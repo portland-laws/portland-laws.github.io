@@ -91,8 +91,7 @@ interface CorpusState {
 }
 
 const DEFAULT_CORPUS_BASE_URL = '/corpus/portland-or/current';
-const CORPUS_BASE_URL =
-  (import.meta.env.VITE_CORPUS_BASE_URL as string | undefined) || DEFAULT_CORPUS_BASE_URL;
+const CORPUS_BASE_URL = DEFAULT_CORPUS_BASE_URL;
 
 let corpusPromise: Promise<CorpusState> | null = null;
 let bm25Promise: Promise<Bm25Payload> | null = null;

@@ -1,0 +1,43 @@
+[
+  {
+    "id": "fol_all_humans_are_mortal",
+    "kind": "fol",
+    "input": "All humans are mortal",
+    "python_regex_formula": "∀x (Humans(x) → Mortal(x))",
+    "notes": "Matches the lightweight regex behavior from fol/utils/fol_parser.py. spaCy and ML confidence parity are tracked separately."
+  },
+  {
+    "id": "fol_if_tenant_then_resident",
+    "kind": "fol",
+    "input": "If tenant then resident",
+    "python_regex_formula": "∀x (Tenant(x) → Resident(x))",
+    "notes": "Simple implication fixture."
+  },
+  {
+    "id": "deontic_tenant_must_pay_rent",
+    "kind": "deontic",
+    "input": "The tenant must pay rent monthly",
+    "python_norm_type": "obligation",
+    "python_deontic_operator": "O",
+    "python_formula_prefix": "O(∀x",
+    "notes": "Operator classification parity target for deontic/utils/deontic_parser.py."
+  },
+  {
+    "id": "deontic_employer_shall_not_retaliate",
+    "kind": "deontic",
+    "input": "The employer shall not retaliate against workers",
+    "python_norm_type": "prohibition",
+    "python_deontic_operator": "F",
+    "python_formula_prefix": "F(∀x",
+    "notes": "Ensures prohibition phrases win before obligation phrases."
+  },
+  {
+    "id": "tdfol_portland_permission",
+    "kind": "tdfol",
+    "input": "∀a:Agent (SubjectTo(a,portland_city_code_1_01_010) → P(□(ComplyWith(a,portland_city_code_1_01_010))))",
+    "python_parseable": true,
+    "python_contains": ["SubjectTo", "ComplyWith", "P", "□"],
+    "notes": "Generated Portland formula shape."
+  }
+]
+

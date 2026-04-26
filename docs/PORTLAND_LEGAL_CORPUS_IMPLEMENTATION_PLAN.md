@@ -12,11 +12,15 @@ Use the Hugging Face corpus at `justicedao/american_municipal_law`, specifically
 - [x] Add static corpus artifact ingestion and validation.
 - [x] Add optimized browser artifact generation.
 - [x] Add corpus data services and TypeScript contracts.
-- [ ] Replace AI Town first screen with Portland Code research UI.
-- [ ] Add hybrid keyword/vector/KG search.
-- [ ] Add citation-grounded GraphRAG chat.
-- [ ] Add proof artifact explorer.
-- [ ] Research browser theorem-prover port.
+- [x] Replace AI Town first screen with Portland Code research UI.
+- [x] Add hybrid keyword/vector/KG search.
+- [x] Add citation-grounded GraphRAG chat.
+- [x] Add proof artifact explorer.
+- [x] Add norm-aware filters and proof badges to search results.
+- [x] Research browser theorem-prover port. Initial browser logic package, cache/errors/validation helpers, TDFOL lexer/parser/formatter, and proof-explorer parse status are implemented.
+- [x] Add plain-language proof explanations and temporal-scope summaries.
+- [x] Redesign the UI as a Portland-style legal directory plus research workbench with tabs for section text, GraphRAG chat, knowledge graph, and logic proofs.
+- [x] Improve accessibility with skip links, labelled landmarks/forms, ARIA tabs, live status regions, larger targets, stronger focus indicators, and reduced-motion support.
 
 ## Key Changes
 

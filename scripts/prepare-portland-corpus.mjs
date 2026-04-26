@@ -231,7 +231,9 @@ async function main() {
   for (const artifact of artifacts) {
     validatedArtifacts.push(await validateArtifact(artifact));
   }
-  await writeManifest(validatedArtifacts);
+  if (!validateOnly) {
+    await writeManifest(validatedArtifacts);
+  }
 
   if (!noExtract) {
     if (await hasPythonExtractorDeps()) {
@@ -240,7 +242,9 @@ async function main() {
       for (const artifact of artifacts) {
         refreshedArtifacts.push(await validateArtifact(artifact));
       }
-      await writeManifest(refreshedArtifacts);
+      if (!validateOnly) {
+        await writeManifest(refreshedArtifacts);
+      }
     } else {
       console.warn('Skipping optimized extraction: python3 with pyarrow is not available.');
     }
