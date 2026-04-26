@@ -6,6 +6,8 @@
     "dev": "vite",
     "build": "tsc && vite build",
     "lint": "eslint .",
+    "prepare:portland-corpus": "node scripts/prepare-portland-corpus.mjs",
+    "validate:portland-corpus": "node scripts/prepare-portland-corpus.mjs --validate-only --no-extract",
     "dev:frontend": "vite",
     "test": "NODE_OPTIONS=--experimental-vm-modules jest --verbose",
     "test:playwright": "playwright test",

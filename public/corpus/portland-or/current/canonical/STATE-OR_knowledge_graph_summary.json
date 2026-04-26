@@ -1,0 +1,2253 @@
+{
+  "entity_count": 21374,
+  "relationship_count": 80382,
+  "document_count": 3052,
+  "ontology_version": "municipal-law-kg-v3",
+  "ontology": {
+    "schema_version": "municipal-law-ontology-v1",
+    "ontology_version": "municipal-law-kg-v3",
+    "description": "Municipal code ontology for KG extraction, frame logic, deontic logic, TDFOL, DCEC, and permit/workflow reasoning.",
+    "classes": [
+      {
+        "id": "Thing",
+        "label": "Thing",
+        "parent": null
+      },
+      {
+        "id": "LegalArtifact",
+        "label": "Legal artifact",
+        "parent": "Thing"
+      },
+      {
+        "id": "MunicipalCodeSection",
+        "label": "Municipal code section",
+        "parent": "LegalArtifact"
+      },
+      {
+        "id": "MunicipalCodeChapter",
+        "label": "Municipal code chapter",
+        "parent": "LegalArtifact"
+      },
+      {
+        "id": "MunicipalCodeTitle",
+        "label": "Municipal code title",
+        "parent": "LegalArtifact"
+      },
+      {
+        "id": "LegalAuthority",
+        "label": "Legal authority",
+        "parent": "LegalArtifact"
+      },
+      {
+        "id": "Ordinance",
+        "label": "Ordinance",
+        "parent": "LegalAuthority"
+      },
+      {
+        "id": "StateStatute",
+        "label": "State statute",
+        "parent": "LegalAuthority"
+      },
+      {
+        "id": "AdministrativeRule",
+        "label": "Administrative rule",
+        "parent": "LegalAuthority"
+      },
+      {
+        "id": "DefinedTerm",
+        "label": "Defined term",
+        "parent": "LegalArtifact"
+      },
+      {
+        "id": "LegalNorm",
+        "label": "Legal norm",
+        "parent": "Thing"
+      },
+      {
+        "id": "Obligation",
+        "label": "Obligation",
+        "parent": "LegalNorm"
+      },
+      {
+        "id": "Prohibition",
+        "label": "Prohibition",
+        "parent": "LegalNorm"
+      },
+      {
+        "id": "Permission",
+        "label": "Permission",
+        "parent": "LegalNorm"
+      },
+      {
+        "id": "AuthorityGrant",
+        "label": "Authority grant",
+        "parent": "LegalNorm"
+      },
+      {
+        "id": "DefinitionNorm",
+        "label": "Definition norm",
+        "parent": "LegalNorm"
+      },
+      {
+        "id": "LegalActor",
+        "label": "Legal actor",
+        "parent": "Thing"
+      },
+      {
+        "id": "GovernmentActor",
+        "label": "Government actor",
+        "parent": "LegalActor"
+      },
+      {
+        "id": "Municipality",
+        "label": "Municipality",
+        "parent": "GovernmentActor"
+      },
+      {
+        "id": "MunicipalAgency",
+        "label": "Municipal agency",
+        "parent": "GovernmentActor"
+      },
+      {
+        "id": "LegislativeBody",
+        "label": "Legislative body",
+        "parent": "GovernmentActor"
+      },
+      {
+        "id": "MunicipalOfficial",
+        "label": "Municipal official",
+        "parent": "GovernmentActor"
+      },
+      {
+        "id": "RegulatedActor",
+        "label": "Regulated actor",
+        "parent": "LegalActor"
+      },
+      {
+        "id": "LegalPerson",
+        "label": "Legal person",
+        "parent": "RegulatedActor"
+      },
+      {
+        "id": "BusinessEntity",
+        "label": "Business entity",
+        "parent": "RegulatedActor"
+      },
+      {
+        "id": "PropertyActor",
+        "label": "Property actor",
+        "parent": "RegulatedActor"
+      },
+      {
+        "id": "Worker",
+        "label": "Worker",
+        "parent": "RegulatedActor"
+      },
+      {
+        "id": "Resident",
+        "label": "Resident",
+        "parent": "RegulatedActor"
+      },
+      {
+        "id": "Process",
+        "label": "Process",
+        "parent": "Thing"
+      },
+      {
+        "id": "AdministrativeProcess",
+        "label": "Administrative process",
+        "parent": "Process"
+      },
+      {
+        "id": "PermitProcess",
+        "label": "Permit process",
+        "parent": "AdministrativeProcess"
+      },
+      {
+        "id": "LicenseProcess",
+        "label": "License process",
+        "parent": "AdministrativeProcess"
+      },
+      {
+        "id": "AppealProcess",
+        "label": "Appeal process",
+        "parent": "AdministrativeProcess"
+      },
+      {
+        "id": "EnforcementProcess",
+        "label": "Enforcement process",
+        "parent": "AdministrativeProcess"
+      },
+      {
+        "id": "InspectionProcess",
+        "label": "Inspection process",
+        "parent": "AdministrativeProcess"
+      },
+      {
+        "id": "RegulatedSubject",
+        "label": "Regulated subject",
+        "parent": "Thing"
+      },
+      {
+        "id": "RegulatedActivity",
+        "label": "Regulated activity",
+        "parent": "RegulatedSubject"
+      },
+      {
+        "id": "RegulatedProperty",
+        "label": "Regulated property",
+        "parent": "RegulatedSubject"
+      },
+      {
+        "id": "AuthorizationInstrument",
+        "label": "Authorization instrument",
+        "parent": "RegulatedSubject"
+      },
+      {
+        "id": "Permit",
+        "label": "Permit",
+        "parent": "AuthorizationInstrument"
+      },
+      {
+        "id": "License",
+        "label": "License",
+        "parent": "AuthorizationInstrument"
+      },
+      {
+        "id": "FinancialObligation",
+        "label": "Financial obligation",
+        "parent": "RegulatedSubject"
+      },
+      {
+        "id": "Sanction",
+        "label": "Sanction",
+        "parent": "RegulatedSubject"
+      },
+      {
+        "id": "LegalViolation",
+        "label": "Legal violation",
+        "parent": "RegulatedSubject"
+      },
+      {
+        "id": "PublicProperty",
+        "label": "Public property",
+        "parent": "RegulatedProperty"
+      },
+      {
+        "id": "LandUseControl",
+        "label": "Land use control",
+        "parent": "RegulatedSubject"
+      },
+      {
+        "id": "PublicSafetySubject",
+        "label": "Public safety subject",
+        "parent": "RegulatedSubject"
+      },
+      {
+        "id": "MunicipalService",
+        "label": "Municipal service",
+        "parent": "RegulatedSubject"
+      },
+      {
+        "id": "Complaint",
+        "label": "Complaint",
+        "parent": "RegulatedSubject",
+        "source": "llm_router"
+      },
+      {
+        "id": "ComplaintProcess",
+        "label": "Complaint Process",
+        "parent": "AdministrativeProcess",
+        "source": "llm_router"
+      },
+      {
+        "id": "Franchise",
+        "label": "Franchise",
+        "parent": "AuthorizationInstrument",
+        "source": "llm_router"
+      },
+      {
+        "id": "UtilityService",
+        "label": "Utility Service",
+        "parent": "MunicipalService",
+        "source": "llm_router"
+      },
+      {
+        "id": "TimePeriod",
+        "label": "Time Period",
+        "parent": "Thing",
+        "source": "llm_router"
+      },
+      {
+        "id": "AccessRestriction",
+        "label": "Access Restriction",
+        "parent": "Sanction",
+        "source": "llm_router"
+      }
+    ],
+    "predicates": [
+      {
+        "id": "PART_OF_TITLE",
+        "domain": "MunicipalCodeChapter|MunicipalCodeSection",
+        "range": "MunicipalCodeTitle",
+        "flogic": "partOfTitle"
+      },
+      {
+        "id": "PART_OF_CHAPTER",
+        "domain": "MunicipalCodeSection",
+        "range": "MunicipalCodeChapter",
+        "flogic": "partOfChapter"
+      },
+      {
+        "id": "REFERENCES_LEGAL_AUTHORITY",
+        "domain": "MunicipalCodeSection",
+        "range": "LegalAuthority",
+        "flogic": "referencesAuthority"
+      },
+      {
+        "id": "REFERENCES_CODE_SECTION",
+        "domain": "MunicipalCodeSection",
+        "range": "LegalAuthority",
+        "flogic": "referencesCodeSection"
+      },
+      {
+        "id": "REFERENCES_SECTION_CID",
+        "domain": "MunicipalCodeSection",
+        "range": "MunicipalCodeSection",
+        "flogic": "referencesSection"
+      },
+      {
+        "id": "AMENDED_BY",
+        "domain": "MunicipalCodeSection",
+        "range": "Ordinance",
+        "flogic": "amendedBy"
+      },
+      {
+        "id": "DEFINES_TERM",
+        "domain": "MunicipalCodeSection",
+        "range": "DefinedTerm",
+        "flogic": "definesTerm"
+      },
+      {
+        "id": "MENTIONS_ACTOR",
+        "domain": "MunicipalCodeSection",
+        "range": "LegalActor",
+        "flogic": "mentionsActor"
+      },
+      {
+        "id": "REGULATES_SUBJECT",
+        "domain": "MunicipalCodeSection",
+        "range": "RegulatedSubject",
+        "flogic": "regulatesSubject"
+      },
+      {
+        "id": "GOVERNS_AUTHORIZATION",
+        "domain": "MunicipalCodeSection",
+        "range": "AuthorizationInstrument",
+        "flogic": "governsAuthorization"
+      },
+      {
+        "id": "IMPOSES_DUTY",
+        "domain": "MunicipalCodeSection",
+        "range": "Obligation",
+        "deontic": "O(action)"
+      },
+      {
+        "id": "IMPOSES_DUTY_ON",
+        "domain": "MunicipalCodeSection",
+        "range": "LegalActor",
+        "deontic": "O(actor, action)"
+      },
+      {
+        "id": "PROHIBITS",
+        "domain": "MunicipalCodeSection",
+        "range": "Prohibition",
+        "deontic": "F(action)"
+      },
+      {
+        "id": "GRANTS_AUTHORITY",
+        "domain": "MunicipalCodeSection",
+        "range": "AuthorityGrant",
+        "deontic": "P(actor, action)"
+      },
+      {
+        "id": "GRANTS_AUTHORITY_TO",
+        "domain": "MunicipalCodeSection",
+        "range": "GovernmentActor|LegalActor",
+        "deontic": "P(actor, action)"
+      },
+      {
+        "id": "CREATES_PROCESS",
+        "domain": "MunicipalCodeSection",
+        "range": "AdministrativeProcess",
+        "flogic": "createsProcess"
+      },
+      {
+        "id": "HAS_TRIGGER",
+        "domain": "LegalNorm",
+        "range": "Process|RegulatedSubject",
+        "tdfol": "trigger(norm, condition)"
+      },
+      {
+        "id": "HAS_EXCEPTION",
+        "domain": "LegalNorm",
+        "range": "LegalNorm|RegulatedSubject",
+        "tdfol": "unless(norm, exception)"
+      },
+      {
+        "id": "HAS_CONDITION",
+        "domain": "LegalNorm",
+        "range": "RegulatedSubject|Process",
+        "tdfol": "condition(norm, condition)"
+      },
+      {
+        "id": "HAS_DEADLINE",
+        "domain": "LegalNorm|AdministrativeProcess",
+        "range": "TemporalConstraint",
+        "tdfol": "deadline(norm, time)"
+      },
+      {
+        "id": "APPLIES_TO_ACTIVITY",
+        "domain": "LegalNorm",
+        "range": "RegulatedActivity",
+        "flogic": "∀x∀y (APPLIES_TO_ACTIVITY(x,y) -> (LegalNorm(x) ∧ RegulatedActivity(y)))",
+        "source": "llm_router"
+      },
+      {
+        "id": "REQUIRES_PERMIT",
+        "domain": "RegulatedActivity",
+        "range": "Permit",
+        "flogic": "∀a∀p (REQUIRES_PERMIT(a,p) -> (RegulatedActivity(a) ∧ Permit(p)))",
+        "source": "llm_router"
+      },
+      {
+        "id": "REQUIRES_LICENSE",
+        "domain": "RegulatedActivity",
+        "range": "License",
+        "flogic": "∀a∀l (REQUIRES_LICENSE(a,l) -> (RegulatedActivity(a) ∧ License(l)))",
+        "source": "llm_router"
+      },
+      {
+        "id": "HAS_APPLICANT",
+        "domain": "AdministrativeProcess",
+        "range": "LegalActor",
+        "flogic": "∀x∀y (HAS_APPLICANT(x,y) -> (AdministrativeProcess(x) ∧ LegalActor(y)))",
+        "source": "llm_router"
+      },
+      {
+        "id": "HAS_REVIEW_AUTHORITY",
+        "domain": "AdministrativeProcess",
+        "range": "GovernmentActor",
+        "flogic": "∀x∀y (HAS_REVIEW_AUTHORITY(x,y) -> (AdministrativeProcess(x) ∧ GovernmentActor(y)))",
+        "source": "llm_router"
+      },
+      {
+        "id": "HAS_TIME_LIMIT",
+        "domain": "AdministrativeProcess",
+        "range": "TimePeriod",
+        "flogic": "∀x∀t (HAS_TIME_LIMIT(x,t) -> (AdministrativeProcess(x) ∧ TimePeriod(t)))",
+        "source": "llm_router"
+      },
+      {
+        "id": "GRANTED_BY_AUTHORITY",
+        "domain": "AuthorizationInstrument",
+        "range": "LegalAuthority",
+        "flogic": "∀i∀a (GRANTED_BY_AUTHORITY(i,a) -> (AuthorizationInstrument(i) ∧ LegalAuthority(a)))",
+        "source": "llm_router"
+      },
+      {
+        "id": "GRANTS_ACCESS_TO_SERVICE",
+        "domain": "AuthorizationInstrument",
+        "range": "UtilityService",
+        "flogic": "∀i∀s (GRANTS_ACCESS_TO_SERVICE(i,s) -> (AuthorizationInstrument(i) ∧ UtilityService(s)))",
+        "source": "llm_router"
+      },
+      {
+        "id": "ESTABLISHES_OBLIGATION",
+        "domain": "LegalNorm",
+        "range": "Obligation",
+        "flogic": "∀n∀o (ESTABLISHES_OBLIGATION(n,o) -> (LegalNorm(n) ∧ Obligation(o)))",
+        "source": "llm_router"
+      },
+      {
+        "id": "ESTABLISHES_PROHIBITION",
+        "domain": "LegalNorm",
+        "range": "Prohibition",
+        "flogic": "∀n∀p (ESTABLISHES_PROHIBITION(n,p) -> (LegalNorm(n) ∧ Prohibition(p)))",
+        "source": "llm_router"
+      },
+      {
+        "id": "ESTABLISHES_PERMISSION",
+        "domain": "LegalNorm",
+        "range": "Permission",
+        "flogic": "∀n∀p (ESTABLISHES_PERMISSION(n,p) -> (LegalNorm(n) ∧ Permission(p)))",
+        "source": "llm_router"
+      },
+      {
+        "id": "HAS_SANCTION",
+        "domain": "LegalNorm",
+        "range": "Sanction",
+        "flogic": "∀n∀s (HAS_SANCTION(n,s) -> (LegalNorm(n) ∧ Sanction(s)))",
+        "source": "llm_router"
+      },
+      {
+        "id": "INVOLVES_ACCESS_RESTRICTION",
+        "domain": "ComplaintProcess",
+        "range": "AccessRestriction",
+        "flogic": "∀c∀a (INVOLVES_ACCESS_RESTRICTION(c,a) -> (ComplaintProcess(c) ∧ AccessRestriction(a)))",
+        "source": "llm_router"
+      }
+    ],
+    "actor_lexicon": {
+      "applicant": "LegalActor",
+      "auditor": "MunicipalOfficial",
+      "bureau": "MunicipalAgency",
+      "business": "BusinessEntity",
+      "city": "Municipality",
+      "city administrator": "MunicipalOfficial",
+      "city attorney": "MunicipalOfficial",
+      "city council": "LegislativeBody",
+      "city official": "MunicipalOfficial",
+      "contractor": "BusinessEntity",
+      "director": "MunicipalOfficial",
+      "employee": "Worker",
+      "employer": "BusinessEntity",
+      "enforcement officer": "MunicipalOfficial",
+      "fire marshal": "MunicipalOfficial",
+      "inspector": "MunicipalOfficial",
+      "landlord": "PropertyActor",
+      "licensee": "BusinessEntity",
+      "manager": "MunicipalOfficial",
+      "officer": "MunicipalOfficial",
+      "owner": "PropertyActor",
+      "permittee": "BusinessEntity",
+      "person": "LegalPerson",
+      "property owner": "PropertyActor",
+      "tenant": "Resident",
+      "worker": "Worker",
+      "administrator": "MunicipalOfficial",
+      "assistant chief": "MunicipalOfficial",
+      "board": "MunicipalAgency",
+      "board member": "MunicipalOfficial",
+      "chief": "MunicipalOfficial",
+      "complainant": "LegalPerson",
+      "community member": "Resident",
+      "customer": "LegalPerson",
+      "driver": "Worker",
+      "district attorney": "MunicipalOfficial",
+      "fire watch": "Worker",
+      "franchisee": "BusinessEntity",
+      "harbor master": "MunicipalOfficial",
+      "mechanic": "Worker",
+      "mediator": "MunicipalOfficial",
+      "moorage operator": "BusinessEntity",
+      "moorage owner": "PropertyActor",
+      "supervisor": "MunicipalOfficial",
+      "company": "BusinessEntity",
+      "fire": "MunicipalAgency",
+      "police": "MunicipalAgency"
+    },
+    "subject_lexicon": {
+      "appeal": "AppealProcess",
+      "application": "AdministrativeProcess",
+      "building": "RegulatedProperty",
+      "business license": "License",
+      "city code": "LegalArtifact",
+      "construction": "RegulatedActivity",
+      "demolition": "RegulatedActivity",
+      "development": "RegulatedActivity",
+      "emergency": "PublicSafetySubject",
+      "fee": "FinancialObligation",
+      "hearing": "AdministrativeProcess",
+      "inspection": "InspectionProcess",
+      "license": "License",
+      "nuisance": "RegulatedSubject",
+      "penalty": "Sanction",
+      "permit": "Permit",
+      "property": "RegulatedProperty",
+      "public works": "MunicipalService",
+      "right-of-way": "PublicProperty",
+      "tax": "FinancialObligation",
+      "violation": "LegalViolation",
+      "zoning": "LandUseControl",
+      "accessway": "RegulatedProperty",
+      "application for permit": "PermitProcess",
+      "application for demolition permit": "PermitProcess",
+      "assessment": "FinancialObligation",
+      "berth": "RegulatedProperty",
+      "boathouse": "RegulatedProperty",
+      "board facility": "MunicipalService",
+      "calendar days": "TimePeriod",
+      "complaint": "Complaint",
+      "complaint process": "ComplaintProcess",
+      "complaint type": "Complaint",
+      "cost": "FinancialObligation",
+      "demolition permit": "Permit",
+      "delay period": "TimePeriod",
+      "ejection": "AccessRestriction",
+      "eligibility period": "TimePeriod",
+      "exclusion": "AccessRestriction",
+      "flood hazard": "RegulatedProperty",
+      "flood hazard area": "RegulatedProperty",
+      "floodplain": "RegulatedProperty",
+      "franchise": "Franchise",
+      "franchise agreement": "Franchise",
+      "gangway": "RegulatedProperty",
+      "internal affairs": "AdministrativeProcess",
+      "license application": "LicenseProcess",
+      "living waters service": "MunicipalService",
+      "maintenance": "RegulatedActivity",
+      "moorage": "RegulatedProperty",
+      "notice period": "TimePeriod",
+      "notice": "AdministrativeProcess",
+      "permit application": "PermitProcess",
+      "policy": "DefinitionNorm",
+      "public property": "PublicProperty",
+      "river": "RegulatedProperty",
+      "sanitary sewer service": "UtilityService",
+      "service": "MunicipalService",
+      "status": "DefinedTerm",
+      "street": "PublicProperty",
+      "time period": "TimePeriod",
+      "tree": "RegulatedSubject",
+      "tree permit": "Permit",
+      "utility": "UtilityService",
+      "utility facility": "UtilityService",
+      "utility service": "UtilityService",
+      "vessel": "RegulatedProperty",
+      "water service": "UtilityService",
+      "working days": "TimePeriod",
+      "floating home": "RegulatedProperty",
+      "park facility": "MunicipalService",
+      "request": "PermitProcess",
+      "review": "AdministrativeProcess",
+      "order": "AuthorizationInstrument",
+      "services": "MunicipalService",
+      "fees": "FinancialObligation",
+      "vehicle": "RegulatedSubject",
+      "parking": "LandUseControl",
+      "improvement": "RegulatedActivity",
+      "water": "UtilityService",
+      "sewer": "UtilityService",
+      "site": "RegulatedProperty",
+      "land": "RegulatedProperty",
+      "structure": "RegulatedProperty",
+      "area": "LandUseControl",
+      "district": "LandUseControl",
+      "plan": "LandUseControl",
+      "sidewalk": "PublicProperty",
+      "stormwater": "RegulatedActivity",
+      "noise": "RegulatedActivity",
+      "solid waste": "MunicipalService",
+      "transportation": "MunicipalService",
+      "housing": "LandUseControl",
+      "electrical": "RegulatedActivity",
+      "mechanical": "RegulatedActivity",
+      "plumbing": "RegulatedActivity"
+    },
+    "norm_patterns": [
+      {
+        "id": "prohibition",
+        "regex": "\\bshall\\s+not\\b|\\bmust\\s+not\\b|\\bmay\\s+not\\b|\\bis\\s+prohibited\\b|\\bare\\s+prohibited\\b",
+        "class": "Prohibition",
+        "predicate": "PROHIBITS"
+      },
+      {
+        "id": "obligation",
+        "regex": "\\bshall\\b|\\bmust\\b|\\bis\\s+required\\b|\\bare\\s+required\\b",
+        "class": "Obligation",
+        "predicate": "IMPOSES_DUTY"
+      },
+      {
+        "id": "authority_grant",
+        "regex": "\\bmay\\b|\\bis\\s+authorized\\b|\\bare\\s+authorized\\b|\\bhas\\s+authority\\b",
+        "class": "AuthorityGrant",
+        "predicate": "GRANTS_AUTHORITY"
+      },
+      {
+        "id": "definition",
+        "regex": "\\bmeans\\b|\\bis defined as\\b",
+        "class": "DefinitionNorm",
+        "predicate": "DEFINES"
+      }
+    ],
+    "logic_mappings": {
+      "frame_logic": {
+        "MunicipalCodeSection": "?Section:MunicipalCodeSection[sectionNumber => ?N, regulatesSubject => ?Subject].",
+        "LegalActor": "?Actor:LegalActor[actorRole => ?Role].",
+        "IMPOSES_DUTY_ON": "duty_applies(?Actor, ?Section) :- ?Section[imposesDutyOn -> ?Actor].",
+        "GRANTS_AUTHORITY_TO": "authority_granted(?Actor, ?Section) :- ?Section[grantsAuthorityTo -> ?Actor].",
+        "REFERENCES_SECTION_CID": "depends_on(?Section, ?Other) :- ?Section[referencesSection -> ?Other]."
+      },
+      "deontic": {
+        "IMPOSES_DUTY_ON": "O(actor, comply_with(section))",
+        "PROHIBITS": "F(actor, prohibited_action(section))",
+        "GRANTS_AUTHORITY_TO": "P(actor, authorized_action(section))"
+      },
+      "tdfol": {
+        "deadline": "G(trigger(norm) -> F_before(deadline, satisfied(norm)))",
+        "exception": "G(exception(norm) -> not active(norm))"
+      }
+    },
+    "llm_extension": {
+      "accepted": true,
+      "accepted_class_count": 6,
+      "accepted_actor_term_count": 45,
+      "accepted_subject_term_count": 66,
+      "accepted_predicate_count": 13,
+      "accepted_actor_terms": {
+        "applicant": "LegalActor",
+        "auditor": "MunicipalOfficial",
+        "administrator": "MunicipalOfficial",
+        "assistant chief": "MunicipalOfficial",
+        "board": "MunicipalAgency",
+        "board member": "MunicipalOfficial",
+        "bureau": "MunicipalAgency",
+        "business": "BusinessEntity",
+        "chief": "MunicipalOfficial",
+        "city": "Municipality",
+        "city administrator": "MunicipalOfficial",
+        "city attorney": "MunicipalOfficial",
+        "city council": "LegislativeBody",
+        "city official": "MunicipalOfficial",
+        "complainant": "LegalPerson",
+        "community member": "Resident",
+        "committe e member": "MunicipalOfficial",
+        "contractor": "BusinessEntity",
+        "customer": "LegalPerson",
+        "director": "MunicipalOfficial",
+        "driver": "Worker",
+        "district attorney": "MunicipalOfficial",
+        "employee": "Worker",
+        "employer": "BusinessEntity",
+        "enforcement officer": "MunicipalOfficial",
+        "fire watch": "Worker",
+        "fire marshal": "MunicipalOfficial",
+        "franchisee": "BusinessEntity",
+        "harbor master": "MunicipalOfficial",
+        "inspector": "MunicipalOfficial",
+        "landlord": "PropertyActor",
+        "licensee": "BusinessEntity",
+        "manager": "MunicipalOfficial",
+        "mechanic": "Worker",
+        "mediator": "MunicipalOfficial",
+        "moorage operator": "BusinessEntity",
+        "moorage owner": "PropertyActor",
+        "officer": "MunicipalOfficial",
+        "owner": "PropertyActor",
+        "permittee": "BusinessEntity",
+        "person": "LegalPerson",
+        "property owner": "PropertyActor",
+        "supervisor": "MunicipalOfficial",
+        "tenant": "Resident",
+        "worker": "Worker"
+      },
+      "accepted_subject_terms": {
+        "accessway": "RegulatedProperty",
+        "appeal": "AppealProcess",
+        "application": "AdministrativeProcess",
+        "application for permit": "PermitProcess",
+        "application for demolition permit": "PermitProcess",
+        "assessment": "FinancialObligation",
+        "berth": "RegulatedProperty",
+        "boathouse": "RegulatedProperty",
+        "board facility": "MunicipalService",
+        "building": "RegulatedProperty",
+        "business license": "License",
+        "calendar days": "TimePeriod",
+        "complaint": "Complaint",
+        "complaint process": "ComplaintProcess",
+        "complaint type": "Complaint",
+        "construction": "RegulatedActivity",
+        "cost": "FinancialObligation",
+        "demolition": "RegulatedActivity",
+        "demolition permit": "Permit",
+        "development": "RegulatedActivity",
+        "delay period": "TimePeriod",
+        "ejection": "AccessRestriction",
+        "eligibility period": "TimePeriod",
+        "exclusion": "AccessRestriction",
+        "flood hazard": "RegulatedProperty",
+        "flood hazard area": "RegulatedProperty",
+        "floodplain": "RegulatedProperty",
+        "franchise": "Franchise",
+        "franchise agreement": "Franchise",
+        "gangway": "RegulatedProperty",
+        "hearing": "AdministrativeProcess",
+        "inspection": "InspectionProcess",
+        "internal affairs": "AdministrativeProcess",
+        "license": "License",
+        "license application": "LicenseProcess",
+        "living waters service": "MunicipalService",
+        "maintenance": "RegulatedActivity",
+        "moorage": "RegulatedProperty",
+        "notice period": "TimePeriod",
+        "notice": "AdministrativeProcess",
+        "permit": "Permit",
+        "permit application": "PermitProcess",
+        "policy": "DefinitionNorm",
+        "public property": "PublicProperty",
+        "right-of-way": "PublicProperty",
+        "river": "RegulatedProperty",
+        "sanitary sewer service": "UtilityService",
+        "service": "MunicipalService",
+        "status": "DefinedTerm",
+        "street": "RegulatedProperty",
+        "time period": "TimePeriod",
+        "tree": "RegulatedProperty",
+        "tree permit": "Permit",
+        "utility": "UtilityService",
+        "utility facility": "UtilityService",
+        "utility service": "UtilityService",
+        "vessel": "RegulatedProperty",
+        "violation": "LegalViolation",
+        "water service": "UtilityService",
+        "working days": "TimePeriod",
+        "zoning": "LandUseControl",
+        "floating home": "RegulatedProperty",
+        "property": "RegulatedProperty",
+        "park facility": "MunicipalService",
+        "fee": "FinancialObligation",
+        "tax": "FinancialObligation"
+      }
+    },
+    "source_corpus": "/home/barberb/HACC/complaint-generator/ipfs_datasets_py/workspace/municipal_common_crawl_laws/portland_gov_code_current_canonical_artifacts/STATE-OR.parquet",
+    "bm25_source": "/home/barberb/HACC/complaint-generator/ipfs_datasets_py/workspace/municipal_common_crawl_laws/portland_gov_code_current_canonical_artifacts/STATE-OR_bm25.parquet",
+    "bm25_review_term_count": 260,
+    "bm25_review_terms": [
+      {
+        "term": "administrator",
+        "tf": 3517,
+        "df": 1033
+      },
+      {
+        "term": "permit",
+        "tf": 2979,
+        "df": 669
+      },
+      {
+        "term": "other",
+        "tf": 2858,
+        "df": 1232
+      },
+      {
+        "term": "property",
+        "tf": 2840,
+        "df": 741
+      },
+      {
+        "term": "person",
+        "tf": 2476,
+        "df": 883
+      },
+      {
+        "term": "within",
+        "tf": 2164,
+        "df": 943
+      },
+      {
+        "term": "such",
+        "tf": 2116,
+        "df": 986
+      },
+      {
+        "term": "public",
+        "tf": 2074,
+        "df": 824
+      },
+      {
+        "term": "vehicle",
+        "tf": 1909,
+        "df": 373
+      },
+      {
+        "term": "under",
+        "tf": 1814,
+        "df": 924
+      },
+      {
+        "term": "required",
+        "tf": 1774,
+        "df": 818
+      },
+      {
+        "term": "means",
+        "tf": 1707,
+        "df": 322
+      },
+      {
+        "term": "has",
+        "tf": 1636,
+        "df": 767
+      },
+      {
+        "term": "use",
+        "tf": 1625,
+        "df": 656
+      },
+      {
+        "term": "than",
+        "tf": 1533,
+        "df": 686
+      },
+      {
+        "term": "provided",
+        "tf": 1488,
+        "df": 755
+      },
+      {
+        "term": "requirements",
+        "tf": 1461,
+        "df": 597
+      },
+      {
+        "term": "bureau",
+        "tf": 1448,
+        "df": 559
+      },
+      {
+        "term": "notice",
+        "tf": 1359,
+        "df": 418
+      },
+      {
+        "term": "area",
+        "tf": 1249,
+        "df": 370
+      },
+      {
+        "term": "service",
+        "tf": 1240,
+        "df": 408
+      },
+      {
+        "term": "which",
+        "tf": 1225,
+        "df": 684
+      },
+      {
+        "term": "building",
+        "tf": 1208,
+        "df": 367
+      },
+      {
+        "term": "water",
+        "tf": 1202,
+        "df": 251
+      },
+      {
+        "term": "owner",
+        "tf": 1198,
+        "df": 435
+      },
+      {
+        "term": "application",
+        "tf": 1179,
+        "df": 357
+      },
+      {
+        "term": "following",
+        "tf": 1166,
+        "df": 688
+      },
+      {
+        "term": "administrative",
+        "tf": 1163,
+        "df": 496
+      },
+      {
+        "term": "business",
+        "tf": 1121,
+        "df": 405
+      },
+      {
+        "term": "violation",
+        "tf": 1108,
+        "df": 414
+      },
+      {
+        "term": "time",
+        "tf": 1106,
+        "df": 560
+      },
+      {
+        "term": "days",
+        "tf": 1105,
+        "df": 497
+      },
+      {
+        "term": "subsection",
+        "tf": 1098,
+        "df": 460
+      },
+      {
+        "term": "including",
+        "tf": 1086,
+        "df": 597
+      },
+      {
+        "term": "when",
+        "tf": 1083,
+        "df": 623
+      },
+      {
+        "term": "applicant",
+        "tf": 1053,
+        "df": 250
+      },
+      {
+        "term": "development",
+        "tf": 1042,
+        "df": 319
+      },
+      {
+        "term": "tax",
+        "tf": 1030,
+        "df": 203
+      },
+      {
+        "term": "have",
+        "tf": 1022,
+        "df": 641
+      },
+      {
+        "term": "work",
+        "tf": 1019,
+        "df": 355
+      },
+      {
+        "term": "upon",
+        "tf": 1008,
+        "df": 600
+      },
+      {
+        "term": "system",
+        "tf": 992,
+        "df": 290
+      },
+      {
+        "term": "fee",
+        "tf": 976,
+        "df": 322
+      },
+      {
+        "term": "street",
+        "tf": 975,
+        "df": 307
+      },
+      {
+        "term": "more",
+        "tf": 968,
+        "df": 512
+      },
+      {
+        "term": "council",
+        "tf": 966,
+        "df": 387
+      },
+      {
+        "term": "state",
+        "tf": 963,
+        "df": 515
+      },
+      {
+        "term": "subject",
+        "tf": 961,
+        "df": 554
+      },
+      {
+        "term": "review",
+        "tf": 959,
+        "df": 352
+      },
+      {
+        "term": "provide",
+        "tf": 938,
+        "df": 502
+      },
+      {
+        "term": "one",
+        "tf": 927,
+        "df": 462
+      },
+      {
+        "term": "appeal",
+        "tf": 925,
+        "df": 220
+      },
+      {
+        "term": "after",
+        "tf": 921,
+        "df": 522
+      },
+      {
+        "term": "been",
+        "tf": 917,
+        "df": 541
+      },
+      {
+        "term": "each",
+        "tf": 910,
+        "df": 477
+      },
+      {
+        "term": "rules",
+        "tf": 909,
+        "df": 455
+      },
+      {
+        "term": "date",
+        "tf": 884,
+        "df": 394
+      },
+      {
+        "term": "director",
+        "tf": 881,
+        "df": 278
+      },
+      {
+        "term": "services",
+        "tf": 881,
+        "df": 377
+      },
+      {
+        "term": "officer",
+        "tf": 879,
+        "df": 344
+      },
+      {
+        "term": "company",
+        "tf": 873,
+        "df": 134
+      },
+      {
+        "term": "010",
+        "tf": 867,
+        "df": 458
+      },
+      {
+        "term": "approved",
+        "tf": 866,
+        "df": 435
+      },
+      {
+        "term": "fire",
+        "tf": 865,
+        "df": 209
+      },
+      {
+        "term": "provisions",
+        "tf": 855,
+        "df": 554
+      },
+      {
+        "term": "year",
+        "tf": 833,
+        "df": 300
+      },
+      {
+        "term": "used",
+        "tf": 826,
+        "df": 460
+      },
+      {
+        "term": "license",
+        "tf": 815,
+        "df": 189
+      },
+      {
+        "term": "information",
+        "tf": 804,
+        "df": 358
+      },
+      {
+        "term": "020",
+        "tf": 794,
+        "df": 404
+      },
+      {
+        "term": "030",
+        "tf": 794,
+        "df": 422
+      },
+      {
+        "term": "but",
+        "tf": 791,
+        "df": 512
+      },
+      {
+        "term": "purpose",
+        "tf": 789,
+        "df": 441
+      },
+      {
+        "term": "parking",
+        "tf": 765,
+        "df": 186
+      },
+      {
+        "term": "structure",
+        "tf": 765,
+        "df": 235
+      },
+      {
+        "term": "where",
+        "tf": 757,
+        "df": 439
+      },
+      {
+        "term": "include",
+        "tf": 755,
+        "df": 454
+      },
+      {
+        "term": "feet",
+        "tf": 750,
+        "df": 192
+      },
+      {
+        "term": "through",
+        "tf": 738,
+        "df": 444
+      },
+      {
+        "term": "who",
+        "tf": 734,
+        "df": 436
+      },
+      {
+        "term": "tree",
+        "tf": 732,
+        "df": 84
+      },
+      {
+        "term": "district",
+        "tf": 730,
+        "df": 201
+      },
+      {
+        "term": "issued",
+        "tf": 726,
+        "df": 415
+      },
+      {
+        "term": "law",
+        "tf": 711,
+        "df": 411
+      },
+      {
+        "term": "request",
+        "tf": 709,
+        "df": 352
+      },
+      {
+        "term": "its",
+        "tf": 708,
+        "df": 449
+      },
+      {
+        "term": "right",
+        "tf": 704,
+        "df": 346
+      },
+      {
+        "term": "driver",
+        "tf": 697,
+        "df": 90
+      },
+      {
+        "term": "police",
+        "tf": 692,
+        "df": 242
+      },
+      {
+        "term": "limited",
+        "tf": 691,
+        "df": 419
+      },
+      {
+        "term": "prior",
+        "tf": 687,
+        "df": 396
+      },
+      {
+        "term": "fees",
+        "tf": 684,
+        "df": 277
+      },
+      {
+        "term": "sign",
+        "tf": 682,
+        "df": 102
+      },
+      {
+        "term": "authorized",
+        "tf": 680,
+        "df": 467
+      },
+      {
+        "term": "improvement",
+        "tf": 680,
+        "df": 173
+      },
+      {
+        "term": "board",
+        "tf": 675,
+        "df": 147
+      },
+      {
+        "term": "construction",
+        "tf": 667,
+        "df": 293
+      },
+      {
+        "term": "unless",
+        "tf": 653,
+        "df": 431
+      },
+      {
+        "term": "regulations",
+        "tf": 651,
+        "df": 323
+      },
+      {
+        "term": "way",
+        "tf": 645,
+        "df": 288
+      },
+      {
+        "term": "without",
+        "tf": 644,
+        "df": 415
+      },
+      {
+        "term": "period",
+        "tf": 642,
+        "df": 331
+      },
+      {
+        "term": "program",
+        "tf": 635,
+        "df": 234
+      },
+      {
+        "term": "standards",
+        "tf": 631,
+        "df": 275
+      },
+      {
+        "term": "written",
+        "tf": 630,
+        "df": 375
+      },
+      {
+        "term": "order",
+        "tf": 628,
+        "df": 316
+      },
+      {
+        "term": "made",
+        "tf": 627,
+        "df": 439
+      },
+      {
+        "term": "amount",
+        "tf": 626,
+        "df": 272
+      },
+      {
+        "term": "penalties",
+        "tf": 614,
+        "df": 260
+      },
+      {
+        "term": "pursuant",
+        "tf": 608,
+        "df": 347
+      },
+      {
+        "term": "their",
+        "tf": 607,
+        "df": 408
+      },
+      {
+        "term": "ors",
+        "tf": 600,
+        "df": 280
+      },
+      {
+        "term": "permits",
+        "tf": 599,
+        "df": 271
+      },
+      {
+        "term": "new",
+        "tf": 597,
+        "df": 268
+      },
+      {
+        "term": "040",
+        "tf": 593,
+        "df": 309
+      },
+      {
+        "term": "division",
+        "tf": 593,
+        "df": 204
+      },
+      {
+        "term": "defined",
+        "tf": 592,
+        "df": 292
+      },
+      {
+        "term": "vehicles",
+        "tf": 592,
+        "df": 208
+      },
+      {
+        "term": "site",
+        "tf": 591,
+        "df": 205
+      },
+      {
+        "term": "except",
+        "tf": 591,
+        "df": 428
+      },
+      {
+        "term": "plan",
+        "tf": 590,
+        "df": 208
+      },
+      {
+        "term": "conditions",
+        "tf": 589,
+        "df": 324
+      },
+      {
+        "term": "during",
+        "tf": 581,
+        "df": 341
+      },
+      {
+        "term": "enforcement",
+        "tf": 573,
+        "df": 268
+      },
+      {
+        "term": "proposed",
+        "tf": 573,
+        "df": 203
+      },
+      {
+        "term": "signs",
+        "tf": 572,
+        "df": 94
+      },
+      {
+        "term": "hearings",
+        "tf": 568,
+        "df": 188
+      },
+      {
+        "term": "compliance",
+        "tf": 567,
+        "df": 320
+      },
+      {
+        "term": "trees",
+        "tf": 561,
+        "df": 79
+      },
+      {
+        "term": "does",
+        "tf": 549,
+        "df": 364
+      },
+      {
+        "term": "apply",
+        "tf": 547,
+        "df": 352
+      },
+      {
+        "term": "applicable",
+        "tf": 546,
+        "df": 351
+      },
+      {
+        "term": "payment",
+        "tf": 546,
+        "df": 255
+      },
+      {
+        "term": "penalty",
+        "tf": 544,
+        "df": 186
+      },
+      {
+        "term": "050",
+        "tf": 541,
+        "df": 287
+      },
+      {
+        "term": "otherwise",
+        "tf": 540,
+        "df": 407
+      },
+      {
+        "term": "only",
+        "tf": 538,
+        "df": 359
+      },
+      {
+        "term": "certification",
+        "tf": 538,
+        "df": 85
+      },
+      {
+        "term": "facilities",
+        "tf": 531,
+        "df": 219
+      },
+      {
+        "term": "responsible",
+        "tf": 530,
+        "df": 267
+      },
+      {
+        "term": "private",
+        "tf": 526,
+        "df": 251
+      },
+      {
+        "term": "additional",
+        "tf": 523,
+        "df": 287
+      },
+      {
+        "term": "necessary",
+        "tf": 523,
+        "df": 371
+      },
+      {
+        "term": "percent",
+        "tf": 523,
+        "df": 226
+      },
+      {
+        "term": "accordance",
+        "tf": 521,
+        "df": 379
+      },
+      {
+        "term": "january",
+        "tf": 518,
+        "df": 439
+      },
+      {
+        "term": "authority",
+        "tf": 518,
+        "df": 331
+      },
+      {
+        "term": "inspection",
+        "tf": 512,
+        "df": 194
+      },
+      {
+        "term": "comply",
+        "tf": 504,
+        "df": 317
+      },
+      {
+        "term": "insurance",
+        "tf": 504,
+        "df": 97
+      },
+      {
+        "term": "before",
+        "tf": 503,
+        "df": 325
+      },
+      {
+        "term": "purposes",
+        "tf": 503,
+        "df": 320
+      },
+      {
+        "term": "sewer",
+        "tf": 502,
+        "df": 127
+      },
+      {
+        "term": "local",
+        "tf": 490,
+        "df": 181
+      },
+      {
+        "term": "control",
+        "tf": 488,
+        "df": 258
+      },
+      {
+        "term": "interest",
+        "tf": 486,
+        "df": 232
+      },
+      {
+        "term": "060",
+        "tf": 482,
+        "df": 237
+      },
+      {
+        "term": "dwelling",
+        "tf": 479,
+        "df": 118
+      },
+      {
+        "term": "management",
+        "tf": 477,
+        "df": 212
+      },
+      {
+        "term": "line",
+        "tf": 476,
+        "df": 126
+      },
+      {
+        "term": "least",
+        "tf": 475,
+        "df": 263
+      },
+      {
+        "term": "designated",
+        "tf": 470,
+        "df": 268
+      },
+      {
+        "term": "structures",
+        "tf": 470,
+        "df": 172
+      },
+      {
+        "term": "report",
+        "tf": 470,
+        "df": 228
+      },
+      {
+        "term": "per",
+        "tf": 470,
+        "df": 235
+      },
+      {
+        "term": "approval",
+        "tf": 469,
+        "df": 285
+      },
+      {
+        "term": "number",
+        "tf": 468,
+        "df": 209
+      },
+      {
+        "term": "members",
+        "tf": 468,
+        "df": 147
+      },
+      {
+        "term": "set",
+        "tf": 467,
+        "df": 315
+      },
+      {
+        "term": "costs",
+        "tf": 464,
+        "df": 211
+      },
+      {
+        "term": "transportation",
+        "tf": 463,
+        "df": 201
+      },
+      {
+        "term": "emergency",
+        "tf": 462,
+        "df": 158
+      },
+      {
+        "term": "committee",
+        "tf": 461,
+        "df": 104
+      },
+      {
+        "term": "due",
+        "tf": 460,
+        "df": 208
+      },
+      {
+        "term": "persons",
+        "tf": 460,
+        "df": 306
+      },
+      {
+        "term": "decision",
+        "tf": 459,
+        "df": 171
+      },
+      {
+        "term": "based",
+        "tf": 458,
+        "df": 256
+      },
+      {
+        "term": "facility",
+        "tf": 455,
+        "df": 166
+      },
+      {
+        "term": "less",
+        "tf": 452,
+        "df": 269
+      },
+      {
+        "term": "failure",
+        "tf": 447,
+        "df": 246
+      },
+      {
+        "term": "records",
+        "tf": 444,
+        "df": 183
+      },
+      {
+        "term": "2025",
+        "tf": 443,
+        "df": 432
+      },
+      {
+        "term": "hearing",
+        "tf": 443,
+        "df": 130
+      },
+      {
+        "term": "14b",
+        "tf": 442,
+        "df": 125
+      },
+      {
+        "term": "term",
+        "tf": 440,
+        "df": 223
+      },
+      {
+        "term": "improvements",
+        "tf": 440,
+        "df": 159
+      },
+      {
+        "term": "general",
+        "tf": 437,
+        "df": 280
+      },
+      {
+        "term": "100",
+        "tf": 436,
+        "df": 214
+      },
+      {
+        "term": "office",
+        "tf": 435,
+        "df": 256
+      },
+      {
+        "term": "same",
+        "tf": 435,
+        "df": 274
+      },
+      {
+        "term": "into",
+        "tf": 433,
+        "df": 288
+      },
+      {
+        "term": "residential",
+        "tf": 430,
+        "df": 150
+      },
+      {
+        "term": "paid",
+        "tf": 429,
+        "df": 287
+      },
+      {
+        "term": "location",
+        "tf": 426,
+        "df": 235
+      },
+      {
+        "term": "utility",
+        "tf": 426,
+        "df": 125
+      },
+      {
+        "term": "cause",
+        "tf": 424,
+        "df": 244
+      },
+      {
+        "term": "meet",
+        "tf": 424,
+        "df": 236
+      },
+      {
+        "term": "areas",
+        "tf": 423,
+        "df": 207
+      },
+      {
+        "term": "assessment",
+        "tf": 422,
+        "df": 145
+      },
+      {
+        "term": "allowed",
+        "tf": 417,
+        "df": 221
+      },
+      {
+        "term": "two",
+        "tf": 413,
+        "df": 258
+      },
+      {
+        "term": "chief",
+        "tf": 410,
+        "df": 141
+      },
+      {
+        "term": "existing",
+        "tf": 408,
+        "df": 203
+      },
+      {
+        "term": "established",
+        "tf": 407,
+        "df": 299
+      },
+      {
+        "term": "party",
+        "tf": 407,
+        "df": 164
+      },
+      {
+        "term": "form",
+        "tf": 405,
+        "df": 228
+      },
+      {
+        "term": "final",
+        "tf": 405,
+        "df": 185
+      },
+      {
+        "term": "conduct",
+        "tf": 404,
+        "df": 211
+      },
+      {
+        "term": "access",
+        "tf": 404,
+        "df": 200
+      },
+      {
+        "term": "was",
+        "tf": 404,
+        "df": 245
+      },
+      {
+        "term": "between",
+        "tf": 403,
+        "df": 203
+      },
+      {
+        "term": "safety",
+        "tf": 403,
+        "df": 256
+      },
+      {
+        "term": "housing",
+        "tf": 403,
+        "df": 128
+      },
+      {
+        "term": "available",
+        "tf": 401,
+        "df": 297
+      },
+      {
+        "term": "described",
+        "tf": 401,
+        "df": 263
+      },
+      {
+        "term": "civil",
+        "tf": 400,
+        "df": 174
+      },
+      {
+        "term": "zone",
+        "tf": 395,
+        "df": 119
+      },
+      {
+        "term": "unlawful",
+        "tf": 394,
+        "df": 227
+      },
+      {
+        "term": "hours",
+        "tf": 394,
+        "df": 216
+      },
+      {
+        "term": "located",
+        "tf": 391,
+        "df": 189
+      },
+      {
+        "term": "day",
+        "tf": 388,
+        "df": 200
+      },
+      {
+        "term": "policy",
+        "tf": 388,
+        "df": 185
+      },
+      {
+        "term": "make",
+        "tf": 387,
+        "df": 270
+      },
+      {
+        "term": "require",
+        "tf": 385,
+        "df": 255
+      },
+      {
+        "term": "charge",
+        "tf": 381,
+        "df": 176
+      },
+      {
+        "term": "determined",
+        "tf": 380,
+        "df": 238
+      },
+      {
+        "term": "action",
+        "tf": 378,
+        "df": 239
+      },
+      {
+        "term": "whether",
+        "tf": 378,
+        "df": 258
+      },
+      {
+        "term": "070",
+        "tf": 377,
+        "df": 193
+      },
+      {
+        "term": "pay",
+        "tf": 376,
+        "df": 227
+      },
+      {
+        "term": "exclusion",
+        "tf": 376,
+        "df": 42
+      },
+      {
+        "term": "permitted",
+        "tf": 373,
+        "df": 200
+      },
+      {
+        "term": "cost",
+        "tf": 372,
+        "df": 202
+      },
+      {
+        "term": "determination",
+        "tf": 371,
+        "df": 185
+      },
+      {
+        "term": "unit",
+        "tf": 370,
+        "df": 125
+      },
+      {
+        "term": "park",
+        "tf": 370,
+        "df": 132
+      },
+      {
+        "term": "charges",
+        "tf": 367,
+        "df": 138
+      },
+      {
+        "term": "also",
+        "tf": 366,
+        "df": 270
+      },
+      {
+        "term": "part",
+        "tf": 365,
+        "df": 266
+      },
+      {
+        "term": "procedures",
+        "tf": 365,
+        "df": 245
+      },
+      {
+        "term": "violations",
+        "tf": 365,
+        "df": 168
+      },
+      {
+        "term": "ordinances",
+        "tf": 364,
+        "df": 335
+      },
+      {
+        "term": "maintenance",
+        "tf": 364,
+        "df": 191
+      },
+      {
+        "term": "tnc",
+        "tf": 363,
+        "df": 14
+      },
+      {
+        "term": "condition",
+        "tf": 362,
+        "df": 209
+      },
+      {
+        "term": "certified",
+        "tf": 361,
+        "df": 142
+      },
+      {
+        "term": "years",
+        "tf": 360,
+        "df": 221
+      },
+      {
+        "term": "until",
+        "tf": 360,
+        "df": 243
+      },
+      {
+        "term": "federal",
+        "tf": 359,
+        "df": 189
+      },
+      {
+        "term": "traffic",
+        "tf": 358,
+        "df": 157
+      },
+      {
+        "term": "taxi",
+        "tf": 358,
+        "df": 23
+      },
+      {
+        "term": "sdc",
+        "tf": 358,
+        "df": 36
+      },
+      {
+        "term": "revenue",
+        "tf": 357,
+        "df": 152
+      },
+      {
+        "term": "being",
+        "tf": 356,
+        "df": 237
+      },
+      {
+        "term": "addition",
+        "tf": 355,
+        "df": 261
+      },
+      {
+        "term": "above",
+        "tf": 354,
+        "df": 211
+      },
+      {
+        "term": "materials",
+        "tf": 353,
+        "df": 158
+      },
+      {
+        "term": "land",
+        "tf": 351,
+        "df": 163
+      },
+      {
+        "term": "equipment",
+        "tf": 351,
+        "df": 169
+      },
+      {
+        "term": "three",
+        "tf": 350,
+        "df": 204
+      }
+    ],
+    "sample_count": 28,
+    "llm_derivation": {
+      "enabled": true,
+      "provider": "codex_cli",
+      "model": "gpt-5.3-codex-spark",
+      "trace": {
+        "effective_provider_name": "codex_cli",
+        "effective_model_name": "gpt-5.3-codex-spark"
+      },
+      "raw_preview": "{\n  \"classes\": [\n    {\n      \"id\": \"Complaint\",\n      \"label\": \"Complaint\",\n      \"parent\": \"RegulatedSubject\"\n    },\n    {\n      \"id\": \"ComplaintProcess\",\n      \"label\": \"Complaint Process\",\n      \"parent\": \"AdministrativeProcess\"\n    },\n    {\n      \"id\": \"Franchise\",\n      \"label\": \"Franchise\",\n      \"parent\": \"AuthorizationInstrument\"\n    },\n    {\n      \"id\": \"UtilityService\",\n      \"label\": \"Utility Service\",\n      \"parent\": \"MunicipalService\"\n    },\n    {\n      \"id\": \"TimePeriod\",\n      \"la",
+      "rationale": "Added only concepts directly evidenced in the supplied code samples: complaint workflow, franchise instruments, utility services, explicit time-limit logic, and access-restriction sanctions (ejection/exclusion). Existing ontology structure was preserved by extending with minimal subclasses and high-signal relations to support deontic/temporal workflow reasoning (obligations, prohibitions, permissions, deadlines) without introducing speculative terms."
+    },
+    "bm25_gap_review": {
+      "enabled": true,
+      "method": "targeted_llm_classification_of_high_frequency_terms_missing_from_lexicon",
+      "provider": "codex_cli",
+      "model": "gpt-5.3-codex-spark",
+      "accepted_actor_terms": {
+        "company": "BusinessEntity",
+        "fire": "MunicipalAgency",
+        "police": "MunicipalAgency"
+      },
+      "accepted_subject_terms": {
+        "request": "PermitProcess",
+        "review": "AdministrativeProcess",
+        "order": "AuthorizationInstrument",
+        "services": "MunicipalService",
+        "fees": "FinancialObligation",
+        "vehicle": "RegulatedSubject",
+        "parking": "LandUseControl",
+        "improvement": "RegulatedActivity",
+        "water": "UtilityService",
+        "sewer": "UtilityService",
+        "site": "RegulatedProperty",
+        "land": "RegulatedProperty",
+        "structure": "RegulatedProperty",
+        "area": "LandUseControl",
+        "district": "LandUseControl",
+        "plan": "LandUseControl",
+        "sidewalk": "PublicProperty",
+        "street": "PublicProperty",
+        "tree": "RegulatedSubject",
+        "stormwater": "RegulatedActivity",
+        "noise": "RegulatedActivity",
+        "solid waste": "MunicipalService",
+        "transportation": "MunicipalService",
+        "housing": "LandUseControl",
+        "electrical": "RegulatedActivity",
+        "mechanical": "RegulatedActivity",
+        "plumbing": "RegulatedActivity"
+      },
+      "removed_terms": [
+        "committe e member"
+      ]
+    },
+    "final_actor_term_count": 47,
+    "final_subject_term_count": 96
+  },
+  "entity_type_counts": {
+    "MunicipalCodeSection": 3052,
+    "MunicipalCodeTitle": 35,
+    "MunicipalCodeChapter": 484,
+    "Municipality": 1,
+    "LegalArtifact": 1,
+    "LegalViolation": 1,
+    "DefinedTerm": 1263,
+    "AuthorityGrant": 1864,
+    "Ordinance": 209,
+    "LegalAuthority": 2864,
+    "document": 3052,
+    "identifier": 3052,
+    "citation": 3052,
+    "jurisdiction": 1,
+    "MunicipalOfficial": 18,
+    "MunicipalAgency": 4,
+    "RegulatedProperty": 16,
+    "FinancialObligation": 5,
+    "LandUseControl": 6,
+    "Obligation": 1281,
+    "BusinessEntity": 7,
+    "LegislativeBody": 1,
+    "Worker": 5,
+    "LegalPerson": 3,
+    "DefinitionNorm": 330,
+    "RegulatedActivity": 10,
+    "Permit": 3,
+    "License": 2,
+    "Sanction": 1,
+    "AdministrativeProcess": 5,
+    "Prohibition": 366,
+    "RegulatedSubject": 3,
+    "MunicipalService": 6,
+    "LegalActor": 1,
+    "TimePeriod": 5,
+    "PermitProcess": 3,
+    "PublicSafetySubject": 1,
+    "PublicProperty": 4,
+    "AuthorizationInstrument": 1,
+    "UtilityService": 7,
+    "InspectionProcess": 1,
+    "Complaint": 2,
+    "ComplaintProcess": 1,
+    "PropertyActor": 4,
+    "AppealProcess": 1,
+    "StateStatute": 301,
+    "Resident": 2,
+    "Franchise": 2,
+    "LicenseProcess": 1,
+    "AccessRestriction": 2,
+    "AdministrativeRule": 30,
+    "all_caps_heading": 2
+  },
+  "relationship_type_counts": {
+    "PART_OF_TITLE": 3122,
+    "PART_OF_CHAPTER": 2791,
+    "MENTIONS_ACTOR": 11320,
+    "GRANTS_AUTHORITY_TO": 8333,
+    "REGULATES_SUBJECT": 20730,
+    "GRANTS_AUTHORITY": 1864,
+    "REFERENCES_LEGAL_AUTHORITY": 6366,
+    "AMENDED_BY": 1019,
+    "REFERENCES_CODE_SECTION": 4060,
+    "IDENTIFIED_BY": 3052,
+    "HAS_CITATION": 3052,
+    "IN_JURISDICTION": 3052,
+    "IMPOSES_DUTY_ON": 5895,
+    "IMPOSES_DUTY": 1281,
+    "DEFINES": 329,
+    "DEFINES_TERM": 1566,
+    "GOVERNS_AUTHORIZATION": 998,
+    "PROHIBITS": 366,
+    "REFERENCES_SECTION_CID": 1184,
+    "has_section": 2
+  }
+}

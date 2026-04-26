@@ -1,0 +1,136 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-04-26T22:10:02.337Z",
+  "datasetId": "justicedao/american_municipal_law",
+  "datasetPath": "municipal_laws_portland_or_current_code",
+  "corpus": {
+    "jurisdiction": "City of Portland, Oregon",
+    "stateCode": "OR",
+    "gnis": "2411471",
+    "canonicalRowCount": 3052,
+    "embeddingModel": "thenlper/gte-small",
+    "browserEmbeddingModel": "Xenova/gte-small",
+    "embeddingDimension": 384
+  },
+  "artifacts": [
+    {
+      "id": "readme",
+      "path": "README.md",
+      "bytes": 2221,
+      "role": "metadata",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/raw/main/municipal_laws_portland_or_current_code/README.md"
+    },
+    {
+      "id": "canonical_manifest",
+      "path": "canonical/manifest.json",
+      "bytes": 6108,
+      "role": "metadata",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/raw/main/municipal_laws_portland_or_current_code/canonical/manifest.json"
+    },
+    {
+      "id": "canonical_sections",
+      "path": "canonical/STATE-OR.parquet",
+      "bytes": 5954924,
+      "role": "core",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/resolve/main/municipal_laws_portland_or_current_code/canonical/STATE-OR.parquet"
+    },
+    {
+      "id": "bm25",
+      "path": "canonical/STATE-OR_bm25.parquet",
+      "bytes": 6442722,
+      "role": "core",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/resolve/main/municipal_laws_portland_or_current_code/canonical/STATE-OR_bm25.parquet"
+    },
+    {
+      "id": "embeddings",
+      "path": "canonical/STATE-OR_embeddings.parquet",
+      "bytes": 11111755,
+      "role": "core",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/resolve/main/municipal_laws_portland_or_current_code/canonical/STATE-OR_embeddings.parquet"
+    },
+    {
+      "id": "faiss_metadata",
+      "path": "canonical/STATE-OR_faiss_metadata.parquet",
+      "bytes": 3746830,
+      "role": "core",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/resolve/main/municipal_laws_portland_or_current_code/canonical/STATE-OR_faiss_metadata.parquet"
+    },
+    {
+      "id": "cid_index",
+      "path": "canonical/STATE-OR_cid_index.parquet",
+      "bytes": 5203040,
+      "role": "core",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/resolve/main/municipal_laws_portland_or_current_code/canonical/STATE-OR_cid_index.parquet"
+    },
+    {
+      "id": "kg_entities",
+      "path": "canonical/STATE-OR_knowledge_graph_entities.parquet",
+      "bytes": 912594,
+      "role": "core",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/resolve/main/municipal_laws_portland_or_current_code/canonical/STATE-OR_knowledge_graph_entities.parquet"
+    },
+    {
+      "id": "kg_relationships",
+      "path": "canonical/STATE-OR_knowledge_graph_relationships.parquet",
+      "bytes": 1920315,
+      "role": "core",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/resolve/main/municipal_laws_portland_or_current_code/canonical/STATE-OR_knowledge_graph_relationships.parquet"
+    },
+    {
+      "id": "kg_summary",
+      "path": "canonical/STATE-OR_knowledge_graph_summary.json",
+      "bytes": 52183,
+      "role": "core",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/raw/main/municipal_laws_portland_or_current_code/canonical/STATE-OR_knowledge_graph_summary.json"
+    },
+    {
+      "id": "ontology",
+      "path": "canonical/municipal_law_ontology.json",
+      "bytes": 45741,
+      "role": "core",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/raw/main/municipal_laws_portland_or_current_code/canonical/municipal_law_ontology.json"
+    },
+    {
+      "id": "logic_manifest",
+      "path": "logic_proofs/manifest.json",
+      "bytes": 930,
+      "role": "lazy",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/raw/main/municipal_laws_portland_or_current_code/logic_proofs/manifest.json"
+    },
+    {
+      "id": "logic_proofs",
+      "path": "logic_proofs/STATE-OR_logic_proof_artifacts.parquet",
+      "bytes": 10806216,
+      "role": "lazy",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/resolve/main/municipal_laws_portland_or_current_code/logic_proofs/STATE-OR_logic_proof_artifacts.parquet"
+    }
+  ],
+  "generatedFiles": [
+    "README.md",
+    "canonical",
+    "canonical/STATE-OR.parquet",
+    "canonical/STATE-OR_bm25.parquet",
+    "canonical/STATE-OR_cid_index.parquet",
+    "canonical/STATE-OR_embeddings.parquet",
+    "canonical/STATE-OR_faiss_metadata.parquet",
+    "canonical/STATE-OR_knowledge_graph_entities.parquet",
+    "canonical/STATE-OR_knowledge_graph_relationships.parquet",
+    "canonical/STATE-OR_knowledge_graph_summary.json",
+    "canonical/manifest.json",
+    "canonical/municipal_law_ontology.json",
+    "generated",
+    "generated/bm25-documents.json",
+    "generated/embedding-index.json",
+    "generated/embeddings.f32",
+    "generated/entities.json",
+    "generated/generated-manifest.json",
+    "generated/graph-adjacency.json",
+    "generated/logic-proof-summaries.json",
+    "generated/relationships.json",
+    "generated/section-index.json",
+    "generated/sections.json",
+    "logic_proofs",
+    "logic_proofs/STATE-OR_logic_proof_artifacts.parquet",
+    "logic_proofs/manifest.json"
+  ]
+}
