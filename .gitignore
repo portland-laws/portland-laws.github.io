@@ -8,6 +8,7 @@ game/node_modules/
 
 # testing
 /coverage
+/playwright-report
 
 # next.js
 /.next/

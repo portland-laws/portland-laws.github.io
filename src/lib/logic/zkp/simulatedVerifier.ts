@@ -19,7 +19,7 @@ export function verifySimulatedCertificate(input: SimulatedCertificateInput): Si
       status: input.zkp_backend ? 'unsupported_backend' : 'missing',
       cryptographic: false,
       message: 'No simulated certificate metadata was verified.',
-      warnings: ['Only simulated certificate metadata checks are supported in the browser V1.'],
+      warnings: ['Only simulated certificate metadata checks are supported until browser-native cryptographic verification is ported.'],
     };
   }
 
@@ -44,4 +44,3 @@ export function verifySimulatedCertificate(input: SimulatedCertificateInput): Si
     ],
   };
 }
-

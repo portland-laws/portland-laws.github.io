@@ -2,7 +2,7 @@
 
 ## Decision
 
-Do not add heavy theorem-prover or cryptographic WASM dependencies to the browser bundle in V1. Also do not add server-side prover, NLP, ML, or verification calls. The runtime target is browser-native TypeScript/WebAssembly only.
+Do not add heavy theorem-prover or cryptographic WASM dependencies casually, but do plan to use TypeScript/WASM/browser-native packages to complete parity with the Python logic module. Do not add server-side prover, NLP, ML, or verification calls. The runtime target is browser-native TypeScript/WebAssembly only.
 
 Use TypeScript for:
 
@@ -11,7 +11,7 @@ Use TypeScript for:
 - Lightweight bounded reasoning.
 - Deterministic canonicalization and simulated certificate checks.
 
-Keep outside browser V1 until browser-native replacements exist:
+Port in later phases with browser-native replacements:
 
 - Full CEC/DCEC inference.
 - External prover orchestration.
@@ -23,10 +23,10 @@ Keep outside browser V1 until browser-native replacements exist:
 
 | Option | Fit | Notes |
 | --- | --- | --- |
-| Z3 WASM / `z3-solver` | Possible later | Useful for bounded SMT checks, but bundle size and async initialization need a clear product need. |
-| cvc5 WASM | Possible later | Similar tradeoffs to Z3; avoid until proof queries require it. |
-| Tau Prolog / Datalog-style engine | Good candidate for local rules | Better fit for small forward-chaining and F-logic-like rule demos than full theorem proving. |
-| `snarkjs` | Only if real browser-side verification is required | Do not add while current artifacts are simulated educational certificates. |
+| Z3 WASM / `z3-solver` | Candidate for full external-prover parity | Useful for bounded SMT checks; manage bundle size with dynamic imports/workers. |
+| cvc5 WASM | Candidate for full external-prover parity | Similar tradeoffs to Z3; evaluate for formulas Z3 does not cover well. |
+| Tau Prolog / Datalog-style engine | Good candidate for local rules | Better fit for forward-chaining and F-logic-like rule demos. |
+| `snarkjs` | Candidate for Groth16 parity | Use only with clear circuit/verifier artifact strategy and strong UI wording. |
 | Server-side Python prover API | Rejected for runtime | It would violate the browser-native/no external service requirement. |
 | Static precomputed artifacts | Acceptable | Keeps runtime offline-friendly as long as the browser does not call an external service. |
 

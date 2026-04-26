@@ -2,9 +2,9 @@
 
 ## Scope
 
-This document tracks parity between the TypeScript logic port and selected `ipfs_datasets_py` logic behavior.
+This document tracks parity between the TypeScript/WASM logic port and the full `ipfs_datasets_py` logic module.
 
-Current parity is focused on deterministic, browser-safe behavior:
+Current parity is focused on deterministic, browser-safe behavior, but the end goal is full Python logic module parity in TypeScript/WASM. The current implemented slice includes:
 
 - FOL regex quantifier/operator parsing.
 - Deontic operator classification and simple formula construction.
@@ -31,12 +31,12 @@ npm run validate:logic-port
 
 | Area | Current TypeScript Behavior | Python Behavior / Target | Status |
 | --- | --- | --- | --- |
-| FOL NLP extraction | Regex-only extraction plus capability reporting. | Browser-native approximation of `FOLConverter(use_nlp=True)`, likely via Transformers.js or a dependency-light NLP package. | Planned Phase 4B, no server calls. |
-| FOL confidence | Validation plus deterministic heuristics only. | Browser-native approximation of `FOLConverter(use_ml=True)`. | Planned Phase 4B, no server calls. |
-| Deontic confidence | Heuristic score from subject/action/condition/temporal extraction. | Browser-native approximation of Python ML confidence. | Planned Phase 4B, no server calls. |
-| TDFOL proving | Parser, formatter, substitution, and local helper reasoning only. | Python has broader TDFOL prover/inference rules. | V1 intentionally limited. |
-| CEC/DCEC | Display/metadata path only. | Python has native CEC/DCEC reasoning. | Keep Python/service for now. |
-| ZKP | Deterministic metadata/canonicalization and simulated verification. | Python includes additional Groth16/EVM/backends. | Browser V1 intentionally non-cryptographic. |
+| FOL NLP extraction | Regex-only extraction plus capability reporting. | Browser-native parity for `FOLConverter(use_nlp=True)`, likely via Transformers.js, ONNX/WebGPU, or WASM NLP. | Planned Phase 13, no server calls. |
+| FOL confidence | Validation plus deterministic heuristics only. | Browser-native parity for `FOLConverter(use_ml=True)`. | Planned Phase 13, no server calls. |
+| Deontic confidence | Heuristic score from subject/action/condition/temporal extraction. | Browser-native parity for Python ML confidence. | Planned Phase 13, no server calls. |
+| TDFOL proving | Parser, formatter, substitution, and local helper reasoning only. | Full TDFOL prover/inference-rule parity. | Planned Phase 11. |
+| CEC/DCEC | Display/metadata path only. | Native CEC/DCEC reasoning parity. | Planned Phase 12. |
+| ZKP | Deterministic metadata/canonicalization and simulated verification. | Groth16/EVM/backend parity through browser-native crypto/WASM. | Planned Phase 14. |
 
 ## Acceptance Rules
 
@@ -49,5 +49,6 @@ npm run validate:logic-port
 
 - Runtime logic features must run browser-native.
 - No production feature may call a Python service, hosted prover, hosted NLP endpoint, or server-side confidence scorer.
-- If browser-native ML/NLP is unavailable, APIs must return capability flags such as `nlpUnavailable` or `mlUnavailable`.
+- While browser-native ML/NLP parity is incomplete, APIs must return temporary port-status flags such as `nlpUnavailable` or `mlUnavailable`.
 - Python-generated parity data is allowed only as static development/CI fixture input.
+- A capability flag is a temporary port-status signal, not an acceptable final replacement for the Python feature.

@@ -42,6 +42,7 @@ const EXAMPLE_QUERIES = [
   'building permit appeal',
   'business license',
 ];
+const RESULT_DISPLAY_LIMIT = 12;
 
 const TITLE_LABELS: Record<string, string> = {
   '1': 'General Provisions',
@@ -502,6 +503,9 @@ function SearchPanel({
   onSelectResult: (cid: string) => void;
   onExample: (query: string) => void;
 }) {
+  const visibleResults = results.slice(0, RESULT_DISPLAY_LIMIT);
+  const hiddenResultCount = Math.max(results.length - visibleResults.length, 0);
+
   return (
     <section
       id="code-search"
@@ -582,10 +586,14 @@ function SearchPanel({
       </form>
 
       <div className="px-4 py-4">
-        <div className="mb-3 flex items-center justify-between">
+        <div className="mb-3 flex items-center justify-between gap-3">
           <h3 className="text-base font-semibold text-[#172026]">Results</h3>
           <span id="search-status" role="status" aria-live="polite" className="text-sm text-[#4f615b]">
-            {loadState === 'ready' ? `${results.length} matches` : 'Loading corpus'}
+            {loadState === 'ready'
+              ? hiddenResultCount > 0
+                ? `${results.length} matches, showing top ${visibleResults.length}`
+                : `${results.length} matches`
+              : 'Loading corpus'}
           </span>
         </div>
 
@@ -598,8 +606,11 @@ function SearchPanel({
         {loadState === 'error' && <EmptyState title="Corpus assets could not be loaded" />}
         {loadState === 'ready' && results.length === 0 && <EmptyState title="No matching sections" />}
 
-        <div className="space-y-3" aria-label="Search results">
-          {results.map((result) => (
+        <div
+          className="space-y-3"
+          aria-label={`Search results${hiddenResultCount > 0 ? ` showing top ${visibleResults.length} of ${results.length}` : ''}`}
+        >
+          {visibleResults.map((result) => (
             <ResultCard
               key={result.ipfs_cid}
               result={result}
@@ -609,6 +620,12 @@ function SearchPanel({
             />
           ))}
         </div>
+        {hiddenResultCount > 0 && (
+          <p className="mt-3 rounded-md border border-[#dce3d6] bg-white px-3 py-2 text-sm leading-6 text-[#4f615b]">
+            Showing the top {visibleResults.length} matches. Refine the search or filters to narrow the remaining{' '}
+            {hiddenResultCount.toLocaleString()} results.
+          </p>
+        )}
       </div>
     </section>
   );
