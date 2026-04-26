@@ -7,7 +7,11 @@ This document tracks parity between the TypeScript/WASM logic port and the full 
 Current parity is focused on deterministic, browser-safe behavior, but the end goal is full Python logic module parity in TypeScript/WASM. The current implemented slice includes:
 
 - FOL regex quantifier/operator parsing.
+- FOL regex predicate extraction, logical relation extraction, variable allocation, and formatter helpers.
 - Deontic operator classification and simple formula construction.
+- Deontic analyzer and knowledge-base primitives for browser-native norm extraction, grouping, conflict summaries, rule inference, and compliance checks.
+- Python-style common converter lifecycle for TypeScript converters: statuses, result shape, validation, bounded local cache, batch conversion, async wrapper, and chained converters.
+- Common proof cache, feature detection, and utility monitor concepts, mapped to browser-native TypeScript.
 - TDFOL parsing/formatting for generated Portland formulas.
 - F-logic parsing for generated frame snippets.
 - ZKP canonicalization and simulated certificate metadata checks.
@@ -31,6 +35,13 @@ npm run validate:logic-port
 
 | Area | Current TypeScript Behavior | Python Behavior / Target | Status |
 | --- | --- | --- | --- |
+| Common converters | `LogicConverter`, `ConversionResult`, validation result, cache, batch, async wrapper, and `ChainedConverter` ported in browser-native TypeScript. | Full converter lifecycle parity, including monitoring/IPFS-compatible metadata where browser-safe. | Partially ported; no server calls. |
+| Common proof cache | Deterministic browser content IDs, local TTL/LRU cache, prover/config-specific lookup, invalidation, global cache, and stats. | Python CID/IPFS-backed proof cache semantics. | Local browser cache ported; IPFS backend parity remains Phase 15. |
+| Common feature detection | Browser capability detector plus Python optional dependency facade that does not import server-side modules. | `find_spec` optional dependency probing in Python. | Browser equivalent ported. |
+| FOL predicate extraction | Regex noun/verb/adjective extraction, relation extraction, variable allocation, and formula construction from extracted parts. | `fol/utils/predicate_extractor.py` and relation portions of `fol/utils/fol_parser.py`. | Ported for deterministic regex path; NLP path remains Phase 13. |
+| FOL formatting | FOL/deontic JSON, Prolog, TPTP, defeasible, text, and aggregate format helpers. | `fol/utils/logic_formatter.py`. | Ported for deterministic formatter path. |
+| Deontic analyzer | Corpus statement extraction, entity grouping, statistics, action similarity, and direct/conditional/jurisdictional/temporal conflict detection. | `deontic/analyzer.py`. | Ported for deterministic regex path. |
+| Deontic knowledge base | Parties, actions, time intervals, propositions, statements, rule inference, and compliance checks. | `deontic/knowledge_base.py`. | Ported as browser-native TypeScript primitives. |
 | FOL NLP extraction | Regex-only extraction plus capability reporting. | Browser-native parity for `FOLConverter(use_nlp=True)`, likely via Transformers.js, ONNX/WebGPU, or WASM NLP. | Planned Phase 13, no server calls. |
 | FOL confidence | Validation plus deterministic heuristics only. | Browser-native parity for `FOLConverter(use_ml=True)`. | Planned Phase 13, no server calls. |
 | Deontic confidence | Heuristic score from subject/action/condition/temporal extraction. | Browser-native parity for Python ML confidence. | Planned Phase 13, no server calls. |

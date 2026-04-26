@@ -296,6 +296,9 @@ Acceptance criteria:
 - [x] Port common logic enums and data shapes from `logic/types`.
 - [x] Add `LogicError`, `LogicParseError`, `LogicValidationError`, and `LogicVerificationError`.
 - [x] Port bounded TTL/LRU cache for parsed formulas.
+- [x] Port `logic/common/converters.py` lifecycle concepts: conversion statuses, standardized results, validation, local cache, batch conversion, async wrapper, and chained converters.
+- [x] Port browser-native `logic/common/proof_cache.py` concepts: deterministic content IDs, prover-specific lookup, TTL, LRU eviction, invalidation, global cache, and stats.
+- [x] Port browser-native `logic/common/feature_detection.py` and `logic/common/utility_monitor.py` concepts without importing Python-only optional dependencies.
 - [x] Add schema guards for proof summary fields.
 - [x] Add normalization helpers for identifiers, predicate names, and citations.
 
@@ -323,9 +326,14 @@ Acceptance criteria:
 ### Phase 4: FOL And Deontic Lightweight Conversion
 
 - [x] Port regex-based quantifier and logical operator parsing from `fol/utils/fol_parser.py`.
+- [x] Port `fol/utils/predicate_extractor.py` regex predicate, relation, and variable extraction.
+- [x] Port `fol/utils/logic_formatter.py` FOL/deontic JSON, Prolog, TPTP, defeasible, text, and aggregate formatting helpers.
 - [x] Port predicate-name normalization and simple FOL formatting.
 - [x] Port deontic operator extraction for must/shall/required/may/permitted/prohibited/shall not.
-- [x] Add a browser deontic converter facade for short clauses.
+- [x] Port `deontic/knowledge_base.py` browser-native primitives: parties, actions, intervals, propositions, statements, rule inference, and compliance checks.
+- [x] Port `deontic/analyzer.py` extraction, entity grouping, statistics, action similarity, and direct/conditional/jurisdictional/temporal conflict detection.
+- [x] Add browser FOL and deontic converter facades for short clauses.
+- [x] Add converter cache, batch, async, output-format helper, metadata, confidence, and warning behavior tests.
 - [x] Add confidence heuristics but do not port Python ML scoring.
 - [ ] Add explicit Python ML confidence and spaCy NLP parity fixtures.
 - [x] Decide which parity path to use: browser-native replacement or WASM only for runtime; Python fixtures are development-only.
@@ -487,9 +495,10 @@ Python may remain as a fixture generator and source reference, but not as a prod
 Current completed TypeScript/WASM port slice:
 
 - 100 percent of shared types needed by the UI.
+- 75-85 percent of common module behavior: cache, converter lifecycle, browser feature detection, proof cache, utility monitoring, validation, and error surfaces.
 - 100 percent of proof summary loading, indexing, validation, and display helpers.
 - 80-90 percent of TDFOL core AST/parser/formatter behavior needed for generated Portland formulas.
-- 60-70 percent of regex FOL/deontic extraction behavior, focused on legal-code clauses.
+- 75-85 percent of regex FOL/deontic extraction, formatter, analyzer, and knowledge-base behavior, focused on legal-code clauses.
 - 70-80 percent of F-logic data modeling and display rendering for generated frame snippets.
 - 50-60 percent of ZKP canonicalization/statement metadata behavior.
 - 10-20 percent of prover behavior, currently limited to bounded local reasoning and explanation traces.

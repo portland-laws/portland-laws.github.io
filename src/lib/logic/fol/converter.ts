@@ -5,6 +5,7 @@ import {
   type ConvertOptions,
 } from '../converters';
 import { getLogicRuntimeCapabilities } from '../runtimeCapabilities';
+import { convertToPrologFormat, convertToTptpFormat, formatFol } from './formatter';
 import {
   parseFolOperators,
   parseFolQuantifiers,
@@ -13,6 +14,7 @@ import {
   type FolParseResult,
   type FolTokenMatch,
 } from './parser';
+import { extractLogicalRelations, extractPredicates, extractVariables } from './predicateExtractor';
 
 export type FolOutputFormat = 'json' | 'formula' | 'prolog' | 'tptp';
 
@@ -88,6 +90,8 @@ export class FOLConverter extends LogicConverter<string, FolFormula> {
 
   protected convertImpl(text: string, _options: ConvertOptions): FolFormula {
     const parsed = parseFolText(text);
+    const extractedPredicates = extractPredicates(text);
+    const relations = extractLogicalRelations(text);
     if (!parsed.validation.valid) {
       throw new Error(parsed.validation.issues.map((issue) => issue.message).join('; '));
     }
@@ -103,6 +107,10 @@ export class FOLConverter extends LogicConverter<string, FolFormula> {
         validation: parsed.validation,
         predicates_count: extractPredicateNames(parsed.formula).length,
         quantifiers_count: parsed.quantifiers.length,
+        extracted_predicates: extractedPredicates,
+        extracted_relations: relations,
+        variables: extractVariables(extractedPredicates),
+        formatted: formatFol(parsed.formula, this.outputFormat === 'formula' ? 'symbolic' : this.outputFormat),
         output_format: this.outputFormat,
       },
       toString() {
@@ -142,11 +150,11 @@ export class FOLConverter extends LogicConverter<string, FolFormula> {
   }
 
   toProlog(text: string): string {
-    return convertFolFormulaToProlog(this.toFol(text));
+    return convertToPrologFormat(this.toFol(text));
   }
 
   toTptp(text: string): string {
-    return convertFolFormulaToTptp(this.toFol(text));
+    return convertToTptpFormat(this.toFol(text));
   }
 
   getMonitoringStats(): Record<string, unknown> {
@@ -165,24 +173,11 @@ export class FOLConverter extends LogicConverter<string, FolFormula> {
 }
 
 export function convertFolFormulaToProlog(formula: string): string {
-  return formula
-    .replace(/∀([a-z])\s*\((.+?)\s*→\s*(.+?)\)/g, 'forall($1, implies($2, $3))')
-    .replace(/∃([a-z])\s*\((.+?)\s*∧\s*(.+?)\)/g, 'exists($1, and($2, $3))')
-    .replace(/¬/g, 'not ')
-    .replace(/∧/g, ',')
-    .replace(/∨/g, ';')
-    .replace(/→/g, ':-');
+  return convertToPrologFormat(formula);
 }
 
 export function convertFolFormulaToTptp(formula: string, name = 'formula_1'): string {
-  const body = formula
-    .replace(/∀([a-z])\s*/g, '! [$1] : ')
-    .replace(/∃([a-z])\s*/g, '? [$1] : ')
-    .replace(/∧/g, ' & ')
-    .replace(/∨/g, ' | ')
-    .replace(/→/g, ' => ')
-    .replace(/¬/g, '~');
-  return `fof(${name}, axiom, ${body}).`;
+  return convertToTptpFormat(formula).replace('fof(formula,', `fof(${name},`);
 }
 
 export function validateFolFormulaText(formula: string): boolean {

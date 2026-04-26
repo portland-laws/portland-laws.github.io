@@ -42,7 +42,8 @@ const EXAMPLE_QUERIES = [
   'building permit appeal',
   'business license',
 ];
-const RESULT_DISPLAY_LIMIT = 12;
+const INITIAL_RESULT_LIMIT = 6;
+const RESULT_INCREMENT = 6;
 
 const TITLE_LABELS: Record<string, string> = {
   '1': 'General Provisions',
@@ -338,6 +339,19 @@ export default function PortlandLegalResearchApp() {
           onSelectResult={(cid) => {
             setSelectedCid(cid);
             setActiveTab('section');
+            if (window.matchMedia('(max-width: 1023px)').matches) {
+              window.requestAnimationFrame(() => {
+                const workbench = document.getElementById('research-workbench');
+                const targetTop = workbench
+                  ? window.scrollY + workbench.getBoundingClientRect().top
+                  : window.scrollY;
+                window.scrollTo({ left: 0, top: Math.max(targetTop, 0) });
+                document.getElementById('panel-section')?.focus({ preventScroll: true });
+                window.requestAnimationFrame(() => {
+                  window.scrollTo({ left: 0, top: window.scrollY });
+                });
+              });
+            }
           }}
           onExample={(example) => {
             setQuery(example);
@@ -381,7 +395,7 @@ function Header({ sections, retrievalMode }: { sections: CorpusSection[]; retrie
             GraphRAG search, knowledge graph context, logic proofs, and corpus chat layered in.
           </p>
         </div>
-        <div className="grid grid-cols-1 gap-2 text-sm min-[420px]:grid-cols-3 sm:gap-3">
+        <div className="grid grid-cols-3 gap-2 text-sm sm:gap-3">
           <Metric label="Sections" value={sections.length ? sections.length.toLocaleString() : '...'} />
           <Metric label="Vector dims" value="384" />
           <Metric label="Search" value={retrievalMode} />
@@ -408,7 +422,7 @@ function DirectoryPanel({
     <nav
       id="code-directory"
       aria-labelledby="code-directory-heading"
-      className="max-h-[65vh] overflow-auto rounded-md border border-[#d8dfd3] bg-white shadow-sm lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)]"
+      className="max-h-[48vh] overflow-auto rounded-md border border-[#d8dfd3] bg-white shadow-sm lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)]"
     >
       <div className="border-b border-[#e1e6dc] px-4 py-4">
         <h2 id="code-directory-heading" className="text-lg font-semibold text-[#172026]">
@@ -503,8 +517,15 @@ function SearchPanel({
   onSelectResult: (cid: string) => void;
   onExample: (query: string) => void;
 }) {
-  const visibleResults = results.slice(0, RESULT_DISPLAY_LIMIT);
+  const [resultLimit, setResultLimit] = useState(INITIAL_RESULT_LIMIT);
+  const selectedIndex = results.findIndex((result) => result.ipfs_cid === selectedCid);
+  const visibleLimit = Math.max(resultLimit, selectedIndex >= 0 ? selectedIndex + 1 : INITIAL_RESULT_LIMIT);
+  const visibleResults = results.slice(0, visibleLimit);
   const hiddenResultCount = Math.max(results.length - visibleResults.length, 0);
+
+  useEffect(() => {
+    setResultLimit(INITIAL_RESULT_LIMIT);
+  }, [results]);
 
   return (
     <section
@@ -591,7 +612,7 @@ function SearchPanel({
           <span id="search-status" role="status" aria-live="polite" className="text-sm text-[#4f615b]">
             {loadState === 'ready'
               ? hiddenResultCount > 0
-                ? `${results.length} matches, showing top ${visibleResults.length}`
+                ? `${results.length} matches, showing ${visibleResults.length}`
                 : `${results.length} matches`
               : 'Loading corpus'}
           </span>
@@ -621,10 +642,19 @@ function SearchPanel({
           ))}
         </div>
         {hiddenResultCount > 0 && (
-          <p className="mt-3 rounded-md border border-[#dce3d6] bg-white px-3 py-2 text-sm leading-6 text-[#4f615b]">
-            Showing the top {visibleResults.length} matches. Refine the search or filters to narrow the remaining{' '}
-            {hiddenResultCount.toLocaleString()} results.
-          </p>
+          <div className="mt-3 rounded-md border border-[#dce3d6] bg-white px-3 py-3">
+            <p className="text-sm leading-6 text-[#4f615b]">
+              Showing {visibleResults.length} strong matches. Refine the search or filters to narrow the remaining{' '}
+              {hiddenResultCount.toLocaleString()} results.
+            </p>
+            <button
+              type="button"
+              onClick={() => setResultLimit((current) => Math.min(current + RESULT_INCREMENT, results.length))}
+              className="mt-2 min-h-11 rounded-md border border-[#8fa08a] px-3 text-sm font-semibold text-[#24594f] hover:bg-[#f3f6ef]"
+            >
+              Show {Math.min(RESULT_INCREMENT, hiddenResultCount)} more results
+            </button>
+          </div>
         )}
       </div>
     </section>
@@ -699,7 +729,7 @@ function WorkspacePanel({
         <h2 id="research-workbench-heading" className="sr-only">
           Selected section and research tools
         </h2>
-        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-px" role="tablist" aria-label="Research workspace panels">
+        <div className="flex gap-2 overflow-x-auto pb-px" role="tablist" aria-label="Research workspace panels">
           {tabs.map(([tab, label]) => (
             <button
               id={`tab-${tab}`}
@@ -1047,9 +1077,9 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-[86px] rounded-md border border-[#d7ddd2] bg-white px-3 py-2 text-left shadow-sm sm:text-right">
-      <div className="text-lg font-semibold text-[#172026]">{value}</div>
-      <div className="text-xs uppercase tracking-wide text-[#607068]">{label}</div>
+    <div className="min-w-0 rounded-md border border-[#d7ddd2] bg-white px-2 py-2 text-left shadow-sm sm:min-w-[86px] sm:px-3 sm:text-right">
+      <div className="text-base font-semibold text-[#172026] sm:text-lg">{value}</div>
+      <div className="text-[0.68rem] uppercase tracking-wide text-[#607068] sm:text-xs">{label}</div>
     </div>
   );
 }

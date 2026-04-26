@@ -115,10 +115,32 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await page.getByRole('button', { name: /^Search$/ }).click();
     await expect(page.locator('#search-status')).toContainText(/matches/);
     await expect(page.getByRole('button', { name: /^Select / }).first()).toBeVisible();
+    await expect(page.getByRole('button', { name: /Show \d+ more results/ })).toBeVisible();
 
     await expectNoHorizontalOverflow(page);
     await page.locator('#code-search').screenshot({
       path: screenshotPath(testInfo, 'mobile-search-results.png'),
+    });
+
+    await page.getByRole('button', { name: /Show \d+ more results/ }).click();
+    await expect(page.locator('#search-status')).toContainText(/showing 12/);
+  });
+
+  test('moves mobile users from a selected result into the research workbench', async ({ page }, testInfo) => {
+    await page.getByRole('button', { name: /^Select / }).first().click();
+    await expect(page.locator('#panel-section')).toBeFocused();
+
+    const workbenchPosition = await page.locator('#research-workbench').evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      return { left: box.left, top: box.top };
+    });
+    expect(workbenchPosition.top).toBeLessThan(80);
+    expect(workbenchPosition.left).toBeGreaterThanOrEqual(0);
+    await expectNoHorizontalOverflow(page);
+
+    await page.screenshot({
+      path: screenshotPath(testInfo, 'mobile-selected-result-workbench.png'),
+      fullPage: false,
     });
   });
 });
@@ -135,11 +157,13 @@ async function expectNoHorizontalOverflow(page: Page) {
   const overflow = await page.evaluate(() => ({
     bodyScrollWidth: document.body.scrollWidth,
     innerWidth: window.innerWidth,
+    scrollX: window.scrollX,
     scrollWidth: document.documentElement.scrollWidth,
   }));
 
   expect(overflow.scrollWidth, JSON.stringify(overflow)).toBeLessThanOrEqual(overflow.innerWidth + 1);
   expect(overflow.bodyScrollWidth, JSON.stringify(overflow)).toBeLessThanOrEqual(overflow.innerWidth + 1);
+  expect(overflow.scrollX, JSON.stringify(overflow)).toBeLessThanOrEqual(1);
 }
 
 function screenshotPath(testInfo: TestInfo, fileName: string) {

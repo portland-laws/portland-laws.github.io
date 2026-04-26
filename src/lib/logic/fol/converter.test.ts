@@ -25,6 +25,8 @@ describe('FOLConverter', () => {
       ipfs_enabled: false,
       predicates_count: 2,
       quantifiers_count: 1,
+      extracted_predicates: expect.any(Object),
+      extracted_relations: [{ type: 'universal', subject: 'tenants', predicate: 'residents' }],
     });
   });
 
@@ -43,8 +45,8 @@ describe('FOLConverter', () => {
   it('renders lightweight Prolog and TPTP formats', () => {
     const formula = '∀x (Tenant(x) → Resident(x))';
 
-    expect(convertFolFormulaToProlog(formula)).toContain('forall');
-    expect(convertFolFormulaToTptp(formula)).toBe('fof(formula_1, axiom, ! [x] : (Tenant(x)  =>  Resident(x))).');
+    expect(convertFolFormulaToProlog(formula)).toBe('resident(X) :- tenant(X).');
+    expect(convertFolFormulaToTptp(formula)).toBe('fof(formula_1, axiom, ![x]: (Tenant(x)  =>  Resident(x))).');
   });
 
   it('reports validation failures before conversion', () => {
