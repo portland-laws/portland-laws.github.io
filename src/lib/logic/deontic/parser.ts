@@ -1,4 +1,5 @@
 import { normalizePredicateName } from '../normalization';
+import { getLogicRuntimeCapabilities } from '../runtimeCapabilities';
 
 export type DeonticOperator = 'O' | 'P' | 'F';
 export type DeonticNormType = 'obligation' | 'permission' | 'prohibition';
@@ -27,6 +28,10 @@ export interface DeonticConversionResult {
   formulas: string[];
   confidence: number;
   warnings: string[];
+  capabilities: {
+    mlUnavailable: boolean;
+    serverCallsAllowed: false;
+  };
 }
 
 const INDICATORS: Array<{ normType: DeonticNormType; deonticOperator: DeonticOperator; phrases: string[] }> = [
@@ -69,7 +74,16 @@ export function convertLegalTextToDeontic(text: string): DeonticConversionResult
     elements,
     formulas,
     confidence,
-    warnings: elements.length > 0 ? [] : ['No normative indicators were detected'],
+    warnings: [
+      ...(elements.length > 0 ? [] : ['No normative indicators were detected']),
+      ...(getLogicRuntimeCapabilities().deontic.mlUnavailable
+        ? ['Browser-native ML confidence is not yet available; heuristic confidence was used.']
+        : []),
+    ],
+    capabilities: {
+      mlUnavailable: getLogicRuntimeCapabilities().deontic.mlUnavailable,
+      serverCallsAllowed: false,
+    },
   };
 }
 

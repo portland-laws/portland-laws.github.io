@@ -296,7 +296,7 @@ export default function PortlandLegalResearchApp() {
 
       <div
         id="main-content"
-        className="mx-auto grid max-w-[1520px] gap-4 px-4 py-4 lg:grid-cols-[300px_minmax(360px,480px)_1fr]"
+        className="mx-auto grid max-w-[1520px] gap-3 px-3 py-3 sm:gap-4 sm:px-4 sm:py-4 lg:grid-cols-[300px_minmax(360px,480px)_1fr]"
       >
         <DirectoryPanel
           directory={directory}
@@ -367,12 +367,12 @@ export default function PortlandLegalResearchApp() {
 function Header({ sections, retrievalMode }: { sections: CorpusSection[]; retrievalMode: string }) {
   return (
     <header className="border-b border-[#d3d8cf] bg-[#fbfcf8]">
-      <div className="mx-auto flex max-w-[1520px] flex-col gap-4 px-4 py-5 lg:flex-row lg:items-end lg:justify-between">
+      <div className="mx-auto flex max-w-[1520px] flex-col gap-4 px-3 py-4 sm:px-4 sm:py-5 lg:flex-row lg:items-end lg:justify-between">
         <div>
           <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#4f6f52]">
             Portland, Oregon
           </p>
-          <h1 className="mt-1 text-3xl font-semibold tracking-normal text-[#172026] sm:text-4xl">
+          <h1 className="mt-1 text-2xl font-semibold tracking-normal text-[#172026] sm:text-4xl">
             City Code Research Directory
           </h1>
           <p className="mt-2 max-w-3xl text-base leading-7 text-[#43534d]">
@@ -380,7 +380,7 @@ function Header({ sections, retrievalMode }: { sections: CorpusSection[]; retrie
             GraphRAG search, knowledge graph context, logic proofs, and corpus chat layered in.
           </p>
         </div>
-        <div className="grid grid-cols-3 gap-3 text-sm">
+        <div className="grid grid-cols-1 gap-2 text-sm min-[420px]:grid-cols-3 sm:gap-3">
           <Metric label="Sections" value={sections.length ? sections.length.toLocaleString() : '...'} />
           <Metric label="Vector dims" value="384" />
           <Metric label="Search" value={retrievalMode} />
@@ -407,7 +407,7 @@ function DirectoryPanel({
     <nav
       id="code-directory"
       aria-labelledby="code-directory-heading"
-      className="rounded-md border border-[#d8dfd3] bg-white shadow-sm lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-auto"
+      className="max-h-[65vh] overflow-auto rounded-md border border-[#d8dfd3] bg-white shadow-sm lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)]"
     >
       <div className="border-b border-[#e1e6dc] px-4 py-4">
         <h2 id="code-directory-heading" className="text-lg font-semibold text-[#172026]">
@@ -682,7 +682,7 @@ function WorkspacePanel({
         <h2 id="research-workbench-heading" className="sr-only">
           Selected section and research tools
         </h2>
-        <div className="flex flex-wrap gap-2" role="tablist" aria-label="Research workspace panels">
+        <div className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-px" role="tablist" aria-label="Research workspace panels">
           {tabs.map(([tab, label]) => (
             <button
               id={`tab-${tab}`}
@@ -694,7 +694,7 @@ function WorkspacePanel({
               tabIndex={activeTab === tab ? 0 : -1}
               onClick={() => setActiveTab(tab as WorkspaceTab)}
               onKeyDown={onTabKeyDown}
-              className={`min-h-11 rounded-t-md border border-b-0 px-3 py-2 text-sm font-semibold ${
+              className={`min-h-11 shrink-0 rounded-t-md border border-b-0 px-3 py-2 text-sm font-semibold ${
                 activeTab === tab
                   ? 'border-[#d8dfd3] bg-white text-[#24594f]'
                   : 'border-transparent bg-[#eef2ea] text-[#596861] hover:text-[#24594f]'
@@ -706,7 +706,7 @@ function WorkspacePanel({
         </div>
       </div>
 
-      <div className="min-h-[720px]" aria-live="polite">
+      <div className="min-h-[520px] lg:min-h-[720px]" aria-live="polite">
         {!selected && <EmptyState title="Select a section" />}
         {selected && activeTab === 'section' && (
           <div id="panel-section" role="tabpanel" aria-labelledby="tab-section" tabIndex={0}>
@@ -791,13 +791,13 @@ function ResultCard({
       }`}
     >
       <div className="flex items-start justify-between gap-3">
-        <div>
+        <div className="min-w-0">
           <p className="text-sm font-semibold text-[#24594f]">{result.citation}</p>
-          <h3 className="mt-1 text-base font-semibold leading-snug text-[#172026]">
+          <h3 className="mt-1 text-base font-semibold leading-snug text-[#172026] [overflow-wrap:anywhere]">
             {result.section.title}
           </h3>
         </div>
-        <span className="rounded-md bg-[#eef2ea] px-2 py-1 text-xs font-semibold text-[#4d625b]">
+        <span className="shrink-0 rounded-md bg-[#eef2ea] px-2 py-1 text-xs font-semibold text-[#4d625b]">
           {result.score.toFixed(2)}
         </span>
       </div>
@@ -809,7 +809,7 @@ function ResultCard({
           <ResultBadge label={proof.deontic_status} />
         </div>
       )}
-      <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#52615c]">{result.snippet}</p>
+      <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#52615c] [overflow-wrap:anywhere]">{result.snippet}</p>
     </button>
   );
 }
@@ -840,7 +840,7 @@ function GraphRagChat({
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }) {
   return (
-    <div className="px-5 py-5">
+    <div className="px-4 py-4 sm:px-5 sm:py-5">
       <div className="mb-4">
         <h2 className="text-xl font-semibold tracking-normal text-[#172026]">GraphRAG Chat</h2>
         <p className="mt-1 text-base leading-7 text-[#4f615b]">Ask questions grounded in local Portland City Code evidence.</p>
@@ -875,7 +875,7 @@ function GraphRagChat({
       )}
       {answer && (
         <div className="mt-4 rounded-md border border-[#dce3d6] bg-[#f8faf5] px-4 py-4" aria-live="polite">
-          <div className="whitespace-pre-wrap text-sm leading-6 text-[#26343a]">{answer}</div>
+          <div className="whitespace-pre-wrap text-sm leading-6 text-[#26343a] [overflow-wrap:anywhere]">{answer}</div>
         </div>
       )}
       {evidence && evidence.sections.length > 0 && (
@@ -891,7 +891,7 @@ function GraphRagChat({
                 className="rounded-md border border-[#dce3d6] bg-white px-3 py-2 text-sm hover:border-[#7a9487]"
               >
                 <span className="font-semibold text-[#24594f]">[{index + 1}] {result.citation}</span>
-                <span className="ml-2 text-[#394a4f]">{result.section.title}</span>
+                <span className="ml-2 text-[#394a4f] [overflow-wrap:anywhere]">{result.section.title}</span>
               </a>
             ))}
           </div>
@@ -909,7 +909,7 @@ function GraphPanel({
   relationships: CorpusRelationship[];
 }) {
   return (
-    <div className="grid gap-5 px-5 py-5 xl:grid-cols-[1fr_1fr]">
+    <div className="grid gap-5 px-4 py-4 sm:px-5 sm:py-5 xl:grid-cols-[1fr_1fr]">
       <div>
         <h2 className="text-xl font-semibold tracking-normal text-[#172026]">Knowledge Graph Entities</h2>
         <div className="mt-3 grid gap-2" role="list" aria-label="Related knowledge graph entities">
@@ -917,7 +917,7 @@ function GraphPanel({
           {entities.map((entity) => (
             <div key={entity.id} role="listitem" className="rounded-md border border-[#dce3d6] bg-[#fbfcf8] px-3 py-2">
               <div className="text-xs font-semibold uppercase tracking-wide text-[#5f7469]">{entity.type}</div>
-              <div className="mt-1 text-sm font-medium leading-5 text-[#223035]">{entity.label}</div>
+              <div className="mt-1 text-sm font-medium leading-5 text-[#223035] [overflow-wrap:anywhere]">{entity.label}</div>
             </div>
           ))}
         </div>
@@ -929,7 +929,7 @@ function GraphPanel({
           {relationships.map((relationship) => (
             <div key={relationship.id} role="listitem" className="rounded-md border border-[#dce3d6] bg-white px-3 py-2">
               <div className="text-xs font-semibold uppercase tracking-wide text-[#5f7469]">{relationship.type}</div>
-              <div className="mt-1 break-all text-xs leading-5 text-[#52615c]">
+              <div className="mt-1 text-xs leading-5 text-[#52615c] [overflow-wrap:anywhere]">
                 {relationship.source} → {relationship.target}
               </div>
             </div>
@@ -943,13 +943,13 @@ function GraphPanel({
 function SectionReader({ section }: { section: CorpusSection }) {
   return (
     <article aria-labelledby="selected-section-heading">
-      <div className="border-b border-[#e1e6dc] px-5 py-4">
+      <div className="border-b border-[#e1e6dc] px-4 py-4 sm:px-5">
         <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
           <div>
             <p className="text-sm font-semibold text-[#24594f]">
               {section.bluebook_citation || section.official_cite || section.identifier}
             </p>
-            <h2 id="selected-section-heading" className="mt-1 text-2xl font-semibold tracking-normal text-[#172026]">{section.title}</h2>
+            <h2 id="selected-section-heading" className="mt-1 text-xl font-semibold tracking-normal text-[#172026] [overflow-wrap:anywhere] sm:text-2xl">{section.title}</h2>
           </div>
           <a
             href={section.source_url}
@@ -961,9 +961,9 @@ function SectionReader({ section }: { section: CorpusSection }) {
           </a>
         </div>
       </div>
-      <div className="max-w-prose px-5 py-5">
+      <div className="max-w-prose px-4 py-4 sm:px-5 sm:py-5">
         {section.text.split(/\n{2,}/).map((paragraph, index) => (
-          <p key={index} className="mb-4 text-base leading-7 text-[#26343a]">
+          <p key={index} className="mb-4 text-base leading-7 text-[#26343a] [overflow-wrap:anywhere]">
             {paragraph.trim()}
           </p>
         ))}
@@ -974,7 +974,7 @@ function SectionReader({ section }: { section: CorpusSection }) {
 
 function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
   if (!proof) {
-    return <div className="px-5 py-5"><EmptyState title="No proof summary loaded" /></div>;
+    return <div className="px-4 py-4 sm:px-5 sm:py-5"><EmptyState title="No proof summary loaded" /></div>;
   }
 
   const certificateWarning = getSimulatedCertificateWarning(proof);
@@ -982,7 +982,7 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
   const explanation = explainLogicProofSummary(proof);
 
   return (
-    <div className="px-5 py-5">
+    <div className="px-4 py-4 sm:px-5 sm:py-5">
       <div className="flex flex-col gap-3 xl:flex-row xl:items-start xl:justify-between">
         <div>
           <h2 className="text-xl font-semibold tracking-normal text-[#172026]">Logic Proof Explorer</h2>
@@ -993,7 +993,7 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
         </span>
       </div>
 
-      <div className="mt-4 grid gap-2 text-xs sm:grid-cols-4">
+      <div className="mt-4 grid gap-2 text-xs min-[480px]:grid-cols-2 xl:grid-cols-4">
         <ProofMetric label="Operator" value={proof.norm_operator} />
         <ProofMetric label="FOL" value={proof.fol_status} />
         <ProofMetric label="Deontic" value={proof.deontic_status} />
@@ -1008,7 +1008,7 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
 
       <div className="mt-4 rounded-md border border-[#dce3d6] bg-[#f8faf5] px-4 py-4">
         <div className="text-xs font-semibold uppercase tracking-wide text-[#607068]">Explanation</div>
-        <p className="mt-2 text-sm leading-6 text-[#26343a]">{explanation.plainLanguage}</p>
+        <p className="mt-2 text-sm leading-6 text-[#26343a] [overflow-wrap:anywhere]">{explanation.plainLanguage}</p>
         <div className="mt-2 text-xs leading-5 text-[#65736e]">
           {explanation.temporalScope}. {explanation.certificateStatus}.
         </div>
@@ -1030,7 +1030,7 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-[86px] rounded-md border border-[#d7ddd2] bg-white px-3 py-2 text-right shadow-sm">
+    <div className="min-w-[86px] rounded-md border border-[#d7ddd2] bg-white px-3 py-2 text-left shadow-sm sm:text-right">
       <div className="text-lg font-semibold text-[#172026]">{value}</div>
       <div className="text-xs uppercase tracking-wide text-[#607068]">{label}</div>
     </div>
@@ -1049,7 +1049,7 @@ function ProofMetric({ label, value }: { label: string; value: string }) {
   return (
     <div className="rounded-md bg-[#f4f7f0] px-2 py-2">
       <div className="uppercase tracking-wide text-[#6d7b74]">{label}</div>
-      <div className="mt-1 font-semibold text-[#26343a]">{value}</div>
+      <div className="mt-1 font-semibold text-[#26343a] [overflow-wrap:anywhere]">{value}</div>
     </div>
   );
 }
@@ -1061,7 +1061,7 @@ function FormulaBlock({ label, value }: { label: string; value: string }) {
       <summary className="min-h-11 cursor-pointer px-3 py-3 text-xs font-semibold uppercase tracking-wide text-[#4f615b]">
         {label}
       </summary>
-      <pre className="max-h-56 overflow-auto whitespace-pre-wrap border-t border-[#dce3d6] px-3 py-3 text-xs leading-5 text-[#26343a]">
+      <pre className="max-h-56 overflow-auto whitespace-pre-wrap border-t border-[#dce3d6] px-3 py-3 text-xs leading-5 text-[#26343a] [overflow-wrap:anywhere]">
         {value}
       </pre>
     </details>

@@ -1,4 +1,5 @@
 import { normalizePredicateName } from '../normalization';
+import { getLogicRuntimeCapabilities } from '../runtimeCapabilities';
 import type { LogicValidationResult } from '../types';
 import { createValidationResult } from '../validation';
 
@@ -14,6 +15,11 @@ export interface FolParseResult {
   quantifiers: FolTokenMatch[];
   operators: FolTokenMatch[];
   validation: LogicValidationResult;
+  capabilities: {
+    nlpUnavailable: boolean;
+    mlUnavailable: boolean;
+    serverCallsAllowed: false;
+  };
 }
 
 const UNIVERSAL_PATTERNS = [
@@ -48,6 +54,11 @@ export function parseFolText(text: string): FolParseResult {
     quantifiers,
     operators,
     validation: validateFolSyntax(formula),
+    capabilities: {
+      nlpUnavailable: getLogicRuntimeCapabilities().fol.nlpUnavailable,
+      mlUnavailable: getLogicRuntimeCapabilities().fol.mlUnavailable,
+      serverCallsAllowed: false,
+    },
   };
 }
 
@@ -177,4 +188,3 @@ function toPredicateName(value: string): string {
     .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
     .join('');
 }
-

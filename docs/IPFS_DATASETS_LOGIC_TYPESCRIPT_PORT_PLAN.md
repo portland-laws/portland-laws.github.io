@@ -2,11 +2,11 @@
 
 ## Executive Summary
 
-This project already contains the Portland City Code corpus, generated search assets, knowledge graph artifacts, and machine-generated logic proof summaries. The next improvement track should port the useful parts of `ipfs_datasets_py/ipfs_datasets_py/logic` into a browser-friendly TypeScript logic layer, while keeping heavyweight theorem provers, Python NLP dependencies, and cryptographic proof generation outside the static runtime.
+This project already contains the Portland City Code corpus, generated search assets, knowledge graph artifacts, and machine-generated logic proof summaries. The improvement track is to port the full `ipfs_datasets_py/ipfs_datasets_py/logic` module into a browser-native TypeScript/WASM logic stack. Heavyweight theorem provers, NLP dependencies, ML confidence scoring, cryptographic proof systems, and chain integrations should be replaced with TypeScript or WebAssembly implementations rather than external server-side calls.
 
-The practical goal is not to translate all 304 Python logic files. The goal is to make the Portland legal research app better by adding typed formal-logic browsing, deterministic validation, lightweight client-side reasoning, and proof-aware retrieval. Most of that can be TypeScript. Full external prover orchestration and production ZKP generation should remain build-time Python, remote service, or future WASM work.
+The practical goal is to translate the entire Python logic surface area into TypeScript/WASM in phases. The runtime target is browser-native TypeScript/WebAssembly only. The app must not depend on external server-side services for logic conversion, ML/NLP confidence, proving, or verification.
 
-Update: the port should also include a later parity track for Python ML confidence scoring and spaCy-style NLP extraction. The browser V1 can use deterministic regex and heuristic fallbacks, but the long-term implementation should be able to reproduce or closely approximate the Python `use_ml` and `use_nlp` behavior through one of three paths: compatible TypeScript/WebAssembly packages, Transformers.js/browser NLP substitutes, or a build-time/server-side Python compatibility harness.
+Update: Python ML confidence scoring and spaCy-style NLP extraction are not optional fallback areas. They must be ported to browser-native equivalents using TypeScript, WebAssembly, Transformers.js, ONNX/WebGPU, or other local browser-compatible packages. Python can only serve as the source implementation and fixture generator during development.
 
 ## Current Project Fit
 
@@ -32,9 +32,9 @@ The Python source tree has a broad logic surface:
 
 ## Guiding Principle
 
-Port behavior, not file layout.
+Port behavior first, but account for every file.
 
-The TypeScript target should be a clean client-side domain library that borrows semantics from `ipfs_datasets_py`, not a line-by-line Python clone. Browser code should be deterministic, inspectable, small enough to ship, and useful offline. Anything that depends on subprocesses, Python ML packages, prover binaries, secrets, chain RPC, or heavy native dependencies belongs in build-time scripts or a later service boundary.
+The TypeScript target should be a clean client-side domain library that preserves the Python module's semantics without blindly copying Python layout. Browser code should be deterministic, inspectable, offline-capable, and tested against Python parity fixtures. Anything that depends on subprocesses, Python ML packages, prover binaries, secrets, chain RPC, or native dependencies must receive a TypeScript/WASM replacement. Temporary capability reporting is allowed only while a module is mid-port, not as the final state.
 
 ## Target Outcomes
 
@@ -44,9 +44,10 @@ The TypeScript target should be a clean client-side domain library that borrows 
 4. Validate formulas and proof metadata deterministically in the browser.
 5. Add norm-aware filters and ranking signals to search.
 6. Add a proof explorer UI that explains obligations, permissions, prohibitions, temporal operators, supporting code sections, and generated certificate metadata.
-7. Add limited client-side reasoning for safe cases: syntax checks, dependency traversal, contradiction hints, deontic operator summaries, and simple forward-chaining over normalized facts.
-8. Preserve Python as the authoritative build-time formalization generator until TypeScript parity is proven.
-9. Add a parity target for Python ML confidence scoring and spaCy NLP extraction, with documented fallback behavior when those features are unavailable in-browser.
+7. Add client-side reasoning that grows from bounded forward chaining into full TDFOL/CEC/DCEC parity.
+8. Replace Python as the authoritative formalization generator once TypeScript/WASM parity is proven.
+9. Port Python ML confidence scoring and spaCy NLP extraction to browser-native ML/NLP.
+10. Port external prover bridges and ZKP backends to browser-native WASM or equivalent local packages.
 
 ## Portability Matrix
 
@@ -65,11 +66,11 @@ The TypeScript target should be a clean client-side domain library that borrows 
 | `logic/TDFOL/proof_tree_visualizer.py` | Port concepts | Render proof trees in React rather than export DOT/HTML files from library code. |
 | `logic/fol/utils/fol_parser.py` | Port directly | Regex-based quantifier/operator parsing and formatting are browser-friendly. |
 | `logic/fol/utils/predicate_extractor.py` | Port selectively | Regex extraction is portable. spaCy/NLP extraction is not. |
-| `logic/fol/utils/nlp_predicate_extractor.py` | Parity track after V1 | Reproduce spaCy extraction behavior where possible via browser NLP substitutes, WASM, or Python-side parity harness. |
+| `logic/fol/utils/nlp_predicate_extractor.py` | Browser-native parity track after V1 | Reproduce spaCy extraction behavior where possible via browser NLP substitutes, Transformers.js, or WASM. Python can generate development fixtures only; it must not be a runtime service. |
 | `logic/fol/converter.py` | Port as browser converter facade, then add ML/NLP parity | Keep regex fallback, validation, confidence heuristics, and output formatting in V1. Later, match Python `use_ml` and `use_nlp` behavior where feasible. Skip IPFS cache integrations in-browser. |
 | `logic/deontic/utils/deontic_parser.py` | Port directly if regex/pattern-based | Norm extraction from legal text is valuable for Portland sections and can be tested against generated artifacts. |
-| `logic/deontic/converter.py` | Port selectively, then add ML/NLP parity | Deontic operator extraction, exceptions, obligations, permissions, prohibitions, and confidence heuristics are high value. Later phases should compare confidence and extraction outputs against Python ML/spaCy-enabled runs. |
-| `logic/ml_confidence.py` | Parity track after V1 | Browser V1 uses heuristics. Long-term goal is either model-compatible TypeScript inference or Python-backed parity fixtures. |
+| `logic/deontic/converter.py` | Port selectively, then add browser-native ML/NLP parity | Deontic operator extraction, exceptions, obligations, permissions, prohibitions, and confidence heuristics are high value. Later phases should compare confidence and extraction outputs against Python ML/spaCy-enabled fixtures. |
+| `logic/ml_confidence.py` | Browser-native parity track after V1 | Browser V1 uses heuristics. Long-term goal is model-compatible TypeScript/Transformers.js/WASM inference with Python-generated fixtures used only for development comparison. |
 | `logic/deontic/knowledge_base.py` | Port selectively | Useful if reduced to in-memory indexed norms by section CID. |
 | `logic/flogic/flogic_types.py` | Port directly | Frame, class, query, ontology, and Ergo rendering are simple and valuable for display. |
 | `logic/flogic/semantic_normalizer.py` | Port selectively | Helpful for normalizing frame names and relation labels. |
@@ -79,7 +80,7 @@ The TypeScript target should be a clean client-side domain library that borrows 
 | `logic/zkp/groth16*`, EVM files | Do not port in V1 | Native/crypto/chain concerns are too heavy for the current static app. Revisit with WASM/snarkjs only after requirements are clear. |
 | `logic/CEC/native` | Research/WASM later | Large inference engine with many rules. Client V1 should parse and display DCEC strings, not implement all CEC reasoning. |
 | `logic/CEC/nl` | Do not port in V1 | Natural-language policy compilation is not needed for browsing existing generated artifacts. |
-| `logic/external_provers` | Do not port to browser | Depends on external binaries/services. Keep as build-time Python or future server API. |
+| `logic/external_provers` | Do not call from browser V1 | Depends on external binaries/services. Replace only when a browser-native WASM prover is chosen. No server API dependency. |
 | `logic/integration/*bridge*` | Port boundary types and result contracts | Useful to keep API compatibility, but implementation should delegate to TS core or Python build step. |
 | `logic/security`, `observability`, `api_server`, `cli` | Do not port, or replace with app-native concerns | Browser app already has its own deployment/runtime model. |
 
@@ -306,7 +307,7 @@ Acceptance criteria:
 - [x] Add a browser deontic converter facade for short clauses.
 - [x] Add confidence heuristics but do not port Python ML scoring.
 - [ ] Add explicit Python ML confidence and spaCy NLP parity fixtures.
-- [ ] Decide which parity path to use: browser-native replacement, WASM, build-time Python, or server-side Python.
+- [x] Decide which parity path to use: browser-native replacement or WASM only for runtime; Python fixtures are development-only.
 
 Acceptance criteria:
 
@@ -315,21 +316,21 @@ Acceptance criteria:
 - It never overwrites the authoritative generated artifact without explicit user action.
 - It documents where browser heuristics differ from Python ML/spaCy outputs.
 
-### Phase 4B: Python ML And spaCy Parity Track
+### Phase 4B: Browser-Native Python ML And spaCy Parity Track
 
-- [ ] Capture Python `FOLConverter(use_ml=True, use_nlp=True)` outputs for representative legal clauses.
-- [ ] Capture Python `DeonticConverter(use_ml=True)` confidence outputs for the same fixtures.
+- [ ] Capture Python `FOLConverter(use_ml=True, use_nlp=True)` outputs for representative legal clauses as development fixtures only.
+- [ ] Capture Python `DeonticConverter(use_ml=True)` confidence outputs for the same fixtures as development fixtures only.
 - [ ] Add parity fixtures with raw text, regex-only output, spaCy-enabled output, ML confidence, and expected tolerances.
-- [ ] Evaluate browser substitutes for spaCy predicate extraction, including Transformers.js token classification or dependency-light NLP packages.
-- [ ] Evaluate whether ML confidence should run in-browser, at build time, or through a future optional Python service.
-- [ ] Add a compatibility mode that surfaces `nlpUnavailable` or `mlUnavailable` rather than silently pretending full parity.
-- [ ] Define acceptance thresholds: exact matches for operator classification, approximate matches for confidence scores, and documented divergences for predicate spans.
+- [x] Evaluate browser substitutes for spaCy predicate extraction, including Transformers.js token classification or dependency-light NLP packages.
+- [x] Decide that ML confidence must run in-browser or from precomputed static artifacts; no runtime Python service is allowed.
+- [x] Add a compatibility mode that surfaces `nlpUnavailable` or `mlUnavailable` rather than silently pretending full parity.
+- [x] Define acceptance thresholds: exact matches for operator classification, approximate matches for confidence scores, and documented divergences for predicate spans.
 
 Acceptance criteria:
 
-- Python ML/spaCy parity is measurable with fixtures.
+- Python ML/spaCy parity is measurable with fixtures, but runtime execution remains browser-native.
 - Browser fallback behavior is explicit in API results and UI copy.
-- The TypeScript implementation can run without Python, but Python-enhanced outputs can be compared in CI or artifact-generation workflows.
+- The TypeScript implementation can run without Python; Python-enhanced outputs may be compared only in development or CI fixture-generation workflows.
 
 ### Phase 5: F-Logic Display And Semantic Normalization
 
@@ -401,7 +402,7 @@ Acceptance criteria:
 - [x] Evaluate whether any external prover should run in-browser via WASM.
 - [x] Evaluate `z3-solver`/Z3 WASM, cvc5 WASM availability, Tau Prolog, or custom Datalog for limited use cases.
 - [x] Evaluate `snarkjs` only if real browser-side proof verification becomes a product requirement.
-- [x] Keep Python or a serverless API as the preferred path for full proof generation.
+- [x] Reject serverless/API runtime dependency for V1; use browser-native WASM only when a prover is truly required.
 
 Acceptance criteria:
 
@@ -410,12 +411,12 @@ Acceptance criteria:
 
 ## What Should Stay Python For Now
 
-Keep these in the Python build pipeline or a future backend:
+Keep these outside the browser V1 runtime until browser-native replacements exist:
 
-- Full CEC and DCEC native prover behavior.
-- External prover orchestration for Z3, CVC5, E Prover, Vampire, Lean, and Coq.
-- Groth16 proof generation, FFI backends, EVM harnesses, and chain registry code.
-- spaCy-based NLP extraction and Python ML confidence scoring.
+- Full CEC and DCEC native prover behavior unless ported to TypeScript/WASM.
+- External prover orchestration for Z3, CVC5, E Prover, Vampire, Lean, and Coq unless a browser-native WASM package is selected.
+- Groth16 proof generation, FFI backends, EVM harnesses, and chain registry code unless implemented with browser-native libraries.
+- spaCy-based NLP extraction and Python ML confidence scoring unless reproduced with browser-native NLP/ML.
 - API server, CLI, dashboards, Prometheus/OpenTelemetry integrations.
 - IPFS-backed proof cache writes and distributed processing.
 
@@ -437,7 +438,7 @@ Not realistic for V1 TypeScript:
 - Full TDFOL prover parity across all inference rules.
 - External prover bridge parity.
 - Cryptographic proof generation.
-- Python NLP/ML parity, now tracked as Phase 4B rather than omitted entirely.
+- Python NLP/ML parity, now tracked as browser-native Phase 4B rather than omitted entirely.
 
 ## Testing Strategy
 

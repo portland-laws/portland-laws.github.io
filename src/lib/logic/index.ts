@@ -5,6 +5,7 @@ export * from './flogic';
 export * from './fol';
 export * from './normalization';
 export * from './reasoning';
+export * from './runtimeCapabilities';
 export * from './tdfol';
 export * from './types';
 export * from './validation';

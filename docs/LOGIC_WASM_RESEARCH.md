@@ -2,7 +2,7 @@
 
 ## Decision
 
-Do not add heavy theorem-prover or cryptographic WASM dependencies to the browser bundle in V1.
+Do not add heavy theorem-prover or cryptographic WASM dependencies to the browser bundle in V1. Also do not add server-side prover, NLP, ML, or verification calls. The runtime target is browser-native TypeScript/WebAssembly only.
 
 Use TypeScript for:
 
@@ -11,7 +11,7 @@ Use TypeScript for:
 - Lightweight bounded reasoning.
 - Deterministic canonicalization and simulated certificate checks.
 
-Keep Python, a future optional service, or build-time artifact generation for:
+Keep outside browser V1 until browser-native replacements exist:
 
 - Full CEC/DCEC inference.
 - External prover orchestration.
@@ -27,8 +27,8 @@ Keep Python, a future optional service, or build-time artifact generation for:
 | cvc5 WASM | Possible later | Similar tradeoffs to Z3; avoid until proof queries require it. |
 | Tau Prolog / Datalog-style engine | Good candidate for local rules | Better fit for small forward-chaining and F-logic-like rule demos than full theorem proving. |
 | `snarkjs` | Only if real browser-side verification is required | Do not add while current artifacts are simulated educational certificates. |
-| Server-side Python prover API | Best full-power option | Preserves existing Python logic behavior without inflating the static app. |
-| Build-time Python artifact generation | Best current option | Matches the existing static corpus pipeline and keeps runtime offline-friendly. |
+| Server-side Python prover API | Rejected for runtime | It would violate the browser-native/no external service requirement. |
+| Static precomputed artifacts | Acceptable | Keeps runtime offline-friendly as long as the browser does not call an external service. |
 
 ## Required Decision Record Before Adding WASM
 
@@ -41,4 +41,4 @@ Before adding a prover or crypto WASM dependency, document:
 - Legal copy/caveats.
 - Whether outputs are advisory, heuristic, simulated, or cryptographically verified.
 - Test fixtures comparing TypeScript/WASM/Python outputs.
-
+- Confirmation that no external server-side runtime call is introduced.

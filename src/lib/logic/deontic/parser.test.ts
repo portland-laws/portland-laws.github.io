@@ -67,8 +67,14 @@ describe('deontic parser utilities', () => {
     expect(result).toMatchObject({
       success: true,
       confidence: expect.any(Number),
-      warnings: [],
+      capabilities: {
+        mlUnavailable: true,
+        serverCallsAllowed: false,
+      },
     });
+    expect(result.warnings).toContain(
+      'Browser-native ML confidence is not yet available; heuristic confidence was used.',
+    );
     expect(result.formulas[0]).toContain('P(∀x');
   });
 
@@ -76,7 +82,10 @@ describe('deontic parser utilities', () => {
     expect(convertLegalTextToDeontic('This section states a purpose.')).toMatchObject({
       success: false,
       formulas: [],
-      warnings: ['No normative indicators were detected'],
+      warnings: [
+        'No normative indicators were detected',
+        'Browser-native ML confidence is not yet available; heuristic confidence was used.',
+      ],
     });
   });
 
