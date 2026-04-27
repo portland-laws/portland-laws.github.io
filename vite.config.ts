@@ -6,7 +6,7 @@ export default defineConfig({
   base: '/',
   plugins: [react()],
   server: {
-    allowedHosts: ['ustypology.github.io', 'localhost', '127.0.0.1'],
+    allowedHosts: ['portland-laws.github.io', 'localhost', '127.0.0.1'],
     headers: {
       // Enable SharedArrayBuffer for WebAssembly threading
       'Cross-Origin-Embedder-Policy': 'require-corp',
