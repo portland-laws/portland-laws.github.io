@@ -947,12 +947,16 @@ function GraphRagChat({
         </div>
       )}
       {answer && (
-        <div className="mt-4 rounded-md border border-[#dce3d6] bg-[#f8faf5] px-4 py-4" aria-live="polite">
+        <div
+          className="mt-4 rounded-md border border-[#dce3d6] bg-[#f8faf5] px-4 py-4"
+          aria-label="GraphRAG answer"
+          aria-live="polite"
+        >
           <div className="whitespace-pre-wrap text-sm leading-6 text-[#26343a] [overflow-wrap:anywhere]">{answer}</div>
         </div>
       )}
       {evidence && evidence.sections.length > 0 && (
-        <div className="mt-4">
+        <div className="mt-4" aria-label="GraphRAG evidence">
           <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-[#607068]">Evidence</h3>
           <div className="mt-2 grid gap-2">
             {evidence.sections.slice(0, 5).map((result, index) => (

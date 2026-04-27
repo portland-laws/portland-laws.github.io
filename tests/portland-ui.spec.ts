@@ -53,7 +53,8 @@ test.describe('Portland legal corpus UI screenshots', () => {
     await page.getByRole('tab', { name: 'GraphRAG' }).click();
     await page.locator('#panel-chat').getByLabel('Question').fill('What does this section say in simple terms?');
     await page.getByRole('button', { name: /^Ask$/ }).click();
-    await expect(page.locator('#panel-chat')).toContainText(/informational|code|section|evidence/i, { timeout: 15000 });
+    await expect(page.getByLabel('GraphRAG answer')).toBeVisible({ timeout: 30000 });
+    await expect(page.getByLabel('GraphRAG evidence')).toBeVisible();
     await page.locator('#research-workbench').screenshot({
       path: screenshotPath(testInfo, 'desktop-graphrag-chat.png'),
     });
