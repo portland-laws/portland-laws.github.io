@@ -1,845 +1,145 @@
-# Typology World 🏠💻💌
+# Portland City Code Legal Research
 
-[Live Demo](https://ustypology.github.io)
+[Live Site](https://portland-laws.github.io)
 
-[Join our community Discord: US Type Club Devs](https://discord.gg/xMX2XaJf)
+A static, browser-only research tool for exploring and querying the **Portland, Oregon City Code**. All computation runs directly in your browser — no backend server, no API keys, no accounts required.
 
-<img width="1454" alt="AI Town Enhanced Interface" src="https://github.com/user-attachments/assets/74186eca-47f1-4d5f-88c0-c1c8cef340a6">
+## What This Is
 
-AI Town is a virtual town where AI characters live, chat and socialize with intelligent, context-aware behavior.
+This repository is a static Vite/React/TypeScript application that provides:
 
-This enhanced version includes:
-- **🚀 Client-Side AI Processing**: Runs Llama 3B/1B models directly in your browser with WebGPU/SIMD acceleration
-- **🎯 Intelligent NPC Behavior**: NPCs make context-aware decisions based on personality, location, and social dynamics  
-- **🎮 Comprehensive Control System**: Interactive UI to monitor, direct, and orchestrate AI characters
-- **📱 Responsive Layout**: Automatically adapts to any screen size without black margins
-- **⚡ Smooth Performance**: Web Workers prevent UI blocking during AI inference
+- **Corpus Browser**: Browse all 3,052 sections of the Portland City Code organized by Title and Chapter
+- **Hybrid Search**: Combine keyword (BM25), vector similarity, and knowledge-graph-expanded search in one query
+- **GraphRAG Chat**: Ask plain-language questions and receive citation-grounded answers generated entirely in-browser
+- **Knowledge Graph Explorer**: Visualize entities and relationships extracted from the legal corpus
+- **Logic Proof Explorer**: Inspect formal logic artifacts (obligations, permissions, prohibitions, temporal operators, ZKP certificates) derived from each section
+- **Browser Logic Engine**: A growing TypeScript/WASM port of the Python `ipfs_datasets_py` logic module, enabling deterministic browser-native theorem proving, TDFOL/CEC/DCEC parsing, deontic analysis, F-logic rendering, and ZKP metadata verification
 
-## 🆕 Enhanced Features
+## Corpus
 
-### Client-Side AI Models
-- **Llama 3.2 3B Instruct**: Advanced reasoning (WebGPU + 8GB+ RAM required)
-- **Llama 3.2 1B Instruct**: High-quality responses (WebGPU + 4GB+ RAM required)  
-- **LaMini-GPT 774M**: Balanced performance (SIMD optimized)
-- **DistilGPT-2**: Universal compatibility (works on any device)
+The corpus is sourced from the Hugging Face dataset [`justicedao/american_municipal_law`](https://huggingface.co/datasets/justicedao/american_municipal_law), specifically the Portland, OR current-code artifacts:
 
-### Intelligent NPC System
-- **Personality-Driven Decisions**: Each character has unique traits affecting behavior
-- **Context Awareness**: NPCs consider location, recent activities, and nearby characters
-- **Memory System**: Characters remember conversations and maintain goal hierarchies
-- **Dynamic Conversations**: Natural dialogue based on character relationships
+- **3,052 canonical sections** with full text, Bluebook citations, source URLs, and JSON-LD metadata
+- **BM25 precomputed term frequencies** for fast keyword search
+- **384-dimensional `thenlper/gte-small` embeddings** for semantic vector search
+- **Knowledge graph entities and relationships** extracted from the corpus
+- **Logic proof artifacts** — per-section TDFOL, DCEC, F-logic formalizations, norm metadata, and ZKP certificate summaries
 
-### Advanced Control Interface
-- **Real-Time Monitoring**: Live display of NPC status, goals, and activities
-- **Custom Goal Assignment**: Natural language commands to direct character behavior
-- **Click-to-Move**: Direct character movement with visual feedback
-- **Conversation Orchestration**: Make specific NPCs interact with each other
-- **Performance Metrics**: Model selection and optimization recommendations
+All corpus assets are pre-generated at build time and served as static files under `public/corpus/portland-or/current/generated/`. The app never calls the Hugging Face Dataset Viewer API at runtime.
+
+## Browser Logic Engine
+
+The logic layer (`src/lib/logic/`) is a browser-native TypeScript port of the `ipfs_datasets_py/ipfs_datasets_py/logic` Python module. It is designed to be deterministic, offline-capable, and free of any server-side dependencies.
+
+### Currently Ported
+
+| Module | Description |
+|---|---|
+| `logic/types` | Discriminated union types and interfaces mirroring Python dataclasses and enums |
+| `logic/common` | Converter lifecycle, bounded cache, proof cache, validation, feature detection, and utility monitor |
+| `logic/fol` | FOL regex quantifier/operator parsing, predicate extraction, logical relation extraction, variable allocation, and output formatters |
+| `logic/deontic` | Deontic operator classification, formula construction, analyzer, knowledge-base primitives, norm extraction, conflict detection, and compliance checks |
+| `logic/tdfol` | TDFOL AST, parser, formatter, inference rules (Modus Ponens/Tollens, temporal K/T, deontic K/D, etc.), forward-chaining prover, proving strategies, modal tableaux, countermodels, proof explainer, dependency graph, proof tree visualizer, security validator, and performance dashboard/profiler/metrics |
+| `logic/cec` | CEC/DCEC AST, parser, formatter, analyzer, DCEC cleaning and preprocessing helpers, DCEC parse-token/prefixing helpers, syntax tree utilities, grammar loader/engine, ShadowProver problem parser (TPTP `fof`/`cnf`), native inference rules (propositional/first-order/modal/temporal/deontic/cognitive/resolution/specialized), fluent/event state manager, discrete event calculus (`Happens`/`Initiates`/`Terminates`/`HoldsAt`/`Clipped`), context manager, ambiguity resolver, ShadowProver facade, bounded prover, proof cache, proof explainer, dependency graph and tree visualizer, modal tableaux, countermodels, performance dashboard/profiler/metrics, and security validator |
+| `logic/flogic` | F-logic frame, class, ontology, query, semantic normalization, and ErgoAI rendering |
+| `logic/zkp` | Deterministic canonicalization and simulated ZKP certificate metadata checks |
+
+### Roadmap
+
+- **Phase 11**: Full TDFOL prover/inference-rule parity and richer interactive visualizations
+- **Phase 12**: Full CEC/DCEC advanced strategies and complete prover parity
+- **Phase 13**: Browser-native ML/NLP parity for FOL/deontic confidence scoring and spaCy-style NLP extraction using Transformers.js / ONNX / WebGPU
+- **Phase 14**: ZKP Groth16/EVM/browser-native crypto parity
+- **Phase 15**: IPFS-backed proof cache semantics
+
+See [`docs/LOGIC_PORT_PARITY.md`](./docs/LOGIC_PORT_PARITY.md) and [`docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`](./docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md) for the full tracking document.
+
+## Stack
+
+| Layer | Technology |
+|---|---|
+| Frontend framework | [Vite](https://vitejs.dev/) + [React](https://react.dev/) + [TypeScript](https://www.typescriptlang.org/) |
+| Styling | [Tailwind CSS](https://tailwindcss.com/) |
+| Corpus loading | [DuckDB-WASM](https://github.com/duckdb/duckdb-wasm) / [parquet-wasm](https://github.com/kylebarron/parquet-wasm) |
+| Vector search | [hnswlib-wasm](https://github.com/yoshoku/hnswlib-wasm) / brute-force cosine scan |
+| Browser inference | [Hugging Face Transformers.js](https://huggingface.co/docs/transformers.js) (`Xenova/gte-small` for embeddings; small generative models for GraphRAG chat) |
+| Hosting | [GitHub Pages](https://pages.github.com/) via GitHub Actions |
 
 ## Quick Start
 
 ```sh
-git clone https://github.com/USTypology/ustypology.github.io.git
-cd ustypology.github.io
+git clone https://github.com/portland-laws/portland-laws.github.io.git
+cd portland-laws.github.io
 npm install --legacy-peer-deps
-npm run build
 npm run dev
 ```
 
-Visit http://localhost:5173 to start exploring the enhanced AI Town!
+Visit http://localhost:5173 to explore the app locally.
 
-## 🧠 AI Model Support & Performance
+> **Note**: The corpus assets in `public/corpus/portland-or/current/generated/` are committed to the repository and are ready to use immediately. You do not need to re-run the data pipeline to start developing.
 
-### Supported Models with Optimization
+## Corpus Build Pipeline
 
-AI Town now supports multiple AI models with advanced optimization:
-
-| Model | Size | WebGPU | SIMD | RAM Required | Best For |
-|-------|------|--------|------|--------------|----------|
-| **Llama 3.2 3B Instruct** | 1.9GB | ✅ Required | ✅ | 8GB+ | Advanced reasoning, complex conversations |
-| **Llama 3.2 1B Instruct** | 637MB | ✅ Required | ✅ | 4GB+ | High-quality responses, instruction following |
-| **LaMini-GPT 774M** | 310MB | ❌ | ✅ | 2GB+ | Balanced performance and quality |
-| **GPT-2** | 124MB | ❌ | ✅ | 1GB+ | Reliable baseline, broad compatibility |
-| **DistilGPT-2** | 82MB | ❌ | ✅ | 512MB+ | Universal compatibility, fastest startup |
-
-### Optimization Technologies
-
-- **WebGPU Acceleration**: GPU-powered inference for Llama models (Chrome 113+, Edge 113+)
-- **WebAssembly SIMD**: Optimized CPU inference for all models
-- **Web Workers**: Non-blocking processing keeps UI responsive
-- **Smart Caching**: Models downloaded once and cached locally
-- **Automatic Fallbacks**: Graceful degradation based on device capabilities
-
-### Device Compatibility
-
-**High-End Devices** (8GB+ RAM, WebGPU)
-- Recommended: Llama 3.2 3B Instruct
-- Performance: Excellent reasoning and conversation quality
-
-**Mid-Range Devices** (4GB+ RAM, WebGPU) 
-- Recommended: Llama 3.2 1B Instruct
-- Performance: High-quality responses with good speed
-
-**Standard Devices** (2GB+ RAM, SIMD)
-- Recommended: LaMini-GPT 774M
-- Performance: Balanced quality and performance
-
-**Constrained Devices** (Any modern browser)
-- Recommended: DistilGPT-2
-- Performance: Fast and reliable for basic interactions
-
-## 📊 Performance Benchmarks
-
-The system automatically detects your device capabilities and recommends the optimal model. Expected inference speeds:
-
-- **Llama 3B (WebGPU)**: ~500-1000 tokens/sec
-- **Llama 1B (WebGPU)**: ~1000-2000 tokens/sec  
-- **LaMini-GPT (WASM+SIMD)**: ~100-300 tokens/sec
-- **DistilGPT-2 (WASM+SIMD)**: ~200-500 tokens/sec
-
-*Actual performance varies based on device specifications and browser optimizations.*
-
-## Stack
-
-- Game engine, database, and vector search: [Convex](https://convex.dev/)
-- Auth (Optional): [Clerk](https://clerk.com/)
-- Default chat model is `llama3` and embeddings with `mxbai-embed-large`.
-- Local inference: [Ollama](https://github.com/jmorganca/ollama)
-- Configurable for other cloud LLMs: [Together.ai](https://together.ai/) or anything that speaks the
-  [OpenAI API](https://platform.openai.com/). PRs welcome to add more cloud provider support.
-- Background Music Generation: [Replicate](https://replicate.com/) using
-  [MusicGen](https://huggingface.co/spaces/facebook/MusicGen)
-- **Peer-to-Peer Player Discovery**: [libp2p](https://libp2p.io/) for decentralized player discovery and networking
-
-## P2P Player Discovery
-
-AI Town now includes **experimental** peer-to-peer player discovery using libp2p. This feature allows players to discover each other directly without relying solely on the central server.
-
-### Key Features:
-- **Decentralized Discovery**: Players can find each other through P2P networking
-- **Hybrid Approach**: Works alongside the existing Convex backend
-- **Optional**: Fully opt-in - the game works perfectly without P2P enabled
-- **Proximity-based**: Find players near your position in the game world
-
-### How to Use:
-1. Look for the P2P status indicator in the top-left of the game screen
-2. Click "Connect" to enable P2P discovery
-3. Your player will be announced to other P2P-enabled players
-4. You can now discover other players using the P2P network
-
-For detailed information, see [P2P Player Discovery Documentation](./docs/P2P_PLAYER_DISCOVERY.md).
-
-Other credits:
-
-- Pixel Art Generation: [Replicate](https://replicate.com/),
-  [Fal.ai](https://serverless.fal.ai/lora)
-- All interactions, background music and rendering on the <Game/> component in the project are
-  powered by [PixiJS](https://pixijs.com/).
-- Tilesheet:
-  - https://opengameart.org/content/16x16-game-assets by George Bailey
-  - https://opengameart.org/content/16x16-rpg-tileset by hilau
-- We used https://github.com/pierpo/phaser3-simple-rpg for the original POC of this project. We have
-  since re-wrote the whole app, but appreciated the easy starting point
-- Original assets by [ansimuz](https://opengameart.org/content/tiny-rpg-forest)
-- The UI is based on original assets by
-  [Mounir Tohami](https://mounirtohami.itch.io/pixel-art-gui-elements)
-
-# Installation
-
-The overall steps are:
-
-1. [Build and deploy](#build-and-deploy)
-2. [Connect it to an LLM](#connect-an-llm)
-
-## Build and Deploy
-
-There are a few ways to run the app on top of Convex (the backend).
-
-1. The standard Convex setup, where you develop locally or in the cloud. This requires a Convex
-   account(free). This is the easiest way to depoy it to the cloud and seriously develop.
-2. If you want to try it out without an account and you're okay with Docker, the Docker Compose
-   setup is nice and self-contained.
-3. There's a community fork of this project offering a one-click install on
-   [Pinokio](https://pinokio.computer/item?uri=https://github.com/cocktailpeanutlabs/aitown) for
-   anyone interested in running but not modifying it 😎.
-4. You can also deploy it to [Fly.io](https://fly.io/). See [./fly](./fly) for instructions.
-
-### Standard Setup
-
-Note, if you're on Windows, see [below](#windows-installation).
+If you need to regenerate the static corpus assets from the upstream Hugging Face dataset:
 
 ```sh
-git clone https://github.com/a16z-infra/ai-town.git
-cd ai-town
-npm install
+# 1. Download and process the Portland corpus parquet artifacts
+python3 scripts/extract-portland-corpus.py
+
+# 2. Generate optimized static assets (section-index, embeddings.f32, BM25 docs, KG adjacency, etc.)
+npm run prepare:portland-corpus
+
+# 3. Validate the generated assets
+npm run validate:portland-corpus
 ```
 
-This will require logging into your Convex account, if you haven't already.
+Generated assets are written to `public/corpus/portland-or/current/generated/`:
 
-To run it:
+| File | Description |
+|---|---|
+| `sections.json` | Full canonical section rows |
+| `section-index.json` | Lightweight index of identifiers, titles, and chapter/title metadata |
+| `bm25-documents.json` | Tokenized term-frequency documents for BM25 keyword search |
+| `embeddings.f32` | Packed `Float32Array` of 384-dimensional `gte-small` embeddings |
+| `embedding-index.json` | `ipfs_cid` lookup map for the embedding array |
+| `entities.json` | Knowledge graph entity records |
+| `relationships.json` | Knowledge graph relationship records |
+| `graph-adjacency.json` | Precomputed KG adjacency maps for fast one-hop/two-hop expansion |
+| `logic-proof-summaries.json` | Per-section TDFOL, DCEC, F-logic formalizations, norm metadata, and ZKP certificate summaries |
+| `generated-manifest.json` | Row counts, embedding dimensions, and content hashes for validation |
+
+## Testing
 
 ```sh
-npm run dev
+# Unit and integration tests (Jest)
+npm test
+
+# Logic port parity tests against Python-generated fixtures
+npm run validate:logic-port
+
+# End-to-end tests (Playwright)
+npm run test:playwright
 ```
 
-You can now visit http://localhost:5173.
+## Deployment
 
-If you'd rather run the frontend and backend separately (which syncs your backend functions as
-they're saved), you can run these in two terminals:
+Every push to `main` automatically builds and deploys the app to GitHub Pages via the workflow in `.github/workflows/deploy.yml`. The live site is at **https://portland-laws.github.io**.
 
-```bash
-npm run dev:frontend
-npm run dev:backend
-```
+You can also trigger a deployment manually from the GitHub Actions tab.
 
-See [package.json](./package.json) for details.
+## Documentation
 
-### Using Docker Compose with self-hosted Convex
+| Document | Description |
+|---|---|
+| [`ARCHITECTURE.md`](./ARCHITECTURE.md) | System architecture, component overview, and data flow |
+| [`docs/PORTLAND_LEGAL_CORPUS_IMPLEMENTATION_PLAN.md`](./docs/PORTLAND_LEGAL_CORPUS_IMPLEMENTATION_PLAN.md) | Full implementation plan for the Portland corpus research UI |
+| [`docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`](./docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md) | Roadmap for porting the Python logic module to TypeScript/WASM |
+| [`docs/LOGIC_PORT_PARITY.md`](./docs/LOGIC_PORT_PARITY.md) | Parity tracker comparing TypeScript behavior to Python targets |
+| [`docs/LOGIC_WASM_RESEARCH.md`](./docs/LOGIC_WASM_RESEARCH.md) | Research notes on browser-native theorem-prover options |
+| [`TESTING.md`](./TESTING.md) | Testing strategy, test structure, and how to run the test suite |
+| [`CLIENT_LLM_IMPLEMENTATION.md`](./CLIENT_LLM_IMPLEMENTATION.md) | Browser inference architecture (Transformers.js, Web Workers) |
+| [`MODEL_GUIDE.md`](./MODEL_GUIDE.md) | Guidance on supported browser-inference models and hardware requirements |
 
-You can also run the Convex backend with the self-hosted Docker container. Here we'll set it up to
-run the frontend, backend, and dashboard all via docker compose.
+## Legal Disclaimer
 
-```sh
-docker compose up --build -d
-```
-
-The container will keep running in the background if you pass `-d`. After you've done it once, you
-can `stop` and `start` services.
-
-- The frontend will be running on http://localhost:5173.
-- The backend will be running on http://localhost:3210 (3211 for the http api).
-- The dashboard will be running on http://localhost:6791.
-
-To log into the dashboard and deploy from the convex CLI, you will need to generate an admin key.
-
-```sh
-docker compose exec backend ./generate_admin_key.sh
-```
-
-Add it to your `.env.local` file. Note: If you run `down` and `up`, you'll have to generate the key
-again and update the `.env.local` file.
-
-```sh
-# in .env.local
-CONVEX_SELF_HOSTED_ADMIN_KEY="<admin-key>" # Ensure there are quotes around it
-CONVEX_SELF_HOSTED_URL="http://127.0.0.1:3210"
-```
-
-Then set up the Convex backend (one time):
-
-```sh
-npm run predev
-```
-
-To continuously deploy new code to the backend and print logs:
-
-```sh
-npm run dev:backend
-```
-
-To see the dashboard, visit `http://localhost:6791` and provide the admin key you generated earlier.
-
-### Configuring Docker for Ollama
-
-If you'll be using Ollama for local inference, you'll need to configure Docker to connect to it.
-
-```sh
-npx convex env set OLLAMA_HOST http://host.docker.internal:11434
-```
-
-To test the connection (after you [have it running](#ollama-default)):
-
-```sh
-docker compose exec backend /bin/bash curl http://host.docker.internal:11434
-```
-
-If it says "Ollama is running", it's good! Otherwise, check out the
-[Troubleshooting](#troubleshooting) section.
-
-## Connect an LLM
-
-The project supports multiple LLM options:
-
-1. **Client-Side LLM (New)**: Uses Hugging Face Transformers.js for browser-based inference
-2. **Server-Side LLM**: Traditional API-based inference with multiple providers
-
-### Client-Side LLM with Transformers.js (Recommended for Privacy)
-
-The project now includes client-side LLM inference using Hugging Face Transformers.js. This approach:
-- Runs entirely in your browser (privacy-preserving)
-- Works offline once models are downloaded
-- Eliminates server LLM API costs
-- Uses DistilGPT-2 model optimized for conversations
-
-**No additional setup required!** The client-side LLM is enabled by default and will automatically download the model on first use.
-
-See [CLIENT_LLM_IMPLEMENTATION.md](./CLIENT_LLM_IMPLEMENTATION.md) for technical details.
-
-### Server-Side LLM Options
-
-If you prefer server-side inference or need more powerful models, you can configure one of these providers:
-
-Note: If you want to run the backend in the cloud, you can either use a cloud-based LLM API, like
-OpenAI or Together.ai or you can proxy the traffic from the cloud to your local Ollama. See
-[below](#using-local-inference-from-a-cloud-deployment) for instructions.
-
-### Ollama (default)
-
-By default, the app tries to use Ollama to run it entirely locally.
-
-1. Download and install [Ollama](https://ollama.com/).
-2. Open the app or run `ollama serve` in a terminal. `ollama serve` will warn you if the app is
-   already running.
-3. Run `ollama pull llama3` to have it download `llama3`.
-4. Test it out with `ollama run llama3`.
-
-Ollama model options can be found [here](https://ollama.ai/library).
-
-If you want to customize which model to use, adjust convex/util/llm.ts or set
-`npx convex env set OLLAMA_MODEL # model`. If you want to edit the embedding model:
-
-1. Change the `OLLAMA_EMBEDDING_DIMENSION` in `convex/util/llm.ts` and ensure:
-   `export const EMBEDDING_DIMENSION = OLLAMA_EMBEDDING_DIMENSION;`
-2. Set `npx convex env set OLLAMA_EMBEDDING_MODEL # model`.
-
-Note: You might want to set `NUM_MEMORIES_TO_SEARCH` to `1` in constants.ts, to reduce the size of
-conversation prompts, if you see slowness.
-
-### OpenAI
-
-To use OpenAI, you need to:
-
-```ts
-// In convex/util/llm.ts change the following line:
-export const EMBEDDING_DIMENSION = OPENAI_EMBEDDING_DIMENSION;
-```
-
-Set the `OPENAI_API_KEY` environment variable. Visit https://platform.openai.com/account/api-keys if
-you don't have one.
-
-```sh
-npx convex env set OPENAI_API_KEY 'your-key'
-```
-
-Optional: choose models with `OPENAI_CHAT_MODEL` and `OPENAI_EMBEDDING_MODEL`.
-
-### Together.ai
-
-To use Together.ai, you need to:
-
-```ts
-// In convex/util/llm.ts change the following line:
-export const EMBEDDING_DIMENSION = TOGETHER_EMBEDDING_DIMENSION;
-```
-
-Set the `TOGETHER_API_KEY` environment variable. Visit https://api.together.xyz/settings/api-keys if
-you don't have one.
-
-```sh
-npx convex env set TOGETHER_API_KEY 'your-key'
-```
-
-Optional: choose models via `TOGETHER_CHAT_MODEL`, `TOGETHER_EMBEDDING_MODEL`. The embedding model's
-dimension must match `EMBEDDING_DIMENSION`.
-
-### Other OpenAI-compatible API
-
-You can use any OpenAI-compatible API, such as Anthropic, Groq, or Azure.
-
-- Change the `EMBEDDING_DIMENSION` in `convex/util/llm.ts` to match the dimension of your embedding
-  model.
-- Edit `getLLMConfig` in `llm.ts` or set environment variables:
-
-```sh
-npx convex env set LLM_API_URL 'your-url'
-npx convex env set LLM_API_KEY 'your-key'
-npx convex env set LLM_MODEL 'your-chat-model'
-npx convex env set LLM_EMBEDDING_MODEL 'your-embedding-model'
-```
-
-Note: if `LLM_API_KEY` is not required, don't set it.
-
-### Note on changing the LLM provider or embedding model:
-
-If you change the LLM provider or embedding model, you should delete your data and start over. The
-embeddings used for memory are based on the embedding model you choose, and the dimension of the
-vector database must match the embedding model's dimension. See
-[below](#wiping-the-database-and-starting-over) for how to do that.
-
-## Customize your own simulation
-
-NOTE: every time you change character data, you should re-run `npx convex run testing:wipeAllTables`
-and then `npm run dev` to re-upload everything to Convex. This is because character data is sent to
-Convex on the initial load. However, beware that `npx convex run testing:wipeAllTables` WILL wipe
-all of your data.
-
-1. Create your own characters and stories: All characters and stories, as well as their spritesheet
-   references are stored in [characters.ts](./data/characters.ts). You can start by changing
-   character descriptions.
-
-2. Updating spritesheets: in `data/characters.ts`, you will see this code:
-
-   ```ts
-   export const characters = [
-     {
-       name: 'f1',
-       textureUrl: '/assets/32x32folk.png',
-       spritesheetData: f1SpritesheetData,
-       speed: 0.1,
-     },
-     ...
-   ];
-   ```
-
-   You should find a sprite sheet for your character, and define sprite motion / assets in the
-   corresponding file (in the above example, `f1SpritesheetData` was defined in f1.ts)
-
-3. Update the Background (Environment): The map gets loaded in `convex/init.ts` from
-   `data/gentle.js`. To update the map, follow these steps:
-
-   - Use [Tiled](https://www.mapeditor.org/) to export tilemaps as a JSON file (2 layers named
-     bgtiles and objmap)
-   - Use the `convertMap.js` script to convert the JSON to a format that the engine can use.
-
-   ```console
-   node data/convertMap.js <mapDataPath> <assetPath> <tilesetpxw> <tilesetpxh>
-   ```
-
-   - `<mapDataPath>`: Path to the Tiled JSON file.
-   - `<assetPath>`: Path to tileset images.
-   - `<tilesetpxw>`: Tileset width in pixels.
-   - `<tilesetpxh>`: Tileset height in pixels. Generates `converted-map.js` that you can use like
-     `gentle.js`
-
-4. Adding background music with Replicate (Optional)
-
-   For Daily background music generation, create a [Replicate](https://replicate.com/) account and
-   create a token in your Profile's [API Token page](https://replicate.com/account/api-tokens).
-   `npx convex env set REPLICATE_API_TOKEN # token`
-
-   This only works if you can receive the webhook from Replicate. If it's running in the normal
-   Convex cloud, it will work by default. If you're self-hosting, you'll need to configure it to hit
-   your app's url on `/http`. If you're using Docker Compose, it will be `http://localhost:3211`,
-   but you'll need to proxy the traffic to your local machine.
-
-   **Note**: The simulation will pause after 5 minutes if the window is idle. Loading the page will
-   unpause it. You can also manually freeze & unfreeze the world with a button in the UI. If you
-   want to run the world without the browser, you can comment-out the "stop inactive worlds" cron in
-   `convex/crons.ts`.
-
-   - Change the background music by modifying the prompt in `convex/music.ts`
-   - Change how often to generate new music at `convex/crons.ts` by modifying the
-     `generate new background music` job
-
-## Commands to run / test / debug
-
-**To stop the back end, in case of too much activity**
-
-This will stop running the engine and agents. You can still run queries and run functions to debug.
-
-```bash
-npx convex run testing:stop
-```
-
-**To restart the back end after stopping it**
-
-```bash
-npx convex run testing:resume
-```
-
-**To kick the engine in case the game engine or agents aren't running**
-
-```bash
-npx convex run testing:kick
-```
-
-**To archive the world**
-
-If you'd like to reset the world and start from scratch, you can archive the current world:
-
-```bash
-npx convex run testing:archive
-```
-
-Then, you can still look at the world's data in the dashboard, but the engine and agents will no
-longer run.
-
-You can then create a fresh world with `init`.
-
-```bash
-npx convex run init
-```
-
-**To pause your backend deployment**
-
-You can go to the [dashboard](https://dashboard.convex.dev) to your deployment settings to pause and
-un-pause your deployment. This will stop all functions, whether invoked from the client, scheduled,
-or as a cron job. See this as a last resort, as there are gentler ways of stopping above.
-
-## Windows Installation
-
-### Prerequisites
-
-1. **Windows 10/11 with WSL2 installed**
-2. **Internet connection**
-
-Steps:
-
-1. Install WSL2
-
-   First, you need to install WSL2. Follow
-   [this guide](https://docs.microsoft.com/en-us/windows/wsl/install) to set up WSL2 on your Windows
-   machine. We recommend using Ubuntu as your Linux distribution.
-
-2. Update Packages
-
-   Open your WSL terminal (Ubuntu) and update your packages:
-
-   ```sh
-   sudo apt update
-   ```
-
-3. Install NVM and Node.js
-
-   NVM (Node Version Manager) helps manage multiple versions of Node.js. Install NVM and Node.js 18
-   (the stable version):
-
-   ```sh
-   curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.2/install.sh | bash
-   export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" || printf %s "${XDG_CONFIG_HOME}/nvm")"
-   [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
-   source ~/.bashrc
-   nvm install 18
-   nvm use 18
-   ```
-
-4. Install Python and Pip
-
-   Python is required for some dependencies. Install Python and Pip:
-
-   ```sh
-   sudo apt-get install python3 python3-pip sudo ln -s /usr/bin/python3 /usr/bin/python
-   ```
-
-At this point, you can follow the instructions [above](#installation).
-
-## Deploy the app to production
-
-### Deploy Convex functions to prod environment
-
-Before you can run the app, you will need to make sure the Convex functions are deployed to its
-production environment. Note: this is assuming you're using the default Convex cloud product.
-
-1. Run `npx convex deploy` to deploy the convex functions to production
-2. Run `npx convex run init --prod`
-
-To transfer your local data to the cloud, you can run `npx convex export` and then import it with
-`npx convex import --prod`.
-
-If you have existing data you want to clear, you can run
-`npx convex run testing:wipeAllTables --prod`
-
-### Adding Auth (Optional)
-
-You can add clerk auth back in with `git revert b44a436`. Or just look at that diff for what changed
-to remove it.
-
-**Make a Clerk account**
-
-- Go to https://dashboard.clerk.com/ and click on "Add Application"
-- Name your application and select the sign-in providers you would like to offer users
-- Create Application
-- Add `VITE_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` to `.env.local`
-
-```bash
-VITE_CLERK_PUBLISHABLE_KEY=pk_***
-CLERK_SECRET_KEY=sk_***
-```
-
-- Go to JWT Templates and create a new Convex Template.
-- Copy the JWKS endpoint URL for use below.
-
-```sh
-npx convex env set CLERK_ISSUER_URL # e.g. https://your-issuer-url.clerk.accounts.dev/
-```
-
-### Deploy the frontend to Vercel
-
-- Register an account on Vercel and then [install the Vercel CLI](https://vercel.com/docs/cli).
-- **If you are using Github Codespaces**: You will need to
-  [install the Vercel CLI](https://vercel.com/docs/cli) and authenticate from your codespaces cli by
-  running `vercel login`.
-- Deploy the app to Vercel with `vercel --prod`.
-
-## Using local inference from a cloud deployment
-
-We support using [Ollama](https://github.com/jmorganca/ollama) for conversation generations. To have
-it accessible from the web, you can use Tunnelmole or Ngrok or similar so the cloud backend can send
-requests to Ollama running on your local machine.
-
-Steps:
-
-1. Set up either Tunnelmole or Ngrok.
-2. Add Ollama endpoint to Convex
-   ```sh
-   npx convex env set OLLAMA_HOST # your tunnelmole/ngrok unique url from the previous step
-   ```
-3. Update Ollama domains Ollama has a list of accepted domains. Add the ngrok domain so it won't
-   reject traffic. see [ollama.ai](https://ollama.ai) for more details.
-
-### Using Tunnelmole
-
-[Tunnelmole](https://github.com/robbie-cahill/tunnelmole-client) is an open source tunneling tool.
-
-You can install Tunnelmole using one of the following options:
-
-- NPM: `npm install -g tunnelmole`
-- Linux: `curl -s https://tunnelmole.com/sh/install-linux.sh | sudo bash`
-- Mac:
-  `curl -s https://tunnelmole.com/sh/install-mac.sh --output install-mac.sh && sudo bash install-mac.sh`
-- Windows: Install with NPM, or if you don't have NodeJS installed, download the `exe` file for
-  Windows [here](https://tunnelmole.com/downloads/tmole.exe) and put it somewhere in your PATH.
-
-Once Tunnelmole is installed, run the following command:
-
-```
-tmole 11434
-```
-
-Tunnelmole should output a unique url once you run this command.
-
-### Using Ngrok
-
-Ngrok is a popular closed source tunneling tool.
-
-- [Install Ngrok](https://ngrok.com/docs/getting-started/)
-
-Once ngrok is installed and authenticated, run the following command:
-
-```
-ngrok http http://localhost:11434
-```
-
-Ngrok should output a unique url once you run this command.
-
-## Troubleshooting
-
-### Wiping the database and starting over
-
-You can wipe the database by running:
-
-```sh
-npx convex run testing:wipeAllTables
-```
-
-Then reset with:
-
-```sh
-npx convex run init
-```
-
-### Incompatible Node.js versions
-
-If you encounter a node version error on the convex server upon application startup, please use node
-version 18, which is the most stable. One way to do this is by
-[installing nvm](https://nodejs.org/en/download/package-manager) and running `nvm install 18` and
-`nvm use 18`.
-
-### Reaching Ollama
-
-If you're having trouble with the backend communicating with Ollama, it depends on your setup how to
-debug:
-
-1. If you're running directly on Windows, see
-   [Windows Ollama connection issues](#windows-ollama-connection-issues).
-2. If you're using **Docker**, see
-   [Docker to Ollama connection issues](#docker-to-ollama-connection-issues).
-3. If you're running locally, you can try the following:
-
-```sh
-npx convex env set OLLAMA_HOST http://localhost:11434
-```
-
-By default, the host is set to `http://127.0.0.1:11434`. Some systems prefer `localhost`
-¯\_(ツ)\_/¯.
-
-### Windows Ollama connection issues
-
-If the above didn't work after following the [windows](#windows-installation) and regular
-[installation](#installation) instructions, you can try the following, assuming you're **not** using
-Docker.
-
-If you're using Docker, see the [next section](#docker-to-ollama-connection-issues) for Docker
-troubleshooting.
-
-For running directly on Windows, you can try the following:
-
-1. Install `unzip` and `socat`:
-
-   ```sh
-   sudo apt install unzip socat
-   ```
-
-2. Configure `socat` to Bridge Ports for Ollama
-
-   Run the following command to bridge ports:
-
-   ```sh
-   socat TCP-LISTEN:11434,fork TCP:$(cat /etc/resolv.conf | grep nameserver | awk '{print $2}'):11434 &
-   ```
-
-3. Test if it's working:
-
-   ```sh
-   curl http://127.0.0.1:11434
-   ```
-
-   If it responds OK, the Ollama API should be accessible.
-
-### Docker to Ollama connection issues
-
-If you're having trouble with the backend communicating with Ollama, there's a couple things to
-check:
-
-1. Is Docker at least verion 18.03 ? That allows you to use the `host.docker.internal` hostname to
-   connect to the host from inside the container.
-
-2. Is Ollama running? You can check this by running `curl http://localhost:11434` from outside the
-   container.
-
-3. Is Ollama accessible from inside the container? You can check this by running
-   `docker compose exec backend curl http://host.docker.internal:11434`.
-
-If 1 & 2 work, but 3 does not, you can use `socat` to bridge the traffic from inside the container
-to Ollama running on the host.
-
-1. Configure `socat` with the host's IP address (not the Docker IP).
-
-   ```sh
-   docker compose exec backend /bin/bash
-   HOST_IP=YOUR-HOST-IP
-   socat TCP-LISTEN:11434,fork TCP:$HOST_IP:11434
-   ```
-
-   Keep this running.
-
-2. Then from outside of the container:
-
-   ```sh
-   npx convex env set OLLAMA_HOST http://localhost:11434
-   ```
-
-3. Test if it's working:
-
-   ```sh
-   docker compose exec backend curl http://localhost:11434
-   ```
-
-   If it responds OK, the Ollama API is accessible. Otherwise, try changing the previous two to
-   `http://127.0.0.1:11434`.
-
-### Launching an Interactive Docker Terminal
-
-If you wan to investigate inside the container, you can launch an interactive Docker terminal, for
-the `frontend`, `backend` or `dashboard` service:
-
-```bash
-docker compose exec frontend /bin/bash
-```
-
-To exit the container, run `exit`.
-
-### Updating the browser list
-
-```bash
-docker compose exec frontend npx update-browserslist-db@latest
-```
-
-# 🧑‍🏫 What is Convex?
-
-[Convex](https://convex.dev) is a hosted backend platform with a built-in database that lets you
-write your [database schema](https://docs.convex.dev/database/schemas) and
-[server functions](https://docs.convex.dev/functions) in
-[TypeScript](https://docs.convex.dev/typescript). Server-side database
-[queries](https://docs.convex.dev/functions/query-functions) automatically
-[cache](https://docs.convex.dev/functions/query-functions#caching--reactivity) and
-[subscribe](https://docs.convex.dev/client/react#reactivity) to data, powering a
-[realtime `useQuery` hook](https://docs.convex.dev/client/react#fetching-data) in our
-[React client](https://docs.convex.dev/client/react). There are also clients for
-[Python](https://docs.convex.dev/client/python), [Rust](https://docs.convex.dev/client/rust),
-[ReactNative](https://docs.convex.dev/client/react-native), and
-[Node](https://docs.convex.dev/client/javascript), as well as a straightforward
-[HTTP API](https://docs.convex.dev/http-api/).
-
-The database supports [NoSQL-style documents](https://docs.convex.dev/database/document-storage)
-with [opt-in schema validation](https://docs.convex.dev/database/schemas),
-[relationships](https://docs.convex.dev/database/document-ids) and
-[custom indexes](https://docs.convex.dev/database/indexes/) (including on fields in nested objects).
-
-The [`query`](https://docs.convex.dev/functions/query-functions) and
-[`mutation`](https://docs.convex.dev/functions/mutation-functions) server functions have
-transactional, low latency access to the database and leverage our
-[`v8` runtime](https://docs.convex.dev/functions/runtimes) with
-[determinism guardrails](https://docs.convex.dev/functions/runtimes#using-randomness-and-time-in-queries-and-mutations)
-to provide the strongest ACID guarantees on the market: immediate consistency, serializable
-isolation, and automatic conflict resolution via
-[optimistic multi-version concurrency control](https://docs.convex.dev/database/advanced/occ) (OCC /
-MVCC).
-
-The [`action` server functions](https://docs.convex.dev/functions/actions) have access to external
-APIs and enable other side-effects and non-determinism in either our
-[optimized `v8` runtime](https://docs.convex.dev/functions/runtimes) or a more
-[flexible `node` runtime](https://docs.convex.dev/functions/runtimes#nodejs-runtime).
-
-Functions can run in the background via
-[scheduling](https://docs.convex.dev/scheduling/scheduled-functions) and
-[cron jobs](https://docs.convex.dev/scheduling/cron-jobs).
-
-Development is cloud-first, with
-[hot reloads for server function](https://docs.convex.dev/cli#run-the-convex-dev-server) editing via
-the [CLI](https://docs.convex.dev/cli),
-[preview deployments](https://docs.convex.dev/production/hosting/preview-deployments),
-[logging and exception reporting integrations](https://docs.convex.dev/production/integrations/),
-There is a [dashboard UI](https://docs.convex.dev/dashboard) to
-[browse and edit data](https://docs.convex.dev/dashboard/deployments/data),
-[edit environment variables](https://docs.convex.dev/production/environment-variables),
-[view logs](https://docs.convex.dev/dashboard/deployments/logs),
-[run server functions](https://docs.convex.dev/dashboard/deployments/functions), and more.
-
-There are built-in features for [reactive pagination](https://docs.convex.dev/database/pagination),
-[file storage](https://docs.convex.dev/file-storage),
-[reactive text search](https://docs.convex.dev/text-search),
-[vector search](https://docs.convex.dev/vector-search),
-[https endpoints](https://docs.convex.dev/functions/http-actions) (for webhooks),
-and more.
-
-## GitHub Pages Deployment
-
-This repository is configured for automatic deployment to GitHub Pages using Vite. The site will be available at https://ustypology.github.io.
-
-### How it works:
-
-1. **Automatic Deployment**: Every push to the `main` branch triggers the GitHub Actions workflow
-2. **Vite Build**: The application is built using `npm run build`, bundling all dependencies
-3. **Static Hosting**: The built files from the `dist/` directory are deployed to GitHub Pages
-4. **Custom Domain**: The site is served from the GitHub.io domain with all assets properly bundled
-
-### Manual Deployment:
-
-You can also trigger deployment manually from the GitHub Actions tab in the repository.
-
-### Local Development:
-
-```bash
-npm install
-npm run dev
-```
-
-The development server will be available at http://localhost:5173
-[snapshot import/export](https://docs.convex.dev/database/import-export/),
-[streaming import/export](https://docs.convex.dev/production/integrations/streaming-import-export),
-and [runtime validation](https://docs.convex.dev/database/schemas#validators) for
-[function arguments](https://docs.convex.dev/functions/args-validation) and
-[database data](https://docs.convex.dev/database/schemas#schema-validation).
-
-Everything scales automatically, and it’s [free to start](https://www.convex.dev/plans).
+This site provides **legal information, not legal advice**. All answers are grounded in the Portland City Code corpus as retrieved and should not be relied upon as authoritative legal guidance. Always consult the [official Portland City Code](https://www.portlandoregon.gov/citycode/) and a licensed attorney for legal matters.
