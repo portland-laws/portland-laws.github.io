@@ -98,6 +98,7 @@ export default function PortlandLegalResearchApp() {
   const [selectedProof, setSelectedProof] = useState<LogicProofSummary | null>(null);
   const [relatedEntities, setRelatedEntities] = useState<CorpusEntity[]>([]);
   const [relatedRelationships, setRelatedRelationships] = useState<CorpusRelationship[]>([]);
+  const [isGraphLoading, setIsGraphLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<WorkspaceTab>('section');
   const [isSearching, setIsSearching] = useState(false);
   const [retrievalMode, setRetrievalMode] = useState<'Hybrid' | 'Keyword'>('Keyword');
@@ -149,8 +150,10 @@ export default function PortlandLegalResearchApp() {
         setRelatedEntities([]);
         setRelatedRelationships([]);
         setSelectedProof(null);
+        setIsGraphLoading(false);
         return;
       }
+      setIsGraphLoading(true);
       try {
         const [related, proof] = await Promise.all([
           getRelatedGraph(selectedCid, 1),
@@ -172,6 +175,10 @@ export default function PortlandLegalResearchApp() {
           setRelatedEntities([]);
           setRelatedRelationships([]);
           setSelectedProof(null);
+        }
+      } finally {
+        if (!cancelled) {
+          setIsGraphLoading(false);
         }
       }
     }
@@ -377,6 +384,7 @@ export default function PortlandLegalResearchApp() {
           proof={selectedProof}
           relatedEntities={relatedEntities}
           relatedRelationships={relatedRelationships}
+          isGraphLoading={isGraphLoading}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           chatQuestion={chatQuestion}
@@ -797,6 +805,7 @@ function WorkspacePanel({
   proof,
   relatedEntities,
   relatedRelationships,
+  isGraphLoading,
   activeTab,
   setActiveTab,
   chatQuestion,
@@ -812,6 +821,7 @@ function WorkspacePanel({
   proof: LogicProofSummary | null;
   relatedEntities: CorpusEntity[];
   relatedRelationships: CorpusRelationship[];
+  isGraphLoading: boolean;
   activeTab: WorkspaceTab;
   setActiveTab: (tab: WorkspaceTab) => void;
   chatQuestion: string;
@@ -917,7 +927,7 @@ function WorkspacePanel({
         )}
         {selected && activeTab === 'graph' && (
           <div id="panel-graph" role="tabpanel" aria-labelledby="tab-graph" tabIndex={0}>
-            <GraphPanel entities={relatedEntities} relationships={relatedRelationships} />
+            <GraphPanel entities={relatedEntities} relationships={relatedRelationships} isLoading={isGraphLoading} />
           </div>
         )}
         {selected && activeTab === 'proof' && (
@@ -1226,59 +1236,103 @@ function GraphRagChat({
 function GraphPanel({
   entities,
   relationships,
+  isLoading,
 }: {
   entities: CorpusEntity[];
   relationships: CorpusRelationship[];
+  isLoading: boolean;
 }) {
   const visibleEntities = entities.slice(0, GRAPH_ENTITY_LIMIT);
   const hiddenEntityCount = Math.max(entities.length - visibleEntities.length, 0);
   const visibleRelationships = relationships.slice(0, GRAPH_RELATIONSHIP_LIMIT);
   const hiddenRelationshipCount = Math.max(relationships.length - visibleRelationships.length, 0);
+  const topEntityType = isLoading ? 'Loading graph data' : getTopGraphTypeLabel(entities.map((entity) => entity.type));
+  const topRelationshipType = isLoading
+    ? 'Loading graph data'
+    : getTopGraphTypeLabel(relationships.map((relationship) => relationship.type));
+  const entityValue = isLoading ? '...' : entities.length.toLocaleString();
+  const relationshipValue = isLoading ? '...' : relationships.length.toLocaleString();
 
   return (
-    <div className="grid gap-5 px-4 py-4 sm:px-5 sm:py-5 xl:grid-cols-[1fr_1fr]">
-      <div>
-        <h2 className="text-xl font-semibold tracking-normal text-[#172026]">Knowledge Graph Entities</h2>
-        <div className="mt-3 grid gap-2" role="list" aria-label="Related knowledge graph entities">
-          {entities.length === 0 && <EmptyState title="No related entities loaded" />}
-          {visibleEntities.map((entity) => (
-            <div key={entity.id} role="listitem" className="rounded-md border border-[#dce3d6] bg-[#fbfcf8] px-3 py-2">
-              <div className="text-xs font-semibold uppercase tracking-wide text-[#5f7469]">{formatGraphTypeLabel(entity.type)}</div>
-              <div className="mt-1 text-sm font-medium leading-5 text-[#223035] [overflow-wrap:anywhere]">
-                {formatGraphValueLabel(entity.label)}
-              </div>
-            </div>
-          ))}
-        </div>
-        {hiddenEntityCount > 0 && (
-          <p className="mt-3 rounded-md border border-[#dce3d6] bg-white px-3 py-2 text-sm leading-6 text-[#4f615b]">
-            Showing {visibleEntities.length} of {entities.length} related entities.
-          </p>
-        )}
+    <div className="px-4 py-4 sm:px-5 sm:py-5">
+      <div className="mb-4">
+        <h2 className="text-xl font-semibold tracking-normal text-[#172026]">Knowledge Graph</h2>
+        <p className="mt-1 text-sm leading-6 text-[#4f615b]">
+          Local entities and relationships connected to the selected code section.
+        </p>
       </div>
-      <div>
-        <h2 className="text-xl font-semibold tracking-normal text-[#172026]">Relationships</h2>
-        <div className="mt-3 grid gap-2" role="list" aria-label="Knowledge graph relationships">
-          {relationships.length === 0 && <EmptyState title="No relationships loaded" />}
-          {visibleRelationships.map((relationship) => (
-            <div key={relationship.id} role="listitem" className="rounded-md border border-[#dce3d6] bg-white px-3 py-2">
-              <div className="text-xs font-semibold uppercase tracking-wide text-[#5f7469]">
-                {formatGraphTypeLabel(relationship.type)}
+      <div className="mb-5 grid gap-2 sm:grid-cols-3" aria-label="Graph context summary">
+        <GraphSummaryMetric label="Entities" value={entityValue} detail={topEntityType} />
+        <GraphSummaryMetric label="Relationships" value={relationshipValue} detail={topRelationshipType} />
+        <GraphSummaryMetric label="Neighborhood" value="1 hop" detail="This section" />
+      </div>
+
+      <div className="grid gap-5 xl:grid-cols-[1fr_1fr]">
+        <div>
+          <h3 className="text-lg font-semibold tracking-normal text-[#172026]">Entities</h3>
+          <div className="mt-3 grid gap-2" role="list" aria-label="Related knowledge graph entities">
+            {isLoading && entities.length === 0 && <EmptyState title="Loading graph entities" />}
+            {!isLoading && entities.length === 0 && <EmptyState title="No related entities loaded" />}
+            {visibleEntities.map((entity) => (
+              <div key={entity.id} role="listitem" className="rounded-md border border-[#dce3d6] bg-[#fbfcf8] px-3 py-2">
+                <div className="text-xs font-semibold uppercase tracking-wide text-[#5f7469]">{formatGraphTypeLabel(entity.type)}</div>
+                <div className="mt-1 text-sm font-medium leading-5 text-[#223035] [overflow-wrap:anywhere]">
+                  {formatGraphValueLabel(entity.label)}
+                </div>
               </div>
-              <div className="mt-1 text-sm leading-5 text-[#52615c] [overflow-wrap:anywhere]">
-                {formatGraphNodeLabel(relationship.source)} → {formatGraphNodeLabel(relationship.target)}
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
+          {hiddenEntityCount > 0 && (
+            <p className="mt-3 rounded-md border border-[#dce3d6] bg-white px-3 py-2 text-sm leading-6 text-[#4f615b]">
+              Showing {visibleEntities.length} of {entities.length} related entities.
+            </p>
+          )}
         </div>
-        {hiddenRelationshipCount > 0 && (
-          <p className="mt-3 rounded-md border border-[#dce3d6] bg-white px-3 py-2 text-sm leading-6 text-[#4f615b]">
-            Showing {visibleRelationships.length} of {relationships.length} graph relationships.
-          </p>
-        )}
+        <div>
+          <h3 className="text-lg font-semibold tracking-normal text-[#172026]">Relationships</h3>
+          <div className="mt-3 grid gap-2" role="list" aria-label="Knowledge graph relationships">
+            {isLoading && relationships.length === 0 && <EmptyState title="Loading graph relationships" />}
+            {!isLoading && relationships.length === 0 && <EmptyState title="No relationships loaded" />}
+            {visibleRelationships.map((relationship) => (
+              <div key={relationship.id} role="listitem" className="rounded-md border border-[#dce3d6] bg-white px-3 py-2">
+                <div className="text-xs font-semibold uppercase tracking-wide text-[#5f7469]">
+                  {formatGraphTypeLabel(relationship.type)}
+                </div>
+                <div className="mt-1 text-sm leading-5 text-[#52615c] [overflow-wrap:anywhere]">
+                  {formatGraphNodeLabel(relationship.source)} → {formatGraphNodeLabel(relationship.target)}
+                </div>
+              </div>
+            ))}
+          </div>
+          {hiddenRelationshipCount > 0 && (
+            <p className="mt-3 rounded-md border border-[#dce3d6] bg-white px-3 py-2 text-sm leading-6 text-[#4f615b]">
+              Showing {visibleRelationships.length} of {relationships.length} graph relationships.
+            </p>
+          )}
+        </div>
       </div>
     </div>
   );
+}
+
+function GraphSummaryMetric({ label, value, detail }: { label: string; value: string; detail: string }) {
+  return (
+    <div className="rounded-md border border-[#dce3d6] bg-[#fbfcf8] px-3 py-3">
+      <div className="text-xs font-semibold uppercase tracking-wide text-[#607068]">{label}</div>
+      <div className="mt-1 text-lg font-semibold text-[#172026]">{value}</div>
+      <div className="mt-0.5 text-sm leading-5 text-[#4f615b] [overflow-wrap:anywhere]">{detail}</div>
+    </div>
+  );
+}
+
+function getTopGraphTypeLabel(types: string[]) {
+  if (types.length === 0) return 'No graph data';
+  const counts = new Map<string, number>();
+  for (const type of types) {
+    counts.set(type, (counts.get(type) || 0) + 1);
+  }
+  const [topType] = [...counts.entries()].sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))[0];
+  return formatGraphTypeLabel(topType);
 }
 
 function formatGraphTypeLabel(type: string) {
@@ -1291,7 +1345,7 @@ function formatGraphTypeLabel(type: string) {
 }
 
 function formatGraphNodeLabel(nodeId: string) {
-  if (nodeId.startsWith('bafk')) return 'Selected section';
+  if (nodeId.startsWith('bafk')) return 'This section';
   const [prefix, value] = nodeId.split(':');
   if (!value) return nodeId;
   if (prefix === 'portland_code_title') return `Title ${value}`;

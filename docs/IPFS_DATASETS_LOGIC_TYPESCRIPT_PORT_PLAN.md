@@ -493,6 +493,7 @@ Acceptance criteria:
   - [x] Initial CEC/DCEC expression analyzer for predicates, atoms, section refs, quantifiers, deontic operators, temporal operators, and expression complexity.
 - [x] Add CEC/DCEC parity fixtures and generated Portland DCEC parse coverage.
 - [ ] Port native inference rule groups: propositional, modal, temporal, deontic, cognitive, specialized, and resolution.
+  - [x] Initial CEC native inference rule slice: modus ponens, conjunction elimination, double-negation elimination, temporal T, deontic D, and prohibition equivalence.
 - [ ] Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.
 - [ ] Port CEC proof cache, proof strategies, advanced inference, and error handling.
 - [ ] Port CEC NL policy compilers and language detection with browser-native NLP.

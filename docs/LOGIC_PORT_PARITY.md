@@ -63,7 +63,7 @@ npm run validate:logic-port
 | FOL confidence | Validation plus deterministic heuristics only. | Browser-native parity for `FOLConverter(use_ml=True)`. | Planned Phase 13, no server calls. |
 | Deontic confidence | Heuristic score from subject/action/condition/temporal extraction. | Browser-native parity for Python ML confidence. | Planned Phase 13, no server calls. |
 | TDFOL proving | Parser, formatter, substitution, and local helper reasoning only. | Full TDFOL prover/inference-rule parity. | Planned Phase 11. |
-| CEC/DCEC | Parser, formatter, analyzer, and initial TDFOL-to-CEC local delegate proof subset for direct facts, implication reduction, and deontic prohibition equivalence. | Native CEC/DCEC reasoning parity. | Initial browser-native adapter ported; native inference rule groups remain Phase 12. |
+| CEC/DCEC | Parser, formatter, analyzer, initial native inference rules for propositional/temporal/deontic expressions, and initial TDFOL-to-CEC local delegate proof subset for direct facts, implication reduction, and deontic prohibition equivalence. | Native CEC/DCEC reasoning parity. | Initial browser-native adapter and rule slice ported; cognitive, specialized, resolution, event-calculus, and full prover parity remain Phase 12. |
 | ZKP | Deterministic metadata/canonicalization and simulated verification. | Groth16/EVM/backend parity through browser-native crypto/WASM. | Planned Phase 14. |
 
 ## Acceptance Rules

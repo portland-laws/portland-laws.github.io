@@ -68,8 +68,12 @@ test.describe('Portland legal corpus UI screenshots', () => {
     });
 
     await page.getByRole('tab', { name: 'Knowledge Graph' }).click();
-    await expect(page.getByRole('heading', { name: 'Knowledge Graph Entities' })).toBeVisible();
-    await expect(page.locator('#panel-graph')).toContainText('Selected section');
+    await expect(page.getByRole('heading', { name: 'Knowledge Graph' })).toBeVisible();
+    await expect(page.getByLabel('Graph context summary')).toContainText('Entities');
+    await expect(page.getByLabel('Graph context summary')).toContainText('Relationships');
+    await expectGraphContextLoaded(page);
+    await expect(page.locator('#panel-graph')).toContainText('This section');
+    await expect(page.locator('#panel-graph')).not.toContainText('Selected section →');
     await expect(page.locator('#panel-graph')).not.toContainText('authority_grant');
     await page.locator('#research-workbench').screenshot({
       path: screenshotPath(testInfo, 'desktop-knowledge-graph.png'),
@@ -132,7 +136,9 @@ test.describe('Portland legal corpus mobile screenshots', () => {
 
     await page.getByRole('tab', { name: 'Knowledge Graph' }).click();
     await expect(page.getByRole('tab', { name: 'Knowledge Graph' })).toHaveAttribute('aria-selected', 'true');
-    await expect(page.locator('#panel-graph')).toContainText('Selected section', { timeout: 10000 });
+    await expect(page.getByLabel('Graph context summary')).toContainText('Neighborhood');
+    await expectGraphContextLoaded(page);
+    await expect(page.locator('#panel-graph')).toContainText('This section', { timeout: 10000 });
     await expect(page.locator('#panel-graph')).not.toContainText('authority_grant');
     await expectNoHorizontalOverflow(page);
     await page.locator('#research-workbench').screenshot({
@@ -238,6 +244,18 @@ async function expectWorkbenchHasBoundedHeight(page: Page) {
   });
 
   expect(height).toBeLessThan(1200);
+}
+
+async function expectGraphContextLoaded(page: Page) {
+  await expect(page.getByLabel('Related knowledge graph entities').getByRole('listitem').first()).toBeVisible({
+    timeout: 10000,
+  });
+  await expect(page.getByLabel('Knowledge graph relationships').getByRole('listitem').first()).toBeVisible({
+    timeout: 10000,
+  });
+  await expect(page.locator('#panel-graph')).not.toContainText('Loading graph');
+  await expect(page.locator('#panel-graph')).not.toContainText('No related entities loaded');
+  await expect(page.locator('#panel-graph')).not.toContainText('No relationships loaded');
 }
 
 async function expectProofMetricsUseTwoColumns(page: Page) {
