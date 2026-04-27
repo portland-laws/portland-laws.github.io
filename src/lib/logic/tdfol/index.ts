@@ -3,6 +3,7 @@ export * from './dependencyGraph';
 export * from './formatter';
 export * from './inferenceRules';
 export * from './lexer';
+export * from './optimization';
 export * from './parser';
 export * from './performanceMetrics';
 export * from './proofExplainer';

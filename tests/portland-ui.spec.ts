@@ -60,6 +60,7 @@ test.describe('Portland legal corpus UI screenshots', () => {
 
     await page.getByRole('tab', { name: 'Knowledge Graph' }).click();
     await expect(page.getByRole('heading', { name: 'Knowledge Graph Entities' })).toBeVisible();
+    await expect(page.locator('#panel-graph')).toContainText('Selected section');
     await page.locator('#research-workbench').screenshot({
       path: screenshotPath(testInfo, 'desktop-knowledge-graph.png'),
     });

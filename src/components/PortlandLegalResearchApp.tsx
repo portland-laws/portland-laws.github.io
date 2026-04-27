@@ -44,6 +44,8 @@ const EXAMPLE_QUERIES = [
 ];
 const INITIAL_RESULT_LIMIT = 6;
 const RESULT_INCREMENT = 6;
+const GRAPH_ENTITY_LIMIT = 14;
+const GRAPH_RELATIONSHIP_LIMIT = 14;
 
 const TITLE_LABELS: Record<string, string> = {
   '1': 'General Provisions',
@@ -762,7 +764,7 @@ function WorkspacePanel({
         </div>
       </div>
 
-      <div className="min-h-[520px] lg:min-h-[720px]" aria-live="polite">
+      <div className="min-h-[420px] lg:min-h-[560px]" aria-live="polite">
         {!selected && <EmptyState title="Select a section" />}
         {selected && activeTab === 'section' && (
           <div id="panel-section" role="tabpanel" aria-labelledby="tab-section" tabIndex={0}>
@@ -979,36 +981,76 @@ function GraphPanel({
   entities: CorpusEntity[];
   relationships: CorpusRelationship[];
 }) {
+  const visibleEntities = entities.slice(0, GRAPH_ENTITY_LIMIT);
+  const hiddenEntityCount = Math.max(entities.length - visibleEntities.length, 0);
+  const visibleRelationships = relationships.slice(0, GRAPH_RELATIONSHIP_LIMIT);
+  const hiddenRelationshipCount = Math.max(relationships.length - visibleRelationships.length, 0);
+
   return (
     <div className="grid gap-5 px-4 py-4 sm:px-5 sm:py-5 xl:grid-cols-[1fr_1fr]">
       <div>
         <h2 className="text-xl font-semibold tracking-normal text-[#172026]">Knowledge Graph Entities</h2>
         <div className="mt-3 grid gap-2" role="list" aria-label="Related knowledge graph entities">
           {entities.length === 0 && <EmptyState title="No related entities loaded" />}
-          {entities.map((entity) => (
+          {visibleEntities.map((entity) => (
             <div key={entity.id} role="listitem" className="rounded-md border border-[#dce3d6] bg-[#fbfcf8] px-3 py-2">
-              <div className="text-xs font-semibold uppercase tracking-wide text-[#5f7469]">{entity.type}</div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-[#5f7469]">{formatGraphTypeLabel(entity.type)}</div>
               <div className="mt-1 text-sm font-medium leading-5 text-[#223035] [overflow-wrap:anywhere]">{entity.label}</div>
             </div>
           ))}
         </div>
+        {hiddenEntityCount > 0 && (
+          <p className="mt-3 rounded-md border border-[#dce3d6] bg-white px-3 py-2 text-sm leading-6 text-[#4f615b]">
+            Showing {visibleEntities.length} of {entities.length} related entities.
+          </p>
+        )}
       </div>
       <div>
         <h2 className="text-xl font-semibold tracking-normal text-[#172026]">Relationships</h2>
         <div className="mt-3 grid gap-2" role="list" aria-label="Knowledge graph relationships">
           {relationships.length === 0 && <EmptyState title="No relationships loaded" />}
-          {relationships.map((relationship) => (
+          {visibleRelationships.map((relationship) => (
             <div key={relationship.id} role="listitem" className="rounded-md border border-[#dce3d6] bg-white px-3 py-2">
-              <div className="text-xs font-semibold uppercase tracking-wide text-[#5f7469]">{relationship.type}</div>
-              <div className="mt-1 text-xs leading-5 text-[#52615c] [overflow-wrap:anywhere]">
-                {relationship.source} → {relationship.target}
+              <div className="text-xs font-semibold uppercase tracking-wide text-[#5f7469]">
+                {formatGraphTypeLabel(relationship.type)}
+              </div>
+              <div className="mt-1 text-sm leading-5 text-[#52615c] [overflow-wrap:anywhere]">
+                {formatGraphNodeLabel(relationship.source)} → {formatGraphNodeLabel(relationship.target)}
               </div>
             </div>
           ))}
         </div>
+        {hiddenRelationshipCount > 0 && (
+          <p className="mt-3 rounded-md border border-[#dce3d6] bg-white px-3 py-2 text-sm leading-6 text-[#4f615b]">
+            Showing {visibleRelationships.length} of {relationships.length} graph relationships.
+          </p>
+        )}
       </div>
     </div>
   );
+}
+
+function formatGraphTypeLabel(type: string) {
+  const withoutTechnicalSuffix = type.replace(/_cid$/i, '');
+  return withoutTechnicalSuffix
+    .replace(/_/g, ' ')
+    .replace(/([a-z])([A-Z])/g, '$1 $2')
+    .toLowerCase()
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function formatGraphNodeLabel(nodeId: string) {
+  if (nodeId.startsWith('bafk')) return 'Selected section';
+  const [prefix, value] = nodeId.split(':');
+  if (!value) return nodeId;
+  if (prefix === 'portland_code_title') return `Title ${value}`;
+  if (prefix === 'portland_code_chapter') return `Chapter ${value}`;
+  if (prefix === 'portland_code_section') return `Section ${value.replace(/_/g, '.')}`;
+  if (prefix === 'municipal_actor') return value.replace(/_/g, ' ');
+  if (prefix === 'municipal_subject') return value.replace(/_/g, ' ');
+  if (prefix === 'ordinance') return `Ordinance ${value}`;
+  if (prefix === 'jurisdiction') return value;
+  return value.replace(/_/g, ' ');
 }
 
 function SectionReader({ section }: { section: CorpusSection }) {
