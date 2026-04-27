@@ -63,6 +63,7 @@ test.describe('Portland legal corpus UI screenshots', () => {
     await page.getByRole('tab', { name: 'Knowledge Graph' }).click();
     await expect(page.getByRole('heading', { name: 'Knowledge Graph Entities' })).toBeVisible();
     await expect(page.locator('#panel-graph')).toContainText('Selected section');
+    await expect(page.locator('#panel-graph')).not.toContainText('authority_grant');
     await page.locator('#research-workbench').screenshot({
       path: screenshotPath(testInfo, 'desktop-knowledge-graph.png'),
     });
@@ -102,6 +103,15 @@ test.describe('Portland legal corpus mobile screenshots', () => {
   test.use({ viewport: { width: 390, height: 844 }, isMobile: true });
 
   test('captures the mobile directory/search/workbench stack without page overflow', async ({ page }, testInfo) => {
+    const browseTitles = page.locator('summary').filter({ hasText: 'Browse titles' });
+    const mobileDirectory = page.getByRole('navigation', { name: 'City Code mobile' });
+    await expect(browseTitles).toBeVisible();
+    await expect(mobileDirectory).not.toBeVisible();
+    await browseTitles.click();
+    await expect(mobileDirectory).toBeVisible();
+    await expect(mobileDirectory.getByRole('button', { name: 'Title 1 General Provisions 7 chapters · 43 sections' })).toBeVisible();
+    await browseTitles.click();
+    await expect(mobileDirectory).not.toBeVisible();
     await expectNoHorizontalOverflow(page);
     await page.screenshot({
       path: screenshotPath(testInfo, 'mobile-full-page-stack.png'),
@@ -110,6 +120,8 @@ test.describe('Portland legal corpus mobile screenshots', () => {
 
     await page.getByRole('tab', { name: 'Knowledge Graph' }).click();
     await expect(page.getByRole('tab', { name: 'Knowledge Graph' })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.locator('#panel-graph')).toContainText('Selected section', { timeout: 10000 });
+    await expect(page.locator('#panel-graph')).not.toContainText('authority_grant');
     await expectNoHorizontalOverflow(page);
     await page.locator('#research-workbench').screenshot({
       path: screenshotPath(testInfo, 'mobile-scrollable-tabs-knowledge-graph.png'),
@@ -156,6 +168,7 @@ test.describe('Portland legal corpus mobile screenshots', () => {
 
     await page.getByRole('tab', { name: 'Logic Proofs' }).click();
     await expect(page.locator('#panel-proof')).toContainText('DCEC structure');
+    await expectProofMetricsUseTwoColumns(page);
     await expectNoHorizontalOverflow(page);
     await page.locator('#research-workbench').screenshot({
       path: screenshotPath(testInfo, 'mobile-logic-proofs.png'),
@@ -197,6 +210,21 @@ async function expectWorkbenchHasBoundedHeight(page: Page) {
   });
 
   expect(height).toBeLessThan(1200);
+}
+
+async function expectProofMetricsUseTwoColumns(page: Page) {
+  const positions = await page
+    .locator('[aria-label="Logic proof status metrics"] > div')
+    .evaluateAll((elements) =>
+      elements.slice(0, 2).map((element) => {
+        const box = element.getBoundingClientRect();
+        return { left: box.left, top: box.top };
+      }),
+    );
+
+  expect(positions).toHaveLength(2);
+  expect(Math.abs(positions[0].top - positions[1].top)).toBeLessThan(2);
+  expect(positions[1].left).toBeGreaterThan(positions[0].left);
 }
 
 function screenshotPath(testInfo: TestInfo, fileName: string) {

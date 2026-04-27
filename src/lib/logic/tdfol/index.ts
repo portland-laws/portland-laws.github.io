@@ -8,6 +8,8 @@ export * from './lexer';
 export * from './modalTableaux';
 export * from './optimization';
 export * from './parser';
+export * from './performanceDashboard';
+export * from './performanceEngine';
 export * from './performanceMetrics';
 export * from './proofExplainer';
 export * from './proofTree';

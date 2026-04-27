@@ -421,61 +421,111 @@ function DirectoryPanel({
   onSelectTitle: (titleNumber: string) => void;
   onSelectChapter: (titleNumber: string, chapterNumber: string) => void;
 }) {
+  const totalChapters = directory.reduce((count, title) => count + title.chapters.length, 0);
+  const totalSections = directory.reduce((count, title) => count + title.sections.length, 0);
+
   return (
-    <nav
+    <section
       id="code-directory"
       aria-labelledby="code-directory-heading"
-      className="min-w-0 max-h-[48vh] overflow-auto rounded-md border border-[#d8dfd3] bg-white shadow-sm lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)]"
+      className="min-w-0 rounded-md border border-[#d8dfd3] bg-white shadow-sm lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-auto"
     >
       <div className="border-b border-[#e1e6dc] px-4 py-4">
         <h2 id="code-directory-heading" className="text-lg font-semibold text-[#172026]">
           City Code
         </h2>
-        <p className="mt-1 text-sm leading-6 text-[#4f615b]">Titles, Chapters, and Sections</p>
+        <p className="mt-1 text-sm leading-6 text-[#4f615b]">
+          {directory.length} titles · {totalChapters.toLocaleString()} chapters · {totalSections.toLocaleString()} sections
+        </p>
       </div>
-      <ul className="divide-y divide-[#edf1e8]">
-        {directory.map((title) => (
-          <li key={title.number} className="px-3 py-2">
-            <button
-              type="button"
-              onClick={() => onSelectTitle(title.number)}
-              aria-expanded={selectedTitle === title.number}
-              aria-controls={`title-${title.number}-chapters`}
-              className={`min-h-12 w-full rounded-md px-3 py-2 text-left transition ${
-                selectedTitle === title.number ? 'bg-[#e8f0e8]' : 'hover:bg-[#f6f8f3]'
-              }`}
-            >
-              <div className="text-sm font-semibold text-[#24594f]">Title {title.number}</div>
-              <div className="mt-0.5 text-sm leading-5 text-[#26343a]">{title.label}</div>
-              <div className="mt-1 text-xs text-[#66756f]">
-                {title.chapters.length} chapters · {title.sections.length} sections
-              </div>
-            </button>
-            {selectedTitle === title.number && (
-              <ul id={`title-${title.number}-chapters`} className="mt-2 space-y-1 pl-3">
-                {title.chapters.slice(0, 30).map((chapter) => (
-                  <li key={chapter.number}>
-                    <button
-                      type="button"
-                      onClick={() => onSelectChapter(title.number, chapter.number)}
-                      aria-current={selectedChapter === chapter.number ? 'true' : undefined}
-                      className={`block min-h-11 w-full rounded-md px-3 py-2 text-left text-sm ${
-                        selectedChapter === chapter.number
-                          ? 'bg-[#24594f] text-white'
-                          : 'text-[#394a4f] hover:bg-[#f2f5ee]'
-                      }`}
-                    >
-                      Chapter {chapter.number}
-                      <span className="ml-2 text-xs opacity-75">({chapter.sections.length})</span>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </li>
-        ))}
-      </ul>
-    </nav>
+      <details className="lg:hidden">
+        <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-[#24594f]">
+          Browse titles
+          <span className="text-xs uppercase tracking-wide text-[#607068]">Expand</span>
+        </summary>
+        <nav aria-label="City Code mobile" className="max-h-[36vh] overflow-auto border-t border-[#edf1e8]">
+          <DirectoryList
+            directory={directory}
+            selectedTitle={selectedTitle}
+            selectedChapter={selectedChapter}
+            onSelectTitle={onSelectTitle}
+            onSelectChapter={onSelectChapter}
+            idPrefix="mobile"
+          />
+        </nav>
+      </details>
+      <nav aria-label="City Code" className="hidden lg:block">
+        <DirectoryList
+          directory={directory}
+          selectedTitle={selectedTitle}
+          selectedChapter={selectedChapter}
+          onSelectTitle={onSelectTitle}
+          onSelectChapter={onSelectChapter}
+          idPrefix="desktop"
+        />
+      </nav>
+    </section>
+  );
+}
+
+function DirectoryList({
+  directory,
+  selectedTitle,
+  selectedChapter,
+  onSelectTitle,
+  onSelectChapter,
+  idPrefix,
+}: {
+  directory: DirectoryTitle[];
+  selectedTitle: string;
+  selectedChapter: string;
+  onSelectTitle: (titleNumber: string) => void;
+  onSelectChapter: (titleNumber: string, chapterNumber: string) => void;
+  idPrefix: string;
+}) {
+  return (
+    <ul className="divide-y divide-[#edf1e8]">
+      {directory.map((title) => (
+        <li key={title.number} className="px-3 py-2">
+          <button
+            type="button"
+            onClick={() => onSelectTitle(title.number)}
+            aria-expanded={selectedTitle === title.number}
+            aria-controls={`${idPrefix}-title-${title.number}-chapters`}
+            className={`min-h-12 w-full rounded-md px-3 py-2 text-left transition ${
+              selectedTitle === title.number ? 'bg-[#e8f0e8]' : 'hover:bg-[#f6f8f3]'
+            }`}
+          >
+            <div className="text-sm font-semibold text-[#24594f]">Title {title.number}</div>
+            <div className="mt-0.5 text-sm leading-5 text-[#26343a]">{title.label}</div>
+            <div className="mt-1 text-xs text-[#66756f]">
+              {title.chapters.length} chapters · {title.sections.length} sections
+            </div>
+          </button>
+          {selectedTitle === title.number && (
+            <ul id={`${idPrefix}-title-${title.number}-chapters`} className="mt-2 space-y-1 pl-3">
+              {title.chapters.slice(0, 30).map((chapter) => (
+                <li key={chapter.number}>
+                  <button
+                    type="button"
+                    onClick={() => onSelectChapter(title.number, chapter.number)}
+                    aria-current={selectedChapter === chapter.number ? 'true' : undefined}
+                    className={`block min-h-11 w-full rounded-md px-3 py-2 text-left text-sm ${
+                      selectedChapter === chapter.number
+                        ? 'bg-[#24594f] text-white'
+                        : 'text-[#394a4f] hover:bg-[#f2f5ee]'
+                    }`}
+                  >
+                    Chapter {chapter.number}
+                    <span className="ml-2 text-xs opacity-75">({chapter.sections.length})</span>
+                  </button>
+                </li>
+              ))}
+            </ul>
+          )}
+        </li>
+      ))}
+    </ul>
   );
 }
 
@@ -1009,7 +1059,9 @@ function GraphPanel({
           {visibleEntities.map((entity) => (
             <div key={entity.id} role="listitem" className="rounded-md border border-[#dce3d6] bg-[#fbfcf8] px-3 py-2">
               <div className="text-xs font-semibold uppercase tracking-wide text-[#5f7469]">{formatGraphTypeLabel(entity.type)}</div>
-              <div className="mt-1 text-sm font-medium leading-5 text-[#223035] [overflow-wrap:anywhere]">{entity.label}</div>
+              <div className="mt-1 text-sm font-medium leading-5 text-[#223035] [overflow-wrap:anywhere]">
+                {formatGraphValueLabel(entity.label)}
+              </div>
             </div>
           ))}
         </div>
@@ -1060,11 +1112,17 @@ function formatGraphNodeLabel(nodeId: string) {
   if (prefix === 'portland_code_title') return `Title ${value}`;
   if (prefix === 'portland_code_chapter') return `Chapter ${value}`;
   if (prefix === 'portland_code_section') return `Section ${value.replace(/_/g, '.')}`;
-  if (prefix === 'municipal_actor') return value.replace(/_/g, ' ');
-  if (prefix === 'municipal_subject') return value.replace(/_/g, ' ');
+  if (prefix === 'municipal_actor') return formatGraphValueLabel(value);
+  if (prefix === 'municipal_subject') return formatGraphValueLabel(value);
   if (prefix === 'ordinance') return `Ordinance ${value}`;
   if (prefix === 'jurisdiction') return value;
-  return value.replace(/_/g, ' ');
+  return formatGraphValueLabel(value);
+}
+
+function formatGraphValueLabel(value: string) {
+  return value
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function SectionReader({ section }: { section: CorpusSection }) {
@@ -1123,7 +1181,7 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
         </span>
       </div>
 
-      <div className="mt-4 grid gap-2 text-xs min-[480px]:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-4 grid grid-cols-2 gap-2 text-xs xl:grid-cols-5" aria-label="Logic proof status metrics">
         <ProofMetric label="Operator" value={proof.norm_operator} />
         <ProofMetric label="FOL" value={proof.fol_status} />
         <ProofMetric label="Deontic" value={proof.deontic_status} />

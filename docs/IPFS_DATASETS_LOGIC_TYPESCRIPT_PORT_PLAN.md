@@ -89,6 +89,8 @@ The TypeScript target should be a clean client-side domain library that preserve
 | `logic/TDFOL/tdfol_optimization.py` | Port fully in browser form | Indexed KB, cache-aware proving, strategy heuristics, and stats are portable; ZKP/parallel search require TS/WASM equivalents. |
 | `logic/TDFOL/modal_tableaux.py` | Port fully in browser form | K/T/D/S4/S5 tableaux, branch expansion, accessibility handling, and countermodel open branches are portable. |
 | `logic/TDFOL/countermodels.py`, `countermodel_visualizer.py` | Port fully in browser form | Kripke structures, countermodel extraction, DOT/JSON/ASCII/HTML exports, and accessibility property checks are browser-native. |
+| `logic/TDFOL/performance_dashboard.py` | Port fully in browser form | Proof metrics, time-series metrics, aggregation, strategy comparison, JSON export, and self-contained dashboard HTML are browser-native. |
+| `logic/TDFOL/tdfol_performance_engine.py` | Port fully in browser form | Metrics, profiling, dashboards, strategy comparison, and regression checks can run in memory with browser-safe exports. |
 | `logic/TDFOL/proof_tree_visualizer.py` | Port fully in browser form | Render proof trees in React/canvas/SVG and preserve exportable DOT/JSON where useful. |
 | `logic/fol/utils/fol_parser.py` | Port directly | Regex-based quantifier/operator parsing and formatting are browser-friendly. |
 | `logic/fol/utils/predicate_extractor.py` | Port fully | Regex and rule-based extraction are portable. |
@@ -330,6 +332,8 @@ Acceptance criteria:
 - [x] Port initial `proof_explainer.py`, `formula_dependency_graph.py`, and `proof_tree_visualizer.py` browser equivalents for text, JSON, DOT, HTML, ASCII tree, and graph exports.
 - [x] Port initial `security_validator.py` browser equivalents for formula validation, rate limiting, resource limits, sanitization, ZKP audit checks, and security reports.
 - [x] Port initial `performance_metrics.py` browser metrics collector for timings, memory samples, counters, gauges, histograms, summaries, and exports.
+- [x] Port initial `performance_dashboard.py` browser dashboard for proof metrics, time-series metrics, aggregation, strategy comparison, JSON export, and self-contained HTML.
+- [x] Port initial `tdfol_performance_engine.py` browser engine for metrics aggregation, profiling operations, dashboard HTML strings, statistics export, strategy comparison, regression checks, and reset.
 - [x] Add fixtures from generated Portland formulas.
 
 Acceptance criteria:
@@ -470,6 +474,9 @@ Acceptance criteria:
 - [ ] Complete TDFOL security validator parity.
 - [ ] Add Python parity fixtures for each TDFOL rule category.
 - [ ] Add browser performance budgets for proof search.
+  - [x] Initial in-memory performance engine and strategy profiler.
+  - [x] Initial browser performance dashboard data model and renderer.
+  - [ ] Full profiler/dashboard parity with browser performance timelines and richer bottleneck reports.
 
 ### Phase 12: Full CEC/DCEC Parity
 
@@ -525,7 +532,7 @@ Current completed TypeScript/WASM port slice:
 - 75-85 percent of common module behavior: cache, converter lifecycle, browser feature detection, proof cache, utility monitoring, validation, and error surfaces.
 - 100 percent of proof summary loading, indexing, validation, and display helpers.
 - 80-90 percent of TDFOL core AST/parser/formatter behavior needed for generated Portland formulas.
-- 56-66 percent of TDFOL inference/prover/explanation/operations behavior: initial propositional, temporal, deontic rules, tableaux expansion rules, bounded forward chaining, modal tableaux, strategy selection, indexed-KB optimization, countermodels, proof explanations, dependency graphs, proof tree views, security validation, and metrics collection.
+- 60-70 percent of TDFOL inference/prover/explanation/operations behavior: initial propositional, temporal, deontic rules, tableaux expansion rules, bounded forward chaining, modal tableaux, strategy selection, indexed-KB optimization, countermodels, proof explanations, dependency graphs, proof tree views, security validation, metrics collection, dashboarding, and performance-engine orchestration.
 - 75-85 percent of regex FOL/deontic extraction, formatter, analyzer, and knowledge-base behavior, focused on legal-code clauses.
 - 70-80 percent of F-logic data modeling and display rendering for generated frame snippets.
 - 50-60 percent of ZKP canonicalization/statement metadata behavior.
