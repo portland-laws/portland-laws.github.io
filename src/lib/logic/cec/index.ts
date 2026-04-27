@@ -3,6 +3,8 @@ export * from './analyzer';
 export * from './ast';
 export * from './contextManager';
 export * from './countermodels';
+export * from './dcecCleaning';
+export * from './dcecParsing';
 export * from './dependencyGraph';
 export * from './eventCalculus';
 export * from './fluents';

@@ -619,6 +619,9 @@ function DirectoryPanel({
         <p className="mt-1 text-sm leading-6 text-[#4f615b]">
           {directory.length} titles · {totalChapters.toLocaleString()} chapters · {totalSections.toLocaleString()} sections
         </p>
+        <p className="mt-1 text-sm leading-6 text-[#4f615b]">
+          Choose a title to browse chapters and narrow the code manually.
+        </p>
       </div>
       <details className="group lg:hidden" open>
         <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-[#24594f]">
@@ -1235,11 +1238,13 @@ function ResultCard({
           </h3>
         </div>
         <div className="flex shrink-0 flex-col items-end gap-2">
-          {selected && (
-            <span className="rounded-md bg-[#24594f] px-2 py-1 text-xs font-semibold text-white">
-              Selected
-            </span>
-          )}
+          <span
+            className={`rounded-md px-2 py-1 text-xs font-semibold ${
+              selected ? 'bg-[#24594f] text-white' : 'border border-[#8fa08a] bg-white text-[#24594f]'
+            }`}
+          >
+            {selected ? 'Selected' : 'Open section'}
+          </span>
           <span
             className="rounded-md bg-[#eef2ea] px-2 py-1 text-xs font-semibold text-[#4d625b]"
             aria-label={`Relevance score ${result.score.toFixed(2)}`}
@@ -1456,8 +1461,8 @@ function GraphRagChat({
       )}
       {answer && (
         <div className="mt-4 grid gap-2 sm:grid-cols-3" aria-label="Chat response summary">
-          <ChatSummaryMetric label="Evidence sections" value={evidenceSections.length.toLocaleString()} />
-          <ChatSummaryMetric label="Answer mode" value={warning ? 'Local evidence' : 'Local model'} />
+          <ChatSummaryMetric label="Sources found" value={evidenceSections.length.toLocaleString()} />
+          <ChatSummaryMetric label="Answer basis" value={warning ? 'Retrieved code' : 'Local model'} />
           <ChatSummaryMetric label="Top citation" value={topCitation} />
         </div>
       )}
@@ -1467,7 +1472,7 @@ function GraphRagChat({
           aria-label="Chat answer"
           aria-live="polite"
         >
-          <h3 className="mb-2 text-sm font-semibold uppercase tracking-[0.14em] text-[#607068]">Cited answer</h3>
+          <h3 className="mb-2 text-sm font-semibold uppercase tracking-[0.14em] text-[#607068]">Answer with citations</h3>
           <CitedAnswer text={answer} />
         </div>
       )}
@@ -1917,10 +1922,19 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
         </span>
       </div>
 
+      <div className="mt-4 rounded-md border border-[#dce3d6] bg-[#f8faf5] px-4 py-4">
+        <div className="text-xs font-semibold uppercase tracking-wide text-[#607068]">Plain meaning</div>
+        <p className="mt-2 text-sm leading-6 text-[#26343a] [overflow-wrap:anywhere]">{explanation.plainLanguage}</p>
+        <dl className="mt-3 grid gap-2 text-sm sm:grid-cols-2" aria-label="Proof plain meaning details">
+          <LogicFact label="Time scope" value={explanation.temporalScope} />
+          <LogicFact label="Verification" value={certificateWarning ? 'Simulated certificate' : explanation.certificateStatus} />
+        </dl>
+      </div>
+
       <ProofReadingGuide proof={proof} explanation={explanation} certificateWarning={certificateWarning} />
 
       <div className="mt-4 grid grid-cols-2 gap-2 text-xs xl:grid-cols-5" aria-label="Logic proof status metrics">
-        <ProofMetric label="Operator" value={formatNormOperatorForDisplay(proof.norm_operator)} />
+        <ProofMetric label="Effect" value={formatResultNormOperatorForBadge(proof.norm_operator)} />
         <ProofMetric label="FOL" value={formatLogicStatusForDisplay(proof.fol_status)} />
         <ProofMetric label="Deontic" value={formatLogicStatusForDisplay(proof.deontic_status)} />
         <ProofMetric label="TDFOL parse" value={tdfolParse.ok ? 'Valid' : 'Check'} />
@@ -1932,14 +1946,6 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
           {certificateWarning}
         </div>
       )}
-
-      <div className="mt-4 rounded-md border border-[#dce3d6] bg-[#f8faf5] px-4 py-4">
-        <div className="text-xs font-semibold uppercase tracking-wide text-[#607068]">Explanation</div>
-        <p className="mt-2 text-sm leading-6 text-[#26343a] [overflow-wrap:anywhere]">{explanation.plainLanguage}</p>
-        <div className="mt-2 text-xs leading-5 text-[#65736e]">
-          {explanation.temporalScope}. {explanation.certificateStatus}.
-        </div>
-      </div>
 
       {!tdfolParse.ok && (
         <div className="mt-4 rounded-md border border-[#d89b82] bg-[#fff4ef] px-3 py-2 text-sm leading-6 text-[#8a3b22]">

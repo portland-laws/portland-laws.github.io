@@ -31,11 +31,13 @@ test.describe('Portland legal corpus UI screenshots', () => {
   test('captures the desktop legal directory, search, and workbench layout', async ({ page }, testInfo) => {
     await expect(page.getByRole('heading', { name: 'City Code Research Directory' })).toBeVisible();
     await expect(page.getByRole('navigation', { name: 'City Code' })).toBeVisible();
+    await expect(page.getByRole('navigation', { name: 'City Code' }).locator('..')).toContainText('Choose a title');
     await expect(page.getByRole('region', { name: 'Find Code Sections' })).toBeVisible();
     await expect(page.getByRole('region', { name: 'Selected section and research tools' })).toBeVisible();
     await expect(page.locator('body')).not.toContainText('GraphRAG');
     await expect(page.getByLabel('Current search filters')).toContainText('"notice requirements"');
     await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText('Selected');
+    await expect(page.getByRole('button', { name: /^Select / }).nth(1)).toContainText('Open section');
     await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText(/Score \d+\.\d{2}/);
     await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText('Proof OK');
     await expect(page.getByRole('button', { name: /^Select / }).first().getByLabel('Result legal signals')).toContainText('Effect');
@@ -75,10 +77,10 @@ test.describe('Portland legal corpus UI screenshots', () => {
     await page.locator('#panel-chat').getByRole('textbox', { name: /Question/ }).fill('What does this section say in simple terms?');
     await page.getByRole('button', { name: /^Ask$/ }).click();
     await expect(page.getByLabel('Chat answer')).toBeVisible({ timeout: 30000 });
-    await expect(page.getByLabel('Chat answer')).toContainText('Cited answer');
+    await expect(page.getByLabel('Chat answer')).toContainText('Answer with citations');
     await expect(page.getByLabel('Chat answer')).not.toContainText('Label:');
-    await expect(page.getByLabel('Chat response summary')).toContainText('Evidence sections');
-    await expect(page.getByLabel('Chat response summary')).toContainText('Local evidence');
+    await expect(page.getByLabel('Chat response summary')).toContainText('Sources found');
+    await expect(page.getByLabel('Chat response summary')).toContainText('Retrieved code');
     await expect(page.getByLabel('Chat response summary')).toContainText('Portland City Code');
     await expect(page.getByLabel('Chat evidence')).toBeVisible();
     await expect(page.getByLabel('Chat evidence')).toContainText('Official source');
@@ -109,11 +111,13 @@ test.describe('Portland legal corpus UI screenshots', () => {
 
     await page.getByRole('tab', { name: 'Logic Proofs' }).click();
     await expect(page.getByRole('heading', { name: 'Logic Proof Explorer' })).toBeVisible();
+    await expect(page.locator('#panel-proof')).toContainText('Plain meaning');
+    await expect(page.getByLabel('Proof plain meaning details')).toContainText('Time scope');
     await expect(page.getByLabel('Proof reading guide')).toContainText('How to read this proof');
     await expect(page.getByLabel('Proof reading guide')).toContainText('Code effect');
     await expect(page.locator('#panel-proof')).toContainText('DCEC parse');
     await expect(page.locator('#panel-proof')).toContainText('DCEC structure');
-    await expect(page.getByLabel('Logic proof status metrics')).toContainText(/Required \(O\)|Allowed \(P\)|Forbidden \(F\)/);
+    await expect(page.getByLabel('Logic proof status metrics')).toContainText(/Required|Allowed|Forbidden/);
     await expect(page.getByLabel('DCEC structure summary')).toContainText('Portland City Code');
     await expect(page.getByLabel('DCEC structure summary')).not.toContainText('portland_city_code');
     await expectWorkbenchHasBoundedHeight(page);
@@ -162,6 +166,7 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await expect(browseTitles).toBeVisible();
     await expect(mobileDirectory).toBeVisible();
     await expect(browseTitles).toContainText('Collapse');
+    await expect(page.locator('#code-directory')).toContainText('Choose a title');
     await expect(mobileDirectory.getByRole('button', { name: 'Title 1 General Provisions 7 chapters · 43 sections' })).toBeVisible();
     await expectElementBefore(page, '[aria-label="Mobile quick actions"]', '#code-directory');
     await expectElementBefore(page, '#code-directory', '#code-search');
@@ -218,6 +223,7 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await expect(page.getByLabel('Current search filters')).toContainText('"noise"');
     await expect(page.getByRole('button', { name: /^Select / }).first()).toBeVisible();
     await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText('Selected');
+    await expect(page.getByRole('button', { name: /^Select / }).nth(1)).toContainText('Open section');
     await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText(/Score \d+\.\d{2}/);
     await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText('Proof OK');
     await expect(page.getByRole('button', { name: /^Select / }).first().getByLabel('Result legal signals')).toContainText('Norm');
@@ -277,9 +283,10 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     });
 
     await page.getByRole('tab', { name: 'Logic Proofs' }).click();
+    await expect(page.locator('#panel-proof')).toContainText('Plain meaning');
     await expect(page.getByLabel('Proof reading guide')).toContainText('Verification');
     await expect(page.locator('#panel-proof')).toContainText('DCEC structure');
-    await expect(page.getByLabel('Logic proof status metrics')).toContainText(/Required \(O\)|Allowed \(P\)|Forbidden \(F\)/);
+    await expect(page.getByLabel('Logic proof status metrics')).toContainText(/Required|Allowed|Forbidden/);
     await expect(page.getByLabel('DCEC structure summary')).toContainText('Portland City Code');
     await expect(page.getByLabel('DCEC structure summary')).not.toContainText('portland_city_code');
     await expectProofMetricsUseTwoColumns(page);
