@@ -494,8 +494,14 @@ Acceptance criteria:
 - [x] Add CEC/DCEC parity fixtures and generated Portland DCEC parse coverage.
 - [ ] Port native inference rule groups: propositional, modal, temporal, deontic, cognitive, specialized, and resolution.
   - [x] Initial CEC native inference rule slice: modus ponens, conjunction elimination, double-negation elimination, temporal T, deontic D, and prohibition equivalence.
+  - [x] Expanded deterministic CEC inference slice: hypothetical syllogism, conjunction introduction as an opt-in generative rule, eventuality introduction as an opt-in generative rule, prohibition-from-obligation, universal modus ponens, existential instantiation, existential generalization, and universal generalization.
 - [ ] Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.
 - [ ] Port CEC proof cache, proof strategies, advanced inference, and error handling.
+  - [x] Initial bounded CEC forward prover with proof steps, unknown results, and derived-expression budget handling.
+  - [x] Initial CEC prover support for Portland-style quantified DCEC facts through browser-native universal modus ponens, without Python delegation.
+  - [x] Initial CEC proof cache with normalized theorem/axiom keys, prover-config sensitivity, invalidation, global helper, TTL/LRU stats, and cached prove facade.
+  - [x] Initial CEC strategy selector with forward and cached-forward strategies, priority/cost selection, metadata, and convenience proving facade.
+  - [x] Initial CEC proof explainer with rule descriptions, natural-language steps, inference chains, rendered text, and proof statistics.
 - [ ] Port CEC NL policy compilers and language detection with browser-native NLP.
 - [ ] Add deeper CEC/DCEC parity fixtures against Python parser and prover outputs.
 

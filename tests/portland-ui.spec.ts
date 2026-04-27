@@ -35,6 +35,8 @@ test.describe('Portland legal corpus UI screenshots', () => {
     await expect(page.getByRole('region', { name: 'Selected section and research tools' })).toBeVisible();
     await expect(page.getByLabel('Current search filters')).toContainText('"notice requirements"');
     await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText('Selected');
+    await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText(/Score \d+\.\d{2}/);
+    await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText('Proof OK');
 
     await expectNoHorizontalOverflow(page);
     await page.screenshot({
@@ -56,13 +58,21 @@ test.describe('Portland legal corpus UI screenshots', () => {
     });
     await expect(page.locator('#panel-section')).not.toContainText(/^Label:/);
     await expect(page.locator('#panel-section').getByLabel('Clause A')).toHaveCount(1);
+    await expect(page.getByLabel('Section overview')).toContainText('Clauses');
+    await expect(page.getByLabel('Section overview')).toContainText('Official code');
+    await expect(page.getByLabel('Code note')).toBeVisible();
 
     await page.getByRole('tab', { name: 'GraphRAG' }).click();
     await page.locator('#panel-chat').getByLabel('Question').fill('What does this section say in simple terms?');
     await page.getByRole('button', { name: /^Ask$/ }).click();
     await expect(page.getByLabel('GraphRAG answer')).toBeVisible({ timeout: 30000 });
+    await expect(page.getByLabel('GraphRAG answer')).toContainText('Cited answer');
     await expect(page.getByLabel('GraphRAG answer')).not.toContainText('Label:');
+    await expect(page.getByLabel('GraphRAG response summary')).toContainText('Evidence sections');
+    await expect(page.getByLabel('GraphRAG response summary')).toContainText('Local evidence');
+    await expect(page.getByLabel('GraphRAG response summary')).toContainText('Portland City Code');
     await expect(page.getByLabel('GraphRAG evidence')).toBeVisible();
+    await expect(page.getByLabel('GraphRAG evidence')).toContainText('Official source');
     await page.locator('#research-workbench').screenshot({
       path: screenshotPath(testInfo, 'desktop-graphrag-chat.png'),
     });
@@ -83,6 +93,9 @@ test.describe('Portland legal corpus UI screenshots', () => {
     await expect(page.getByRole('heading', { name: 'Logic Proof Explorer' })).toBeVisible();
     await expect(page.locator('#panel-proof')).toContainText('DCEC parse');
     await expect(page.locator('#panel-proof')).toContainText('DCEC structure');
+    await expect(page.getByLabel('Logic proof status metrics')).toContainText(/Required \(O\)|Allowed \(P\)|Forbidden \(F\)/);
+    await expect(page.getByLabel('DCEC structure summary')).toContainText('Portland City Code');
+    await expect(page.getByLabel('DCEC structure summary')).not.toContainText('portland_city_code');
     await expectWorkbenchHasBoundedHeight(page);
     await page.locator('#research-workbench').screenshot({
       path: screenshotPath(testInfo, 'desktop-logic-proofs.png'),
@@ -152,6 +165,8 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await expect(page.locator('#search-status')).toContainText(/matches/);
     await expect(page.getByRole('button', { name: /^Select / }).first()).toBeVisible();
     await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText('Selected');
+    await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText(/Score \d+\.\d{2}/);
+    await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText('Proof OK');
     await expect(page.getByRole('button', { name: /Show \d+ more results/ })).toBeVisible();
     await expect(page.getByRole('button', { name: /^Select / }).first()).not.toContainText(/^Label:/);
     const mobileFilters = page.locator('summary').filter({ hasText: 'Filters and examples' });
@@ -184,6 +199,7 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await expect(page.locator('#panel-section')).toBeFocused();
     await expect(page.locator('#panel-section')).not.toContainText(/^Label:/);
     await expect(page.locator('#panel-section').getByLabel('Clause A')).toHaveCount(1);
+    await expect(page.getByLabel('Section overview')).toContainText('Clauses');
 
     const workbenchPosition = await page.locator('#research-workbench').evaluate((element) => {
       const box = element.getBoundingClientRect();
@@ -202,6 +218,9 @@ test.describe('Portland legal corpus mobile screenshots', () => {
 
     await page.getByRole('tab', { name: 'Logic Proofs' }).click();
     await expect(page.locator('#panel-proof')).toContainText('DCEC structure');
+    await expect(page.getByLabel('Logic proof status metrics')).toContainText(/Required \(O\)|Allowed \(P\)|Forbidden \(F\)/);
+    await expect(page.getByLabel('DCEC structure summary')).toContainText('Portland City Code');
+    await expect(page.getByLabel('DCEC structure summary')).not.toContainText('portland_city_code');
     await expectProofMetricsUseTwoColumns(page);
     await expectNoHorizontalOverflow(page);
     await page.locator('#research-workbench').screenshot({

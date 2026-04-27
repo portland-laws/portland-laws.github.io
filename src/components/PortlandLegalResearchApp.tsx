@@ -1084,16 +1084,16 @@ function ResultCard({
             aria-label={`Relevance score ${result.score.toFixed(2)}`}
             title={`Relevance score ${result.score.toFixed(2)}`}
           >
-            {result.score.toFixed(2)}
+            Score {result.score.toFixed(2)}
           </span>
         </div>
       </div>
 
       {proof && (
         <div className="mt-3 flex flex-wrap gap-2">
-          <ResultBadge label={proof.norm_type} />
-          <ResultBadge label={formatNormOperatorForBadge(proof.norm_operator)} />
-          <ResultBadge label={formatProofStatusForBadge(proof.deontic_status)} />
+          <ResultBadge label={formatNormTypeForDisplay(proof.norm_type)} />
+          <ResultBadge label={formatResultNormOperatorForBadge(proof.norm_operator)} />
+          <ResultBadge label={formatResultProofStatusForBadge(proof.deontic_status)} />
         </div>
       )}
       <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#52615c] [overflow-wrap:anywhere]">
@@ -1124,6 +1124,56 @@ function formatProofStatusForBadge(status: string) {
   if (status === 'warning') return 'needs review';
   if (status === 'error') return 'proof error';
   return status.replace(/_/g, ' ');
+}
+
+function formatResultNormOperatorForBadge(operator: string) {
+  return formatNormOperatorForBadge(operator)
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function formatResultProofStatusForBadge(status: string) {
+  if (status === 'success') return 'Proof OK';
+  return formatProofStatusForBadge(status)
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function formatNormOperatorForDisplay(operator: string) {
+  const normalized = operator.toUpperCase();
+  if (normalized === 'O') return 'Required (O)';
+  if (normalized === 'P') return 'Allowed (P)';
+  if (normalized === 'F') return 'Forbidden (F)';
+  return operator || 'Unknown';
+}
+
+function formatNormTypeForDisplay(norm: string) {
+  if (!norm) return 'Unknown';
+  return norm
+    .replace(/_/g, ' ')
+    .toLowerCase()
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function formatLogicStatusForDisplay(status: string) {
+  if (status === 'success') return 'Success';
+  if (status === 'warning') return 'Needs review';
+  if (status === 'error') return 'Error';
+  return formatNormTypeForDisplay(status);
+}
+
+function formatSectionRefsForDisplay(refs: string[]) {
+  if (refs.length === 0) return 'None';
+  return refs.map(formatSectionRefForDisplay).join(', ');
+}
+
+function formatSectionRefForDisplay(ref: string) {
+  const normalized = ref.replace(/^portland_city_code_?/i, '').replace(/_/g, '.');
+  if (!normalized) return ref;
+  return `Portland City Code ${normalized}`;
+}
+
+function formatDeonticOperatorsForDisplay(operators: string[]) {
+  if (operators.length === 0) return 'None';
+  return operators.map(formatNormOperatorForDisplay).join(', ');
 }
 
 function buildActiveFilterChips(
@@ -1167,6 +1217,9 @@ function GraphRagChat({
   onQuestionChange: (question: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }) {
+  const evidenceSections = evidence?.sections.slice(0, 5) || [];
+  const topCitation = evidenceSections[0]?.citation || 'None yet';
+
   return (
     <div className="px-4 py-4 sm:px-5 sm:py-5">
       <div className="mb-4">
@@ -1202,33 +1255,53 @@ function GraphRagChat({
         </div>
       )}
       {answer && (
+        <div className="mt-4 grid gap-2 sm:grid-cols-3" aria-label="GraphRAG response summary">
+          <ChatSummaryMetric label="Evidence sections" value={evidenceSections.length.toLocaleString()} />
+          <ChatSummaryMetric label="Answer mode" value={warning ? 'Local evidence' : 'Local model'} />
+          <ChatSummaryMetric label="Top citation" value={topCitation} />
+        </div>
+      )}
+      {answer && (
         <div
           className="mt-4 rounded-md border border-[#dce3d6] bg-[#f8faf5] px-4 py-4"
           aria-label="GraphRAG answer"
           aria-live="polite"
         >
+          <h3 className="mb-2 text-sm font-semibold uppercase tracking-[0.14em] text-[#607068]">Cited answer</h3>
           <div className="whitespace-pre-wrap text-sm leading-6 text-[#26343a] [overflow-wrap:anywhere]">{answer}</div>
         </div>
       )}
-      {evidence && evidence.sections.length > 0 && (
+      {evidenceSections.length > 0 && (
         <div className="mt-4" aria-label="GraphRAG evidence">
           <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-[#607068]">Evidence</h3>
           <div className="mt-2 grid gap-2">
-            {evidence.sections.slice(0, 5).map((result, index) => (
+            {evidenceSections.map((result, index) => (
               <a
                 key={result.ipfs_cid}
                 href={result.section.source_url}
                 target="_blank"
                 rel="noreferrer"
-                className="rounded-md border border-[#dce3d6] bg-white px-3 py-2 text-sm hover:border-[#7a9487]"
+                className="grid gap-1 rounded-md border border-[#dce3d6] bg-white px-3 py-2 text-sm hover:border-[#7a9487] sm:grid-cols-[1fr_auto] sm:items-center"
               >
-                <span className="font-semibold text-[#24594f]">[{index + 1}] {result.citation}</span>
-                <span className="ml-2 text-[#394a4f] [overflow-wrap:anywhere]">{result.section.title}</span>
+                <span className="min-w-0">
+                  <span className="font-semibold text-[#24594f]">[{index + 1}] {result.citation}</span>
+                  <span className="ml-2 text-[#394a4f] [overflow-wrap:anywhere]">{result.section.title}</span>
+                </span>
+                <span className="text-xs font-semibold uppercase tracking-wide text-[#607068]">Official source</span>
               </a>
             ))}
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function ChatSummaryMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-md border border-[#dce3d6] bg-white px-3 py-3">
+      <div className="text-xs font-semibold uppercase tracking-wide text-[#607068]">{label}</div>
+      <div className="mt-1 text-sm font-semibold leading-5 text-[#172026] [overflow-wrap:anywhere]">{value}</div>
     </div>
   );
 }
@@ -1367,6 +1440,8 @@ function formatGraphValueLabel(value: string) {
 function SectionReader({ section }: { section: CorpusSection }) {
   const paragraphs = section.text.split(/\n{2,}/).map(cleanSectionParagraph).filter(Boolean);
   const blocks = paragraphs.flatMap(splitLegalClauses);
+  const clauseCount = blocks.filter((block) => block.label).length;
+  const codeNoteCount = blocks.filter((block) => !block.label).length;
 
   return (
     <article aria-labelledby="selected-section-heading">
@@ -1389,6 +1464,11 @@ function SectionReader({ section }: { section: CorpusSection }) {
         </div>
       </div>
       <div className="max-w-prose px-4 py-4 sm:px-5 sm:py-5">
+        <div className="mb-4 grid gap-2 sm:grid-cols-3" aria-label="Section overview">
+          <SectionOverviewMetric label="Clauses" value={clauseCount.toLocaleString()} />
+          <SectionOverviewMetric label="Code notes" value={codeNoteCount.toLocaleString()} />
+          <SectionOverviewMetric label="Source" value="Official code" />
+        </div>
         <div className="grid gap-3" aria-label="Section text clauses">
           {blocks.map((block, index) => (
             block.label ? (
@@ -1403,14 +1483,30 @@ function SectionReader({ section }: { section: CorpusSection }) {
                 <p className="text-base leading-7 text-[#26343a] [overflow-wrap:anywhere]">{block.text}</p>
               </section>
             ) : (
-              <p key={`paragraph-${index}`} className="text-base leading-7 text-[#26343a] [overflow-wrap:anywhere]">
-                {block.text}
-              </p>
+              <aside
+                key={`paragraph-${index}`}
+                className="rounded-md border border-[#d6c28e] bg-[#fff9e8] px-3 py-3 sm:px-4"
+                aria-label="Code note"
+              >
+                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#735b18]">
+                  Code note
+                </div>
+                <p className="text-base leading-7 text-[#26343a] [overflow-wrap:anywhere]">{block.text}</p>
+              </aside>
             )
           ))}
         </div>
       </div>
     </article>
+  );
+}
+
+function SectionOverviewMetric({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="rounded-md border border-[#dce3d6] bg-white px-3 py-3">
+      <div className="text-xs font-semibold uppercase tracking-wide text-[#607068]">{label}</div>
+      <div className="mt-1 text-sm font-semibold text-[#172026] [overflow-wrap:anywhere]">{value}</div>
+    </div>
   );
 }
 
@@ -1431,17 +1527,17 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
           <h2 className="text-xl font-semibold tracking-normal text-[#172026]">Logic Proof Explorer</h2>
           <p className="mt-1 text-sm text-[#607068]">{proof.formalization_scope}</p>
         </div>
-        <span className="rounded-md bg-[#eef2ea] px-3 py-1.5 text-xs font-semibold uppercase text-[#4d625b]">
-          {proof.norm_type}
+        <span className="rounded-md bg-[#eef2ea] px-3 py-1.5 text-xs font-semibold text-[#4d625b]">
+          {formatNormTypeForDisplay(proof.norm_type)}
         </span>
       </div>
 
       <div className="mt-4 grid grid-cols-2 gap-2 text-xs xl:grid-cols-5" aria-label="Logic proof status metrics">
-        <ProofMetric label="Operator" value={proof.norm_operator} />
-        <ProofMetric label="FOL" value={proof.fol_status} />
-        <ProofMetric label="Deontic" value={proof.deontic_status} />
-        <ProofMetric label="TDFOL parse" value={tdfolParse.ok ? 'valid' : 'check'} />
-        <ProofMetric label="DCEC parse" value={dcecParse.ok ? 'valid' : 'check'} />
+        <ProofMetric label="Operator" value={formatNormOperatorForDisplay(proof.norm_operator)} />
+        <ProofMetric label="FOL" value={formatLogicStatusForDisplay(proof.fol_status)} />
+        <ProofMetric label="Deontic" value={formatLogicStatusForDisplay(proof.deontic_status)} />
+        <ProofMetric label="TDFOL parse" value={tdfolParse.ok ? 'Valid' : 'Check'} />
+        <ProofMetric label="DCEC parse" value={dcecParse.ok ? 'Valid' : 'Check'} />
       </div>
 
       {certificateWarning && (
@@ -1470,12 +1566,15 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
       )}
 
       {dcecParse.ok && dcecParse.analysis && (
-        <div className="mt-4 rounded-md border border-[#dce3d6] bg-white px-4 py-4">
+        <div
+          className="mt-4 rounded-md border border-[#dce3d6] bg-white px-4 py-4"
+          aria-label="DCEC structure summary"
+        >
           <div className="text-xs font-semibold uppercase tracking-wide text-[#607068]">DCEC structure</div>
           <dl className="mt-3 grid gap-3 text-sm min-[520px]:grid-cols-2">
             <LogicFact label="Predicates" value={dcecParse.analysis.predicates.join(', ') || 'None'} />
-            <LogicFact label="Section refs" value={dcecParse.analysis.sectionRefs.join(', ') || 'None'} />
-            <LogicFact label="Deontic" value={dcecParse.analysis.deonticOperators.join(', ') || 'None'} />
+            <LogicFact label="Section refs" value={formatSectionRefsForDisplay(dcecParse.analysis.sectionRefs)} />
+            <LogicFact label="Deontic" value={formatDeonticOperatorsForDisplay(dcecParse.analysis.deonticOperators)} />
             <LogicFact label="Temporal" value={dcecParse.analysis.temporalOperators.join(', ') || 'None'} />
           </dl>
         </div>

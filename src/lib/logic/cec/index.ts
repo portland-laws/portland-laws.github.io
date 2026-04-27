@@ -3,3 +3,7 @@ export * from './ast';
 export * from './formatter';
 export * from './inferenceRules';
 export * from './parser';
+export * from './proofCache';
+export * from './proofExplainer';
+export * from './prover';
+export * from './strategies';
