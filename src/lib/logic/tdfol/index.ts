@@ -1,5 +1,12 @@
 export * from './ast';
+export * from './dependencyGraph';
 export * from './formatter';
+export * from './inferenceRules';
 export * from './lexer';
 export * from './parser';
-
+export * from './performanceMetrics';
+export * from './proofExplainer';
+export * from './proofTree';
+export * from './prover';
+export * from './securityValidator';
+export * from './strategies';

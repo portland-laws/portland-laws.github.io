@@ -84,6 +84,7 @@ The TypeScript target should be a clean client-side domain library that preserve
 | `logic/TDFOL/tdfol_converter.py` | Port fully | TDFOL to DCEC/FOL/TPTP conversion must match Python outputs. |
 | `logic/TDFOL/tdfol_inference_rules.py` | Port fully | All propositional, first-order, temporal, deontic, and combined rules need TS parity. |
 | `logic/TDFOL/tdfol_prover.py` | Port fully | Start with bounded reasoning, then complete proof search parity and strategy selection. |
+| `logic/TDFOL/strategies/base.py`, `forward_chaining.py`, `strategy_selector.py` | Port fully | Browser-native proof strategy selection keeps prover behavior modular without Python strategy classes. |
 | `logic/TDFOL/proof_tree_visualizer.py` | Port fully in browser form | Render proof trees in React/canvas/SVG and preserve exportable DOT/JSON where useful. |
 | `logic/fol/utils/fol_parser.py` | Port directly | Regex-based quantifier/operator parsing and formatting are browser-friendly. |
 | `logic/fol/utils/predicate_extractor.py` | Port fully | Regex and rule-based extraction are portable. |
@@ -315,6 +316,12 @@ Acceptance criteria:
 - [x] Support ASCII and symbolic operator aliases where feasible.
 - [x] Format ASTs back to compact source and display-friendly JSON.
 - [x] Implement free variable analysis and basic substitution.
+- [x] Port initial `TDFOL/inference_rules` browser-native rule interface and deterministic propositional, temporal, and deontic rules.
+- [x] Port initial `tdfol_prover.py` forward-chaining proof engine with step and derived-formula budgets.
+- [x] Port initial `TDFOL/strategies/base.py`, `forward_chaining.py`, and `strategy_selector.py` browser strategy layer with priority/cost selection.
+- [x] Port initial `proof_explainer.py`, `formula_dependency_graph.py`, and `proof_tree_visualizer.py` browser equivalents for text, JSON, DOT, HTML, ASCII tree, and graph exports.
+- [x] Port initial `security_validator.py` browser equivalents for formula validation, rate limiting, resource limits, sanitization, ZKP audit checks, and security reports.
+- [x] Port initial `performance_metrics.py` browser metrics collector for timings, memory samples, counters, gauges, histograms, summaries, and exports.
 - [x] Add fixtures from generated Portland formulas.
 
 Acceptance criteria:
@@ -441,9 +448,11 @@ Acceptance criteria:
 ### Phase 11: Full TDFOL Parity
 
 - [ ] Port every TDFOL inference rule from `logic/TDFOL/tdfol_inference_rules.py`.
-- [ ] Port proof strategies, strategy selector, performance engine, proof cache, dependency graph, and proof explainer.
+- [ ] Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.
+  - [x] Initial forward-chaining strategy and selector parity.
+  - [ ] Backward chaining, modal tableaux strategy, CEC delegate replacement, and bidirectional strategy parity.
 - [ ] Port modal tableaux and countermodel generation/visualization.
-- [ ] Port TDFOL security validator.
+- [ ] Complete TDFOL security validator parity.
 - [ ] Add Python parity fixtures for each TDFOL rule category.
 - [ ] Add browser performance budgets for proof search.
 
@@ -498,6 +507,7 @@ Current completed TypeScript/WASM port slice:
 - 75-85 percent of common module behavior: cache, converter lifecycle, browser feature detection, proof cache, utility monitoring, validation, and error surfaces.
 - 100 percent of proof summary loading, indexing, validation, and display helpers.
 - 80-90 percent of TDFOL core AST/parser/formatter behavior needed for generated Portland formulas.
+- 40-50 percent of TDFOL inference/prover/explanation/operations behavior: initial propositional, temporal, deontic rules, bounded forward chaining, strategy selection, proof explanations, dependency graphs, proof tree views, security validation, and metrics collection.
 - 75-85 percent of regex FOL/deontic extraction, formatter, analyzer, and knowledge-base behavior, focused on legal-code clauses.
 - 70-80 percent of F-logic data modeling and display rendering for generated frame snippets.
 - 50-60 percent of ZKP canonicalization/statement metadata behavior.

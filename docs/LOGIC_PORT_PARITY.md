@@ -12,6 +12,9 @@ Current parity is focused on deterministic, browser-safe behavior, but the end g
 - Deontic analyzer and knowledge-base primitives for browser-native norm extraction, grouping, conflict summaries, rule inference, and compliance checks.
 - Python-style common converter lifecycle for TypeScript converters: statuses, result shape, validation, bounded local cache, batch conversion, async wrapper, and chained converters.
 - Common proof cache, feature detection, and utility monitor concepts, mapped to browser-native TypeScript.
+- Initial TDFOL inference rules and bounded forward-chaining prover for deterministic browser proof search.
+- Initial TDFOL proof explanation, dependency graph, and proof tree visualization helpers.
+- Initial TDFOL security validation and performance metrics helpers.
 - TDFOL parsing/formatting for generated Portland formulas.
 - F-logic parsing for generated frame snippets.
 - ZKP canonicalization and simulated certificate metadata checks.
@@ -42,6 +45,12 @@ npm run validate:logic-port
 | FOL formatting | FOL/deontic JSON, Prolog, TPTP, defeasible, text, and aggregate format helpers. | `fol/utils/logic_formatter.py`. | Ported for deterministic formatter path. |
 | Deontic analyzer | Corpus statement extraction, entity grouping, statistics, action similarity, and direct/conditional/jurisdictional/temporal conflict detection. | `deontic/analyzer.py`. | Ported for deterministic regex path. |
 | Deontic knowledge base | Parties, actions, time intervals, propositions, statements, rule inference, and compliance checks. | `deontic/knowledge_base.py`. | Ported as browser-native TypeScript primitives. |
+| TDFOL inference rules | Rule interface plus initial Modus Ponens, Modus Tollens, hypothetical syllogism, conjunction elimination, double-negation, temporal K/T, deontic K/D, prohibition equivalence, and obligation weakening. | Full `TDFOL/inference_rules/*` parity. | Initial deterministic rule subset ported; full rule inventory remains Phase 11. |
+| TDFOL prover | Bounded forward-chaining prover with proof steps, unknown, and timeout results. | Full `tdfol_prover.py` strategies, modal tableaux, CEC delegation, proof cache, and first-order reasoning. | Initial browser prover ported; full parity remains Phase 11. |
+| TDFOL proving strategies | `TdfolProverStrategy`, forward-chaining strategy, priority/cost selector, multi-strategy ranking, selected-strategy proof facade, timeout and derived-formula budgets. | `TDFOL/strategies/base.py`, `forward_chaining.py`, and `strategy_selector.py`. | Initial browser-native strategy layer ported; backward chaining, modal tableaux, CEC delegate replacement, and bidirectional strategy parity remain Phase 11. |
+| TDFOL proof explanation and graphing | Text explanations, reasoning chains, statistics, dependency graph JSON/DOT, topological order, path lookup, ASCII/JSON/DOT/HTML proof tree views. | `proof_explainer.py`, `formula_dependency_graph.py`, and `proof_tree_visualizer.py`. | Initial browser-native slice ported; rich interactive/rendering parity remains Phase 11. |
+| TDFOL security validation | Formula size/depth/operator/variable checks, rate limiting, sanitization, resource checks, ZKP proof audit, and security reports. | `security_validator.py`. | Initial browser-native slice ported; complete enterprise parity remains Phase 11. |
+| TDFOL performance metrics | Timing samples, memory samples, counters, gauges, histograms, statistical summaries, export, and global collector helpers. | `performance_metrics.py`. | Initial browser-native metrics collector ported. |
 | FOL NLP extraction | Regex-only extraction plus capability reporting. | Browser-native parity for `FOLConverter(use_nlp=True)`, likely via Transformers.js, ONNX/WebGPU, or WASM NLP. | Planned Phase 13, no server calls. |
 | FOL confidence | Validation plus deterministic heuristics only. | Browser-native parity for `FOLConverter(use_ml=True)`. | Planned Phase 13, no server calls. |
 | Deontic confidence | Heuristic score from subject/action/condition/temporal extraction. | Browser-native parity for Python ML confidence. | Planned Phase 13, no server calls. |

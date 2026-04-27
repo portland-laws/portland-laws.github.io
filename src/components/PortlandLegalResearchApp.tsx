@@ -422,7 +422,7 @@ function DirectoryPanel({
     <nav
       id="code-directory"
       aria-labelledby="code-directory-heading"
-      className="max-h-[48vh] overflow-auto rounded-md border border-[#d8dfd3] bg-white shadow-sm lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)]"
+      className="min-w-0 max-h-[48vh] overflow-auto rounded-md border border-[#d8dfd3] bg-white shadow-sm lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)]"
     >
       <div className="border-b border-[#e1e6dc] px-4 py-4">
         <h2 id="code-directory-heading" className="text-lg font-semibold text-[#172026]">
@@ -531,7 +531,7 @@ function SearchPanel({
     <section
       id="code-search"
       aria-labelledby="code-search-heading"
-      className="rounded-md border border-[#d8dfd3] bg-[#fbfcf8] shadow-sm"
+      className="min-w-0 rounded-md border border-[#d8dfd3] bg-[#fbfcf8] shadow-sm"
     >
       <div className="border-b border-[#e1e6dc] px-4 py-4">
         <h2 id="code-search-heading" className="text-lg font-semibold text-[#172026]">
@@ -690,13 +690,13 @@ function WorkspacePanel({
   onQuestionChange: (question: string) => void;
   onAskQuestion: (event: FormEvent<HTMLFormElement>) => void;
 }) {
-  const tabs: Array<[WorkspaceTab, string]> = [
-    ['section', 'Section'],
-    ['chat', 'GraphRAG'],
-    ['graph', 'Knowledge Graph'],
-    ['proof', 'Logic Proofs'],
+  const tabs: Array<{ tab: WorkspaceTab; label: string; shortLabel: string }> = [
+    { tab: 'section', label: 'Section', shortLabel: 'Section' },
+    { tab: 'chat', label: 'GraphRAG', shortLabel: 'GraphRAG' },
+    { tab: 'graph', label: 'Knowledge Graph', shortLabel: 'Graph' },
+    { tab: 'proof', label: 'Logic Proofs', shortLabel: 'Proofs' },
   ];
-  const activeIndex = tabs.findIndex(([tab]) => tab === activeTab);
+  const activeIndex = tabs.findIndex((item) => item.tab === activeTab);
 
   function onTabKeyDown(event: KeyboardEvent<HTMLButtonElement>) {
     if (!['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) {
@@ -712,7 +712,7 @@ function WorkspacePanel({
           : event.key === 'ArrowRight'
             ? (activeIndex + 1) % tabs.length
             : (activeIndex - 1 + tabs.length) % tabs.length;
-    const nextTab = tabs[nextIndex][0];
+    const nextTab = tabs[nextIndex].tab;
     setActiveTab(nextTab);
     window.requestAnimationFrame(() => {
       document.getElementById(`tab-${nextTab}`)?.focus();
@@ -723,31 +723,40 @@ function WorkspacePanel({
     <section
       id="research-workbench"
       aria-labelledby="research-workbench-heading"
-      className="rounded-md border border-[#d8dfd3] bg-white shadow-sm"
+      className="min-w-0 rounded-md border border-[#d8dfd3] bg-white shadow-sm"
     >
       <div className="border-b border-[#e1e6dc] px-4 pt-4">
         <h2 id="research-workbench-heading" className="sr-only">
           Selected section and research tools
         </h2>
-        <div className="flex gap-2 overflow-x-auto pb-px" role="tablist" aria-label="Research workspace panels">
-          {tabs.map(([tab, label]) => (
+        <a
+          href="#code-search"
+          className="mb-3 inline-flex min-h-11 items-center rounded-md border border-[#8fa08a] px-3 text-sm font-semibold text-[#24594f] hover:bg-[#f3f6ef] lg:hidden"
+        >
+          Back to results
+        </a>
+        <div className="flex gap-1.5 overflow-x-auto pb-px sm:gap-2" role="tablist" aria-label="Research workspace panels">
+          {tabs.map(({ tab, label, shortLabel }) => (
             <button
               id={`tab-${tab}`}
               key={tab}
               type="button"
               role="tab"
+              aria-label={label}
               aria-selected={activeTab === tab}
               aria-controls={`panel-${tab}`}
               tabIndex={activeTab === tab ? 0 : -1}
               onClick={() => setActiveTab(tab as WorkspaceTab)}
               onKeyDown={onTabKeyDown}
-              className={`min-h-11 shrink-0 rounded-t-md border border-b-0 px-3 py-2 text-sm font-semibold ${
+              title={label}
+              className={`min-h-11 shrink-0 rounded-t-md border border-b-0 px-2 py-2 text-xs font-semibold sm:px-3 sm:text-sm ${
                 activeTab === tab
                   ? 'border-[#d8dfd3] bg-white text-[#24594f]'
                   : 'border-transparent bg-[#eef2ea] text-[#596861] hover:text-[#24594f]'
               }`}
             >
-              {label}
+              <span className="sm:hidden">{shortLabel}</span>
+              <span className="hidden sm:inline">{label}</span>
             </button>
           ))}
         </div>
@@ -852,8 +861,8 @@ function ResultCard({
       {proof && (
         <div className="mt-3 flex flex-wrap gap-2">
           <ResultBadge label={proof.norm_type} />
-          <ResultBadge label={proof.norm_operator} />
-          <ResultBadge label={proof.deontic_status} />
+          <ResultBadge label={formatNormOperatorForBadge(proof.norm_operator)} />
+          <ResultBadge label={formatProofStatusForBadge(proof.deontic_status)} />
         </div>
       )}
       <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#52615c] [overflow-wrap:anywhere]">{result.snippet}</p>
@@ -867,6 +876,21 @@ function ResultBadge({ label }: { label: string }) {
       {label}
     </span>
   );
+}
+
+function formatNormOperatorForBadge(operator: string) {
+  const normalized = operator.toUpperCase();
+  if (normalized === 'O') return 'required';
+  if (normalized === 'P') return 'allowed';
+  if (normalized === 'F') return 'forbidden';
+  return operator;
+}
+
+function formatProofStatusForBadge(status: string) {
+  if (status === 'success') return 'proof ok';
+  if (status === 'warning') return 'needs review';
+  if (status === 'error') return 'proof error';
+  return status.replace(/_/g, ' ');
 }
 
 function GraphRagChat({

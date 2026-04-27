@@ -73,9 +73,8 @@ body {
 
 .skip-links a {
   position: absolute;
-  left: 0.5rem;
+  left: -100vw;
   top: 0.5rem;
-  transform: translateY(-150%);
   border-radius: 0.375rem;
   background: #ffffff;
   color: #102a43;
@@ -88,7 +87,7 @@ body {
 
 .skip-links a:focus,
 .skip-links a:focus-visible {
-  transform: translateY(0);
+  left: 0.5rem;
 }
 
 @media (prefers-reduced-motion: reduce) {

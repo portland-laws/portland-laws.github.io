@@ -116,6 +116,7 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await expect(page.locator('#search-status')).toContainText(/matches/);
     await expect(page.getByRole('button', { name: /^Select / }).first()).toBeVisible();
     await expect(page.getByRole('button', { name: /Show \d+ more results/ })).toBeVisible();
+    await page.getByLabel('Search Portland City Code').focus();
 
     await expectNoHorizontalOverflow(page);
     await page.locator('#code-search').screenshot({
@@ -142,6 +143,13 @@ test.describe('Portland legal corpus mobile screenshots', () => {
       path: screenshotPath(testInfo, 'mobile-selected-result-workbench.png'),
       fullPage: false,
     });
+
+    await page.getByRole('link', { name: 'Back to results' }).click();
+    const searchPosition = await page.locator('#code-search').evaluate((element) => {
+      const box = element.getBoundingClientRect();
+      return { top: box.top };
+    });
+    expect(searchPosition.top).toBeLessThan(80);
   });
 });
 
