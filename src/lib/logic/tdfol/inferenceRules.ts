@@ -1,4 +1,5 @@
-import type { TdfolBinaryFormula, TdfolFormula } from './ast';
+import { getFreeVariables, substituteFormula } from './ast';
+import type { TdfolBinaryFormula, TdfolFormula, TdfolTerm } from './ast';
 import { formatTdfolFormula } from './formatter';
 
 export interface TdfolInferenceRule {
@@ -227,6 +228,75 @@ export const ObligationWeakeningRule = new TdfolRule({
   },
 });
 
+export const UniversalModusPonensRule = new TdfolRule({
+  name: 'UniversalModusPonens',
+  description: 'From forall x. (phi(x) -> psi(x)) and phi(a), infer psi(a)',
+  arity: 2,
+  canApply: (universal, premise) => {
+    if (universal.kind !== 'quantified' || universal.quantifier !== 'FORALL' || !isImplication(universal.formula)) {
+      return false;
+    }
+    return matchFormulaForVariable(universal.formula.left, premise, universal.variable.name) !== undefined;
+  },
+  apply: (universal, premise) => {
+    if (universal.kind !== 'quantified' || !isImplication(universal.formula)) {
+      throw new Error('Invalid universal premise');
+    }
+    const binding = matchFormulaForVariable(universal.formula.left, premise, universal.variable.name);
+    if (!binding) throw new Error('Universal premise does not match supplied fact');
+    return substituteFormula(universal.formula.right, universal.variable.name, binding);
+  },
+});
+
+export const ExistentialInstantiationRule = new TdfolRule({
+  name: 'ExistentialInstantiation',
+  description: 'From exists x. phi(x), infer phi(skolem_x)',
+  arity: 1,
+  canApply: (formula) => formula.kind === 'quantified' && formula.quantifier === 'EXISTS',
+  apply: (formula) => {
+    if (formula.kind !== 'quantified') throw new Error('Invalid existential premise');
+    return substituteFormula(formula.formula, formula.variable.name, {
+      kind: 'constant',
+      name: `skolem_${formula.variable.name}`,
+      sort: formula.variable.sort,
+    });
+  },
+});
+
+export const ExistentialGeneralizationRule = new TdfolRule({
+  name: 'ExistentialGeneralization',
+  description: 'From phi(a), infer exists x. phi(x) by replacing the first constant',
+  arity: 1,
+  canApply: (formula) => findFirstConstant(formula) !== undefined,
+  apply: (formula) => {
+    const constant = findFirstConstant(formula);
+    if (!constant) throw new Error('No constant available for existential generalization');
+    const variable: TdfolTerm = { kind: 'variable', name: 'x', sort: constant.sort };
+    return {
+      kind: 'quantified',
+      quantifier: 'EXISTS',
+      variable,
+      formula: replaceFirstTerm(formula, constant, variable),
+    };
+  },
+});
+
+export const UniversalGeneralizationRule = new TdfolRule({
+  name: 'UniversalGeneralization',
+  description: 'From phi(x), infer forall x. phi(x) for a free variable',
+  arity: 1,
+  canApply: (formula) => getFreeVariables(formula).size > 0,
+  apply: (formula) => {
+    const [variableName] = [...getFreeVariables(formula)].sort();
+    return {
+      kind: 'quantified',
+      quantifier: 'FORALL',
+      variable: { kind: 'variable', name: variableName },
+      formula,
+    };
+  },
+});
+
 export function getAllTdfolRules(): TdfolInferenceRule[] {
   return [
     ModusPonensRule,
@@ -243,6 +313,10 @@ export function getAllTdfolRules(): TdfolInferenceRule[] {
     ProhibitionEquivalenceRule,
     ProhibitionFromObligationRule,
     ObligationWeakeningRule,
+    UniversalModusPonensRule,
+    ExistentialInstantiationRule,
+    ExistentialGeneralizationRule,
+    UniversalGeneralizationRule,
   ];
 }
 
@@ -281,4 +355,114 @@ export function formulaKey(formula: TdfolFormula): string {
 
 function isImplication(formula: TdfolFormula): formula is TdfolBinaryFormula {
   return formula.kind === 'binary' && formula.operator === 'IMPLIES';
+}
+
+function matchFormulaForVariable(pattern: TdfolFormula, target: TdfolFormula, variableName: string): TdfolTerm | undefined {
+  const bindings = new Map<string, TdfolTerm>();
+  return matchFormula(pattern, target, variableName, bindings) ? bindings.get(variableName) : undefined;
+}
+
+function matchFormula(pattern: TdfolFormula, target: TdfolFormula, variableName: string, bindings: Map<string, TdfolTerm>): boolean {
+  if (pattern.kind !== target.kind) return false;
+  switch (pattern.kind) {
+    case 'predicate':
+      return target.kind === 'predicate' &&
+        pattern.name === target.name &&
+        pattern.args.length === target.args.length &&
+        pattern.args.every((term, index) => matchTerm(term, target.args[index], variableName, bindings));
+    case 'unary':
+      return target.kind === 'unary' && pattern.operator === target.operator && matchFormula(pattern.formula, target.formula, variableName, bindings);
+    case 'binary':
+      return target.kind === 'binary' &&
+        pattern.operator === target.operator &&
+        matchFormula(pattern.left, target.left, variableName, bindings) &&
+        matchFormula(pattern.right, target.right, variableName, bindings);
+    case 'quantified':
+      return target.kind === 'quantified' &&
+        pattern.quantifier === target.quantifier &&
+        matchFormula(pattern.formula, target.formula, variableName, bindings);
+    case 'deontic':
+      return target.kind === 'deontic' &&
+        pattern.operator === target.operator &&
+        matchFormula(pattern.formula, target.formula, variableName, bindings);
+    case 'temporal':
+      return target.kind === 'temporal' &&
+        pattern.operator === target.operator &&
+        matchFormula(pattern.formula, target.formula, variableName, bindings);
+  }
+}
+
+function matchTerm(pattern: TdfolTerm, target: TdfolTerm, variableName: string, bindings: Map<string, TdfolTerm>): boolean {
+  if (pattern.kind === 'variable' && pattern.name === variableName) {
+    const existing = bindings.get(variableName);
+    if (!existing) {
+      bindings.set(variableName, target);
+      return true;
+    }
+    return formatTermKey(existing) === formatTermKey(target);
+  }
+  if (pattern.kind !== target.kind || pattern.name !== target.name) return false;
+  if (pattern.kind === 'function' && target.kind === 'function') {
+    return pattern.args.length === target.args.length &&
+      pattern.args.every((arg, index) => matchTerm(arg, target.args[index], variableName, bindings));
+  }
+  return true;
+}
+
+function findFirstConstant(formula: TdfolFormula): TdfolTerm | undefined {
+  switch (formula.kind) {
+    case 'predicate':
+      return formula.args.map(findFirstConstantInTerm).find(Boolean);
+    case 'unary':
+    case 'deontic':
+    case 'temporal':
+    case 'quantified':
+      return findFirstConstant(formula.formula);
+    case 'binary':
+      return findFirstConstant(formula.left) ?? findFirstConstant(formula.right);
+  }
+}
+
+function findFirstConstantInTerm(term: TdfolTerm): TdfolTerm | undefined {
+  if (term.kind === 'constant') return term;
+  if (term.kind === 'function') return term.args.map(findFirstConstantInTerm).find(Boolean);
+  return undefined;
+}
+
+function replaceFirstTerm(formula: TdfolFormula, target: TdfolTerm, replacement: TdfolTerm): TdfolFormula {
+  let replaced = false;
+  const replaceTermOnce = (term: TdfolTerm): TdfolTerm => {
+    if (!replaced && formatTermKey(term) === formatTermKey(target)) {
+      replaced = true;
+      return replacement;
+    }
+    if (term.kind === 'function') {
+      return { ...term, args: term.args.map(replaceTermOnce) };
+    }
+    return term;
+  };
+
+  const walk = (node: TdfolFormula): TdfolFormula => {
+    switch (node.kind) {
+      case 'predicate':
+        return { ...node, args: node.args.map(replaceTermOnce) };
+      case 'unary':
+        return { ...node, formula: walk(node.formula) };
+      case 'binary':
+        return { ...node, left: walk(node.left), right: walk(node.right) };
+      case 'quantified':
+      case 'deontic':
+      case 'temporal':
+        return { ...node, formula: walk(node.formula) };
+    }
+  };
+
+  return walk(formula);
+}
+
+function formatTermKey(term: TdfolTerm): string {
+  if (term.kind === 'function') {
+    return `${term.name}(${term.args.map(formatTermKey).join(',')})`;
+  }
+  return `${term.kind}:${term.name}:${term.sort ?? ''}`;
 }

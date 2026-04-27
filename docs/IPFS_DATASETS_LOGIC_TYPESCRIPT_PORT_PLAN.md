@@ -81,7 +81,7 @@ The TypeScript target should be a clean client-side domain library that preserve
 | `logic/common/converters.py` | Port fully as idiomatic TS interfaces/classes | Preserve converter lifecycle, validation, caching, batch behavior, and result shapes in browser-native form. |
 | `logic/TDFOL/tdfol_core.py` | Port directly | AST, operators, terms, formulas, substitution, and free-variable analysis are the best TypeScript core. |
 | `logic/TDFOL/tdfol_parser.py` | Port directly, with tests | Recursive descent parsing and tokenization are portable. This unlocks proof explorer and validation. |
-| `logic/TDFOL/tdfol_converter.py` | Port fully | TDFOL to DCEC/FOL/TPTP conversion must match Python outputs. |
+| `logic/TDFOL/tdfol_converter.py` | Port fully | TDFOL to DCEC/FOL/TPTP conversion must match Python outputs. Initial browser converter supports stable TDFOL, FOL projection, DCEC s-expression, TPTP, JSON, metadata, and projection warnings. |
 | `logic/TDFOL/tdfol_inference_rules.py` | Port fully | All propositional, first-order, temporal, deontic, and combined rules need TS parity. |
 | `logic/TDFOL/expansion_rules.py` | Port directly | Tableaux expansion rules are deterministic and reusable across modal tableaux and inference systems. |
 | `logic/TDFOL/tdfol_prover.py` | Port fully | Start with bounded reasoning, then complete proof search parity and strategy selection. |
@@ -320,10 +320,11 @@ Acceptance criteria:
 
 - [x] Port the TDFOL term/formula model from `tdfol_core.py`.
 - [x] Port tokenization and recursive descent parsing from `tdfol_parser.py`.
+- [x] Port initial `tdfol_converter.py` browser converter for stable TDFOL, FOL projection, DCEC s-expression, TPTP, JSON, metadata, and batch conversion.
 - [x] Support ASCII and symbolic operator aliases where feasible.
 - [x] Format ASTs back to compact source and display-friendly JSON.
 - [x] Implement free variable analysis and basic substitution.
-- [x] Port initial `TDFOL/inference_rules` browser-native rule interface and deterministic propositional, temporal, and deontic rules.
+- [x] Port initial `TDFOL/inference_rules` browser-native rule interface and deterministic propositional, temporal, deontic, and first-order rules.
 - [x] Port `expansion_rules.py` browser-native rule registry for AND, OR, IMPLIES, IFF, and NOT tableaux expansions.
 - [x] Port initial `tdfol_prover.py` forward-chaining proof engine with step and derived-formula budgets.
 - [x] Port initial `TDFOL/strategies/base.py`, `forward_chaining.py`, `backward_chaining.py`, `bidirectional.py`, `modal_tableaux.py`, `cec_delegate.py`, and `strategy_selector.py` browser strategy layer with priority/cost selection.
@@ -462,6 +463,7 @@ Acceptance criteria:
 ### Phase 11: Full TDFOL Parity
 
 - [ ] Port every TDFOL inference rule from `logic/TDFOL/tdfol_inference_rules.py`.
+  - [x] Initial first-order rule slice: universal modus ponens, existential instantiation, existential generalization, and universal generalization.
 - [x] Port propositional tableaux expansion rules from `logic/TDFOL/expansion_rules.py`.
 - [ ] Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.
   - [x] Initial forward-chaining strategy and selector parity.
@@ -538,7 +540,7 @@ Current completed TypeScript/WASM port slice:
 - 75-85 percent of common module behavior: cache, converter lifecycle, browser feature detection, proof cache, utility monitoring, validation, and error surfaces.
 - 100 percent of proof summary loading, indexing, validation, and display helpers.
 - 80-90 percent of TDFOL core AST/parser/formatter behavior needed for generated Portland formulas.
-- 66-76 percent of TDFOL inference/prover/explanation/operations behavior: initial propositional, temporal, deontic rules, tableaux expansion rules, bounded forward/backward/bidirectional chaining, local CEC delegation, modal tableaux, strategy selection, indexed-KB optimization, countermodels, proof explanations, dependency graphs, proof tree views, security validation, metrics collection, profiling, dashboarding, and performance-engine orchestration.
+- 70-80 percent of TDFOL inference/prover/explanation/operations behavior: initial converter outputs, propositional, first-order, temporal, deontic rules, tableaux expansion rules, bounded forward/backward/bidirectional chaining, local CEC delegation, modal tableaux, strategy selection, indexed-KB optimization, countermodels, proof explanations, dependency graphs, proof tree views, security validation, metrics collection, profiling, dashboarding, and performance-engine orchestration.
 - 75-85 percent of regex FOL/deontic extraction, formatter, analyzer, and knowledge-base behavior, focused on legal-code clauses.
 - 70-80 percent of F-logic data modeling and display rendering for generated frame snippets.
 - 50-60 percent of ZKP canonicalization/statement metadata behavior.

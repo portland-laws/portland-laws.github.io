@@ -44,6 +44,17 @@ export async function answerWithGraphRag(question: string): Promise<GraphRagAnsw
   const prompt = buildGraphRagPrompt(trimmedQuestion, evidence.sections, logicEvidence);
 
   try {
+    if (shouldSkipLocalModelForBrowserTest()) {
+      return {
+        question: trimmedQuestion,
+        answer: buildEvidenceSummary(evidence.sections),
+        evidence,
+        logicEvidence,
+        usedLocalModel: false,
+        warning: 'Answered from retrieved evidence without local model generation.',
+      };
+    }
+
     const { clientLLMWorkerService } = await import('./clientLLMWorkerService');
     const rawAnswer = await clientLLMWorkerService.generateText(prompt, 220);
     const candidateAnswer = cleanModelAnswer(rawAnswer);
@@ -77,6 +88,13 @@ export async function answerWithGraphRag(question: string): Promise<GraphRagAnsw
   }
 }
 
+function shouldSkipLocalModelForBrowserTest() {
+  if (typeof window === 'undefined') {
+    return false;
+  }
+  return window.localStorage.getItem('PORTLAND_DISABLE_LOCAL_LLM') === 'true';
+}
+
 function buildGraphRagPrompt(question: string, sections: SearchResult[], logicEvidence: LogicEvidenceItem[]) {
   const logicByCid = new Map(logicEvidence.map((item) => [item.ipfs_cid, item]));
   const evidence = sections
@@ -96,7 +114,7 @@ Generated logic metadata:
       return `[${index + 1}] ${citation}
 Title: ${section.title}
 Source: ${section.source_url}
-Excerpt: ${result.snippet || section.text.slice(0, 700)}${logicBlock}`;
+Excerpt: ${cleanCorpusExcerpt(result.snippet || section.text.slice(0, 700))}${logicBlock}`;
     })
     .join('\n\n');
 
@@ -134,9 +152,17 @@ function buildEvidenceSummary(sections: SearchResult[]) {
   const lead = topSections
     .map((result, index) => {
       const section = result.section;
-      return `[${index + 1}] ${result.citation}: ${section.title}. ${result.snippet}`;
+      return `[${index + 1}] ${result.citation}: ${section.title}. ${cleanCorpusExcerpt(result.snippet)}`;
     })
     .join('\n\n');
 
   return `The strongest local corpus matches are:\n\n${lead}\n\nReview the cited Portland City Code sections before relying on this information.`;
+}
+
+function cleanCorpusExcerpt(excerpt: string) {
+  return excerpt
+    .replace(/\s+/g, ' ')
+    .replace(/(^|\.\.\.|\s)Label:\s*City code section\s*/gi, '$1')
+    .replace(/(^|\.\.\.|\s)Label:\s*/gi, '$1')
+    .trim();
 }

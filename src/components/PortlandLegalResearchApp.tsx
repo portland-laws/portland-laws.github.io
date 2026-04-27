@@ -777,7 +777,7 @@ function WorkspacePanel({
 }) {
   const tabs: Array<{ tab: WorkspaceTab; label: string; shortLabel: string }> = [
     { tab: 'section', label: 'Section', shortLabel: 'Section' },
-    { tab: 'chat', label: 'GraphRAG', shortLabel: 'GraphRAG' },
+    { tab: 'chat', label: 'GraphRAG', shortLabel: 'Chat' },
     { tab: 'graph', label: 'Knowledge Graph', shortLabel: 'Graph' },
     { tab: 'proof', label: 'Logic Proofs', shortLabel: 'Proofs' },
   ];
@@ -810,17 +810,18 @@ function WorkspacePanel({
       aria-labelledby="research-workbench-heading"
       className={`min-w-0 self-start rounded-md border border-[#d8dfd3] bg-white shadow-sm ${className}`}
     >
-      <div className="border-b border-[#e1e6dc] px-4 pt-4">
+      <div className="border-b border-[#e1e6dc] px-4 pt-3 sm:pt-4">
         <h2 id="research-workbench-heading" className="sr-only">
           Selected section and research tools
         </h2>
-        <a
-          href="#code-search"
-          className="mb-3 inline-flex min-h-11 items-center rounded-md border border-[#8fa08a] px-3 text-sm font-semibold text-[#24594f] hover:bg-[#f3f6ef] lg:hidden"
-        >
-          Back to results
-        </a>
         <div className="flex gap-1.5 overflow-x-auto pb-px sm:gap-2" role="tablist" aria-label="Research workspace panels">
+          <a
+            href="#code-search"
+            aria-label="Back to results"
+            className="inline-flex min-h-11 shrink-0 items-center rounded-t-md border border-b-0 border-[#d8dfd3] bg-white px-2 py-2 text-xs font-semibold text-[#24594f] hover:bg-[#f3f6ef] sm:px-3 sm:text-sm lg:hidden"
+          >
+            Results
+          </a>
           {tabs.map(({ tab, label, shortLabel }) => (
             <button
               id={`tab-${tab}`}
@@ -1233,6 +1234,7 @@ function formatGraphValueLabel(value: string) {
 
 function SectionReader({ section }: { section: CorpusSection }) {
   const paragraphs = section.text.split(/\n{2,}/).map(cleanSectionParagraph).filter(Boolean);
+  const blocks = paragraphs.flatMap(splitLegalClauses);
 
   return (
     <article aria-labelledby="selected-section-heading">
@@ -1255,11 +1257,26 @@ function SectionReader({ section }: { section: CorpusSection }) {
         </div>
       </div>
       <div className="max-w-prose px-4 py-4 sm:px-5 sm:py-5">
-        {paragraphs.map((paragraph, index) => (
-          <p key={index} className="mb-4 text-base leading-7 text-[#26343a] [overflow-wrap:anywhere]">
-            {paragraph}
-          </p>
-        ))}
+        <div className="grid gap-3" aria-label="Section text clauses">
+          {blocks.map((block, index) => (
+            block.label ? (
+              <section
+                key={`${block.label}-${index}`}
+                aria-label={`Clause ${block.label}`}
+                className="rounded-md border border-[#dce3d6] bg-[#fbfcf8] px-3 py-3 sm:px-4"
+              >
+                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#607068]">
+                  Clause {block.label}
+                </div>
+                <p className="text-base leading-7 text-[#26343a] [overflow-wrap:anywhere]">{block.text}</p>
+              </section>
+            ) : (
+              <p key={`paragraph-${index}`} className="text-base leading-7 text-[#26343a] [overflow-wrap:anywhere]">
+                {block.text}
+              </p>
+            )
+          ))}
+        </div>
       </div>
     </article>
   );
@@ -1393,7 +1410,43 @@ function cleanSectionParagraph(paragraph: string) {
   return paragraph
     .trim()
     .replace(/^Label:\s*City code section\s*/i, '')
-    .replace(/^Label:\s*/i, '');
+    .replace(/^Label:\s*/i, '')
+    .replace(/\s+([A-Z])\s+\./g, ' $1.');
+}
+
+function splitLegalClauses(paragraph: string): Array<{ label?: string; text: string }> {
+  const matches = [...paragraph.matchAll(/(?<prefix>^|[\.\)])\s*(?<label>[A-Z])\.\s+(?=[A-Z(])/g)]
+    .map((match) => {
+      const label = match.groups?.label || '';
+      const labelIndex = (match.index ?? 0) + match[0].indexOf(`${label}.`);
+      const contentStart = labelIndex + `${label}.`.length;
+      return {
+        label,
+        labelIndex,
+        contentStart: contentStart + (paragraph.slice(contentStart).match(/^\s+/)?.[0].length || 0),
+      };
+    });
+  if (matches.length < 2) {
+    return [{ text: paragraph }];
+  }
+
+  const blocks: Array<{ label?: string; text: string }> = [];
+  const firstMatchIndex = matches[0].labelIndex;
+  const preface = paragraph.slice(0, firstMatchIndex).trim();
+  if (preface) {
+    blocks.push({ text: preface });
+  }
+
+  matches.forEach((match, index) => {
+    const start = match.contentStart;
+    const nextStart = matches[index + 1]?.labelIndex ?? paragraph.length;
+    const text = paragraph.slice(start, nextStart).trim();
+    if (text) {
+      blocks.push({ label: match.label, text });
+    }
+  });
+
+  return blocks;
 }
 
 function cleanCorpusSnippet(snippet: string) {

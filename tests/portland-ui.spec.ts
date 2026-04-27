@@ -9,6 +9,9 @@ test.beforeAll(() => {
 });
 
 test.beforeEach(async ({ page }) => {
+  await page.addInitScript(() => {
+    window.localStorage.setItem('PORTLAND_DISABLE_LOCAL_LLM', 'true');
+  });
   await page.goto('/');
   await page.addStyleTag({
     content: `
@@ -50,11 +53,13 @@ test.describe('Portland legal corpus UI screenshots', () => {
       path: screenshotPath(testInfo, 'desktop-section-reader.png'),
     });
     await expect(page.locator('#panel-section')).not.toContainText(/^Label:/);
+    await expect(page.locator('#panel-section').getByLabel('Clause A')).toHaveCount(1);
 
     await page.getByRole('tab', { name: 'GraphRAG' }).click();
     await page.locator('#panel-chat').getByLabel('Question').fill('What does this section say in simple terms?');
     await page.getByRole('button', { name: /^Ask$/ }).click();
     await expect(page.getByLabel('GraphRAG answer')).toBeVisible({ timeout: 30000 });
+    await expect(page.getByLabel('GraphRAG answer')).not.toContainText('Label:');
     await expect(page.getByLabel('GraphRAG evidence')).toBeVisible();
     await page.locator('#research-workbench').screenshot({
       path: screenshotPath(testInfo, 'desktop-graphrag-chat.png'),
@@ -156,6 +161,7 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await page.getByRole('button', { name: /^Select / }).first().click();
     await expect(page.locator('#panel-section')).toBeFocused();
     await expect(page.locator('#panel-section')).not.toContainText(/^Label:/);
+    await expect(page.locator('#panel-section').getByLabel('Clause A')).toHaveCount(1);
 
     const workbenchPosition = await page.locator('#research-workbench').evaluate((element) => {
       const box = element.getBoundingClientRect();
@@ -163,6 +169,8 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     });
     expect(workbenchPosition.top).toBeLessThan(80);
     expect(workbenchPosition.left).toBeGreaterThanOrEqual(0);
+    await expectWorkbenchToolbarIsCompact(page);
+    await expectWorkbenchTabsFitWithoutHorizontalScroll(page);
     await expectNoHorizontalOverflow(page);
 
     await page.screenshot({
@@ -234,6 +242,25 @@ async function expectProofMetricsUseTwoColumns(page: Page) {
 async function expectElementTopLessThan(page: Page, selector: string, maxTop: number) {
   const top = await page.locator(selector).evaluate((element) => element.getBoundingClientRect().top);
   expect(top).toBeLessThan(maxTop);
+}
+
+async function expectWorkbenchToolbarIsCompact(page: Page) {
+  const toolbarHeight = await page.locator('#research-workbench [role="tablist"]').evaluate((element) => {
+    return element.getBoundingClientRect().height;
+  });
+
+  expect(toolbarHeight).toBeLessThan(54);
+}
+
+async function expectWorkbenchTabsFitWithoutHorizontalScroll(page: Page) {
+  const tablist = await page.locator('#research-workbench [role="tablist"]').evaluate((element) => ({
+    clientWidth: element.clientWidth,
+    scrollLeft: element.scrollLeft,
+    scrollWidth: element.scrollWidth,
+  }));
+
+  expect(tablist.scrollWidth, JSON.stringify(tablist)).toBeLessThanOrEqual(tablist.clientWidth + 1);
+  expect(tablist.scrollLeft, JSON.stringify(tablist)).toBeLessThanOrEqual(1);
 }
 
 function screenshotPath(testInfo: TestInfo, fileName: string) {
