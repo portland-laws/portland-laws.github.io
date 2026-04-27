@@ -164,6 +164,35 @@ test.describe('Portland legal corpus UI screenshots', () => {
     await expectNoHorizontalOverflow(page);
   });
 
+  test('renders deeply nested legal subsections for renter protections', async ({ page }, testInfo) => {
+    await page.getByLabel('Search Portland City Code').fill('30.01.085');
+    await page.getByRole('button', { name: /^Search$/ }).click();
+    await expect(page.locator('#search-status')).toContainText(/matches/);
+    await page.getByRole('button', { name: /^Select / }).first().click();
+
+    await expect(page.locator('#panel-section').getByRole('heading', { name: '30.01.085 Portland Renter Additional Protections.' })).toBeVisible();
+    await expect(page.getByLabel('Section overview')).toContainText('Subsections');
+    await expect(page.getByLabel('Section overview')).toContainText('12');
+    await expect(page.locator('#panel-section')).not.toContainText('Act B. A Landlord');
+    await expect(page.locator('#panel-section').getByLabel('Subsection B')).toContainText('A Landlord may terminate');
+
+    const subsectionC = page.locator('#panel-section').getByLabel('Subsection C');
+    await expect(subsectionC.locator('[data-outline-depth="1"] > li[data-outline-marker="(a)"]')).toHaveCount(1);
+    await expect(subsectionC.locator('[data-outline-depth="1"] > li[data-outline-marker="(b)"]')).toHaveCount(1);
+    await expect(subsectionC.locator('[data-outline-depth="2"] > li[data-outline-marker="(i)"]')).toHaveCount(1);
+    await expect(subsectionC.locator('[data-outline-depth="2"] > li[data-outline-marker="(ii)"]')).toHaveCount(1);
+
+    const subsectionI = page.locator('#panel-section').getByLabel('Subsection I');
+    await expect(subsectionI.locator('[data-outline-depth="1"] > li')).toHaveCount(12);
+    await expect(subsectionI.locator('[data-outline-depth="2"] > li[data-outline-marker="a."]')).toHaveCount(1);
+    await expect(subsectionI.locator('[data-outline-depth="2"] > li[data-outline-marker="d."]')).toHaveCount(1);
+
+    await page.locator('#research-workbench').screenshot({
+      path: screenshotPath(testInfo, 'desktop-renter-protections-outline.png'),
+    });
+    await expectNoHorizontalOverflow(page);
+  });
+
   test('captures keyboard skip links and tab keyboard navigation states', async ({ page }, testInfo) => {
     await page.keyboard.press('Tab');
     await expect(page.getByRole('link', { name: 'Skip to code directory' })).toBeFocused();

@@ -1977,24 +1977,47 @@ function SectionReader({
 }
 
 function LegalTextBlock({ text }: { text: string }) {
-  const structured = splitNumberedSubparts(text);
+  const outline = parseLegalOutline(text, ['number', 'lower-alpha', 'roman']);
 
-  if (!structured) {
+  if (!outline) {
     return <p className="text-base leading-7 text-[#26343a] [overflow-wrap:anywhere]">{text}</p>;
   }
 
   return (
     <div className="text-base leading-7 text-[#26343a] [overflow-wrap:anywhere]">
-      {structured.preface && <p>{structured.preface}</p>}
-      <ol
-        className={`${structured.preface ? 'mt-3' : ''} list-decimal space-y-2 pl-6 marker:font-semibold marker:text-[#24594f]`}
-        aria-label="Numbered legal requirements"
-      >
-        {structured.items.map((item, index) => (
-          <li key={`${index}-${item.slice(0, 24)}`}>{item}</li>
-        ))}
-      </ol>
+      {outline.preface && <p>{outline.preface}</p>}
+      <LegalOutlineList nodes={outline.nodes} className={outline.preface ? 'mt-3' : ''} />
     </div>
+  );
+}
+
+function LegalOutlineList({
+  nodes,
+  className = '',
+  depth = 1,
+}: {
+  nodes: LegalOutlineNode[];
+  className?: string;
+  depth?: number;
+}) {
+  return (
+    <ol className={`grid gap-2 ${className}`} aria-label="Numbered legal requirements" data-outline-depth={depth}>
+      {nodes.map((node) => (
+        <li
+          key={`${node.marker}-${node.text.slice(0, 24)}`}
+          className="grid grid-cols-[2rem_minmax(0,1fr)] gap-2"
+          data-outline-marker={node.marker}
+        >
+          <span className="font-semibold text-[#24594f]" aria-hidden="true">{node.marker}</span>
+          <div>
+            {node.text && <p>{node.text}</p>}
+            {node.children.length > 0 && (
+              <LegalOutlineList nodes={node.children} className="mt-2 border-l border-[#d4ddd0] pl-3" depth={depth + 1} />
+            )}
+          </div>
+        </li>
+      ))}
+    </ol>
   );
 }
 
@@ -2185,24 +2208,33 @@ function summarizeSectionForAtAGlance(blocks: Array<{ label?: string; text: stri
   return `${cleaned.slice(0, 177).replace(/\s+\S*$/, '')}...`;
 }
 
+type LegalMarkerKind = 'upper' | 'number' | 'lower-alpha' | 'roman';
+
+interface LegalOutlineNode {
+  marker: string;
+  text: string;
+  children: LegalOutlineNode[];
+}
+
+interface LegalOutline {
+  preface: string;
+  nodes: LegalOutlineNode[];
+}
+
+interface LegalMarkerMatch {
+  marker: string;
+  index: number;
+  contentStart: number;
+}
+
 function splitLegalClauses(paragraph: string): Array<{ label?: string; text: string }> {
-  const matches = [...paragraph.matchAll(/(?<prefix>^|[\.\)])\s*(?<label>[A-Z])\.\s+(?=[A-Z(])/g)]
-    .map((match) => {
-      const label = match.groups?.label || '';
-      const labelIndex = (match.index ?? 0) + match[0].indexOf(`${label}.`);
-      const contentStart = labelIndex + `${label}.`.length;
-      return {
-        label,
-        labelIndex,
-        contentStart: contentStart + (paragraph.slice(contentStart).match(/^\s+/)?.[0].length || 0),
-      };
-    });
+  const matches = findOrderedMarkers(paragraph, 'upper');
   if (matches.length < 2) {
     return [{ text: paragraph }];
   }
 
   const blocks: Array<{ label?: string; text: string }> = [];
-  const firstMatchIndex = matches[0].labelIndex;
+  const firstMatchIndex = matches[0].index;
   const preface = paragraph.slice(0, firstMatchIndex).trim();
   if (preface) {
     blocks.push({ text: preface });
@@ -2210,14 +2242,117 @@ function splitLegalClauses(paragraph: string): Array<{ label?: string; text: str
 
   matches.forEach((match, index) => {
     const start = match.contentStart;
-    const nextStart = matches[index + 1]?.labelIndex ?? paragraph.length;
+    const nextStart = matches[index + 1]?.index ?? paragraph.length;
     const text = paragraph.slice(start, nextStart).trim();
     if (text) {
-      blocks.push({ label: match.label, text });
+      blocks.push({ label: match.marker.replace(/\.$/, ''), text });
     }
   });
 
   return blocks;
+}
+
+function parseLegalOutline(text: string, markerKinds: LegalMarkerKind[]): LegalOutline | null {
+  const [kind, ...childKinds] = markerKinds;
+  if (!kind) return null;
+  const matches = findOrderedMarkers(text, kind);
+  if (matches.length < 2) {
+    return parseLegalOutline(text, childKinds);
+  }
+
+  const preface = text.slice(0, matches[0].index).trim().replace(/[:;]\s*$/, ':');
+  const nodes = matches.map((match, index) => {
+    const nextStart = matches[index + 1]?.index ?? text.length;
+    const rawContent = text
+      .slice(match.contentStart, nextStart)
+      .trim()
+      .replace(/^and\s+/i, '')
+      .replace(/;\s*$/g, '')
+      .trim();
+    const childOutline = parseLegalOutline(rawContent, childKinds);
+    return {
+      marker: match.marker,
+      text: childOutline ? childOutline.preface : rawContent,
+      children: childOutline?.nodes || [],
+    };
+  });
+
+  return { preface, nodes };
+}
+
+function findOrderedMarkers(text: string, kind: LegalMarkerKind): LegalMarkerMatch[] {
+  const candidates = findMarkerCandidates(text, kind);
+  if (candidates.length < 2) {
+    return [];
+  }
+
+  let best: LegalMarkerMatch[] = [];
+  for (let start = 0; start < candidates.length; start += 1) {
+    const sequence: LegalMarkerMatch[] = [];
+    let expected = markerOrdinal(candidates[start].marker, kind);
+    if (expected === null) continue;
+
+    for (let index = start; index < candidates.length; index += 1) {
+      const candidate = candidates[index];
+      const ordinal = markerOrdinal(candidate.marker, kind);
+      if (ordinal === expected) {
+        sequence.push(candidate);
+        expected += 1;
+      } else if (sequence.length > 0 && ordinal !== null && ordinal < expected) {
+        break;
+      }
+    }
+
+    if (sequence.length > best.length) {
+      best = sequence;
+    }
+  }
+
+  return best.length >= 2 ? best : [];
+}
+
+function findMarkerCandidates(text: string, kind: LegalMarkerKind): LegalMarkerMatch[] {
+  const pattern =
+    kind === 'upper'
+      ? /(?:^|\s)([A-Z])\.\s+(?=\S)/g
+      : kind === 'number'
+        ? /(?:^|\s)(\d+)\.\s+(?=\S)/g
+        : kind === 'lower-alpha'
+          ? /(?:^|\s)(?:\(([a-z])\)|([a-z])\.)\s+(?=\S)/g
+          : /(?:^|\s)\((i{1,3}|iv|v|vi{0,3}|ix|x)\)\s+(?=\S)/g;
+
+  return [...text.matchAll(pattern)].map((match) => {
+    const rawMarker = match[1] || match[2] || '';
+    const markerStartInMatch = match[0].indexOf(match[1] ? rawMarker : `(${rawMarker})`);
+    const index = (match.index ?? 0) + markerStartInMatch;
+    const display = match[0].includes(`(${rawMarker})`) ? `(${rawMarker})` : `${rawMarker}.`;
+    const contentStart = index + display.length + (text.slice(index + display.length).match(/^\s+/)?.[0].length || 0);
+    return { marker: display, index, contentStart };
+  });
+}
+
+function markerOrdinal(marker: string, kind: LegalMarkerKind): number | null {
+  const normalized = marker.replace(/[().]/g, '');
+  if (kind === 'upper') return normalized.charCodeAt(0) - 64;
+  if (kind === 'number') return Number.parseInt(normalized, 10);
+  if (kind === 'lower-alpha') return /^[a-z]$/.test(normalized) ? normalized.charCodeAt(0) - 96 : null;
+  return romanOrdinal(normalized);
+}
+
+function romanOrdinal(value: string): number | null {
+  const numerals: Record<string, number> = {
+    i: 1,
+    ii: 2,
+    iii: 3,
+    iv: 4,
+    v: 5,
+    vi: 6,
+    vii: 7,
+    viii: 8,
+    ix: 9,
+    x: 10,
+  };
+  return numerals[value] || null;
 }
 
 function splitNumberedSubparts(text: string): { preface: string; items: string[] } | null {
