@@ -4,6 +4,7 @@ export * from './dependencyGraph';
 export * from './formatter';
 export * from './inferenceRules';
 export * from './lexer';
+export * from './modalTableaux';
 export * from './optimization';
 export * from './parser';
 export * from './performanceMetrics';

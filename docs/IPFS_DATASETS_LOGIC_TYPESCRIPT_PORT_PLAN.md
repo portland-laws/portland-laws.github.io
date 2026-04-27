@@ -86,6 +86,7 @@ The TypeScript target should be a clean client-side domain library that preserve
 | `logic/TDFOL/tdfol_prover.py` | Port fully | Start with bounded reasoning, then complete proof search parity and strategy selection. |
 | `logic/TDFOL/strategies/base.py`, `forward_chaining.py`, `strategy_selector.py` | Port fully | Browser-native proof strategy selection keeps prover behavior modular without Python strategy classes. |
 | `logic/TDFOL/tdfol_optimization.py` | Port fully in browser form | Indexed KB, cache-aware proving, strategy heuristics, and stats are portable; ZKP/parallel search require TS/WASM equivalents. |
+| `logic/TDFOL/modal_tableaux.py` | Port fully in browser form | K/T/D/S4/S5 tableaux, branch expansion, accessibility handling, and countermodel open branches are portable. |
 | `logic/TDFOL/countermodels.py`, `countermodel_visualizer.py` | Port fully in browser form | Kripke structures, countermodel extraction, DOT/JSON/ASCII/HTML exports, and accessibility property checks are browser-native. |
 | `logic/TDFOL/proof_tree_visualizer.py` | Port fully in browser form | Render proof trees in React/canvas/SVG and preserve exportable DOT/JSON where useful. |
 | `logic/fol/utils/fol_parser.py` | Port directly | Regex-based quantifier/operator parsing and formatting are browser-friendly. |
@@ -322,6 +323,7 @@ Acceptance criteria:
 - [x] Port initial `tdfol_prover.py` forward-chaining proof engine with step and derived-formula budgets.
 - [x] Port initial `TDFOL/strategies/base.py`, `forward_chaining.py`, and `strategy_selector.py` browser strategy layer with priority/cost selection.
 - [x] Port initial `tdfol_optimization.py` browser facade with indexed KB, cache-aware proving, strategy heuristics, and optimization stats.
+- [x] Port initial `modal_tableaux.py` browser tableaux core for K/T/D/S4/S5, branch expansion, closure checks, modal worlds, and countermodel-compatible open branches.
 - [x] Port initial `countermodels.py` and `countermodel_visualizer.py` browser equivalents for Kripke structures, branch extraction, DOT/JSON/ASCII/HTML exports, and modal property checks.
 - [x] Port initial `proof_explainer.py`, `formula_dependency_graph.py`, and `proof_tree_visualizer.py` browser equivalents for text, JSON, DOT, HTML, ASCII tree, and graph exports.
 - [x] Port initial `security_validator.py` browser equivalents for formula validation, rate limiting, resource limits, sanitization, ZKP audit checks, and security reports.
@@ -457,9 +459,10 @@ Acceptance criteria:
   - [x] Initial indexed-KB and cache-aware optimization facade.
   - [ ] Backward chaining, modal tableaux strategy, CEC delegate replacement, and bidirectional strategy parity.
   - [ ] Browser-native ZKP acceleration and parallel proof search parity.
-- [ ] Port modal tableaux and complete countermodel generation/visualization.
+- [ ] Complete modal tableaux and countermodel generation/visualization parity.
+  - [x] Initial modal tableaux proof search for propositional, temporal, deontic modal formulas and K/T/D/S4/S5 accessibility.
   - [x] Initial countermodel model, extractor, and self-contained visual exports.
-  - [ ] Modal tableaux proof search integration and richer interactive renderer parity.
+  - [ ] Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.
 - [ ] Complete TDFOL security validator parity.
 - [ ] Add Python parity fixtures for each TDFOL rule category.
 - [ ] Add browser performance budgets for proof search.
@@ -467,11 +470,14 @@ Acceptance criteria:
 ### Phase 12: Full CEC/DCEC Parity
 
 - [ ] Port CEC syntax tree, grammar loader, grammar engine, problem parser, and DCEC parsers.
+  - [x] Initial browser-native CEC/DCEC s-expression AST, parser, formatter, validator, and Portland DCEC unit coverage.
+  - [x] Initial CEC/DCEC expression analyzer for predicates, atoms, section refs, quantifiers, deontic operators, temporal operators, and expression complexity.
+- [x] Add CEC/DCEC parity fixtures and generated Portland DCEC parse coverage.
 - [ ] Port native inference rule groups: propositional, modal, temporal, deontic, cognitive, specialized, and resolution.
 - [ ] Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.
 - [ ] Port CEC proof cache, proof strategies, advanced inference, and error handling.
 - [ ] Port CEC NL policy compilers and language detection with browser-native NLP.
-- [ ] Add CEC/DCEC parity fixtures and generated Portland DCEC parse coverage.
+- [ ] Add deeper CEC/DCEC parity fixtures against Python parser and prover outputs.
 
 ### Phase 13: Browser-Native ML/NLP Parity
 
@@ -515,7 +521,7 @@ Current completed TypeScript/WASM port slice:
 - 75-85 percent of common module behavior: cache, converter lifecycle, browser feature detection, proof cache, utility monitoring, validation, and error surfaces.
 - 100 percent of proof summary loading, indexing, validation, and display helpers.
 - 80-90 percent of TDFOL core AST/parser/formatter behavior needed for generated Portland formulas.
-- 50-60 percent of TDFOL inference/prover/explanation/operations behavior: initial propositional, temporal, deontic rules, bounded forward chaining, strategy selection, indexed-KB optimization, countermodels, proof explanations, dependency graphs, proof tree views, security validation, and metrics collection.
+- 55-65 percent of TDFOL inference/prover/explanation/operations behavior: initial propositional, temporal, deontic rules, bounded forward chaining, modal tableaux, strategy selection, indexed-KB optimization, countermodels, proof explanations, dependency graphs, proof tree views, security validation, and metrics collection.
 - 75-85 percent of regex FOL/deontic extraction, formatter, analyzer, and knowledge-base behavior, focused on legal-code clauses.
 - 70-80 percent of F-logic data modeling and display rendering for generated frame snippets.
 - 50-60 percent of ZKP canonicalization/statement metadata behavior.

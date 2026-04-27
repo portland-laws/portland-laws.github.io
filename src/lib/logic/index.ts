@@ -1,4 +1,5 @@
 export * from './cache';
+export * from './cec';
 export * from './converters';
 export * from './deontic';
 export * from './errors';
