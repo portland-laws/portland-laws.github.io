@@ -596,14 +596,14 @@ function SearchPanel({
       aria-labelledby="code-search-heading"
       className={`min-w-0 rounded-md border border-[#d8dfd3] bg-[#fbfcf8] shadow-sm ${className}`}
     >
-      <div className="border-b border-[#e1e6dc] px-4 py-4">
+      <div className="border-b border-[#e1e6dc] px-4 py-3 sm:py-4">
         <h2 id="code-search-heading" className="text-lg font-semibold text-[#172026]">
           Find Code Sections
         </h2>
-        <p className="mt-1 text-sm leading-6 text-[#4f615b]">Keyword, vector, graph, and proof-aware retrieval</p>
+        <p className="mt-1 hidden text-sm leading-6 text-[#4f615b] sm:block">Keyword, vector, graph, and proof-aware retrieval</p>
       </div>
 
-      <form onSubmit={onSubmit} className="grid gap-3 border-b border-[#e1e6dc] px-4 py-4" aria-label="Search and filter code sections">
+      <form onSubmit={onSubmit} className="grid gap-2 border-b border-[#e1e6dc] px-4 py-3 sm:gap-3 sm:py-4" aria-label="Search and filter code sections">
         <label className="block">
           <span className="mb-1 block text-sm font-semibold text-[#26343a]">Search Portland City Code</span>
           <input
@@ -613,38 +613,71 @@ function SearchPanel({
             className="h-12 w-full rounded-md border border-[#8fa08a] bg-white px-4 text-base text-[#172026] shadow-sm transition"
             placeholder="Search code sections"
           />
-          <span id="search-help" className="mt-1 block text-sm leading-6 text-[#4f615b]">
+          <span id="search-help" className="sr-only sm:not-sr-only sm:mt-1 sm:block sm:text-sm sm:leading-6 sm:text-[#4f615b]">
             Search by words, citation, topic, or a plain-language question.
           </span>
         </label>
 
-        <div className="grid gap-3 sm:grid-cols-2">
-          <Select value={titleFilter} onChange={onTitleChange} label="Title">
-            <option value="">All titles</option>
-            {directory.map((title) => (
-              <option key={title.number} value={title.number}>
-                Title {title.number}
-              </option>
-            ))}
-          </Select>
-          <Select value={chapterFilter} onChange={onChapterChange} label="Chapter" disabled={!titleFilter}>
-            <option value="">All chapters</option>
-            {visibleChapters.map((chapter) => (
-              <option key={chapter.number} value={chapter.number}>
-                Chapter {chapter.number}
-              </option>
-            ))}
-          </Select>
+        <details className="rounded-md border border-[#dce3d6] bg-white sm:hidden">
+          <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-3 px-3 py-2 text-sm font-semibold text-[#24594f]">
+            Filters and examples
+            <span className="text-xs uppercase tracking-wide text-[#607068]">Expand</span>
+          </summary>
+          <div className="grid gap-3 border-t border-[#edf1e8] px-3 py-3">
+            <FilterControls
+              titleFilter={titleFilter}
+              chapterFilter={chapterFilter}
+              normFilter={normFilter}
+              directory={directory}
+              visibleChapters={visibleChapters}
+              onTitleChange={onTitleChange}
+              onChapterChange={onChapterChange}
+              onNormChange={onNormChange}
+            />
+            <ExampleSearches onExample={onExample} />
+          </div>
+        </details>
+
+        <div className="hidden gap-3 sm:grid">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <FilterControls
+              titleFilter={titleFilter}
+              chapterFilter={chapterFilter}
+              normFilter={normFilter}
+              directory={directory}
+              visibleChapters={visibleChapters}
+              onTitleChange={onTitleChange}
+              onChapterChange={onChapterChange}
+              onNormChange={onNormChange}
+              includeNorm={false}
+            />
+          </div>
+          <div className="grid gap-3 sm:grid-cols-[1fr_120px]">
+            <FilterControls
+              titleFilter={titleFilter}
+              chapterFilter={chapterFilter}
+              normFilter={normFilter}
+              directory={directory}
+              visibleChapters={visibleChapters}
+              onTitleChange={onTitleChange}
+              onChapterChange={onChapterChange}
+              onNormChange={onNormChange}
+              includeTitle={false}
+              includeChapter={false}
+            />
+            <button
+              type="submit"
+              disabled={loadState !== 'ready' || isSearching}
+              aria-describedby="search-status"
+              className="min-h-11 rounded-md bg-[#24594f] px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1d473f] disabled:cursor-not-allowed disabled:bg-[#8aa19b]"
+            >
+              {isSearching ? 'Searching' : 'Search'}
+            </button>
+          </div>
+          <ExampleSearches onExample={onExample} />
         </div>
 
-        <div className="grid gap-3 sm:grid-cols-[1fr_120px]">
-          <Select value={normFilter} onChange={(value) => onNormChange(value as NormType | '')} label="Norm">
-            <option value="">All norms</option>
-            <option value="obligation">Obligations</option>
-            <option value="permission">Permissions</option>
-            <option value="prohibition">Prohibitions</option>
-            <option value="unknown">Unknown norms</option>
-          </Select>
+        <div className="sm:hidden">
           <button
             type="submit"
             disabled={loadState !== 'ready' || isSearching}
@@ -654,25 +687,9 @@ function SearchPanel({
             {isSearching ? 'Searching' : 'Search'}
           </button>
         </div>
-
-        <div
-          className="flex flex-wrap gap-2"
-          aria-label="Example searches"
-        >
-          {EXAMPLE_QUERIES.map((example) => (
-            <button
-              key={example}
-              type="button"
-              onClick={() => onExample(example)}
-              className="min-h-11 max-w-full rounded-md border border-[#aab8a4] bg-white px-3 py-2 text-left text-sm text-[#30413f] hover:border-[#49635a]"
-            >
-              {example}
-            </button>
-          ))}
-        </div>
       </form>
 
-      <div className="px-4 py-4">
+      <div className="px-4 py-3 sm:py-4">
         <div className="mb-3 flex items-center justify-between gap-3">
           <h3 className="text-base font-semibold text-[#172026]">Results</h3>
           <span id="search-status" role="status" aria-live="polite" className="text-sm text-[#4f615b]">
@@ -862,6 +879,83 @@ function WorkspacePanel({
         )}
       </div>
     </section>
+  );
+}
+
+function FilterControls({
+  titleFilter,
+  chapterFilter,
+  normFilter,
+  directory,
+  visibleChapters,
+  onTitleChange,
+  onChapterChange,
+  onNormChange,
+  includeTitle = true,
+  includeChapter = true,
+  includeNorm = true,
+}: {
+  titleFilter: string;
+  chapterFilter: string;
+  normFilter: NormType | '';
+  directory: DirectoryTitle[];
+  visibleChapters: DirectoryChapter[];
+  onTitleChange: (title: string) => void;
+  onChapterChange: (chapter: string) => void;
+  onNormChange: (norm: NormType | '') => void;
+  includeTitle?: boolean;
+  includeChapter?: boolean;
+  includeNorm?: boolean;
+}) {
+  return (
+    <>
+      {includeTitle && (
+        <Select value={titleFilter} onChange={onTitleChange} label="Title">
+          <option value="">All titles</option>
+          {directory.map((title) => (
+            <option key={title.number} value={title.number}>
+              Title {title.number}
+            </option>
+          ))}
+        </Select>
+      )}
+      {includeChapter && (
+        <Select value={chapterFilter} onChange={onChapterChange} label="Chapter" disabled={!titleFilter}>
+          <option value="">All chapters</option>
+          {visibleChapters.map((chapter) => (
+            <option key={chapter.number} value={chapter.number}>
+              Chapter {chapter.number}
+            </option>
+          ))}
+        </Select>
+      )}
+      {includeNorm && (
+        <Select value={normFilter} onChange={(value) => onNormChange(value as NormType | '')} label="Norm">
+          <option value="">All norms</option>
+          <option value="obligation">Obligations</option>
+          <option value="permission">Permissions</option>
+          <option value="prohibition">Prohibitions</option>
+          <option value="unknown">Unknown norms</option>
+        </Select>
+      )}
+    </>
+  );
+}
+
+function ExampleSearches({ onExample }: { onExample: (query: string) => void }) {
+  return (
+    <div className="flex flex-wrap gap-2" aria-label="Example searches">
+      {EXAMPLE_QUERIES.map((example) => (
+        <button
+          key={example}
+          type="button"
+          onClick={() => onExample(example)}
+          className="min-h-11 max-w-full rounded-md border border-[#aab8a4] bg-white px-3 py-2 text-left text-sm text-[#30413f] hover:border-[#49635a]"
+        >
+          {example}
+        </button>
+      ))}
+    </div>
   );
 }
 

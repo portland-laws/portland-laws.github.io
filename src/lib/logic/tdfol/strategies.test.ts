@@ -3,9 +3,14 @@ import { ModusPonensRule, TemporalKAxiomRule, TemporalTAxiomRule, type TdfolInfe
 import { parseTdfolFormula } from './parser';
 import {
   proveTdfolWithStrategySelection,
+  TdfolBackwardChainingStrategy,
+  TdfolBidirectionalStrategy,
+  TdfolCecDelegateStrategy,
   TdfolForwardChainingStrategy,
+  TdfolLocalCecDelegate,
   TdfolModalTableauxStrategy,
   TdfolStrategySelector,
+  tdfolToCecExpression,
   type TdfolProverStrategy,
 } from './strategies';
 
@@ -137,6 +142,118 @@ describe('TDFOL proving strategies', () => {
     expect(strategy.selectModalLogicType(parseTdfolFormula('O(Comply(x))'))).toBe('D');
     expect(strategy.selectModalLogicType(parseTdfolFormula('always(Pred(x))'))).toBe('S4');
     expect(strategy.estimateCost(parseTdfolFormula('always(eventually(Pred(x)))'))).toBe(4);
+  });
+
+  it('proves implication chains by reducing goals backward', () => {
+    const strategy = new TdfolBackwardChainingStrategy();
+    const result = strategy.prove(parseTdfolFormula('Eligible(x)'), {
+      axioms: [
+        parseTdfolFormula('Resident(x)'),
+        parseTdfolFormula('Resident(x) -> Tenant(x)'),
+        parseTdfolFormula('Tenant(x) -> Eligible(x)'),
+      ],
+    });
+
+    expect(result).toMatchObject({
+      status: 'proved',
+      method: 'backward_chaining',
+    });
+    expect(result.steps.map((step) => step.rule)).toEqual([
+      'KnowledgeBaseLookup',
+      'BackwardModusPonens',
+      'BackwardModusPonens',
+    ]);
+  });
+
+  it('proves conjunction goals as paired backward subgoals', () => {
+    const strategy = new TdfolBackwardChainingStrategy();
+    const result = strategy.prove(parseTdfolFormula('Resident(x) and Tenant(x)'), {
+      axioms: [parseTdfolFormula('Resident(x)'), parseTdfolFormula('Tenant(x)')],
+    });
+
+    expect(result).toMatchObject({
+      status: 'proved',
+      method: 'backward_chaining',
+    });
+    expect(result.steps.at(-1)).toMatchObject({
+      rule: 'ConjunctionIntroduction',
+      conclusion: '(Resident(x)) ∧ (Tenant(x))',
+    });
+  });
+
+  it('falls back to forward proof search in bidirectional mode', () => {
+    const strategy = new TdfolBidirectionalStrategy({
+      forward: new TdfolForwardChainingStrategy({ rules: [TemporalKAxiomRule, TemporalTAxiomRule] }),
+    });
+    const result = strategy.prove(parseTdfolFormula('Goal(x)'), {
+      axioms: [parseTdfolFormula('always(Pred(x) -> Goal(x))'), parseTdfolFormula('always(Pred(x))')],
+    });
+
+    expect(result).toMatchObject({
+      status: 'proved',
+      method: 'bidirectional',
+      theorem: 'Goal(x)',
+    });
+  });
+
+  it('includes backward and bidirectional strategies in the default browser-native selector', () => {
+    const selector = new TdfolStrategySelector();
+    const info = selector.getStrategyInfo(parseTdfolFormula('Goal(x)'), {
+      axioms: [parseTdfolFormula('Pred(x)'), parseTdfolFormula('Pred(x) -> Goal(x)')],
+    });
+
+    expect(info.map((entry) => entry.type)).toEqual([
+      'modal_tableaux',
+      'bidirectional',
+      'forward_chaining',
+      'cec_delegate',
+      'backward_chaining',
+    ]);
+    expect(selector.selectStrategy(parseTdfolFormula('Goal(x)'), {
+      axioms: [parseTdfolFormula('Pred(x)'), parseTdfolFormula('Pred(x) -> Goal(x)')],
+    }).strategyType).toBe('bidirectional');
+  });
+
+  it('translates TDFOL formulas to browser-native CEC expressions for delegation', () => {
+    expect(tdfolToCecExpression(parseTdfolFormula('always(O(Comply(x)))'))).toEqual({
+      kind: 'unary',
+      operator: 'always',
+      expression: {
+        kind: 'unary',
+        operator: 'O',
+        expression: {
+          kind: 'application',
+          name: 'Comply',
+          args: [{ kind: 'atom', name: 'x' }],
+        },
+      },
+    });
+  });
+
+  it('uses the local CEC delegate for deontic equivalence without server calls', () => {
+    const strategy = new TdfolCecDelegateStrategy({ delegate: new TdfolLocalCecDelegate() });
+    const result = strategy.prove(parseTdfolFormula('F(Enter(x))'), {
+      axioms: [parseTdfolFormula('O(not Enter(x))')],
+    });
+
+    expect(result).toMatchObject({
+      status: 'proved',
+      method: 'cec_delegate',
+    });
+    expect(result.steps.map((step) => step.rule)).toEqual([
+      'CecKnowledgeBaseLookup',
+      'CecDeonticProhibitionEquivalence',
+    ]);
+    expect(result.steps.at(-1)?.conclusion).toBe('(F (Enter x))');
+  });
+
+  it('returns explicit unknown results when the local CEC delegate cannot justify a proof', () => {
+    const strategy = new TdfolCecDelegateStrategy();
+
+    expect(strategy.prove(parseTdfolFormula('O(Comply(x))'), { axioms: [parseTdfolFormula('Permit(x)')] })).toMatchObject({
+      status: 'unknown',
+      method: 'cec_delegate',
+    });
   });
 });
 

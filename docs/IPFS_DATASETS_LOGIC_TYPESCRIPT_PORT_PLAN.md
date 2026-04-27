@@ -326,7 +326,7 @@ Acceptance criteria:
 - [x] Port initial `TDFOL/inference_rules` browser-native rule interface and deterministic propositional, temporal, and deontic rules.
 - [x] Port `expansion_rules.py` browser-native rule registry for AND, OR, IMPLIES, IFF, and NOT tableaux expansions.
 - [x] Port initial `tdfol_prover.py` forward-chaining proof engine with step and derived-formula budgets.
-- [x] Port initial `TDFOL/strategies/base.py`, `forward_chaining.py`, `modal_tableaux.py`, and `strategy_selector.py` browser strategy layer with priority/cost selection.
+- [x] Port initial `TDFOL/strategies/base.py`, `forward_chaining.py`, `backward_chaining.py`, `bidirectional.py`, `modal_tableaux.py`, `cec_delegate.py`, and `strategy_selector.py` browser strategy layer with priority/cost selection.
 - [x] Port initial `tdfol_optimization.py` browser facade with indexed KB, cache-aware proving, strategy heuristics, and optimization stats.
 - [x] Port initial `modal_tableaux.py` browser tableaux core for K/T/D/S4/S5, branch expansion, closure checks, modal worlds, and countermodel-compatible open branches.
 - [x] Port initial `countermodels.py` and `countermodel_visualizer.py` browser equivalents for Kripke structures, branch extraction, DOT/JSON/ASCII/HTML exports, and modal property checks.
@@ -465,9 +465,12 @@ Acceptance criteria:
 - [x] Port propositional tableaux expansion rules from `logic/TDFOL/expansion_rules.py`.
 - [ ] Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.
   - [x] Initial forward-chaining strategy and selector parity.
+  - [x] Initial backward-chaining strategy parity for direct goals, conjunctive goals, and implication-goal reduction.
+  - [x] Initial bidirectional strategy parity with backward-first proof search and bounded forward fallback.
   - [x] Initial modal tableaux strategy parity with local TS tableaux, modal-logic auto-selection, and priority/cost selection.
+  - [x] Initial local CEC delegate replacement that translates TDFOL to browser-native CEC expressions and returns explicit unknown results instead of calling Python or a server.
   - [x] Initial indexed-KB and cache-aware optimization facade.
-  - [ ] Backward chaining, CEC delegate replacement, and bidirectional strategy parity.
+  - [ ] Deeper CEC delegate parity for native CEC inference rule groups and proof traces.
   - [ ] Browser-native ZKP acceleration and parallel proof search parity.
 - [ ] Complete modal tableaux and countermodel generation/visualization parity.
   - [x] Initial modal tableaux proof search for propositional, temporal, deontic modal formulas and K/T/D/S4/S5 accessibility.
@@ -535,7 +538,7 @@ Current completed TypeScript/WASM port slice:
 - 75-85 percent of common module behavior: cache, converter lifecycle, browser feature detection, proof cache, utility monitoring, validation, and error surfaces.
 - 100 percent of proof summary loading, indexing, validation, and display helpers.
 - 80-90 percent of TDFOL core AST/parser/formatter behavior needed for generated Portland formulas.
-- 62-72 percent of TDFOL inference/prover/explanation/operations behavior: initial propositional, temporal, deontic rules, tableaux expansion rules, bounded forward chaining, modal tableaux, strategy selection, indexed-KB optimization, countermodels, proof explanations, dependency graphs, proof tree views, security validation, metrics collection, profiling, dashboarding, and performance-engine orchestration.
+- 66-76 percent of TDFOL inference/prover/explanation/operations behavior: initial propositional, temporal, deontic rules, tableaux expansion rules, bounded forward/backward/bidirectional chaining, local CEC delegation, modal tableaux, strategy selection, indexed-KB optimization, countermodels, proof explanations, dependency graphs, proof tree views, security validation, metrics collection, profiling, dashboarding, and performance-engine orchestration.
 - 75-85 percent of regex FOL/deontic extraction, formatter, analyzer, and knowledge-base behavior, focused on legal-code clauses.
 - 70-80 percent of F-logic data modeling and display rendering for generated frame snippets.
 - 50-60 percent of ZKP canonicalization/statement metadata behavior.

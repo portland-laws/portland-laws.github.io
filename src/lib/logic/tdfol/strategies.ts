@@ -1,5 +1,8 @@
 import type { ProofResult, ProofStatus, ProofStep } from '../types';
-import type { TdfolFormula } from './ast';
+import { analyzeCecExpression } from '../cec/analyzer';
+import type { CecExpression } from '../cec/ast';
+import { formatCecExpression } from '../cec/formatter';
+import type { TdfolBinaryFormula, TdfolFormula, TdfolTerm } from './ast';
 import { formatTdfolFormula } from './formatter';
 import { applyTdfolRules, formulaEquals, formulaKey, getAllTdfolRules, type TdfolInferenceRule } from './inferenceRules';
 import { TdfolModalTableaux, type TdfolModalTableauxOptions } from './modalTableaux';
@@ -64,7 +67,7 @@ export class TdfolForwardChainingStrategy implements TdfolProverStrategy {
     this.defaultTimeoutMs = options.defaultTimeoutMs ?? 2000;
   }
 
-  canHandle(): boolean {
+  canHandle(_formula?: TdfolFormula, _kb?: TdfolKnowledgeBase): boolean {
     return true;
   }
 
@@ -166,6 +169,320 @@ export class TdfolForwardChainingStrategy implements TdfolProverStrategy {
       timeMs: Math.max(0, nowMs() - start),
       error,
     };
+  }
+}
+
+export interface TdfolBackwardChainingStrategyOptions {
+  maxDepth?: number;
+  maxBranches?: number;
+  defaultTimeoutMs?: number;
+}
+
+export class TdfolBackwardChainingStrategy implements TdfolProverStrategy {
+  readonly name = 'Backward Chaining';
+  readonly strategyType = 'backward_chaining' satisfies TdfolStrategyType;
+  private readonly maxDepth: number;
+  private readonly maxBranches: number;
+  private readonly defaultTimeoutMs: number;
+
+  constructor(options: TdfolBackwardChainingStrategyOptions = {}) {
+    this.maxDepth = options.maxDepth ?? 12;
+    this.maxBranches = options.maxBranches ?? 200;
+    this.defaultTimeoutMs = options.defaultTimeoutMs ?? 2000;
+  }
+
+  canHandle(formula: TdfolFormula, kb: TdfolKnowledgeBase): boolean {
+    if (containsFormula(kb, formula)) return true;
+    if (formula.kind === 'binary' && formula.operator === 'AND') return true;
+    return getImplications(kb).some((implication) => formulaEquals(implication.right, formula));
+  }
+
+  prove(formula: TdfolFormula, kb: TdfolKnowledgeBase, timeoutMs = this.defaultTimeoutMs): ProofResult {
+    const start = nowMs();
+    const deadline = start + Math.min(timeoutMs, this.defaultTimeoutMs);
+    const state = {
+      steps: [] as ProofStep[],
+      branchCount: 0,
+      visited: new Set<string>(),
+      timeout: false,
+      exhausted: false,
+    };
+    const proved = this.proveGoal(formula, kb, 0, deadline, state);
+    const status: ProofStatus = proved ? 'proved' : state.timeout ? 'timeout' : 'unknown';
+    return {
+      status,
+      theorem: formatTdfolFormula(formula),
+      steps: state.steps,
+      method: this.strategyType,
+      timeMs: Math.max(0, nowMs() - start),
+      error: proved ? undefined : state.timeout ? 'Backward chaining timeout or budget exceeded' : 'No backward proof found',
+    };
+  }
+
+  getPriority(): number {
+    return 60;
+  }
+
+  estimateCost(formula: TdfolFormula, kb: TdfolKnowledgeBase): number {
+    const implications = getImplications(kb).filter((implication) => formulaEquals(implication.right, formula)).length;
+    const kbSize = kb.axioms.length + (kb.theorems?.length ?? 0);
+    return Math.max(1, (implications || 1) * Math.log2(kbSize + 2));
+  }
+
+  private proveGoal(
+    goal: TdfolFormula,
+    kb: TdfolKnowledgeBase,
+    depth: number,
+    deadline: number,
+    state: { steps: ProofStep[]; branchCount: number; visited: Set<string>; timeout: boolean; exhausted: boolean },
+  ): boolean {
+    if (nowMs() > deadline || depth > this.maxDepth || state.branchCount >= this.maxBranches) {
+      state.timeout = true;
+      return false;
+    }
+
+    const goalKey = formulaKey(goal);
+    if (state.visited.has(goalKey)) return false;
+    state.visited.add(goalKey);
+
+    const direct = [...kb.axioms, ...(kb.theorems ?? [])].find((candidate) => formulaEquals(candidate, goal));
+    if (direct) {
+      state.steps.push({
+        id: `tdfol-backward-step-${state.steps.length + 1}`,
+        rule: 'KnowledgeBaseLookup',
+        premises: [],
+        conclusion: formatTdfolFormula(direct),
+        explanation: 'Goal matched an existing knowledge-base formula',
+      });
+      state.visited.delete(goalKey);
+      return true;
+    }
+
+    if (goal.kind === 'binary' && goal.operator === 'AND') {
+      const left = this.proveGoal(goal.left, kb, depth + 1, deadline, state);
+      const right = left && this.proveGoal(goal.right, kb, depth + 1, deadline, state);
+      if (left && right) {
+        state.steps.push({
+          id: `tdfol-backward-step-${state.steps.length + 1}`,
+          rule: 'ConjunctionIntroduction',
+          premises: [formatTdfolFormula(goal.left), formatTdfolFormula(goal.right)],
+          conclusion: formatTdfolFormula(goal),
+          explanation: 'Both conjunctive subgoals were proven',
+        });
+        state.visited.delete(goalKey);
+        return true;
+      }
+    }
+
+    const candidateRules = getImplications(kb).filter((implication) => formulaEquals(implication.right, goal));
+    for (const implication of candidateRules) {
+      state.branchCount += 1;
+      if (this.proveGoal(implication.left, kb, depth + 1, deadline, state)) {
+        state.steps.push({
+          id: `tdfol-backward-step-${state.steps.length + 1}`,
+          rule: 'BackwardModusPonens',
+          premises: [formatTdfolFormula(implication.left), formatTdfolFormula(implication)],
+          conclusion: formatTdfolFormula(goal),
+          explanation: 'Reduced the goal to the implication antecedent and proved it',
+        });
+        state.visited.delete(goalKey);
+        return true;
+      }
+    }
+
+    state.visited.delete(goalKey);
+    return false;
+  }
+}
+
+export interface TdfolBidirectionalStrategyOptions {
+  backward?: TdfolBackwardChainingStrategy;
+  forward?: TdfolForwardChainingStrategy;
+}
+
+export class TdfolBidirectionalStrategy implements TdfolProverStrategy {
+  readonly name = 'Bidirectional';
+  readonly strategyType = 'bidirectional' satisfies TdfolStrategyType;
+  private readonly backward: TdfolBackwardChainingStrategy;
+  private readonly forward: TdfolForwardChainingStrategy;
+
+  constructor(options: TdfolBidirectionalStrategyOptions = {}) {
+    this.backward = options.backward ?? new TdfolBackwardChainingStrategy();
+    this.forward = options.forward ?? new TdfolForwardChainingStrategy();
+  }
+
+  canHandle(formula: TdfolFormula, kb: TdfolKnowledgeBase): boolean {
+    return this.backward.canHandle(formula, kb) || this.forward.canHandle(formula, kb);
+  }
+
+  prove(formula: TdfolFormula, kb: TdfolKnowledgeBase, timeoutMs?: number): ProofResult {
+    const backwardResult = this.backward.prove(formula, kb, timeoutMs);
+    if (backwardResult.status === 'proved' || backwardResult.status === 'timeout') {
+      return { ...backwardResult, method: this.strategyType };
+    }
+
+    const forwardResult = this.forward.prove(formula, kb, timeoutMs);
+    return {
+      ...forwardResult,
+      method: this.strategyType,
+      steps: [
+        ...backwardResult.steps,
+        ...forwardResult.steps,
+      ],
+      error: forwardResult.status === 'proved' ? undefined : forwardResult.error ?? backwardResult.error,
+    };
+  }
+
+  getPriority(): number {
+    return 75;
+  }
+
+  estimateCost(formula: TdfolFormula, kb: TdfolKnowledgeBase): number {
+    return Math.min(this.backward.estimateCost(formula, kb), this.forward.estimateCost(formula, kb) * 0.8);
+  }
+}
+
+export interface TdfolCecDelegate {
+  readonly name: string;
+  canProve(formula: TdfolFormula, kb: TdfolKnowledgeBase): boolean;
+  prove(formula: TdfolFormula, kb: TdfolKnowledgeBase, timeoutMs?: number): ProofResult;
+}
+
+export interface TdfolLocalCecDelegateOptions {
+  maxDepth?: number;
+  defaultTimeoutMs?: number;
+}
+
+export class TdfolLocalCecDelegate implements TdfolCecDelegate {
+  readonly name = 'Local CEC Delegate';
+  private readonly maxDepth: number;
+  private readonly defaultTimeoutMs: number;
+
+  constructor(options: TdfolLocalCecDelegateOptions = {}) {
+    this.maxDepth = options.maxDepth ?? 8;
+    this.defaultTimeoutMs = options.defaultTimeoutMs ?? 2000;
+  }
+
+  canProve(formula: TdfolFormula, kb: TdfolKnowledgeBase): boolean {
+    return isCecShapedFormula(formula) || containsFormula(kb, formula) || getImplications(kb).some((rule) => formulaEquals(rule.right, formula));
+  }
+
+  prove(formula: TdfolFormula, kb: TdfolKnowledgeBase, timeoutMs = this.defaultTimeoutMs): ProofResult {
+    const start = nowMs();
+    const deadline = start + Math.min(timeoutMs, this.defaultTimeoutMs);
+    const theoremCec = tdfolToCecExpression(formula);
+    const analysis = analyzeCecExpression(theoremCec);
+    const steps: ProofStep[] = [];
+    const proved = this.proveGoal(formula, kb, deadline, 0, new Set(), steps);
+    return {
+      status: proved ? 'proved' : nowMs() > deadline ? 'timeout' : 'unknown',
+      theorem: formatTdfolFormula(formula),
+      steps,
+      method: 'cec_delegate:local',
+      timeMs: Math.max(0, nowMs() - start),
+      error: proved
+        ? undefined
+        : `Local CEC delegate could not prove ${formatCecExpression(theoremCec)}; predicates=${analysis.predicates.join(',') || 'none'}`,
+    };
+  }
+
+  private proveGoal(
+    goal: TdfolFormula,
+    kb: TdfolKnowledgeBase,
+    deadline: number,
+    depth: number,
+    visited: Set<string>,
+    steps: ProofStep[],
+  ): boolean {
+    if (nowMs() > deadline || depth > this.maxDepth) return false;
+    const key = formulaKey(goal);
+    if (visited.has(key)) return false;
+    visited.add(key);
+
+    const direct = [...kb.axioms, ...(kb.theorems ?? [])].find((candidate) => formulaEquals(candidate, goal));
+    if (direct) {
+      steps.push({
+        id: `tdfol-cec-delegate-step-${steps.length + 1}`,
+        rule: 'CecKnowledgeBaseLookup',
+        premises: [],
+        conclusion: formatCecExpression(tdfolToCecExpression(direct)),
+        explanation: 'Translated TDFOL goal to CEC and matched a local knowledge-base formula',
+      });
+      visited.delete(key);
+      return true;
+    }
+
+    if (goal.kind === 'deontic' && goal.operator === 'PROHIBITION') {
+      const obligationOfNot: TdfolFormula = {
+        kind: 'deontic',
+        operator: 'OBLIGATION',
+        formula: { kind: 'unary', operator: 'NOT', formula: goal.formula },
+      };
+      if (this.proveGoal(obligationOfNot, kb, deadline, depth + 1, visited, steps)) {
+        steps.push({
+          id: `tdfol-cec-delegate-step-${steps.length + 1}`,
+          rule: 'CecDeonticProhibitionEquivalence',
+          premises: [formatCecExpression(tdfolToCecExpression(obligationOfNot))],
+          conclusion: formatCecExpression(tdfolToCecExpression(goal)),
+          explanation: 'Used the CEC deontic equivalence between prohibition and obligation of negation',
+        });
+        visited.delete(key);
+        return true;
+      }
+    }
+
+    for (const implication of getImplications(kb).filter((rule) => formulaEquals(rule.right, goal))) {
+      if (this.proveGoal(implication.left, kb, deadline, depth + 1, visited, steps)) {
+        steps.push({
+          id: `tdfol-cec-delegate-step-${steps.length + 1}`,
+          rule: 'CecDelegatedModusPonens',
+          premises: [
+            formatCecExpression(tdfolToCecExpression(implication.left)),
+            formatCecExpression(tdfolToCecExpression(implication)),
+          ],
+          conclusion: formatCecExpression(tdfolToCecExpression(goal)),
+          explanation: 'Reduced the delegated CEC goal through a local implication',
+        });
+        visited.delete(key);
+        return true;
+      }
+    }
+
+    visited.delete(key);
+    return false;
+  }
+}
+
+export interface TdfolCecDelegateStrategyOptions {
+  delegate?: TdfolCecDelegate;
+}
+
+export class TdfolCecDelegateStrategy implements TdfolProverStrategy {
+  readonly name = 'CEC Delegate';
+  readonly strategyType = 'cec_delegate' satisfies TdfolStrategyType;
+  private readonly delegate: TdfolCecDelegate;
+
+  constructor(options: TdfolCecDelegateStrategyOptions = {}) {
+    this.delegate = options.delegate ?? new TdfolLocalCecDelegate();
+  }
+
+  canHandle(formula: TdfolFormula, kb: TdfolKnowledgeBase): boolean {
+    return this.delegate.canProve(formula, kb);
+  }
+
+  prove(formula: TdfolFormula, kb: TdfolKnowledgeBase, timeoutMs?: number): ProofResult {
+    const result = this.delegate.prove(formula, kb, timeoutMs);
+    return { ...result, method: this.strategyType };
+  }
+
+  getPriority(): number {
+    return 65;
+  }
+
+  estimateCost(formula: TdfolFormula, kb: TdfolKnowledgeBase): number {
+    const analysis = analyzeCecExpression(tdfolToCecExpression(formula));
+    const kbSize = kb.axioms.length + (kb.theorems?.length ?? 0);
+    return Math.max(1, analysis.nodeCount + analysis.maxDepth + kbSize / 2);
   }
 }
 
@@ -324,7 +641,13 @@ export class TdfolStrategySelector {
 }
 
 export function createDefaultTdfolStrategies(): TdfolProverStrategy[] {
-  return [new TdfolModalTableauxStrategy(), new TdfolForwardChainingStrategy()];
+  return [
+    new TdfolModalTableauxStrategy(),
+    new TdfolBidirectionalStrategy(),
+    new TdfolForwardChainingStrategy(),
+    new TdfolCecDelegateStrategy(),
+    new TdfolBackwardChainingStrategy(),
+  ];
 }
 
 export function proveTdfolWithStrategySelection(
@@ -339,7 +662,74 @@ export function proveTdfolWithStrategySelection(
 }
 
 function nowMs(): number {
-  return typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
+  return typeof globalThis.performance?.now === 'function' ? globalThis.performance.now() : Date.now();
+}
+
+function containsFormula(kb: TdfolKnowledgeBase, formula: TdfolFormula): boolean {
+  return [...kb.axioms, ...(kb.theorems ?? [])].some((candidate) => formulaEquals(candidate, formula));
+}
+
+function getImplications(kb: TdfolKnowledgeBase): TdfolBinaryFormula[] {
+  return [...kb.axioms, ...(kb.theorems ?? [])].filter(
+    (formula): formula is TdfolBinaryFormula => formula.kind === 'binary' && formula.operator === 'IMPLIES',
+  );
+}
+
+function isCecShapedFormula(formula: TdfolFormula): boolean {
+  return traverseFormula(formula, (node) => node.kind === 'deontic' || node.kind === 'temporal' || node.kind === 'quantified');
+}
+
+export function tdfolToCecExpression(formula: TdfolFormula): CecExpression {
+  switch (formula.kind) {
+    case 'predicate':
+      return { kind: 'application', name: formula.name, args: formula.args.map(tdfolTermToCecExpression) };
+    case 'unary':
+      return { kind: 'unary', operator: 'not', expression: tdfolToCecExpression(formula.formula) };
+    case 'binary':
+      return {
+        kind: 'binary',
+        operator: tdfolBinaryToCecOperator(formula.operator),
+        left: tdfolToCecExpression(formula.left),
+        right: tdfolToCecExpression(formula.right),
+      };
+    case 'quantified':
+      return {
+        kind: 'quantified',
+        quantifier: formula.quantifier === 'FORALL' ? 'forall' : 'exists',
+        variable: formula.variable.name,
+        expression: tdfolToCecExpression(formula.formula),
+      };
+    case 'deontic':
+      return {
+        kind: 'unary',
+        operator: formula.operator === 'OBLIGATION' ? 'O' : formula.operator === 'PERMISSION' ? 'P' : 'F',
+        expression: tdfolToCecExpression(formula.formula),
+      };
+    case 'temporal':
+      return {
+        kind: 'unary',
+        operator: formula.operator === 'ALWAYS' ? 'always' : formula.operator === 'EVENTUALLY' ? 'eventually' : 'next',
+        expression: tdfolToCecExpression(formula.formula),
+      };
+  }
+}
+
+function tdfolTermToCecExpression(term: TdfolTerm): CecExpression {
+  if (term.kind === 'function') {
+    return { kind: 'application', name: term.name, args: term.args.map(tdfolTermToCecExpression) };
+  }
+  return { kind: 'atom', name: term.name };
+}
+
+function tdfolBinaryToCecOperator(operator: TdfolBinaryFormula['operator']): 'implies' | 'and' | 'or' | 'iff' | 'xor' {
+  const operators: Record<TdfolBinaryFormula['operator'], 'implies' | 'and' | 'or' | 'iff' | 'xor'> = {
+    AND: 'and',
+    OR: 'or',
+    IMPLIES: 'implies',
+    IFF: 'iff',
+    XOR: 'xor',
+  };
+  return operators[operator];
 }
 
 function isModalFormula(formula: TdfolFormula): boolean {

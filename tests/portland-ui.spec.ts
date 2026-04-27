@@ -137,8 +137,10 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await expect(page.getByRole('button', { name: /^Select / }).first()).toBeVisible();
     await expect(page.getByRole('button', { name: /Show \d+ more results/ })).toBeVisible();
     await expect(page.getByRole('button', { name: /^Select / }).first()).not.toContainText(/^Label:/);
-    await expect(page.getByRole('button', { name: 'temporary administrative rules' })).toBeInViewport();
+    await expect(page.locator('summary').filter({ hasText: 'Filters and examples' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'temporary administrative rules' })).not.toBeVisible();
     await expect(page.getByLabel(/Relevance score/).first()).toBeVisible();
+    await expectElementTopLessThan(page, '#search-status', 520);
     await page.getByLabel('Search Portland City Code').focus();
 
     await expectNoHorizontalOverflow(page);
