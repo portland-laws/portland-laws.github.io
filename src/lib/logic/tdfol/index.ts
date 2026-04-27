@@ -1,6 +1,7 @@
 export * from './ast';
 export * from './countermodels';
 export * from './dependencyGraph';
+export * from './expansionRules';
 export * from './formatter';
 export * from './inferenceRules';
 export * from './lexer';

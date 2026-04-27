@@ -49,6 +49,7 @@ test.describe('Portland legal corpus UI screenshots', () => {
     await page.locator('#research-workbench').screenshot({
       path: screenshotPath(testInfo, 'desktop-section-reader.png'),
     });
+    await expect(page.locator('#panel-section')).not.toContainText(/^Label:/);
 
     await page.getByRole('tab', { name: 'GraphRAG' }).click();
     await page.locator('#panel-chat').getByLabel('Question').fill('What does this section say in simple terms?');
@@ -68,6 +69,9 @@ test.describe('Portland legal corpus UI screenshots', () => {
 
     await page.getByRole('tab', { name: 'Logic Proofs' }).click();
     await expect(page.getByRole('heading', { name: 'Logic Proof Explorer' })).toBeVisible();
+    await expect(page.locator('#panel-proof')).toContainText('DCEC parse');
+    await expect(page.locator('#panel-proof')).toContainText('DCEC structure');
+    await expectWorkbenchHasBoundedHeight(page);
     await page.locator('#research-workbench').screenshot({
       path: screenshotPath(testInfo, 'desktop-logic-proofs.png'),
     });
@@ -118,6 +122,9 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await expect(page.locator('#search-status')).toContainText(/matches/);
     await expect(page.getByRole('button', { name: /^Select / }).first()).toBeVisible();
     await expect(page.getByRole('button', { name: /Show \d+ more results/ })).toBeVisible();
+    await expect(page.getByRole('button', { name: /^Select / }).first()).not.toContainText(/^Label:/);
+    await expect(page.getByRole('button', { name: 'temporary administrative rules' })).toBeInViewport();
+    await expect(page.getByLabel(/Relevance score/).first()).toBeVisible();
     await page.getByLabel('Search Portland City Code').focus();
 
     await expectNoHorizontalOverflow(page);
@@ -132,6 +139,7 @@ test.describe('Portland legal corpus mobile screenshots', () => {
   test('moves mobile users from a selected result into the research workbench', async ({ page }, testInfo) => {
     await page.getByRole('button', { name: /^Select / }).first().click();
     await expect(page.locator('#panel-section')).toBeFocused();
+    await expect(page.locator('#panel-section')).not.toContainText(/^Label:/);
 
     const workbenchPosition = await page.locator('#research-workbench').evaluate((element) => {
       const box = element.getBoundingClientRect();
@@ -144,6 +152,13 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await page.screenshot({
       path: screenshotPath(testInfo, 'mobile-selected-result-workbench.png'),
       fullPage: false,
+    });
+
+    await page.getByRole('tab', { name: 'Logic Proofs' }).click();
+    await expect(page.locator('#panel-proof')).toContainText('DCEC structure');
+    await expectNoHorizontalOverflow(page);
+    await page.locator('#research-workbench').screenshot({
+      path: screenshotPath(testInfo, 'mobile-logic-proofs.png'),
     });
 
     await page.getByRole('link', { name: 'Back to results' }).click();
@@ -174,6 +189,14 @@ async function expectNoHorizontalOverflow(page: Page) {
   expect(overflow.scrollWidth, JSON.stringify(overflow)).toBeLessThanOrEqual(overflow.innerWidth + 1);
   expect(overflow.bodyScrollWidth, JSON.stringify(overflow)).toBeLessThanOrEqual(overflow.innerWidth + 1);
   expect(overflow.scrollX, JSON.stringify(overflow)).toBeLessThanOrEqual(1);
+}
+
+async function expectWorkbenchHasBoundedHeight(page: Page) {
+  const height = await page.locator('#research-workbench').evaluate((element) => {
+    return element.getBoundingClientRect().height;
+  });
+
+  expect(height).toBeLessThan(1200);
 }
 
 function screenshotPath(testInfo: TestInfo, fileName: string) {

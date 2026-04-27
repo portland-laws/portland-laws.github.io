@@ -2,6 +2,8 @@ import type { ProofResult, ProofStatus, ProofStep } from '../types';
 import type { TdfolFormula } from './ast';
 import { formatTdfolFormula } from './formatter';
 import { applyTdfolRules, formulaEquals, formulaKey, getAllTdfolRules, type TdfolInferenceRule } from './inferenceRules';
+import { TdfolModalTableaux, type TdfolModalTableauxOptions } from './modalTableaux';
+import type { TdfolModalLogicType } from './countermodels';
 import type { TdfolKnowledgeBase } from './prover';
 
 export type TdfolStrategyType =
@@ -167,6 +169,90 @@ export class TdfolForwardChainingStrategy implements TdfolProverStrategy {
   }
 }
 
+export interface TdfolModalTableauxStrategyOptions {
+  logicType?: TdfolModalLogicType | 'auto';
+  maxWorlds?: number;
+  maxDepth?: number;
+}
+
+export class TdfolModalTableauxStrategy implements TdfolProverStrategy {
+  readonly name = 'Modal Tableaux';
+  readonly strategyType = 'modal_tableaux' satisfies TdfolStrategyType;
+  private readonly logicType: TdfolModalLogicType | 'auto';
+  private readonly tableauxOptions: Omit<TdfolModalTableauxOptions, 'logicType'>;
+
+  constructor(options: TdfolModalTableauxStrategyOptions = {}) {
+    this.logicType = options.logicType ?? 'auto';
+    this.tableauxOptions = {
+      maxWorlds: options.maxWorlds,
+      maxDepth: options.maxDepth,
+    };
+  }
+
+  canHandle(formula: TdfolFormula): boolean {
+    return isModalFormula(formula);
+  }
+
+  prove(formula: TdfolFormula, kb: TdfolKnowledgeBase, _timeoutMs?: number): ProofResult {
+    const start = nowMs();
+    const direct = [...kb.axioms, ...(kb.theorems ?? [])].find((candidate) => formulaEquals(candidate, formula));
+    if (direct) {
+      return {
+        status: 'proved',
+        theorem: formatTdfolFormula(formula),
+        steps: [{
+          id: 'tdfol-modal-tableaux-direct-1',
+          rule: 'KnowledgeBaseLookup',
+          premises: [],
+          conclusion: formatTdfolFormula(direct),
+          explanation: 'Found in knowledge base',
+        }],
+        method: this.strategyType,
+        timeMs: Math.max(0, nowMs() - start),
+      };
+    }
+
+    const logicType = this.selectModalLogicType(formula);
+    const result = new TdfolModalTableaux({ ...this.tableauxOptions, logicType }).prove(formula);
+    return {
+      status: result.isValid ? 'proved' : 'unknown',
+      theorem: formatTdfolFormula(formula),
+      steps: result.proofSteps.map((step, index) => ({
+        id: `tdfol-modal-tableaux-step-${index + 1}`,
+        rule: 'ModalTableaux',
+        premises: [],
+        conclusion: step,
+        explanation: step,
+      })),
+      method: `${this.strategyType}:${logicType}`,
+      timeMs: Math.max(0, nowMs() - start),
+      error: result.isValid ? undefined : `Open branch remains after ${result.totalBranches} branch(es)`,
+    };
+  }
+
+  getPriority(): number {
+    return 80;
+  }
+
+  estimateCost(formula: TdfolFormula): number {
+    let cost = 2;
+    if (hasNestedTemporalFormula(formula)) cost *= 2;
+    if (hasDeonticFormula(formula) && hasTemporalFormula(formula)) cost *= 1.5;
+    return cost;
+  }
+
+  selectModalLogicType(formula: TdfolFormula): TdfolModalLogicType {
+    if (this.logicType !== 'auto') return this.logicType;
+    if (hasDeonticFormula(formula)) return 'D';
+    if (hasTemporalFormula(formula)) return 'S4';
+    return 'K';
+  }
+
+  toString(): string {
+    return `${this.name} (${this.strategyType})`;
+  }
+}
+
 export interface TdfolStrategySelectorOptions {
   strategies?: TdfolProverStrategy[];
 }
@@ -238,7 +324,7 @@ export class TdfolStrategySelector {
 }
 
 export function createDefaultTdfolStrategies(): TdfolProverStrategy[] {
-  return [new TdfolForwardChainingStrategy()];
+  return [new TdfolModalTableauxStrategy(), new TdfolForwardChainingStrategy()];
 }
 
 export function proveTdfolWithStrategySelection(
@@ -254,4 +340,50 @@ export function proveTdfolWithStrategySelection(
 
 function nowMs(): number {
   return typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
+}
+
+function isModalFormula(formula: TdfolFormula): boolean {
+  return hasDeonticFormula(formula) || hasTemporalFormula(formula);
+}
+
+function hasDeonticFormula(formula: TdfolFormula): boolean {
+  return traverseFormula(formula, (node) => node.kind === 'deontic');
+}
+
+function hasTemporalFormula(formula: TdfolFormula): boolean {
+  return traverseFormula(formula, (node) => node.kind === 'temporal');
+}
+
+function hasNestedTemporalFormula(formula: TdfolFormula): boolean {
+  return temporalDepth(formula) >= 2;
+}
+
+function traverseFormula(formula: TdfolFormula, predicate: (formula: TdfolFormula) => boolean): boolean {
+  if (predicate(formula)) return true;
+  switch (formula.kind) {
+    case 'predicate':
+      return false;
+    case 'unary':
+    case 'temporal':
+    case 'deontic':
+    case 'quantified':
+      return traverseFormula(formula.formula, predicate);
+    case 'binary':
+      return traverseFormula(formula.left, predicate) || traverseFormula(formula.right, predicate);
+  }
+}
+
+function temporalDepth(formula: TdfolFormula, depth = 0): number {
+  const nextDepth = formula.kind === 'temporal' ? depth + 1 : depth;
+  switch (formula.kind) {
+    case 'predicate':
+      return nextDepth;
+    case 'unary':
+    case 'temporal':
+    case 'deontic':
+    case 'quantified':
+      return temporalDepth(formula.formula, nextDepth);
+    case 'binary':
+      return Math.max(temporalDepth(formula.left, nextDepth), temporalDepth(formula.right, nextDepth));
+  }
 }

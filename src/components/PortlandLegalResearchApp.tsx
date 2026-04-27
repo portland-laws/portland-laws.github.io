@@ -20,6 +20,7 @@ import {
   loadLogicProofIndexes,
 } from '../lib/portlandLogic';
 import { formatTdfolFormula, parseTdfolFormula } from '../lib/logic/tdfol';
+import { analyzeCecExpression, formatCecExpression, parseCecExpression } from '../lib/logic/cec';
 
 type LoadState = 'loading' | 'ready' | 'error';
 type WorkspaceTab = 'section' | 'chat' | 'graph' | 'proof';
@@ -594,13 +595,16 @@ function SearchPanel({
           </button>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div
+          className="flex flex-wrap gap-2"
+          aria-label="Example searches"
+        >
           {EXAMPLE_QUERIES.map((example) => (
             <button
               key={example}
               type="button"
               onClick={() => onExample(example)}
-              className="min-h-11 rounded-md border border-[#aab8a4] bg-white px-3 py-2 text-sm text-[#30413f] hover:border-[#49635a]"
+              className="min-h-11 max-w-full rounded-md border border-[#aab8a4] bg-white px-3 py-2 text-left text-sm text-[#30413f] hover:border-[#49635a]"
             >
               {example}
             </button>
@@ -725,7 +729,7 @@ function WorkspacePanel({
     <section
       id="research-workbench"
       aria-labelledby="research-workbench-heading"
-      className="min-w-0 rounded-md border border-[#d8dfd3] bg-white shadow-sm"
+      className="min-w-0 self-start rounded-md border border-[#d8dfd3] bg-white shadow-sm"
     >
       <div className="border-b border-[#e1e6dc] px-4 pt-4">
         <h2 id="research-workbench-heading" className="sr-only">
@@ -855,7 +859,11 @@ function ResultCard({
             {result.section.title}
           </h3>
         </div>
-        <span className="shrink-0 rounded-md bg-[#eef2ea] px-2 py-1 text-xs font-semibold text-[#4d625b]">
+        <span
+          className="shrink-0 rounded-md bg-[#eef2ea] px-2 py-1 text-xs font-semibold text-[#4d625b]"
+          aria-label={`Relevance score ${result.score.toFixed(2)}`}
+          title={`Relevance score ${result.score.toFixed(2)}`}
+        >
           {result.score.toFixed(2)}
         </span>
       </div>
@@ -867,7 +875,9 @@ function ResultCard({
           <ResultBadge label={formatProofStatusForBadge(proof.deontic_status)} />
         </div>
       )}
-      <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#52615c] [overflow-wrap:anywhere]">{result.snippet}</p>
+      <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#52615c] [overflow-wrap:anywhere]">
+        {cleanCorpusSnippet(result.snippet)}
+      </p>
     </button>
   );
 }
@@ -1058,6 +1068,8 @@ function formatGraphNodeLabel(nodeId: string) {
 }
 
 function SectionReader({ section }: { section: CorpusSection }) {
+  const paragraphs = section.text.split(/\n{2,}/).map(cleanSectionParagraph).filter(Boolean);
+
   return (
     <article aria-labelledby="selected-section-heading">
       <div className="border-b border-[#e1e6dc] px-4 py-4 sm:px-5">
@@ -1079,9 +1091,9 @@ function SectionReader({ section }: { section: CorpusSection }) {
         </div>
       </div>
       <div className="max-w-prose px-4 py-4 sm:px-5 sm:py-5">
-        {section.text.split(/\n{2,}/).map((paragraph, index) => (
+        {paragraphs.map((paragraph, index) => (
           <p key={index} className="mb-4 text-base leading-7 text-[#26343a] [overflow-wrap:anywhere]">
-            {paragraph.trim()}
+            {paragraph}
           </p>
         ))}
       </div>
@@ -1096,6 +1108,7 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
 
   const certificateWarning = getSimulatedCertificateWarning(proof);
   const tdfolParse = parseTdfolForDisplay(proof.deontic_temporal_fol);
+  const dcecParse = parseCecForDisplay(proof.deontic_cognitive_event_calculus);
   const explanation = explainLogicProofSummary(proof);
 
   return (
@@ -1115,6 +1128,7 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
         <ProofMetric label="FOL" value={proof.fol_status} />
         <ProofMetric label="Deontic" value={proof.deontic_status} />
         <ProofMetric label="TDFOL parse" value={tdfolParse.ok ? 'valid' : 'check'} />
+        <ProofMetric label="DCEC parse" value={dcecParse.ok ? 'valid' : 'check'} />
       </div>
 
       {certificateWarning && (
@@ -1136,9 +1150,26 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
           {tdfolParse.error}
         </div>
       )}
+      {!dcecParse.ok && (
+        <div className="mt-4 rounded-md border border-[#d89b82] bg-[#fff4ef] px-3 py-2 text-sm leading-6 text-[#8a3b22]">
+          {dcecParse.error}
+        </div>
+      )}
+
+      {dcecParse.ok && dcecParse.analysis && (
+        <div className="mt-4 rounded-md border border-[#dce3d6] bg-white px-4 py-4">
+          <div className="text-xs font-semibold uppercase tracking-wide text-[#607068]">DCEC structure</div>
+          <dl className="mt-3 grid gap-3 text-sm min-[520px]:grid-cols-2">
+            <LogicFact label="Predicates" value={dcecParse.analysis.predicates.join(', ') || 'None'} />
+            <LogicFact label="Section refs" value={dcecParse.analysis.sectionRefs.join(', ') || 'None'} />
+            <LogicFact label="Deontic" value={dcecParse.analysis.deonticOperators.join(', ') || 'None'} />
+            <LogicFact label="Temporal" value={dcecParse.analysis.temporalOperators.join(', ') || 'None'} />
+          </dl>
+        </div>
+      )}
 
       <FormulaBlock label="TDFOL" value={tdfolParse.formatted || proof.deontic_temporal_fol} />
-      <FormulaBlock label="DCEC" value={proof.deontic_cognitive_event_calculus} />
+      <FormulaBlock label="DCEC" value={dcecParse.formatted || proof.deontic_cognitive_event_calculus} />
       <FormulaBlock label="Frame Logic" value={proof.frame_logic_ergo} />
       <FormulaBlock label="Certificate" value={`${proof.zkp_backend}: ${proof.zkp_security_note}`} />
     </div>
@@ -1171,6 +1202,15 @@ function ProofMetric({ label, value }: { label: string; value: string }) {
   );
 }
 
+function LogicFact({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0">
+      <dt className="text-xs font-semibold uppercase tracking-wide text-[#6d7b74]">{label}</dt>
+      <dd className="mt-1 text-sm leading-6 text-[#26343a] [overflow-wrap:anywhere]">{value}</dd>
+    </div>
+  );
+}
+
 function FormulaBlock({ label, value }: { label: string; value: string }) {
   if (!value) return null;
   return (
@@ -1185,6 +1225,20 @@ function FormulaBlock({ label, value }: { label: string; value: string }) {
   );
 }
 
+function cleanSectionParagraph(paragraph: string) {
+  return paragraph
+    .trim()
+    .replace(/^Label:\s*City code section\s*/i, '')
+    .replace(/^Label:\s*/i, '');
+}
+
+function cleanCorpusSnippet(snippet: string) {
+  return snippet
+    .trim()
+    .replace(/^(\.\.\.)?\s*Label:\s*City code section\s*/i, '$1')
+    .replace(/^(\.\.\.)?\s*Label:\s*/i, '$1');
+}
+
 function parseTdfolForDisplay(source: string): { ok: boolean; formatted?: string; error?: string } {
   if (!source) {
     return { ok: false, error: 'No TDFOL formula available.' };
@@ -1195,6 +1249,30 @@ function parseTdfolForDisplay(source: string): { ok: boolean; formatted?: string
     return {
       ok: false,
       error: error instanceof Error ? error.message : 'Unable to parse TDFOL formula.',
+    };
+  }
+}
+
+function parseCecForDisplay(source: string): {
+  ok: boolean;
+  formatted?: string;
+  analysis?: ReturnType<typeof analyzeCecExpression>;
+  error?: string;
+} {
+  if (!source) {
+    return { ok: false, error: 'No DCEC formula available.' };
+  }
+  try {
+    const expression = parseCecExpression(source);
+    return {
+      ok: true,
+      formatted: formatCecExpression(expression),
+      analysis: analyzeCecExpression(expression),
+    };
+  } catch (error) {
+    return {
+      ok: false,
+      error: error instanceof Error ? error.message : 'Unable to parse DCEC formula.',
     };
   }
 }

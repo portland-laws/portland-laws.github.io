@@ -83,8 +83,9 @@ The TypeScript target should be a clean client-side domain library that preserve
 | `logic/TDFOL/tdfol_parser.py` | Port directly, with tests | Recursive descent parsing and tokenization are portable. This unlocks proof explorer and validation. |
 | `logic/TDFOL/tdfol_converter.py` | Port fully | TDFOL to DCEC/FOL/TPTP conversion must match Python outputs. |
 | `logic/TDFOL/tdfol_inference_rules.py` | Port fully | All propositional, first-order, temporal, deontic, and combined rules need TS parity. |
+| `logic/TDFOL/expansion_rules.py` | Port directly | Tableaux expansion rules are deterministic and reusable across modal tableaux and inference systems. |
 | `logic/TDFOL/tdfol_prover.py` | Port fully | Start with bounded reasoning, then complete proof search parity and strategy selection. |
-| `logic/TDFOL/strategies/base.py`, `forward_chaining.py`, `strategy_selector.py` | Port fully | Browser-native proof strategy selection keeps prover behavior modular without Python strategy classes. |
+| `logic/TDFOL/strategies/base.py`, `forward_chaining.py`, `modal_tableaux.py`, `strategy_selector.py` | Port fully | Browser-native proof strategy selection keeps prover behavior modular without Python strategy classes. |
 | `logic/TDFOL/tdfol_optimization.py` | Port fully in browser form | Indexed KB, cache-aware proving, strategy heuristics, and stats are portable; ZKP/parallel search require TS/WASM equivalents. |
 | `logic/TDFOL/modal_tableaux.py` | Port fully in browser form | K/T/D/S4/S5 tableaux, branch expansion, accessibility handling, and countermodel open branches are portable. |
 | `logic/TDFOL/countermodels.py`, `countermodel_visualizer.py` | Port fully in browser form | Kripke structures, countermodel extraction, DOT/JSON/ASCII/HTML exports, and accessibility property checks are browser-native. |
@@ -320,8 +321,9 @@ Acceptance criteria:
 - [x] Format ASTs back to compact source and display-friendly JSON.
 - [x] Implement free variable analysis and basic substitution.
 - [x] Port initial `TDFOL/inference_rules` browser-native rule interface and deterministic propositional, temporal, and deontic rules.
+- [x] Port `expansion_rules.py` browser-native rule registry for AND, OR, IMPLIES, IFF, and NOT tableaux expansions.
 - [x] Port initial `tdfol_prover.py` forward-chaining proof engine with step and derived-formula budgets.
-- [x] Port initial `TDFOL/strategies/base.py`, `forward_chaining.py`, and `strategy_selector.py` browser strategy layer with priority/cost selection.
+- [x] Port initial `TDFOL/strategies/base.py`, `forward_chaining.py`, `modal_tableaux.py`, and `strategy_selector.py` browser strategy layer with priority/cost selection.
 - [x] Port initial `tdfol_optimization.py` browser facade with indexed KB, cache-aware proving, strategy heuristics, and optimization stats.
 - [x] Port initial `modal_tableaux.py` browser tableaux core for K/T/D/S4/S5, branch expansion, closure checks, modal worlds, and countermodel-compatible open branches.
 - [x] Port initial `countermodels.py` and `countermodel_visualizer.py` browser equivalents for Kripke structures, branch extraction, DOT/JSON/ASCII/HTML exports, and modal property checks.
@@ -454,10 +456,12 @@ Acceptance criteria:
 ### Phase 11: Full TDFOL Parity
 
 - [ ] Port every TDFOL inference rule from `logic/TDFOL/tdfol_inference_rules.py`.
+- [x] Port propositional tableaux expansion rules from `logic/TDFOL/expansion_rules.py`.
 - [ ] Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.
   - [x] Initial forward-chaining strategy and selector parity.
+  - [x] Initial modal tableaux strategy parity with local TS tableaux, modal-logic auto-selection, and priority/cost selection.
   - [x] Initial indexed-KB and cache-aware optimization facade.
-  - [ ] Backward chaining, modal tableaux strategy, CEC delegate replacement, and bidirectional strategy parity.
+  - [ ] Backward chaining, CEC delegate replacement, and bidirectional strategy parity.
   - [ ] Browser-native ZKP acceleration and parallel proof search parity.
 - [ ] Complete modal tableaux and countermodel generation/visualization parity.
   - [x] Initial modal tableaux proof search for propositional, temporal, deontic modal formulas and K/T/D/S4/S5 accessibility.
@@ -521,7 +525,7 @@ Current completed TypeScript/WASM port slice:
 - 75-85 percent of common module behavior: cache, converter lifecycle, browser feature detection, proof cache, utility monitoring, validation, and error surfaces.
 - 100 percent of proof summary loading, indexing, validation, and display helpers.
 - 80-90 percent of TDFOL core AST/parser/formatter behavior needed for generated Portland formulas.
-- 55-65 percent of TDFOL inference/prover/explanation/operations behavior: initial propositional, temporal, deontic rules, bounded forward chaining, modal tableaux, strategy selection, indexed-KB optimization, countermodels, proof explanations, dependency graphs, proof tree views, security validation, and metrics collection.
+- 56-66 percent of TDFOL inference/prover/explanation/operations behavior: initial propositional, temporal, deontic rules, tableaux expansion rules, bounded forward chaining, modal tableaux, strategy selection, indexed-KB optimization, countermodels, proof explanations, dependency graphs, proof tree views, security validation, and metrics collection.
 - 75-85 percent of regex FOL/deontic extraction, formatter, analyzer, and knowledge-base behavior, focused on legal-code clauses.
 - 70-80 percent of F-logic data modeling and display rendering for generated frame snippets.
 - 50-60 percent of ZKP canonicalization/statement metadata behavior.

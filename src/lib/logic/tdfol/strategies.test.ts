@@ -4,6 +4,7 @@ import { parseTdfolFormula } from './parser';
 import {
   proveTdfolWithStrategySelection,
   TdfolForwardChainingStrategy,
+  TdfolModalTableauxStrategy,
   TdfolStrategySelector,
   type TdfolProverStrategy,
 } from './strategies';
@@ -98,6 +99,44 @@ describe('TDFOL proving strategies', () => {
       { name: 'Low', type: 'forward_chaining', priority: 5, cost: 1 },
     ]);
     expect(selector.selectMultiple(parseTdfolFormula('Goal(x)'), { axioms: [] }, 1).map((s) => s.name)).toEqual(['High']);
+  });
+
+  it('selects modal tableaux for modal formulas in the default strategy set', () => {
+    const selector = new TdfolStrategySelector();
+    const strategy = selector.selectStrategy(parseTdfolFormula('always(Pred(x)) -> Pred(x)'), { axioms: [] });
+
+    expect(strategy.name).toBe('Modal Tableaux');
+    expect(strategy.strategyType).toBe('modal_tableaux');
+  });
+
+  it('proves modal tautologies through the modal tableaux strategy', () => {
+    const strategy = new TdfolModalTableauxStrategy({ logicType: 'T' });
+    const result = strategy.prove(parseTdfolFormula('always(Pred(x)) -> Pred(x)'), { axioms: [] });
+
+    expect(result).toMatchObject({
+      status: 'proved',
+      theorem: '(□(Pred(x))) → (Pred(x))',
+      method: 'modal_tableaux:T',
+    });
+    expect(result.steps.some((step) => step.conclusion.includes('BOX expansion'))).toBe(true);
+  });
+
+  it('returns unknown with an open branch for non-valid modal formulas', () => {
+    const strategy = new TdfolModalTableauxStrategy({ logicType: 'K' });
+
+    expect(strategy.prove(parseTdfolFormula('always(Pred(x)) -> Pred(x)'), { axioms: [] })).toMatchObject({
+      status: 'unknown',
+      method: 'modal_tableaux:K',
+      error: 'Open branch remains after 1 branch(es)',
+    });
+  });
+
+  it('selects D for deontic formulas and S4 for temporal formulas', () => {
+    const strategy = new TdfolModalTableauxStrategy();
+
+    expect(strategy.selectModalLogicType(parseTdfolFormula('O(Comply(x))'))).toBe('D');
+    expect(strategy.selectModalLogicType(parseTdfolFormula('always(Pred(x))'))).toBe('S4');
+    expect(strategy.estimateCost(parseTdfolFormula('always(eventually(Pred(x)))'))).toBe(4);
   });
 });
 
