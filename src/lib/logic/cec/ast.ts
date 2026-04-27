@@ -20,7 +20,7 @@ export type CecExpression =
 
 export type CecQuantifier = 'forall' | 'exists';
 export type CecUnaryOperator = 'not' | 'O' | 'P' | 'F' | 'always' | 'eventually' | 'next';
-export type CecBinaryOperator = 'implies' | 'and' | 'or' | 'iff' | 'xor';
+export type CecBinaryOperator = 'implies' | 'and' | 'or' | 'iff' | 'xor' | 'until' | 'since';
 
 export interface CecQuantifiedExpression {
   kind: 'quantified';

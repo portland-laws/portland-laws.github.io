@@ -131,6 +131,203 @@ export const CecEventuallyIntroductionRule = new CecRule({
   apply: (expression) => ({ kind: 'unary', operator: 'eventually', expression }),
 });
 
+export const CecAlwaysDistributionRule = new CecRule({
+  name: 'CecAlwaysDistribution',
+  description: 'From (always (and phi psi)), infer (and (always phi) (always psi))',
+  arity: 1,
+  canApply: (expression) => isUnary(expression, 'always') && isBinary(expression.expression, 'and'),
+  apply: (expression) => {
+    if (!isUnary(expression, 'always') || !isBinary(expression.expression, 'and')) {
+      throw new Error('Invalid CEC always distribution premise');
+    }
+    return {
+      kind: 'binary',
+      operator: 'and',
+      left: { kind: 'unary', operator: 'always', expression: expression.expression.left },
+      right: { kind: 'unary', operator: 'always', expression: expression.expression.right },
+    };
+  },
+});
+
+export const CecAlwaysImplicationRule = new CecRule({
+  name: 'CecAlwaysImplication',
+  description: 'From (always phi) and (always (implies phi psi)), infer (always psi)',
+  arity: 2,
+  canApply: (left, right) => findUnaryImplicationPremises('always', left, right) !== undefined,
+  apply: (left, right) => {
+    const premises = findUnaryImplicationPremises('always', left, right);
+    if (!premises) throw new Error('Invalid CEC always implication premises');
+    return { kind: 'unary', operator: 'always', expression: premises.implication.expression.right };
+  },
+});
+
+export const CecAlwaysTransitiveRule = new CecRule({
+  name: 'CecAlwaysTransitive',
+  description: 'From (always (always phi)), infer (always phi)',
+  arity: 1,
+  canApply: (expression) => isUnary(expression, 'always') && isUnary(expression.expression, 'always'),
+  apply: (expression) => {
+    if (!isUnary(expression, 'always') || !isUnary(expression.expression, 'always')) {
+      throw new Error('Invalid CEC always transitive premise');
+    }
+    return { kind: 'unary', operator: 'always', expression: expression.expression.expression };
+  },
+});
+
+export const CecAlwaysImpliesNextRule = new CecRule({
+  name: 'CecAlwaysImpliesNext',
+  description: 'From (always phi), infer (next phi)',
+  arity: 1,
+  canApply: (expression) => isUnary(expression, 'always'),
+  apply: (expression) => {
+    if (!isUnary(expression, 'always')) throw new Error('Invalid CEC always-next premise');
+    return { kind: 'unary', operator: 'next', expression: expression.expression };
+  },
+});
+
+export const CecAlwaysInductionRule = new CecRule({
+  name: 'CecAlwaysInduction',
+  description: 'From phi and (always (implies phi (next phi))), infer (always phi)',
+  arity: 2,
+  canApply: (left, right) => findAlwaysInductionPremises(left, right) !== undefined,
+  apply: (left, right) => {
+    const premise = findAlwaysInductionPremises(left, right);
+    if (!premise) throw new Error('Invalid CEC always induction premises');
+    return { kind: 'unary', operator: 'always', expression: premise };
+  },
+});
+
+export const CecEventuallyFromAlwaysRule = new CecRule({
+  name: 'CecEventuallyFromAlways',
+  description: 'From (always phi), infer (eventually phi)',
+  arity: 1,
+  canApply: (expression) => isUnary(expression, 'always'),
+  apply: (expression) => {
+    if (!isUnary(expression, 'always')) throw new Error('Invalid CEC eventually-from-always premise');
+    return { kind: 'unary', operator: 'eventually', expression: expression.expression };
+  },
+});
+
+export const CecEventuallyDistributionRule = new CecRule({
+  name: 'CecEventuallyDistribution',
+  description: 'From (eventually (or phi psi)), infer (or (eventually phi) (eventually psi))',
+  arity: 1,
+  canApply: (expression) => isUnary(expression, 'eventually') && isBinary(expression.expression, 'or'),
+  apply: (expression) => {
+    if (!isUnary(expression, 'eventually') || !isBinary(expression.expression, 'or')) {
+      throw new Error('Invalid CEC eventually distribution premise');
+    }
+    return {
+      kind: 'binary',
+      operator: 'or',
+      left: { kind: 'unary', operator: 'eventually', expression: expression.expression.left },
+      right: { kind: 'unary', operator: 'eventually', expression: expression.expression.right },
+    };
+  },
+});
+
+export const CecEventuallyTransitiveRule = new CecRule({
+  name: 'CecEventuallyTransitive',
+  description: 'From (eventually (eventually phi)), infer (eventually phi)',
+  arity: 1,
+  canApply: (expression) => isUnary(expression, 'eventually') && isUnary(expression.expression, 'eventually'),
+  apply: (expression) => {
+    if (!isUnary(expression, 'eventually') || !isUnary(expression.expression, 'eventually')) {
+      throw new Error('Invalid CEC eventually transitive premise');
+    }
+    return { kind: 'unary', operator: 'eventually', expression: expression.expression.expression };
+  },
+});
+
+export const CecEventuallyImplicationRule = new CecRule({
+  name: 'CecEventuallyImplication',
+  description: 'From (eventually phi) and (always (implies phi psi)), infer (eventually psi)',
+  arity: 2,
+  canApply: (eventual, alwaysImplication) => findEventuallyImplicationPremises(eventual, alwaysImplication) !== undefined,
+  apply: (eventual, alwaysImplication) => {
+    const premises = findEventuallyImplicationPremises(eventual, alwaysImplication);
+    if (!premises) throw new Error('Invalid CEC eventually implication premises');
+    return { kind: 'unary', operator: 'eventually', expression: premises.implication.expression.right };
+  },
+});
+
+export const CecNextDistributionRule = new CecRule({
+  name: 'CecNextDistribution',
+  description: 'From (next (and phi psi)), infer (and (next phi) (next psi))',
+  arity: 1,
+  canApply: (expression) => isUnary(expression, 'next') && isBinary(expression.expression, 'and'),
+  apply: (expression) => {
+    if (!isUnary(expression, 'next') || !isBinary(expression.expression, 'and')) {
+      throw new Error('Invalid CEC next distribution premise');
+    }
+    return {
+      kind: 'binary',
+      operator: 'and',
+      left: { kind: 'unary', operator: 'next', expression: expression.expression.left },
+      right: { kind: 'unary', operator: 'next', expression: expression.expression.right },
+    };
+  },
+});
+
+export const CecNextImplicationRule = new CecRule({
+  name: 'CecNextImplication',
+  description: 'From (next phi) and (next (implies phi psi)), infer (next psi)',
+  arity: 2,
+  canApply: (left, right) => findUnaryImplicationPremises('next', left, right) !== undefined,
+  apply: (left, right) => {
+    const premises = findUnaryImplicationPremises('next', left, right);
+    if (!premises) throw new Error('Invalid CEC next implication premises');
+    return { kind: 'unary', operator: 'next', expression: premises.implication.expression.right };
+  },
+});
+
+export const CecUntilWeakeningRule = new CecRule({
+  name: 'CecUntilWeakening',
+  description: 'From (until phi psi), infer (eventually psi)',
+  arity: 1,
+  canApply: (expression) => isBinary(expression, 'until'),
+  apply: (expression) => {
+    if (!isBinary(expression, 'until')) throw new Error('Invalid CEC until weakening premise');
+    return { kind: 'unary', operator: 'eventually', expression: expression.right };
+  },
+});
+
+export const CecSinceWeakeningRule = new CecRule({
+  name: 'CecSinceWeakening',
+  description: 'From (since phi psi), infer psi',
+  arity: 1,
+  canApply: (expression) => isBinary(expression, 'since'),
+  apply: (expression) => {
+    if (!isBinary(expression, 'since')) throw new Error('Invalid CEC since weakening premise');
+    return expression.right;
+  },
+});
+
+export const CecTemporalUntilEliminationRule = new CecRule({
+  name: 'CecTemporalUntilElimination',
+  description: 'From (until phi psi) and psi, infer psi',
+  arity: 2,
+  canApply: (untilExpression, current) => isBinary(untilExpression, 'until') && cecExpressionEquals(untilExpression.right, current),
+  apply: (_untilExpression, current) => current,
+});
+
+export const CecTemporalNegationRule = new CecRule({
+  name: 'CecTemporalNegation',
+  description: 'From (not (always phi)), infer (eventually (not phi))',
+  arity: 1,
+  canApply: (expression) => isUnary(expression, 'not') && isUnary(expression.expression, 'always'),
+  apply: (expression) => {
+    if (!isUnary(expression, 'not') || !isUnary(expression.expression, 'always')) {
+      throw new Error('Invalid CEC temporal negation premise');
+    }
+    return {
+      kind: 'unary',
+      operator: 'eventually',
+      expression: { kind: 'unary', operator: 'not', expression: expression.expression.expression },
+    };
+  },
+});
+
 export const CecDeonticDRule = new CecRule({
   name: 'CecDeonticD',
   description: 'From (O phi), infer (P phi)',
@@ -171,6 +368,101 @@ export const CecProhibitionFromObligationRule = new CecRule({
     }
     return { kind: 'unary', operator: 'F', expression: expression.expression.expression };
   },
+});
+
+export const CecObligationDistributionRule = new CecRule({
+  name: 'CecObligationDistribution',
+  description: 'From (O (and phi psi)), infer (and (O phi) (O psi))',
+  arity: 1,
+  canApply: (expression) => isUnary(expression, 'O') && isBinary(expression.expression, 'and'),
+  apply: (expression) => {
+    if (!isUnary(expression, 'O') || !isBinary(expression.expression, 'and')) {
+      throw new Error('Invalid CEC obligation distribution premise');
+    }
+    return {
+      kind: 'binary',
+      operator: 'and',
+      left: { kind: 'unary', operator: 'O', expression: expression.expression.left },
+      right: { kind: 'unary', operator: 'O', expression: expression.expression.right },
+    };
+  },
+});
+
+export const CecObligationImplicationRule = new CecRule({
+  name: 'CecObligationImplication',
+  description: 'From (O phi) and (implies phi psi), infer (O psi)',
+  arity: 2,
+  canApply: (obligation, implication) =>
+    isUnary(obligation, 'O') && isBinary(implication, 'implies') && cecExpressionEquals(obligation.expression, implication.left),
+  apply: (obligation, implication) => {
+    if (!isUnary(obligation, 'O') || !isBinary(implication, 'implies')) {
+      throw new Error('Invalid CEC obligation implication premises');
+    }
+    return { kind: 'unary', operator: 'O', expression: implication.right };
+  },
+});
+
+export const CecPermissionFromNonObligationRule = new CecRule({
+  name: 'CecPermissionFromNonObligation',
+  description: 'From (not (O (not phi))), infer (P phi)',
+  arity: 1,
+  canApply: (expression) =>
+    isUnary(expression, 'not') &&
+    isUnary(expression.expression, 'O') &&
+    isUnary(expression.expression.expression, 'not'),
+  apply: (expression) => {
+    if (!isUnary(expression, 'not') || !isUnary(expression.expression, 'O') || !isUnary(expression.expression.expression, 'not')) {
+      throw new Error('Invalid CEC permission duality premise');
+    }
+    return { kind: 'unary', operator: 'P', expression: expression.expression.expression.expression };
+  },
+});
+
+export const CecObligationConjunctionRule = new CecRule({
+  name: 'CecObligationConjunction',
+  description: 'From (O phi) and (O psi), infer (O (and phi psi)); kept opt-in because it generates conjunctions',
+  arity: 2,
+  canApply: (left, right) =>
+    isUnary(left, 'O') &&
+    isUnary(right, 'O') &&
+    !cecExpressionEquals(left.expression, right.expression),
+  apply: (left, right) => {
+    if (!isUnary(left, 'O') || !isUnary(right, 'O')) throw new Error('Invalid CEC obligation conjunction premises');
+    return {
+      kind: 'unary',
+      operator: 'O',
+      expression: { kind: 'binary', operator: 'and', left: left.expression, right: right.expression },
+    };
+  },
+});
+
+export const CecPermissionDistributionRule = new CecRule({
+  name: 'CecPermissionDistribution',
+  description: 'From (P (or phi psi)), infer (or (P phi) (P psi))',
+  arity: 1,
+  canApply: (expression) => isUnary(expression, 'P') && isBinary(expression.expression, 'or'),
+  apply: (expression) => {
+    if (!isUnary(expression, 'P') || !isBinary(expression.expression, 'or')) {
+      throw new Error('Invalid CEC permission distribution premise');
+    }
+    return {
+      kind: 'binary',
+      operator: 'or',
+      left: { kind: 'unary', operator: 'P', expression: expression.expression.left },
+      right: { kind: 'unary', operator: 'P', expression: expression.expression.right },
+    };
+  },
+});
+
+export const CecObligationConsistencyRule = new CecRule({
+  name: 'CecObligationConsistency',
+  description: 'From (O phi) and (O (not phi)), infer contradiction',
+  arity: 2,
+  canApply: (left, right) =>
+    isUnary(left, 'O') &&
+    isUnary(right, 'O') &&
+    (isNegationOf(left.expression, right.expression) || isNegationOf(right.expression, left.expression)),
+  apply: () => ({ kind: 'atom', name: 'contradiction' }),
 });
 
 export const CecUniversalModusPonensRule = new CecRule({
@@ -671,6 +963,40 @@ export function getResolutionCecRules(): CecInferenceRule[] {
   ];
 }
 
+export function getTemporalCecRules(): CecInferenceRule[] {
+  return [
+    CecTemporalTRule,
+    CecAlwaysDistributionRule,
+    CecAlwaysImplicationRule,
+    CecAlwaysTransitiveRule,
+    CecAlwaysImpliesNextRule,
+    CecAlwaysInductionRule,
+    CecEventuallyFromAlwaysRule,
+    CecEventuallyDistributionRule,
+    CecEventuallyTransitiveRule,
+    CecEventuallyImplicationRule,
+    CecNextDistributionRule,
+    CecNextImplicationRule,
+    CecUntilWeakeningRule,
+    CecSinceWeakeningRule,
+    CecTemporalUntilEliminationRule,
+    CecTemporalNegationRule,
+  ];
+}
+
+export function getDeonticCecRules(): CecInferenceRule[] {
+  return [
+    CecDeonticDRule,
+    CecProhibitionEquivalenceRule,
+    CecProhibitionFromObligationRule,
+    CecObligationDistributionRule,
+    CecObligationImplicationRule,
+    CecPermissionFromNonObligationRule,
+    CecPermissionDistributionRule,
+    CecObligationConsistencyRule,
+  ];
+}
+
 export function getSpecializedCecRules(): CecInferenceRule[] {
   return [
     CecBiconditionalIntroductionRule,
@@ -709,6 +1035,7 @@ export function getGenerativeCecRules(): CecInferenceRule[] {
     CecBeliefConjunctionRule,
     CecKnowledgeConjunctionRule,
     CecAdditionRule,
+    CecObligationConjunctionRule,
   ];
 }
 
@@ -800,6 +1127,98 @@ function buildDisjunction(expressions: CecExpression[]): CecExpression {
 
 function isNegationOf(left: CecExpression, right: CecExpression): boolean {
   return isUnary(left, 'not') && cecExpressionEquals(left.expression, right);
+}
+
+function findUnaryImplicationPremises(
+  operator: Extract<CecUnaryExpression['operator'], 'always' | 'next'>,
+  left: CecExpression,
+  right: CecExpression,
+): { fact: CecUnaryExpression; implication: CecUnaryExpression & { expression: CecBinaryExpression } } | undefined {
+  const candidates = [
+    [left, right],
+    [right, left],
+  ] as const;
+  for (const [fact, implication] of candidates) {
+    if (
+      isUnary(fact, operator) &&
+      isUnary(implication, operator) &&
+      isBinary(implication.expression, 'implies') &&
+      cecExpressionEquals(fact.expression, implication.expression.left)
+    ) {
+      return { fact, implication: implication as CecUnaryExpression & { expression: CecBinaryExpression } };
+    }
+  }
+  return undefined;
+}
+
+function findEventuallyImplicationPremises(
+  eventual: CecExpression,
+  alwaysImplication: CecExpression,
+): { eventual: CecUnaryExpression; implication: CecUnaryExpression & { expression: CecBinaryExpression } } | undefined {
+  const candidates = [
+    [eventual, alwaysImplication],
+    [alwaysImplication, eventual],
+  ] as const;
+  for (const [eventualCandidate, implicationCandidate] of candidates) {
+    if (
+      isUnary(eventualCandidate, 'eventually') &&
+      isUnary(implicationCandidate, 'always') &&
+      isBinary(implicationCandidate.expression, 'implies') &&
+      cecExpressionEquals(eventualCandidate.expression, implicationCandidate.expression.left)
+    ) {
+      return {
+        eventual: eventualCandidate,
+        implication: implicationCandidate as CecUnaryExpression & { expression: CecBinaryExpression },
+      };
+    }
+  }
+  return undefined;
+}
+
+function findAlwaysInductionPremises(left: CecExpression, right: CecExpression): CecExpression | undefined {
+  const candidates = [
+    [left, right],
+    [right, left],
+  ] as const;
+  for (const [base, induction] of candidates) {
+    if (
+      isUnary(induction, 'always') &&
+      isBinary(induction.expression, 'implies') &&
+      isUnary(induction.expression.right, 'next') &&
+      cecExpressionEquals(base, induction.expression.left) &&
+      cecExpressionEquals(base, induction.expression.right.expression)
+    ) {
+      return base;
+    }
+  }
+  return undefined;
+}
+
+function findDilemmaPremises(
+  expressions: CecExpression[],
+  destructive: boolean,
+): { first: CecBinaryExpression; second: CecBinaryExpression; disjunction: CecBinaryExpression } | undefined {
+  const implications = expressions.filter((expression): expression is CecBinaryExpression => isBinary(expression, 'implies'));
+  const disjunction = expressions.find((expression): expression is CecBinaryExpression => isBinary(expression, 'or'));
+  if (implications.length !== 2 || !disjunction) return undefined;
+
+  const disjuncts = getDisjuncts(disjunction);
+  const [first, second] = implications;
+  const firstTarget = destructive ? { kind: 'unary' as const, operator: 'not' as const, expression: first.right } : first.left;
+  const secondTarget = destructive ? { kind: 'unary' as const, operator: 'not' as const, expression: second.right } : second.left;
+  const matchesForward = hasExpression(disjuncts, firstTarget) && hasExpression(disjuncts, secondTarget);
+  if (matchesForward) return { first, second, disjunction };
+
+  const swappedFirstTarget = destructive ? { kind: 'unary' as const, operator: 'not' as const, expression: second.right } : second.left;
+  const swappedSecondTarget = destructive ? { kind: 'unary' as const, operator: 'not' as const, expression: first.right } : first.left;
+  if (hasExpression(disjuncts, swappedFirstTarget) && hasExpression(disjuncts, swappedSecondTarget)) {
+    return { first: second, second: first, disjunction };
+  }
+  return undefined;
+}
+
+function hasExpression(expressions: CecExpression[], target: CecExpression): boolean {
+  return expressions.some((expression) => cecExpressionEquals(expression, target));
 }
 
 function findComplementaryDisjunctPair(

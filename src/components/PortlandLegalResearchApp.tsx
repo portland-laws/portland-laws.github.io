@@ -47,6 +47,11 @@ const INITIAL_RESULT_LIMIT = 6;
 const RESULT_INCREMENT = 6;
 const GRAPH_ENTITY_LIMIT = 14;
 const GRAPH_RELATIONSHIP_LIMIT = 14;
+const CHAT_PROMPTS = [
+  'What does this section require?',
+  'Who is affected by this section?',
+  'What evidence supports this answer?',
+];
 
 const TITLE_LABELS: Record<string, string> = {
   '1': 'General Provisions',
@@ -313,7 +318,10 @@ export default function PortlandLegalResearchApp() {
 
   function onMobileSearch(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    void runSearch();
+    setTitleFilter('');
+    setChapterFilter('');
+    setNormFilter('');
+    void runSearch(query, '', '', '');
     window.requestAnimationFrame(() => {
       document.getElementById('code-search')?.scrollIntoView({ block: 'start' });
     });
@@ -344,7 +352,7 @@ export default function PortlandLegalResearchApp() {
         className="mx-auto grid max-w-[1520px] gap-3 px-3 py-3 sm:gap-4 sm:px-4 sm:py-4 lg:grid-cols-[300px_minmax(360px,480px)_1fr]"
       >
         <DirectoryPanel
-          className="order-2 lg:order-none"
+          className="order-1 lg:order-none"
           directory={directory}
           selectedTitle={titleFilter}
           selectedChapter={chapterFilter}
@@ -353,7 +361,7 @@ export default function PortlandLegalResearchApp() {
         />
 
         <SearchPanel
-          className="order-1 lg:order-none"
+          className="order-2 lg:order-none"
           query={query}
           titleFilter={titleFilter}
           chapterFilter={chapterFilter}
@@ -512,10 +520,10 @@ function MobileFrontPanel({
         </div>
         <div className="p-3">
           {mode === 'search' && (
-          <form onSubmit={onSearch} aria-label="Search the code from the front panel">
+          <form onSubmit={onSearch} aria-label="Search all Portland City Code from the front panel">
             <div>
               <label htmlFor="mobile-front-search" className="mb-1 block text-sm font-semibold text-[#26343a]">
-                Search the code
+                Search all Portland City Code
               </label>
               <span className="grid grid-cols-[minmax(0,1fr)_86px] gap-2">
                 <input
@@ -537,29 +545,42 @@ function MobileFrontPanel({
           </form>
           )}
           {mode === 'chat' && (
-          <form onSubmit={onAskQuestion} aria-label="Ask the code from the front panel">
-            <div>
-              <label htmlFor="mobile-front-chat" className="mb-1 block text-sm font-semibold text-[#26343a]">
-                Ask the code
-              </label>
-              <span className="grid grid-cols-[minmax(0,1fr)_76px] gap-2">
-                <input
-                  id="mobile-front-chat"
-                  value={question}
-                  onChange={(event) => onQuestionChange(event.target.value)}
-                  className="min-h-11 w-full rounded-md border border-[#8fa08a] bg-white px-3 text-base text-[#172026] shadow-sm"
-                  placeholder="What notice is required?"
-                />
-                <button
-                  type="submit"
-                  disabled={isAnswering}
-                  className="min-h-11 rounded-md bg-[#24594f] px-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1d473f] disabled:cursor-not-allowed disabled:bg-[#8aa19b]"
-                >
-                  {isAnswering ? '...' : 'Ask'}
-                </button>
-              </span>
-            </div>
-          </form>
+            <form onSubmit={onAskQuestion} aria-label="Ask all Portland City Code from the front panel">
+              <div>
+                <label htmlFor="mobile-front-chat" className="mb-1 block text-sm font-semibold text-[#26343a]">
+                  Ask all Portland City Code
+                </label>
+                <span className="grid grid-cols-[minmax(0,1fr)_76px] gap-2">
+                  <textarea
+                    id="mobile-front-chat"
+                    value={question}
+                    onChange={(event) => onQuestionChange(event.target.value)}
+                    rows={2}
+                    className="min-h-[4.5rem] w-full resize-none rounded-md border border-[#8fa08a] bg-white px-3 py-2 text-base text-[#172026] shadow-sm"
+                    placeholder="What notice is required?"
+                  />
+                  <button
+                    type="submit"
+                    disabled={isAnswering}
+                    className="min-h-[4.5rem] rounded-md bg-[#24594f] px-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1d473f] disabled:cursor-not-allowed disabled:bg-[#8aa19b]"
+                  >
+                    {isAnswering ? '...' : 'Ask'}
+                  </button>
+                </span>
+                <div className="mt-3 grid gap-2" aria-label="Mobile suggested chat questions">
+                  {CHAT_PROMPTS.map((prompt) => (
+                    <button
+                      key={prompt}
+                      type="button"
+                      onClick={() => onQuestionChange(prompt)}
+                      className="min-h-11 rounded-md border border-[#8fa08a] bg-[#f7faf4] px-3 py-2 text-left text-sm font-semibold text-[#24594f]"
+                    >
+                      {prompt}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </form>
           )}
         </div>
       </div>
@@ -599,7 +620,7 @@ function DirectoryPanel({
           {directory.length} titles · {totalChapters.toLocaleString()} chapters · {totalSections.toLocaleString()} sections
         </p>
       </div>
-      <details className="group lg:hidden">
+      <details className="group lg:hidden" open>
         <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-[#24594f]">
           Browse titles
           <span className="text-xs uppercase tracking-wide text-[#607068]">
@@ -1479,17 +1500,11 @@ function GraphRagChat({
 }
 
 function ChatPromptStarters({ onQuestionChange }: { onQuestionChange: (question: string) => void }) {
-  const prompts = [
-    'What does this section require?',
-    'Who is affected by this section?',
-    'What evidence supports this answer?',
-  ];
-
   return (
     <div className="rounded-md border border-dashed border-[#aebba9] bg-white/70 px-4 py-5" role="status">
       <p className="text-center text-sm font-semibold text-[#26343a]">No answer yet</p>
       <div className="mt-3 flex flex-wrap justify-center gap-2" aria-label="Suggested chat questions">
-        {prompts.map((prompt) => (
+        {CHAT_PROMPTS.map((prompt) => (
           <button
             key={prompt}
             type="button"

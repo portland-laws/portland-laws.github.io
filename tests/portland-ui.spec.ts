@@ -145,25 +145,27 @@ test.describe('Portland legal corpus mobile screenshots', () => {
   test('captures the mobile directory/search/workbench stack without page overflow', async ({ page }, testInfo) => {
     const browseTitles = page.locator('summary').filter({ hasText: 'Browse titles' });
     const mobileDirectory = page.getByRole('navigation', { name: 'City Code mobile' });
+    await expect(page.getByText('Search the Portland code with graph, proof, and chat tools.')).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Mobile quick actions' })).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Mobile quick actions' }).getByRole('button', { name: 'Show search' })).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Mobile quick actions' }).getByRole('button', { name: 'Show chat' })).toBeVisible();
+    await expect(page.getByRole('textbox', { name: 'Search all Portland City Code' })).toBeVisible();
+    await expect(page.getByRole('textbox', { name: 'Ask all Portland City Code' })).toHaveCount(0);
     await expect(browseTitles).toBeVisible();
+    await expect(mobileDirectory).toBeVisible();
+    await expect(browseTitles).toContainText('Collapse');
+    await expect(mobileDirectory.getByRole('button', { name: 'Title 1 General Provisions 7 chapters · 43 sections' })).toBeVisible();
+    await expectElementBefore(page, '[aria-label="Mobile quick actions"]', '#code-directory');
+    await expectElementBefore(page, '#code-directory', '#code-search');
+    await browseTitles.click();
     await expect(mobileDirectory).not.toBeVisible();
     await expect(browseTitles).toContainText('Expand');
     await browseTitles.click();
     await expect(mobileDirectory).toBeVisible();
     await expect(browseTitles).toContainText('Collapse');
-    await expect(mobileDirectory.getByRole('button', { name: 'Title 1 General Provisions 7 chapters · 43 sections' })).toBeVisible();
-    await browseTitles.click();
-    await expect(mobileDirectory).not.toBeVisible();
-    await expect(browseTitles).toContainText('Expand');
-    await expect(page.getByText('Search the Portland code with graph, proof, and chat tools.')).toBeVisible();
-    await expect(page.getByRole('region', { name: 'Mobile quick actions' })).toBeVisible();
-    await expect(page.getByRole('region', { name: 'Mobile quick actions' }).getByRole('button', { name: 'Show search' })).toBeVisible();
-    await expect(page.getByRole('region', { name: 'Mobile quick actions' }).getByRole('button', { name: 'Show chat' })).toBeVisible();
-    await expect(page.getByRole('textbox', { name: 'Search the code' })).toBeVisible();
-    await expect(page.getByRole('textbox', { name: 'Ask the code' })).toHaveCount(0);
     await expectMobileFrontPanelRowsAreCompact(page);
     await expectElementTopLessThan(page, '[aria-label="Mobile quick actions"]', 245);
-    await expectElementTopLessThan(page, '#code-search', 360);
+    await expectElementTopLessThan(page, '#code-directory', 360);
     await expectNoHorizontalOverflow(page);
     await page.screenshot({
       path: screenshotPath(testInfo, 'mobile-full-page-stack.png'),
@@ -171,7 +173,13 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     });
 
     await page.getByRole('region', { name: 'Mobile quick actions' }).getByRole('button', { name: 'Show chat' }).click();
-    await expect(page.getByRole('textbox', { name: 'Ask the code' })).toBeVisible();
+    await expect(page.getByRole('textbox', { name: 'Ask all Portland City Code' })).toBeVisible();
+    await expect(page.getByLabel('Mobile suggested chat questions').getByRole('button')).toHaveCount(3);
+    await page.getByLabel('Mobile suggested chat questions').getByRole('button', { name: 'Who is affected by this section?' }).click();
+    await expect(page.getByRole('textbox', { name: 'Ask all Portland City Code' })).toHaveValue('Who is affected by this section?');
+    await page.locator('[aria-label="Mobile quick actions"]').screenshot({
+      path: screenshotPath(testInfo, 'mobile-front-chat.png'),
+    });
     await page.getByRole('region', { name: 'Mobile quick actions' }).getByRole('button', { name: /^Ask$/ }).click();
     await expect(page.getByRole('tab', { name: 'Chat' })).toHaveAttribute('aria-selected', 'true');
 
@@ -189,9 +197,16 @@ test.describe('Portland legal corpus mobile screenshots', () => {
   });
 
   test('captures mobile search results after filtering', async ({ page }, testInfo) => {
-    await page.getByRole('textbox', { name: 'Search the code' }).fill('noise');
+    const mobileFilters = page.locator('summary').filter({ hasText: 'Filters and examples' });
+    await mobileFilters.click();
+    await page.locator('#code-search details').getByLabel('Title').selectOption('14');
+    await expect(page.getByLabel('Current search filters')).toContainText('Title 14');
+    await mobileFilters.click();
+    await page.getByRole('textbox', { name: 'Search all Portland City Code' }).fill('noise');
     await page.getByRole('button', { name: /^Search$/ }).click();
     await expect(page.locator('#search-status')).toContainText(/matches/);
+    await expect(page.getByLabel('Current search filters')).not.toContainText('Title 14');
+    await expect(page.getByLabel('Current search filters')).toContainText('"noise"');
     await expect(page.getByRole('button', { name: /^Select / }).first()).toBeVisible();
     await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText('Selected');
     await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText(/Score \d+\.\d{2}/);
@@ -199,7 +214,6 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await expect(page.getByRole('button', { name: /^Select / }).first().getByLabel('Structured result preview')).toBeVisible();
     await expect(page.getByRole('button', { name: /Show \d+ more results/ })).toBeVisible();
     await expect(page.getByRole('button', { name: /^Select / }).first()).not.toContainText(/^Label:/);
-    const mobileFilters = page.locator('summary').filter({ hasText: 'Filters and examples' });
     await expect(mobileFilters).toBeVisible();
     await expect(mobileFilters).toContainText('Expand');
     await mobileFilters.click();
@@ -211,7 +225,7 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await expect(page.getByLabel('Current search filters')).toContainText('"noise"');
     await expect(page.locator('#code-search').getByRole('textbox', { name: 'Search Portland City Code' })).toHaveCount(0);
     await expectElementTopLessThan(page, '#search-status', 360);
-    await page.getByRole('textbox', { name: 'Search the code' }).focus();
+    await page.getByRole('textbox', { name: 'Search all Portland City Code' }).focus();
 
     await expectNoHorizontalOverflow(page);
     await page.locator('#code-search').screenshot({
@@ -366,6 +380,22 @@ async function expectChatAskButtonIsCompact(page: Page) {
 async function expectElementTopLessThan(page: Page, selector: string, maxTop: number) {
   const top = await page.locator(selector).evaluate((element) => element.getBoundingClientRect().top);
   expect(top).toBeLessThan(maxTop);
+}
+
+async function expectElementBefore(page: Page, firstSelector: string, secondSelector: string) {
+  const positions = await page.evaluate(
+    ([first, second]) => {
+      const firstElement = document.querySelector(first);
+      const secondElement = document.querySelector(second);
+      return {
+        firstTop: firstElement?.getBoundingClientRect().top ?? Number.POSITIVE_INFINITY,
+        secondTop: secondElement?.getBoundingClientRect().top ?? Number.NEGATIVE_INFINITY,
+      };
+    },
+    [firstSelector, secondSelector],
+  );
+
+  expect(positions.firstTop, JSON.stringify(positions)).toBeLessThan(positions.secondTop);
 }
 
 async function expectWorkbenchToolbarIsCompact(page: Page) {

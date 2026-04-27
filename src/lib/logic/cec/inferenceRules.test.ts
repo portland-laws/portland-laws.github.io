@@ -7,11 +7,28 @@ import {
   CecBeliefMonotonicityRule,
   CecBeliefNegationRule,
   CecBeliefRevisionRule,
+  CecAbsorptionRule,
+  CecAdditionRule,
+  CecAlwaysDistributionRule,
+  CecAlwaysImpliesNextRule,
+  CecAlwaysImplicationRule,
+  CecAlwaysInductionRule,
+  CecAlwaysTransitiveRule,
+  CecBiconditionalEliminationRule,
+  CecBiconditionalIntroductionRule,
   CecDeonticDRule,
   CecDoubleNegationEliminationRule,
+  CecCommutativityConjunctionRule,
+  CecConstructiveDilemmaRule,
+  CecDestructiveDilemmaRule,
   CecEventuallyIntroductionRule,
+  CecEventuallyDistributionRule,
+  CecEventuallyFromAlwaysRule,
+  CecEventuallyImplicationRule,
+  CecEventuallyTransitiveRule,
   CecExistentialGeneralizationRule,
   CecExistentialInstantiationRule,
+  CecExportationRule,
   CecHypotheticalSyllogismRule,
   CecIntentionCommitmentRule,
   CecIntentionMeansEndRule,
@@ -21,24 +38,40 @@ import {
   CecKnowledgeImpliesBeliefRule,
   CecKnowledgeMonotonicityRule,
   CecModusPonensRule,
+  CecNextDistributionRule,
+  CecNextImplicationRule,
+  CecObligationConjunctionRule,
+  CecObligationConsistencyRule,
+  CecObligationDistributionRule,
+  CecObligationImplicationRule,
   CecPerceptionImpliesKnowledgeRule,
+  CecPermissionDistributionRule,
+  CecPermissionFromNonObligationRule,
   CecCaseAnalysisRule,
   CecFactoringRule,
   CecProofByContradictionRule,
   CecResolutionRule,
   CecSubsumptionRule,
+  CecSinceWeakeningRule,
   CecUnitResolutionRule,
   CecProhibitionFromObligationRule,
   CecProhibitionEquivalenceRule,
   CecTemporalTRule,
+  CecTemporalNegationRule,
+  CecTautologyRule,
+  CecTemporalUntilEliminationRule,
+  CecUntilWeakeningRule,
   CecUniversalGeneralizationRule,
   CecUniversalModusPonensRule,
   applyCecRules,
   cecExpressionEquals,
   getAllCecRules,
   getCognitiveCecRules,
+  getDeonticCecRules,
   getGenerativeCecRules,
   getResolutionCecRules,
+  getSpecializedCecRules,
+  getTemporalCecRules,
 } from './inferenceRules';
 import { parseCecExpression } from './parser';
 
@@ -75,6 +108,102 @@ describe('CEC inference rules', () => {
     expect(formatCecExpression(CecProhibitionEquivalenceRule.apply(prohibition))).toBe('(O (not (enter agent code)))');
     expect(formatCecExpression(CecProhibitionFromObligationRule.apply(parseCecExpression('(O (not (enter agent code)))'))))
       .toBe('(F (enter agent code))');
+  });
+
+  it('applies expanded temporal CEC rules', () => {
+    expect(formatCecExpression(CecAlwaysDistributionRule.apply(
+      parseCecExpression('(always (and (p) (q)))'),
+    ))).toBe('(and (always (p)) (always (q)))');
+
+    expect(formatCecExpression(CecAlwaysImplicationRule.apply(
+      parseCecExpression('(always (p))'),
+      parseCecExpression('(always (implies (p) (q)))'),
+    ))).toBe('(always (q))');
+
+    expect(formatCecExpression(CecAlwaysTransitiveRule.apply(
+      parseCecExpression('(always (always (p)))'),
+    ))).toBe('(always (p))');
+
+    expect(formatCecExpression(CecAlwaysImpliesNextRule.apply(
+      parseCecExpression('(always (p))'),
+    ))).toBe('(next (p))');
+
+    expect(formatCecExpression(CecAlwaysInductionRule.apply(
+      parseCecExpression('(p)'),
+      parseCecExpression('(always (implies (p) (next (p))))'),
+    ))).toBe('(always (p))');
+
+    expect(formatCecExpression(CecEventuallyFromAlwaysRule.apply(
+      parseCecExpression('(always (p))'),
+    ))).toBe('(eventually (p))');
+
+    expect(formatCecExpression(CecEventuallyDistributionRule.apply(
+      parseCecExpression('(eventually (or (p) (q)))'),
+    ))).toBe('(or (eventually (p)) (eventually (q)))');
+
+    expect(formatCecExpression(CecEventuallyTransitiveRule.apply(
+      parseCecExpression('(eventually (eventually (p)))'),
+    ))).toBe('(eventually (p))');
+
+    expect(formatCecExpression(CecEventuallyImplicationRule.apply(
+      parseCecExpression('(eventually (p))'),
+      parseCecExpression('(always (implies (p) (q)))'),
+    ))).toBe('(eventually (q))');
+
+    expect(formatCecExpression(CecNextDistributionRule.apply(
+      parseCecExpression('(next (and (p) (q)))'),
+    ))).toBe('(and (next (p)) (next (q)))');
+
+    expect(formatCecExpression(CecNextImplicationRule.apply(
+      parseCecExpression('(next (p))'),
+      parseCecExpression('(next (implies (p) (q)))'),
+    ))).toBe('(next (q))');
+
+    expect(formatCecExpression(CecUntilWeakeningRule.apply(
+      parseCecExpression('(until (p) (q))'),
+    ))).toBe('(eventually (q))');
+
+    expect(formatCecExpression(CecSinceWeakeningRule.apply(
+      parseCecExpression('(since (p) (q))'),
+    ))).toBe('(q)');
+
+    expect(formatCecExpression(CecTemporalUntilEliminationRule.apply(
+      parseCecExpression('(until (p) (q))'),
+      parseCecExpression('(q)'),
+    ))).toBe('(q)');
+
+    expect(formatCecExpression(CecTemporalNegationRule.apply(
+      parseCecExpression('(not (always (p)))'),
+    ))).toBe('(eventually (not (p)))');
+  });
+
+  it('applies expanded deontic CEC rules', () => {
+    expect(formatCecExpression(CecObligationDistributionRule.apply(
+      parseCecExpression('(O (and (file_report agent) (pay_fee agent)))'),
+    ))).toBe('(and (O (file_report agent)) (O (pay_fee agent)))');
+
+    expect(formatCecExpression(CecObligationImplicationRule.apply(
+      parseCecExpression('(O (file_report agent))'),
+      parseCecExpression('(implies (file_report agent) (retain_record agent))'),
+    ))).toBe('(O (retain_record agent))');
+
+    expect(formatCecExpression(CecPermissionFromNonObligationRule.apply(
+      parseCecExpression('(not (O (not (speak agent))))'),
+    ))).toBe('(P (speak agent))');
+
+    expect(formatCecExpression(CecObligationConjunctionRule.apply(
+      parseCecExpression('(O (file_report agent))'),
+      parseCecExpression('(O (pay_fee agent))'),
+    ))).toBe('(O (and (file_report agent) (pay_fee agent)))');
+
+    expect(formatCecExpression(CecPermissionDistributionRule.apply(
+      parseCecExpression('(P (or (coffee) (tea)))'),
+    ))).toBe('(or (P (coffee)) (P (tea)))');
+
+    expect(formatCecExpression(CecObligationConsistencyRule.apply(
+      parseCecExpression('(O (speak agent))'),
+      parseCecExpression('(O (not (speak agent)))'),
+    ))).toBe('contradiction');
   });
 
   it('applies quantified CEC rules', () => {
@@ -194,6 +323,50 @@ describe('CEC inference rules', () => {
     ))).toBe('contradiction');
   });
 
+  it('applies specialized CEC rules', () => {
+    expect(formatCecExpression(CecBiconditionalIntroductionRule.apply(
+      parseCecExpression('(implies (rains) (wet))'),
+      parseCecExpression('(implies (wet) (rains))'),
+    ))).toBe('(iff (rains) (wet))');
+
+    expect(formatCecExpression(CecBiconditionalEliminationRule.apply(
+      parseCecExpression('(iff (rains) (wet))'),
+    ))).toBe('(and (implies (rains) (wet)) (implies (wet) (rains)))');
+
+    expect(formatCecExpression(CecConstructiveDilemmaRule.apply(
+      parseCecExpression('(implies (rains) (umbrella))'),
+      parseCecExpression('(implies (sunny) (sunglasses))'),
+      parseCecExpression('(or (rains) (sunny))'),
+    ))).toBe('(or (umbrella) (sunglasses))');
+
+    expect(formatCecExpression(CecDestructiveDilemmaRule.apply(
+      parseCecExpression('(implies (rains) (umbrella))'),
+      parseCecExpression('(implies (sunny) (sunglasses))'),
+      parseCecExpression('(or (not (umbrella)) (not (sunglasses)))'),
+    ))).toBe('(or (not (rains)) (not (sunny)))');
+
+    expect(formatCecExpression(CecExportationRule.apply(
+      parseCecExpression('(implies (and (home alice) (calls bob)) (answers alice))'),
+    ))).toBe('(implies (home alice) (implies (calls bob) (answers alice)))');
+
+    expect(formatCecExpression(CecAbsorptionRule.apply(
+      parseCecExpression('(implies (rains) (wet))'),
+    ))).toBe('(implies (rains) (and (rains) (wet)))');
+
+    expect(formatCecExpression(CecAdditionRule.apply(
+      parseCecExpression('(rains)'),
+      parseCecExpression('(snowing)'),
+    ))).toBe('(or (rains) (snowing))');
+
+    expect(formatCecExpression(CecTautologyRule.apply(
+      parseCecExpression('(or (rains) (rains))'),
+    ))).toBe('(rains)');
+
+    expect(formatCecExpression(CecCommutativityConjunctionRule.apply(
+      parseCecExpression('(and (home alice) (busy bob))'),
+    ))).toBe('(and (busy bob) (home alice))');
+  });
+
   it('enumerates three-premise resolution applications', () => {
     const applications = applyCecRules([
       parseCecExpression('(or (home alice) (work alice))'),
@@ -233,6 +406,20 @@ describe('CEC inference rules', () => {
       'CecConjunctionIntroduction',
       'CecEventuallyIntroduction',
       'CecBeliefConjunction',
+      'CecAddition',
+      'CecObligationConjunction',
+    ]));
+    expect(getTemporalCecRules().map((rule) => rule.name)).toEqual(expect.arrayContaining([
+      'CecAlwaysDistribution',
+      'CecEventuallyImplication',
+      'CecUntilWeakening',
+      'CecTemporalNegation',
+    ]));
+    expect(getDeonticCecRules().map((rule) => rule.name)).toEqual(expect.arrayContaining([
+      'CecObligationDistribution',
+      'CecObligationImplication',
+      'CecPermissionFromNonObligation',
+      'CecObligationConsistency',
     ]));
     expect(getResolutionCecRules().map((rule) => rule.name)).toEqual(expect.arrayContaining([
       'CecResolution',
@@ -240,5 +427,12 @@ describe('CEC inference rules', () => {
       'CecFactoring',
       'CecCaseAnalysis',
     ]));
+    expect(getSpecializedCecRules().map((rule) => rule.name)).toEqual(expect.arrayContaining([
+      'CecBiconditionalIntroduction',
+      'CecConstructiveDilemma',
+      'CecExportation',
+      'CecTautology',
+    ]));
+    expect(getSpecializedCecRules().map((rule) => rule.name)).not.toContain('CecAddition');
   });
 });

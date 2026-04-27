@@ -20,7 +20,7 @@ interface CecToken {
 
 const QUANTIFIERS = new Set(['forall', 'exists']);
 const UNARY_OPERATORS = new Set(['not', 'O', 'P', 'F', 'always', 'eventually', 'next']);
-const BINARY_OPERATORS = new Set(['implies', 'and', 'or', 'iff', 'xor']);
+const BINARY_OPERATORS = new Set(['implies', 'and', 'or', 'iff', 'xor', 'until', 'since']);
 
 export function parseCecExpression(source: string): CecExpression {
   return new CecParser(source).parse();
