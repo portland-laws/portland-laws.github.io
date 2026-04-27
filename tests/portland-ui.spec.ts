@@ -112,6 +112,8 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await expect(mobileDirectory.getByRole('button', { name: 'Title 1 General Provisions 7 chapters · 43 sections' })).toBeVisible();
     await browseTitles.click();
     await expect(mobileDirectory).not.toBeVisible();
+    await expect(page.getByText('Search the Portland code with graph, proof, and chat tools.')).toBeVisible();
+    await expectElementTopLessThan(page, '#code-search', 230);
     await expectNoHorizontalOverflow(page);
     await page.screenshot({
       path: screenshotPath(testInfo, 'mobile-full-page-stack.png'),
@@ -225,6 +227,11 @@ async function expectProofMetricsUseTwoColumns(page: Page) {
   expect(positions).toHaveLength(2);
   expect(Math.abs(positions[0].top - positions[1].top)).toBeLessThan(2);
   expect(positions[1].left).toBeGreaterThan(positions[0].left);
+}
+
+async function expectElementTopLessThan(page: Page, selector: string, maxTop: number) {
+  const top = await page.locator(selector).evaluate((element) => element.getBoundingClientRect().top);
+  expect(top).toBeLessThan(maxTop);
 }
 
 function screenshotPath(testInfo: TestInfo, fileName: string) {

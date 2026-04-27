@@ -14,7 +14,7 @@ Current parity is focused on deterministic, browser-safe behavior, but the end g
 - Common proof cache, feature detection, and utility monitor concepts, mapped to browser-native TypeScript.
 - Initial TDFOL inference rules and bounded forward-chaining prover for deterministic browser proof search.
 - Initial TDFOL proof explanation, dependency graph, and proof tree visualization helpers.
-- Initial TDFOL security validation and performance metrics helpers.
+- Initial TDFOL security validation, performance metrics, profiler, dashboard, and performance engine helpers.
 - TDFOL parsing/formatting for generated Portland formulas.
 - F-logic parsing for generated frame snippets.
 - ZKP canonicalization and simulated certificate metadata checks.
@@ -55,6 +55,7 @@ npm run validate:logic-port
 | TDFOL proof explanation and graphing | Text explanations, reasoning chains, statistics, dependency graph JSON/DOT, topological order, path lookup, ASCII/JSON/DOT/HTML proof tree views. | `proof_explainer.py`, `formula_dependency_graph.py`, and `proof_tree_visualizer.py`. | Initial browser-native slice ported; rich interactive/rendering parity remains Phase 11. |
 | TDFOL security validation | Formula size/depth/operator/variable checks, rate limiting, sanitization, resource checks, ZKP proof audit, and security reports. | `security_validator.py`. | Initial browser-native slice ported; complete enterprise parity remains Phase 11. |
 | TDFOL performance metrics | Timing samples, memory samples, counters, gauges, histograms, statistical summaries, export, and global collector helpers. | `performance_metrics.py`. | Initial browser-native metrics collector ported. |
+| TDFOL performance profiler | Repeated timing profiles, optional browser memory snapshots, bottleneck classification, benchmark suites, baseline regression accounting, and text/JSON/HTML report strings. | `performance_profiler.py`. | Initial browser-native profiler ported; cProfile, flamegraph, and richer timeline parity remain Phase 11. |
 | TDFOL performance dashboard | Proof metrics, time-series metrics, aggregated stats, strategy comparisons, JSON export, self-contained HTML dashboard strings, formula complexity/type helpers, and clear/reset. | `performance_dashboard.py`. | Initial browser-native dashboard ported; Chart.js-style rich visualization parity remains Phase 11. |
 | TDFOL performance engine | Metrics aggregation, operation profiling, self-contained dashboard HTML strings, JSON/Prometheus-style export, strategy comparison, regression checks, profiler history, and reset. | `tdfol_performance_engine.py`. | Initial browser-native orchestration engine ported; richer browser timeline/flamegraph parity remains Phase 11. |
 | FOL NLP extraction | Regex-only extraction plus capability reporting. | Browser-native parity for `FOLConverter(use_nlp=True)`, likely via Transformers.js, ONNX/WebGPU, or WASM NLP. | Planned Phase 13, no server calls. |

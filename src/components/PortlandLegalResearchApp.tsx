@@ -304,6 +304,7 @@ export default function PortlandLegalResearchApp() {
         className="mx-auto grid max-w-[1520px] gap-3 px-3 py-3 sm:gap-4 sm:px-4 sm:py-4 lg:grid-cols-[300px_minmax(360px,480px)_1fr]"
       >
         <DirectoryPanel
+          className="order-2 lg:order-none"
           directory={directory}
           selectedTitle={titleFilter}
           selectedChapter={chapterFilter}
@@ -312,6 +313,7 @@ export default function PortlandLegalResearchApp() {
         />
 
         <SearchPanel
+          className="order-1 lg:order-none"
           query={query}
           titleFilter={titleFilter}
           chapterFilter={chapterFilter}
@@ -363,6 +365,7 @@ export default function PortlandLegalResearchApp() {
         />
 
         <WorkspacePanel
+          className="order-3 lg:order-none"
           selected={selected}
           proof={selectedProof}
           relatedEntities={relatedEntities}
@@ -385,15 +388,18 @@ export default function PortlandLegalResearchApp() {
 function Header({ sections, retrievalMode }: { sections: CorpusSection[]; retrievalMode: string }) {
   return (
     <header className="border-b border-[#d3d8cf] bg-[#fbfcf8]">
-      <div className="mx-auto flex max-w-[1520px] flex-col gap-4 px-3 py-4 sm:px-4 sm:py-5 lg:flex-row lg:items-end lg:justify-between">
+      <div className="mx-auto flex max-w-[1520px] flex-col gap-3 px-3 py-3 sm:gap-4 sm:px-4 sm:py-5 lg:flex-row lg:items-end lg:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.18em] text-[#4f6f52]">
+          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-[#4f6f52] sm:text-sm sm:tracking-[0.18em]">
             Portland, Oregon
           </p>
-          <h1 className="mt-1 text-2xl font-semibold tracking-normal text-[#172026] sm:text-4xl">
+          <h1 className="mt-1 text-xl font-semibold tracking-normal text-[#172026] sm:text-4xl">
             City Code Research Directory
           </h1>
-          <p className="mt-2 max-w-3xl text-base leading-7 text-[#43534d]">
+          <p className="mt-1 max-w-3xl text-sm leading-6 text-[#43534d] sm:hidden">
+            Search the Portland code with graph, proof, and chat tools.
+          </p>
+          <p className="mt-2 hidden max-w-3xl text-base leading-7 text-[#43534d] sm:block">
             Browse Titles, Chapters, and Sections like the official code directory, with client-side
             GraphRAG search, knowledge graph context, logic proofs, and corpus chat layered in.
           </p>
@@ -409,12 +415,14 @@ function Header({ sections, retrievalMode }: { sections: CorpusSection[]; retrie
 }
 
 function DirectoryPanel({
+  className = '',
   directory,
   selectedTitle,
   selectedChapter,
   onSelectTitle,
   onSelectChapter,
 }: {
+  className?: string;
   directory: DirectoryTitle[];
   selectedTitle: string;
   selectedChapter: string;
@@ -428,7 +436,7 @@ function DirectoryPanel({
     <section
       id="code-directory"
       aria-labelledby="code-directory-heading"
-      className="min-w-0 rounded-md border border-[#d8dfd3] bg-white shadow-sm lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-auto"
+      className={`min-w-0 rounded-md border border-[#d8dfd3] bg-white shadow-sm lg:sticky lg:top-4 lg:max-h-[calc(100vh-2rem)] lg:overflow-auto ${className}`}
     >
       <div className="border-b border-[#e1e6dc] px-4 py-4">
         <h2 id="code-directory-heading" className="text-lg font-semibold text-[#172026]">
@@ -530,6 +538,7 @@ function DirectoryList({
 }
 
 function SearchPanel({
+  className = '',
   query,
   titleFilter,
   chapterFilter,
@@ -550,6 +559,7 @@ function SearchPanel({
   onSelectResult,
   onExample,
 }: {
+  className?: string;
   query: string;
   titleFilter: string;
   chapterFilter: string;
@@ -584,7 +594,7 @@ function SearchPanel({
     <section
       id="code-search"
       aria-labelledby="code-search-heading"
-      className="min-w-0 rounded-md border border-[#d8dfd3] bg-[#fbfcf8] shadow-sm"
+      className={`min-w-0 rounded-md border border-[#d8dfd3] bg-[#fbfcf8] shadow-sm ${className}`}
     >
       <div className="border-b border-[#e1e6dc] px-4 py-4">
         <h2 id="code-search-heading" className="text-lg font-semibold text-[#172026]">
@@ -718,6 +728,7 @@ function SearchPanel({
 }
 
 function WorkspacePanel({
+  className = '',
   selected,
   proof,
   relatedEntities,
@@ -732,6 +743,7 @@ function WorkspacePanel({
   onQuestionChange,
   onAskQuestion,
 }: {
+  className?: string;
   selected: CorpusSection | null;
   proof: LogicProofSummary | null;
   relatedEntities: CorpusEntity[];
@@ -779,7 +791,7 @@ function WorkspacePanel({
     <section
       id="research-workbench"
       aria-labelledby="research-workbench-heading"
-      className="min-w-0 self-start rounded-md border border-[#d8dfd3] bg-white shadow-sm"
+      className={`min-w-0 self-start rounded-md border border-[#d8dfd3] bg-white shadow-sm ${className}`}
     >
       <div className="border-b border-[#e1e6dc] px-4 pt-4">
         <h2 id="research-workbench-heading" className="sr-only">
@@ -1236,9 +1248,9 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
 
 function Metric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0 rounded-md border border-[#d7ddd2] bg-white px-2 py-2 text-left shadow-sm sm:min-w-[86px] sm:px-3 sm:text-right">
-      <div className="text-base font-semibold text-[#172026] sm:text-lg">{value}</div>
-      <div className="text-[0.68rem] uppercase tracking-wide text-[#607068] sm:text-xs">{label}</div>
+    <div className="min-w-0 rounded-md border border-[#d7ddd2] bg-white px-2 py-1.5 text-left shadow-sm sm:min-w-[86px] sm:px-3 sm:py-2 sm:text-right">
+      <div className="text-sm font-semibold text-[#172026] sm:text-lg">{value}</div>
+      <div className="text-[0.62rem] uppercase tracking-wide text-[#607068] sm:text-xs">{label}</div>
     </div>
   );
 }
