@@ -92,6 +92,9 @@ test.describe('Portland legal corpus UI screenshots', () => {
     await expect(page.getByRole('heading', { name: 'Knowledge Graph' })).toBeVisible();
     await expect(page.getByLabel('Graph context summary')).toContainText('Entities');
     await expect(page.getByLabel('Graph context summary')).toContainText('Relationships');
+    await expect(page.getByLabel('Graph at a glance')).toContainText('Connected items');
+    await expect(page.getByLabel('Graph at a glance')).toContainText('Legal links');
+    await expect(page.getByLabel('Graph at a glance')).toContainText('Direct neighbors');
     await expect(page.getByLabel('Graph type summaries')).toContainText('Entity types');
     await expect(page.getByLabel('Entity types summary').getByRole('listitem')).not.toHaveCount(0);
     await expect(page.getByLabel('Relationship types summary').getByRole('listitem')).not.toHaveCount(0);
@@ -191,6 +194,7 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await page.getByRole('tab', { name: 'Knowledge Graph' }).click();
     await expect(page.getByRole('tab', { name: 'Knowledge Graph' })).toHaveAttribute('aria-selected', 'true');
     await expect(page.getByLabel('Graph context summary')).toContainText('Neighborhood');
+    await expect(page.getByLabel('Graph at a glance')).toContainText('Connected items');
     await expect(page.getByLabel('Graph type summaries')).toContainText('Relationship types');
     await expectGraphContextLoaded(page);
     await expect(page.locator('#panel-graph')).toContainText('This section', { timeout: 10000 });

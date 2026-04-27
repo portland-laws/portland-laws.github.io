@@ -463,7 +463,7 @@ function Header({ sections, retrievalMode }: { sections: CorpusSection[]; retrie
         <div className="grid grid-cols-3 gap-2 text-sm sm:gap-3">
           <Metric label="Sections" value={sections.length ? sections.length.toLocaleString() : '...'} />
           <Metric label="Vector dims" value="384" />
-          <Metric label="Search" value={retrievalMode} />
+          <Metric label="Retrieval" value={retrievalMode} />
         </div>
       </div>
     </header>
@@ -786,7 +786,9 @@ function SearchPanel({
         <h2 id="code-search-heading" className="text-lg font-semibold text-[#172026]">
           Find Code Sections
         </h2>
-        <p className="mt-1 hidden text-sm leading-6 text-[#4f615b] sm:block">Keyword, vector, graph, and proof-aware retrieval</p>
+        <p className="mt-1 hidden text-sm leading-6 text-[#4f615b] sm:block">
+          Search by topic, citation, or phrase. Results include citation, effect, and logic status.
+        </p>
       </div>
 
       <form onSubmit={onSubmit} className="grid gap-2 border-b border-[#e1e6dc] px-4 py-3 sm:gap-3 sm:py-4" aria-label="Search and filter code sections">
@@ -1602,6 +1604,15 @@ function GraphPanel({
         <GraphSummaryMetric label="Neighborhood" value="1 hop" detail="This section" />
       </div>
 
+      <section className="mb-5 rounded-md border border-[#dce3d6] bg-[#f8faf5] px-3 py-3 sm:px-4" aria-label="Graph at a glance">
+        <div className="text-xs font-semibold uppercase tracking-wide text-[#607068]">Graph at a glance</div>
+        <dl className="mt-3 grid gap-2 sm:grid-cols-3">
+          <GraphPlainFact label="Connected items" value={entityValue} detail={topEntityType} />
+          <GraphPlainFact label="Legal links" value={relationshipValue} detail={topRelationshipType} />
+          <GraphPlainFact label="Distance" value="Direct neighbors" detail="One step from this section" />
+        </dl>
+      </section>
+
       <div className="mb-5 grid gap-3 lg:grid-cols-2" aria-label="Graph type summaries">
         <GraphTypeSummary title="Entity types" items={entityTypeCounts} emptyLabel={isLoading ? 'Loading entity types' : 'No entity types'} />
         <GraphTypeSummary title="Relationship types" items={relationshipTypeCounts} emptyLabel={isLoading ? 'Loading relationship types' : 'No relationship types'} />
@@ -1689,6 +1700,18 @@ function GraphSummaryMetric({ label, value, detail }: { label: string; value: st
       <div className="text-xs font-semibold uppercase tracking-wide text-[#607068]">{label}</div>
       <div className="mt-1 text-lg font-semibold text-[#172026]">{value}</div>
       <div className="mt-0.5 text-sm leading-5 text-[#4f615b] [overflow-wrap:anywhere]">{detail}</div>
+    </div>
+  );
+}
+
+function GraphPlainFact({ label, value, detail }: { label: string; value: string; detail: string }) {
+  return (
+    <div className="min-w-0 rounded-md border border-[#d4ddd0] bg-white px-3 py-2">
+      <dt className="text-[0.62rem] font-semibold uppercase tracking-wide text-[#607068]">{label}</dt>
+      <dd className="mt-1 text-sm leading-5 text-[#26343a] [overflow-wrap:anywhere]">
+        <span className="font-semibold text-[#172026]">{value}</span>
+        <span className="block text-[#4f615b]">{detail}</span>
+      </dd>
     </div>
   );
 }
@@ -1791,7 +1814,7 @@ function SectionReader({ section, proof }: { section: CorpusSection; proof: Logi
               <AtAGlanceFact label="Chapter" value={chapterNumber ? `Chapter ${chapterNumber}` : 'Not listed'} />
               <AtAGlanceFact
                 label="Effect"
-                value={proof ? formatNormOperatorForDisplay(proof.norm_operator) : 'Not classified'}
+                value={proof ? formatResultNormOperatorForBadge(proof.norm_operator) : 'Not classified'}
               />
               <AtAGlanceFact
                 label="Logic"

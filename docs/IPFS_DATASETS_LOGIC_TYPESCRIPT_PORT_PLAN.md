@@ -492,6 +492,8 @@ Acceptance criteria:
   - [x] Initial browser-native CEC/DCEC s-expression AST, parser, formatter, validator, and Portland DCEC unit coverage.
   - [x] Initial CEC/DCEC expression analyzer for predicates, atoms, section refs, quantifiers, deontic operators, temporal operators, and expression complexity.
   - [x] Initial CEC ShadowProver problem parser with browser-native TPTP `fof`/`cnf` parsing, include tracking, custom `LOGIC`/`ASSUMPTIONS`/`GOALS` format parsing, format auto-detection, and parser-specific errors.
+  - [x] Initial CEC syntax tree utility with typed node kinds, parent-aware construction, traversal/search helpers, transform/map/filter, JSON round-trip, leaf/height/size metrics, and ASCII pretty printing.
+  - [x] Initial CEC grammar loader and engine with embedded browser-native default grammar data, static grammar-data loading, operator word/semantic/example lookup, validation, lexical entries, grammar rules, bottom-up chart parsing, ambiguity resolution, and linearization fallback.
 - [x] Add CEC/DCEC parity fixtures and generated Portland DCEC parse coverage.
 - [ ] Port native inference rule groups: propositional, modal, temporal, deontic, cognitive, specialized, and resolution.
   - [x] Initial CEC native inference rule slice: modus ponens, conjunction elimination, double-negation elimination, temporal T, deontic D, and prohibition equivalence.
