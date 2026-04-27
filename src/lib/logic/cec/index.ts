@@ -19,4 +19,5 @@ export * from './proofExplainer';
 export * from './proofTree';
 export * from './prover';
 export * from './securityValidator';
+export * from './shadowProver';
 export * from './strategies';

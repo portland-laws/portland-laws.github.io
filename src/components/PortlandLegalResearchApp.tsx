@@ -1449,7 +1449,7 @@ function GraphRagChat({
       )}
       {!answer && !warning && (
         <div className="mt-4" aria-label="Chat empty state">
-          <EmptyState title="No answer yet" />
+          <ChatPromptStarters onQuestionChange={onQuestionChange} />
         </div>
       )}
       {evidenceSections.length > 0 && (
@@ -1474,6 +1474,32 @@ function GraphRagChat({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function ChatPromptStarters({ onQuestionChange }: { onQuestionChange: (question: string) => void }) {
+  const prompts = [
+    'What does this section require?',
+    'Who is affected by this section?',
+    'What evidence supports this answer?',
+  ];
+
+  return (
+    <div className="rounded-md border border-dashed border-[#aebba9] bg-white/70 px-4 py-5" role="status">
+      <p className="text-center text-sm font-semibold text-[#26343a]">No answer yet</p>
+      <div className="mt-3 flex flex-wrap justify-center gap-2" aria-label="Suggested chat questions">
+        {prompts.map((prompt) => (
+          <button
+            key={prompt}
+            type="button"
+            onClick={() => onQuestionChange(prompt)}
+            className="min-h-11 rounded-md border border-[#8fa08a] bg-white px-3 py-2 text-sm font-semibold text-[#24594f] hover:bg-[#f3f6ef]"
+          >
+            {prompt}
+          </button>
+        ))}
+      </div>
     </div>
   );
 }
@@ -1530,18 +1556,21 @@ function GraphPanel({
   relationships: CorpusRelationship[];
   isLoading: boolean;
 }) {
+  const usefulRelationships = relationships.filter((relationship) => {
+    return formatGraphNodeLabel(relationship.source) !== formatGraphNodeLabel(relationship.target);
+  });
   const visibleEntities = entities.slice(0, GRAPH_ENTITY_LIMIT);
   const hiddenEntityCount = Math.max(entities.length - visibleEntities.length, 0);
-  const visibleRelationships = relationships.slice(0, GRAPH_RELATIONSHIP_LIMIT);
-  const hiddenRelationshipCount = Math.max(relationships.length - visibleRelationships.length, 0);
+  const visibleRelationships = usefulRelationships.slice(0, GRAPH_RELATIONSHIP_LIMIT);
+  const hiddenRelationshipCount = Math.max(usefulRelationships.length - visibleRelationships.length, 0);
   const topEntityType = isLoading ? 'Loading graph data' : getTopGraphTypeLabel(entities.map((entity) => entity.type));
   const topRelationshipType = isLoading
     ? 'Loading graph data'
-    : getTopGraphTypeLabel(relationships.map((relationship) => relationship.type));
+    : getTopGraphTypeLabel(usefulRelationships.map((relationship) => relationship.type));
   const entityValue = isLoading ? '...' : entities.length.toLocaleString();
-  const relationshipValue = isLoading ? '...' : relationships.length.toLocaleString();
+  const relationshipValue = isLoading ? '...' : usefulRelationships.length.toLocaleString();
   const entityTypeCounts = summarizeGraphTypes(entities.map((entity) => entity.type));
-  const relationshipTypeCounts = summarizeGraphTypes(relationships.map((relationship) => relationship.type));
+  const relationshipTypeCounts = summarizeGraphTypes(usefulRelationships.map((relationship) => relationship.type));
 
   return (
     <div className="px-4 py-4 sm:px-5 sm:py-5">
@@ -1601,7 +1630,7 @@ function GraphPanel({
           </div>
           {hiddenRelationshipCount > 0 && (
             <p className="mt-3 rounded-md border border-[#dce3d6] bg-white px-3 py-2 text-sm leading-6 text-[#4f615b]">
-              Showing {visibleRelationships.length} of {relationships.length} graph relationships.
+              Showing {visibleRelationships.length} of {usefulRelationships.length} graph relationships.
             </p>
           )}
         </div>

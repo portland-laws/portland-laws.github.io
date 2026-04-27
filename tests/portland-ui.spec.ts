@@ -67,7 +67,7 @@ test.describe('Portland legal corpus UI screenshots', () => {
     await expect(page.getByLabel('Code note')).toBeVisible();
 
     await page.getByRole('tab', { name: 'Chat' }).click();
-    await page.locator('#panel-chat').getByLabel('Question').fill('What does this section say in simple terms?');
+    await page.locator('#panel-chat').getByRole('textbox', { name: /Question/ }).fill('What does this section say in simple terms?');
     await page.getByRole('button', { name: /^Ask$/ }).click();
     await expect(page.getByLabel('Chat answer')).toBeVisible({ timeout: 30000 });
     await expect(page.getByLabel('Chat answer')).toContainText('Cited answer');
@@ -80,7 +80,7 @@ test.describe('Portland legal corpus UI screenshots', () => {
     await expect(page.getByLabel('Cited answer citations').getByRole('listitem')).toHaveCount(3);
     await expectChatAskButtonIsCompact(page);
     await page.locator('#research-workbench').screenshot({
-      path: screenshotPath(testInfo, 'desktop-graphrag-chat.png'),
+      path: screenshotPath(testInfo, 'desktop-chat.png'),
     });
 
     await page.getByRole('tab', { name: 'Knowledge Graph' }).click();
@@ -92,6 +92,7 @@ test.describe('Portland legal corpus UI screenshots', () => {
     await expect(page.getByLabel('Relationship types summary').getByRole('listitem')).not.toHaveCount(0);
     await expectGraphContextLoaded(page);
     await expect(page.locator('#panel-graph')).toContainText('This section');
+    await expect(page.locator('#panel-graph')).not.toContainText('This section → This section');
     await expect(page.locator('#panel-graph')).not.toContainText('Selected section →');
     await expect(page.locator('#panel-graph')).not.toContainText('authority_grant');
     await page.locator('#research-workbench').screenshot({
@@ -129,6 +130,9 @@ test.describe('Portland legal corpus UI screenshots', () => {
     await expect(page.getByRole('tab', { name: 'Chat' })).toBeFocused();
     await expect(page.getByRole('tab', { name: 'Chat' })).toHaveAttribute('aria-selected', 'true');
     await expect(page.getByLabel('Chat empty state')).toContainText('No answer yet');
+    await expect(page.getByLabel('Suggested chat questions').getByRole('button')).toHaveCount(3);
+    await page.getByLabel('Suggested chat questions').getByRole('button', { name: 'Who is affected by this section?' }).click();
+    await expect(page.locator('#panel-chat').getByRole('textbox', { name: /Question/ })).toHaveValue('Who is affected by this section?');
     await page.locator('#research-workbench').screenshot({
       path: screenshotPath(testInfo, 'keyboard-workbench-tab-focus.png'),
     });
