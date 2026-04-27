@@ -495,6 +495,7 @@ Acceptance criteria:
   - [x] Initial CEC syntax tree utility with typed node kinds, parent-aware construction, traversal/search helpers, transform/map/filter, JSON round-trip, leaf/height/size metrics, and ASCII pretty printing.
   - [x] Initial CEC grammar loader and engine with embedded browser-native default grammar data, static grammar-data loading, operator word/semantic/example lookup, validation, lexical entries, grammar rules, bottom-up chart parsing, ambiguity resolution, and linearization fallback.
   - [x] Initial DCEC cleaning/preprocessing utilities with whitespace/comment normalization, redundant-parentheses consolidation, balanced-paren checks, matching close-paren lookup, function-call tucking, symbolic-operator functorization, and a standard cleaning pipeline.
+  - [x] Initial DCEC parsing utility layer with Python-compatible parse tokens, S-expression/F-expression rendering, depth/width metrics, synonym normalization, logical prefixing, arithmetic PEMDAS prefixing, and atomic sort tracking.
 - [x] Add CEC/DCEC parity fixtures and generated Portland DCEC parse coverage.
 - [ ] Port native inference rule groups: propositional, modal, temporal, deontic, cognitive, specialized, and resolution.
   - [x] Initial CEC native inference rule slice: modus ponens, conjunction elimination, double-negation elimination, temporal T, deontic D, and prohibition equivalence.
