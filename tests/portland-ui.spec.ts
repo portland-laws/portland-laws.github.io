@@ -38,6 +38,8 @@ test.describe('Portland legal corpus UI screenshots', () => {
     await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText('Selected');
     await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText(/Score \d+\.\d{2}/);
     await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText('Proof OK');
+    await expect(page.getByRole('button', { name: /^Select / }).first().getByLabel('Result legal signals')).toContainText('Effect');
+    await expect(page.getByRole('button', { name: /^Select / }).first().getByLabel('Result legal signals')).toContainText('Logic');
     await expect(page.getByRole('button', { name: /^Select / }).first().getByLabel('Structured result preview')).toContainText('Clause A');
     await expect(page.getByRole('button', { name: /^Select / }).first().getByLabel('Preview requirements')).toBeVisible();
 
@@ -63,6 +65,9 @@ test.describe('Portland legal corpus UI screenshots', () => {
     await expect(page.locator('#panel-section').getByLabel('Clause A')).toHaveCount(1);
     await expect(page.getByLabel('Section overview')).toContainText('Clauses');
     await expect(page.getByLabel('Section overview')).toContainText('Official code');
+    await expect(page.getByLabel('Section at a glance')).toContainText('At a glance');
+    await expect(page.getByLabel('Citation and logic details')).toContainText('Citation');
+    await expect(page.getByLabel('Citation and logic details')).toContainText('Effect');
     await expectOfficialSourceButtonIsSingleLine(page);
     await expect(page.getByLabel('Code note')).toBeVisible();
 
@@ -211,6 +216,7 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText('Selected');
     await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText(/Score \d+\.\d{2}/);
     await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText('Proof OK');
+    await expect(page.getByRole('button', { name: /^Select / }).first().getByLabel('Result legal signals')).toContainText('Norm');
     await expect(page.getByRole('button', { name: /^Select / }).first().getByLabel('Structured result preview')).toBeVisible();
     await expect(page.getByRole('button', { name: /Show \d+ more results/ })).toBeVisible();
     await expect(page.getByRole('button', { name: /^Select / }).first()).not.toContainText(/^Label:/);
@@ -247,6 +253,8 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await expect(page.locator('#panel-section').getByLabel('Clause A').getByLabel('Numbered legal requirements')).toBeVisible();
     await expect(page.locator('#panel-section').getByLabel('Clause C').getByRole('listitem')).toHaveCount(5);
     await expect(page.getByLabel('Section overview')).toContainText('Clauses');
+    await expect(page.getByLabel('Section at a glance')).toContainText('At a glance');
+    await expect(page.getByLabel('Citation and logic details')).toContainText('Logic');
     await expectSectionOverviewUsesThreeColumns(page);
 
     const workbenchPosition = await page.locator('#research-workbench').evaluate((element) => {

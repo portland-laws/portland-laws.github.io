@@ -14,6 +14,7 @@ export * from './performanceDashboard';
 export * from './performanceEngine';
 export * from './performanceMetrics';
 export * from './performanceProfiler';
+export * from './problemParser';
 export * from './proofCache';
 export * from './proofExplainer';
 export * from './proofTree';

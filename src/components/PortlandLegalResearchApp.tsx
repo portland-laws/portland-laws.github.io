@@ -1068,7 +1068,7 @@ function WorkspacePanel({
         {!selected && <EmptyState title="Select a section" />}
         {selected && activeTab === 'section' && (
           <div id="panel-section" role="tabpanel" aria-labelledby="tab-section" tabIndex={0}>
-            <SectionReader section={selected} />
+            <SectionReader section={selected} proof={proof} />
           </div>
         )}
         {selected && activeTab === 'chat' && (
@@ -1249,10 +1249,10 @@ function ResultCard({
       </div>
 
       {proof && (
-        <div className="mt-3 flex flex-wrap gap-2">
-          <ResultBadge label={formatNormTypeForDisplay(proof.norm_type)} />
-          <ResultBadge label={formatResultNormOperatorForBadge(proof.norm_operator)} />
-          <ResultBadge label={formatResultProofStatusForBadge(proof.deontic_status)} />
+        <div className="mt-3 grid grid-cols-3 gap-2" aria-label="Result legal signals">
+          <ResultSignal label="Effect" value={formatResultNormOperatorForBadge(proof.norm_operator)} />
+          <ResultSignal label="Norm" value={formatNormTypeForDisplay(proof.norm_type)} />
+          <ResultSignal label="Logic" value={formatResultProofStatusForBadge(proof.deontic_status)} />
         </div>
       )}
       <ResultSnippet snippet={result.snippet} />
@@ -1300,10 +1300,11 @@ function ResultSnippet({ snippet }: { snippet: string }) {
   );
 }
 
-function ResultBadge({ label }: { label: string }) {
+function ResultSignal({ label, value }: { label: string; value: string }) {
   return (
-    <span className="rounded-md border border-[#d4ddd0] bg-[#f8faf5] px-2 py-1 text-xs font-semibold text-[#53655f]">
-      {label}
+    <span className="min-w-0 rounded-md border border-[#d4ddd0] bg-[#f8faf5] px-2 py-1">
+      <span className="block text-[0.62rem] font-semibold uppercase tracking-wide text-[#607068]">{label}</span>
+      <span className="block truncate text-xs font-semibold text-[#384b45]">{value}</span>
     </span>
   );
 }
@@ -1742,11 +1743,13 @@ function formatGraphValueLabel(value: string) {
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
-function SectionReader({ section }: { section: CorpusSection }) {
+function SectionReader({ section, proof }: { section: CorpusSection; proof: LogicProofSummary | null }) {
   const paragraphs = section.text.split(/\n{2,}/).map(cleanSectionParagraph).filter(Boolean);
   const blocks = paragraphs.flatMap(splitLegalClauses);
   const clauseCount = blocks.filter((block) => block.label).length;
   const codeNoteCount = blocks.filter((block) => !block.label).length;
+  const plainSummary = summarizeSectionForAtAGlance(blocks, section);
+  const chapterNumber = getChapterNumber(section);
 
   return (
     <article aria-labelledby="selected-section-heading">
@@ -1774,6 +1777,29 @@ function SectionReader({ section }: { section: CorpusSection }) {
           <SectionOverviewMetric label="Code notes" value={codeNoteCount.toLocaleString()} />
           <SectionOverviewMetric label="Source" value="Official code" />
         </div>
+        <section
+          className="mb-4 rounded-md border border-[#dce3d6] bg-[#f8faf5] px-3 py-3 sm:px-4"
+          aria-label="Section at a glance"
+        >
+          <div className="grid gap-3 lg:grid-cols-[minmax(0,1.4fr)_minmax(180px,0.9fr)]">
+            <div>
+              <div className="text-xs font-semibold uppercase tracking-wide text-[#607068]">At a glance</div>
+              <p className="mt-2 text-sm leading-6 text-[#26343a] [overflow-wrap:anywhere]">{plainSummary}</p>
+            </div>
+            <dl className="grid grid-cols-2 gap-2 text-sm lg:grid-cols-1" aria-label="Citation and logic details">
+              <AtAGlanceFact label="Citation" value={section.bluebook_citation || section.official_cite || section.identifier} />
+              <AtAGlanceFact label="Chapter" value={chapterNumber ? `Chapter ${chapterNumber}` : 'Not listed'} />
+              <AtAGlanceFact
+                label="Effect"
+                value={proof ? formatNormOperatorForDisplay(proof.norm_operator) : 'Not classified'}
+              />
+              <AtAGlanceFact
+                label="Logic"
+                value={proof ? formatResultProofStatusForBadge(proof.deontic_status) : 'Not checked'}
+              />
+            </dl>
+          </div>
+        </section>
         <div className="grid gap-3" aria-label="Section text clauses">
           {blocks.map((block, index) => (
             block.label ? (
@@ -1824,6 +1850,15 @@ function LegalTextBlock({ text }: { text: string }) {
           <li key={`${index}-${item.slice(0, 24)}`}>{item}</li>
         ))}
       </ol>
+    </div>
+  );
+}
+
+function AtAGlanceFact({ label, value }: { label: string; value: string }) {
+  return (
+    <div className="min-w-0 rounded-md border border-[#d4ddd0] bg-white px-2 py-2">
+      <dt className="text-[0.62rem] font-semibold uppercase tracking-wide text-[#607068]">{label}</dt>
+      <dd className="mt-1 text-xs font-semibold leading-5 text-[#172026] [overflow-wrap:anywhere]">{value}</dd>
     </div>
   );
 }
@@ -1997,6 +2032,21 @@ function cleanSectionParagraph(paragraph: string) {
     .replace(/^Label:\s*City code section\s*/i, '')
     .replace(/^Label:\s*/i, '')
     .replace(/\s+([A-Z])\s+\./g, ' $1.');
+}
+
+function summarizeSectionForAtAGlance(blocks: Array<{ label?: string; text: string }>, section: CorpusSection) {
+  const firstLegalBlock = blocks.find((block) => block.label) || blocks[0];
+  const sourceText = firstLegalBlock?.text || section.text || section.title;
+  const structured = splitNumberedSubparts(sourceText);
+  const candidate = structured?.preface || sourceText;
+  const cleaned = candidate
+    .replace(/\s+/g, ' ')
+    .replace(/\b\d+\.\s+/g, '')
+    .trim();
+  if (cleaned.length <= 180) {
+    return cleaned;
+  }
+  return `${cleaned.slice(0, 177).replace(/\s+\S*$/, '')}...`;
 }
 
 function splitLegalClauses(paragraph: string): Array<{ label?: string; text: string }> {

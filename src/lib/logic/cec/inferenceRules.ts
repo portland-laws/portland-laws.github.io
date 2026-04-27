@@ -328,6 +328,73 @@ export const CecTemporalNegationRule = new CecRule({
   },
 });
 
+export const CecNecessityEliminationRule = new CecRule({
+  name: 'CecNecessityElimination',
+  description: 'From necessary phi, represented as (always phi), infer phi',
+  arity: 1,
+  canApply: (expression) => isUnary(expression, 'always'),
+  apply: (expression) => {
+    if (!isUnary(expression, 'always')) throw new Error('Invalid CEC necessity elimination premise');
+    return expression.expression;
+  },
+});
+
+export const CecPossibilityIntroductionRule = new CecRule({
+  name: 'CecPossibilityIntroduction',
+  description: 'From phi, infer possible phi, represented as (eventually phi); kept opt-in because it generates modal formulas',
+  arity: 1,
+  canApply: (expression) => !isUnary(expression, 'eventually'),
+  apply: (expression) => ({ kind: 'unary', operator: 'eventually', expression }),
+});
+
+export const CecNecessityDistributionRule = new CecRule({
+  name: 'CecNecessityDistribution',
+  description: 'From (always (implies phi psi)) and (always phi), infer (always psi)',
+  arity: 2,
+  canApply: (left, right) => findUnaryImplicationPremises('always', left, right) !== undefined,
+  apply: (left, right) => {
+    const premises = findUnaryImplicationPremises('always', left, right);
+    if (!premises) throw new Error('Invalid CEC necessity distribution premises');
+    return { kind: 'unary', operator: 'always', expression: premises.implication.expression.right };
+  },
+});
+
+export const CecPossibilityDualityRule = new CecRule({
+  name: 'CecPossibilityDuality',
+  description: 'From (not (always (not phi))), infer (eventually phi)',
+  arity: 1,
+  canApply: (expression) =>
+    isUnary(expression, 'not') &&
+    isUnary(expression.expression, 'always') &&
+    isUnary(expression.expression.expression, 'not'),
+  apply: (expression) => {
+    if (!isUnary(expression, 'not') || !isUnary(expression.expression, 'always') || !isUnary(expression.expression.expression, 'not')) {
+      throw new Error('Invalid CEC possibility duality premise');
+    }
+    return { kind: 'unary', operator: 'eventually', expression: expression.expression.expression.expression };
+  },
+});
+
+export const CecNecessityConjunctionRule = new CecRule({
+  name: 'CecNecessityConjunction',
+  description: 'From (always phi) and (always psi), infer (always (and phi psi)); kept opt-in because it generates conjunctions',
+  arity: 2,
+  canApply: (left, right) =>
+    isUnary(left, 'always') &&
+    isUnary(right, 'always') &&
+    !cecExpressionEquals(left.expression, right.expression),
+  apply: (left, right) => {
+    if (!isUnary(left, 'always') || !isUnary(right, 'always')) {
+      throw new Error('Invalid CEC necessity conjunction premises');
+    }
+    return {
+      kind: 'unary',
+      operator: 'always',
+      expression: { kind: 'binary', operator: 'and', left: left.expression, right: right.expression },
+    };
+  },
+});
+
 export const CecDeonticDRule = new CecRule({
   name: 'CecDeonticD',
   description: 'From (O phi), infer (P phi)',
@@ -997,6 +1064,14 @@ export function getDeonticCecRules(): CecInferenceRule[] {
   ];
 }
 
+export function getModalCecRules(): CecInferenceRule[] {
+  return [
+    CecNecessityEliminationRule,
+    CecNecessityDistributionRule,
+    CecPossibilityDualityRule,
+  ];
+}
+
 export function getSpecializedCecRules(): CecInferenceRule[] {
   return [
     CecBiconditionalIntroductionRule,
@@ -1036,6 +1111,8 @@ export function getGenerativeCecRules(): CecInferenceRule[] {
     CecKnowledgeConjunctionRule,
     CecAdditionRule,
     CecObligationConjunctionRule,
+    CecPossibilityIntroductionRule,
+    CecNecessityConjunctionRule,
   ];
 }
 

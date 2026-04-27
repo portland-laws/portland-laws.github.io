@@ -38,6 +38,9 @@ import {
   CecKnowledgeImpliesBeliefRule,
   CecKnowledgeMonotonicityRule,
   CecModusPonensRule,
+  CecNecessityConjunctionRule,
+  CecNecessityDistributionRule,
+  CecNecessityEliminationRule,
   CecNextDistributionRule,
   CecNextImplicationRule,
   CecObligationConjunctionRule,
@@ -47,6 +50,8 @@ import {
   CecPerceptionImpliesKnowledgeRule,
   CecPermissionDistributionRule,
   CecPermissionFromNonObligationRule,
+  CecPossibilityDualityRule,
+  CecPossibilityIntroductionRule,
   CecCaseAnalysisRule,
   CecFactoringRule,
   CecProofByContradictionRule,
@@ -69,6 +74,7 @@ import {
   getCognitiveCecRules,
   getDeonticCecRules,
   getGenerativeCecRules,
+  getModalCecRules,
   getResolutionCecRules,
   getSpecializedCecRules,
   getTemporalCecRules,
@@ -175,6 +181,30 @@ describe('CEC inference rules', () => {
     expect(formatCecExpression(CecTemporalNegationRule.apply(
       parseCecExpression('(not (always (p)))'),
     ))).toBe('(eventually (not (p)))');
+  });
+
+  it('applies modal CEC rules', () => {
+    expect(formatCecExpression(CecNecessityEliminationRule.apply(
+      parseCecExpression('(always (p))'),
+    ))).toBe('(p)');
+
+    expect(formatCecExpression(CecPossibilityIntroductionRule.apply(
+      parseCecExpression('(p)'),
+    ))).toBe('(eventually (p))');
+
+    expect(formatCecExpression(CecNecessityDistributionRule.apply(
+      parseCecExpression('(always (implies (p) (q)))'),
+      parseCecExpression('(always (p))'),
+    ))).toBe('(always (q))');
+
+    expect(formatCecExpression(CecPossibilityDualityRule.apply(
+      parseCecExpression('(not (always (not (p))))'),
+    ))).toBe('(eventually (p))');
+
+    expect(formatCecExpression(CecNecessityConjunctionRule.apply(
+      parseCecExpression('(always (p))'),
+      parseCecExpression('(always (q))'),
+    ))).toBe('(always (and (p) (q)))');
   });
 
   it('applies expanded deontic CEC rules', () => {
@@ -408,7 +438,15 @@ describe('CEC inference rules', () => {
       'CecBeliefConjunction',
       'CecAddition',
       'CecObligationConjunction',
+      'CecPossibilityIntroduction',
+      'CecNecessityConjunction',
     ]));
+    expect(getModalCecRules().map((rule) => rule.name)).toEqual(expect.arrayContaining([
+      'CecNecessityElimination',
+      'CecNecessityDistribution',
+      'CecPossibilityDuality',
+    ]));
+    expect(getModalCecRules().map((rule) => rule.name)).not.toContain('CecPossibilityIntroduction');
     expect(getTemporalCecRules().map((rule) => rule.name)).toEqual(expect.arrayContaining([
       'CecAlwaysDistribution',
       'CecEventuallyImplication',

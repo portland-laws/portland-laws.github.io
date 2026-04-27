@@ -491,11 +491,13 @@ Acceptance criteria:
 - [ ] Port CEC syntax tree, grammar loader, grammar engine, problem parser, and DCEC parsers.
   - [x] Initial browser-native CEC/DCEC s-expression AST, parser, formatter, validator, and Portland DCEC unit coverage.
   - [x] Initial CEC/DCEC expression analyzer for predicates, atoms, section refs, quantifiers, deontic operators, temporal operators, and expression complexity.
+  - [x] Initial CEC ShadowProver problem parser with browser-native TPTP `fof`/`cnf` parsing, include tracking, custom `LOGIC`/`ASSUMPTIONS`/`GOALS` format parsing, format auto-detection, and parser-specific errors.
 - [x] Add CEC/DCEC parity fixtures and generated Portland DCEC parse coverage.
 - [ ] Port native inference rule groups: propositional, modal, temporal, deontic, cognitive, specialized, and resolution.
   - [x] Initial CEC native inference rule slice: modus ponens, conjunction elimination, double-negation elimination, temporal T, deontic D, and prohibition equivalence.
   - [x] Expanded deterministic CEC inference slice: hypothetical syllogism, conjunction introduction as an opt-in generative rule, eventuality introduction as an opt-in generative rule, prohibition-from-obligation, universal modus ponens, existential instantiation, existential generalization, and universal generalization.
   - [x] Expanded CEC temporal/deontic inference rule slice with always/eventually/next distribution and implication, temporal transitivity, always induction, temporal negation, until/since weakening, obligation/permission distribution, obligation implication, permission duality, obligation consistency, and opt-in obligation conjunction.
+  - [x] Initial CEC modal inference rule group with necessity elimination, necessity distribution, possibility-necessity duality, opt-in possibility introduction, and opt-in necessity conjunction generation.
   - [x] Initial CEC cognitive inference rule group with belief/knowledge distribution, knowledge-implies-belief, belief/knowledge monotonicity, intention commitment, intention means-end, perception-to-knowledge, belief negation, intention persistence, belief revision, and opt-in belief/knowledge conjunction generation.
   - [x] Initial CEC resolution inference rule group with binary resolution, unit resolution, factoring, subsumption, case analysis/disjunction elimination, proof-by-contradiction signaling, and three-premise rule enumeration.
   - [x] Initial CEC specialized inference rule group with biconditional introduction/elimination, constructive/destructive dilemma, exportation, absorption, tautology simplification, conjunction commutativity, and opt-in addition/disjunction introduction.
