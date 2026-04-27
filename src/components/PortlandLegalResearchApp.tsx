@@ -340,6 +340,13 @@ export default function PortlandLegalResearchApp() {
             setNormFilter(value);
             void runSearch(query, titleFilter, chapterFilter, value);
           }}
+          onClearFilters={() => {
+            setQuery('');
+            setTitleFilter('');
+            setChapterFilter('');
+            setNormFilter('');
+            void runSearch('', '', '', '');
+          }}
           onSubmit={onSubmit}
           onSelectResult={(cid) => {
             setSelectedCid(cid);
@@ -446,10 +453,13 @@ function DirectoryPanel({
           {directory.length} titles · {totalChapters.toLocaleString()} chapters · {totalSections.toLocaleString()} sections
         </p>
       </div>
-      <details className="lg:hidden">
+      <details className="group lg:hidden">
         <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-3 px-4 py-3 text-sm font-semibold text-[#24594f]">
           Browse titles
-          <span className="text-xs uppercase tracking-wide text-[#607068]">Expand</span>
+          <span className="text-xs uppercase tracking-wide text-[#607068]">
+            <span className="group-open:hidden">Expand</span>
+            <span className="hidden group-open:inline">Collapse</span>
+          </span>
         </summary>
         <nav aria-label="City Code mobile" className="max-h-[36vh] overflow-auto border-t border-[#edf1e8]">
           <DirectoryList
@@ -555,6 +565,7 @@ function SearchPanel({
   onTitleChange,
   onChapterChange,
   onNormChange,
+  onClearFilters,
   onSubmit,
   onSelectResult,
   onExample,
@@ -576,6 +587,7 @@ function SearchPanel({
   onTitleChange: (title: string) => void;
   onChapterChange: (chapter: string) => void;
   onNormChange: (norm: NormType | '') => void;
+  onClearFilters: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
   onSelectResult: (cid: string) => void;
   onExample: (query: string) => void;
@@ -585,6 +597,13 @@ function SearchPanel({
   const visibleLimit = Math.max(resultLimit, selectedIndex >= 0 ? selectedIndex + 1 : INITIAL_RESULT_LIMIT);
   const visibleResults = results.slice(0, visibleLimit);
   const hiddenResultCount = Math.max(results.length - visibleResults.length, 0);
+  const activeFilters = buildActiveFilterChips(query, titleFilter, chapterFilter, normFilter, directory);
+  const resultStatus =
+    loadState === 'ready'
+      ? hiddenResultCount > 0
+        ? `${results.length} matches, showing ${visibleResults.length}`
+        : `${results.length} matches`
+      : 'Loading corpus';
 
   useEffect(() => {
     setResultLimit(INITIAL_RESULT_LIMIT);
@@ -618,10 +637,13 @@ function SearchPanel({
           </span>
         </label>
 
-        <details className="rounded-md border border-[#dce3d6] bg-white sm:hidden">
+        <details className="group rounded-md border border-[#dce3d6] bg-white sm:hidden">
           <summary className="flex min-h-11 cursor-pointer items-center justify-between gap-3 px-3 py-2 text-sm font-semibold text-[#24594f]">
             Filters and examples
-            <span className="text-xs uppercase tracking-wide text-[#607068]">Expand</span>
+            <span className="text-xs uppercase tracking-wide text-[#607068]">
+              <span className="group-open:hidden">Expand</span>
+              <span className="hidden group-open:inline">Collapse</span>
+            </span>
           </summary>
           <div className="grid gap-3 border-t border-[#edf1e8] px-3 py-3">
             <FilterControls
@@ -682,7 +704,7 @@ function SearchPanel({
             type="submit"
             disabled={loadState !== 'ready' || isSearching}
             aria-describedby="search-status"
-            className="min-h-11 rounded-md bg-[#24594f] px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1d473f] disabled:cursor-not-allowed disabled:bg-[#8aa19b]"
+            className="min-h-11 w-full rounded-md bg-[#24594f] px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1d473f] disabled:cursor-not-allowed disabled:bg-[#8aa19b]"
           >
             {isSearching ? 'Searching' : 'Search'}
           </button>
@@ -690,15 +712,40 @@ function SearchPanel({
       </form>
 
       <div className="px-4 py-3 sm:py-4">
-        <div className="mb-3 flex items-center justify-between gap-3">
-          <h3 className="text-base font-semibold text-[#172026]">Results</h3>
-          <span id="search-status" role="status" aria-live="polite" className="text-sm text-[#4f615b]">
-            {loadState === 'ready'
-              ? hiddenResultCount > 0
-                ? `${results.length} matches, showing ${visibleResults.length}`
-                : `${results.length} matches`
-              : 'Loading corpus'}
-          </span>
+        <div className="mb-3 grid gap-3">
+          <div className="flex items-center justify-between gap-3">
+            <h3 className="text-base font-semibold text-[#172026]">Results</h3>
+            <span id="search-status" role="status" aria-live="polite" className="text-sm text-[#4f615b]">
+              {resultStatus}
+            </span>
+          </div>
+          <div
+            className="flex flex-wrap items-center gap-2 rounded-md border border-[#dce3d6] bg-white px-3 py-2"
+            aria-label="Current search filters"
+          >
+            <span className="text-xs font-semibold uppercase tracking-wide text-[#607068]">Active</span>
+            {activeFilters.length > 0 ? (
+              activeFilters.map((filter) => (
+                <span
+                  key={filter}
+                  className="rounded-md bg-[#eef2ea] px-2 py-1 text-xs font-semibold text-[#394a4f]"
+                >
+                  {filter}
+                </span>
+              ))
+            ) : (
+              <span className="text-sm text-[#4f615b]">All titles and norms</span>
+            )}
+            {activeFilters.length > 0 && (
+              <button
+                type="button"
+                onClick={onClearFilters}
+                className="ml-auto min-h-9 rounded-md border border-[#8fa08a] px-3 text-xs font-semibold text-[#24594f] hover:bg-[#f3f6ef]"
+              >
+                Clear
+              </button>
+            )}
+          </div>
         </div>
 
         {error && (
@@ -1016,13 +1063,20 @@ function ResultCard({
             {result.section.title}
           </h3>
         </div>
-        <span
-          className="shrink-0 rounded-md bg-[#eef2ea] px-2 py-1 text-xs font-semibold text-[#4d625b]"
-          aria-label={`Relevance score ${result.score.toFixed(2)}`}
-          title={`Relevance score ${result.score.toFixed(2)}`}
-        >
-          {result.score.toFixed(2)}
-        </span>
+        <div className="flex shrink-0 flex-col items-end gap-2">
+          {selected && (
+            <span className="rounded-md bg-[#24594f] px-2 py-1 text-xs font-semibold text-white">
+              Selected
+            </span>
+          )}
+          <span
+            className="rounded-md bg-[#eef2ea] px-2 py-1 text-xs font-semibold text-[#4d625b]"
+            aria-label={`Relevance score ${result.score.toFixed(2)}`}
+            title={`Relevance score ${result.score.toFixed(2)}`}
+          >
+            {result.score.toFixed(2)}
+          </span>
+        </div>
       </div>
 
       {proof && (
@@ -1060,6 +1114,30 @@ function formatProofStatusForBadge(status: string) {
   if (status === 'warning') return 'needs review';
   if (status === 'error') return 'proof error';
   return status.replace(/_/g, ' ');
+}
+
+function buildActiveFilterChips(
+  query: string,
+  titleFilter: string,
+  chapterFilter: string,
+  normFilter: NormType | '',
+  directory: DirectoryTitle[],
+) {
+  const chips: string[] = [];
+  const trimmedQuery = query.trim();
+  const title = directory.find((item) => item.number === titleFilter);
+  if (trimmedQuery) chips.push(`"${trimmedQuery}"`);
+  if (title) chips.push(`Title ${title.number}`);
+  if (chapterFilter) chips.push(`Chapter ${chapterFilter}`);
+  if (normFilter) chips.push(formatNormTypeLabel(normFilter));
+  return chips;
+}
+
+function formatNormTypeLabel(norm: NormType) {
+  if (norm === 'obligation') return 'Obligations';
+  if (norm === 'permission') return 'Permissions';
+  if (norm === 'prohibition') return 'Prohibitions';
+  return 'Unknown norms';
 }
 
 function GraphRagChat({

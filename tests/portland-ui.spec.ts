@@ -33,6 +33,8 @@ test.describe('Portland legal corpus UI screenshots', () => {
     await expect(page.getByRole('navigation', { name: 'City Code' })).toBeVisible();
     await expect(page.getByRole('region', { name: 'Find Code Sections' })).toBeVisible();
     await expect(page.getByRole('region', { name: 'Selected section and research tools' })).toBeVisible();
+    await expect(page.getByLabel('Current search filters')).toContainText('"notice requirements"');
+    await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText('Selected');
 
     await expectNoHorizontalOverflow(page);
     await page.screenshot({
@@ -112,11 +114,14 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     const mobileDirectory = page.getByRole('navigation', { name: 'City Code mobile' });
     await expect(browseTitles).toBeVisible();
     await expect(mobileDirectory).not.toBeVisible();
+    await expect(browseTitles).toContainText('Expand');
     await browseTitles.click();
     await expect(mobileDirectory).toBeVisible();
+    await expect(browseTitles).toContainText('Collapse');
     await expect(mobileDirectory.getByRole('button', { name: 'Title 1 General Provisions 7 chapters · 43 sections' })).toBeVisible();
     await browseTitles.click();
     await expect(mobileDirectory).not.toBeVisible();
+    await expect(browseTitles).toContainText('Expand');
     await expect(page.getByText('Search the Portland code with graph, proof, and chat tools.')).toBeVisible();
     await expectElementTopLessThan(page, '#code-search', 230);
     await expectNoHorizontalOverflow(page);
@@ -140,11 +145,20 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await page.getByRole('button', { name: /^Search$/ }).click();
     await expect(page.locator('#search-status')).toContainText(/matches/);
     await expect(page.getByRole('button', { name: /^Select / }).first()).toBeVisible();
+    await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText('Selected');
     await expect(page.getByRole('button', { name: /Show \d+ more results/ })).toBeVisible();
     await expect(page.getByRole('button', { name: /^Select / }).first()).not.toContainText(/^Label:/);
-    await expect(page.locator('summary').filter({ hasText: 'Filters and examples' })).toBeVisible();
+    const mobileFilters = page.locator('summary').filter({ hasText: 'Filters and examples' });
+    await expect(mobileFilters).toBeVisible();
+    await expect(mobileFilters).toContainText('Expand');
+    await mobileFilters.click();
+    await expect(mobileFilters).toContainText('Collapse');
+    await mobileFilters.click();
+    await expect(mobileFilters).toContainText('Expand');
     await expect(page.getByRole('button', { name: 'temporary administrative rules' })).not.toBeVisible();
     await expect(page.getByLabel(/Relevance score/).first()).toBeVisible();
+    await expect(page.getByLabel('Current search filters')).toContainText('"noise"');
+    await expectMobileSearchButtonSpansPanel(page);
     await expectElementTopLessThan(page, '#search-status', 520);
     await page.getByLabel('Search Portland City Code').focus();
 
@@ -155,6 +169,8 @@ test.describe('Portland legal corpus mobile screenshots', () => {
 
     await page.getByRole('button', { name: /Show \d+ more results/ }).click();
     await expect(page.locator('#search-status')).toContainText(/showing 12/);
+    await page.getByRole('button', { name: 'Clear' }).click();
+    await expect(page.getByLabel('Current search filters')).toContainText('All titles and norms');
   });
 
   test('moves mobile users from a selected result into the research workbench', async ({ page }, testInfo) => {
@@ -261,6 +277,21 @@ async function expectWorkbenchTabsFitWithoutHorizontalScroll(page: Page) {
 
   expect(tablist.scrollWidth, JSON.stringify(tablist)).toBeLessThanOrEqual(tablist.clientWidth + 1);
   expect(tablist.scrollLeft, JSON.stringify(tablist)).toBeLessThanOrEqual(1);
+}
+
+async function expectMobileSearchButtonSpansPanel(page: Page) {
+  const dimensions = await page
+    .locator('#code-search form > div.sm\\:hidden')
+    .evaluate((element) => {
+      const container = element.getBoundingClientRect();
+      const button = element.querySelector('button')?.getBoundingClientRect();
+      return {
+        buttonWidth: button?.width ?? 0,
+        containerWidth: container.width,
+      };
+    });
+
+  expect(dimensions.buttonWidth, JSON.stringify(dimensions)).toBeGreaterThan(dimensions.containerWidth - 2);
 }
 
 function screenshotPath(testInfo: TestInfo, fileName: string) {
