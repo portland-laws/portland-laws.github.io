@@ -297,6 +297,28 @@ export default function PortlandLegalResearchApp() {
     }
   }
 
+  function jumpToWorkbench(tab: WorkspaceTab = 'chat') {
+    setActiveTab(tab);
+    window.requestAnimationFrame(() => {
+      document.getElementById('research-workbench')?.scrollIntoView({ block: 'start' });
+    });
+  }
+
+  function onMobileAskQuestion(event: FormEvent<HTMLFormElement>) {
+    void onAskQuestion(event);
+    if (chatQuestion.trim()) {
+      jumpToWorkbench('chat');
+    }
+  }
+
+  function onMobileSearch(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    void runSearch();
+    window.requestAnimationFrame(() => {
+      document.getElementById('code-search')?.scrollIntoView({ block: 'start' });
+    });
+  }
+
   return (
     <main className="min-h-screen bg-[#f3f5ef] text-[#1f2933] font-system">
       <nav className="skip-links" aria-label="Skip links">
@@ -305,6 +327,17 @@ export default function PortlandLegalResearchApp() {
         <a href="#research-workbench">Skip to selected section and research tools</a>
       </nav>
       <Header sections={sections} retrievalMode={retrievalMode} />
+
+      <MobileFrontPanel
+        searchQuery={query}
+        question={chatQuestion}
+        isSearching={isSearching}
+        isAnswering={isAnswering}
+        onSearchQueryChange={setQuery}
+        onSearch={onMobileSearch}
+        onQuestionChange={setChatQuestion}
+        onAskQuestion={onMobileAskQuestion}
+      />
 
       <div
         id="main-content"
@@ -416,7 +449,7 @@ function Header({ sections, retrievalMode }: { sections: CorpusSection[]; retrie
           </p>
           <p className="mt-2 hidden max-w-3xl text-base leading-7 text-[#43534d] sm:block">
             Browse Titles, Chapters, and Sections like the official code directory, with client-side
-            GraphRAG search, knowledge graph context, logic proofs, and corpus chat layered in.
+            chat, graph search, knowledge graph context, and logic proofs layered in.
           </p>
         </div>
         <div className="grid grid-cols-3 gap-2 text-sm sm:gap-3">
@@ -426,6 +459,111 @@ function Header({ sections, retrievalMode }: { sections: CorpusSection[]; retrie
         </div>
       </div>
     </header>
+  );
+}
+
+function MobileFrontPanel({
+  searchQuery,
+  question,
+  isSearching,
+  isAnswering,
+  onSearchQueryChange,
+  onSearch,
+  onQuestionChange,
+  onAskQuestion,
+}: {
+  searchQuery: string;
+  question: string;
+  isSearching: boolean;
+  isAnswering: boolean;
+  onSearchQueryChange: (query: string) => void;
+  onSearch: (event: FormEvent<HTMLFormElement>) => void;
+  onQuestionChange: (question: string) => void;
+  onAskQuestion: (event: FormEvent<HTMLFormElement>) => void;
+}) {
+  const [mode, setMode] = useState<'search' | 'chat'>('search');
+
+  return (
+    <section className="mx-auto max-w-[1520px] px-3 pt-3 lg:hidden" aria-label="Mobile quick actions">
+      <div className="rounded-md border border-[#d8dfd3] bg-white shadow-sm">
+        <div className="grid grid-cols-2 border-b border-[#e1e6dc]" role="group" aria-label="Choose quick action">
+          <button
+            type="button"
+            aria-label="Show search"
+            aria-pressed={mode === 'search'}
+            onClick={() => setMode('search')}
+            className={`flex min-h-11 items-center justify-center rounded-tl-md px-3 text-sm font-semibold ${
+              mode === 'search' ? 'bg-[#24594f] text-white' : 'text-[#24594f] hover:bg-[#f3f6ef]'
+            }`}
+          >
+            Search
+          </button>
+          <button
+            type="button"
+            aria-label="Show chat"
+            aria-pressed={mode === 'chat'}
+            onClick={() => setMode('chat')}
+            className={`flex min-h-11 items-center justify-center rounded-tr-md border-l border-[#e1e6dc] px-3 text-sm font-semibold ${
+              mode === 'chat' ? 'bg-[#24594f] text-white' : 'text-[#24594f] hover:bg-[#f3f6ef]'
+            }`}
+          >
+            Chat
+          </button>
+        </div>
+        <div className="p-3">
+          {mode === 'search' && (
+          <form onSubmit={onSearch} aria-label="Search the code from the front panel">
+            <div>
+              <label htmlFor="mobile-front-search" className="mb-1 block text-sm font-semibold text-[#26343a]">
+                Search the code
+              </label>
+              <span className="grid grid-cols-[minmax(0,1fr)_86px] gap-2">
+                <input
+                  id="mobile-front-search"
+                  value={searchQuery}
+                  onChange={(event) => onSearchQueryChange(event.target.value)}
+                  className="min-h-11 w-full rounded-md border border-[#8fa08a] bg-white px-3 text-base text-[#172026] shadow-sm"
+                  placeholder="notice requirements"
+                />
+                <button
+                  type="submit"
+                  disabled={isSearching}
+                  className="min-h-11 rounded-md bg-[#24594f] px-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1d473f] disabled:cursor-not-allowed disabled:bg-[#8aa19b]"
+                >
+                  {isSearching ? '...' : 'Search'}
+                </button>
+              </span>
+            </div>
+          </form>
+          )}
+          {mode === 'chat' && (
+          <form onSubmit={onAskQuestion} aria-label="Ask the code from the front panel">
+            <div>
+              <label htmlFor="mobile-front-chat" className="mb-1 block text-sm font-semibold text-[#26343a]">
+                Ask the code
+              </label>
+              <span className="grid grid-cols-[minmax(0,1fr)_76px] gap-2">
+                <input
+                  id="mobile-front-chat"
+                  value={question}
+                  onChange={(event) => onQuestionChange(event.target.value)}
+                  className="min-h-11 w-full rounded-md border border-[#8fa08a] bg-white px-3 text-base text-[#172026] shadow-sm"
+                  placeholder="What notice is required?"
+                />
+                <button
+                  type="submit"
+                  disabled={isAnswering}
+                  className="min-h-11 rounded-md bg-[#24594f] px-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1d473f] disabled:cursor-not-allowed disabled:bg-[#8aa19b]"
+                >
+                  {isAnswering ? '...' : 'Ask'}
+                </button>
+              </span>
+            </div>
+          </form>
+          )}
+        </div>
+      </div>
+    </section>
   );
 }
 
@@ -631,7 +769,7 @@ function SearchPanel({
       </div>
 
       <form onSubmit={onSubmit} className="grid gap-2 border-b border-[#e1e6dc] px-4 py-3 sm:gap-3 sm:py-4" aria-label="Search and filter code sections">
-        <label className="block">
+        <label className="hidden sm:block">
           <span className="mb-1 block text-sm font-semibold text-[#26343a]">Search Portland City Code</span>
           <input
             value={query}
@@ -707,7 +845,7 @@ function SearchPanel({
           <ExampleSearches onExample={onExample} />
         </div>
 
-        <div className="sm:hidden">
+        <div className="hidden">
           <button
             type="submit"
             disabled={loadState !== 'ready' || isSearching}
@@ -834,7 +972,7 @@ function WorkspacePanel({
 }) {
   const tabs: Array<{ tab: WorkspaceTab; label: string; shortLabel: string }> = [
     { tab: 'section', label: 'Section', shortLabel: 'Section' },
-    { tab: 'chat', label: 'GraphRAG', shortLabel: 'Chat' },
+    { tab: 'chat', label: 'Chat', shortLabel: 'Chat' },
     { tab: 'graph', label: 'Knowledge Graph', shortLabel: 'Graph' },
     { tab: 'proof', label: 'Logic Proofs', shortLabel: 'Proofs' },
   ];
@@ -1096,10 +1234,48 @@ function ResultCard({
           <ResultBadge label={formatResultProofStatusForBadge(proof.deontic_status)} />
         </div>
       )}
-      <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#52615c] [overflow-wrap:anywhere]">
-        {cleanCorpusSnippet(result.snippet)}
-      </p>
+      <ResultSnippet snippet={result.snippet} />
     </button>
+  );
+}
+
+function ResultSnippet({ snippet }: { snippet: string }) {
+  const cleaned = cleanCorpusSnippet(snippet);
+  const clauseMatch = cleaned.match(/(?:^|\s)([A-Z])\.\s+/);
+
+  if (!clauseMatch || clauseMatch.index === undefined) {
+    return (
+      <div className="mt-3 text-sm leading-6 text-[#52615c]" aria-label="Structured result preview">
+        <p className="line-clamp-3 [overflow-wrap:anywhere]">{cleaned}</p>
+      </div>
+    );
+  }
+
+  const clauseLabel = clauseMatch[1];
+  const contentStart = clauseMatch.index + clauseMatch[0].length;
+  const previewText = cleaned.slice(contentStart).trim();
+  const structured = splitNumberedSubparts(previewText);
+
+  return (
+    <div className="mt-3 grid gap-1 text-sm leading-6 text-[#52615c]" aria-label="Structured result preview">
+      <span className="w-fit rounded-md border border-[#d4ddd0] bg-[#f8faf5] px-2 py-0.5 text-xs font-semibold text-[#53655f]">
+        Clause {clauseLabel}
+      </span>
+      {structured ? (
+        <>
+          {structured.preface && <p className="line-clamp-2 [overflow-wrap:anywhere]">{structured.preface}</p>}
+          <ol className="list-decimal space-y-0.5 pl-5 marker:font-semibold marker:text-[#24594f]" aria-label="Preview requirements">
+            {structured.items.slice(0, 2).map((item, index) => (
+              <li key={`${index}-${item.slice(0, 20)}`} className="line-clamp-2 [overflow-wrap:anywhere]">
+                {item}
+              </li>
+            ))}
+          </ol>
+        </>
+      ) : (
+        <p className="line-clamp-3 [overflow-wrap:anywhere]">{previewText || cleaned}</p>
+      )}
+    </div>
   );
 }
 
@@ -1223,7 +1399,7 @@ function GraphRagChat({
   return (
     <div className="px-4 py-4 sm:px-5 sm:py-5">
       <div className="mb-4">
-        <h2 className="text-xl font-semibold tracking-normal text-[#172026]">GraphRAG Chat</h2>
+        <h2 className="text-xl font-semibold tracking-normal text-[#172026]">Code Chat</h2>
         <p className="mt-1 text-base leading-7 text-[#4f615b]">Ask questions grounded in local Portland City Code evidence.</p>
       </div>
       <form onSubmit={onSubmit} className="grid gap-3 md:grid-cols-[1fr_112px]">
@@ -1243,7 +1419,7 @@ function GraphRagChat({
         <button
           type="submit"
           disabled={isAnswering}
-          className="min-h-11 rounded-md bg-[#24594f] px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1d473f] disabled:cursor-not-allowed disabled:bg-[#8aa19b]"
+          className="min-h-11 rounded-md bg-[#24594f] px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1d473f] disabled:cursor-not-allowed disabled:bg-[#8aa19b] md:mt-6 md:self-start"
         >
           {isAnswering ? 'Asking' : 'Ask'}
         </button>
@@ -1255,7 +1431,7 @@ function GraphRagChat({
         </div>
       )}
       {answer && (
-        <div className="mt-4 grid gap-2 sm:grid-cols-3" aria-label="GraphRAG response summary">
+        <div className="mt-4 grid gap-2 sm:grid-cols-3" aria-label="Chat response summary">
           <ChatSummaryMetric label="Evidence sections" value={evidenceSections.length.toLocaleString()} />
           <ChatSummaryMetric label="Answer mode" value={warning ? 'Local evidence' : 'Local model'} />
           <ChatSummaryMetric label="Top citation" value={topCitation} />
@@ -1264,15 +1440,20 @@ function GraphRagChat({
       {answer && (
         <div
           className="mt-4 rounded-md border border-[#dce3d6] bg-[#f8faf5] px-4 py-4"
-          aria-label="GraphRAG answer"
+          aria-label="Chat answer"
           aria-live="polite"
         >
           <h3 className="mb-2 text-sm font-semibold uppercase tracking-[0.14em] text-[#607068]">Cited answer</h3>
-          <div className="whitespace-pre-wrap text-sm leading-6 text-[#26343a] [overflow-wrap:anywhere]">{answer}</div>
+          <CitedAnswer text={answer} />
+        </div>
+      )}
+      {!answer && !warning && (
+        <div className="mt-4" aria-label="Chat empty state">
+          <EmptyState title="No answer yet" />
         </div>
       )}
       {evidenceSections.length > 0 && (
-        <div className="mt-4" aria-label="GraphRAG evidence">
+        <div className="mt-4" aria-label="Chat evidence">
           <h3 className="text-sm font-semibold uppercase tracking-[0.14em] text-[#607068]">Evidence</h3>
           <div className="mt-2 grid gap-2">
             {evidenceSections.map((result, index) => (
@@ -1293,6 +1474,40 @@ function GraphRagChat({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function CitedAnswer({ text }: { text: string }) {
+  const blocks = text.split(/\n{2,}/).map((block) => block.trim()).filter(Boolean);
+  const citationBlocks = blocks
+    .map((block) => {
+      const match = block.match(/^\[(\d+)\]\s*(.+)$/s);
+      return match ? { number: match[1], text: match[2].trim() } : null;
+    })
+    .filter((block): block is { number: string; text: string } => Boolean(block));
+  const introBlocks = blocks.filter((block) => !/^\[\d+\]\s*/.test(block) && !/^Review\b/i.test(block));
+  const noteBlocks = blocks.filter((block) => /^Review\b/i.test(block));
+
+  if (citationBlocks.length === 0) {
+    return <div className="whitespace-pre-wrap text-sm leading-6 text-[#26343a] [overflow-wrap:anywhere]">{text}</div>;
+  }
+
+  return (
+    <div className="grid gap-3 text-sm leading-6 text-[#26343a]" aria-label="Cited answer sections">
+      {introBlocks.map((block, index) => (
+        <p key={`intro-${index}`} className="[overflow-wrap:anywhere]">{block}</p>
+      ))}
+      <ol className="grid gap-3 list-decimal pl-5 marker:font-semibold marker:text-[#24594f]" aria-label="Cited answer citations">
+        {citationBlocks.map((block) => (
+          <li key={block.number} className="[overflow-wrap:anywhere]">{block.text}</li>
+        ))}
+      </ol>
+      {noteBlocks.map((block, index) => (
+        <p key={`note-${index}`} className="rounded-md border border-[#d6c28e] bg-[#fff9e8] px-3 py-2 text-[#735b18] [overflow-wrap:anywhere]">
+          {block}
+        </p>
+      ))}
     </div>
   );
 }
@@ -1325,6 +1540,8 @@ function GraphPanel({
     : getTopGraphTypeLabel(relationships.map((relationship) => relationship.type));
   const entityValue = isLoading ? '...' : entities.length.toLocaleString();
   const relationshipValue = isLoading ? '...' : relationships.length.toLocaleString();
+  const entityTypeCounts = summarizeGraphTypes(entities.map((entity) => entity.type));
+  const relationshipTypeCounts = summarizeGraphTypes(relationships.map((relationship) => relationship.type));
 
   return (
     <div className="px-4 py-4 sm:px-5 sm:py-5">
@@ -1338,6 +1555,11 @@ function GraphPanel({
         <GraphSummaryMetric label="Entities" value={entityValue} detail={topEntityType} />
         <GraphSummaryMetric label="Relationships" value={relationshipValue} detail={topRelationshipType} />
         <GraphSummaryMetric label="Neighborhood" value="1 hop" detail="This section" />
+      </div>
+
+      <div className="mb-5 grid gap-3 lg:grid-cols-2" aria-label="Graph type summaries">
+        <GraphTypeSummary title="Entity types" items={entityTypeCounts} emptyLabel={isLoading ? 'Loading entity types' : 'No entity types'} />
+        <GraphTypeSummary title="Relationship types" items={relationshipTypeCounts} emptyLabel={isLoading ? 'Loading relationship types' : 'No relationship types'} />
       </div>
 
       <div className="grid gap-5 xl:grid-cols-[1fr_1fr]">
@@ -1388,6 +1610,34 @@ function GraphPanel({
   );
 }
 
+function GraphTypeSummary({
+  title,
+  items,
+  emptyLabel,
+}: {
+  title: string;
+  items: Array<{ label: string; count: number }>;
+  emptyLabel: string;
+}) {
+  return (
+    <section className="rounded-md border border-[#dce3d6] bg-[#fbfcf8] px-3 py-3" aria-label={title}>
+      <h3 className="text-xs font-semibold uppercase tracking-wide text-[#607068]">{title}</h3>
+      {items.length > 0 ? (
+        <ul className="mt-2 flex flex-wrap gap-2" aria-label={`${title} summary`}>
+          {items.slice(0, 5).map((item) => (
+            <li key={item.label} className="rounded-md border border-[#d4ddd0] bg-white px-2 py-1 text-sm leading-5 text-[#26343a]">
+              <span className="font-semibold text-[#24594f]">{item.count}</span>{' '}
+              <span>{item.label}</span>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-2 text-sm leading-6 text-[#4f615b]">{emptyLabel}</p>
+      )}
+    </section>
+  );
+}
+
 function GraphSummaryMetric({ label, value, detail }: { label: string; value: string; detail: string }) {
   return (
     <div className="rounded-md border border-[#dce3d6] bg-[#fbfcf8] px-3 py-3">
@@ -1396,6 +1646,17 @@ function GraphSummaryMetric({ label, value, detail }: { label: string; value: st
       <div className="mt-0.5 text-sm leading-5 text-[#4f615b] [overflow-wrap:anywhere]">{detail}</div>
     </div>
   );
+}
+
+function summarizeGraphTypes(types: string[]) {
+  const counts = new Map<string, number>();
+  for (const type of types) {
+    const label = formatGraphTypeLabel(type);
+    counts.set(label, (counts.get(label) || 0) + 1);
+  }
+  return [...counts.entries()]
+    .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0]))
+    .map(([label, count]) => ({ label, count }));
 }
 
 function getTopGraphTypeLabel(types: string[]) {
@@ -1457,14 +1718,14 @@ function SectionReader({ section }: { section: CorpusSection }) {
             href={section.source_url}
             target="_blank"
             rel="noreferrer"
-            className="inline-flex min-h-11 items-center justify-center rounded-md border border-[#8fa08a] px-3 text-sm font-semibold text-[#24594f] hover:bg-[#f3f6ef]"
+            className="inline-flex min-h-11 items-center justify-center whitespace-nowrap rounded-md border border-[#8fa08a] px-4 text-sm font-semibold text-[#24594f] hover:bg-[#f3f6ef]"
           >
             Official source<span className="sr-only"> for {section.identifier}</span>
           </a>
         </div>
       </div>
       <div className="max-w-prose px-4 py-4 sm:px-5 sm:py-5">
-        <div className="mb-4 grid gap-2 sm:grid-cols-3" aria-label="Section overview">
+        <div className="mb-4 grid grid-cols-3 gap-2" aria-label="Section overview">
           <SectionOverviewMetric label="Clauses" value={clauseCount.toLocaleString()} />
           <SectionOverviewMetric label="Code notes" value={codeNoteCount.toLocaleString()} />
           <SectionOverviewMetric label="Source" value="Official code" />
@@ -1480,7 +1741,7 @@ function SectionReader({ section }: { section: CorpusSection }) {
                 <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#607068]">
                   Clause {block.label}
                 </div>
-                <p className="text-base leading-7 text-[#26343a] [overflow-wrap:anywhere]">{block.text}</p>
+                <LegalTextBlock text={block.text} />
               </section>
             ) : (
               <aside
@@ -1501,11 +1762,33 @@ function SectionReader({ section }: { section: CorpusSection }) {
   );
 }
 
+function LegalTextBlock({ text }: { text: string }) {
+  const structured = splitNumberedSubparts(text);
+
+  if (!structured) {
+    return <p className="text-base leading-7 text-[#26343a] [overflow-wrap:anywhere]">{text}</p>;
+  }
+
+  return (
+    <div className="text-base leading-7 text-[#26343a] [overflow-wrap:anywhere]">
+      {structured.preface && <p>{structured.preface}</p>}
+      <ol
+        className={`${structured.preface ? 'mt-3' : ''} list-decimal space-y-2 pl-6 marker:font-semibold marker:text-[#24594f]`}
+        aria-label="Numbered legal requirements"
+      >
+        {structured.items.map((item, index) => (
+          <li key={`${index}-${item.slice(0, 24)}`}>{item}</li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
 function SectionOverviewMetric({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-md border border-[#dce3d6] bg-white px-3 py-3">
-      <div className="text-xs font-semibold uppercase tracking-wide text-[#607068]">{label}</div>
-      <div className="mt-1 text-sm font-semibold text-[#172026] [overflow-wrap:anywhere]">{value}</div>
+    <div className="min-w-0 rounded-md border border-[#dce3d6] bg-white px-2 py-2 sm:px-3 sm:py-3">
+      <div className="text-[0.62rem] font-semibold uppercase tracking-wide text-[#607068] sm:text-xs">{label}</div>
+      <div className="mt-1 text-xs font-semibold leading-5 text-[#172026] [overflow-wrap:anywhere] sm:text-sm">{value}</div>
     </div>
   );
 }
@@ -1531,6 +1814,8 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
           {formatNormTypeForDisplay(proof.norm_type)}
         </span>
       </div>
+
+      <ProofReadingGuide proof={proof} explanation={explanation} certificateWarning={certificateWarning} />
 
       <div className="mt-4 grid grid-cols-2 gap-2 text-xs xl:grid-cols-5" aria-label="Logic proof status metrics">
         <ProofMetric label="Operator" value={formatNormOperatorForDisplay(proof.norm_operator)} />
@@ -1585,6 +1870,31 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
       <FormulaBlock label="Frame Logic" value={proof.frame_logic_ergo} />
       <FormulaBlock label="Certificate" value={`${proof.zkp_backend}: ${proof.zkp_security_note}`} />
     </div>
+  );
+}
+
+function ProofReadingGuide({
+  proof,
+  explanation,
+  certificateWarning,
+}: {
+  proof: LogicProofSummary;
+  explanation: ReturnType<typeof explainLogicProofSummary>;
+  certificateWarning: string | null;
+}) {
+  const normLabel = formatNormTypeForDisplay(proof.norm_type).toLowerCase();
+  const operatorLabel = formatNormOperatorForDisplay(proof.norm_operator);
+  const verificationLabel = certificateWarning ? 'Simulated certificate' : 'Certificate metadata';
+
+  return (
+    <section className="mt-4 rounded-md border border-[#dce3d6] bg-[#fbfcf8] px-4 py-4" aria-label="Proof reading guide">
+      <h3 className="text-xs font-semibold uppercase tracking-wide text-[#607068]">How to read this proof</h3>
+      <dl className="mt-3 grid gap-3 text-sm sm:grid-cols-3">
+        <LogicFact label="Code effect" value={`${operatorLabel} ${normLabel}`} />
+        <LogicFact label="Time scope" value={explanation.temporalScope} />
+        <LogicFact label="Verification" value={verificationLabel} />
+      </dl>
+    </section>
   );
 }
 
@@ -1678,6 +1988,38 @@ function splitLegalClauses(paragraph: string): Array<{ label?: string; text: str
   });
 
   return blocks;
+}
+
+function splitNumberedSubparts(text: string): { preface: string; items: string[] } | null {
+  const matches = [...text.matchAll(/(?<prefix>^|[:;]\s+(?:and\s+)?|\.\s+(?:and\s+)?)(?<number>\d+)\.\s+(?=[A-Z(])/g)]
+    .map((match) => {
+      const number = match.groups?.number || '';
+      const numberIndex = (match.index ?? 0) + match[0].lastIndexOf(`${number}.`);
+      const contentStart = numberIndex + `${number}.`.length;
+      return {
+        numberIndex,
+        contentStart: contentStart + (text.slice(contentStart).match(/^\s+/)?.[0].length || 0),
+      };
+    });
+
+  if (matches.length < 2) {
+    return null;
+  }
+
+  const preface = text.slice(0, matches[0].numberIndex).trim().replace(/[:;]\s*$/, ':');
+  const items = matches
+    .map((match, index) => {
+      const nextStart = matches[index + 1]?.numberIndex ?? text.length;
+      return text
+        .slice(match.contentStart, nextStart)
+        .trim()
+        .replace(/^and\s+/i, '')
+        .replace(/;\s*$/g, '')
+        .trim();
+    })
+    .filter(Boolean);
+
+  return items.length >= 2 ? { preface, items } : null;
 }
 
 function cleanCorpusSnippet(snippet: string) {

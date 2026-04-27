@@ -496,12 +496,23 @@ Acceptance criteria:
   - [x] Initial CEC native inference rule slice: modus ponens, conjunction elimination, double-negation elimination, temporal T, deontic D, and prohibition equivalence.
   - [x] Expanded deterministic CEC inference slice: hypothetical syllogism, conjunction introduction as an opt-in generative rule, eventuality introduction as an opt-in generative rule, prohibition-from-obligation, universal modus ponens, existential instantiation, existential generalization, and universal generalization.
 - [ ] Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.
+  - [x] Initial CEC fluent/event state manager with fluent types, persistence rules, event transitions, frame-problem persistence, conflict resolution, timelines, statistics, and validation.
+  - [x] Initial CEC event calculus with browser-native discrete event occurrences, initiation/termination/release rules, `Happens`, `Initiates`, `Terminates`, `Releases`, `ReleasedAt`, `HoldsAt`, `Clipped`, parsed predicate loading/evaluation, timelines, all-fluent queries, caching, and validation.
+  - [x] Initial CEC context manager with discourse state, entity tracking, focus management, pronoun/anaphora resolution, parsed CEC expression ingestion, discourse segmentation, coherence scoring, snapshots, and validation.
+  - [x] Initial CEC ambiguity resolver with syntax-tree adapters, minimal-attachment/right-association/balance scoring, ranked parse explanations, custom preference rules, semantic pattern scoring, statistical bigram scoring, and CEC AST-to-tree conversion.
+  - [x] Initial CEC modal tableaux with K/T/D/S4/S5 world/branch model, contradiction closure, box/diamond expansion, deontic O/P/F mapping, proof steps, and open-branch countermodel support.
+  - [x] Initial CEC countermodel extraction and visualization from open tableaux branches with Kripke JSON, DOT, ASCII, compact ASCII, HTML, valuation extraction, and modal property checks.
 - [ ] Port CEC proof cache, proof strategies, advanced inference, and error handling.
   - [x] Initial bounded CEC forward prover with proof steps, unknown results, and derived-expression budget handling.
   - [x] Initial CEC prover support for Portland-style quantified DCEC facts through browser-native universal modus ponens, without Python delegation.
   - [x] Initial CEC proof cache with normalized theorem/axiom keys, prover-config sensitivity, invalidation, global helper, TTL/LRU stats, and cached prove facade.
   - [x] Initial CEC strategy selector with forward and cached-forward strategies, priority/cost selection, metadata, and convenience proving facade.
   - [x] Initial CEC proof explainer with rule descriptions, natural-language steps, inference chains, rendered text, and proof statistics.
+  - [x] Initial CEC dependency graph and proof tree visualizer with JSON, DOT, HTML, ASCII, topological order, path lookup, and unused-axiom diagnostics.
+  - [x] Initial CEC performance metrics and engine with timing collectors, strategy profiling, dashboard HTML export, JSON/Prometheus-style export, regression checks, and profiler history.
+  - [x] Initial CEC performance dashboard with proof metrics, time-series metrics, expression classification, aggregate stats, strategy comparison, JSON export, and self-contained HTML.
+  - [x] Initial CEC performance profiler with repeated-run profiling, bottleneck detection, browser memory snapshots, benchmark suites, baseline regression accounting, and text/JSON/HTML reports.
+  - [x] Initial CEC security validator and error-hardening facade with rate limits, input sanitization, size/depth/operator guards, injection/DoS detection, parse validation, resource checks, proof-result audit, and security reports.
 - [ ] Port CEC NL policy compilers and language detection with browser-native NLP.
 - [ ] Add deeper CEC/DCEC parity fixtures against Python parser and prover outputs.
 
