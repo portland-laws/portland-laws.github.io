@@ -501,6 +501,7 @@ Acceptance criteria:
   - [x] Initial DCEC integration pipeline with browser-native string-to-parse-token conversion, recursive comma-S-expression parsing, token-to-formula conversion, prefix `not` normalization, deontic/cognitive/temporal mapping, object/agent term inference, and formula validation.
   - [x] Initial DCEC prototype namespace with sort inheritance, overloaded function prototypes, atomic type definitions, text prototype parsing, base DCEC/logical/numeric vocabularies, type-conflict checks, quantifier map state, statistics, and printable snapshots.
   - [x] Initial DCEC temporal evaluator/state layer with finite-trace `ALWAYS`/`EVENTUALLY`/`NEXT`/`UNTIL`/`SINCE`/`YESTERDAY` evaluation, unary/binary arity validation, DCEC atom proposition extraction, negated-atom handling, symbolic rendering, and convenience constructors.
+  - [x] Initial DCEC natural-language converter with browser-native pattern matching for deontic/cognitive/temporal/logical phrases, DCEC namespace reuse, conversion result history/statistics, formula-to-English linearization, deterministic precedence, and local dependency-free grammar placeholders.
 - [x] Add CEC/DCEC parity fixtures and generated Portland DCEC parse coverage.
 - [ ] Port native inference rule groups: propositional, modal, temporal, deontic, cognitive, specialized, and resolution.
   - [x] Initial CEC native inference rule slice: modus ponens, conjunction elimination, double-negation elimination, temporal T, deontic D, and prohibition equivalence.
@@ -519,8 +520,11 @@ Acceptance criteria:
   - [x] Initial CEC modal tableaux with K/T/D/S4/S5 world/branch model, contradiction closure, box/diamond expansion, deontic O/P/F mapping, proof steps, and open-branch countermodel support.
   - [x] Initial CEC countermodel extraction and visualization from open tableaux branches with Kripke JSON, DOT, ASCII, compact ASCII, HTML, valuation extraction, and modal property checks.
 - [ ] Port CEC proof cache, proof strategies, advanced inference, and error handling.
+  - [x] Initial CEC native shared-type layer with Python `types.py`-style formula/proof/conversion/namespace/config dictionaries, protocol guards for formulas/provers/converters/knowledge bases, generic result/cache/stat records, callable aliases, and unified proof statistics with incremental averages.
+  - [x] Initial DCEC advanced inference layer with modal K/T/S4/necessitation, temporal induction/frame, deontic D/permission-obligation/distribution, knowledge-obligation interaction, temporal-obligation persistence, and grouped rule registries.
   - [x] Initial CEC native error-handling layer with CEC-specific parse/proof/conversion/validation/namespace/grammar/knowledge-base errors, Python-style context/suggestion formatting, safe-call wrappers, parse/proof handler wrappers, operation error formatting, and DCEC formula-shape validation.
   - [x] Initial CEC lemma-generation layer with reusable lemma objects, deterministic pattern hashing, LRU lemma cache, pattern lookup, proof-tree lemma discovery, cached lemma reuse during CEC proving, discovery/reuse statistics, and clear/reset behavior.
+  - [x] Initial CEC proof-optimization layer with proof-node trees, depth/redundancy pruning, optimization metrics, duplicate/subsumption elimination, browser-native async batch search, combined optimizer coordination, and metrics export.
   - [x] Initial bounded CEC forward prover with proof steps, unknown results, and derived-expression budget handling.
   - [x] Initial CEC prover support for Portland-style quantified DCEC facts through browser-native universal modus ponens, without Python delegation.
   - [x] Initial CEC proof cache with normalized theorem/axiom keys, prover-config sensitivity, invalidation, global helper, TTL/LRU stats, and cached prove facade.
