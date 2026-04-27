@@ -1,5 +1,12 @@
 import { clientEmbeddingWorkerService } from './clientEmbeddingWorkerService';
-import { GraphRagEvidence, SearchResult, buildGraphRagEvidence } from './portlandCorpus';
+import {
+  CorpusEntity,
+  CorpusRelationship,
+  GraphRagEvidence,
+  SearchResult,
+  buildGraphRagEvidence,
+  buildSectionGraphRagEvidence,
+} from './portlandCorpus';
 import {
   buildLogicEvidenceForSearchResults,
   type LogicEvidenceItem,
@@ -11,10 +18,12 @@ export interface GraphRagAnswer {
   evidence: GraphRagEvidence;
   logicEvidence: LogicEvidenceItem[];
   usedLocalModel: boolean;
-  warning?: string;
 }
 
-export async function answerWithGraphRag(question: string): Promise<GraphRagAnswer> {
+export async function answerWithGraphRag(
+  question: string,
+  options: { selectedCid?: string | null } = {},
+): Promise<GraphRagAnswer> {
   const trimmedQuestion = question.trim();
   if (!trimmedQuestion) {
     throw new Error('Question is required');
@@ -27,7 +36,9 @@ export async function answerWithGraphRag(question: string): Promise<GraphRagAnsw
     console.warn('GraphRAG embedding unavailable, retrieving with keyword search only', error);
   }
 
-  const evidence = await buildGraphRagEvidence(trimmedQuestion, queryEmbedding, 5);
+  const evidence = options.selectedCid
+    ? await buildSectionGraphRagEvidence(options.selectedCid, trimmedQuestion, queryEmbedding, 5)
+    : await buildGraphRagEvidence(trimmedQuestion, queryEmbedding, 5);
   const logicEvidence = await buildLogicEvidenceForSearchResults(evidence.sections);
   if (evidence.sections.length === 0) {
     return {
@@ -37,11 +48,10 @@ export async function answerWithGraphRag(question: string): Promise<GraphRagAnsw
       evidence,
       logicEvidence,
       usedLocalModel: false,
-      warning: 'No supporting evidence was retrieved.',
     };
   }
 
-  const prompt = buildGraphRagPrompt(trimmedQuestion, evidence.sections, logicEvidence);
+  const prompt = buildGraphRagPrompt(trimmedQuestion, evidence, logicEvidence, Boolean(options.selectedCid));
 
   try {
     if (shouldSkipLocalModelForBrowserTest()) {
@@ -51,7 +61,6 @@ export async function answerWithGraphRag(question: string): Promise<GraphRagAnsw
         evidence,
         logicEvidence,
         usedLocalModel: false,
-        warning: 'Answered from retrieved evidence without local model generation.',
       };
     }
 
@@ -67,10 +76,6 @@ export async function answerWithGraphRag(question: string): Promise<GraphRagAnsw
       evidence,
       logicEvidence,
       usedLocalModel: answer === candidateAnswer,
-      warning:
-        answer === candidateAnswer
-          ? undefined
-          : 'Local model output did not include required citations, so the app returned a cited evidence summary.',
     };
   } catch (error) {
     console.warn('Local GraphRAG generation failed, using evidence summary', error);
@@ -80,10 +85,6 @@ export async function answerWithGraphRag(question: string): Promise<GraphRagAnsw
       evidence,
       logicEvidence,
       usedLocalModel: false,
-      warning:
-        error instanceof Error
-          ? `Local model unavailable: ${error.message}`
-          : 'Local model unavailable.',
     };
   }
 }
@@ -95,9 +96,14 @@ function shouldSkipLocalModelForBrowserTest() {
   return window.localStorage.getItem('PORTLAND_DISABLE_LOCAL_LLM') === 'true';
 }
 
-function buildGraphRagPrompt(question: string, sections: SearchResult[], logicEvidence: LogicEvidenceItem[]) {
+function buildGraphRagPrompt(
+  question: string,
+  evidence: GraphRagEvidence,
+  logicEvidence: LogicEvidenceItem[],
+  sectionScoped: boolean,
+) {
   const logicByCid = new Map(logicEvidence.map((item) => [item.ipfs_cid, item]));
-  const evidence = sections
+  const sectionEvidence = evidence.sections
     .map((result, index) => {
       const section = result.section;
       const citation = result.citation || section.identifier;
@@ -114,13 +120,15 @@ Generated logic metadata:
       return `[${index + 1}] ${citation}
 Title: ${section.title}
 Source: ${section.source_url}
-Excerpt: ${cleanCorpusExcerpt(result.snippet || section.text.slice(0, 700))}${logicBlock}`;
+${index === 0 && sectionScoped ? 'Full selected section text' : 'Excerpt'}: ${cleanCorpusExcerpt(index === 0 && sectionScoped ? section.text.slice(0, 5000) : result.snippet || section.text.slice(0, 900))}${logicBlock}`;
     })
     .join('\n\n');
+  const graphContext = buildGraphContext(evidence.entities, evidence.relationships);
 
   return `You answer simple questions about the Portland City Code using only the evidence below.
 This is legal information, not legal advice.
 Generated logic metadata is machine-created support material, not the official law text.
+${sectionScoped ? 'The first evidence item is the selected statute the user is reading. Use it as the primary context before relying on related statutes.' : 'The evidence was retrieved from the full local corpus for the user question.'}
 If the evidence does not answer the question, say that the local corpus evidence is insufficient.
 Keep the answer concise.
 Every factual sentence must cite at least one evidence number like [1] or [2].
@@ -128,9 +136,35 @@ Every factual sentence must cite at least one evidence number like [1] or [2].
 Question: ${question}
 
 Evidence:
-${evidence}
+${sectionEvidence}
+
+Knowledge graph context:
+${graphContext}
 
 Answer:`;
+}
+
+function buildGraphContext(entities: CorpusEntity[], relationships: CorpusRelationship[]) {
+  const entityLabels = new Map(entities.map((entity) => [entity.id, `${entity.label} (${formatGraphType(entity.type)})`]));
+  const entityLines = entities
+    .slice(0, 16)
+    .map((entity) => `- ${entityLabels.get(entity.id)}`)
+    .join('\n') || '- None retrieved.';
+  const relationshipLines = relationships
+    .slice(0, 16)
+    .map((relationship) => {
+      const source = entityLabels.get(relationship.source) || relationship.source;
+      const target = entityLabels.get(relationship.target) || relationship.target;
+      return `- ${source} ${formatGraphType(relationship.type)} ${target}`;
+    })
+    .join('\n') || '- None retrieved.';
+  return `Entities:\n${entityLines}\nRelationships:\n${relationshipLines}`;
+}
+
+function formatGraphType(type: string) {
+  return type
+    .replace(/_/g, ' ')
+    .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function cleanModelAnswer(answer: string) {

@@ -32,17 +32,37 @@ test.describe('Portland legal corpus UI screenshots', () => {
     await expect(page.getByRole('heading', { name: 'City Code Research Directory' })).toBeVisible();
     await expect(page.getByRole('navigation', { name: 'City Code' })).toBeVisible();
     await expect(page.getByRole('navigation', { name: 'City Code' }).locator('..')).toContainText('Choose a title');
-    await expect(page.getByRole('region', { name: 'Find Code Sections' })).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Search and Chat' })).toBeVisible();
+    await expect(page.getByRole('tab', { name: 'Search code' })).toHaveAttribute('aria-selected', 'true');
+    await page.getByRole('tab', { name: 'Chat with code' }).click();
+    await expect(page.getByRole('tab', { name: 'Chat with code' })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByRole('region', { name: 'Chat with Portland City Code' })).toBeVisible();
+    await expect(page.getByRole('region', { name: 'Chat with Portland City Code' })).toContainText('Ask the full local corpus');
+    await page.getByRole('region', { name: 'Chat with Portland City Code' }).getByRole('button', { name: 'Who is affected by this section?' }).click();
+    await expect(page.getByRole('region', { name: 'Chat with Portland City Code' }).getByRole('textbox')).toHaveValue('Who is affected by this section?');
+    await page.locator('#code-search').screenshot({
+      path: screenshotPath(testInfo, 'desktop-corpus-chat-panel.png'),
+    });
+    await page.getByRole('region', { name: 'Chat with Portland City Code' }).getByRole('button', { name: /^Ask$/ }).click();
+    await expect(page.getByRole('tab', { name: 'Chat', exact: true })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByLabel('Chat answer')).toBeVisible({ timeout: 30000 });
+    await expect(page.getByLabel('Chat answer')).toContainText('Answer with citations');
+    await expect(page.locator('body')).not.toContainText('Local model output did not include required citations');
+    await expect(page.locator('body')).not.toContainText('Answered from retrieved evidence without local model generation');
+    await expect(page.locator('body')).not.toContainText('could not be fully verified');
+    await page.getByRole('tab', { name: 'Section' }).click();
+    await page.getByRole('tab', { name: 'Search code' }).click();
     await expect(page.getByRole('region', { name: 'Selected section and research tools' })).toBeVisible();
     await expect(page.locator('body')).not.toContainText('GraphRAG');
+    await expect(page.locator('body')).not.toContainText('Vector dims');
+    await expect(page.locator('body')).not.toContainText('Retrieval');
     await expect(page.getByLabel('Current search filters')).toContainText('"notice requirements"');
     await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText('Selected');
     await expect(page.getByRole('button', { name: /^Select / }).nth(1)).toContainText('Open section');
-    await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText(/Score \d+\.\d{2}/);
-    await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText('Proof OK');
-    await expect(page.getByRole('button', { name: /^Select / }).first().getByLabel('Result legal signals')).toContainText('Effect');
-    await expect(page.getByRole('button', { name: /^Select / }).first().getByLabel('Result legal signals')).toContainText('Logic');
-    await expect(page.getByRole('button', { name: /^Select / }).first().getByLabel('Structured result preview')).toContainText('Clause A');
+    await expect(page.getByRole('button', { name: /^Select / }).first()).not.toContainText(/Score \d+\.\d{2}/);
+    await expect(page.getByRole('button', { name: /^Select / }).first()).not.toContainText('Proof OK');
+    await expect(page.getByRole('button', { name: /^Select / }).first()).not.toContainText('Effect');
+    await expect(page.getByRole('button', { name: /^Select / }).first().getByLabel('Structured result preview')).toContainText('A.');
     await expect(page.getByRole('button', { name: /^Select / }).first().getByLabel('Preview requirements')).toBeVisible();
 
     await expectNoHorizontalOverflow(page);
@@ -64,26 +84,44 @@ test.describe('Portland legal corpus UI screenshots', () => {
       path: screenshotPath(testInfo, 'desktop-section-reader.png'),
     });
     await expect(page.locator('#panel-section')).not.toContainText(/^Label:/);
-    await expect(page.locator('#panel-section').getByLabel('Clause A')).toHaveCount(1);
-    await expect(page.getByLabel('Section overview')).toContainText('Clauses');
+    await expect(page.locator('#panel-section')).not.toContainText('Clause A');
+    await expect(page.locator('#panel-section').getByLabel('Subsection A')).toHaveCount(1);
+    await expect(page.getByLabel('Research actions')).toContainText('Research this section');
+    await expect(page.getByRole('button', { name: 'Ask about it' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Related code' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Proof details' })).toBeVisible();
+    await page.getByRole('button', { name: 'Related code' }).click();
+    await expect(page.getByRole('tab', { name: 'Knowledge Graph' })).toHaveAttribute('aria-selected', 'true');
+    await page.getByRole('tab', { name: 'Section' }).click();
+    await page.getByRole('button', { name: 'Proof details' }).click();
+    await expect(page.getByRole('tab', { name: 'Logic Proofs' })).toHaveAttribute('aria-selected', 'true');
+    await page.getByRole('tab', { name: 'Section' }).click();
+    await expect(page.getByLabel('Section overview')).toContainText('Subsections');
     await expect(page.getByLabel('Section overview')).toContainText('Official code');
     await expect(page.getByLabel('Section at a glance')).toContainText('At a glance');
-    await expect(page.getByLabel('Citation and logic details')).toContainText('Citation');
-    await expect(page.getByLabel('Citation and logic details')).toContainText('Effect');
+    await expect(page.getByLabel('Citation details')).toContainText('Citation');
+    await expect(page.getByLabel('Citation details')).toContainText('Chapter');
+    await expect(page.getByLabel('Section at a glance')).not.toContainText('Proof OK');
+    await expect(page.getByLabel('Section at a glance')).not.toContainText('Effect');
     await expectOfficialSourceButtonIsSingleLine(page);
     await expect(page.getByLabel('Code note')).toBeVisible();
 
-    await page.getByRole('tab', { name: 'Chat' }).click();
+    await page.getByRole('button', { name: 'Ask about it' }).click();
+    await expect(page.getByRole('tab', { name: 'Chat', exact: true })).toHaveAttribute('aria-selected', 'true');
     await page.locator('#panel-chat').getByRole('textbox', { name: /Question/ }).fill('What does this section say in simple terms?');
-    await page.getByRole('button', { name: /^Ask$/ }).click();
+    await page.locator('#panel-chat').getByRole('button', { name: /^Ask$/ }).click();
     await expect(page.getByLabel('Chat answer')).toBeVisible({ timeout: 30000 });
     await expect(page.getByLabel('Chat answer')).toContainText('Answer with citations');
     await expect(page.getByLabel('Chat answer')).not.toContainText('Label:');
+    await expect(page.locator('body')).not.toContainText('Local model output did not include required citations');
+    await expect(page.locator('body')).not.toContainText('Answered from retrieved evidence without local model generation');
+    await expect(page.locator('body')).not.toContainText('could not be fully verified');
     await expect(page.getByLabel('Chat response summary')).toContainText('Sources found');
     await expect(page.getByLabel('Chat response summary')).toContainText('Retrieved code');
     await expect(page.getByLabel('Chat response summary')).toContainText('Portland City Code');
     await expect(page.getByLabel('Chat evidence')).toBeVisible();
     await expect(page.getByLabel('Chat evidence')).toContainText('Official source');
+    await expect(page.getByLabel('Chat evidence').getByRole('link').first()).toContainText('Portland City Code 30.01.090');
     await expect(page.getByLabel('Cited answer citations').getByRole('listitem')).toHaveCount(3);
     await expectChatAskButtonIsCompact(page);
     await page.locator('#research-workbench').screenshot({
@@ -94,9 +132,7 @@ test.describe('Portland legal corpus UI screenshots', () => {
     await expect(page.getByRole('heading', { name: 'Knowledge Graph' })).toBeVisible();
     await expect(page.getByLabel('Graph context summary')).toContainText('Entities');
     await expect(page.getByLabel('Graph context summary')).toContainText('Relationships');
-    await expect(page.getByLabel('Graph at a glance')).toContainText('Connected items');
-    await expect(page.getByLabel('Graph at a glance')).toContainText('Legal links');
-    await expect(page.getByLabel('Graph at a glance')).toContainText('Direct neighbors');
+    await expect(page.locator('#panel-graph')).not.toContainText('Graph at a glance');
     await expect(page.getByLabel('Graph type summaries')).toContainText('Entity types');
     await expect(page.getByLabel('Entity types summary').getByRole('listitem')).not.toHaveCount(0);
     await expect(page.getByLabel('Relationship types summary').getByRole('listitem')).not.toHaveCount(0);
@@ -139,8 +175,8 @@ test.describe('Portland legal corpus UI screenshots', () => {
     await page.getByRole('button', { name: /^Select / }).first().click();
     await page.getByRole('tab', { name: 'Section' }).focus();
     await page.keyboard.press('ArrowRight');
-    await expect(page.getByRole('tab', { name: 'Chat' })).toBeFocused();
-    await expect(page.getByRole('tab', { name: 'Chat' })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByRole('tab', { name: 'Chat', exact: true })).toBeFocused();
+    await expect(page.getByRole('tab', { name: 'Chat', exact: true })).toHaveAttribute('aria-selected', 'true');
     await expect(page.getByLabel('Chat empty state')).toContainText('No answer yet');
     await expect(page.getByLabel('Suggested chat questions').getByRole('button')).toHaveCount(3);
     await page.getByLabel('Suggested chat questions').getByRole('button', { name: 'Who is affected by this section?' }).click();
@@ -163,6 +199,7 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await expect(page.getByRole('region', { name: 'Mobile quick actions' }).getByRole('button', { name: 'Show chat' })).toBeVisible();
     await expect(page.getByRole('textbox', { name: 'Search all Portland City Code' })).toBeVisible();
     await expect(page.getByRole('textbox', { name: 'Ask all Portland City Code' })).toHaveCount(0);
+    await expect(page.getByRole('navigation', { name: 'Mobile page shortcuts' })).toHaveCount(0);
     await expect(browseTitles).toBeVisible();
     await expect(mobileDirectory).toBeVisible();
     await expect(browseTitles).toContainText('Collapse');
@@ -187,6 +224,8 @@ test.describe('Portland legal corpus mobile screenshots', () => {
 
     await page.getByRole('region', { name: 'Mobile quick actions' }).getByRole('button', { name: 'Show chat' }).click();
     await expect(page.getByRole('textbox', { name: 'Ask all Portland City Code' })).toBeVisible();
+    await expect(page.getByRole('navigation', { name: 'Mobile page shortcuts' }).getByRole('link', { name: 'Browse titles' })).toBeVisible();
+    await expect(page.getByRole('navigation', { name: 'Mobile page shortcuts' }).getByRole('link', { name: 'View results' })).toBeVisible();
     await expect(page.getByLabel('Mobile suggested chat questions').getByRole('button')).toHaveCount(3);
     await page.getByLabel('Mobile suggested chat questions').getByRole('button', { name: 'Who is affected by this section?' }).click();
     await expect(page.getByRole('textbox', { name: 'Ask all Portland City Code' })).toHaveValue('Who is affected by this section?');
@@ -194,12 +233,12 @@ test.describe('Portland legal corpus mobile screenshots', () => {
       path: screenshotPath(testInfo, 'mobile-front-chat.png'),
     });
     await page.getByRole('region', { name: 'Mobile quick actions' }).getByRole('button', { name: /^Ask$/ }).click();
-    await expect(page.getByRole('tab', { name: 'Chat' })).toHaveAttribute('aria-selected', 'true');
+    await expect(page.getByRole('tab', { name: 'Chat', exact: true })).toHaveAttribute('aria-selected', 'true');
 
     await page.getByRole('tab', { name: 'Knowledge Graph' }).click();
     await expect(page.getByRole('tab', { name: 'Knowledge Graph' })).toHaveAttribute('aria-selected', 'true');
     await expect(page.getByLabel('Graph context summary')).toContainText('Neighborhood');
-    await expect(page.getByLabel('Graph at a glance')).toContainText('Connected items');
+    await expect(page.locator('#panel-graph')).not.toContainText('Graph at a glance');
     await expect(page.getByLabel('Graph type summaries')).toContainText('Relationship types');
     await expectGraphContextLoaded(page);
     await expect(page.locator('#panel-graph')).toContainText('This section', { timeout: 10000 });
@@ -224,9 +263,9 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await expect(page.getByRole('button', { name: /^Select / }).first()).toBeVisible();
     await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText('Selected');
     await expect(page.getByRole('button', { name: /^Select / }).nth(1)).toContainText('Open section');
-    await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText(/Score \d+\.\d{2}/);
-    await expect(page.getByRole('button', { name: /^Select / }).first()).toContainText('Proof OK');
-    await expect(page.getByRole('button', { name: /^Select / }).first().getByLabel('Result legal signals')).toContainText('Norm');
+    await expect(page.getByRole('button', { name: /^Select / }).first()).not.toContainText(/Score \d+\.\d{2}/);
+    await expect(page.getByRole('button', { name: /^Select / }).first()).not.toContainText('Proof OK');
+    await expect(page.getByRole('button', { name: /^Select / }).first()).not.toContainText('Effect');
     await expect(page.getByRole('button', { name: /^Select / }).first().getByLabel('Structured result preview')).toBeVisible();
     await expect(page.getByRole('button', { name: /Show \d+ more results/ })).toBeVisible();
     await expect(page.getByRole('button', { name: /^Select / }).first()).not.toContainText(/^Label:/);
@@ -237,7 +276,7 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await mobileFilters.click();
     await expect(mobileFilters).toContainText('Expand');
     await expect(page.getByRole('button', { name: 'temporary administrative rules' })).not.toBeVisible();
-    await expect(page.getByLabel(/Relevance score/).first()).toBeVisible();
+    await expect(page.getByLabel(/Relevance score/)).toHaveCount(0);
     await expect(page.getByLabel('Current search filters')).toContainText('"noise"');
     await expect(page.locator('#code-search').getByRole('textbox', { name: 'Search Portland City Code' })).toHaveCount(0);
     await expectElementTopLessThan(page, '#search-status', 360);
@@ -258,13 +297,19 @@ test.describe('Portland legal corpus mobile screenshots', () => {
     await page.getByRole('button', { name: /^Select / }).first().click();
     await expect(page.locator('#panel-section')).toBeFocused();
     await expect(page.locator('#panel-section')).not.toContainText(/^Label:/);
-    await expect(page.locator('#panel-section').getByLabel('Clause A')).toHaveCount(1);
-    await expect(page.locator('#panel-section').getByLabel('Clause A').getByRole('listitem')).toHaveCount(3);
-    await expect(page.locator('#panel-section').getByLabel('Clause A').getByLabel('Numbered legal requirements')).toBeVisible();
-    await expect(page.locator('#panel-section').getByLabel('Clause C').getByRole('listitem')).toHaveCount(5);
-    await expect(page.getByLabel('Section overview')).toContainText('Clauses');
+    await expect(page.locator('#panel-section')).not.toContainText('Clause A');
+    await expect(page.locator('#panel-section').getByLabel('Subsection A')).toHaveCount(1);
+    await expect(page.locator('#panel-section').getByLabel('Subsection A').getByRole('listitem')).toHaveCount(3);
+    await expect(page.locator('#panel-section').getByLabel('Subsection A').getByLabel('Numbered legal requirements')).toBeVisible();
+    await expect(page.locator('#panel-section').getByLabel('Subsection C').getByRole('listitem')).toHaveCount(5);
+    await expect(page.getByLabel('Research actions')).toContainText('Research this section');
+    await expect(page.getByRole('button', { name: 'Ask about it' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Related code' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Proof details' })).toBeVisible();
+    await expect(page.getByLabel('Section overview')).toContainText('Subsections');
     await expect(page.getByLabel('Section at a glance')).toContainText('At a glance');
-    await expect(page.getByLabel('Citation and logic details')).toContainText('Logic');
+    await expect(page.getByLabel('Citation details')).toContainText('Citation');
+    await expect(page.getByLabel('Section at a glance')).not.toContainText('Logic');
     await expectSectionOverviewUsesThreeColumns(page);
 
     const workbenchPosition = await page.locator('#research-workbench').evaluate((element) => {
@@ -282,7 +327,11 @@ test.describe('Portland legal corpus mobile screenshots', () => {
       fullPage: false,
     });
 
-    await page.getByRole('tab', { name: 'Logic Proofs' }).click();
+    await page.getByRole('button', { name: 'Related code' }).click();
+    await expect(page.getByRole('tab', { name: 'Knowledge Graph' })).toHaveAttribute('aria-selected', 'true');
+    await page.getByRole('tab', { name: 'Section' }).click();
+    await page.getByRole('button', { name: 'Proof details' }).click();
+    await expect(page.getByRole('tab', { name: 'Logic Proofs' })).toHaveAttribute('aria-selected', 'true');
     await expect(page.locator('#panel-proof')).toContainText('Plain meaning');
     await expect(page.getByLabel('Proof reading guide')).toContainText('Verification');
     await expect(page.locator('#panel-proof')).toContainText('DCEC structure');

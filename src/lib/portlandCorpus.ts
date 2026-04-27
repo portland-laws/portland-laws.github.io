@@ -297,6 +297,60 @@ export async function buildGraphRagEvidence(
   };
 }
 
+export async function buildSectionGraphRagEvidence(
+  ipfs_cid: string,
+  query: string,
+  queryEmbedding?: Float32Array | number[],
+  limit = 6,
+): Promise<GraphRagEvidence> {
+  const [{ sectionByCid }, related, retrieved] = await Promise.all([
+    loadPortlandCorpus(),
+    getRelatedGraph(ipfs_cid, 1),
+    query.trim() ? searchCorpus(query, { limit }, 'hybrid', queryEmbedding) : Promise.resolve([]),
+  ]);
+  const primarySection = sectionByCid.get(ipfs_cid);
+  if (!primarySection) {
+    return { sections: [], entities: related.entities, relationships: related.relationships };
+  }
+
+  const sectionResults = new Map<string, SearchResult>();
+  sectionResults.set(primarySection.ipfs_cid, sectionToContextResult(primarySection, query, 100));
+
+  for (const entity of related.entities) {
+    const relatedSection = sectionByCid.get(entity.id);
+    if (relatedSection && relatedSection.ipfs_cid !== primarySection.ipfs_cid) {
+      sectionResults.set(relatedSection.ipfs_cid, sectionToContextResult(relatedSection, query, 25));
+    }
+  }
+
+  for (const result of retrieved) {
+    if (sectionResults.size >= limit) break;
+    sectionResults.set(result.ipfs_cid, result);
+  }
+
+  return {
+    sections: [...sectionResults.values()].slice(0, limit),
+    entities: related.entities,
+    relationships: related.relationships,
+  };
+}
+
+function sectionToContextResult(section: CorpusSection, query: string, score: number): SearchResult {
+  return {
+    ipfs_cid: section.ipfs_cid,
+    section,
+    score,
+    scoreParts: {
+      keyword: score,
+      vector: 0,
+      title: 0,
+      citation: 0,
+    },
+    snippet: buildSnippet(section.text, query) || section.text.slice(0, 900),
+    citation: section.bluebook_citation || section.official_cite || section.identifier,
+  };
+}
+
 async function keywordSearch(query: string): Promise<Map<string, number>> {
   const tokens = tokenize(query);
   const scores = new Map<string, number>();

@@ -106,12 +106,12 @@ export default function PortlandLegalResearchApp() {
   const [isGraphLoading, setIsGraphLoading] = useState(false);
   const [activeTab, setActiveTab] = useState<WorkspaceTab>('section');
   const [isSearching, setIsSearching] = useState(false);
-  const [retrievalMode, setRetrievalMode] = useState<'Hybrid' | 'Keyword'>('Keyword');
   const [error, setError] = useState<string | null>(null);
   const [chatQuestion, setChatQuestion] = useState('What does the code say about notice requirements?');
   const [chatAnswer, setChatAnswer] = useState('');
   const [chatEvidence, setChatEvidence] = useState<GraphRagEvidence | null>(null);
-  const [chatWarning, setChatWarning] = useState<string | null>(null);
+  const [chatError, setChatError] = useState<string | null>(null);
+  const [chatUsedLocalModel, setChatUsedLocalModel] = useState(false);
   const [isAnswering, setIsAnswering] = useState(false);
 
   useEffect(() => {
@@ -228,10 +228,8 @@ export default function PortlandLegalResearchApp() {
       try {
         queryEmbedding = await clientEmbeddingWorkerService.generateEmbedding(nextQuery);
         mode = 'hybrid';
-        setRetrievalMode('Hybrid');
       } catch (err) {
         console.warn('Vector embedding unavailable, using keyword search', err);
-        setRetrievalMode('Keyword');
       }
 
       const nextResults = await searchCorpus(
@@ -281,22 +279,30 @@ export default function PortlandLegalResearchApp() {
 
   async function onAskQuestion(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    await answerChatQuestion(null);
+  }
+
+  async function onAskSelectedQuestion(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    await answerChatQuestion(selected?.ipfs_cid || null);
+  }
+
+  async function answerChatQuestion(contextCid: string | null) {
     if (!chatQuestion.trim()) return;
 
     setActiveTab('chat');
     setIsAnswering(true);
-    setChatWarning(null);
+    setChatError(null);
     try {
-      const response = await answerWithGraphRag(chatQuestion);
+      const response = await answerWithGraphRag(chatQuestion, { selectedCid: contextCid });
       setChatAnswer(response.answer);
       setChatEvidence(response.evidence);
-      setChatWarning(
-        response.warning || (response.usedLocalModel ? null : 'Answered from retrieved evidence without local model generation.'),
-      );
+      setChatUsedLocalModel(response.usedLocalModel);
     } catch (err) {
-      setChatWarning(err instanceof Error ? err.message : 'Unable to answer that question.');
+      setChatError(err instanceof Error ? err.message : 'Unable to answer that question.');
       setChatAnswer('');
       setChatEvidence(null);
+      setChatUsedLocalModel(false);
     } finally {
       setIsAnswering(false);
     }
@@ -334,7 +340,7 @@ export default function PortlandLegalResearchApp() {
         <a href="#code-search">Skip to search</a>
         <a href="#research-workbench">Skip to selected section and research tools</a>
       </nav>
-      <Header sections={sections} retrievalMode={retrievalMode} />
+      <Header />
 
       <MobileFrontPanel
         searchQuery={query}
@@ -374,7 +380,10 @@ export default function PortlandLegalResearchApp() {
           loadState={loadState}
           isSearching={isSearching}
           error={error}
+          chatQuestion={chatQuestion}
+          isAnswering={isAnswering}
           onQueryChange={setQuery}
+          onQuestionChange={setChatQuestion}
           onTitleChange={(value) => {
             setTitleFilter(value);
             setChapterFilter('');
@@ -396,6 +405,7 @@ export default function PortlandLegalResearchApp() {
             void runSearch('', '', '', '');
           }}
           onSubmit={onSubmit}
+          onAskQuestion={onAskQuestion}
           onSelectResult={(cid) => {
             setSelectedCid(cid);
             setActiveTab('section');
@@ -431,17 +441,18 @@ export default function PortlandLegalResearchApp() {
           chatQuestion={chatQuestion}
           chatAnswer={chatAnswer}
           chatEvidence={chatEvidence}
-          chatWarning={chatWarning}
+          chatError={chatError}
+          chatUsedLocalModel={chatUsedLocalModel}
           isAnswering={isAnswering}
           onQuestionChange={setChatQuestion}
-          onAskQuestion={onAskQuestion}
+          onAskQuestion={onAskSelectedQuestion}
         />
       </div>
     </main>
   );
 }
 
-function Header({ sections, retrievalMode }: { sections: CorpusSection[]; retrievalMode: string }) {
+function Header() {
   return (
     <header className="border-b border-[#d3d8cf] bg-[#fbfcf8]">
       <div className="mx-auto flex max-w-[1520px] flex-col gap-3 px-3 py-3 sm:gap-4 sm:px-4 sm:py-5 lg:flex-row lg:items-end lg:justify-between">
@@ -459,11 +470,6 @@ function Header({ sections, retrievalMode }: { sections: CorpusSection[]; retrie
             Browse Titles, Chapters, and Sections like the official code directory, with client-side
             chat, graph search, knowledge graph context, and logic proofs layered in.
           </p>
-        </div>
-        <div className="grid grid-cols-3 gap-2 text-sm sm:gap-3">
-          <Metric label="Sections" value={sections.length ? sections.length.toLocaleString() : '...'} />
-          <Metric label="Vector dims" value="384" />
-          <Metric label="Retrieval" value={retrievalMode} />
         </div>
       </div>
     </header>
@@ -581,6 +587,22 @@ function MobileFrontPanel({
                 </div>
               </div>
             </form>
+          )}
+          {mode === 'chat' && (
+            <nav className="mt-3 grid grid-cols-2 gap-2" aria-label="Mobile page shortcuts">
+              <a
+                href="#code-directory"
+                className="flex min-h-11 items-center justify-center rounded-md border border-[#8fa08a] bg-[#f7faf4] px-3 text-sm font-semibold text-[#24594f]"
+              >
+                Browse titles
+              </a>
+              <a
+                href="#code-search"
+                className="flex min-h-11 items-center justify-center rounded-md border border-[#8fa08a] bg-[#f7faf4] px-3 text-sm font-semibold text-[#24594f]"
+              >
+                View results
+              </a>
+            </nav>
           )}
         </div>
       </div>
@@ -731,12 +753,16 @@ function SearchPanel({
   loadState,
   isSearching,
   error,
+  chatQuestion,
+  isAnswering,
   onQueryChange,
+  onQuestionChange,
   onTitleChange,
   onChapterChange,
   onNormChange,
   onClearFilters,
   onSubmit,
+  onAskQuestion,
   onSelectResult,
   onExample,
 }: {
@@ -753,16 +779,21 @@ function SearchPanel({
   loadState: LoadState;
   isSearching: boolean;
   error: string | null;
+  chatQuestion: string;
+  isAnswering: boolean;
   onQueryChange: (query: string) => void;
+  onQuestionChange: (question: string) => void;
   onTitleChange: (title: string) => void;
   onChapterChange: (chapter: string) => void;
   onNormChange: (norm: NormType | '') => void;
   onClearFilters: () => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
+  onAskQuestion: (event: FormEvent<HTMLFormElement>) => void;
   onSelectResult: (cid: string) => void;
   onExample: (query: string) => void;
 }) {
   const [resultLimit, setResultLimit] = useState(INITIAL_RESULT_LIMIT);
+  const [desktopMode, setDesktopMode] = useState<'search' | 'chat'>('search');
   const selectedIndex = results.findIndex((result) => result.ipfs_cid === selectedCid);
   const visibleLimit = Math.max(resultLimit, selectedIndex >= 0 ? selectedIndex + 1 : INITIAL_RESULT_LIMIT);
   const visibleResults = results.slice(0, visibleLimit);
@@ -787,14 +818,52 @@ function SearchPanel({
     >
       <div className="border-b border-[#e1e6dc] px-4 py-3 sm:py-4">
         <h2 id="code-search-heading" className="text-lg font-semibold text-[#172026]">
-          Find Code Sections
+          Search and Chat
         </h2>
         <p className="mt-1 hidden text-sm leading-6 text-[#4f615b] sm:block">
-          Search by topic, citation, or phrase. Results include citation, effect, and logic status.
+          Search the code directly, or ask a plain-language question across the full Portland City Code.
         </p>
       </div>
 
-      <form onSubmit={onSubmit} className="grid gap-2 border-b border-[#e1e6dc] px-4 py-3 sm:gap-3 sm:py-4" aria-label="Search and filter code sections">
+      <div className="hidden border-b border-[#e1e6dc] bg-white px-4 py-3 sm:block" role="tablist" aria-label="Choose search or chat">
+        <div className="grid grid-cols-2 gap-2">
+          <button
+            type="button"
+            role="tab"
+            aria-selected={desktopMode === 'search'}
+            aria-controls="desktop-search-panel"
+            onClick={() => setDesktopMode('search')}
+            className={`min-h-11 rounded-md px-3 text-sm font-semibold ${
+              desktopMode === 'search'
+                ? 'bg-[#24594f] text-white'
+                : 'border border-[#8fa08a] bg-[#f7faf4] text-[#24594f] hover:bg-[#f3f6ef]'
+            }`}
+          >
+            Search code
+          </button>
+          <button
+            type="button"
+            role="tab"
+            aria-selected={desktopMode === 'chat'}
+            aria-controls="desktop-chat-panel"
+            onClick={() => setDesktopMode('chat')}
+            className={`min-h-11 rounded-md px-3 text-sm font-semibold ${
+              desktopMode === 'chat'
+                ? 'bg-[#24594f] text-white'
+                : 'border border-[#8fa08a] bg-[#f7faf4] text-[#24594f] hover:bg-[#f3f6ef]'
+            }`}
+          >
+            Chat with code
+          </button>
+        </div>
+      </div>
+
+      <form
+        id="desktop-search-panel"
+        onSubmit={onSubmit}
+        className={`grid gap-2 border-b border-[#e1e6dc] px-4 py-3 sm:gap-3 sm:py-4 ${desktopMode === 'search' ? 'sm:grid' : 'sm:hidden'}`}
+        aria-label="Search and filter code sections"
+      >
         <label className="hidden sm:block">
           <span className="mb-1 block text-sm font-semibold text-[#26343a]">Search Portland City Code</span>
           <input
@@ -882,6 +951,50 @@ function SearchPanel({
           </button>
         </div>
       </form>
+
+      <section
+        id="desktop-chat-panel"
+        className={`border-b border-[#e1e6dc] px-4 py-4 ${desktopMode === 'chat' ? 'hidden sm:block' : 'hidden'}`}
+        aria-label="Chat with Portland City Code"
+      >
+        <div className="mb-2">
+          <h3 className="text-base font-semibold text-[#172026]">Chat with all Portland City Code</h3>
+          <p className="mt-1 text-sm leading-6 text-[#4f615b]">
+            Ask the full local corpus. The answer opens in Code Chat with cited Portland City Code evidence.
+          </p>
+        </div>
+        <form onSubmit={onAskQuestion} className="grid gap-2" aria-label="Desktop corpus chat">
+          <label>
+            <span className="mb-1 block text-sm font-semibold text-[#26343a]">Ask all Portland City Code</span>
+            <textarea
+              value={chatQuestion}
+              onChange={(event) => onQuestionChange(event.target.value)}
+              rows={3}
+              className="min-h-[6rem] w-full resize-none rounded-md border border-[#8fa08a] bg-white px-3 py-2 text-base text-[#172026] shadow-sm"
+              placeholder="What does the code say about noise complaints?"
+            />
+          </label>
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              type="submit"
+              disabled={isAnswering}
+              className="min-h-11 rounded-md bg-[#24594f] px-4 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1d473f] disabled:cursor-not-allowed disabled:bg-[#8aa19b]"
+            >
+              {isAnswering ? 'Asking' : 'Ask'}
+            </button>
+            {CHAT_PROMPTS.slice(0, 2).map((prompt) => (
+              <button
+                key={prompt}
+                type="button"
+                onClick={() => onQuestionChange(prompt)}
+                className="min-h-11 rounded-md border border-[#8fa08a] bg-white px-3 py-2 text-left text-sm font-semibold text-[#24594f] hover:bg-[#f3f6ef]"
+              >
+                {prompt}
+              </button>
+            ))}
+          </div>
+        </form>
+      </section>
 
       <div className="px-4 py-3 sm:py-4">
         <div className="mb-3 grid gap-3">
@@ -975,7 +1088,8 @@ function WorkspacePanel({
   chatQuestion,
   chatAnswer,
   chatEvidence,
-  chatWarning,
+  chatError,
+  chatUsedLocalModel,
   isAnswering,
   onQuestionChange,
   onAskQuestion,
@@ -991,7 +1105,8 @@ function WorkspacePanel({
   chatQuestion: string;
   chatAnswer: string;
   chatEvidence: GraphRagEvidence | null;
-  chatWarning: string | null;
+  chatError: string | null;
+  chatUsedLocalModel: boolean;
   isAnswering: boolean;
   onQuestionChange: (question: string) => void;
   onAskQuestion: (event: FormEvent<HTMLFormElement>) => void;
@@ -1022,6 +1137,13 @@ function WorkspacePanel({
     setActiveTab(nextTab);
     window.requestAnimationFrame(() => {
       document.getElementById(`tab-${nextTab}`)?.focus();
+    });
+  }
+
+  function openTab(tab: WorkspaceTab) {
+    setActiveTab(tab);
+    window.requestAnimationFrame(() => {
+      document.getElementById(`panel-${tab}`)?.focus();
     });
   }
 
@@ -1073,7 +1195,12 @@ function WorkspacePanel({
         {!selected && <EmptyState title="Select a section" />}
         {selected && activeTab === 'section' && (
           <div id="panel-section" role="tabpanel" aria-labelledby="tab-section" tabIndex={0}>
-            <SectionReader section={selected} proof={proof} />
+            <SectionReader
+              section={selected}
+              onOpenChat={() => openTab('chat')}
+              onOpenGraph={() => openTab('graph')}
+              onOpenProof={() => openTab('proof')}
+            />
           </div>
         )}
         {selected && activeTab === 'chat' && (
@@ -1082,7 +1209,8 @@ function WorkspacePanel({
               question={chatQuestion}
               answer={chatAnswer}
               evidence={chatEvidence}
-              warning={chatWarning}
+              error={chatError}
+              usedLocalModel={chatUsedLocalModel}
               isAnswering={isAnswering}
               onQuestionChange={onQuestionChange}
               onSubmit={onAskQuestion}
@@ -1245,23 +1373,9 @@ function ResultCard({
           >
             {selected ? 'Selected' : 'Open section'}
           </span>
-          <span
-            className="rounded-md bg-[#eef2ea] px-2 py-1 text-xs font-semibold text-[#4d625b]"
-            aria-label={`Relevance score ${result.score.toFixed(2)}`}
-            title={`Relevance score ${result.score.toFixed(2)}`}
-          >
-            Score {result.score.toFixed(2)}
-          </span>
         </div>
       </div>
 
-      {proof && (
-        <div className="mt-3 grid grid-cols-3 gap-2" aria-label="Result legal signals">
-          <ResultSignal label="Effect" value={formatResultNormOperatorForBadge(proof.norm_operator)} />
-          <ResultSignal label="Norm" value={formatNormTypeForDisplay(proof.norm_type)} />
-          <ResultSignal label="Logic" value={formatResultProofStatusForBadge(proof.deontic_status)} />
-        </div>
-      )}
       <ResultSnippet snippet={result.snippet} />
     </button>
   );
@@ -1287,7 +1401,7 @@ function ResultSnippet({ snippet }: { snippet: string }) {
   return (
     <div className="mt-3 grid gap-1 text-sm leading-6 text-[#52615c]" aria-label="Structured result preview">
       <span className="w-fit rounded-md border border-[#d4ddd0] bg-[#f8faf5] px-2 py-0.5 text-xs font-semibold text-[#53655f]">
-        Clause {clauseLabel}
+        {clauseLabel}.
       </span>
       {structured ? (
         <>
@@ -1304,15 +1418,6 @@ function ResultSnippet({ snippet }: { snippet: string }) {
         <p className="line-clamp-3 [overflow-wrap:anywhere]">{previewText || cleaned}</p>
       )}
     </div>
-  );
-}
-
-function ResultSignal({ label, value }: { label: string; value: string }) {
-  return (
-    <span className="min-w-0 rounded-md border border-[#d4ddd0] bg-[#f8faf5] px-2 py-1">
-      <span className="block text-[0.62rem] font-semibold uppercase tracking-wide text-[#607068]">{label}</span>
-      <span className="block truncate text-xs font-semibold text-[#384b45]">{value}</span>
-    </span>
   );
 }
 
@@ -1409,7 +1514,8 @@ function GraphRagChat({
   question,
   answer,
   evidence,
-  warning,
+  error,
+  usedLocalModel,
   isAnswering,
   onQuestionChange,
   onSubmit,
@@ -1417,7 +1523,8 @@ function GraphRagChat({
   question: string;
   answer: string;
   evidence: GraphRagEvidence | null;
-  warning: string | null;
+  error: string | null;
+  usedLocalModel: boolean;
   isAnswering: boolean;
   onQuestionChange: (question: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
@@ -1454,15 +1561,15 @@ function GraphRagChat({
         </button>
       </form>
 
-      {warning && (
-        <div role="status" className="mt-4 rounded-md border border-[#d6c28e] bg-[#fff9e8] px-3 py-2 text-sm text-[#735b18]">
-          {warning}
+      {error && (
+        <div role="alert" className="mt-4 rounded-md border border-[#d89b82] bg-[#fff4ef] px-3 py-2 text-sm text-[#8a3b22]">
+          {error}
         </div>
       )}
       {answer && (
         <div className="mt-4 grid gap-2 sm:grid-cols-3" aria-label="Chat response summary">
           <ChatSummaryMetric label="Sources found" value={evidenceSections.length.toLocaleString()} />
-          <ChatSummaryMetric label="Answer basis" value={warning ? 'Retrieved code' : 'Local model'} />
+          <ChatSummaryMetric label="Answer basis" value={usedLocalModel ? 'Local model' : 'Retrieved code'} />
           <ChatSummaryMetric label="Top citation" value={topCitation} />
         </div>
       )}
@@ -1476,7 +1583,7 @@ function GraphRagChat({
           <CitedAnswer text={answer} />
         </div>
       )}
-      {!answer && !warning && (
+      {!answer && !error && (
         <div className="mt-4" aria-label="Chat empty state">
           <ChatPromptStarters onQuestionChange={onQuestionChange} />
         </div>
@@ -1609,15 +1716,6 @@ function GraphPanel({
         <GraphSummaryMetric label="Neighborhood" value="1 hop" detail="This section" />
       </div>
 
-      <section className="mb-5 rounded-md border border-[#dce3d6] bg-[#f8faf5] px-3 py-3 sm:px-4" aria-label="Graph at a glance">
-        <div className="text-xs font-semibold uppercase tracking-wide text-[#607068]">Graph at a glance</div>
-        <dl className="mt-3 grid gap-2 sm:grid-cols-3">
-          <GraphPlainFact label="Connected items" value={entityValue} detail={topEntityType} />
-          <GraphPlainFact label="Legal links" value={relationshipValue} detail={topRelationshipType} />
-          <GraphPlainFact label="Distance" value="Direct neighbors" detail="One step from this section" />
-        </dl>
-      </section>
-
       <div className="mb-5 grid gap-3 lg:grid-cols-2" aria-label="Graph type summaries">
         <GraphTypeSummary title="Entity types" items={entityTypeCounts} emptyLabel={isLoading ? 'Loading entity types' : 'No entity types'} />
         <GraphTypeSummary title="Relationship types" items={relationshipTypeCounts} emptyLabel={isLoading ? 'Loading relationship types' : 'No relationship types'} />
@@ -1709,18 +1807,6 @@ function GraphSummaryMetric({ label, value, detail }: { label: string; value: st
   );
 }
 
-function GraphPlainFact({ label, value, detail }: { label: string; value: string; detail: string }) {
-  return (
-    <div className="min-w-0 rounded-md border border-[#d4ddd0] bg-white px-3 py-2">
-      <dt className="text-[0.62rem] font-semibold uppercase tracking-wide text-[#607068]">{label}</dt>
-      <dd className="mt-1 text-sm leading-5 text-[#26343a] [overflow-wrap:anywhere]">
-        <span className="font-semibold text-[#172026]">{value}</span>
-        <span className="block text-[#4f615b]">{detail}</span>
-      </dd>
-    </div>
-  );
-}
-
 function summarizeGraphTypes(types: string[]) {
   const counts = new Map<string, number>();
   for (const type of types) {
@@ -1771,10 +1857,20 @@ function formatGraphValueLabel(value: string) {
     .replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
-function SectionReader({ section, proof }: { section: CorpusSection; proof: LogicProofSummary | null }) {
+function SectionReader({
+  section,
+  onOpenChat,
+  onOpenGraph,
+  onOpenProof,
+}: {
+  section: CorpusSection;
+  onOpenChat: () => void;
+  onOpenGraph: () => void;
+  onOpenProof: () => void;
+}) {
   const paragraphs = section.text.split(/\n{2,}/).map(cleanSectionParagraph).filter(Boolean);
   const blocks = paragraphs.flatMap(splitLegalClauses);
-  const clauseCount = blocks.filter((block) => block.label).length;
+  const subsectionCount = blocks.filter((block) => block.label).length;
   const codeNoteCount = blocks.filter((block) => !block.label).length;
   const plainSummary = summarizeSectionForAtAGlance(blocks, section);
   const chapterNumber = getChapterNumber(section);
@@ -1800,8 +1896,34 @@ function SectionReader({ section, proof }: { section: CorpusSection; proof: Logi
         </div>
       </div>
       <div className="max-w-prose px-4 py-4 sm:px-5 sm:py-5">
+        <section className="mb-4 rounded-md border border-[#dce3d6] bg-white px-3 py-3 sm:px-4" aria-label="Research actions">
+          <div className="text-xs font-semibold uppercase tracking-wide text-[#607068]">Research this section</div>
+          <div className="mt-2 grid gap-2 sm:grid-cols-3">
+            <button
+              type="button"
+              onClick={onOpenChat}
+              className="min-h-11 rounded-md bg-[#24594f] px-3 py-2 text-sm font-semibold text-white hover:bg-[#1d473f]"
+            >
+              Ask about it
+            </button>
+            <button
+              type="button"
+              onClick={onOpenGraph}
+              className="min-h-11 rounded-md border border-[#8fa08a] bg-[#f7faf4] px-3 py-2 text-sm font-semibold text-[#24594f] hover:bg-[#f3f6ef]"
+            >
+              Related code
+            </button>
+            <button
+              type="button"
+              onClick={onOpenProof}
+              className="min-h-11 rounded-md border border-[#8fa08a] bg-[#f7faf4] px-3 py-2 text-sm font-semibold text-[#24594f] hover:bg-[#f3f6ef]"
+            >
+              Proof details
+            </button>
+          </div>
+        </section>
         <div className="mb-4 grid grid-cols-3 gap-2" aria-label="Section overview">
-          <SectionOverviewMetric label="Clauses" value={clauseCount.toLocaleString()} />
+          <SectionOverviewMetric label="Subsections" value={subsectionCount.toLocaleString()} />
           <SectionOverviewMetric label="Code notes" value={codeNoteCount.toLocaleString()} />
           <SectionOverviewMetric label="Source" value="Official code" />
         </div>
@@ -1814,32 +1936,26 @@ function SectionReader({ section, proof }: { section: CorpusSection; proof: Logi
               <div className="text-xs font-semibold uppercase tracking-wide text-[#607068]">At a glance</div>
               <p className="mt-2 text-sm leading-6 text-[#26343a] [overflow-wrap:anywhere]">{plainSummary}</p>
             </div>
-            <dl className="grid grid-cols-2 gap-2 text-sm lg:grid-cols-1" aria-label="Citation and logic details">
+            <dl className="grid grid-cols-2 gap-2 text-sm lg:grid-cols-1" aria-label="Citation details">
               <AtAGlanceFact label="Citation" value={section.bluebook_citation || section.official_cite || section.identifier} />
               <AtAGlanceFact label="Chapter" value={chapterNumber ? `Chapter ${chapterNumber}` : 'Not listed'} />
-              <AtAGlanceFact
-                label="Effect"
-                value={proof ? formatResultNormOperatorForBadge(proof.norm_operator) : 'Not classified'}
-              />
-              <AtAGlanceFact
-                label="Logic"
-                value={proof ? formatResultProofStatusForBadge(proof.deontic_status) : 'Not checked'}
-              />
             </dl>
           </div>
         </section>
-        <div className="grid gap-3" aria-label="Section text clauses">
+        <div className="grid gap-3" aria-label="Section text">
           {blocks.map((block, index) => (
             block.label ? (
               <section
                 key={`${block.label}-${index}`}
-                aria-label={`Clause ${block.label}`}
+                aria-label={`Subsection ${block.label}`}
                 className="rounded-md border border-[#dce3d6] bg-[#fbfcf8] px-3 py-3 sm:px-4"
               >
-                <div className="mb-2 text-xs font-semibold uppercase tracking-wide text-[#607068]">
-                  Clause {block.label}
+                <div className="grid grid-cols-[2rem_minmax(0,1fr)] gap-2">
+                  <div className="pt-0.5 text-base font-semibold leading-7 text-[#24594f]" aria-hidden="true">
+                    {block.label}.
+                  </div>
+                  <LegalTextBlock text={block.text} />
                 </div>
-                <LegalTextBlock text={block.text} />
               </section>
             ) : (
               <aside
@@ -2003,15 +2119,6 @@ function ProofReadingGuide({
         <LogicFact label="Verification" value={verificationLabel} />
       </dl>
     </section>
-  );
-}
-
-function Metric({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="min-w-0 rounded-md border border-[#d7ddd2] bg-white px-2 py-1.5 text-left shadow-sm sm:min-w-[86px] sm:px-3 sm:py-2 sm:text-right">
-      <div className="text-sm font-semibold text-[#172026] sm:text-lg">{value}</div>
-      <div className="text-[0.62rem] uppercase tracking-wide text-[#607068] sm:text-xs">{label}</div>
-    </div>
   );
 }
 
