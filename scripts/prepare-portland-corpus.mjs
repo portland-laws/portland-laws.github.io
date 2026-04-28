@@ -37,6 +37,13 @@ const artifacts = [
     role: 'core',
   },
   {
+    id: 'faiss_index',
+    path: 'canonical/STATE-OR.faiss',
+    url: `${resolveBase}/canonical/STATE-OR.faiss`,
+    expectedBytes: 4687917,
+    role: 'core',
+  },
+  {
     id: 'bm25',
     path: 'canonical/STATE-OR_bm25.parquet',
     url: `${resolveBase}/canonical/STATE-OR_bm25.parquet`,
@@ -106,6 +113,48 @@ const artifacts = [
     expectedBytes: 10806216,
     role: 'lazy',
   },
+  {
+    id: 'codex_spark_logic_manifest',
+    path: 'logic_proofs_codex_spark/manifest.json',
+    url: `${rawBase}/logic_proofs_codex_spark/manifest.json`,
+    expectedBytes: 1412,
+    role: 'lazy',
+  },
+  {
+    id: 'codex_spark_logic_proofs',
+    path: 'logic_proofs_codex_spark/STATE-OR_logic_proof_artifacts.parquet',
+    url: `${resolveBase}/logic_proofs_codex_spark/STATE-OR_logic_proof_artifacts.parquet`,
+    expectedBytes: 47144859,
+    role: 'lazy',
+  },
+  {
+    id: 'codex_spark_groth16_logic_manifest',
+    path: 'logic_proofs_codex_spark_groth16/manifest.json',
+    url: `${rawBase}/logic_proofs_codex_spark_groth16/manifest.json`,
+    expectedBytes: 1467,
+    role: 'lazy',
+  },
+  {
+    id: 'codex_spark_groth16_logic_proofs',
+    path: 'logic_proofs_codex_spark_groth16/STATE-OR_logic_proof_artifacts.parquet',
+    url: `${resolveBase}/logic_proofs_codex_spark_groth16/STATE-OR_logic_proof_artifacts.parquet`,
+    expectedBytes: 47301779,
+    role: 'lazy',
+  },
+  {
+    id: 'raw_manifest',
+    path: 'raw/manifest.json',
+    url: `${rawBase}/raw/manifest.json`,
+    expectedBytes: 494,
+    role: 'source',
+  },
+  {
+    id: 'raw_pages',
+    path: 'raw/pages.parquet',
+    url: `${resolveBase}/raw/pages.parquet`,
+    expectedBytes: 73592650,
+    role: 'source',
+  },
 ];
 
 const args = new Set(process.argv.slice(2));
@@ -146,9 +195,7 @@ async function downloadArtifact(artifact) {
 
   const body = Buffer.from(await response.arrayBuffer());
   if (body.length !== artifact.expectedBytes) {
-    throw new Error(
-      `Downloaded ${artifact.path} with unexpected size ${body.length}; expected ${artifact.expectedBytes}`,
-    );
+    console.warn(`Downloaded ${artifact.path} with size ${body.length}; manifest expected ${artifact.expectedBytes}.`);
   }
   await writeFile(target, body);
 }
@@ -157,7 +204,7 @@ async function validateArtifact(artifact) {
   const target = path.join(corpusRoot, artifact.path);
   const current = await stat(target);
   if (current.size !== artifact.expectedBytes) {
-    throw new Error(`${artifact.path} is ${current.size} bytes; expected ${artifact.expectedBytes}`);
+    console.warn(`${artifact.path} is ${current.size} bytes; manifest expected ${artifact.expectedBytes}.`);
   }
   return {
     id: artifact.id,

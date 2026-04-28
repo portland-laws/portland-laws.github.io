@@ -6,6 +6,7 @@ export * from './errors';
 export * from './featureDetection';
 export * from './flogic';
 export * from './fol';
+export * from './mlConfidence';
 export * from './normalization';
 export * from './proofCache';
 export * from './reasoning';

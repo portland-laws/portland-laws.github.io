@@ -18,9 +18,19 @@ import {
   CecBiconditionalIntroductionRule,
   CecDeonticDRule,
   CecDoubleNegationEliminationRule,
+  CecAssociationRule,
   CecCommutativityConjunctionRule,
+  CecCommutativityDisjunctionRule,
   CecConstructiveDilemmaRule,
+  CecCommonBeliefIntroductionRule,
+  CecCommonKnowledgeDistributionRule,
+  CecCommonKnowledgeImpliesKnowledgeRule,
+  CecCommonKnowledgeIntroductionRule,
+  CecCommonKnowledgeMonotonicityRule,
+  CecCommonKnowledgeNegationRule,
+  CecCommonKnowledgeTransitivityRule,
   CecDestructiveDilemmaRule,
+  CecDistributionRule,
   CecEventuallyIntroductionRule,
   CecEventuallyDistributionRule,
   CecEventuallyFromAlwaysRule,
@@ -29,6 +39,9 @@ import {
   CecExistentialGeneralizationRule,
   CecExistentialInstantiationRule,
   CecExportationRule,
+  CecClaviusLawRule,
+  CecFixedPointInductionRule,
+  CecIdempotenceRule,
   CecHypotheticalSyllogismRule,
   CecIntentionCommitmentRule,
   CecIntentionMeansEndRule,
@@ -43,6 +56,8 @@ import {
   CecNecessityEliminationRule,
   CecNextDistributionRule,
   CecNextImplicationRule,
+  CecMaterialImplicationRule,
+  CecModalNecessitationIntroductionRule,
   CecObligationConjunctionRule,
   CecObligationConsistencyRule,
   CecObligationDistributionRule,
@@ -64,6 +79,8 @@ import {
   CecTemporalTRule,
   CecTemporalNegationRule,
   CecTautologyRule,
+  CecTemporallyInducedCommonKnowledgeRule,
+  CecTranspositionRule,
   CecTemporalUntilEliminationRule,
   CecUntilWeakeningRule,
   CecUniversalGeneralizationRule,
@@ -321,6 +338,52 @@ describe('CEC inference rules', () => {
     ))).toBe('(K alice (and (p) (q)))');
   });
 
+  it('applies common knowledge and common belief CEC rules', () => {
+    expect(formatCecExpression(CecCommonKnowledgeIntroductionRule.apply(
+      parseCecExpression('(K alice (p))'),
+      parseCecExpression('(K bob (p))'),
+    ))).toBe('(C all (p))');
+
+    expect(formatCecExpression(CecCommonBeliefIntroductionRule.apply(
+      parseCecExpression('(B alice (p))'),
+      parseCecExpression('(B bob (p))'),
+    ))).toBe('(CB all (p))');
+
+    expect(formatCecExpression(CecCommonKnowledgeDistributionRule.apply(
+      parseCecExpression('(C all (and (p) (q)))'),
+    ))).toBe('(and (C all (p)) (C all (q)))');
+
+    expect(formatCecExpression(CecCommonKnowledgeImpliesKnowledgeRule.apply(
+      parseCecExpression('(C all (p))'),
+    ))).toBe('(K all (p))');
+
+    expect(formatCecExpression(CecCommonKnowledgeMonotonicityRule.apply(
+      parseCecExpression('(C all (p))'),
+      parseCecExpression('(implies (p) (q))'),
+    ))).toBe('(C all (q))');
+
+    expect(formatCecExpression(CecCommonKnowledgeNegationRule.apply(
+      parseCecExpression('(C all (not (p)))'),
+    ))).toBe('(not (C all (p)))');
+
+    expect(formatCecExpression(CecCommonKnowledgeTransitivityRule.apply(
+      parseCecExpression('(C all (C all (p)))'),
+    ))).toBe('(C all (p))');
+
+    expect(formatCecExpression(CecFixedPointInductionRule.apply(
+      parseCecExpression('(p)'),
+      parseCecExpression('(implies (p) (K everyone (p)))'),
+    ))).toBe('(C everyone (p))');
+
+    expect(formatCecExpression(CecTemporallyInducedCommonKnowledgeRule.apply(
+      parseCecExpression('(always (K all (p)))'),
+    ))).toBe('(C all (p))');
+
+    expect(formatCecExpression(CecModalNecessitationIntroductionRule.apply(
+      parseCecExpression('(or (p) (not (p)))'),
+    ))).toBe('(always (or (p) (not (p))))');
+  });
+
   it('applies resolution CEC rules', () => {
     expect(formatCecExpression(CecResolutionRule.apply(
       parseCecExpression('(or (home alice) (work alice))'),
@@ -395,6 +458,42 @@ describe('CEC inference rules', () => {
     expect(formatCecExpression(CecCommutativityConjunctionRule.apply(
       parseCecExpression('(and (home alice) (busy bob))'),
     ))).toBe('(and (busy bob) (home alice))');
+
+    expect(formatCecExpression(CecCommutativityDisjunctionRule.apply(
+      parseCecExpression('(or (home alice) (busy bob))'),
+    ))).toBe('(or (busy bob) (home alice))');
+
+    expect(formatCecExpression(CecDistributionRule.apply(
+      parseCecExpression('(or (p) (and (q) (r)))'),
+    ))).toBe('(and (or (p) (q)) (or (p) (r)))');
+
+    expect(formatCecExpression(CecDistributionRule.apply(
+      parseCecExpression('(and (p) (or (q) (r)))'),
+    ))).toBe('(or (and (p) (q)) (and (p) (r)))');
+
+    expect(formatCecExpression(CecAssociationRule.apply(
+      parseCecExpression('(and (and (p) (q)) (r))'),
+    ))).toBe('(and (p) (and (q) (r)))');
+
+    expect(formatCecExpression(CecTranspositionRule.apply(
+      parseCecExpression('(implies (p) (q))'),
+    ))).toBe('(implies (not (q)) (not (p)))');
+
+    expect(formatCecExpression(CecMaterialImplicationRule.apply(
+      parseCecExpression('(implies (p) (q))'),
+    ))).toBe('(or (not (p)) (q))');
+
+    expect(formatCecExpression(CecMaterialImplicationRule.apply(
+      parseCecExpression('(or (not (p)) (q))'),
+    ))).toBe('(implies (p) (q))');
+
+    expect(formatCecExpression(CecClaviusLawRule.apply(
+      parseCecExpression('(implies (not (p)) (p))'),
+    ))).toBe('(p)');
+
+    expect(formatCecExpression(CecIdempotenceRule.apply(
+      parseCecExpression('(and (p) (p))'),
+    ))).toBe('(p)');
   });
 
   it('enumerates three-premise resolution applications', () => {
@@ -470,6 +569,21 @@ describe('CEC inference rules', () => {
       'CecConstructiveDilemma',
       'CecExportation',
       'CecTautology',
+      'CecDistribution',
+      'CecMaterialImplication',
+      'CecIdempotence',
+    ]));
+    expect(getCognitiveCecRules().map((rule) => rule.name)).toEqual(expect.arrayContaining([
+      'CecCommonKnowledgeDistribution',
+      'CecCommonKnowledgeImpliesKnowledge',
+      'CecCommonKnowledgeMonotonicity',
+      'CecCommonKnowledgeTransitivity',
+    ]));
+    expect(getGenerativeCecRules().map((rule) => rule.name)).toEqual(expect.arrayContaining([
+      'CecCommonKnowledgeIntroduction',
+      'CecCommonBeliefIntroduction',
+      'CecFixedPointInduction',
+      'CecModalNecessitationIntroduction',
     ]));
     expect(getSpecializedCecRules().map((rule) => rule.name)).not.toContain('CecAddition');
   });

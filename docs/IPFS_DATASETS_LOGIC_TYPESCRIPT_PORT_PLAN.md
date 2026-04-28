@@ -99,7 +99,7 @@ The TypeScript target should be a clean client-side domain library that preserve
 | `logic/fol/converter.py` | Port fully | Preserve cache, batch, validation, ML confidence, NLP mode, output formats, and monitoring-compatible metadata. |
 | `logic/deontic/utils/deontic_parser.py` | Port directly if regex/pattern-based | Norm extraction from legal text is valuable for Portland sections and can be tested against generated artifacts. |
 | `logic/deontic/converter.py` | Port fully | Deontic extraction, exception handling, obligations, permissions, prohibitions, confidence, batch, and cache behavior need parity. |
-| `logic/ml_confidence.py` | Port fully via browser-native ML | Implement with local model artifacts, Transformers.js/ONNX/WebGPU, or deterministic TS model equivalent. |
+| `logic/ml_confidence.py` | Port fully via browser-native ML | Initial deterministic TypeScript port now covers Python-compatible feature extraction, fallback scoring, training facade, and feature importance. Next step is local browser artifact loading for trained XGBoost/LightGBM-equivalent weights through TS/WASM/ONNX where needed. |
 | `logic/deontic/knowledge_base.py` | Port fully | Browser-native indexed norms and query APIs are required. |
 | `logic/flogic/flogic_types.py` | Port directly | Frame, class, query, ontology, and Ergo rendering are simple and valuable for display. |
 | `logic/flogic/semantic_normalizer.py` | Port fully | Dictionary mode ports directly; SymAI behavior needs browser-native semantic similarity replacement. |
@@ -513,6 +513,8 @@ Acceptance criteria:
   - [x] Initial CEC cognitive inference rule group with belief/knowledge distribution, knowledge-implies-belief, belief/knowledge monotonicity, intention commitment, intention means-end, perception-to-knowledge, belief negation, intention persistence, belief revision, and opt-in belief/knowledge conjunction generation.
   - [x] Initial CEC resolution inference rule group with binary resolution, unit resolution, factoring, subsumption, case analysis/disjunction elimination, proof-by-contradiction signaling, and three-premise rule enumeration.
   - [x] Initial CEC specialized inference rule group with biconditional introduction/elimination, constructive/destructive dilemma, exportation, absorption, tautology simplification, conjunction commutativity, and opt-in addition/disjunction introduction.
+  - [x] Expanded CEC extended prover-core rule parity with disjunction commutativity, distribution, association, transposition, material implication round-tripping, Clavius law, and conjunction/disjunction idempotence.
+  - [x] Expanded CEC common-knowledge/common-belief rule parity with common knowledge/belief introduction, common knowledge distribution, common-knowledge-to-knowledge, monotonicity, negation, transitivity, fixed-point induction, temporally induced common knowledge, and modal necessitation introduction.
 - [ ] Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.
   - [x] Initial CEC fluent/event state manager with fluent types, persistence rules, event transitions, frame-problem persistence, conflict resolution, timelines, statistics, and validation.
   - [x] Initial CEC event calculus with browser-native discrete event occurrences, initiation/termination/release rules, `Happens`, `Initiates`, `Terminates`, `Releases`, `ReleasedAt`, `HoldsAt`, `Clipped`, parsed predicate loading/evaluation, timelines, all-fluent queries, caching, and validation.
@@ -527,10 +529,12 @@ Acceptance criteria:
   - [x] Initial CEC native error-handling layer with CEC-specific parse/proof/conversion/validation/namespace/grammar/knowledge-base errors, Python-style context/suggestion formatting, safe-call wrappers, parse/proof handler wrappers, operation error formatting, and DCEC formula-shape validation.
   - [x] Initial CEC lemma-generation layer with reusable lemma objects, deterministic pattern hashing, LRU lemma cache, pattern lookup, proof-tree lemma discovery, cached lemma reuse during CEC proving, discovery/reuse statistics, and clear/reset behavior.
   - [x] Initial CEC proof-optimization layer with proof-node trees, depth/redundancy pruning, optimization metrics, duplicate/subsumption elimination, browser-native async batch search, combined optimizer coordination, and metrics export.
+  - [x] Initial CEC/ZKP integration layer with unified standard/ZKP/cached proof results, simulated educational CEC ZKP certificates, private axiom hiding, deterministic browser Web Crypto commitments, local standard fallback, cache-first hybrid proving, statistics, clear/reset helpers, and explicit non-cryptographic simulated-backend language.
   - [x] Initial bounded CEC forward prover with proof steps, unknown results, and derived-expression budget handling.
   - [x] Initial CEC prover support for Portland-style quantified DCEC facts through browser-native universal modus ponens, without Python delegation.
   - [x] Initial CEC proof cache with normalized theorem/axiom keys, prover-config sensitivity, invalidation, global helper, TTL/LRU stats, and cached prove facade.
   - [x] Initial CEC strategy selector with forward and cached-forward strategies, priority/cost selection, metadata, and convenience proving facade.
+  - [x] Expanded CEC proof strategy parity with backward chaining, bidirectional backward-first/forward-fallback search, hybrid adaptive strategy selection using Python axiom-count heuristics, Python-style strategy factory, strategy costs, and direct/cached default selection.
   - [x] Initial CEC proof explainer with rule descriptions, natural-language steps, inference chains, rendered text, and proof statistics.
   - [x] Initial CEC dependency graph and proof tree visualizer with JSON, DOT, HTML, ASCII, topological order, path lookup, and unused-axiom diagnostics.
   - [x] Initial CEC performance metrics and engine with timing collectors, strategy profiling, dashboard HTML export, JSON/Prometheus-style export, regression checks, and profiler history.

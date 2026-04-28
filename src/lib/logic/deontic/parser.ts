@@ -1,5 +1,6 @@
 import { normalizePredicateName } from '../normalization';
 import { getLogicRuntimeCapabilities } from '../runtimeCapabilities';
+import { predictMLConfidence } from '../mlConfidence';
 
 export type DeonticOperator = 'O' | 'P' | 'F';
 export type DeonticNormType = 'obligation' | 'permission' | 'prohibition';
@@ -76,9 +77,7 @@ export function convertLegalTextToDeontic(text: string): DeonticConversionResult
     confidence,
     warnings: [
       ...(elements.length > 0 ? [] : ['No normative indicators were detected']),
-      ...(getLogicRuntimeCapabilities().deontic.mlUnavailable
-        ? ['Browser-native ML confidence is not yet available; heuristic confidence was used.']
-        : []),
+      ...(getLogicRuntimeCapabilities().deontic.mlUnavailable ? ['Browser-native ML confidence is not yet available.'] : []),
     ],
     capabilities: {
       mlUnavailable: getLogicRuntimeCapabilities().deontic.mlUnavailable,
@@ -111,7 +110,7 @@ export function analyzeNormativeSentence(sentence: string): NormativeElement | n
       conditions,
       exceptions,
       temporalConstraints,
-      confidence: scoreConfidence(subjects, actions, conditions, temporalConstraints),
+      confidence: scoreConfidence(sentence, subjects, actions, conditions, exceptions, temporalConstraints),
     };
   }
   return null;
@@ -214,15 +213,32 @@ function toPascalPredicate(value: string): string {
 }
 
 function scoreConfidence(
+  sentence: string,
   subjects: string[],
   actions: string[],
   conditions: string[],
+  exceptions: string[],
   temporalConstraints: TemporalConstraint[],
 ): number {
-  let score = 0.55;
-  if (subjects.length > 0) score += 0.15;
-  if (actions.length > 0) score += 0.2;
-  if (conditions.length > 0) score += 0.05;
-  if (temporalConstraints.length > 0) score += 0.05;
-  return Math.min(0.95, score);
+  const predicates = {
+    nouns: subjects.map(toPascalPredicate),
+    verbs: actions.map(toPascalPredicate),
+    adjectives: [...conditions, ...exceptions, ...temporalConstraints.map((constraint) => constraint.value)].map(toPascalPredicate),
+  };
+  const quantifiers = subjects.length > 0 ? ['∀'] : [];
+  const operators = [
+    ...(conditions.length > 0 ? ['→'] : []),
+    ...(exceptions.length > 0 ? ['¬'] : []),
+    ...(actions.length > 1 ? Array(actions.length - 1).fill('∧') : []),
+  ];
+  return Math.min(0.95, 0.35 + predictMLConfidence(sentence, buildConfidenceFormula(subjects, actions, conditions), predicates, quantifiers, operators) * 0.6);
+}
+
+function buildConfidenceFormula(subjects: string[], actions: string[], conditions: string[]): string {
+  const subject = toPascalPredicate(subjects[0] || 'Agent');
+  const action = toPascalPredicate(actions[0] || 'Action');
+  if (conditions.length > 0) {
+    return `O(∀x (${subject}(x) ∧ ${toPascalPredicate(conditions[0])}(x) → ${action}(x)))`;
+  }
+  return `O(∀x (${subject}(x) → ${action}(x)))`;
 }

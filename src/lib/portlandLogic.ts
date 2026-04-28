@@ -11,7 +11,14 @@ import {
   type LogicValidationResult,
   type TdfolFormula,
 } from './logic';
-import { searchCorpus, type SearchFilters, type SearchMode, type SearchResult } from './portlandCorpus';
+import {
+  __resetPortlandCorpusCacheForTests,
+  fetchCorpusJson,
+  searchCorpus,
+  type SearchFilters,
+  type SearchMode,
+  type SearchResult,
+} from './portlandCorpus';
 
 export type NormOperator = 'O' | 'P' | 'F' | 'unknown';
 export type NormType = 'obligation' | 'permission' | 'prohibition' | 'unknown';
@@ -85,10 +92,7 @@ export interface LogicAwareSearchResult extends SearchResult {
   logicScore: number;
 }
 
-const DEFAULT_CORPUS_BASE_URL = '/corpus/portland-or/current';
 const LOGIC_SUMMARIES_PATH = 'generated/logic-proof-summaries.json';
-
-const CORPUS_BASE_URL = DEFAULT_CORPUS_BASE_URL;
 
 let logicProofPromise: Promise<LogicProofSummary[]> | null = null;
 let logicIndexesPromise: Promise<LogicProofIndexes> | null = null;
@@ -236,17 +240,9 @@ export function normalizeLogicProofSummary(value: unknown): LogicProofSummary {
   };
 }
 
-async function fetchJson<T>(relativePath: string): Promise<T> {
-  const response = await fetch(`${CORPUS_BASE_URL}/${relativePath}`);
-  if (!response.ok) {
-    throw new Error(`Failed to load logic asset ${relativePath}: ${response.status}`);
-  }
-  return response.json() as Promise<T>;
-}
-
 export async function loadLogicProofSummaries(): Promise<LogicProofSummary[]> {
   if (!logicProofPromise) {
-    logicProofPromise = fetchJson<unknown[]>(LOGIC_SUMMARIES_PATH).then((rows) => {
+    logicProofPromise = fetchCorpusJson<unknown[]>(LOGIC_SUMMARIES_PATH).then((rows) => {
       if (!Array.isArray(rows)) {
         throw new Error('Logic proof summaries asset must be an array');
       }
@@ -520,4 +516,5 @@ function collectTemporalOperators(formula: TdfolFormula, operators: Set<string>)
 export function __resetPortlandLogicCacheForTests(): void {
   logicProofPromise = null;
   logicIndexesPromise = null;
+  __resetPortlandCorpusCacheForTests();
 }

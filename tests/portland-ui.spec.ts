@@ -30,6 +30,38 @@ test.beforeEach(async ({ page }) => {
 test.describe('Portland legal corpus UI screenshots', () => {
   test('captures the desktop legal directory, search, and workbench layout', async ({ page }, testInfo) => {
     await expect(page.getByRole('heading', { name: 'City Code Research Directory' })).toBeVisible();
+    await expect(page.getByLabel('Loaded corpus version')).toContainText('3,052 sections');
+    await expect(page.getByLabel('Loaded corpus version')).toContainText('20 artifacts');
+    await expect(page.getByLabel('Loaded corpus version')).toContainText('Apr 27, 2026');
+    const corpusUsage = await page.evaluate(async () => {
+      const manifest = await fetch('/corpus/portland-or/current/artifacts.manifest.json', {
+        cache: 'no-store',
+      }).then((response) => response.json());
+      const resourceUrls = performance
+        .getEntriesByType('resource')
+        .map((entry) => entry.name)
+        .filter((name) => name.includes('/corpus/portland-or/current/'));
+      const sectionsUrl = resourceUrls.find((name) => name.includes('/generated/sections.json?')) || '';
+      const logicUrl = resourceUrls.find((name) => name.includes('/generated/logic-proof-summaries.json?')) || '';
+      return {
+        generatedAt: manifest.generatedAt,
+        hasFaiss: manifest.generatedFiles.includes('canonical/STATE-OR.faiss'),
+        hasRawPages: manifest.generatedFiles.includes('raw/pages.parquet'),
+        hasSparkProofs: manifest.generatedFiles.includes(
+          'logic_proofs_codex_spark/STATE-OR_logic_proof_artifacts.parquet',
+        ),
+        sectionsVersion: sectionsUrl ? new URL(sectionsUrl).searchParams.get('v') : null,
+        logicVersion: logicUrl ? new URL(logicUrl).searchParams.get('v') : null,
+      };
+    });
+    expect(corpusUsage).toMatchObject({
+      generatedAt: '2026-04-27T19:57:04.679Z',
+      hasFaiss: true,
+      hasRawPages: true,
+      hasSparkProofs: true,
+      sectionsVersion: '2026-04-27T19:57:04.679Z',
+      logicVersion: '2026-04-27T19:57:04.679Z',
+    });
     await expect(page.getByRole('navigation', { name: 'City Code' })).toBeVisible();
     await expect(page.getByRole('navigation', { name: 'City Code' }).locator('..')).toContainText('Choose a title');
     await expect(page.getByRole('region', { name: 'Search and Chat' })).toBeVisible();

@@ -10,7 +10,7 @@ describe('DeonticConverter', () => {
     const result = converter.convert('The applicant may appeal within 10 days.');
 
     expect(result).toMatchObject({
-      status: 'partial',
+      status: 'success',
       success: true,
     });
     expect(result.output).toMatchObject({
@@ -23,7 +23,7 @@ describe('DeonticConverter', () => {
       jurisdiction: 'us',
       document_type: 'statute',
       elements_count: 1,
-      browser_native_ml_confidence: false,
+      browser_native_ml_confidence: true,
     });
   });
 
@@ -31,7 +31,7 @@ describe('DeonticConverter', () => {
     const converter = new DeonticConverter();
 
     expect(converter.toDeontic('The tenant must pay rent monthly')).toContain('O(∀x');
-    expect(converter.convert('The tenant shall not block access.').status).toBe('partial');
+    expect(converter.convert('The tenant shall not block access.').status).toBe('success');
     expect(converter.convert('The tenant shall not block access.').status).toBe('cached');
     expect(converter.convertBatch(['The tenant must pay rent.', 'The landlord may enter.'])).toHaveLength(2);
     expect(converter.getStats()).toMatchObject({ conversions: 5, successful: 5, failed: 0 });

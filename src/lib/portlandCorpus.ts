@@ -85,14 +85,38 @@ interface GraphAdjacency {
   incoming: Record<string, CorpusRelationship[]>;
 }
 
-interface CorpusState {
+export interface CorpusArtifact {
+  id: string;
+  path: string;
+  bytes: number;
+  role: string;
+  sourceUrl?: string;
+}
+
+export interface PortlandCorpusManifest {
+  schemaVersion: number;
+  generatedAt: string;
+  datasetId: string;
+  datasetPath: string;
+  corpus: {
+    jurisdiction: string;
+    name: string;
+    source: string;
+  };
+  artifacts: CorpusArtifact[];
+  generatedFiles: string[];
+}
+
+export interface CorpusState {
   sections: CorpusSection[];
   sectionByCid: Map<string, CorpusSection>;
+  manifest: PortlandCorpusManifest;
 }
 
 const DEFAULT_CORPUS_BASE_URL = '/corpus/portland-or/current';
 const CORPUS_BASE_URL = DEFAULT_CORPUS_BASE_URL;
 
+let manifestPromise: Promise<PortlandCorpusManifest> | null = null;
 let corpusPromise: Promise<CorpusState> | null = null;
 let bm25Promise: Promise<Bm25Payload> | null = null;
 let embeddingPromise: Promise<{ index: EmbeddingIndex; vectors: Float32Array }> | null = null;
@@ -103,16 +127,37 @@ let graphPromise: Promise<{
   adjacency: GraphAdjacency;
 }> | null = null;
 
-async function fetchJson<T>(relativePath: string): Promise<T> {
-  const response = await fetch(`${CORPUS_BASE_URL}/${relativePath}`);
+export async function loadPortlandCorpusManifest(): Promise<PortlandCorpusManifest> {
+  if (!manifestPromise) {
+    manifestPromise = fetch(`${CORPUS_BASE_URL}/artifacts.manifest.json`, { cache: 'no-store' }).then(
+      async (response) => {
+        if (!response.ok) {
+          throw new Error(`Failed to load corpus manifest: ${response.status}`);
+        }
+        return response.json() as Promise<PortlandCorpusManifest>;
+      },
+    );
+  }
+  return manifestPromise;
+}
+
+export function getPortlandCorpusAssetUrl(relativePath: string, manifest: PortlandCorpusManifest): string {
+  const params = new URLSearchParams({ v: manifest.generatedAt });
+  return `${CORPUS_BASE_URL}/${relativePath}?${params.toString()}`;
+}
+
+export async function fetchCorpusJson<T>(relativePath: string): Promise<T> {
+  const manifest = await loadPortlandCorpusManifest();
+  const response = await fetch(getPortlandCorpusAssetUrl(relativePath, manifest));
   if (!response.ok) {
     throw new Error(`Failed to load corpus asset ${relativePath}: ${response.status}`);
   }
   return response.json() as Promise<T>;
 }
 
-async function fetchArrayBuffer(relativePath: string): Promise<ArrayBuffer> {
-  const response = await fetch(`${CORPUS_BASE_URL}/${relativePath}`);
+export async function fetchCorpusArrayBuffer(relativePath: string): Promise<ArrayBuffer> {
+  const manifest = await loadPortlandCorpusManifest();
+  const response = await fetch(getPortlandCorpusAssetUrl(relativePath, manifest));
   if (!response.ok) {
     throw new Error(`Failed to load corpus asset ${relativePath}: ${response.status}`);
   }
@@ -121,9 +166,13 @@ async function fetchArrayBuffer(relativePath: string): Promise<ArrayBuffer> {
 
 export async function loadPortlandCorpus(): Promise<CorpusState> {
   if (!corpusPromise) {
-    corpusPromise = fetchJson<CorpusSection[]>('generated/sections.json').then((sections) => ({
+    corpusPromise = Promise.all([
+      loadPortlandCorpusManifest(),
+      fetchCorpusJson<CorpusSection[]>('generated/sections.json'),
+    ]).then(([manifest, sections]) => ({
       sections,
       sectionByCid: new Map(sections.map((section) => [section.ipfs_cid, section])),
+      manifest,
     }));
   }
   return corpusPromise;
@@ -131,7 +180,7 @@ export async function loadPortlandCorpus(): Promise<CorpusState> {
 
 async function loadBm25(): Promise<Bm25Payload> {
   if (!bm25Promise) {
-    bm25Promise = fetchJson<Bm25Payload>('generated/bm25-documents.json');
+    bm25Promise = fetchCorpusJson<Bm25Payload>('generated/bm25-documents.json');
   }
   return bm25Promise;
 }
@@ -142,8 +191,8 @@ export async function loadPortlandEmbeddings(): Promise<{
 }> {
   if (!embeddingPromise) {
     embeddingPromise = Promise.all([
-      fetchJson<EmbeddingIndex>('generated/embedding-index.json'),
-      fetchArrayBuffer('generated/embeddings.f32'),
+      fetchCorpusJson<EmbeddingIndex>('generated/embedding-index.json'),
+      fetchCorpusArrayBuffer('generated/embeddings.f32'),
     ]).then(([index, buffer]) => {
       const vectors = new Float32Array(buffer);
       const expectedLength = index.count * index.dimension;
@@ -159,9 +208,9 @@ export async function loadPortlandEmbeddings(): Promise<{
 async function loadGraph() {
   if (!graphPromise) {
     graphPromise = Promise.all([
-      fetchJson<CorpusEntity[]>('generated/entities.json'),
-      fetchJson<CorpusRelationship[]>('generated/relationships.json'),
-      fetchJson<GraphAdjacency>('generated/graph-adjacency.json'),
+      fetchCorpusJson<CorpusEntity[]>('generated/entities.json'),
+      fetchCorpusJson<CorpusRelationship[]>('generated/relationships.json'),
+      fetchCorpusJson<GraphAdjacency>('generated/graph-adjacency.json'),
     ]).then(([entities, relationships, adjacency]) => ({
       entities,
       entityById: new Map(entities.map((entity) => [entity.id, entity])),
@@ -450,4 +499,12 @@ function vectorNorm(vector: Float32Array): number {
     sum += value * value;
   }
   return Math.sqrt(sum) || 1;
+}
+
+export function __resetPortlandCorpusCacheForTests(): void {
+  manifestPromise = null;
+  corpusPromise = null;
+  bm25Promise = null;
+  embeddingPromise = null;
+  graphPromise = null;
 }

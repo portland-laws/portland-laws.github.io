@@ -15,6 +15,7 @@ import {
   type FolTokenMatch,
 } from './parser';
 import { extractLogicalRelations, extractPredicates, extractVariables } from './predicateExtractor';
+import { predictMLConfidence } from '../mlConfidence';
 
 export type FolOutputFormat = 'json' | 'formula' | 'prolog' | 'tptp';
 
@@ -95,7 +96,15 @@ export class FOLConverter extends LogicConverter<string, FolFormula> {
     if (!parsed.validation.valid) {
       throw new Error(parsed.validation.issues.map((issue) => issue.message).join('; '));
     }
-    const confidence = this.calculateHeuristicConfidence(text, parsed);
+    const confidence = this.useMl
+      ? predictMLConfidence(
+          text,
+          parsed.formula,
+          extractedPredicates,
+          parsed.quantifiers.map((quantifier) => quantifier.symbol),
+          parsed.operators.map((operator) => operator.symbol),
+        )
+      : this.calculateHeuristicConfidence(text, parsed);
     return {
       formulaString: parsed.formula,
       predicates: extractPredicateNames(parsed.formula).map((name) => ({ name, arity: 1 })),
@@ -129,9 +138,7 @@ export class FOLConverter extends LogicConverter<string, FolFormula> {
       ...(this.useNlp && capabilities.nlpUnavailable
         ? ['Browser-native NLP extraction is not yet complete; regex extraction was used.']
         : []),
-      ...(this.useMl && capabilities.mlUnavailable
-        ? ['Browser-native ML confidence is not yet complete; heuristic confidence was used.']
-        : []),
+      ...(this.useMl && capabilities.mlUnavailable ? ['Browser-native ML confidence is not yet complete.'] : []),
     ];
   }
 

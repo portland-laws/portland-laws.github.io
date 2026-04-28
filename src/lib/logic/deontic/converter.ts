@@ -144,7 +144,7 @@ export class DeonticConverter extends LogicConverter<string, DeonticFormula> {
     return [
       ...(output.elements.length > 0 ? [] : ['No normative indicators were detected']),
       ...(this.useMl && getLogicRuntimeCapabilities().deontic.mlUnavailable
-        ? ['Browser-native ML confidence is not yet complete; heuristic confidence was used.']
+        ? ['Browser-native ML confidence is not yet complete.']
         : []),
     ];
   }

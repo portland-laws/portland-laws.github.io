@@ -94,7 +94,7 @@ export class UnifiedCecProof implements UnifiedCecProofResult {
   readonly cacheHitTime?: number;
   readonly timestamp: number;
 
-  constructor(options: Omit<UnifiedCecProofResult, 'toDict'> & { timestamp?: number }) {
+  constructor(options: Omit<UnifiedCecProofResult, 'toDict' | 'timestamp'> & { timestamp?: number }) {
     this.isProved = options.isProved;
     this.formula = options.formula;
     this.axioms = [...options.axioms];
@@ -167,6 +167,7 @@ export class UnifiedCecProof implements UnifiedCecProofResult {
       base_result: this.baseResult,
       proof_steps: this.proofSteps,
       inference_rules: this.inferenceRules,
+      error_message: this.errorMessage,
       is_private: this.isPrivate,
       zkp_backend: this.zkpBackend,
       from_cache: this.fromCache,

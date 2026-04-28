@@ -69,9 +69,22 @@ const proofRows = [
 ];
 
 function mockFetchJson(rows: unknown[]) {
-  const fetchMock = jest.fn(async () => ({
+  const manifest = {
+    schemaVersion: 1,
+    generatedAt: '2026-04-27T19:57:04.679Z',
+    datasetId: 'justicedao/american_municipal_law',
+    datasetPath: 'municipal_laws_portland_or_current_code',
+    corpus: {
+      jurisdiction: 'Portland, Oregon',
+      name: 'Portland City Code',
+      source: 'https://huggingface.co/datasets/justicedao/american_municipal_law',
+    },
+    artifacts: [],
+    generatedFiles: [],
+  };
+  const fetchMock = jest.fn(async (url: RequestInfo | URL) => ({
     ok: true,
-    json: async () => rows,
+    json: async () => (String(url).includes('artifacts.manifest.json') ? manifest : rows),
   }) as Response);
   global.fetch = fetchMock as unknown as typeof fetch;
   return fetchMock;
@@ -94,7 +107,12 @@ describe('portlandLogic', () => {
       norm_operator: 'P',
       norm_type: 'permission',
     });
-    expect(fetchMock).toHaveBeenCalledWith('/corpus/portland-or/current/generated/logic-proof-summaries.json');
+    expect(fetchMock).toHaveBeenCalledWith('/corpus/portland-or/current/artifacts.manifest.json', {
+      cache: 'no-store',
+    });
+    expect(fetchMock).toHaveBeenCalledWith(
+      '/corpus/portland-or/current/generated/logic-proof-summaries.json?v=2026-04-27T19%3A57%3A04.679Z',
+    );
   });
 
   it('indexes summaries by CID, identifier, norm operator, and norm type', () => {

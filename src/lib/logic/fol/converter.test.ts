@@ -8,8 +8,9 @@ describe('FOLConverter', () => {
     expect(result).toMatchObject({
       status: 'partial',
       success: true,
-      confidence: 1,
+      confidence: expect.any(Number),
     });
+    expect(result.confidence).toBeGreaterThan(0.5);
     expect(result.output).toMatchObject({
       formulaString: '∀x (Tenants(x) → Residents(x))',
       predicates: [
@@ -19,7 +20,6 @@ describe('FOLConverter', () => {
     });
     expect(result.warnings).toEqual([
       'Browser-native NLP extraction is not yet complete; regex extraction was used.',
-      'Browser-native ML confidence is not yet complete; heuristic confidence was used.',
     ]);
     expect(result.metadata).toMatchObject({
       ipfs_enabled: false,
@@ -27,6 +27,7 @@ describe('FOLConverter', () => {
       quantifiers_count: 1,
       extracted_predicates: expect.any(Object),
       extracted_relations: [{ type: 'universal', subject: 'tenants', predicate: 'residents' }],
+      browser_native_ml_confidence: true,
     });
   });
 

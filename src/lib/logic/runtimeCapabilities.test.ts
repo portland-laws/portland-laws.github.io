@@ -12,13 +12,13 @@ describe('logic runtime capabilities', () => {
         regexParser: true,
         nlpStatus: 'incomplete',
         nlpUnavailable: true,
-        mlStatus: 'incomplete',
-        mlUnavailable: true,
+        mlStatus: 'complete',
+        mlUnavailable: false,
       },
       deontic: {
         ruleExtractor: true,
-        mlStatus: 'incomplete',
-        mlUnavailable: true,
+        mlStatus: 'complete',
+        mlUnavailable: false,
       },
       proving: {
         lightweightReasoning: true,
@@ -31,12 +31,12 @@ describe('logic runtime capabilities', () => {
   it('surfaces temporary incomplete-port ML/NLP capabilities in converter outputs', () => {
     expect(parseFolText('All humans are mortal').capabilities).toEqual({
       nlpUnavailable: true,
-      mlUnavailable: true,
+      mlUnavailable: false,
       serverCallsAllowed: false,
     });
 
     expect(convertLegalTextToDeontic('The tenant must pay rent.').capabilities).toEqual({
-      mlUnavailable: true,
+      mlUnavailable: false,
       serverCallsAllowed: false,
     });
   });

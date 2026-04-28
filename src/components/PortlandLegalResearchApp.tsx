@@ -4,6 +4,7 @@ import {
   CorpusRelationship,
   CorpusSection,
   GraphRagEvidence,
+  PortlandCorpusManifest,
   SearchResult,
   getRelatedGraph,
   loadPortlandCorpus,
@@ -93,6 +94,7 @@ const TITLE_LABELS: Record<string, string> = {
 export default function PortlandLegalResearchApp() {
   const [loadState, setLoadState] = useState<LoadState>('loading');
   const [sections, setSections] = useState<CorpusSection[]>([]);
+  const [corpusManifest, setCorpusManifest] = useState<PortlandCorpusManifest | null>(null);
   const [query, setQuery] = useState('notice requirements');
   const [titleFilter, setTitleFilter] = useState('');
   const [chapterFilter, setChapterFilter] = useState('');
@@ -125,6 +127,7 @@ export default function PortlandLegalResearchApp() {
         ]);
         if (cancelled) return;
         setSections(corpus.sections);
+        setCorpusManifest(corpus.manifest);
         setProofByCid(logicIndexes.proofByCid);
         setLoadState('ready');
       } catch (err) {
@@ -340,7 +343,7 @@ export default function PortlandLegalResearchApp() {
         <a href="#code-search">Skip to search</a>
         <a href="#research-workbench">Skip to selected section and research tools</a>
       </nav>
-      <Header />
+      <Header manifest={corpusManifest} sectionCount={sections.length} />
 
       <MobileFrontPanel
         searchQuery={query}
@@ -452,7 +455,17 @@ export default function PortlandLegalResearchApp() {
   );
 }
 
-function Header() {
+function Header({
+  manifest,
+  sectionCount,
+}: {
+  manifest: PortlandCorpusManifest | null;
+  sectionCount: number;
+}) {
+  const dataSummary = manifest
+    ? `${sectionCount.toLocaleString()} sections · ${manifest.artifacts.length} artifacts · refreshed ${formatDate(manifest.generatedAt)}`
+    : 'Loading latest Portland code dataset';
+
   return (
     <header className="border-b border-[#d3d8cf] bg-[#fbfcf8]">
       <div className="mx-auto flex max-w-[1520px] flex-col gap-3 px-3 py-3 sm:gap-4 sm:px-4 sm:py-5 lg:flex-row lg:items-end lg:justify-between">
@@ -470,10 +483,26 @@ function Header() {
             Browse Titles, Chapters, and Sections like the official code directory, with client-side
             chat, graph search, knowledge graph context, and logic proofs layered in.
           </p>
+          <p aria-label="Loaded corpus version" className="mt-2 text-sm font-semibold text-[#24594f]">
+            {dataSummary}
+          </p>
         </div>
       </div>
     </header>
   );
+}
+
+function formatDate(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+  return date.toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    timeZone: 'UTC',
+  });
 }
 
 function MobileFrontPanel({

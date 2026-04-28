@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-04-26T22:10:02.337Z",
+  "generatedAt": "2026-04-27T19:57:04.679Z",
   "datasetId": "justicedao/american_municipal_law",
   "datasetPath": "municipal_laws_portland_or_current_code",
   "corpus": {
@@ -33,6 +33,13 @@
       "bytes": 5954924,
       "role": "core",
       "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/resolve/main/municipal_laws_portland_or_current_code/canonical/STATE-OR.parquet"
+    },
+    {
+      "id": "faiss_index",
+      "path": "canonical/STATE-OR.faiss",
+      "bytes": 4687917,
+      "role": "core",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/resolve/main/municipal_laws_portland_or_current_code/canonical/STATE-OR.faiss"
     },
     {
       "id": "bm25",
@@ -103,11 +110,54 @@
       "bytes": 10806216,
       "role": "lazy",
       "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/resolve/main/municipal_laws_portland_or_current_code/logic_proofs/STATE-OR_logic_proof_artifacts.parquet"
+    },
+    {
+      "id": "codex_spark_logic_manifest",
+      "path": "logic_proofs_codex_spark/manifest.json",
+      "bytes": 1412,
+      "role": "lazy",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/raw/main/municipal_laws_portland_or_current_code/logic_proofs_codex_spark/manifest.json"
+    },
+    {
+      "id": "codex_spark_logic_proofs",
+      "path": "logic_proofs_codex_spark/STATE-OR_logic_proof_artifacts.parquet",
+      "bytes": 47144859,
+      "role": "lazy",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/resolve/main/municipal_laws_portland_or_current_code/logic_proofs_codex_spark/STATE-OR_logic_proof_artifacts.parquet"
+    },
+    {
+      "id": "codex_spark_groth16_logic_manifest",
+      "path": "logic_proofs_codex_spark_groth16/manifest.json",
+      "bytes": 1467,
+      "role": "lazy",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/raw/main/municipal_laws_portland_or_current_code/logic_proofs_codex_spark_groth16/manifest.json"
+    },
+    {
+      "id": "codex_spark_groth16_logic_proofs",
+      "path": "logic_proofs_codex_spark_groth16/STATE-OR_logic_proof_artifacts.parquet",
+      "bytes": 47301779,
+      "role": "lazy",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/resolve/main/municipal_laws_portland_or_current_code/logic_proofs_codex_spark_groth16/STATE-OR_logic_proof_artifacts.parquet"
+    },
+    {
+      "id": "raw_manifest",
+      "path": "raw/manifest.json",
+      "bytes": 494,
+      "role": "source",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/raw/main/municipal_laws_portland_or_current_code/raw/manifest.json"
+    },
+    {
+      "id": "raw_pages",
+      "path": "raw/pages.parquet",
+      "bytes": 73592650,
+      "role": "source",
+      "sourceUrl": "https://huggingface.co/datasets/justicedao/american_municipal_law/resolve/main/municipal_laws_portland_or_current_code/raw/pages.parquet"
     }
   ],
   "generatedFiles": [
     "README.md",
     "canonical",
+    "canonical/STATE-OR.faiss",
     "canonical/STATE-OR.parquet",
     "canonical/STATE-OR_bm25.parquet",
     "canonical/STATE-OR_cid_index.parquet",
@@ -131,6 +181,15 @@
     "generated/sections.json",
     "logic_proofs",
     "logic_proofs/STATE-OR_logic_proof_artifacts.parquet",
-    "logic_proofs/manifest.json"
+    "logic_proofs/manifest.json",
+    "logic_proofs_codex_spark",
+    "logic_proofs_codex_spark/STATE-OR_logic_proof_artifacts.parquet",
+    "logic_proofs_codex_spark/manifest.json",
+    "logic_proofs_codex_spark_groth16",
+    "logic_proofs_codex_spark_groth16/STATE-OR_logic_proof_artifacts.parquet",
+    "logic_proofs_codex_spark_groth16/manifest.json",
+    "raw",
+    "raw/manifest.json",
+    "raw/pages.parquet"
   ]
 }
