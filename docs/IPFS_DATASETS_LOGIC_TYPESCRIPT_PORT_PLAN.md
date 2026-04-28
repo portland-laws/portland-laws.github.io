@@ -112,7 +112,7 @@ The TypeScript target should be a clean client-side domain library that preserve
 | `logic/CEC/nl` | Port fully via browser-native NLP | Policy compilers and language detectors need TS/NLP equivalents. |
 | `logic/external_provers` | Port bridge layer to browser-native WASM provers | Z3/cvc5/Tau Prolog/Lean/Coq bridges should target local WASM packages or local in-browser adapters only. |
 | `logic/integration/*bridge*` | Port fully | Bridge types and implementation should route to TS/WASM cores, not Python. |
-| `logic/security`, `observability`, `api_server`, `cli` | Port as browser/runtime equivalents | Security validation, rate limiting, audit logs, metrics, and CLI-like developer tools should become TS/browser/devtool modules. |
+| `logic/security`, `observability`, `api_server`, `cli` | Port as browser/runtime equivalents | Initial shared security TypeScript port now covers input validation, sliding-window rate limiting, LLM-style circuit breakers, global breaker registry, and structured in-memory audit events. Initial observability TypeScript port now covers structured logs, context propagation, Prometheus-style metrics text, and in-memory OTel-style traces. Dashboards and CLI-like developer tools remain follow-up TS/browser/devtool modules. |
 
 ## Proposed TypeScript Architecture
 
@@ -564,7 +564,8 @@ Acceptance criteria:
 ### Phase 15: Integration, Security, Observability, And Developer Tools
 
 - [ ] Port logic integration bridges to route to TS/WASM cores.
-- [ ] Port security input validation, circuit breaker, rate limiting, and audit-log semantics to browser/local-storage-safe equivalents.
+- [x] Port security input validation, circuit breaker, rate limiting, and audit-log semantics to browser-local equivalents.
+- [x] Port observability structured logging, Prometheus-style metrics, and OTel-style tracing to browser-local equivalents.
 - [ ] Port monitoring/metrics to in-browser telemetry objects and developer panels.
 - [ ] Replace Python API/CLI surfaces with TypeScript developer scripts or browser devtools.
 - [ ] Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.

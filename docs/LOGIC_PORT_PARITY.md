@@ -14,6 +14,8 @@ Current parity is focused on deterministic, browser-safe behavior, but the end g
 - Deontic graph and support-map primitives for browser-native rule/source/authority graphs, conflict detection, reasoning rows, and motion-style support maps.
 - Python-style common converter lifecycle for TypeScript converters: statuses, result shape, validation, bounded local cache, batch conversion, async wrapper, and chained converters.
 - Common proof cache, feature detection, and utility monitor concepts, mapped to browser-native TypeScript.
+- Shared security package for browser-local input validation, sliding-window rate limiting, LLM-style circuit breakers, and structured in-memory audit events.
+- Observability package for structured JSON logs, context propagation, Prometheus-style metrics export, and in-memory OpenTelemetry-style traces.
 - Initial TDFOL inference rules and bounded forward-chaining prover for deterministic browser proof search.
 - Initial TDFOL proof explanation, dependency graph, and proof tree visualization helpers.
 - Initial TDFOL security validation, performance metrics, profiler, dashboard, and performance engine helpers.
@@ -43,6 +45,8 @@ npm run validate:logic-port
 | Common converters | `LogicConverter`, `ConversionResult`, validation result, cache, batch, async wrapper, and `ChainedConverter` ported in browser-native TypeScript. | Full converter lifecycle parity, including monitoring/IPFS-compatible metadata where browser-safe. | Partially ported; no server calls. |
 | Common proof cache | Deterministic browser content IDs, local TTL/LRU cache, prover/config-specific lookup, invalidation, global cache, and stats. | Python CID/IPFS-backed proof cache semantics. | Local browser cache ported; IPFS backend parity remains Phase 15. |
 | Common feature detection | Browser capability detector plus Python optional dependency facade that does not import server-side modules. | `find_spec` optional dependency probing in Python. | Browser equivalent ported. |
+| Shared security | Text/formula/list validation, `RateLimiter`, `LLMCircuitBreaker`, global breaker registry, and structured audit event helpers are ported without filesystem/server dependencies. | `logic/security/input_validation.py`, `rate_limiting.py`, `llm_circuit_breaker.py`, and `audit_log.py`. | Browser-local parity ported; persistent audit sinks remain app-integration work. |
+| Observability | Structured logging schema/context helpers, event/error/performance/MCP tool log helpers, JSON-lines parsing/filtering, Prometheus-style metrics collector, and in-memory OTel-style spans/traces/Jaeger export. | `logic/observability/structured_logging.py`, `metrics_prometheus.py`, and `otel_integration.py`. | Browser-local parity ported; external collector/exporter integration remains follow-up work. |
 | FOL predicate extraction | Regex noun/verb/adjective extraction, relation extraction, variable allocation, and formula construction from extracted parts. | `fol/utils/predicate_extractor.py` and relation portions of `fol/utils/fol_parser.py`. | Ported for deterministic regex path; NLP path remains Phase 13. |
 | FOL formatting | FOL/deontic JSON, Prolog, TPTP, defeasible, text, and aggregate format helpers. | `fol/utils/logic_formatter.py`. | Ported for deterministic formatter path. |
 | Deontic analyzer | Corpus statement extraction, entity grouping, statistics, action similarity, and direct/conditional/jurisdictional/temporal conflict detection. | `deontic/analyzer.py`. | Ported for deterministic regex path. |

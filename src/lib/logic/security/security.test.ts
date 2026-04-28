@@ -1,0 +1,110 @@
+import { LogicValidationError } from '../errors';
+import { AuditLogger, logProofAttempt, setAuditLogger } from './auditLog';
+import { CircuitBreakerOpenError, getCircuitBreaker, LLMCircuitBreaker, resetAllCircuitBreakers } from './circuitBreaker';
+import { InputValidator, validateFormulaList, validateText } from './inputValidation';
+import { RateLimitExceeded, RateLimiter, rateLimit, setRateLimiter } from './rateLimiting';
+
+describe('logic security browser-native parity helpers', () => {
+  afterEach(() => {
+    setAuditLogger(undefined);
+    setRateLimiter(undefined);
+    resetAllCircuitBreakers();
+  });
+
+  it('validates text, formulas, and formula lists with Python-style errors', () => {
+    const validator = new InputValidator();
+
+    expect(validator.validateText('Legal text')).toBe('Legal text');
+    expect(validator.validateFormula('P(x)')).toBe('P(x)');
+    expect(validator.validateFormulaList(['P(x)', 'Q(y)'])).toEqual(['P(x)', 'Q(y)']);
+
+    expect(() => validateText('')).toThrow(LogicValidationError);
+    expect(() => validateText('abcd', { maxLength: 3 })).toThrow('exceeds maximum length');
+    expect(() => validateFormulaList('P(x)')).toThrow("'formulas' must be iterable");
+    expect(() => validateFormulaList(['P(x)', ''])).toThrow("'formulas[1]' must not be empty.");
+  });
+
+  it('rate limits by user with sliding-window reset and wrapper support', () => {
+    let now = 0;
+    const limiter = new RateLimiter(2, 10, () => now);
+
+    limiter.checkRateLimit('ada');
+    limiter.checkRateLimit('ada');
+    expect(limiter.getRemaining('ada')).toBe(0);
+    expect(() => limiter.checkRateLimit('ada')).toThrow(RateLimitExceeded);
+
+    now = 11;
+    expect(limiter.getRemaining('ada')).toBe(2);
+    expect(limiter.wrap((value: number) => value + 1, () => 'bob')(1)).toBe(2);
+
+    setRateLimiter(new RateLimiter(1, 60, () => 0));
+    const guarded = rateLimit(() => 'ok');
+    expect(guarded()).toBe('ok');
+    expect(() => guarded()).toThrow(RateLimitExceeded);
+  });
+
+  it('opens, half-opens, recovers, and reports circuit-breaker metrics', () => {
+    let now = 0;
+    const breaker = new LLMCircuitBreaker({
+      failureThreshold: 2,
+      successThreshold: 2,
+      timeoutSeconds: 5,
+      name: 'test',
+      now: () => now,
+    });
+
+    expect(() => breaker.call(() => { throw new Error('boom'); })).toThrow('boom');
+    expect(() => breaker.call(() => { throw new Error('boom'); })).toThrow('boom');
+    expect(breaker.state).toBe('open');
+    expect(() => breaker.call(() => 'blocked')).toThrow(CircuitBreakerOpenError);
+
+    now = 6;
+    expect(breaker.refreshState()).toBe('half_open');
+    expect(breaker.call(() => 'first')).toBe('first');
+    expect(breaker.state).toBe('half_open');
+    expect(breaker.call(() => 'second')).toBe('second');
+    expect(breaker.state).toBe('closed');
+    expect(breaker.getStats()).toMatchObject({
+      name: 'test',
+      metrics: {
+        total_calls: 4,
+        successes: 2,
+        failures: 2,
+        state_transitions: 3,
+      },
+    });
+  });
+
+  it('uses fallback and global circuit-breaker registry', () => {
+    const breaker = new LLMCircuitBreaker({
+      failureThreshold: 1,
+      fallback: () => 'fallback',
+      name: 'fallback',
+    });
+
+    expect(() => breaker.call(() => { throw new Error('fail'); })).toThrow('fail');
+    expect(breaker.call(() => 'blocked')).toBe('fallback');
+    expect(getCircuitBreaker('shared')).toBe(getCircuitBreaker('shared'));
+    expect(resetAllCircuitBreakers()).toBeGreaterThanOrEqual(1);
+  });
+
+  it('records in-memory audit events and JSON-lines export', () => {
+    const logger = new AuditLogger(() => '2026-01-01T00:00:00.000Z');
+    setAuditLogger(logger);
+
+    logger.logSecurityEvent('ada', 'validation_error', 'low', 'Bad formula', { field: 'formula' });
+    logger.logRateLimitExceeded('ada', 2, 60);
+    logger.logValidationError('ada', 'formula', 'empty');
+    logProofAttempt('ada', 'P('.repeat(80), 'browser-prover', false, 12, false, 'parse error');
+
+    expect(logger.events).toHaveLength(4);
+    expect(logger.events[3].details).toMatchObject({
+      prover: 'browser-prover',
+      duration_ms: 12,
+      cached: false,
+      error: 'parse error',
+    });
+    expect((logger.events[3].details?.formula as string).length).toBe(100);
+    expect(logger.toJsonLines().split('\n')).toHaveLength(4);
+  });
+});
