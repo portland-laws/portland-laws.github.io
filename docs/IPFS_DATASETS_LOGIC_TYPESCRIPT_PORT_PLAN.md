@@ -289,7 +289,7 @@ export interface LogicSearchFilters {
 
 - [x] Add this plan to `docs/`.
 - [x] Record the exact generated proof summary schema from `public/corpus/portland-or/current/generated/logic-proof-summaries.json`.
-- [ ] Add a small script or test fixture with 10 representative proof summaries: obligation, permission, prohibition, parse success, parse failure, simulated certificate, missing logic, long F-logic, citation match, KG-linked section.
+- [x] Add a small script or test fixture with 10 representative proof summaries: obligation, permission, prohibition, parse success, parse failure, simulated certificate, missing logic, long F-logic, citation match, KG-linked section.
 - [x] Decide whether logic code lives in `src/lib/logic/` or a package-style `src/logic/`.
 
 Acceptance criteria:
@@ -375,7 +375,7 @@ Acceptance criteria:
 - [x] Add browser FOL and deontic converter facades for short clauses.
 - [x] Add converter cache, batch, async, output-format helper, metadata, confidence, and warning behavior tests.
 - [x] Add confidence heuristics but do not port Python ML scoring.
-- [ ] Add explicit Python ML confidence and spaCy NLP parity fixtures.
+- [x] Add explicit Python ML confidence and spaCy NLP parity fixtures.
 - [x] Decide which parity path to use: browser-native replacement or WASM only for runtime; Python fixtures are development-only.
 
 Acceptance criteria:
@@ -387,7 +387,7 @@ Acceptance criteria:
 
 ### Phase 4B: Browser-Native Python ML And spaCy Parity Track
 
-- [ ] Capture Python `FOLConverter(use_ml=True, use_nlp=True)` outputs for representative legal clauses as development fixtures only.
+- [x] Capture Python `FOLConverter(use_ml=True, use_nlp=True)` outputs for representative legal clauses as development fixtures only.
 - [ ] Capture Python `DeonticConverter(use_ml=True)` confidence outputs for the same fixtures as development fixtures only.
 - [ ] Add parity fixtures with raw text, regex-only output, spaCy-enabled output, ML confidence, and expected tolerances.
 - [x] Evaluate browser substitutes for spaCy predicate extraction, including Transformers.js token classification or dependency-light NLP packages.
@@ -697,3 +697,226 @@ The first implementation PR should be intentionally small:
 6. Add a minimal proof metadata panel to the existing Portland section detail UI, if that UI is already ready.
 
 That PR gives the project immediate product value without committing to a full theorem prover port.
+
+<!-- logic-port-daemon-task-board:start -->
+## Daemon Task Board
+
+Last updated: 2026-04-28 13:23:49 UTC
+
+Selection policy: choose the first port-plan checkbox that is not marked complete, keep the daemon scoped to that task, and update this board after every daemon round.
+
+Current target: `Task checkbox-56: Capture Python 'DeonticConverter(use_ml=True)' confidence outputs for the same fixtures as development fixtures only.`
+
+Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
+
+### Checklist
+
+- [x] `Task checkbox-1: Add this plan to 'docs/'.` - complete
+- [x] `Task checkbox-2: Record the exact generated proof summary schema from 'public/corpus/portland-or/current/generated/logic-proof-summaries.json'.` - complete
+- [x] `Task checkbox-3: Add a small script or test fixture with 10 representative proof summaries: obligation, permission, prohibition, parse success, parse failure, simulated certificate, missing logic, long F-logic, citation match, KG-linked section.` - complete
+- [x] `Task checkbox-4: Decide whether logic code lives in 'src/lib/logic/' or a package-style 'src/logic/'.` - complete
+- [x] `Task checkbox-5: Add 'src/lib/portlandLogic.ts'.` - complete
+- [x] `Task checkbox-6: Add 'LogicProofSummary' and related enums/unions.` - complete
+- [x] `Task checkbox-7: Implement 'loadLogicProofSummaries()', 'getLogicProofForSection()', and summary count helpers.` - complete
+- [x] `Task checkbox-8: Cache the loaded proof summaries like the existing corpus service does.` - complete
+- [x] `Task checkbox-9: Add Jest tests for loading, indexing, and missing-section behavior.` - complete
+- [x] `Task checkbox-10: Port common logic enums and data shapes from 'logic/types'.` - complete
+- [x] `Task checkbox-11: Add 'LogicError', 'LogicParseError', 'LogicValidationError', and 'LogicVerificationError'.` - complete
+- [x] `Task checkbox-12: Port 'logic/config.py' dataclass-style prover/cache/security/monitoring config defaults, 'to_dict' output, object loading, and explicit env-record loading without browser runtime filesystem/YAML/process dependencies.` - complete
+- [x] `Task checkbox-13: Port 'logic/common/validators.py' formula string, axiom list, logic system, timeout, and format validators with Python-style validation errors.` - complete
+- [x] `Task checkbox-14: Port bounded TTL/LRU cache for parsed formulas.` - complete
+- [x] `Task checkbox-15: Port 'logic/batch_processing.py' batch result stats, bounded async processing, FOL conversion batches, local bridge proof batches, and chunked large-batch aggregation in browser-native TypeScript.` - complete
+- [x] `Task checkbox-16: Port 'logic/benchmarks.py' benchmark result stats, sync/async timing runners, comparison, summaries, local FOL benchmark suite, local proof-cache benchmark suite, and comprehensive benchmark runner.` - complete
+- [x] `Task checkbox-17: Port initial 'logic/api.py' public facade with stable browser-native conversion/proof wrappers, Python-compatible aliases, monitoring integration, local benchmark entrypoint, and explicit unsupported UCAN-signing result.` - complete
+- [x] `Task checkbox-18: Port 'logic/common/converters.py' lifecycle concepts: conversion statuses, standardized results, validation, local cache, batch conversion, async wrapper, and chained converters.` - complete
+- [x] `Task checkbox-19: Port browser-native 'logic/common/proof_cache.py' concepts: deterministic content IDs, prover-specific lookup, TTL, LRU eviction, invalidation, global cache, and stats.` - complete
+- [x] `Task checkbox-20: Port browser-native 'logic/common/feature_detection.py' and 'logic/common/utility_monitor.py' concepts without importing Python-only optional dependencies.` - complete
+- [x] `Task checkbox-21: Add schema guards for proof summary fields.` - complete
+- [x] `Task checkbox-22: Add normalization helpers for identifiers, predicate names, and citations.` - complete
+- [x] `Task checkbox-23: Port the TDFOL term/formula model from 'tdfol_core.py'.` - complete
+- [x] `Task checkbox-24: Port tokenization and recursive descent parsing from 'tdfol_parser.py'.` - complete
+- [x] `Task checkbox-25: Port initial 'tdfol_converter.py' browser converter for stable TDFOL, FOL projection, DCEC s-expression, TPTP, JSON, metadata, and batch conversion.` - complete
+- [x] `Task checkbox-26: Support ASCII and symbolic operator aliases where feasible.` - complete
+- [x] `Task checkbox-27: Format ASTs back to compact source and display-friendly JSON.` - complete
+- [x] `Task checkbox-28: Implement free variable analysis and basic substitution.` - complete
+- [x] `Task checkbox-29: Port initial 'TDFOL/inference_rules' browser-native rule interface and deterministic propositional, temporal, deontic, and first-order rules.` - complete
+- [x] `Task checkbox-30: Port 'expansion_rules.py' browser-native rule registry for AND, OR, IMPLIES, IFF, and NOT tableaux expansions.` - complete
+- [x] `Task checkbox-31: Port initial 'tdfol_prover.py' forward-chaining proof engine with step and derived-formula budgets.` - complete
+- [x] `Task checkbox-32: Port initial 'TDFOL/strategies/base.py', 'forward_chaining.py', 'backward_chaining.py', 'bidirectional.py', 'modal_tableaux.py', 'cec_delegate.py', and 'strategy_selector.py' browser strategy layer with priority/cost selection.` - complete
+- [x] `Task checkbox-33: Port initial 'tdfol_optimization.py' browser facade with indexed KB, cache-aware proving, strategy heuristics, and optimization stats.` - complete
+- [x] `Task checkbox-34: Port initial 'modal_tableaux.py' browser tableaux core for K/T/D/S4/S5, branch expansion, closure checks, modal worlds, and countermodel-compatible open branches.` - complete
+- [x] `Task checkbox-35: Port initial 'countermodels.py' and 'countermodel_visualizer.py' browser equivalents for Kripke structures, branch extraction, DOT/JSON/ASCII/HTML exports, and modal property checks.` - complete
+- [x] `Task checkbox-36: Port initial 'proof_explainer.py', 'formula_dependency_graph.py', and 'proof_tree_visualizer.py' browser equivalents for text, JSON, DOT, HTML, ASCII tree, and graph exports.` - complete
+- [x] `Task checkbox-37: Port initial 'security_validator.py' browser equivalents for formula validation, rate limiting, resource limits, sanitization, ZKP audit checks, and security reports.` - complete
+- [x] `Task checkbox-38: Port initial 'performance_metrics.py' browser metrics collector for timings, memory samples, counters, gauges, histograms, summaries, and exports.` - complete
+- [x] `Task checkbox-39: Port initial 'performance_profiler.py' browser profiler for repeated timing samples, optional browser memory snapshots, bottleneck classification, benchmark suites, and text/JSON/HTML reports.` - complete
+- [x] `Task checkbox-40: Port initial 'performance_dashboard.py' browser dashboard for proof metrics, time-series metrics, aggregation, strategy comparison, JSON export, and self-contained HTML.` - complete
+- [x] `Task checkbox-41: Port initial 'tdfol_performance_engine.py' browser engine for metrics aggregation, profiling operations, dashboard HTML strings, statistics export, strategy comparison, regression checks, and reset.` - complete
+- [x] `Task checkbox-42: Add fixtures from generated Portland formulas.` - complete
+- [x] `Task checkbox-43: Port regex-based quantifier and logical operator parsing from 'fol/utils/fol_parser.py'.` - complete
+- [x] `Task checkbox-44: Port 'fol/utils/predicate_extractor.py' regex predicate, relation, and variable extraction.` - complete
+- [x] `Task checkbox-45: Port 'fol/utils/logic_formatter.py' FOL/deontic JSON, Prolog, TPTP, defeasible, text, and aggregate formatting helpers.` - complete
+- [x] `Task checkbox-46: Port predicate-name normalization and simple FOL formatting.` - complete
+- [x] `Task checkbox-47: Port deontic operator extraction for must/shall/required/may/permitted/prohibited/shall not.` - complete
+- [x] `Task checkbox-48: Port 'deontic/knowledge_base.py' browser-native primitives: parties, actions, intervals, propositions, statements, rule inference, and compliance checks.` - complete
+- [x] `Task checkbox-49: Port 'deontic/analyzer.py' extraction, entity grouping, statistics, action similarity, and direct/conditional/jurisdictional/temporal conflict detection.` - complete
+- [x] `Task checkbox-50: Add browser FOL and deontic converter facades for short clauses.` - complete
+- [x] `Task checkbox-51: Add converter cache, batch, async, output-format helper, metadata, confidence, and warning behavior tests.` - complete
+- [x] `Task checkbox-52: Add confidence heuristics but do not port Python ML scoring.` - complete
+- [x] `Task checkbox-53: Add explicit Python ML confidence and spaCy NLP parity fixtures.` - complete
+- [x] `Task checkbox-54: Decide which parity path to use: browser-native replacement or WASM only for runtime; Python fixtures are development-only.` - complete
+- [x] `Task checkbox-55: Capture Python 'FOLConverter(use_ml=True, use_nlp=True)' outputs for representative legal clauses as development fixtures only.` - complete
+- [!] `Task checkbox-56: Capture Python 'DeonticConverter(use_ml=True)' confidence outputs for the same fixtures as development fixtures only.` - latest daemon round failed validation or preflight
+- [ ] `Task checkbox-57: Add parity fixtures with raw text, regex-only output, spaCy-enabled output, ML confidence, and expected tolerances.` - needed
+- [x] `Task checkbox-58: Evaluate browser substitutes for spaCy predicate extraction, including Transformers.js token classification or dependency-light NLP packages.` - complete
+- [x] `Task checkbox-59: Decide that ML confidence must run in-browser or from precomputed static artifacts; no runtime Python service is allowed.` - complete
+- [x] `Task checkbox-60: Add a compatibility mode that surfaces 'nlpUnavailable' or 'mlUnavailable' rather than silently pretending full parity.` - complete
+- [x] `Task checkbox-61: Define acceptance thresholds: exact matches for operator classification, approximate matches for confidence scores, and documented divergences for predicate spans.` - complete
+- [x] `Task checkbox-62: Port 'FLogicFrame', 'FLogicClass', 'FLogicQuery', and 'FLogicOntology' concepts.` - complete
+- [x] `Task checkbox-63: Parse the subset of 'frame_logic_ergo' currently generated for Portland sections.` - complete
+- [x] `Task checkbox-64: Render frames as structured tables: object, class, attributes, rules.` - complete
+- [x] `Task checkbox-65: Normalize generated object IDs back to Portland citations when possible.` - complete
+- [x] `Task checkbox-66: Port text normalization and deterministic hashing concepts from 'zkp/canonicalization.py'.` - complete
+- [x] `Task checkbox-67: Port 'Statement', 'Witness', and 'ProofStatement' shapes, dictionary serialization, circuit reference parsing/formatting, and field-element mapping from 'zkp/statement.py'.` - complete
+- [x] `Task checkbox-68: Port initial 'zkp/circuits.py' circuit metadata, Boolean circuit construction, simplified R1CS export, knowledge-of-axioms constraint checks, and TDFOL v1 Horn derivation constraint checks.` - complete
+- [x] `Task checkbox-69: Port simulated ZKP backend proof shape, demo proof layout, backend registry metadata, availability checks, and fail-closed verification semantics from 'zkp/backends'.` - complete
+- [x] `Task checkbox-70: Port initial 'zkp_prover.py' and 'zkp_verifier.py' browser-native facades with backend routing, proof caching, public-input validation, expected-theorem checks, and statistics.` - complete
+- [x] `Task checkbox-71: Port 'legal_theorem_semantics.py' and 'witness_manager.py' browser-native TDFOL v1 Horn semantics, witness generation/validation, proof statement creation, consistency checks, and witness cache helpers.` - complete
+- [x] `Task checkbox-72: Port 'evm_public_inputs.py' browser-native BN254 field packing helpers for EVM public inputs without chain calls.` - complete
+- [x] `Task checkbox-73: Port 'vk_registry.py' and initial 'eth_vk_registry_payloads.py' browser-native VK hashing, registry, bytes32 normalization, and registerVK payload validation without RPC calls.` - complete
+- [x] `Task checkbox-74: Port 'eth_contract_artifacts.py' as browser-native contract artifact object/JSON parsing for ABI and bytecode without filesystem path loading.` - complete
+- [x] `Task checkbox-75: Add 'verifySimulatedCertificate()' that checks metadata consistency only.` - complete
+- [x] `Task checkbox-76: Rename UI language so 'zkp_verified: true' with 'zkp_backend: simulated' is shown as "simulated certificate present", not "cryptographically verified".` - complete
+- [x] `Task checkbox-77: Add a small in-memory 'LogicKnowledgeBase' keyed by section CID.` - complete
+- [x] `Task checkbox-78: Add bounded forward chaining for facts and simple implications.` - complete
+- [x] `Task checkbox-79: Add contradiction hints for obvious norm conflicts: same actor/action/condition with 'O' and 'F'.` - complete
+- [x] `Task checkbox-80: Add temporal summary helpers for always/eventually/next/until.` - complete
+- [x] `Task checkbox-81: Add proof trace output for any inferred result.` - complete
+- [x] `Task checkbox-82: Add logic filters to the search service layer. UI wiring is deferred to the Portland research screen.` - complete
+- [x] `Task checkbox-83: Add norm-aware score parts to logic-aware search results.` - complete
+- [x] `Task checkbox-84: Add proof facts to GraphRAG evidence packs.` - complete
+- [x] `Task checkbox-85: Add prompts or answer formatting that distinguish code text, KG facts, generated formalization, and local reasoning.` - complete
+- [x] `Task checkbox-86: Add unsupported-question handling for queries not grounded in retrieved code.` - complete
+- [x] `Task checkbox-87: Create a parity test fixture generated from selected Python outputs.` - complete
+- [x] `Task checkbox-88: Compare TypeScript parser/formatter/converter outputs against Python outputs for fixed examples.` - complete
+- [x] `Task checkbox-89: Add a validation command that can be run after corpus regeneration.` - complete
+- [x] `Task checkbox-90: Track intentional divergences in a markdown table.` - complete
+- [x] `Task checkbox-91: Evaluate whether any external prover should run in-browser via WASM.` - complete
+- [x] `Task checkbox-92: Evaluate 'z3-solver'/Z3 WASM, cvc5 WASM availability, Tau Prolog, or custom Datalog for limited use cases.` - complete
+- [x] `Task checkbox-93: Evaluate 'snarkjs' only if real browser-side proof verification becomes a product requirement.` - complete
+- [x] `Task checkbox-94: Reject hosted runtime dependencies; use browser-native WASM only when a prover is truly required.` - complete
+- [ ] `Task checkbox-95: Port every TDFOL inference rule from 'logic/TDFOL/tdfol_inference_rules.py'.` - needed
+- [x] `Task checkbox-96: Initial first-order rule slice: universal modus ponens, existential instantiation, existential generalization, and universal generalization.` - complete
+- [x] `Task checkbox-97: Port propositional tableaux expansion rules from 'logic/TDFOL/expansion_rules.py'.` - complete
+- [ ] `Task checkbox-98: Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.` - needed
+- [x] `Task checkbox-99: Initial forward-chaining strategy and selector parity.` - complete
+- [x] `Task checkbox-100: Initial backward-chaining strategy parity for direct goals, conjunctive goals, and implication-goal reduction.` - complete
+- [x] `Task checkbox-101: Initial bidirectional strategy parity with backward-first proof search and bounded forward fallback.` - complete
+- [x] `Task checkbox-102: Initial modal tableaux strategy parity with local TS tableaux, modal-logic auto-selection, and priority/cost selection.` - complete
+- [x] `Task checkbox-103: Initial local CEC delegate replacement that translates TDFOL to browser-native CEC expressions and returns explicit unknown results instead of calling Python or a server.` - complete
+- [x] `Task checkbox-104: Initial indexed-KB and cache-aware optimization facade.` - complete
+- [ ] `Task checkbox-105: Deeper CEC delegate parity for native CEC inference rule groups and proof traces.` - needed
+- [ ] `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.` - needed
+- [ ] `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.` - needed
+- [x] `Task checkbox-108: Initial modal tableaux proof search for propositional, temporal, deontic modal formulas and K/T/D/S4/S5 accessibility.` - complete
+- [x] `Task checkbox-109: Initial countermodel model, extractor, and self-contained visual exports.` - complete
+- [ ] `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.` - needed
+- [ ] `Task checkbox-111: Complete TDFOL security validator parity.` - needed
+- [ ] `Task checkbox-112: Add Python parity fixtures for each TDFOL rule category.` - needed
+- [ ] `Task checkbox-113: Add browser performance budgets for proof search.` - needed
+- [x] `Task checkbox-114: Initial in-memory performance engine and strategy profiler.` - complete
+- [x] `Task checkbox-115: Initial browser performance dashboard data model and renderer.` - complete
+- [x] `Task checkbox-116: Initial browser performance profiler with repeated timing samples, memory snapshots, bottleneck classification, benchmark suites, and report strings.` - complete
+- [ ] `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.` - needed
+- [ ] `Task checkbox-118: Port CEC syntax tree, grammar loader, grammar engine, problem parser, and DCEC parsers.` - needed
+- [x] `Task checkbox-119: Initial browser-native CEC/DCEC s-expression AST, parser, formatter, validator, and Portland DCEC unit coverage.` - complete
+- [x] `Task checkbox-120: Initial CEC/DCEC expression analyzer for predicates, atoms, section refs, quantifiers, deontic operators, temporal operators, and expression complexity.` - complete
+- [x] `Task checkbox-121: Initial CEC ShadowProver problem parser with browser-native TPTP 'fof'/'cnf' parsing, include tracking, custom 'LOGIC'/'ASSUMPTIONS'/'GOALS' format parsing, format auto-detection, and parser-specific errors.` - complete
+- [x] `Task checkbox-122: Initial CEC syntax tree utility with typed node kinds, parent-aware construction, traversal/search helpers, transform/map/filter, JSON round-trip, leaf/height/size metrics, and ASCII pretty printing.` - complete
+- [x] `Task checkbox-123: Initial CEC grammar loader and engine with embedded browser-native default grammar data, static grammar-data loading, operator word/semantic/example lookup, validation, lexical entries, grammar rules, bottom-up chart parsing, ambiguity resolution, and linearization fallback.` - complete
+- [x] `Task checkbox-124: Initial DCEC enhanced grammar parser with DCEC grammar categories, terminals, CFG rules, parse-tree helpers, Earley-style chart states, mutable lexicon/rules, built-in deontic/cognitive/temporal grammar fragments, parse extraction, and grammar validation.` - complete
+- [x] `Task checkbox-125: Initial DCEC English grammar facade with browser-native lexicon/rule setup, compositional local parsing for atomic/deontic/cognitive/temporal/connective fragments, dependency-free domain-vocabulary fallback parsing, Python-style semantic dictionary linearization, semantic-to-DCEC conversion, DCEC-to-semantic conversion, formula-to-English rendering, and factory construction.` - complete
+- [x] `Task checkbox-126: Initial DCEC cleaning/preprocessing utilities with whitespace/comment normalization, redundant-parentheses consolidation, balanced-paren checks, matching close-paren lookup, function-call tucking, symbolic-operator functorization, and a standard cleaning pipeline.` - complete
+- [x] `Task checkbox-127: Initial DCEC parsing utility layer with Python-compatible parse tokens, S-expression/F-expression rendering, depth/width metrics, synonym normalization, logical prefixing, arithmetic PEMDAS prefixing, and atomic sort tracking.` - complete
+- [x] `Task checkbox-128: Initial DCEC type, namespace, and container layer with deontic/cognitive/logical/temporal operator constants, sort subtyping, variable/function/predicate symbols, built-in sorts, duplicate/missing-sort errors, statement labels, axioms, theorems, clear/statistics behavior, and CEC AST-compatible formulas.` - complete
+- [x] `Task checkbox-129: Initial DCEC core formula layer with variable/function terms, atomic/deontic/cognitive/temporal/connective/quantified formulas, Python-compatible rendering, arity validation, free-variable tracking, substitution, statement formatting, structural string equality, and convenience constructors.` - complete
+- [x] `Task checkbox-130: Initial DCEC integration pipeline with browser-native string-to-parse-token conversion, recursive comma-S-expression parsing, token-to-formula conversion, prefix 'not' normalization, deontic/cognitive/temporal mapping, object/agent term inference, and formula validation.` - complete
+- [x] `Task checkbox-131: Initial DCEC prototype namespace with sort inheritance, overloaded function prototypes, atomic type definitions, text prototype parsing, base DCEC/logical/numeric vocabularies, type-conflict checks, quantifier map state, statistics, and printable snapshots.` - complete
+- [x] `Task checkbox-132: Initial DCEC temporal evaluator/state layer with finite-trace 'ALWAYS'/'EVENTUALLY'/'NEXT'/'UNTIL'/'SINCE'/'YESTERDAY' evaluation, unary/binary arity validation, DCEC atom proposition extraction, negated-atom handling, symbolic rendering, and convenience constructors.` - complete
+- [x] `Task checkbox-133: Initial DCEC natural-language converter with browser-native pattern matching for deontic/cognitive/temporal/logical phrases, DCEC namespace reuse, conversion result history/statistics, formula-to-English linearization, deterministic precedence, and local dependency-free grammar placeholders.` - complete
+- [x] `Task checkbox-134: Add CEC/DCEC parity fixtures and generated Portland DCEC parse coverage.` - complete
+- [ ] `Task checkbox-135: Port native inference rule groups: propositional, modal, temporal, deontic, cognitive, specialized, and resolution.` - needed
+- [x] `Task checkbox-136: Initial CEC native inference rule slice: modus ponens, conjunction elimination, double-negation elimination, temporal T, deontic D, and prohibition equivalence.` - complete
+- [x] `Task checkbox-137: Expanded deterministic CEC inference slice: hypothetical syllogism, conjunction introduction as an opt-in generative rule, eventuality introduction as an opt-in generative rule, prohibition-from-obligation, universal modus ponens, existential instantiation, existential generalization, and universal generalization.` - complete
+- [x] `Task checkbox-138: Expanded CEC temporal/deontic inference rule slice with always/eventually/next distribution and implication, temporal transitivity, always induction, temporal negation, until/since weakening, obligation/permission distribution, obligation implication, permission duality, obligation consistency, and opt-in obligation conjunction.` - complete
+- [x] `Task checkbox-139: Initial CEC modal inference rule group with necessity elimination, necessity distribution, possibility-necessity duality, opt-in possibility introduction, and opt-in necessity conjunction generation.` - complete
+- [x] `Task checkbox-140: Initial CEC cognitive inference rule group with belief/knowledge distribution, knowledge-implies-belief, belief/knowledge monotonicity, intention commitment, intention means-end, perception-to-knowledge, belief negation, intention persistence, belief revision, and opt-in belief/knowledge conjunction generation.` - complete
+- [x] `Task checkbox-141: Initial CEC resolution inference rule group with binary resolution, unit resolution, factoring, subsumption, case analysis/disjunction elimination, proof-by-contradiction signaling, and three-premise rule enumeration.` - complete
+- [x] `Task checkbox-142: Initial CEC specialized inference rule group with biconditional introduction/elimination, constructive/destructive dilemma, exportation, absorption, tautology simplification, conjunction commutativity, and opt-in addition/disjunction introduction.` - complete
+- [x] `Task checkbox-143: Expanded CEC extended prover-core rule parity with disjunction commutativity, distribution, association, transposition, material implication round-tripping, Clavius law, and conjunction/disjunction idempotence.` - complete
+- [x] `Task checkbox-144: Expanded CEC common-knowledge/common-belief rule parity with common knowledge/belief introduction, common knowledge distribution, common-knowledge-to-knowledge, monotonicity, negation, transitivity, fixed-point induction, temporally induced common knowledge, and modal necessitation introduction.` - complete
+- [ ] `Task checkbox-145: Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.` - needed
+- [x] `Task checkbox-146: Initial CEC fluent/event state manager with fluent types, persistence rules, event transitions, frame-problem persistence, conflict resolution, timelines, statistics, and validation.` - complete
+- [x] `Task checkbox-147: Initial CEC event calculus with browser-native discrete event occurrences, initiation/termination/release rules, 'Happens', 'Initiates', 'Terminates', 'Releases', 'ReleasedAt', 'HoldsAt', 'Clipped', parsed predicate loading/evaluation, timelines, all-fluent queries, caching, and validation.` - complete
+- [x] `Task checkbox-148: Initial CEC context manager with discourse state, entity tracking, focus management, pronoun/anaphora resolution, parsed CEC expression ingestion, discourse segmentation, coherence scoring, snapshots, and validation.` - complete
+- [x] `Task checkbox-149: Initial CEC ambiguity resolver with syntax-tree adapters, minimal-attachment/right-association/balance scoring, ranked parse explanations, custom preference rules, semantic pattern scoring, statistical bigram scoring, and CEC AST-to-tree conversion.` - complete
+- [x] `Task checkbox-150: Initial CEC ShadowProver facade with K/T/D/S4/S5 local modal tableaux, forward-prover fallback, problem-object proving, proof cache/statistics, direct-assumption proofs, unsupported-LP diagnostics, and browser-native cognitive rule subset.` - complete
+- [x] `Task checkbox-151: Initial CEC modal tableaux with K/T/D/S4/S5 world/branch model, contradiction closure, box/diamond expansion, deontic O/P/F mapping, proof steps, and open-branch countermodel support.` - complete
+- [x] `Task checkbox-152: Initial CEC countermodel extraction and visualization from open tableaux branches with Kripke JSON, DOT, ASCII, compact ASCII, HTML, valuation extraction, and modal property checks.` - complete
+- [ ] `Task checkbox-153: Port CEC proof cache, proof strategies, advanced inference, and error handling.` - needed
+- [x] `Task checkbox-154: Initial CEC native shared-type layer with Python 'types.py'-style formula/proof/conversion/namespace/config dictionaries, protocol guards for formulas/provers/converters/knowledge bases, generic result/cache/stat records, callable aliases, and unified proof statistics with incremental averages.` - complete
+- [x] `Task checkbox-155: Initial DCEC advanced inference layer with modal K/T/S4/necessitation, temporal induction/frame, deontic D/permission-obligation/distribution, knowledge-obligation interaction, temporal-obligation persistence, and grouped rule registries.` - complete
+- [x] `Task checkbox-156: Initial CEC native error-handling layer with CEC-specific parse/proof/conversion/validation/namespace/grammar/knowledge-base errors, Python-style context/suggestion formatting, safe-call wrappers, parse/proof handler wrappers, operation error formatting, and DCEC formula-shape validation.` - complete
+- [x] `Task checkbox-157: Initial CEC lemma-generation layer with reusable lemma objects, deterministic pattern hashing, LRU lemma cache, pattern lookup, proof-tree lemma discovery, cached lemma reuse during CEC proving, discovery/reuse statistics, and clear/reset behavior.` - complete
+- [x] `Task checkbox-158: Initial CEC proof-optimization layer with proof-node trees, depth/redundancy pruning, optimization metrics, duplicate/subsumption elimination, browser-native async batch search, combined optimizer coordination, and metrics export.` - complete
+- [x] `Task checkbox-159: Initial CEC/ZKP integration layer with unified standard/ZKP/cached proof results, simulated educational CEC ZKP certificates, private axiom hiding, deterministic browser Web Crypto commitments, local standard fallback, cache-first hybrid proving, statistics, clear/reset helpers, and explicit non-cryptographic simulated-backend language.` - complete
+- [x] `Task checkbox-160: Initial bounded CEC forward prover with proof steps, unknown results, and derived-expression budget handling.` - complete
+- [x] `Task checkbox-161: Initial CEC prover support for Portland-style quantified DCEC facts through browser-native universal modus ponens, without Python delegation.` - complete
+- [x] `Task checkbox-162: Initial CEC proof cache with normalized theorem/axiom keys, prover-config sensitivity, invalidation, global helper, TTL/LRU stats, and cached prove facade.` - complete
+- [x] `Task checkbox-163: Initial CEC strategy selector with forward and cached-forward strategies, priority/cost selection, metadata, and convenience proving facade.` - complete
+- [x] `Task checkbox-164: Expanded CEC proof strategy parity with backward chaining, bidirectional backward-first/forward-fallback search, hybrid adaptive strategy selection using Python axiom-count heuristics, Python-style strategy factory, strategy costs, and direct/cached default selection.` - complete
+- [x] `Task checkbox-165: Initial CEC proof explainer with rule descriptions, natural-language steps, inference chains, rendered text, and proof statistics.` - complete
+- [x] `Task checkbox-166: Initial CEC dependency graph and proof tree visualizer with JSON, DOT, HTML, ASCII, topological order, path lookup, and unused-axiom diagnostics.` - complete
+- [x] `Task checkbox-167: Initial CEC performance metrics and engine with timing collectors, strategy profiling, dashboard HTML export, JSON/Prometheus-style export, regression checks, and profiler history.` - complete
+- [x] `Task checkbox-168: Initial CEC performance dashboard with proof metrics, time-series metrics, expression classification, aggregate stats, strategy comparison, JSON export, and self-contained HTML.` - complete
+- [x] `Task checkbox-169: Initial CEC performance profiler with repeated-run profiling, bottleneck detection, browser memory snapshots, benchmark suites, baseline regression accounting, and text/JSON/HTML reports.` - complete
+- [x] `Task checkbox-170: Initial CEC security validator and error-hardening facade with rate limits, input sanitization, size/depth/operator guards, injection/DoS detection, parse validation, resource checks, proof-result audit, and security reports.` - complete
+- [ ] `Task checkbox-171: Port CEC NL policy compilers and language detection with browser-native NLP.` - needed
+- [ ] `Task checkbox-172: Add deeper CEC/DCEC parity fixtures against Python parser and prover outputs.` - needed
+- [ ] `Task checkbox-173: Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.` - needed
+- [ ] `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.` - needed
+- [ ] `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.` - needed
+- [ ] `Task checkbox-176: Add exact/tolerance parity tests against Python ML/spaCy development fixtures.` - needed
+- [ ] `Task checkbox-177: Remove 'nlpUnavailable' and 'mlUnavailable' capability flags once browser-native parity is implemented.` - needed
+- [ ] `Task checkbox-178: Port external prover router and bridge contracts to local browser adapters.` - needed
+- [ ] `Task checkbox-179: Evaluate and integrate local WASM provers for Z3/cvc5/Tau Prolog/Lean/Coq-style workflows where feasible.` - needed
+- [ ] `Task checkbox-180: Port Groth16 verification/proving path using browser-native cryptographic libraries where feasible.` - needed
+- [ ] `Task checkbox-181: Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.` - needed
+- [ ] `Task checkbox-182: Add strict UI/API language distinguishing simulated, heuristic, proof-checking, and cryptographic outputs.` - needed
+- [ ] `Task checkbox-183: Port logic integration bridges to route to TS/WASM cores.` - needed
+- [x] `Task checkbox-184: Initial browser-native bridge facade for local route inventory, FOL/deontic/TDFOL/CEC conversion routing, TDFOL/CEC proof routing, and explicit unsupported-route results with 'server_calls_allowed: false'.` - complete
+- [ ] `Task checkbox-185: Port deeper domain-specific integration bridges, interactive workflows, and parity fixtures.` - needed
+- [x] `Task checkbox-186: Port security input validation, circuit breaker, rate limiting, and audit-log semantics to browser-local equivalents.` - complete
+- [x] `Task checkbox-187: Port observability structured logging, Prometheus-style metrics, and OTel-style tracing to browser-local equivalents.` - complete
+- [ ] `Task checkbox-188: Port monitoring/metrics to in-browser telemetry objects and developer panels.` - needed
+- [x] `Task checkbox-189: Initial top-level 'logic/monitoring.py' parity for operation metrics, tracking helpers, health checks, error/warning counters, global monitor, reset, operation summaries, and optional Prometheus text export.` - complete
+- [ ] `Task checkbox-190: Add richer developer-panel integration for live UI inspection.` - needed
+- [ ] `Task checkbox-191: Replace Python API/CLI surfaces with TypeScript developer scripts or browser devtools.` - needed
+- [x] `Task checkbox-192: Initial browser-native public API facade for 'logic/api.py' import-surface parity.` - complete
+- [ ] `Task checkbox-193: Add CLI/devtools command adapter parity for 'logic/cli.py'.` - needed
+- [ ] `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.` - needed
+
+### Latest Round
+
+- Target: `Task checkbox-56: Capture Python 'DeonticConverter(use_ml=True)' confidence outputs for the same fixtures as development fixtures only.`
+- Result: `needs follow-up`
+- Summary: Added development parity fixtures for Python DeonticConverter(use_ml=True) confidence outputs and focused Jest coverage.
+- Errors: Patch failed validation and was rolled back.
+
+### Required Daemon Behavior
+
+- Work only on the current port-plan target unless the task is already complete in code and tests.
+- If a round fails, keep the task marked as needing follow-up and use the validation error as the next-cycle constraint.
+- Mark a task complete only after TypeScript validation and logic-port tests pass for the accepted change.
+- Keep browser runtime changes TypeScript/WASM-native with no server or Python service dependency.
+<!-- logic-port-daemon-task-board:end -->

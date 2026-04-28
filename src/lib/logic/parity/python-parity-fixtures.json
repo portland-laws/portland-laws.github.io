@@ -38,6 +38,377 @@
     "python_parseable": true,
     "python_contains": ["SubjectTo", "ComplyWith", "P", "□"],
     "notes": "Generated Portland formula shape."
+  },
+  {
+    "id": "ml_confidence_python_feature_vector",
+    "kind": "ml_confidence",
+    "sentence": "All tenants must pay rent, and some landlords may inspect.",
+    "fol_formula": "∀x (Tenant(x) → PayRent(x))",
+    "predicates": {
+      "nouns": ["Tenant"],
+      "verbs": ["PayRent", "Inspect"],
+      "adjectives": []
+    },
+    "quantifiers": ["∀"],
+    "operators": ["→", "∧"],
+    "python_feature_vector": [
+      58,
+      10,
+      1,
+      1,
+      27,
+      3,
+      1,
+      3,
+      1,
+      2,
+      0,
+      1,
+      2,
+      1,
+      0,
+      1,
+      0,
+      1,
+      0,
+      0.46551724137931033,
+      0.3,
+      3
+    ],
+    "python_heuristic_confidence": 0.8500000000000001,
+    "notes": "Explicit Python ml_confidence.FeatureExtractor and fallback heuristic parity fixture."
+  },
+  {
+    "id": "spacy_nlp_predicate_relation_extraction",
+    "kind": "spacy_nlp",
+    "input": "Portland is Safe and tenants must comply. If tenant applies then auditor responds.",
+    "python_predicates": {
+      "nouns": ["Portland", "Safe", "If"],
+      "verbs": ["Safe", "Comply"],
+      "adjectives": ["Safe"],
+      "relations": []
+    },
+    "python_relations": [
+      {
+        "type": "implication",
+        "premise": "tenant applies",
+        "conclusion": "auditor responds"
+      }
+    ],
+    "notes": "Explicit spaCy-style NLP predicate and relation extraction parity fixture for the browser-native deterministic fallback."
+  },
+  {
+    "id": "fol_converter_ml_nlp_all_landlords_responsible",
+    "kind": "fol_converter_ml_nlp",
+    "input": "All landlords are responsible.",
+    "python_status": "partial",
+    "python_success": true,
+    "python_confidence": 0.55,
+    "python_formula_string": "∀x (Landlords(x) → Responsible(x))",
+    "python_predicates": [
+      { "name": "Landlords", "arity": 1 },
+      { "name": "Responsible", "arity": 1 }
+    ],
+    "python_quantifier_symbols": ["∀"],
+    "python_operator_symbols": [],
+    "python_metadata": {
+      "predicates_count": 2,
+      "quantifiers_count": 1,
+      "extracted_predicates": {
+        "nouns": ["All"],
+        "verbs": ["Responsible"],
+        "adjectives": ["Responsible"],
+        "relations": []
+      },
+      "extracted_relations": [
+        { "type": "universal", "subject": "landlords", "predicate": "responsible" }
+      ],
+      "variables": ["x", "y"],
+      "output_format": "json"
+    },
+    "python_warnings": [
+      "Browser-native NLP extraction is not yet complete; regex extraction was used."
+    ],
+    "python_feature_vector": [
+      30, 4, 0, 1, 34, 3, 1, 3, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0,
+      1.1333333333333333, 0.75, 1
+    ],
+    "notes": "Development fixture captured from Python FOLConverter(use_ml=True, use_nlp=True) for a representative legal responsibility clause."
+  },
+  {
+    "id": "fol_converter_ml_nlp_some_permits_revocable",
+    "kind": "fol_converter_ml_nlp",
+    "input": "Some permits are revocable.",
+    "python_status": "partial",
+    "python_success": true,
+    "python_confidence": 0.55,
+    "python_formula_string": "∃x (Permits(x) ∧ Revocable(x))",
+    "python_predicates": [
+      { "name": "Permits", "arity": 1 },
+      { "name": "Revocable", "arity": 1 }
+    ],
+    "python_quantifier_symbols": ["∃"],
+    "python_operator_symbols": [],
+    "python_metadata": {
+      "predicates_count": 2,
+      "quantifiers_count": 1,
+      "extracted_predicates": {
+        "nouns": ["Some"],
+        "verbs": ["Revocable"],
+        "adjectives": ["Revocable"],
+        "relations": []
+      },
+      "extracted_relations": [
+        { "type": "existential", "subject": "permits", "predicate": "revocable" }
+      ],
+      "variables": ["x", "y"],
+      "output_format": "json"
+    },
+    "python_warnings": [
+      "Browser-native NLP extraction is not yet complete; regex extraction was used."
+    ],
+    "python_feature_vector": [
+      27, 4, 0, 1, 30, 3, 1, 3, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0,
+      1.1111111111111112, 0.75, 1
+    ],
+    "notes": "Development fixture captured from Python FOLConverter(use_ml=True, use_nlp=True) for a representative legal permit clause."
+  },
+  {
+    "id": "fol_converter_ml_nlp_if_applicant_then_eligible",
+    "kind": "fol_converter_ml_nlp",
+    "input": "If applicant then eligible.",
+    "python_status": "partial",
+    "python_success": true,
+    "python_confidence": 0.6,
+    "python_formula_string": "∀x (Applicant(x) → Eligible(x))",
+    "python_predicates": [
+      { "name": "Applicant", "arity": 1 },
+      { "name": "Eligible", "arity": 1 }
+    ],
+    "python_quantifier_symbols": [],
+    "python_operator_symbols": ["→"],
+    "python_metadata": {
+      "predicates_count": 2,
+      "quantifiers_count": 0,
+      "extracted_predicates": {
+        "nouns": ["If"],
+        "verbs": [],
+        "adjectives": [],
+        "relations": []
+      },
+      "extracted_relations": [
+        { "type": "implication", "premise": "applicant", "conclusion": "eligible" }
+      ],
+      "variables": ["x"],
+      "output_format": "json"
+    },
+    "python_warnings": [
+      "Browser-native NLP extraction is not yet complete; regex extraction was used."
+    ],
+    "python_feature_vector": [
+      27, 4, 0, 1, 31, 3, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0,
+      1.1481481481481481, 0.25, 2
+    ],
+    "notes": "Development fixture captured from Python FOLConverter(use_ml=True, use_nlp=True) for a representative legal eligibility condition."
+  },
+  {
+    "id": "proof_summary_obligation_business_license",
+    "kind": "proof_summary",
+    "category": "obligation",
+    "section_id": "portland_city_code_7_02_010",
+    "citation": "PCC 7.02.010",
+    "title": "Business license required",
+    "source_text": "A person engaging in business in the City shall register for a business license.",
+    "norm_type": "obligation",
+    "norm_operator": "O",
+    "parse_status": "success",
+    "deontic_temporal_fol": "O(RegisterForBusinessLicense(person, city))",
+    "deontic_cognitive_event_calculus": "Happens(register_for_business_license(person), t)",
+    "frame_logic_ergo": "person[obligation->register_for_business_license].",
+    "zkp_backend": "none",
+    "zkp_verified": false,
+    "citation_matches_section": true,
+    "kg_section_id": null,
+    "notes": "Simple proof-ready obligation summary."
+  },
+  {
+    "id": "proof_summary_permission_sidewalk_use",
+    "kind": "proof_summary",
+    "category": "permission",
+    "section_id": "portland_city_code_17_25_020",
+    "citation": "PCC 17.25.020",
+    "title": "Permitted sidewalk use",
+    "source_text": "The Director may authorize temporary use of the sidewalk subject to permit conditions.",
+    "norm_type": "permission",
+    "norm_operator": "P",
+    "parse_status": "success",
+    "deontic_temporal_fol": "P(AuthorizeTemporarySidewalkUse(director, applicant))",
+    "deontic_cognitive_event_calculus": "CanAuthorize(director, temporary_sidewalk_use, t)",
+    "frame_logic_ergo": "director[permission->authorize_temporary_sidewalk_use].",
+    "zkp_backend": "none",
+    "zkp_verified": false,
+    "citation_matches_section": true,
+    "kg_section_id": null,
+    "notes": "Permission summary with deterministic modal classification."
+  },
+  {
+    "id": "proof_summary_prohibition_noise",
+    "kind": "proof_summary",
+    "category": "prohibition",
+    "section_id": "portland_city_code_18_10_030",
+    "citation": "PCC 18.10.030",
+    "title": "Unlawful excessive noise",
+    "source_text": "No person shall create unreasonable noise between 10 p.m. and 7 a.m.",
+    "norm_type": "prohibition",
+    "norm_operator": "F",
+    "parse_status": "success",
+    "deontic_temporal_fol": "F(CreateUnreasonableNoise(person, nighttime))",
+    "deontic_cognitive_event_calculus": "Prohibited(create_unreasonable_noise(person), nighttime)",
+    "frame_logic_ergo": "person[prohibition->create_unreasonable_noise].",
+    "zkp_backend": "none",
+    "zkp_verified": false,
+    "citation_matches_section": true,
+    "kg_section_id": null,
+    "notes": "Prohibition summary using the no-person-shall pattern."
+  },
+  {
+    "id": "proof_summary_parse_success_permit_deadline",
+    "kind": "proof_summary",
+    "category": "parse_success",
+    "section_id": "portland_city_code_3_30_040",
+    "citation": "PCC 3.30.040",
+    "title": "Permit review deadline",
+    "source_text": "The Bureau shall issue a decision within 30 days after receipt of a complete application.",
+    "norm_type": "obligation",
+    "norm_operator": "O",
+    "parse_status": "success",
+    "deontic_temporal_fol": "O(Within(IssueDecision(bureau), 30_days_after_receipt))",
+    "deontic_cognitive_event_calculus": "Deadline(issue_decision(bureau), receipt_complete_application + 30_days)",
+    "frame_logic_ergo": "bureau[obligation->issue_decision; deadline->days(30)].",
+    "zkp_backend": "none",
+    "zkp_verified": false,
+    "citation_matches_section": true,
+    "kg_section_id": null,
+    "notes": "Successful parse with temporal constraint preserved."
+  },
+  {
+    "id": "proof_summary_parse_failure_unresolved_actor",
+    "kind": "proof_summary",
+    "category": "parse_failure",
+    "section_id": "portland_city_code_5_10_999",
+    "citation": "PCC 5.10.999",
+    "title": "Ambiguous retained clause",
+    "source_text": "Such measures shall be taken as necessary and appropriate.",
+    "norm_type": null,
+    "norm_operator": null,
+    "parse_status": "failure",
+    "deontic_temporal_fol": null,
+    "deontic_cognitive_event_calculus": null,
+    "frame_logic_ergo": null,
+    "zkp_backend": "none",
+    "zkp_verified": false,
+    "citation_matches_section": true,
+    "kg_section_id": null,
+    "notes": "Blocked because the actor and action object are not source-grounded."
+  },
+  {
+    "id": "proof_summary_simulated_certificate_permit",
+    "kind": "proof_summary",
+    "category": "simulated_certificate",
+    "section_id": "portland_city_code_24_10_060",
+    "citation": "PCC 24.10.060",
+    "title": "Inspection certificate",
+    "source_text": "The inspector shall certify completion after final inspection.",
+    "norm_type": "obligation",
+    "norm_operator": "O",
+    "parse_status": "success",
+    "deontic_temporal_fol": "O(CertifyCompletion(inspector, after_final_inspection))",
+    "deontic_cognitive_event_calculus": "Happens(certify_completion(inspector), after(final_inspection))",
+    "frame_logic_ergo": "inspector[obligation->certify_completion].",
+    "zkp_backend": "simulated",
+    "zkp_verified": true,
+    "citation_matches_section": true,
+    "kg_section_id": null,
+    "notes": "Representative simulated proof certificate metadata."
+  },
+  {
+    "id": "proof_summary_missing_logic_policy_note",
+    "kind": "proof_summary",
+    "category": "missing_logic",
+    "section_id": "portland_city_code_1_01_005",
+    "citation": "PCC 1.01.005",
+    "title": "Legislative findings",
+    "source_text": "The Council finds that public participation improves administration of this Code.",
+    "norm_type": "statement",
+    "norm_operator": null,
+    "parse_status": "success",
+    "deontic_temporal_fol": null,
+    "deontic_cognitive_event_calculus": null,
+    "frame_logic_ergo": null,
+    "zkp_backend": "none",
+    "zkp_verified": false,
+    "citation_matches_section": true,
+    "kg_section_id": null,
+    "notes": "Parsed as non-normative text with no formal logic artifact."
+  },
+  {
+    "id": "proof_summary_long_flogic_definitions",
+    "kind": "proof_summary",
+    "category": "long_flogic",
+    "section_id": "portland_city_code_33_910_030",
+    "citation": "PCC 33.910.030",
+    "title": "Definitions",
+    "source_text": "For purposes of this Title, household living includes residential occupancy by a household in a dwelling unit.",
+    "norm_type": "definition",
+    "norm_operator": "DEF",
+    "parse_status": "success",
+    "deontic_temporal_fol": "DEF(HouseholdLiving, ResidentialOccupancyByHousehold)",
+    "deontic_cognitive_event_calculus": null,
+    "frame_logic_ergo": "household_living::land_use_category[defined_in->portland_city_code_33_910_030; includes->residential_occupancy; actor->household; location->dwelling_unit; scope->title_33; source_citation->pcc_33_910_030; parser_schema->deterministic_deontic_v12].",
+    "zkp_backend": "none",
+    "zkp_verified": false,
+    "citation_matches_section": true,
+    "kg_section_id": null,
+    "notes": "Long frame-logic fixture exercises richer definition rendering."
+  },
+  {
+    "id": "proof_summary_citation_match",
+    "kind": "proof_summary",
+    "category": "citation_match",
+    "section_id": "portland_city_code_20_12_100",
+    "citation": "PCC 20.12.100",
+    "title": "Park closure citation match",
+    "source_text": "A person must comply with closure notices issued under Section 20.12.100.",
+    "norm_type": "obligation",
+    "norm_operator": "O",
+    "parse_status": "success",
+    "deontic_temporal_fol": "O(ComplyWithClosureNotice(person, section_20_12_100))",
+    "deontic_cognitive_event_calculus": "Requires(section_20_12_100, comply_with_closure_notice(person))",
+    "frame_logic_ergo": "person[obligation->comply_with_closure_notice; authority->section_20_12_100].",
+    "zkp_backend": "none",
+    "zkp_verified": false,
+    "citation_matches_section": true,
+    "kg_section_id": null,
+    "notes": "Citation string and normalized section identifier are expected to agree."
+  },
+  {
+    "id": "proof_summary_kg_linked_section",
+    "kind": "proof_summary",
+    "category": "kg_linked_section",
+    "section_id": "portland_city_code_16_20_130",
+    "citation": "PCC 16.20.130",
+    "title": "Tow hearing relationship",
+    "source_text": "The Hearings Officer shall provide an opportunity for review of a tow decision.",
+    "norm_type": "obligation",
+    "norm_operator": "O",
+    "parse_status": "success",
+    "deontic_temporal_fol": "O(ProvideReviewOpportunity(hearings_officer, tow_decision))",
+    "deontic_cognitive_event_calculus": "Happens(provide_review_opportunity(hearings_officer, tow_decision), t)",
+    "frame_logic_ergo": "hearings_officer[obligation->provide_review_opportunity; object->tow_decision].",
+    "zkp_backend": "none",
+    "zkp_verified": false,
+    "citation_matches_section": true,
+    "kg_section_id": "portland_city_code_16_20_130",
+    "notes": "Proof summary links back to a knowledge-graph section node."
   }
 ]
-
