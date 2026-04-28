@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
+import type { TdfolFormula } from './ast';
 import { formatTdfolFormula } from './formatter';
 import { parseTdfolFormula } from './parser';
 
@@ -40,9 +41,15 @@ describe('TDFOL generated Portland fixtures', () => {
       const formula = parseTdfolFormula(sample.deontic_temporal_fol);
       const formatted = formatTdfolFormula(formula);
 
-      expect(formula.kind).toBe('quantified');
-      expect(formatted).toContain('SubjectTo');
-      expect(formatted).toContain('ComplyWith');
+      expect(containsFormulaKind(formula, 'quantified')).toBe(true);
+      expect(containsFormulaKind(formula, 'deontic')).toBe(true);
+      if (sample.norm_type === 'permission') {
+        expect(formatted).toContain('ExerciseAuthority');
+      } else if (sample.norm_type === 'prohibition') {
+        expect(formatted).toContain('Violate');
+      } else {
+        expect(formatted).toContain('ComplyWith');
+      }
     }
   });
 
@@ -66,3 +73,11 @@ describe('TDFOL generated Portland fixtures', () => {
   });
 });
 
+function containsFormulaKind(formula: TdfolFormula, kind: TdfolFormula['kind']): boolean {
+  if (formula.kind === kind) return true;
+  if (formula.kind === 'binary') return containsFormulaKind(formula.left, kind) || containsFormulaKind(formula.right, kind);
+  if (formula.kind === 'unary' || formula.kind === 'deontic' || formula.kind === 'temporal' || formula.kind === 'quantified') {
+    return containsFormulaKind(formula.formula, kind);
+  }
+  return false;
+}

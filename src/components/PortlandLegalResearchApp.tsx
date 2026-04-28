@@ -21,7 +21,7 @@ import {
   loadLogicProofIndexes,
 } from '../lib/portlandLogic';
 import { formatTdfolFormula, parseTdfolFormula } from '../lib/logic/tdfol';
-import { analyzeCecExpression, formatCecExpression, parseCecExpression } from '../lib/logic/cec';
+import { analyzeCecExpression, formatCecExpression, parseCecExpression, type CecAnalysis } from '../lib/logic/cec';
 
 type LoadState = 'loading' | 'ready' | 'error';
 type WorkspaceTab = 'section' | 'chat' | 'graph' | 'proof';
@@ -2126,7 +2126,7 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
         </div>
       )}
 
-      {dcecParse.ok && dcecParse.analysis && (
+      {dcecParse.analysis && (
         <div
           className="mt-4 rounded-md border border-[#dce3d6] bg-white px-4 py-4"
           aria-label="DCEC structure summary"
@@ -2440,7 +2440,7 @@ function parseTdfolForDisplay(source: string): { ok: boolean; formatted?: string
 function parseCecForDisplay(source: string): {
   ok: boolean;
   formatted?: string;
-  analysis?: ReturnType<typeof analyzeCecExpression>;
+  analysis?: CecAnalysis;
   error?: string;
 } {
   if (!source) {
@@ -2454,11 +2454,55 @@ function parseCecForDisplay(source: string): {
       analysis: analyzeCecExpression(expression),
     };
   } catch (error) {
+    const analysis = analyzeCecSource(source);
     return {
       ok: false,
+      analysis,
       error: error instanceof Error ? error.message : 'Unable to parse DCEC formula.',
     };
   }
+}
+
+function analyzeCecSource(source: string): CecAnalysis {
+  const predicates = new Set<string>();
+  const atoms = new Set<string>();
+  const sectionRefs = new Set<string>();
+  const deonticOperators: CecAnalysis['deonticOperators'] = [];
+  const temporalOperators: CecAnalysis['temporalOperators'] = [];
+  const quantifiers: CecAnalysis['quantifiers'] = [];
+  const tokens = source.match(/[A-Za-z_][A-Za-z0-9_]*/g) || [];
+
+  for (let index = 0; index < tokens.length; index += 1) {
+    const token = tokens[index];
+    const nextCharIndex = source.indexOf(token) + token.length;
+    if (/^portland_city_code_/i.test(token)) {
+      sectionRefs.add(token);
+    }
+    if (token === 'O' || token === 'P' || token === 'F') {
+      deonticOperators.push(token);
+    }
+    if (token === 'always' || token === 'eventually' || token === 'next') {
+      temporalOperators.push(token);
+    }
+    if (token === 'forall' || token === 'exists') {
+      quantifiers.push(token);
+    }
+    atoms.add(token);
+    if (source.slice(nextCharIndex).trimStart().startsWith('(')) {
+      predicates.add(token);
+    }
+  }
+
+  return {
+    predicates: [...predicates].sort(),
+    atoms: [...atoms].sort(),
+    sectionRefs: [...sectionRefs].sort(),
+    quantifiers,
+    deonticOperators,
+    temporalOperators,
+    maxDepth: Math.max(1, Math.min(99, (source.match(/\(/g) || []).length)),
+    nodeCount: tokens.length,
+  };
 }
 
 function buildDirectory(sections: CorpusSection[]): DirectoryTitle[] {

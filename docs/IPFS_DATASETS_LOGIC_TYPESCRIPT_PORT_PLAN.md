@@ -101,6 +101,7 @@ The TypeScript target should be a clean client-side domain library that preserve
 | `logic/deontic/converter.py` | Port fully | Deontic extraction, exception handling, obligations, permissions, prohibitions, confidence, batch, and cache behavior need parity. |
 | `logic/ml_confidence.py` | Port fully via browser-native ML | Initial deterministic TypeScript port now covers Python-compatible feature extraction, fallback scoring, training facade, and feature importance. Next step is local browser artifact loading for trained XGBoost/LightGBM-equivalent weights through TS/WASM/ONNX where needed. |
 | `logic/deontic/knowledge_base.py` | Port fully | Browser-native indexed norms and query APIs are required. |
+| `logic/deontic/graph.py`, `support_map.py` | Port fully | Initial TypeScript port now covers deontic graph nodes/rules, assessments, summaries, conflict detection, graph builders, serialization, and support-map entries for facts/filings. |
 | `logic/flogic/flogic_types.py` | Port directly | Frame, class, query, ontology, and Ergo rendering are simple and valuable for display. |
 | `logic/flogic/semantic_normalizer.py` | Port fully | Dictionary mode ports directly; SymAI behavior needs browser-native semantic similarity replacement. |
 | `logic/zkp/canonicalization.py` | Port directly | Deterministic canonicalization, hashing, and field mapping are useful for verifying generated metadata consistency. Use Web Crypto or a small SHA-256 fallback. |

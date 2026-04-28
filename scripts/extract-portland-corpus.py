@@ -212,8 +212,17 @@ def extract_graph(corpus_root):
 
 
 def extract_logic_summary(corpus_root):
-    path = corpus_root / "logic_proofs" / "STATE-OR_logic_proof_artifacts.parquet"
-    if not path.exists():
+    candidates = [
+        corpus_root
+        / "logic_proofs_codex_spark_groth16"
+        / "STATE-OR_logic_proof_artifacts.parquet",
+        corpus_root
+        / "logic_proofs_codex_spark"
+        / "STATE-OR_logic_proof_artifacts.parquet",
+        corpus_root / "logic_proofs" / "STATE-OR_logic_proof_artifacts.parquet",
+    ]
+    path = next((candidate for candidate in candidates if candidate.exists()), None)
+    if path is None:
         return
 
     rows = read_rows(

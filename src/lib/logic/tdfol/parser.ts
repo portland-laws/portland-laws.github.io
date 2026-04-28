@@ -165,7 +165,7 @@ class TdfolParser {
 
   private parseTerm(): TdfolTerm {
     const token = this.advance();
-    if (token.type !== 'IDENTIFIER' && token.type !== 'NUMBER') {
+    if (!isTermToken(token.type)) {
       throw new LogicParseError(`Expected term but found ${token.type}`, {
         source: this.source,
         offset: token.position.offset,
@@ -243,4 +243,20 @@ class TdfolParser {
   private current(): TdfolToken {
     return this.tokens[this.index] || this.tokens[this.tokens.length - 1];
   }
+}
+
+function isTermToken(type: TdfolTokenType): boolean {
+  return (
+    type === 'IDENTIFIER' ||
+    type === 'NUMBER' ||
+    type === 'AND' ||
+    type === 'OR' ||
+    type === 'NOT' ||
+    type === 'ALWAYS' ||
+    type === 'EVENTUALLY' ||
+    type === 'NEXT' ||
+    type === 'OBLIGATION' ||
+    type === 'PERMISSION' ||
+    type === 'PROHIBITION'
+  );
 }

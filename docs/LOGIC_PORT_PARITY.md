@@ -11,6 +11,7 @@ Current parity is focused on deterministic, browser-safe behavior, but the end g
 - Browser-native `logic/ml_confidence.py` feature extraction, deterministic confidence scoring, training-compatible facade, and feature-importance reporting.
 - Deontic operator classification and simple formula construction.
 - Deontic analyzer and knowledge-base primitives for browser-native norm extraction, grouping, conflict summaries, rule inference, and compliance checks.
+- Deontic graph and support-map primitives for browser-native rule/source/authority graphs, conflict detection, reasoning rows, and motion-style support maps.
 - Python-style common converter lifecycle for TypeScript converters: statuses, result shape, validation, bounded local cache, batch conversion, async wrapper, and chained converters.
 - Common proof cache, feature detection, and utility monitor concepts, mapped to browser-native TypeScript.
 - Initial TDFOL inference rules and bounded forward-chaining prover for deterministic browser proof search.
@@ -46,6 +47,7 @@ npm run validate:logic-port
 | FOL formatting | FOL/deontic JSON, Prolog, TPTP, defeasible, text, and aggregate format helpers. | `fol/utils/logic_formatter.py`. | Ported for deterministic formatter path. |
 | Deontic analyzer | Corpus statement extraction, entity grouping, statistics, action similarity, and direct/conditional/jurisdictional/temporal conflict detection. | `deontic/analyzer.py`. | Ported for deterministic regex path. |
 | Deontic knowledge base | Parties, actions, time intervals, propositions, statements, rule inference, and compliance checks. | `deontic/knowledge_base.py`. | Ported as browser-native TypeScript primitives. |
+| Deontic graph and support map | Node/rule graph, modality/node distributions, rule assessment, gap summaries, conflict detection, graph builders from matrix/findings/statements, dictionary/JSON export, and support-map entries with facts/filings. | `deontic/graph.py` and `deontic/support_map.py`. | Ported as browser-native TypeScript primitives. |
 | TDFOL inference rules | Rule interface plus initial Modus Ponens, Modus Tollens, hypothetical syllogism, conjunction elimination, double-negation, universal modus ponens, existential instantiation/generalization, universal generalization, temporal K/T, deontic K/D, prohibition equivalence, and obligation weakening. | Full `TDFOL/inference_rules/*` parity. | Initial deterministic propositional, first-order, temporal, and deontic rule subset ported; full rule inventory remains Phase 11. |
 | TDFOL converter | Stable TDFOL formatting, FOL projection with explicit temporal/deontic projection warnings, DCEC s-expression conversion, TPTP-style output, JSON output, batch conversion, and metadata. | `tdfol_converter.py`. | Initial browser-native converter ported; exact Python fixture parity for all converter targets remains Phase 11. |
 | TDFOL expansion rules | Tableaux expansion context/result/rule interfaces plus AND, OR, IMPLIES, IFF, NOT rule registry and selector. | `expansion_rules.py`. | Browser-native propositional expansion rules ported. |

@@ -161,6 +161,7 @@ function singleCharToken(char: string): TdfolTokenType | null {
     case '□':
       return 'ALWAYS';
     case '◊':
+    case '◇':
       return 'EVENTUALLY';
     case 'O':
       return 'OBLIGATION';
