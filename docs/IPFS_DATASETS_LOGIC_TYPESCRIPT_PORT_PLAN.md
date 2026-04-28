@@ -75,6 +75,7 @@ The TypeScript target should be a clean client-side domain library that preserve
 | Python area | TypeScript/WASM port recommendation | Why |
 | --- | --- | --- |
 | `logic/types` | Port directly | Mostly enums, dataclasses, protocol-like shapes. These map well to TypeScript discriminated unions and interfaces. |
+| `logic/types/common_types.py`, `proof_types.py`, `bridge_types.py`, `fol_types.py`, `translation_types.py` | Port directly | Initial TypeScript port now covers complexity metrics, proof result shapes, bridge metadata/config/conversion/recommendation helpers, FOL predicate/formula/conversion/extraction helpers, and translation result/abstract formula helpers. |
 | `logic/common/errors.py` | Port directly | Standard error hierarchy improves client diagnostics. |
 | `logic/common/bounded_cache.py` | Port directly | Useful for parsed formula caches and proof summary indexes. Browser implementation is straightforward with `Map`, TTL, and LRU bookkeeping. |
 | `logic/common/validators.py` | Port fully | Formula, text, config, and proof validation should have browser-native parity. |
