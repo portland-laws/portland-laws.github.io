@@ -1,4 +1,12 @@
 export * from './canonicalization';
+export * from './circuits';
+export * from './ethContractArtifacts';
+export * from './ethVkRegistryPayloads';
+export * from './evmPublicInputs';
+export * from './facade';
+export * from './legalTheoremSemantics';
+export * from './simulatedBackend';
 export * from './simulatedVerifier';
 export * from './statement';
-
+export * from './vkRegistry';
+export * from './witnessManager';

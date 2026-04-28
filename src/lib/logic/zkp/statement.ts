@@ -15,6 +15,14 @@ export interface ZkpWitness {
   intermediateSteps?: string[];
   axiomsCommitmentHex?: string;
   circuitVersion?: number;
+  rulesetId?: string;
+}
+
+export interface ZkpProofStatement {
+  statement: ZkpStatement;
+  circuitId: string;
+  proofType: string;
+  witnessCount: number;
 }
 
 export function parseCircuitRef(circuitRef: string): { circuitId: string; version: bigint } {
@@ -86,6 +94,65 @@ export function statementFromDict(data: Record<string, unknown>): ZkpStatement {
     axiomsCommitment: String(data.axioms_commitment || ''),
     circuitVersion: Number(data.circuit_version || 0),
     rulesetId: String(data.ruleset_id || ''),
+  };
+}
+
+export function witnessToDict(witness: ZkpWitness): Record<string, string | number | string[] | null> {
+  return {
+    axioms: [...witness.axioms],
+    theorem: witness.theorem ?? null,
+    intermediate_steps: [...(witness.intermediateSteps ?? [])],
+    axioms_commitment_hex: witness.axiomsCommitmentHex ?? null,
+    circuit_version: witness.circuitVersion ?? 1,
+    ruleset_id: witness.rulesetId ?? 'TDFOL_v1',
+  };
+}
+
+export function witnessFromDict(data: Record<string, unknown>): ZkpWitness {
+  const axioms = data.axioms;
+  if (!Array.isArray(axioms)) {
+    throw new Error('axioms must be an array');
+  }
+
+  const intermediateSteps = data.intermediate_steps;
+  if (intermediateSteps !== undefined && !Array.isArray(intermediateSteps)) {
+    throw new Error('intermediate_steps must be an array when present');
+  }
+
+  return {
+    axioms: axioms.map(String),
+    theorem: data.theorem === undefined || data.theorem === null ? undefined : String(data.theorem),
+    intermediateSteps: intermediateSteps === undefined ? [] : intermediateSteps.map(String),
+    axiomsCommitmentHex:
+      data.axioms_commitment_hex === undefined || data.axioms_commitment_hex === null
+        ? undefined
+        : String(data.axioms_commitment_hex),
+    circuitVersion: data.circuit_version === undefined ? 1 : Number(data.circuit_version),
+    rulesetId: data.ruleset_id === undefined ? 'TDFOL_v1' : String(data.ruleset_id),
+  };
+}
+
+export function proofStatementToDict(
+  proofStatement: ZkpProofStatement,
+): Record<string, string | number | Record<string, string | number>> {
+  return {
+    statement: statementToDict(proofStatement.statement),
+    circuit_id: proofStatement.circuitId,
+    circuit_ref: formatCircuitRef(proofStatement.circuitId, proofStatement.statement.circuitVersion),
+    proof_type: proofStatement.proofType,
+    witness_count: proofStatement.witnessCount,
+  };
+}
+
+export function proofStatementFromDict(data: Record<string, unknown>): ZkpProofStatement {
+  if (!data.statement || typeof data.statement !== 'object' || Array.isArray(data.statement)) {
+    throw new Error('statement must be an object');
+  }
+  return {
+    statement: statementFromDict(data.statement as Record<string, unknown>),
+    circuitId: String(data.circuit_id || ''),
+    proofType: data.proof_type === undefined ? 'simulated' : String(data.proof_type),
+    witnessCount: data.witness_count === undefined ? 0 : Number(data.witness_count),
   };
 }
 

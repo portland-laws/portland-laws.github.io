@@ -111,9 +111,14 @@ The TypeScript target should be a clean client-side domain library that preserve
 | `logic/flogic/flogic_types.py` | Port directly | Frame, class, query, ontology, and Ergo rendering are simple and valuable for display. |
 | `logic/flogic/semantic_normalizer.py` | Port fully | Dictionary mode ports directly; SymAI behavior needs browser-native semantic similarity replacement. |
 | `logic/zkp/canonicalization.py` | Port directly | Deterministic canonicalization, hashing, and field mapping are useful for verifying generated metadata consistency. Use Web Crypto or a small SHA-256 fallback. |
-| `logic/zkp/statement.py` | Port directly | Statement/witness JSON schemas and circuit ref parsing are portable. |
-| `logic/zkp/zkp_verifier.py` | Port fully | Simulated verifier first, then real browser-native verification for supported circuits. |
-| `logic/zkp/groth16*`, EVM files | Port to WASM/browser crypto | Use snarkjs, noble/viem/ethers browser APIs, or generated WASM circuits. |
+| `logic/zkp/statement.py` | Port directly | Initial TypeScript parity now covers statement/witness/proof-statement JSON schemas, circuit reference parsing/formatting, field-element mapping, and Python-compatible witness defaults. |
+| `logic/zkp/circuits.py` | Port metadata and local constraint evaluators first | Initial TypeScript parity now covers high-level Boolean circuit construction, simplified R1CS export, MVP knowledge-of-axioms circuit metadata, and local TDFOL v1 Horn-derivation constraint checks without cryptographic backend claims. |
+| `logic/zkp/backends/simulated.py` and `logic/zkp/backends/__init__.py` | Port as browser-native simulated backend and registry | Initial TypeScript parity now covers simulated `ZKPProof` dictionary serialization, 160-byte `SIMZKP/1` proof layout generation, fail-closed simulated verification, backend metadata, aliases, availability checks, cache reset, and explicit unsupported Groth16 status without server fallback. |
+| `logic/zkp/zkp_prover.py` and `logic/zkp/zkp_verifier.py` | Port simulated facades first, then real browser-native verification for supported circuits | Initial TypeScript parity now covers async browser-native prover/verifier facades, backend routing, canonicalized proof cache keys, cached theorem adaptation, `prove()` alias witness handling, public-input validation, expected-theorem checks, statistics, reset, and fail-closed unsupported-backend behavior. |
+| `logic/zkp/legal_theorem_semantics.py` and `logic/zkp/witness_manager.py` | Port directly as browser-native witness helpers | Initial TypeScript parity now covers TDFOL v1 Horn atom/axiom/theorem parsing, deterministic forward-chaining evaluation, derivation traces, witness generation, commitment validation, proof-statement creation, witness consistency checks, cache lookup, and Python-compatible aliases. |
+| `logic/zkp/evm_public_inputs.py` | Port directly as browser-native field packing | Initial TypeScript parity now covers BN254 Fr modulus export, 0x normalization, 32-byte hex-to-field reduction, SHA-256 text-to-field hashing, single public-input packing, batch packing, and Python-style validation errors without chain/RPC calls. |
+| `logic/zkp/vk_registry.py`, `logic/zkp/eth_vk_registry_payloads.py`, and `logic/zkp/eth_contract_artifacts.py` | Port off-chain registry, payload validation, and artifact parsing first | Initial TypeScript parity now covers stable VK hashing, in-memory VK registry registration/lookup/serialization, circuit-ref lookup, bytes32 normalization, registerVK payload validation, contract ABI/bytecode artifact parsing from object/JSON values, and explicit unsupported filesystem/calldata/keccak status until local browser replacements land. |
+| `logic/zkp/groth16*`, remaining EVM files | Port to WASM/browser crypto | Use snarkjs, noble/viem/ethers browser APIs, or generated WASM circuits. |
 | `logic/CEC/native` | Port fully to TS/WASM | Large inference engine with many rules; split into AST/parser/rules/prover packages and use WASM only where needed. |
 | `logic/CEC/nl` | Port fully via browser-native NLP | Policy compilers and language detectors need TS/NLP equivalents. |
 | `logic/external_provers` | Port bridge layer to browser-native WASM provers | Z3/cvc5/Tau Prolog/Lean/Coq bridges should target local WASM packages or local in-browser adapters only. |
@@ -411,7 +416,14 @@ Acceptance criteria:
 ### Phase 6: Simulated Certificate And Canonicalization Checks
 
 - [x] Port text normalization and deterministic hashing concepts from `zkp/canonicalization.py`.
-- [x] Port `Statement` shape and circuit reference parsing from `zkp/statement.py`.
+- [x] Port `Statement`, `Witness`, and `ProofStatement` shapes, dictionary serialization, circuit reference parsing/formatting, and field-element mapping from `zkp/statement.py`.
+- [x] Port initial `zkp/circuits.py` circuit metadata, Boolean circuit construction, simplified R1CS export, knowledge-of-axioms constraint checks, and TDFOL v1 Horn derivation constraint checks.
+- [x] Port simulated ZKP backend proof shape, demo proof layout, backend registry metadata, availability checks, and fail-closed verification semantics from `zkp/backends`.
+- [x] Port initial `zkp_prover.py` and `zkp_verifier.py` browser-native facades with backend routing, proof caching, public-input validation, expected-theorem checks, and statistics.
+- [x] Port `legal_theorem_semantics.py` and `witness_manager.py` browser-native TDFOL v1 Horn semantics, witness generation/validation, proof statement creation, consistency checks, and witness cache helpers.
+- [x] Port `evm_public_inputs.py` browser-native BN254 field packing helpers for EVM public inputs without chain calls.
+- [x] Port `vk_registry.py` and initial `eth_vk_registry_payloads.py` browser-native VK hashing, registry, bytes32 normalization, and registerVK payload validation without RPC calls.
+- [x] Port `eth_contract_artifacts.py` as browser-native contract artifact object/JSON parsing for ABI and bytecode without filesystem path loading.
 - [x] Add `verifySimulatedCertificate()` that checks metadata consistency only.
 - [x] Rename UI language so `zkp_verified: true` with `zkp_backend: simulated` is shown as "simulated certificate present", not "cryptographically verified".
 
