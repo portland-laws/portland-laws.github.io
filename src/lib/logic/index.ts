@@ -1,5 +1,30 @@
+export {
+  BrowserNativeLogicApi,
+  buildSignedDelegation,
+  build_signed_delegation,
+  compileNlToPolicy,
+  compile_nl_to_policy,
+  convert_legal_text_to_deontic,
+  convert_text_to_fol,
+  convertLogic,
+  convertTextToFol,
+  createLogicApi,
+  evaluateNlPolicy,
+  evaluate_nl_policy,
+  getGlobalLogicApi,
+  proveLogic,
+  requireBrowserNativeSignedDelegation,
+  resetGlobalLogicApi,
+} from './api';
+export type {
+  LogicApiOptions,
+  NlPolicyCompileResult,
+  NlPolicyEvaluationResult,
+  SignedDelegationResult,
+} from './api';
 export * from './cache';
 export * from './batchProcessing';
+export * from './benchmarks';
 export * from './cec';
 export * from './config';
 export * from './converters';

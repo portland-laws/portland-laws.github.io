@@ -83,6 +83,8 @@ The TypeScript target should be a clean client-side domain library that preserve
 | `logic/common/converters.py` | Port fully as idiomatic TS interfaces/classes | Preserve converter lifecycle, validation, caching, batch behavior, and result shapes in browser-native form. |
 | `logic/batch_processing.py` | Port as browser-native async batching | Initial TypeScript parity now covers batch result stats, bounded async processing, FOL conversion batches, local bridge proof batches, and chunked large-batch aggregation without Python thread/process pools or server workers. |
 | `logic/monitoring.py` | Port as browser-native telemetry objects | Initial TypeScript parity now covers operation metrics, operation tracking, error/warning counters, health checks, reset, operation summaries, global monitor helper, and optional Prometheus text export without server daemons or threads. |
+| `logic/benchmarks.py` | Port as browser-native benchmark helpers | Initial TypeScript parity now covers benchmark result stats, sync/async benchmark runners, comparisons, summaries, FOL conversion benchmarks, proof-cache benchmarks, and comprehensive local benchmark runs with browser timing APIs. |
+| `logic/api.py` | Port as browser-native public API facade | Initial TypeScript parity now covers stable FOL/deontic conversion wrappers, generic bridge conversion/proving, monitoring integration, local benchmark entrypoint, Python-compatible aliases, NL policy compile/evaluate helpers, and explicit unsupported UCAN signing status without server fallback. |
 | `logic/TDFOL/tdfol_core.py` | Port directly | AST, operators, terms, formulas, substitution, and free-variable analysis are the best TypeScript core. |
 | `logic/TDFOL/tdfol_parser.py` | Port directly, with tests | Recursive descent parsing and tokenization are portable. This unlocks proof explorer and validation. |
 | `logic/TDFOL/tdfol_converter.py` | Port fully | TDFOL to DCEC/FOL/TPTP conversion must match Python outputs. Initial browser converter supports stable TDFOL, FOL projection, DCEC s-expression, TPTP, JSON, metadata, and projection warnings. |
@@ -313,6 +315,8 @@ Acceptance criteria:
 - [x] Port `logic/common/validators.py` formula string, axiom list, logic system, timeout, and format validators with Python-style validation errors.
 - [x] Port bounded TTL/LRU cache for parsed formulas.
 - [x] Port `logic/batch_processing.py` batch result stats, bounded async processing, FOL conversion batches, local bridge proof batches, and chunked large-batch aggregation in browser-native TypeScript.
+- [x] Port `logic/benchmarks.py` benchmark result stats, sync/async timing runners, comparison, summaries, local FOL benchmark suite, local proof-cache benchmark suite, and comprehensive benchmark runner.
+- [x] Port initial `logic/api.py` public facade with stable browser-native conversion/proof wrappers, Python-compatible aliases, monitoring integration, local benchmark entrypoint, and explicit unsupported UCAN-signing result.
 - [x] Port `logic/common/converters.py` lifecycle concepts: conversion statuses, standardized results, validation, local cache, batch conversion, async wrapper, and chained converters.
 - [x] Port browser-native `logic/common/proof_cache.py` concepts: deterministic content IDs, prover-specific lookup, TTL, LRU eviction, invalidation, global cache, and stats.
 - [x] Port browser-native `logic/common/feature_detection.py` and `logic/common/utility_monitor.py` concepts without importing Python-only optional dependencies.
@@ -580,6 +584,8 @@ Acceptance criteria:
   - [x] Initial top-level `logic/monitoring.py` parity for operation metrics, tracking helpers, health checks, error/warning counters, global monitor, reset, operation summaries, and optional Prometheus text export.
   - [ ] Add richer developer-panel integration for live UI inspection.
 - [ ] Replace Python API/CLI surfaces with TypeScript developer scripts or browser devtools.
+  - [x] Initial browser-native public API facade for `logic/api.py` import-surface parity.
+  - [ ] Add CLI/devtools command adapter parity for `logic/cli.py`.
 - [ ] Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.
 
 ## Full-Port Completion Definition
