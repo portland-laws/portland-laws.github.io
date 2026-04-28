@@ -78,8 +78,11 @@ The TypeScript target should be a clean client-side domain library that preserve
 | `logic/types/common_types.py`, `proof_types.py`, `bridge_types.py`, `fol_types.py`, `translation_types.py` | Port directly | Initial TypeScript port now covers complexity metrics, proof result shapes, bridge metadata/config/conversion/recommendation helpers, FOL predicate/formula/conversion/extraction helpers, and translation result/abstract formula helpers. |
 | `logic/common/errors.py` | Port directly | Standard error hierarchy improves client diagnostics. |
 | `logic/common/bounded_cache.py` | Port directly | Useful for parsed formula caches and proof summary indexes. Browser implementation is straightforward with `Map`, TTL, and LRU bookkeeping. |
-| `logic/common/validators.py` | Port fully | Formula, text, config, and proof validation should have browser-native parity. |
+| `logic/common/validators.py` | Port fully | Initial browser-native parity now covers formula string, axiom list, logic system, timeout, and format validators with Python-style errors. |
+| `logic/config.py` | Port as browser-native config objects | Initial TypeScript parity now covers prover/cache/security/monitoring config defaults, Python-compatible dictionary serialization, object loading, and explicit env-record loading without YAML/filesystem/process runtime dependencies. |
 | `logic/common/converters.py` | Port fully as idiomatic TS interfaces/classes | Preserve converter lifecycle, validation, caching, batch behavior, and result shapes in browser-native form. |
+| `logic/batch_processing.py` | Port as browser-native async batching | Initial TypeScript parity now covers batch result stats, bounded async processing, FOL conversion batches, local bridge proof batches, and chunked large-batch aggregation without Python thread/process pools or server workers. |
+| `logic/monitoring.py` | Port as browser-native telemetry objects | Initial TypeScript parity now covers operation metrics, operation tracking, error/warning counters, health checks, reset, operation summaries, global monitor helper, and optional Prometheus text export without server daemons or threads. |
 | `logic/TDFOL/tdfol_core.py` | Port directly | AST, operators, terms, formulas, substitution, and free-variable analysis are the best TypeScript core. |
 | `logic/TDFOL/tdfol_parser.py` | Port directly, with tests | Recursive descent parsing and tokenization are portable. This unlocks proof explorer and validation. |
 | `logic/TDFOL/tdfol_converter.py` | Port fully | TDFOL to DCEC/FOL/TPTP conversion must match Python outputs. Initial browser converter supports stable TDFOL, FOL projection, DCEC s-expression, TPTP, JSON, metadata, and projection warnings. |
@@ -113,6 +116,7 @@ The TypeScript target should be a clean client-side domain library that preserve
 | `logic/CEC/nl` | Port fully via browser-native NLP | Policy compilers and language detectors need TS/NLP equivalents. |
 | `logic/external_provers` | Port bridge layer to browser-native WASM provers | Z3/cvc5/Tau Prolog/Lean/Coq bridges should target local WASM packages or local in-browser adapters only. |
 | `logic/integration/*bridge*` | Port fully | Bridge types and implementation should route to TS/WASM cores, not Python. |
+| `logic/integration/*bridge*` initial browser facade | Port directly | `BrowserNativeLogicBridge` now routes text-to-FOL/deontic, TDFOL conversion, CEC formatting, and TDFOL/CEC proof requests to local TypeScript cores with explicit unsupported-route status and no server calls. |
 | `logic/security`, `observability`, `api_server`, `cli` | Port as browser/runtime equivalents | Initial shared security TypeScript port now covers input validation, sliding-window rate limiting, LLM-style circuit breakers, global breaker registry, and structured in-memory audit events. Initial observability TypeScript port now covers structured logs, context propagation, Prometheus-style metrics text, and in-memory OTel-style traces. Dashboards and CLI-like developer tools remain follow-up TS/browser/devtool modules. |
 
 ## Proposed TypeScript Architecture
@@ -305,7 +309,10 @@ Acceptance criteria:
 
 - [x] Port common logic enums and data shapes from `logic/types`.
 - [x] Add `LogicError`, `LogicParseError`, `LogicValidationError`, and `LogicVerificationError`.
+- [x] Port `logic/config.py` dataclass-style prover/cache/security/monitoring config defaults, `to_dict` output, object loading, and explicit env-record loading without browser runtime filesystem/YAML/process dependencies.
+- [x] Port `logic/common/validators.py` formula string, axiom list, logic system, timeout, and format validators with Python-style validation errors.
 - [x] Port bounded TTL/LRU cache for parsed formulas.
+- [x] Port `logic/batch_processing.py` batch result stats, bounded async processing, FOL conversion batches, local bridge proof batches, and chunked large-batch aggregation in browser-native TypeScript.
 - [x] Port `logic/common/converters.py` lifecycle concepts: conversion statuses, standardized results, validation, local cache, batch conversion, async wrapper, and chained converters.
 - [x] Port browser-native `logic/common/proof_cache.py` concepts: deterministic content IDs, prover-specific lookup, TTL, LRU eviction, invalidation, global cache, and stats.
 - [x] Port browser-native `logic/common/feature_detection.py` and `logic/common/utility_monitor.py` concepts without importing Python-only optional dependencies.
@@ -565,9 +572,13 @@ Acceptance criteria:
 ### Phase 15: Integration, Security, Observability, And Developer Tools
 
 - [ ] Port logic integration bridges to route to TS/WASM cores.
+  - [x] Initial browser-native bridge facade for local route inventory, FOL/deontic/TDFOL/CEC conversion routing, TDFOL/CEC proof routing, and explicit unsupported-route results with `server_calls_allowed: false`.
+  - [ ] Port deeper domain-specific integration bridges, interactive workflows, and parity fixtures.
 - [x] Port security input validation, circuit breaker, rate limiting, and audit-log semantics to browser-local equivalents.
 - [x] Port observability structured logging, Prometheus-style metrics, and OTel-style tracing to browser-local equivalents.
 - [ ] Port monitoring/metrics to in-browser telemetry objects and developer panels.
+  - [x] Initial top-level `logic/monitoring.py` parity for operation metrics, tracking helpers, health checks, error/warning counters, global monitor, reset, operation summaries, and optional Prometheus text export.
+  - [ ] Add richer developer-panel integration for live UI inspection.
 - [ ] Replace Python API/CLI surfaces with TypeScript developer scripts or browser devtools.
 - [ ] Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.
 

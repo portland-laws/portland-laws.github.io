@@ -184,6 +184,8 @@ test.describe('Portland legal corpus UI screenshots', () => {
     await expect(page.getByLabel('Proof reading guide')).toContainText('Code effect');
     await expect(page.locator('#panel-proof')).toContainText('DCEC parse');
     await expect(page.locator('#panel-proof')).toContainText('DCEC structure');
+    await expect(page.locator('#panel-proof')).not.toContainText('Expected RPAREN');
+    await expect(page.locator('#panel-proof')).not.toContainText('Expected LPAREN');
     await expect(page.getByLabel('Logic proof status metrics')).toContainText(/Required|Allowed|Forbidden/);
     await expect(page.getByLabel('DCEC structure summary')).toContainText('Portland City Code');
     await expect(page.getByLabel('DCEC structure summary')).not.toContainText('portland_city_code');

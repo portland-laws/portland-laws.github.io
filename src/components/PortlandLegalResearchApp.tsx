@@ -2076,6 +2076,7 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
   const certificateWarning = getSimulatedCertificateWarning(proof);
   const tdfolParse = parseTdfolForDisplay(proof.deontic_temporal_fol);
   const dcecParse = parseCecForDisplay(proof.deontic_cognitive_event_calculus);
+  const dcecStructureAvailable = Boolean(dcecParse.analysis);
   const explanation = explainLogicProofSummary(proof);
 
   return (
@@ -2106,7 +2107,7 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
         <ProofMetric label="FOL" value={formatLogicStatusForDisplay(proof.fol_status)} />
         <ProofMetric label="Deontic" value={formatLogicStatusForDisplay(proof.deontic_status)} />
         <ProofMetric label="TDFOL parse" value={tdfolParse.ok ? 'Valid' : 'Check'} />
-        <ProofMetric label="DCEC parse" value={dcecParse.ok ? 'Valid' : 'Check'} />
+        <ProofMetric label="DCEC parse" value={dcecParse.ok ? 'Valid' : dcecStructureAvailable ? 'Structured' : 'Check'} />
       </div>
 
       {certificateWarning && (
@@ -2120,7 +2121,7 @@ function ProofPanel({ proof }: { proof: LogicProofSummary | null }) {
           {tdfolParse.error}
         </div>
       )}
-      {!dcecParse.ok && (
+      {!dcecParse.ok && !dcecStructureAvailable && (
         <div className="mt-4 rounded-md border border-[#d89b82] bg-[#fff4ef] px-3 py-2 text-sm leading-6 text-[#8a3b22]">
           {dcecParse.error}
         </div>
@@ -2470,11 +2471,11 @@ function analyzeCecSource(source: string): CecAnalysis {
   const deonticOperators: CecAnalysis['deonticOperators'] = [];
   const temporalOperators: CecAnalysis['temporalOperators'] = [];
   const quantifiers: CecAnalysis['quantifiers'] = [];
-  const tokens = source.match(/[A-Za-z_][A-Za-z0-9_]*/g) || [];
+  const tokenMatches = [...source.matchAll(/[A-Za-z_][A-Za-z0-9_]*/g)];
 
-  for (let index = 0; index < tokens.length; index += 1) {
-    const token = tokens[index];
-    const nextCharIndex = source.indexOf(token) + token.length;
+  for (const match of tokenMatches) {
+    const token = match[0];
+    const nextCharIndex = (match.index || 0) + token.length;
     if (/^portland_city_code_/i.test(token)) {
       sectionRefs.add(token);
     }
@@ -2501,7 +2502,7 @@ function analyzeCecSource(source: string): CecAnalysis {
     deonticOperators,
     temporalOperators,
     maxDepth: Math.max(1, Math.min(99, (source.match(/\(/g) || []).length)),
-    nodeCount: tokens.length,
+    nodeCount: tokenMatches.length,
   };
 }
 
