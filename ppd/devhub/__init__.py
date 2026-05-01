@@ -16,6 +16,7 @@ from .workflow import (
     DevHubWorkflowState,
     DevHubWorkflowStateKind,
 )
+from .privacy_validation import validate_devhub_fixture_privacy, validate_devhub_fixture_privacy_file
 
 __all__ = [
     "DevHubActionKind",
@@ -27,4 +28,6 @@ __all__ = [
     "DevHubWorkflowState",
     "DevHubWorkflowStateKind",
     "classify_workflow_action",
+    "validate_devhub_fixture_privacy",
+    "validate_devhub_fixture_privacy_file",
 ]

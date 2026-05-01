@@ -1,0 +1,35 @@
+{
+  "fixtureKind": "devhub_privacy_validation",
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-01T18:25:00Z",
+  "workflow": "mock_plan_review_request",
+  "states": [
+    {
+      "id": "unsafe-request",
+      "heading": "Start a permit request",
+      "urlPattern": "https://devhub.portlandoregon.gov/permits/request-type*",
+      "fields": [
+        {
+          "id": "applicant-email",
+          "label": "Applicant email",
+          "valueState": "applicant@example.com"
+        },
+        {
+          "id": "applicant-phone",
+          "label": "Applicant phone",
+          "valueState": "503-555-1212"
+        }
+      ],
+      "authState": {
+        "cookies": [
+          {
+            "name": "session",
+            "value": "secret-cookie-value"
+          }
+        ]
+      },
+      "traceFile": "trace.zip",
+      "screenshot": "permit-screen-with-private-values.png"
+    }
+  ]
+}

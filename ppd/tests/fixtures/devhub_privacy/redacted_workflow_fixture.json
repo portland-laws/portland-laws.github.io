@@ -1,0 +1,30 @@
+{
+  "fixtureKind": "devhub_privacy_validation",
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-01T18:25:00Z",
+  "workflow": "mock_plan_review_request",
+  "redactionPolicy": "All private account, applicant, contact, property, permit, file, payment, auth, and session values are redacted.",
+  "states": [
+    {
+      "id": "request-type",
+      "heading": "Start a permit request",
+      "urlPattern": "https://devhub.portlandoregon.gov/permits/request-type*",
+      "fields": [
+        {
+          "id": "project-address",
+          "label": "Project address",
+          "valueState": "[REDACTED]"
+        },
+        {
+          "id": "applicant-email",
+          "label": "Applicant email",
+          "valueState": "[REDACTED]"
+        }
+      ],
+      "authState": "[REDACTED]",
+      "sessionToken": "[REDACTED]",
+      "screenshot": "[REDACTED]",
+      "trace": "[REDACTED]"
+    }
+  ]
+}

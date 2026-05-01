@@ -701,11 +701,11 @@ That PR gives the project immediate product value without committing to a full t
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-01 18:07:35 UTC
+Last updated: 2026-05-01 18:22:00 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-173: Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.`
+Current target: `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -883,8 +883,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-170: Initial CEC security validator and error-hardening facade with rate limits, input sanitization, size/depth/operator guards, injection/DoS detection, parse validation, resource checks, proof-result audit, and security reports.` - complete
 - [!] `Task checkbox-171: Port CEC NL policy compilers and language detection with browser-native NLP.` - blocked
 - [x] `Task checkbox-172: Add deeper CEC/DCEC parity fixtures against Python parser and prover outputs.` - complete
-- [!] `Task checkbox-173: Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.` - latest daemon round failed validation or preflight
-- [!] `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.` - blocked
+- [!] `Task checkbox-173: Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.` - blocked
+- [!] `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.` - latest daemon round failed validation or preflight
 - [!] `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.` - blocked
 - [x] `Task checkbox-176: Add exact/tolerance parity tests against Python ML/spaCy development fixtures.` - complete
 - [!] `Task checkbox-177: Remove 'nlpUnavailable' and 'mlUnavailable' capability flags once browser-native parity is implemented.` - blocked
@@ -908,11 +908,32 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-173: Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.`
+- Target: `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.`
 - Result: `needs follow-up`
-- Summary: No summary
-- Errors: LLM response did not contain JSON or a fenced diff patch.
-- Failure kind: `parse`
+- Summary: Port ml_confidence scoring to a deterministic browser-native TypeScript model with explainable local inference details.
+- Impact: src/lib/logic/mlConfidence.ts now provides an in-process calibrated deterministic model and prediction details, so the TypeScript logic port can score confidence without Python services or server calls. src/lib/logic/mlConfidence.test.ts validates the feature vector, deterministic model path, neutral fallback, and training-compatible facade through the existing Jest logic validation suite.
+- Errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
+../../..src/lib/logic/mlConfidence.ts(138,30): error TS1109: Expression expected.
+../../..src/lib/logic/mlConfidence.ts(139,3): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/mlConfidence.ts(140,3): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/mlConfidence.ts(140,26): error TS1109: Expression expected.
+../../..src/lib/logic/mlConfidence.ts(140,35): error TS1011: An element access expression should take an argument.
+../../..src/lib/logic/mlConfidence.ts(141,3): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/mlConfidence.ts(143,21): error TS1005: ',' expected.
+../../..src/lib/logic/mlConfidence.ts(143,48): error TS1005: ';' expected.
+../../..src/lib/logic/mlConfidence.ts(154,3): error TS1434: Unexpected keyword or identifier.
+../../..src/lib/logic/mlConfidence.ts(154,18): error TS1005: ';' expected.
+../../..src/lib/logic/mlConfidence.ts(154,20): error TS1434: Unexpected keyword or identifier.
+../../..src/lib/logic/mlConfidence.ts(159,13): error TS1005: ',' expected.
+../../..src/lib/logic/mlConfidence.ts(160,15): error TS1005: ',' expected.
+../../..src/lib/logic/mlConfidence.ts(161,15): error TS1005: ',' expected.
+../../..src/lib/logic/mlConfidence.ts(162,16): error TS1005: ',' expected.
+../../..src/lib/logic/mlConfidence.ts(162,25): error TS1011: An element access expression should take an argument.
+../../..src/lib/logic/mlConfidence.ts(163,14): error TS1005: ',' expected.
+../../..src/lib/logic/mlConfidence.ts(163,23): error TS1011: An element access expression should take an argument.
+../../..src/lib/logic/mlConfidence.ts(164,4): error TS1005: ';' expected.
+../../..src/lib/logic/mlConfidence.ts(164,6): error TS1434: Unexpected keyword or identifier.; File edits failed validation and were rolled back.
+- Failure kind: `preflight`
 
 ### Blocked Backlog
 

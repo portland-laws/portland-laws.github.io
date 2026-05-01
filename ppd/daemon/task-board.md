@@ -33,8 +33,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] Add requirement extraction validation for Single PDF Process obligations, preconditions, deadlines, exceptions, confidence, and formalization status.
 - [x] Add guardrail compiler fixture tests for document completeness, PDF file rules, missing user facts, and explicit-confirmation gates.
 - [x] Add mocked DevHub workflow snapshot fixtures with redacted field values, semantic selectors, validation messages, upload controls, and navigation edges.
-- [ ] Add DevHub fixture privacy validation that rejects credentials, auth state, traces, screenshots with private values, and unredacted PII.
-- [ ] Add a fixture-backed public crawl dry-run report command that uses injected responses by default and writes no raw crawl output.
+- [x] Add DevHub fixture privacy validation that rejects credentials, auth state, traces, screenshots with private values, and unredacted PII.
+- [~] Add a fixture-backed public crawl dry-run report command that uses injected responses by default and writes no raw crawl output.
 - [ ] Add a live-public-crawl preflight task that only reports eligible tiny seed URLs after allowlist, robots, timeout, and no-persist checks.
 
 
@@ -52,11 +52,11 @@ Last updated: 2026-05-01T17:23:00Z
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-01T18:15:11.075249Z
+Last updated: 2026-05-01T18:22:45.876586Z
 
-- Latest target: `Task checkbox-28: Add DevHub fixture privacy validation that rejects credentials, auth state, traces, screenshots with private values, and unredacted PII.`
+- Latest target: `Task checkbox-29: Add a fixture-backed public crawl dry-run report command that uses injected responses by default and writes no raw crawl output.`
 - Latest result: `validation`
-- Latest summary: Added fixture-only DevHub privacy validation for credentials, auth state, traces, screenshots, and unredacted PII.
-- Counts: `{"blocked": 0, "complete": 27, "in_progress": 0, "needed": 3}`
+- Latest summary: Adds a syntax-valid fixture-backed PP&D public crawl dry-run report command and tests. The command defaults to committed injected responses, never performs live network access, and emits only summary/report metadata with no raw response bodies or raw crawl-output paths.
+- Counts: `{"blocked": 0, "complete": 28, "in_progress": 0, "needed": 2}`
 
 <!-- ppd-daemon-task-board:end -->
