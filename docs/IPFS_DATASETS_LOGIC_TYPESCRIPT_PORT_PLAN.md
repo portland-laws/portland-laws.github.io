@@ -509,7 +509,7 @@ Acceptance criteria:
   - [x] Initial in-memory performance engine and strategy profiler.
   - [x] Initial browser performance dashboard data model and renderer.
   - [x] Initial browser performance profiler with repeated timing samples, memory snapshots, bottleneck classification, benchmark suites, and report strings.
-  - [ ] Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.
+  - [!] Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.
 
 ### Phase 12: Full CEC/DCEC Parity
 
@@ -701,11 +701,11 @@ That PR gives the project immediate product value without committing to a full t
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-04-29 21:47:12 UTC
+Last updated: 2026-05-01 05:24:02 UTC
 
 Selection policy: choose the first port-plan checkbox that is not marked complete, keep the daemon scoped to that task, and update this board after every daemon round.
 
-Current target: `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.`
+Current target: `Task checkbox-118: Port CEC syntax tree, grammar loader, grammar engine, problem parser, and DCEC parsers.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
