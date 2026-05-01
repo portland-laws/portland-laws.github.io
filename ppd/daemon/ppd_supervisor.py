@@ -36,6 +36,22 @@ from ppd.daemon.ppd_daemon import (  # noqa: E402
     utc_now,
 )
 
+SYNTAX_OR_COMPILE_FAILURE_MARKERS = (
+    "syntaxerror",
+    "failed py_compile",
+    "py_compile",
+    "invalid syntax",
+    "unterminated string literal",
+    "unmatched ')'",
+    "unexpected indent",
+    "expected an indented block",
+    "ts1005",
+    "ts1109",
+    "ts1128",
+    "declaration or statement expected",
+    "expression expected",
+)
+
 
 @dataclass(frozen=True)
 class SupervisorConfig:
@@ -52,6 +68,7 @@ class SupervisorConfig:
     stall_seconds: int = 900
     blocked_task_threshold: int = 1
     repeated_failure_threshold: int = 3
+    active_state_timeout_seconds: int = 420
     max_prompt_chars: int = 50000
     llm_timeout_seconds: int = 300
     model_name: str = "gpt-5.5"
@@ -125,12 +142,55 @@ def process_running(pid: Optional[int]) -> bool:
     return True
 
 
-def latest_repeated_failure_count(rows: list[dict[str, Any]]) -> int:
+def latest_repeated_failure_count(rows: list[dict[str, Any]], *, completed_task_labels: Optional[set[str]] = None) -> int:
+    completed = completed_task_labels or set()
     count = 0
     for proposal in reversed(rows):
+        if str(proposal.get("target_task") or "") in completed:
+            continue
         if proposal.get("applied") and proposal.get("validation_passed") and not proposal.get("errors"):
             break
         count += 1
+    return count
+
+
+def proposal_validation_text(proposal: dict[str, Any]) -> str:
+    parts: list[str] = []
+    for error in proposal.get("errors", []) or []:
+        parts.append(str(error))
+    for result in proposal.get("validation_results", []) or []:
+        if not isinstance(result, dict):
+            continue
+        parts.append(" ".join(str(part) for part in result.get("command", []) or []))
+        parts.append(str(result.get("stdout", "")))
+        parts.append(str(result.get("stderr", "")))
+    return "\n".join(parts).lower()
+
+
+def is_syntax_or_compile_failure(proposal: dict[str, Any]) -> bool:
+    if str(proposal.get("failure_kind") or "") != "validation":
+        return False
+    text = proposal_validation_text(proposal)
+    return any(marker in text for marker in SYNTAX_OR_COMPILE_FAILURE_MARKERS)
+
+
+def recent_syntax_failure_count(
+    rows: list[dict[str, Any]], *, limit: int = 6, completed_task_labels: Optional[set[str]] = None
+) -> int:
+    completed = completed_task_labels or set()
+    count = 0
+    inspected = 0
+    for proposal in reversed(rows):
+        if str(proposal.get("target_task") or "") in completed:
+            continue
+        if proposal.get("applied") and proposal.get("validation_passed") and not proposal.get("errors"):
+            break
+        inspected += 1
+        if not is_syntax_or_compile_failure(proposal):
+            break
+        count += 1
+        if inspected >= limit:
+            break
     return count
 
 
@@ -141,6 +201,7 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
     progress = load_json(config.resolve(config.progress_file))
     board = read_text(config.resolve(config.task_board)) if config.resolve(config.task_board).exists() else ""
     tasks = parse_tasks(board)
+    completed_task_labels = {task.label for task in tasks if task.status == "complete"}
     rows = read_result_log(config.resolve(config.result_log))
 
     if not running:
@@ -153,6 +214,7 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
 
     heartbeat_age = age_seconds(status.get("updated_at"), now=now)
     active_state = str(status.get("active_state") or status.get("state") or "")
+    active_state_age = age_seconds(status.get("active_state_started_at"), now=now)
     if heartbeat_age is None:
         return SupervisorDecision(
             action="invoke_codex",
@@ -168,6 +230,19 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
             should_invoke_codex=True,
             should_restart_daemon=True,
         )
+    if active_state in {"calling_llm", "applying_files"} and active_state_age is not None:
+        if active_state_age > config.active_state_timeout_seconds:
+            target = status.get("active_target_task") or status.get("target_task") or "<unknown task>"
+            return SupervisorDecision(
+                action="invoke_codex",
+                reason=(
+                    f"daemon has been in {active_state} for {int(active_state_age)} seconds "
+                    f"on {target}; repair or restart the worker so it can keep making progress"
+                ),
+                severity="warning",
+                should_invoke_codex=True,
+                should_restart_daemon=True,
+            )
 
     if tasks and all(task.status == "complete" for task in tasks):
         return SupervisorDecision(
@@ -195,7 +270,20 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
             should_invoke_codex=True,
         )
 
-    repeated_failures = latest_repeated_failure_count(rows)
+    syntax_failures = recent_syntax_failure_count(rows, completed_task_labels=completed_task_labels)
+    if syntax_failures >= 2:
+        return SupervisorDecision(
+            action="repair_daemon_programming",
+            reason=(
+                f"{syntax_failures} recent validation rollbacks were syntax or compile failures; "
+                "patch daemon prompt, preflight, or repair guidance before more worker attempts"
+            ),
+            severity="warning",
+            should_invoke_codex=True,
+            should_restart_daemon=True,
+        )
+
+    repeated_failures = latest_repeated_failure_count(rows, completed_task_labels=completed_task_labels)
     if repeated_failures >= config.repeated_failure_threshold:
         return SupervisorDecision(
             action="invoke_codex",
@@ -235,6 +323,13 @@ def build_supervisor_prompt(config: SupervisorConfig, decision: SupervisorDecisi
         for path in sorted(failed_dir.glob("*.json"))[-5:]:
             failed_manifests.append(f"--- {path.relative_to(config.repo_root).as_posix()} ---\n{read_text(path, limit=2500)}")
 
+    if decision.action == "plan_next_tasks":
+        goal = "Review completed work against the original PP&D goal and update `ppd/daemon/task-board.md` with the next narrow, ordered tranche of unfinished tasks. Do not implement those tasks in this proposal; create the backlog so the worker daemon can continue."
+    elif decision.action == "repair_daemon_programming":
+        goal = "Patch the PP&D daemon or supervisor programming so repeated syntax/compile validation failures are detected earlier and the worker is prompted toward smaller, syntactically valid proposals."
+    else:
+        goal = "Improve the PP&D daemon or supervisor programming so the worker can resume meaningful autonomous progress."
+
     prompt = f"""
 You are Codex acting as a supervisor repair agent for the isolated PP&D daemon.
 
@@ -244,7 +339,7 @@ Supervisor diagnosis:
 - reason: {decision.reason}
 
 Goal:
-{"Review completed work against the original PP&D goal and update `ppd/daemon/task-board.md` with the next narrow, ordered tranche of unfinished tasks. Do not implement those tasks in this proposal; create the backlog so the worker daemon can continue." if decision.action == "plan_next_tasks" else "Improve the PP&D daemon or supervisor programming so the worker can resume meaningful autonomous progress."}
+{goal}
 
 Hard constraints:
 - Return ONLY one JSON object; no markdown fences and no prose outside JSON.
@@ -252,6 +347,8 @@ Hard constraints:
 - For `plan_next_tasks`, edit only `ppd/daemon/task-board.md` and optionally `ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md`.
 - For repair actions, edit only `ppd/daemon/`, `ppd/tests/`, `ppd/.gitignore`, or PP&D daemon operations docs.
 - Do not edit application/domain artifacts just to mark progress. Fix supervision, validation, task selection, retry, recovery, or diagnostics.
+- For `repair_daemon_programming`, focus on daemon prompt/preflight/retry logic and supervisor diagnostics; do not implement the selected PP&D domain task.
+- When recent failures include Python `SyntaxError`, `py_compile`, or TypeScript `TS1005`/`TS1109`/`TS1128`, prefer smaller file sets and explicit syntactic-validity guardrails over broader contract rewrites.
 - When planning next tasks, preserve completed tasks, append new `[ ]` tasks, keep each task narrow enough for one daemon cycle, and include fixture-first/validation-first work before live or authenticated automation.
 - Do not create private DevHub session files, auth state, traces, raw crawl output, or downloaded documents.
 - Do not automate CAPTCHA, MFA, account creation, payment, submission, certification, cancellation, official upload, or inspection scheduling.
@@ -391,6 +488,31 @@ def self_test(repo_root: Path) -> int:
         errors.append("timestamp age calculation failed")
     if latest_repeated_failure_count([{"applied": False}, {"applied": False}]) != 2:
         errors.append("repeated failure count failed")
+    completed_failure = {"applied": False, "target_task": "Task checkbox-1: Done"}
+    if latest_repeated_failure_count([completed_failure], completed_task_labels={"Task checkbox-1: Done"}) != 0:
+        errors.append("completed-task failure filtering failed")
+    if age_seconds("2026-05-01T00:00:00Z", now=datetime(2026, 5, 1, 0, 7, 1, tzinfo=timezone.utc)) != 421:
+        errors.append("active-state age calculation failed")
+    syntax_failure = {
+        "failure_kind": "validation",
+        "validation_results": [
+            {
+                "command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
+                "returncode": 1,
+                "stderr": "SyntaxError: invalid syntax",
+            }
+        ],
+    }
+    if not is_syntax_or_compile_failure(syntax_failure):
+        errors.append("syntax failure classification failed")
+    if recent_syntax_failure_count([syntax_failure, syntax_failure]) != 2:
+        errors.append("recent syntax failure count failed")
+    non_syntax_failure = {
+        "failure_kind": "validation",
+        "validation_results": [{"command": ["python3", "-m", "unittest"], "returncode": 1, "stderr": "AssertionError"}],
+    }
+    if recent_syntax_failure_count([syntax_failure, non_syntax_failure]) != 0:
+        errors.append("syntax failure streak should stop at newer non-syntax validation failures")
     complete_board = "- [x] Finished\n"
     if parse_tasks(complete_board)[0].status != "complete":
         errors.append("task parsing failed for completed board")

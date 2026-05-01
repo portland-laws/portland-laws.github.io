@@ -1,0 +1,549 @@
+{
+  "fixtureKind": "permit_process",
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-01T17:55:00Z",
+  "process": {
+    "id": "single-pdf-process",
+    "name": "Single PDF Process",
+    "permitTypes": [
+      "Building permit requests requiring plan review",
+      "Trade permits with plan review",
+      "Other PP&D permit requests where public guidance directs use of the Single PDF Process"
+    ],
+    "sourceIds": [
+      "ppd-single-pdf-process-guidance",
+      "ppd-devhub-application-guidance",
+      "ppd-devhub-faq"
+    ],
+    "stages": [
+      {
+        "id": "research-process-applicability",
+        "name": "Research Single PDF Process applicability",
+        "kind": "pre_application_research",
+        "sequence": 0,
+        "description": "Confirm that the selected PP&D permit request is one of the public guidance workflows that uses the Single PDF Process before preparing files.",
+        "entryConditions": [],
+        "exitConditions": [
+          "single_pdf_process_applicability_confirmed"
+        ],
+        "nextStageIds": [
+          "prepare-pdf-documents"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-single-pdf-process-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+            "anchorId": "single-pdf-process-overview",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "Public PP&D guidance describes projects that use a Single PDF Process."
+          }
+        ]
+      },
+      {
+        "id": "prepare-pdf-documents",
+        "name": "Prepare PDF submittal documents",
+        "kind": "document_preparation",
+        "sequence": 1,
+        "description": "Prepare drawing plans as one searchable PDF and keep applications, calculations, and supporting documents as separate PDFs.",
+        "entryConditions": [
+          "single_pdf_process_applicability_confirmed"
+        ],
+        "exitConditions": [
+          "single_searchable_plan_pdf_ready",
+          "application_pdf_ready",
+          "supporting_documents_ready_when_required"
+        ],
+        "nextStageIds": [
+          "enter-devhub-request"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-single-pdf-process-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+            "anchorId": "single-pdf-file-rules",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "Public guidance says drawing plans are one searchable PDF and applications, calculations, and supporting documents are separate PDFs."
+          }
+        ]
+      },
+      {
+        "id": "enter-devhub-request",
+        "name": "Enter request in DevHub",
+        "kind": "application_data_entry",
+        "sequence": 2,
+        "description": "Use DevHub to start the permit request and enter the project and applicant information needed for the selected request type.",
+        "entryConditions": [
+          "devhub_account_available",
+          "required_project_facts_available"
+        ],
+        "exitConditions": [
+          "devhub_request_ready_for_upload"
+        ],
+        "nextStageIds": [
+          "upload-submittal-files"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-application-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
+            "anchorId": "devhub-request-types",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "Public DevHub application guidance lists permit request types handled through DevHub."
+          }
+        ]
+      },
+      {
+        "id": "upload-submittal-files",
+        "name": "Upload submittal files",
+        "kind": "upload",
+        "sequence": 3,
+        "description": "Upload the single drawing-plan PDF and the separate application or supporting PDFs for PP&D intake review.",
+        "entryConditions": [
+          "devhub_request_ready_for_upload",
+          "single_searchable_plan_pdf_ready",
+          "application_pdf_ready"
+        ],
+        "exitConditions": [
+          "submittal_files_attached_for_user_review"
+        ],
+        "nextStageIds": [
+          "review-and-certify"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-single-pdf-process-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+            "anchorId": "single-pdf-file-rules",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "The Single PDF Process requires plan files and other submittal documents to be prepared as PDFs before upload."
+          }
+        ]
+      },
+      {
+        "id": "review-and-certify",
+        "name": "Review and certify request",
+        "kind": "acknowledgment_certification",
+        "sequence": 4,
+        "description": "Review all prepared request data and any certification language before taking an official submission action.",
+        "entryConditions": [
+          "submittal_files_attached_for_user_review"
+        ],
+        "exitConditions": [
+          "user_explicitly_confirms_certification_and_submission"
+        ],
+        "nextStageIds": [
+          "submit-request"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-faq",
+            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
+            "anchorId": "devhub-service-categories",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "DevHub FAQ describes online permit request services, fee payments, correction uploads, and related portal actions."
+          }
+        ]
+      },
+      {
+        "id": "submit-request",
+        "name": "Submit request for PP&D intake",
+        "kind": "submission",
+        "sequence": 5,
+        "description": "Submit the completed request only after exact user confirmation; the agent must stop before submission without that confirmation.",
+        "entryConditions": [
+          "user_explicitly_confirms_certification_and_submission"
+        ],
+        "exitConditions": [
+          "request_submitted_to_ppd"
+        ],
+        "nextStageIds": [
+          "prescreen-and-intake"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-application-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
+            "anchorId": "devhub-application-submission",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "DevHub is Portland's online permitting system for permit requests, so submission is a consequential portal action."
+          }
+        ]
+      },
+      {
+        "id": "prescreen-and-intake",
+        "name": "PP&D prescreen and intake",
+        "kind": "prescreen_intake",
+        "sequence": 6,
+        "description": "PP&D reviews the submitted request for intake completeness before later review stages, correction cycles, fees, or issuance paths apply.",
+        "entryConditions": [
+          "request_submitted_to_ppd"
+        ],
+        "exitConditions": [
+          "intake_status_available"
+        ],
+        "nextStageIds": [
+          "plan-review-and-corrections"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-faq",
+            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
+            "anchorId": "devhub-service-categories",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "Public DevHub FAQ lists permit requests requiring plan review and correction uploads as DevHub service categories."
+          }
+        ]
+      },
+      {
+        "id": "plan-review-and-corrections",
+        "name": "Plan review and corrections",
+        "kind": "plan_review",
+        "sequence": 7,
+        "description": "Track plan review status and prepare separate correction response PDFs if PP&D issues checksheets or correction requests.",
+        "entryConditions": [
+          "intake_status_available"
+        ],
+        "exitConditions": [
+          "review_complete_or_corrections_resolved"
+        ],
+        "nextStageIds": [],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-faq",
+            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
+            "anchorId": "devhub-correction-upload",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "Public DevHub FAQ identifies correction uploads as an online permitting service."
+          }
+        ]
+      }
+    ],
+    "requiredFacts": [
+      {
+        "id": "project-property-identifier",
+        "label": "Project property address or property identifier",
+        "kind": "property",
+        "required": true,
+        "description": "The request needs a property location or identifier before a permit request can be prepared.",
+        "appliesWhen": [
+          "all_single_pdf_process_requests"
+        ],
+        "sourceStageIds": [
+          "enter-devhub-request"
+        ],
+        "validationHint": "Ask for the project address or a public property identifier before preparing the DevHub request.",
+        "containsPrivateOrUserSpecificData": true,
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-application-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
+            "anchorId": "devhub-application-submission",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "Permit requests are project-specific DevHub transactions."
+          }
+        ]
+      },
+      {
+        "id": "project-scope-description",
+        "label": "Project scope description",
+        "kind": "project_scope",
+        "required": true,
+        "description": "The selected permit request must be tied to the user's project scope so the correct process and required documents can be checked.",
+        "appliesWhen": [
+          "all_single_pdf_process_requests"
+        ],
+        "sourceStageIds": [
+          "research-process-applicability",
+          "enter-devhub-request"
+        ],
+        "validationHint": "Ask for a concise description of the proposed work and intended permit type.",
+        "containsPrivateOrUserSpecificData": true,
+        "evidence": [
+          {
+            "sourceId": "ppd-single-pdf-process-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+            "anchorId": "single-pdf-process-overview",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "Single PDF Process applicability depends on the project and permit request workflow."
+          }
+        ]
+      }
+    ],
+    "requiredDocuments": [
+      {
+        "id": "single-searchable-drawing-plan-pdf",
+        "name": "Single searchable drawing-plan PDF",
+        "kind": "drawing_plan",
+        "required": true,
+        "description": "Drawing plans must be combined into one searchable PDF for the Single PDF Process.",
+        "appliesWhen": [
+          "drawing_plans_required_for_selected_permit_type"
+        ],
+        "acceptedFileTypes": [
+          "application/pdf"
+        ],
+        "sourceStageIds": [
+          "prepare-pdf-documents",
+          "upload-submittal-files"
+        ],
+        "singlePdfProcessRole": "single_searchable_plan_pdf",
+        "requiresSignature": false,
+        "evidence": [
+          {
+            "sourceId": "ppd-single-pdf-process-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+            "anchorId": "single-pdf-file-rules",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "Public guidance says drawing plans are one searchable PDF."
+          }
+        ]
+      },
+      {
+        "id": "permit-application-pdf",
+        "name": "Permit application PDF",
+        "kind": "application_form",
+        "required": true,
+        "description": "The permit application is prepared and uploaded separately from the drawing-plan PDF.",
+        "appliesWhen": [
+          "all_single_pdf_process_requests"
+        ],
+        "acceptedFileTypes": [
+          "application/pdf"
+        ],
+        "sourceStageIds": [
+          "prepare-pdf-documents",
+          "upload-submittal-files"
+        ],
+        "singlePdfProcessRole": "separate_application_pdf",
+        "requiresSignature": true,
+        "evidence": [
+          {
+            "sourceId": "ppd-single-pdf-process-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+            "anchorId": "single-pdf-file-rules",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "Public guidance distinguishes applications from drawing plans and treats applications as separate PDFs."
+          }
+        ]
+      },
+      {
+        "id": "calculations-and-supporting-documents-pdf",
+        "name": "Calculations and supporting documents PDFs",
+        "kind": "calculation",
+        "required": false,
+        "description": "Calculations and other supporting documents are uploaded as separate PDFs when the selected permit type requires them.",
+        "appliesWhen": [
+          "calculations_or_supporting_documents_required_for_selected_permit_type"
+        ],
+        "acceptedFileTypes": [
+          "application/pdf"
+        ],
+        "sourceStageIds": [
+          "prepare-pdf-documents",
+          "upload-submittal-files"
+        ],
+        "singlePdfProcessRole": "separate_supporting_pdf",
+        "requiresSignature": false,
+        "evidence": [
+          {
+            "sourceId": "ppd-single-pdf-process-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+            "anchorId": "single-pdf-file-rules",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "Public guidance says calculations and supporting documents are separate PDFs."
+          }
+        ]
+      },
+      {
+        "id": "correction-response-pdf",
+        "name": "Correction response PDF",
+        "kind": "correction_response",
+        "required": false,
+        "description": "If PP&D issues corrections or checksheets, responses should be prepared as separate PDFs for the correction upload workflow.",
+        "appliesWhen": [
+          "corrections_or_checksheets_issued"
+        ],
+        "acceptedFileTypes": [
+          "application/pdf"
+        ],
+        "sourceStageIds": [
+          "plan-review-and-corrections"
+        ],
+        "singlePdfProcessRole": "separate_correction_response_pdf",
+        "requiresSignature": false,
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-faq",
+            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
+            "anchorId": "devhub-correction-upload",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "DevHub FAQ lists correction uploads among online permit services."
+          }
+        ]
+      }
+    ],
+    "fileRules": [
+      {
+        "id": "plans-one-searchable-pdf",
+        "description": "Drawing plans are submitted as one searchable PDF.",
+        "appliesToDocumentIds": [
+          "single-searchable-drawing-plan-pdf"
+        ],
+        "required": true,
+        "acceptedFileTypes": [
+          "application/pdf"
+        ],
+        "prohibitedPatterns": [
+          "multiple_plan_pdf_files_for_same_initial_submittal",
+          "image_only_or_unsearchable_plan_pdf_when_searchable_pdf_can_be_produced"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-single-pdf-process-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+            "anchorId": "single-pdf-file-rules",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "Public guidance says drawing plans are one searchable PDF."
+          }
+        ]
+      },
+      {
+        "id": "applications-and-supporting-documents-separate-pdfs",
+        "description": "Applications, calculations, and supporting documents are not merged into the drawing-plan PDF; they remain separate PDFs.",
+        "appliesToDocumentIds": [
+          "permit-application-pdf",
+          "calculations-and-supporting-documents-pdf"
+        ],
+        "required": true,
+        "acceptedFileTypes": [
+          "application/pdf"
+        ],
+        "prohibitedPatterns": [
+          "application_pages_embedded_in_plan_pdf",
+          "calculations_embedded_in_plan_pdf_when_separate_pdf_required"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-single-pdf-process-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+            "anchorId": "single-pdf-file-rules",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "Public guidance says applications, calculations, and supporting documents are separate PDFs."
+          }
+        ]
+      },
+      {
+        "id": "official-actions-require-user-confirmation",
+        "description": "An agent may prepare and check files, but official upload, certification, and submission actions require exact user confirmation before execution.",
+        "appliesToDocumentIds": [
+          "single-searchable-drawing-plan-pdf",
+          "permit-application-pdf",
+          "calculations-and-supporting-documents-pdf",
+          "correction-response-pdf"
+        ],
+        "required": true,
+        "acceptedFileTypes": [
+          "application/pdf"
+        ],
+        "prohibitedPatterns": [
+          "unconfirmed_official_upload",
+          "unconfirmed_certification",
+          "unconfirmed_submission"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-application-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
+            "anchorId": "devhub-application-submission",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "DevHub request submission is a consequential portal action and must remain user-confirmed in PP&D automation."
+          }
+        ]
+      }
+    ],
+    "actionGates": [
+      {
+        "id": "official-upload-gate",
+        "name": "Official upload gate",
+        "kind": "official_upload",
+        "classification": "potentially_consequential",
+        "description": "Uploading files to an official DevHub request may affect the permit record and requires exact user approval.",
+        "requiredConfirmation": "User explicitly confirms uploading these named files to this DevHub permit request.",
+        "blocksUntil": [
+          "required_documents_present",
+          "file_rules_pass",
+          "user_explicit_upload_confirmation"
+        ],
+        "prohibitedWithoutConfirmation": true,
+        "sourceStageIds": [
+          "upload-submittal-files"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-faq",
+            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
+            "anchorId": "devhub-service-categories",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "DevHub supports permit request and correction upload services."
+          }
+        ]
+      },
+      {
+        "id": "certification-gate",
+        "name": "Certification gate",
+        "kind": "certification",
+        "classification": "potentially_consequential",
+        "description": "Any certification or acknowledgment text must be reviewed and confirmed by the user before the agent proceeds.",
+        "requiredConfirmation": "User explicitly confirms the certification or acknowledgment text for this request.",
+        "blocksUntil": [
+          "user_reviews_certification_text",
+          "user_explicit_certification_confirmation"
+        ],
+        "prohibitedWithoutConfirmation": true,
+        "sourceStageIds": [
+          "review-and-certify"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-application-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
+            "anchorId": "devhub-application-submission",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "Submitting a permit request through DevHub is an official workflow action."
+          }
+        ]
+      },
+      {
+        "id": "submission-gate",
+        "name": "Submission gate",
+        "kind": "submission",
+        "classification": "potentially_consequential",
+        "description": "The agent must stop before submitting the request unless the user has confirmed this exact submission.",
+        "requiredConfirmation": "User explicitly confirms submitting this completed permit request to PP&D.",
+        "blocksUntil": [
+          "required_documents_present",
+          "file_rules_pass",
+          "user_explicit_submission_confirmation"
+        ],
+        "prohibitedWithoutConfirmation": true,
+        "sourceStageIds": [
+          "submit-request"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-application-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
+            "anchorId": "devhub-application-submission",
+            "capturedAt": "2026-05-01T17:55:00Z",
+            "note": "DevHub is the online permitting system for permit request submission."
+          }
+        ]
+      }
+    ],
+    "formalRequirementIds": [
+      "single-pdf-process:plans-one-searchable-pdf",
+      "single-pdf-process:application-separate-pdf",
+      "single-pdf-process:official-actions-require-confirmation"
+    ]
+  }
+}

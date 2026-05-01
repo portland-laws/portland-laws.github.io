@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/test_guardrail_compiler.py",
+    "ppd/tests/fixtures/guardrail_compiler/single_pdf_guardrail_cases.json"
+  ],
+  "created_at": "2026-05-01T18:07:10.595828Z",
+  "impact": "Advances the PP&D guardrail compiler milestone with deterministic, public/redacted fixtures that validate agent-facing gates before any live crawl, DevHub login, upload, submission, or payment workflow.",
+  "summary": "Added fixture-backed guardrail compiler tests for document completeness, PDF file rules, missing user facts, and explicit-confirmation gates.",
+  "target_task": "Task checkbox-26: Add guardrail compiler fixture tests for document completeness, PDF file rules, missing user facts, and explicit-confirmation gates.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 30 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "................................................... ---------------------------------------------------------------------- Ran 51 tests in 0.004s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

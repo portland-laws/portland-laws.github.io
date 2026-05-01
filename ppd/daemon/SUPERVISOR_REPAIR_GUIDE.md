@@ -10,6 +10,14 @@ Repairs should be deterministic and fixture-only. They must not depend on live p
 
 All generated file proposals must be complete file replacements. Avoid partial snippets, shell commands, or patches embedded in prose.
 
+## Syntax and Compile Failure Recovery
+
+If recent daemon rounds fail validation with Python `SyntaxError`, `py_compile` failures, or TypeScript parser errors such as `TS1005`, `TS1109`, or `TS1128`, treat that as a daemon-programming problem before retrying the same PP&D domain task.
+
+A useful supervisor repair should improve prompt guidance, preflight checks, retry classification, or diagnostics so the worker asks for smaller syntactically valid proposals. Prefer repairs in `ppd/daemon/` or focused daemon tests. Do not use this path to implement the selected PP&D domain artifact directly.
+
+The next worker proposal after a syntax loop should usually add a narrow module plus a narrow test or fixture. It should avoid broad rewrites of stable shared contracts unless the selected task directly requires changing those contracts.
+
 ## Task checkbox-15 Recovery
 
 Task checkbox-15 is blocked on bounded public crawl dry-run work. Recent failed attempts show two concrete risks:

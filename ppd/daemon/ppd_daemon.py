@@ -612,6 +612,11 @@ Hard constraints:
 - Do not create private DevHub session files, auth state, traces, raw crawl output, or downloaded documents.
 - Keep the change narrow and directly useful for the selected task.
 - Prefer deterministic fixtures and validation before any live crawl or authenticated automation.
+- Before returning JSON, ensure every Python file is syntactically valid Python and every TypeScript file is syntactically valid TypeScript. Do not mix TypeScript syntax into Python or Python typing/control-flow syntax into TypeScript.
+- Prefer adding narrow new modules and tests over rewriting stable shared contracts such as `ppd/contracts/documents.py`, unless the selected task directly requires a shared contract extension.
+- If recent failure context includes `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128`, return a smaller proposal with only the files needed for a syntax-valid implementation or repair.
+- Put committed PP&D fixtures under `ppd/tests/fixtures/...`. Tests in `ppd/tests/` should derive fixture paths from their own file location, for example `Path(__file__).parent / "fixtures" / ...`, so they do not accidentally point at repository-root `tests/fixtures`.
+- Do not mark task-board checkboxes complete in the same proposal unless the implementation, fixtures, and validation code for the selected task are all included. The daemon will mark the selected task complete after validation passes.
 - Do not automate CAPTCHA, MFA, account creation, payment, submission, certification, cancellation, or upload actions.
 
 JSON schema:
@@ -665,15 +670,23 @@ class Daemon:
         self.config = config
         self._heartbeat_stop = threading.Event()
         self._active_state = "initializing"
+        self._active_state_started_at = utc_now()
+        self._active_target_task = ""
 
     def write_status(self, state: str, **extra: Any) -> None:
         if state != "heartbeat":
+            target_task = str(extra.get("target_task") or self._active_target_task)
+            if state != self._active_state or target_task != self._active_target_task:
+                self._active_state_started_at = utc_now()
             self._active_state = state
+            self._active_target_task = target_task
         payload = {
             "updated_at": utc_now(),
             "pid": os.getpid(),
             "state": state,
             "active_state": self._active_state,
+            "active_state_started_at": self._active_state_started_at,
+            "active_target_task": self._active_target_task,
             **extra,
         }
         atomic_write_json(self.config.resolve(self.config.status_file), payload)

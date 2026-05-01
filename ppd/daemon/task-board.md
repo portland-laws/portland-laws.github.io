@@ -27,11 +27,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] Add source-index record fixtures and validation for canonical URL, redirects, content hash, timestamps, and crawl status.
 - [x] Add fixture-only frontier expansion output with discovered links, content-type classifications, and skipped-URL reason codes.
 - [x] Add fixture-only HTML-to-normalized-document conversion for headings, ordered steps, tables, links, and modified-date evidence.
-- [~] Add fixture-only PDF normalized-document conversion metadata for page text, form fields, checkboxes, signatures, and fee-table hints without downloading live PDFs.
-- [ ] Add deterministic source-diff comparator tests that classify added, removed, and changed public guidance requirements from fixtures.
-- [ ] Add a first permit-process fixture for the Single PDF Process with stages, required documents, file rules, and citation-backed evidence.
-- [ ] Add requirement extraction validation for Single PDF Process obligations, preconditions, deadlines, exceptions, confidence, and formalization status.
-- [ ] Add guardrail compiler fixture tests for document completeness, PDF file rules, missing user facts, and explicit-confirmation gates.
+- [x] Add fixture-only PDF normalized-document conversion metadata for page text, form fields, checkboxes, signatures, and fee-table hints without downloading live PDFs.
+- [x] Add deterministic source-diff comparator tests that classify added, removed, and changed public guidance requirements from fixtures.
+- [x] Add a first permit-process fixture for the Single PDF Process with stages, required documents, file rules, and citation-backed evidence.
+- [x] Add requirement extraction validation for Single PDF Process obligations, preconditions, deadlines, exceptions, confidence, and formalization status.
+- [x] Add guardrail compiler fixture tests for document completeness, PDF file rules, missing user facts, and explicit-confirmation gates.
 - [ ] Add mocked DevHub workflow snapshot fixtures with redacted field values, semantic selectors, validation messages, upload controls, and navigation edges.
 - [ ] Add DevHub fixture privacy validation that rejects credentials, auth state, traces, screenshots with private values, and unredacted PII.
 - [ ] Add a fixture-backed public crawl dry-run report command that uses injected responses by default and writes no raw crawl output.
@@ -52,11 +52,11 @@ Last updated: 2026-05-01T17:23:00Z
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-01T17:34:38.148828Z
+Last updated: 2026-05-01T18:07:10.596594Z
 
-- Latest target: `Task checkbox-22: Add fixture-only PDF normalized-document conversion metadata for page text, form fields, checkboxes, signatures, and fee-table hints without downloading live PDFs.`
-- Latest result: `validation`
-- Latest summary: Added fixture-only PDF normalized-document conversion metadata contracts, fixture data, and deterministic validation for page text, form fields, checkboxes, signatures, and fee-table hints.
-- Counts: `{"blocked": 0, "complete": 21, "in_progress": 0, "needed": 9}`
+- Latest target: `Task checkbox-26: Add guardrail compiler fixture tests for document completeness, PDF file rules, missing user facts, and explicit-confirmation gates.`
+- Latest result: `accepted`
+- Latest summary: Added fixture-backed guardrail compiler tests for document completeness, PDF file rules, missing user facts, and explicit-confirmation gates.
+- Counts: `{"blocked": 0, "complete": 26, "in_progress": 0, "needed": 4}`
 
 <!-- ppd-daemon-task-board:end -->

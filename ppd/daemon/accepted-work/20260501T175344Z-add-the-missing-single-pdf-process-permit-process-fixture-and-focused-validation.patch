@@ -1,0 +1,766 @@
+--- a/ppd/tests/fixtures/permit-processes/single_pdf_process.json
++++ b/ppd/tests/fixtures/permit-processes/single_pdf_process.json
+@@ -0,0 +1,549 @@
++{
++  "fixtureKind": "permit_process",
++  "schemaVersion": 1,
++  "generatedAt": "2026-05-01T17:55:00Z",
++  "process": {
++    "id": "single-pdf-process",
++    "name": "Single PDF Process",
++    "permitTypes": [
++      "Building permit requests requiring plan review",
++      "Trade permits with plan review",
++      "Other PP&D permit requests where public guidance directs use of the Single PDF Process"
++    ],
++    "sourceIds": [
++      "ppd-single-pdf-process-guidance",
++      "ppd-devhub-application-guidance",
++      "ppd-devhub-faq"
++    ],
++    "stages": [
++      {
++        "id": "research-process-applicability",
++        "name": "Research Single PDF Process applicability",
++        "kind": "pre_application_research",
++        "sequence": 0,
++        "description": "Confirm that the selected PP&D permit request is one of the public guidance workflows that uses the Single PDF Process before preparing files.",
++        "entryConditions": [],
++        "exitConditions": [
++          "single_pdf_process_applicability_confirmed"
++        ],
++        "nextStageIds": [
++          "prepare-pdf-documents"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-single-pdf-process-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
++            "anchorId": "single-pdf-process-overview",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "Public PP&D guidance describes projects that use a Single PDF Process."
++          }
++        ]
++      },
++      {
++        "id": "prepare-pdf-documents",
++        "name": "Prepare PDF submittal documents",
++        "kind": "document_preparation",
++        "sequence": 1,
++        "description": "Prepare drawing plans as one searchable PDF and keep applications, calculations, and supporting documents as separate PDFs.",
++        "entryConditions": [
++          "single_pdf_process_applicability_confirmed"
++        ],
++        "exitConditions": [
++          "single_searchable_plan_pdf_ready",
++          "application_pdf_ready",
++          "supporting_documents_ready_when_required"
++        ],
++        "nextStageIds": [
++          "enter-devhub-request"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-single-pdf-process-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
++            "anchorId": "single-pdf-file-rules",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "Public guidance says drawing plans are one searchable PDF and applications, calculations, and supporting documents are separate PDFs."
++          }
++        ]
++      },
++      {
++        "id": "enter-devhub-request",
++        "name": "Enter request in DevHub",
++        "kind": "application_data_entry",
++        "sequence": 2,
++        "description": "Use DevHub to start the permit request and enter the project and applicant information needed for the selected request type.",
++        "entryConditions": [
++          "devhub_account_available",
++          "required_project_facts_available"
++        ],
++        "exitConditions": [
++          "devhub_request_ready_for_upload"
++        ],
++        "nextStageIds": [
++          "upload-submittal-files"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-application-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
++            "anchorId": "devhub-request-types",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "Public DevHub application guidance lists permit request types handled through DevHub."
++          }
++        ]
++      },
++      {
++        "id": "upload-submittal-files",
++        "name": "Upload submittal files",
++        "kind": "upload",
++        "sequence": 3,
++        "description": "Upload the single drawing-plan PDF and the separate application or supporting PDFs for PP&D intake review.",
++        "entryConditions": [
++          "devhub_request_ready_for_upload",
++          "single_searchable_plan_pdf_ready",
++          "application_pdf_ready"
++        ],
++        "exitConditions": [
++          "submittal_files_attached_for_user_review"
++        ],
++        "nextStageIds": [
++          "review-and-certify"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-single-pdf-process-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
++            "anchorId": "single-pdf-file-rules",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "The Single PDF Process requires plan files and other submittal documents to be prepared as PDFs before upload."
++          }
++        ]
++      },
++      {
++        "id": "review-and-certify",
++        "name": "Review and certify request",
++        "kind": "acknowledgment_certification",
++        "sequence": 4,
++        "description": "Review all prepared request data and any certification language before taking an official submission action.",
++        "entryConditions": [
++          "submittal_files_attached_for_user_review"
++        ],
++        "exitConditions": [
++          "user_explicitly_confirms_certification_and_submission"
++        ],
++        "nextStageIds": [
++          "submit-request"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-faq",
++            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
++            "anchorId": "devhub-service-categories",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "DevHub FAQ describes online permit request services, fee payments, correction uploads, and related portal actions."
++          }
++        ]
++      },
++      {
++        "id": "submit-request",
++        "name": "Submit request for PP&D intake",
++        "kind": "submission",
++        "sequence": 5,
++        "description": "Submit the completed request only after exact user confirmation; the agent must stop before submission without that confirmation.",
++        "entryConditions": [
++          "user_explicitly_confirms_certification_and_submission"
++        ],
++        "exitConditions": [
++          "request_submitted_to_ppd"
++        ],
++        "nextStageIds": [
++          "prescreen-and-intake"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-application-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
++            "anchorId": "devhub-application-submission",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "DevHub is Portland's online permitting system for permit requests, so submission is a consequential portal action."
++          }
++        ]
++      },
++      {
++        "id": "prescreen-and-intake",
++        "name": "PP&D prescreen and intake",
++        "kind": "prescreen_intake",
++        "sequence": 6,
++        "description": "PP&D reviews the submitted request for intake completeness before later review stages, correction cycles, fees, or issuance paths apply.",
++        "entryConditions": [
++          "request_submitted_to_ppd"
++        ],
++        "exitConditions": [
++          "intake_status_available"
++        ],
++        "nextStageIds": [
++          "plan-review-and-corrections"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-faq",
++            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
++            "anchorId": "devhub-service-categories",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "Public DevHub FAQ lists permit requests requiring plan review and correction uploads as DevHub service categories."
++          }
++        ]
++      },
++      {
++        "id": "plan-review-and-corrections",
++        "name": "Plan review and corrections",
++        "kind": "plan_review",
++        "sequence": 7,
++        "description": "Track plan review status and prepare separate correction response PDFs if PP&D issues checksheets or correction requests.",
++        "entryConditions": [
++          "intake_status_available"
++        ],
++        "exitConditions": [
++          "review_complete_or_corrections_resolved"
++        ],
++        "nextStageIds": [],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-faq",
++            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
++            "anchorId": "devhub-correction-upload",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "Public DevHub FAQ identifies correction uploads as an online permitting service."
++          }
++        ]
++      }
++    ],
++    "requiredFacts": [
++      {
++        "id": "project-property-identifier",
++        "label": "Project property address or property identifier",
++        "kind": "property",
++        "required": true,
++        "description": "The request needs a property location or identifier before a permit request can be prepared.",
++        "appliesWhen": [
++          "all_single_pdf_process_requests"
++        ],
++        "sourceStageIds": [
++          "enter-devhub-request"
++        ],
++        "validationHint": "Ask for the project address or a public property identifier before preparing the DevHub request.",
++        "containsPrivateOrUserSpecificData": true,
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-application-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
++            "anchorId": "devhub-application-submission",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "Permit requests are project-specific DevHub transactions."
++          }
++        ]
++      },
++      {
++        "id": "project-scope-description",
++        "label": "Project scope description",
++        "kind": "project_scope",
++        "required": true,
++        "description": "The selected permit request must be tied to the user's project scope so the correct process and required documents can be checked.",
++        "appliesWhen": [
++          "all_single_pdf_process_requests"
++        ],
++        "sourceStageIds": [
++          "research-process-applicability",
++          "enter-devhub-request"
++        ],
++        "validationHint": "Ask for a concise description of the proposed work and intended permit type.",
++        "containsPrivateOrUserSpecificData": true,
++        "evidence": [
++          {
++            "sourceId": "ppd-single-pdf-process-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
++            "anchorId": "single-pdf-process-overview",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "Single PDF Process applicability depends on the project and permit request workflow."
++          }
++        ]
++      }
++    ],
++    "requiredDocuments": [
++      {
++        "id": "single-searchable-drawing-plan-pdf",
++        "name": "Single searchable drawing-plan PDF",
++        "kind": "drawing_plan",
++        "required": true,
++        "description": "Drawing plans must be combined into one searchable PDF for the Single PDF Process.",
++        "appliesWhen": [
++          "drawing_plans_required_for_selected_permit_type"
++        ],
++        "acceptedFileTypes": [
++          "application/pdf"
++        ],
++        "sourceStageIds": [
++          "prepare-pdf-documents",
++          "upload-submittal-files"
++        ],
++        "singlePdfProcessRole": "single_searchable_plan_pdf",
++        "requiresSignature": false,
++        "evidence": [
++          {
++            "sourceId": "ppd-single-pdf-process-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
++            "anchorId": "single-pdf-file-rules",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "Public guidance says drawing plans are one searchable PDF."
++          }
++        ]
++      },
++      {
++        "id": "permit-application-pdf",
++        "name": "Permit application PDF",
++        "kind": "application_form",
++        "required": true,
++        "description": "The permit application is prepared and uploaded separately from the drawing-plan PDF.",
++        "appliesWhen": [
++          "all_single_pdf_process_requests"
++        ],
++        "acceptedFileTypes": [
++          "application/pdf"
++        ],
++        "sourceStageIds": [
++          "prepare-pdf-documents",
++          "upload-submittal-files"
++        ],
++        "singlePdfProcessRole": "separate_application_pdf",
++        "requiresSignature": true,
++        "evidence": [
++          {
++            "sourceId": "ppd-single-pdf-process-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
++            "anchorId": "single-pdf-file-rules",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "Public guidance distinguishes applications from drawing plans and treats applications as separate PDFs."
++          }
++        ]
++      },
++      {
++        "id": "calculations-and-supporting-documents-pdf",
++        "name": "Calculations and supporting documents PDFs",
++        "kind": "calculation",
++        "required": false,
++        "description": "Calculations and other supporting documents are uploaded as separate PDFs when the selected permit type requires them.",
++        "appliesWhen": [
++          "calculations_or_supporting_documents_required_for_selected_permit_type"
++        ],
++        "acceptedFileTypes": [
++          "application/pdf"
++        ],
++        "sourceStageIds": [
++          "prepare-pdf-documents",
++          "upload-submittal-files"
++        ],
++        "singlePdfProcessRole": "separate_supporting_pdf",
++        "requiresSignature": false,
++        "evidence": [
++          {
++            "sourceId": "ppd-single-pdf-process-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
++            "anchorId": "single-pdf-file-rules",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "Public guidance says calculations and supporting documents are separate PDFs."
++          }
++        ]
++      },
++      {
++        "id": "correction-response-pdf",
++        "name": "Correction response PDF",
++        "kind": "correction_response",
++        "required": false,
++        "description": "If PP&D issues corrections or checksheets, responses should be prepared as separate PDFs for the correction upload workflow.",
++        "appliesWhen": [
++          "corrections_or_checksheets_issued"
++        ],
++        "acceptedFileTypes": [
++          "application/pdf"
++        ],
++        "sourceStageIds": [
++          "plan-review-and-corrections"
++        ],
++        "singlePdfProcessRole": "separate_correction_response_pdf",
++        "requiresSignature": false,
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-faq",
++            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
++            "anchorId": "devhub-correction-upload",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "DevHub FAQ lists correction uploads among online permit services."
++          }
++        ]
++      }
++    ],
++    "fileRules": [
++      {
++        "id": "plans-one-searchable-pdf",
++        "description": "Drawing plans are submitted as one searchable PDF.",
++        "appliesToDocumentIds": [
++          "single-searchable-drawing-plan-pdf"
++        ],
++        "required": true,
++        "acceptedFileTypes": [
++          "application/pdf"
++        ],
++        "prohibitedPatterns": [
++          "multiple_plan_pdf_files_for_same_initial_submittal",
++          "image_only_or_unsearchable_plan_pdf_when_searchable_pdf_can_be_produced"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-single-pdf-process-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
++            "anchorId": "single-pdf-file-rules",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "Public guidance says drawing plans are one searchable PDF."
++          }
++        ]
++      },
++      {
++        "id": "applications-and-supporting-documents-separate-pdfs",
++        "description": "Applications, calculations, and supporting documents are not merged into the drawing-plan PDF; they remain separate PDFs.",
++        "appliesToDocumentIds": [
++          "permit-application-pdf",
++          "calculations-and-supporting-documents-pdf"
++        ],
++        "required": true,
++        "acceptedFileTypes": [
++          "application/pdf"
++        ],
++        "prohibitedPatterns": [
++          "application_pages_embedded_in_plan_pdf",
++          "calculations_embedded_in_plan_pdf_when_separate_pdf_required"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-single-pdf-process-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
++            "anchorId": "single-pdf-file-rules",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "Public guidance says applications, calculations, and supporting documents are separate PDFs."
++          }
++        ]
++      },
++      {
++        "id": "official-actions-require-user-confirmation",
++        "description": "An agent may prepare and check files, but official upload, certification, and submission actions require exact user confirmation before execution.",
++        "appliesToDocumentIds": [
++          "single-searchable-drawing-plan-pdf",
++          "permit-application-pdf",
++          "calculations-and-supporting-documents-pdf",
++          "correction-response-pdf"
++        ],
++        "required": true,
++        "acceptedFileTypes": [
++          "application/pdf"
++        ],
++        "prohibitedPatterns": [
++          "unconfirmed_official_upload",
++          "unconfirmed_certification",
++          "unconfirmed_submission"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-application-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
++            "anchorId": "devhub-application-submission",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "DevHub request submission is a consequential portal action and must remain user-confirmed in PP&D automation."
++          }
++        ]
++      }
++    ],
++    "actionGates": [
++      {
++        "id": "official-upload-gate",
++        "name": "Official upload gate",
++        "kind": "official_upload",
++        "classification": "potentially_consequential",
++        "description": "Uploading files to an official DevHub request may affect the permit record and requires exact user approval.",
++        "requiredConfirmation": "User explicitly confirms uploading these named files to this DevHub permit request.",
++        "blocksUntil": [
++          "required_documents_present",
++          "file_rules_pass",
++          "user_explicit_upload_confirmation"
++        ],
++        "prohibitedWithoutConfirmation": true,
++        "sourceStageIds": [
++          "upload-submittal-files"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-faq",
++            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
++            "anchorId": "devhub-service-categories",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "DevHub supports permit request and correction upload services."
++          }
++        ]
++      },
++      {
++        "id": "certification-gate",
++        "name": "Certification gate",
++        "kind": "certification",
++        "classification": "potentially_consequential",
++        "description": "Any certification or acknowledgment text must be reviewed and confirmed by the user before the agent proceeds.",
++        "requiredConfirmation": "User explicitly confirms the certification or acknowledgment text for this request.",
++        "blocksUntil": [
++          "user_reviews_certification_text",
++          "user_explicit_certification_confirmation"
++        ],
++        "prohibitedWithoutConfirmation": true,
++        "sourceStageIds": [
++          "review-and-certify"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-application-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
++            "anchorId": "devhub-application-submission",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "Submitting a permit request through DevHub is an official workflow action."
++          }
++        ]
++      },
++      {
++        "id": "submission-gate",
++        "name": "Submission gate",
++        "kind": "submission",
++        "classification": "potentially_consequential",
++        "description": "The agent must stop before submitting the request unless the user has confirmed this exact submission.",
++        "requiredConfirmation": "User explicitly confirms submitting this completed permit request to PP&D.",
++        "blocksUntil": [
++          "required_documents_present",
++          "file_rules_pass",
++          "user_explicit_submission_confirmation"
++        ],
++        "prohibitedWithoutConfirmation": true,
++        "sourceStageIds": [
++          "submit-request"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-application-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
++            "anchorId": "devhub-application-submission",
++            "capturedAt": "2026-05-01T17:55:00Z",
++            "note": "DevHub is the online permitting system for permit request submission."
++          }
++        ]
++      }
++    ],
++    "formalRequirementIds": [
++      "single-pdf-process:plans-one-searchable-pdf",
++      "single-pdf-process:application-separate-pdf",
++      "single-pdf-process:official-actions-require-confirmation"
++    ]
++  }
++}
+--- a/ppd/tests/test_single_pdf_process_fixture.py
++++ b/ppd/tests/test_single_pdf_process_fixture.py
+@@ -0,0 +1,211 @@
++"""Validate the first fixture-backed Single PDF Process permit model."""
++
++from __future__ import annotations
++
++import json
++import unittest
++from pathlib import Path
++
++from ppd.contracts.processes import (
++    ActionGate,
++    ActionGateClassification,
++    ActionGateKind,
++    EvidenceRef,
++    PermitProcess,
++    ProcessStage,
++    ProcessStageKind,
++    RequiredDocument,
++    RequiredDocumentKind,
++    RequiredFact,
++    RequiredFactKind,
++)
++
++FIXTURE_PATH = Path(__file__).parent / "fixtures" / "permit-processes" / "single_pdf_process.json"
++
++
++class SinglePdfProcessFixtureTest(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls) -> None:
++        cls.fixture = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
++        cls.process = cls.fixture["process"]
++
++    def test_fixture_metadata_is_scoped_and_versioned(self) -> None:
++        self.assertEqual(self.fixture["fixtureKind"], "permit_process")
++        self.assertEqual(self.fixture["schemaVersion"], 1)
++        self.assertTrue(self.fixture["generatedAt"].endswith("Z"))
++        self.assertEqual(self.process["id"], "single-pdf-process")
++        self.assertIn("ppd-single-pdf-process-guidance", self.process["sourceIds"])
++
++    def test_process_contract_accepts_core_fixture_shape(self) -> None:
++        permit_process = PermitProcess(
++            id=self.process["id"],
++            name=self.process["name"],
++            permit_types=tuple(self.process["permitTypes"]),
++            source_ids=tuple(self.process["sourceIds"]),
++            stages=tuple(self._stage(stage) for stage in self.process["stages"]),
++            required_facts=tuple(self._fact(fact) for fact in self.process["requiredFacts"]),
++            required_documents=tuple(self._document(document) for document in self.process["requiredDocuments"]),
++            action_gates=tuple(self._gate(gate) for gate in self.process["actionGates"]),
++            formal_requirement_ids=tuple(self.process["formalRequirementIds"]),
++        )
++        self.assertEqual(permit_process.validate(), [])
++
++    def test_stage_sequence_covers_single_pdf_workflow(self) -> None:
++        stages = self.process["stages"]
++        self.assertEqual([stage["sequence"] for stage in stages], list(range(len(stages))))
++        kinds = {stage["kind"] for stage in stages}
++        expected_kinds = {
++            "pre_application_research",
++            "document_preparation",
++            "application_data_entry",
++            "upload",
++            "acknowledgment_certification",
++            "submission",
++            "prescreen_intake",
++            "plan_review",
++        }
++        self.assertTrue(expected_kinds.issubset(kinds))
++        stage_ids = {stage["id"] for stage in stages}
++        for stage in stages:
++            for next_stage_id in stage["nextStageIds"]:
++                self.assertIn(next_stage_id, stage_ids)
++            self.assertEvidence(stage["evidence"], f"stage {stage['id']}")
++
++    def test_required_documents_capture_single_pdf_roles_and_pdf_rules(self) -> None:
++        documents = {document["id"]: document for document in self.process["requiredDocuments"]}
++        self.assertIn("single-searchable-drawing-plan-pdf", documents)
++        self.assertIn("permit-application-pdf", documents)
++        self.assertIn("calculations-and-supporting-documents-pdf", documents)
++
++        plan = documents["single-searchable-drawing-plan-pdf"]
++        self.assertEqual(plan["kind"], "drawing_plan")
++        self.assertTrue(plan["required"])
++        self.assertEqual(plan["singlePdfProcessRole"], "single_searchable_plan_pdf")
++
++        separate_roles = {
++            documents["permit-application-pdf"]["singlePdfProcessRole"],
++            documents["calculations-and-supporting-documents-pdf"]["singlePdfProcessRole"],
++        }
++        self.assertEqual(separate_roles, {"separate_application_pdf", "separate_supporting_pdf"})
++
++        for document in documents.values():
++            self.assertEqual(document["acceptedFileTypes"], ["application/pdf"])
++            self.assertEvidence(document["evidence"], f"document {document['id']}")
++
++    def test_file_rules_are_citation_backed_and_constrain_pdf_submittals(self) -> None:
++        rules = {rule["id"]: rule for rule in self.process["fileRules"]}
++        self.assertIn("plans-one-searchable-pdf", rules)
++        self.assertIn("applications-and-supporting-documents-separate-pdfs", rules)
++        self.assertIn("official-actions-require-user-confirmation", rules)
++
++        plan_rule = rules["plans-one-searchable-pdf"]
++        self.assertEqual(plan_rule["acceptedFileTypes"], ["application/pdf"])
++        self.assertIn("single-searchable-drawing-plan-pdf", plan_rule["appliesToDocumentIds"])
++        self.assertIn("multiple_plan_pdf_files_for_same_initial_submittal", plan_rule["prohibitedPatterns"])
++
++        separate_rule = rules["applications-and-supporting-documents-separate-pdfs"]
++        self.assertIn("permit-application-pdf", separate_rule["appliesToDocumentIds"])
++        self.assertIn("calculations-and-supporting-documents-pdf", separate_rule["appliesToDocumentIds"])
++        self.assertIn("application_pages_embedded_in_plan_pdf", separate_rule["prohibitedPatterns"])
++
++        for rule in rules.values():
++            self.assertTrue(rule["required"])
++            self.assertEqual(rule["acceptedFileTypes"], ["application/pdf"])
++            self.assertEvidence(rule["evidence"], f"file rule {rule['id']}")
++
++    def test_action_gates_stop_before_consequential_devhub_actions(self) -> None:
++        gates = {gate["id"]: gate for gate in self.process["actionGates"]}
++        self.assertEqual(set(gates), {"official-upload-gate", "certification-gate", "submission-gate"})
++        for gate in gates.values():
++            self.assertEqual(gate["classification"], "potentially_consequential")
++            self.assertTrue(gate["prohibitedWithoutConfirmation"])
++            self.assertIn("explicitly confirms", gate["requiredConfirmation"])
++            self.assertEvidence(gate["evidence"], f"action gate {gate['id']}")
++
++    def test_no_private_or_runtime_artifacts_are_embedded(self) -> None:
++        serialized = json.dumps(self.fixture, sort_keys=True).lower()
++        forbidden = ("password", "cookie", "auth-state", "storage-state", "trace.zip", "session token")
++        for marker in forbidden:
++            self.assertNotIn(marker, serialized)
++
++    def assertEvidence(self, evidence: list[dict], context: str) -> None:
++        self.assertTrue(evidence, f"{context} must include evidence")
++        source_ids = set(self.process["sourceIds"])
++        for item in evidence:
++            self.assertIn(item["sourceId"], source_ids, context)
++            self.assertTrue(item["sourceUrl"].startswith("https://"), context)
++            self.assertTrue(item["capturedAt"].endswith("Z"), context)
++            self.assertTrue(item["note"].strip(), context)
++
++    def _evidence(self, items: list[dict]) -> tuple[EvidenceRef, ...]:
++        return tuple(
++            EvidenceRef(
++                source_id=item["sourceId"],
++                source_url=item.get("sourceUrl"),
++                anchor_id=item.get("anchorId"),
++                page_number=item.get("pageNumber"),
++                captured_at=item.get("capturedAt"),
++                note=item.get("note"),
++            )
++            for item in items
++        )
++
++    def _stage(self, stage: dict) -> ProcessStage:
++        return ProcessStage(
++            id=stage["id"],
++            name=stage["name"],
++            kind=ProcessStageKind(stage["kind"]),
++            sequence=stage["sequence"],
++            description=stage["description"],
++            entry_conditions=tuple(stage["entryConditions"]),
++            exit_conditions=tuple(stage["exitConditions"]),
++            next_stage_ids=tuple(stage["nextStageIds"]),
++            evidence=self._evidence(stage["evidence"]),
++        )
++
++    def _fact(self, fact: dict) -> RequiredFact:
++        return RequiredFact(
++            id=fact["id"],
++            label=fact["label"],
++            kind=RequiredFactKind(fact["kind"]),
++            required=fact["required"],
++            description=fact["description"],
++            applies_when=tuple(fact["appliesWhen"]),
++            source_stage_ids=tuple(fact["sourceStageIds"]),
++            validation_hint=fact.get("validationHint"),
++            contains_private_or_user_specific_data=fact["containsPrivateOrUserSpecificData"],
++            evidence=self._evidence(fact["evidence"]),
++        )
++
++    def _document(self, document: dict) -> RequiredDocument:
++        return RequiredDocument(
++            id=document["id"],
++            name=document["name"],
++            kind=RequiredDocumentKind(document["kind"]),
++            required=document["required"],
++            description=document["description"],
++            applies_when=tuple(document["appliesWhen"]),
++            accepted_file_types=tuple(document["acceptedFileTypes"]),
++            source_stage_ids=tuple(document["sourceStageIds"]),
++            single_pdf_process_role=document.get("singlePdfProcessRole"),
++            requires_signature=document["requiresSignature"],
++            evidence=self._evidence(document["evidence"]),
++        )
++
++    def _gate(self, gate: dict) -> ActionGate:
++        return ActionGate(
++            id=gate["id"],
++            name=gate["name"],
++            kind=ActionGateKind(gate["kind"]),
++            classification=ActionGateClassification(gate["classification"]),
++            description=gate["description"],
++            required_confirmation=gate["requiredConfirmation"],
++            blocks_until=tuple(gate["blocksUntil"]),
++            prohibited_without_confirmation=gate["prohibitedWithoutConfirmation"],
++            source_stage_ids=tuple(gate["sourceStageIds"]),
++            evidence=self._evidence(gate["evidence"]),
++        )
++
++
++if __name__ == "__main__":
++    unittest.main()

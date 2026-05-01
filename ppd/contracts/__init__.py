@@ -22,6 +22,15 @@ from .frontier import (
     SkippedFrontierUrl,
     SkippedUrlReason,
 )
+from .pdf_metadata import (
+    PdfCheckboxHint,
+    PdfFeeTableHint,
+    PdfFieldKind,
+    PdfFormField,
+    PdfNormalizedDocumentMetadata,
+    PdfPageText,
+    PdfSignatureHint,
+)
 from .processes import (
     ActionGate,
     ActionGateClassification,
@@ -35,7 +44,25 @@ from .processes import (
     RequiredFact,
     RequiredFactKind,
 )
+from .requirements import (
+    ExtractedRequirement,
+    ExtractedRequirementType,
+    RequirementEvidenceRef,
+    RequirementExtractionFixture,
+    RequirementFormalizationStatus,
+    RequirementSubject,
+    evidence_from_dict,
+    fixture_from_dict,
+    requirement_from_dict,
+)
 from .source_index import CrawlStatus, RedirectHop, SourceIndexRecord, SourcePageType
+from .source_diff import (
+    PublicGuidanceRequirement,
+    RequirementDiff,
+    RequirementDiffKind,
+    RequirementDiffReport,
+    classify_requirement_diffs,
+)
 
 __all__ = [
     "ActionGate",
@@ -48,6 +75,8 @@ __all__ = [
     "DocumentTable",
     "EvidenceRef",
     "ExtractedField",
+    "ExtractedRequirement",
+    "ExtractedRequirementType",
     "FrontierContentType",
     "FrontierExpansion",
     "FrontierExpansionSummary",
@@ -55,12 +84,27 @@ __all__ = [
     "ModifiedDateEvidence",
     "NormalizedDocument",
     "PageAnchor",
+    "PdfCheckboxHint",
+    "PdfFeeTableHint",
+    "PdfFieldKind",
+    "PdfFormField",
+    "PdfNormalizedDocumentMetadata",
+    "PdfPageText",
+    "PdfSignatureHint",
     "PermitProcess",
     "PpdContentType",
     "PpdDocumentRole",
     "ProcessStage",
     "ProcessStageKind",
+    "PublicGuidanceRequirement",
     "RedirectHop",
+    "RequirementDiff",
+    "RequirementDiffKind",
+    "RequirementDiffReport",
+    "RequirementEvidenceRef",
+    "RequirementExtractionFixture",
+    "RequirementFormalizationStatus",
+    "RequirementSubject",
     "RequiredDocument",
     "RequiredDocumentKind",
     "RequiredFact",
@@ -71,4 +115,8 @@ __all__ = [
     "SourceIndexRecord",
     "SourceLink",
     "SourcePageType",
+    "classify_requirement_diffs",
+    "evidence_from_dict",
+    "fixture_from_dict",
+    "requirement_from_dict",
 ]

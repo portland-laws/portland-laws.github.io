@@ -701,11 +701,11 @@ That PR gives the project immediate product value without committing to a full t
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-01 17:35:21 UTC
+Last updated: 2026-05-01 18:07:35 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.`
+Current target: `Task checkbox-173: Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -816,7 +816,7 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-103: Initial local CEC delegate replacement that translates TDFOL to browser-native CEC expressions and returns explicit unknown results instead of calling Python or a server.` - complete
 - [x] `Task checkbox-104: Initial indexed-KB and cache-aware optimization facade.` - complete
 - [x] `Task checkbox-105: Deeper CEC delegate parity for native CEC inference rule groups and proof traces.` - complete
-- [!] `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.` - latest daemon round failed validation or preflight
+- [!] `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.` - blocked
 - [!] `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.` - blocked
 - [x] `Task checkbox-108: Initial modal tableaux proof search for propositional, temporal, deontic modal formulas and K/T/D/S4/S5 accessibility.` - complete
 - [x] `Task checkbox-109: Initial countermodel model, extractor, and self-contained visual exports.` - complete
@@ -883,7 +883,7 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-170: Initial CEC security validator and error-hardening facade with rate limits, input sanitization, size/depth/operator guards, injection/DoS detection, parse validation, resource checks, proof-result audit, and security reports.` - complete
 - [!] `Task checkbox-171: Port CEC NL policy compilers and language detection with browser-native NLP.` - blocked
 - [x] `Task checkbox-172: Add deeper CEC/DCEC parity fixtures against Python parser and prover outputs.` - complete
-- [!] `Task checkbox-173: Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.` - blocked
+- [!] `Task checkbox-173: Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.` - latest daemon round failed validation or preflight
 - [!] `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.` - blocked
 - [!] `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.` - blocked
 - [x] `Task checkbox-176: Add exact/tolerance parity tests against Python ML/spaCy development fixtures.` - complete
@@ -908,12 +908,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.`
+- Target: `Task checkbox-173: Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.`
 - Result: `needs follow-up`
-- Summary: Repair ZKP facade proof search replacement with valid TypeScript generics and bounded browser-native search syntax.
-- Impact: Adds typed proof-search candidates/results/profile to the TypeScript ZKP facade and extends Jest facade coverage for bounded parallel proof search and exhausted search validation.
-- Errors: File edits failed validation and were rolled back.
-- Failure kind: `validation_repair`
+- Summary: No summary
+- Errors: LLM response did not contain JSON or a fenced diff patch.
+- Failure kind: `parse`
 
 ### Blocked Backlog
 
@@ -938,9 +937,9 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
   - Latest failure kind: `apply_check`
   - Latest errors: Patch failed git apply --check.
 - `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.`
-  - Failures since success: `5`
-  - Failure kinds: `{"validation": 4, "validation_repair": 1}`
-  - Latest failure kind: `validation_repair`
+  - Failures since success: `6`
+  - Failure kinds: `{"validation": 5, "validation_repair": 1}`
+  - Latest failure kind: `validation`
   - Latest errors: File edits failed validation and were rolled back.
 - `Task checkbox-111: Complete TDFOL security validator parity.`
   - Failures since success: `18`
@@ -948,23 +947,23 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
   - Latest failure kind: `validation`
   - Latest errors: File edits failed validation and were rolled back.
 - `Task checkbox-113: Add browser performance budgets for proof search.`
-  - Failures since success: `5`
-  - Failure kinds: `{"validation": 3, "validation_repair": 2}`
-  - Latest failure kind: `validation_repair`
-  - Latest errors: File edits failed validation and were rolled back.
+  - Failures since success: `6`
+  - Failure kinds: `{"preflight": 1, "validation": 3, "validation_repair": 2}`
+  - Latest failure kind: `preflight`
+  - Latest errors: Rejected proposal because TypeScript parser preflight found syntax errors before touching the worktree: ../../..src/lib/logic/tdfol/prover.ts(31,59): error TS1005: ')' expected. ../../..src/lib/logic/tdfol/prover.ts(32,3): error TS1128: Dec...; File edits failed validation and were rolled back.
 - `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.`
   - Failures since success: `110`
   - Failure kinds: `{"apply_check": 20, "invalid_no_change": 14, "parse": 73, "preflight": 1, "validation": 2}`
   - Latest failure kind: `invalid_no_change`
 - `Task checkbox-145: Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.`
-  - Failures since success: `5`
-  - Failure kinds: `{"validation_repair": 5}`
-  - Latest failure kind: `validation_repair`
-  - Latest errors: File edits failed validation and were rolled back.
+  - Failures since success: `6`
+  - Failure kinds: `{"apply_check": 1, "validation_repair": 5}`
+  - Latest failure kind: `apply_check`
+  - Latest errors: Patch failed git apply --check.
 - `Task checkbox-153: Port CEC proof cache, proof strategies, advanced inference, and error handling.`
-  - Failures since success: `5`
-  - Failure kinds: `{"validation_repair": 5}`
-  - Latest failure kind: `validation_repair`
+  - Failures since success: `6`
+  - Failure kinds: `{"validation": 1, "validation_repair": 5}`
+  - Latest failure kind: `validation`
   - Latest errors: File edits failed validation and were rolled back.
 
 ### Required Daemon Behavior

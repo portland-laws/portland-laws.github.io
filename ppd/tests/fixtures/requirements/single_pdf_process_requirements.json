@@ -1,0 +1,119 @@
+{
+  "fixture_id": "single-pdf-process-requirements-v1",
+  "process_id": "single-pdf-process",
+  "process_name": "Single PDF Process",
+  "extracted_at": "2026-05-01T18:02:00Z",
+  "requirements": [
+    {
+      "requirement_id": "spp-obligation-drawing-plans-single-pdf",
+      "type": "obligation",
+      "subject": "applicant",
+      "action": "prepare",
+      "object": "drawing plans as one searchable PDF",
+      "conditions": [
+        "Single PDF Process applies to the permit request"
+      ],
+      "deadline_or_temporal_scope": "before DevHub permit request upload",
+      "evidence": [
+        {
+          "source_id": "ppd-single-pdf-process-guidance",
+          "source_url": "https://www.portland.gov/ppd/permits/single-pdf-process",
+          "quote": "Drawing plans are submitted as one searchable PDF.",
+          "anchor_id": "single-pdf-file-rules"
+        }
+      ],
+      "confidence": 0.94,
+      "formalization_status": "machine_checked",
+      "formalization_notes": "Candidate deontic rule: OBLIGATED(applicant, prepare(single_searchable_drawing_plan_pdf), if(single_pdf_process_applies))."
+    },
+    {
+      "requirement_id": "spp-obligation-supporting-documents-separate-pdfs",
+      "type": "obligation",
+      "subject": "applicant",
+      "action": "submit",
+      "object": "applications, calculations, and supporting documents as separate PDF files",
+      "conditions": [
+        "Single PDF Process applies to the permit request"
+      ],
+      "deadline_or_temporal_scope": "with the permit request upload package",
+      "evidence": [
+        {
+          "source_id": "ppd-single-pdf-process-guidance",
+          "source_url": "https://www.portland.gov/ppd/permits/single-pdf-process",
+          "quote": "Applications, calculations, and supporting documents are submitted as separate PDF files.",
+          "anchor_id": "single-pdf-file-rules"
+        }
+      ],
+      "confidence": 0.91,
+      "formalization_status": "draft",
+      "formalization_notes": "Candidate document completeness rule for non-plan supporting PDFs."
+    },
+    {
+      "requirement_id": "spp-precondition-process-applies",
+      "type": "precondition",
+      "subject": "applicant",
+      "action": "use",
+      "object": "Single PDF Process",
+      "conditions": [
+        "project guidance or permit type directs the applicant to use the Single PDF Process",
+        "plan review documents are being prepared for upload"
+      ],
+      "deadline_or_temporal_scope": "during document preparation",
+      "evidence": [
+        {
+          "source_id": "ppd-single-pdf-process-guidance",
+          "source_url": "https://www.portland.gov/ppd/permits/single-pdf-process",
+          "quote": "Some projects use a Single PDF Process for plan review submittals.",
+          "anchor_id": "single-pdf-process-overview"
+        }
+      ],
+      "confidence": 0.82,
+      "formalization_status": "human_review_needed",
+      "formalization_notes": "Needs source-specific confirmation for which permit types route to this process."
+    },
+    {
+      "requirement_id": "spp-deadline-upload-before-submit",
+      "type": "deadline",
+      "subject": "applicant",
+      "action": "upload",
+      "object": "required Single PDF Process document package",
+      "conditions": [
+        "applicant is preparing a DevHub permit request that requires plan review"
+      ],
+      "deadline_or_temporal_scope": "before submitting the permit request for review",
+      "evidence": [
+        {
+          "source_id": "ppd-devhub-application-guidance",
+          "source_url": "https://www.portland.gov/ppd/devhub/apply-permit",
+          "quote": "Prepare the drawing plan PDF and separate application or supporting PDFs before uploading the permit request in DevHub.",
+          "anchor_id": "devhub-application-submission"
+        }
+      ],
+      "confidence": 0.86,
+      "formalization_status": "draft",
+      "formalization_notes": "Temporal rule candidate: before(upload_required_documents, submit_request)."
+    },
+    {
+      "requirement_id": "spp-exception-non-plan-supporting-documents",
+      "type": "exception",
+      "subject": "applicant",
+      "action": "exclude",
+      "object": "applications, calculations, and supporting documents from the single drawing plan PDF",
+      "conditions": [
+        "document is an application, calculation, or supporting document rather than a drawing plan sheet"
+      ],
+      "deadline_or_temporal_scope": "when assembling the Single PDF Process upload package",
+      "evidence": [
+        {
+          "source_id": "ppd-single-pdf-process-guidance",
+          "source_url": "https://www.portland.gov/ppd/permits/single-pdf-process",
+          "quote": "Drawing plans are one searchable PDF; applications, calculations, and supporting documents are separate PDFs.",
+          "anchor_id": "single-pdf-file-rules"
+        }
+      ],
+      "confidence": 0.89,
+      "formalization_status": "machine_checked",
+      "formalization_notes": "Exception to single-PDF bundling applies to non-plan supporting documents."
+    }
+  ]
+}

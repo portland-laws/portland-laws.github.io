@@ -1,0 +1,55 @@
+{
+  "reportId": "ppd-source-diff-requirements-2026-05-01",
+  "generatedAt": "2026-05-01T17:45:00Z",
+  "beforeSnapshotId": "ppd-guidance-before",
+  "afterSnapshotId": "ppd-guidance-after",
+  "before": [
+    {
+      "id": "req-existing-file-format",
+      "sourceId": "single-pdf-process",
+      "sourceUrl": "https://www.portland.gov/ppd/single-pdf-process",
+      "anchorId": "drawing-plans",
+      "requirementType": "obligation",
+      "text": "Drawing plans must be submitted as one searchable PDF.",
+      "evidenceText": "Drawing plans must be provided as one searchable PDF.",
+      "contentHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "id": "req-removed-paper-copy",
+      "sourceId": "legacy-submittal",
+      "sourceUrl": "https://www.portland.gov/ppd/legacy-submittal",
+      "anchorId": "paper-copy",
+      "requirementType": "obligation",
+      "text": "Applicants should bring a paper copy to the permit center.",
+      "evidenceText": "Bring a paper copy to the permit center.",
+      "contentHash": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    }
+  ],
+  "after": [
+    {
+      "id": "req-existing-file-format",
+      "sourceId": "single-pdf-process",
+      "sourceUrl": "https://www.portland.gov/ppd/single-pdf-process",
+      "anchorId": "drawing-plans",
+      "requirementType": "obligation",
+      "text": "Drawing plans must be submitted as one searchable PDF with bookmarks when required.",
+      "evidenceText": "Drawing plans must be provided as one searchable PDF with bookmarks when required.",
+      "contentHash": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
+    },
+    {
+      "id": "req-added-fee-confirmation",
+      "sourceId": "devhub-fees",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub-fees",
+      "anchorId": "fee-payment",
+      "requirementType": "action_gate",
+      "text": "Fee payment requires explicit user confirmation before proceeding.",
+      "evidenceText": "Confirm before paying fees in Development Hub PDX.",
+      "contentHash": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
+    }
+  ],
+  "expectedDiffKinds": {
+    "added": ["req-added-fee-confirmation"],
+    "removed": ["req-removed-paper-copy"],
+    "changed": ["req-existing-file-format"]
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/permit-processes/single_pdf_process.json",
+    "ppd/tests/test_single_pdf_process_fixture.py"
+  ],
+  "created_at": "2026-05-01T17:53:44.780174Z",
+  "impact": "This gives PP&D its first deterministic permit-process model for the Single PDF Process, including ordered stages, PDF-only document requirements, file rules, consequential action gates, and citation-backed evidence without live crawling or DevHub automation.",
+  "summary": "Add the missing Single PDF Process permit-process fixture and focused validation test that uses ppd/tests fixture-relative paths.",
+  "target_task": "Task checkbox-24: Add a first permit-process fixture for the Single PDF Process with stages, required documents, file rules, and citation-backed evidence.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 30 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "........................................... ---------------------------------------------------------------------- Ran 43 tests in 0.004s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

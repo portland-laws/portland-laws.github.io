@@ -1,0 +1,97 @@
+{
+  "fixtureId": "pdf-normalized-document-metadata-v1",
+  "fixtureKind": "pdf_normalized_document_metadata",
+  "generatedAt": "2026-05-01T17:40:00Z",
+  "documents": [
+    {
+      "documentId": "building-permit-application-pdf-fixture",
+      "sourceUrl": "https://www.portland.gov/ppd/forms/building-permit-application.pdf",
+      "canonicalUrl": "https://www.portland.gov/ppd/forms/building-permit-application.pdf",
+      "title": "Building Permit Application PDF fixture",
+      "pageCount": 3,
+      "capturedAt": "2026-05-01T17:40:00Z",
+      "extractionMode": "fixture_only",
+      "liveDownloadPerformed": false,
+      "pageText": [
+        {
+          "id": "page-1",
+          "pageNumber": 1,
+          "text": "Project address, applicant, owner, contractor, and project description.",
+          "textHash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+        },
+        {
+          "id": "page-2",
+          "pageNumber": 2,
+          "text": "Required declarations, valuation, occupancy, and permit type selections.",
+          "textHash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+        },
+        {
+          "id": "page-3",
+          "pageNumber": 3,
+          "text": "Applicant signature, fee table hints, and submission acknowledgments.",
+          "textHash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        }
+      ],
+      "formFields": [
+        {
+          "id": "field-project-address",
+          "label": "Project address",
+          "kind": "text",
+          "pageNumber": 1,
+          "required": true,
+          "evidenceText": "Project address"
+        },
+        {
+          "id": "field-project-valuation",
+          "label": "Project valuation",
+          "kind": "money",
+          "pageNumber": 2,
+          "required": true,
+          "evidenceText": "Valuation"
+        },
+        {
+          "id": "field-permit-type",
+          "label": "Permit type",
+          "kind": "select",
+          "pageNumber": 2,
+          "required": true,
+          "options": ["Residential", "Commercial", "Trade"],
+          "evidenceText": "Permit type"
+        }
+      ],
+      "checkboxHints": [
+        {
+          "id": "checkbox-owner-occupied",
+          "label": "Owner occupied",
+          "pageNumber": 2,
+          "checkedByDefault": false,
+          "evidenceText": "Owner occupied"
+        }
+      ],
+      "signatureHints": [
+        {
+          "id": "signature-applicant",
+          "label": "Applicant signature",
+          "pageNumber": 3,
+          "required": true,
+          "signerRole": "applicant",
+          "evidenceText": "Applicant signature"
+        }
+      ],
+      "feeTableHints": [
+        {
+          "id": "fee-table-building-permit",
+          "pageNumber": 3,
+          "caption": "Fee table",
+          "headers": ["Fee type", "Amount", "Due"],
+          "rowCount": 2,
+          "evidenceText": "Fees are due before permit issuance"
+        }
+      ],
+      "warnings": [
+        "Curated fixture only; not raw PDF extraction output.",
+        "No live PDF download was performed."
+      ]
+    }
+  ]
+}

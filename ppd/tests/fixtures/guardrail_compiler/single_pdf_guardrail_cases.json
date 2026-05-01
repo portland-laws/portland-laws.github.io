@@ -1,0 +1,253 @@
+{
+  "fixture_id": "single_pdf_guardrail_cases_v1",
+  "fixture_version": 1,
+  "created_at": "2026-05-01T18:30:00Z",
+  "purpose": "Deterministic guardrail compiler fixture covering document completeness, PDF file rules, missing user facts, and explicit-confirmation gates for a Single PDF Process permit-preparation case.",
+  "privacy_classification": "public_redacted_fixture",
+  "source_policy": {
+    "live_crawl_required": false,
+    "authenticated_session_required": false,
+    "contains_private_user_data": false,
+    "allowed_uses": [
+      "fixture_validation",
+      "guardrail_compiler_unit_tests"
+    ],
+    "disallowed_uses": [
+      "DevHub login",
+      "application submission",
+      "payment",
+      "file upload",
+      "CAPTCHA or MFA automation"
+    ]
+  },
+  "documents": [
+    {
+      "source_id": "ppd_single_pdf_process_public_guidance_sample",
+      "source_url": "https://www.portland.gov/ppd/single-pdf-process",
+      "canonical_url": "https://www.portland.gov/ppd/single-pdf-process",
+      "content_type": "html",
+      "title": "Single PDF Process guidance",
+      "captured_at": "2026-05-01T18:30:00Z",
+      "fixture_note": "Curated public-guidance excerpt for deterministic tests. This is not raw crawl output.",
+      "sections": [
+        {
+          "anchor_id": "single-pdf-file-rules",
+          "heading": "File rules",
+          "text": "Drawing plans are submitted as one searchable PDF. Applications, calculations, and supporting documents are submitted as separate PDF files."
+        },
+        {
+          "anchor_id": "single-pdf-before-submit",
+          "heading": "Prepare before submitting",
+          "text": "Required application forms, drawing plans, and supporting documents must be prepared before submitting the request in DevHub."
+        }
+      ]
+    },
+    {
+      "source_id": "ppd_devhub_submission_confirmation_sample",
+      "source_url": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
+      "canonical_url": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
+      "content_type": "html",
+      "title": "Apply for permits online using Development Hub PDX",
+      "captured_at": "2026-05-01T18:30:00Z",
+      "fixture_note": "Curated public-guidance excerpt for deterministic action-gate tests. This is not a DevHub session recording.",
+      "sections": [
+        {
+          "anchor_id": "review-before-submit",
+          "heading": "Review before submitting",
+          "text": "The applicant is responsible for reviewing application information and required documents before final submission. Automation must stop before submitting an application unless the user explicitly confirms that exact action."
+        }
+      ]
+    }
+  ],
+  "expected_requirements": [
+    {
+      "requirement_id": "req-application-pdf-present",
+      "type": "obligation",
+      "subject": "applicant",
+      "action": "provide",
+      "object": "application form PDF",
+      "natural_language": "The applicant must provide the required application form as a separate PDF before submitting a DevHub permit request.",
+      "conditions": [
+        "single_pdf_process_applies",
+        "permit_request_requires_application_form"
+      ],
+      "deadline_or_temporal_scope": "before(submit_application)",
+      "evidence": [
+        {
+          "source_id": "ppd_single_pdf_process_public_guidance_sample",
+          "source_url": "https://www.portland.gov/ppd/single-pdf-process",
+          "anchor_id": "single-pdf-file-rules",
+          "captured_at": "2026-05-01T18:30:00Z",
+          "excerpt": "Applications, calculations, and supporting documents are submitted as separate PDF files."
+        }
+      ],
+      "confidence": 0.91,
+      "formalization_status": "draft",
+      "expected_formula_hint": "OBLIGATED(applicant, provide(application_form_pdf), before(submit_application))"
+    },
+    {
+      "requirement_id": "req-drawing-plan-single-searchable-pdf",
+      "type": "obligation",
+      "subject": "applicant",
+      "action": "provide",
+      "object": "drawing plans as one searchable PDF",
+      "natural_language": "For projects using the Single PDF Process, drawing plans must be provided as one searchable PDF.",
+      "conditions": [
+        "single_pdf_process_applies"
+      ],
+      "deadline_or_temporal_scope": "before(upload_files_to_devhub)",
+      "evidence": [
+        {
+          "source_id": "ppd_single_pdf_process_public_guidance_sample",
+          "source_url": "https://www.portland.gov/ppd/single-pdf-process",
+          "anchor_id": "single-pdf-file-rules",
+          "captured_at": "2026-05-01T18:30:00Z",
+          "excerpt": "Drawing plans are submitted as one searchable PDF."
+        }
+      ],
+      "confidence": 0.96,
+      "formalization_status": "machine_checked",
+      "expected_formula_hint": "OBLIGATED(applicant, provide(single_searchable_drawing_plan_pdf), if(single_pdf_process_applies))"
+    },
+    {
+      "requirement_id": "req-property-address-known",
+      "type": "precondition",
+      "subject": "applicant",
+      "action": "identify",
+      "object": "project property address",
+      "natural_language": "The project property address must be known before a permit request can be prepared for review.",
+      "conditions": [
+        "online_permit_request"
+      ],
+      "deadline_or_temporal_scope": "before(prepare_online_permit_request)",
+      "evidence": [
+        {
+          "source_id": "ppd_devhub_submission_confirmation_sample",
+          "source_url": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
+          "anchor_id": "review-before-submit",
+          "captured_at": "2026-05-01T18:30:00Z",
+          "excerpt": "The applicant is responsible for reviewing application information and required documents before final submission."
+        }
+      ],
+      "confidence": 0.84,
+      "formalization_status": "draft",
+      "expected_formula_hint": "PRECONDITION(applicant, prepare_online_permit_request, has_property_address(project))"
+    },
+    {
+      "requirement_id": "req-property-id-known",
+      "type": "precondition",
+      "subject": "applicant",
+      "action": "identify",
+      "object": "project property identifier",
+      "natural_language": "The project property identifier is treated as a missing user fact until supplied or resolved from a permitted public property lookup.",
+      "conditions": [
+        "online_permit_request",
+        "property_lookup_required"
+      ],
+      "deadline_or_temporal_scope": "before(prepare_online_permit_request)",
+      "evidence": [
+        {
+          "source_id": "ppd_devhub_submission_confirmation_sample",
+          "source_url": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
+          "anchor_id": "review-before-submit",
+          "captured_at": "2026-05-01T18:30:00Z",
+          "excerpt": "The applicant is responsible for reviewing application information and required documents before final submission."
+        }
+      ],
+      "confidence": 0.8,
+      "formalization_status": "draft",
+      "expected_formula_hint": "PRECONDITION(applicant, prepare_online_permit_request, has_property_identifier(project))"
+    },
+    {
+      "requirement_id": "req-submit-explicit-confirmation",
+      "type": "action_gate",
+      "subject": "agent",
+      "action": "stop_for_confirmation",
+      "object": "final DevHub application submission",
+      "natural_language": "Automation must stop before submitting an application unless the user explicitly confirms that exact action.",
+      "conditions": [
+        "agent_operates_devhub_workflow",
+        "action_is_final_submission"
+      ],
+      "deadline_or_temporal_scope": "before(submit_application)",
+      "evidence": [
+        {
+          "source_id": "ppd_devhub_submission_confirmation_sample",
+          "source_url": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
+          "anchor_id": "review-before-submit",
+          "captured_at": "2026-05-01T18:30:00Z",
+          "excerpt": "Automation must stop before submitting an application unless the user explicitly confirms that exact action."
+        }
+      ],
+      "confidence": 0.98,
+      "formalization_status": "machine_checked",
+      "expected_formula_hint": "PROHIBITED(agent, submit_application, unless(explicit_user_confirmation(submit_application)))"
+    }
+  ],
+  "user_case": {
+    "case_id": "redacted-single-pdf-case-001",
+    "known_facts": {
+      "property_address": "1221 SW 4th Ave, Portland, OR",
+      "property_id": null,
+      "permit_type": "building permit with plan review"
+    },
+    "uploaded_documents": [
+      {
+        "document_id": "doc-drawing-plan",
+        "document_type": "drawing_plan",
+        "file_name": "drawing-plan.pdf",
+        "mime_type": "application/pdf",
+        "searchable_text": true
+      }
+    ],
+    "explicit_confirmations": {
+      "submit_application": false
+    }
+  },
+  "expected_guardrail_checks": [
+    {
+      "check_id": "check-application-pdf-present",
+      "kind": "document_completeness",
+      "requirement_id": "req-application-pdf-present",
+      "document_type": "application_form",
+      "expected_status": "missing"
+    },
+    {
+      "check_id": "check-drawing-plan-pdf-rule",
+      "kind": "pdf_file_rule",
+      "requirement_id": "req-drawing-plan-single-searchable-pdf",
+      "document_type": "drawing_plan",
+      "require_single_file": true,
+      "require_searchable_text": true,
+      "expected_status": "pass"
+    },
+    {
+      "check_id": "check-property-address-known",
+      "kind": "missing_user_fact",
+      "requirement_id": "req-property-address-known",
+      "fact_key": "property_address",
+      "expected_status": "pass"
+    },
+    {
+      "check_id": "check-property-id-known",
+      "kind": "missing_user_fact",
+      "requirement_id": "req-property-id-known",
+      "fact_key": "property_id",
+      "expected_status": "missing"
+    },
+    {
+      "check_id": "check-submit-confirmation",
+      "kind": "explicit_confirmation_gate",
+      "requirement_id": "req-submit-explicit-confirmation",
+      "action": "submit_application",
+      "expected_status": "blocked"
+    }
+  ],
+  "validation_expectations": [
+    "Every expected requirement compiles into a guardrail with support-map evidence.",
+    "Document completeness checks identify missing required PDFs without reading private document stores.",
+    "PDF file-rule checks require application/pdf MIME type, .pdf file extension, and searchable drawing-plan text when specified by the fixture.",
+    "Missing user facts are reported as missing rather than guessed from public guidance.",
+    "Final DevHub submission remains blocked until explicit confirmation for that exact action is present."
+  ]
+}
