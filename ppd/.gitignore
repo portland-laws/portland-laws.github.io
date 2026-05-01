@@ -11,6 +11,9 @@ data/normalized/
 data/manifests/
 
 # Daemon runtime state
+__pycache__/
+**/__pycache__/
+*.pyc
 daemon/status.json
 daemon/progress.json
 daemon/*.pid

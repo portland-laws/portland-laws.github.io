@@ -1,0 +1,327 @@
+--- a/ppd/tests/fixtures/requirement_extraction/ppd_public_guidance_requirement_fixture.json
++++ b/ppd/tests/fixtures/requirement_extraction/ppd_public_guidance_requirement_fixture.json
+@@ -0,0 +1,305 @@
++{
++  "fixture_id": "ppd_public_guidance_requirement_fixture_v1",
++  "fixture_version": 1,
++  "created_at": "2026-05-01T00:00:00Z",
++  "purpose": "Deterministic requirement extraction fixture for PP&D public guidance samples. Covers obligations, preconditions, deadlines, exceptions, and source evidence without live crawling or authenticated automation.",
++  "privacy_classification": "public_redacted_fixture",
++  "source_policy": {
++    "live_crawl_required": false,
++    "authenticated_session_required": false,
++    "contains_private_user_data": false,
++    "allowed_uses": [
++      "fixture_validation",
++      "requirement_extractor_unit_tests",
++      "guardrail_compiler_input_tests"
++    ],
++    "disallowed_uses": [
++      "DevHub login",
++      "application submission",
++      "payment",
++      "file upload",
++      "CAPTCHA or MFA automation"
++    ]
++  },
++  "documents": [
++    {
++      "source_id": "ppd_public_devhub_application_guidance_sample",
++      "source_url": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
++      "canonical_url": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
++      "content_type": "html",
++      "title": "Apply for permits online using Development Hub PDX",
++      "captured_at": "2026-05-01T00:00:00Z",
++      "fixture_note": "Curated public-guidance excerpt based on verified PP&D/DevHub facts. This is not raw crawl output.",
++      "sections": [
++        {
++          "anchor_id": "devhub-account-required",
++          "heading": "Before you apply online",
++          "text": "Applicants use Development Hub PDX with PortlandOregon.gov credentials. A user must have a DevHub account before preparing or submitting online permit requests."
++        },
++        {
++          "anchor_id": "devhub-permit-types",
++          "heading": "Permit requests available online",
++          "text": "Online request types include building permits, new single-family residence and detached ADU permits, solar permits, FCC wireless applications, demolition permits, trade permits, trade permits with plan review, sign permits, and Urban Forestry permits."
++        },
++        {
++          "anchor_id": "devhub-user-confirmation",
++          "heading": "Review before submitting",
++          "text": "The applicant is responsible for reviewing application information, required documents, acknowledgments, and fees before final submission. Automation must stop before submitting an application unless the user explicitly confirms that exact action."
++        }
++      ]
++    },
++    {
++      "source_id": "ppd_public_single_pdf_process_sample",
++      "source_url": "https://www.portland.gov/ppd/single-pdf-process",
++      "canonical_url": "https://www.portland.gov/ppd/single-pdf-process",
++      "content_type": "html",
++      "title": "Single PDF Process guidance",
++      "captured_at": "2026-05-01T00:00:00Z",
++      "fixture_note": "Curated public-guidance excerpt based on verified PP&D single-PDF-process facts. This is not raw crawl output.",
++      "sections": [
++        {
++          "anchor_id": "single-pdf-plan-file",
++          "heading": "Drawing plans",
++          "text": "For projects using the Single PDF Process, drawing plans must be provided as one searchable PDF. Applications, calculations, and supporting documents are separate PDFs."
++        },
++        {
++          "anchor_id": "single-pdf-before-upload",
++          "heading": "Prepare files before upload",
++          "text": "Applicants should prepare the drawing plan PDF, application PDF, calculations, and supporting documents before uploading files to DevHub."
++        }
++      ]
++    },
++    {
++      "source_id": "ppd_public_devhub_faq_sample",
++      "source_url": "https://www.portland.gov/ppd/devhub/devhub-faq",
++      "canonical_url": "https://www.portland.gov/ppd/devhub/devhub-faq",
++      "content_type": "html",
++      "title": "Development Hub PDX FAQ",
++      "captured_at": "2026-05-01T00:00:00Z",
++      "fixture_note": "Curated public-guidance excerpt based on verified DevHub FAQ service categories. This is not raw crawl output.",
++      "sections": [
++        {
++          "anchor_id": "faq-service-categories",
++          "heading": "What can I do in DevHub?",
++          "text": "DevHub supports permit purchase, permit requests requiring plan review, inspection scheduling for online trade permits, correction uploads, and fee payments."
++        },
++        {
++          "anchor_id": "faq-correction-upload",
++          "heading": "Corrections",
++          "text": "When corrections are requested for a permit in plan review, the applicant may upload corrected documents through the correction upload path."
++        }
++      ]
++    }
++  ],
++  "expected_requirements": [
++    {
++      "requirement_id": "req-devhub-account-precondition",
++      "type": "precondition",
++      "subject": "applicant",
++      "action": "have_account",
++      "object": "Development Hub PDX account using PortlandOregon.gov credentials",
++      "natural_language": "An applicant must have a DevHub account with PortlandOregon.gov credentials before preparing or submitting online permit requests.",
++      "conditions": [
++        "online_permit_request",
++        "workflow_uses_devhub"
++      ],
++      "deadline_or_temporal_scope": "before(prepare_online_permit_request)",
++      "evidence": [
++        {
++          "source_id": "ppd_public_devhub_application_guidance_sample",
++          "source_url": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
++          "anchor_id": "devhub-account-required",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "excerpt": "A user must have a DevHub account before preparing or submitting online permit requests."
++        }
++      ],
++      "confidence": 0.93,
++      "formalization_status": "draft",
++      "expected_formula_hint": "PRECONDITION(applicant, prepare_online_permit_request, has_devhub_account(applicant))"
++    },
++    {
++      "requirement_id": "req-single-pdf-drawing-plan-obligation",
++      "type": "obligation",
++      "subject": "applicant",
++      "action": "provide",
++      "object": "drawing plans as one searchable PDF",
++      "natural_language": "For projects using the Single PDF Process, the applicant must provide drawing plans as one searchable PDF.",
++      "conditions": [
++        "single_pdf_process_applies"
++      ],
++      "deadline_or_temporal_scope": "before(upload_files_to_devhub)",
++      "evidence": [
++        {
++          "source_id": "ppd_public_single_pdf_process_sample",
++          "source_url": "https://www.portland.gov/ppd/single-pdf-process",
++          "anchor_id": "single-pdf-plan-file",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "excerpt": "For projects using the Single PDF Process, drawing plans must be provided as one searchable PDF."
++        }
++      ],
++      "confidence": 0.96,
++      "formalization_status": "draft",
++      "expected_formula_hint": "OBLIGATED(applicant, provide(single_searchable_drawing_plan_pdf), if(single_pdf_process_applies))"
++    },
++    {
++      "requirement_id": "req-single-pdf-supporting-documents-exception",
++      "type": "exception",
++      "subject": "applicant",
++      "action": "separate",
++      "object": "applications, calculations, and supporting documents from drawing plan PDF",
++      "natural_language": "The Single PDF Process requirement for one searchable PDF applies to drawing plans; applications, calculations, and supporting documents are separate PDFs.",
++      "conditions": [
++        "single_pdf_process_applies",
++        "document_is_application_calculation_or_supporting_document"
++      ],
++      "deadline_or_temporal_scope": "during(document_preparation)",
++      "evidence": [
++        {
++          "source_id": "ppd_public_single_pdf_process_sample",
++          "source_url": "https://www.portland.gov/ppd/single-pdf-process",
++          "anchor_id": "single-pdf-plan-file",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "excerpt": "Applications, calculations, and supporting documents are separate PDFs."
++        }
++      ],
++      "confidence": 0.94,
++      "formalization_status": "draft",
++      "expected_formula_hint": "EXCEPTION(single_searchable_drawing_plan_pdf_rule, separate_pdf(application_calculation_or_supporting_document))"
++    },
++    {
++      "requirement_id": "req-prepare-files-before-upload-deadline",
++      "type": "deadline",
++      "subject": "applicant",
++      "action": "prepare",
++      "object": "drawing plan PDF, application PDF, calculations, and supporting documents",
++      "natural_language": "Applicants should prepare required PDFs and supporting documents before uploading files to DevHub.",
++      "conditions": [
++        "online_upload_in_devhub",
++        "documents_required_for_request"
++      ],
++      "deadline_or_temporal_scope": "before(upload_files_to_devhub)",
++      "evidence": [
++        {
++          "source_id": "ppd_public_single_pdf_process_sample",
++          "source_url": "https://www.portland.gov/ppd/single-pdf-process",
++          "anchor_id": "single-pdf-before-upload",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "excerpt": "Applicants should prepare the drawing plan PDF, application PDF, calculations, and supporting documents before uploading files to DevHub."
++        }
++      ],
++      "confidence": 0.88,
++      "formalization_status": "draft",
++      "expected_formula_hint": "before(prepare_required_documents, upload_files_to_devhub)"
++    },
++    {
++      "requirement_id": "req-correction-upload-precondition",
++      "type": "precondition",
++      "subject": "applicant",
++      "action": "upload",
++      "object": "corrected documents through correction upload path",
++      "natural_language": "Correction upload applies when corrections are requested for a permit in plan review.",
++      "conditions": [
++        "permit_in_plan_review",
++        "corrections_requested"
++      ],
++      "deadline_or_temporal_scope": "after(corrections_requested)",
++      "evidence": [
++        {
++          "source_id": "ppd_public_devhub_faq_sample",
++          "source_url": "https://www.portland.gov/ppd/devhub/devhub-faq",
++          "anchor_id": "faq-correction-upload",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "excerpt": "When corrections are requested for a permit in plan review, the applicant may upload corrected documents through the correction upload path."
++        }
++      ],
++      "confidence": 0.9,
++      "formalization_status": "draft",
++      "expected_formula_hint": "PRECONDITION(applicant, upload_corrected_documents, corrections_requested(permit))"
++    },
++    {
++      "requirement_id": "req-stop-before-submission-obligation",
++      "type": "obligation",
++      "subject": "agent",
++      "action": "stop_for_confirmation",
++      "object": "final DevHub application submission",
++      "natural_language": "Automation must stop before submitting an application unless the user explicitly confirms that exact action.",
++      "conditions": [
++        "agent_operates_devhub_workflow",
++        "action_is_final_submission"
++      ],
++      "deadline_or_temporal_scope": "before(submit_application)",
++      "evidence": [
++        {
++          "source_id": "ppd_public_devhub_application_guidance_sample",
++          "source_url": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
++          "anchor_id": "devhub-user-confirmation",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "excerpt": "Automation must stop before submitting an application unless the user explicitly confirms that exact action."
++        }
++      ],
++      "confidence": 0.97,
++      "formalization_status": "draft",
++      "expected_formula_hint": "PROHIBITED(agent, submit_application, unless(explicit_user_confirmation(submit_application)))"
++    },
++    {
++      "requirement_id": "req-fee-payment-action-gate",
++      "type": "action_gate",
++      "subject": "agent",
++      "action": "stop_for_confirmation",
++      "object": "fee payment in DevHub",
++      "natural_language": "Because DevHub supports fee payments, an agent must treat payment as a financial action gate requiring explicit user authorization before proceeding.",
++      "conditions": [
++        "devhub_fee_payment_available",
++        "agent_operates_devhub_workflow",
++        "action_is_payment"
++      ],
++      "deadline_or_temporal_scope": "before(pay_fee)",
++      "evidence": [
++        {
++          "source_id": "ppd_public_devhub_faq_sample",
++          "source_url": "https://www.portland.gov/ppd/devhub/devhub-faq",
++          "anchor_id": "faq-service-categories",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "excerpt": "DevHub supports permit purchase, permit requests requiring plan review, inspection scheduling for online trade permits, correction uploads, and fee payments."
++        }
++      ],
++      "confidence": 0.91,
++      "formalization_status": "draft",
++      "expected_formula_hint": "PROHIBITED(agent, pay_fee, unless(explicit_user_confirmation(pay_fee)))"
++    }
++  ],
++  "expected_extraction_coverage": {
++    "minimum_requirement_count": 7,
++    "required_types": [
++      "obligation",
++      "precondition",
++      "deadline",
++      "exception",
++      "action_gate"
++    ],
++    "required_subjects": [
++      "applicant",
++      "agent"
++    ],
++    "required_evidence_fields": [
++      "source_id",
++      "source_url",
++      "anchor_id",
++      "captured_at",
++      "excerpt"
++    ],
++    "required_temporal_relations": [
++      "before(prepare_online_permit_request)",
++      "before(upload_files_to_devhub)",
++      "after(corrections_requested)",
++      "before(submit_application)",
++      "before(pay_fee)"
++    ]
++  },
++  "validation_expectations": [
++    "Every expected requirement has at least one evidence reference.",
++    "Every evidence source_id matches a fixture document source_id.",
++    "No fixture document contains private user data, credentials, raw browser traces, downloaded documents, or live crawl output.",
++    "Consequential and financial agent actions are represented as stop-for-confirmation requirements."
++  ]
++}
+--- a/ppd/tests/fixtures/requirement_extraction/README.md
++++ b/ppd/tests/fixtures/requirement_extraction/README.md
+@@ -0,0 +1,16 @@
++# Requirement Extraction Fixtures
++
++This directory contains deterministic, redacted fixtures for PP&D requirement extraction tests.
++
++The fixtures are curated from public PP&D and DevHub guidance facts already verified for the PP&D plan. They are not raw crawl output, browser traces, authenticated DevHub captures, private user files, or downloaded documents.
++
++Coverage targets:
++
++- obligations
++- preconditions
++- deadlines and temporal ordering
++- exceptions
++- action gates
++- source evidence with stable fixture anchors
++
++These fixtures are intended to be used before any live public crawl or authenticated browser automation is added.

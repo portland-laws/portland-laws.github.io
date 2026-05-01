@@ -1,0 +1,37 @@
+{
+  "changed_files": [
+    "ppd/contracts/__init__.py",
+    "ppd/contracts/processes.py"
+  ],
+  "created_at": "2026-05-01T14:47:19.769985Z",
+  "impact": "This gives extraction, DevHub recorder, missing-information detection, and guardrail compiler work a shared typed representation for source-backed permit process models without adding crawl or authenticated automation behavior.",
+  "summary": "Add PP&D process model contracts in Python and TypeScript, including permit processes, workflow stages, required facts, required documents, and action gates.",
+  "target_task": "Task checkbox-8: Add process model data contracts for permit processes, workflow stages, required facts, required documents, and action gates.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\n  \"ok\": true,\n  \"task_count\": 18\n}\n"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............\n----------------------------------------------------------------------\nRan 12 tests in 0.001s\n\nOK\n",
+      "stdout": ""
+    }
+  ]
+}

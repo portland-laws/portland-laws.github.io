@@ -14,6 +14,7 @@ import argparse
 import difflib
 import json
 import os
+import py_compile
 import re
 import subprocess
 import sys
@@ -50,6 +51,13 @@ DISALLOWED_WRITE_PREFIXES = (
 DEFAULT_VALIDATION_COMMANDS = (
     ("python3", "ppd/daemon/ppd_daemon.py", "--self-test"),
     ("python3", "-m", "unittest", "discover", "-s", "ppd/tests", "-p", "test_*.py"),
+    (
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); "
+        "test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext "
+        "--moduleResolution node --strict --skipLibCheck --types node $files",
+    ),
 )
 
 
@@ -114,7 +122,7 @@ class Proposal:
             "dry_run": self.dry_run,
             "validation_passed": bool(self.validation_results) and all(result.ok for result in self.validation_results),
             "validation_results": [result.compact() for result in self.validation_results],
-            "errors": self.errors,
+            "errors": [compact_message(error) for error in self.errors],
             "failure_kind": self.failure_kind,
         }
 
@@ -142,6 +150,7 @@ class Config:
     max_prompt_chars: int = 60000
     allow_local_fallback: bool = False
     revisit_blocked: bool = False
+    max_task_failures_before_block: int = 3
     validation_commands: tuple[tuple[str, ...], ...] = DEFAULT_VALIDATION_COMMANDS
 
     def resolve(self, path: Path) -> Path:
@@ -269,6 +278,71 @@ def is_retryable_failure(proposal: Proposal) -> bool:
     )
 
 
+def read_result_log(path: Path) -> list[dict[str, Any]]:
+    if not path.exists():
+        return []
+    rows: list[dict[str, Any]] = []
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        if not line.strip():
+            continue
+        try:
+            parsed = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        proposal = parsed.get("proposal")
+        if isinstance(proposal, dict):
+            rows.append(proposal)
+    return rows
+
+
+def recent_task_failures(config: Config, task_label: str, *, limit: int = 3) -> list[dict[str, Any]]:
+    failures: list[dict[str, Any]] = []
+    for proposal in reversed(read_result_log(config.resolve(config.result_log))):
+        if proposal.get("target_task") != task_label:
+            continue
+        if proposal.get("applied") and proposal.get("validation_passed") and not proposal.get("errors"):
+            break
+        failures.append(proposal)
+        if len(failures) >= limit:
+            break
+    return failures
+
+
+def task_failure_count(config: Config, task_label: str, *, kinds: Optional[set[str]] = None) -> int:
+    count = 0
+    for proposal in recent_task_failures(config, task_label, limit=100):
+        kind = str(proposal.get("failure_kind") or "")
+        if kinds is None or kind in kinds:
+            count += 1
+    return count
+
+
+def format_failure_context(failures: list[dict[str, Any]]) -> str:
+    if not failures:
+        return "No recent failures for this task."
+    parts: list[str] = []
+    for index, failure in enumerate(failures, start=1):
+        validation_bits: list[str] = []
+        for result in failure.get("validation_results", []) or []:
+            if not isinstance(result, dict) or int(result.get("returncode", 0)) == 0:
+                continue
+            command = " ".join(str(part) for part in result.get("command", []))
+            validation_bits.append(
+                f"{command}: {compact_message(str(result.get('stdout', '')) + ' ' + str(result.get('stderr', '')), limit=900)}"
+            )
+        parts.append(
+            "\n".join(
+                [
+                    f"Failure {index}: kind={failure.get('failure_kind', '')}",
+                    f"summary={compact_message(failure.get('summary', ''), limit=300)}",
+                    f"errors={'; '.join(compact_message(error, limit=300) for error in failure.get('errors', [])[:3])}",
+                    f"validation={'; '.join(validation_bits) if validation_bits else '<none>'}",
+                ]
+            )
+        )
+    return "\n\n".join(parts)
+
+
 def extract_json(text: str) -> Optional[dict[str, Any]]:
     match = JSON_BLOCK_RE.search(text)
     candidates = [match.group(1)] if match else []
@@ -381,6 +455,7 @@ def apply_files_with_validation(proposal: Proposal, config: Config) -> Proposal:
     if preflight_errors:
         proposal.errors.extend(preflight_errors)
         proposal.failure_kind = "preflight"
+        persist_failed_work(proposal, config, patch="", reason="preflight")
         return proposal
 
     backups: dict[Path, Optional[str]] = {}
@@ -404,9 +479,11 @@ def apply_files_with_validation(proposal: Proposal, config: Config) -> Proposal:
         proposal.errors.append("Proposal made no content changes.")
         proposal.failure_kind = "no_change"
         proposal.validation_results = run_validation(config)
+        persist_failed_work(proposal, config, patch="", reason="no_change")
         return proposal
 
     proposal.validation_results = run_validation(config)
+    patch_text = "".join(patch_parts)
     if not all(result.ok for result in proposal.validation_results):
         for path, before in backups.items():
             if before is None:
@@ -418,10 +495,11 @@ def apply_files_with_validation(proposal: Proposal, config: Config) -> Proposal:
                 path.write_text(before, encoding="utf-8")
         proposal.errors.append("Validation failed; file edits were rolled back.")
         proposal.failure_kind = "validation"
+        persist_failed_work(proposal, config, patch=patch_text, reason="validation")
         return proposal
 
     proposal.applied = True
-    persist_accepted_work(proposal, config, patch="".join(patch_parts))
+    persist_accepted_work(proposal, config, patch=patch_text)
     return proposal
 
 
@@ -443,10 +521,32 @@ def persist_accepted_work(proposal: Proposal, config: Config, *, patch: str) -> 
     base.with_suffix(".stat.txt").write_text("\n".join(proposal.changed_files) + "\n", encoding="utf-8")
 
 
+def persist_failed_work(proposal: Proposal, config: Config, *, patch: str, reason: str) -> None:
+    config.resolve(config.failed_dir).mkdir(parents=True, exist_ok=True)
+    slug = re.sub(r"[^A-Za-z0-9._-]+", "-", (proposal.summary or reason).lower()).strip("-")[:80] or "failed-work"
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    base = config.resolve(config.failed_dir) / f"{stamp}-{reason}-{slug}"
+    manifest = {
+        "created_at": utc_now(),
+        "reason": reason,
+        "target_task": proposal.target_task,
+        "summary": proposal.summary,
+        "impact": proposal.impact,
+        "files": [item.get("path", "") for item in proposal.files],
+        "changed_files": proposal.changed_files,
+        "errors": [compact_message(error) for error in proposal.errors],
+        "validation_results": [result.compact() for result in proposal.validation_results],
+    }
+    base.with_suffix(".json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    base.with_suffix(".patch").write_text(patch, encoding="utf-8")
+    base.with_suffix(".stat.txt").write_text("\n".join(proposal.changed_files) + "\n", encoding="utf-8")
+
+
 def build_prompt(config: Config, selected: Task) -> str:
     plan = read_text(config.resolve(config.plan_doc), limit=22000)
     board = read_text(config.resolve(config.task_board), limit=14000)
     readme = read_text(config.resolve(config.readme), limit=8000) if config.resolve(config.readme).exists() else ""
+    failure_context = format_failure_context(recent_task_failures(config, selected.label))
     context_files: list[str] = []
     for path in sorted((config.repo_root / "ppd").glob("**/*")):
         if not path.is_file():
@@ -494,6 +594,9 @@ PP&D task board:
 PP&D workspace context:
 {readme}
 
+Recent failure context for this task:
+{failure_context}
+
 Current files:
 {chr(10).join(context_files)}
 """
@@ -512,7 +615,7 @@ def call_llm(prompt: str, config: Config) -> str:
         model_name=config.model_name,
         provider=config.provider,
         allow_local_fallback=config.allow_local_fallback,
-        timeout_seconds=config.llm_timeout_seconds,
+        timeout=config.llm_timeout_seconds,
         max_new_tokens=4096,
         temperature=0.1,
     )
@@ -525,11 +628,13 @@ class Daemon:
         self._active_state = "initializing"
 
     def write_status(self, state: str, **extra: Any) -> None:
-        self._active_state = state
+        if state != "heartbeat":
+            self._active_state = state
         payload = {
             "updated_at": utc_now(),
             "pid": os.getpid(),
             "state": state,
+            "active_state": self._active_state,
             **extra,
         }
         atomic_write_json(self.config.resolve(self.config.status_file), payload)
@@ -574,7 +679,13 @@ class Daemon:
             if proposal.valid:
                 board = replace_task_mark(board, selected, "x")
             elif selected.status in {"needed", "in-progress"} and not is_retryable_failure(proposal):
-                board = replace_task_mark(board, selected, "!")
+                prior_failures = task_failure_count(
+                    self.config,
+                    selected.label,
+                    kinds={"validation", "preflight", "no_change"},
+                )
+                mark = "!" if prior_failures + 1 >= self.config.max_task_failures_before_block else " "
+                board = replace_task_mark(board, selected, mark)
             elif selected.status in {"needed", "in-progress"}:
                 board = replace_task_mark(board, selected, " ")
         tasks_after = parse_tasks(board)
@@ -622,6 +733,7 @@ class Daemon:
                 if self.config.iterations > 0 and count >= self.config.iterations:
                     break
                 if self.config.interval_seconds > 0:
+                    self.write_status("sleeping", seconds=self.config.interval_seconds)
                     time.sleep(self.config.interval_seconds)
         finally:
             self._heartbeat_stop.set()
@@ -651,6 +763,7 @@ def self_test(repo_root: Path) -> int:
         if not validate_write_path(prefix + "bad.ts"):
             errors.append(f"disallowed prefix unexpectedly passed preflight: {prefix}")
     errors.extend(validate_seed_and_allowlist(repo_root))
+    errors.extend(validate_python_sources(repo_root))
     if errors:
         print(json.dumps({"ok": False, "errors": errors}, indent=2), file=sys.stderr)
         return 1
@@ -741,6 +854,19 @@ def validate_seed_and_allowlist(repo_root: Path) -> list[str]:
     return errors
 
 
+def validate_python_sources(repo_root: Path) -> list[str]:
+    errors: list[str] = []
+    for path in sorted((repo_root / "ppd").rglob("*.py")):
+        if "__pycache__" in path.parts:
+            continue
+        rel = path.relative_to(repo_root).as_posix()
+        try:
+            py_compile.compile(str(path), doraise=True)
+        except py_compile.PyCompileError as exc:
+            errors.append(f"{rel} failed py_compile: {compact_message(exc.msg, limit=500)}")
+    return errors
+
+
 def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="Run the isolated PP&D autonomous daemon.")
     parser.add_argument("--repo-root", default=".", help="Repository root")
@@ -748,10 +874,12 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     parser.add_argument("--watch", action="store_true", help="Run repeated cycles")
     parser.add_argument("--iterations", type=int, default=1, help="Number of cycles; with --watch, 0 means unbounded")
     parser.add_argument("--interval", type=float, default=0.0, help="Seconds between watch cycles")
+    parser.add_argument("--llm-timeout", type=int, default=300, help="Seconds to allow for one LLM proposal")
     parser.add_argument("--model", default="gpt-5.5", help="llm_router model")
     parser.add_argument("--provider", default=None, help="llm_router provider")
     parser.add_argument("--allow-local-fallback", action="store_true", help="Allow local fallback providers")
     parser.add_argument("--revisit-blocked", action="store_true", help="Revisit blocked tasks after needed tasks are exhausted")
+    parser.add_argument("--max-task-failures-before-block", type=int, default=3, help="Validation/preflight failures before marking a task blocked")
     parser.add_argument("--self-test", action="store_true", help="Run daemon self-test and exit")
     return parser.parse_args(argv)
 
@@ -767,10 +895,12 @@ def main(argv: Optional[list[str]] = None) -> int:
         watch=bool(args.watch),
         iterations=int(args.iterations),
         interval_seconds=float(args.interval),
+        llm_timeout_seconds=int(args.llm_timeout),
         model_name=str(args.model),
         provider=args.provider,
         allow_local_fallback=bool(args.allow_local_fallback),
         revisit_blocked=bool(args.revisit_blocked),
+        max_task_failures_before_block=max(1, int(args.max_task_failures_before_block)),
     )
     proposals = Daemon(config).run()
     print(json.dumps([proposal.to_dict() for proposal in proposals], indent=2))

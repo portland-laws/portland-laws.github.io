@@ -53,3 +53,16 @@ The PP&D daemon should use its own allowlist and should initially accept changes
 ## Version Control
 
 `ppd/.gitignore` excludes private DevHub session artifacts, live crawl output, traces, daemon runtime state, and failed patches. Commit only curated, redacted fixtures and source code.
+
+## Daemon Control
+
+Use the local control wrapper from the repository root:
+
+```bash
+bash ppd/daemon/control.sh start
+bash ppd/daemon/control.sh status
+bash ppd/daemon/control.sh logs
+bash ppd/daemon/control.sh stop
+```
+
+The daemon validates PP&D work with its self-test, PP&D unit tests, Python compilation, and scoped TypeScript checks before accepting changes.

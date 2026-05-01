@@ -701,11 +701,11 @@ That PR gives the project immediate product value without committing to a full t
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-01 14:26:47 UTC
+Last updated: 2026-05-01 15:08:54 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.`
+Current target: `Task checkbox-145: Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -820,7 +820,7 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [!] `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.` - blocked
 - [x] `Task checkbox-108: Initial modal tableaux proof search for propositional, temporal, deontic modal formulas and K/T/D/S4/S5 accessibility.` - complete
 - [x] `Task checkbox-109: Initial countermodel model, extractor, and self-contained visual exports.` - complete
-- [~] `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.` - selected for next daemon round
+- [!] `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.` - blocked
 - [!] `Task checkbox-111: Complete TDFOL security validator parity.` - blocked
 - [x] `Task checkbox-112: Add Python parity fixtures for each TDFOL rule category.` - complete
 - [!] `Task checkbox-113: Add browser performance budgets for proof search.` - blocked
@@ -855,7 +855,7 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-142: Initial CEC specialized inference rule group with biconditional introduction/elimination, constructive/destructive dilemma, exportation, absorption, tautology simplification, conjunction commutativity, and opt-in addition/disjunction introduction.` - complete
 - [x] `Task checkbox-143: Expanded CEC extended prover-core rule parity with disjunction commutativity, distribution, association, transposition, material implication round-tripping, Clavius law, and conjunction/disjunction idempotence.` - complete
 - [x] `Task checkbox-144: Expanded CEC common-knowledge/common-belief rule parity with common knowledge/belief introduction, common knowledge distribution, common-knowledge-to-knowledge, monotonicity, negation, transitivity, fixed-point induction, temporally induced common knowledge, and modal necessitation introduction.` - complete
-- [!] `Task checkbox-145: Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.` - blocked
+- [!] `Task checkbox-145: Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.` - latest daemon round failed validation or preflight
 - [x] `Task checkbox-146: Initial CEC fluent/event state manager with fluent types, persistence rules, event transitions, frame-problem persistence, conflict resolution, timelines, statistics, and validation.` - complete
 - [x] `Task checkbox-147: Initial CEC event calculus with browser-native discrete event occurrences, initiation/termination/release rules, 'Happens', 'Initiates', 'Terminates', 'Releases', 'ReleasedAt', 'HoldsAt', 'Clipped', parsed predicate loading/evaluation, timelines, all-fluent queries, caching, and validation.` - complete
 - [x] `Task checkbox-148: Initial CEC context manager with discourse state, entity tracking, focus management, pronoun/anaphora resolution, parsed CEC expression ingestion, discourse segmentation, coherence scoring, snapshots, and validation.` - complete
@@ -908,9 +908,12 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.`
+- Target: `Task checkbox-145: Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.`
 - Result: `needs follow-up`
-- Summary: No summary
+- Summary: Fix CEC event calculus TypeScript syntax and add InitiallyP/Declipped support.
+- Impact: The corrected event calculus module is imported by the TypeScript logic port and validation tests to load, evaluate, and verify browser-native CEC predicates without Python runtime support.
+- Errors: File edits failed validation and were rolled back.
+- Failure kind: `validation_repair`
 
 ### Blocked Backlog
 
@@ -935,8 +938,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
   - Latest failure kind: `apply_check`
   - Latest errors: Patch failed git apply --check.
 - `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.`
-  - Failures since success: `3`
-  - Failure kinds: `{"validation": 3}`
+  - Failures since success: `4`
+  - Failure kinds: `{"validation": 4}`
   - Latest failure kind: `validation`
   - Latest errors: File edits failed validation and were rolled back.
 - `Task checkbox-111: Complete TDFOL security validator parity.`
@@ -945,17 +948,17 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
   - Latest failure kind: `validation`
   - Latest errors: File edits failed validation and were rolled back.
 - `Task checkbox-113: Add browser performance budgets for proof search.`
-  - Failures since success: `3`
-  - Failure kinds: `{"validation": 3}`
-  - Latest failure kind: `validation`
+  - Failures since success: `4`
+  - Failure kinds: `{"validation": 3, "validation_repair": 1}`
+  - Latest failure kind: `validation_repair`
   - Latest errors: File edits failed validation and were rolled back.
 - `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.`
   - Failures since success: `110`
   - Failure kinds: `{"apply_check": 20, "invalid_no_change": 14, "parse": 73, "preflight": 1, "validation": 2}`
   - Latest failure kind: `invalid_no_change`
 - `Task checkbox-145: Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.`
-  - Failures since success: `3`
-  - Failure kinds: `{"validation_repair": 3}`
+  - Failures since success: `4`
+  - Failure kinds: `{"validation_repair": 4}`
   - Latest failure kind: `validation_repair`
   - Latest errors: File edits failed validation and were rolled back.
 - `Task checkbox-153: Port CEC proof cache, proof strategies, advanced inference, and error handling.`

@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/requirement_extraction/ppd_public_guidance_requirement_fixture.json",
+    "ppd/tests/fixtures/requirement_extraction/README.md"
+  ],
+  "created_at": "2026-05-01T15:09:23.227445Z",
+  "impact": "This advances the PP&D plan by giving fixture-based extraction tests a small, source-grounded target before any live crawl or authenticated DevHub automation is introduced.",
+  "summary": "Added deterministic PP&D requirement extraction fixtures covering obligations, preconditions, deadlines, exceptions, and source evidence.",
+  "target_task": "Task checkbox-11: Add requirement extraction fixtures for obligations, preconditions, deadlines, exceptions, and source evidence.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\n  \"ok\": true,\n  \"task_count\": 18\n}\n"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "..................\n----------------------------------------------------------------------\nRan 18 tests in 0.001s\n\nOK\n",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

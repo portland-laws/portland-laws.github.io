@@ -1,0 +1,209 @@
+{
+  "fixture_set_id": "ppd-public-pdf-extraction-fixtures-v1",
+  "created_for_task": "Task checkbox-6: Add PDF extraction fixture definitions for public PP&D applications and checklists.",
+  "verified_context_date": "2026-05-01",
+  "fixture_mode": "deterministic_redacted_public_pdf_definitions",
+  "source_policy": {
+    "public_only": true,
+    "no_live_fetch_required": true,
+    "no_downloaded_documents": true,
+    "no_private_devhub_session": true,
+    "authoritative_discovery_source": "https://www.portland.gov/ppd/applications-forms",
+    "required_preflight_before_future_fetch": [
+      "load_crawler_allowlist",
+      "check_robots_txt",
+      "classify_public_vs_private_url",
+      "verify_content_type_application_pdf",
+      "record_source_url_and_checksum"
+    ]
+  },
+  "normalization_contract": {
+    "required_document_fields": [
+      "fixture_id",
+      "document_family",
+      "document_type",
+      "source",
+      "synthetic_pdf_text_pages",
+      "expected_extraction"
+    ],
+    "required_expected_extraction_fields": [
+      "title",
+      "document_classification",
+      "page_anchors",
+      "detected_sections",
+      "required_data_labels",
+      "signature_blocks",
+      "checkbox_groups",
+      "tables",
+      "evidence_expectations"
+    ],
+    "notes": [
+      "Synthetic text snippets are representative extraction inputs, not copied public documents.",
+      "Future live extraction tests should replace synthetic text only after approved public PDF capture with URL, timestamp, content hash, and robots/crawl-policy evidence."
+    ]
+  },
+  "fixtures": [
+    {
+      "fixture_id": "ppd-building-permit-application-pdf-definition",
+      "document_family": "public_ppd_application",
+      "document_type": "application_pdf",
+      "source": {
+        "discovery_url": "https://www.portland.gov/ppd/applications-forms",
+        "expected_host": "www.portland.gov",
+        "expected_content_type": "application/pdf",
+        "public_access": "unauthenticated",
+        "future_capture_required": true
+      },
+      "synthetic_pdf_text_pages": [
+        {
+          "page_number": 1,
+          "text": "Building Permit Application\nProject address\nProperty owner name\nApplicant name\nContractor business name\nCCB license number\nProject description\nValuation\nType of work\nRequired attachments\nApplicant signature\nDate"
+        },
+        {
+          "page_number": 2,
+          "text": "Submittal instructions\nPlans and supporting documents must be provided as searchable PDF files when required. Separate calculations, reports, and application forms from drawing plan sets when instructed by PP&D guidance."
+        }
+      ],
+      "expected_extraction": {
+        "title": "Building Permit Application",
+        "document_classification": "permit_application_form",
+        "page_anchors": [
+          {"page_number": 1, "anchor_type": "title", "expected_text": "Building Permit Application"},
+          {"page_number": 2, "anchor_type": "instructions", "expected_text": "Submittal instructions"}
+        ],
+        "detected_sections": [
+          "project_information",
+          "owner_information",
+          "applicant_information",
+          "contractor_information",
+          "scope_and_valuation",
+          "attachments",
+          "signature"
+        ],
+        "required_data_labels": [
+          "Project address",
+          "Property owner name",
+          "Applicant name",
+          "Project description",
+          "Valuation"
+        ],
+        "signature_blocks": [
+          {"label": "Applicant signature", "page_number": 1, "requires_date": true}
+        ],
+        "checkbox_groups": [
+          {"label": "Type of work", "page_number": 1, "expected_behavior": "extract_options_when_available"}
+        ],
+        "tables": [],
+        "evidence_expectations": [
+          "Every extracted required field preserves page_number provenance.",
+          "Signature labels are classified separately from general text labels.",
+          "PDF file-rule language is retained as instructions, not converted into a legal obligation without later source review."
+        ]
+      }
+    },
+    {
+      "fixture_id": "ppd-residential-checklist-pdf-definition",
+      "document_family": "public_ppd_checklist",
+      "document_type": "checklist_pdf",
+      "source": {
+        "discovery_url": "https://www.portland.gov/ppd/applications-forms",
+        "expected_host": "www.portland.gov",
+        "expected_content_type": "application/pdf",
+        "public_access": "unauthenticated",
+        "future_capture_required": true
+      },
+      "synthetic_pdf_text_pages": [
+        {
+          "page_number": 1,
+          "text": "Residential Permit Submittal Checklist\nProject information\nSite plan\nFloor plans\nElevations\nStructural details\nEnergy forms\nEngineering calculations if required\nCompleted permit application\nOwner or contractor information"
+        },
+        {
+          "page_number": 2,
+          "text": "Checklist\n[ ] Site plan included\n[ ] Floor plans included\n[ ] Elevations included\n[ ] Structural details included\n[ ] Energy documentation included\nAdditional information may be requested during plan review."
+        }
+      ],
+      "expected_extraction": {
+        "title": "Residential Permit Submittal Checklist",
+        "document_classification": "submittal_checklist",
+        "page_anchors": [
+          {"page_number": 1, "anchor_type": "title", "expected_text": "Residential Permit Submittal Checklist"},
+          {"page_number": 2, "anchor_type": "checklist", "expected_text": "Checklist"}
+        ],
+        "detected_sections": [
+          "project_information",
+          "required_plans",
+          "supporting_documents",
+          "review_notes"
+        ],
+        "required_data_labels": [
+          "Project information",
+          "Completed permit application",
+          "Owner or contractor information"
+        ],
+        "signature_blocks": [],
+        "checkbox_groups": [
+          {"label": "Submittal checklist", "page_number": 2, "expected_minimum_options": 5}
+        ],
+        "tables": [],
+        "evidence_expectations": [
+          "Checklist item order is preserved.",
+          "Checked and unchecked boxes are represented distinctly when a captured PDF exposes box state.",
+          "Conditional phrases such as if required are retained on the extracted item."
+        ]
+      }
+    },
+    {
+      "fixture_id": "ppd-commercial-checklist-pdf-definition",
+      "document_family": "public_ppd_checklist",
+      "document_type": "checklist_pdf",
+      "source": {
+        "discovery_url": "https://www.portland.gov/ppd/applications-forms",
+        "expected_host": "www.portland.gov",
+        "expected_content_type": "application/pdf",
+        "public_access": "unauthenticated",
+        "future_capture_required": true
+      },
+      "synthetic_pdf_text_pages": [
+        {
+          "page_number": 1,
+          "text": "Commercial Building Permit Submittal Checklist\nPermit application\nConstruction drawings\nCode summary\nLife safety plan\nStructural calculations\nAccessibility information\nSite plan\nEnergy code compliance documentation"
+        },
+        {
+          "page_number": 2,
+          "text": "Plan review submittal\nProvide drawings as searchable PDF files. Provide calculations and supporting documents as separate PDF files when instructed. Incomplete submittals may require correction before review can proceed."
+        }
+      ],
+      "expected_extraction": {
+        "title": "Commercial Building Permit Submittal Checklist",
+        "document_classification": "submittal_checklist",
+        "page_anchors": [
+          {"page_number": 1, "anchor_type": "title", "expected_text": "Commercial Building Permit Submittal Checklist"},
+          {"page_number": 2, "anchor_type": "file_rules", "expected_text": "searchable PDF files"}
+        ],
+        "detected_sections": [
+          "application_materials",
+          "plan_documents",
+          "code_compliance",
+          "supporting_calculations",
+          "file_format_instructions"
+        ],
+        "required_data_labels": [
+          "Permit application",
+          "Construction drawings",
+          "Code summary",
+          "Site plan"
+        ],
+        "signature_blocks": [],
+        "checkbox_groups": [
+          {"label": "Commercial submittal items", "page_number": 1, "expected_behavior": "extract_as_document_requirements"}
+        ],
+        "tables": [],
+        "evidence_expectations": [
+          "File-format rules are extracted with page provenance.",
+          "Document requirements are normalized separately from workflow status text.",
+          "Incomplete-submittal language is flagged for later requirement review rather than treated as an executable action gate by this fixture alone."
+        ]
+      }
+    }
+  ]
+}

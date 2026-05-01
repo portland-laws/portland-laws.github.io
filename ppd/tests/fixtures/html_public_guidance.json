@@ -1,0 +1,99 @@
+{
+  "fixtures": [
+    {
+      "id": "devhub_faq_public_guidance_html",
+      "source_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "base_url": "https://www.portland.gov",
+      "html": "<!doctype html><html><head><title>Frequently Asked Questions (FAQs) about Development Hub PDX | Portland.gov</title><meta name=\"dcterms.modified\" content=\"2026-04-15\" /></head><body><main><h1>Frequently Asked Questions (FAQs) about Development Hub PDX</h1><h2>What can I do in Development Hub PDX?</h2><ul><li>Purchase permits online</li><li>Upload corrections</li><li>Pay fees</li></ul><a href=\"/ppd/devhub-sign-guide\">Sign in guide</a><img src=\"/sites/default/files/devhub-dashboard.png\" alt=\"Development Hub dashboard screenshot\" /></main></body></html>",
+      "expected": {
+        "title": "Frequently Asked Questions (FAQs) about Development Hub PDX | Portland.gov",
+        "headings": [
+          "Frequently Asked Questions (FAQs) about Development Hub PDX",
+          "What can I do in Development Hub PDX?"
+        ],
+        "list_items": [
+          "Purchase permits online",
+          "Upload corrections",
+          "Pay fees"
+        ],
+        "links": [
+          {
+            "url": "https://www.portland.gov/ppd/devhub-sign-guide",
+            "label": "Sign in guide"
+          }
+        ],
+        "images": [
+          {
+            "src": "https://www.portland.gov/sites/default/files/devhub-dashboard.png",
+            "alt": "Development Hub dashboard screenshot"
+          }
+        ],
+        "modified_date": "2026-04-15"
+      }
+    },
+    {
+      "id": "single_pdf_process_public_guidance_html",
+      "source_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "base_url": "https://www.portland.gov",
+      "html": "<html><head><title>Single PDF Process for building permit applications | Portland.gov</title></head><body><article><h1>Single PDF Process for building permit applications</h1><p>Drawing plans must be one searchable PDF.</p><ol><li>Prepare one searchable drawing plan PDF</li><li>Prepare application forms as separate PDF files</li><li>Upload documents in Development Hub PDX</li></ol><table><tr><th>Document</th><th>Rule</th></tr><tr><td>Drawing plans</td><td>One searchable PDF</td></tr><tr><td>Applications</td><td>Separate PDFs</td></tr></table><time>2026-03-20</time></article></body></html>",
+      "expected": {
+        "title": "Single PDF Process for building permit applications | Portland.gov",
+        "headings": [
+          "Single PDF Process for building permit applications"
+        ],
+        "list_items": [
+          "Prepare one searchable drawing plan PDF",
+          "Prepare application forms as separate PDF files",
+          "Upload documents in Development Hub PDX"
+        ],
+        "tables": [
+          {
+            "headers": [
+              "Document",
+              "Rule"
+            ],
+            "rows": [
+              [
+                "Drawing plans",
+                "One searchable PDF"
+              ],
+              [
+                "Applications",
+                "Separate PDFs"
+              ]
+            ]
+          }
+        ],
+        "modified_date": "2026-03-20"
+      }
+    },
+    {
+      "id": "permit_applications_index_public_guidance_html",
+      "source_url": "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications",
+      "base_url": "https://www.portland.gov",
+      "html": "<html><head><title>Permits and Inspections Applications | Portland.gov</title></head><body><main><h1>Permits and Inspections Applications</h1><h2>Applications</h2><ul><li>Building permit application</li><li>Trade permit application</li><li>Demolition permit application</li></ul><a href=\"/ppd/documents/building-permit-application/download\">Building permit application PDF</a><a href=\"https://devhub.portlandoregon.gov/\">Development Hub PDX</a></main></body></html>",
+      "expected": {
+        "title": "Permits and Inspections Applications | Portland.gov",
+        "headings": [
+          "Permits and Inspections Applications",
+          "Applications"
+        ],
+        "list_items": [
+          "Building permit application",
+          "Trade permit application",
+          "Demolition permit application"
+        ],
+        "links": [
+          {
+            "url": "https://www.portland.gov/ppd/documents/building-permit-application/download",
+            "label": "Building permit application PDF"
+          },
+          {
+            "url": "https://devhub.portlandoregon.gov/",
+            "label": "Development Hub PDX"
+          }
+        ]
+      }
+    }
+  ]
+}

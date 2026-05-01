@@ -1,0 +1,259 @@
+--- a/ppd/contracts/documents.ts
++++ b/ppd/contracts/documents.ts
+@@ -0,0 +1,97 @@
++export type PpdContentType = "html" | "pdf" | "image" | "form" | "other";
++
++export type PpdDocumentRole =
++  | "guidance"
++  | "application"
++  | "checklist"
++  | "handout"
++  | "faq"
++  | "portal_reference"
++  | "unknown";
++
++export interface SourceLink {
++  url: string;
++  label: string;
++  relation?: "same_site" | "download" | "external_reference" | "portal_action" | "unknown";
++  contentTypeHint?: PpdContentType;
++}
++
++export interface ExtractedField {
++  id: string;
++  label: string;
++  fieldType: "text" | "number" | "date" | "checkbox" | "radio" | "select" | "signature" | "file" | "unknown";
++  required: boolean;
++  options?: string[];
++  pageNumber?: number;
++  evidenceText?: string;
++}
++
++export interface PageAnchor {
++  id: string;
++  label: string;
++  pageNumber?: number;
++  selector?: string;
++  textOffset?: number;
++}
++
++export interface DocumentSection {
++  id: string;
++  heading: string;
++  level: number;
++  text: string;
++  pageNumber?: number;
++  anchorId?: string;
++}
++
++export interface DocumentTable {
++  id: string;
++  caption?: string;
++  headers: string[];
++  rows: string[][];
++  pageNumber?: number;
++  anchorId?: string;
++}
++
++export interface ScrapedDocument {
++  id: string;
++  sourceUrl: string;
++  canonicalUrl: string;
++  contentType: PpdContentType;
++  title: string;
++  fetchedAt: string;
++  contentHash: string;
++  text: string;
++  links: SourceLink[];
++  extractedFields?: ExtractedField[];
++  pageAnchors?: PageAnchor[];
++}
++
++export interface NormalizedDocument extends ScrapedDocument {
++  documentRole: PpdDocumentRole;
++  normalizedAt: string;
++  sourceFamily?: "portland_gov_ppd" | "portland_gov_devhub_guidance" | "devhub_public_portal" | "portlandoregon_legacy_reference" | "portland_maps_public_reference" | "unknown";
++  sections: DocumentSection[];
++  tables: DocumentTable[];
++  warnings: string[];
++}
++
++export function validateScrapedDocument(document: ScrapedDocument): string[] {
++  const errors: string[] = [];
++  if (!document.id.trim()) errors.push("id is required");
++  if (!document.sourceUrl.startsWith("https://")) errors.push("sourceUrl must be HTTPS");
++  if (!document.canonicalUrl.startsWith("https://")) errors.push("canonicalUrl must be HTTPS");
++  if (!document.title.trim()) errors.push("title is required");
++  if (!document.fetchedAt.trim()) errors.push("fetchedAt is required");
++  if (!document.contentHash.trim()) errors.push("contentHash is required");
++  if (!Array.isArray(document.links)) errors.push("links must be an array");
++  return errors;
++}
++
++export function validateNormalizedDocument(document: NormalizedDocument): string[] {
++  const errors = validateScrapedDocument(document);
++  if (!document.normalizedAt.trim()) errors.push("normalizedAt is required");
++  if (!Array.isArray(document.sections)) errors.push("sections must be an array");
++  if (!Array.isArray(document.tables)) errors.push("tables must be an array");
++  if (!Array.isArray(document.warnings)) errors.push("warnings must be an array");
++  return errors;
++}
+--- a/ppd/contracts/documents.py
++++ b/ppd/contracts/documents.py
+@@ -0,0 +1,128 @@
++"""Normalized PP&D public document data contracts.
++
++These contracts are side-effect free. They describe public-source crawler and
++extractor outputs without fetching URLs, reading browser state, or storing
++private DevHub artifacts.
++"""
++
++from __future__ import annotations
++
++from dataclasses import dataclass, field
++from enum import Enum
++from typing import Optional
++
++
++class PpdContentType(str, Enum):
++    HTML = "html"
++    PDF = "pdf"
++    IMAGE = "image"
++    FORM = "form"
++    OTHER = "other"
++
++
++class PpdDocumentRole(str, Enum):
++    GUIDANCE = "guidance"
++    APPLICATION = "application"
++    CHECKLIST = "checklist"
++    HANDOUT = "handout"
++    FAQ = "faq"
++    PORTAL_REFERENCE = "portal_reference"
++    UNKNOWN = "unknown"
++
++
++@dataclass(frozen=True)
++class SourceLink:
++    url: str
++    label: str
++    relation: str = "unknown"
++    content_type_hint: Optional[PpdContentType] = None
++
++
++@dataclass(frozen=True)
++class ExtractedField:
++    id: str
++    label: str
++    field_type: str
++    required: bool
++    options: tuple[str, ...] = field(default_factory=tuple)
++    page_number: Optional[int] = None
++    evidence_text: Optional[str] = None
++
++
++@dataclass(frozen=True)
++class PageAnchor:
++    id: str
++    label: str
++    page_number: Optional[int] = None
++    selector: Optional[str] = None
++    text_offset: Optional[int] = None
++
++
++@dataclass(frozen=True)
++class DocumentSection:
++    id: str
++    heading: str
++    level: int
++    text: str
++    page_number: Optional[int] = None
++    anchor_id: Optional[str] = None
++
++
++@dataclass(frozen=True)
++class DocumentTable:
++    id: str
++    headers: tuple[str, ...]
++    rows: tuple[tuple[str, ...], ...]
++    caption: Optional[str] = None
++    page_number: Optional[int] = None
++    anchor_id: Optional[str] = None
++
++
++@dataclass(frozen=True)
++class ScrapedDocument:
++    id: str
++    source_url: str
++    canonical_url: str
++    content_type: PpdContentType
++    title: str
++    fetched_at: str
++    content_hash: str
++    text: str
++    links: tuple[SourceLink, ...] = field(default_factory=tuple)
++    extracted_fields: tuple[ExtractedField, ...] = field(default_factory=tuple)
++    page_anchors: tuple[PageAnchor, ...] = field(default_factory=tuple)
++
++    def validate(self) -> list[str]:
++        errors: list[str] = []
++        if not self.id.strip():
++            errors.append("id is required")
++        if not self.source_url.startswith("https://"):
++            errors.append("source_url must be HTTPS")
++        if not self.canonical_url.startswith("https://"):
++            errors.append("canonical_url must be HTTPS")
++        if not self.title.strip():
++            errors.append("title is required")
++        if not self.fetched_at.strip():
++            errors.append("fetched_at is required")
++        if not self.content_hash.strip():
++            errors.append("content_hash is required")
++        return errors
++
++
++@dataclass(frozen=True)
++class NormalizedDocument(ScrapedDocument):
++    document_role: PpdDocumentRole = PpdDocumentRole.UNKNOWN
++    normalized_at: str = ""
++    source_family: str = "unknown"
++    sections: tuple[DocumentSection, ...] = field(default_factory=tuple)
++    tables: tuple[DocumentTable, ...] = field(default_factory=tuple)
++    warnings: tuple[str, ...] = field(default_factory=tuple)
++
++    def validate(self) -> list[str]:
++        errors = super().validate()
++        if not self.normalized_at.strip():
++            errors.append("normalized_at is required")
++        for section in self.sections:
++            if section.level < 1:
++                errors.append(f"section {section.id} level must be positive")
++        return errors
+--- a/ppd/contracts/__init__.py
++++ b/ppd/contracts/__init__.py
+@@ -0,0 +1,25 @@
++"""PP&D data contracts."""
++
++from .documents import (
++    DocumentSection,
++    DocumentTable,
++    ExtractedField,
++    NormalizedDocument,
++    PageAnchor,
++    PpdContentType,
++    PpdDocumentRole,
++    ScrapedDocument,
++    SourceLink,
++)
++
++__all__ = [
++    "DocumentSection",
++    "DocumentTable",
++    "ExtractedField",
++    "NormalizedDocument",
++    "PageAnchor",
++    "PpdContentType",
++    "PpdDocumentRole",
++    "ScrapedDocument",
++    "SourceLink",
++]
