@@ -39,11 +39,12 @@ export class CecTptpParser {
     const assumptions: string[] = [];
     const goals: string[] = [];
     for (const formula of this.formulas) {
-      if (formula.role === 'axiom' || formula.role === 'hypothesis') {
+      const role = classifyProblemRole(formula.role);
+      if (role === 'assumption') {
         assumptions.push(formula.formula);
-      } else if (formula.role === 'conjecture' || formula.role === 'theorem') {
+      } else if (role === 'goal') {
         goals.push(formula.formula);
-      } else if (formula.role === 'negated_conjecture') {
+      } else if (role === 'negated_goal') {
         goals.push(`not(${formula.formula})`);
       }
     }
@@ -71,16 +72,45 @@ export class CecCustomProblemParser {
     let currentSection: 'assumptions' | 'goals' | undefined;
 
     for (const rawLine of content.split(/\r?\n/)) {
-      const line = rawLine.trim();
-      if (!line || line.startsWith('#') || line.startsWith('//')) continue;
+      const line = stripInlineComment(rawLine).trim();
+      if (!line) continue;
 
-      if (/^LOGIC\s*:/i.test(line)) {
-        logic = parseProblemLogic(line.split(':', 2)[1]?.trim() ?? '');
-      } else if (/^ASSUMPTIONS\s*:/i.test(line)) {
-        currentSection = 'assumptions';
-      } else if (/^GOALS\s*:/i.test(line)) {
-        currentSection = 'goals';
-      } else if (currentSection === 'assumptions') {
+      const assignment = line.match(/^([A-Za-z_ -]+)\s*[:=]\s*(.*)$/);
+      if (assignment) {
+        const key = normalizeProblemRole(assignment[1]);
+        const value = assignment[2].trim();
+        if (key === 'logic') {
+          logic = parseProblemLogic(value);
+          currentSection = undefined;
+          continue;
+        }
+        const role = classifyProblemRole(key);
+        if (role === 'assumption') {
+          currentSection = value ? undefined : 'assumptions';
+          if (value) assumptions.push(value);
+          continue;
+        }
+        if (role === 'goal' || role === 'negated_goal') {
+          currentSection = value ? undefined : 'goals';
+          if (value) goals.push(role === 'negated_goal' ? `not(${value})` : value);
+          continue;
+        }
+      }
+
+      const section = line.match(/^\[?([A-Za-z_ -]+)\]?$/);
+      if (section) {
+        const role = classifyProblemRole(section[1]);
+        if (role === 'assumption') {
+          currentSection = 'assumptions';
+          continue;
+        }
+        if (role === 'goal' || role === 'negated_goal') {
+          currentSection = 'goals';
+          continue;
+        }
+      }
+
+      if (currentSection === 'assumptions') {
         assumptions.push(line);
       } else if (currentSection === 'goals') {
         goals.push(line);
@@ -110,7 +140,10 @@ export class CecProblemParser {
   }
 }
 
-export function parseCecProblemString(content: string, formatHint?: CecProblemFormat): CecShadowProblemFile {
+export function parseCecProblemString(
+  content: string,
+  formatHint?: CecProblemFormat,
+): CecShadowProblemFile {
   return new CecProblemParser().parseString(content, { formatHint });
 }
 
@@ -120,9 +153,43 @@ export function detectProblemFormat(content: string): CecProblemFormat {
 
 function parseProblemLogic(logic: string): CecShadowModalLogic {
   const normalized = logic.toUpperCase();
-  if (normalized === 'T' || normalized === 'S4' || normalized === 'S5' || normalized === 'D') return normalized;
+  if (normalized === 'T' || normalized === 'S4' || normalized === 'S5' || normalized === 'D')
+    return normalized;
   if (normalized === 'COGNITIVE') return 'S5';
   return 'K';
+}
+
+function classifyProblemRole(role: string): 'assumption' | 'goal' | 'negated_goal' | undefined {
+  const normalized = normalizeProblemRole(role);
+  if (
+    ['axiom', 'hypothesis', 'assumption', 'assumptions', 'premise', 'premises', 'given'].includes(
+      normalized,
+    )
+  ) {
+    return 'assumption';
+  }
+  if (
+    ['conjecture', 'theorem', 'goal', 'goals', 'query', 'queries', 'prove'].includes(normalized)
+  ) {
+    return 'goal';
+  }
+  if (['negated_conjecture', 'negated_goal', 'negated_query'].includes(normalized))
+    return 'negated_goal';
+  return undefined;
+}
+
+function normalizeProblemRole(role: string): string {
+  return role
+    .trim()
+    .toLowerCase()
+    .replace(/[\s-]+/g, '_');
+}
+
+function stripInlineComment(line: string): string {
+  const hash = line.indexOf('#');
+  const slash = line.indexOf('//');
+  const indexes = [hash, slash].filter((index) => index >= 0);
+  return indexes.length === 0 ? line : line.slice(0, Math.min(...indexes));
 }
 
 function stripTptpComments(content: string): string {
@@ -178,7 +245,7 @@ function parseTptpFormulas(source: string): CecTptpFormula[] {
     formulas.push({
       kind,
       name: unquote(args[0].trim()),
-      role: args[1].trim().toLowerCase(),
+      role: normalizeProblemRole(args[1]),
       formula: args[2].trim(),
       annotations: args.slice(3).join(',').trim() || undefined,
     });
@@ -235,7 +302,10 @@ function splitTopLevel(source: string, delimiter: string): string[] {
 }
 
 function unquote(value: string): string {
-  if ((value.startsWith('"') && value.endsWith('"')) || (value.startsWith("'") && value.endsWith("'"))) {
+  if (
+    (value.startsWith('"') && value.endsWith('"')) ||
+    (value.startsWith("'") && value.endsWith("'"))
+  ) {
     return value.slice(1, -1);
   }
   return value;

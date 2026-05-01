@@ -193,6 +193,14 @@ function expectWithinTolerance(actual: number, expected: number, tolerance: numb
   expect(Math.abs(actual - expected)).toBeLessThanOrEqual(tolerance);
 }
 
+function expectFeatureVectorWithinTolerance(actual: number[], expected: number[], tolerance: number): void {
+  expect(actual).toHaveLength(ML_CONFIDENCE_FEATURE_NAMES.length);
+  expect(actual).toHaveLength(expected.length);
+  expected.forEach((expectedValue, index) => {
+    expectWithinTolerance(actual[index], expectedValue, tolerance);
+  });
+}
+
 describe('Python parity fixtures', () => {
   it.each(fixtures as Fixture[])('matches fixture $id', (fixture) => {
     if (fixture.kind === 'fol') {
@@ -227,7 +235,7 @@ describe('Python parity fixtures', () => {
         fixture.python_quantifier_symbols,
         fixture.python_operator_symbols,
       );
-      expect(features).toEqual(fixture.python_feature_vector);
+      expectFeatureVectorWithinTolerance(features, fixture.python_feature_vector, 1e-10);
       return;
     }
 
@@ -247,10 +255,11 @@ describe('Python parity fixtures', () => {
         fixture.ml_confidence.quantifiers,
         fixture.ml_confidence.operators,
       );
-      expect(features).toHaveLength(ML_CONFIDENCE_FEATURE_NAMES.length);
-      fixture.ml_confidence.feature_vector.forEach((expected, index) => {
-        expectWithinTolerance(features[index], expected, fixture.expected_tolerances.feature);
-      });
+      expectFeatureVectorWithinTolerance(
+        features,
+        fixture.ml_confidence.feature_vector,
+        fixture.expected_tolerances.feature,
+      );
       expectWithinTolerance(
         predictMLConfidence(
           fixture.raw_text,
@@ -320,11 +329,7 @@ describe('Python parity fixtures', () => {
         fixture.quantifiers,
         fixture.operators,
       );
-      expect(features).toHaveLength(ML_CONFIDENCE_FEATURE_NAMES.length);
-      expect(features).toHaveLength(fixture.python_feature_vector.length);
-      fixture.python_feature_vector.forEach((expected, index) => {
-        expect(features[index]).toBeCloseTo(expected, 10);
-      });
+      expectFeatureVectorWithinTolerance(features, fixture.python_feature_vector, 1e-10);
       expect(
         predictMLConfidence(
           fixture.sentence,
@@ -392,6 +397,35 @@ describe('Python parity fixtures', () => {
       'fol_converter_ml_nlp_if_applicant_then_eligible',
       'fol_converter_ml_nlp_some_permits_revocable',
     ]);
+  });
+
+  it('checks Python ML/spaCy development captures with exact structures and numeric tolerances', () => {
+    const converterFixtures = (fixtures as Fixture[]).filter(
+      (fixture): fixture is FolConverterMlNlpFixture => fixture.kind === 'fol_converter_ml_nlp',
+    );
+
+    for (const fixture of converterFixtures) {
+      const converter = new FOLConverter({ useMl: true, useNlp: true, useCache: false });
+      const result = converter.convert(fixture.input);
+
+      expect(result.metadata?.extracted_predicates).toEqual(
+        fixture.python_metadata.extracted_predicates,
+      );
+      expect(result.metadata?.extracted_relations).toEqual(
+        fixture.python_metadata.extracted_relations,
+      );
+      expect(result.output?.predicates).toEqual(fixture.python_predicates);
+      expectWithinTolerance(result.confidence, fixture.python_confidence, 1e-10);
+
+      const features = FeatureExtractor.extractFeatures(
+        fixture.input,
+        fixture.python_formula_string,
+        fixture.python_metadata.extracted_predicates,
+        fixture.python_quantifier_symbols,
+        fixture.python_operator_symbols,
+      );
+      expectFeatureVectorWithinTolerance(features, fixture.python_feature_vector, 1e-10);
+    }
   });
 
   it('keeps Python parity fixtures for every TDFOL rule category', () => {

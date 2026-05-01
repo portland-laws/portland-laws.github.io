@@ -1,4 +1,8 @@
-import { getLogicRuntimeCapabilities } from './runtimeCapabilities';
+import {
+  getLocalWasmProverEvaluations,
+  getLogicRuntimeCapabilities,
+  getRecommendedLocalWasmProvers,
+} from './runtimeCapabilities';
 import { convertLegalTextToDeontic } from './deontic';
 import { parseFolText } from './fol';
 
@@ -24,8 +28,40 @@ describe('logic runtime capabilities', () => {
         lightweightReasoning: true,
         wasmProverStatus: 'incomplete',
         externalProverUnavailable: true,
+        browserWasmProver: true,
+        recommendedLocalProvers: ['z3', 'cvc5', 'tau-prolog'],
       },
     });
+  });
+
+  it('evaluates local WASM prover routes without server or Python wrappers', () => {
+    const evaluations = getLocalWasmProverEvaluations();
+
+    expect(evaluations.map((prover) => prover.id)).toEqual([
+      'z3',
+      'cvc5',
+      'tau-prolog',
+      'lean',
+      'coq',
+    ]);
+    expect(evaluations.every((prover) => prover.serverCallsAllowed === false)).toBe(true);
+    expect(
+      evaluations.filter((prover) => prover.status !== 'blocked').map((prover) => prover.id),
+    ).toEqual(['z3', 'cvc5', 'tau-prolog']);
+    expect(
+      evaluations.filter((prover) => prover.status === 'blocked').map((prover) => prover.id),
+    ).toEqual(['lean', 'coq']);
+  });
+
+  it('selects deterministic browser-native prover candidates by workflow', () => {
+    expect(getRecommendedLocalWasmProvers('smt').map((prover) => prover.id)).toEqual([
+      'z3',
+      'cvc5',
+    ]);
+    expect(getRecommendedLocalWasmProvers('logic-programming').map((prover) => prover.id)).toEqual([
+      'tau-prolog',
+    ]);
+    expect(getRecommendedLocalWasmProvers('proof-checking')).toEqual([]);
   });
 
   it('surfaces temporary incomplete-port ML/NLP capabilities in converter outputs', () => {
