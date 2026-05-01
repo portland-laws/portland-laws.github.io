@@ -34,8 +34,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] Add guardrail compiler fixture tests for document completeness, PDF file rules, missing user facts, and explicit-confirmation gates.
 - [x] Add mocked DevHub workflow snapshot fixtures with redacted field values, semantic selectors, validation messages, upload controls, and navigation edges.
 - [x] Add DevHub fixture privacy validation that rejects credentials, auth state, traces, screenshots with private values, and unredacted PII.
-- [~] Add a fixture-backed public crawl dry-run report command that uses injected responses by default and writes no raw crawl output.
-- [ ] Add a live-public-crawl preflight task that only reports eligible tiny seed URLs after allowlist, robots, timeout, and no-persist checks.
+- [x] Add a fixture-backed public crawl dry-run report command that uses injected responses by default and writes no raw crawl output.
+- [~] Add a live-public-crawl preflight task that only reports eligible tiny seed URLs after allowlist, robots, timeout, and no-persist checks.
 
 
 
@@ -52,11 +52,11 @@ Last updated: 2026-05-01T17:23:00Z
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-01T18:22:45.876586Z
+Last updated: 2026-05-01T18:28:29.559526Z
 
-- Latest target: `Task checkbox-29: Add a fixture-backed public crawl dry-run report command that uses injected responses by default and writes no raw crawl output.`
+- Latest target: `Task checkbox-30: Add a live-public-crawl preflight task that only reports eligible tiny seed URLs after allowlist, robots, timeout, and no-persist checks.`
 - Latest result: `validation`
-- Latest summary: Adds a syntax-valid fixture-backed PP&D public crawl dry-run report command and tests. The command defaults to committed injected responses, never performs live network access, and emits only summary/report metadata with no raw response bodies or raw crawl-output paths.
-- Counts: `{"blocked": 0, "complete": 28, "in_progress": 0, "needed": 2}`
+- Latest summary: Add a syntax-valid live public crawl preflight module plus deterministic fixture-backed tests for eligible tiny seed URL reporting.
+- Counts: `{"blocked": 0, "complete": 29, "in_progress": 0, "needed": 1}`
 
 <!-- ppd-daemon-task-board:end -->

@@ -1,0 +1,35 @@
+{
+  "fixtureId": "public-crawl-report-injected-responses-v1",
+  "maxSeedFetches": 2,
+  "robotsTextByHost": {
+    "www.portland.gov": "User-agent: *\nAllow: /ppd\n"
+  },
+  "seeds": [
+    {
+      "id": "ppd-home",
+      "url": "https://www.portland.gov/ppd"
+    },
+    {
+      "id": "single-pdf-process",
+      "url": "https://www.portland.gov/ppd/permits/single-pdf-process"
+    },
+    {
+      "id": "ignored-third-seed",
+      "url": "https://www.portland.gov/ppd/permits"
+    }
+  ],
+  "responses": {
+    "https://www.portland.gov/ppd": {
+      "url": "https://www.portland.gov/ppd",
+      "statusCode": 200,
+      "contentType": "text/html; charset=utf-8",
+      "body": "<html><head><title>Portland Permitting & Development</title></head><body>Fixture-only public PP&D page.</body></html>"
+    },
+    "https://www.portland.gov/ppd/permits/single-pdf-process": {
+      "url": "https://www.portland.gov/ppd/permits/single-pdf-process",
+      "statusCode": 200,
+      "contentType": "text/html; charset=utf-8",
+      "body": "<html><head><title>Single PDF Process</title></head><body>Fixture-only public guidance page.</body></html>"
+    }
+  }
+}
