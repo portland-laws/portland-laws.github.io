@@ -69,6 +69,16 @@ class DocumentSection:
 
 
 @dataclass(frozen=True)
+class DocumentOrderedStep:
+    id: str
+    sequence: int
+    text: str
+    page_number: Optional[int] = None
+    anchor_id: Optional[str] = None
+    evidence_selector: Optional[str] = None
+
+
+@dataclass(frozen=True)
 class DocumentTable:
     id: str
     headers: tuple[str, ...]
@@ -76,6 +86,13 @@ class DocumentTable:
     caption: Optional[str] = None
     page_number: Optional[int] = None
     anchor_id: Optional[str] = None
+
+
+@dataclass(frozen=True)
+class ModifiedDateEvidence:
+    date_text: str
+    evidence_text: str
+    evidence_selector: Optional[str] = None
 
 
 @dataclass(frozen=True)
@@ -115,7 +132,9 @@ class NormalizedDocument(ScrapedDocument):
     normalized_at: str = ""
     source_family: str = "unknown"
     sections: tuple[DocumentSection, ...] = field(default_factory=tuple)
+    ordered_steps: tuple[DocumentOrderedStep, ...] = field(default_factory=tuple)
     tables: tuple[DocumentTable, ...] = field(default_factory=tuple)
+    modified_date_evidence: tuple[ModifiedDateEvidence, ...] = field(default_factory=tuple)
     warnings: tuple[str, ...] = field(default_factory=tuple)
 
     def validate(self) -> list[str]:
@@ -125,4 +144,12 @@ class NormalizedDocument(ScrapedDocument):
         for section in self.sections:
             if section.level < 1:
                 errors.append(f"section {section.id} level must be positive")
+        for step in self.ordered_steps:
+            if step.sequence < 1:
+                errors.append(f"ordered step {step.id} sequence must be positive")
+            if not step.text.strip():
+                errors.append(f"ordered step {step.id} text is required")
+        for evidence in self.modified_date_evidence:
+            if not evidence.date_text.strip() or not evidence.evidence_text.strip():
+                errors.append("modified date evidence requires date_text and evidence_text")
         return errors

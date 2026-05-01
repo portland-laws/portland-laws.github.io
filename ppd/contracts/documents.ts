@@ -12,7 +12,7 @@ export type PpdDocumentRole =
 export interface SourceLink {
   url: string;
   label: string;
-  relation?: "same_site" | "download" | "external_reference" | "portal_action" | "unknown";
+  relation?: "same_site" | "download" | "external_reference" | "portal_action" | "contact" | "unknown";
   contentTypeHint?: PpdContentType;
 }
 
@@ -43,6 +43,15 @@ export interface DocumentSection {
   anchorId?: string;
 }
 
+export interface DocumentOrderedStep {
+  id: string;
+  sequence: number;
+  text: string;
+  pageNumber?: number;
+  anchorId?: string;
+  evidenceSelector?: string;
+}
+
 export interface DocumentTable {
   id: string;
   caption?: string;
@@ -50,6 +59,12 @@ export interface DocumentTable {
   rows: string[][];
   pageNumber?: number;
   anchorId?: string;
+}
+
+export interface ModifiedDateEvidence {
+  dateText: string;
+  evidenceText: string;
+  evidenceSelector?: string;
 }
 
 export interface ScrapedDocument {
@@ -71,7 +86,9 @@ export interface NormalizedDocument extends ScrapedDocument {
   normalizedAt: string;
   sourceFamily?: "portland_gov_ppd" | "portland_gov_devhub_guidance" | "devhub_public_portal" | "portlandoregon_legacy_reference" | "portland_maps_public_reference" | "unknown";
   sections: DocumentSection[];
+  orderedSteps?: DocumentOrderedStep[];
   tables: DocumentTable[];
+  modifiedDateEvidence?: ModifiedDateEvidence[];
   warnings: string[];
 }
 
@@ -91,7 +108,9 @@ export function validateNormalizedDocument(document: NormalizedDocument): string
   const errors = validateScrapedDocument(document);
   if (!document.normalizedAt.trim()) errors.push("normalizedAt is required");
   if (!Array.isArray(document.sections)) errors.push("sections must be an array");
+  if (document.orderedSteps && !Array.isArray(document.orderedSteps)) errors.push("orderedSteps must be an array");
   if (!Array.isArray(document.tables)) errors.push("tables must be an array");
+  if (document.modifiedDateEvidence && !Array.isArray(document.modifiedDateEvidence)) errors.push("modifiedDateEvidence must be an array");
   if (!Array.isArray(document.warnings)) errors.push("warnings must be an array");
   return errors;
 }

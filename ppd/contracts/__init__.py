@@ -1,15 +1,26 @@
 """PP&D data contracts."""
 
 from .documents import (
+    DocumentOrderedStep,
     DocumentSection,
     DocumentTable,
     ExtractedField,
+    ModifiedDateEvidence,
     NormalizedDocument,
     PageAnchor,
     PpdContentType,
     PpdDocumentRole,
     ScrapedDocument,
     SourceLink,
+)
+from .frontier import (
+    DiscoveredFrontierLink,
+    FrontierContentType,
+    FrontierExpansion,
+    FrontierExpansionSummary,
+    FrontierLinkRelation,
+    SkippedFrontierUrl,
+    SkippedUrlReason,
 )
 from .processes import (
     ActionGate,
@@ -24,15 +35,24 @@ from .processes import (
     RequiredFact,
     RequiredFactKind,
 )
+from .source_index import CrawlStatus, RedirectHop, SourceIndexRecord, SourcePageType
 
 __all__ = [
     "ActionGate",
     "ActionGateClassification",
     "ActionGateKind",
+    "CrawlStatus",
+    "DiscoveredFrontierLink",
+    "DocumentOrderedStep",
     "DocumentSection",
     "DocumentTable",
     "EvidenceRef",
     "ExtractedField",
+    "FrontierContentType",
+    "FrontierExpansion",
+    "FrontierExpansionSummary",
+    "FrontierLinkRelation",
+    "ModifiedDateEvidence",
     "NormalizedDocument",
     "PageAnchor",
     "PermitProcess",
@@ -40,10 +60,15 @@ __all__ = [
     "PpdDocumentRole",
     "ProcessStage",
     "ProcessStageKind",
+    "RedirectHop",
     "RequiredDocument",
     "RequiredDocumentKind",
     "RequiredFact",
     "RequiredFactKind",
     "ScrapedDocument",
+    "SkippedFrontierUrl",
+    "SkippedUrlReason",
+    "SourceIndexRecord",
     "SourceLink",
+    "SourcePageType",
 ]

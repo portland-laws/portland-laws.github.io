@@ -1,0 +1,50 @@
+{
+  "changed_files": [
+    "ppd/crawler/html_normalizer.py",
+    "ppd/tests/fixtures/html/html_to_normalized_document_fixture.json",
+    "ppd/contracts/documents.py",
+    "ppd/contracts/documents.ts",
+    "ppd/contracts/__init__.py"
+  ],
+  "created_at": "2026-05-01T17:26:41.602740Z",
+  "impact": "This advances the PP&D plan by turning curated public HTML fixtures into source-grounded normalized-document artifacts before any live crawling or authenticated DevHub automation.",
+  "summary": "Added fixture-only HTML normalization support for headings, ordered steps, tables, links, and modified-date evidence.",
+  "target_task": "Task checkbox-21: Add fixture-only HTML-to-normalized-document conversion for headings, ordered steps, tables, links, and modified-date evidence.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 30 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "................................ ---------------------------------------------------------------------- Ran 32 tests in 0.003s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

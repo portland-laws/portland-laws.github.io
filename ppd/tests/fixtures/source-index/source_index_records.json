@@ -1,0 +1,87 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "source_index_records",
+  "generatedAt": "2026-05-01T17:20:00Z",
+  "records": [
+    {
+      "id": "ppd-home",
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "canonicalUrl": "https://www.portland.gov/ppd",
+      "redirects": [],
+      "title": "Portland Permitting & Development",
+      "bureau": "Portland Permitting & Development",
+      "pageType": "guidance",
+      "contentType": "text/html",
+      "firstSeenAt": "2026-05-01T16:00:00Z",
+      "lastSeenAt": "2026-05-01T17:00:00Z",
+      "fetchedAt": "2026-05-01T17:00:00Z",
+      "httpStatus": 200,
+      "etag": "W/\"fixture-ppd-home\"",
+      "lastModified": "Fri, 01 May 2026 16:45:00 GMT",
+      "contentHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "crawlStatus": "fetched"
+    },
+    {
+      "id": "ppd-residential-redirect",
+      "sourceUrl": "https://www.portland.gov/bds/residential-permits",
+      "canonicalUrl": "https://www.portland.gov/ppd/residential-permits",
+      "redirects": [
+        {
+          "fromUrl": "https://www.portland.gov/bds/residential-permits",
+          "toUrl": "https://www.portland.gov/ppd/residential-permits",
+          "statusCode": 301,
+          "observedAt": "2026-05-01T17:01:00Z"
+        }
+      ],
+      "title": "Residential Permits",
+      "bureau": "Portland Permitting & Development",
+      "pageType": "guidance",
+      "contentType": "text/html",
+      "firstSeenAt": "2026-05-01T16:05:00Z",
+      "lastSeenAt": "2026-05-01T17:01:00Z",
+      "fetchedAt": "2026-05-01T17:01:00Z",
+      "httpStatus": 200,
+      "etag": "W/\"fixture-residential\"",
+      "lastModified": "Fri, 01 May 2026 16:50:00 GMT",
+      "contentHash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "crawlStatus": "fetched"
+    },
+    {
+      "id": "devhub-faq-not-modified",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub-faq",
+      "canonicalUrl": "https://www.portland.gov/ppd/devhub-faq",
+      "redirects": [],
+      "title": "Development Hub PDX Frequently Asked Questions",
+      "bureau": "Portland Permitting & Development",
+      "pageType": "faq",
+      "contentType": "text/html",
+      "firstSeenAt": "2026-05-01T16:10:00Z",
+      "lastSeenAt": "2026-05-01T17:02:00Z",
+      "fetchedAt": "2026-05-01T17:02:00Z",
+      "httpStatus": 304,
+      "etag": "W/\"fixture-devhub-faq\"",
+      "lastModified": "Fri, 01 May 2026 15:30:00 GMT",
+      "contentHash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "crawlStatus": "not_modified"
+    },
+    {
+      "id": "external-nonallowlisted-skipped",
+      "sourceUrl": "https://example.com/non-authoritative-permit-summary",
+      "canonicalUrl": "https://example.com/non-authoritative-permit-summary",
+      "redirects": [],
+      "title": "Skipped non-authoritative permit summary",
+      "bureau": "unknown",
+      "pageType": "other",
+      "contentType": "text/html",
+      "firstSeenAt": "2026-05-01T16:15:00Z",
+      "lastSeenAt": "2026-05-01T17:03:00Z",
+      "fetchedAt": null,
+      "httpStatus": null,
+      "etag": null,
+      "lastModified": null,
+      "contentHash": null,
+      "crawlStatus": "skipped",
+      "skipReason": "domain_not_in_ppd_public_allowlist"
+    }
+  ]
+}

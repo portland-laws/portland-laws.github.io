@@ -1,0 +1,148 @@
+{
+  "fixtureId": "frontier-expansion-ppd-landing-2026-05-01",
+  "sourceDocumentId": "ppd-landing-html-fixture",
+  "sourceUrl": "https://www.portland.gov/ppd",
+  "expandedAt": "2026-05-01T17:20:00Z",
+  "allowedDomains": [
+    "www.portland.gov",
+    "devhub.portlandoregon.gov",
+    "www.portlandoregon.gov",
+    "www.portlandmaps.com"
+  ],
+  "discoveredLinks": [
+    {
+      "id": "frontier-link-001",
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "rawHref": "/ppd/residential-permitting",
+      "normalizedUrl": "https://www.portland.gov/ppd/residential-permitting",
+      "label": "Residential permitting",
+      "contentType": "html",
+      "relation": "same_site",
+      "allowedDomain": true,
+      "crawlCandidate": true,
+      "evidenceSelector": "nav a[href='/ppd/residential-permitting']"
+    },
+    {
+      "id": "frontier-link-002",
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "rawHref": "/sites/default/files/2026/building-permit-application.pdf",
+      "normalizedUrl": "https://www.portland.gov/sites/default/files/2026/building-permit-application.pdf",
+      "label": "Building permit application PDF",
+      "contentType": "pdf",
+      "relation": "download",
+      "allowedDomain": true,
+      "crawlCandidate": true,
+      "evidenceSelector": "main a[href$='building-permit-application.pdf']"
+    },
+    {
+      "id": "frontier-link-003",
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "rawHref": "https://devhub.portlandoregon.gov/",
+      "normalizedUrl": "https://devhub.portlandoregon.gov/",
+      "label": "Development Hub PDX public portal",
+      "contentType": "portal_action",
+      "relation": "portal_action",
+      "allowedDomain": true,
+      "crawlCandidate": true,
+      "evidenceSelector": "main a[href='https://devhub.portlandoregon.gov/']"
+    },
+    {
+      "id": "frontier-link-004",
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "rawHref": "mailto:ppd@portlandoregon.gov",
+      "normalizedUrl": "mailto:ppd@portlandoregon.gov",
+      "label": "Email Portland Permitting & Development",
+      "contentType": "mailto",
+      "relation": "contact",
+      "allowedDomain": false,
+      "crawlCandidate": false,
+      "evidenceSelector": "footer a[href^='mailto:']"
+    },
+    {
+      "id": "frontier-link-005",
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "rawHref": "tel:+15038227300",
+      "normalizedUrl": "tel:+15038227300",
+      "label": "Call Portland Permitting & Development",
+      "contentType": "phone",
+      "relation": "contact",
+      "allowedDomain": false,
+      "crawlCandidate": false,
+      "evidenceSelector": "footer a[href^='tel:']"
+    }
+  ],
+  "skippedUrls": [
+    {
+      "id": "frontier-skip-001",
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "rawHref": "#main-content",
+      "normalizedUrl": "https://www.portland.gov/ppd#main-content",
+      "label": "Skip to main content",
+      "contentType": "html",
+      "reason": "fragment_only",
+      "evidenceSelector": "a[href='#main-content']"
+    },
+    {
+      "id": "frontier-skip-002",
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "rawHref": "https://www.example.com/vendor-brochure",
+      "normalizedUrl": "https://www.example.com/vendor-brochure",
+      "label": "Vendor brochure",
+      "contentType": "external_site",
+      "reason": "disallowed_domain",
+      "evidenceSelector": "main a[href='https://www.example.com/vendor-brochure']"
+    },
+    {
+      "id": "frontier-skip-003",
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "rawHref": "javascript:void(0)",
+      "normalizedUrl": "javascript:void(0)",
+      "label": "Open search overlay",
+      "contentType": "other",
+      "reason": "unsupported_scheme",
+      "evidenceSelector": "button[data-search-trigger]"
+    },
+    {
+      "id": "frontier-skip-004",
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "rawHref": "https://devhub.portlandoregon.gov/Account/Login",
+      "normalizedUrl": "https://devhub.portlandoregon.gov/Account/Login",
+      "label": "Sign in to Development Hub PDX",
+      "contentType": "portal_action",
+      "reason": "private_or_authenticated",
+      "evidenceSelector": "main a[href*='/Account/Login']"
+    },
+    {
+      "id": "frontier-skip-005",
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "rawHref": "/ppd/residential-permitting",
+      "normalizedUrl": "https://www.portland.gov/ppd/residential-permitting",
+      "label": "Residential permitting duplicate footer link",
+      "contentType": "html",
+      "reason": "duplicate_url",
+      "evidenceSelector": "footer a[href='/ppd/residential-permitting']"
+    }
+  ],
+  "summary": {
+    "totalLinksSeen": 10,
+    "discoveredCount": 5,
+    "skippedCount": 5,
+    "crawlCandidateCount": 3,
+    "contentTypeCounts": {
+      "html": 3,
+      "pdf": 1,
+      "external_site": 1,
+      "mailto": 1,
+      "phone": 1,
+      "portal_action": 2,
+      "other": 1
+    },
+    "skippedReasonCounts": {
+      "duplicate_url": 1,
+      "disallowed_domain": 1,
+      "unsupported_scheme": 1,
+      "fragment_only": 1,
+      "private_or_authenticated": 1
+    }
+  }
+}

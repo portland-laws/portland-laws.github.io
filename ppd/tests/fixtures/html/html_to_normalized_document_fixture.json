@@ -1,0 +1,108 @@
+{
+  "fixtureKind": "html_to_normalized_document",
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-01T17:30:00Z",
+  "input": {
+    "documentId": "ppd-single-pdf-process-html-fixture",
+    "sourceUrl": "https://www.portland.gov/ppd/single-pdf-process-fixture",
+    "canonicalUrl": "https://www.portland.gov/ppd/single-pdf-process-fixture",
+    "fetchedAt": "2026-05-01T17:25:00Z",
+    "normalizedAt": "2026-05-01T17:30:00Z",
+    "html": "Single PDF Process FixtureSingle PDF ProcessLast updated: May 1, 2026Prepare filesUse one searchable PDF for drawing plans and separate PDFs for applications, calculations, and supporting documents.Review the project requirements.Combine drawing sheets into one searchable PDF.Upload applications and supporting documents as separate PDFs.Fixture file groupsDocument groupExpected formatDrawing plansOne searchable PDFApplicationsSeparate PDFPermits and inspections applicationsOpen DevHubSample checklist PDF"
+  },
+  "expected": {
+    "id": "ppd-single-pdf-process-html-fixture",
+    "sourceUrl": "https://www.portland.gov/ppd/single-pdf-process-fixture",
+    "canonicalUrl": "https://www.portland.gov/ppd/single-pdf-process-fixture",
+    "contentType": "html",
+    "title": "Single PDF Process Fixture",
+    "fetchedAt": "2026-05-01T17:25:00Z",
+    "textIncludes": [
+      "Single PDF Process",
+      "Prepare files",
+      "Review the project requirements.",
+      "Combine drawing sheets into one searchable PDF."
+    ],
+    "documentRole": "guidance",
+    "normalizedAt": "2026-05-01T17:30:00Z",
+    "sourceFamily": "portland_gov_ppd",
+    "sections": [
+      {
+        "id": "single-pdf-process",
+        "heading": "Single PDF Process",
+        "level": 1,
+        "anchorId": "single-pdf-process"
+      },
+      {
+        "id": "prepare-files",
+        "heading": "Prepare files",
+        "level": 2,
+        "anchorId": "prepare-files"
+      }
+    ],
+    "orderedSteps": [
+      {
+        "id": "step-review",
+        "sequence": 1,
+        "text": "Review the project requirements."
+      },
+      {
+        "id": "step-combine",
+        "sequence": 2,
+        "text": "Combine drawing sheets into one searchable PDF."
+      },
+      {
+        "id": "step-upload",
+        "sequence": 3,
+        "text": "Upload applications and supporting documents as separate PDFs."
+      }
+    ],
+    "tables": [
+      {
+        "id": "file-table",
+        "caption": "Fixture file groups",
+        "headers": [
+          "Document group",
+          "Expected format"
+        ],
+        "rows": [
+          [
+            "Drawing plans",
+            "One searchable PDF"
+          ],
+          [
+            "Applications",
+            "Separate PDF"
+          ]
+        ]
+      }
+    ],
+    "links": [
+      {
+        "url": "https://www.portland.gov/ppd/applications-forms",
+        "label": "Permits and inspections applications",
+        "relation": "same_site",
+        "contentTypeHint": "html"
+      },
+      {
+        "url": "https://devhub.portlandoregon.gov/",
+        "label": "Open DevHub",
+        "relation": "portal_action",
+        "contentTypeHint": "html"
+      },
+      {
+        "url": "https://www.portland.gov/ppd/sample-checklist.pdf",
+        "label": "Sample checklist PDF",
+        "relation": "download",
+        "contentTypeHint": "pdf"
+      }
+    ],
+    "modifiedDateEvidence": [
+      {
+        "dateText": "May 1, 2026",
+        "evidenceText": "Last updated: May 1, 2026",
+        "evidenceSelector": "p"
+      }
+    ]
+  }
+}

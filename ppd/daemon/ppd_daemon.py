@@ -27,6 +27,15 @@ from pathlib import Path
 from typing import Any, Iterable, Optional
 from urllib.parse import urlparse
 
+if __package__ in {None, ""}:
+    sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
+
+from ppd.daemon.accepted_work_ledger import (
+    AcceptedWorkArtifacts,
+    append_accepted_work_ledger as append_accepted_work_jsonl,
+    build_accepted_work_ledger_entry,
+)
+
 
 CHECKBOX_RE = re.compile(r"^(?P<prefix>\s*-\s+\[)(?P<mark>[ xX~!])(?P<suffix>\]\s+)(?P<title>.+)$")
 JSON_BLOCK_RE = re.compile(r"```json\s*([\s\S]*?)\s*```", re.IGNORECASE)
@@ -531,6 +540,24 @@ def persist_accepted_work(proposal: Proposal, config: Config, *, patch: str) -> 
     base.with_suffix(".json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     base.with_suffix(".patch").write_text(patch, encoding="utf-8")
     base.with_suffix(".stat.txt").write_text("\n".join(proposal.changed_files) + "\n", encoding="utf-8")
+    append_accepted_work_ledger(proposal, config, base=base)
+
+
+def append_accepted_work_ledger(proposal: Proposal, config: Config, *, base: Path) -> None:
+    entry = build_accepted_work_ledger_entry(
+        repo_root=config.repo_root,
+        target_task=proposal.target_task,
+        summary=proposal.summary,
+        impact=proposal.impact,
+        changed_files=proposal.changed_files,
+        artifacts=AcceptedWorkArtifacts(
+            manifest=base.with_suffix(".json"),
+            patch=base.with_suffix(".patch"),
+            stat=base.with_suffix(".stat.txt"),
+        ),
+        validation_results=[result.compact() for result in proposal.validation_results],
+    )
+    append_accepted_work_jsonl(config.resolve(config.accepted_dir), entry)
 
 
 def persist_failed_work(proposal: Proposal, config: Config, *, patch: str, reason: str) -> None:
@@ -664,6 +691,7 @@ class Daemon:
             proposal = Proposal(summary="No eligible PP&D tasks remain.", failure_kind="no_eligible_tasks")
             proposal.dry_run = not self.config.apply
             self.write_status("no_eligible_tasks")
+            self.write_progress([proposal])
             return proposal
 
         self.write_status("selected_task", target_task=selected.label)

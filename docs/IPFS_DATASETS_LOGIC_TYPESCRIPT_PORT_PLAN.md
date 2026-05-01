@@ -701,11 +701,11 @@ That PR gives the project immediate product value without committing to a full t
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-01 16:30:07 UTC
+Last updated: 2026-05-01 17:35:21 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-153: Port CEC proof cache, proof strategies, advanced inference, and error handling.`
+Current target: `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -816,7 +816,7 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-103: Initial local CEC delegate replacement that translates TDFOL to browser-native CEC expressions and returns explicit unknown results instead of calling Python or a server.` - complete
 - [x] `Task checkbox-104: Initial indexed-KB and cache-aware optimization facade.` - complete
 - [x] `Task checkbox-105: Deeper CEC delegate parity for native CEC inference rule groups and proof traces.` - complete
-- [!] `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.` - blocked
+- [!] `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.` - latest daemon round failed validation or preflight
 - [!] `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.` - blocked
 - [x] `Task checkbox-108: Initial modal tableaux proof search for propositional, temporal, deontic modal formulas and K/T/D/S4/S5 accessibility.` - complete
 - [x] `Task checkbox-109: Initial countermodel model, extractor, and self-contained visual exports.` - complete
@@ -863,7 +863,7 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-150: Initial CEC ShadowProver facade with K/T/D/S4/S5 local modal tableaux, forward-prover fallback, problem-object proving, proof cache/statistics, direct-assumption proofs, unsupported-LP diagnostics, and browser-native cognitive rule subset.` - complete
 - [x] `Task checkbox-151: Initial CEC modal tableaux with K/T/D/S4/S5 world/branch model, contradiction closure, box/diamond expansion, deontic O/P/F mapping, proof steps, and open-branch countermodel support.` - complete
 - [x] `Task checkbox-152: Initial CEC countermodel extraction and visualization from open tableaux branches with Kripke JSON, DOT, ASCII, compact ASCII, HTML, valuation extraction, and modal property checks.` - complete
-- [!] `Task checkbox-153: Port CEC proof cache, proof strategies, advanced inference, and error handling.` - latest daemon round failed validation or preflight
+- [!] `Task checkbox-153: Port CEC proof cache, proof strategies, advanced inference, and error handling.` - blocked
 - [x] `Task checkbox-154: Initial CEC native shared-type layer with Python 'types.py'-style formula/proof/conversion/namespace/config dictionaries, protocol guards for formulas/provers/converters/knowledge bases, generic result/cache/stat records, callable aliases, and unified proof statistics with incremental averages.` - complete
 - [x] `Task checkbox-155: Initial DCEC advanced inference layer with modal K/T/S4/necessitation, temporal induction/frame, deontic D/permission-obligation/distribution, knowledge-obligation interaction, temporal-obligation persistence, and grouped rule registries.` - complete
 - [x] `Task checkbox-156: Initial CEC native error-handling layer with CEC-specific parse/proof/conversion/validation/namespace/grammar/knowledge-base errors, Python-style context/suggestion formatting, safe-call wrappers, parse/proof handler wrappers, operation error formatting, and DCEC formula-shape validation.` - complete
@@ -908,10 +908,10 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-153: Port CEC proof cache, proof strategies, advanced inference, and error handling.`
+- Target: `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.`
 - Result: `needs follow-up`
-- Summary: Fix CEC proof cache generic type annotations and keep cache behavior tests focused on status-gated CEC proving.
-- Impact: The corrected src/lib/logic/cec/proofCache.ts is directly used by cached CEC proving, strategy-sensitive cache keys, and structured browser-native prover error results. The Jest test file validates canonical cache lookup, rule-group-sensitive keys, non-caching failed statuses, configurable status caching, and global helper integration for the TypeScript logic port.
+- Summary: Repair ZKP facade proof search replacement with valid TypeScript generics and bounded browser-native search syntax.
+- Impact: Adds typed proof-search candidates/results/profile to the TypeScript ZKP facade and extends Jest facade coverage for bounded parallel proof search and exhausted search validation.
 - Errors: File edits failed validation and were rolled back.
 - Failure kind: `validation_repair`
 
@@ -928,9 +928,9 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
   - Latest failure kind: `validation`
   - Latest errors: File edits failed validation and were rolled back.
 - `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.`
-  - Failures since success: `5`
-  - Failure kinds: `{"file_repair_validation": 1, "validation": 4}`
-  - Latest failure kind: `validation`
+  - Failures since success: `6`
+  - Failure kinds: `{"file_repair_validation": 1, "validation": 4, "validation_repair": 1}`
+  - Latest failure kind: `validation_repair`
   - Latest errors: File edits failed validation and were rolled back.
 - `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.`
   - Failures since success: `40`

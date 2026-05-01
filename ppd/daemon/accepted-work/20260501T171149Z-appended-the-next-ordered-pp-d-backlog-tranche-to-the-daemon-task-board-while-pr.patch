@@ -1,0 +1,38 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -24,16 +24,28 @@
+ - [x] Add source diff report artifacts for changed PP&D guidance pages.
+ - [x] Add append-only accepted-work ledger generation for successful PP&D daemon rounds.
+ - [x] Add operations documentation for starting, stopping, and inspecting the PP&D daemon.
++- [ ] Add source-index record fixtures and validation for canonical URL, redirects, content hash, timestamps, and crawl status.
++- [ ] Add fixture-only frontier expansion output with discovered links, content-type classifications, and skipped-URL reason codes.
++- [ ] Add fixture-only HTML-to-normalized-document conversion for headings, ordered steps, tables, links, and modified-date evidence.
++- [ ] Add fixture-only PDF normalized-document conversion metadata for page text, form fields, checkboxes, signatures, and fee-table hints without downloading live PDFs.
++- [ ] Add deterministic source-diff comparator tests that classify added, removed, and changed public guidance requirements from fixtures.
++- [ ] Add a first permit-process fixture for the Single PDF Process with stages, required documents, file rules, and citation-backed evidence.
++- [ ] Add requirement extraction validation for Single PDF Process obligations, preconditions, deadlines, exceptions, confidence, and formalization status.
++- [ ] Add guardrail compiler fixture tests for document completeness, PDF file rules, missing user facts, and explicit-confirmation gates.
++- [ ] Add mocked DevHub workflow snapshot fixtures with redacted field values, semantic selectors, validation messages, upload controls, and navigation edges.
++- [ ] Add DevHub fixture privacy validation that rejects credentials, auth state, traces, screenshots with private values, and unredacted PII.
++- [ ] Add a fixture-backed public crawl dry-run report command that uses injected responses by default and writes no raw crawl output.
++- [ ] Add a live-public-crawl preflight task that only reports eligible tiny seed URLs after allowlist, robots, timeout, and no-persist checks.
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
++
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T16:47:00Z
++Last updated: 2026-05-01T17:10:55Z
+ 
+-- Latest target: `Task checkbox-17: Add append-only accepted-work ledger generation for successful PP&D daemon rounds.`
+-- Latest result: `manual_acceptance`
+-- Latest summary: Added bounded public crawl dry-run and accepted-work ledger generation.
+-- Counts: `{"blocked": 0, "complete": 18, "in_progress": 0, "needed": 0}`
++- Latest target: `plan_next_tasks`
++- Latest result: `task_board_extended`
++- Latest summary: Added the next narrow fixture-first PP&D daemon tranche.
++- Counts: `{"blocked": 0, "complete": 18, "in_progress": 0, "needed": 12}`
+ 
+-<!-- ppd-daemon-task-board:end -->
++

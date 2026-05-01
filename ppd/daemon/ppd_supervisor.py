@@ -45,6 +45,7 @@ class SupervisorConfig:
     progress_file: Path = Path("ppd/daemon/progress.json")
     result_log: Path = Path("ppd/daemon/ppd-daemon.jsonl")
     task_board: Path = Path("ppd/daemon/task-board.md")
+    plan_doc: Path = Path("docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md")
     supervisor_status_file: Path = Path("ppd/daemon/supervisor-status.json")
     supervisor_log: Path = Path("ppd/daemon/supervisor-actions.jsonl")
     control_script: Path = Path("ppd/daemon/control.sh")
@@ -168,12 +169,29 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
             should_restart_daemon=True,
         )
 
+    if tasks and all(task.status == "complete" for task in tasks):
+        return SupervisorDecision(
+            action="plan_next_tasks",
+            reason="all PP&D daemon tasks are complete; review the original PP&D goal and add the next task-board tranche",
+            severity="info",
+            should_invoke_codex=True,
+        )
+
     blocked = [task for task in tasks if task.status == "blocked"]
     if len(blocked) >= config.blocked_task_threshold:
         return SupervisorDecision(
             action="invoke_codex",
             reason=f"{len(blocked)} task(s) are blocked: " + "; ".join(task.label for task in blocked[:3]),
             severity="warning",
+            should_invoke_codex=True,
+        )
+
+    latest = progress.get("latest") if isinstance(progress.get("latest"), dict) else {}
+    if latest.get("failure_kind") == "no_eligible_tasks" and all(task.status == "complete" for task in tasks):
+        return SupervisorDecision(
+            action="plan_next_tasks",
+            reason="daemon has no eligible tasks; review completed work against the PP&D plan and add the next backlog tranche",
+            severity="info",
             should_invoke_codex=True,
         )
 
@@ -186,7 +204,6 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
             should_invoke_codex=True,
         )
 
-    latest = progress.get("latest") if isinstance(progress.get("latest"), dict) else {}
     if active_state == "sleeping" and latest and not latest.get("applied") and not latest.get("validation_passed"):
         return SupervisorDecision(
             action="invoke_codex",
@@ -208,6 +225,7 @@ def build_supervisor_prompt(config: SupervisorConfig, decision: SupervisorDecisi
         if config.resolve(Path("ppd/daemon/OPERATIONS.md")).exists()
         else "",
     }
+    plan = read_text(config.resolve(config.plan_doc), limit=18000) if config.resolve(config.plan_doc).exists() else ""
     status = load_json(config.resolve(config.status_file))
     progress = load_json(config.resolve(config.progress_file))
     recent_results = read_result_log(config.resolve(config.result_log))[-8:]
@@ -226,13 +244,15 @@ Supervisor diagnosis:
 - reason: {decision.reason}
 
 Goal:
-Improve the PP&D daemon or supervisor programming so the worker can resume meaningful autonomous progress.
+{"Review completed work against the original PP&D goal and update `ppd/daemon/task-board.md` with the next narrow, ordered tranche of unfinished tasks. Do not implement those tasks in this proposal; create the backlog so the worker daemon can continue." if decision.action == "plan_next_tasks" else "Improve the PP&D daemon or supervisor programming so the worker can resume meaningful autonomous progress."}
 
 Hard constraints:
 - Return ONLY one JSON object; no markdown fences and no prose outside JSON.
 - Use complete file replacements in a `files` array. Do not return shell commands.
-- Edit only `ppd/daemon/`, `ppd/tests/`, `ppd/.gitignore`, or PP&D daemon operations docs.
+- For `plan_next_tasks`, edit only `ppd/daemon/task-board.md` and optionally `ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md`.
+- For repair actions, edit only `ppd/daemon/`, `ppd/tests/`, `ppd/.gitignore`, or PP&D daemon operations docs.
 - Do not edit application/domain artifacts just to mark progress. Fix supervision, validation, task selection, retry, recovery, or diagnostics.
+- When planning next tasks, preserve completed tasks, append new `[ ]` tasks, keep each task narrow enough for one daemon cycle, and include fixture-first/validation-first work before live or authenticated automation.
 - Do not create private DevHub session files, auth state, traces, raw crawl output, or downloaded documents.
 - Do not automate CAPTCHA, MFA, account creation, payment, submission, certification, cancellation, official upload, or inspection scheduling.
 - Keep the change narrow and deterministic.
@@ -249,6 +269,9 @@ JSON schema:
 
 Runtime status:
 {json.dumps(status, indent=2, sort_keys=True)}
+
+Original PP&D plan:
+{plan}
 
 Progress:
 {json.dumps(progress, indent=2, sort_keys=True)}
@@ -368,6 +391,12 @@ def self_test(repo_root: Path) -> int:
         errors.append("timestamp age calculation failed")
     if latest_repeated_failure_count([{"applied": False}, {"applied": False}]) != 2:
         errors.append("repeated failure count failed")
+    complete_board = "- [x] Finished\n"
+    if parse_tasks(complete_board)[0].status != "complete":
+        errors.append("task parsing failed for completed board")
+    synthetic = SupervisorConfig(repo_root=repo_root)
+    if synthetic.plan_doc != Path("docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md"):
+        errors.append("supervisor plan document path changed unexpectedly")
     if not config.resolve(config.task_board).exists():
         errors.append("supervisor task board path is missing")
     if errors:
