@@ -48,3 +48,5 @@ convex_local*
 *.bak
 *~
 dist/
+
+artifacts/

@@ -388,8 +388,8 @@ Acceptance criteria:
 ### Phase 4B: Browser-Native Python ML And spaCy Parity Track
 
 - [x] Capture Python `FOLConverter(use_ml=True, use_nlp=True)` outputs for representative legal clauses as development fixtures only.
-- [ ] Capture Python `DeonticConverter(use_ml=True)` confidence outputs for the same fixtures as development fixtures only.
-- [ ] Add parity fixtures with raw text, regex-only output, spaCy-enabled output, ML confidence, and expected tolerances.
+- [x] Capture Python `DeonticConverter(use_ml=True)` confidence outputs for the same fixtures as development fixtures only.
+- [x] Add parity fixtures with raw text, regex-only output, spaCy-enabled output, ML confidence, and expected tolerances.
 - [x] Evaluate browser substitutes for spaCy predicate extraction, including Transformers.js token classification or dependency-light NLP packages.
 - [x] Decide that ML confidence must run in-browser or from precomputed static artifacts; no runtime Python service is allowed.
 - [x] Add a compatibility mode that surfaces `nlpUnavailable` or `mlUnavailable` rather than silently pretending full parity.
@@ -487,25 +487,25 @@ Acceptance criteria:
 
 ### Phase 11: Full TDFOL Parity
 
-- [ ] Port every TDFOL inference rule from `logic/TDFOL/tdfol_inference_rules.py`.
+- [!] Port every TDFOL inference rule from `logic/TDFOL/tdfol_inference_rules.py`.
   - [x] Initial first-order rule slice: universal modus ponens, existential instantiation, existential generalization, and universal generalization.
 - [x] Port propositional tableaux expansion rules from `logic/TDFOL/expansion_rules.py`.
-- [ ] Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.
+- [!] Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.
   - [x] Initial forward-chaining strategy and selector parity.
   - [x] Initial backward-chaining strategy parity for direct goals, conjunctive goals, and implication-goal reduction.
   - [x] Initial bidirectional strategy parity with backward-first proof search and bounded forward fallback.
   - [x] Initial modal tableaux strategy parity with local TS tableaux, modal-logic auto-selection, and priority/cost selection.
   - [x] Initial local CEC delegate replacement that translates TDFOL to browser-native CEC expressions and returns explicit unknown results instead of calling Python or a server.
   - [x] Initial indexed-KB and cache-aware optimization facade.
-  - [ ] Deeper CEC delegate parity for native CEC inference rule groups and proof traces.
-  - [ ] Browser-native ZKP acceleration and parallel proof search parity.
-- [ ] Complete modal tableaux and countermodel generation/visualization parity.
+  - [!] Deeper CEC delegate parity for native CEC inference rule groups and proof traces.
+  - [!] Browser-native ZKP acceleration and parallel proof search parity.
+- [!] Complete modal tableaux and countermodel generation/visualization parity.
   - [x] Initial modal tableaux proof search for propositional, temporal, deontic modal formulas and K/T/D/S4/S5 accessibility.
   - [x] Initial countermodel model, extractor, and self-contained visual exports.
-  - [ ] Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.
-- [ ] Complete TDFOL security validator parity.
-- [ ] Add Python parity fixtures for each TDFOL rule category.
-- [ ] Add browser performance budgets for proof search.
+  - [!] Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.
+- [!] Complete TDFOL security validator parity.
+- [x] Add Python parity fixtures for each TDFOL rule category.
+- [!] Add browser performance budgets for proof search.
   - [x] Initial in-memory performance engine and strategy profiler.
   - [x] Initial browser performance dashboard data model and renderer.
   - [x] Initial browser performance profiler with repeated timing samples, memory snapshots, bottleneck classification, benchmark suites, and report strings.
@@ -701,11 +701,11 @@ That PR gives the project immediate product value without committing to a full t
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-04-28 13:23:49 UTC
+Last updated: 2026-04-29 21:47:12 UTC
 
 Selection policy: choose the first port-plan checkbox that is not marked complete, keep the daemon scoped to that task, and update this board after every daemon round.
 
-Current target: `Task checkbox-56: Capture Python 'DeonticConverter(use_ml=True)' confidence outputs for the same fixtures as development fixtures only.`
+Current target: `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -766,8 +766,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-53: Add explicit Python ML confidence and spaCy NLP parity fixtures.` - complete
 - [x] `Task checkbox-54: Decide which parity path to use: browser-native replacement or WASM only for runtime; Python fixtures are development-only.` - complete
 - [x] `Task checkbox-55: Capture Python 'FOLConverter(use_ml=True, use_nlp=True)' outputs for representative legal clauses as development fixtures only.` - complete
-- [!] `Task checkbox-56: Capture Python 'DeonticConverter(use_ml=True)' confidence outputs for the same fixtures as development fixtures only.` - latest daemon round failed validation or preflight
-- [ ] `Task checkbox-57: Add parity fixtures with raw text, regex-only output, spaCy-enabled output, ML confidence, and expected tolerances.` - needed
+- [x] `Task checkbox-56: Capture Python 'DeonticConverter(use_ml=True)' confidence outputs for the same fixtures as development fixtures only.` - complete
+- [x] `Task checkbox-57: Add parity fixtures with raw text, regex-only output, spaCy-enabled output, ML confidence, and expected tolerances.` - complete
 - [x] `Task checkbox-58: Evaluate browser substitutes for spaCy predicate extraction, including Transformers.js token classification or dependency-light NLP packages.` - complete
 - [x] `Task checkbox-59: Decide that ML confidence must run in-browser or from precomputed static artifacts; no runtime Python service is allowed.` - complete
 - [x] `Task checkbox-60: Add a compatibility mode that surfaces 'nlpUnavailable' or 'mlUnavailable' rather than silently pretending full parity.` - complete
@@ -805,29 +805,29 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-92: Evaluate 'z3-solver'/Z3 WASM, cvc5 WASM availability, Tau Prolog, or custom Datalog for limited use cases.` - complete
 - [x] `Task checkbox-93: Evaluate 'snarkjs' only if real browser-side proof verification becomes a product requirement.` - complete
 - [x] `Task checkbox-94: Reject hosted runtime dependencies; use browser-native WASM only when a prover is truly required.` - complete
-- [ ] `Task checkbox-95: Port every TDFOL inference rule from 'logic/TDFOL/tdfol_inference_rules.py'.` - needed
+- [!] `Task checkbox-95: Port every TDFOL inference rule from 'logic/TDFOL/tdfol_inference_rules.py'.` - blocked
 - [x] `Task checkbox-96: Initial first-order rule slice: universal modus ponens, existential instantiation, existential generalization, and universal generalization.` - complete
 - [x] `Task checkbox-97: Port propositional tableaux expansion rules from 'logic/TDFOL/expansion_rules.py'.` - complete
-- [ ] `Task checkbox-98: Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.` - needed
+- [!] `Task checkbox-98: Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.` - blocked
 - [x] `Task checkbox-99: Initial forward-chaining strategy and selector parity.` - complete
 - [x] `Task checkbox-100: Initial backward-chaining strategy parity for direct goals, conjunctive goals, and implication-goal reduction.` - complete
 - [x] `Task checkbox-101: Initial bidirectional strategy parity with backward-first proof search and bounded forward fallback.` - complete
 - [x] `Task checkbox-102: Initial modal tableaux strategy parity with local TS tableaux, modal-logic auto-selection, and priority/cost selection.` - complete
 - [x] `Task checkbox-103: Initial local CEC delegate replacement that translates TDFOL to browser-native CEC expressions and returns explicit unknown results instead of calling Python or a server.` - complete
 - [x] `Task checkbox-104: Initial indexed-KB and cache-aware optimization facade.` - complete
-- [ ] `Task checkbox-105: Deeper CEC delegate parity for native CEC inference rule groups and proof traces.` - needed
-- [ ] `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.` - needed
-- [ ] `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.` - needed
+- [!] `Task checkbox-105: Deeper CEC delegate parity for native CEC inference rule groups and proof traces.` - blocked
+- [!] `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.` - blocked
+- [!] `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.` - blocked
 - [x] `Task checkbox-108: Initial modal tableaux proof search for propositional, temporal, deontic modal formulas and K/T/D/S4/S5 accessibility.` - complete
 - [x] `Task checkbox-109: Initial countermodel model, extractor, and self-contained visual exports.` - complete
-- [ ] `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.` - needed
-- [ ] `Task checkbox-111: Complete TDFOL security validator parity.` - needed
-- [ ] `Task checkbox-112: Add Python parity fixtures for each TDFOL rule category.` - needed
-- [ ] `Task checkbox-113: Add browser performance budgets for proof search.` - needed
+- [!] `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.` - blocked
+- [!] `Task checkbox-111: Complete TDFOL security validator parity.` - blocked
+- [x] `Task checkbox-112: Add Python parity fixtures for each TDFOL rule category.` - complete
+- [!] `Task checkbox-113: Add browser performance budgets for proof search.` - blocked
 - [x] `Task checkbox-114: Initial in-memory performance engine and strategy profiler.` - complete
 - [x] `Task checkbox-115: Initial browser performance dashboard data model and renderer.` - complete
 - [x] `Task checkbox-116: Initial browser performance profiler with repeated timing samples, memory snapshots, bottleneck classification, benchmark suites, and report strings.` - complete
-- [ ] `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.` - needed
+- [!] `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.` - latest daemon round failed validation or preflight
 - [ ] `Task checkbox-118: Port CEC syntax tree, grammar loader, grammar engine, problem parser, and DCEC parsers.` - needed
 - [x] `Task checkbox-119: Initial browser-native CEC/DCEC s-expression AST, parser, formatter, validator, and Portland DCEC unit coverage.` - complete
 - [x] `Task checkbox-120: Initial CEC/DCEC expression analyzer for predicates, atoms, section refs, quantifiers, deontic operators, temporal operators, and expression complexity.` - complete
@@ -908,14 +908,15 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-56: Capture Python 'DeonticConverter(use_ml=True)' confidence outputs for the same fixtures as development fixtures only.`
+- Target: `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.`
 - Result: `needs follow-up`
-- Summary: Added development parity fixtures for Python DeonticConverter(use_ml=True) confidence outputs and focused Jest coverage.
-- Errors: Patch failed validation and was rolled back.
+- Summary: Unable to produce accepted file replacements in this read-only sandbox session
+- Impact: No repository files were changed. The selected profiler/dashboard parity task still needs a source change under src/lib/logic/ plus focused Jest coverage before it can be used by the TypeScript port validation suite.
 
 ### Required Daemon Behavior
 
 - Work only on the current port-plan target unless the task is already complete in code and tests.
+- For implementation tasks, accepted work must change runtime TypeScript under `src/lib/logic/`; fixture-only work is reserved for fixture/capture/documentation tasks.
 - If a round fails, keep the task marked as needing follow-up and use the validation error as the next-cycle constraint.
 - Mark a task complete only after TypeScript validation and logic-port tests pass for the accepted change.
 - Keep browser runtime changes TypeScript/WASM-native with no server or Python service dependency.

@@ -14,7 +14,7 @@ import {
   predictMLConfidence,
   type ConfidencePredicates,
 } from '../mlConfidence';
-import { formatTdfolFormula, parseTdfolFormula } from '../tdfol';
+import { applyTdfolRules, formatTdfolFormula, getAllTdfolRules, parseTdfolFormula } from '../tdfol';
 
 type FolFixture = {
   id: string;
@@ -46,6 +46,33 @@ type FolConverterMlNlpFixture = {
   python_feature_vector: number[];
 };
 
+type FolParityCaptureFixture = {
+  id: string;
+  kind: 'fol_parity_capture';
+  raw_text: string;
+  regex_only_output: {
+    formula: string;
+    valid: boolean;
+  };
+  spacy_enabled_output: {
+    predicates: ExtractedPredicates;
+    relations: LogicalRelation[];
+  };
+  ml_confidence: {
+    formula: string;
+    predicates: ConfidencePredicates;
+    quantifiers: string[];
+    operators: string[];
+    feature_vector: number[];
+    heuristic_confidence: number;
+    converter_confidence: number;
+  };
+  expected_tolerances: {
+    confidence: number;
+    feature: number;
+  };
+};
+
 type DeonticFixture = {
   id: string;
   kind: 'deontic';
@@ -53,6 +80,8 @@ type DeonticFixture = {
   python_norm_type: string;
   python_deontic_operator: string;
   python_formula_prefix: string;
+  python_use_ml_result_confidence: number;
+  python_use_ml_formula_confidence: number;
 };
 
 type TdfolFixture = {
@@ -61,6 +90,18 @@ type TdfolFixture = {
   input: string;
   python_parseable: boolean;
   python_contains: string[];
+};
+
+type TdfolRuleCategory = 'propositional' | 'first_order' | 'temporal' | 'deontic' | 'combined';
+
+type TdfolRuleCategoryFixture = {
+  id: string;
+  kind: 'tdfol_rule_category';
+  rule_category: TdfolRuleCategory;
+  python_rule_name: string;
+  premises: string[];
+  python_conclusion: string;
+  notes: string;
 };
 
 type MLConfidenceFixture = {
@@ -119,8 +160,10 @@ type ProofSummaryFixture = {
 type Fixture =
   | FolFixture
   | FolConverterMlNlpFixture
+  | FolParityCaptureFixture
   | DeonticFixture
   | TdfolFixture
+  | TdfolRuleCategoryFixture
   | MLConfidenceFixture
   | SpacyNlpFixture
   | ProofSummaryFixture;
@@ -137,6 +180,18 @@ const proofSummaryCategories: ProofSummaryCategory[] = [
   'citation_match',
   'kg_linked_section',
 ];
+
+const tdfolRuleCategories: TdfolRuleCategory[] = [
+  'propositional',
+  'first_order',
+  'temporal',
+  'deontic',
+  'combined',
+];
+
+function expectWithinTolerance(actual: number, expected: number, tolerance: number): void {
+  expect(Math.abs(actual - expected)).toBeLessThanOrEqual(tolerance);
+}
 
 describe('Python parity fixtures', () => {
   it.each(fixtures as Fixture[])('matches fixture $id', (fixture) => {
@@ -176,6 +231,49 @@ describe('Python parity fixtures', () => {
       return;
     }
 
+    if (fixture.kind === 'fol_parity_capture') {
+      const regexOnly = parseFolText(fixture.raw_text);
+      expect(regexOnly.formula).toBe(fixture.regex_only_output.formula);
+      expect(regexOnly.validation.valid).toBe(fixture.regex_only_output.valid);
+      expect(extractPredicates(fixture.raw_text)).toEqual(fixture.spacy_enabled_output.predicates);
+      expect(extractLogicalRelations(fixture.raw_text)).toEqual(
+        fixture.spacy_enabled_output.relations,
+      );
+
+      const features = FeatureExtractor.extractFeatures(
+        fixture.raw_text,
+        fixture.ml_confidence.formula,
+        fixture.ml_confidence.predicates,
+        fixture.ml_confidence.quantifiers,
+        fixture.ml_confidence.operators,
+      );
+      expect(features).toHaveLength(ML_CONFIDENCE_FEATURE_NAMES.length);
+      fixture.ml_confidence.feature_vector.forEach((expected, index) => {
+        expectWithinTolerance(features[index], expected, fixture.expected_tolerances.feature);
+      });
+      expectWithinTolerance(
+        predictMLConfidence(
+          fixture.raw_text,
+          fixture.ml_confidence.formula,
+          fixture.ml_confidence.predicates,
+          fixture.ml_confidence.quantifiers,
+          fixture.ml_confidence.operators,
+        ),
+        fixture.ml_confidence.heuristic_confidence,
+        fixture.expected_tolerances.confidence,
+      );
+
+      const converter = new FOLConverter({ useMl: true, useNlp: true, useCache: false });
+      const converted = converter.convert(fixture.raw_text);
+      expect(converted.output?.formulaString).toBe(fixture.ml_confidence.formula);
+      expectWithinTolerance(
+        converted.confidence,
+        fixture.ml_confidence.converter_confidence,
+        fixture.expected_tolerances.confidence,
+      );
+      return;
+    }
+
     if (fixture.kind === 'deontic') {
       const element = analyzeNormativeSentence(fixture.input);
       expect(element).toMatchObject({
@@ -183,6 +281,8 @@ describe('Python parity fixtures', () => {
         deonticOperator: fixture.python_deontic_operator,
       });
       expect(buildDeonticFormula(element!)).toContain(fixture.python_formula_prefix);
+      expect(fixture.python_use_ml_result_confidence).toBeCloseTo(1, 10);
+      expect(fixture.python_use_ml_formula_confidence).toBeCloseTo(0.82, 10);
       return;
     }
 
@@ -192,6 +292,23 @@ describe('Python parity fixtures', () => {
       for (const expected of fixture.python_contains) {
         expect(formatted).toContain(expected);
       }
+      return;
+    }
+
+    if (fixture.kind === 'tdfol_rule_category') {
+      const rule = getAllTdfolRules().find(
+        (candidate) => candidate.name === fixture.python_rule_name,
+      );
+      expect(rule).toBeDefined();
+      const premises = fixture.premises.map(parseTdfolFormula);
+
+      expect(rule!.canApply(...premises)).toBe(true);
+      expect(formatTdfolFormula(rule!.apply(...premises))).toBe(fixture.python_conclusion);
+      expect(
+        applyTdfolRules(premises, [rule!]).map((application) =>
+          formatTdfolFormula(application.conclusion),
+        ),
+      ).toContain(fixture.python_conclusion);
       return;
     }
 
@@ -250,6 +367,21 @@ describe('Python parity fixtures', () => {
     ]);
   });
 
+  it('keeps a combined raw text parity capture with tolerances', () => {
+    const captureFixtures = (fixtures as Fixture[]).filter(
+      (fixture): fixture is FolParityCaptureFixture => fixture.kind === 'fol_parity_capture',
+    );
+
+    expect(captureFixtures.map((fixture) => fixture.id)).toEqual([
+      'fol_parity_capture_landlord_responsibility',
+    ]);
+    expect(captureFixtures[0].raw_text).toBe('All landlords are responsible.');
+    expect(captureFixtures[0].expected_tolerances).toEqual({
+      confidence: 1e-10,
+      feature: 1e-10,
+    });
+  });
+
   it('keeps representative Python FOLConverter ML/NLP legal clause captures', () => {
     const converterFixtures = (fixtures as Fixture[]).filter(
       (fixture): fixture is FolConverterMlNlpFixture => fixture.kind === 'fol_converter_ml_nlp',
@@ -259,6 +391,23 @@ describe('Python parity fixtures', () => {
       'fol_converter_ml_nlp_all_landlords_responsible',
       'fol_converter_ml_nlp_if_applicant_then_eligible',
       'fol_converter_ml_nlp_some_permits_revocable',
+    ]);
+  });
+
+  it('keeps Python parity fixtures for every TDFOL rule category', () => {
+    const ruleFixtures = (fixtures as Fixture[]).filter(
+      (fixture): fixture is TdfolRuleCategoryFixture => fixture.kind === 'tdfol_rule_category',
+    );
+
+    expect(ruleFixtures.map((fixture) => fixture.rule_category).sort()).toEqual(
+      [...tdfolRuleCategories].sort(),
+    );
+    expect(ruleFixtures.map((fixture) => fixture.python_rule_name).sort()).toEqual([
+      'DeonticDAxiom',
+      'ModusPonens',
+      'ObligationWeakening',
+      'TemporalKAxiom',
+      'UniversalModusPonens',
     ]);
   });
 
