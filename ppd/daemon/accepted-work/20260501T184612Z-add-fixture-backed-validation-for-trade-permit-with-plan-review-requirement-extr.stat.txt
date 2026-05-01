@@ -1,0 +1,2 @@
+ppd/tests/fixtures/requirement_extraction/trade_permit_with_plan_review_requirements.json
+ppd/tests/test_trade_permit_with_plan_review_requirement_extraction.py

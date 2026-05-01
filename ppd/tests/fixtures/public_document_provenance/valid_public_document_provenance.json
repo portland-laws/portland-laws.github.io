@@ -1,0 +1,52 @@
+{
+  "source_index_records": [
+    {
+      "id": "source-index-html-single-pdf-process",
+      "canonical_url": "https://www.portland.gov/ppd/single-pdf-process",
+      "title": "Single PDF Process",
+      "page_type": "guidance",
+      "retrieved_at": "2026-05-01T12:00:00Z",
+      "content_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "crawl_status": "fetched"
+    },
+    {
+      "id": "source-index-pdf-building-permit-application",
+      "canonical_url": "https://www.portland.gov/ppd/documents/building-permit-application/download",
+      "title": "Building Permit Application PDF",
+      "page_type": "pdf",
+      "retrieved_at": "2026-05-01T12:05:00Z",
+      "content_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "crawl_status": "fetched"
+    }
+  ],
+  "normalized_documents": [
+    {
+      "id": "normalized-html-single-pdf-process",
+      "document_type": "html",
+      "canonical_url": "https://www.portland.gov/ppd/single-pdf-process",
+      "retrieved_at": "2026-05-01T12:00:00Z",
+      "checksum": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "source_index_id": "source-index-html-single-pdf-process",
+      "title": "Single PDF Process",
+      "headings": [
+        "Single PDF Process",
+        "How to prepare plans"
+      ]
+    },
+    {
+      "id": "normalized-pdf-building-permit-application",
+      "document_type": "pdf",
+      "canonical_url": "https://www.portland.gov/ppd/documents/building-permit-application/download",
+      "retrieved_at": "2026-05-01T12:05:00Z",
+      "checksum": "2222222222222222222222222222222222222222222222222222222222222222",
+      "source_index_id": "source-index-pdf-building-permit-application",
+      "title": "Building Permit Application PDF",
+      "pages": [
+        {
+          "page_number": 1,
+          "text": "Fixture-only page text for provenance validation."
+        }
+      ]
+    }
+  ]
+}

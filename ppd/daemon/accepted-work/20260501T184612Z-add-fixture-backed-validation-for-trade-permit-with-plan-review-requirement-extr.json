@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/requirement_extraction/trade_permit_with_plan_review_requirements.json",
+    "ppd/tests/test_trade_permit_with_plan_review_requirement_extraction.py"
+  ],
+  "created_at": "2026-05-01T18:46:12.184797Z",
+  "impact": "Extends PP&D deterministic extraction coverage from the new trade-permit-with-plan-review process fixture into explicit requirement categories: eligibility, uploads, fees, corrections, and confirmation gates, without live DevHub automation or private artifacts.",
+  "summary": "Add fixture-backed validation for trade permit with plan review requirement extraction.",
+  "target_task": "Task checkbox-37: Add requirement extraction validation for the trade-permit-with-plan-review fixture, covering eligibility preconditions, upload requirements, fee/payment checkpoints, correction paths, and explicit-confirmation gates.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 47 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................... ---------------------------------------------------------------------- Ran 79 tests in 0.008s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

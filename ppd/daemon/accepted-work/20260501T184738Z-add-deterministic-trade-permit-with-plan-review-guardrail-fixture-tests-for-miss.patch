@@ -1,0 +1,341 @@
+--- a/ppd/tests/fixtures/guardrails/trade_permit_with_plan_review_guardrails.json
++++ b/ppd/tests/fixtures/guardrails/trade_permit_with_plan_review_guardrails.json
+@@ -0,0 +1,200 @@
++{
++  "fixture_id": "trade_permit_with_plan_review_guardrail_fixture",
++  "process_id": "trade_permit_with_plan_review",
++  "permit_type": "trade_permit_with_plan_review",
++  "source_basis": [
++    {
++      "source_id": "devhub_application_guidance_trade_plan_review",
++      "url": "https://www.portland.gov/ppd/devhub/apply-permits-devhub",
++      "title": "Apply for permits in DevHub",
++      "captured_at": "2026-05-01T00:00:00Z",
++      "supports": [
++        "required_fact:project_address",
++        "required_fact:trade_scope",
++        "required_document:application_pdf",
++        "required_document:drawing_plan_pdf",
++        "action_gate:submit_request_confirmation"
++      ]
++    },
++    {
++      "source_id": "devhub_faq_trade_plan_review_payments_corrections",
++      "url": "https://www.portland.gov/ppd/devhub/faq",
++      "title": "Development Hub PDX frequently asked questions",
++      "captured_at": "2026-05-01T00:00:00Z",
++      "supports": [
++        "payment_gate:intake_fee_payment",
++        "correction_gate:upload_corrections_confirmation"
++      ]
++    }
++  ],
++  "compiled_guardrails": {
++    "required_facts": [
++      {
++        "id": "project_address",
++        "label": "Project address or property identifier",
++        "predicate": "has_property_identifier(project)",
++        "missing_behavior": "ask_user",
++        "blocks_actions": ["submit_request", "pay_intake_fees", "upload_corrections"]
++      },
++      {
++        "id": "trade_scope",
++        "label": "Trade discipline and plan-review scope",
++        "predicate": "has_trade_plan_review_scope(project)",
++        "missing_behavior": "ask_user",
++        "blocks_actions": ["submit_request"]
++      },
++      {
++        "id": "project_description",
++        "label": "Project description",
++        "predicate": "has_project_description(project)",
++        "missing_behavior": "ask_user",
++        "blocks_actions": ["submit_request"]
++      },
++      {
++        "id": "contractor_license_status",
++        "label": "Active contractor license or owner-applicant status",
++        "predicate": "has_contractor_or_owner_applicant_status(project)",
++        "missing_behavior": "ask_user",
++        "blocks_actions": ["submit_request"]
++      }
++    ],
++    "required_documents": [
++      {
++        "id": "application_pdf",
++        "label": "Completed permit application PDF",
++        "predicate": "has_required_document(project, application_pdf)",
++        "file_rule": "document_is_pdf(file)",
++        "missing_behavior": "ask_user_for_file",
++        "blocks_actions": ["submit_request"]
++      },
++      {
++        "id": "drawing_plan_pdf",
++        "label": "Drawing plan PDF for plan review",
++        "predicate": "has_required_document(project, drawing_plan_pdf)",
++        "file_rule": "document_is_pdf(file)",
++        "missing_behavior": "ask_user_for_file",
++        "blocks_actions": ["submit_request"]
++      },
++      {
++        "id": "supporting_documents_pdf",
++        "label": "Separate supporting documents PDF when calculations or supplemental materials apply",
++        "predicate": "has_required_document(project, supporting_documents_pdf)",
++        "file_rule": "document_is_pdf(file)",
++        "missing_behavior": "ask_user_for_file_or_confirm_not_applicable",
++        "blocks_actions": ["submit_request"]
++      }
++    ],
++    "action_gates": [
++      {
++        "id": "submit_request_confirmation",
++        "action": "submit_request",
++        "classification": "potentially_consequential",
++        "requires_exact_confirmation": true,
++        "stop_message": "Stop before submitting the trade permit with plan review request unless the user explicitly confirms this exact submission."
++      },
++      {
++        "id": "intake_fee_payment_stop",
++        "action": "pay_intake_fees",
++        "classification": "financial",
++        "requires_exact_confirmation": true,
++        "requires_payment_preview": true,
++        "stop_message": "Stop before fee payment or payment-detail entry unless the user explicitly confirms this exact payment action."
++      },
++      {
++        "id": "correction_upload_confirmation",
++        "action": "upload_corrections",
++        "classification": "potentially_consequential",
++        "requires_exact_confirmation": true,
++        "requires_document_inventory": true,
++        "stop_message": "Stop before officially uploading corrections unless the user explicitly confirms this exact correction upload."
++      }
++    ]
++  },
++  "cases": [
++    {
++      "id": "missing_trade_plan_review_facts",
++      "known_facts": {
++        "project_address": null,
++        "trade_scope": null,
++        "project_description": "Replace service panel and feeder for tenant improvement.",
++        "contractor_license_status": null
++      },
++      "documents": {
++        "application_pdf": "trade-application.pdf",
++        "drawing_plan_pdf": "electrical-plans.pdf"
++      },
++      "requested_action": "submit_request",
++      "user_confirmation": null,
++      "expected": {
++        "allowed": false,
++        "missing_facts": ["project_address", "trade_scope", "contractor_license_status"],
++        "missing_documents": ["supporting_documents_pdf"],
++        "stop_points": ["submit_request_confirmation"]
++      }
++    },
++    {
++      "id": "missing_required_plan_review_documents",
++      "known_facts": {
++        "project_address": "[REDACTED]",
++        "trade_scope": "Electrical service upgrade requiring plan review",
++        "project_description": "Replace service panel and feeder for tenant improvement.",
++        "contractor_license_status": "active_contractor_license_confirmed"
++      },
++      "documents": {
++        "application_pdf": "trade-application.pdf"
++      },
++      "requested_action": "submit_request",
++      "user_confirmation": "I confirm submitting this trade permit with plan review request.",
++      "expected": {
++        "allowed": false,
++        "missing_facts": [],
++        "missing_documents": ["drawing_plan_pdf", "supporting_documents_pdf"],
++        "stop_points": []
++      }
++    },
++    {
++      "id": "payment_requires_financial_confirmation",
++      "known_facts": {
++        "project_address": "[REDACTED]",
++        "trade_scope": "Mechanical alteration requiring plan review",
++        "project_description": "Install roof-mounted unit and duct alterations.",
++        "contractor_license_status": "active_contractor_license_confirmed"
++      },
++      "documents": {
++        "application_pdf": "trade-application.pdf",
++        "drawing_plan_pdf": "mechanical-plans.pdf",
++        "supporting_documents_pdf": "mechanical-calculations.pdf"
++      },
++      "requested_action": "pay_intake_fees",
++      "user_confirmation": "Continue",
++      "expected": {
++        "allowed": false,
++        "missing_facts": [],
++        "missing_documents": [],
++        "stop_points": ["intake_fee_payment_stop"]
++      }
++    },
++    {
++      "id": "correction_upload_requires_exact_confirmation",
++      "known_facts": {
++        "project_address": "[REDACTED]",
++        "trade_scope": "Plumbing alteration requiring plan review",
++        "project_description": "Revise waste and vent layout after checksheet comments.",
++        "contractor_license_status": "active_contractor_license_confirmed"
++      },
++      "documents": {
++        "application_pdf": "trade-application.pdf",
++        "drawing_plan_pdf": "plumbing-revised-plans.pdf",
++        "supporting_documents_pdf": "response-to-checksheet.pdf"
++      },
++      "requested_action": "upload_corrections",
++      "user_confirmation": "I confirm uploading these corrections for the trade permit with plan review request.",
++      "expected": {
++        "allowed": true,
++        "missing_facts": [],
++        "missing_documents": [],
++        "stop_points": []
++      }
++    }
++  ]
++}
+--- a/ppd/tests/test_trade_permit_with_plan_review_guardrails.py
++++ b/ppd/tests/test_trade_permit_with_plan_review_guardrails.py
+@@ -0,0 +1,135 @@
++from __future__ import annotations
++
++import json
++from pathlib import Path
++from typing import Any
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "guardrails"
++    / "trade_permit_with_plan_review_guardrails.json"
++)
++
++
++EXACT_CONFIRMATIONS = {
++    "submit_request": "I confirm submitting this trade permit with plan review request.",
++    "pay_intake_fees": "I confirm paying intake fees for this trade permit with plan review request.",
++    "upload_corrections": "I confirm uploading these corrections for the trade permit with plan review request.",
++}
++
++
++def load_fixture() -> dict[str, Any]:
++    with FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
++        return json.load(fixture_file)
++
++
++def evaluate_case(fixture: dict[str, Any], case: dict[str, Any]) -> dict[str, Any]:
++    compiled = fixture["compiled_guardrails"]
++    requested_action = case["requested_action"]
++    known_facts = case.get("known_facts", {})
++    documents = case.get("documents", {})
++    confirmation = case.get("user_confirmation")
++
++    missing_facts = [
++        fact["id"]
++        for fact in compiled["required_facts"]
++        if requested_action in fact["blocks_actions"] and not known_facts.get(fact["id"])
++    ]
++    missing_documents = [
++        document["id"]
++        for document in compiled["required_documents"]
++        if requested_action in document["blocks_actions"] and not documents.get(document["id"])
++    ]
++
++    stop_points: list[str] = []
++    if not missing_facts and not missing_documents:
++        for gate in compiled["action_gates"]:
++            if gate["action"] != requested_action:
++                continue
++            if gate.get("requires_exact_confirmation") and confirmation != EXACT_CONFIRMATIONS[requested_action]:
++                stop_points.append(gate["id"])
++
++    return {
++        "allowed": not missing_facts and not missing_documents and not stop_points,
++        "missing_facts": missing_facts,
++        "missing_documents": missing_documents,
++        "stop_points": stop_points,
++    }
++
++
++def test_trade_plan_review_guardrail_fixture_shape() -> None:
++    fixture = load_fixture()
++
++    assert fixture["process_id"] == "trade_permit_with_plan_review"
++    assert fixture["compiled_guardrails"]["required_facts"]
++    assert fixture["compiled_guardrails"]["required_documents"]
++    assert fixture["compiled_guardrails"]["action_gates"]
++    assert fixture["cases"]
++
++    source_ids = {source["source_id"] for source in fixture["source_basis"]}
++    assert "devhub_application_guidance_trade_plan_review" in source_ids
++    assert "devhub_faq_trade_plan_review_payments_corrections" in source_ids
++
++
++def test_trade_plan_review_missing_fact_guardrails_are_user_questions() -> None:
++    fixture = load_fixture()
++    facts = fixture["compiled_guardrails"]["required_facts"]
++
++    fact_ids = {fact["id"] for fact in facts}
++    assert {
++        "project_address",
++        "trade_scope",
++        "project_description",
++        "contractor_license_status",
++    }.issubset(fact_ids)
++    assert all(fact["missing_behavior"] == "ask_user" for fact in facts)
++
++    case = next(item for item in fixture["cases"] if item["id"] == "missing_trade_plan_review_facts")
++    assert evaluate_case(fixture, case) == case["expected"]
++
++
++def test_trade_plan_review_required_document_guardrails_block_submission() -> None:
++    fixture = load_fixture()
++    documents = fixture["compiled_guardrails"]["required_documents"]
++
++    document_ids = {document["id"] for document in documents}
++    assert {"application_pdf", "drawing_plan_pdf", "supporting_documents_pdf"}.issubset(document_ids)
++    assert all(document["file_rule"] == "document_is_pdf(file)" for document in documents)
++    assert all("submit_request" in document["blocks_actions"] for document in documents)
++
++    case = next(item for item in fixture["cases"] if item["id"] == "missing_required_plan_review_documents")
++    assert evaluate_case(fixture, case) == case["expected"]
++
++
++def test_trade_plan_review_payment_has_financial_stop_point() -> None:
++    fixture = load_fixture()
++    payment_gate = next(
++        gate for gate in fixture["compiled_guardrails"]["action_gates"] if gate["id"] == "intake_fee_payment_stop"
++    )
++
++    assert payment_gate["action"] == "pay_intake_fees"
++    assert payment_gate["classification"] == "financial"
++    assert payment_gate["requires_exact_confirmation"] is True
++    assert payment_gate["requires_payment_preview"] is True
++
++    case = next(item for item in fixture["cases"] if item["id"] == "payment_requires_financial_confirmation")
++    assert evaluate_case(fixture, case) == case["expected"]
++
++
++def test_trade_plan_review_correction_upload_requires_confirmation_gate() -> None:
++    fixture = load_fixture()
++    correction_gate = next(
++        gate
++        for gate in fixture["compiled_guardrails"]["action_gates"]
++        if gate["id"] == "correction_upload_confirmation"
++    )
++
++    assert correction_gate["action"] == "upload_corrections"
++    assert correction_gate["classification"] == "potentially_consequential"
++    assert correction_gate["requires_exact_confirmation"] is True
++    assert correction_gate["requires_document_inventory"] is True
++
++    case = next(item for item in fixture["cases"] if item["id"] == "correction_upload_requires_exact_confirmation")
++    assert evaluate_case(fixture, case) == case["expected"]

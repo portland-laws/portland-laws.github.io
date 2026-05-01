@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/processes/trade_permit_with_plan_review.json"
+  ],
+  "created_at": "2026-05-01T18:44:23.216385Z",
+  "impact": "Provides the second source-backed permit-process model needed for trade permits requiring plan review, covering missing facts, document/file checks, process stages, and guarded DevHub actions without live crawl or authenticated automation.",
+  "summary": "Add deterministic PP&D trade-permit-with-plan-review permit-process fixture.",
+  "target_task": "Task checkbox-36: Add a second permit-process fixture for a PP&D trade permit with plan review, including required facts, required documents, file rules, stages, and citation-backed action gates.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 47 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "...................................................................... ---------------------------------------------------------------------- Ran 70 tests in 0.008s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

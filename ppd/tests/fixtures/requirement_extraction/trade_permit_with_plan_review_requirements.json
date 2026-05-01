@@ -1,0 +1,259 @@
+{
+  "fixture_id": "trade-permit-with-plan-review-requirements-v1",
+  "process_id": "trade-permit-with-plan-review",
+  "source_profile": "fixture_only_public_guidance_summary",
+  "captured_at": "2026-05-01T00:00:00Z",
+  "requirements": [
+    {
+      "requirement_id": "tpwpr-precondition-devhub-account",
+      "type": "precondition",
+      "category": "eligibility_precondition",
+      "subject": "applicant",
+      "action": "use",
+      "object": "DevHub account before starting an online trade permit request with plan review",
+      "conditions": [
+        "request is initiated through Development Hub PDX",
+        "online permit services require PortlandOregon.gov credentials"
+      ],
+      "deadline_or_temporal_scope": "before drafting or submitting the request",
+      "evidence": [
+        {
+          "source_id": "devhub-faq-public-services",
+          "url": "https://www.portland.gov/ppd/devhub-faq",
+          "title": "Development Hub PDX FAQ",
+          "anchor": "online-permitting-services",
+          "quote": "DevHub is Portland's online permitting system and uses PortlandOregon.gov credentials for online permitting services."
+        }
+      ],
+      "confidence": 0.93,
+      "formalization_status": "candidate"
+    },
+    {
+      "requirement_id": "tpwpr-precondition-select-trade-plan-review",
+      "type": "precondition",
+      "category": "eligibility_precondition",
+      "subject": "applicant",
+      "action": "select",
+      "object": "trade permit with plan review request type",
+      "conditions": [
+        "project is a trade permit request that requires plan review",
+        "permit request type is available in DevHub public application guidance"
+      ],
+      "deadline_or_temporal_scope": "before upload and submission steps",
+      "evidence": [
+        {
+          "source_id": "devhub-application-guidance",
+          "url": "https://www.portland.gov/ppd/devhub/apply-permits",
+          "title": "Apply for permits in Development Hub PDX",
+          "anchor": "permit-request-types",
+          "quote": "Public guidance lists trade permits with plan review among DevHub permit request types."
+        }
+      ],
+      "confidence": 0.91,
+      "formalization_status": "candidate"
+    },
+    {
+      "requirement_id": "tpwpr-precondition-property-and-work-scope",
+      "type": "precondition",
+      "category": "eligibility_precondition",
+      "subject": "applicant",
+      "action": "provide",
+      "object": "project address, property identifier, trade discipline, and work description",
+      "conditions": [
+        "DevHub request requires enough project information for intake and routing",
+        "permit type and scope determine required uploads and review path"
+      ],
+      "deadline_or_temporal_scope": "before request submission",
+      "evidence": [
+        {
+          "source_id": "trade-plan-review-process-fixture",
+          "url": "https://www.portland.gov/ppd/devhub/apply-permits",
+          "title": "Trade permit with plan review process fixture",
+          "anchor": "required-facts",
+          "quote": "Fixture process model requires property, permit type, trade discipline, project scope, and applicant/contact facts."
+        }
+      ],
+      "confidence": 0.88,
+      "formalization_status": "candidate"
+    },
+    {
+      "requirement_id": "tpwpr-upload-application-documents",
+      "type": "obligation",
+      "category": "upload_requirement",
+      "subject": "applicant",
+      "action": "upload",
+      "object": "completed application and supporting trade permit documents",
+      "conditions": [
+        "request is a trade permit with plan review",
+        "supporting documents are required for intake and plan review"
+      ],
+      "deadline_or_temporal_scope": "before submitting the request for intake",
+      "evidence": [
+        {
+          "source_id": "devhub-application-guidance",
+          "url": "https://www.portland.gov/ppd/devhub/apply-permits",
+          "title": "Apply for permits in Development Hub PDX",
+          "anchor": "applications-and-documents",
+          "quote": "Application guidance directs applicants to prepare and upload required application materials before submitting online requests."
+        }
+      ],
+      "confidence": 0.9,
+      "formalization_status": "candidate"
+    },
+    {
+      "requirement_id": "tpwpr-upload-plans-as-pdf",
+      "type": "obligation",
+      "category": "upload_requirement",
+      "subject": "applicant",
+      "action": "upload",
+      "object": "plan drawings as PDF files compatible with the applicable plan-review process",
+      "conditions": [
+        "plan review is required",
+        "drawings or plans are part of the submittal package"
+      ],
+      "deadline_or_temporal_scope": "before request submission and before review can proceed",
+      "evidence": [
+        {
+          "source_id": "single-pdf-process-public-guidance",
+          "url": "https://www.portland.gov/ppd/permit-review-process/single-pdf-process",
+          "title": "Single PDF Process",
+          "anchor": "drawing-plans-and-supporting-documents",
+          "quote": "Public guidance says drawing plans are submitted as one searchable PDF when the Single PDF Process applies."
+        }
+      ],
+      "confidence": 0.87,
+      "formalization_status": "candidate"
+    },
+    {
+      "requirement_id": "tpwpr-fee-intake-payment-checkpoint",
+      "type": "action_gate",
+      "category": "fee_payment_checkpoint",
+      "subject": "agent",
+      "action": "stop_before",
+      "object": "intake fee payment or payment-detail entry",
+      "conditions": [
+        "DevHub displays fees due",
+        "payment is needed before the application can proceed or permit can be issued"
+      ],
+      "deadline_or_temporal_scope": "when DevHub reaches a fee or payment step",
+      "evidence": [
+        {
+          "source_id": "devhub-faq-fee-payments",
+          "url": "https://www.portland.gov/ppd/devhub-faq",
+          "title": "Development Hub PDX FAQ",
+          "anchor": "fee-payments",
+          "quote": "Public DevHub FAQ includes fee payments as an online service category."
+        }
+      ],
+      "confidence": 0.92,
+      "formalization_status": "candidate",
+      "requires_explicit_confirmation": true
+    },
+    {
+      "requirement_id": "tpwpr-fee-review-payment-checkpoint",
+      "type": "action_gate",
+      "category": "fee_payment_checkpoint",
+      "subject": "agent",
+      "action": "stop_before",
+      "object": "review, issuance, or remaining fee payment",
+      "conditions": [
+        "additional fees are assessed after intake or review",
+        "payment action is financial and user-specific"
+      ],
+      "deadline_or_temporal_scope": "before any assessed fee is paid",
+      "evidence": [
+        {
+          "source_id": "devhub-faq-fee-payments",
+          "url": "https://www.portland.gov/ppd/devhub-faq",
+          "title": "Development Hub PDX FAQ",
+          "anchor": "pay-fees",
+          "quote": "Fee payment is a DevHub workflow checkpoint and must remain user-confirmed."
+        }
+      ],
+      "confidence": 0.9,
+      "formalization_status": "candidate",
+      "requires_explicit_confirmation": true
+    },
+    {
+      "requirement_id": "tpwpr-correction-checksheet-response",
+      "type": "obligation",
+      "category": "correction_path",
+      "subject": "applicant",
+      "action": "respond_to",
+      "object": "review checksheet or correction notice",
+      "conditions": [
+        "reviewer issues corrections or a checksheet",
+        "application cannot advance until corrections are resolved"
+      ],
+      "deadline_or_temporal_scope": "after correction notice and before approval or issuance",
+      "evidence": [
+        {
+          "source_id": "devhub-faq-corrections",
+          "url": "https://www.portland.gov/ppd/devhub-faq",
+          "title": "Development Hub PDX FAQ",
+          "anchor": "correction-uploads",
+          "quote": "Public DevHub FAQ lists correction uploads as an online permitting service."
+        }
+      ],
+      "confidence": 0.91,
+      "formalization_status": "candidate"
+    },
+    {
+      "requirement_id": "tpwpr-correction-upload-confirmation-gate",
+      "type": "action_gate",
+      "category": "explicit_confirmation_gate",
+      "subject": "agent",
+      "action": "stop_before",
+      "object": "official correction upload",
+      "conditions": [
+        "correction documents are ready for upload",
+        "upload would become part of the official permit record"
+      ],
+      "deadline_or_temporal_scope": "immediately before upload action",
+      "evidence": [
+        {
+          "source_id": "ppd-automation-guardrails-plan",
+          "url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md",
+          "title": "PP&D scraping, automation, and logic guardrails plan",
+          "anchor": "guarded-action-executor",
+          "quote": "Potentially consequential actions require exact user instruction, action preview, confirmation checkpoint, and durable audit event."
+        }
+      ],
+      "confidence": 0.96,
+      "formalization_status": "candidate",
+      "requires_explicit_confirmation": true
+    },
+    {
+      "requirement_id": "tpwpr-submission-confirmation-gate",
+      "type": "action_gate",
+      "category": "explicit_confirmation_gate",
+      "subject": "agent",
+      "action": "stop_before",
+      "object": "permit request submission or certification acknowledgement",
+      "conditions": [
+        "all required fields and uploads appear complete",
+        "submission or certification would be consequential"
+      ],
+      "deadline_or_temporal_scope": "immediately before submission or certification action",
+      "evidence": [
+        {
+          "source_id": "ppd-automation-guardrails-plan",
+          "url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md",
+          "title": "PP&D scraping, automation, and logic guardrails plan",
+          "anchor": "guarded-action-executor",
+          "quote": "Agents must stop before submission, certification, payment, cancellation, inspection scheduling, or official upload unless the user explicitly confirms the exact action."
+        }
+      ],
+      "confidence": 0.97,
+      "formalization_status": "candidate",
+      "requires_explicit_confirmation": true
+    }
+  ],
+  "coverage_expectations": {
+    "eligibility_precondition": 3,
+    "upload_requirement": 2,
+    "fee_payment_checkpoint": 2,
+    "correction_path": 1,
+    "explicit_confirmation_gate": 2
+  }
+}

@@ -1,0 +1,2 @@
+ppd/tests/fixtures/guardrails/trade_permit_with_plan_review_guardrails.json
+ppd/tests/test_trade_permit_with_plan_review_guardrails.py

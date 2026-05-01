@@ -1,0 +1,671 @@
+--- a/ppd/tests/fixtures/processes/trade_permit_with_plan_review.json
++++ b/ppd/tests/fixtures/processes/trade_permit_with_plan_review.json
+@@ -0,0 +1,668 @@
++{
++  "fixture_id": "permit_process_trade_permit_with_plan_review",
++  "fixture_version": 1,
++  "captured_from_public_guidance_at": "2026-05-01T00:00:00Z",
++  "process": {
++    "id": "trade_permit_with_plan_review",
++    "permit_type": "PP&D trade permit with plan review",
++    "description": "Fixture-only process model for Portland Permitting & Development trade permit requests that require plan review before permit issuance.",
++    "authority_sources": [
++      {
++        "id": "devhub_faq_service_categories",
++        "title": "Development Hub PDX FAQ",
++        "url": "https://www.portland.gov/ppd/development-hub-pdx-devhub/devhub-faq",
++        "retrieved_at": "2026-05-01T00:00:00Z",
++        "supports": [
++          "DevHub service categories include permit requests that require plan review, inspection scheduling for online trade permits, correction uploads, and fee payments."
++        ]
++      },
++      {
++        "id": "devhub_application_guidance_request_types",
++        "title": "Apply for permits online using Development Hub PDX",
++        "url": "https://www.portland.gov/ppd/apply-permits-online-using-development-hub-pdx",
++        "retrieved_at": "2026-05-01T00:00:00Z",
++        "supports": [
++          "DevHub application guidance lists trade permits and trade permits with plan review among permit request types."
++        ]
++      },
++      {
++        "id": "single_pdf_process_guidance",
++        "title": "Single PDF Process guidance",
++        "url": "https://www.portland.gov/ppd/single-pdf-process",
++        "retrieved_at": "2026-05-01T00:00:00Z",
++        "supports": [
++          "Some projects use a Single PDF Process where drawing plans are one searchable PDF and applications, calculations, and supporting documents are separate PDFs."
++        ]
++      },
++      {
++        "id": "devhub_account_guidance",
++        "title": "Development Hub PDX account and sign-in guidance",
++        "url": "https://www.portland.gov/ppd/development-hub-pdx-devhub",
++        "retrieved_at": "2026-05-01T00:00:00Z",
++        "supports": [
++          "DevHub is Portland's online permitting system and uses PortlandOregon.gov credentials for authenticated online permitting services."
++        ]
++      }
++    ],
++    "eligibility_rules": [
++      {
++        "id": "eligibility_trade_permit_plan_review_selected",
++        "type": "precondition",
++        "subject": "applicant",
++        "action": "select trade permit with plan review request type",
++        "object": "DevHub permit request",
++        "conditions": [
++          "project is a trade permit request",
++          "project scope requires plan review rather than instant online permit purchase"
++        ],
++        "evidence": [
++          {
++            "source_id": "devhub_application_guidance_request_types",
++            "quote_or_summary": "Public DevHub application guidance identifies trade permits with plan review as an available permit request type."
++          }
++        ],
++        "confidence": "medium",
++        "formalization_status": "fixture_seed"
++      },
++      {
++        "id": "eligibility_devhub_account_required",
++        "type": "precondition",
++        "subject": "applicant",
++        "action": "authenticate",
++        "object": "DevHub using PortlandOregon.gov credentials",
++        "conditions": [
++          "online request will be drafted or submitted in DevHub"
++        ],
++        "evidence": [
++          {
++            "source_id": "devhub_account_guidance",
++            "quote_or_summary": "DevHub uses PortlandOregon.gov credentials for authenticated online permitting services."
++          }
++        ],
++        "confidence": "high",
++        "formalization_status": "fixture_seed"
++      }
++    ],
++    "required_user_facts": [
++      {
++        "id": "property_identifier",
++        "kind": "property",
++        "label": "Property address or property identifier",
++        "required": true,
++        "reason": "The request must be tied to the correct Portland property before permit scope and review routing can be evaluated.",
++        "evidence": [
++          {
++            "source_id": "devhub_application_guidance_request_types",
++            "quote_or_summary": "DevHub permit requests are initiated through request-type workflows for a specific project."
++          }
++        ]
++      },
++      {
++        "id": "trade_discipline",
++        "kind": "project_scope",
++        "label": "Trade discipline",
++        "required": true,
++        "allowed_values": [
++          "electrical",
++          "mechanical",
++          "plumbing",
++          "other trade discipline identified by PP&D"
++        ],
++        "reason": "Trade discipline determines the permit path, review routing, document checklist, and inspection type.",
++        "evidence": [
++          {
++            "source_id": "devhub_application_guidance_request_types",
++            "quote_or_summary": "Trade permits and trade permits with plan review are identified as DevHub request types."
++          }
++        ]
++      },
++      {
++        "id": "project_description",
++        "kind": "project_scope",
++        "label": "Project description and scope of work",
++        "required": true,
++        "reason": "Plan review requires enough scope detail to evaluate submitted plans and route review.",
++        "evidence": [
++          {
++            "source_id": "devhub_faq_service_categories",
++            "quote_or_summary": "DevHub supports permit requests requiring plan review."
++          }
++        ]
++      },
++      {
++        "id": "contractor_license_or_responsible_party",
++        "kind": "party",
++        "label": "Contractor license or responsible party information",
++        "required": true,
++        "reason": "Trade permit workflows need the responsible applicant or licensed contractor facts before issuance and inspection coordination.",
++        "evidence": [
++          {
++            "source_id": "devhub_application_guidance_request_types",
++            "quote_or_summary": "Trade permit request types are submitted through authenticated DevHub workflows."
++          }
++        ]
++      },
++      {
++        "id": "applicant_contact",
++        "kind": "contact",
++        "label": "Applicant contact information",
++        "required": true,
++        "reason": "PP&D must be able to send intake, fee, review, and correction communications.",
++        "evidence": [
++          {
++            "source_id": "devhub_account_guidance",
++            "quote_or_summary": "Authenticated DevHub services are account-based."
++          }
++        ]
++      }
++    ],
++    "required_documents": [
++      {
++        "id": "trade_permit_application",
++        "kind": "application_form",
++        "label": "Trade permit application or DevHub request data",
++        "required": true,
++        "file_rule_ids": [
++          "supporting_documents_are_pdf"
++        ],
++        "evidence": [
++          {
++            "source_id": "devhub_application_guidance_request_types",
++            "quote_or_summary": "The request is made through DevHub as a trade permit with plan review permit type."
++          }
++        ]
++      },
++      {
++        "id": "trade_plan_set",
++        "kind": "drawing_plans",
++        "label": "Trade plan set for review",
++        "required": true,
++        "file_rule_ids": [
++          "drawing_plans_single_searchable_pdf",
++          "pdf_files_only"
++        ],
++        "evidence": [
++          {
++            "source_id": "single_pdf_process_guidance",
++            "quote_or_summary": "When the Single PDF Process applies, drawing plans are one searchable PDF."
++          }
++        ]
++      },
++      {
++        "id": "calculations_or_equipment_schedules",
++        "kind": "calculations",
++        "label": "Calculations, equipment schedules, or trade-specific supporting materials",
++        "required": true,
++        "conditional_on": [
++          "scope requires calculations or equipment data for plan review"
++        ],
++        "file_rule_ids": [
++          "supporting_documents_are_separate_pdfs"
++        ],
++        "evidence": [
++          {
++            "source_id": "single_pdf_process_guidance",
++            "quote_or_summary": "Applications, calculations, and supporting documents are separate PDFs in the Single PDF Process."
++          }
++        ]
++      },
++      {
++        "id": "owner_or_contractor_authorization",
++        "kind": "authorization",
++        "label": "Owner, applicant, or contractor authorization when required",
++        "required": true,
++        "conditional_on": [
++          "applicant is not the owner or responsible licensed contractor"
++        ],
++        "file_rule_ids": [
++          "supporting_documents_are_pdf"
++        ],
++        "evidence": [
++          {
++            "source_id": "devhub_account_guidance",
++            "quote_or_summary": "DevHub online permitting services are authenticated and account-scoped."
++          }
++        ]
++      }
++    ],
++    "file_rules": [
++      {
++        "id": "pdf_files_only",
++        "rule": "Uploaded plan-review documents must be PDFs unless a later PP&D source authorizes another format.",
++        "applies_to_document_ids": [
++          "trade_plan_set",
++          "trade_permit_application",
++          "calculations_or_equipment_schedules",
++          "owner_or_contractor_authorization"
++        ],
++        "evidence": [
++          {
++            "source_id": "single_pdf_process_guidance",
++            "quote_or_summary": "The public Single PDF Process guidance describes plan, application, calculation, and supporting document submittals as PDFs."
++          }
++        ]
++      },
++      {
++        "id": "drawing_plans_single_searchable_pdf",
++        "rule": "When the Single PDF Process applies, combine drawing sheets into one searchable PDF for the plan set.",
++        "applies_to_document_ids": [
++          "trade_plan_set"
++        ],
++        "evidence": [
++          {
++            "source_id": "single_pdf_process_guidance",
++            "quote_or_summary": "Drawing plans are one searchable PDF under the Single PDF Process."
++          }
++        ]
++      },
++      {
++        "id": "supporting_documents_are_separate_pdfs",
++        "rule": "Applications, calculations, and supporting documents stay separate from the drawing plan PDF.",
++        "applies_to_document_ids": [
++          "trade_permit_application",
++          "calculations_or_equipment_schedules",
++          "owner_or_contractor_authorization"
++        ],
++        "evidence": [
++          {
++            "source_id": "single_pdf_process_guidance",
++            "quote_or_summary": "Applications, calculations, and supporting documents are separate PDFs."
++          }
++        ]
++      },
++      {
++        "id": "no_private_fixture_files",
++        "rule": "Fixture data may describe required uploads but must not include private DevHub session files, traces, screenshots, raw crawl output, or downloaded documents.",
++        "applies_to_document_ids": [
++          "trade_plan_set",
++          "trade_permit_application",
++          "calculations_or_equipment_schedules",
++          "owner_or_contractor_authorization"
++        ],
++        "evidence": [
++          {
++            "source_id": "devhub_account_guidance",
++            "quote_or_summary": "Authenticated DevHub services are account-scoped, so fixtures must remain redacted and deterministic."
++          }
++        ]
++      }
++    ],
++    "stages": [
++      {
++        "id": "research_scope",
++        "kind": "pre_application_research",
++        "label": "Confirm scope and trade discipline",
++        "required_fact_ids": [
++          "property_identifier",
++          "trade_discipline",
++          "project_description"
++        ],
++        "required_document_ids": [],
++        "entry_gate_ids": [],
++        "exit_gate_ids": [
++          "gate_missing_trade_facts"
++        ],
++        "evidence": [
++          {
++            "source_id": "devhub_application_guidance_request_types",
++            "quote_or_summary": "The applicant must choose the correct DevHub permit request type, including trade permits with plan review where applicable."
++          }
++        ]
++      },
++      {
++        "id": "devhub_account_setup",
++        "kind": "account_setup",
++        "label": "Sign in to DevHub",
++        "required_fact_ids": [
++          "applicant_contact"
++        ],
++        "required_document_ids": [],
++        "entry_gate_ids": [
++          "gate_manual_authentication_only"
++        ],
++        "exit_gate_ids": [],
++        "evidence": [
++          {
++            "source_id": "devhub_account_guidance",
++            "quote_or_summary": "DevHub uses PortlandOregon.gov credentials for authenticated services."
++          }
++        ]
++      },
++      {
++        "id": "prepare_plan_review_documents",
++        "kind": "document_preparation",
++        "label": "Prepare plans and supporting PDFs",
++        "required_fact_ids": [
++          "project_description",
++          "contractor_license_or_responsible_party"
++        ],
++        "required_document_ids": [
++          "trade_permit_application",
++          "trade_plan_set",
++          "calculations_or_equipment_schedules"
++        ],
++        "entry_gate_ids": [
++          "gate_missing_trade_facts"
++        ],
++        "exit_gate_ids": [
++          "gate_pdf_file_rules"
++        ],
++        "evidence": [
++          {
++            "source_id": "single_pdf_process_guidance",
++            "quote_or_summary": "Plan drawings, applications, calculations, and supporting documents are organized as PDFs when the Single PDF Process applies."
++          }
++        ]
++      },
++      {
++        "id": "draft_devhub_request",
++        "kind": "application_data_entry",
++        "label": "Draft the DevHub request",
++        "required_fact_ids": [
++          "property_identifier",
++          "trade_discipline",
++          "project_description",
++          "applicant_contact"
++        ],
++        "required_document_ids": [
++          "trade_permit_application"
++        ],
++        "entry_gate_ids": [
++          "gate_manual_authentication_only"
++        ],
++        "exit_gate_ids": [
++          "gate_submit_requires_confirmation"
++        ],
++        "evidence": [
++          {
++            "source_id": "devhub_application_guidance_request_types",
++            "quote_or_summary": "Trade permits with plan review are DevHub request types."
++          }
++        ]
++      },
++      {
++        "id": "upload_plan_review_documents",
++        "kind": "upload",
++        "label": "Upload required plan-review files",
++        "required_fact_ids": [],
++        "required_document_ids": [
++          "trade_plan_set",
++          "calculations_or_equipment_schedules",
++          "owner_or_contractor_authorization"
++        ],
++        "entry_gate_ids": [
++          "gate_pdf_file_rules"],
++        "exit_gate_ids": [
++          "gate_official_upload_requires_confirmation"
++        ],
++        "evidence": [
++          {
++            "source_id": "devhub_faq_service_categories",
++            "quote_or_summary": "DevHub supports permit requests requiring plan review and correction uploads."
++          }
++        ]
++      },
++      {
++        "id": "submit_for_intake",
++        "kind": "submission",
++        "label": "Submit request for PP&D intake",
++        "required_fact_ids": [
++          "property_identifier",
++          "trade_discipline",
++          "project_description",
++          "applicant_contact"
++        ],
++        "required_document_ids": [
++          "trade_permit_application",
++          "trade_plan_set"
++        ],
++        "entry_gate_ids": [
++          "gate_submit_requires_confirmation"
++        ],
++        "exit_gate_ids": [],
++        "evidence": [
++          {
++            "source_id": "devhub_faq_service_categories",
++            "quote_or_summary": "Permit requests requiring plan review are a DevHub service category."
++          }
++        ]
++      },
++      {
++        "id": "pay_fees_when_assessed",
++        "kind": "fee_payment",
++        "label": "Pay assessed fees only after user confirmation",
++        "required_fact_ids": [],
++        "required_document_ids": [],
++        "entry_gate_ids": [
++          "gate_payment_requires_confirmation"
++        ],
++        "exit_gate_ids": [],
++        "evidence": [
++          {
++            "source_id": "devhub_faq_service_categories",
++            "quote_or_summary": "DevHub FAQ lists fee payments as an online service category."
++          }
++        ]
++      },
++      {
++        "id": "plan_review_and_corrections",
++        "kind": "plan_review",
++        "label": "Respond to plan review checksheets or corrections",
++        "required_fact_ids": [],
++        "required_document_ids": [
++          "trade_plan_set",
++          "calculations_or_equipment_schedules"
++        ],
++        "entry_gate_ids": [],
++        "exit_gate_ids": [
++          "gate_correction_upload_requires_confirmation"
++        ],
++        "evidence": [
++          {
++            "source_id": "devhub_faq_service_categories",
++            "quote_or_summary": "DevHub FAQ lists correction uploads for permit requests requiring plan review."
++          }
++        ]
++      },
++      {
++        "id": "permit_issuance_and_inspections",
++        "kind": "inspections",
++        "label": "After issuance, schedule applicable trade inspections",
++        "required_fact_ids": [],
++        "required_document_ids": [],
++        "entry_gate_ids": [],
++        "exit_gate_ids": [
++          "gate_inspection_scheduling_confirmation"
++        ],
++        "evidence": [
++          {
++            "source_id": "devhub_faq_service_categories",
++            "quote_or_summary": "DevHub FAQ lists inspection scheduling for online trade permits."
++          }
++        ]
++      }
++    ],
++    "action_gates": [
++      {
++        "id": "gate_missing_trade_facts",
++        "kind": "missing_information",
++        "classification": "read_only",
++        "agent_rule": "Ask only for missing or ambiguous property, trade discipline, scope, applicant, and responsible-party facts before drafting a trade permit with plan review request.",
++        "blocks_actions": [
++          "draft_devhub_request",
++          "submit_for_intake"
++        ],
++        "required_confirmation": false,
++        "evidence": [
++          {
++            "source_id": "devhub_application_guidance_request_types",
++            "quote_or_summary": "Correct permit request type selection is required before starting the DevHub request path."
++          }
++        ]
++      },
++      {
++        "id": "gate_manual_authentication_only",
++        "kind": "authentication_boundary",
++        "classification": "read_only",
++        "agent_rule": "Do not automate credential entry, CAPTCHA, MFA, account creation, or password recovery; the user must complete authentication manually or provide an already authorized session.",
++        "blocks_actions": [
++          "automate_login",
++          "automate_mfa",
++          "create_account"
++        ],
++        "required_confirmation": true,
++        "evidence": [
++          {
++            "source_id": "devhub_account_guidance",
++            "quote_or_summary": "DevHub uses PortlandOregon.gov credentials for authenticated online permitting services."
++          }
++        ]
++      },
++      {
++        "id": "gate_pdf_file_rules",
++        "kind": "file_validation",
++        "classification": "draft_edit",
++        "agent_rule": "Before upload, verify that plan-review files are PDFs, drawing plans are a single searchable PDF when that process applies, and supporting documents are separate PDFs.",
++        "blocks_actions": [
++          "upload_plan_review_documents",
++          "submit_for_intake"
++        ],
++        "required_confirmation": false,
++        "evidence": [
++          {
++            "source_id": "single_pdf_process_guidance",
++            "quote_or_summary": "Drawing plans are one searchable PDF, while applications, calculations, and supporting documents are separate PDFs."
++          }
++        ]
++      },
++      {
++        "id": "gate_official_upload_requires_confirmation",
++        "kind": "consequential_action",
++        "classification": "consequential",
++        "agent_rule": "Stop before any official upload to DevHub unless the user explicitly confirms the exact upload action for the current session.",
++        "blocks_actions": [
++          "official_upload",
++          "upload_plan_review_documents"
++        ],
++        "required_confirmation": true,
++        "evidence": [
++          {
++            "source_id": "devhub_faq_service_categories",
++            "quote_or_summary": "DevHub supports permit requests requiring plan review and correction uploads, so uploads are workflow actions with official permit consequences."
++          }
++        ]
++      },
++      {
++        "id": "gate_submit_requires_confirmation",
++        "kind": "consequential_action",
++        "classification": "consequential",
++        "agent_rule": "Stop before submitting the trade permit with plan review request unless the user explicitly confirms submission of that request.",
++        "blocks_actions": [
++          "submit_for_intake"
++        ],
++        "required_confirmation": true,
++        "evidence": [
++          {
++            "source_id": "devhub_faq_service_categories",
++            "quote_or_summary": "Permit requests requiring plan review are submitted through DevHub service workflows."
++          }
++        ]
++      },
++      {
++        "id": "gate_payment_requires_confirmation",
++        "kind": "financial_action",
++        "classification": "financial",
++        "agent_rule": "Stop before paying fees or entering payment details unless the user explicitly confirms the exact payment action.",
++        "blocks_actions": [
++          "pay_fees",
++          "enter_payment_details"
++        ],
++        "required_confirmation": true,
++        "evidence": [
++          {
++            "source_id": "devhub_faq_service_categories",
++            "quote_or_summary": "DevHub FAQ lists fee payments as an online service category."
++          }
++        ]
++      },
++      {
++        "id": "gate_correction_upload_requires_confirmation",
++        "kind": "consequential_action",
++        "classification": "consequential",
++        "agent_rule": "Stop before uploading official plan review corrections unless the user explicitly confirms the exact correction upload action.",
++        "blocks_actions": [
++          "upload_corrections",
++          "respond_to_checksheet"
++        ],
++        "required_confirmation": true,
++        "evidence": [
++          {
++            "source_id": "devhub_faq_service_categories",
++            "quote_or_summary": "DevHub FAQ lists correction uploads for permit requests requiring plan review."
++          }
++        ]
++      },
++      {
++        "id": "gate_inspection_scheduling_confirmation",
++        "kind": "consequential_action",
++        "classification": "consequential",
++        "agent_rule": "After permit issuance, stop before scheduling an inspection unless the user explicitly confirms the exact inspection scheduling action.",
++        "blocks_actions": [
++          "schedule_inspection"
++        ],
++        "required_confirmation": true,
++        "evidence": [
++          {
++            "source_id": "devhub_faq_service_categories",
++            "quote_or_summary": "DevHub FAQ lists inspection scheduling for online trade permits."
++          }
++        ]
++      }
++    ],
++    "fees": [
++      {
++        "id": "assessed_devhub_fees",
++        "label": "PP&D assessed permit and review fees",
++        "amount": null,
++        "when_due": "when assessed by PP&D or shown in DevHub",
++        "action_gate_id": "gate_payment_requires_confirmation",
++        "evidence": [
++          {
++            "source_id": "devhub_faq_service_categories",
++            "quote_or_summary": "DevHub FAQ lists fee payments as an online service category."
++          }
++        ]
++      }
++    ],
++    "external_dependencies": [
++      {
++        "id": "portlandoregon_gov_credentials",
++        "label": "PortlandOregon.gov credentials for DevHub sign-in",
++        "evidence": [
++          {
++            "source_id": "devhub_account_guidance",
++            "quote_or_summary": "DevHub uses PortlandOregon.gov credentials."
++          }
++        ]
++      },
++      {
++        "id": "ppd_plan_review_response",
++        "label": "PP&D plan review checksheets, approvals, and fee assessment",
++        "evidence": [
++          {
++            "source_id": "devhub_faq_service_categories",
++            "quote_or_summary": "DevHub supports permit requests requiring plan review and correction uploads."
++          }
++        ]
++      }
++    ],
++    "irreversible_or_guarded_actions": [
++      "official_upload",
++      "submit_for_intake",
++      "pay_fees",
++      "enter_payment_details",
++      "upload_corrections",
++      "schedule_inspection"
++    ]
++  }
++}

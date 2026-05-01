@@ -1,0 +1,200 @@
+{
+  "fixture_id": "trade_permit_with_plan_review_guardrail_fixture",
+  "process_id": "trade_permit_with_plan_review",
+  "permit_type": "trade_permit_with_plan_review",
+  "source_basis": [
+    {
+      "source_id": "devhub_application_guidance_trade_plan_review",
+      "url": "https://www.portland.gov/ppd/devhub/apply-permits-devhub",
+      "title": "Apply for permits in DevHub",
+      "captured_at": "2026-05-01T00:00:00Z",
+      "supports": [
+        "required_fact:project_address",
+        "required_fact:trade_scope",
+        "required_document:application_pdf",
+        "required_document:drawing_plan_pdf",
+        "action_gate:submit_request_confirmation"
+      ]
+    },
+    {
+      "source_id": "devhub_faq_trade_plan_review_payments_corrections",
+      "url": "https://www.portland.gov/ppd/devhub/faq",
+      "title": "Development Hub PDX frequently asked questions",
+      "captured_at": "2026-05-01T00:00:00Z",
+      "supports": [
+        "payment_gate:intake_fee_payment",
+        "correction_gate:upload_corrections_confirmation"
+      ]
+    }
+  ],
+  "compiled_guardrails": {
+    "required_facts": [
+      {
+        "id": "project_address",
+        "label": "Project address or property identifier",
+        "predicate": "has_property_identifier(project)",
+        "missing_behavior": "ask_user",
+        "blocks_actions": ["submit_request", "pay_intake_fees", "upload_corrections"]
+      },
+      {
+        "id": "trade_scope",
+        "label": "Trade discipline and plan-review scope",
+        "predicate": "has_trade_plan_review_scope(project)",
+        "missing_behavior": "ask_user",
+        "blocks_actions": ["submit_request"]
+      },
+      {
+        "id": "project_description",
+        "label": "Project description",
+        "predicate": "has_project_description(project)",
+        "missing_behavior": "ask_user",
+        "blocks_actions": ["submit_request"]
+      },
+      {
+        "id": "contractor_license_status",
+        "label": "Active contractor license or owner-applicant status",
+        "predicate": "has_contractor_or_owner_applicant_status(project)",
+        "missing_behavior": "ask_user",
+        "blocks_actions": ["submit_request"]
+      }
+    ],
+    "required_documents": [
+      {
+        "id": "application_pdf",
+        "label": "Completed permit application PDF",
+        "predicate": "has_required_document(project, application_pdf)",
+        "file_rule": "document_is_pdf(file)",
+        "missing_behavior": "ask_user_for_file",
+        "blocks_actions": ["submit_request"]
+      },
+      {
+        "id": "drawing_plan_pdf",
+        "label": "Drawing plan PDF for plan review",
+        "predicate": "has_required_document(project, drawing_plan_pdf)",
+        "file_rule": "document_is_pdf(file)",
+        "missing_behavior": "ask_user_for_file",
+        "blocks_actions": ["submit_request"]
+      },
+      {
+        "id": "supporting_documents_pdf",
+        "label": "Separate supporting documents PDF when calculations or supplemental materials apply",
+        "predicate": "has_required_document(project, supporting_documents_pdf)",
+        "file_rule": "document_is_pdf(file)",
+        "missing_behavior": "ask_user_for_file_or_confirm_not_applicable",
+        "blocks_actions": ["submit_request"]
+      }
+    ],
+    "action_gates": [
+      {
+        "id": "submit_request_confirmation",
+        "action": "submit_request",
+        "classification": "potentially_consequential",
+        "requires_exact_confirmation": true,
+        "stop_message": "Stop before submitting the trade permit with plan review request unless the user explicitly confirms this exact submission."
+      },
+      {
+        "id": "intake_fee_payment_stop",
+        "action": "pay_intake_fees",
+        "classification": "financial",
+        "requires_exact_confirmation": true,
+        "requires_payment_preview": true,
+        "stop_message": "Stop before fee payment or payment-detail entry unless the user explicitly confirms this exact payment action."
+      },
+      {
+        "id": "correction_upload_confirmation",
+        "action": "upload_corrections",
+        "classification": "potentially_consequential",
+        "requires_exact_confirmation": true,
+        "requires_document_inventory": true,
+        "stop_message": "Stop before officially uploading corrections unless the user explicitly confirms this exact correction upload."
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "missing_trade_plan_review_facts",
+      "known_facts": {
+        "project_address": null,
+        "trade_scope": null,
+        "project_description": "Replace service panel and feeder for tenant improvement.",
+        "contractor_license_status": null
+      },
+      "documents": {
+        "application_pdf": "trade-application.pdf",
+        "drawing_plan_pdf": "electrical-plans.pdf"
+      },
+      "requested_action": "submit_request",
+      "user_confirmation": null,
+      "expected": {
+        "allowed": false,
+        "missing_facts": ["project_address", "trade_scope", "contractor_license_status"],
+        "missing_documents": ["supporting_documents_pdf"],
+        "stop_points": ["submit_request_confirmation"]
+      }
+    },
+    {
+      "id": "missing_required_plan_review_documents",
+      "known_facts": {
+        "project_address": "[REDACTED]",
+        "trade_scope": "Electrical service upgrade requiring plan review",
+        "project_description": "Replace service panel and feeder for tenant improvement.",
+        "contractor_license_status": "active_contractor_license_confirmed"
+      },
+      "documents": {
+        "application_pdf": "trade-application.pdf"
+      },
+      "requested_action": "submit_request",
+      "user_confirmation": "I confirm submitting this trade permit with plan review request.",
+      "expected": {
+        "allowed": false,
+        "missing_facts": [],
+        "missing_documents": ["drawing_plan_pdf", "supporting_documents_pdf"],
+        "stop_points": []
+      }
+    },
+    {
+      "id": "payment_requires_financial_confirmation",
+      "known_facts": {
+        "project_address": "[REDACTED]",
+        "trade_scope": "Mechanical alteration requiring plan review",
+        "project_description": "Install roof-mounted unit and duct alterations.",
+        "contractor_license_status": "active_contractor_license_confirmed"
+      },
+      "documents": {
+        "application_pdf": "trade-application.pdf",
+        "drawing_plan_pdf": "mechanical-plans.pdf",
+        "supporting_documents_pdf": "mechanical-calculations.pdf"
+      },
+      "requested_action": "pay_intake_fees",
+      "user_confirmation": "Continue",
+      "expected": {
+        "allowed": false,
+        "missing_facts": [],
+        "missing_documents": [],
+        "stop_points": ["intake_fee_payment_stop"]
+      }
+    },
+    {
+      "id": "correction_upload_requires_exact_confirmation",
+      "known_facts": {
+        "project_address": "[REDACTED]",
+        "trade_scope": "Plumbing alteration requiring plan review",
+        "project_description": "Revise waste and vent layout after checksheet comments.",
+        "contractor_license_status": "active_contractor_license_confirmed"
+      },
+      "documents": {
+        "application_pdf": "trade-application.pdf",
+        "drawing_plan_pdf": "plumbing-revised-plans.pdf",
+        "supporting_documents_pdf": "response-to-checksheet.pdf"
+      },
+      "requested_action": "upload_corrections",
+      "user_confirmation": "I confirm uploading these corrections for the trade permit with plan review request.",
+      "expected": {
+        "allowed": true,
+        "missing_facts": [],
+        "missing_documents": [],
+        "stop_points": []
+      }
+    }
+  ]
+}

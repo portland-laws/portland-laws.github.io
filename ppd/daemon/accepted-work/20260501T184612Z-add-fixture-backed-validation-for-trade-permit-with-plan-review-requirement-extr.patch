@@ -1,0 +1,466 @@
+--- a/ppd/tests/fixtures/requirement_extraction/trade_permit_with_plan_review_requirements.json
++++ b/ppd/tests/fixtures/requirement_extraction/trade_permit_with_plan_review_requirements.json
+@@ -0,0 +1,259 @@
++{
++  "fixture_id": "trade-permit-with-plan-review-requirements-v1",
++  "process_id": "trade-permit-with-plan-review",
++  "source_profile": "fixture_only_public_guidance_summary",
++  "captured_at": "2026-05-01T00:00:00Z",
++  "requirements": [
++    {
++      "requirement_id": "tpwpr-precondition-devhub-account",
++      "type": "precondition",
++      "category": "eligibility_precondition",
++      "subject": "applicant",
++      "action": "use",
++      "object": "DevHub account before starting an online trade permit request with plan review",
++      "conditions": [
++        "request is initiated through Development Hub PDX",
++        "online permit services require PortlandOregon.gov credentials"
++      ],
++      "deadline_or_temporal_scope": "before drafting or submitting the request",
++      "evidence": [
++        {
++          "source_id": "devhub-faq-public-services",
++          "url": "https://www.portland.gov/ppd/devhub-faq",
++          "title": "Development Hub PDX FAQ",
++          "anchor": "online-permitting-services",
++          "quote": "DevHub is Portland's online permitting system and uses PortlandOregon.gov credentials for online permitting services."
++        }
++      ],
++      "confidence": 0.93,
++      "formalization_status": "candidate"
++    },
++    {
++      "requirement_id": "tpwpr-precondition-select-trade-plan-review",
++      "type": "precondition",
++      "category": "eligibility_precondition",
++      "subject": "applicant",
++      "action": "select",
++      "object": "trade permit with plan review request type",
++      "conditions": [
++        "project is a trade permit request that requires plan review",
++        "permit request type is available in DevHub public application guidance"
++      ],
++      "deadline_or_temporal_scope": "before upload and submission steps",
++      "evidence": [
++        {
++          "source_id": "devhub-application-guidance",
++          "url": "https://www.portland.gov/ppd/devhub/apply-permits",
++          "title": "Apply for permits in Development Hub PDX",
++          "anchor": "permit-request-types",
++          "quote": "Public guidance lists trade permits with plan review among DevHub permit request types."
++        }
++      ],
++      "confidence": 0.91,
++      "formalization_status": "candidate"
++    },
++    {
++      "requirement_id": "tpwpr-precondition-property-and-work-scope",
++      "type": "precondition",
++      "category": "eligibility_precondition",
++      "subject": "applicant",
++      "action": "provide",
++      "object": "project address, property identifier, trade discipline, and work description",
++      "conditions": [
++        "DevHub request requires enough project information for intake and routing",
++        "permit type and scope determine required uploads and review path"
++      ],
++      "deadline_or_temporal_scope": "before request submission",
++      "evidence": [
++        {
++          "source_id": "trade-plan-review-process-fixture",
++          "url": "https://www.portland.gov/ppd/devhub/apply-permits",
++          "title": "Trade permit with plan review process fixture",
++          "anchor": "required-facts",
++          "quote": "Fixture process model requires property, permit type, trade discipline, project scope, and applicant/contact facts."
++        }
++      ],
++      "confidence": 0.88,
++      "formalization_status": "candidate"
++    },
++    {
++      "requirement_id": "tpwpr-upload-application-documents",
++      "type": "obligation",
++      "category": "upload_requirement",
++      "subject": "applicant",
++      "action": "upload",
++      "object": "completed application and supporting trade permit documents",
++      "conditions": [
++        "request is a trade permit with plan review",
++        "supporting documents are required for intake and plan review"
++      ],
++      "deadline_or_temporal_scope": "before submitting the request for intake",
++      "evidence": [
++        {
++          "source_id": "devhub-application-guidance",
++          "url": "https://www.portland.gov/ppd/devhub/apply-permits",
++          "title": "Apply for permits in Development Hub PDX",
++          "anchor": "applications-and-documents",
++          "quote": "Application guidance directs applicants to prepare and upload required application materials before submitting online requests."
++        }
++      ],
++      "confidence": 0.9,
++      "formalization_status": "candidate"
++    },
++    {
++      "requirement_id": "tpwpr-upload-plans-as-pdf",
++      "type": "obligation",
++      "category": "upload_requirement",
++      "subject": "applicant",
++      "action": "upload",
++      "object": "plan drawings as PDF files compatible with the applicable plan-review process",
++      "conditions": [
++        "plan review is required",
++        "drawings or plans are part of the submittal package"
++      ],
++      "deadline_or_temporal_scope": "before request submission and before review can proceed",
++      "evidence": [
++        {
++          "source_id": "single-pdf-process-public-guidance",
++          "url": "https://www.portland.gov/ppd/permit-review-process/single-pdf-process",
++          "title": "Single PDF Process",
++          "anchor": "drawing-plans-and-supporting-documents",
++          "quote": "Public guidance says drawing plans are submitted as one searchable PDF when the Single PDF Process applies."
++        }
++      ],
++      "confidence": 0.87,
++      "formalization_status": "candidate"
++    },
++    {
++      "requirement_id": "tpwpr-fee-intake-payment-checkpoint",
++      "type": "action_gate",
++      "category": "fee_payment_checkpoint",
++      "subject": "agent",
++      "action": "stop_before",
++      "object": "intake fee payment or payment-detail entry",
++      "conditions": [
++        "DevHub displays fees due",
++        "payment is needed before the application can proceed or permit can be issued"
++      ],
++      "deadline_or_temporal_scope": "when DevHub reaches a fee or payment step",
++      "evidence": [
++        {
++          "source_id": "devhub-faq-fee-payments",
++          "url": "https://www.portland.gov/ppd/devhub-faq",
++          "title": "Development Hub PDX FAQ",
++          "anchor": "fee-payments",
++          "quote": "Public DevHub FAQ includes fee payments as an online service category."
++        }
++      ],
++      "confidence": 0.92,
++      "formalization_status": "candidate",
++      "requires_explicit_confirmation": true
++    },
++    {
++      "requirement_id": "tpwpr-fee-review-payment-checkpoint",
++      "type": "action_gate",
++      "category": "fee_payment_checkpoint",
++      "subject": "agent",
++      "action": "stop_before",
++      "object": "review, issuance, or remaining fee payment",
++      "conditions": [
++        "additional fees are assessed after intake or review",
++        "payment action is financial and user-specific"
++      ],
++      "deadline_or_temporal_scope": "before any assessed fee is paid",
++      "evidence": [
++        {
++          "source_id": "devhub-faq-fee-payments",
++          "url": "https://www.portland.gov/ppd/devhub-faq",
++          "title": "Development Hub PDX FAQ",
++          "anchor": "pay-fees",
++          "quote": "Fee payment is a DevHub workflow checkpoint and must remain user-confirmed."
++        }
++      ],
++      "confidence": 0.9,
++      "formalization_status": "candidate",
++      "requires_explicit_confirmation": true
++    },
++    {
++      "requirement_id": "tpwpr-correction-checksheet-response",
++      "type": "obligation",
++      "category": "correction_path",
++      "subject": "applicant",
++      "action": "respond_to",
++      "object": "review checksheet or correction notice",
++      "conditions": [
++        "reviewer issues corrections or a checksheet",
++        "application cannot advance until corrections are resolved"
++      ],
++      "deadline_or_temporal_scope": "after correction notice and before approval or issuance",
++      "evidence": [
++        {
++          "source_id": "devhub-faq-corrections",
++          "url": "https://www.portland.gov/ppd/devhub-faq",
++          "title": "Development Hub PDX FAQ",
++          "anchor": "correction-uploads",
++          "quote": "Public DevHub FAQ lists correction uploads as an online permitting service."
++        }
++      ],
++      "confidence": 0.91,
++      "formalization_status": "candidate"
++    },
++    {
++      "requirement_id": "tpwpr-correction-upload-confirmation-gate",
++      "type": "action_gate",
++      "category": "explicit_confirmation_gate",
++      "subject": "agent",
++      "action": "stop_before",
++      "object": "official correction upload",
++      "conditions": [
++        "correction documents are ready for upload",
++        "upload would become part of the official permit record"
++      ],
++      "deadline_or_temporal_scope": "immediately before upload action",
++      "evidence": [
++        {
++          "source_id": "ppd-automation-guardrails-plan",
++          "url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md",
++          "title": "PP&D scraping, automation, and logic guardrails plan",
++          "anchor": "guarded-action-executor",
++          "quote": "Potentially consequential actions require exact user instruction, action preview, confirmation checkpoint, and durable audit event."
++        }
++      ],
++      "confidence": 0.96,
++      "formalization_status": "candidate",
++      "requires_explicit_confirmation": true
++    },
++    {
++      "requirement_id": "tpwpr-submission-confirmation-gate",
++      "type": "action_gate",
++      "category": "explicit_confirmation_gate",
++      "subject": "agent",
++      "action": "stop_before",
++      "object": "permit request submission or certification acknowledgement",
++      "conditions": [
++        "all required fields and uploads appear complete",
++        "submission or certification would be consequential"
++      ],
++      "deadline_or_temporal_scope": "immediately before submission or certification action",
++      "evidence": [
++        {
++          "source_id": "ppd-automation-guardrails-plan",
++          "url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md",
++          "title": "PP&D scraping, automation, and logic guardrails plan",
++          "anchor": "guarded-action-executor",
++          "quote": "Agents must stop before submission, certification, payment, cancellation, inspection scheduling, or official upload unless the user explicitly confirms the exact action."
++        }
++      ],
++      "confidence": 0.97,
++      "formalization_status": "candidate",
++      "requires_explicit_confirmation": true
++    }
++  ],
++  "coverage_expectations": {
++    "eligibility_precondition": 3,
++    "upload_requirement": 2,
++    "fee_payment_checkpoint": 2,
++    "correction_path": 1,
++    "explicit_confirmation_gate": 2
++  }
++}
+--- a/ppd/tests/test_trade_permit_with_plan_review_requirement_extraction.py
++++ b/ppd/tests/test_trade_permit_with_plan_review_requirement_extraction.py
+@@ -0,0 +1,201 @@
++"""Validate requirement extraction coverage for trade permits with plan review.
++
++This test is fixture-only. It does not crawl Portland.gov, open DevHub,
++authenticate, submit, upload, pay, or inspect private session artifacts.
++"""
++
++from __future__ import annotations
++
++import json
++from pathlib import Path
++from typing import Any
++import unittest
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "requirement_extraction"
++    / "trade_permit_with_plan_review_requirements.json"
++)
++
++REQUIRED_TOP_LEVEL_KEYS = {
++    "fixture_id",
++    "process_id",
++    "source_profile",
++    "captured_at",
++    "requirements",
++    "coverage_expectations",
++}
++
++REQUIRED_REQUIREMENT_KEYS = {
++    "requirement_id",
++    "type",
++    "category",
++    "subject",
++    "action",
++    "object",
++    "conditions",
++    "deadline_or_temporal_scope",
++    "evidence",
++    "confidence",
++    "formalization_status",
++}
++
++EXPECTED_CATEGORIES = {
++    "eligibility_precondition",
++    "upload_requirement",
++    "fee_payment_checkpoint",
++    "correction_path",
++    "explicit_confirmation_gate",
++}
++
++CONFIRMATION_GATE_CATEGORIES = {
++    "fee_payment_checkpoint",
++    "explicit_confirmation_gate",
++}
++
++PRIVATE_ARTIFACT_MARKERS = (
++    "ppd/data/private",
++    "storage_state",
++    "auth_state",
++    "trace.zip",
++    "playwright-report",
++    "screenshot",
++    "captcha",
++    "mfa secret",
++    "password",
++    "cookie",
++    "bearer ",
++)
++
++
++class TradePermitWithPlanReviewRequirementExtractionTest(unittest.TestCase):
++    def setUp(self) -> None:
++        with FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
++            self.fixture: dict[str, Any] = json.load(fixture_file)
++        self.requirements: list[dict[str, Any]] = self.fixture["requirements"]
++
++    def test_fixture_shape_is_complete(self) -> None:
++        self.assertTrue(REQUIRED_TOP_LEVEL_KEYS.issubset(self.fixture))
++        self.assertEqual("trade-permit-with-plan-review", self.fixture["process_id"])
++        self.assertEqual("fixture_only_public_guidance_summary", self.fixture["source_profile"])
++        self.assertTrue(self.fixture["captured_at"].endswith("Z"))
++        self.assertGreaterEqual(len(self.requirements), 10)
++
++        requirement_ids: set[str] = set()
++        for requirement in self.requirements:
++            self.assertTrue(REQUIRED_REQUIREMENT_KEYS.issubset(requirement), requirement)
++            requirement_id = requirement["requirement_id"]
++            self.assertNotIn(requirement_id, requirement_ids)
++            requirement_ids.add(requirement_id)
++            self.assertTrue(requirement_id.startswith("tpwpr-"))
++            self.assertIsInstance(requirement["conditions"], list)
++            self.assertGreaterEqual(len(requirement["conditions"]), 1)
++            self.assertIsInstance(requirement["evidence"], list)
++            self.assertGreaterEqual(len(requirement["evidence"]), 1)
++            self.assertGreaterEqual(requirement["confidence"], 0.8)
++            self.assertLessEqual(requirement["confidence"], 1.0)
++
++    def test_required_categories_are_covered_at_expected_depth(self) -> None:
++        categories = [requirement["category"] for requirement in self.requirements]
++        self.assertTrue(EXPECTED_CATEGORIES.issubset(set(categories)))
++
++        expectations = self.fixture["coverage_expectations"]
++        for category, expected_count in expectations.items():
++            with self.subTest(category=category):
++                self.assertIn(category, EXPECTED_CATEGORIES)
++                actual_count = categories.count(category)
++                self.assertGreaterEqual(actual_count, expected_count)
++
++    def test_eligibility_preconditions_are_explicit(self) -> None:
++        eligibility_requirements = self._requirements_for("eligibility_precondition")
++        combined_text = self._combined_text(eligibility_requirements)
++        self.assertIn("devhub account", combined_text)
++        self.assertIn("portlandoregon.gov credentials", combined_text)
++        self.assertIn("trade permit with plan review", combined_text)
++        self.assertIn("property", combined_text)
++        self.assertIn("work description", combined_text)
++        self.assertTrue(all(item["type"] == "precondition" for item in eligibility_requirements))
++
++    def test_upload_requirements_name_documents_and_timing(self) -> None:
++        upload_requirements = self._requirements_for("upload_requirement")
++        combined_text = self._combined_text(upload_requirements)
++        self.assertIn("application", combined_text)
++        self.assertIn("supporting", combined_text)
++        self.assertIn("plan", combined_text)
++        self.assertIn("pdf", combined_text)
++        self.assertIn("before", combined_text)
++        self.assertTrue(all(item["type"] == "obligation" for item in upload_requirements))
++
++    def test_fee_payment_checkpoints_are_financial_confirmation_gates(self) -> None:
++        fee_requirements = self._requirements_for("fee_payment_checkpoint")
++        combined_text = self._combined_text(fee_requirements)
++        self.assertIn("payment", combined_text)
++        self.assertIn("fee", combined_text)
++        self.assertIn("stop_before", {item["action"] for item in fee_requirements})
++        for requirement in fee_requirements:
++            self.assertEqual("action_gate", requirement["type"])
++            self.assertIs(requirement.get("requires_explicit_confirmation"), True)
++
++    def test_correction_path_and_upload_gate_are_distinct(self) -> None:
++        correction_requirements = self._requirements_for("correction_path")
++        correction_gate_requirements = [
++            item
++            for item in self.requirements
++            if item["requirement_id"] == "tpwpr-correction-upload-confirmation-gate"
++        ]
++        self.assertEqual(1, len(correction_gate_requirements))
++        self.assertIn("checksheet", self._combined_text(correction_requirements))
++        self.assertIn("correction", self._combined_text(correction_requirements))
++        self.assertEqual("obligation", correction_requirements[0]["type"])
++        self.assertEqual("action_gate", correction_gate_requirements[0]["type"])
++        self.assertIs(correction_gate_requirements[0].get("requires_explicit_confirmation"), True)
++
++    def test_explicit_confirmation_gates_cover_consequential_actions(self) -> None:
++        gate_requirements = self._requirements_for("explicit_confirmation_gate")
++        combined_text = self._combined_text(gate_requirements)
++        self.assertIn("official correction upload", combined_text)
++        self.assertIn("submission", combined_text)
++        self.assertIn("certification", combined_text)
++        for requirement in gate_requirements:
++            self.assertEqual("action_gate", requirement["type"])
++            self.assertEqual("agent", requirement["subject"])
++            self.assertEqual("stop_before", requirement["action"])
++            self.assertIs(requirement.get("requires_explicit_confirmation"), True)
++
++    def test_evidence_is_source_backed_without_private_artifacts(self) -> None:
++        serialized = json.dumps(self.fixture, sort_keys=True).lower()
++        for marker in PRIVATE_ARTIFACT_MARKERS:
++            self.assertNotIn(marker, serialized)
++
++        for requirement in self.requirements:
++            for evidence in requirement["evidence"]:
++                self.assertIn("source_id", evidence)
++                self.assertIn("url", evidence)
++                self.assertIn("title", evidence)
++                self.assertIn("quote", evidence)
++                self.assertTrue(evidence["url"].startswith(("https://www.portland.gov/", "docs/")))
++                self.assertNotIn("devhub.portlandoregon.gov/secure", evidence["url"])
++
++    def test_confirmation_sensitive_categories_require_exact_gate_marker(self) -> None:
++        for requirement in self.requirements:
++            if requirement["category"] in CONFIRMATION_GATE_CATEGORIES:
++                with self.subTest(requirement=requirement["requirement_id"]):
++                    self.assertEqual("action_gate", requirement["type"])
++                    self.assertEqual("agent", requirement["subject"])
++                    self.assertEqual("stop_before", requirement["action"])
++                    self.assertIs(requirement.get("requires_explicit_confirmation"), True)
++
++    def _requirements_for(self, category: str) -> list[dict[str, Any]]:
++        matches = [item for item in self.requirements if item["category"] == category]
++        self.assertGreaterEqual(len(matches), 1, category)
++        return matches
++
++    @staticmethod
++    def _combined_text(requirements: list[dict[str, Any]]) -> str:
++        return json.dumps(requirements, sort_keys=True).lower()
++
++
++if __name__ == "__main__":
++    unittest.main()

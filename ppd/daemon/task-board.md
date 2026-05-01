@@ -40,11 +40,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] Add a narrow supervisor diagnostic fixture that classifies repeated Python `SyntaxError` failures as a syntactic-validity repair hint and recommends smaller file sets.
 - [x] Add a fixture-only crawl session manifest schema that records planned public fetch URLs, policy decisions, and no raw response bodies.
 - [x] Add validation for crawl session manifests that rejects private DevHub session paths, raw crawl output paths, response bodies, credentials, traces, screenshots, and downloaded documents.
-- [~] Add fixture-only public document provenance validation that ties normalized HTML and PDF records back to canonical URL, retrieval timestamp, checksum, and source-index entry.
-- [ ] Add a second permit-process fixture for a PP&D trade permit with plan review, including required facts, required documents, file rules, stages, and citation-backed action gates.
-- [ ] Add requirement extraction validation for the trade-permit-with-plan-review fixture, covering eligibility preconditions, upload requirements, fee/payment checkpoints, correction paths, and explicit-confirmation gates.
-- [ ] Add guardrail compiler fixture tests for trade-permit-with-plan-review missing facts, required documents, payment stop points, and correction-upload confirmation gates.
-- [ ] Add mocked DevHub recorder transition fixtures for save-for-later, back/continue navigation, upload validation messages, and draft-resume states using only redacted fixture data.
+- [x] Add fixture-only public document provenance validation that ties normalized HTML and PDF records back to canonical URL, retrieval timestamp, checksum, and source-index entry.
+- [x] Add a second permit-process fixture for a PP&D trade permit with plan review, including required facts, required documents, file rules, stages, and citation-backed action gates.
+- [x] Add requirement extraction validation for the trade-permit-with-plan-review fixture, covering eligibility preconditions, upload requirements, fee/payment checkpoints, correction paths, and explicit-confirmation gates.
+- [x] Add guardrail compiler fixture tests for trade-permit-with-plan-review missing facts, required documents, payment stop points, and correction-upload confirmation gates.
+- [~] Add mocked DevHub recorder transition fixtures for save-for-later, back/continue navigation, upload validation messages, and draft-resume states using only redacted fixture data.
 - [ ] Add DevHub action-classifier tests for inspection scheduling, correction upload, cancellation, certification, and payment actions, ensuring consequential and financial actions require exact explicit user confirmation.
 - [ ] Add a PP&D archive adapter contract that treats `ipfs_datasets_py/ipfs_datasets_py/processors` as the website archival backend and records processor name, version, content hash, source URL, and PP&D policy decision.
 - [ ] Add fixture tests for the PP&D archive adapter proving it refuses non-allowlisted URLs, private DevHub paths, raw response-body persistence, credentials, traces, screenshots, and downloaded private documents before invoking processor archival code.
@@ -58,11 +58,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-01T18:40:14.602472Z
+Last updated: 2026-05-01T18:47:38.507067Z
 
-- Latest target: `Task checkbox-34: Add validation for crawl session manifests that rejects private DevHub session paths, raw crawl output paths, response bodies, credentials, traces, screenshots, and downloaded documents.`
+- Latest target: `Task checkbox-38: Add guardrail compiler fixture tests for trade-permit-with-plan-review missing facts, required documents, payment stop points, and correction-upload confirmation gates.`
 - Latest result: `accepted`
-- Latest summary: Add crawl-session manifest privacy validation for paths and payload fields that must never be committed.
-- Counts: `{"blocked": 0, "complete": 34, "in_progress": 0, "needed": 13}`
+- Latest summary: Add deterministic trade-permit-with-plan-review guardrail fixture tests for missing facts, required documents, payment stop points, and correction-upload confirmation gates.
+- Counts: `{"blocked": 0, "complete": 38, "in_progress": 0, "needed": 9}`
 
 <!-- ppd-daemon-task-board:end -->

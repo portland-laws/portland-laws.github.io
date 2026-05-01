@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/guardrails/trade_permit_with_plan_review_guardrails.json",
+    "ppd/tests/test_trade_permit_with_plan_review_guardrails.py"
+  ],
+  "created_at": "2026-05-01T18:47:38.506477Z",
+  "impact": "Advances the PP&D plan by adding fixture-only validation that agents fail closed before trade-permit plan-review submission, fee payment, and official correction upload actions without required user facts, files, or exact confirmation.",
+  "summary": "Add deterministic trade-permit-with-plan-review guardrail fixture tests for missing facts, required documents, payment stop points, and correction-upload confirmation gates.",
+  "target_task": "Task checkbox-38: Add guardrail compiler fixture tests for trade-permit-with-plan-review missing facts, required documents, payment stop points, and correction-upload confirmation gates.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 47 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................... ---------------------------------------------------------------------- Ran 79 tests in 0.008s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

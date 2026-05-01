@@ -701,7 +701,7 @@ That PR gives the project immediate product value without committing to a full t
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-01 18:37:28 UTC
+Last updated: 2026-05-01 18:43:13 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
@@ -888,9 +888,9 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [!] `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.` - blocked
 - [x] `Task checkbox-176: Add exact/tolerance parity tests against Python ML/spaCy development fixtures.` - complete
 - [!] `Task checkbox-177: Remove 'nlpUnavailable' and 'mlUnavailable' capability flags once browser-native parity is implemented.` - blocked
-- [x] `Task checkbox-178: Port external prover router and bridge contracts to local browser adapters.` - validated by latest daemon round
+- [x] `Task checkbox-178: Port external prover router and bridge contracts to local browser adapters.` - complete
 - [x] `Task checkbox-179: Evaluate and integrate local WASM provers for Z3/cvc5/Tau Prolog/Lean/Coq-style workflows where feasible.` - complete
-- [!] `Task checkbox-180: Port Groth16 verification/proving path using browser-native cryptographic libraries where feasible.` - blocked
+- [!] `Task checkbox-180: Port Groth16 verification/proving path using browser-native cryptographic libraries where feasible.` - latest daemon round failed validation or preflight
 - [!] `Task checkbox-181: Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.` - blocked
 - [!] `Task checkbox-182: Add strict UI/API language distinguishing simulated, heuristic, proof-checking, and cryptographic outputs.` - blocked
 - [!] `Task checkbox-183: Port logic integration bridges to route to TS/WASM cores.` - blocked
@@ -908,11 +908,12 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-178: Port external prover router and bridge contracts to local browser adapters.`
-- Result: `valid`
-- Summary: Add browser-local prover adapter router contracts
-- Impact: The new prover adapter module gives the TypeScript logic port an explicit browser-native proof router for TDFOL, CEC, and DCEC proof requests, backed by local parser/prover implementations. The integration bridge tests load the router, assert adapter metadata forbids external prover calls, prove through the local adapters, and verify injectable adapter routing contracts for validation.
-- Accepted changed files: `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/proverAdapters.ts`
+- Target: `Task checkbox-180: Port Groth16 verification/proving path using browser-native cryptographic libraries where feasible.`
+- Result: `needs follow-up`
+- Summary: add injectable browser-native Groth16 backend path
+- Impact: The ZKP backend registry can now use a browser/WASM Groth16 adapter registered from TypeScript without server calls or Python wrapping, and the Jest coverage exercises proving, verification, tamper rejection, and registry availability for that path.
+- Errors: Patch failed git apply --check.
+- Failure kind: `apply_check`
 
 ### Blocked Backlog
 

@@ -1,0 +1,50 @@
+{
+  "changed_files": [
+    "ppd/contracts/public_document_provenance.py",
+    "ppd/tests/test_public_document_provenance.py",
+    "ppd/tests/fixtures/public_document_provenance/valid_public_document_provenance.json",
+    "ppd/tests/fixtures/public_document_provenance/invalid_public_document_provenance.json",
+    "ppd/contracts/__init__.py"
+  ],
+  "created_at": "2026-05-01T18:42:11.035348Z",
+  "impact": "This advances the PP&D plan by ensuring normalized public documents retain deterministic provenance links to canonical source-index records, retrieval timestamps, and content checksums before any live crawl or authenticated automation is introduced.",
+  "summary": "Add fixture-only public document provenance validation for normalized HTML/PDF records.",
+  "target_task": "Task checkbox-35: Add fixture-only public document provenance validation that ties normalized HTML and PDF records back to canonical URL, retrieval timestamp, checksum, and source-index entry.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 47 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "...................................................................... ---------------------------------------------------------------------- Ran 70 tests in 0.008s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

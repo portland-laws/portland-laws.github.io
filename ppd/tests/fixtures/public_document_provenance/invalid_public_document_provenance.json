@@ -1,0 +1,50 @@
+{
+  "source_index_records": [
+    {
+      "id": "source-index-html-single-pdf-process",
+      "canonical_url": "https://www.portland.gov/ppd/single-pdf-process",
+      "title": "Single PDF Process",
+      "page_type": "guidance",
+      "retrieved_at": "2026-05-01T12:00:00Z",
+      "content_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "crawl_status": "fetched"
+    },
+    {
+      "id": "source-index-pdf-building-permit-application",
+      "canonical_url": "https://www.portland.gov/ppd/documents/building-permit-application/download",
+      "title": "Building Permit Application PDF",
+      "page_type": "pdf",
+      "retrieved_at": "2026-05-01T12:05:00Z",
+      "content_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "crawl_status": "fetched"
+    }
+  ],
+  "normalized_documents": [
+    {
+      "id": "normalized-html-mismatched-provenance",
+      "document_type": "html",
+      "canonical_url": "https://www.portland.gov/ppd/different-guidance-page",
+      "retrieved_at": "2026-05-01T13:00:00Z",
+      "checksum": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "source_index_id": "source-index-html-single-pdf-process",
+      "title": "Mismatched Guidance Page"
+    },
+    {
+      "id": "normalized-pdf-missing-source-index",
+      "document_type": "pdf",
+      "canonical_url": "https://www.portland.gov/ppd/documents/missing/download",
+      "retrieved_at": "2026-05-01T12:10:00Z",
+      "checksum": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "source_index_id": "missing-source-index-entry",
+      "title": "Missing Source Index PDF"
+    },
+    {
+      "id": "normalized-pdf-missing-timestamp",
+      "document_type": "application/pdf",
+      "canonical_url": "https://www.portland.gov/ppd/documents/building-permit-application/download",
+      "checksum": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "source_index_id": "source-index-pdf-building-permit-application",
+      "title": "Building Permit Application PDF"
+    }
+  ]
+}

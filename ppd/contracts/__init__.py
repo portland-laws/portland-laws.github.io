@@ -52,6 +52,11 @@ from .processes import (
     RequiredFact,
     RequiredFactKind,
 )
+from .public_document_provenance import (
+    PublicDocumentProvenanceFinding,
+    assert_public_document_provenance,
+    validate_public_document_provenance,
+)
 from .requirements import (
     ExtractedRequirement,
     ExtractedRequirementType,
@@ -109,6 +114,7 @@ __all__ = [
     "PpdDocumentRole",
     "ProcessStage",
     "ProcessStageKind",
+    "PublicDocumentProvenanceFinding",
     "PublicGuidanceRequirement",
     "RedirectHop",
     "RequirementDiff",
@@ -128,9 +134,11 @@ __all__ = [
     "SourceIndexRecord",
     "SourceLink",
     "SourcePageType",
+    "assert_public_document_provenance",
     "classify_requirement_diffs",
     "evidence_from_dict",
     "fixture_from_dict",
     "planned_crawl_manifest_from_dict",
     "requirement_from_dict",
+    "validate_public_document_provenance",
 ]
