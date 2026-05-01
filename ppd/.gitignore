@@ -1,0 +1,20 @@
+# Private authenticated DevHub artifacts
+data/private/
+**/*storage-state*.json
+**/*auth-state*.json
+**/*session*.json
+**/*trace*.zip
+
+# Live crawl output and downloaded source material
+data/raw/
+data/normalized/
+data/manifests/
+
+# Daemon runtime state
+daemon/status.json
+daemon/progress.json
+daemon/*.pid
+daemon/*.log
+daemon/*.jsonl
+daemon/failed-patches/
+

@@ -497,7 +497,7 @@ Acceptance criteria:
   - [x] Initial modal tableaux strategy parity with local TS tableaux, modal-logic auto-selection, and priority/cost selection.
   - [x] Initial local CEC delegate replacement that translates TDFOL to browser-native CEC expressions and returns explicit unknown results instead of calling Python or a server.
   - [x] Initial indexed-KB and cache-aware optimization facade.
-  - [!] Deeper CEC delegate parity for native CEC inference rule groups and proof traces.
+  - [x] Deeper CEC delegate parity for native CEC inference rule groups and proof traces.
   - [!] Browser-native ZKP acceleration and parallel proof search parity.
 - [!] Complete modal tableaux and countermodel generation/visualization parity.
   - [x] Initial modal tableaux proof search for propositional, temporal, deontic modal formulas and K/T/D/S4/S5 accessibility.
@@ -701,11 +701,11 @@ That PR gives the project immediate product value without committing to a full t
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-01 13:27:56 UTC
+Last updated: 2026-05-01 14:26:47 UTC
 
-Selection policy: choose the first port-plan checkbox that is not marked complete, keep the daemon scoped to that task, and update this board after every daemon round.
+Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-95: Port every TDFOL inference rule from 'logic/TDFOL/tdfol_inference_rules.py'.`
+Current target: `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -805,7 +805,7 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-92: Evaluate 'z3-solver'/Z3 WASM, cvc5 WASM availability, Tau Prolog, or custom Datalog for limited use cases.` - complete
 - [x] `Task checkbox-93: Evaluate 'snarkjs' only if real browser-side proof verification becomes a product requirement.` - complete
 - [x] `Task checkbox-94: Reject hosted runtime dependencies; use browser-native WASM only when a prover is truly required.` - complete
-- [!] `Task checkbox-95: Port every TDFOL inference rule from 'logic/TDFOL/tdfol_inference_rules.py'.` - latest daemon round failed validation or preflight
+- [!] `Task checkbox-95: Port every TDFOL inference rule from 'logic/TDFOL/tdfol_inference_rules.py'.` - blocked
 - [x] `Task checkbox-96: Initial first-order rule slice: universal modus ponens, existential instantiation, existential generalization, and universal generalization.` - complete
 - [x] `Task checkbox-97: Port propositional tableaux expansion rules from 'logic/TDFOL/expansion_rules.py'.` - complete
 - [!] `Task checkbox-98: Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.` - blocked
@@ -815,12 +815,12 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-102: Initial modal tableaux strategy parity with local TS tableaux, modal-logic auto-selection, and priority/cost selection.` - complete
 - [x] `Task checkbox-103: Initial local CEC delegate replacement that translates TDFOL to browser-native CEC expressions and returns explicit unknown results instead of calling Python or a server.` - complete
 - [x] `Task checkbox-104: Initial indexed-KB and cache-aware optimization facade.` - complete
-- [!] `Task checkbox-105: Deeper CEC delegate parity for native CEC inference rule groups and proof traces.` - blocked
+- [x] `Task checkbox-105: Deeper CEC delegate parity for native CEC inference rule groups and proof traces.` - complete
 - [!] `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.` - blocked
 - [!] `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.` - blocked
 - [x] `Task checkbox-108: Initial modal tableaux proof search for propositional, temporal, deontic modal formulas and K/T/D/S4/S5 accessibility.` - complete
 - [x] `Task checkbox-109: Initial countermodel model, extractor, and self-contained visual exports.` - complete
-- [!] `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.` - blocked
+- [~] `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.` - selected for next daemon round
 - [!] `Task checkbox-111: Complete TDFOL security validator parity.` - blocked
 - [x] `Task checkbox-112: Add Python parity fixtures for each TDFOL rule category.` - complete
 - [!] `Task checkbox-113: Add browser performance budgets for proof search.` - blocked
@@ -908,12 +908,61 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-95: Port every TDFOL inference rule from 'logic/TDFOL/tdfol_inference_rules.py'.`
+- Target: `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.`
 - Result: `needs follow-up`
-- Summary: Fixed TDFOL inference rule port by replacing helper type names that collided with TypeScript built-in generics and completing temporal/deontic rule implementations.
-- Impact: src/lib/logic/tdfol/inferenceRules.ts is used by getAllTdfolRules and applyTdfolRules during the TypeScript logic port validation; the Jest test file exercises the added temporal and deontic TDFOL rules through the existing parser/formatter harness.
-- Errors: File edits failed validation and were rolled back.
-- Failure kind: `validation_repair`
+- Summary: No summary
+
+### Blocked Backlog
+
+- `Task checkbox-95: Port every TDFOL inference rule from 'logic/TDFOL/tdfol_inference_rules.py'.`
+  - Failures since success: `8`
+  - Failure kinds: `{"apply_check": 1, "daemon_exception": 1, "file_repair_validation": 2, "validation": 3, "validation_repair": 1}`
+  - Latest failure kind: `validation_repair`
+  - Latest errors: File edits failed validation and were rolled back.
+- `Task checkbox-98: Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.`
+  - Failures since success: `14`
+  - Failure kinds: `{"file_repair_validation": 5, "parse": 1, "validation": 8}`
+  - Latest failure kind: `validation`
+  - Latest errors: File edits failed validation and were rolled back.
+- `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.`
+  - Failures since success: `5`
+  - Failure kinds: `{"file_repair_validation": 1, "validation": 4}`
+  - Latest failure kind: `validation`
+  - Latest errors: File edits failed validation and were rolled back.
+- `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.`
+  - Failures since success: `40`
+  - Failure kinds: `{"apply_check": 15, "file_repair_validation": 2, "invalid_no_change": 4, "parse": 16, "validation": 3}`
+  - Latest failure kind: `apply_check`
+  - Latest errors: Patch failed git apply --check.
+- `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.`
+  - Failures since success: `3`
+  - Failure kinds: `{"validation": 3}`
+  - Latest failure kind: `validation`
+  - Latest errors: File edits failed validation and were rolled back.
+- `Task checkbox-111: Complete TDFOL security validator parity.`
+  - Failures since success: `18`
+  - Failure kinds: `{"file_repair_validation": 6, "preflight": 3, "validation": 9}`
+  - Latest failure kind: `validation`
+  - Latest errors: File edits failed validation and were rolled back.
+- `Task checkbox-113: Add browser performance budgets for proof search.`
+  - Failures since success: `3`
+  - Failure kinds: `{"validation": 3}`
+  - Latest failure kind: `validation`
+  - Latest errors: File edits failed validation and were rolled back.
+- `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.`
+  - Failures since success: `110`
+  - Failure kinds: `{"apply_check": 20, "invalid_no_change": 14, "parse": 73, "preflight": 1, "validation": 2}`
+  - Latest failure kind: `invalid_no_change`
+- `Task checkbox-145: Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.`
+  - Failures since success: `3`
+  - Failure kinds: `{"validation_repair": 3}`
+  - Latest failure kind: `validation_repair`
+  - Latest errors: File edits failed validation and were rolled back.
+- `Task checkbox-153: Port CEC proof cache, proof strategies, advanced inference, and error handling.`
+  - Failures since success: `3`
+  - Failure kinds: `{"validation_repair": 3}`
+  - Latest failure kind: `validation_repair`
+  - Latest errors: File edits failed validation and were rolled back.
 
 ### Required Daemon Behavior
 

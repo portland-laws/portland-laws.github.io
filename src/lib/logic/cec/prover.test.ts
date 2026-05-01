@@ -87,6 +87,52 @@ describe('CEC prover', () => {
     expect(result.steps.map((step) => step.rule)).toEqual(['CecUniversalModusPonens']);
   });
 
+  it('selects native CEC rule groups and emits proof trace metadata', () => {
+    const result = proveCec(
+      parseCecExpression('(K ada wet_pavement)'),
+      {
+        axioms: [parseCecExpression('(Perceives ada wet_pavement)')],
+      },
+      { ruleGroups: ['cognitive'], maxSteps: 3 },
+    );
+
+    expect(result).toMatchObject({
+      status: 'proved',
+      method: 'cec-forward-chaining',
+      ruleGroups: ['cognitive'],
+    });
+    expect(result.trace).toHaveLength(1);
+    expect(result.trace[0]).toMatchObject({
+      rule: 'CecPerceptionImpliesKnowledge',
+      ruleGroup: 'cognitive',
+      premises: ['(Perceives ada wet_pavement)'],
+      conclusion: '(K ada wet_pavement)',
+      derivedExpressionCount: 2,
+    });
+    expect(result.trace[0].ruleDescription).toContain('Perceives');
+  });
+
+  it('keeps grouped CEC delegate attempts local and scoped to selected native families', () => {
+    const result = proveCec(
+      parseCecExpression('(comply_with agent code)'),
+      {
+        axioms: [
+          parseCecExpression('(always (subject_to agent code))'),
+          parseCecExpression('(implies (subject_to agent code) (comply_with agent code))'),
+        ],
+      },
+      { ruleGroups: ['temporal'], maxSteps: 3 },
+    );
+
+    expect(result).toMatchObject({
+      status: 'unknown',
+      ruleGroups: ['temporal'],
+    });
+    expect(result.trace.every((step) => step.ruleGroup === 'temporal')).toBe(true);
+    expect(result.trace.map((step) => step.rule)).toContain('CecTemporalT');
+    expect(result.trace.map((step) => step.rule)).not.toContain('CecModusPonens');
+  });
+
   it('matches Python-captured CEC/DCEC parser and prover parity fixtures', () => {
     expect(PYTHON_CEC_DCEC_PARITY_FIXTURES.map((fixture) => fixture.id)).toEqual([
       'dcec_quantified_portland_obligation',

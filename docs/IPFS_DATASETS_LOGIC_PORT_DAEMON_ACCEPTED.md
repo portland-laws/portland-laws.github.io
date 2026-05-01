@@ -74,3 +74,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260501T085605Z-add-browser-native-local-wasm-prover-evaluation-registry-and-focused-runtime-cap.json`, `ipfs_datasets_py/.daemon/accepted-work/20260501T085605Z-add-browser-native-local-wasm-prover-evaluation-registry-and-focused-runtime-cap.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260501T085605Z-add-browser-native-local-wasm-prover-evaluation-registry-and-focused-runtime-cap.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-01 14:20:03 UTC
+
+- Target: `Task checkbox-105: Deeper CEC delegate parity for native CEC inference rule groups and proof traces.`
+- Summary: Add native CEC rule-group selection and proof trace metadata to the browser CEC prover.
+- Impact: src/lib/logic/cec/prover.ts now accepts native rule groups, keeps CEC proof attempts browser-local, and emits rule-group trace metadata covered by the CEC prover Jest suite.
+- Changed files: `src/lib/logic/cec/prover.ts`, `src/lib/logic/cec/prover.test.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260501T142003Z-add-native-cec-rule-group-selection-and-proof-trace-metadata-to-the-browser-cec-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260501T142003Z-add-native-cec-rule-group-selection-and-proof-trace-metadata-to-the-browser-cec-.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260501T142003Z-add-native-cec-rule-group-selection-and-proof-trace-metadata-to-the-browser-cec-.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
