@@ -1,0 +1,1015 @@
+--- a/ppd/contracts/devhub_workflows.py
++++ b/ppd/contracts/devhub_workflows.py
+@@ -0,0 +1,319 @@
++"""DevHub workflow snapshot contracts for redacted, fixture-only tests.
++
++These contracts model observed DevHub screen states without storing private
++session state, screenshots, traces, credentials, or unredacted user values.
++"""
++
++from __future__ import annotations
++
++from dataclasses import dataclass, field
++from enum import Enum
++from typing import Any, Optional
++
++
++REDACTED_VALUE = "[REDACTED]"
++
++
++class WorkflowFieldKind(str, Enum):
++    TEXT = "text"
++    TEXTAREA = "textarea"
++    NUMBER = "number"
++    DATE = "date"
++    CHECKBOX = "checkbox"
++    RADIO = "radio"
++    SELECT = "select"
++    FILE = "file"
++    DISPLAY = "display"
++    UNKNOWN = "unknown"
++
++
++class WorkflowActionKind(str, Enum):
++    NAVIGATE = "navigate"
++    SAVE_DRAFT = "save_draft"
++    CONTINUE = "continue"
++    BACK = "back"
++    CANCEL = "cancel"
++    SUBMIT = "submit"
++    UPLOAD = "upload"
++    DOWNLOAD = "download"
++    UNKNOWN = "unknown"
++
++
++@dataclass(frozen=True)
++class SemanticSelector:
++    role: str
++    accessible_name: str
++    label_text: Optional[str] = None
++    nearby_heading: Optional[str] = None
++    url_state: Optional[str] = None
++    test_id: Optional[str] = None
++    fallback_css: Optional[str] = None
++    fallback_xpath: Optional[str] = None
++
++    def validate(self, context: str) -> list[str]:
++        errors: list[str] = []
++        if not self.role.strip():
++            errors.append(f"{context} selector role is required")
++        if not self.accessible_name.strip():
++            errors.append(f"{context} selector accessible_name is required")
++        if not (self.label_text or self.nearby_heading or self.url_state or self.test_id):
++            errors.append(f"{context} selector needs semantic context beyond role/name")
++        if self.fallback_css and not self.fallback_css.strip():
++            errors.append(f"{context} fallback_css must not be blank")
++        if self.fallback_xpath and not self.fallback_xpath.strip():
++            errors.append(f"{context} fallback_xpath must not be blank")
++        return errors
++
++
++@dataclass(frozen=True)
++class WorkflowValidationMessage:
++    id: str
++    text: str
++    severity: str
++    field_id: Optional[str] = None
++    selector: Optional[SemanticSelector] = None
++
++    def validate(self) -> list[str]:
++        errors: list[str] = []
++        if not self.id.strip():
++            errors.append("validation message id is required")
++        if not self.text.strip():
++            errors.append(f"validation message {self.id} text is required")
++        if self.severity not in {"error", "warning", "info"}:
++            errors.append(f"validation message {self.id} severity is invalid")
++        if self.selector:
++            errors.extend(self.selector.validate(f"validation message {self.id}"))
++        return errors
++
++
++@dataclass(frozen=True)
++class WorkflowUploadControl:
++    id: str
++    label: str
++    required: bool
++    accepted_file_types: tuple[str, ...]
++    max_file_size_hint: Optional[str] = None
++    naming_rule_hint: Optional[str] = None
++    selector: Optional[SemanticSelector] = None
++
++    def validate(self) -> list[str]:
++        errors: list[str] = []
++        if not self.id.strip():
++            errors.append("upload control id is required")
++        if not self.label.strip():
++            errors.append(f"upload control {self.id} label is required")
++        if not self.accepted_file_types:
++            errors.append(f"upload control {self.id} requires accepted_file_types")
++        for file_type in self.accepted_file_types:
++            if "/" not in file_type and not file_type.startswith("."):
++                errors.append(f"upload control {self.id} has invalid file type hint {file_type}")
++        if self.selector:
++            errors.extend(self.selector.validate(f"upload control {self.id}"))
++        return errors
++
++
++@dataclass(frozen=True)
++class WorkflowField:
++    id: str
++    label: str
++    kind: WorkflowFieldKind
++    required: bool
++    selector: SemanticSelector
++    value_state: str = REDACTED_VALUE
++    options: tuple[str, ...] = field(default_factory=tuple)
++    validation_message_ids: tuple[str, ...] = field(default_factory=tuple)
++    description: Optional[str] = None
++
++    def validate(self) -> list[str]:
++        errors: list[str] = []
++        if not self.id.strip():
++            errors.append("field id is required")
++        if not self.label.strip():
++            errors.append(f"field {self.id} label is required")
++        if self.value_state != REDACTED_VALUE:
++            errors.append(f"field {self.id} value_state must be [REDACTED]")
++        if self.kind in {WorkflowFieldKind.SELECT, WorkflowFieldKind.RADIO} and not self.options:
++            errors.append(f"field {self.id} requires options")
++        errors.extend(self.selector.validate(f"field {self.id}"))
++        return errors
++
++
++@dataclass(frozen=True)
++class WorkflowAction:
++    id: str
++    label: str
++    kind: WorkflowActionKind
++    selector: SemanticSelector
++    enabled: bool
++    target_state_id: Optional[str] = None
++    confirmation_required: bool = False
++
++    def validate(self) -> list[str]:
++        errors: list[str] = []
++        if not self.id.strip():
++            errors.append("action id is required")
++        if not self.label.strip():
++            errors.append(f"action {self.id} label is required")
++        if self.kind in {WorkflowActionKind.SUBMIT, WorkflowActionKind.UPLOAD, WorkflowActionKind.CANCEL} and not self.confirmation_required:
++            errors.append(f"action {self.id} must require confirmation in fixtures")
++        errors.extend(self.selector.validate(f"action {self.id}"))
++        return errors
++
++
++@dataclass(frozen=True)
++class WorkflowNavigationEdge:
++    from_state_id: str
++    action_id: str
++    to_state_id: str
++    guard: str
++
++    def validate(self, known_states: set[str]) -> list[str]:
++        errors: list[str] = []
++        if self.from_state_id not in known_states:
++            errors.append(f"navigation edge from unknown state {self.from_state_id}")
++        if self.to_state_id not in known_states:
++            errors.append(f"navigation edge to unknown state {self.to_state_id}")
++        if not self.action_id.strip():
++            errors.append("navigation edge action_id is required")
++        if not self.guard.strip():
++            errors.append(f"navigation edge {self.from_state_id}->{self.to_state_id} guard is required")
++        return errors
++
++
++@dataclass(frozen=True)
++class DevHubWorkflowState:
++    id: str
++    workflow: str
++    url_pattern: str
++    heading: str
++    captured_at: str
++    fields: tuple[WorkflowField, ...] = field(default_factory=tuple)
++    actions: tuple[WorkflowAction, ...] = field(default_factory=tuple)
++    validation_messages: tuple[WorkflowValidationMessage, ...] = field(default_factory=tuple)
++    upload_controls: tuple[WorkflowUploadControl, ...] = field(default_factory=tuple)
++    next_states: tuple[str, ...] = field(default_factory=tuple)
++
++    def validate(self) -> list[str]:
++        errors: list[str] = []
++        if not self.id.strip():
++            errors.append("workflow state id is required")
++        if not self.workflow.strip():
++            errors.append(f"workflow state {self.id} workflow is required")
++        if not self.url_pattern.startswith("https://devhub.portlandoregon.gov/"):
++            errors.append(f"workflow state {self.id} url_pattern must be a DevHub HTTPS URL pattern")
++        if not self.heading.strip():
++            errors.append(f"workflow state {self.id} heading is required")
++        if not self.captured_at.endswith("Z"):
++            errors.append(f"workflow state {self.id} captured_at must end in Z")
++
++        field_ids: set[str] = set()
++        message_ids = {message.id for message in self.validation_messages}
++        for field_item in self.fields:
++            if field_item.id in field_ids:
++                errors.append(f"workflow state {self.id} duplicate field id {field_item.id}")
++            field_ids.add(field_item.id)
++            errors.extend(field_item.validate())
++            for message_id in field_item.validation_message_ids:
++                if message_id not in message_ids:
++                    errors.append(f"field {field_item.id} references unknown validation message {message_id}")
++
++        action_ids: set[str] = set()
++        for action in self.actions:
++            if action.id in action_ids:
++                errors.append(f"workflow state {self.id} duplicate action id {action.id}")
++            action_ids.add(action.id)
++            errors.extend(action.validate())
++
++        for message in self.validation_messages:
++            errors.extend(message.validate())
++            if message.field_id and message.field_id not in field_ids:
++                errors.append(f"validation message {message.id} references unknown field {message.field_id}")
++
++        for upload in self.upload_controls:
++            errors.extend(upload.validate())
++        return errors
++
++
++def _selector_from_dict(data: dict[str, Any]) -> SemanticSelector:
++    return SemanticSelector(
++        role=str(data.get("role", "")),
++        accessible_name=str(data.get("accessibleName", "")),
++        label_text=data.get("labelText"),
++        nearby_heading=data.get("nearbyHeading"),
++        url_state=data.get("urlState"),
++        test_id=data.get("testId"),
++        fallback_css=data.get("fallbackCss"),
++        fallback_xpath=data.get("fallbackXpath"),
++    )
++
++
++def state_from_dict(data: dict[str, Any]) -> DevHubWorkflowState:
++    messages = tuple(
++        WorkflowValidationMessage(
++            id=str(item.get("id", "")),
++            text=str(item.get("text", "")),
++            severity=str(item.get("severity", "")),
++            field_id=item.get("fieldId"),
++            selector=_selector_from_dict(item["selector"]) if isinstance(item.get("selector"), dict) else None,
++        )
++        for item in data.get("validationMessages", [])
++    )
++    fields = tuple(
++        WorkflowField(
++            id=str(item.get("id", "")),
++            label=str(item.get("label", "")),
++            kind=WorkflowFieldKind(str(item.get("kind", "unknown"))),
++            required=bool(item.get("required", False)),
++            selector=_selector_from_dict(item.get("selector", {})),
++            value_state=str(item.get("valueState", "")),
++            options=tuple(str(option) for option in item.get("options", [])),
++            validation_message_ids=tuple(str(message_id) for message_id in item.get("validationMessageIds", [])),
++            description=item.get("description"),
++        )
++        for item in data.get("fields", [])
++    )
++    actions = tuple(
++        WorkflowAction(
++            id=str(item.get("id", "")),
++            label=str(item.get("label", "")),
++            kind=WorkflowActionKind(str(item.get("kind", "unknown"))),
++            selector=_selector_from_dict(item.get("selector", {})),
++            enabled=bool(item.get("enabled", False)),
++            target_state_id=item.get("targetStateId"),
++            confirmation_required=bool(item.get("confirmationRequired", False)),
++        )
++        for item in data.get("actions", [])
++    )
++    uploads = tuple(
++        WorkflowUploadControl(
++            id=str(item.get("id", "")),
++            label=str(item.get("label", "")),
++            required=bool(item.get("required", False)),
++            accepted_file_types=tuple(str(value) for value in item.get("acceptedFileTypes", [])),
++            max_file_size_hint=item.get("maxFileSizeHint"),
++            naming_rule_hint=item.get("namingRuleHint"),
++            selector=_selector_from_dict(item["selector"]) if isinstance(item.get("selector"), dict) else None,
++        )
++        for item in data.get("uploadControls", [])
++    )
++    return DevHubWorkflowState(
++        id=str(data.get("id", "")),
++        workflow=str(data.get("workflow", "")),
++        url_pattern=str(data.get("urlPattern", "")),
++        heading=str(data.get("heading", "")),
++        captured_at=str(data.get("capturedAt", "")),
++        fields=fields,
++        actions=actions,
++        validation_messages=messages,
++        upload_controls=uploads,
++        next_states=tuple(str(state_id) for state_id in data.get("nextStates", [])),
++    )
++
++
++def edge_from_dict(data: dict[str, Any]) -> WorkflowNavigationEdge:
++    return WorkflowNavigationEdge(
++        from_state_id=str(data.get("fromStateId", "")),
++        action_id=str(data.get("actionId", "")),
++        to_state_id=str(data.get("toStateId", "")),
++        guard=str(data.get("guard", "")),
++    )
+--- a/ppd/contracts/devhub_workflows.ts
++++ b/ppd/contracts/devhub_workflows.ts
+@@ -0,0 +1,148 @@
++export type WorkflowFieldKind =
++  | "text"
++  | "textarea"
++  | "number"
++  | "date"
++  | "checkbox"
++  | "radio"
++  | "select"
++  | "file"
++  | "display"
++  | "unknown";
++
++export type WorkflowActionKind =
++  | "navigate"
++  | "save_draft"
++  | "continue"
++  | "back"
++  | "cancel"
++  | "submit"
++  | "upload"
++  | "download"
++  | "unknown";
++
++export interface SemanticSelector {
++  role: string;
++  accessibleName: string;
++  labelText?: string;
++  nearbyHeading?: string;
++  urlState?: string;
++  testId?: string;
++  fallbackCss?: string;
++  fallbackXpath?: string;
++}
++
++export interface WorkflowValidationMessage {
++  id: string;
++  text: string;
++  severity: "error" | "warning" | "info";
++  fieldId?: string;
++  selector?: SemanticSelector;
++}
++
++export interface WorkflowUploadControl {
++  id: string;
++  label: string;
++  required: boolean;
++  acceptedFileTypes: string[];
++  maxFileSizeHint?: string;
++  namingRuleHint?: string;
++  selector?: SemanticSelector;
++}
++
++export interface WorkflowField {
++  id: string;
++  label: string;
++  kind: WorkflowFieldKind;
++  required: boolean;
++  selector: SemanticSelector;
++  valueState: "[REDACTED]";
++  options?: string[];
++  validationMessageIds?: string[];
++  description?: string;
++}
++
++export interface WorkflowAction {
++  id: string;
++  label: string;
++  kind: WorkflowActionKind;
++  selector: SemanticSelector;
++  enabled: boolean;
++  targetStateId?: string;
++  confirmationRequired?: boolean;
++}
++
++export interface WorkflowNavigationEdge {
++  fromStateId: string;
++  actionId: string;
++  toStateId: string;
++  guard: string;
++}
++
++export interface DevHubWorkflowState {
++  id: string;
++  workflow: string;
++  urlPattern: string;
++  heading: string;
++  fields: WorkflowField[];
++  actions: WorkflowAction[];
++  validationMessages: WorkflowValidationMessage[];
++  uploadControls?: WorkflowUploadControl[];
++  nextStates: string[];
++  capturedAt: string;
++}
++
++export interface DevHubWorkflowSnapshotFixture {
++  fixtureKind: "devhub_workflow_snapshots";
++  schemaVersion: 1;
++  redactionPolicy: string;
++  generatedAt: string;
++  states: DevHubWorkflowState[];
++  navigationEdges: WorkflowNavigationEdge[];
++}
++
++export function validateSemanticSelector(selector: SemanticSelector, context: string): string[] {
++  const errors: string[] = [];
++  if (!selector.role.trim()) errors.push(`${context} selector role is required`);
++  if (!selector.accessibleName.trim()) errors.push(`${context} selector accessibleName is required`);
++  if (!selector.labelText && !selector.nearbyHeading && !selector.urlState && !selector.testId) {
++    errors.push(`${context} selector needs semantic context beyond role/name`);
++  }
++  return errors;
++}
++
++export function validateDevHubWorkflowState(state: DevHubWorkflowState): string[] {
++  const errors: string[] = [];
++  if (!state.id.trim()) errors.push("state id is required");
++  if (!state.workflow.trim()) errors.push(`state ${state.id} workflow is required`);
++  if (!state.urlPattern.startsWith("https://devhub.portlandoregon.gov/")) {
++    errors.push(`state ${state.id} urlPattern must be a DevHub HTTPS URL pattern`);
++  }
++  if (!state.heading.trim()) errors.push(`state ${state.id} heading is required`);
++  if (!state.capturedAt.endsWith("Z")) errors.push(`state ${state.id} capturedAt must end in Z`);
++
++  const messageIds = new Set(state.validationMessages.map((message) => message.id));
++  const fieldIds = new Set();
++  for (const field of state.fields) {
++    if (fieldIds.has(field.id)) errors.push(`state ${state.id} duplicate field id ${field.id}`);
++    fieldIds.add(field.id);
++    if (field.valueState !== "[REDACTED]") errors.push(`field ${field.id} valueState must be [REDACTED]`);
++    errors.push(...validateSemanticSelector(field.selector, `field ${field.id}`));
++    for (const messageId of field.validationMessageIds ?? []) {
++      if (!messageIds.has(messageId)) errors.push(`field ${field.id} references unknown validation message ${messageId}`);
++    }
++  }
++
++  for (const action of state.actions) {
++    errors.push(...validateSemanticSelector(action.selector, `action ${action.id}`));
++    if (["submit", "upload", "cancel"].includes(action.kind) && !action.confirmationRequired) {
++      errors.push(`action ${action.id} must require confirmation in fixtures`);
++    }
++  }
++
++  for (const upload of state.uploadControls ?? []) {
++    if (!upload.acceptedFileTypes.length) errors.push(`upload control ${upload.id} requires acceptedFileTypes`);
++    if (upload.selector) errors.push(...validateSemanticSelector(upload.selector, `upload control ${upload.id}`));
++  }
++  return errors;
++}
+--- a/ppd/tests/fixtures/devhub-workflows/mock_workflow_snapshots.json
++++ b/ppd/tests/fixtures/devhub-workflows/mock_workflow_snapshots.json
+@@ -0,0 +1,371 @@
++{
++  "fixtureKind": "devhub_workflow_snapshots",
++  "schemaVersion": 1,
++  "generatedAt": "2026-05-01T18:20:00Z",
++  "redactionPolicy": "All account, applicant, property, permit, file, and contact values are represented as [REDACTED]. This fixture is mocked and contains no private DevHub session state, screenshots, traces, credentials, raw crawl output, downloaded documents, submissions, payments, or live uploads.",
++  "states": [
++    {
++      "id": "devhub-request-type",
++      "workflow": "mock_plan_review_request",
++      "urlPattern": "https://devhub.portlandoregon.gov/permits/request-type*",
++      "heading": "Start a permit request",
++      "capturedAt": "2026-05-01T18:20:00Z",
++      "fields": [
++        {
++          "id": "request-type",
++          "label": "What type of permit are you requesting?",
++          "kind": "select",
++          "required": true,
++          "valueState": "[REDACTED]",
++          "options": [
++            "Building permit with plan review",
++            "Trade permit with plan review",
++            "Demolition permit",
++            "Sign permit"
++          ],
++          "validationMessageIds": [
++            "request-type-required"
++          ],
++          "selector": {
++            "role": "combobox",
++            "accessibleName": "What type of permit are you requesting?",
++            "labelText": "What type of permit are you requesting?",
++            "nearbyHeading": "Start a permit request",
++            "urlState": "/permits/request-type"
++          }
++        },
++        {
++          "id": "project-address",
++          "label": "Project address",
++          "kind": "text",
++          "required": true,
++          "valueState": "[REDACTED]",
++          "validationMessageIds": [
++            "project-address-required"
++          ],
++          "selector": {
++            "role": "textbox",
++            "accessibleName": "Project address",
++            "labelText": "Project address",
++            "nearbyHeading": "Start a permit request",
++            "urlState": "/permits/request-type"
++          }
++        }
++      ],
++      "validationMessages": [
++        {
++          "id": "request-type-required",
++          "text": "Select a permit request type before continuing.",
++          "severity": "error",
++          "fieldId": "request-type",
++          "selector": {
++            "role": "alert",
++            "accessibleName": "Select a permit request type before continuing.",
++            "nearbyHeading": "Start a permit request",
++            "urlState": "/permits/request-type"
++          }
++        },
++        {
++          "id": "project-address-required",
++          "text": "Enter the project address or search for the property.",
++          "severity": "error",
++          "fieldId": "project-address",
++          "selector": {
++            "role": "alert",
++            "accessibleName": "Enter the project address or search for the property.",
++            "nearbyHeading": "Start a permit request",
++            "urlState": "/permits/request-type"
++          }
++        }
++      ],
++      "uploadControls": [],
++      "actions": [
++        {
++          "id": "continue-to-documents",
++          "label": "Continue",
++          "kind": "continue",
++          "enabled": false,
++          "targetStateId": "devhub-document-upload",
++          "confirmationRequired": false,
++          "selector": {
++            "role": "button",
++            "accessibleName": "Continue",
++            "nearbyHeading": "Start a permit request",
++            "urlState": "/permits/request-type"
++          }
++        },
++        {
++          "id": "save-request-type-draft",
++          "label": "Save for later",
++          "kind": "save_draft",
++          "enabled": true,
++          "targetStateId": "devhub-request-type",
++          "confirmationRequired": false,
++          "selector": {
++            "role": "button",
++            "accessibleName": "Save for later",
++            "nearbyHeading": "Start a permit request",
++            "urlState": "/permits/request-type"
++          }
++        }
++      ],
++      "nextStates": [
++        "devhub-document-upload"
++      ]
++    },
++    {
++      "id": "devhub-document-upload",
++      "workflow": "mock_plan_review_request",
++      "urlPattern": "https://devhub.portlandoregon.gov/permits/documents*",
++      "heading": "Upload documents",
++      "capturedAt": "2026-05-01T18:20:00Z",
++      "fields": [
++        {
++          "id": "application-document-status",
++          "label": "Application form",
++          "kind": "display",
++          "required": true,
++          "valueState": "[REDACTED]",
++          "validationMessageIds": [
++            "application-pdf-required"
++          ],
++          "selector": {
++            "role": "status",
++            "accessibleName": "Application form upload status",
++            "labelText": "Application form",
++            "nearbyHeading": "Upload documents",
++            "urlState": "/permits/documents"
++          }
++        },
++        {
++          "id": "plan-document-status",
++          "label": "Drawing plans",
++          "kind": "display",
++          "required": true,
++          "valueState": "[REDACTED]",
++          "validationMessageIds": [
++            "plans-pdf-required"
++          ],
++          "selector": {
++            "role": "status",
++            "accessibleName": "Drawing plans upload status",
++            "labelText": "Drawing plans",
++            "nearbyHeading": "Upload documents",
++            "urlState": "/permits/documents"
++          }
++        }
++      ],
++      "validationMessages": [
++        {
++          "id": "application-pdf-required",
++          "text": "Upload the completed application form as a PDF.",
++          "severity": "error",
++          "fieldId": "application-document-status",
++          "selector": {
++            "role": "alert",
++            "accessibleName": "Upload the completed application form as a PDF.",
++            "nearbyHeading": "Upload documents",
++            "urlState": "/permits/documents"
++          }
++        },
++        {
++          "id": "plans-pdf-required",
++          "text": "Upload drawing plans as one searchable PDF when the Single PDF Process applies.",
++          "severity": "error",
++          "fieldId": "plan-document-status",
++          "selector": {
++            "role": "alert",
++            "accessibleName": "Upload drawing plans as one searchable PDF when the Single PDF Process applies.",
++            "nearbyHeading": "Upload documents",
++            "urlState": "/permits/documents"
++          }
++        }
++      ],
++      "uploadControls": [
++        {
++          "id": "application-pdf-upload",
++          "label": "Application form upload",
++          "required": true,
++          "acceptedFileTypes": [
++            "application/pdf"
++          ],
++          "maxFileSizeHint": "Mocked hint: file-size limit appears near the upload control; verify against live DevHub before use.",
++          "namingRuleHint": "Mocked hint: use a clear document name; no private file names are stored in this fixture.",
++          "selector": {
++            "role": "button",
++            "accessibleName": "Upload application form",
++            "labelText": "Application form upload",
++            "nearbyHeading": "Upload documents",
++            "urlState": "/permits/documents"
++          }
++        },
++        {
++          "id": "plans-pdf-upload",
++          "label": "Drawing plans upload",
++          "required": true,
++          "acceptedFileTypes": [
++            "application/pdf"
++          ],
++          "maxFileSizeHint": "Mocked hint: file-size limit appears near the upload control; verify against live DevHub before use.",
++          "namingRuleHint": "Single PDF Process fixture expects drawings as one searchable PDF and supporting documents as separate PDFs.",
++          "selector": {
++            "role": "button",
++            "accessibleName": "Upload drawing plans",
++            "labelText": "Drawing plans upload",
++            "nearbyHeading": "Upload documents",
++            "urlState": "/permits/documents"
++          }
++        }
++      ],
++      "actions": [
++        {
++          "id": "back-to-request-type",
++          "label": "Back",
++          "kind": "back",
++          "enabled": true,
++          "targetStateId": "devhub-request-type",
++          "confirmationRequired": false,
++          "selector": {
++            "role": "button",
++            "accessibleName": "Back",
++            "nearbyHeading": "Upload documents",
++            "urlState": "/permits/documents"
++          }
++        },
++        {
++          "id": "upload-application-pdf",
++          "label": "Upload application form",
++          "kind": "upload",
++          "enabled": true,
++          "targetStateId": "devhub-document-upload",
++          "confirmationRequired": true,
++          "selector": {
++            "role": "button",
++            "accessibleName": "Upload application form",
++            "labelText": "Application form upload",
++            "nearbyHeading": "Upload documents",
++            "urlState": "/permits/documents"
++          }
++        },
++        {
++          "id": "continue-to-review",
++          "label": "Continue",
++          "kind": "continue",
++          "enabled": false,
++          "targetStateId": "devhub-review-and-certify",
++          "confirmationRequired": false,
++          "selector": {
++            "role": "button",
++            "accessibleName": "Continue",
++            "nearbyHeading": "Upload documents",
++            "urlState": "/permits/documents"
++          }
++        }
++      ],
++      "nextStates": [
++        "devhub-request-type",
++        "devhub-review-and-certify"
++      ]
++    },
++    {
++      "id": "devhub-review-and-certify",
++      "workflow": "mock_plan_review_request",
++      "urlPattern": "https://devhub.portlandoregon.gov/permits/review*",
++      "heading": "Review and certify",
++      "capturedAt": "2026-05-01T18:20:00Z",
++      "fields": [
++        {
++          "id": "certification-acknowledgment",
++          "label": "I certify the information is accurate",
++          "kind": "checkbox",
++          "required": true,
++          "valueState": "[REDACTED]",
++          "validationMessageIds": [
++            "certification-required"
++          ],
++          "selector": {
++            "role": "checkbox",
++            "accessibleName": "I certify the information is accurate",
++            "labelText": "I certify the information is accurate",
++            "nearbyHeading": "Review and certify",
++            "urlState": "/permits/review"
++          }
++        }
++      ],
++      "validationMessages": [
++        {
++          "id": "certification-required",
++          "text": "Review and acknowledge the certification before submitting.",
++          "severity": "error",
++          "fieldId": "certification-acknowledgment",
++          "selector": {
++            "role": "alert",
++            "accessibleName": "Review and acknowledge the certification before submitting.",
++            "nearbyHeading": "Review and certify",
++            "urlState": "/permits/review"
++          }
++        }
++      ],
++      "uploadControls": [],
++      "actions": [
++        {
++          "id": "back-to-documents",
++          "label": "Back",
++          "kind": "back",
++          "enabled": true,
++          "targetStateId": "devhub-document-upload",
++          "confirmationRequired": false,
++          "selector": {
++            "role": "button",
++            "accessibleName": "Back",
++            "nearbyHeading": "Review and certify",
++            "urlState": "/permits/review"
++          }
++        },
++        {
++          "id": "submit-permit-request",
++          "label": "Submit request",
++          "kind": "submit",
++          "enabled": false,
++          "targetStateId": "devhub-review-and-certify",
++          "confirmationRequired": true,
++          "selector": {
++            "role": "button",
++            "accessibleName": "Submit request",
++            "nearbyHeading": "Review and certify",
++            "urlState": "/permits/review"
++          }
++        }
++      ],
++      "nextStates": [
++        "devhub-document-upload"
++      ]
++    }
++  ],
++  "navigationEdges": [
++    {
++      "fromStateId": "devhub-request-type",
++      "actionId": "continue-to-documents",
++      "toStateId": "devhub-document-upload",
++      "guard": "request type and project address are present; values remain redacted in fixtures"
++    },
++    {
++      "fromStateId": "devhub-document-upload",
++      "actionId": "back-to-request-type",
++      "toStateId": "devhub-request-type",
++      "guard": "read-only navigation back to request details"
++    },
++    {
++      "fromStateId": "devhub-document-upload",
++      "actionId": "continue-to-review",
++      "toStateId": "devhub-review-and-certify",
++      "guard": "required application and plan PDFs have been selected and reviewed by the user"
++    },
++    {
++      "fromStateId": "devhub-review-and-certify",
++      "actionId": "back-to-documents",
++      "toStateId": "devhub-document-upload",
++      "guard": "read-only navigation back to document review"
++    }
++  ]
++}
+--- a/ppd/tests/validate_devhub_workflow_snapshots.py
++++ b/ppd/tests/validate_devhub_workflow_snapshots.py
+@@ -0,0 +1,165 @@
++#!/usr/bin/env python3
++"""Validate mocked, redacted DevHub workflow snapshot fixtures.
++
++This validator is deterministic and fixture-only. It does not open DevHub,
++authenticate, submit, upload, pay, read browser state, or inspect private files.
++"""
++
++from __future__ import annotations
++
++import json
++import re
++import sys
++from datetime import datetime
++from pathlib import Path
++from typing import Any
++
++ROOT = Path(__file__).resolve().parents[2]
++FIXTURE_PATH = Path(__file__).parent / "fixtures" / "devhub-workflows" / "mock_workflow_snapshots.json"
++
++SECRET_PATTERNS = (
++    re.compile(r"password", re.IGNORECASE),
++    re.compile(r"access[_-]?token", re.IGNORECASE),
++    re.compile(r"refresh[_-]?token", re.IGNORECASE),
++    re.compile(r"storage[_-]?state", re.IGNORECASE),
++    re.compile(r"auth[_-]?state", re.IGNORECASE),
++    re.compile(r"trace\.zip", re.IGNORECASE),
++    re.compile(r"\.har\b", re.IGNORECASE),
++    re.compile(r"\b\d{3}-\d{2}-\d{4}\b"),
++    re.compile(r"\b\d{16}\b"),
++    re.compile(r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}", re.IGNORECASE),
++)
++
++
++def fail(message: str) -> None:
++    raise AssertionError(message)
++
++
++def load_fixture() -> dict[str, Any]:
++    try:
++        data = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
++    except json.JSONDecodeError as exc:
++        fail(f"{FIXTURE_PATH.relative_to(ROOT)} is not valid JSON: {exc}")
++    if not isinstance(data, dict):
++        fail(f"{FIXTURE_PATH.relative_to(ROOT)} must contain a JSON object")
++    return data
++
++
++def parse_utc_timestamp(value: Any, field: str) -> None:
++    if not isinstance(value, str) or not value.endswith("Z"):
++        fail(f"{field} must be an ISO UTC timestamp ending in Z")
++    try:
++        datetime.fromisoformat(value.replace("Z", "+00:00"))
++    except ValueError as exc:
++        fail(f"{field} is not a valid ISO timestamp: {exc}")
++
++
++def scan_for_private_values(value: Any, path: str = "$") -> None:
++    if isinstance(value, dict):
++        for key, child in value.items():
++            scan_for_private_values(key, f"{path}.{key}#key")
++            scan_for_private_values(child, f"{path}.{key}")
++        return
++    if isinstance(value, list):
++        for index, child in enumerate(value):
++            scan_for_private_values(child, f"{path}[{index}]")
++        return
++    if isinstance(value, str):
++        for pattern in SECRET_PATTERNS:
++            if pattern.search(value):
++                fail(f"fixture contains private/session-like value at {path}")
++
++
++def validate_fixture_shape(data: dict[str, Any]) -> None:
++    if data.get("fixtureKind") != "devhub_workflow_snapshots":
++        fail("fixtureKind must be devhub_workflow_snapshots")
++    if data.get("schemaVersion") != 1:
++        fail("schemaVersion must be 1")
++    parse_utc_timestamp(data.get("generatedAt"), "generatedAt")
++    policy = data.get("redactionPolicy")
++    if not isinstance(policy, str) or "[REDACTED]" not in policy:
++        fail("redactionPolicy must describe [REDACTED] value handling")
++
++
++def validate_with_contracts(data: dict[str, Any]) -> None:
++    sys.path.insert(0, str(ROOT))
++    from ppd.contracts.devhub_workflows import edge_from_dict, state_from_dict
++
++    states = data.get("states")
++    if not isinstance(states, list) or not states:
++        fail("states must be a non-empty array")
++    state_models = [state_from_dict(state) for state in states]
++    state_ids = {state.id for state in state_models}
++    if len(state_ids) != len(state_models):
++        fail("state ids must be unique")
++
++    saw_semantic_selector = False
++    saw_validation_message = False
++    saw_upload_control = False
++    saw_redacted_field = False
++    saw_confirmation_gated_upload = False
++    saw_confirmation_gated_submit = False
++
++    for state in state_models:
++        errors = state.validate()
++        if errors:
++            fail(f"state {state.id} failed validation: {errors}")
++        for field in state.fields:
++            saw_redacted_field = saw_redacted_field or field.value_state == "[REDACTED]"
++            saw_semantic_selector = saw_semantic_selector or bool(
++                field.selector.label_text or field.selector.nearby_heading or field.selector.url_state or field.selector.test_id
++            )
++        saw_validation_message = saw_validation_message or bool(state.validation_messages)
++        saw_upload_control = saw_upload_control or bool(state.upload_controls)
++        for action in state.actions:
++            if action.kind.value == "upload" and action.confirmation_required:
++                saw_confirmation_gated_upload = True
++            if action.kind.value == "submit" and action.confirmation_required:
++                saw_confirmation_gated_submit = True
++            if action.target_state_id and action.target_state_id not in state_ids:
++                fail(f"action {action.id} targets unknown state {action.target_state_id}")
++        for next_state in state.next_states:
++            if next_state not in state_ids:
++                fail(f"state {state.id} references unknown next state {next_state}")
++
++    edges = data.get("navigationEdges")
++    if not isinstance(edges, list) or not edges:
++        fail("navigationEdges must be a non-empty array")
++    action_ids_by_state = {state.id: {action.id for action in state.actions} for state in state_models}
++    for item in edges:
++        edge = edge_from_dict(item)
++        errors = edge.validate(state_ids)
++        if errors:
++            fail(f"navigation edge failed validation: {errors}")
++        if edge.action_id not in action_ids_by_state.get(edge.from_state_id, set()):
++            fail(f"navigation edge references action {edge.action_id} that is not on state {edge.from_state_id}")
++
++    if not saw_semantic_selector:
++        fail("fixture must include semantic selector context")
++    if not saw_validation_message:
++        fail("fixture must include validation messages")
++    if not saw_upload_control:
++        fail("fixture must include upload controls")
++    if not saw_redacted_field:
++        fail("fixture must include redacted field values")
++    if not saw_confirmation_gated_upload:
++        fail("upload actions in fixtures must be confirmation gated")
++    if not saw_confirmation_gated_submit:
++        fail("submit actions in fixtures must be confirmation gated")
++
++
++def main() -> int:
++    data = load_fixture()
++    scan_for_private_values(data)
++    validate_fixture_shape(data)
++    validate_with_contracts(data)
++    print("DevHub workflow snapshot fixtures are redacted and valid.")
++    return 0
++
++
++if __name__ == "__main__":
++    try:
++        raise SystemExit(main())
++    except AssertionError as exc:
++        print(f"DevHub workflow snapshot validation failed: {exc}", file=sys.stderr)
++        raise SystemExit(1)

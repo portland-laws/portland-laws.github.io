@@ -1,0 +1,371 @@
+{
+  "fixtureKind": "devhub_workflow_snapshots",
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-01T18:20:00Z",
+  "redactionPolicy": "All account, applicant, property, permit, file, and contact values are represented as [REDACTED]. This fixture is mocked and contains no private DevHub session state, screenshots, traces, credentials, raw crawl output, downloaded documents, submissions, payments, or live uploads.",
+  "states": [
+    {
+      "id": "devhub-request-type",
+      "workflow": "mock_plan_review_request",
+      "urlPattern": "https://devhub.portlandoregon.gov/permits/request-type*",
+      "heading": "Start a permit request",
+      "capturedAt": "2026-05-01T18:20:00Z",
+      "fields": [
+        {
+          "id": "request-type",
+          "label": "What type of permit are you requesting?",
+          "kind": "select",
+          "required": true,
+          "valueState": "[REDACTED]",
+          "options": [
+            "Building permit with plan review",
+            "Trade permit with plan review",
+            "Demolition permit",
+            "Sign permit"
+          ],
+          "validationMessageIds": [
+            "request-type-required"
+          ],
+          "selector": {
+            "role": "combobox",
+            "accessibleName": "What type of permit are you requesting?",
+            "labelText": "What type of permit are you requesting?",
+            "nearbyHeading": "Start a permit request",
+            "urlState": "/permits/request-type"
+          }
+        },
+        {
+          "id": "project-address",
+          "label": "Project address",
+          "kind": "text",
+          "required": true,
+          "valueState": "[REDACTED]",
+          "validationMessageIds": [
+            "project-address-required"
+          ],
+          "selector": {
+            "role": "textbox",
+            "accessibleName": "Project address",
+            "labelText": "Project address",
+            "nearbyHeading": "Start a permit request",
+            "urlState": "/permits/request-type"
+          }
+        }
+      ],
+      "validationMessages": [
+        {
+          "id": "request-type-required",
+          "text": "Select a permit request type before continuing.",
+          "severity": "error",
+          "fieldId": "request-type",
+          "selector": {
+            "role": "alert",
+            "accessibleName": "Select a permit request type before continuing.",
+            "nearbyHeading": "Start a permit request",
+            "urlState": "/permits/request-type"
+          }
+        },
+        {
+          "id": "project-address-required",
+          "text": "Enter the project address or search for the property.",
+          "severity": "error",
+          "fieldId": "project-address",
+          "selector": {
+            "role": "alert",
+            "accessibleName": "Enter the project address or search for the property.",
+            "nearbyHeading": "Start a permit request",
+            "urlState": "/permits/request-type"
+          }
+        }
+      ],
+      "uploadControls": [],
+      "actions": [
+        {
+          "id": "continue-to-documents",
+          "label": "Continue",
+          "kind": "continue",
+          "enabled": false,
+          "targetStateId": "devhub-document-upload",
+          "confirmationRequired": false,
+          "selector": {
+            "role": "button",
+            "accessibleName": "Continue",
+            "nearbyHeading": "Start a permit request",
+            "urlState": "/permits/request-type"
+          }
+        },
+        {
+          "id": "save-request-type-draft",
+          "label": "Save for later",
+          "kind": "save_draft",
+          "enabled": true,
+          "targetStateId": "devhub-request-type",
+          "confirmationRequired": false,
+          "selector": {
+            "role": "button",
+            "accessibleName": "Save for later",
+            "nearbyHeading": "Start a permit request",
+            "urlState": "/permits/request-type"
+          }
+        }
+      ],
+      "nextStates": [
+        "devhub-document-upload"
+      ]
+    },
+    {
+      "id": "devhub-document-upload",
+      "workflow": "mock_plan_review_request",
+      "urlPattern": "https://devhub.portlandoregon.gov/permits/documents*",
+      "heading": "Upload documents",
+      "capturedAt": "2026-05-01T18:20:00Z",
+      "fields": [
+        {
+          "id": "application-document-status",
+          "label": "Application form",
+          "kind": "display",
+          "required": true,
+          "valueState": "[REDACTED]",
+          "validationMessageIds": [
+            "application-pdf-required"
+          ],
+          "selector": {
+            "role": "status",
+            "accessibleName": "Application form upload status",
+            "labelText": "Application form",
+            "nearbyHeading": "Upload documents",
+            "urlState": "/permits/documents"
+          }
+        },
+        {
+          "id": "plan-document-status",
+          "label": "Drawing plans",
+          "kind": "display",
+          "required": true,
+          "valueState": "[REDACTED]",
+          "validationMessageIds": [
+            "plans-pdf-required"
+          ],
+          "selector": {
+            "role": "status",
+            "accessibleName": "Drawing plans upload status",
+            "labelText": "Drawing plans",
+            "nearbyHeading": "Upload documents",
+            "urlState": "/permits/documents"
+          }
+        }
+      ],
+      "validationMessages": [
+        {
+          "id": "application-pdf-required",
+          "text": "Upload the completed application form as a PDF.",
+          "severity": "error",
+          "fieldId": "application-document-status",
+          "selector": {
+            "role": "alert",
+            "accessibleName": "Upload the completed application form as a PDF.",
+            "nearbyHeading": "Upload documents",
+            "urlState": "/permits/documents"
+          }
+        },
+        {
+          "id": "plans-pdf-required",
+          "text": "Upload drawing plans as one searchable PDF when the Single PDF Process applies.",
+          "severity": "error",
+          "fieldId": "plan-document-status",
+          "selector": {
+            "role": "alert",
+            "accessibleName": "Upload drawing plans as one searchable PDF when the Single PDF Process applies.",
+            "nearbyHeading": "Upload documents",
+            "urlState": "/permits/documents"
+          }
+        }
+      ],
+      "uploadControls": [
+        {
+          "id": "application-pdf-upload",
+          "label": "Application form upload",
+          "required": true,
+          "acceptedFileTypes": [
+            "application/pdf"
+          ],
+          "maxFileSizeHint": "Mocked hint: file-size limit appears near the upload control; verify against live DevHub before use.",
+          "namingRuleHint": "Mocked hint: use a clear document name; no private file names are stored in this fixture.",
+          "selector": {
+            "role": "button",
+            "accessibleName": "Upload application form",
+            "labelText": "Application form upload",
+            "nearbyHeading": "Upload documents",
+            "urlState": "/permits/documents"
+          }
+        },
+        {
+          "id": "plans-pdf-upload",
+          "label": "Drawing plans upload",
+          "required": true,
+          "acceptedFileTypes": [
+            "application/pdf"
+          ],
+          "maxFileSizeHint": "Mocked hint: file-size limit appears near the upload control; verify against live DevHub before use.",
+          "namingRuleHint": "Single PDF Process fixture expects drawings as one searchable PDF and supporting documents as separate PDFs.",
+          "selector": {
+            "role": "button",
+            "accessibleName": "Upload drawing plans",
+            "labelText": "Drawing plans upload",
+            "nearbyHeading": "Upload documents",
+            "urlState": "/permits/documents"
+          }
+        }
+      ],
+      "actions": [
+        {
+          "id": "back-to-request-type",
+          "label": "Back",
+          "kind": "back",
+          "enabled": true,
+          "targetStateId": "devhub-request-type",
+          "confirmationRequired": false,
+          "selector": {
+            "role": "button",
+            "accessibleName": "Back",
+            "nearbyHeading": "Upload documents",
+            "urlState": "/permits/documents"
+          }
+        },
+        {
+          "id": "upload-application-pdf",
+          "label": "Upload application form",
+          "kind": "upload",
+          "enabled": true,
+          "targetStateId": "devhub-document-upload",
+          "confirmationRequired": true,
+          "selector": {
+            "role": "button",
+            "accessibleName": "Upload application form",
+            "labelText": "Application form upload",
+            "nearbyHeading": "Upload documents",
+            "urlState": "/permits/documents"
+          }
+        },
+        {
+          "id": "continue-to-review",
+          "label": "Continue",
+          "kind": "continue",
+          "enabled": false,
+          "targetStateId": "devhub-review-and-certify",
+          "confirmationRequired": false,
+          "selector": {
+            "role": "button",
+            "accessibleName": "Continue",
+            "nearbyHeading": "Upload documents",
+            "urlState": "/permits/documents"
+          }
+        }
+      ],
+      "nextStates": [
+        "devhub-request-type",
+        "devhub-review-and-certify"
+      ]
+    },
+    {
+      "id": "devhub-review-and-certify",
+      "workflow": "mock_plan_review_request",
+      "urlPattern": "https://devhub.portlandoregon.gov/permits/review*",
+      "heading": "Review and certify",
+      "capturedAt": "2026-05-01T18:20:00Z",
+      "fields": [
+        {
+          "id": "certification-acknowledgment",
+          "label": "I certify the information is accurate",
+          "kind": "checkbox",
+          "required": true,
+          "valueState": "[REDACTED]",
+          "validationMessageIds": [
+            "certification-required"
+          ],
+          "selector": {
+            "role": "checkbox",
+            "accessibleName": "I certify the information is accurate",
+            "labelText": "I certify the information is accurate",
+            "nearbyHeading": "Review and certify",
+            "urlState": "/permits/review"
+          }
+        }
+      ],
+      "validationMessages": [
+        {
+          "id": "certification-required",
+          "text": "Review and acknowledge the certification before submitting.",
+          "severity": "error",
+          "fieldId": "certification-acknowledgment",
+          "selector": {
+            "role": "alert",
+            "accessibleName": "Review and acknowledge the certification before submitting.",
+            "nearbyHeading": "Review and certify",
+            "urlState": "/permits/review"
+          }
+        }
+      ],
+      "uploadControls": [],
+      "actions": [
+        {
+          "id": "back-to-documents",
+          "label": "Back",
+          "kind": "back",
+          "enabled": true,
+          "targetStateId": "devhub-document-upload",
+          "confirmationRequired": false,
+          "selector": {
+            "role": "button",
+            "accessibleName": "Back",
+            "nearbyHeading": "Review and certify",
+            "urlState": "/permits/review"
+          }
+        },
+        {
+          "id": "submit-permit-request",
+          "label": "Submit request",
+          "kind": "submit",
+          "enabled": false,
+          "targetStateId": "devhub-review-and-certify",
+          "confirmationRequired": true,
+          "selector": {
+            "role": "button",
+            "accessibleName": "Submit request",
+            "nearbyHeading": "Review and certify",
+            "urlState": "/permits/review"
+          }
+        }
+      ],
+      "nextStates": [
+        "devhub-document-upload"
+      ]
+    }
+  ],
+  "navigationEdges": [
+    {
+      "fromStateId": "devhub-request-type",
+      "actionId": "continue-to-documents",
+      "toStateId": "devhub-document-upload",
+      "guard": "request type and project address are present; values remain redacted in fixtures"
+    },
+    {
+      "fromStateId": "devhub-document-upload",
+      "actionId": "back-to-request-type",
+      "toStateId": "devhub-request-type",
+      "guard": "read-only navigation back to request details"
+    },
+    {
+      "fromStateId": "devhub-document-upload",
+      "actionId": "continue-to-review",
+      "toStateId": "devhub-review-and-certify",
+      "guard": "required application and plan PDFs have been selected and reviewed by the user"
+    },
+    {
+      "fromStateId": "devhub-review-and-certify",
+      "actionId": "back-to-documents",
+      "toStateId": "devhub-document-upload",
+      "guard": "read-only navigation back to document review"
+    }
+  ]
+}
