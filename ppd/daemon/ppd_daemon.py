@@ -87,8 +87,8 @@ class CommandResult:
         return {
             "command": list(self.command),
             "returncode": self.returncode,
-            "stdout": self.stdout[-limit:],
-            "stderr": self.stderr[-limit:],
+            "stdout": compact_message(self.stdout, limit=limit),
+            "stderr": compact_message(self.stderr, limit=limit),
         }
 
 
@@ -252,8 +252,20 @@ Last updated: {utc_now()}
 
 def compact_message(value: Any, limit: int = 700) -> str:
     text = str(value or "")
-    text = re.sub(r"<(?:html|head|body|script|style|svg|path|div|meta|noscript)[\s\S]*", "[html response omitted]", text, flags=re.IGNORECASE)
-    text = re.sub(r"__cf_chl_[A-Za-z0-9_=-]+", "__cf_chl_[omitted]", text)
+    text = re.sub(
+        r"<!doctype html[\s\S]*",
+        "[html response omitted]",
+        text,
+        flags=re.IGNORECASE,
+    )
+    text = re.sub(
+        r"<(?:html|head|body|script|style|svg|path|div|meta|noscript)\b[\s\S]*",
+        "[html response omitted]",
+        text,
+        flags=re.IGNORECASE,
+    )
+    text = re.sub(r"__cf_chl_[A-Za-z0-9_.=-]+", "__cf_chl_[omitted]", text)
+    text = re.sub(r"c[A-Z][A-Za-z0-9_]*:\s*'[^']{80,}'", "cloudflare_token: '[omitted]'", text)
     text = re.sub(r"\s+", " ", text).strip()
     if len(text) > limit:
         return text[:limit].rstrip() + "..."
@@ -762,6 +774,14 @@ def self_test(repo_root: Path) -> int:
     for prefix in DISALLOWED_WRITE_PREFIXES:
         if not validate_write_path(prefix + "bad.ts"):
             errors.append(f"disallowed prefix unexpectedly passed preflight: {prefix}")
+    compacted = CommandResult(
+        command=("example",),
+        returncode=1,
+        stdout="<html><body><script>cloudflare challenge</script></body></html>",
+        stderr="token __cf_chl_tk=secret",
+    ).compact()
+    if "cloudflare challenge" in compacted["stdout"] or "__cf_chl_tk=secret" in compacted["stderr"]:
+        errors.append("runtime log compaction failed to redact noisy provider HTML")
     errors.extend(validate_seed_and_allowlist(repo_root))
     errors.extend(validate_python_sources(repo_root))
     if errors:

@@ -1,23 +1,54 @@
-# Private authenticated DevHub artifacts
-data/private/
-**/*storage-state*.json
-**/*auth-state*.json
-**/*session*.json
-**/*trace*.zip
+# PP&D runtime daemon state
+/daemon/status.json
+/daemon/progress.json
+/daemon/supervisor-status.json
+/daemon/supervisor-actions.jsonl
+/daemon/*.jsonl
+/daemon/daemon.log
+/daemon/*.pid
+/daemon/*.out
+/daemon/accepted-work/*.tmp
+/daemon/failed-patches/
 
-# Live crawl output and downloaded source material
-data/raw/
-data/normalized/
-data/manifests/
+# Private DevHub account/session artifacts
+/data/private/
+/devhub/.auth/
+/devhub/auth-state*.json
+/devhub/session*.json
+/devhub/storage-state*.json
+/devhub/traces/
+/devhub/screenshots/
+/devhub/downloads/
 
-# Daemon runtime state
+# Live crawl output and downloaded source documents
+/data/raw/
+/data/normalized/
+/data/manifests/live-*.json
+/data/manifests/crawl-*.json
+/crawler/output/
+/crawler/downloads/
+
+# Browser automation artifacts
+**/playwright-report/
+**/test-results/
+**/trace.zip
+**/*.har
+
+# Local caches
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+node_modules/
+
+# Keep curated, redacted fixtures committed.
+!/tests/
+!/tests/**
+!/data/manifests/
+!/data/manifests/seeds.json
+
+# Re-exclude generated caches after fixture allowlist rules.
 __pycache__/
 **/__pycache__/
-*.pyc
-daemon/status.json
-daemon/progress.json
-daemon/*.pid
-daemon/*.log
-daemon/*.out
-daemon/*.jsonl
-daemon/failed-patches/
+*.py[cod]

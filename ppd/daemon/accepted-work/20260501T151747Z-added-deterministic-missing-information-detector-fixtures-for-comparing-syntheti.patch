@@ -1,0 +1,534 @@
+--- a/ppd/tests/fixtures/missing_information_detector_fixtures.json
++++ b/ppd/tests/fixtures/missing_information_detector_fixtures.json
+@@ -0,0 +1,531 @@
++{
++  "fixtureSetId": "ppd_missing_information_detector_user_document_store_v1",
++  "schemaVersion": "1.0",
++  "description": "Deterministic, redacted fixtures for comparing a user's document-store evidence against PP&D permit-process requirements.",
++  "capturedAt": "2026-05-01T00:00:00Z",
++  "privacy": {
++    "containsPrivateUserData": false,
++    "redactionPolicy": "Synthetic values only. No DevHub session data, credentials, traces, screenshots, raw crawl output, downloaded documents, or real applicant/property identifiers are included."
++  },
++  "processModel": {
++    "id": "fixture_residential_plan_review_single_pdf",
++    "name": "Synthetic residential building permit with plan review and Single PDF Process",
++    "permitTypes": [
++      "building_permit",
++      "residential_plan_review"
++    ],
++    "requiredFacts": [
++      {
++        "id": "property_address",
++        "label": "Property address",
++        "kind": "property",
++        "required": true,
++        "requiresUserCertification": false
++      },
++      {
++        "id": "property_id",
++        "label": "Property ID or tax account identifier",
++        "kind": "property",
++        "required": true,
++        "requiresUserCertification": false
++      },
++      {
++        "id": "applicant_name",
++        "label": "Applicant name",
++        "kind": "applicant",
++        "required": true,
++        "requiresUserCertification": true
++      },
++      {
++        "id": "project_description",
++        "label": "Project description and scope",
++        "kind": "project_scope",
++        "required": true,
++        "requiresUserCertification": true
++      },
++      {
++        "id": "project_valuation",
++        "label": "Project valuation",
++        "kind": "valuation",
++        "required": true,
++        "requiresUserCertification": true
++      },
++      {
++        "id": "contractor_ccb_number",
++        "label": "Contractor CCB number",
++        "kind": "license",
++        "required": false,
++        "appliesWhen": [
++          "contractor_performs_work"
++        ],
++        "requiresUserCertification": false
++      }
++    ],
++    "requiredDocuments": [
++      {
++        "id": "application_pdf",
++        "name": "Completed permit application PDF",
++        "kind": "application_form",
++        "required": true,
++        "acceptedFileTypes": [
++          "application/pdf"
++        ],
++        "requiresSignature": true
++      },
++      {
++        "id": "single_drawing_plan_pdf",
++        "name": "Single searchable drawing plan PDF",
++        "kind": "drawing_plan",
++        "required": true,
++        "acceptedFileTypes": [
++          "application/pdf"
++        ],
++        "singlePdfProcessRole": "drawing_plans"
++      },
++      {
++        "id": "structural_calculations_pdf",
++        "name": "Structural calculations PDF",
++        "kind": "calculation",
++        "required": false,
++        "appliesWhen": [
++          "structural_work_in_scope"
++        ],
++        "acceptedFileTypes": [
++          "application/pdf"
++        ]
++      }
++    ]
++  },
++  "fixtures": [
++    {
++      "id": "all_required_items_available",
++      "description": "All required facts and documents are present with current, high-confidence evidence.",
++      "knownConditions": [
++        "single_pdf_process_applies",
++        "contractor_performs_work"
++      ],
++      "documentStore": {
++        "facts": [
++          {
++            "fieldId": "property_address",
++            "value": "1234 SE EXAMPLE ST",
++            "sourceId": "user_intake_form_001",
++            "confidence": 0.99,
++            "observedAt": "2026-04-20T12:00:00Z"
++          },
++          {
++            "fieldId": "property_id",
++            "value": "R000000000",
++            "sourceId": "user_intake_form_001",
++            "confidence": 0.98,
++            "observedAt": "2026-04-20T12:00:00Z"
++          },
++          {
++            "fieldId": "applicant_name",
++            "value": "SYNTHETIC APPLICANT",
++            "sourceId": "signed_application_pdf_001",
++            "confidence": 0.97,
++            "observedAt": "2026-04-21T09:30:00Z"
++          },
++          {
++            "fieldId": "project_description",
++            "value": "Interior remodel of existing dwelling with structural beam replacement.",
++            "sourceId": "signed_application_pdf_001",
++            "confidence": 0.96,
++            "observedAt": "2026-04-21T09:30:00Z"
++          },
++          {
++            "fieldId": "project_valuation",
++            "value": "45000",
++            "sourceId": "signed_application_pdf_001",
++            "confidence": 0.95,
++            "observedAt": "2026-04-21T09:30:00Z"
++          },
++          {
++            "fieldId": "contractor_ccb_number",
++            "value": "SYNTH-CCB-000001",
++            "sourceId": "contractor_license_card_001",
++            "confidence": 0.94,
++            "observedAt": "2026-04-22T15:00:00Z"
++          }
++        ],
++        "documents": [
++          {
++            "documentId": "application_pdf",
++            "storeId": "signed_application_pdf_001",
++            "fileName": "synthetic-permit-application.pdf",
++            "mimeType": "application/pdf",
++            "signed": true,
++            "searchableText": true,
++            "observedAt": "2026-04-21T09:30:00Z",
++            "confidence": 0.98
++          },
++          {
++            "documentId": "single_drawing_plan_pdf",
++            "storeId": "plan_set_pdf_001",
++            "fileName": "synthetic-single-plan-set.pdf",
++            "mimeType": "application/pdf",
++            "signed": false,
++            "searchableText": true,
++            "observedAt": "2026-04-22T10:15:00Z",
++            "confidence": 0.97
++          },
++          {
++            "documentId": "structural_calculations_pdf",
++            "storeId": "structural_calcs_pdf_001",
++            "fileName": "synthetic-structural-calculations.pdf",
++            "mimeType": "application/pdf",
++            "signed": false,
++            "searchableText": true,
++            "observedAt": "2026-04-22T10:20:00Z",
++            "confidence": 0.96
++          }
++        ]
++      },
++      "expected": {
++        "availableEvidence": [
++          "property_address",
++          "property_id",
++          "applicant_name",
++          "project_description",
++          "project_valuation",
++          "contractor_ccb_number",
++          "application_pdf",
++          "single_drawing_plan_pdf",
++          "structural_calculations_pdf"
++        ],
++        "missingFields": [],
++        "missingDocuments": [],
++        "conflictingFacts": [],
++        "staleDocuments": [],
++        "uncertainMatches": [],
++        "requiresUserCertification": [
++          "applicant_name",
++          "project_description",
++          "project_valuation"
++        ],
++        "readyForDraftPreparation": true,
++        "mustStopBeforeActions": [
++          "certification",
++          "official_upload",
++          "submission",
++          "payment"
++        ]
++      }
++    },
++    {
++      "id": "missing_required_facts_and_plan_pdf",
++      "description": "Required property and valuation facts plus the Single PDF Process drawing plan are absent.",
++      "knownConditions": [
++        "single_pdf_process_applies"
++      ],
++      "documentStore": {
++        "facts": [
++          {
++            "fieldId": "property_address",
++            "value": "1234 SE EXAMPLE ST",
++            "sourceId": "user_intake_form_002",
++            "confidence": 0.99,
++            "observedAt": "2026-04-23T12:00:00Z"
++          },
++          {
++            "fieldId": "applicant_name",
++            "value": "SYNTHETIC APPLICANT",
++            "sourceId": "draft_application_pdf_002",
++            "confidence": 0.91,
++            "observedAt": "2026-04-23T13:00:00Z"
++          },
++          {
++            "fieldId": "project_description",
++            "value": "Kitchen alteration.",
++            "sourceId": "draft_application_pdf_002",
++            "confidence": 0.9,
++            "observedAt": "2026-04-23T13:00:00Z"
++          }
++        ],
++        "documents": [
++          {
++            "documentId": "application_pdf",
++            "storeId": "draft_application_pdf_002",
++            "fileName": "synthetic-draft-application.pdf",
++            "mimeType": "application/pdf",
++            "signed": false,
++            "searchableText": true,
++            "observedAt": "2026-04-23T13:00:00Z",
++            "confidence": 0.94
++          }
++        ]
++      },
++      "expected": {
++        "availableEvidence": [
++          "property_address",
++          "applicant_name",
++          "project_description",
++          "application_pdf"
++        ],
++        "missingFields": [
++          "property_id",
++          "project_valuation"
++        ],
++        "missingDocuments": [
++          "single_drawing_plan_pdf"
++        ],
++        "conflictingFacts": [],
++        "staleDocuments": [],
++        "uncertainMatches": [],
++        "requiresUserCertification": [
++          "applicant_name",
++          "project_description"
++        ],
++        "notices": [
++          {
++            "code": "signature_required",
++            "targetId": "application_pdf",
++            "message": "The available application PDF is not marked as signed."
++          }
++        ],
++        "readyForDraftPreparation": false,
++        "mustStopBeforeActions": [
++          "certification",
++          "official_upload",
++          "submission",
++          "payment"
++        ]
++      }
++    },
++    {
++      "id": "conflicting_project_valuation",
++      "description": "Two document-store facts provide different valuation values and must be surfaced for user resolution.",
++      "knownConditions": [
++        "single_pdf_process_applies"
++      ],
++      "documentStore": {
++        "facts": [
++          {
++            "fieldId": "property_address",
++            "value": "1234 SE EXAMPLE ST",
++            "sourceId": "user_intake_form_003",
++            "confidence": 0.99,
++            "observedAt": "2026-04-24T10:00:00Z"
++          },
++          {
++            "fieldId": "property_id",
++            "value": "R000000000",
++            "sourceId": "user_intake_form_003",
++            "confidence": 0.98,
++            "observedAt": "2026-04-24T10:00:00Z"
++          },
++          {
++            "fieldId": "applicant_name",
++            "value": "SYNTHETIC APPLICANT",
++            "sourceId": "signed_application_pdf_003",
++            "confidence": 0.97,
++            "observedAt": "2026-04-24T10:30:00Z"
++          },
++          {
++            "fieldId": "project_description",
++            "value": "Basement conversion with new habitable space.",
++            "sourceId": "signed_application_pdf_003",
++            "confidence": 0.95,
++            "observedAt": "2026-04-24T10:30:00Z"
++          },
++          {
++            "fieldId": "project_valuation",
++            "value": "30000",
++            "sourceId": "user_intake_form_003",
++            "confidence": 0.9,
++            "observedAt": "2026-04-24T10:00:00Z"
++          },
++          {
++            "fieldId": "project_valuation",
++            "value": "55000",
++            "sourceId": "signed_application_pdf_003",
++            "confidence": 0.95,
++            "observedAt": "2026-04-24T10:30:00Z"
++          }
++        ],
++        "documents": [
++          {
++            "documentId": "application_pdf",
++            "storeId": "signed_application_pdf_003",
++            "fileName": "synthetic-signed-application.pdf",
++            "mimeType": "application/pdf",
++            "signed": true,
++            "searchableText": true,
++            "observedAt": "2026-04-24T10:30:00Z",
++            "confidence": 0.98
++          },
++          {
++            "documentId": "single_drawing_plan_pdf",
++            "storeId": "plan_set_pdf_003",
++            "fileName": "synthetic-single-plan-set.pdf",
++            "mimeType": "application/pdf",
++            "signed": false,
++            "searchableText": true,
++            "observedAt": "2026-04-24T11:00:00Z",
++            "confidence": 0.97
++          }
++        ]
++      },
++      "expected": {
++        "availableEvidence": [
++          "property_address",
++          "property_id",
++          "applicant_name",
++          "project_description",
++          "application_pdf",
++          "single_drawing_plan_pdf"
++        ],
++        "missingFields": [],
++        "missingDocuments": [],
++        "conflictingFacts": [
++          {
++            "fieldId": "project_valuation",
++            "values": [
++              "30000",
++              "55000"
++            ],
++            "sourceIds": [
++              "user_intake_form_003",
++              "signed_application_pdf_003"
++            ]
++          }
++        ],
++        "staleDocuments": [],
++        "uncertainMatches": [],
++        "requiresUserCertification": [
++          "applicant_name",
++          "project_description",
++          "project_valuation"
++        ],
++        "readyForDraftPreparation": false,
++        "mustStopBeforeActions": [
++          "certification",
++          "official_upload",
++          "submission",
++          "payment"
++        ]
++      }
++    },
++    {
++      "id": "stale_and_uncertain_documents",
++      "description": "A stale application and a low-confidence plan match should be reported instead of treated as complete evidence.",
++      "knownConditions": [
++        "single_pdf_process_applies"
++      ],
++      "stalenessPolicy": {
++        "staleAfterDays": 180,
++        "referenceDate": "2026-05-01T00:00:00Z"
++      },
++      "documentStore": {
++        "facts": [
++          {
++            "fieldId": "property_address",
++            "value": "1234 SE EXAMPLE ST",
++            "sourceId": "old_application_pdf_004",
++            "confidence": 0.93,
++            "observedAt": "2025-08-01T09:00:00Z"
++          },
++          {
++            "fieldId": "property_id",
++            "value": "R000000000",
++            "sourceId": "old_application_pdf_004",
++            "confidence": 0.92,
++            "observedAt": "2025-08-01T09:00:00Z"
++          },
++          {
++            "fieldId": "applicant_name",
++            "value": "SYNTHETIC APPLICANT",
++            "sourceId": "old_application_pdf_004",
++            "confidence": 0.91,
++            "observedAt": "2025-08-01T09:00:00Z"
++          },
++          {
++            "fieldId": "project_description",
++            "value": "Garage alteration.",
++            "sourceId": "old_application_pdf_004",
++            "confidence": 0.9,
++            "observedAt": "2025-08-01T09:00:00Z"
++          },
++          {
++            "fieldId": "project_valuation",
++            "value": "12000",
++            "sourceId": "old_application_pdf_004",
++            "confidence": 0.9,
++            "observedAt": "2025-08-01T09:00:00Z"
++          }
++        ],
++        "documents": [
++          {
++            "documentId": "application_pdf",
++            "storeId": "old_application_pdf_004",
++            "fileName": "synthetic-old-application.pdf",
++            "mimeType": "application/pdf",
++            "signed": true,
++            "searchableText": true,
++            "observedAt": "2025-08-01T09:00:00Z",
++            "confidence": 0.94
++          },
++          {
++            "documentId": "single_drawing_plan_pdf",
++            "storeId": "possible_plan_pdf_004",
++            "fileName": "synthetic-possible-plan-document.pdf",
++            "mimeType": "application/pdf",
++            "signed": false,
++            "searchableText": false,
++            "observedAt": "2026-04-28T14:00:00Z",
++            "confidence": 0.54
++          }
++        ]
++      },
++      "expected": {
++        "availableEvidence": [
++          "property_address",
++          "property_id",
++          "applicant_name",
++          "project_description",
++          "project_valuation"
++        ],
++        "missingFields": [],
++        "missingDocuments": [],
++        "conflictingFacts": [],
++        "staleDocuments": [
++          {
++            "documentId": "application_pdf",
++            "storeId": "old_application_pdf_004",
++            "observedAt": "2025-08-01T09:00:00Z"
++          }
++        ],
++        "uncertainMatches": [
++          {
++            "documentId": "single_drawing_plan_pdf",
++            "storeId": "possible_plan_pdf_004",
++            "reason": "low_confidence_or_not_searchable"
++          }
++        ],
++        "requiresUserCertification": [
++          "applicant_name",
++          "project_description",
++          "project_valuation"
++        ],
++        "readyForDraftPreparation": false,
++        "mustStopBeforeActions": [
++          "certification",
++          "official_upload",
++          "submission",
++          "payment"
++        ]
++      }
++    }
++  ],
++  "detectorExpectations": {
++    "comparisonRules": [
++      "Report a required fact as missing when no matching document-store fact exists for its fieldId.",
++      "Report a required document as missing when no matching document-store document exists for its documentId.",
++      "Report conflicting facts when two or more high-confidence values for the same fieldId differ materially.",
++      "Report stale documents when observedAt is older than the fixture staleness policy allows.",
++      "Report uncertain matches when confidence is below 0.75 or the evidence fails a required document hint such as searchableText for a Single PDF Process plan.",
++      "Never treat user-certification facts as final action approval; certification, official upload, submission, and payment remain guarded actions."
++    ]
++  }
++}

@@ -701,11 +701,11 @@ That PR gives the project immediate product value without committing to a full t
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-01 15:08:54 UTC
+Last updated: 2026-05-01 16:30:07 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-145: Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.`
+Current target: `Task checkbox-153: Port CEC proof cache, proof strategies, advanced inference, and error handling.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -855,7 +855,7 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-142: Initial CEC specialized inference rule group with biconditional introduction/elimination, constructive/destructive dilemma, exportation, absorption, tautology simplification, conjunction commutativity, and opt-in addition/disjunction introduction.` - complete
 - [x] `Task checkbox-143: Expanded CEC extended prover-core rule parity with disjunction commutativity, distribution, association, transposition, material implication round-tripping, Clavius law, and conjunction/disjunction idempotence.` - complete
 - [x] `Task checkbox-144: Expanded CEC common-knowledge/common-belief rule parity with common knowledge/belief introduction, common knowledge distribution, common-knowledge-to-knowledge, monotonicity, negation, transitivity, fixed-point induction, temporally induced common knowledge, and modal necessitation introduction.` - complete
-- [!] `Task checkbox-145: Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.` - latest daemon round failed validation or preflight
+- [!] `Task checkbox-145: Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.` - blocked
 - [x] `Task checkbox-146: Initial CEC fluent/event state manager with fluent types, persistence rules, event transitions, frame-problem persistence, conflict resolution, timelines, statistics, and validation.` - complete
 - [x] `Task checkbox-147: Initial CEC event calculus with browser-native discrete event occurrences, initiation/termination/release rules, 'Happens', 'Initiates', 'Terminates', 'Releases', 'ReleasedAt', 'HoldsAt', 'Clipped', parsed predicate loading/evaluation, timelines, all-fluent queries, caching, and validation.` - complete
 - [x] `Task checkbox-148: Initial CEC context manager with discourse state, entity tracking, focus management, pronoun/anaphora resolution, parsed CEC expression ingestion, discourse segmentation, coherence scoring, snapshots, and validation.` - complete
@@ -863,7 +863,7 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-150: Initial CEC ShadowProver facade with K/T/D/S4/S5 local modal tableaux, forward-prover fallback, problem-object proving, proof cache/statistics, direct-assumption proofs, unsupported-LP diagnostics, and browser-native cognitive rule subset.` - complete
 - [x] `Task checkbox-151: Initial CEC modal tableaux with K/T/D/S4/S5 world/branch model, contradiction closure, box/diamond expansion, deontic O/P/F mapping, proof steps, and open-branch countermodel support.` - complete
 - [x] `Task checkbox-152: Initial CEC countermodel extraction and visualization from open tableaux branches with Kripke JSON, DOT, ASCII, compact ASCII, HTML, valuation extraction, and modal property checks.` - complete
-- [!] `Task checkbox-153: Port CEC proof cache, proof strategies, advanced inference, and error handling.` - blocked
+- [!] `Task checkbox-153: Port CEC proof cache, proof strategies, advanced inference, and error handling.` - latest daemon round failed validation or preflight
 - [x] `Task checkbox-154: Initial CEC native shared-type layer with Python 'types.py'-style formula/proof/conversion/namespace/config dictionaries, protocol guards for formulas/provers/converters/knowledge bases, generic result/cache/stat records, callable aliases, and unified proof statistics with incremental averages.` - complete
 - [x] `Task checkbox-155: Initial DCEC advanced inference layer with modal K/T/S4/necessitation, temporal induction/frame, deontic D/permission-obligation/distribution, knowledge-obligation interaction, temporal-obligation persistence, and grouped rule registries.` - complete
 - [x] `Task checkbox-156: Initial CEC native error-handling layer with CEC-specific parse/proof/conversion/validation/namespace/grammar/knowledge-base errors, Python-style context/suggestion formatting, safe-call wrappers, parse/proof handler wrappers, operation error formatting, and DCEC formula-shape validation.` - complete
@@ -908,10 +908,10 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-145: Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.`
+- Target: `Task checkbox-153: Port CEC proof cache, proof strategies, advanced inference, and error handling.`
 - Result: `needs follow-up`
-- Summary: Fix CEC event calculus TypeScript syntax and add InitiallyP/Declipped support.
-- Impact: The corrected event calculus module is imported by the TypeScript logic port and validation tests to load, evaluate, and verify browser-native CEC predicates without Python runtime support.
+- Summary: Fix CEC proof cache generic type annotations and keep cache behavior tests focused on status-gated CEC proving.
+- Impact: The corrected src/lib/logic/cec/proofCache.ts is directly used by cached CEC proving, strategy-sensitive cache keys, and structured browser-native prover error results. The Jest test file validates canonical cache lookup, rule-group-sensitive keys, non-caching failed statuses, configurable status caching, and global helper integration for the TypeScript logic port.
 - Errors: File edits failed validation and were rolled back.
 - Failure kind: `validation_repair`
 
@@ -938,9 +938,9 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
   - Latest failure kind: `apply_check`
   - Latest errors: Patch failed git apply --check.
 - `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.`
-  - Failures since success: `4`
-  - Failure kinds: `{"validation": 4}`
-  - Latest failure kind: `validation`
+  - Failures since success: `5`
+  - Failure kinds: `{"validation": 4, "validation_repair": 1}`
+  - Latest failure kind: `validation_repair`
   - Latest errors: File edits failed validation and were rolled back.
 - `Task checkbox-111: Complete TDFOL security validator parity.`
   - Failures since success: `18`
@@ -948,8 +948,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
   - Latest failure kind: `validation`
   - Latest errors: File edits failed validation and were rolled back.
 - `Task checkbox-113: Add browser performance budgets for proof search.`
-  - Failures since success: `4`
-  - Failure kinds: `{"validation": 3, "validation_repair": 1}`
+  - Failures since success: `5`
+  - Failure kinds: `{"validation": 3, "validation_repair": 2}`
   - Latest failure kind: `validation_repair`
   - Latest errors: File edits failed validation and were rolled back.
 - `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.`
@@ -957,13 +957,13 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
   - Failure kinds: `{"apply_check": 20, "invalid_no_change": 14, "parse": 73, "preflight": 1, "validation": 2}`
   - Latest failure kind: `invalid_no_change`
 - `Task checkbox-145: Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.`
-  - Failures since success: `4`
-  - Failure kinds: `{"validation_repair": 4}`
+  - Failures since success: `5`
+  - Failure kinds: `{"validation_repair": 5}`
   - Latest failure kind: `validation_repair`
   - Latest errors: File edits failed validation and were rolled back.
 - `Task checkbox-153: Port CEC proof cache, proof strategies, advanced inference, and error handling.`
-  - Failures since success: `3`
-  - Failure kinds: `{"validation_repair": 3}`
+  - Failures since success: `5`
+  - Failure kinds: `{"validation_repair": 5}`
   - Latest failure kind: `validation_repair`
   - Latest errors: File edits failed validation and were rolled back.
 

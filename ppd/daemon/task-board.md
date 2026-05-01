@@ -17,22 +17,33 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] Add DevHub workflow-state recorder interfaces with no live login or submission behavior.
 - [x] Add guarded action classification for read-only, draft-edit, consequential, and financial DevHub actions.
 - [x] Add requirement extraction fixtures for obligations, preconditions, deadlines, exceptions, and source evidence.
-- [ ] Add formal guardrail compiler skeleton for deterministic predicates, deontic rules, temporal rules, and support maps.
-- [ ] Add missing-information detector fixtures for user document-store comparison.
-- [ ] Add PP&D validation command that checks fixtures, schemas, daemon self-test, and private-data ignore coverage.
-- [ ] Add a bounded public crawl dry-run that fetches only a tiny seed set after robots/crawl-policy checks.
-- [ ] Add source diff report artifacts for changed PP&D guidance pages.
-- [ ] Add append-only accepted-work ledger generation for successful PP&D daemon rounds.
-- [ ] Add operations documentation for starting, stopping, and inspecting the PP&D daemon.
+- [x] Add formal guardrail compiler skeleton for deterministic predicates, deontic rules, temporal rules, and support maps.
+- [x] Add missing-information detector fixtures for user document-store comparison.
+- [x] Add PP&D validation command that checks fixtures, schemas, daemon self-test, and private-data ignore coverage.
+- [!] Add a bounded public crawl dry-run that fetches only a tiny seed set after robots/crawl-policy checks.
+- [x] Add source diff report artifacts for changed PP&D guidance pages.
+- [!] Add append-only accepted-work ledger generation for successful PP&D daemon rounds.
+- [x] Add operations documentation for starting, stopping, and inspecting the PP&D daemon.
+
+
+## Generated Status
+
+Last updated: 2026-05-01T15:17:47.497853Z
+
+- Latest target: `Task checkbox-14: Add PP&D validation command that checks fixtures, schemas, daemon self-test, and private-data ignore coverage.`
+- Latest result: `accepted`
+- Latest summary: Added deterministic PP&D validation command for fixture JSON, Python schema contracts, daemon self-test, and private-data ignore coverage.
+- Counts: `{"blocked": 0, "complete": 14, "in_progress": 0, "needed": 4}`
+
 
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-01T15:09:23.227722Z
+Last updated: 2026-05-01T16:36:17.643891Z
 
-- Latest target: `Task checkbox-11: Add requirement extraction fixtures for obligations, preconditions, deadlines, exceptions, and source evidence.`
-- Latest result: `accepted`
-- Latest summary: Added deterministic PP&D requirement extraction fixtures covering obligations, preconditions, deadlines, exceptions, and source evidence.
-- Counts: `{"blocked": 0, "complete": 11, "in_progress": 0, "needed": 7}`
+- Latest target: `Task checkbox-15: Add a bounded public crawl dry-run that fetches only a tiny seed set after robots/crawl-policy checks.`
+- Latest result: `validation`
+- Latest summary: Add deterministic bounded PP&D public crawl dry-run
+- Counts: `{"blocked": 2, "complete": 16, "in_progress": 0, "needed": 0}`
 
 <!-- ppd-daemon-task-board:end -->

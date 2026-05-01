@@ -1,0 +1,87 @@
+{
+  "schema_id": "ppd.source_diff_report.v1",
+  "description": "Deterministic artifact contract for source-backed PP&D guidance page change reports.",
+  "artifact_rules": {
+    "public_sources_only": true,
+    "no_private_devhub_session_data": true,
+    "no_raw_crawl_payloads": true,
+    "no_authenticated_actions": true,
+    "intended_storage": "ppd/tests/fixtures/source-diff-reports/ for curated fixtures; ppd/data/manifests/ for later reviewed public crawl outputs"
+  },
+  "required_top_level_fields": [
+    "report_id",
+    "generated_at",
+    "source_scope",
+    "baseline_manifest",
+    "comparison_manifest",
+    "changed_pages",
+    "added_pages",
+    "removed_pages",
+    "unchanged_pages",
+    "validation"
+  ],
+  "field_definitions": {
+    "report_id": "Stable report identifier.",
+    "generated_at": "ISO-8601 timestamp for report generation.",
+    "source_scope": "Bounded source category, seed set, and compliance notes.",
+    "baseline_manifest": "Previous public-source inventory metadata.",
+    "comparison_manifest": "Current public-source inventory metadata.",
+    "changed_pages": "Pages whose normalized public guidance content changed.",
+    "added_pages": "Newly discovered public guidance pages.",
+    "removed_pages": "Previously tracked public guidance pages no longer present or no longer in scope.",
+    "unchanged_pages": "Tracked pages with unchanged normalized content hashes.",
+    "validation": "Deterministic fixture and policy checks that can run without network access."
+  },
+  "changed_page_required_fields": [
+    "page_id",
+    "canonical_url",
+    "title",
+    "page_type",
+    "previous_hash",
+    "current_hash",
+    "first_seen_at",
+    "last_seen_at",
+    "change_categories",
+    "severity",
+    "summary",
+    "diff_hunks",
+    "review_actions",
+    "evidence"
+  ],
+  "allowed_change_categories": [
+    "permit_type",
+    "submittal_requirement",
+    "deadline_or_expiration",
+    "fee_or_payment_instruction",
+    "authenticated_workflow_guidance",
+    "file_format_rule",
+    "contact_or_support_path",
+    "editorial"
+  ],
+  "allowed_severities": [
+    "info",
+    "watch",
+    "review_required",
+    "guardrail_update_required"
+  ],
+  "diff_hunk_required_fields": [
+    "section",
+    "anchor_id",
+    "change_type",
+    "before_excerpt",
+    "after_excerpt",
+    "requirement_impact"
+  ],
+  "allowed_hunk_change_types": [
+    "added",
+    "removed",
+    "modified"
+  ],
+  "validation_expectations": [
+    "Every changed page has HTTPS canonical_url.",
+    "Every changed page has at least one evidence item.",
+    "Every diff hunk has a non-empty requirement_impact.",
+    "Consequential changes are flagged for human review before guardrail promotion.",
+    "Fixtures contain no credentials, user project facts, private session state, raw traces, screenshots, or downloaded documents."
+  ]
+}

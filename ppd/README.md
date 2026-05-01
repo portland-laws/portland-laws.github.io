@@ -54,6 +54,16 @@ The PP&D daemon should use its own allowlist and should initially accept changes
 
 `ppd/.gitignore` excludes private DevHub session artifacts, live crawl output, traces, daemon runtime state, and failed patches. Commit only curated, redacted fixtures and source code.
 
+## Validation
+
+Run the deterministic PP&D workspace validation command from the repository root:
+
+```bash
+python3 ppd/tests/validate_ppd.py
+```
+
+The validation command checks curated JSON fixtures and manifests, Python schema contracts, the PP&D daemon self-test, and private-data ignore coverage. It does not crawl public sites, open DevHub, authenticate, submit, upload, pay, or read private session artifacts.
+
 ## Daemon Control
 
 Use the local control wrapper from the repository root:

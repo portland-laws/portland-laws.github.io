@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/control.sh"
+  ],
+  "created_at": "2026-05-01T16:33:38.943579Z",
+  "impact": "The supervisor currently stops the worker before applying a repair and restarts it afterward. Updating the daemon control path to include --revisit-blocked lets the restarted worker select the remaining blocked PP&D tasks and use existing failure context, instead of leaving the daemon with no eligible work and repeatedly triggering supervisor repair.",
+  "summary": "Start PP&D worker runs with blocked-task revisit enabled.",
+  "target_task": "Supervisor repair: 2 task(s) are blocked: Task checkbox-15: Add a bounded public crawl dry-run that fetches only a tiny seed set after robots/crawl-policy checks.; Task checkbox-17: Add append-only accepted-work ledger generation for successful PP&D daemon rounds.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 18 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "...................... ---------------------------------------------------------------------- Ran 22 tests in 0.001s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

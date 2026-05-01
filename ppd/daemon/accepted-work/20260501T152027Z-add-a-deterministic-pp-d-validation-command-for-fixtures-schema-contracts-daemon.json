@@ -1,0 +1,49 @@
+{
+  "changed_files": [
+    "ppd/.gitignore",
+    "ppd/tests/validate_ppd.py",
+    "ppd/daemon/task-board.md",
+    "ppd/README.md"
+  ],
+  "created_at": "2026-05-01T15:20:27.319801Z",
+  "impact": "This completes the fixture-first validation milestone before any live crawl work by giving the PP&D daemon a single local command that checks committed fixtures, contract validators, daemon health, and ignore rules for private/session artifacts.",
+  "summary": "Add a deterministic PP&D validation command for fixtures, schema contracts, daemon self-test, and private-data ignore coverage.",
+  "target_task": "Task checkbox-14: Add PP&D validation command that checks fixtures, schemas, daemon self-test, and private-data ignore coverage.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 18 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "...................... ---------------------------------------------------------------------- Ran 22 tests in 0.001s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

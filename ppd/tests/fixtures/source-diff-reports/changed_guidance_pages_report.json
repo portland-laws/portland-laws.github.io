@@ -1,0 +1,147 @@
+{
+  "report_id": "ppd-source-diff-fixture-2026-05-01",
+  "generated_at": "2026-05-01T15:45:00Z",
+  "source_scope": {
+    "description": "Curated deterministic fixture for changed public PP&D and DevHub guidance pages.",
+    "source_families": [
+      "portland_gov_ppd",
+      "portland_gov_devhub_guidance"
+    ],
+    "seed_urls": [
+      "https://www.portland.gov/ppd",
+      "https://www.portland.gov/ppd/development-hub-pdx-devhub"
+    ],
+    "compliance_notes": [
+      "Fixture is hand-curated from public guidance facts and does not perform a live crawl.",
+      "Fixture excludes private DevHub account data, browser state, traces, screenshots, raw crawl payloads, and downloaded documents.",
+      "Diff excerpts are short normalized guidance snippets intended for validation and review workflow tests."
+    ]
+  },
+  "baseline_manifest": {
+    "manifest_id": "ppd-public-guidance-baseline-fixture",
+    "captured_at": "2026-04-24T00:00:00Z",
+    "document_count": 3,
+    "normalization_version": "fixture-normalizer-v1"
+  },
+  "comparison_manifest": {
+    "manifest_id": "ppd-public-guidance-comparison-fixture",
+    "captured_at": "2026-05-01T00:00:00Z",
+    "document_count": 3,
+    "normalization_version": "fixture-normalizer-v1"
+  },
+  "changed_pages": [
+    {
+      "page_id": "portland-gov-ppd-devhub-guidance",
+      "canonical_url": "https://www.portland.gov/ppd/development-hub-pdx-devhub",
+      "title": "Development Hub PDX guidance",
+      "page_type": "portal_reference",
+      "previous_hash": "sha256:fixture-prev-devhub-guidance-001",
+      "current_hash": "sha256:fixture-current-devhub-guidance-001",
+      "first_seen_at": "2026-04-24T00:00:00Z",
+      "last_seen_at": "2026-05-01T00:00:00Z",
+      "change_categories": [
+        "authenticated_workflow_guidance",
+        "submittal_requirement"
+      ],
+      "severity": "review_required",
+      "summary": "DevHub public guidance changed the described permit request coverage and clarified that some permit requests require plan review.",
+      "diff_hunks": [
+        {
+          "section": "Available services",
+          "anchor_id": "available-services",
+          "change_type": "modified",
+          "before_excerpt": "DevHub supports online permit services and account access.",
+          "after_excerpt": "DevHub supports permit purchases, permit requests requiring plan review, inspections for online trade permits, correction uploads, and fee payments.",
+          "requirement_impact": "Process extraction should model DevHub service categories separately so agents do not treat purchase, plan-review request, inspection scheduling, correction upload, and fee payment as one generic action."
+        },
+        {
+          "section": "Permit request types",
+          "anchor_id": "permit-request-types",
+          "change_type": "added",
+          "before_excerpt": "Permit request type list was not present in the fixture baseline.",
+          "after_excerpt": "Guidance lists building, new single-family residence and detached ADU, solar, FCC wireless, demolition, trade, trade with plan review, sign, and Urban Forestry permit request types.",
+          "requirement_impact": "Permit-process inventory should add or verify these permit request type labels before compiling missing-information checklists."
+        }
+      ],
+      "review_actions": [
+        "Route permit request type changes to human review before promoting process-model updates.",
+        "Check whether guarded action classification needs separate action gates for correction upload, inspection scheduling, and fee payment."
+      ],
+      "evidence": [
+        {
+          "source_url": "https://www.portland.gov/ppd/development-hub-pdx-devhub",
+          "captured_at": "2026-05-01T00:00:00Z",
+          "source_kind": "public_guidance_page",
+          "note": "Public DevHub guidance fixture; no authenticated session data."
+        }
+      ]
+    },
+    {
+      "page_id": "portland-gov-ppd-single-pdf-process",
+      "canonical_url": "https://www.portland.gov/ppd/permits/single-pdf-process",
+      "title": "Single PDF Process guidance",
+      "page_type": "guidance",
+      "previous_hash": "sha256:fixture-prev-single-pdf-001",
+      "current_hash": "sha256:fixture-current-single-pdf-001",
+      "first_seen_at": "2026-04-24T00:00:00Z",
+      "last_seen_at": "2026-05-01T00:00:00Z",
+      "change_categories": [
+        "file_format_rule",
+        "submittal_requirement"
+      ],
+      "severity": "guardrail_update_required",
+      "summary": "Single PDF Process guidance clarified that drawing plans are one searchable PDF while applications, calculations, and supporting documents are separate PDFs.",
+      "diff_hunks": [
+        {
+          "section": "File preparation",
+          "anchor_id": "file-preparation",
+          "change_type": "modified",
+          "before_excerpt": "Upload project documents as PDF files.",
+          "after_excerpt": "Drawing plans are one searchable PDF; applications, calculations, and supporting documents are separate PDFs.",
+          "requirement_impact": "Formal guardrails should distinguish the drawing-plan PDF from application and support-document PDFs when the Single PDF Process applies."
+        }
+      ],
+      "review_actions": [
+        "Update required document extraction fixtures to preserve separate document roles.",
+        "Add or refresh predicate coverage for plans_are_single_pdf(project) and document_is_pdf(file)."
+      ],
+      "evidence": [
+        {
+          "source_url": "https://www.portland.gov/ppd/permits/single-pdf-process",
+          "captured_at": "2026-05-01T00:00:00Z",
+          "source_kind": "public_guidance_page",
+          "note": "Curated public guidance fixture with short normalized excerpts only."
+        }
+      ]
+    }
+  ],
+  "added_pages": [],
+  "removed_pages": [],
+  "unchanged_pages": [
+    {
+      "page_id": "portland-gov-ppd-landing",
+      "canonical_url": "https://www.portland.gov/ppd",
+      "title": "Portland Permitting & Development",
+      "content_hash": "sha256:fixture-unchanged-ppd-landing-001",
+      "last_seen_at": "2026-05-01T00:00:00Z"
+    }
+  ],
+  "validation": {
+    "fixture_only": true,
+    "network_required": false,
+    "authenticated_devhub_required": false,
+    "private_data_scan": {
+      "contains_credentials": false,
+      "contains_user_project_facts": false,
+      "contains_auth_state": false,
+      "contains_traces_or_screenshots": false,
+      "contains_raw_downloaded_documents": false
+    },
+    "review_required_before_guardrail_promotion": true,
+    "expected_validation_command": [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  }
+}
