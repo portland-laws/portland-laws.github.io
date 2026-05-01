@@ -83,3 +83,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260501T142003Z-add-native-cec-rule-group-selection-and-proof-trace-metadata-to-the-browser-cec-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260501T142003Z-add-native-cec-rule-group-selection-and-proof-trace-metadata-to-the-browser-cec-.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260501T142003Z-add-native-cec-rule-group-selection-and-proof-trace-metadata-to-the-browser-cec-.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-01 18:37:28 UTC
+
+- Target: `Task checkbox-178: Port external prover router and bridge contracts to local browser adapters.`
+- Summary: Add browser-local prover adapter router contracts
+- Impact: The new prover adapter module gives the TypeScript logic port an explicit browser-native proof router for TDFOL, CEC, and DCEC proof requests, backed by local parser/prover implementations. The integration bridge tests load the router, assert adapter metadata forbids external prover calls, prove through the local adapters, and verify injectable adapter routing contracts for validation.
+- Changed files: `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/proverAdapters.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260501T183728Z-add-browser-local-prover-adapter-router-contracts.json`, `ipfs_datasets_py/.daemon/accepted-work/20260501T183728Z-add-browser-local-prover-adapter-router-contracts.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260501T183728Z-add-browser-local-prover-adapter-router-contracts.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

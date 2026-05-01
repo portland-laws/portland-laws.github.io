@@ -1,0 +1,125 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,75 +1,71 @@
+ # PP&D Supervisor Repair Guide
+ 
+-This guide is used when the PP&D supervisor detects repeated daemon validation rollbacks caused by syntax or compile failures.
++This guide is for supervisor repair cycles after repeated daemon validation rollbacks. It keeps recovery focused on daemon behavior, validation, task selection, retry policy, and diagnostics. It must not be used to implement the selected PP&D domain task directly.
+ 
+-## Syntax Failure Recovery
++## Syntax And Compile Rollback Recovery
+ 
+-Trigger this mode when recent failed proposals include any of these signals:
++When two recent failed daemon proposals for the same task include Python `SyntaxError`, `py_compile`, or TypeScript parser errors such as `TS1005`, `TS1109`, or `TS1128`, the next worker prompt must switch to syntax-recovery mode.
+ 
+-- Python `SyntaxError`
+-- Python `py_compile` failure
+-- TypeScript `TS1005`
+-- TypeScript `TS1109`
+-- TypeScript `TS1128`
++In syntax-recovery mode, instruct the worker to:
+ 
+-When this mode is active, the next daemon worker prompt must steer toward a smaller syntactically valid proposal instead of a broader contract rewrite.
++- edit the smallest possible file set, preferably one implementation file and one focused test file;
++- avoid broad contract rewrites, shared schema rewrites, and multi-module refactors;
++- avoid adding live crawl behavior, authenticated automation, private artifacts, raw crawl output, or downloaded documents;
++- write plain Python in `.py` files and plain TypeScript in `.ts` files, with no mixed-language fragments;
++- avoid complex regular expressions unless they are already present and known to compile;
++- prefer simple conditionals and helper functions over dense inline expressions;
++- include fixture-first or validation-first behavior before any live or authenticated behavior;
++- return complete file replacements only.
+ 
+-## Worker Prompt Requirements
++The supervisor should treat repeated syntax failures as a prompt/programming problem, not as evidence that the PP&D domain task needs a larger implementation.
+ 
+-Add these guardrails to the next worker request:
++## Prompt Guardrail
+ 
+-- Return the smallest useful proposal for the selected task.
+-- Touch no more than three files unless the task cannot be validated otherwise.
+-- Prefer one implementation file, one fixture, and one focused test.
+-- Do not rewrite stable shared contracts while recovering from syntax failures unless the selected task is specifically a shared-contract repair.
+-- Keep Python and TypeScript syntax separate.
+-- Avoid complex regular expressions during recovery; prefer explicit string checks, parsed JSON, and small helper functions.
+-- Use ordinary control flow over dense one-line expressions.
+-- Before returning JSON, mentally check that every changed Python file can pass `python3 -m py_compile` and every changed TypeScript file can parse under `tsc --noEmit`.
++For the next worker attempt after repeated syntax failures, add this instruction near the selected task:
+ 
+-## Preflight Policy
++```text
++Recent validation rollbacks were syntax or compile failures. Return a smaller proposal than the failed attempts. Limit edits to the minimum files needed. Before returning JSON, mentally run Python `py_compile` on every `.py` file and TypeScript parsing on every `.ts` file. Do not use placeholders that are invalid syntax. Do not mix type annotation syntax with control-flow syntax. If unsure, choose simpler syntax.
++```
+ 
+-The supervisor should classify changed-file syntax failures before running the full validation suite.
+-
+-Recommended preflight order:
+-
+-1. Validate returned JSON shape and allowed write paths.
+-2. Apply file replacements to a rollback-capable workspace.
+-3. Run `python3 -m py_compile` on changed `.py` files only.
+-4. Run a parser/typecheck preflight on changed `.ts` and `.tsx` files only.
+-5. If any changed-file syntax preflight fails, roll back immediately and record failure kind `syntax_preflight`.
+-6. Run the full PP&D validation suite only after changed-file syntax preflight passes.
++If the active task is live-public-crawl preflight, the worker must only report eligible tiny seed URLs and must not fetch pages, persist crawl output, or create raw response fixtures.
+ 
+ ## Retry Policy
+ 
+-For a task with repeated syntax failures:
++After a syntax or compile rollback:
+ 
+-- First syntax failure: retry with syntax recovery guidance.
+-- Second syntax failure on the same task: require an even smaller file set and avoid editing shared contracts.
+-- Third syntax failure on the same task: block the task and append a narrow repair task to the task board.
++1. Keep the task selected only if the next proposal is explicitly smaller and syntax-first.
++2. If a second syntax or compile rollback occurs on the same task, stop normal worker retries and run supervisor repair before another domain attempt.
++3. Do not escalate to broader architecture changes unless validation failures are semantic and syntax-clean.
++4. Keep the task board state unchanged except for normal daemon-generated status updates or explicit supervisor planning tasks.
+ 
+-Blocked syntax tasks should name the exact file and parser error that failed, then request a fixture-first repair rather than a feature expansion.
++## Diagnostics To Preserve
+ 
+-## Diagnostic Summary Format
++Failed-patch manifests should preserve:
+ 
+-When reporting a syntax rollback, include:
++- target task label;
++- changed file paths;
++- validation command;
++- compact syntax error text;
++- line number when available;
++- whether the failure came from `py_compile`, unittest import, or TypeScript parsing.
+ 
+-- target task label
+-- failure kind: `syntax_preflight` or `validation`
+-- changed files
+-- exact parser command
+-- first syntax error line
+-- whether rollback completed
+-- next recommended file limit
++Diagnostics should be compact and must not include private DevHub session files, auth state, traces, screenshots, raw crawl output, or downloaded documents.
+ 
+-Do not include private DevHub session state, traces, raw crawl output, credentials, screenshots with private values, or downloaded documents in diagnostics.
++## Supervisor Repair Scope
+ 
+-## Current Recovery Recommendation
++Valid supervisor repair edits include:
+ 
+-Recent PP&D daemon failures are syntax failures in newly proposed Python modules. The next worker should not broaden the selected public crawl dry-run task. It should produce a narrow replacement with at most these files:
++- daemon prompt text;
++- preflight validation checks;
++- retry and blocked-task policy;
++- syntax-failure diagnostics;
++- task-board repair planning;
++- PP&D daemon operations documentation;
++- focused tests for daemon supervision behavior.
+ 
+-- `ppd/crawler/public_crawl_report.py`
+-- one small committed fixture under `ppd/tests/fixtures/`
+-- one focused test under `ppd/tests/`
++Invalid repair edits include:
+ 
+-The worker should avoid shared contract edits and should use simple Python only: imports, plain functions, dataclasses only if necessary, explicit validation branches, and no complex regex syntax.
++- implementing the selected PP&D domain task during repair;
++- editing application or domain artifacts only to mark progress;
++- creating private DevHub artifacts;
++- automating CAPTCHA, MFA, account creation, payment, submission, certification, cancellation, official upload, or inspection scheduling.

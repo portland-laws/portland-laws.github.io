@@ -31,6 +31,14 @@ from .pdf_metadata import (
     PdfPageText,
     PdfSignatureHint,
 )
+from .planned_crawl_manifest import (
+    PlannedCrawlManifest,
+    PlannedFetchDecision,
+    PlannedFetchPolicyDecision,
+    PlannedFetchPolicyReason,
+    PlannedPublicFetch,
+    planned_crawl_manifest_from_dict,
+)
 from .processes import (
     ActionGate,
     ActionGateClassification,
@@ -92,6 +100,11 @@ __all__ = [
     "PdfPageText",
     "PdfSignatureHint",
     "PermitProcess",
+    "PlannedCrawlManifest",
+    "PlannedFetchDecision",
+    "PlannedFetchPolicyDecision",
+    "PlannedFetchPolicyReason",
+    "PlannedPublicFetch",
     "PpdContentType",
     "PpdDocumentRole",
     "ProcessStage",
@@ -118,5 +131,6 @@ __all__ = [
     "classify_requirement_diffs",
     "evidence_from_dict",
     "fixture_from_dict",
+    "planned_crawl_manifest_from_dict",
     "requirement_from_dict",
 ]

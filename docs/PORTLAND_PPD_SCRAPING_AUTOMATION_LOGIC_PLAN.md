@@ -46,8 +46,9 @@ Important current facts verified on May 1, 2026:
 
 ```text
 Public source discovery
+  -> ipfs_datasets_py processor archival suite
   -> crawler frontier
-  -> page/PDF/form extractor
+  -> page/PDF/form/archive extractor
   -> normalized document store
   -> citation and version index
   -> process/requirement extraction
@@ -55,8 +56,9 @@ Public source discovery
   -> agent planning and validation
 
 Authenticated DevHub automation
-  -> user-approved browser session
+  -> Playwright user-approved browser session
   -> state and form schema recorder
+  -> guarded form-drafting scaffold
   -> account-scoped artifact store
   -> process-state model
   -> missing-information detector
@@ -66,6 +68,16 @@ Authenticated DevHub automation
 ## Repository Boundary
 
 All PP&D implementation work should live under a top-level `ppd/` directory. The existing Portland legal corpus, browser logic port, and `ipfs_datasets_py` daemon artifacts should remain reusable references, not active write targets for this project.
+
+The PP&D crawler and archive layer should reuse the existing website archival and processor suite in the `ipfs_datasets_py` submodule as a read-only dependency. The relevant submodule capabilities live under `ipfs_datasets_py/ipfs_datasets_py/processors/`, including:
+
+- `web_archiving/` for web archive capture, archive utilities, and simple crawl primitives.
+- `legal_scrapers/parallel_web_archiver.py`, `legal_scrapers/url_archive_cache.py`, and related legal/web archive helpers.
+- `adapters/web_archive_adapter.py` and `adapters/specialized_scraper_adapter.py` for processor integration boundaries.
+- `advanced_graphrag_website_processor.py`, `website_graphrag_processor.py`, and GraphRAG processors for archive-to-retrieval and archive-to-knowledge-graph workflows.
+- PDF, multimedia, file-conversion, batch, and serialization processors that can normalize linked public documents after the archive layer captures them.
+
+PP&D code should wrap these processors through a PP&D-local adapter contract rather than forking or rewriting the processor suite. The adapter should preserve PP&D allowlist, robots, no-persist, and redaction policy decisions before invoking any archival processor.
 
 The only planned exceptions are:
 
@@ -97,11 +109,14 @@ ppd/
     allowlist.ts
     robots.ts
     fetcher.ts
+    processorArchiveAdapter.ts
     extractHtml.ts
     extractPdf.ts
   devhub/
     session.ts
+    playwrightSession.ts
     recorder.ts
+    formDraftingScaffold.ts
     actionClassifier.ts
     selectors.ts
   extraction/
@@ -164,7 +179,8 @@ The first PP&D daemon milestone should be documentation-only and fixture-only:
 
 ## Data Stores
 
-- `raw_public_documents`: immutable HTML, PDF, image-alt text, downloaded form metadata, headers, crawl timestamp, checksum, and source URL.
+- `processor_archive_manifests`: PP&D-local manifests that reference `ipfs_datasets_py` processor/archive outputs by content hash, source URL, canonical URL, capture timestamp, processor name/version, and policy decision. These manifests should not contain raw response bodies.
+- `raw_public_documents`: immutable HTML, PDF, image-alt text, downloaded form metadata, headers, crawl timestamp, checksum, and source URL, preferably captured through the `ipfs_datasets_py` processor archival suite and represented in PP&D through manifests and normalized fixtures.
 - `normalized_documents`: markdown/text extraction, sections, tables, links, page numbers, form fields, and document type.
 - `source_index`: canonical URL, redirects, title, bureau, page type, last-seen timestamp, etag/last-modified when present, content hash, and crawl status.
 - `permit_processes`: permit type, scope, eligibility, required inputs, required documents, fees, review stages, correction stages, inspections, expiration/reactivation/cancellation/refund paths.
@@ -193,6 +209,8 @@ The first PP&D daemon milestone should be documentation-only and fixture-only:
   - `www.portlandoregon.gov`
   - `www.portlandmaps.com` only for public permit/case/property references.
 - Store skipped URLs with reason codes.
+- Route archival capture through a PP&D adapter over `ipfs_datasets_py/ipfs_datasets_py/processors` once a URL has passed allowlist, robots, timeout, content-type, and no-persist preflight.
+- Treat PP&D-native crawler code as policy and orchestration glue. Do not duplicate robust archive, processor, GraphRAG, PDF, or serialization functionality that already exists in the submodule.
 
 ### Phase 2: Extraction
 
@@ -263,6 +281,19 @@ Later supported actions:
   - nearby heading.
   - stable URL/state.
   - fallback CSS/XPath only as a last resort.
+
+### Playwright Form-Drafting Scaffold
+
+Future AI agents should use Playwright only inside a guarded drafting workflow:
+
+- Start from a user-approved browser session. The preferred mode is manual login, then attach/continue after the user is authenticated.
+- Read workflow state, labels, accessible names, validation messages, upload controls, and visible options before proposing any field changes.
+- Draft reversible field entries only when the missing-information detector has source-backed user facts or the user has supplied values in the current interaction.
+- Keep field-value fixtures redacted. Test Playwright code against mocked DevHub pages or synthetic fixtures, not real user account pages.
+- Support dry-run and "preview changes" modes that show planned field edits before interacting with a page.
+- Stop before official upload, certification, submission, payment, cancellation, inspection scheduling, or any action classified as consequential/financial unless the user explicitly confirms the exact action in that session.
+- Never automate CAPTCHA, MFA, account creation, password recovery, payment entry, or bypass controls.
+- Record an audit event for every proposed and executed browser action, including the selector basis, process requirement, user confirmation state, and whether the action was read-only, draft-edit, consequential, or financial.
 
 ### Login Workflow
 
@@ -539,8 +570,9 @@ interface DevHubWorkflowState {
 
 ### Phase 2: Public Crawler MVP
 
-- Implement deterministic crawler for Portland.gov PP&D pages.
-- Add PDF download and extraction.
+- Implement deterministic PP&D policy/preflight wrappers for Portland.gov PP&D pages.
+- Add an adapter that invokes the `ipfs_datasets_py` processor archival suite for public page/PDF capture only after PP&D policy checks pass.
+- Add PDF processing through existing processor capabilities where possible before adding PP&D-specific extractors.
 - Normalize documents to markdown/text with provenance.
 - Generate crawl manifest and content hashes.
 - Add rate limits, retries, and skip reasons.
@@ -569,6 +601,8 @@ interface DevHubWorkflowState {
 - Capture field schemas, options, validation messages, and navigation edges.
 - Redact PII in traces and screenshots.
 - Produce repeatable fixtures from a test account or synthetic account only when authorized.
+- Add a Playwright form-drafting scaffold that can fill reversible draft fields in mocked fixtures, but only emits action plans for live DevHub until confirmation-gate tests are complete.
+- Add tests proving the scaffold refuses upload, submit, certify, pay, cancel, schedule inspection, MFA, CAPTCHA, account creation, and password recovery routes without exact user authorization.
 
 ### Phase 5: Guardrail Compiler
 
@@ -618,6 +652,10 @@ interface DevHubWorkflowState {
   - contradictory extracted rules are flagged.
 - DevHub automation tests:
   - login flow can pause for manual authentication.
+  - Playwright fixtures can discover fields by accessible name, label text, role, nearby heading, and stable URL/state.
+  - form-drafting scaffold can prepare reversible draft entries from redacted fixture facts.
+  - scaffold refuses consequential and financial actions without exact confirmation.
+  - mocked pages cover upload controls, validation messages, disabled submit states, save-for-later, and draft-resume navigation.
   - selectors use accessible roles/names where possible.
   - recorder captures fields without submitting.
   - PII redaction works in traces and logs.

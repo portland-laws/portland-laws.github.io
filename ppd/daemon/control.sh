@@ -20,7 +20,7 @@ start() {
   fi
 
   local existing_pid
-  existing_pid="$(pgrep -f "python3 ppd/daemon/ppd_daemon.py --apply --watch" | tail -n 1 || true)"
+  existing_pid="$(pgrep -f "^python3 ppd/daemon/ppd_daemon.py --apply --watch" | tail -n 1 || true)"
   if [[ -n "$existing_pid" ]]; then
     echo "$existing_pid" > "$PID_FILE"
     echo "PP&D daemon already running: $existing_pid"

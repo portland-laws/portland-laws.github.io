@@ -1,0 +1,14 @@
+{
+  "task_id": "checkbox-31",
+  "summary": "Fixture proposal containing a Python syntax error before discovery",
+  "files": [
+    {
+      "path": "ppd/tests/fixtures/generated/bad_replacement.py",
+      "content": "def broken_replacement(:\n    return 'never accepted'\n"
+    },
+    {
+      "path": "ppd/tests/fixtures/generated/readme.txt",
+      "content": "Non-Python replacements are ignored by py_compile prevalidation.\n"
+    }
+  ]
+}

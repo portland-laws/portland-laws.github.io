@@ -1,0 +1,111 @@
+{
+  "fixture_kind": "ppd_planned_crawl_manifest",
+  "schema_version": 1,
+  "generated_at": "2026-05-01T18:45:00Z",
+  "crawl_plan_id": "public-ppd-fixture-plan-001",
+  "description": "Fixture-only planned public PP&D fetches with policy decisions and no stored response bodies.",
+  "stores_raw_response_bodies": false,
+  "planned_fetches": [
+    {
+      "id": "ppd-home",
+      "url": "https://www.portland.gov/ppd",
+      "canonical_url": "https://www.portland.gov/ppd",
+      "method": "GET",
+      "expected_content_type": "text/html",
+      "source_seed_id": "seed-ppd-home",
+      "decision": "allowed",
+      "policy_decisions": [
+        {
+          "reason": "allowlisted_public_url",
+          "allowed": true,
+          "detail": "Host is in the PP&D public crawl allowlist."
+        },
+        {
+          "reason": "robots_allowed",
+          "allowed": true,
+          "detail": "Fixture records the planned decision; no live robots request is made."
+        },
+        {
+          "reason": "no_persist_raw_body",
+          "allowed": true,
+          "detail": "Only URL, policy, and expected metadata are stored."
+        },
+        {
+          "reason": "fixture_only",
+          "allowed": true,
+          "detail": "This manifest is deterministic test data and does not trigger a network fetch."
+        }
+      ],
+      "notes": [
+        "Public PP&D landing page seed."
+      ]
+    },
+    {
+      "id": "devhub-public-home",
+      "url": "https://devhub.portlandoregon.gov/",
+      "canonical_url": "https://devhub.portlandoregon.gov/",
+      "method": "GET",
+      "expected_content_type": "text/html",
+      "source_seed_id": "seed-devhub-public",
+      "decision": "allowed",
+      "policy_decisions": [
+        {
+          "reason": "allowlisted_public_url",
+          "allowed": true,
+          "detail": "DevHub public landing host is allowlisted."
+        },
+        {
+          "reason": "robots_allowed",
+          "allowed": true,
+          "detail": "Fixture records public preflight intent without authenticating."
+        },
+        {
+          "reason": "no_persist_raw_body",
+          "allowed": true,
+          "detail": "No page source, document bytes, screenshots, traces, or auth state are stored."
+        },
+        {
+          "reason": "fixture_only",
+          "allowed": true,
+          "detail": "This fixture is a planned fetch record only."
+        }
+      ],
+      "notes": [
+        "Public portal entry point only; no account pages."
+      ]
+    },
+    {
+      "id": "devhub-private-path-skipped",
+      "url": "https://devhub.portlandoregon.gov/my/permits",
+      "canonical_url": "https://devhub.portlandoregon.gov/my/permits",
+      "method": "GET",
+      "expected_content_type": "text/html",
+      "decision": "skipped",
+      "policy_decisions": [
+        {
+          "reason": "allowlisted_public_url",
+          "allowed": true,
+          "detail": "The host is recognized, but the path is not public crawl scope."
+        },
+        {
+          "reason": "private_devhub_path_rejected",
+          "allowed": false,
+          "detail": "User-specific DevHub pages are excluded from public crawl planning."
+        },
+        {
+          "reason": "no_persist_raw_body",
+          "allowed": true,
+          "detail": "The skipped URL record contains no response data."
+        },
+        {
+          "reason": "fixture_only",
+          "allowed": true,
+          "detail": "Negative fixture for policy recording only."
+        }
+      ],
+      "notes": [
+        "Skipped fixture proves policy decisions can record rejected public-plan candidates."
+      ]
+    }
+  ]
+}

@@ -579,7 +579,7 @@ Acceptance criteria:
 
 ### Phase 14: External Provers And ZKP WASM Parity
 
-- [!] Port external prover router and bridge contracts to local browser adapters.
+- [x] Port external prover router and bridge contracts to local browser adapters.
 - [x] Evaluate and integrate local WASM provers for Z3/cvc5/Tau Prolog/Lean/Coq-style workflows where feasible.
 - [!] Port Groth16 verification/proving path using browser-native cryptographic libraries where feasible.
 - [!] Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.
@@ -701,11 +701,11 @@ That PR gives the project immediate product value without committing to a full t
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-01 18:22:00 UTC
+Last updated: 2026-05-01 18:37:28 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.`
+Current target: `Task checkbox-180: Port Groth16 verification/proving path using browser-native cryptographic libraries where feasible.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -884,11 +884,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [!] `Task checkbox-171: Port CEC NL policy compilers and language detection with browser-native NLP.` - blocked
 - [x] `Task checkbox-172: Add deeper CEC/DCEC parity fixtures against Python parser and prover outputs.` - complete
 - [!] `Task checkbox-173: Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.` - blocked
-- [!] `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.` - latest daemon round failed validation or preflight
+- [!] `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.` - blocked
 - [!] `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.` - blocked
 - [x] `Task checkbox-176: Add exact/tolerance parity tests against Python ML/spaCy development fixtures.` - complete
 - [!] `Task checkbox-177: Remove 'nlpUnavailable' and 'mlUnavailable' capability flags once browser-native parity is implemented.` - blocked
-- [!] `Task checkbox-178: Port external prover router and bridge contracts to local browser adapters.` - blocked
+- [x] `Task checkbox-178: Port external prover router and bridge contracts to local browser adapters.` - validated by latest daemon round
 - [x] `Task checkbox-179: Evaluate and integrate local WASM provers for Z3/cvc5/Tau Prolog/Lean/Coq-style workflows where feasible.` - complete
 - [!] `Task checkbox-180: Port Groth16 verification/proving path using browser-native cryptographic libraries where feasible.` - blocked
 - [!] `Task checkbox-181: Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.` - blocked
@@ -908,32 +908,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.`
-- Result: `needs follow-up`
-- Summary: Port ml_confidence scoring to a deterministic browser-native TypeScript model with explainable local inference details.
-- Impact: src/lib/logic/mlConfidence.ts now provides an in-process calibrated deterministic model and prediction details, so the TypeScript logic port can score confidence without Python services or server calls. src/lib/logic/mlConfidence.test.ts validates the feature vector, deterministic model path, neutral fallback, and training-compatible facade through the existing Jest logic validation suite.
-- Errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/mlConfidence.ts(138,30): error TS1109: Expression expected.
-../../..src/lib/logic/mlConfidence.ts(139,3): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/mlConfidence.ts(140,3): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/mlConfidence.ts(140,26): error TS1109: Expression expected.
-../../..src/lib/logic/mlConfidence.ts(140,35): error TS1011: An element access expression should take an argument.
-../../..src/lib/logic/mlConfidence.ts(141,3): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/mlConfidence.ts(143,21): error TS1005: ',' expected.
-../../..src/lib/logic/mlConfidence.ts(143,48): error TS1005: ';' expected.
-../../..src/lib/logic/mlConfidence.ts(154,3): error TS1434: Unexpected keyword or identifier.
-../../..src/lib/logic/mlConfidence.ts(154,18): error TS1005: ';' expected.
-../../..src/lib/logic/mlConfidence.ts(154,20): error TS1434: Unexpected keyword or identifier.
-../../..src/lib/logic/mlConfidence.ts(159,13): error TS1005: ',' expected.
-../../..src/lib/logic/mlConfidence.ts(160,15): error TS1005: ',' expected.
-../../..src/lib/logic/mlConfidence.ts(161,15): error TS1005: ',' expected.
-../../..src/lib/logic/mlConfidence.ts(162,16): error TS1005: ',' expected.
-../../..src/lib/logic/mlConfidence.ts(162,25): error TS1011: An element access expression should take an argument.
-../../..src/lib/logic/mlConfidence.ts(163,14): error TS1005: ',' expected.
-../../..src/lib/logic/mlConfidence.ts(163,23): error TS1011: An element access expression should take an argument.
-../../..src/lib/logic/mlConfidence.ts(164,4): error TS1005: ';' expected.
-../../..src/lib/logic/mlConfidence.ts(164,6): error TS1434: Unexpected keyword or identifier.; File edits failed validation and were rolled back.
-- Failure kind: `preflight`
+- Target: `Task checkbox-178: Port external prover router and bridge contracts to local browser adapters.`
+- Result: `valid`
+- Summary: Add browser-local prover adapter router contracts
+- Impact: The new prover adapter module gives the TypeScript logic port an explicit browser-native proof router for TDFOL, CEC, and DCEC proof requests, backed by local parser/prover implementations. The integration bridge tests load the router, assert adapter metadata forbids external prover calls, prove through the local adapters, and verify injectable adapter routing contracts for validation.
+- Accepted changed files: `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/proverAdapters.ts`
 
 ### Blocked Backlog
 

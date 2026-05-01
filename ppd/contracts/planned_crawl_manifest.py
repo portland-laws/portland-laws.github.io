@@ -1,0 +1,231 @@
+"""Fixture-only PP&D planned crawl manifest contracts.
+
+The manifest records public URLs that may be fetched later, the policy decisions
+that made each URL eligible or ineligible, and enough provenance to audit the
+plan. It intentionally does not store HTTP response bodies, downloaded files,
+private DevHub state, screenshots, traces, or credentials.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from enum import Enum
+from typing import Any
+from urllib.parse import urlparse
+
+
+FORBIDDEN_RESPONSE_KEYS = frozenset(
+    {
+        "body",
+        "content",
+        "html",
+        "text",
+        "raw_body",
+        "raw_response",
+        "raw_response_body",
+        "response_body",
+        "response_text",
+        "responseContent",
+        "responseBody",
+        "document_bytes",
+        "downloaded_document",
+        "screenshot",
+        "trace",
+        "auth_state",
+        "credential",
+        "credentials",
+        "password",
+        "token",
+        "cookie",
+        "cookies",
+    }
+)
+
+PUBLIC_HOSTS = frozenset(
+    {
+        "www.portland.gov",
+        "devhub.portlandoregon.gov",
+        "www.portlandoregon.gov",
+        "www.portlandmaps.com",
+    }
+)
+
+
+class PlannedFetchDecision(str, Enum):
+    ALLOWED = "allowed"
+    SKIPPED = "skipped"
+
+
+class PlannedFetchPolicyReason(str, Enum):
+    ALLOWLISTED_PUBLIC_URL = "allowlisted_public_url"
+    ROBOTS_ALLOWED = "robots_allowed"
+    NO_PERSIST_RAW_BODY = "no_persist_raw_body"
+    FIXTURE_ONLY = "fixture_only"
+    PRIVATE_DEVHUB_PATH_REJECTED = "private_devhub_path_rejected"
+    NON_ALLOWLISTED_HOST_REJECTED = "non_allowlisted_host_rejected"
+    UNSUPPORTED_SCHEME_REJECTED = "unsupported_scheme_rejected"
+
+
+@dataclass(frozen=True)
+class PlannedFetchPolicyDecision:
+    reason: PlannedFetchPolicyReason
+    allowed: bool
+    detail: str
+
+    def validate(self, context: str) -> list[str]:
+        errors: list[str] = []
+        if not self.detail.strip():
+            errors.append(f"{context} policy detail is required")
+        if self.reason in {
+            PlannedFetchPolicyReason.PRIVATE_DEVHUB_PATH_REJECTED,
+            PlannedFetchPolicyReason.NON_ALLOWLISTED_HOST_REJECTED,
+            PlannedFetchPolicyReason.UNSUPPORTED_SCHEME_REJECTED,
+        } and self.allowed:
+            errors.append(f"{context} rejection reason cannot be allowed")
+        return errors
+
+
+@dataclass(frozen=True)
+class PlannedPublicFetch:
+    id: str
+    url: str
+    canonical_url: str
+    decision: PlannedFetchDecision
+    policy_decisions: tuple[PlannedFetchPolicyDecision, ...]
+    method: str = "GET"
+    expected_content_type: str = "text/html"
+    source_seed_id: str | None = None
+    notes: tuple[str, ...] = field(default_factory=tuple)
+
+    def validate(self) -> list[str]:
+        errors: list[str] = []
+        if not self.id.strip():
+            errors.append("planned fetch id is required")
+        if self.method != "GET":
+            errors.append(f"planned fetch {self.id} method must be GET")
+        errors.extend(_validate_public_url(self.url, f"planned fetch {self.id} url"))
+        errors.extend(_validate_public_url(self.canonical_url, f"planned fetch {self.id} canonical_url"))
+        if not self.expected_content_type.strip():
+            errors.append(f"planned fetch {self.id} expected_content_type is required")
+        if not self.policy_decisions:
+            errors.append(f"planned fetch {self.id} requires policy decisions")
+
+        allowed_flags = [policy.allowed for policy in self.policy_decisions]
+        for index, policy in enumerate(self.policy_decisions):
+            errors.extend(policy.validate(f"planned fetch {self.id} policy {index}"))
+        if self.decision is PlannedFetchDecision.ALLOWED and not all(allowed_flags):
+            errors.append(f"planned fetch {self.id} cannot be allowed with rejected policy decisions")
+        if self.decision is PlannedFetchDecision.SKIPPED and all(allowed_flags):
+            errors.append(f"planned fetch {self.id} skipped record needs at least one rejecting policy decision")
+        return errors
+
+
+@dataclass(frozen=True)
+class PlannedCrawlManifest:
+    fixture_kind: str
+    schema_version: int
+    generated_at: str
+    crawl_plan_id: str
+    description: str
+    planned_fetches: tuple[PlannedPublicFetch, ...]
+    stores_raw_response_bodies: bool = False
+
+    def validate(self) -> list[str]:
+        errors: list[str] = []
+        if self.fixture_kind != "ppd_planned_crawl_manifest":
+            errors.append("fixture_kind must be ppd_planned_crawl_manifest")
+        if self.schema_version != 1:
+            errors.append("schema_version must be 1")
+        if not self.generated_at.endswith("Z"):
+            errors.append("generated_at must end in Z")
+        if not self.crawl_plan_id.strip():
+            errors.append("crawl_plan_id is required")
+        if not self.description.strip():
+            errors.append("description is required")
+        if self.stores_raw_response_bodies:
+            errors.append("planned crawl manifests must not store raw response bodies")
+        if not self.planned_fetches:
+            errors.append("planned crawl manifest requires at least one planned fetch")
+
+        fetch_ids: set[str] = set()
+        for planned_fetch in self.planned_fetches:
+            if planned_fetch.id in fetch_ids:
+                errors.append(f"duplicate planned fetch id {planned_fetch.id}")
+            fetch_ids.add(planned_fetch.id)
+            errors.extend(planned_fetch.validate())
+        return errors
+
+
+def planned_crawl_manifest_from_dict(data: dict[str, Any]) -> PlannedCrawlManifest:
+    """Build a planned crawl manifest from JSON-like data after key screening."""
+
+    forbidden_paths = _find_forbidden_keys(data)
+    if forbidden_paths:
+        joined = ", ".join(forbidden_paths)
+        raise ValueError(f"planned crawl manifest contains forbidden response/private keys: {joined}")
+
+    planned_fetches = tuple(_planned_fetch_from_dict(item) for item in data.get("planned_fetches", ()))
+    return PlannedCrawlManifest(
+        fixture_kind=str(data.get("fixture_kind", "")),
+        schema_version=int(data.get("schema_version", 0)),
+        generated_at=str(data.get("generated_at", "")),
+        crawl_plan_id=str(data.get("crawl_plan_id", "")),
+        description=str(data.get("description", "")),
+        stores_raw_response_bodies=bool(data.get("stores_raw_response_bodies", False)),
+        planned_fetches=planned_fetches,
+    )
+
+
+def _planned_fetch_from_dict(data: dict[str, Any]) -> PlannedPublicFetch:
+    policy_decisions = tuple(
+        PlannedFetchPolicyDecision(
+            reason=PlannedFetchPolicyReason(str(policy.get("reason", ""))),
+            allowed=bool(policy.get("allowed", False)),
+            detail=str(policy.get("detail", "")),
+        )
+        for policy in data.get("policy_decisions", ())
+    )
+    return PlannedPublicFetch(
+        id=str(data.get("id", "")),
+        url=str(data.get("url", "")),
+        canonical_url=str(data.get("canonical_url", "")),
+        method=str(data.get("method", "GET")),
+        expected_content_type=str(data.get("expected_content_type", "")),
+        source_seed_id=data.get("source_seed_id"),
+        decision=PlannedFetchDecision(str(data.get("decision", ""))),
+        policy_decisions=policy_decisions,
+        notes=tuple(str(note) for note in data.get("notes", ())),
+    )
+
+
+def _validate_public_url(url: str, context: str) -> list[str]:
+    errors: list[str] = []
+    parsed = urlparse(url)
+    if parsed.scheme != "https":
+        errors.append(f"{context} must use https")
+    if parsed.hostname not in PUBLIC_HOSTS:
+        errors.append(f"{context} host must be in the PP&D public allowlist")
+    if parsed.hostname == "devhub.portlandoregon.gov" and _looks_private_devhub_path(parsed.path):
+        errors.append(f"{context} must not target private DevHub paths")
+    return errors
+
+
+def _looks_private_devhub_path(path: str) -> bool:
+    lowered = path.lower()
+    private_markers = ("/account", "/login", "/signin", "/sign-in", "/my", "/permits", "/requests", "/payments")
+    return any(marker in lowered for marker in private_markers)
+
+
+def _find_forbidden_keys(value: Any, path: str = "$.") -> list[str]:
+    findings: list[str] = []
+    if isinstance(value, dict):
+        for key, child in value.items():
+            key_text = str(key)
+            child_path = f"{path}{key_text}"
+            if key_text in FORBIDDEN_RESPONSE_KEYS:
+                findings.append(child_path)
+            findings.extend(_find_forbidden_keys(child, f"{child_path}."))
+    elif isinstance(value, list):
+        for index, child in enumerate(value):
+            findings.extend(_find_forbidden_keys(child, f"{path}[{index}]."))
+    return findings

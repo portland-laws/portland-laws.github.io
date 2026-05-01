@@ -1,0 +1,30 @@
+{
+  "fixtureKind": "supervisor_diagnostic",
+  "schemaVersion": 1,
+  "proposals": [
+    {
+      "failure_kind": "validation",
+      "validation_results": [
+        {
+          "command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
+          "returncode": 1,
+          "stderr": "ppd/example.py failed py_compile: SyntaxError: invalid syntax"
+        }
+      ]
+    },
+    {
+      "failure_kind": "validation",
+      "validation_results": [
+        {
+          "command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
+          "returncode": 1,
+          "stderr": "ppd/other.py failed py_compile: SyntaxError: unterminated string literal"
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "kind": "syntactic_validity_repair_hint",
+    "recommendedActionContains": "fewer files"
+  }
+}

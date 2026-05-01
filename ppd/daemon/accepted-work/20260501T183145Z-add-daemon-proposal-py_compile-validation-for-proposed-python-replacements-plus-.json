@@ -1,0 +1,48 @@
+{
+  "changed_files": [
+    "ppd/daemon/proposal_validation.py",
+    "ppd/tests/fixtures/daemon/proposal_with_python_syntax_error.json",
+    "ppd/tests/test_daemon_proposal_validation.py"
+  ],
+  "created_at": "2026-05-01T18:31:45.849446Z",
+  "impact": "This advances the PP&D daemon by rejecting syntactically invalid Python proposals before broader validation or test discovery and by marking those failures as non-retryable for the same task, preventing blind repeat cycles.",
+  "summary": "Add daemon proposal py_compile validation for proposed Python replacements plus a deterministic syntax-error fixture test.",
+  "target_task": "Task checkbox-31: Add daemon-side proposal validation that runs `py_compile` on every proposed Python replacement before broader test discovery, with a fixture proving syntax errors are rejected without retrying the same task blindly.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 40 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................... ---------------------------------------------------------------------- Ran 63 tests in 0.007s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

@@ -1,0 +1,4 @@
+ppd/contracts/crawl_manifest_privacy.py
+ppd/tests/test_crawl_manifest_privacy.py
+ppd/tests/fixtures/crawl_manifest_privacy/safe_public_planning_manifest.json
+ppd/tests/fixtures/crawl_manifest_privacy/unsafe_private_artifacts_manifest.json

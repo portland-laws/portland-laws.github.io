@@ -1,4 +1,9 @@
 import { BrowserNativeLogicBridge, createBrowserNativeLogicBridge } from './bridge';
+import {
+  BrowserNativeProverRouter,
+  createBrowserNativeProverRouter,
+  type BrowserNativeProofAdapter,
+} from './proverAdapters';
 
 describe('BrowserNativeLogicBridge', () => {
   it('reports local browser-native metadata and supported routes', () => {
@@ -90,6 +95,73 @@ describe('BrowserNativeLogicBridge', () => {
     });
     expect(tdfol.timeMs).toEqual(expect.any(Number));
     expect(cec.timeMs).toEqual(expect.any(Number));
+  });
+
+  it('exposes browser-local prover adapter contracts for TDFOL, CEC, and DCEC', () => {
+    const router = createBrowserNativeProverRouter();
+    const adapters = router.listAdapters();
+
+    expect(adapters.map((adapter) => adapter.logic)).toEqual(['tdfol', 'cec', 'dcec']);
+    expect(adapters.every((adapter) => adapter.runtime === 'typescript-wasm-browser')).toBe(true);
+    expect(adapters.every((adapter) => adapter.requiresExternalProver === false)).toBe(true);
+    expect(router.supports('tdfol')).toBe(true);
+    expect(router.supports('dcec')).toBe(true);
+  });
+
+  it('routes proof requests through local browser adapters without external prover delegation', () => {
+    const router = createBrowserNativeProverRouter();
+
+    const tdfol = router.prove({
+      logic: 'tdfol',
+      theorem: 'Resident(Ada)',
+      axioms: ['Resident(Ada)'],
+    });
+    const dcec = router.prove({
+      logic: 'dcec',
+      theorem: '(P (always (comply_with ada code)))',
+      axioms: ['(P (always (comply_with ada code)))'],
+    });
+
+    expect(tdfol).toMatchObject({
+      status: 'proved',
+      theorem: 'Resident(Ada)',
+      method: 'adapter:local-tdfol-forward-prover:tdfol-forward-chaining',
+    });
+    expect(dcec).toMatchObject({
+      status: 'proved',
+      theorem: '(P (always (comply_with ada code)))',
+      method: 'adapter:local-dcec-forward-prover:cec-forward-chaining',
+    });
+    expect(tdfol.timeMs).toEqual(expect.any(Number));
+    expect(dcec.timeMs).toEqual(expect.any(Number));
+  });
+
+  it('accepts injectable browser-native prover adapters for bridge contract tests', () => {
+    const adapter: BrowserNativeProofAdapter = {
+      metadata: {
+        logic: 'tdfol',
+        name: 'test-local-adapter',
+        runtime: 'typescript-wasm-browser',
+        requiresExternalProver: false,
+      },
+      supports: (logic) => logic === 'tdfol',
+      prove: (request) => ({
+        status: 'proved',
+        theorem: request.theorem,
+        steps: [],
+        method: 'injected-local-proof',
+      }),
+    };
+    const router = new BrowserNativeProverRouter([adapter]);
+
+    const result = router.prove({ logic: 'tdfol', theorem: 'opaque theorem', axioms: [] });
+
+    expect(router.listAdapters()).toEqual([adapter.metadata]);
+    expect(result).toMatchObject({
+      status: 'proved',
+      theorem: 'opaque theorem',
+      method: 'adapter:test-local-adapter:injected-local-proof',
+    });
   });
 
   it('returns explicit unsupported conversion results for missing local routes', () => {

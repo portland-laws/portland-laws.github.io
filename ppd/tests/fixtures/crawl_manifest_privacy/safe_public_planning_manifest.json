@@ -1,0 +1,38 @@
+{
+  "fixture_kind": "crawl_session_manifest",
+  "schema_version": 1,
+  "generated_at": "2026-05-01T18:45:00Z",
+  "session_id": "fixture-public-planning-only",
+  "policy": {
+    "persist_raw_response_bodies": false,
+    "persist_private_session_state": false,
+    "persist_downloaded_documents": false
+  },
+  "planned_fetches": [
+    {
+      "url": "https://www.portland.gov/ppd",
+      "canonical_url": "https://www.portland.gov/ppd",
+      "decision": "allow",
+      "policy_reasons": ["allowed_domain", "public_guidance", "no_persist_raw_body"],
+      "expected_content_type": "html",
+      "content_hash": "sha256:planned-only-no-body"
+    },
+    {
+      "url": "https://www.portland.gov/ppd/permits/forms",
+      "canonical_url": "https://www.portland.gov/ppd/permits/forms",
+      "decision": "allow",
+      "policy_reasons": ["allowed_domain", "public_forms_index", "no_download_fixture"],
+      "expected_content_type": "html",
+      "content_hash": "sha256:planned-only-no-document"
+    },
+    {
+      "url": "https://www.portland.gov/ppd/documents/example-public-form/download",
+      "canonical_url": "https://www.portland.gov/ppd/documents/example-public-form/download",
+      "decision": "allow",
+      "policy_reasons": ["allowed_domain", "public_document_url_only", "no_local_download_path"],
+      "expected_content_type": "pdf",
+      "content_hash": "sha256:planned-public-document-url-only"
+    }
+  ],
+  "output_manifest_path": "ppd/data/manifests/public-planning-fixture.json"
+}

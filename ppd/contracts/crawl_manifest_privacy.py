@@ -1,0 +1,238 @@
+"""Privacy validation for PP&D crawl session manifests.
+
+Crawl session manifests are commit-safe planning and provenance records. They may
+name public URLs and policy decisions, but they must not carry private DevHub
+session artifacts, raw crawl output paths, response bodies, credentials, traces,
+screenshots, or downloaded documents.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any, Iterable
+from urllib.parse import urlparse
+
+
+@dataclass(frozen=True)
+class CrawlManifestPrivacyFinding:
+    path: str
+    reason: str
+    value_preview: str
+
+
+PRIVATE_DEVHUB_PATH_MARKERS = (
+    "ppd/data/private",
+    "ppd\\data\\private",
+    "devhub/session",
+    "devhub\\session",
+    "devhub/sessions",
+    "devhub\\sessions",
+    "storage_state",
+    "storage-state",
+    "auth_state",
+    "auth-state",
+    ".auth/",
+    ".auth\\",
+    "cookies.json",
+    "localstorage.json",
+)
+
+RAW_CRAWL_PATH_MARKERS = (
+    "ppd/data/raw",
+    "ppd\\data\\raw",
+    "raw_crawl",
+    "raw-crawl",
+    "crawl_output",
+    "crawl-output",
+    "crawl-responses",
+    "crawl_responses",
+    "/responses/",
+    "\\responses\\",
+    "/response-bodies/",
+    "\\response-bodies\\",
+)
+
+TRACE_PATH_MARKERS = (
+    "trace.zip",
+    "traces.zip",
+    "/traces/",
+    "\\traces\\",
+    "playwright-report",
+)
+
+SCREENSHOT_PATH_MARKERS = (
+    "/screenshots/",
+    "\\screenshots\\",
+    "screenshot.png",
+    "screenshot.jpg",
+    "screenshot.jpeg",
+    "screenshot.webp",
+)
+
+DOWNLOAD_PATH_MARKERS = (
+    "/downloads/",
+    "\\downloads\\",
+    "downloaded_documents",
+    "downloaded-documents",
+    "downloaded_public_documents",
+    "downloaded-public-documents",
+)
+
+DOWNLOADED_DOCUMENT_EXTENSIONS = (
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
+    ".ppt",
+    ".pptx",
+    ".zip",
+)
+
+RESPONSE_BODY_KEYS = {
+    "body",
+    "response_body",
+    "responseBody",
+    "raw_body",
+    "rawBody",
+    "html",
+    "raw_html",
+    "rawHtml",
+    "text",
+    "raw_text",
+    "rawText",
+    "content",
+    "raw_content",
+    "rawContent",
+}
+
+CREDENTIAL_KEYS = {
+    "authorization",
+    "auth",
+    "bearer",
+    "client_secret",
+    "cookie",
+    "cookies",
+    "credential",
+    "credentials",
+    "password",
+    "refresh_token",
+    "secret",
+    "session_cookie",
+    "token",
+    "username",
+    "api_key",
+    "apikey",
+}
+
+PATH_KEYS = {
+    "path",
+    "file",
+    "file_path",
+    "filepath",
+    "manifest_path",
+    "output_path",
+    "raw_path",
+    "trace_path",
+    "screenshot_path",
+    "download_path",
+    "document_path",
+    "local_path",
+    "storage_state_path",
+}
+
+
+def validate_crawl_manifest_privacy(manifest: Any) -> list[CrawlManifestPrivacyFinding]:
+    """Return privacy findings for a crawl manifest-like JSON object."""
+
+    findings: list[CrawlManifestPrivacyFinding] = []
+    for path, key, value in _walk_json(manifest):
+        key_text = str(key or "")
+        normalized_key = _normalize_key(key_text)
+
+        if normalized_key in CREDENTIAL_KEYS:
+            findings.append(_finding(path, "credential field is not allowed in crawl manifests", value))
+            continue
+
+        if normalized_key in RESPONSE_BODY_KEYS and _has_body_payload(value):
+            findings.append(_finding(path, "raw response body field is not allowed in crawl manifests", value))
+            continue
+
+        if isinstance(value, str):
+            findings.extend(_validate_string_value(path, normalized_key, value))
+
+    return findings
+
+
+def assert_crawl_manifest_privacy(manifest: Any) -> None:
+    """Raise ValueError when a crawl manifest contains private or raw artifacts."""
+
+    findings = validate_crawl_manifest_privacy(manifest)
+    if findings:
+        details = "; ".join(f"{finding.path}: {finding.reason}" for finding in findings)
+        raise ValueError(f"crawl session manifest failed privacy validation: {details}")
+
+
+def _validate_string_value(path: str, normalized_key: str, value: str) -> list[CrawlManifestPrivacyFinding]:
+    findings: list[CrawlManifestPrivacyFinding] = []
+    lower_value = value.lower()
+
+    marker_groups: tuple[tuple[Iterable[str], str], ...] = (
+        (PRIVATE_DEVHUB_PATH_MARKERS, "private DevHub session path is not allowed"),
+        (RAW_CRAWL_PATH_MARKERS, "raw crawl output path is not allowed"),
+        (TRACE_PATH_MARKERS, "browser trace path is not allowed"),
+        (SCREENSHOT_PATH_MARKERS, "screenshot path is not allowed"),
+        (DOWNLOAD_PATH_MARKERS, "downloaded document path is not allowed"),
+    )
+    for markers, reason in marker_groups:
+        if any(marker in lower_value for marker in markers):
+            findings.append(_finding(path, reason, value))
+
+    if normalized_key in PATH_KEYS and _looks_like_local_downloaded_document(value):
+        findings.append(_finding(path, "downloaded document file path is not allowed", value))
+
+    return findings
+
+
+def _walk_json(value: Any, path: str = "$", key: str | None = None) -> Iterable[tuple[str, str | None, Any]]:
+    yield path, key, value
+    if isinstance(value, dict):
+        for child_key, child_value in value.items():
+            child_key_text = str(child_key)
+            yield from _walk_json(child_value, f"{path}.{child_key_text}", child_key_text)
+    elif isinstance(value, list):
+        for index, child_value in enumerate(value):
+            yield from _walk_json(child_value, f"{path}[{index}]", key)
+
+
+def _normalize_key(key: str) -> str:
+    return key.strip().replace("-", "_")
+
+
+def _has_body_payload(value: Any) -> bool:
+    if value is None:
+        return False
+    if isinstance(value, str):
+        return bool(value.strip())
+    if isinstance(value, (list, dict, tuple, set)):
+        return bool(value)
+    return True
+
+
+def _looks_like_local_downloaded_document(value: str) -> bool:
+    parsed = urlparse(value)
+    if parsed.scheme in {"http", "https"}:
+        return False
+    lower_value = value.lower().split("?", 1)[0].split("#", 1)[0]
+    return lower_value.endswith(DOWNLOADED_DOCUMENT_EXTENSIONS)
+
+
+def _finding(path: str, reason: str, value: Any) -> CrawlManifestPrivacyFinding:
+    return CrawlManifestPrivacyFinding(path=path, reason=reason, value_preview=_preview(value))
+
+
+def _preview(value: Any) -> str:
+    text = repr(value)
+    if len(text) > 96:
+        return f"{text[:93]}..."
+    return text

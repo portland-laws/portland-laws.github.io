@@ -1,0 +1,32 @@
+{
+  "fixture_kind": "crawl_session_manifest",
+  "schema_version": 1,
+  "generated_at": "2026-05-01T18:46:00Z",
+  "session_id": "fixture-with-disallowed-artifacts",
+  "storage_state_path": "ppd/data/private/devhub/session/storage_state.json",
+  "raw_output_path": "ppd/data/raw/crawl-output/session-123/responses/index.html",
+  "trace_path": "ppd/data/private/devhub/traces/trace.zip",
+  "screenshot_path": "ppd/data/private/devhub/screenshots/account-home.png",
+  "download_path": "ppd/data/private/devhub/downloads/permit-document.pdf",
+  "document_path": "ppd/tests/fixtures/crawl_manifest_privacy/downloaded-checklist.pdf",
+  "credentials": {
+    "username": "applicant@example.test",
+    "password": "not-a-real-password",
+    "token": "not-a-real-token"
+  },
+  "planned_fetches": [
+    {
+      "url": "https://www.portland.gov/ppd",
+      "decision": "allow",
+      "response_body": "Raw response bodies do not belong in manifests.",
+      "headers": {
+        "authorization": "Bearer fixture-token",
+        "cookie": "session=fixture"
+      }
+    }
+  ],
+  "raw_capture": {
+    "html": "raw html",
+    "content": "raw content payload"
+  }
+}
