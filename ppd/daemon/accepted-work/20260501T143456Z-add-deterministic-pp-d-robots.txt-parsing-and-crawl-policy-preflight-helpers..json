@@ -1,0 +1,23 @@
+{
+  "changed_files": [
+    "ppd/crawler/robots.py",
+    "ppd/crawler/crawl_policy.py",
+    "ppd/tests/test_crawl_preflight.py"
+  ],
+  "created_at": "2026-05-01T14:34:56.969687Z",
+  "impact": "This gives the public source discovery phase a fail-closed preflight layer before any live crawl: URLs are checked against HTTPS, the PP&D allowlist, private/consequential path fragments, optional content type expectations, and parsed robots directives using deterministic local inputs.",
+  "summary": "Add deterministic PP&D robots.txt parsing and crawl-policy preflight helpers.",
+  "target_task": "Task checkbox-4: Add robots and crawl-policy preflight helpers for PP&D public source discovery.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\n  \"ok\": true,\n  \"task_count\": 18\n}\n"
+    }
+  ]
+}

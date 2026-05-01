@@ -24,6 +24,7 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Iterable, Optional
+from urllib.parse import urlparse
 
 
 CHECKBOX_RE = re.compile(r"^(?P<prefix>\s*-\s+\[)(?P<mark>[ xX~!])(?P<suffix>\]\s+)(?P<title>.+)$")
@@ -48,6 +49,7 @@ DISALLOWED_WRITE_PREFIXES = (
 
 DEFAULT_VALIDATION_COMMANDS = (
     ("python3", "ppd/daemon/ppd_daemon.py", "--self-test"),
+    ("python3", "-m", "unittest", "discover", "-s", "ppd/tests", "-p", "test_*.py"),
 )
 
 
@@ -237,6 +239,34 @@ Last updated: {utc_now()}
     if TASK_BOARD_STATUS_RE.search(markdown):
         return TASK_BOARD_STATUS_RE.sub("\n" + block.strip() + "\n", markdown).rstrip() + "\n"
     return markdown.rstrip() + "\n\n" + block
+
+
+def compact_message(value: Any, limit: int = 700) -> str:
+    text = str(value or "")
+    text = re.sub(r"<(?:html|head|body|script|style|svg|path|div|meta|noscript)[\s\S]*", "[html response omitted]", text, flags=re.IGNORECASE)
+    text = re.sub(r"__cf_chl_[A-Za-z0-9_=-]+", "__cf_chl_[omitted]", text)
+    text = re.sub(r"\s+", " ", text).strip()
+    if len(text) > limit:
+        return text[:limit].rstrip() + "..."
+    return text
+
+
+def is_retryable_failure(proposal: Proposal) -> bool:
+    if proposal.failure_kind in {"llm", "parse", "empty_proposal"}:
+        return True
+    text = " ".join(proposal.errors).lower()
+    return any(
+        marker in text
+        for marker in (
+            "cloudflare",
+            "403 forbidden",
+            "plugins/featured",
+            "timed out",
+            "timeout",
+            "could not generate",
+            "provider",
+        )
+    )
 
 
 def extract_json(text: str) -> Optional[dict[str, Any]]:
@@ -529,7 +559,7 @@ class Daemon:
             raw = call_llm(build_prompt(self.config, selected), self.config)
             proposal = parse_proposal(raw)
         except Exception as exc:
-            proposal = Proposal(summary="LLM proposal failed.", errors=[str(exc)], failure_kind="llm")
+            proposal = Proposal(summary="LLM proposal failed.", errors=[compact_message(exc)], failure_kind="llm")
         proposal.target_task = selected.label
         proposal.dry_run = not self.config.apply
 
@@ -543,8 +573,10 @@ class Daemon:
         if self.config.apply:
             if proposal.valid:
                 board = replace_task_mark(board, selected, "x")
-            elif selected.status in {"needed", "in-progress"}:
+            elif selected.status in {"needed", "in-progress"} and not is_retryable_failure(proposal):
                 board = replace_task_mark(board, selected, "!")
+            elif selected.status in {"needed", "in-progress"}:
+                board = replace_task_mark(board, selected, " ")
         tasks_after = parse_tasks(board)
         board = update_generated_status(
             board,
@@ -618,11 +650,95 @@ def self_test(repo_root: Path) -> int:
     for prefix in DISALLOWED_WRITE_PREFIXES:
         if not validate_write_path(prefix + "bad.ts"):
             errors.append(f"disallowed prefix unexpectedly passed preflight: {prefix}")
+    errors.extend(validate_seed_and_allowlist(repo_root))
     if errors:
         print(json.dumps({"ok": False, "errors": errors}, indent=2), file=sys.stderr)
         return 1
     print(json.dumps({"ok": True, "task_count": len(parse_tasks(board))}, indent=2))
     return 0
+
+
+def load_json_file(path: Path) -> Optional[dict[str, Any]]:
+    if not path.exists():
+        return None
+    try:
+        parsed = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"{path.relative_to(path.parents[2])} is invalid JSON: {exc}") from exc
+    if not isinstance(parsed, dict):
+        raise ValueError(f"{path} must contain a JSON object")
+    return parsed
+
+
+def validate_seed_and_allowlist(repo_root: Path) -> list[str]:
+    errors: list[str] = []
+    seed_path = repo_root / "ppd/crawler/seed_manifest.json"
+    allowlist_path = repo_root / "ppd/crawler/allowlist.json"
+    try:
+        seed_manifest = load_json_file(seed_path)
+        allowlist = load_json_file(allowlist_path)
+    except ValueError as exc:
+        return [str(exc)]
+    if seed_manifest is None and allowlist is None:
+        return errors
+    if seed_manifest is None or allowlist is None:
+        return ["seed_manifest.json and allowlist.json must be added together"]
+
+    allowed_hosts = allowlist.get("allowed_hosts")
+    if not isinstance(allowed_hosts, list) or not allowed_hosts:
+        errors.append("allowlist.json must include non-empty allowed_hosts")
+        allowed_hosts = []
+    host_policies: dict[str, dict[str, Any]] = {}
+    for entry in allowed_hosts:
+        if not isinstance(entry, dict):
+            errors.append("allowlist allowed_hosts entries must be objects")
+            continue
+        host = entry.get("host")
+        if not isinstance(host, str) or not host:
+            errors.append("allowlist host entry missing host")
+            continue
+        host_policies[host] = entry
+        if entry.get("scheme") != "https":
+            errors.append(f"allowlist host {host} must require https")
+        prefixes = entry.get("allowed_path_prefixes")
+        if not isinstance(prefixes, list) or not all(isinstance(prefix, str) and prefix.startswith("/") for prefix in prefixes):
+            errors.append(f"allowlist host {host} must define allowed_path_prefixes")
+
+    seeds = seed_manifest.get("seeds")
+    if not isinstance(seeds, list) or not seeds:
+        errors.append("seed_manifest.json must include non-empty seeds")
+        seeds = []
+    seen_ids: set[str] = set()
+    for seed in seeds:
+        if not isinstance(seed, dict):
+            errors.append("seed entries must be objects")
+            continue
+        seed_id = seed.get("id")
+        url = seed.get("url")
+        if not isinstance(seed_id, str) or not seed_id:
+            errors.append("seed entry missing id")
+        elif seed_id in seen_ids:
+            errors.append(f"duplicate seed id: {seed_id}")
+        else:
+            seen_ids.add(seed_id)
+        if not isinstance(url, str) or not url:
+            errors.append(f"seed {seed_id or '<unknown>'} missing url")
+            continue
+        parsed = urlparse(url)
+        if parsed.scheme != "https":
+            errors.append(f"seed {seed_id} must use https: {url}")
+        policy = host_policies.get(parsed.netloc)
+        if policy is None:
+            errors.append(f"seed {seed_id} host is not allowlisted: {parsed.netloc}")
+            continue
+        prefixes = policy.get("allowed_path_prefixes", [])
+        parsed_path = parsed.path or "/"
+        if isinstance(prefixes, list) and not any(parsed_path.startswith(str(prefix)) for prefix in prefixes):
+            errors.append(f"seed {seed_id} path is outside host allowlist: {parsed_path}")
+        for fragment in policy.get("disallowed_path_fragments", []) or []:
+            if isinstance(fragment, str) and fragment.lower() in url.lower():
+                errors.append(f"seed {seed_id} includes disallowed path fragment {fragment!r}")
+    return errors
 
 
 def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:

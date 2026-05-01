@@ -1,0 +1,122 @@
+{
+  "allowlist_id": "ppd-public-crawler-allowlist-v1",
+  "created_for_task": "Task checkbox-3: Add public PP&D seed manifest and crawler allowlist for Portland.gov, DevHub, PortlandOregon.gov, and Portland Maps references.",
+  "verified_context_date": "2026-05-01",
+  "default_policy": "deny",
+  "global_requirements": [
+    "Respect robots.txt and published crawl restrictions before fetching.",
+    "Fetch public pages and public linked documents only.",
+    "Do not use authenticated sessions, credentials, cookies, private browser state, or user account data.",
+    "Do not automate CAPTCHA, MFA, account creation, payment, submission, certification, cancellation, upload, password recovery, or other consequential actions.",
+    "Store skipped URLs with a reason code instead of retrying disallowed or private URLs."
+  ],
+  "allowed_hosts": [
+    {
+      "host": "www.portland.gov",
+      "scheme": "https",
+      "scope": "PP&D public guidance, forms, handouts, checklists, process pages, DevHub public help pages, and linked public documents.",
+      "allowed_path_prefixes": [
+        "/ppd",
+        "/search"
+      ],
+      "allowed_content_types": [
+        "text/html",
+        "application/pdf"
+      ],
+      "link_follow_policy": "Follow public links relevant to PP&D permitting, DevHub guidance, forms, handouts, and checklists after robots preflight.",
+      "disallowed_path_fragments": [
+        "/user",
+        "/admin",
+        "/login",
+        "/logout",
+        "/cart",
+        "/checkout"
+      ]
+    },
+    {
+      "host": "devhub.portlandoregon.gov",
+      "scheme": "https",
+      "scope": "Public DevHub portal landing and unauthenticated help or reference pages only.",
+      "allowed_path_prefixes": [
+        "/"
+      ],
+      "allowed_content_types": [
+        "text/html"
+      ],
+      "link_follow_policy": "Discover public portal metadata only; stop before sign-in, registration, account, draft, permit, payment, inspection scheduling, upload, submit, or user-specific pages.",
+      "disallowed_path_fragments": [
+        "signin",
+        "sign-in",
+        "login",
+        "logout",
+        "register",
+        "account",
+        "dashboard",
+        "my-permits",
+        "mypermits",
+        "payment",
+        "checkout",
+        "cart",
+        "submit",
+        "upload",
+        "inspection",
+        "schedule",
+        "draft"
+      ]
+    },
+    {
+      "host": "www.portlandoregon.gov",
+      "scheme": "https",
+      "scope": "Legacy PortlandOregon.gov public account and authentication references linked from Portland.gov or DevHub public guidance.",
+      "allowed_path_prefixes": [
+        "/"
+      ],
+      "allowed_content_types": [
+        "text/html",
+        "application/pdf"
+      ],
+      "link_follow_policy": "Follow only public guidance links needed to document DevHub account context; do not enter account workflows.",
+      "disallowed_path_fragments": [
+        "login",
+        "logout",
+        "signin",
+        "sign-in",
+        "register",
+        "account",
+        "password",
+        "profile",
+        "payment"
+      ]
+    },
+    {
+      "host": "www.portlandmaps.com",
+      "scheme": "https",
+      "scope": "Public permit, case, and property reference pages relevant to PP&D guidance.",
+      "allowed_path_prefixes": [
+        "/"
+      ],
+      "allowed_content_types": [
+        "text/html"
+      ],
+      "link_follow_policy": "Use as a public reference source only; avoid bulk property enumeration, private account areas, and high-volume lookup automation.",
+      "disallowed_path_fragments": [
+        "login",
+        "logout",
+        "account",
+        "profile",
+        "payment",
+        "checkout",
+        "cart"
+      ]
+    }
+  ],
+  "skip_reason_codes": {
+    "host_not_allowlisted": "URL host is outside the PP&D public crawler allowlist.",
+    "scheme_not_https": "URL does not use HTTPS.",
+    "robots_disallowed": "Robots or crawl policy preflight disallowed fetching.",
+    "path_not_in_scope": "URL path is outside the allowed public PP&D discovery scope.",
+    "private_or_authenticated": "URL appears to require login, account access, private state, payment, upload, submission, or another restricted workflow.",
+    "content_type_not_allowed": "URL content type is outside this phase's public HTML/PDF discovery scope.",
+    "consequential_action": "URL appears to initiate or continue a consequential workflow action."
+  }
+}

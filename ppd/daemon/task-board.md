@@ -8,9 +8,9 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 - [x] Create the isolated `ppd/` workspace marker and local ignore rules.
 - [x] Add the PP&D daemon implementation with autonomous status, progress, accepted-work, and failed-patch evidence.
-- [~] Add public PP&D seed manifest and crawler allowlist for Portland.gov, DevHub, PortlandOregon.gov, and Portland Maps references.
-- [ ] Add robots and crawl-policy preflight helpers for PP&D public source discovery.
-- [ ] Add HTML extraction fixtures from public PP&D guidance pages.
+- [x] Add public PP&D seed manifest and crawler allowlist for Portland.gov, DevHub, PortlandOregon.gov, and Portland Maps references.
+- [x] Add robots and crawl-policy preflight helpers for PP&D public source discovery.
+- [!] Add HTML extraction fixtures from public PP&D guidance pages.
 - [ ] Add PDF extraction fixture definitions for public PP&D applications and checklists.
 - [ ] Add normalized document TypeScript/Python data contracts under `ppd/`.
 - [ ] Add process model data contracts for permit processes, workflow stages, required facts, required documents, and action gates.
@@ -28,5 +28,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-No daemon rounds have been recorded yet.
+Last updated: 2026-05-01T14:40:08.796839Z
+
+- Latest target: `Task checkbox-5: Add HTML extraction fixtures from public PP&D guidance pages.`
+- Latest result: `validation`
+- Latest summary: Add deterministic public PP&D HTML extraction fixtures and fixture validation.
+- Counts: `{"blocked": 1, "complete": 4, "in_progress": 0, "needed": 13}`
+
 <!-- ppd-daemon-task-board:end -->

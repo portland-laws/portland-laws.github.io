@@ -1,0 +1,413 @@
+--- a/ppd/crawler/robots.py
++++ b/ppd/crawler/robots.py
+@@ -0,0 +1,171 @@
++#!/usr/bin/env python3
++"""Deterministic robots.txt helpers for PP&D public source discovery.
++
++This module intentionally performs no network access. Callers provide robots.txt
++text captured by an approved fetch step, then use the parser to decide whether a
++candidate public URL may be fetched.
++"""
++
++from __future__ import annotations
++
++from dataclasses import dataclass, field
++from typing import Iterable, Optional
++from urllib.parse import quote, urlparse
++
++
++@dataclass(frozen=True)
++class RobotsRule:
++    directive: str
++    path: str
++    line_number: int
++
++    @property
++    def is_allow(self) -> bool:
++        return self.directive == "allow"
++
++    @property
++    def is_disallow(self) -> bool:
++        return self.directive == "disallow"
++
++
++@dataclass(frozen=True)
++class RobotsGroup:
++    user_agents: tuple[str, ...] = field(default_factory=tuple)
++    rules: tuple[RobotsRule, ...] = field(default_factory=tuple)
++    crawl_delay: Optional[float] = None
++
++    def matches(self, user_agent: str) -> bool:
++        normalized = user_agent.lower()
++        for candidate in self.user_agents:
++            agent = candidate.lower()
++            if agent == "*" or agent in normalized:
++                return True
++        return False
++
++    @property
++    def specificity(self) -> int:
++        if not self.user_agents:
++            return 0
++        if "*" in self.user_agents:
++            return 1
++        return max(len(agent) for agent in self.user_agents)
++
++
++@dataclass(frozen=True)
++class RobotsDecision:
++    allowed: bool
++    reason: str
++    matched_rule: Optional[RobotsRule] = None
++    crawl_delay: Optional[float] = None
++
++
++@dataclass(frozen=True)
++class RobotsPolicy:
++    groups: tuple[RobotsGroup, ...] = field(default_factory=tuple)
++    sitemaps: tuple[str, ...] = field(default_factory=tuple)
++
++    @classmethod
++    def from_text(cls, text: str) -> "RobotsPolicy":
++        groups: list[RobotsGroup] = []
++        sitemaps: list[str] = []
++        current_agents: list[str] = []
++        current_rules: list[RobotsRule] = []
++        current_delay: Optional[float] = None
++        saw_rule = False
++
++        def flush_group() -> None:
++            nonlocal current_agents, current_rules, current_delay, saw_rule
++            if current_agents:
++                groups.append(
++                    RobotsGroup(
++                        user_agents=tuple(current_agents),
++                        rules=tuple(current_rules),
++                        crawl_delay=current_delay,
++                    )
++                )
++            current_agents = []
++            current_rules = []
++            current_delay = None
++            saw_rule = False
++
++        for line_number, raw_line in enumerate(text.splitlines(), start=1):
++            line = raw_line.split("#", 1)[0].strip()
++            if not line or ":" not in line:
++                continue
++            key, value = line.split(":", 1)
++            key = key.strip().lower()
++            value = value.strip()
++
++            if key == "sitemap" and value:
++                sitemaps.append(value)
++                continue
++
++            if key == "user-agent":
++                if saw_rule:
++                    flush_group()
++                if value:
++                    current_agents.append(value.lower())
++                continue
++
++            if key in {"allow", "disallow"}:
++                saw_rule = True
++                current_rules.append(RobotsRule(directive=key, path=value, line_number=line_number))
++                continue
++
++            if key == "crawl-delay" and value:
++                saw_rule = True
++                try:
++                    current_delay = float(value)
++                except ValueError:
++                    current_delay = None
++
++        flush_group()
++        return cls(groups=tuple(groups), sitemaps=tuple(sitemaps))
++
++    def group_for(self, user_agent: str) -> Optional[RobotsGroup]:
++        matches = [group for group in self.groups if group.matches(user_agent)]
++        if not matches:
++            return None
++        return max(matches, key=lambda group: group.specificity)
++
++    def can_fetch(self, url: str, user_agent: str = "ppd-public-crawler") -> RobotsDecision:
++        group = self.group_for(user_agent) or self.group_for("*")
++        if group is None:
++            return RobotsDecision(allowed=True, reason="robots_no_matching_group")
++
++        parsed = urlparse(url)
++        candidate_path = parsed.path or "/"
++        if parsed.query:
++            candidate_path = f"{candidate_path}?{parsed.query}"
++        encoded_path = quote(candidate_path, safe="/%?=&;:+,$-_.!~*'()")
++
++        matching_rules = [
++            rule
++            for rule in group.rules
++            if rule.path and (candidate_path.startswith(rule.path) or encoded_path.startswith(rule.path))
++        ]
++        if not matching_rules:
++            return RobotsDecision(
++                allowed=True,
++                reason="robots_no_matching_rule",
++                crawl_delay=group.crawl_delay,
++            )
++
++        matched = max(matching_rules, key=lambda rule: (len(rule.path), 1 if rule.is_allow else 0))
++        if matched.is_disallow:
++            return RobotsDecision(
++                allowed=False,
++                reason="robots_disallowed",
++                matched_rule=matched,
++                crawl_delay=group.crawl_delay,
++            )
++        return RobotsDecision(
++            allowed=True,
++            reason="robots_allowed",
++            matched_rule=matched,
++            crawl_delay=group.crawl_delay,
++        )
++
++
++def policy_from_lines(lines: Iterable[str]) -> RobotsPolicy:
++    return RobotsPolicy.from_text("\n".join(lines))
+--- a/ppd/crawler/crawl_policy.py
++++ b/ppd/crawler/crawl_policy.py
+@@ -0,0 +1,155 @@
++#!/usr/bin/env python3
++"""Fail-closed crawl-policy preflight helpers for PP&D public discovery.
++
++The helpers in this module are deterministic and side-effect free. They do not
++fetch URLs, read cookies, open browser sessions, or inspect authenticated state.
++"""
++
++from __future__ import annotations
++
++import json
++from dataclasses import dataclass, field
++from pathlib import Path
++from typing import Any, Optional
++from urllib.parse import urlparse
++
++try:
++    from .robots import RobotsPolicy
++except ImportError:  # pragma: no cover - supports direct script-style imports.
++    from robots import RobotsPolicy  # type: ignore
++
++
++DEFAULT_ALLOWLIST_PATH = Path(__file__).with_name("allowlist.json")
++PRIVATE_OR_CONSEQUENTIAL_TERMS = (
++    "account",
++    "cart",
++    "checkout",
++    "dashboard",
++    "draft",
++    "inspection",
++    "login",
++    "logout",
++    "my-permits",
++    "mypermits",
++    "password",
++    "payment",
++    "profile",
++    "register",
++    "schedule",
++    "sign-in",
++    "signin",
++    "submit",
++    "upload",
++)
++
++
++@dataclass(frozen=True)
++class PreflightDecision:
++    allowed: bool
++    reason_code: str
++    url: str
++    host: str = ""
++    normalized_path: str = ""
++    details: dict[str, Any] = field(default_factory=dict)
++
++
++@dataclass(frozen=True)
++class CrawlPolicy:
++    allowlist: dict[str, Any]
++
++    @classmethod
++    def load(cls, path: Path = DEFAULT_ALLOWLIST_PATH) -> "CrawlPolicy":
++        return cls(json.loads(path.read_text(encoding="utf-8")))
++
++    @property
++    def allowed_hosts(self) -> list[dict[str, Any]]:
++        return list(self.allowlist.get("allowed_hosts", []))
++
++    def host_policy(self, host: str) -> Optional[dict[str, Any]]:
++        normalized = host.lower()
++        for item in self.allowed_hosts:
++            if str(item.get("host", "")).lower() == normalized:
++                return item
++        return None
++
++    def preflight(
++        self,
++        url: str,
++        *,
++        content_type: Optional[str] = None,
++        robots_policy: Optional[RobotsPolicy] = None,
++        user_agent: str = "ppd-public-crawler",
++    ) -> PreflightDecision:
++        parsed = urlparse(url)
++        host = parsed.netloc.lower()
++        path = parsed.path or "/"
++        path_for_checks = path.lower()
++        if parsed.query:
++            path_for_checks = f"{path_for_checks}?{parsed.query.lower()}"
++
++        if parsed.scheme != "https":
++            return PreflightDecision(False, "scheme_not_https", url, host, path)
++
++        policy = self.host_policy(host)
++        if policy is None:
++            return PreflightDecision(False, "host_not_allowlisted", url, host, path)
++
++        if any(term in path_for_checks for term in PRIVATE_OR_CONSEQUENTIAL_TERMS):
++            return PreflightDecision(False, "private_or_authenticated", url, host, path)
++
++        for fragment in policy.get("disallowed_path_fragments", []):
++            if str(fragment).lower() in path_for_checks:
++                return PreflightDecision(False, "private_or_authenticated", url, host, path, {"fragment": fragment})
++
++        prefixes = policy.get("allowed_path_prefixes", [])
++        if prefixes and not any(path.startswith(str(prefix)) for prefix in prefixes):
++            return PreflightDecision(False, "path_not_in_scope", url, host, path, {"allowed_path_prefixes": prefixes})
++
++        if content_type:
++            normalized_content_type = content_type.split(";", 1)[0].strip().lower()
++            allowed_types = [str(item).lower() for item in policy.get("allowed_content_types", [])]
++            if allowed_types and normalized_content_type not in allowed_types:
++                return PreflightDecision(
++                    False,
++                    "content_type_not_allowed",
++                    url,
++                    host,
++                    path,
++                    {"content_type": normalized_content_type, "allowed_content_types": allowed_types},
++                )
++
++        if robots_policy is not None:
++            robots_decision = robots_policy.can_fetch(url, user_agent=user_agent)
++            if not robots_decision.allowed:
++                details: dict[str, Any] = {"robots_reason": robots_decision.reason}
++                if robots_decision.matched_rule is not None:
++                    details["robots_rule"] = {
++                        "directive": robots_decision.matched_rule.directive,
++                        "path": robots_decision.matched_rule.path,
++                        "line_number": robots_decision.matched_rule.line_number,
++                    }
++                return PreflightDecision(False, "robots_disallowed", url, host, path, details)
++
++            details = {"robots_reason": robots_decision.reason}
++            if robots_decision.crawl_delay is not None:
++                details["crawl_delay_seconds"] = robots_decision.crawl_delay
++            return PreflightDecision(True, "allowed", url, host, path, details)
++
++        return PreflightDecision(True, "allowed", url, host, path)
++
++
++def preflight_url(
++    url: str,
++    *,
++    allowlist_path: Path = DEFAULT_ALLOWLIST_PATH,
++    content_type: Optional[str] = None,
++    robots_text: Optional[str] = None,
++    user_agent: str = "ppd-public-crawler",
++) -> PreflightDecision:
++    robots_policy = RobotsPolicy.from_text(robots_text) if robots_text is not None else None
++    return CrawlPolicy.load(allowlist_path).preflight(
++        url,
++        content_type=content_type,
++        robots_policy=robots_policy,
++        user_agent=user_agent,
++    )
+--- a/ppd/tests/test_crawl_preflight.py
++++ b/ppd/tests/test_crawl_preflight.py
+@@ -0,0 +1,78 @@
++#!/usr/bin/env python3
++"""Deterministic checks for PP&D crawl-policy and robots helpers."""
++
++from __future__ import annotations
++
++import unittest
++from pathlib import Path
++
++from ppd.crawler.crawl_policy import CrawlPolicy, preflight_url
++from ppd.crawler.robots import RobotsPolicy
++
++
++class RobotsPolicyTests(unittest.TestCase):
++    def test_disallow_blocks_longest_matching_path(self) -> None:
++        robots = RobotsPolicy.from_text(
++            "\n".join(
++                [
++                    "User-agent: *",
++                    "Disallow: /ppd/private",
++                    "Allow: /ppd/private/public-summary",
++                ]
++            )
++        )
++        blocked = robots.can_fetch("https://www.portland.gov/ppd/private/case")
++        allowed = robots.can_fetch("https://www.portland.gov/ppd/private/public-summary")
++        self.assertFalse(blocked.allowed)
++        self.assertEqual(blocked.reason, "robots_disallowed")
++        self.assertTrue(allowed.allowed)
++        self.assertEqual(allowed.reason, "robots_allowed")
++
++    def test_no_matching_group_allows_by_default(self) -> None:
++        robots = RobotsPolicy.from_text("User-agent: unrelated-bot\nDisallow: /")
++        decision = robots.can_fetch("https://www.portland.gov/ppd")
++        self.assertTrue(decision.allowed)
++        self.assertEqual(decision.reason, "robots_no_matching_group")
++
++
++class CrawlPolicyTests(unittest.TestCase):
++    def setUp(self) -> None:
++        self.policy = CrawlPolicy.load(Path("ppd/crawler/allowlist.json"))
++
++    def test_allows_public_ppd_seed_after_robots(self) -> None:
++        robots = RobotsPolicy.from_text("User-agent: *\nAllow: /ppd\nCrawl-delay: 2")
++        decision = self.policy.preflight("https://www.portland.gov/ppd", robots_policy=robots)
++        self.assertTrue(decision.allowed)
++        self.assertEqual(decision.reason_code, "allowed")
++        self.assertEqual(decision.details.get("crawl_delay_seconds"), 2.0)
++
++    def test_rejects_non_https_and_unlisted_hosts(self) -> None:
++        self.assertEqual(
++            self.policy.preflight("http://www.portland.gov/ppd").reason_code,
++            "scheme_not_https",
++        )
++        self.assertEqual(
++            self.policy.preflight("https://example.com/ppd").reason_code,
++            "host_not_allowlisted",
++        )
++
++    def test_rejects_private_or_consequential_devhub_paths(self) -> None:
++        decision = self.policy.preflight("https://devhub.portlandoregon.gov/my-permits/payment")
++        self.assertFalse(decision.allowed)
++        self.assertEqual(decision.reason_code, "private_or_authenticated")
++
++    def test_rejects_content_type_outside_phase_scope(self) -> None:
++        decision = self.policy.preflight("https://www.portland.gov/ppd", content_type="application/json")
++        self.assertFalse(decision.allowed)
++        self.assertEqual(decision.reason_code, "content_type_not_allowed")
++
++    def test_preflight_url_accepts_inline_robots_fixture(self) -> None:
++        decision = preflight_url(
++            "https://www.portland.gov/ppd",
++            robots_text="User-agent: *\nDisallow: /admin\nAllow: /ppd",
++        )
++        self.assertTrue(decision.allowed)
++
++
++if __name__ == "__main__":
++    unittest.main()

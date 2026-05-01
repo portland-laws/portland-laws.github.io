@@ -1,0 +1,92 @@
+{
+  "manifest_id": "ppd-public-seed-manifest-v1",
+  "created_for_task": "Task checkbox-3: Add public PP&D seed manifest and crawler allowlist for Portland.gov, DevHub, PortlandOregon.gov, and Portland Maps references.",
+  "verified_context_date": "2026-05-01",
+  "crawl_mode": "public_discovery_seed_only",
+  "notes": [
+    "This manifest contains starting URLs only; it is not raw crawl output and does not include downloaded documents.",
+    "Run robots and crawl-policy preflight before fetching any URL.",
+    "Authenticated DevHub workflows, private user data, submissions, payments, uploads, certifications, cancellations, MFA, CAPTCHA, and account creation are out of scope for this manifest."
+  ],
+  "seeds": [
+    {
+      "id": "portland-gov-ppd-home",
+      "url": "https://www.portland.gov/ppd",
+      "source_family": "portland_gov_ppd",
+      "authority_role": "primary_public_guidance",
+      "expected_content_types": ["html"],
+      "purpose": "PP&D landing page and public guidance discovery."
+    },
+    {
+      "id": "portland-gov-ppd-permits",
+      "url": "https://www.portland.gov/ppd/permits",
+      "source_family": "portland_gov_ppd",
+      "authority_role": "primary_public_guidance",
+      "expected_content_types": ["html", "pdf"],
+      "purpose": "Permit process, application, checklist, handout, and form discovery."
+    },
+    {
+      "id": "portland-gov-ppd-residential-permits",
+      "url": "https://www.portland.gov/ppd/residential-permits",
+      "source_family": "portland_gov_ppd",
+      "authority_role": "primary_public_guidance",
+      "expected_content_types": ["html", "pdf"],
+      "purpose": "Residential permitting process discovery."
+    },
+    {
+      "id": "portland-gov-ppd-commercial-permits",
+      "url": "https://www.portland.gov/ppd/commercial-permits",
+      "source_family": "portland_gov_ppd",
+      "authority_role": "primary_public_guidance",
+      "expected_content_types": ["html", "pdf"],
+      "purpose": "Commercial permitting process discovery."
+    },
+    {
+      "id": "portland-gov-ppd-applications-forms",
+      "url": "https://www.portland.gov/ppd/applications-forms",
+      "source_family": "portland_gov_ppd",
+      "authority_role": "primary_public_guidance",
+      "expected_content_types": ["html", "pdf"],
+      "purpose": "Applications, forms, handouts, and checklist discovery."
+    },
+    {
+      "id": "portland-gov-devhub-guidance-search",
+      "url": "https://www.portland.gov/search?search=DevHub",
+      "source_family": "portland_gov_devhub_guidance",
+      "authority_role": "public_operational_guidance",
+      "expected_content_types": ["html"],
+      "purpose": "Public DevHub FAQ, sign-in, quick guide, correction upload, fee payment, and submission guidance discovery."
+    },
+    {
+      "id": "devhub-public-portal",
+      "url": "https://devhub.portlandoregon.gov",
+      "source_family": "devhub_public_portal",
+      "authority_role": "public_portal_entrypoint",
+      "expected_content_types": ["html"],
+      "purpose": "Public DevHub portal entrypoint discovery without login or account-scoped access."
+    },
+    {
+      "id": "portlandoregon-account-reference",
+      "url": "https://www.portlandoregon.gov",
+      "source_family": "portlandoregon_legacy_reference",
+      "authority_role": "legacy_account_reference",
+      "expected_content_types": ["html"],
+      "purpose": "Legacy PortlandOregon.gov account and authentication reference discovery only where linked by PP&D or DevHub public guidance."
+    },
+    {
+      "id": "portland-maps-public-reference",
+      "url": "https://www.portlandmaps.com",
+      "source_family": "portland_maps_public_reference",
+      "authority_role": "public_property_permit_reference",
+      "expected_content_types": ["html"],
+      "purpose": "Public permit, case, and property lookup references only where relevant to PP&D public guidance."
+    }
+  ],
+  "required_preflight": [
+    "load_crawler_allowlist",
+    "check_robots_txt",
+    "classify_public_vs_private_url",
+    "apply_rate_limit_policy",
+    "record_skip_reason_for_disallowed_urls"
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "changed_files": [
+    "ppd/crawler/seed_manifest.json",
+    "ppd/crawler/allowlist.json"
+  ],
+  "created_at": "2026-05-01T14:32:36.245315Z",
+  "impact": "Provides deterministic, reviewable public-source inputs for the PP&D crawler before any live crawl or authenticated DevHub automation, covering Portland.gov PP&D guidance, DevHub public references, PortlandOregon.gov account guidance, and Portland Maps public lookup references.",
+  "summary": "Add public PP&D crawl seeds and crawler domain allowlist.",
+  "target_task": "Task checkbox-3: Add public PP&D seed manifest and crawler allowlist for Portland.gov, DevHub, PortlandOregon.gov, and Portland Maps references.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{\n  \"ok\": true,\n  \"task_count\": 18\n}\n"
+    }
+  ]
+}

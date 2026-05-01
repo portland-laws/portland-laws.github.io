@@ -15,6 +15,6 @@ daemon/status.json
 daemon/progress.json
 daemon/*.pid
 daemon/*.log
+daemon/*.out
 daemon/*.jsonl
 daemon/failed-patches/
-
