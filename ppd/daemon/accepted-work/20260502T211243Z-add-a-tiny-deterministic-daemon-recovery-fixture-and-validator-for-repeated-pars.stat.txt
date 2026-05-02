@@ -1,0 +1,2 @@
+ppd/tests/fixtures/daemon/repeated_syntax_failure_one_file_repair.json
+ppd/tests/test_daemon_repeated_syntax_failure_prompt.py

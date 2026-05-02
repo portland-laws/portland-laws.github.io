@@ -1,0 +1,40 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,17 +1,19 @@
+ {
+-  "createdAt": "2026-05-02T21:29:21.980938Z",
++  "createdAt": "2026-05-02T21:32:01.219420Z",
+   "decision": {
+-    "action": "repair_daemon_programming",
+-    "reason": "4 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
++    "action": "invoke_codex",
++    "reason": "5 consecutive daemon rounds failed without an accepted patch",
+     "severity": "warning"
+   },
+   "failedAgenticRepair": {
+-    "changedFiles": [],
++    "changedFiles": [
++      "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
++    ],
+     "errors": [
+-      "LLM response did not contain a JSON object."
++      "Validation failed; file edits were rolled back."
+     ],
+-    "failureKind": "parse",
+-    "summary": "",
++    "failureKind": "validation",
++    "summary": "Add a narrow supervisor repair guide for the checkbox-131 fixture-shape validation loop.",
+     "validationResults": [
+       {
+         "command": [
+@@ -34,8 +36,8 @@
+           "-p",
+           "test_*.py"
+         ],
+-        "returncode": 0,
+-        "stderr": "............................................................................................................................................................................................................................................................................................................................ss..............sss....................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 566 tests in 0.099s OK (skipped=5)",
++        "returncode": 1,
++        "stderr": "............................................................................................................................................................................................................................................................................................................................ss..............sss.........................................................................................................................................................................................FFF........................................... ====================================================================== FAIL: test_guide_keeps_repair_separate_from_domain_implementation (test_supervisor_repair_guide.SupervisorRepairGuideTest.test_guide_keeps_repair_separate_from_domain_implementation) ---------------------------------------------------------------------- Tracebac...",
+         "stdout": ""
+       },
+       {

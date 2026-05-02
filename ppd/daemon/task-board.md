@@ -161,34 +161,40 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 
 ## Supervisor Syntax-Validity Guardrail Tranche
 
-- [~] Task checkbox-127: Add daemon validation that a syntax-recovery worker proposal touching a blocked domain task is rejected when it changes more than one source file or omits syntax-preflight evidence for every changed Python or TypeScript file.
-- [ ] Task checkbox-128: Add a tiny fixture proving repeated Python SyntaxError, py_compile, TS1005, TS1109, or TS1128 failures convert the next daemon prompt into a one-file repair instruction rather than a broad domain contract rewrite.
-- [ ] Task checkbox-129: Add validation for the checkbox-128 fixture proving the prompt names the failed syntax kind, lists the allowed one-file retry shape, and explicitly defers live crawl, authenticated automation, and crawler contract implementation.
+- [x] Task checkbox-127: Add daemon validation that a syntax-recovery worker proposal touching a blocked domain task is rejected when it changes more than one source file or omits syntax-preflight evidence for every changed Python or TypeScript file.
+- [x] Task checkbox-128: Add a tiny fixture proving repeated Python SyntaxError, py_compile, TS1005, TS1109, or TS1128 failures convert the next daemon prompt into a one-file repair instruction rather than a broad domain contract rewrite.
+- [x] Task checkbox-129: Add validation for the checkbox-128 fixture proving the prompt names the failed syntax kind, lists the allowed one-file retry shape, and explicitly defers live crawl, authenticated automation, and crawler contract implementation.
+
+## Supervisor Supersession-Recovery Tranche
+
+- [x] Task checkbox-130: Add a daemon-local supersession decision fixture proving checkbox-108 can be marked superseded only when committed checkbox-109 validation evidence names queued, accepted, skipped, deferred, allowlist, robots/no-persist, content-type, timeout, and processor-handoff coverage. Do not edit crawler contracts, crawler code, public fixtures, or crawl output.
+- [x] Task checkbox-131: Add validation for the checkbox-130 supersession decision fixture proving missing evidence keeps checkbox-108 parked and complete evidence produces a task-board-only supersession recommendation.
+- [~] Task checkbox-132: Add daemon task-selection validation proving a parked blocked domain task with accepted supersession evidence is not reselected before a task-board supersession note is appended.
+- [ ] Task checkbox-133: Append a task-board-only supersession note for checkbox-108 only after checkbox-130 through checkbox-132 pass, preserving completed tasks and citing the accepted checkbox-109 evidence instead of implementing new domain artifacts.
 
 ## Built-In Supervisor Repair Notes
 
 - Parked repeated syntax-preflight loop for `Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output.` so the daemon can continue with independent selectable work. The task should be resumed only after narrow syntax-valid supervisor recovery work has been accepted.
 - For checkbox-108, inspect committed frontier validation evidence first. If accepted validation already covers the public crawl frontier checkpoint shape, supersede checkbox-108 with evidence. Otherwise, allow only one syntax-preflightable Python test file or one small JSON fixture file in the resumed worker proposal.
 
-
 ## Generated Status
 
-Last updated: 2026-05-02T21:00:00.000000Z
+Last updated: 2026-05-02T21:20:00.000000Z
 
-- Latest target: `Task checkbox-124: Task checkbox-124: Add daemon prompt guidance that converts the checkbox-108 blocked state into a deterministic next instruction: inspect committed frontier-related tests first, then either mark the task superseded with evidence or retry with exactly one syntactically valid Python test or one small JSON fixture. Do not create new crawl output.`
-- Latest result: `supervisor_repair_programming`
-- Latest summary: Added deterministic checkbox-108 retry guidance and appended syntax-validity guardrail tasks before any resumed domain attempt.
-- Counts: `{"blocked": 1, "complete": 123, "in_progress": 0, "needed": 5}`
+- Latest target: `Supervisor repair: append supersession-recovery tasks for parked checkbox-108 after no selectable task remained.`
+- Latest result: `supervisor_plan_next_tasks`
+- Latest summary: Added a narrow fixture-first supervisor tranche so the daemon can validate checkbox-108 supersession evidence before any domain retry.
+- Counts: blocked=1 complete=128 in_progress=0 needed=4
 
 
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-02T21:08:54.746679Z
+Last updated: 2026-05-02T21:37:04.722398Z
 
-- Latest target: `Task checkbox-126: Task checkbox-126: Resume checkbox-108 only after checkbox-122 through checkbox-125 pass, and limit the resumed worker proposal to one file that is syntax-preflightable before full validation; if checkbox-109 already proves the checkpoint fixture contract, mark checkbox-108 superseded in the task board instead of adding domain artifacts.`
-- Latest result: `accepted`
-- Latest summary: Add a narrow checkbox-108 resume policy helper that gates resumed work on checkbox-122 through checkbox-125, detects checkbox-109 supersession evidence, and enforces a one-file syntax-preflightable retry shape.
-- Counts: `{"blocked": 1, "complete": 125, "in_progress": 0, "needed": 3}`
+- Latest target: `Task checkbox-132: Task checkbox-132: Add daemon task-selection validation proving a parked blocked domain task with accepted supersession evidence is not reselected before a task-board supersession note is appended.`
+- Latest result: `validation`
+- Latest summary: Add a deterministic daemon task-selection validation helper and unit coverage for parked blocked domain tasks with accepted supersession evidence.
+- Counts: `{"blocked": 1, "complete": 130, "in_progress": 0, "needed": 2}`
 
 <!-- ppd-daemon-task-board:end -->

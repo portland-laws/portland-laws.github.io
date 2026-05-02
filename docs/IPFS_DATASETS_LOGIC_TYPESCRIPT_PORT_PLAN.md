@@ -966,7 +966,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-02 21:02:00 UTC
+Last updated: 2026-05-02 21:34:50 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
@@ -1432,37 +1432,50 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 - Target: `Task checkbox-200: Port remaining Python logic module 'logic/CEC/native/cec_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `needs follow-up`
-- Summary: Add browser-native CEC native proof cache snapshot and validation parity
-- Impact: The CEC proof cache now keeps deterministic browser-native proof-cache entries with metadata, validates snapshot payloads, exports cache snapshots, and restores valid entries without Python, server, filesystem, subprocess, RPC, or Node-only dependencies. The focused Jest tests exercise the new source contract through src/lib/logic/cec/proofCache.test.ts, so it is directly covered by the TypeScript logic port validation suite.
+- Summary: Add browser-native CEC native proof cache snapshot parity
+- Impact: The CEC proof cache now exposes deterministic snapshot export, validation, and fail-closed import/hydration used directly by the existing Jest logic validation suite. The implementation stays browser-native TypeScript with no Python, server, filesystem, subprocess, RPC, or Node-only runtime dependency.
 - Errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/cec/proofCache.ts(278,33): error TS1005: ';' expected.
-../../..src/lib/logic/cec/proofCache.ts(278,34): error TS1109: Expression expected.
-../../..src/lib/logic/cec/proofCache.ts(286,15): error TS1005: ']' expected.
-../../..src/lib/logic/cec/proofCache.ts(286,57): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/cec/proofCache.ts(289,11): error TS1005: ';' expected.
-../../..src/lib/logic/cec/proofCache.ts(289,12): error TS1434: Unexpected keyword or identifier.
+../../..src/lib/logic/cec/proofCache.ts(17,17): error TS2314: Generic type 'Record' requires 2 type argument(s).
+../../..src/lib/logic/cec/proofCache.ts(194,63): error TS2314: Generic type 'Record' requires 2 type argument(s).
+../../..src/lib/logic/cec/proofCache.ts(210,17): error TS2314: Generic type 'Record' requires 2 type argument(s).
+../../..src/lib/logic/cec/proofCache.ts(250,45): error TS2314: Generic type 'Record' requires 2 type argument(s).
+../../..src/lib/logic/cec/proofCache.ts(262,27): error TS2314: Generic type 'Record' requires 2 type argument(s).
 
 Replacement diagnostic context:
-src/lib/logic/cec/proofCache.ts:278:33 TS1005: ';' expected.
-  276: function stableHash(value: string): string {
-  277:   let hash = 2166136261;
-> 278:   for (let index = 0; index >> 0).toString(16).padStart(8, '0')}`;
-  279: }
-  280: 
+src/lib/logic/cec/proofCache.ts:17:17 TS2314: Generic type 'Record' requires 2 type argument(s).
+  15:   axioms: string[];
+  16:   proverName: string;
+> 17:   proverConfig: Record;
+  18:   result: ProofResult;
+  19:   cid: string;
 
-src/lib/logic/cec/proofCache.ts:286:15 TS1005: ']' expected.
-  284:   }
-  285:   if (Array.isArray(value)) {
-> 286:     return `[${value.map(stableJsonStringify).join(',')}]`;
-  287:   }
-  288:   const object = value as Record;
+src/lib/logic/cec/proofCache.ts:194:63 TS2314: Generic type 'Record' requires 2 type argument(s).
+  192: }
+  193: 
+> 194: function normalizeCecProverConfig(options: CecProverOptions): Record {
+  195:   return {
+  196:     maxSteps: options.maxSteps,
 
-src/lib/logic/cec/proofCache.ts:289:11 TS1005: ';' expected.
-  287:   }
-  288:   const object = value as Record;
-> 289:   return `{${Object.keys(object).sort().map(key => `${JSON.stringify(key)}:${stableJsonStringify(object[key])}`).join(',')}}`;
-  290: }
-  291: 
+src/lib/logic/cec/proofCache.ts:210:17 TS2314: Generic type 'Record' requires 2 type argument(s).
+  208:   axioms: string[],
+  209:   proverName: string,
+> 210:   proverConfig: Record,
+  211: ): string {
+  212:   return stableJsonStringify({ axioms, proverConfig, proverName, theorem });
+
+src/lib/logic/cec/proofCache.ts:250:45 TS2314: Generic type 'Record' requires 2 type argument(s).
+  248: }
+  249: 
+> 250: function isRecord(value: unknown): value is Record {
+  251:   return typeof value === 'object' && value !== null && !Array.isArray(value);
+  252: }
+
+src/lib/logic/cec/proofCache.ts:262:27 TS2314: Generic type 'Record' requires 2 type argument(s).
+  260:   }
+  261: 
+> 262:   const object = value as Record;
+  263:   return `{${Object.keys(object)
+  264:     .sort()
 - Failure kind: `preflight`
 
 ### Blocked Backlog

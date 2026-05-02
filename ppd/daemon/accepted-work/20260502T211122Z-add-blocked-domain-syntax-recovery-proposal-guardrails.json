@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/blocked_syntax_recovery.py"
+  ],
+  "created_at": "2026-05-02T21:11:22.539516Z",
+  "impact": "Provides deterministic daemon-side validation helpers that reject syntax-recovery proposals for blocked domain tasks when they change multiple Python/TypeScript files or fail to include per-file syntax-preflight evidence.",
+  "summary": "Add blocked-domain syntax recovery proposal guardrails",
+  "target_task": "Task checkbox-127: Task checkbox-127: Add daemon validation that a syntax-recovery worker proposal touching a blocked domain task is rejected when it changes more than one source file or omits syntax-preflight evidence for every changed Python or TypeScript file.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 129 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".......................................................................................................................................................................................................................................................................................................................ss..............sss....................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 561 tests in 0.103s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

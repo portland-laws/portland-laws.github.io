@@ -1,0 +1,106 @@
+"""Validate the checkbox-128 syntax-retry prompt guardrail fixture.
+
+The checkbox-128 fixture should keep a syntax-recovery retry narrow: it must
+name the parser failure kind, describe the only allowed one-file retry shape,
+and explicitly defer live crawl, authenticated automation, and crawler contract
+implementation.
+"""
+
+from __future__ import annotations
+
+import json
+import re
+from pathlib import Path
+from typing import Any, Iterable
+
+
+FIXTURES_DIR = Path(__file__).parent / "fixtures"
+
+
+SYNTAX_KIND_PATTERNS = (
+    re.compile(r"\bsyntax[_ -]?preflight\b", re.IGNORECASE),
+    re.compile(r"\bSyntaxError\b"),
+    re.compile(r"\bpy_compile\b"),
+    re.compile(r"\bTS(?:1005|1109|1128)\b"),
+)
+
+ONE_FILE_RETRY_PATTERNS = (
+    re.compile(r"\bone[- ]file\b", re.IGNORECASE),
+    re.compile(r"\bexactly one\b[^.\n]*(?:Python|TypeScript|test|fixture|file)", re.IGNORECASE),
+)
+
+DEFER_LIVE_CRAWL_PATTERNS = (
+    re.compile(r"\bdefer(?:s|red|ring)?\b[^.\n]*(?:live crawl|public crawl|network)", re.IGNORECASE),
+    re.compile(r"\b(?:live crawl|public crawl|network)\b[^.\n]*\bdefer(?:s|red|ring)?\b", re.IGNORECASE),
+)
+
+DEFER_AUTH_AUTOMATION_PATTERNS = (
+    re.compile(r"\bdefer(?:s|red|ring)?\b[^.\n]*(?:authenticated automation|DevHub automation|Playwright)", re.IGNORECASE),
+    re.compile(r"\b(?:authenticated automation|DevHub automation|Playwright)\b[^.\n]*\bdefer(?:s|red|ring)?\b", re.IGNORECASE),
+)
+
+DEFER_CRAWLER_CONTRACT_PATTERNS = (
+    re.compile(r"\bdefer(?:s|red|ring)?\b[^.\n]*(?:crawler contract|crawl contract|frontier contract)", re.IGNORECASE),
+    re.compile(r"\b(?:crawler contract|crawl contract|frontier contract)\b[^.\n]*\bdefer(?:s|red|ring)?\b", re.IGNORECASE),
+)
+
+
+def test_checkbox_128_prompt_fixture_names_syntax_kind_and_defers_broad_work() -> None:
+    fixture_path = _find_checkbox_128_fixture()
+    fixture_text = _fixture_text(fixture_path)
+
+    assert _matches_any(SYNTAX_KIND_PATTERNS, fixture_text), (
+        f"{fixture_path} must name the failed syntax kind, such as "
+        "syntax_preflight, SyntaxError, py_compile, TS1005, TS1109, or TS1128"
+    )
+    assert _matches_any(ONE_FILE_RETRY_PATTERNS, fixture_text), (
+        f"{fixture_path} must list the allowed one-file retry shape"
+    )
+    assert _matches_any(DEFER_LIVE_CRAWL_PATTERNS, fixture_text), (
+        f"{fixture_path} must explicitly defer live crawl or network crawl work"
+    )
+    assert _matches_any(DEFER_AUTH_AUTOMATION_PATTERNS, fixture_text), (
+        f"{fixture_path} must explicitly defer authenticated automation"
+    )
+    assert _matches_any(DEFER_CRAWLER_CONTRACT_PATTERNS, fixture_text), (
+        f"{fixture_path} must explicitly defer crawler contract implementation"
+    )
+
+
+def _find_checkbox_128_fixture() -> Path:
+    candidates = sorted(
+        path
+        for path in FIXTURES_DIR.rglob("*")
+        if path.is_file()
+        and "checkbox_128" in path.as_posix().replace("-", "_").lower()
+        and path.suffix.lower() in {".json", ".md", ".txt"}
+    )
+    assert candidates, "expected a committed checkbox-128 fixture under ppd/tests/fixtures"
+    return candidates[0]
+
+
+def _fixture_text(path: Path) -> str:
+    raw_text = path.read_text(encoding="utf-8")
+    if path.suffix.lower() != ".json":
+        return raw_text
+
+    data = json.loads(raw_text)
+    return "\n".join(_json_strings(data))
+
+
+def _json_strings(value: Any) -> Iterable[str]:
+    if isinstance(value, str):
+        yield value
+    elif isinstance(value, dict):
+        for key, item in value.items():
+            yield str(key)
+            yield from _json_strings(item)
+    elif isinstance(value, list):
+        for item in value:
+            yield from _json_strings(item)
+    elif value is not None:
+        yield str(value)
+
+
+def _matches_any(patterns: Iterable[re.Pattern[str]], text: str) -> bool:
+    return any(pattern.search(text) for pattern in patterns)

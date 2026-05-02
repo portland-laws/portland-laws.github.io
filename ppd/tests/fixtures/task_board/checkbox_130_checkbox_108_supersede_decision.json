@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "checkbox-130-checkbox-108-supersede-decision",
+  "taskId": "checkbox-130",
+  "targetTaskId": "checkbox-108",
+  "decision": "mark_superseded",
+  "decisionScope": "daemon-local-task-board-reconciliation",
+  "allowedOnlyWhen": {
+    "evidenceTaskId": "checkbox-109",
+    "evidenceStatus": "accepted",
+    "committed": true,
+    "validationEvidenceMustName": [
+      "queued",
+      "accepted",
+      "skipped",
+      "deferred",
+      "allowlist",
+      "robots/no-persist",
+      "content-type",
+      "timeout",
+      "processor-handoff"
+    ]
+  },
+  "committedEvidence": {
+    "taskId": "checkbox-109",
+    "status": "accepted",
+    "committed": true,
+    "artifactKind": "accepted-work-ledger-entry",
+    "artifactRef": "ppd/daemon/accepted-work/checkbox-109.md",
+    "validationSummary": "Accepted checkbox-109 validation evidence names queued, accepted, skipped, deferred, allowlist, robots/no-persist, content-type, timeout, and processor-handoff coverage for the public crawl frontier checkpoint contract."
+  },
+  "prohibitedChanges": [
+    "crawler contracts",
+    "crawler code",
+    "public fixtures",
+    "crawl output"
+  ],
+  "notes": "This fixture is a daemon-local reconciliation decision only. It does not add public crawl artifacts or modify crawler behavior."
+}

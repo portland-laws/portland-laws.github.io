@@ -4,7 +4,7 @@ This guide is for supervisor repair cycles after repeated PP&D daemon failures. 
 
 ## Current Failure Pattern
 
-The recent failed rounds are parser preflight failures on PP&D domain work, especially proposed public frontier checkpoint files and public PDF extraction tests. Workers have repeatedly emitted TypeScript-style fragments inside Python expressions. Treat these exact patterns as banned strings in generated Python:
+The recent failed rounds are parser preflight failures on PP&D domain work, especially proposed public frontier checkpoint files, public PDF extraction tests, and the checkbox-130 supersession-decision validator. Workers have repeatedly emitted TypeScript-style fragments inside Python expressions. Treat these exact patterns as banned strings in generated Python:
 
 - `timeout_ms list[str]`
 - `timeout_ms self.budget_ms`
@@ -14,6 +14,21 @@ The recent failed rounds are parser preflight failures on PP&D domain work, espe
 - `if self.page_count list[str]`
 
 Equivalent malformed expressions are also banned, including any conditional that places a type fragment where a comparison, membership check, boolean expression, or function call belongs.
+
+## Active Checkbox-130 Recovery
+
+The active checkbox-130 failure is a syntax_preflight rollback in `ppd/tests/test_checkbox_130_supersede_decision_fixture.py` caused by a malformed Python expression. The next supervisor or daemon prompt must not ask for a broader supersession contract rewrite. It must direct the worker to repair only the parser-bearing surface first.
+
+For checkbox-130, the next accepted proposal should have this shape:
+
+- Replace exactly one Python validator file by default.
+- Do not add or replace the JSON supersession fixture in the same cycle unless a later accepted supervisor task explicitly unblocks that two-file shape.
+- Do not edit crawler contracts, crawler code, public fixtures, crawl output, DevHub artifacts, or application/domain artifacts.
+- Inspect committed accepted-work evidence for checkbox-109 before making assertions about checkbox-108 supersession.
+- Use complete Python comparisons such as `is None`, `is not None`, `==`, `!=`, `in`, or `isinstance(...)`.
+- Run `python3 -m py_compile` mentally for the changed Python file before returning JSON.
+
+Checkbox-131 through checkbox-133 should remain parked until checkbox-130 has an accepted parser-clean fixture or validator. A missing checkbox-130 fixture is not a reason to invent crawler code or a new public frontier contract.
 
 ## Parser-Failure Circuit Breaker
 
@@ -95,7 +110,7 @@ The syntax preflight should also reject broad parser-bearing retries before full
 
 ## Separation From Domain Work
 
-Supervisor repair is not a shortcut to complete checkbox-106, checkbox-108, or any other selected PP&D domain task. A repair patch may improve prompts, guides, retry logic, task selection, diagnostics, or validation sequencing. It must not implement the stalled PP&D domain task directly, must not add live public crawl artifacts, must not download documents, and must not create, modify, or reference private DevHub artifacts beyond naming the prohibited category.
+Supervisor repair is not a shortcut to complete checkbox-106, checkbox-108, checkbox-130, or any other selected PP&D domain task. A repair patch may improve prompts, guides, retry logic, task selection, diagnostics, or validation sequencing. It must not implement the stalled PP&D domain task directly, must not add live public crawl artifacts, must not download documents, and must not create, modify, or reference private DevHub artifacts beyond naming the prohibited category.
 
 ## Recovery Behavior
 

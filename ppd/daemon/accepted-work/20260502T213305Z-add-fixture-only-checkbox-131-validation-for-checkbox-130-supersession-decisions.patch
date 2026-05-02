@@ -1,0 +1,284 @@
+--- a/ppd/tests/test_checkbox_131_supersession_decision.py
++++ b/ppd/tests/test_checkbox_131_supersession_decision.py
+@@ -1,8 +1,8 @@
+-"""Validate checkbox-130 supersession decisions for parked checkbox-108.
++"""Validate checkbox-130 supersession decision fixtures for checkbox-108.
+ 
+-The fixture is intentionally task-board-only. It proves the daemon should not add
+-crawler artifacts or run public crawling just to decide whether checkbox-108 can
+-be superseded by later accepted evidence.
++The fixture is intentionally deterministic and task-board scoped. It proves that
++missing evidence keeps checkbox-108 parked, while complete accepted-work evidence
++only recommends a task-board supersession update.
+ """
+ 
+ from __future__ import annotations
+@@ -16,93 +16,124 @@
+ FIXTURE_PATH = (
+     Path(__file__).parent
+     / "fixtures"
+-    / "daemon"
++    / "checkbox_131"
+     / "checkbox_130_supersession_decision.json"
+ )
+ 
++PRIVATE_OR_LIVE_MARKERS = (
++    "ppd/data/private",
++    "ppd\\data\\private",
++    "ppd/data/raw",
++    "ppd\\data\\raw",
++    "devhub/session",
++    "devhub\\session",
++    "storage_state",
++    "auth_state",
++    "trace.zip",
++    "traces/",
++    "screenshots/",
++    "downloads/",
++    "public/corpus/portland-or/current",
++    "src/lib/logic",
++    "ipfs_datasets_py/.daemon",
++)
++
++FORBIDDEN_ARTIFACT_KINDS = {
++    "crawler_code",
++    "crawl_contract",
++    "public_corpus_fixture",
++    "raw_crawl_output",
++    "network_automation",
++    "schema_rewrite",
++    "typescript_logic_ledger",
++    "private_devhub_session",
++}
++
+ 
+ class Checkbox131SupersessionDecisionTest(unittest.TestCase):
++    maxDiff = None
++
++    def load_fixture(self) -> dict[str, Any]:
++        with FIXTURE_PATH.open(encoding="utf-8") as fixture_file:
++            fixture = json.load(fixture_file)
++        self.assertIsInstance(fixture, dict)
++        return fixture
++
++    def test_fixture_has_unique_cases_and_no_private_or_live_artifact_paths(self) -> None:
++        fixture = self.load_fixture()
++        cases = fixture.get("cases")
++        self.assertIsInstance(cases, list)
++        self.assertEqual(2, len(cases))
++
++        case_ids = [case.get("caseId") for case in cases]
++        self.assertEqual(len(case_ids), len(set(case_ids)))
++
++        serialized = json.dumps(fixture, sort_keys=True)
++        lowered = serialized.lower()
++        for marker in PRIVATE_OR_LIVE_MARKERS:
++            self.assertNotIn(marker.lower(), lowered)
++
++        self.assertEqual("checkbox-131", fixture.get("taskId"))
++        self.assertEqual("checkbox-130", fixture.get("decisionFixtureFor"))
++        self.assertEqual("checkbox-108", fixture.get("parkedTaskId"))
++
+     def test_missing_evidence_keeps_checkbox_108_parked(self) -> None:
+-        fixture = _load_fixture()
+-        case = _case_by_id(fixture, "missing-evidence-keeps-checkbox-108-parked")
++        fixture = self.load_fixture()
++        missing_case = self.case_by_id(fixture, "missing_evidence_keeps_checkbox_108_parked")
+ 
+-        self.assertEqual(fixture["targetTaskId"], "checkbox-108")
+-        self.assertEqual(fixture["sourceTaskId"], "checkbox-130")
+-        self.assertEqual(case["targetTaskState"], "parked")
+-        self.assertEqual(case["evidenceState"], "missing")
+-        self.assertEqual(case["recommendation"], "keep_parked")
+-        self.assertEqual(case["decisionScope"], "task_board_only")
+-        self.assertEqual(case["requiredOutcome"]["taskBoardAction"], "leave_checkbox_108_parked")
+-        self.assertFalse(case["requiredOutcome"]["mayCreateDomainArtifacts"])
+-        self.assertFalse(case["requiredOutcome"]["mayRunLiveCrawl"])
+-        self.assertTrue(any(not item["present"] for item in case["evidence"]))
++        self.assertEqual("checkbox-108", missing_case.get("parkedTaskId"))
++        self.assertEqual("park", missing_case.get("decision"))
++        self.assertEqual("missing_supersession_evidence", missing_case.get("reason"))
++        self.assertEqual(False, missing_case.get("taskBoardUpdateAllowed"))
++        self.assertEqual([], missing_case.get("taskBoardOnlyRecommendations"))
++
++        missing_evidence = missing_case.get("missingEvidence")
++        self.assertIsInstance(missing_evidence, list)
++        self.assertGreaterEqual(len(missing_evidence), 1)
++        self.assertIn("accepted_validation_evidence_for_checkbox_130", missing_evidence)
++
++        present_evidence = missing_case.get("presentEvidence")
++        self.assertIsInstance(present_evidence, list)
++        self.assertNotIn("accepted_validation_evidence_for_checkbox_130", present_evidence)
+ 
+     def test_complete_evidence_produces_task_board_only_supersession_recommendation(self) -> None:
+-        fixture = _load_fixture()
+-        case = _case_by_id(
++        fixture = self.load_fixture()
++        complete_case = self.case_by_id(
+             fixture,
+-            "complete-evidence-recommends-task-board-only-supersession",
++            "complete_evidence_recommends_task_board_only_supersession",
+         )
+ 
+-        self.assertEqual(fixture["targetTaskId"], "checkbox-108")
+-        self.assertEqual(fixture["sourceTaskId"], "checkbox-130")
+-        self.assertEqual(case["targetTaskState"], "parked")
+-        self.assertEqual(case["evidenceState"], "complete")
+-        self.assertEqual(case["recommendation"], "supersede_checkbox_108")
+-        self.assertEqual(case["decisionScope"], "task_board_only")
+-        self.assertEqual(case["requiredOutcome"]["taskBoardAction"], "recommend_checkbox_108_superseded")
+-        self.assertFalse(case["requiredOutcome"]["mayCreateDomainArtifacts"])
+-        self.assertFalse(case["requiredOutcome"]["mayRunLiveCrawl"])
+-        self.assertTrue(all(item["present"] for item in case["evidence"]))
+-        self.assertTrue(all(item["file"].startswith("ppd/") for item in case["evidence"]))
++        self.assertEqual("checkbox-108", complete_case.get("parkedTaskId"))
++        self.assertEqual("recommend_supersession", complete_case.get("decision"))
++        self.assertEqual("task-board-only", complete_case.get("recommendationScope"))
++        self.assertEqual(True, complete_case.get("taskBoardUpdateAllowed"))
++        self.assertEqual([], complete_case.get("missingEvidence"))
+ 
+-    def test_fixture_has_unique_cases_and_no_private_or_live_artifact_paths(self) -> None:
+-        fixture = _load_fixture()
+-        case_ids = [case["caseId"] for case in fixture["cases"]]
+-        self.assertEqual(len(case_ids), len(set(case_ids)))
++        required_evidence = set(complete_case.get("requiredEvidence", []))
++        present_evidence = set(complete_case.get("presentEvidence", []))
++        self.assertTrue(required_evidence)
++        self.assertTrue(required_evidence.issubset(present_evidence))
+ 
+-        forbidden_fragments = (
+-            "ppd/data/private/",
+-            "ppd/data/raw/",
+-            "auth_state",
+-            "storage_state",
+-            "trace",
+-            "screenshot",
+-            "download",
+-            "public/corpus/portland-or/current/",
+-            "src/lib/logic/",
+-            "ipfs_datasets_py/.daemon/",
+-        )
+-        for case in fixture["cases"]:
+-            self.assertEqual(case["decisionScope"], "task_board_only")
+-            self.assertFalse(case["requiredOutcome"]["mayCreateDomainArtifacts"])
+-            self.assertFalse(case["requiredOutcome"]["mayRunLiveCrawl"])
+-            for evidence in case["evidence"]:
+-                evidence_file = evidence["file"]
+-                self.assertTrue(evidence_file.startswith("ppd/"), evidence_file)
+-                self.assertFalse(
+-                    any(fragment in evidence_file for fragment in forbidden_fragments),
+-                    evidence_file,
+-                )
++        recommendations = complete_case.get("taskBoardOnlyRecommendations")
++        self.assertIsInstance(recommendations, list)
++        self.assertEqual(1, len(recommendations))
++        recommendation = recommendations[0]
++        self.assertEqual("mark_superseded", recommendation.get("operation"))
++        self.assertEqual("checkbox-108", recommendation.get("targetTaskId"))
++        self.assertEqual("checkbox-130", recommendation.get("supersededByTaskId"))
++        self.assertEqual("ppd/daemon/task-board.md", recommendation.get("allowedPath"))
+ 
++        artifact_kinds = set(complete_case.get("artifactKinds", []))
++        self.assertFalse(FORBIDDEN_ARTIFACT_KINDS.intersection(artifact_kinds))
++        self.assertEqual(["task_board_markdown"], complete_case.get("artifactKinds"))
+ 
+-def _load_fixture() -> dict[str, Any]:
+-    with FIXTURE_PATH.open(encoding="utf-8") as handle:
+-        fixture = json.load(handle)
+-    if fixture.get("schemaVersion") != 1:
+-        raise AssertionError("checkbox-130 supersession fixture schemaVersion must be 1")
+-    if fixture.get("fixtureId") != "checkbox-130-supersession-decision":
+-        raise AssertionError("unexpected checkbox-130 supersession fixtureId")
+-    if not isinstance(fixture.get("cases"), list) or not fixture["cases"]:
+-        raise AssertionError("checkbox-130 supersession fixture requires cases")
+-    return fixture
+-
+-
+-def _case_by_id(fixture: dict[str, Any], case_id: str) -> dict[str, Any]:
+-    for case in fixture["cases"]:
+-        if case.get("caseId") == case_id:
+-            return case
+-    raise AssertionError(f"missing supersession decision case: {case_id}")
++    @staticmethod
++    def case_by_id(fixture: dict[str, Any], case_id: str) -> dict[str, Any]:
++        cases = fixture.get("cases", [])
++        for case in cases:
++            if case.get("caseId") == case_id:
++                return case
++        raise AssertionError(f"fixture case not found: {case_id}")
+ 
+ 
+ if __name__ == "__main__":
+--- a/ppd/tests/fixtures/checkbox_131/checkbox_130_supersession_decision.json
++++ b/ppd/tests/fixtures/checkbox_131/checkbox_130_supersession_decision.json
+@@ -0,0 +1,70 @@
++{
++  "schemaVersion": 1,
++  "taskId": "checkbox-131",
++  "decisionFixtureFor": "checkbox-130",
++  "parkedTaskId": "checkbox-108",
++  "purpose": "Validate the supersession decision path before changing the PP&D task board.",
++  "cases": [
++    {
++      "caseId": "missing_evidence_keeps_checkbox_108_parked",
++      "parkedTaskId": "checkbox-108",
++      "decision": "park",
++      "reason": "missing_supersession_evidence",
++      "taskBoardUpdateAllowed": false,
++      "recommendationScope": "none",
++      "requiredEvidence": [
++        "accepted_validation_evidence_for_checkbox_130",
++        "fixture_level_reference_to_checkbox_108_frontier_contract",
++        "task_board_supersession_text"
++      ],
++      "presentEvidence": [
++        "fixture_level_reference_to_checkbox_108_frontier_contract"
++      ],
++      "missingEvidence": [
++        "accepted_validation_evidence_for_checkbox_130",
++        "task_board_supersession_text"
++      ],
++      "taskBoardOnlyRecommendations": [],
++      "artifactKinds": [],
++      "evidencePaths": [
++        "ppd/tests/fixtures/checkbox_131/checkbox_130_supersession_decision.json"
++      ]
++    },
++    {
++      "caseId": "complete_evidence_recommends_task_board_only_supersession",
++      "parkedTaskId": "checkbox-108",
++      "decision": "recommend_supersession",
++      "reason": "complete_supersession_evidence",
++      "taskBoardUpdateAllowed": true,
++      "recommendationScope": "task-board-only",
++      "requiredEvidence": [
++        "accepted_validation_evidence_for_checkbox_130",
++        "fixture_level_reference_to_checkbox_108_frontier_contract",
++        "task_board_supersession_text"
++      ],
++      "presentEvidence": [
++        "accepted_validation_evidence_for_checkbox_130",
++        "fixture_level_reference_to_checkbox_108_frontier_contract",
++        "task_board_supersession_text"
++      ],
++      "missingEvidence": [],
++      "taskBoardOnlyRecommendations": [
++        {
++          "operation": "mark_superseded",
++          "targetTaskId": "checkbox-108",
++          "supersededByTaskId": "checkbox-130",
++          "allowedPath": "ppd/daemon/task-board.md",
++          "text": "Task checkbox-108 remains parked unless accepted checkbox-130 validation evidence proves the frontier checkpoint contract; with complete evidence, recommend a task-board-only supersession note."
++        }
++      ],
++      "artifactKinds": [
++        "task_board_markdown"
++      ],
++      "evidencePaths": [
++        "ppd/daemon/accepted-work/checkbox-130.json",
++        "ppd/daemon/task-board.md",
++        "ppd/tests/fixtures/checkbox_131/checkbox_130_supersession_decision.json"
++      ]
++    }
++  ]
++}

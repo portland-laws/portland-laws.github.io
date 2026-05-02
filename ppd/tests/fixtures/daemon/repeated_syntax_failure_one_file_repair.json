@@ -1,0 +1,48 @@
+{
+  "schema_version": 1,
+  "fixture_id": "repeated-syntax-failure-one-file-repair",
+  "selected_task": "checkbox-128",
+  "recent_failures": [
+    {
+      "round": 1,
+      "failure_kind": "syntax_preflight",
+      "diagnostic": "SyntaxError: invalid syntax",
+      "changed_files": ["ppd/contracts/example_contract.py", "ppd/tests/test_example_contract.py"]
+    },
+    {
+      "round": 2,
+      "failure_kind": "syntax_preflight",
+      "diagnostic": "py_compile failed for ppd/contracts/example_contract.py",
+      "changed_files": ["ppd/contracts/example_contract.py", "ppd/tests/test_example_contract.py"]
+    },
+    {
+      "round": 3,
+      "failure_kind": "syntax_preflight",
+      "diagnostic": "TS1005: ',' expected",
+      "changed_files": ["ppd/daemon/example_prompt.ts"]
+    },
+    {
+      "round": 4,
+      "failure_kind": "syntax_preflight",
+      "diagnostic": "TS1109: Expression expected; TS1128: Declaration or statement expected",
+      "changed_files": ["ppd/daemon/example_prompt.ts"]
+    }
+  ],
+  "expected_next_prompt": {
+    "mode": "one_file_syntax_repair",
+    "max_files": 1,
+    "allowed_focus": "repair the parser or compiler failure before retrying the domain task",
+    "required_instruction_fragments": [
+      "replace exactly one file",
+      "repair the syntax failure first",
+      "do not rewrite shared domain contracts",
+      "do not broaden the task scope"
+    ],
+    "forbidden_instruction_fragments": [
+      "rewrite ppd/contracts/documents.py",
+      "extend the shared contract surface",
+      "resume the broad domain implementation",
+      "add crawler code"
+    ]
+  }
+}

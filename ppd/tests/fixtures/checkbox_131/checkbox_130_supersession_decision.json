@@ -1,0 +1,70 @@
+{
+  "schemaVersion": 1,
+  "taskId": "checkbox-131",
+  "decisionFixtureFor": "checkbox-130",
+  "parkedTaskId": "checkbox-108",
+  "purpose": "Validate the supersession decision path before changing the PP&D task board.",
+  "cases": [
+    {
+      "caseId": "missing_evidence_keeps_checkbox_108_parked",
+      "parkedTaskId": "checkbox-108",
+      "decision": "park",
+      "reason": "missing_supersession_evidence",
+      "taskBoardUpdateAllowed": false,
+      "recommendationScope": "none",
+      "requiredEvidence": [
+        "accepted_validation_evidence_for_checkbox_130",
+        "fixture_level_reference_to_checkbox_108_frontier_contract",
+        "task_board_supersession_text"
+      ],
+      "presentEvidence": [
+        "fixture_level_reference_to_checkbox_108_frontier_contract"
+      ],
+      "missingEvidence": [
+        "accepted_validation_evidence_for_checkbox_130",
+        "task_board_supersession_text"
+      ],
+      "taskBoardOnlyRecommendations": [],
+      "artifactKinds": [],
+      "evidencePaths": [
+        "ppd/tests/fixtures/checkbox_131/checkbox_130_supersession_decision.json"
+      ]
+    },
+    {
+      "caseId": "complete_evidence_recommends_task_board_only_supersession",
+      "parkedTaskId": "checkbox-108",
+      "decision": "recommend_supersession",
+      "reason": "complete_supersession_evidence",
+      "taskBoardUpdateAllowed": true,
+      "recommendationScope": "task-board-only",
+      "requiredEvidence": [
+        "accepted_validation_evidence_for_checkbox_130",
+        "fixture_level_reference_to_checkbox_108_frontier_contract",
+        "task_board_supersession_text"
+      ],
+      "presentEvidence": [
+        "accepted_validation_evidence_for_checkbox_130",
+        "fixture_level_reference_to_checkbox_108_frontier_contract",
+        "task_board_supersession_text"
+      ],
+      "missingEvidence": [],
+      "taskBoardOnlyRecommendations": [
+        {
+          "operation": "mark_superseded",
+          "targetTaskId": "checkbox-108",
+          "supersededByTaskId": "checkbox-130",
+          "allowedPath": "ppd/daemon/task-board.md",
+          "text": "Task checkbox-108 remains parked unless accepted checkbox-130 validation evidence proves the frontier checkpoint contract; with complete evidence, recommend a task-board-only supersession note."
+        }
+      ],
+      "artifactKinds": [
+        "task_board_markdown"
+      ],
+      "evidencePaths": [
+        "ppd/daemon/accepted-work/checkbox-130.json",
+        "ppd/daemon/task-board.md",
+        "ppd/tests/fixtures/checkbox_131/checkbox_130_supersession_decision.json"
+      ]
+    }
+  ]
+}

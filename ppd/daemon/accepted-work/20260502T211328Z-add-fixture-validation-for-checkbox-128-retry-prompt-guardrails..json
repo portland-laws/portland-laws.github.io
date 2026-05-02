@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/test_checkbox_129_checkbox_128_prompt_guardrails.py"
+  ],
+  "created_at": "2026-05-02T21:13:28.303941Z",
+  "impact": "This advances the PP&D daemon recovery plan by proving the committed checkbox-128 fixture constrains syntax-failure retries to a narrow, safe shape and defers crawler/live automation work.",
+  "summary": "Add fixture validation for checkbox-128 retry prompt guardrails.",
+  "target_task": "Task checkbox-129: Task checkbox-129: Add validation for the checkbox-128 fixture proving the prompt names the failed syntax kind, lists the allowed one-file retry shape, and explicitly defers live crawl, authenticated automation, and crawler contract implementation.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 129 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".......................................................................................................................................................................................................................................................................................................................ss..............sss....................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 561 tests in 0.098s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

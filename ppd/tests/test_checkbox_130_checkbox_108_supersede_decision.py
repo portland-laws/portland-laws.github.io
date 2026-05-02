@@ -1,0 +1,160 @@
+from __future__ import annotations
+
+import json
+from pathlib import Path
+from typing import Any
+
+
+FIXTURE_PATH = (
+    Path(__file__).parent
+    / "fixtures"
+    / "task_board"
+    / "checkbox_130_checkbox_108_supersede_decision.json"
+)
+
+REQUIRED_COVERAGE = {
+    "queued",
+    "accepted",
+    "skipped",
+    "deferred",
+    "allowlist",
+    "robots/no-persist",
+    "content-type",
+    "timeout",
+    "processor-handoff",
+}
+
+PROHIBITED_CHANGES = {
+    "crawler contracts",
+    "crawler code",
+    "public fixtures",
+    "crawl output",
+}
+
+
+def _load_fixture() -> dict[str, Any]:
+    with FIXTURE_PATH.open(encoding="utf-8") as handle:
+        data = json.load(handle)
+    assert isinstance(data, dict)
+    return data
+
+
+def _coverage_from_summary(summary: str) -> set[str]:
+    normalized = summary.lower()
+    return {item for item in REQUIRED_COVERAGE if item in normalized}
+
+
+def _decision_errors(data: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+
+    if data.get("schemaVersion") != 1:
+        errors.append("schemaVersion must be 1")
+    if data.get("taskId") != "checkbox-130":
+        errors.append("taskId must be checkbox-130")
+    if data.get("targetTaskId") != "checkbox-108":
+        errors.append("targetTaskId must be checkbox-108")
+    if data.get("decision") != "mark_superseded":
+        errors.append("decision must be mark_superseded")
+    if data.get("decisionScope") != "daemon-local-task-board-reconciliation":
+        errors.append("decisionScope must stay daemon-local")
+
+    gate = data.get("allowedOnlyWhen")
+    if not isinstance(gate, dict):
+        errors.append("allowedOnlyWhen must be an object")
+        gate = {}
+
+    evidence = data.get("committedEvidence")
+    if not isinstance(evidence, dict):
+        errors.append("committedEvidence must be an object")
+        evidence = {}
+
+    if gate.get("evidenceTaskId") != "checkbox-109":
+        errors.append("allowedOnlyWhen.evidenceTaskId must be checkbox-109")
+    if gate.get("evidenceStatus") != "accepted":
+        errors.append("allowedOnlyWhen.evidenceStatus must be accepted")
+    if gate.get("committed") is not True:
+        errors.append("allowedOnlyWhen.committed must be true")
+
+    required_names = gate.get("validationEvidenceMustName")
+    if not isinstance(required_names, list):
+        errors.append("validationEvidenceMustName must be a list")
+        required_names = []
+    required_name_set = {item for item in required_names if isinstance(item, str)}
+    missing_required_names = REQUIRED_COVERAGE.difference(required_name_set)
+    if missing_required_names:
+        errors.append("validationEvidenceMustName missing: " + ", ".join(sorted(missing_required_names)))
+
+    if evidence.get("taskId") != "checkbox-109":
+        errors.append("committedEvidence.taskId must be checkbox-109")
+    if evidence.get("status") != "accepted":
+        errors.append("committedEvidence.status must be accepted")
+    if evidence.get("committed") is not True:
+        errors.append("committedEvidence.committed must be true")
+    if evidence.get("artifactKind") != "accepted-work-ledger-entry":
+        errors.append("committedEvidence.artifactKind must be accepted-work-ledger-entry")
+
+    artifact_ref = evidence.get("artifactRef")
+    if not isinstance(artifact_ref, str) or "checkbox-109" not in artifact_ref:
+        errors.append("committedEvidence.artifactRef must name checkbox-109")
+
+    summary = evidence.get("validationSummary")
+    if not isinstance(summary, str) or not summary.strip():
+        errors.append("committedEvidence.validationSummary is required")
+        summary = ""
+    named_coverage = _coverage_from_summary(summary)
+    missing_summary_coverage = REQUIRED_COVERAGE.difference(named_coverage)
+    if missing_summary_coverage:
+        errors.append("validationSummary missing: " + ", ".join(sorted(missing_summary_coverage)))
+
+    prohibited = data.get("prohibitedChanges")
+    if not isinstance(prohibited, list):
+        errors.append("prohibitedChanges must be a list")
+        prohibited = []
+    prohibited_set = {item for item in prohibited if isinstance(item, str)}
+    missing_prohibited = PROHIBITED_CHANGES.difference(prohibited_set)
+    if missing_prohibited:
+        errors.append("prohibitedChanges missing: " + ", ".join(sorted(missing_prohibited)))
+
+    return errors
+
+
+def test_checkbox_130_fixture_allows_checkbox_108_superseded_only_with_full_checkbox_109_evidence() -> None:
+    data = _load_fixture()
+    assert _decision_errors(data) == []
+
+
+def test_checkbox_130_fixture_rejects_missing_required_validation_coverage_names() -> None:
+    data = _load_fixture()
+    gate = data["allowedOnlyWhen"]
+    original_names = list(gate["validationEvidenceMustName"])
+
+    for required_name in sorted(REQUIRED_COVERAGE):
+        mutated = json.loads(json.dumps(data))
+        mutated_gate = mutated["allowedOnlyWhen"]
+        mutated_gate["validationEvidenceMustName"] = [
+            name for name in original_names if name != required_name
+        ]
+        errors = _decision_errors(mutated)
+        assert any(required_name in error for error in errors), required_name
+
+
+def test_checkbox_130_fixture_rejects_unaccepted_or_uncommitted_checkbox_109_evidence() -> None:
+    data = _load_fixture()
+
+    unaccepted = json.loads(json.dumps(data))
+    unaccepted["committedEvidence"]["status"] = "queued"
+    assert any("status must be accepted" in error for error in _decision_errors(unaccepted))
+
+    uncommitted = json.loads(json.dumps(data))
+    uncommitted["committedEvidence"]["committed"] = False
+    assert any("committedEvidence.committed must be true" in error for error in _decision_errors(uncommitted))
+
+
+def test_checkbox_130_fixture_rejects_summary_that_does_not_name_all_coverage() -> None:
+    data = _load_fixture()
+    mutated = json.loads(json.dumps(data))
+    mutated["committedEvidence"]["validationSummary"] = "Accepted checkbox-109 validation evidence names queued coverage only."
+
+    errors = _decision_errors(mutated)
+    assert any("processor-handoff" in error for error in errors)
+    assert any("robots/no-persist" in error for error in errors)

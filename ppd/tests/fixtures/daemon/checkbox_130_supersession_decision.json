@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "checkbox-130-supersession-decision",
+  "targetTaskId": "checkbox-108",
+  "sourceTaskId": "checkbox-130",
+  "cases": [
+    {
+      "caseId": "missing-evidence-keeps-checkbox-108-parked",
+      "targetTaskState": "parked",
+      "evidenceState": "missing",
+      "recommendation": "keep_parked",
+      "decisionScope": "task_board_only",
+      "evidence": [
+        {
+          "file": "ppd/tests/fixtures/crawler/frontier_checkpoint_summary.json",
+          "present": false,
+          "proves": "frontier checkpoint contract accepted by later work"
+        }
+      ],
+      "requiredOutcome": {
+        "taskBoardAction": "leave_checkbox_108_parked",
+        "mayCreateDomainArtifacts": false,
+        "mayRunLiveCrawl": false
+      }
+    },
+    {
+      "caseId": "complete-evidence-recommends-task-board-only-supersession",
+      "targetTaskState": "parked",
+      "evidenceState": "complete",
+      "recommendation": "supersede_checkbox_108",
+      "decisionScope": "task_board_only",
+      "evidence": [
+        {
+          "file": "ppd/daemon/task-board.md",
+          "present": true,
+          "proves": "checkbox-109-or-later accepted work can supersede checkbox-108 when file-level evidence is present"
+        },
+        {
+          "file": "ppd/tests/fixtures/crawler/frontier_checkpoint_summary.json",
+          "present": true,
+          "proves": "frontier checkpoint contract is represented by committed fixture evidence"
+        },
+        {
+          "file": "ppd/tests/test_public_crawl_frontier_checkpoint.py",
+          "present": true,
+          "proves": "frontier checkpoint contract is covered by deterministic validation"
+        }
+      ],
+      "requiredOutcome": {
+        "taskBoardAction": "recommend_checkbox_108_superseded",
+        "mayCreateDomainArtifacts": false,
+        "mayRunLiveCrawl": false
+      }
+    }
+  ]
+}

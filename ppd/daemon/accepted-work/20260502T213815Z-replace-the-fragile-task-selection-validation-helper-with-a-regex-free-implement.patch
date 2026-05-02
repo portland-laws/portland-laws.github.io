@@ -1,0 +1,218 @@
+--- a/ppd/daemon/task_selection_validation.py
++++ b/ppd/daemon/task_selection_validation.py
+@@ -1,9 +1,17 @@
+ """Deterministic validation for PP&D daemon task selection recovery cases.
+ 
+-This module is intentionally standalone and fixture-only. It models the narrow
+-selection invariant needed after syntax-preflight failures: blocked tasks are not
+-eligible for reselection, but unchecked supervisor recovery tasks remain
+-available.
++This module is intentionally standalone and fixture-only. It models narrow
++selection invariants needed after failed daemon rounds:
++
++- blocked tasks are not eligible for reselection.
++- unchecked supervisor recovery tasks remain available.
++- accepted supersession evidence for a blocked domain task requires a task-board
++  reconciliation task before the domain task can be revisited.
++
++The implementation avoids regular-expression task-board parsing on purpose. The
++recent daemon failures were syntax/preflight-sensitive, so these guardrails use
++small typed fixtures that can be validated by py_compile and unittest without
++live crawling, authenticated automation, or task-board mutation.
+ """
+ 
+ from __future__ import annotations
+@@ -25,6 +33,9 @@
+     state: TaskState
+     failure_kind: str | None = None
+     recovery_kind: str | None = None
++    task_kind: str = "daemon"
++    accepted_supersession_evidence: bool = False
++    task_board_supersession_note_appended: bool = False
+ 
+ 
+ def eligible_task_ids(tasks: tuple[TaskSelectionFixture, ...]) -> tuple[str, ...]:
+@@ -36,6 +47,30 @@
+             continue
+         eligible.append(task.checkbox_id)
+     return tuple(eligible)
++
++
++def tasks_requiring_supersession_reconciliation(
++    tasks: tuple[TaskSelectionFixture, ...],
++) -> tuple[str, ...]:
++    """Return blocked domain tasks whose accepted supersession evidence is unrecorded.
++
++    A blocked domain task with accepted supersession evidence is not a domain-work
++    candidate. Until the task board records the supersession note, the daemon
++    should select a narrow board-reconciliation task instead.
++    """
++
++    requiring_reconciliation: list[str] = []
++    for task in tasks:
++        if task.state != TaskState.BLOCKED:
++            continue
++        if task.task_kind != "domain":
++            continue
++        if not task.accepted_supersession_evidence:
++            continue
++        if task.task_board_supersession_note_appended:
++            continue
++        requiring_reconciliation.append(task.checkbox_id)
++    return tuple(requiring_reconciliation)
+ 
+ 
+ def validate_blocked_syntax_preflight_selection() -> list[str]:
+@@ -74,8 +109,55 @@
+     return errors
+ 
+ 
++def validate_blocked_superseded_domain_task_selection() -> list[str]:
++    """Validate accepted supersession evidence forces board reconciliation first."""
++
++    tasks = (
++        TaskSelectionFixture(
++            checkbox_id="checkbox-108",
++            title="Implement crawl frontier decision contract fixtures",
++            state=TaskState.BLOCKED,
++            failure_kind="superseded_by_accepted_evidence",
++            task_kind="domain",
++            accepted_supersession_evidence=True,
++            task_board_supersession_note_appended=False,
++        ),
++        TaskSelectionFixture(
++            checkbox_id="checkbox-132",
++            title="Record checkbox-108 supersession on the task board before domain retry",
++            state=TaskState.UNCHECKED,
++            recovery_kind="task_board_supersession_reconciliation",
++            task_kind="daemon",
++        ),
++        TaskSelectionFixture(
++            checkbox_id="checkbox-131",
++            title="Accepted supersession evidence validation",
++            state=TaskState.CHECKED,
++            task_kind="daemon",
++        ),
++    )
++
++    selected = eligible_task_ids(tasks)
++    reconciliation_required = tasks_requiring_supersession_reconciliation(tasks)
++    errors: list[str] = []
++
++    if reconciliation_required != ("checkbox-108",):
++        errors.append(
++            "expected checkbox-108 to require task-board supersession reconciliation, "
++            f"got {reconciliation_required!r}"
++        )
++    if "checkbox-108" in selected:
++        errors.append("blocked superseded domain task checkbox-108 must not be reselected")
++    if selected != ("checkbox-132",):
++        errors.append(f"expected only checkbox-132 to be eligible, got {selected!r}")
++
++    return errors
++
++
+ def run_self_test() -> None:
+-    errors = validate_blocked_syntax_preflight_selection()
++    errors = []
++    errors.extend(validate_blocked_syntax_preflight_selection())
++    errors.extend(validate_blocked_superseded_domain_task_selection())
+     if errors:
+         raise AssertionError("; ".join(errors))
+ 
+--- a/ppd/tests/test_daemon_task_selection_validation.py
++++ b/ppd/tests/test_daemon_task_selection_validation.py
+@@ -1,33 +1,74 @@
+ """Tests for daemon task-selection recovery validation."""
+ 
+ from __future__ import annotations
++
++import unittest
+ 
+ from ppd.daemon.task_selection_validation import (
+     TaskSelectionFixture,
+     TaskState,
+     eligible_task_ids,
++    tasks_requiring_supersession_reconciliation,
++    validate_blocked_superseded_domain_task_selection,
+     validate_blocked_syntax_preflight_selection,
+ )
+ 
+ 
+-def test_blocked_syntax_preflight_task_is_not_reselected() -> None:
+-    assert validate_blocked_syntax_preflight_selection() == []
++class DaemonTaskSelectionValidationTest(unittest.TestCase):
++    def test_blocked_syntax_preflight_task_is_not_reselected(self) -> None:
++        self.assertEqual(validate_blocked_syntax_preflight_selection(), [])
++
++    def test_unchecked_supervisor_recovery_task_remains_available(self) -> None:
++        tasks = (
++            TaskSelectionFixture(
++                checkbox_id="checkbox-112",
++                title="Blocked syntax-preflight retry",
++                state=TaskState.BLOCKED,
++                failure_kind="syntax_preflight",
++            ),
++            TaskSelectionFixture(
++                checkbox_id="checkbox-117",
++                title="Unchecked supervisor recovery validation",
++                state=TaskState.UNCHECKED,
++                recovery_kind="supervisor_recovery",
++            ),
++        )
++
++        self.assertEqual(eligible_task_ids(tasks), ("checkbox-117",))
++
++    def test_blocked_domain_task_with_unrecorded_supersession_is_not_selected(self) -> None:
++        self.assertEqual(validate_blocked_superseded_domain_task_selection(), [])
++
++    def test_supersession_reconciliation_detects_only_unrecorded_domain_tasks(self) -> None:
++        tasks = (
++            TaskSelectionFixture(
++                checkbox_id="checkbox-108",
++                title="Blocked domain task with accepted supersession evidence",
++                state=TaskState.BLOCKED,
++                task_kind="domain",
++                accepted_supersession_evidence=True,
++                task_board_supersession_note_appended=False,
++            ),
++            TaskSelectionFixture(
++                checkbox_id="checkbox-130",
++                title="Blocked domain task already reconciled on the board",
++                state=TaskState.BLOCKED,
++                task_kind="domain",
++                accepted_supersession_evidence=True,
++                task_board_supersession_note_appended=True,
++            ),
++            TaskSelectionFixture(
++                checkbox_id="checkbox-132",
++                title="Unchecked daemon reconciliation task",
++                state=TaskState.UNCHECKED,
++                task_kind="daemon",
++                recovery_kind="task_board_supersession_reconciliation",
++            ),
++        )
++
++        self.assertEqual(tasks_requiring_supersession_reconciliation(tasks), ("checkbox-108",))
++        self.assertEqual(eligible_task_ids(tasks), ("checkbox-132",))
+ 
+ 
+-def test_unchecked_supervisor_recovery_task_remains_available() -> None:
+-    tasks = (
+-        TaskSelectionFixture(
+-            checkbox_id="checkbox-112",
+-            title="Blocked syntax-preflight retry",
+-            state=TaskState.BLOCKED,
+-            failure_kind="syntax_preflight",
+-        ),
+-        TaskSelectionFixture(
+-            checkbox_id="checkbox-117",
+-            title="Unchecked supervisor recovery validation",
+-            state=TaskState.UNCHECKED,
+-            recovery_kind="supervisor_recovery",
+-        ),
+-    )
+-
+-    assert eligible_task_ids(tasks) == ("checkbox-117",)
++if __name__ == "__main__":
++    unittest.main()

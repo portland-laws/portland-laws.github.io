@@ -1,0 +1,23 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,8 +1,8 @@
+ {
+-  "createdAt": "2026-05-02T21:32:01.219420Z",
++  "createdAt": "2026-05-02T21:35:07.802813Z",
+   "decision": {
+-    "action": "invoke_codex",
+-    "reason": "5 consecutive daemon rounds failed without an accepted patch",
++    "action": "repair_daemon_programming",
++    "reason": "4 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
+     "severity": "warning"
+   },
+   "failedAgenticRepair": {
+@@ -13,7 +13,7 @@
+       "Validation failed; file edits were rolled back."
+     ],
+     "failureKind": "validation",
+-    "summary": "Add a narrow supervisor repair guide for the checkbox-131 fixture-shape validation loop.",
++    "summary": "Add a supervisor repair guide that converts repeated syntax and compile rollbacks into a narrow one-file retry protocol.",
+     "validationResults": [
+       {
+         "command": [

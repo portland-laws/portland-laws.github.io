@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/test_checkbox_131_supersession_decision.py",
+    "ppd/tests/fixtures/checkbox_131/checkbox_130_supersession_decision.json"
+  ],
+  "created_at": "2026-05-02T21:33:05.296176Z",
+  "impact": "This proves the daemon can distinguish an incomplete supersession record, which must keep checkbox-108 parked, from a complete evidence record, which may only recommend a task-board supersession and must not add crawler/domain artifacts.",
+  "summary": "Add fixture-only checkbox-131 validation for checkbox-130 supersession decisions.",
+  "target_task": "Task checkbox-131: Task checkbox-131: Add validation for the checkbox-130 supersession decision fixture proving missing evidence keeps checkbox-108 parked and complete evidence produces a task-board-only supersession recommendation.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 133 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................................................................................................................................................................................................ss..............sss....................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 566 tests in 0.098s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}
