@@ -1,0 +1,128 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "playwright-planning-confirmation-guardrails",
+  "description": "Synthetic, redacted Playwright planning fixture for PP&D DevHub action guardrails. It contains no live browser state, credentials, traces, screenshots, uploads, payment data, or private account values.",
+  "sourceEvidenceIds": [
+    "devhub-public-guidance-fixture",
+    "ppd-agent-action-gate-fixture"
+  ],
+  "planningContext": {
+    "browserLaunched": false,
+    "liveDevHubSession": false,
+    "authenticatedAutomation": false,
+    "valuesRedacted": true
+  },
+  "actions": [
+    {
+      "id": "plan-upload-without-exact-confirmation",
+      "kind": "upload",
+      "label": "Upload plan file",
+      "classification": "potentially_consequential",
+      "exactExplicitUserConfirmationPresent": false,
+      "refused": true,
+      "refusalReason": "official uploads require exact explicit user confirmation before planning proceeds",
+      "automationAllowed": false
+    },
+    {
+      "id": "plan-submit-without-exact-confirmation",
+      "kind": "submit",
+      "label": "Submit application",
+      "classification": "potentially_consequential",
+      "exactExplicitUserConfirmationPresent": false,
+      "refused": true,
+      "refusalReason": "official submission requires exact explicit user confirmation before planning proceeds",
+      "automationAllowed": false
+    },
+    {
+      "id": "plan-certify-without-exact-confirmation",
+      "kind": "certify",
+      "label": "Certify application statement",
+      "classification": "potentially_consequential",
+      "exactExplicitUserConfirmationPresent": false,
+      "refused": true,
+      "refusalReason": "certification requires exact explicit user confirmation before planning proceeds",
+      "automationAllowed": false
+    },
+    {
+      "id": "plan-pay-without-exact-confirmation",
+      "kind": "pay",
+      "label": "Pay fees",
+      "classification": "financial",
+      "exactExplicitUserConfirmationPresent": false,
+      "refused": true,
+      "refusalReason": "payment actions require exact explicit user confirmation before planning proceeds",
+      "automationAllowed": false
+    },
+    {
+      "id": "plan-cancel-without-exact-confirmation",
+      "kind": "cancel",
+      "label": "Cancel request",
+      "classification": "potentially_consequential",
+      "exactExplicitUserConfirmationPresent": false,
+      "refused": true,
+      "refusalReason": "cancellation requires exact explicit user confirmation before planning proceeds",
+      "automationAllowed": false
+    },
+    {
+      "id": "plan-schedule-inspection-without-exact-confirmation",
+      "kind": "schedule_inspection",
+      "label": "Schedule inspection",
+      "classification": "potentially_consequential",
+      "exactExplicitUserConfirmationPresent": false,
+      "refused": true,
+      "refusalReason": "inspection scheduling requires exact explicit user confirmation before planning proceeds",
+      "automationAllowed": false
+    },
+    {
+      "id": "plan-mfa-without-exact-confirmation",
+      "kind": "mfa",
+      "label": "Complete MFA challenge",
+      "classification": "access_control",
+      "exactExplicitUserConfirmationPresent": false,
+      "refused": true,
+      "refusalReason": "MFA actions are access-control steps and must be refused without exact explicit user confirmation",
+      "automationAllowed": false
+    },
+    {
+      "id": "plan-captcha-without-exact-confirmation",
+      "kind": "captcha",
+      "label": "Complete CAPTCHA",
+      "classification": "access_control",
+      "exactExplicitUserConfirmationPresent": false,
+      "refused": true,
+      "refusalReason": "CAPTCHA actions are access-control steps and must be refused without exact explicit user confirmation",
+      "automationAllowed": false
+    },
+    {
+      "id": "plan-account-creation-without-exact-confirmation",
+      "kind": "account_creation",
+      "label": "Create PortlandOregon.gov account",
+      "classification": "account_control",
+      "exactExplicitUserConfirmationPresent": false,
+      "refused": true,
+      "refusalReason": "account creation requires exact explicit user confirmation before planning proceeds",
+      "automationAllowed": false
+    },
+    {
+      "id": "plan-password-recovery-without-exact-confirmation",
+      "kind": "password_recovery",
+      "label": "Recover password",
+      "classification": "account_control",
+      "exactExplicitUserConfirmationPresent": false,
+      "refused": true,
+      "refusalReason": "password recovery requires exact explicit user confirmation before planning proceeds",
+      "automationAllowed": false
+    },
+    {
+      "id": "plan-submit-with-exact-confirmation-control",
+      "kind": "submit",
+      "label": "Submit application after exact confirmation checkpoint",
+      "classification": "potentially_consequential",
+      "exactExplicitUserConfirmationPresent": true,
+      "refused": false,
+      "refusalReason": null,
+      "automationAllowed": false,
+      "requiresManualCheckpoint": true
+    }
+  ]
+}

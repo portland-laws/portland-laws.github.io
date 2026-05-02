@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "fixtureType": "playwright_action_classification",
+  "source": "synthetic_mocked_devhub_form",
+  "liveDevhubSession": false,
+  "playwrightRuntimeRequired": false,
+  "classificationDefaults": {
+    "read_only": {
+      "exactConfirmationProvided": false
+    },
+    "reversible_draft_edit": {
+      "exactConfirmationProvided": false
+    },
+    "consequential": {
+      "exactConfirmationProvided": false
+    },
+    "financial": {
+      "exactConfirmationProvided": false
+    }
+  },
+  "mockedFormInteractions": [
+    {
+      "id": "inspect-permit-type-help",
+      "mockedPlaywrightAction": "read_visible_text",
+      "classification": "read_only",
+      "reversible": true,
+      "exactConfirmationRequired": false,
+      "exactConfirmationProvidedDefault": false,
+      "allowedWithoutExactConfirmation": true,
+      "selectorBasis": {
+        "role": "link",
+        "accessibleName": "Residential building permit help",
+        "labelText": "Residential building permit help",
+        "nearbyHeading": "Permit type",
+        "stableSelectorBasis": "role_and_accessible_name"
+      },
+      "redaction": {
+        "containsPrivateUserValue": false,
+        "recordedValue": "[public-help-text]"
+      },
+      "sourceEvidenceIds": [
+        "public-devhub-guidance-permit-request-types"
+      ]
+    },
+    {
+      "id": "fill-project-description-draft",
+      "mockedPlaywrightAction": "fill_field_preview",
+      "classification": "reversible_draft_edit",
+      "reversible": true,
+      "exactConfirmationRequired": false,
+      "exactConfirmationProvidedDefault": false,
+      "allowedWithoutExactConfirmation": true,
+      "selectorBasis": {
+        "role": "textbox",
+        "accessibleName": "Project description",
+        "labelText": "Project description",
+        "nearbyHeading": "Project information",
+        "stableSelectorBasis": "label_and_role"
+      },
+      "redaction": {
+        "containsPrivateUserValue": true,
+        "beforeValue": "[redacted-empty]",
+        "afterValue": "[redacted-user-supplied-project-description]"
+      },
+      "sourceEvidenceIds": [
+        "mock-devhub-draft-form-project-description"
+      ]
+    },
+    {
+      "id": "submit-application-stop-gate",
+      "mockedPlaywrightAction": "stop_before_click",
+      "classification": "consequential",
+      "reversible": false,
+      "exactConfirmationRequired": true,
+      "exactConfirmationProvidedDefault": false,
+      "allowedWithoutExactConfirmation": false,
+      "selectorBasis": {
+        "role": "button",
+        "accessibleName": "Submit application",
+        "labelText": "Submit application",
+        "nearbyHeading": "Review and submit",
+        "stableSelectorBasis": "role_and_accessible_name"
+      },
+      "redaction": {
+        "containsPrivateUserValue": false,
+        "recordedValue": "[button-label-only]"
+      },
+      "sourceEvidenceIds": [
+        "guardrail-stop-before-submit-application"
+      ]
+    },
+    {
+      "id": "pay-fees-stop-gate",
+      "mockedPlaywrightAction": "stop_before_payment",
+      "classification": "financial",
+      "reversible": false,
+      "exactConfirmationRequired": true,
+      "exactConfirmationProvidedDefault": false,
+      "allowedWithoutExactConfirmation": false,
+      "selectorBasis": {
+        "role": "button",
+        "accessibleName": "Pay fees",
+        "labelText": "Pay fees",
+        "nearbyHeading": "Fees due",
+        "stableSelectorBasis": "role_and_accessible_name"
+      },
+      "redaction": {
+        "containsPrivateUserValue": true,
+        "recordedValue": "[redacted-fee-amount]"
+      },
+      "sourceEvidenceIds": [
+        "guardrail-stop-before-payment"
+      ]
+    }
+  ]
+}

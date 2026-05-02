@@ -1,0 +1,79 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "playwright-planning-source-evidence-registry",
+  "description": "Commit-safe registry of public or synthetic fixture evidence IDs used by PP&D Playwright planning fixtures.",
+  "processIds": [
+    "synthetic-building-permit-process",
+    "synthetic-single-pdf-building-permit-process"
+  ],
+  "evidenceIds": [
+    "devhub-public-guidance-fixture",
+    "devhub-public-guidance-permit-request-types",
+    "devhub-public-guidance-save-draft",
+    "guardrail-stop-before-payment",
+    "guardrail-stop-before-submit-application",
+    "mock-devhub-draft-form-project-description",
+    "public-devhub-guidance-permit-request-types",
+    "ppd-agent-action-gate-fixture",
+    "ppd-public-guidance-devhub-application-address-evidence",
+    "src-devhub-building-permit-request",
+    "src-single-pdf-process"
+  ],
+  "registryEntries": [
+    {
+      "id": "devhub-public-guidance-fixture",
+      "sourceType": "public_guidance_fixture",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub"
+    },
+    {
+      "id": "devhub-public-guidance-permit-request-types",
+      "sourceType": "public_guidance_fixture",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub"
+    },
+    {
+      "id": "devhub-public-guidance-save-draft",
+      "sourceType": "public_guidance_fixture",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub"
+    },
+    {
+      "id": "guardrail-stop-before-payment",
+      "sourceType": "guardrail_fixture",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub"
+    },
+    {
+      "id": "guardrail-stop-before-submit-application",
+      "sourceType": "guardrail_fixture",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub"
+    },
+    {
+      "id": "mock-devhub-draft-form-project-description",
+      "sourceType": "mocked_devhub_form_fixture",
+      "sourceUrl": "https://devhub.portlandoregon.gov/permit-requests/trade-plan-review/project-information"
+    },
+    {
+      "id": "public-devhub-guidance-permit-request-types",
+      "sourceType": "public_guidance_fixture",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub"
+    },
+    {
+      "id": "ppd-agent-action-gate-fixture",
+      "sourceType": "guardrail_fixture",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub"
+    },
+    {
+      "id": "ppd-public-guidance-devhub-application-address-evidence",
+      "sourceType": "public_guidance_fixture",
+      "sourceUrl": "https://www.portland.gov/ppd/permits"
+    },
+    {
+      "id": "src-devhub-building-permit-request",
+      "sourceType": "public_guidance_fixture",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub"
+    },
+    {
+      "id": "src-single-pdf-process",
+      "sourceType": "public_guidance_fixture",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process"
+    }
+  ]
+}

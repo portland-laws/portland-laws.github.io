@@ -1,0 +1,93 @@
+{
+  "fixtureSchema": "ppd.devhub.playwright_accessible_selector_contract.v1",
+  "fixtureId": "trade-plan-review-project-info-accessible-selectors",
+  "captureMode": "synthetic_fixture_only",
+  "noLiveBrowserSession": true,
+  "usesAuthenticationState": false,
+  "usesBrowserTrace": false,
+  "usesScreenshots": false,
+  "sourceEvidenceIds": [
+    "devhub-public-guidance-permit-request-types",
+    "mock-devhub-draft-form-project-description"
+  ],
+  "evidence": [
+    {
+      "id": "devhub-public-guidance-permit-request-types",
+      "sourceType": "public_guidance_fixture",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub",
+      "title": "Development Hub PDX permit request guidance",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "id": "mock-devhub-draft-form-project-description",
+      "sourceType": "mocked_devhub_form_fixture",
+      "sourceUrl": "https://devhub.portlandoregon.gov/permit-requests/trade-plan-review/project-information",
+      "title": "Mocked DevHub trade plan review project information page",
+      "capturedAt": "2026-05-02T00:00:00Z"
+    }
+  ],
+  "page": {
+    "pageId": "trade-plan-review-project-information",
+    "stateKind": "mocked_devhub_draft_page",
+    "urlState": {
+      "stableUrl": "https://devhub.portlandoregon.gov/permit-requests/trade-plan-review/project-information",
+      "stateName": "trade_plan_review_project_information",
+      "path": "/permit-requests/trade-plan-review/project-information",
+      "queryState": "[REDACTED]"
+    },
+    "heading": "Project information",
+    "fields": [
+      {
+        "fieldId": "project-description",
+        "role": "textbox",
+        "accessibleName": "Project description",
+        "labelText": "Project description",
+        "nearbyHeading": "Project information",
+        "required": true,
+        "requiredFlagBasis": "aria-required",
+        "redactedValue": "[REDACTED]",
+        "selectorBasis": {
+          "strategy": "accessible_role_name",
+          "role": "textbox",
+          "name": "Project description",
+          "exact": true,
+          "stableLocator": "page.getByRole('textbox', { name: 'Project description', exact: true })"
+        }
+      },
+      {
+        "fieldId": "permit-category",
+        "role": "combobox",
+        "accessibleName": "Permit category",
+        "labelText": "Permit category",
+        "nearbyHeading": "Permit request type",
+        "required": true,
+        "requiredFlagBasis": "visible_label",
+        "redactedValue": "[SELECTED_OPTION_REDACTED]",
+        "selectorBasis": {
+          "strategy": "accessible_role_name",
+          "role": "combobox",
+          "name": "Permit category",
+          "exact": true,
+          "stableLocator": "page.getByRole('combobox', { name: 'Permit category', exact: true })"
+        }
+      },
+      {
+        "fieldId": "owner-is-applicant",
+        "role": "checkbox",
+        "accessibleName": "Owner is applicant",
+        "labelText": "Owner is applicant",
+        "nearbyHeading": "Applicant information",
+        "required": false,
+        "requiredFlagBasis": "not_required",
+        "redactedValue": "[CHECKED_REDACTED]",
+        "selectorBasis": {
+          "strategy": "accessible_role_name",
+          "role": "checkbox",
+          "name": "Owner is applicant",
+          "exact": true,
+          "stableLocator": "page.getByRole('checkbox', { name: 'Owner is applicant', exact: true })"
+        }
+      }
+    ]
+  }
+}

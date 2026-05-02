@@ -1,0 +1,63 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "devhub-missing-information-form-field-mapping-001",
+  "description": "Synthetic fixture linking one missing PP&D user fact to one mocked DevHub field and one reversible draft-preview action.",
+  "processId": "synthetic-single-pdf-building-permit-process",
+  "mapping": {
+    "missingInformationId": "missing-property-site-address",
+    "requiredUserFact": {
+      "factId": "property.site_address",
+      "label": "Project site address",
+      "required": true,
+      "redactionPolicy": "redacted_fixture_value_only",
+      "processRequirementId": "required-fact-property-site-address",
+      "sourceEvidenceId": "ppd-public-guidance-devhub-application-address-evidence"
+    },
+    "mockedDevHubField": {
+      "fieldId": "devhub-field-project-site-address",
+      "pageStateId": "mock-devhub-building-permit-draft-page",
+      "role": "textbox",
+      "accessibleName": "Project site address",
+      "labelText": "Project site address",
+      "nearbyHeading": "Project location",
+      "required": true,
+      "selectorBasis": {
+        "strategy": "accessible_role_and_name",
+        "role": "textbox",
+        "name": "Project site address"
+      },
+      "currentValue": ""
+    },
+    "sourceEvidence": {
+      "evidenceId": "ppd-public-guidance-devhub-application-address-evidence",
+      "sourceType": "public_guidance_fixture",
+      "sourceUrl": "https://www.portland.gov/ppd/permits",
+      "citationLabel": "PP&D public permit application guidance fixture",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    "draftPreviewAction": {
+      "actionId": "preview-fill-project-site-address",
+      "classification": "reversible_draft_edit",
+      "actionType": "fill_field_preview",
+      "fieldId": "devhub-field-project-site-address",
+      "beforeValue": "",
+      "afterValue": "",
+      "executesBrowserAction": false,
+      "requiresExactUserConfirmation": false,
+      "isPreviewOnly": true,
+      "reversible": true,
+      "blockedActionTypes": [
+        "upload",
+        "submit",
+        "certify",
+        "pay",
+        "cancel",
+        "schedule_inspection",
+        "mfa",
+        "captcha",
+        "account_creation",
+        "password_recovery"
+      ]
+    }
+  }
+}

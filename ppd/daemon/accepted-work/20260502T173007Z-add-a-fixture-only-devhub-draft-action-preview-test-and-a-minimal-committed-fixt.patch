@@ -1,0 +1,415 @@
+--- a/ppd/tests/fixtures/devhub/draft_action_preview.json
++++ b/ppd/tests/fixtures/devhub/draft_action_preview.json
+@@ -1,100 +1,67 @@
+ {
+   "schemaVersion": 1,
+-  "fixtureId": "devhub-draft-action-preview-redacted-001",
+-  "capturedFrom": "synthetic-playwright-fixture",
+-  "lastReviewed": "2026-05-02",
+-  "sourceEvidenceIds": [
+-    "devhub-public-guidance-application-draft",
+-    "ppd-guardrail-reversible-draft-edit"
+-  ],
+-  "pageState": {
+-    "stateId": "draft-building-permit-details-redacted",
+-    "urlPattern": "https://devhub.portlandoregon.gov/*/draft/*",
+-    "authenticatedSessionRequired": false,
+-    "usesSyntheticHtmlOnly": true,
+-    "liveBrowserSession": false
++  "fixtureType": "devhubDraftActionPreview",
++  "generatedAt": "2026-05-02T00:00:00Z",
++  "source": {
++    "kind": "synthetic_redacted_fixture",
++    "description": "Synthetic DevHub draft-action preview fixture for reversible form fills only.",
++    "noLiveBrowserSession": true,
++    "containsPrivateSessionState": false,
++    "containsScreenshots": false,
++    "containsTraces": false,
++    "containsUploads": false
+   },
+-  "previewMode": {
+-    "enabled": true,
+-    "dryRun": true,
+-    "requiresUserReviewBeforeExecution": true,
+-    "executesBrowserActions": false
+-  },
+-  "forbiddenActionTerms": [
+-    "upload",
+-    "submit",
+-    "certify",
+-    "certification",
+-    "payment",
+-    "pay",
+-    "cancel",
+-    "cancellation",
+-    "mfa",
+-    "captcha",
+-    "inspection",
+-    "scheduleInspection",
+-    "schedule-inspection"
+-  ],
+   "draftActionPreviews": [
+     {
+-      "previewId": "preview-project-description-fill",
+-      "actionClass": "reversible_draft_fill",
++      "id": "preview-project-description-fill",
++      "classification": "reversible_draft_edit",
++      "actionType": "fill",
+       "playwrightAction": "fill",
+-      "previewOnly": true,
+-      "executionStatus": "not_executed",
+-      "selectorBasis": {
++      "target": {
+         "role": "textbox",
+         "accessibleName": "Project description",
+-        "label": "Project description",
+-        "required": true
++        "selectorBasis": "label",
++        "selector": "label:Project description"
+       },
+-      "field": {
+-        "fieldId": "projectDescription",
+-        "label": "Project description",
+-        "required": true,
+-        "beforeValue": "[redacted-empty]",
+-        "previewValue": "[redacted-project-description]"
+-      },
++      "beforeValue": "[REDACTED_EMPTY]",
++      "afterValue": "[REDACTED_PROJECT_DESCRIPTION]",
++      "linkedMissingFactId": "missing-project-description",
+       "sourceEvidenceIds": [
+-        "devhub-public-guidance-application-draft"
++        "devhub-public-guidance-save-draft"
+       ],
+-      "stopBefore": [
+-        "official_submission",
+-        "certification",
++      "previewOnly": true,
++      "requiresExplicitConfirmation": false,
++      "isIrreversible": false,
++      "notes": "Represents a reversible draft field fill preview only; it is not an upload, submission, certification, payment, cancellation, MFA, CAPTCHA, or inspection scheduling action."
++    }
++  ],
++  "stopGates": [
++    {
++      "id": "stop-before-submit",
++      "blockedActionTypes": [
++        "upload",
++        "submit",
++        "certify",
+         "payment",
+-        "upload",
+-        "inspection_scheduling"
++        "cancel",
++        "mfa",
++        "captcha",
++        "schedule_inspection"
++      ],
++      "requiresExplicitConfirmation": true,
++      "defaultConfirmed": false,
++      "sourceEvidenceIds": [
++        "devhub-public-guidance-save-draft"
+       ]
+-    },
++    }
++  ],
++  "evidence": [
+     {
+-      "previewId": "preview-work-type-select",
+-      "actionClass": "reversible_draft_fill",
+-      "playwrightAction": "selectOption",
+-      "previewOnly": true,
+-      "executionStatus": "not_executed",
+-      "selectorBasis": {
+-        "role": "combobox",
+-        "accessibleName": "Type of work",
+-        "label": "Type of work",
+-        "required": true
+-      },
+-      "field": {
+-        "fieldId": "workType",
+-        "label": "Type of work",
+-        "required": true,
+-        "beforeValue": "[redacted-unselected]",
+-        "previewValue": "[redacted-option]"
+-      },
+-      "sourceEvidenceIds": [
+-        "devhub-public-guidance-application-draft"
+-      ],
+-      "stopBefore": [
+-        "official_submission",
+-        "certification",
+-        "payment",
+-        "upload",
+-        "inspection_scheduling"
+-      ]
++      "id": "devhub-public-guidance-save-draft",
++      "sourceUrl": "https://www.portland.gov/ppd/devhub",
++      "title": "Development Hub PDX public guidance",
++      "capturedAt": "2026-05-01T00:00:00Z",
++      "summary": "Public guidance distinguishes draft preparation from consequential DevHub actions that require user control."
+     }
+   ]
+ }
+--- a/ppd/tests/test_devhub_draft_action_preview.py
++++ b/ppd/tests/test_devhub_draft_action_preview.py
+@@ -1,3 +1,11 @@
++"""Fixture-only validation for DevHub draft-action previews.
++
++This test intentionally does not launch Playwright, authenticate, upload files,
++submit applications, certify statements, pay fees, cancel requests, handle MFA or
++CAPTCHA, or schedule inspections. It validates only a committed redacted JSON
++fixture shape.
++"""
++
+ from __future__ import annotations
+ 
+ import json
+@@ -6,154 +14,114 @@
+ from typing import Any
+ 
+ 
++FIXTURE_PATH = Path(__file__).parent / "fixtures" / "devhub" / "draft_action_preview.json"
++
++FORBIDDEN_ACTION_TYPES = {
++    "upload",
++    "submit",
++    "certify",
++    "certification",
++    "payment",
++    "pay",
++    "cancel",
++    "cancellation",
++    "mfa",
++    "captcha",
++    "schedule_inspection",
++    "inspection_scheduling",
++}
++
++REVERSIBLE_CLASSIFICATIONS = {"reversible_draft_edit", "draft_preview"}
++DRAFT_PLAYWRIGHT_ACTIONS = {"fill", "check", "uncheck", "selectOption"}
++
++
+ class DevHubDraftActionPreviewFixtureTest(unittest.TestCase):
+     def load_fixture(self) -> dict[str, Any]:
+-        fixture_path = Path(__file__).parent / "fixtures" / "devhub" / "draft_action_preview.json"
+-        with fixture_path.open(encoding="utf-8") as handle:
+-            fixture = json.load(handle)
+-        self.assertIsInstance(fixture, dict)
+-        return fixture
++        with FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
++            data = json.load(fixture_file)
++        self.assertIsInstance(data, dict)
++        return data
+ 
+-    def test_draft_action_previews_are_preview_only_reversible_fills(self) -> None:
+-        fixture = self.load_fixture()
++    def test_fixture_exposes_draft_action_previews(self) -> None:
++        data = self.load_fixture()
+ 
+-        self.assertEqual(fixture.get("schemaVersion"), 1)
+-        self.assertEqual(fixture.get("capturedFrom"), "synthetic-playwright-fixture")
+-        self.assertIsInstance(fixture.get("sourceEvidenceIds"), list)
+-        self.assertTrue(fixture["sourceEvidenceIds"])
++        self.assertEqual(data.get("fixtureType"), "devhubDraftActionPreview")
++        self.assertTrue(data.get("source", {}).get("noLiveBrowserSession"))
++        self.assertFalse(data.get("source", {}).get("containsPrivateSessionState"))
++        self.assertFalse(data.get("source", {}).get("containsScreenshots"))
++        self.assertFalse(data.get("source", {}).get("containsTraces"))
++        self.assertFalse(data.get("source", {}).get("containsUploads"))
+ 
+-        page_state = fixture.get("pageState")
+-        self.assertIsInstance(page_state, dict)
+-        self.assertFalse(page_state.get("authenticatedSessionRequired"))
+-        self.assertTrue(page_state.get("usesSyntheticHtmlOnly"))
+-        self.assertFalse(page_state.get("liveBrowserSession"))
++        previews = data.get("draftActionPreviews")
++        self.assertIsInstance(previews, list, "fixture must expose draftActionPreviews")
++        self.assertGreater(len(previews), 0, "fixture must include at least one draft action preview")
+ 
+-        preview_mode = fixture.get("previewMode")
+-        self.assertIsInstance(preview_mode, dict)
+-        self.assertTrue(preview_mode.get("enabled"))
+-        self.assertTrue(preview_mode.get("dryRun"))
+-        self.assertTrue(preview_mode.get("requiresUserReviewBeforeExecution"))
+-        self.assertFalse(preview_mode.get("executesBrowserActions"))
++    def test_draft_previews_are_reversible_fill_previews_only(self) -> None:
++        data = self.load_fixture()
++        previews = data["draftActionPreviews"]
++        evidence_ids = {item["id"] for item in data.get("evidence", [])}
+ 
+-        previews = fixture.get("draftActionPreviews")
+-        self.assertIsInstance(previews, list)
+-        self.assertTrue(previews)
++        for preview in previews:
++            with self.subTest(preview=preview.get("id")):
++                self.assertIn(preview.get("classification"), REVERSIBLE_CLASSIFICATIONS)
++                self.assertIn(preview.get("playwrightAction"), DRAFT_PLAYWRIGHT_ACTIONS)
++                self.assertEqual(preview.get("actionType"), "fill")
++                self.assertTrue(preview.get("previewOnly"))
++                self.assertFalse(preview.get("requiresExplicitConfirmation"))
++                self.assertFalse(preview.get("isIrreversible"))
+ 
+-        preview_ids: set[str] = set()
+-        allowed_playwright_actions = {"fill", "selectOption"}
+-        for index, preview in enumerate(previews):
+-            self.assertIsInstance(preview, dict)
+-            preview_id = preview.get("previewId")
+-            self.assertIsInstance(preview_id, str)
+-            self.assertTrue(preview_id)
+-            self.assertNotIn(preview_id, preview_ids)
+-            preview_ids.add(preview_id)
++                before_value = preview.get("beforeValue")
++                after_value = preview.get("afterValue")
++                self.assertIsInstance(before_value, str)
++                self.assertIsInstance(after_value, str)
++                self.assertTrue(before_value.startswith("[REDACTED"))
++                self.assertTrue(after_value.startswith("[REDACTED"))
+ 
+-            self.assertEqual(preview.get("actionClass"), "reversible_draft_fill")
+-            self.assertIn(preview.get("playwrightAction"), allowed_playwright_actions)
+-            self.assertTrue(preview.get("previewOnly"), index)
+-            self.assertEqual(preview.get("executionStatus"), "not_executed")
++                target = preview.get("target")
++                self.assertIsInstance(target, dict)
++                self.assertEqual(target.get("role"), "textbox")
++                self.assertEqual(target.get("selectorBasis"), "label")
++                self.assertIsInstance(target.get("accessibleName"), str)
++                self.assertTrue(target.get("accessibleName", "").strip())
+ 
+-            selector_basis = preview.get("selectorBasis")
+-            self.assertIsInstance(selector_basis, dict)
+-            self.assertIn(selector_basis.get("role"), {"textbox", "combobox", "checkbox", "radio"})
+-            self.assertIsInstance(selector_basis.get("accessibleName"), str)
+-            self.assertTrue(selector_basis["accessibleName"])
+-            self.assertIsInstance(selector_basis.get("label"), str)
+-            self.assertTrue(selector_basis["label"])
+-            self.assertIsInstance(selector_basis.get("required"), bool)
++                linked_evidence = preview.get("sourceEvidenceIds")
++                self.assertIsInstance(linked_evidence, list)
++                self.assertGreater(len(linked_evidence), 0)
++                self.assertTrue(set(linked_evidence).issubset(evidence_ids))
+ 
+-            field = preview.get("field")
+-            self.assertIsInstance(field, dict)
+-            self.assertIsInstance(field.get("fieldId"), str)
+-            self.assertTrue(field["fieldId"])
+-            self.assertEqual(field.get("label"), selector_basis.get("label"))
+-            self.assertIsInstance(field.get("required"), bool)
+-            self.assertIsInstance(field.get("beforeValue"), str)
+-            self.assertIsInstance(field.get("previewValue"), str)
+-            self.assertTrue(field["beforeValue"].startswith("[redacted"))
+-            self.assertTrue(field["previewValue"].startswith("[redacted"))
++    def test_draft_previews_do_not_include_forbidden_actions(self) -> None:
++        data = self.load_fixture()
++        previews = data["draftActionPreviews"]
+ 
+-            evidence_ids = preview.get("sourceEvidenceIds")
+-            self.assertIsInstance(evidence_ids, list)
+-            self.assertTrue(evidence_ids)
++        for preview in previews:
++            searchable_values = {
++                str(preview.get("classification", "")).lower(),
++                str(preview.get("actionType", "")).lower(),
++                str(preview.get("playwrightAction", "")).lower(),
++                str(preview.get("id", "")).lower(),
++            }
++            with self.subTest(preview=preview.get("id")):
++                self.assertTrue(searchable_values.isdisjoint(FORBIDDEN_ACTION_TYPES))
+ 
+-            stop_before = preview.get("stopBefore")
+-            self.assertIsInstance(stop_before, list)
+-            self.assertIn("official_submission", stop_before)
+-            self.assertIn("certification", stop_before)
+-            self.assertIn("payment", stop_before)
+-            self.assertIn("upload", stop_before)
+-            self.assertIn("inspection_scheduling", stop_before)
++    def test_stop_gates_list_forbidden_actions_without_authorizing_them(self) -> None:
++        data = self.load_fixture()
++        stop_gates = data.get("stopGates")
++        self.assertIsInstance(stop_gates, list)
++        self.assertGreater(len(stop_gates), 0)
+ 
+-    def test_forbidden_terms_are_only_declared_as_guards_not_preview_actions(self) -> None:
+-        fixture = self.load_fixture()
+-        forbidden_terms = fixture.get("forbiddenActionTerms")
+-        self.assertIsInstance(forbidden_terms, list)
+-        self.assertTrue(forbidden_terms)
++        blocked_actions: set[str] = set()
++        for gate in stop_gates:
++            self.assertTrue(gate.get("requiresExplicitConfirmation"))
++            self.assertFalse(gate.get("defaultConfirmed"))
++            blocked_actions.update(str(action).lower() for action in gate.get("blockedActionTypes", []))
+ 
+-        exempt_path_parts = {"forbiddenActionTerms", "stopBefore"}
+-        findings: list[str] = []
+-        for path, value in self.walk_strings(fixture):
+-            if any(part in exempt_path_parts for part in path):
+-                continue
+-            lowered = value.lower()
+-            for term in forbidden_terms:
+-                self.assertIsInstance(term, str)
+-                if term.lower() in lowered:
+-                    findings.append(".".join(path))
+-        self.assertEqual(findings, [])
+-
+-    def test_fixture_does_not_define_runtime_artifact_or_private_auth_fields(self) -> None:
+-        fixture = self.load_fixture()
+-        forbidden_keys = {
+-            "authState",
+-            "storageState",
+-            "storageStatePath",
+-            "tracePath",
+-            "screenshotPath",
+-            "downloadPath",
+-            "uploadPath",
+-            "privateSessionPath",
+-            "credentials",
+-            "password",
+-            "token",
+-        }
+-        seen_forbidden: list[str] = []
+-        for path, key in self.walk_keys(fixture):
+-            if key in forbidden_keys:
+-                seen_forbidden.append(".".join(path))
+-        self.assertEqual(seen_forbidden, [])
+-
+-    def walk_strings(self, value: Any, path: tuple[str, ...] = ()) -> list[tuple[tuple[str, ...], str]]:
+-        if isinstance(value, str):
+-            return [(path, value)]
+-        if isinstance(value, dict):
+-            findings: list[tuple[tuple[str, ...], str]] = []
+-            for key, child in value.items():
+-                findings.extend(self.walk_strings(child, path + (str(key),)))
+-            return findings
+-        if isinstance(value, list):
+-            findings = []
+-            for index, child in enumerate(value):
+-                findings.extend(self.walk_strings(child, path + (str(index),)))
+-            return findings
+-        return []
+-
+-    def walk_keys(self, value: Any, path: tuple[str, ...] = ()) -> list[tuple[tuple[str, ...], str]]:
+-        if isinstance(value, dict):
+-            findings: list[tuple[tuple[str, ...], str]] = []
+-            for key, child in value.items():
+-                key_text = str(key)
+-                findings.append((path + (key_text,), key_text))
+-                findings.extend(self.walk_keys(child, path + (key_text,)))
+-            return findings
+-        if isinstance(value, list):
+-            findings = []
+-            for index, child in enumerate(value):
+-                findings.extend(self.walk_keys(child, path + (str(index),)))
+-            return findings
+-        return []
++        self.assertTrue(FORBIDDEN_ACTION_TYPES.intersection(blocked_actions))
++        self.assertIn("submit", blocked_actions)
++        self.assertIn("upload", blocked_actions)
++        self.assertIn("payment", blocked_actions)
++        self.assertIn("mfa", blocked_actions)
++        self.assertIn("captcha", blocked_actions)
++        self.assertIn("schedule_inspection", blocked_actions)
+ 
+ 
+ if __name__ == "__main__":

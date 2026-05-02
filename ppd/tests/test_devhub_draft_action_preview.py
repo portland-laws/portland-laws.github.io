@@ -1,4 +1,10 @@
-"""Validate DevHub draft-action previews remain reversible and non-consequential."""
+"""Fixture-only validation for DevHub draft-action previews.
+
+This test intentionally does not launch Playwright, authenticate, upload files,
+submit applications, certify statements, pay fees, cancel requests, handle MFA or
+CAPTCHA, or schedule inspections. It validates only a committed redacted JSON
+fixture shape.
+"""
 
 from __future__ import annotations
 
@@ -9,103 +15,113 @@ from typing import Any
 
 
 FIXTURE_PATH = Path(__file__).parent / "fixtures" / "devhub" / "draft_action_preview.json"
-REVERSIBLE_ACTION_CLASS = "reversible_draft_fill"
-ALLOWED_PLAYWRIGHT_ACTIONS = {"fill", "selectOption", "check", "uncheck"}
-FORBIDDEN_ACTION_CLASSES = {
+
+FORBIDDEN_ACTION_TYPES = {
     "upload",
     "submit",
     "certify",
+    "certification",
     "payment",
+    "pay",
+    "cancel",
     "cancellation",
     "mfa",
     "captcha",
+    "schedule_inspection",
     "inspection_scheduling",
-    "consequential",
-    "financial",
 }
+
+REVERSIBLE_CLASSIFICATIONS = {"reversible_draft_edit", "draft_preview"}
+DRAFT_PLAYWRIGHT_ACTIONS = {"fill", "check", "uncheck", "selectOption"}
 
 
 class DevHubDraftActionPreviewFixtureTest(unittest.TestCase):
-    def setUp(self) -> None:
-        with FIXTURE_PATH.open(encoding="utf-8") as fixture_file:
-            self.fixture: dict[str, Any] = json.load(fixture_file)
+    def load_fixture(self) -> dict[str, Any]:
+        with FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
+            data = json.load(fixture_file)
+        self.assertIsInstance(data, dict)
+        return data
 
-    def test_reversible_draft_fills_are_preview_only(self) -> None:
-        previews = self.fixture.get("draftActionPreviews")
-        self.assertIsInstance(previews, list)
-        self.assertGreater(len(previews), 0)
+    def test_fixture_exposes_draft_action_previews(self) -> None:
+        data = self.load_fixture()
 
-        preview_mode = self.fixture.get("previewMode", {})
-        self.assertTrue(preview_mode.get("enabled"))
-        self.assertTrue(preview_mode.get("dryRun"))
-        self.assertFalse(preview_mode.get("executesBrowserActions"))
-        self.assertTrue(preview_mode.get("requiresUserReviewBeforeExecution"))
+        self.assertEqual(data.get("fixtureType"), "devhubDraftActionPreview")
+        self.assertTrue(data.get("source", {}).get("noLiveBrowserSession"))
+        self.assertFalse(data.get("source", {}).get("containsPrivateSessionState"))
+        self.assertFalse(data.get("source", {}).get("containsScreenshots"))
+        self.assertFalse(data.get("source", {}).get("containsTraces"))
+        self.assertFalse(data.get("source", {}).get("containsUploads"))
+
+        previews = data.get("draftActionPreviews")
+        self.assertIsInstance(previews, list, "fixture must expose draftActionPreviews")
+        self.assertGreater(len(previews), 0, "fixture must include at least one draft action preview")
+
+    def test_draft_previews_are_reversible_fill_previews_only(self) -> None:
+        data = self.load_fixture()
+        previews = data["draftActionPreviews"]
+        evidence_ids = {item["id"] for item in data.get("evidence", [])}
 
         for preview in previews:
-            with self.subTest(preview_id=preview.get("previewId")):
-                self.assertEqual(preview.get("actionClass"), REVERSIBLE_ACTION_CLASS)
-                self.assertIn(preview.get("playwrightAction"), ALLOWED_PLAYWRIGHT_ACTIONS)
+            with self.subTest(preview=preview.get("id")):
+                self.assertIn(preview.get("classification"), REVERSIBLE_CLASSIFICATIONS)
+                self.assertIn(preview.get("playwrightAction"), DRAFT_PLAYWRIGHT_ACTIONS)
+                self.assertEqual(preview.get("actionType"), "fill")
                 self.assertTrue(preview.get("previewOnly"))
-                self.assertEqual(preview.get("executionStatus"), "not_executed")
-                self.assert_accessible_selector(preview.get("selectorBasis"))
-                self.assert_redacted_field_values(preview.get("field"))
-                self.assert_source_evidence(preview.get("sourceEvidenceIds"))
+                self.assertFalse(preview.get("requiresExplicitConfirmation"))
+                self.assertFalse(preview.get("isIrreversible"))
 
-    def test_preview_actions_do_not_include_forbidden_actions(self) -> None:
-        previews = self.fixture["draftActionPreviews"]
-        forbidden_terms = {term.lower() for term in self.fixture.get("forbiddenActionTerms", [])}
-        self.assertTrue(forbidden_terms)
+                before_value = preview.get("beforeValue")
+                after_value = preview.get("afterValue")
+                self.assertIsInstance(before_value, str)
+                self.assertIsInstance(after_value, str)
+                self.assertTrue(before_value.startswith("[REDACTED"))
+                self.assertTrue(after_value.startswith("[REDACTED"))
+
+                target = preview.get("target")
+                self.assertIsInstance(target, dict)
+                self.assertEqual(target.get("role"), "textbox")
+                self.assertEqual(target.get("selectorBasis"), "label")
+                self.assertIsInstance(target.get("accessibleName"), str)
+                self.assertTrue(target.get("accessibleName", "").strip())
+
+                linked_evidence = preview.get("sourceEvidenceIds")
+                self.assertIsInstance(linked_evidence, list)
+                self.assertGreater(len(linked_evidence), 0)
+                self.assertTrue(set(linked_evidence).issubset(evidence_ids))
+
+    def test_draft_previews_do_not_include_forbidden_actions(self) -> None:
+        data = self.load_fixture()
+        previews = data["draftActionPreviews"]
 
         for preview in previews:
-            with self.subTest(preview_id=preview.get("previewId")):
-                searchable_values = [
-                    preview.get("previewId", ""),
-                    preview.get("actionClass", ""),
-                    preview.get("playwrightAction", ""),
-                    preview.get("field", {}).get("fieldId", ""),
-                    preview.get("field", {}).get("label", ""),
-                ]
-                searchable = " ".join(str(value).lower() for value in searchable_values)
-                for forbidden_term in forbidden_terms:
-                    self.assertNotIn(forbidden_term, searchable)
+            searchable_values = {
+                str(preview.get("classification", "")).lower(),
+                str(preview.get("actionType", "")).lower(),
+                str(preview.get("playwrightAction", "")).lower(),
+                str(preview.get("id", "")).lower(),
+            }
+            with self.subTest(preview=preview.get("id")):
+                self.assertTrue(searchable_values.isdisjoint(FORBIDDEN_ACTION_TYPES))
 
-                action_class = str(preview.get("actionClass", "")).lower()
-                self.assertNotIn(action_class, FORBIDDEN_ACTION_CLASSES)
-                self.assert_no_forbidden_stop_action(preview.get("stopBefore", []))
+    def test_stop_gates_list_forbidden_actions_without_authorizing_them(self) -> None:
+        data = self.load_fixture()
+        stop_gates = data.get("stopGates")
+        self.assertIsInstance(stop_gates, list)
+        self.assertGreater(len(stop_gates), 0)
 
-    def assert_accessible_selector(self, selector: Any) -> None:
-        self.assertIsInstance(selector, dict)
-        self.assertIn(selector.get("role"), {"textbox", "combobox", "checkbox", "radio"})
-        self.assertTrue(str(selector.get("accessibleName", "")).strip())
-        self.assertTrue(str(selector.get("label", "")).strip())
-        self.assertIsInstance(selector.get("required"), bool)
+        blocked_actions: set[str] = set()
+        for gate in stop_gates:
+            self.assertTrue(gate.get("requiresExplicitConfirmation"))
+            self.assertFalse(gate.get("defaultConfirmed"))
+            blocked_actions.update(str(action).lower() for action in gate.get("blockedActionTypes", []))
 
-    def assert_redacted_field_values(self, field: Any) -> None:
-        self.assertIsInstance(field, dict)
-        self.assertTrue(str(field.get("fieldId", "")).strip())
-        self.assertTrue(str(field.get("label", "")).strip())
-        self.assertIsInstance(field.get("required"), bool)
-        before_value = str(field.get("beforeValue", ""))
-        preview_value = str(field.get("previewValue", ""))
-        self.assertTrue(before_value.startswith("[redacted"))
-        self.assertTrue(preview_value.startswith("[redacted"))
-
-    def assert_source_evidence(self, source_evidence_ids: Any) -> None:
-        self.assertIsInstance(source_evidence_ids, list)
-        self.assertGreater(len(source_evidence_ids), 0)
-        for source_evidence_id in source_evidence_ids:
-            self.assertTrue(str(source_evidence_id).strip())
-
-    def assert_no_forbidden_stop_action(self, stop_before: Any) -> None:
-        self.assertIsInstance(stop_before, list)
-        forbidden_stop_actions = {
-            "official_submission",
-            "certification",
-            "payment",
-            "upload",
-            "inspection_scheduling",
-        }
-        self.assertTrue(forbidden_stop_actions.issubset(set(stop_before)))
+        self.assertTrue(FORBIDDEN_ACTION_TYPES.intersection(blocked_actions))
+        self.assertIn("submit", blocked_actions)
+        self.assertIn("upload", blocked_actions)
+        self.assertIn("payment", blocked_actions)
+        self.assertIn("mfa", blocked_actions)
+        self.assertIn("captcha", blocked_actions)
+        self.assertIn("schedule_inspection", blocked_actions)
 
 
 if __name__ == "__main__":

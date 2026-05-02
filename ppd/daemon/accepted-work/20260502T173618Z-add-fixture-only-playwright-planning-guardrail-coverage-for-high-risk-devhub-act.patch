@@ -1,0 +1,228 @@
+--- a/ppd/tests/fixtures/devhub/playwright_planning_confirmation_guardrails.json
++++ b/ppd/tests/fixtures/devhub/playwright_planning_confirmation_guardrails.json
+@@ -0,0 +1,128 @@
++{
++  "schemaVersion": 1,
++  "fixtureId": "playwright-planning-confirmation-guardrails",
++  "description": "Synthetic, redacted Playwright planning fixture for PP&D DevHub action guardrails. It contains no live browser state, credentials, traces, screenshots, uploads, payment data, or private account values.",
++  "sourceEvidenceIds": [
++    "devhub-public-guidance-fixture",
++    "ppd-agent-action-gate-fixture"
++  ],
++  "planningContext": {
++    "browserLaunched": false,
++    "liveDevHubSession": false,
++    "authenticatedAutomation": false,
++    "valuesRedacted": true
++  },
++  "actions": [
++    {
++      "id": "plan-upload-without-exact-confirmation",
++      "kind": "upload",
++      "label": "Upload plan file",
++      "classification": "potentially_consequential",
++      "exactExplicitUserConfirmationPresent": false,
++      "refused": true,
++      "refusalReason": "official uploads require exact explicit user confirmation before planning proceeds",
++      "automationAllowed": false
++    },
++    {
++      "id": "plan-submit-without-exact-confirmation",
++      "kind": "submit",
++      "label": "Submit application",
++      "classification": "potentially_consequential",
++      "exactExplicitUserConfirmationPresent": false,
++      "refused": true,
++      "refusalReason": "official submission requires exact explicit user confirmation before planning proceeds",
++      "automationAllowed": false
++    },
++    {
++      "id": "plan-certify-without-exact-confirmation",
++      "kind": "certify",
++      "label": "Certify application statement",
++      "classification": "potentially_consequential",
++      "exactExplicitUserConfirmationPresent": false,
++      "refused": true,
++      "refusalReason": "certification requires exact explicit user confirmation before planning proceeds",
++      "automationAllowed": false
++    },
++    {
++      "id": "plan-pay-without-exact-confirmation",
++      "kind": "pay",
++      "label": "Pay fees",
++      "classification": "financial",
++      "exactExplicitUserConfirmationPresent": false,
++      "refused": true,
++      "refusalReason": "payment actions require exact explicit user confirmation before planning proceeds",
++      "automationAllowed": false
++    },
++    {
++      "id": "plan-cancel-without-exact-confirmation",
++      "kind": "cancel",
++      "label": "Cancel request",
++      "classification": "potentially_consequential",
++      "exactExplicitUserConfirmationPresent": false,
++      "refused": true,
++      "refusalReason": "cancellation requires exact explicit user confirmation before planning proceeds",
++      "automationAllowed": false
++    },
++    {
++      "id": "plan-schedule-inspection-without-exact-confirmation",
++      "kind": "schedule_inspection",
++      "label": "Schedule inspection",
++      "classification": "potentially_consequential",
++      "exactExplicitUserConfirmationPresent": false,
++      "refused": true,
++      "refusalReason": "inspection scheduling requires exact explicit user confirmation before planning proceeds",
++      "automationAllowed": false
++    },
++    {
++      "id": "plan-mfa-without-exact-confirmation",
++      "kind": "mfa",
++      "label": "Complete MFA challenge",
++      "classification": "access_control",
++      "exactExplicitUserConfirmationPresent": false,
++      "refused": true,
++      "refusalReason": "MFA actions are access-control steps and must be refused without exact explicit user confirmation",
++      "automationAllowed": false
++    },
++    {
++      "id": "plan-captcha-without-exact-confirmation",
++      "kind": "captcha",
++      "label": "Complete CAPTCHA",
++      "classification": "access_control",
++      "exactExplicitUserConfirmationPresent": false,
++      "refused": true,
++      "refusalReason": "CAPTCHA actions are access-control steps and must be refused without exact explicit user confirmation",
++      "automationAllowed": false
++    },
++    {
++      "id": "plan-account-creation-without-exact-confirmation",
++      "kind": "account_creation",
++      "label": "Create PortlandOregon.gov account",
++      "classification": "account_control",
++      "exactExplicitUserConfirmationPresent": false,
++      "refused": true,
++      "refusalReason": "account creation requires exact explicit user confirmation before planning proceeds",
++      "automationAllowed": false
++    },
++    {
++      "id": "plan-password-recovery-without-exact-confirmation",
++      "kind": "password_recovery",
++      "label": "Recover password",
++      "classification": "account_control",
++      "exactExplicitUserConfirmationPresent": false,
++      "refused": true,
++      "refusalReason": "password recovery requires exact explicit user confirmation before planning proceeds",
++      "automationAllowed": false
++    },
++    {
++      "id": "plan-submit-with-exact-confirmation-control",
++      "kind": "submit",
++      "label": "Submit application after exact confirmation checkpoint",
++      "classification": "potentially_consequential",
++      "exactExplicitUserConfirmationPresent": true,
++      "refused": false,
++      "refusalReason": null,
++      "automationAllowed": false,
++      "requiresManualCheckpoint": true
++    }
++  ]
++}
+--- a/ppd/tests/test_playwright_planning_confirmation_guardrails.py
++++ b/ppd/tests/test_playwright_planning_confirmation_guardrails.py
+@@ -0,0 +1,94 @@
++"""Fixture-only guardrail tests for Playwright planning confirmations.
++
++These tests validate synthetic planning records only. They do not launch a
++browser, authenticate, upload files, submit applications, certify statements,
++pay fees, cancel requests, schedule inspections, complete MFA/CAPTCHA, create
++accounts, or recover passwords.
++"""
++
++from __future__ import annotations
++
++import json
++import unittest
++from pathlib import Path
++from typing import Any
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "devhub"
++    / "playwright_planning_confirmation_guardrails.json"
++)
++
++CONFIRMATION_FIELD = "exactExplicitUserConfirmationPresent"
++REFUSED_FIELD = "refused"
++AUTOMATION_ALLOWED_FIELD = "automationAllowed"
++
++GATED_ACTION_KINDS = {
++    "upload",
++    "submit",
++    "certify",
++    "pay",
++    "cancel",
++    "schedule_inspection",
++    "mfa",
++    "captcha",
++    "account_creation",
++    "password_recovery",
++}
++
++
++class PlaywrightPlanningConfirmationGuardrailTest(unittest.TestCase):
++    def setUp(self) -> None:
++        with FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
++            self.fixture: dict[str, Any] = json.load(fixture_file)
++        self.actions: list[dict[str, Any]] = list(self.fixture.get("actions", []))
++
++    def test_fixture_is_offline_redacted_planning_only(self) -> None:
++        context = self.fixture.get("planningContext", {})
++        self.assertEqual(self.fixture.get("schemaVersion"), 1)
++        self.assertFalse(context.get("browserLaunched"))
++        self.assertFalse(context.get("liveDevHubSession"))
++        self.assertFalse(context.get("authenticatedAutomation"))
++        self.assertTrue(context.get("valuesRedacted"))
++
++    def test_all_guarded_action_kinds_are_represented(self) -> None:
++        observed_kinds = {str(action.get("kind")) for action in self.actions}
++        self.assertEqual(set(), GATED_ACTION_KINDS - observed_kinds)
++
++    def test_guarded_actions_without_exact_confirmation_are_refused(self) -> None:
++        unconfirmed_actions = [
++            action
++            for action in self.actions
++            if action.get("kind") in GATED_ACTION_KINDS
++            and action.get(CONFIRMATION_FIELD) is False
++        ]
++        self.assertEqual(len(GATED_ACTION_KINDS), len(unconfirmed_actions))
++
++        for action in unconfirmed_actions:
++            with self.subTest(action=action.get("id")):
++                self.assertIs(action.get(CONFIRMATION_FIELD), False)
++                self.assertIs(action.get(REFUSED_FIELD), True)
++                self.assertIs(action.get(AUTOMATION_ALLOWED_FIELD), False)
++                self.assertIsInstance(action.get("refusalReason"), str)
++                self.assertNotEqual("", action.get("refusalReason", "").strip())
++
++    def test_refusal_is_not_claimed_when_exact_confirmation_is_present(self) -> None:
++        confirmed_actions = [
++            action
++            for action in self.actions
++            if action.get("kind") in GATED_ACTION_KINDS
++            and action.get(CONFIRMATION_FIELD) is True
++        ]
++        self.assertGreaterEqual(len(confirmed_actions), 1)
++
++        for action in confirmed_actions:
++            with self.subTest(action=action.get("id")):
++                self.assertIs(action.get(REFUSED_FIELD), False)
++                self.assertIs(action.get(AUTOMATION_ALLOWED_FIELD), False)
++                self.assertIs(action.get("requiresManualCheckpoint"), True)
++
++
++if __name__ == "__main__":
++    unittest.main()

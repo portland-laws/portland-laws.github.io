@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/test_devhub_draft_action_preview.py"
+  ],
+  "created_at": "2026-05-02T17:29:07.254669Z",
+  "impact": "Advances the blocked PP&D DevHub preview task by validating the committed draft-action preview fixture shape without launching Playwright or introducing private runtime artifacts.",
+  "summary": "Add fixture-only DevHub draft-action preview validation",
+  "target_task": "Task checkbox-74: Task checkbox-69: Resume checkbox-63 only after checkbox-68 passes. Use at most one redacted fixture plus one syntax-valid Python unittest file, inspect the committed `ppd/tests/fixtures/devhub/draft_action_preview.json` shape first, and either align the test to existing keys or replace the fixture with the smallest preview-only shape. Do not add Playwright runtime automation, private auth state, screenshots, traces, uploads, submissions, payments, MFA, CAPTCHA, cancellation, certification, or inspection scheduling.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 74 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................................................................................................................................................................................ss..............sss............................................................................................................................................. ---------------------------------------------------------------------- Ran 401 tests in 0.083s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

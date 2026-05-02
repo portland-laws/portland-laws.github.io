@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/devhub/action_classification_playwright.json",
+    "ppd/tests/test_playwright_action_classification_fixture.py"
+  ],
+  "created_at": "2026-05-02T17:35:18.702075Z",
+  "impact": "This advances the PP&D DevHub guardrail plan by fixture-validating how mocked Playwright interactions are classified before any browser automation, with consequential and financial paths stopped by false exact-confirmation defaults.",
+  "summary": "Add a deterministic Playwright action-classification fixture and validation test for mocked DevHub form interactions.",
+  "target_task": "Task checkbox-76: Task checkbox-71: Add a Playwright action-classification fixture that maps mocked form interactions to read-only, reversible draft-edit, consequential, and financial classes, with exact-confirmation defaults set to false.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 80 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "..................................................................................................................................................................................................................................................ss..............sss..................................................................................................................................................... ---------------------------------------------------------------------- Ran 410 tests in 0.080s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

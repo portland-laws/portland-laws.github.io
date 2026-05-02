@@ -1,0 +1,247 @@
+--- a/ppd/tests/test_devhub_draft_action_preview.py
++++ b/ppd/tests/test_devhub_draft_action_preview.py
+@@ -1,5 +1,3 @@
+-"""Validate DevHub draft-action previews remain reversible and non-consequential."""
+-
+ from __future__ import annotations
+ 
+ import json
+@@ -8,104 +6,154 @@
+ from typing import Any
+ 
+ 
+-FIXTURE_PATH = Path(__file__).parent / "fixtures" / "devhub" / "draft_action_preview.json"
+-REVERSIBLE_ACTION_CLASS = "reversible_draft_fill"
+-ALLOWED_PLAYWRIGHT_ACTIONS = {"fill", "selectOption", "check", "uncheck"}
+-FORBIDDEN_ACTION_CLASSES = {
+-    "upload",
+-    "submit",
+-    "certify",
+-    "payment",
+-    "cancellation",
+-    "mfa",
+-    "captcha",
+-    "inspection_scheduling",
+-    "consequential",
+-    "financial",
+-}
++class DevHubDraftActionPreviewFixtureTest(unittest.TestCase):
++    def load_fixture(self) -> dict[str, Any]:
++        fixture_path = Path(__file__).parent / "fixtures" / "devhub" / "draft_action_preview.json"
++        with fixture_path.open(encoding="utf-8") as handle:
++            fixture = json.load(handle)
++        self.assertIsInstance(fixture, dict)
++        return fixture
+ 
++    def test_draft_action_previews_are_preview_only_reversible_fills(self) -> None:
++        fixture = self.load_fixture()
+ 
+-class DevHubDraftActionPreviewFixtureTest(unittest.TestCase):
+-    def setUp(self) -> None:
+-        with FIXTURE_PATH.open(encoding="utf-8") as fixture_file:
+-            self.fixture: dict[str, Any] = json.load(fixture_file)
++        self.assertEqual(fixture.get("schemaVersion"), 1)
++        self.assertEqual(fixture.get("capturedFrom"), "synthetic-playwright-fixture")
++        self.assertIsInstance(fixture.get("sourceEvidenceIds"), list)
++        self.assertTrue(fixture["sourceEvidenceIds"])
+ 
+-    def test_reversible_draft_fills_are_preview_only(self) -> None:
+-        previews = self.fixture.get("draftActionPreviews")
+-        self.assertIsInstance(previews, list)
+-        self.assertGreater(len(previews), 0)
++        page_state = fixture.get("pageState")
++        self.assertIsInstance(page_state, dict)
++        self.assertFalse(page_state.get("authenticatedSessionRequired"))
++        self.assertTrue(page_state.get("usesSyntheticHtmlOnly"))
++        self.assertFalse(page_state.get("liveBrowserSession"))
+ 
+-        preview_mode = self.fixture.get("previewMode", {})
++        preview_mode = fixture.get("previewMode")
++        self.assertIsInstance(preview_mode, dict)
+         self.assertTrue(preview_mode.get("enabled"))
+         self.assertTrue(preview_mode.get("dryRun"))
++        self.assertTrue(preview_mode.get("requiresUserReviewBeforeExecution"))
+         self.assertFalse(preview_mode.get("executesBrowserActions"))
+-        self.assertTrue(preview_mode.get("requiresUserReviewBeforeExecution"))
+ 
+-        for preview in previews:
+-            with self.subTest(preview_id=preview.get("previewId")):
+-                self.assertEqual(preview.get("actionClass"), REVERSIBLE_ACTION_CLASS)
+-                self.assertIn(preview.get("playwrightAction"), ALLOWED_PLAYWRIGHT_ACTIONS)
+-                self.assertTrue(preview.get("previewOnly"))
+-                self.assertEqual(preview.get("executionStatus"), "not_executed")
+-                self.assert_accessible_selector(preview.get("selectorBasis"))
+-                self.assert_redacted_field_values(preview.get("field"))
+-                self.assert_source_evidence(preview.get("sourceEvidenceIds"))
++        previews = fixture.get("draftActionPreviews")
++        self.assertIsInstance(previews, list)
++        self.assertTrue(previews)
+ 
+-    def test_preview_actions_do_not_include_forbidden_actions(self) -> None:
+-        previews = self.fixture["draftActionPreviews"]
+-        forbidden_terms = {term.lower() for term in self.fixture.get("forbiddenActionTerms", [])}
++        preview_ids: set[str] = set()
++        allowed_playwright_actions = {"fill", "selectOption"}
++        for index, preview in enumerate(previews):
++            self.assertIsInstance(preview, dict)
++            preview_id = preview.get("previewId")
++            self.assertIsInstance(preview_id, str)
++            self.assertTrue(preview_id)
++            self.assertNotIn(preview_id, preview_ids)
++            preview_ids.add(preview_id)
++
++            self.assertEqual(preview.get("actionClass"), "reversible_draft_fill")
++            self.assertIn(preview.get("playwrightAction"), allowed_playwright_actions)
++            self.assertTrue(preview.get("previewOnly"), index)
++            self.assertEqual(preview.get("executionStatus"), "not_executed")
++
++            selector_basis = preview.get("selectorBasis")
++            self.assertIsInstance(selector_basis, dict)
++            self.assertIn(selector_basis.get("role"), {"textbox", "combobox", "checkbox", "radio"})
++            self.assertIsInstance(selector_basis.get("accessibleName"), str)
++            self.assertTrue(selector_basis["accessibleName"])
++            self.assertIsInstance(selector_basis.get("label"), str)
++            self.assertTrue(selector_basis["label"])
++            self.assertIsInstance(selector_basis.get("required"), bool)
++
++            field = preview.get("field")
++            self.assertIsInstance(field, dict)
++            self.assertIsInstance(field.get("fieldId"), str)
++            self.assertTrue(field["fieldId"])
++            self.assertEqual(field.get("label"), selector_basis.get("label"))
++            self.assertIsInstance(field.get("required"), bool)
++            self.assertIsInstance(field.get("beforeValue"), str)
++            self.assertIsInstance(field.get("previewValue"), str)
++            self.assertTrue(field["beforeValue"].startswith("[redacted"))
++            self.assertTrue(field["previewValue"].startswith("[redacted"))
++
++            evidence_ids = preview.get("sourceEvidenceIds")
++            self.assertIsInstance(evidence_ids, list)
++            self.assertTrue(evidence_ids)
++
++            stop_before = preview.get("stopBefore")
++            self.assertIsInstance(stop_before, list)
++            self.assertIn("official_submission", stop_before)
++            self.assertIn("certification", stop_before)
++            self.assertIn("payment", stop_before)
++            self.assertIn("upload", stop_before)
++            self.assertIn("inspection_scheduling", stop_before)
++
++    def test_forbidden_terms_are_only_declared_as_guards_not_preview_actions(self) -> None:
++        fixture = self.load_fixture()
++        forbidden_terms = fixture.get("forbiddenActionTerms")
++        self.assertIsInstance(forbidden_terms, list)
+         self.assertTrue(forbidden_terms)
+ 
+-        for preview in previews:
+-            with self.subTest(preview_id=preview.get("previewId")):
+-                searchable_values = [
+-                    preview.get("previewId", ""),
+-                    preview.get("actionClass", ""),
+-                    preview.get("playwrightAction", ""),
+-                    preview.get("field", {}).get("fieldId", ""),
+-                    preview.get("field", {}).get("label", ""),
+-                ]
+-                searchable = " ".join(str(value).lower() for value in searchable_values)
+-                for forbidden_term in forbidden_terms:
+-                    self.assertNotIn(forbidden_term, searchable)
++        exempt_path_parts = {"forbiddenActionTerms", "stopBefore"}
++        findings: list[str] = []
++        for path, value in self.walk_strings(fixture):
++            if any(part in exempt_path_parts for part in path):
++                continue
++            lowered = value.lower()
++            for term in forbidden_terms:
++                self.assertIsInstance(term, str)
++                if term.lower() in lowered:
++                    findings.append(".".join(path))
++        self.assertEqual(findings, [])
+ 
+-                action_class = str(preview.get("actionClass", "")).lower()
+-                self.assertNotIn(action_class, FORBIDDEN_ACTION_CLASSES)
+-                self.assert_no_forbidden_stop_action(preview.get("stopBefore", []))
++    def test_fixture_does_not_define_runtime_artifact_or_private_auth_fields(self) -> None:
++        fixture = self.load_fixture()
++        forbidden_keys = {
++            "authState",
++            "storageState",
++            "storageStatePath",
++            "tracePath",
++            "screenshotPath",
++            "downloadPath",
++            "uploadPath",
++            "privateSessionPath",
++            "credentials",
++            "password",
++            "token",
++        }
++        seen_forbidden: list[str] = []
++        for path, key in self.walk_keys(fixture):
++            if key in forbidden_keys:
++                seen_forbidden.append(".".join(path))
++        self.assertEqual(seen_forbidden, [])
+ 
+-    def assert_accessible_selector(self, selector: Any) -> None:
+-        self.assertIsInstance(selector, dict)
+-        self.assertIn(selector.get("role"), {"textbox", "combobox", "checkbox", "radio"})
+-        self.assertTrue(str(selector.get("accessibleName", "")).strip())
+-        self.assertTrue(str(selector.get("label", "")).strip())
+-        self.assertIsInstance(selector.get("required"), bool)
++    def walk_strings(self, value: Any, path: tuple[str, ...] = ()) -> list[tuple[tuple[str, ...], str]]:
++        if isinstance(value, str):
++            return [(path, value)]
++        if isinstance(value, dict):
++            findings: list[tuple[tuple[str, ...], str]] = []
++            for key, child in value.items():
++                findings.extend(self.walk_strings(child, path + (str(key),)))
++            return findings
++        if isinstance(value, list):
++            findings = []
++            for index, child in enumerate(value):
++                findings.extend(self.walk_strings(child, path + (str(index),)))
++            return findings
++        return []
+ 
+-    def assert_redacted_field_values(self, field: Any) -> None:
+-        self.assertIsInstance(field, dict)
+-        self.assertTrue(str(field.get("fieldId", "")).strip())
+-        self.assertTrue(str(field.get("label", "")).strip())
+-        self.assertIsInstance(field.get("required"), bool)
+-        before_value = str(field.get("beforeValue", ""))
+-        preview_value = str(field.get("previewValue", ""))
+-        self.assertTrue(before_value.startswith("[redacted"))
+-        self.assertTrue(preview_value.startswith("[redacted"))
+-
+-    def assert_source_evidence(self, source_evidence_ids: Any) -> None:
+-        self.assertIsInstance(source_evidence_ids, list)
+-        self.assertGreater(len(source_evidence_ids), 0)
+-        for source_evidence_id in source_evidence_ids:
+-            self.assertTrue(str(source_evidence_id).strip())
+-
+-    def assert_no_forbidden_stop_action(self, stop_before: Any) -> None:
+-        self.assertIsInstance(stop_before, list)
+-        forbidden_stop_actions = {
+-            "official_submission",
+-            "certification",
+-            "payment",
+-            "upload",
+-            "inspection_scheduling",
+-        }
+-        self.assertTrue(forbidden_stop_actions.issubset(set(stop_before)))
++    def walk_keys(self, value: Any, path: tuple[str, ...] = ()) -> list[tuple[tuple[str, ...], str]]:
++        if isinstance(value, dict):
++            findings: list[tuple[tuple[str, ...], str]] = []
++            for key, child in value.items():
++                key_text = str(key)
++                findings.append((path + (key_text,), key_text))
++                findings.extend(self.walk_keys(child, path + (key_text,)))
++            return findings
++        if isinstance(value, list):
++            findings = []
++            for index, child in enumerate(value):
++                findings.extend(self.walk_keys(child, path + (str(index),)))
++            return findings
++        return []
+ 
+ 
+ if __name__ == "__main__":

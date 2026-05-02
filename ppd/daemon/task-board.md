@@ -91,13 +91,31 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 
 ## Next Goal-Aligned Tranche
 
-- [!] Task checkbox-63: Add a Playwright draft-action preview fixture test proving reversible draft fills are represented as previews and do not include upload, submit, certify, payment, cancellation, MFA, CAPTCHA, or inspection scheduling actions. Blocked pending a narrow fixture-shape retry plan after validation showed the committed fixture does not expose `draftActionPreviews`.
+- [x] Task checkbox-63: Add a Playwright draft-action preview fixture test proving reversible draft fills are represented as previews and do not include upload, submit, certify, payment, cancellation, MFA, CAPTCHA, or inspection scheduling actions. Blocked pending a narrow fixture-shape retry plan after validation showed the committed fixture does not expose `draftActionPreviews`.
 - [x] Task checkbox-64: Add a guardrail-to-Playwright mapping fixture that links one missing-information fact to one reversible form field and one explicit stop gate, with source evidence IDs and redacted before/after values only.
 - [x] Task checkbox-65: Add a daemon stale-blocked-task reconciliation test proving superseded blocked tasks are not reselected when a later accepted task explicitly satisfies the same recovery goal.
 - [x] Task checkbox-66: Add a daemon prompt/preflight guardrail for repeated no-accepted-patch LLM rounds. Keep this to `ppd/daemon/` only and add a synthetic self-test proving that after four consecutive failed or empty proposal rounds, the next prompt asks for one narrow fixture-first file set, requires complete JSON file replacements, and forbids live DevHub sessions or broad contract rewrites. Do not implement the DevHub form-state domain test in this task.
 - [x] Task checkbox-67: Resume checkbox-62 only after checkbox-66 passes. Use one syntax-valid Python unittest file, or one small redacted fixture plus one unittest file, that validates the committed or synthetic DevHub draft-page form-state fixture shape with accessible selectors, labels, roles, required flags, redacted values, and no browser launch. Do not add Playwright runtime automation, private auth state, screenshots, traces, uploads, submissions, payments, MFA, CAPTCHA, cancellation, certification, or inspection scheduling.
 - [x] Task checkbox-68: Add a daemon fixture-shape retry self-test for DevHub draft-action preview validation failures. Use only `ppd/daemon/` or `ppd/tests/`, keep it synthetic, and prove KeyError or assertion failures for absent fixture keys such as `draftActionPreviews` produce guidance to inspect the committed fixture shape before retrying. Do not edit DevHub fixtures or implement the domain validator in this task.
-- [~] Task checkbox-69: Resume checkbox-63 only after checkbox-68 passes. Use at most one redacted fixture plus one syntax-valid Python unittest file, inspect the committed `ppd/tests/fixtures/devhub/draft_action_preview.json` shape first, and either align the test to existing keys or replace the fixture with the smallest preview-only shape. Do not add Playwright runtime automation, private auth state, screenshots, traces, uploads, submissions, payments, MFA, CAPTCHA, cancellation, certification, or inspection scheduling.
+- [x] Task checkbox-69: Resume checkbox-63 only after checkbox-68 passes. Use at most one redacted fixture plus one syntax-valid Python unittest file, inspect the committed `ppd/tests/fixtures/devhub/draft_action_preview.json` shape first, and either align the test to existing keys or replace the fixture with the smallest preview-only shape. Do not add Playwright runtime automation, private auth state, screenshots, traces, uploads, submissions, payments, MFA, CAPTCHA, cancellation, certification, or inspection scheduling.
+
+## Next Goal-Aligned Tranche
+
+- [x] Task checkbox-70: Add a fixture-only Playwright accessible-selector contract for one mocked DevHub permit form page. Validate role, accessible name, label text, nearby heading, required flag, redacted value, and stable selector basis only; do not launch a browser or touch live DevHub.
+- [x] Task checkbox-71: Add a Playwright action-classification fixture that maps mocked form interactions to read-only, reversible draft-edit, consequential, and financial classes, with exact-confirmation defaults set to false.
+- [x] Task checkbox-72: Add a guardrail test proving upload, submit, certify, pay, cancel, schedule inspection, MFA, CAPTCHA, account creation, and password recovery actions are refused in Playwright planning fixtures unless exact explicit user confirmation is present.
+- [x] Task checkbox-73: Add a missing-information to form-field mapping fixture that links one required PP&D user fact to one mocked DevHub field, one source evidence ID, and one reversible draft-preview action.
+- [x] Task checkbox-74: Add a source-evidence continuity test that confirms every Playwright planning fixture references an existing process, requirement, or public source evidence fixture and uses redacted values only.
+- [x] Task checkbox-75: Add daemon no-eligible-task replanning guidance that treats `complete == task_count` with expanded goals as a prompt to append the next fixture-first tranche instead of invoking repeated repair on stale progress.
+
+## Next Goal-Aligned Tranche
+
+- [~] Task checkbox-76: Add a Playwright audit-event continuity fixture that records selector basis, source requirement, action classification, user-confirmation state, and redacted before/after field state for a reversible draft edit only.
+- [ ] Task checkbox-77: Add validation proving Playwright audit-event fixtures reject private auth state, cookies, traces, screenshots, raw browser storage, uploads, submissions, payments, certifications, cancellations, MFA, CAPTCHA, and inspection scheduling actions.
+- [ ] Task checkbox-78: Add a fixture-only DevHub recorder-state transition map that links accessible selector contracts, draft-action previews, and audit events without launching Playwright or touching live DevHub.
+- [ ] Task checkbox-79: Add an agent planning fixture that combines missing information, guardrail stop gates, Playwright draft previews, and source evidence into one reversible draft-only plan.
+- [ ] Task checkbox-80: Add a PP&D processor-archive provenance fixture that links public crawl dry-run URLs to processor handoff manifests, source-index records, and normalized document provenance without invoking network or processor code.
+- [ ] Task checkbox-81: Add daemon replenishment validation proving a completed board can be extended with a new goal-aligned tranche while preserving accepted-work history and avoiding stale supervisor repair counts.
 
 ## Generated Status
 
@@ -111,11 +129,11 @@ Last updated: 2026-05-02T06:45:00Z
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-02T16:44:47.272484Z
+Last updated: 2026-05-02T17:49:19.465653Z
 
-- Latest target: `Task checkbox-73: Task checkbox-68: Add a daemon fixture-shape retry self-test for DevHub draft-action preview validation failures. Use only `ppd/daemon/` or `ppd/tests/`, keep it synthetic, and prove KeyError or assertion failures for absent fixture keys such as `draftActionPreviews` produce guidance to inspect the committed fixture shape before retrying. Do not edit DevHub fixtures or implement the domain validator in this task.`
-- Latest result: `accepted`
-- Latest summary: Broadened daemon fixture-shape retry guidance to recognize absent-key KeyError/assertion failures and added synthetic DevHub preview guidance tests.
-- Counts: `{"blocked": 1, "complete": 72, "in_progress": 0, "needed": 1}`
+- Latest target: `Task checkbox-81: Task checkbox-76: Add a Playwright audit-event continuity fixture that records selector basis, source requirement, action classification, user-confirmation state, and redacted before/after field state for a reversible draft edit only.`
+- Latest result: `validation`
+- Latest summary: Add a deterministic Playwright audit-event continuity fixture and validation test for a reversible DevHub draft edit.
+- Counts: `{"blocked": 0, "complete": 80, "in_progress": 0, "needed": 6}`
 
 <!-- ppd-daemon-task-board:end -->

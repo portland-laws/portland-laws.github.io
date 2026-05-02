@@ -499,11 +499,11 @@ Acceptance criteria:
   - [x] Initial indexed-KB and cache-aware optimization facade.
   - [x] Deeper CEC delegate parity for native CEC inference rule groups and proof traces.
   - [!] Browser-native ZKP acceleration and parallel proof search parity.
-- [ ] Complete modal tableaux and countermodel generation/visualization parity.
+- [!] Complete modal tableaux and countermodel generation/visualization parity.
   - [x] Initial modal tableaux proof search for propositional, temporal, deontic modal formulas and K/T/D/S4/S5 accessibility.
   - [x] Initial countermodel model, extractor, and self-contained visual exports.
   - [x] Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.
-- [ ] Complete TDFOL security validator parity.
+- [!] Complete TDFOL security validator parity.
 - [x] Add Python parity fixtures for each TDFOL rule category.
 - [x] Add browser performance budgets for proof search.
   - [x] Initial in-memory performance engine and strategy profiler.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-02 16:39:31 UTC
+Last updated: 2026-05-02 17:41:27 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.`
+Current target: `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1082,17 +1082,17 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-104: Initial indexed-KB and cache-aware optimization facade.` - complete
 - [x] `Task checkbox-105: Deeper CEC delegate parity for native CEC inference rule groups and proof traces.` - complete
 - [!] `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.` - blocked
-- [!] `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.` - latest daemon round failed validation or preflight
+- [!] `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.` - blocked
 - [x] `Task checkbox-108: Initial modal tableaux proof search for propositional, temporal, deontic modal formulas and K/T/D/S4/S5 accessibility.` - complete
 - [x] `Task checkbox-109: Initial countermodel model, extractor, and self-contained visual exports.` - complete
 - [x] `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.` - complete
-- [ ] `Task checkbox-111: Complete TDFOL security validator parity.` - needed
+- [!] `Task checkbox-111: Complete TDFOL security validator parity.` - blocked
 - [x] `Task checkbox-112: Add Python parity fixtures for each TDFOL rule category.` - complete
 - [x] `Task checkbox-113: Add browser performance budgets for proof search.` - complete
 - [x] `Task checkbox-114: Initial in-memory performance engine and strategy profiler.` - complete
 - [x] `Task checkbox-115: Initial browser performance dashboard data model and renderer.` - complete
 - [x] `Task checkbox-116: Initial browser performance profiler with repeated timing samples, memory snapshots, bottleneck classification, benchmark suites, and report strings.` - complete
-- [ ] `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.` - needed
+- [!] `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.` - latest daemon round failed validation or preflight
 - [x] `Task checkbox-118: Port CEC syntax tree, grammar loader, grammar engine, problem parser, and DCEC parsers.` - complete
 - [x] `Task checkbox-119: Initial browser-native CEC/DCEC s-expression AST, parser, formatter, validator, and Portland DCEC unit coverage.` - complete
 - [x] `Task checkbox-120: Initial CEC/DCEC expression analyzer for predicates, atoms, section refs, quantifiers, deontic operators, temporal operators, and expression complexity.` - complete
@@ -1430,17 +1430,27 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.`
+- Target: `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.`
 - Result: `needs follow-up`
-- Summary: Daemon failed before producing a valid patch.
-- Errors: llm_router could not generate with model='gpt-5.5' provider='auto'. Configure the provider credentials or pass --provider. Original error: copilot CLI binary not found on PATH (required for session/tracing flags). Install the GitHub Copilot CLI, or unset session args to use the command-template mode.
-- Failure kind: `daemon_exception`
+- Summary: No summary
+- Errors: LLM response did not contain JSON or a fenced diff patch.
+- Failure kind: `parse`
 
 ### Blocked Backlog
 
 - `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.`
   - Failures since success: `5`
   - Failure kinds: `{"daemon_exception": 3, "parse": 2}`
+  - Latest failure kind: `daemon_exception`
+  - Latest errors: llm_router could not generate with model='gpt-5.5' provider='auto'. Configure the provider credentials or pass --provider. Original error: copilot CLI binary not found on PATH (required for session/tracing flags). Install the GitHub Copilot...
+- `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.`
+  - Failures since success: `3`
+  - Failure kinds: `{"daemon_exception": 3}`
+  - Latest failure kind: `daemon_exception`
+  - Latest errors: llm_router could not generate with model='gpt-5.5' provider='auto'. Configure the provider credentials or pass --provider. Original error: copilot CLI binary not found on PATH (required for session/tracing flags). Install the GitHub Copilot...
+- `Task checkbox-111: Complete TDFOL security validator parity.`
+  - Failures since success: `3`
+  - Failure kinds: `{"daemon_exception": 3}`
   - Latest failure kind: `daemon_exception`
   - Latest errors: llm_router could not generate with model='gpt-5.5' provider='auto'. Configure the provider credentials or pass --provider. Original error: copilot CLI binary not found on PATH (required for session/tracing flags). Install the GitHub Copilot...
 

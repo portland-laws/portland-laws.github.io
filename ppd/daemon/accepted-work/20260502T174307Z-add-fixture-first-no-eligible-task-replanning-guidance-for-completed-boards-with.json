@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/daemon/no_eligible_replanning.py",
+    "ppd/tests/test_daemon_no_eligible_replanning.py"
+  ],
+  "created_at": "2026-05-02T17:43:07.761271Z",
+  "impact": "This gives the PP&D daemon a deterministic recovery path when progress says all parsed tasks are complete but the plan has expanded goals: append the next narrow fixture-first tranche instead of repeatedly repairing stale completed progress.",
+  "summary": "Add fixture-first no-eligible-task replanning guidance for completed boards with expanded goals.",
+  "target_task": "Task checkbox-80: Task checkbox-75: Add daemon no-eligible-task replanning guidance that treats `complete == task_count` with expanded goals as a prompt to append the next fixture-first tranche instead of invoking repeated repair on stale progress.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 80 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "......................................................................................................................................................................................................................................................ss..............sss........................................................................................................................................................... ---------------------------------------------------------------------- Ran 420 tests in 0.081s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}
