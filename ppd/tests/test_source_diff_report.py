@@ -1,0 +1,127 @@
+from __future__ import annotations
+
+import json
+import re
+import unittest
+from pathlib import Path
+from typing import Any
+
+from ppd.contracts.source_diff import PublicGuidanceRequirement, classify_requirement_diffs
+
+
+FIXTURE_PATH = Path(__file__).parent / "fixtures" / "source-diff" / "public_requirement_source_diff_report.json"
+SHA256_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
+EXPECTED_KINDS = {"added", "removed", "changed"}
+
+
+class PublicRequirementSourceDiffReportTest(unittest.TestCase):
+    def test_fixture_classifies_added_removed_and_changed_obligations(self) -> None:
+        fixture = _load_fixture()
+
+        self.assertEqual(fixture.get("fixtureKind"), "public_requirement_source_diff_report")
+        self.assertEqual(fixture.get("schemaVersion"), 1)
+        self.assertTrue(str(fixture.get("generatedAt", "")).endswith("Z"))
+
+        source_requirement = fixture.get("sourceRequirement")
+        self.assertIsInstance(source_requirement, dict)
+        self.assertEqual(source_requirement.get("id"), "ppd-public-single-pdf-process-requirements")
+        self.assert_https_url(source_requirement.get("sourceUrl"))
+        self.assertTrue(str(source_requirement.get("sourceId", "")).strip())
+        self.assertTrue(str(source_requirement.get("anchorId", "")).strip())
+
+        snapshots = fixture.get("snapshots")
+        self.assertIsInstance(snapshots, dict)
+        before_snapshot = _snapshot(snapshots, "before")
+        after_snapshot = _snapshot(snapshots, "after")
+
+        before_requirements = tuple(_requirement_from_dict(item) for item in before_snapshot["requirements"])
+        after_requirements = tuple(_requirement_from_dict(item) for item in after_snapshot["requirements"])
+        for requirement in before_requirements + after_requirements:
+            self.assertEqual(requirement.requirement_type, "obligation")
+            self.assertFalse(requirement.validate())
+            self.assertRegex(requirement.content_hash, SHA256_RE)
+
+        computed = classify_requirement_diffs(before_requirements, after_requirements)
+        computed_by_id = {diff.id: diff for diff in computed}
+        fixture_diffs = fixture.get("diffs")
+        self.assertIsInstance(fixture_diffs, list)
+        self.assertEqual({diff["kind"] for diff in fixture_diffs}, EXPECTED_KINDS)
+        self.assertEqual({diff["id"] for diff in fixture_diffs}, set(computed_by_id))
+
+        for diff in fixture_diffs:
+            diff_id = diff["id"]
+            computed_diff = computed_by_id[diff_id]
+            self.assertEqual(diff["kind"], computed_diff.kind.value)
+            self.assertEqual(diff["requirementId"], computed_diff.requirement_id)
+            self.assert_confidence(diff.get("confidence"))
+            self.assert_citations(diff.get("citations"), source_requirement, {before_snapshot["id"], after_snapshot["id"]})
+
+            if diff["kind"] == "added":
+                self.assertIn("afterRequirementId", diff)
+                self.assertNotIn("beforeRequirementId", diff)
+            elif diff["kind"] == "removed":
+                self.assertIn("beforeRequirementId", diff)
+                self.assertNotIn("afterRequirementId", diff)
+            elif diff["kind"] == "changed":
+                self.assertIn("beforeRequirementId", diff)
+                self.assertIn("afterRequirementId", diff)
+                self.assertEqual(tuple(diff["changedFields"]), computed_diff.changed_fields)
+                self.assertGreaterEqual(len(diff["citations"]), 2)
+
+    def assert_https_url(self, value: Any) -> None:
+        self.assertIsInstance(value, str)
+        self.assertTrue(value.startswith("https://"), value)
+
+    def assert_confidence(self, value: Any) -> None:
+        self.assertIsInstance(value, (int, float))
+        self.assertGreaterEqual(value, 0.0)
+        self.assertLessEqual(value, 1.0)
+        self.assertGreaterEqual(value, 0.75)
+
+    def assert_citations(self, citations: Any, source_requirement: dict[str, Any], snapshot_ids: set[str]) -> None:
+        self.assertIsInstance(citations, list)
+        self.assertTrue(citations)
+        for citation in citations:
+            self.assertIsInstance(citation, dict)
+            self.assertEqual(citation.get("sourceId"), source_requirement.get("sourceId"))
+            self.assertEqual(citation.get("sourceUrl"), source_requirement.get("sourceUrl"))
+            self.assertTrue(str(citation.get("anchorId", "")).strip())
+            self.assertIn(citation.get("snapshotId"), snapshot_ids)
+            self.assertTrue(str(citation.get("evidenceText", "")).strip())
+            self.assert_confidence(citation.get("confidence"))
+
+
+def _load_fixture() -> dict[str, Any]:
+    return json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
+
+
+def _snapshot(snapshots: dict[str, Any], key: str) -> dict[str, Any]:
+    snapshot = snapshots.get(key)
+    if not isinstance(snapshot, dict):
+        raise AssertionError(f"snapshot {key} must be an object")
+    if not str(snapshot.get("id", "")).strip():
+        raise AssertionError(f"snapshot {key} requires an id")
+    if not str(snapshot.get("capturedAt", "")).endswith("Z"):
+        raise AssertionError(f"snapshot {key} capturedAt must end in Z")
+    requirements = snapshot.get("requirements")
+    if not isinstance(requirements, list) or not requirements:
+        raise AssertionError(f"snapshot {key} requires non-empty requirements")
+    return snapshot
+
+
+def _requirement_from_dict(data: dict[str, Any]) -> PublicGuidanceRequirement:
+    return PublicGuidanceRequirement(
+        id=str(data.get("id", "")),
+        source_id=str(data.get("sourceId", "")),
+        source_url=str(data.get("sourceUrl", "")),
+        anchor_id=str(data.get("anchorId", "")),
+        requirement_type=str(data.get("requirementType", "")),
+        text=str(data.get("text", "")),
+        evidence_text=str(data.get("evidenceText", "")),
+        content_hash=str(data.get("contentHash", "")),
+        page_number=int(data["pageNumber"]) if data.get("pageNumber") is not None else None,
+    )
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -1,0 +1,2 @@
+ppd/tests/fixtures/forms/building_permit_application_field_contract.json
+ppd/tests/test_public_form_field_extraction_contract.py

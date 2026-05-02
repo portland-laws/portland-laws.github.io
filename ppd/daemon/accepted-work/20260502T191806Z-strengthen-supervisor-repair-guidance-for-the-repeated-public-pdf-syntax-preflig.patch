@@ -1,0 +1,33 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -12,8 +12,9 @@
+ - `page_number list[str]`
+ - `page_count list[str]`
+ - `if self.page_count list[str]`
++- unterminated strings introduced while writing conditional diagnostics
+ 
+-These are not valid Python expressions. They indicate that the worker is mixing TypeScript-style type fragments into Python conditionals.
++These are not valid Python expressions. They indicate that the worker is mixing TypeScript-style type fragments into Python conditionals or generating broad validator rewrites without a syntax-first check.
+ 
+ ## Repair Scope
+ 
+@@ -29,7 +30,7 @@
+ - One small JSON fixture plus one syntax-valid Python unittest file
+ - One daemon prompt, diagnostic, or preflight file plus one focused syntax-valid test
+ 
+-Avoid broad contract rewrites. Avoid introducing new helper modules unless the repair is specifically about daemon preflight or diagnostics.
++Avoid broad contract rewrites. Avoid introducing new helper modules unless the repair is specifically about daemon preflight or diagnostics. If the active public PDF extraction validation task has already failed twice for syntax reasons, the supervisor should pause that domain retry and append or select a daemon-repair task first.
+ 
+ ## Syntax Guardrails
+ 
+@@ -49,6 +50,10 @@
+ 
+ For the stalled public PDF extraction validation task, supervisor repair can explain how to retry safely, but it must not implement the stalled PP&D domain task directly. A valid later domain retry should be fixture-first, should use only committed redacted public fixtures, does not download documents, does not persist raw PDF bytes or OCR output, and rejects private DevHub artifacts by default.
+ 
++## Recovery Decision Rule
++
++When four or more consecutive daemon rounds fail without an accepted patch while the daemon is waiting on the model, select repair work before selecting the same domain task again. When the failure kind is `syntax_preflight`, prefer prompt, preflight, or diagnostic repairs over larger fixture contracts. When validation failures report missing fixture fields, inspect and report the committed fixture shape before proposing a replacement.
++
+ ## Suggested Next Daemon Instruction
+ 
+ Pause the repeated public PDF validation retry until the worker has read this guide. Then resume with the smallest syntax-valid patch that can pass `py_compile` before running full PP&D validation. If another `syntax_preflight` rollback occurs for the same malformed expression family, append a daemon preflight or prompt repair task before selecting the domain task again.

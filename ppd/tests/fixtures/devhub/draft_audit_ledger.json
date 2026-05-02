@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "ledgerId": "ppd-devhub-draft-audit-ledger-fixture-001",
+  "recordedAt": "2026-05-01T18:30:00Z",
+  "fixtureKind": "redacted_mock_devhub_draft_audit_ledger",
+  "workflowState": {
+    "stateId": "mock-devhub-building-permit-draft-project-details",
+    "stableUrlState": "https://devhub.portlandoregon.gov/mock/permit-request/project-details",
+    "mode": "preview_only",
+    "liveBrowserUsed": false,
+    "portalWriteAttempted": false
+  },
+  "retainedArtifactPolicy": {
+    "publicEvidenceIdsOnly": true,
+    "redactedFieldValuesOnly": true,
+    "semanticSelectorBasisOnly": true,
+    "binaryPageArtifactsStored": false,
+    "credentialMaterialStored": false,
+    "browserPersistenceStored": false,
+    "networkPayloadsStored": false
+  },
+  "publicSourceEvidence": [
+    {
+      "evidenceId": "pub-devhub-application-guidance-001",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-online",
+      "title": "Apply online through Development Hub PDX",
+      "capturedAt": "2026-05-01T12:00:00Z",
+      "anchor": "permit-request-types",
+      "supports": [
+        "req-devhub-account-before-online-request",
+        "gate-stop-before-submit"
+      ]
+    },
+    {
+      "evidenceId": "pub-single-pdf-process-001",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+      "title": "Single PDF Process",
+      "capturedAt": "2026-05-01T12:05:00Z",
+      "anchor": "application-and-supporting-documents",
+      "supports": [
+        "req-project-description-before-plan-review-request"
+      ]
+    }
+  ],
+  "guardrails": [
+    {
+      "guardrailId": "gr-draft-edits-preview-only",
+      "kind": "action_gate",
+      "classification": "reversible_draft_edit",
+      "defaultDecision": "preview_only",
+      "requiresExactUserConfirmation": false,
+      "sourceEvidenceIds": [
+        "pub-devhub-application-guidance-001"
+      ]
+    },
+    {
+      "guardrailId": "gr-stop-before-official-actions",
+      "kind": "stop_gate",
+      "classification": "consequential_or_financial",
+      "defaultDecision": "stop",
+      "requiresExactUserConfirmation": true,
+      "sourceEvidenceIds": [
+        "pub-devhub-application-guidance-001"
+      ]
+    }
+  ],
+  "selectorConfidence": [
+    {
+      "selectorId": "sel-project-description-textbox",
+      "targetFieldId": "field-project-description",
+      "strategy": "semantic_accessible_selector",
+      "score": 0.94,
+      "basis": {
+        "role": "textbox",
+        "accessibleName": "Project description",
+        "labelText": "Project description",
+        "nearbyHeading": "Project details",
+        "required": true,
+        "stableUrlState": "mock-devhub-building-permit-draft-project-details"
+      }
+    }
+  ],
+  "events": [
+    {
+      "eventId": "audit-event-read-project-details",
+      "eventType": "inspect_form_state",
+      "actionClass": "read_only",
+      "processRequirementId": "req-devhub-account-before-online-request",
+      "sourceEvidenceIds": [
+        "pub-devhub-application-guidance-001"
+      ],
+      "guardrailIds": [
+        "gr-draft-edits-preview-only"
+      ],
+      "selectorConfidenceId": "sel-project-description-textbox",
+      "userConfirmationState": {
+        "exactActionConfirmation": false,
+        "confirmationRequired": false,
+        "previewAcceptedByUser": false,
+        "currentInteractionSuppliedFact": false
+      },
+      "mutations": []
+    },
+    {
+      "eventId": "audit-event-preview-project-description-fill",
+      "eventType": "preview_reversible_field_fill",
+      "actionClass": "reversible_draft_edit",
+      "processRequirementId": "req-project-description-before-plan-review-request",
+      "sourceEvidenceIds": [
+        "pub-single-pdf-process-001"
+      ],
+      "guardrailIds": [
+        "gr-draft-edits-preview-only",
+        "gr-stop-before-official-actions"
+      ],
+      "selectorConfidenceId": "sel-project-description-textbox",
+      "userConfirmationState": {
+        "exactActionConfirmation": false,
+        "confirmationRequired": false,
+        "previewAcceptedByUser": false,
+        "currentInteractionSuppliedFact": true
+      },
+      "mutations": [
+        {
+          "mutationId": "mut-preview-project-description-fill",
+          "fieldId": "field-project-description",
+          "fieldAction": "fill",
+          "beforeValue": "[REDACTED:empty]",
+          "afterValue": "[REDACTED:user_supplied_project_description]",
+          "previewOnly": true,
+          "reversible": true,
+          "appliedToLivePage": false,
+          "persistedToPortal": false,
+          "rollbackPlan": "clear_field_before_any_portal_save"
+        }
+      ]
+    }
+  ],
+  "blockedActionDefaults": [
+    {
+      "action": "official_upload",
+      "defaultAllowed": false,
+      "requiresExactUserConfirmation": true
+    },
+    {
+      "action": "submit_application",
+      "defaultAllowed": false,
+      "requiresExactUserConfirmation": true
+    },
+    {
+      "action": "certify_statement",
+      "defaultAllowed": false,
+      "requiresExactUserConfirmation": true
+    },
+    {
+      "action": "pay_fee",
+      "defaultAllowed": false,
+      "requiresExactUserConfirmation": true
+    },
+    {
+      "action": "cancel_request",
+      "defaultAllowed": false,
+      "requiresExactUserConfirmation": true
+    },
+    {
+      "action": "schedule_inspection",
+      "defaultAllowed": false,
+      "requiresExactUserConfirmation": true
+    }
+  ]
+}

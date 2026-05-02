@@ -1,0 +1,3 @@
+ppd/devhub/exact_confirmation_checkpoint.py
+ppd/tests/fixtures/devhub/exact_confirmation_checkpoint_contract.json
+ppd/tests/test_devhub_exact_confirmation_checkpoint_contract.py

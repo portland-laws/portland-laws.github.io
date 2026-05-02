@@ -1,0 +1,38 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -137,6 +137,17 @@
+ - [x] Task checkbox-94: Add a mocked DevHub workflow-resume fixture that models read-only draft discovery and missing-field detection from redacted state only, with no browser launch, auth state, cookies, traces, screenshots, uploads, submissions, payments, MFA, CAPTCHA, cancellation, certification, or inspection scheduling.
+ - [x] Task checkbox-95: Add validation for mocked workflow-resume fixtures proving the allowed actions are limited to safe read-only inspection and reversible draft previews, while consequential and financial actions require exact confirmation and remain refused by default.
+ 
++## Replenished Goal-Aligned Tranche
++
++- [ ] Task checkbox-96: Add a fixture-only exact-confirmation checkpoint contract for mocked DevHub consequential and financial actions, with redacted action previews, source-backed consequence summaries, durable audit-event references, and default refusal before confirmation. Do not launch a browser, store auth state, upload, submit, certify, pay, cancel, schedule inspections, automate MFA or CAPTCHA, or use live DevHub.
++- [ ] Task checkbox-97: Add validation for exact-confirmation checkpoint fixtures proving vague confirmations, stale source evidence, private values, missing audit-event IDs, and mismatched action strings are rejected before any consequential or financial DevHub action can be planned.
++- [ ] Task checkbox-98: Add a fixture-only public PP&D requirement-boundary sample that separates legal or procedural obligations from operational DevHub UI behavior for one permit process, preserving source evidence IDs, requirement type, confidence, and review-needed flags.
++- [ ] Task checkbox-99: Add validation for requirement-boundary fixtures proving legal obligations, operational UI hints, user facts, document requirements, fee notices, and deadlines are classified separately and fail closed when citations or review-needed flags are missing.
++- [ ] Task checkbox-100: Add a fixture-only public PDF extraction contract for one PP&D checklist or form sample that records document metadata, page-number anchors, required document labels, signature or acknowledgment markers, and extracted text snippets only; do not download documents or store raw PDF bytes.
++- [ ] Task checkbox-101: Add validation for public PDF extraction fixtures proving page anchors, source URLs, checksums or placeholder hash fields, redacted values, and skipped raw-byte/OCR-output reasons are present, while raw bodies and private DevHub artifacts are rejected.
++- [ ] Task checkbox-102: Add a fixture-only redacted user-case-state contract that links a mocked project fact inventory, missing-information questions, uploaded-file placeholders, draft status, and source evidence without storing private documents, account identifiers, cookies, traces, screenshots, payments, or live DevHub state.
++- [ ] Task checkbox-103: Add validation for user-case-state fixtures proving missing facts, file placeholders, draft/submitted status, payment status, messages, and outstanding tasks remain redacted, source-linked, and blocked from consequential or financial action planning by default.
++
+ ## Generated Status
+ 
+ Last updated: 2026-05-02T06:45:00Z
+@@ -157,7 +168,7 @@
+ - Counts: `{"blocked": 0, "complete": 92, "in_progress": 0, "needed": 0}`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
++
+ ## Generated Status
+ 
+ Last updated: 2026-05-02T18:35:29.491670Z
+@@ -165,6 +176,6 @@
+ - Latest target: `Task checkbox-100: Task checkbox-95: Add validation for mocked workflow-resume fixtures proving the allowed actions are limited to safe read-only inspection and reversible draft previews, while consequential and financial actions require exact confirmation and remain refused by default.`
+ - Latest result: `accepted`
+ - Latest summary: Add fixture-only workflow-resume action-gate validation for mocked DevHub resume states.
+-- Counts: `{"blocked": 0, "complete": 100, "in_progress": 0, "needed": 0}`
++- Counts: `{"blocked": 0, "complete": 100, "in_progress": 0, "needed": 8}`
+ 
+-<!-- ppd-daemon-task-board:end -->
++

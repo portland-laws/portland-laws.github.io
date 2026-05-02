@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-01T12:00:00Z",
+  "maxEvidenceAgeDays": 90,
+  "sourceEvidence": [
+    {
+      "id": "ppd-devhub-faq-fee-payment-2026-05-01",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub-faq",
+      "capturedAt": "2026-05-01T10:00:00Z",
+      "public": true,
+      "summary": "Public DevHub FAQ describes fee payment as a DevHub service category."
+    },
+    {
+      "id": "ppd-devhub-submit-guide-2026-05-01",
+      "sourceUrl": "https://www.portland.gov/ppd/apply-permit-devhub",
+      "capturedAt": "2026-05-01T10:30:00Z",
+      "public": true,
+      "summary": "Public DevHub application guidance describes permit request submission through DevHub."
+    },
+    {
+      "id": "ppd-devhub-old-payment-guide-2025-01-01",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub-faq",
+      "capturedAt": "2025-01-01T00:00:00Z",
+      "public": true,
+      "summary": "Intentionally stale public payment guidance fixture used only for rejection validation."
+    }
+  ],
+  "checkpoints": [
+    {
+      "id": "checkpoint-valid-exact-financial-payment-preview",
+      "description": "A financial payment planning checkpoint with exact confirmation, current public evidence, redacted values, audit continuity, and matching action strings.",
+      "actionClassification": "financial",
+      "plannedActionString": "plan DevHub fee payment preview for permit request PR-REDACTED",
+      "sourceEvidenceIds": ["ppd-devhub-faq-fee-payment-2026-05-01"],
+      "confirmation": {
+        "required": true,
+        "exactRequired": true,
+        "exactPhrase": "plan DevHub fee payment preview for permit request PR-REDACTED",
+        "userConfirmation": "plan DevHub fee payment preview for permit request PR-REDACTED"
+      },
+      "preview": {
+        "beforeValue": "[REDACTED]",
+        "afterValue": "[REDACTED]",
+        "privateValuesIncluded": false
+      },
+      "auditEvent": {
+        "id": "audit_exact_checkpoint_001",
+        "actionString": "plan DevHub fee payment preview for permit request PR-REDACTED",
+        "sourceEvidenceIds": ["ppd-devhub-faq-fee-payment-2026-05-01"]
+      },
+      "planningOutcome": {
+        "canPlan": true
+      }
+    },
+    {
+      "id": "checkpoint-reject-vague-confirmation",
+      "description": "Vague confirmation is insufficient for a consequential DevHub submission planning checkpoint.",
+      "actionClassification": "consequential",
+      "plannedActionString": "plan DevHub application submission preview for permit request PR-REDACTED",
+      "sourceEvidenceIds": ["ppd-devhub-submit-guide-2026-05-01"],
+      "confirmation": {
+        "required": true,
+        "exactRequired": true,
+        "exactPhrase": "plan DevHub application submission preview for permit request PR-REDACTED",
+        "userConfirmation": "yes, go ahead"
+      },
+      "preview": {
+        "beforeValue": "[REDACTED]",
+        "afterValue": "[REDACTED]",
+        "privateValuesIncluded": false
+      },
+      "auditEvent": {
+        "id": "audit_exact_checkpoint_002",
+        "actionString": "plan DevHub application submission preview for permit request PR-REDACTED",
+        "sourceEvidenceIds": ["ppd-devhub-submit-guide-2026-05-01"]
+      },
+      "planningOutcome": {
+        "canPlan": false,
+        "expectedErrorContains": "exact confirmation"
+      }
+    },
+    {
+      "id": "checkpoint-reject-stale-source-evidence",
+      "description": "Stale public evidence cannot support financial DevHub action planning.",
+      "actionClassification": "financial",
+      "plannedActionString": "plan DevHub fee payment preview for permit request PR-REDACTED",
+      "sourceEvidenceIds": ["ppd-devhub-old-payment-guide-2025-01-01"],
+      "confirmation": {
+        "required": true,
+        "exactRequired": true,
+        "exactPhrase": "plan DevHub fee payment preview for permit request PR-REDACTED",
+        "userConfirmation": "plan DevHub fee payment preview for permit request PR-REDACTED"
+      },
+      "preview": {
+        "beforeValue": "[REDACTED]",
+        "afterValue": "[REDACTED]",
+        "privateValuesIncluded": false
+      },
+      "auditEvent": {
+        "id": "audit_exact_checkpoint_003",
+        "actionString": "plan DevHub fee payment preview for permit request PR-REDACTED",
+        "sourceEvidenceIds": ["ppd-devhub-old-payment-guide-2025-01-01"]
+      },
+      "planningOutcome": {
+        "canPlan": false,
+        "expectedErrorContains": "stale source evidence"
+      }
+    },
+    {
+      "id": "checkpoint-reject-private-values",
+      "description": "Private user values must not appear in committed planning checkpoint fixtures.",
+      "actionClassification": "consequential",
+      "plannedActionString": "plan DevHub correction upload preview for permit request PR-REDACTED",
+      "sourceEvidenceIds": ["ppd-devhub-submit-guide-2026-05-01"],
+      "confirmation": {
+        "required": true,
+        "exactRequired": true,
+        "exactPhrase": "plan DevHub correction upload preview for permit request PR-REDACTED",
+        "userConfirmation": "plan DevHub correction upload preview for permit request PR-REDACTED"
+      },
+      "preview": {
+        "beforeValue": "[REDACTED]",
+        "afterValue": "1234 SE Private Example St",
+        "privateValuesIncluded": true
+      },
+      "auditEvent": {
+        "id": "audit_exact_checkpoint_004",
+        "actionString": "plan DevHub correction upload preview for permit request PR-REDACTED",
+        "sourceEvidenceIds": ["ppd-devhub-submit-guide-2026-05-01"]
+      },
+      "planningOutcome": {
+        "canPlan": false,
+        "expectedErrorContains": "private value"
+      }
+    },
+    {
+      "id": "checkpoint-reject-missing-audit-event-id",
+      "description": "Consequential planning checkpoints require a durable audit event identifier.",
+      "actionClassification": "consequential",
+      "plannedActionString": "plan DevHub cancellation preview for permit request PR-REDACTED",
+      "sourceEvidenceIds": ["ppd-devhub-submit-guide-2026-05-01"],
+      "confirmation": {
+        "required": true,
+        "exactRequired": true,
+        "exactPhrase": "plan DevHub cancellation preview for permit request PR-REDACTED",
+        "userConfirmation": "plan DevHub cancellation preview for permit request PR-REDACTED"
+      },
+      "preview": {
+        "beforeValue": "[REDACTED]",
+        "afterValue": "[REDACTED]",
+        "privateValuesIncluded": false
+      },
+      "auditEvent": {
+        "id": "",
+        "actionString": "plan DevHub cancellation preview for permit request PR-REDACTED",
+        "sourceEvidenceIds": ["ppd-devhub-submit-guide-2026-05-01"]
+      },
+      "planningOutcome": {
+        "canPlan": false,
+        "expectedErrorContains": "audit event id"
+      }
+    },
+    {
+      "id": "checkpoint-reject-mismatched-action-string",
+      "description": "Audit action strings must match the exact planned action string for consequential DevHub planning.",
+      "actionClassification": "financial",
+      "plannedActionString": "plan DevHub fee payment preview for permit request PR-REDACTED",
+      "sourceEvidenceIds": ["ppd-devhub-faq-fee-payment-2026-05-01"],
+      "confirmation": {
+        "required": true,
+        "exactRequired": true,
+        "exactPhrase": "plan DevHub fee payment preview for permit request PR-REDACTED",
+        "userConfirmation": "plan DevHub fee payment preview for permit request PR-REDACTED"
+      },
+      "preview": {
+        "beforeValue": "[REDACTED]",
+        "afterValue": "[REDACTED]",
+        "privateValuesIncluded": false
+      },
+      "auditEvent": {
+        "id": "audit_exact_checkpoint_005",
+        "actionString": "plan DevHub application submission preview for permit request PR-REDACTED",
+        "sourceEvidenceIds": ["ppd-devhub-faq-fee-payment-2026-05-01"]
+      },
+      "planningOutcome": {
+        "canPlan": false,
+        "expectedErrorContains": "action string"
+      }
+    }
+  ]
+}

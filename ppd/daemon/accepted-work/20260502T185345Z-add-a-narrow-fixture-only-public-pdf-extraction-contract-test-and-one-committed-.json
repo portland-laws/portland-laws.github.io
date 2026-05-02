@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/public_pdf_extraction/residential_building_permit_application_extract.json",
+    "ppd/tests/test_public_pdf_extraction_contract.py"
+  ],
+  "created_at": "2026-05-02T18:53:45.393025Z",
+  "impact": "This advances the PP&D fixture-first PDF extraction plan by recording public document metadata, page anchors, required document labels, signature or acknowledgment markers, and short text snippets without storing raw PDF bytes, downloaded files, private paths, or live crawl artifacts.",
+  "summary": "Add a narrow fixture-only public PDF extraction contract test and one committed PP&D form sample extraction fixture.",
+  "target_task": "Task checkbox-105: Task checkbox-100: Add a fixture-only public PDF extraction contract for one PP&D checklist or form sample that records document metadata, page-number anchors, required document labels, signature or acknowledgment markers, and extracted text snippets only; do not download documents or store raw PDF bytes.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 108 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".........................................................................................................................................................................................................................................................................................................ss..............sss......................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 517 tests in 0.092s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

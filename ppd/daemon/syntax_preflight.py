@@ -8,6 +8,7 @@ Python and TypeScript files only.
 from __future__ import annotations
 
 import py_compile
+import re
 import shlex
 import subprocess
 from dataclasses import dataclass
@@ -35,6 +36,16 @@ class ApplyFlowSyntaxPreflight:
     failure_kind: str
     errors: tuple[str, ...]
     validation_results: tuple[SyntaxPreflightResult, ...]
+
+
+PYTHON_CONTROL_FLOW_RE = re.compile(r"^(if|elif|while|assert|return)\b")
+PYTHON_TYPE_EXPR_RE = re.compile(r"\b(list|dict|tuple|set)\s*\[[^\]]+\]")
+MISSING_COMPARISON_OPERATOR_RE = re.compile(
+    r"\b(or|and)\s+[A-Za-z_][A-Za-z0-9_\.]*\s+(None|True|False|list\s*\[|dict\s*\[|tuple\s*\[|set\s*\[)"
+)
+RETURN_ANNOTATION_FRAGMENT_RE = re.compile(
+    r"\breturn\s+[^#\n]+\s+(list|dict|tuple|set)\s*\[[^\]]+\]"
+)
 
 
 def changed_syntax_paths(changed_files: Iterable[str]) -> tuple[tuple[str, ...], tuple[str, ...]]:
@@ -115,6 +126,10 @@ def _run_python_preflight(repo_root: Path, python_files: tuple[str, ...]) -> lis
     for relative_path in python_files:
         path = repo_root / relative_path
         command = ("python3", "-m", "py_compile", relative_path)
+        malformed = _detect_malformed_python_constructs(path, relative_path)
+        if malformed:
+            results.append(SyntaxPreflightResult(command=command, returncode=1, stderr=malformed))
+            continue
         try:
             py_compile.compile(str(path), doraise=True)
         except py_compile.PyCompileError as exc:
@@ -122,6 +137,43 @@ def _run_python_preflight(repo_root: Path, python_files: tuple[str, ...]) -> lis
         else:
             results.append(SyntaxPreflightResult(command=command, returncode=0))
     return results
+
+
+def _detect_malformed_python_constructs(path: Path, relative_path: str) -> str:
+    """Return a targeted diagnostic for recurrent proposal syntax mistakes."""
+
+    try:
+        lines = path.read_text(encoding="utf-8").splitlines()
+    except UnicodeDecodeError:
+        return ""
+
+    findings: list[str] = []
+    for line_number, line in enumerate(lines, start=1):
+        stripped = line.strip()
+        if not stripped or stripped.startswith("#"):
+            continue
+        if _looks_like_cross_language_python(stripped):
+            findings.append(
+                f"{relative_path}:{line_number}: malformed Python expression; "
+                "use explicit operators such as `is None`, `is not None`, `isinstance(...)`, "
+                "or a normal return expression. Do not place TypeScript-style type fragments "
+                "inside Python control-flow or return statements."
+            )
+        if len(findings) >= 3:
+            break
+    return " ".join(findings)
+
+
+def _looks_like_cross_language_python(stripped: str) -> bool:
+    if not PYTHON_CONTROL_FLOW_RE.match(stripped):
+        return False
+    if MISSING_COMPARISON_OPERATOR_RE.search(stripped):
+        return True
+    if RETURN_ANNOTATION_FRAGMENT_RE.search(stripped):
+        return True
+    if " or " in stripped or " and " in stripped:
+        return bool(PYTHON_TYPE_EXPR_RE.search(stripped))
+    return False
 
 
 def _run_typescript_preflight(repo_root: Path, typescript_files: tuple[str, ...], *, timeout: int) -> SyntaxPreflightResult:

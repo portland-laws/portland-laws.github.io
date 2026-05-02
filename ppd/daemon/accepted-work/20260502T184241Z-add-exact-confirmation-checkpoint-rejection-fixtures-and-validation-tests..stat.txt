@@ -1,0 +1,2 @@
+ppd/tests/fixtures/devhub/exact_confirmation_checkpoint_rejections.json
+ppd/tests/test_exact_confirmation_checkpoint_fixtures.py

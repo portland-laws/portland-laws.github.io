@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/forms/building_permit_application_field_contract.json",
+    "ppd/tests/test_public_form_field_extraction_contract.py"
+  ],
+  "created_at": "2026-05-02T18:27:42.551249Z",
+  "impact": "This advances the fixture-first PP&D extraction plan by defining a redacted, source-anchored contract for required form labels, enumerated options, signatures or acknowledgments, and placeholder-only values without crawling, downloading, authenticating, or touching shared logic.",
+  "summary": "Add a fixture-only public PP&D form-field extraction contract and validator for one application sample.",
+  "target_task": "Task checkbox-95: Task checkbox-90: Add a fixture-only public form-field extraction contract for one PP&D application or checklist sample that records required labels, enumerated options, signature or acknowledgment markers, source page anchors, and redacted placeholder values only.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 100 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "...........................................................................................................................................................................................................................................................................................ss..............sss........................................................................................................................................................................................ ---------------------------------------------------------------------- Ran 486 tests in 0.090s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

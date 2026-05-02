@@ -1,0 +1,51 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -4,14 +4,14 @@
+ 
+ ## Current Recovery Trigger
+ 
+-Use this guide when several consecutive daemon rounds fail without an accepted patch, especially when the active task remains in calling_llm or repeatedly rolls back during syntax preflight.
++Use this guide when several consecutive daemon rounds fail without an accepted patch, especially when the active task remains in `calling_llm` or repeatedly rolls back during syntax preflight.
+ 
+ The current failure pattern is malformed Python generated for public PDF fixture validation. Recent invalid fragments include:
+ 
+-- page_number None
+-- page_number list[str]
+-- page_count list[str]
+-- if self.page_count list[str]
++- `page_number None`
++- `page_number list[str]`
++- `page_count list[str]`
++- `if self.page_count list[str]`
+ 
+ These are not valid Python expressions. They indicate that the worker is mixing TypeScript-style type fragments into Python conditionals.
+ 
+@@ -35,15 +35,15 @@
+ 
+ Every Python conditional uses complete comparisons. Examples of acceptable forms:
+ 
+-- page_number is None
+-- page_number is not None
+-- not isinstance(page_number, int)
+-- isinstance(page_count, int)
+-- isinstance(values, list)
++- `page_number is None`
++- `page_number is not None`
++- `not isinstance(page_number, int)`
++- `isinstance(page_count, int)`
++- `isinstance(values, list)`
+ 
+-No Python file contains TypeScript-style expression fragments. Do not place list[str], dict[str, object], tuple[str, ...], or similar annotations inside if statements, return expressions, boolean expressions, or assertions unless they are inside a valid Python type annotation context.
++No Python file contains TypeScript-style expression fragments. Do not place `list[str]`, `dict[str, object]`, `tuple[str, ...]`, or similar annotations inside `if` statements, return expressions, boolean expressions, or assertions unless they are inside a valid Python type annotation context.
+ 
+-Before broader validation, changed Python files should be checked with py_compile and changed TypeScript files should be checked by the daemon syntax preflight path. Parser failures should be classified as syntax_preflight and should produce compact guidance that names the malformed line and asks for a smaller syntax-first retry.
++Before broader validation, changed Python files should be checked with `py_compile` and changed TypeScript files should be checked by the daemon syntax preflight path. Parser failures should be classified as `syntax_preflight` and should produce compact guidance that names the malformed line and asks for a smaller syntax-first retry.
+ 
+ ## Domain Safety Boundary
+ 
+@@ -51,4 +51,4 @@
+ 
+ ## Suggested Next Daemon Instruction
+ 
+-Pause the repeated public PDF validation retry until the worker has read this guide. Then resume with the smallest syntax-valid patch that can pass py_compile before running full PP&D validation. If another syntax_preflight rollback occurs for the same malformed expression family, append a daemon preflight or prompt repair task before selecting the domain task again.
++Pause the repeated public PDF validation retry until the worker has read this guide. Then resume with the smallest syntax-valid patch that can pass `py_compile` before running full PP&D validation. If another `syntax_preflight` rollback occurs for the same malformed expression family, append a daemon preflight or prompt repair task before selecting the domain task again.

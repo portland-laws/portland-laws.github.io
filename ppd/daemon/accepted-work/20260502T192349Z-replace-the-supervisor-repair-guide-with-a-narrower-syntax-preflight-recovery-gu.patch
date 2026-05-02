@@ -1,0 +1,34 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -12,13 +12,13 @@
+ - `page_number list[str]`
+ - `page_count list[str]`
+ - `if self.page_count list[str]`
+-- unterminated strings introduced while writing conditional diagnostics
++- Unterminated string literals introduced while writing conditional diagnostics
+ 
+-These are not valid Python expressions. They indicate that the worker is mixing TypeScript-style type fragments into Python conditionals or generating broad validator rewrites without a syntax-first check.
++These are parser failures, not domain-contract failures. They indicate that the worker is mixing TypeScript-style type fragments into Python conditionals or attempting broad validator rewrites before proving the changed file can parse.
+ 
+ ## Repair Scope
+ 
+-A repair round may edit daemon supervision files, daemon diagnostics, daemon prompt guidance, task-board recovery notes, or focused daemon tests. It may not add the public PDF extraction validator, replace public PDF fixtures to complete the stalled task, download documents, run live crawling, or create private DevHub artifacts.
++A repair round may edit daemon supervision files, daemon diagnostics, daemon prompt guidance, task-board recovery notes, or focused daemon tests. It must not add the public PDF extraction validator, replace public PDF fixtures to complete the stalled task, download documents, run live crawling, or create private DevHub artifacts.
+ 
+ Private DevHub artifacts include auth state, cookies, traces, screenshots, raw browser storage, account identifiers, uploaded documents, payment records, and live session captures.
+ 
+@@ -44,7 +44,7 @@
+ 
+ No Python file contains TypeScript-style expression fragments. Do not place `list[str]`, `dict[str, object]`, `tuple[str, ...]`, or similar annotations inside `if` statements, return expressions, boolean expressions, or assertions unless they are inside a valid Python type annotation context.
+ 
+-Before broader validation, changed Python files should be checked with `py_compile` and changed TypeScript files should be checked by the daemon syntax preflight path. Parser failures should be classified as `syntax_preflight` and should produce compact guidance that names the malformed line and asks for a smaller syntax-first retry.
++Before broader validation, changed Python files should be checked with `py_compile`. Changed TypeScript files should be checked by the daemon syntax preflight path. Parser failures should be classified as `syntax_preflight` and should produce compact guidance that names the malformed line and asks for a smaller syntax-first retry.
+ 
+ ## Domain Safety Boundary
+ 
+@@ -67,4 +67,4 @@
+ 
+ ## Suggested Next Daemon Instruction
+ 
+-Pause the repeated public PDF validation retry until the worker has read this guide. Then resume with the smallest syntax-valid patch that can pass `py_compile` before running full PP&D validation. If another `syntax_preflight` rollback occurs for the same malformed expression family, append a daemon preflight or prompt repair task before selecting the domain task again.
++Pause the repeated public PDF validation retry until the worker has read this guide. Then resume with the smallest syntax-valid patch that can pass `python3 -m py_compile` before running full PP&D validation. If another `syntax_preflight` rollback occurs for the same malformed expression family, append a daemon preflight or prompt repair task before selecting the domain task again.

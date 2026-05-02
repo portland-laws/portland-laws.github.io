@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-02T18:52:34.934230Z",
+  "impact": "The daemon has been retrying the same public PDF extraction task after syntax and validation failures. This repair gives the next worker deterministic recovery guidance: avoid broad contract rewrites, avoid embedding forbidden search tokens in negative field names, and retry with the smallest fixture/test set aligned to the validator's actual assertions.",
+  "summary": "Add a narrow supervisor recovery rule for forbidden-token fixture failures during public PDF extraction retries.",
+  "target_task": "Supervisor repair: 4 consecutive daemon rounds failed without an accepted patch",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 108 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".........................................................................................................................................................................................................................................................................................................ss..............sss...................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 514 tests in 0.089s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

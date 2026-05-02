@@ -1,42 +1,47 @@
 # PP&D Supervisor Repair Guide
 
-This guide is intentionally short because the daemon includes PP&D markdown files in worker prompt context. Use it when the supervisor reports repeated failed daemon rounds.
+This guide is for supervisor repair cycles after repeated daemon rounds fail without an accepted patch. It is intentionally narrow and applies to daemon prompt, preflight, retry, recovery, and diagnostics work only.
 
-## Syntax-Preflight Recovery
+## Current Recovery Target
 
-When recent daemon failures include `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128`, the next worker proposal must be smaller than the failed proposal.
+Recent failed patches repeatedly targeted the public PDF extraction fixture validator and were rolled back by Python syntax preflight. The recurring malformed fragments looked like Python conditionals polluted with TypeScript-style type fragments, including these exact failure shapes:
 
-Required recovery behavior:
+- `page_number None`
+- `page_number list[str]`
+- `page_count list[str]`
+- `if self.page_count list[str]`
 
-- Replace only the files needed for the selected task.
-- Prefer one implementation file plus one focused test file, or one documentation repair file when the failure is supervisory.
-- Do not rewrite shared contracts or broad validation suites while recovering from syntax failures.
-- For Python, use ordinary annotations only in assignments, parameters, returns, dataclasses, and type aliases.
-- Never write pseudo type-guard statements such as `if value list[str]:`, `if value tuple[str, ...]:`, or `if object.field dict[str, str]:`.
-- Use `isinstance(value, list)`, `isinstance(value, tuple)`, or explicit helper functions for runtime validation.
-- Keep every generated Python expression valid under `python3 -m py_compile` before returning JSON.
+A supervisor repair patch must not implement the stalled PP&D domain task directly. It should improve the daemon instructions, diagnostics, or retry constraints so a later worker can resume the domain task with a smaller syntactically valid patch.
 
-## Replenishment Task Guidance
+## Required Retry Shape
 
-For completed-board replenishment validation, avoid live daemon execution and avoid authenticated automation. A valid narrow implementation should prove the transition with deterministic data:
+When the previous failure kind is `syntax_preflight`, the next domain retry must use one of these shapes:
 
-- a completed board snapshot,
-- accepted-work history identifiers that are preserved,
-- a new appended tranche with `[ ]` tasks,
-- stale supervisor repair counters reset or excluded from the new tranche,
-- validation that completed tasks remain completed and are not reselected.
+- One syntax-valid Python unittest file
+- One small JSON fixture plus one syntax-valid Python unittest file
 
-Use fixtures or small pure-Python helpers. Do not write private DevHub state, raw crawl output, browser traces, screenshots, auth state, uploads, submissions, payments, certifications, cancellations, MFA, CAPTCHA, or inspection scheduling artifacts.
+The retry should not broaden schemas, rewrite multiple unrelated contracts, or create a new live automation path. If a fixture is needed, keep it small, redacted, and committed under `ppd/tests/fixtures/`.
 
-## Supervisor Diagnosis Checklist
+## Python Syntax Guardrails
 
-Before broad validation, the daemon must be able to explain failures compactly enough for the next worker cycle:
+Every Python file proposed after a syntax-preflight rollback must satisfy these rules before full validation:
 
-- failure kind,
-- changed files,
-- failing command,
-- parser or assertion diagnostic,
-- whether edits were rolled back,
-- whether the next proposal should shrink scope.
+- Every Python conditional uses complete comparisons such as `value is None`, `value is not None`, `isinstance(value, list)`, or `len(value) > 0`.
+- No Python file contains TypeScript-style expression fragments such as `field list[str]`, `field string`, `field?:`, or inline type fragments inside `if`, `return`, `assert`, list comprehensions, or boolean expressions.
+- Python type hints may appear only in valid Python locations: function signatures, variable annotations, class attributes, or `typing` aliases.
+- The daemon should run `python3 -m py_compile` for changed Python files before broader unittest or repository validation.
 
-If a selected task has multiple syntax-preflight failures, the worker should repair syntax and tests first, not extend the domain implementation surface.
+## Repair Scope Boundaries
+
+Supervisor repair changes stay in daemon programming, diagnostics, preflight, retry policy, task selection, or recovery documentation. A repair patch must not implement the stalled PP&D domain task directly, does not download documents, does not crawl live public pages, and does not create private DevHub artifacts.
+
+Forbidden repair outputs include:
+
+- private DevHub artifacts
+- auth state, cookies, sessions, traces, screenshots, or browser storage
+- raw crawl output, raw PDF bytes, OCR dumps, or downloaded documents
+- upload, submit, certify, pay, cancel, inspection scheduling, MFA, CAPTCHA, account creation, or password recovery automation
+
+## Supervisor Action Rule
+
+If the daemon has failed four or more consecutive rounds on the same parser or compiler error family, pause that domain task and accept only a narrow repair patch that improves prompt constraints or diagnostics. After the repair passes validation, resume the domain task with the smallest fixture-first retry shape listed above.

@@ -1,0 +1,45 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "unsafe-form-field-extraction-fixture",
+  "sourceDocument": {
+    "documentId": "unsafe-synthetic-document",
+    "sourceUrl": "https://www.portland.gov/ppd/permits/synthetic-public-fixture",
+    "documentRole": "public_form_metadata",
+    "contentStorage": "unsafe_payload_for_validator_test"
+  },
+  "sourceEvidence": [
+    {
+      "id": "evidence-known-required-field",
+      "url": "https://www.portland.gov/ppd/permits/synthetic-public-fixture",
+      "quote": "Known required field has source evidence.",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    }
+  ],
+  "fields": [
+    {
+      "id": "field-uncited-required",
+      "label": "Uncited required field",
+      "kind": "text",
+      "required": true,
+      "citations": []
+    },
+    {
+      "id": "field-bad-citation",
+      "label": "Required field with missing evidence id",
+      "kind": "text",
+      "required": true,
+      "citations": ["missing-evidence-id"]
+    }
+  ],
+  "instructions": [
+    "Submit the application after the fields are filled.",
+    "Upload the correction document.",
+    "Pay the fee, cancel the request, certify the statement, or schedule an inspection."
+  ],
+  "rawPdfBody": "%PDF-1.7 synthetic raw body that must not be committed",
+  "downloadedDocumentBytes": "JVBERi0xLjc=",
+  "privateUserValues": {
+    "applicantName": "Private Person",
+    "siteAddress": "123 Private Street"
+  }
+}

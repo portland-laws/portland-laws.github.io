@@ -1,0 +1,163 @@
+{
+  "fixtureKind": "public_requirement_source_diff_report",
+  "schemaVersion": 1,
+  "reportId": "ppd-source-diff-single-pdf-process-2026-05-01",
+  "generatedAt": "2026-05-01T12:00:00Z",
+  "sourceRequirement": {
+    "id": "ppd-public-single-pdf-process-requirements",
+    "title": "Single PDF Process submittal requirements",
+    "sourceUrl": "https://www.portland.gov/ppd/apply-permit/single-pdf-process",
+    "sourceId": "ppd-guidance-single-pdf-process",
+    "anchorId": "single-pdf-process-submittal-requirements"
+  },
+  "snapshots": {
+    "before": {
+      "id": "single-pdf-process-before-synthetic-v1",
+      "capturedAt": "2026-05-01T10:00:00Z",
+      "requirements": [
+        {
+          "id": "single-pdf-application-documents",
+          "sourceId": "ppd-guidance-single-pdf-process",
+          "sourceUrl": "https://www.portland.gov/ppd/apply-permit/single-pdf-process",
+          "anchorId": "applications-and-supporting-documents",
+          "requirementType": "obligation",
+          "text": "Applicants must upload the permit application as a separate PDF from drawing plans.",
+          "evidenceText": "Upload the permit application separately from the drawing plan PDF.",
+          "contentHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "pageNumber": 1
+        },
+        {
+          "id": "single-pdf-drawing-plans",
+          "sourceId": "ppd-guidance-single-pdf-process",
+          "sourceUrl": "https://www.portland.gov/ppd/apply-permit/single-pdf-process",
+          "anchorId": "drawing-plans",
+          "requirementType": "obligation",
+          "text": "Applicants must combine drawing plan sheets into one PDF when the Single PDF Process applies.",
+          "evidenceText": "Drawing plans are submitted as one PDF for the Single PDF Process.",
+          "contentHash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "pageNumber": 1
+        },
+        {
+          "id": "single-pdf-paper-copy-checklist",
+          "sourceId": "ppd-guidance-single-pdf-process",
+          "sourceUrl": "https://www.portland.gov/ppd/apply-permit/single-pdf-process",
+          "anchorId": "paper-copy-checklist",
+          "requirementType": "obligation",
+          "text": "Applicants must keep a paper copy checklist with the submitted application packet.",
+          "evidenceText": "Keep a paper copy checklist with the application packet.",
+          "contentHash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+          "pageNumber": 2
+        }
+      ]
+    },
+    "after": {
+      "id": "single-pdf-process-after-synthetic-v2",
+      "capturedAt": "2026-05-01T11:00:00Z",
+      "requirements": [
+        {
+          "id": "single-pdf-application-documents",
+          "sourceId": "ppd-guidance-single-pdf-process",
+          "sourceUrl": "https://www.portland.gov/ppd/apply-permit/single-pdf-process",
+          "anchorId": "applications-calculations-supporting-documents",
+          "requirementType": "obligation",
+          "text": "Applicants must upload applications, calculations, and supporting documents as PDFs separate from drawing plans.",
+          "evidenceText": "Applications, calculations, and supporting documents are separate PDFs from drawing plans.",
+          "contentHash": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+          "pageNumber": 1
+        },
+        {
+          "id": "single-pdf-drawing-plans",
+          "sourceId": "ppd-guidance-single-pdf-process",
+          "sourceUrl": "https://www.portland.gov/ppd/apply-permit/single-pdf-process",
+          "anchorId": "drawing-plans",
+          "requirementType": "obligation",
+          "text": "Applicants must combine drawing plan sheets into one PDF when the Single PDF Process applies.",
+          "evidenceText": "Drawing plans are submitted as one PDF for the Single PDF Process.",
+          "contentHash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "pageNumber": 1
+        },
+        {
+          "id": "single-pdf-searchable-plan-pdf",
+          "sourceId": "ppd-guidance-single-pdf-process",
+          "sourceUrl": "https://www.portland.gov/ppd/apply-permit/single-pdf-process",
+          "anchorId": "searchable-drawing-plan-pdf",
+          "requirementType": "obligation",
+          "text": "Applicants must make drawing plan PDFs searchable when submitting through the Single PDF Process.",
+          "evidenceText": "Drawing plans must be one searchable PDF.",
+          "contentHash": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+          "pageNumber": 1
+        }
+      ]
+    }
+  },
+  "diffs": [
+    {
+      "id": "diff-added-single-pdf-searchable-plan-pdf",
+      "kind": "added",
+      "requirementId": "single-pdf-searchable-plan-pdf",
+      "afterRequirementId": "single-pdf-searchable-plan-pdf",
+      "changedFields": [],
+      "confidence": 0.93,
+      "citations": [
+        {
+          "sourceId": "ppd-guidance-single-pdf-process",
+          "sourceUrl": "https://www.portland.gov/ppd/apply-permit/single-pdf-process",
+          "anchorId": "searchable-drawing-plan-pdf",
+          "snapshotId": "single-pdf-process-after-synthetic-v2",
+          "evidenceText": "Drawing plans must be one searchable PDF.",
+          "confidence": 0.94
+        }
+      ]
+    },
+    {
+      "id": "diff-removed-single-pdf-paper-copy-checklist",
+      "kind": "removed",
+      "requirementId": "single-pdf-paper-copy-checklist",
+      "beforeRequirementId": "single-pdf-paper-copy-checklist",
+      "changedFields": [],
+      "confidence": 0.9,
+      "citations": [
+        {
+          "sourceId": "ppd-guidance-single-pdf-process",
+          "sourceUrl": "https://www.portland.gov/ppd/apply-permit/single-pdf-process",
+          "anchorId": "paper-copy-checklist",
+          "snapshotId": "single-pdf-process-before-synthetic-v1",
+          "evidenceText": "Keep a paper copy checklist with the application packet.",
+          "confidence": 0.91
+        }
+      ]
+    },
+    {
+      "id": "diff-changed-single-pdf-application-documents",
+      "kind": "changed",
+      "requirementId": "single-pdf-application-documents",
+      "beforeRequirementId": "single-pdf-application-documents",
+      "afterRequirementId": "single-pdf-application-documents",
+      "changedFields": [
+        "text",
+        "evidence_text",
+        "content_hash",
+        "anchor_id"
+      ],
+      "confidence": 0.88,
+      "citations": [
+        {
+          "sourceId": "ppd-guidance-single-pdf-process",
+          "sourceUrl": "https://www.portland.gov/ppd/apply-permit/single-pdf-process",
+          "anchorId": "applications-and-supporting-documents",
+          "snapshotId": "single-pdf-process-before-synthetic-v1",
+          "evidenceText": "Upload the permit application separately from the drawing plan PDF.",
+          "confidence": 0.88
+        },
+        {
+          "sourceId": "ppd-guidance-single-pdf-process",
+          "sourceUrl": "https://www.portland.gov/ppd/apply-permit/single-pdf-process",
+          "anchorId": "applications-calculations-supporting-documents",
+          "snapshotId": "single-pdf-process-after-synthetic-v2",
+          "evidenceText": "Applications, calculations, and supporting documents are separate PDFs from drawing plans.",
+          "confidence": 0.89
+        }
+      ]
+    }
+  ]
+}

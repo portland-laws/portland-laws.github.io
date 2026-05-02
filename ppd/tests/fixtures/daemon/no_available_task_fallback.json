@@ -1,0 +1,44 @@
+{
+  "boardBefore": "# PP&D Daemon Task Board\n\n## Completed Work\n\n- [x] Task checkbox-90: Existing accepted supervisor validation.\n\n## Next Goal-Aligned Tranche\n",
+  "expectedTaskLine": "- [ ] Task checkbox-91: Task checkbox-86: Add supervisor no-available-task fallback validation proving the supervisor can append a deterministic fixture-first tranche if Codex planning fails or times out.",
+  "expectedGuidanceContains": [
+    "Fixture-first scope",
+    "python3 ppd/daemon/ppd_daemon.py --self-test",
+    "no live DevHub sessions",
+    "no live DevHub sessions, browser traces, auth state, raw crawl output, uploads, submissions, payments, CAPTCHA, MFA, account creation, cancellation, certification, or inspection scheduling"
+  ],
+  "states": [
+    {
+      "name": "planning failed after board exhaustion",
+      "completeCount": 90,
+      "taskCount": 90,
+      "noAvailableTask": true,
+      "planningStatus": "codex_planning_failed",
+      "shouldAppend": true
+    },
+    {
+      "name": "planning timed out after board exhaustion",
+      "completeCount": 90,
+      "taskCount": 90,
+      "noAvailableTask": true,
+      "planningStatus": "codex_planning_timed_out",
+      "shouldAppend": true
+    },
+    {
+      "name": "validation failure is not a no-task planning fallback",
+      "completeCount": 90,
+      "taskCount": 90,
+      "noAvailableTask": true,
+      "planningStatus": "validation_failed",
+      "shouldAppend": false
+    },
+    {
+      "name": "incomplete board is not eligible",
+      "completeCount": 89,
+      "taskCount": 90,
+      "noAvailableTask": false,
+      "planningStatus": "codex_planning_failed",
+      "shouldAppend": false
+    }
+  ]
+}

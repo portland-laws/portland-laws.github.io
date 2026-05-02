@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/change_monitoring/change_monitoring_plan.json",
+    "ppd/tests/test_change_monitoring_plan.py"
+  ],
+  "created_at": "2026-05-02T18:26:28.661730Z",
+  "impact": "This advances the PP&D plan by proving watched public sources carry canonical provenance, deterministic freshness metadata placeholders, recrawl cadence, and explicit skip reasons for live crawling and private DevHub data before any network or authenticated automation is attempted.",
+  "summary": "Add fixture-only validation for a PP&D change-monitoring plan.",
+  "target_task": "Task checkbox-94: Task checkbox-89: Add validation for the change-monitoring plan fixture proving each watched source has canonical URL provenance, content-hash or HTTP-cache metadata placeholders, a recrawl cadence, and skipped-action reasons for live crawl and private DevHub data.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 100 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "...........................................................................................................................................................................................................................................................................................ss..............sss...................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 484 tests in 0.087s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

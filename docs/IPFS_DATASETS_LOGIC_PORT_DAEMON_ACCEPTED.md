@@ -227,3 +227,21 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T180111Z-add-browser-native-cec-profiler-timeline-flamegraph-and-bottleneck-report-helper.json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T180111Z-add-browser-native-cec-profiler-timeline-flamegraph-and-bottleneck-report-helper.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T180111Z-add-browser-native-cec-profiler-timeline-flamegraph-and-bottleneck-report-helper.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-02 19:08:04 UTC
+
+- Target: `Task checkbox-183: Port logic integration bridges to route to TS/WASM cores.`
+- Summary: Fix core bridge fallback typing and fail-closed WASM routing.
+- Impact: Adds the browser-native integration bridge and Jest coverage used by the TypeScript port validation suite to route logic work to TS/WASM cores without Python or server fallback.
+- Changed files: `src/lib/logic/integration/coreBridge.test.ts`, `src/lib/logic/integration/coreBridge.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T190804Z-fix-core-bridge-fallback-typing-and-fail-closed-wasm-routing..json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T190804Z-fix-core-bridge-fallback-typing-and-fail-closed-wasm-routing..patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T190804Z-fix-core-bridge-fallback-typing-and-fail-closed-wasm-routing..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
+## 2026-05-02 19:17:52 UTC
+
+- Target: `Task checkbox-188: Port monitoring/metrics to in-browser telemetry objects and developer panels.`
+- Summary: Add browser-native telemetry objects and developer panel summaries
+- Impact: Adds a deterministic in-memory telemetry collector under src/lib/logic with no Node, filesystem, RPC, or server dependencies. The focused Jest coverage validates metric aggregation, developer panel summaries, bounded event retention, and fail-closed input validation for the TypeScript logic-port validation suite.
+- Changed files: `src/lib/logic/browserTelemetry.test.ts`, `src/lib/logic/browserTelemetry.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T191752Z-add-browser-native-telemetry-objects-and-developer-panel-summaries.json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T191752Z-add-browser-native-telemetry-objects-and-developer-panel-summaries.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T191752Z-add-browser-native-telemetry-objects-and-developer-panel-summaries.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

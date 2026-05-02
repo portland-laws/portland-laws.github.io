@@ -1,0 +1,49 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "synthetic-public-permit-request-form-fields",
+  "sourceDocument": {
+    "documentId": "ppd-public-synthetic-permit-request-form",
+    "sourceUrl": "https://www.portland.gov/ppd/permits/synthetic-public-fixture",
+    "documentRole": "public_form_metadata",
+    "contentStorage": "metadata_only"
+  },
+  "sourceEvidence": [
+    {
+      "id": "evidence-project-description-required",
+      "url": "https://www.portland.gov/ppd/permits/synthetic-public-fixture",
+      "quote": "Project description is required for this permit request fixture.",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "id": "evidence-property-id-required",
+      "url": "https://www.portland.gov/ppd/permits/synthetic-public-fixture",
+      "quote": "Property identifier is required for this permit request fixture.",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    }
+  ],
+  "fields": [
+    {
+      "id": "field-project-description",
+      "label": "Project description",
+      "kind": "text",
+      "required": true,
+      "citations": ["evidence-project-description-required"],
+      "redactedValue": "[REDACTED]"
+    },
+    {
+      "id": "field-property-id",
+      "label": "Property identifier",
+      "kind": "text",
+      "required": true,
+      "citations": ["evidence-property-id-required"],
+      "redactedValue": "[REDACTED]"
+    }
+  ],
+  "instructions": [
+    "Use this fixture only to identify missing information and reversible draft field previews.",
+    "Stop before consequential or financial DevHub actions."
+  ],
+  "privateUserValues": [],
+  "rawPdfBody": null,
+  "downloadedDocumentBytes": null
+}

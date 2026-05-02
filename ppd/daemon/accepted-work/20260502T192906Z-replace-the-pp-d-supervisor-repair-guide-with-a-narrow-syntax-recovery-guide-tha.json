@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-02T19:29:06.715817Z",
+  "impact": "This gives the daemon deterministic recovery instructions for the current stalled public PDF validation task: shrink retries, require py_compile-safe Python, forbid TypeScript-style fragments in Python expressions, keep supervisor repair separate from domain implementation, and avoid live/downloaded/private DevHub artifacts. It should let validation accept the repair guide and steer the next autonomous cycle away from repeating the same malformed test patch.",
+  "summary": "Replace the PP&D supervisor repair guide with a narrow syntax-recovery guide that matches the existing repair-guide tests and directly addresses the repeated Python SyntaxError loop.",
+  "target_task": "Supervisor repair: 13 consecutive daemon rounds failed without an accepted patch",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 108 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".........................................................................................................................................................................................................................................................................................................ss..............sss......................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 517 tests in 0.093s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

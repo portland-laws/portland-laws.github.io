@@ -123,8 +123,30 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 - [x] Task checkbox-83: Add processor archive manifest validation that proves the PP&D handoff can reference ipfs_datasets_py processor provenance, source index records, and normalized document IDs without network, raw crawl output, or private DevHub artifacts.
 - [x] Task checkbox-84: Add a mocked Playwright form-fill planning fixture that ranks accessible selectors by evidence confidence and refuses low-confidence selectors before any live browser session is launched.
 - [x] Task checkbox-85: Add a missing-information resolution fixture that converts unresolved PP&D user facts into a minimal questionnaire while preserving source evidence, redaction, and action-classification guardrails.
-- [~] Task checkbox-86: Add supervisor no-available-task fallback validation proving the supervisor can append a deterministic fixture-first tranche if Codex planning fails or times out.
-- [ ] Task checkbox-87: Add an autonomous draft-session audit ledger fixture that links source evidence, guardrails, selector confidence, user-confirmation state, and reversible form mutations without storing screenshots, traces, cookies, auth state, or raw browser storage.
+- [x] Task checkbox-86: Add supervisor no-available-task fallback validation proving the supervisor can append a deterministic fixture-first tranche if Codex planning fails or times out.
+- [x] Task checkbox-87: Add an autonomous draft-session audit ledger fixture that links source evidence, guardrails, selector confidence, user-confirmation state, and reversible form mutations without storing screenshots, traces, cookies, auth state, or raw browser storage.
+
+## Replenished Goal-Aligned Tranche
+
+- [x] Task checkbox-88: Add a fixture-only public PP&D change-monitoring plan that lists one high-change guidance page, one low-change PDF or form artifact, recrawl cadence, hash/header fields, and change-report categories without network access, raw crawl output, or downloaded documents.
+- [x] Task checkbox-89: Add validation for the change-monitoring plan fixture proving each watched source has canonical URL provenance, content-hash or HTTP-cache metadata placeholders, a recrawl cadence, and skipped-action reasons for live crawl and private DevHub data.
+- [x] Task checkbox-90: Add a fixture-only public form-field extraction contract for one PP&D application or checklist sample that records required labels, enumerated options, signature or acknowledgment markers, source page anchors, and redacted placeholder values only.
+- [x] Task checkbox-91: Add validation that form-field extraction fixtures reject uncited required fields, raw PDF bodies, downloaded document bytes, private user values, and any instruction to submit, certify, upload, pay, cancel, or schedule inspections.
+- [x] Task checkbox-92: Add a fixture-only source-diff report that compares two synthetic versions of one public PP&D requirement and classifies added, removed, and changed obligations with citations and confidence values.
+- [x] Task checkbox-93: Add validation for source-diff fixtures proving changed requirements preserve prior and current source evidence, stable requirement IDs, review-needed flags, and fail-closed agent impact summaries.
+- [x] Task checkbox-94: Add a mocked DevHub workflow-resume fixture that models read-only draft discovery and missing-field detection from redacted state only, with no browser launch, auth state, cookies, traces, screenshots, uploads, submissions, payments, MFA, CAPTCHA, cancellation, certification, or inspection scheduling.
+- [x] Task checkbox-95: Add validation for mocked workflow-resume fixtures proving the allowed actions are limited to safe read-only inspection and reversible draft previews, while consequential and financial actions require exact confirmation and remain refused by default.
+
+## Replenished Goal-Aligned Tranche
+
+- [x] Task checkbox-96: Add a fixture-only exact-confirmation checkpoint contract for mocked DevHub consequential and financial actions, with redacted action previews, source-backed consequence summaries, durable audit-event references, and default refusal before confirmation. Do not launch a browser, store auth state, upload, submit, certify, pay, cancel, schedule inspections, automate MFA or CAPTCHA, or use live DevHub.
+- [x] Task checkbox-97: Add validation for exact-confirmation checkpoint fixtures proving vague confirmations, stale source evidence, private values, missing audit-event IDs, and mismatched action strings are rejected before any consequential or financial DevHub action can be planned.
+- [x] Task checkbox-98: Add a fixture-only public PP&D requirement-boundary sample that separates legal or procedural obligations from operational DevHub UI behavior for one permit process, preserving source evidence IDs, requirement type, confidence, and review-needed flags.
+- [x] Task checkbox-99: Add validation for requirement-boundary fixtures proving legal obligations, operational UI hints, user facts, document requirements, fee notices, and deadlines are classified separately and fail closed when citations or review-needed flags are missing.
+- [x] Task checkbox-100: Add a fixture-only public PDF extraction contract for one PP&D checklist or form sample that records document metadata, page-number anchors, required document labels, signature or acknowledgment markers, and extracted text snippets only; do not download documents or store raw PDF bytes.
+- [~] Task checkbox-101: Add validation for public PDF extraction fixtures proving page anchors, source URLs, checksums or placeholder hash fields, redacted values, and skipped raw-byte/OCR-output reasons are present, while raw bodies and private DevHub artifacts are rejected.
+- [ ] Task checkbox-102: Add a fixture-only redacted user-case-state contract that links a mocked project fact inventory, missing-information questions, uploaded-file placeholders, draft status, and source evidence without storing private documents, account identifiers, cookies, traces, screenshots, payments, or live DevHub state.
+- [ ] Task checkbox-103: Add validation for user-case-state fixtures proving missing facts, file placeholders, draft/submitted status, payment status, messages, and outstanding tasks remain redacted, source-linked, and blocked from consequential or financial action planning by default.
 
 ## Generated Status
 
@@ -135,14 +157,36 @@ Last updated: 2026-05-02T06:45:00Z
 - Latest summary: Blocked the draft-action preview domain retry behind a narrow daemon fixture-shape guidance self-test, then queued a constrained fixture-first retry.
 
 
+
+## Generated Status
+
+Last updated: 2026-05-02T18:21:22.136761Z
+
+- Latest target: `Task checkbox-92: Task checkbox-87: Add an autonomous draft-session audit ledger fixture that links source evidence, guardrails, selector confidence, user-confirmation state, and reversible form mutations without storing screenshots, traces, cookies, auth state, or raw browser storage.`
+- Latest result: `accepted`
+- Latest summary: Add a narrow redacted DevHub draft audit ledger fixture and focused validation test.
+- Counts: `{"blocked": 0, "complete": 92, "in_progress": 0, "needed": 0}`
+
+
+
+## Generated Status
+
+Last updated: 2026-05-02T18:35:29.491670Z
+
+- Latest target: `Task checkbox-100: Task checkbox-95: Add validation for mocked workflow-resume fixtures proving the allowed actions are limited to safe read-only inspection and reversible draft previews, while consequential and financial actions require exact confirmation and remain refused by default.`
+- Latest result: `accepted`
+- Latest summary: Add fixture-only workflow-resume action-gate validation for mocked DevHub resume states.
+- Counts: `{"blocked": 0, "complete": 100, "in_progress": 0, "needed": 8}`
+
+
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-02T18:14:28.704101Z
+Last updated: 2026-05-02T19:30:44.327882Z
 
-- Latest target: `Task checkbox-90: Task checkbox-85: Add a missing-information resolution fixture that converts unresolved PP&D user facts into a minimal questionnaire while preserving source evidence, redaction, and action-classification guardrails.`
-- Latest result: `accepted`
-- Latest summary: Add a deterministic missing-information questionnaire resolution fixture and focused validation test.
-- Counts: `{"blocked": 0, "complete": 90, "in_progress": 0, "needed": 2}`
+- Latest target: `Task checkbox-106: Task checkbox-101: Add validation for public PDF extraction fixtures proving page anchors, source URLs, checksums or placeholder hash fields, redacted values, and skipped raw-byte/OCR-output reasons are present, while raw bodies and private DevHub artifacts are rejected.`
+- Latest result: `syntax_preflight`
+- Latest summary: Add a narrow public PDF extraction fixture and validator for checkbox-106.
+- Counts: `{"blocked": 0, "complete": 105, "in_progress": 0, "needed": 3}`
 
 <!-- ppd-daemon-task-board:end -->

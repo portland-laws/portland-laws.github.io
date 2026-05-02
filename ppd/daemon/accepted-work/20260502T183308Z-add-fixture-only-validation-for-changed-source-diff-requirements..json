@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/source-diff/changed_requirement_evidence_continuity.json",
+    "ppd/tests/test_source_diff_changed_requirement_evidence.py"
+  ],
+  "created_at": "2026-05-02T18:33:08.831074Z",
+  "impact": "This advances the PP&D source monitoring plan by proving changed requirements retain stable IDs, preserve before/after public source evidence, require review, and fail closed for agent impact summaries before any live crawl or automation is introduced.",
+  "summary": "Add fixture-only validation for changed source-diff requirements.",
+  "target_task": "Task checkbox-98: Task checkbox-93: Add validation for source-diff fixtures proving changed requirements preserve prior and current source evidence, stable requirement IDs, review-needed flags, and fail-closed agent impact summaries.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 100 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".............................................................................................................................................................................................................................................................................................ss..............sss.............................................................................................................................................................................................. ---------------------------------------------------------------------- Ran 494 tests in 0.092s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

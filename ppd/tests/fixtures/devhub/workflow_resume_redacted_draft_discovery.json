@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "devhub-workflow-resume-redacted-draft-discovery-v1",
+  "mode": "mocked_redacted_state_only",
+  "browserLaunch": false,
+  "authenticatedSession": false,
+  "privateSessionArtifacts": {
+    "authState": false,
+    "cookies": false,
+    "traces": false,
+    "screenshots": false,
+    "downloadedDocuments": false,
+    "rawCrawlOutput": false
+  },
+  "redactedState": {
+    "stateId": "redacted-devhub-draft-state-001",
+    "capturedAt": "2026-05-01T00:00:00Z",
+    "captureMethod": "synthetic_fixture",
+    "accountRef": "[REDACTED_ACCOUNT]",
+    "projectRef": "[REDACTED_PROJECT]",
+    "portal": "Development Hub PDX",
+    "sourceEvidence": [
+      {
+        "id": "public-devhub-guidance-001",
+        "sourceType": "public_guidance",
+        "url": "https://www.portland.gov/ppd/devhub",
+        "description": "Public DevHub guidance identifies Development Hub PDX as Portland's online permitting system."
+      },
+      {
+        "id": "public-devhub-guidance-002",
+        "sourceType": "public_guidance",
+        "url": "https://www.portland.gov/ppd/devhub-help",
+        "description": "Public DevHub help describes saved permitting workflows and user-visible draft status concepts."
+      }
+    ]
+  },
+  "workflowResume": {
+    "readOnly": true,
+    "discoverySource": "redactedState",
+    "resumeCandidateCount": 1,
+    "drafts": [
+      {
+        "draftId": "[REDACTED_DRAFT_ID]",
+        "workflowType": "building_permit_request",
+        "status": "saved_draft",
+        "lastKnownStep": "project_information",
+        "stableStateKey": "devhub:draft:building_permit_request:project_information",
+        "requiredFields": [
+          {
+            "fieldId": "project_address",
+            "label": "Project address",
+            "required": true,
+            "present": true,
+            "redactedValue": "[REDACTED_PRESENT]",
+            "sourceEvidenceIds": ["public-devhub-guidance-001"]
+          },
+          {
+            "fieldId": "project_description",
+            "label": "Project description",
+            "required": true,
+            "present": false,
+            "redactedValue": "[REDACTED_EMPTY]",
+            "sourceEvidenceIds": ["public-devhub-guidance-002"]
+          },
+          {
+            "fieldId": "applicant_phone",
+            "label": "Applicant phone",
+            "required": true,
+            "present": false,
+            "redactedValue": "[REDACTED_EMPTY]",
+            "sourceEvidenceIds": ["public-devhub-guidance-002"]
+          }
+        ]
+      }
+    ]
+  },
+  "missingFieldDetection": {
+    "inputSource": "workflowResume.drafts.requiredFields",
+    "derivedFromRedactedValuesOnly": true,
+    "missingFields": [
+      {
+        "draftId": "[REDACTED_DRAFT_ID]",
+        "fieldId": "project_description",
+        "label": "Project description",
+        "reason": "required_field_redacted_empty",
+        "sourceEvidenceIds": ["public-devhub-guidance-002"]
+      },
+      {
+        "draftId": "[REDACTED_DRAFT_ID]",
+        "fieldId": "applicant_phone",
+        "label": "Applicant phone",
+        "reason": "required_field_redacted_empty",
+        "sourceEvidenceIds": ["public-devhub-guidance-002"]
+      }
+    ]
+  },
+  "actionInventory": {
+    "availableActions": [
+      {
+        "actionId": "inspect_redacted_draft_state",
+        "kind": "read_only",
+        "requiresExactUserConfirmation": false
+      },
+      {
+        "actionId": "derive_missing_required_fields",
+        "kind": "read_only",
+        "requiresExactUserConfirmation": false
+      }
+    ]
+  }
+}

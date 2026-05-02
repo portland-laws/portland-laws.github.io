@@ -1,0 +1,145 @@
+{
+  "schemaVersion": 1,
+  "sampleId": "public-building-permit-plan-review-requirement-boundary-v1",
+  "sampleKind": "fixture_only_public_requirement_boundary",
+  "processId": "building-permit-plan-review-single-pdf",
+  "permitProcess": {
+    "permitType": "Building permit requiring plan review",
+    "publicOnly": true,
+    "sourceEvidenceIds": [
+      "ppd-devhub-faq-services",
+      "ppd-devhub-application-guidance-request-types",
+      "ppd-single-pdf-process-guidance"
+    ]
+  },
+  "sourceEvidence": [
+    {
+      "id": "ppd-devhub-faq-services",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub-faq",
+      "sourceType": "public_guidance_html",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "supports": "Public DevHub FAQ describes online permitting service categories including permit requests requiring plan review, inspection scheduling for online trade permits, correction uploads, and fee payments."
+    },
+    {
+      "id": "ppd-devhub-application-guidance-request-types",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
+      "sourceType": "public_guidance_html",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "supports": "Public application guidance lists permit request types including building permits and related permit categories."
+    },
+    {
+      "id": "ppd-single-pdf-process-guidance",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+      "sourceType": "public_guidance_html",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "supports": "Public guidance says some projects use a Single PDF Process where drawing plans are one searchable PDF and applications, calculations, and supporting documents are separate PDFs."
+    }
+  ],
+  "requirementBoundary": {
+    "legalProceduralRequirements": [
+      {
+        "requirementId": "req-building-plan-review-request-type",
+        "boundaryClass": "legal_or_procedural_obligation",
+        "requirementType": "precondition",
+        "subject": "applicant",
+        "action": "select an eligible building permit request type for plan review",
+        "object": "building permit request",
+        "conditions": [
+          "project requires PP&D plan review",
+          "request is started through the public DevHub permitting process"
+        ],
+        "sourceEvidenceIds": [
+          "ppd-devhub-application-guidance-request-types",
+          "ppd-devhub-faq-services"
+        ],
+        "confidence": 0.86,
+        "reviewNeeded": true,
+        "boundaryRationale": "This describes which public permit process the applicant must use, not a browser selector or screen behavior."
+      },
+      {
+        "requirementId": "req-single-drawing-plan-pdf",
+        "boundaryClass": "legal_or_procedural_obligation",
+        "requirementType": "obligation",
+        "subject": "applicant",
+        "action": "prepare drawing plans as one searchable PDF when the Single PDF Process applies",
+        "object": "drawing plan PDF",
+        "conditions": [
+          "Single PDF Process applies to the project",
+          "drawing plans are required for plan review"
+        ],
+        "sourceEvidenceIds": [
+          "ppd-single-pdf-process-guidance"
+        ],
+        "confidence": 0.91,
+        "reviewNeeded": false,
+        "boundaryRationale": "This is a document-format and submittal obligation grounded in public PP&D guidance."
+      },
+      {
+        "requirementId": "req-supporting-documents-separate-pdfs",
+        "boundaryClass": "legal_or_procedural_obligation",
+        "requirementType": "obligation",
+        "subject": "applicant",
+        "action": "keep applications, calculations, and supporting documents separate from the drawing plan PDF",
+        "object": "application and supporting document PDFs",
+        "conditions": [
+          "Single PDF Process applies to the project",
+          "supporting documents are required for the permit request"
+        ],
+        "sourceEvidenceIds": [
+          "ppd-single-pdf-process-guidance"
+        ],
+        "confidence": 0.9,
+        "reviewNeeded": false,
+        "boundaryRationale": "This is a source-backed submittal requirement rather than a DevHub interaction step."
+      }
+    ],
+    "operationalDevhubUiBehavior": [
+      {
+        "behaviorId": "ui-devhub-account-prerequisite",
+        "boundaryClass": "operational_devhub_ui_behavior",
+        "requirementType": "dependency",
+        "subject": "applicant",
+        "action": "use PortlandOregon.gov credentials to access DevHub online permitting services",
+        "object": "DevHub account access",
+        "conditions": [
+          "applicant chooses to use authenticated DevHub services",
+          "manual user authentication is handled outside this fixture"
+        ],
+        "sourceEvidenceIds": [
+          "ppd-devhub-faq-services"
+        ],
+        "confidence": 0.84,
+        "reviewNeeded": true,
+        "boundaryRationale": "This records an operational access dependency; it does not authorize credential capture, MFA handling, or private session recording."
+      },
+      {
+        "behaviorId": "ui-draft-request-type-selection",
+        "boundaryClass": "operational_devhub_ui_behavior",
+        "requirementType": "action_gate",
+        "subject": "agent",
+        "action": "preview a reversible draft selection for the building permit request type",
+        "object": "mocked DevHub draft field",
+        "conditions": [
+          "user has provided the permit goal in the current interaction",
+          "agent stays in preview-only mode",
+          "no official filing action is performed"
+        ],
+        "sourceEvidenceIds": [
+          "ppd-devhub-application-guidance-request-types"
+        ],
+        "confidence": 0.78,
+        "reviewNeeded": true,
+        "boundaryRationale": "This is an operational UI planning behavior linked to a source-backed process choice, not an independent legal obligation."
+      }
+    ]
+  },
+  "privacyAndSafety": {
+    "containsPrivateDevhubSessionData": false,
+    "containsCredentials": false,
+    "containsUserProjectValues": false,
+    "containsDownloadedDocuments": false,
+    "containsRawCrawlOutput": false,
+    "containsLiveBrowserTrace": false,
+    "fixtureOnly": true
+  }
+}

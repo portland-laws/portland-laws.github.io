@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "planId": "fixture-public-ppd-change-monitoring-plan-001",
+  "generatedAt": "2026-05-02T00:00:00Z",
+  "fixtureOnly": true,
+  "networkAccessAllowed": false,
+  "rawCrawlOutputAllowed": false,
+  "downloadedDocumentsAllowed": false,
+  "scope": {
+    "bureau": "Portland Permitting & Development",
+    "allowedHosts": [
+      "www.portland.gov"
+    ],
+    "excludedArtifacts": [
+      "private DevHub session state",
+      "browser traces",
+      "screenshots",
+      "raw response bodies",
+      "downloaded PDFs or forms"
+    ]
+  },
+  "monitoredArtifacts": [
+    {
+      "id": "high-change-devhub-faq-guidance",
+      "changeLikelihood": "high",
+      "artifactType": "public_guidance_page",
+      "title": "Development Hub PDX FAQ",
+      "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
+      "canonicalUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
+      "recrawlCadence": "weekly",
+      "recrawlReason": "DevHub public guidance can change when online permit request, correction upload, inspection, or payment guidance changes.",
+      "hashFields": [
+        "normalized_body_text_sha256",
+        "heading_outline_sha256",
+        "link_inventory_sha256"
+      ],
+      "headerFields": [
+        "etag",
+        "last-modified",
+        "content-type",
+        "cache-control"
+      ],
+      "reportCategories": [
+        "changed_authenticated_workflow_guidance",
+        "new_or_removed_permit_types",
+        "changed_submittal_requirements",
+        "changed_fees_or_payment_instructions"
+      ],
+      "storedEvidencePolicy": "Store manifest fields, hashes, headers, timestamps, and source URLs only; do not store raw HTML in this fixture."
+    },
+    {
+      "id": "low-change-permit-application-form-artifact",
+      "changeLikelihood": "low",
+      "artifactType": "public_pdf_or_form_artifact",
+      "title": "Permit application form artifact referenced from public PP&D forms guidance",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/permits-and-inspections-applications",
+      "canonicalUrl": "https://www.portland.gov/ppd/permits/permits-and-inspections-applications",
+      "recrawlCadence": "monthly_unless_linked_page_changed",
+      "recrawlReason": "Form and PDF artifacts are expected to change less often than public guidance pages, but should be refreshed when their index page changes.",
+      "hashFields": [
+        "artifact_url_sha256",
+        "artifact_metadata_sha256",
+        "linked_page_reference_sha256"
+      ],
+      "headerFields": [
+        "etag",
+        "last-modified",
+        "content-type",
+        "content-length"
+      ],
+      "reportCategories": [
+        "changed_submittal_requirements",
+        "changed_deadlines_or_expiration_rules",
+        "changed_fees_or_payment_instructions"
+      ],
+      "storedEvidencePolicy": "Store link metadata and planned hash/header field names only; do not download or commit the PDF or form document."
+    }
+  ],
+  "changeReportCategories": [
+    {
+      "id": "new_or_removed_permit_types",
+      "description": "Permit request type appears, disappears, or is renamed in public PP&D or DevHub guidance."
+    },
+    {
+      "id": "changed_submittal_requirements",
+      "description": "Required forms, plans, calculations, signatures, file standards, or supporting documents change."
+    },
+    {
+      "id": "changed_deadlines_or_expiration_rules",
+      "description": "Deadline, expiration, reactivation, extension, or timing guidance changes."
+    },
+    {
+      "id": "changed_fees_or_payment_instructions",
+      "description": "Fee, payment timing, payment method, or payment workflow guidance changes."
+    },
+    {
+      "id": "changed_authenticated_workflow_guidance",
+      "description": "Public guidance for authenticated DevHub actions such as correction upload, inspection scheduling, or permit requests changes."
+    }
+  ]
+}

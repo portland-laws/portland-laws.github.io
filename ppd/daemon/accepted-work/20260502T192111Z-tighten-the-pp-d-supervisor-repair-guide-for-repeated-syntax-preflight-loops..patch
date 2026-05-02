@@ -1,0 +1,20 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -54,6 +54,17 @@
+ 
+ When four or more consecutive daemon rounds fail without an accepted patch while the daemon is waiting on the model, select repair work before selecting the same domain task again. When the failure kind is `syntax_preflight`, prefer prompt, preflight, or diagnostic repairs over larger fixture contracts. When validation failures report missing fixture fields, inspect and report the committed fixture shape before proposing a replacement.
+ 
++## Supervisor Acceptance Checklist
++
++A supervisor repair proposal is acceptable only when all of these are true:
++
++- It changes daemon supervision, retry guidance, prompt guidance, preflight diagnostics, focused daemon tests, or the task board.
++- It does not complete the stalled public PDF extraction fixture task itself.
++- It keeps the file set smaller than the repeated failed proposals unless the daemon code itself must be replaced.
++- It preserves completed task-board checkboxes and does not mark domain work complete by documentation alone.
++- It uses fixture-first and validation-first instructions before any live or authenticated automation.
++- It creates no private DevHub artifacts, raw crawl output, downloaded documents, auth state, traces, or session files.
++
+ ## Suggested Next Daemon Instruction
+ 
+ Pause the repeated public PDF validation retry until the worker has read this guide. Then resume with the smallest syntax-valid patch that can pass `py_compile` before running full PP&D validation. If another `syntax_preflight` rollback occurs for the same malformed expression family, append a daemon preflight or prompt repair task before selecting the domain task again.

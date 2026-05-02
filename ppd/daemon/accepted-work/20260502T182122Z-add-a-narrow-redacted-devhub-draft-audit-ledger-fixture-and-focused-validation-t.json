@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/devhub/draft_audit_ledger.json",
+    "ppd/tests/test_draft_audit_ledger.py"
+  ],
+  "created_at": "2026-05-02T18:21:22.135896Z",
+  "impact": "Advances the PP&D fixture-first DevHub automation plan by proving draft edits can be audited with public source evidence, guardrails, semantic selector confidence, explicit user-confirmation state, and reversible redacted mutations while excluding private browser artifacts and live automation output.",
+  "summary": "Add a narrow redacted DevHub draft audit ledger fixture and focused validation test.",
+  "target_task": "Task checkbox-92: Task checkbox-87: Add an autonomous draft-session audit ledger fixture that links source evidence, guardrails, selector confidence, user-confirmation state, and reversible form mutations without storing screenshots, traces, cookies, auth state, or raw browser storage.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 92 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".......................................................................................................................................................................................................................................................................................ss..............sss................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 477 tests in 0.088s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

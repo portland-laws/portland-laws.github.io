@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-01T00:00:00Z",
+  "planId": "ppd-change-monitoring-fixture-plan",
+  "description": "Fixture-only PP&D change-monitoring plan. This file is committed provenance metadata only and does not authorize live crawling or private DevHub access.",
+  "watchedSources": [
+    {
+      "id": "ppd-devhub-faq",
+      "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
+      "canonicalUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
+      "authority": "Portland Permitting & Development public guidance",
+      "pageType": "public_guidance",
+      "provenance": {
+        "sourceEvidenceId": "public-source-devhub-faq",
+        "canonicalUrlBasis": "public guidance URL without fragment or tracking parameters",
+        "verifiedAt": "2026-05-01T00:00:00Z"
+      },
+      "freshness": {
+        "contentHashPlaceholder": "sha256:pending_fixture_only_no_live_fetch",
+        "httpCacheMetadataPlaceholder": {
+          "etag": null,
+          "lastModified": null,
+          "cacheControl": null
+        }
+      },
+      "recrawlCadence": {
+        "frequency": "daily",
+        "reason": "DevHub FAQ and workflow guidance are high-change public guidance sources."
+      },
+      "skippedActions": [
+        {
+          "action": "live_public_crawl",
+          "reasonCode": "fixture_only_no_network_access",
+          "reason": "Validation proves metadata shape without performing network access."
+        },
+        {
+          "action": "private_devhub_data_access",
+          "reasonCode": "private_devhub_data_not_authorized",
+          "reason": "The source is public guidance; authenticated account data is out of scope for this fixture."
+        }
+      ]
+    },
+    {
+      "id": "ppd-permits-and-inspections-applications",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/permits-and-inspections-applications",
+      "canonicalUrl": "https://www.portland.gov/ppd/permits/permits-and-inspections-applications",
+      "authority": "Portland Permitting & Development public forms index",
+      "pageType": "public_forms_index",
+      "provenance": {
+        "sourceEvidenceId": "public-source-permits-applications-index",
+        "canonicalUrlBasis": "public forms index URL without fragment or tracking parameters",
+        "verifiedAt": "2026-05-01T00:00:00Z"
+      },
+      "freshness": {
+        "contentHashPlaceholder": "sha256:pending_fixture_only_no_live_fetch",
+        "httpCacheMetadataPlaceholder": {
+          "etag": null,
+          "lastModified": null,
+          "cacheControl": null
+        }
+      },
+      "recrawlCadence": {
+        "frequency": "weekly",
+        "reason": "Permit application and form indexes can change as requirements and downloadable forms change."
+      },
+      "skippedActions": [
+        {
+          "action": "live_public_crawl",
+          "reasonCode": "fixture_only_no_network_access",
+          "reason": "Validation proves metadata shape without performing network access."
+        },
+        {
+          "action": "private_devhub_data_access",
+          "reasonCode": "private_devhub_data_not_authorized",
+          "reason": "No authenticated DevHub session or user account data is needed to validate public form index monitoring."
+        }
+      ]
+    },
+    {
+      "id": "devhub-public-portal",
+      "sourceUrl": "https://devhub.portlandoregon.gov/",
+      "canonicalUrl": "https://devhub.portlandoregon.gov/",
+      "authority": "Development Hub PDX public portal",
+      "pageType": "public_portal_landing",
+      "provenance": {
+        "sourceEvidenceId": "public-source-devhub-portal",
+        "canonicalUrlBasis": "public portal landing URL normalized with trailing slash",
+        "verifiedAt": "2026-05-01T00:00:00Z"
+      },
+      "freshness": {
+        "contentHashPlaceholder": null,
+        "httpCacheMetadataPlaceholder": {
+          "etag": "pending_fixture_only_no_live_fetch",
+          "lastModified": "pending_fixture_only_no_live_fetch",
+          "cacheControl": null
+        }
+      },
+      "recrawlCadence": {
+        "frequency": "weekly",
+        "reason": "Public portal entry points may change independently from Portland.gov guidance pages."
+      },
+      "skippedActions": [
+        {
+          "action": "live_public_crawl",
+          "reasonCode": "fixture_only_no_network_access",
+          "reason": "This plan records intended monitoring metadata only."
+        },
+        {
+          "action": "private_devhub_data_access",
+          "reasonCode": "private_devhub_data_not_authorized",
+          "reason": "Authenticated DevHub account pages require explicit user authorization and are not part of public change monitoring."
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "fixtureKind": "source_diff_changed_requirement_evidence_continuity",
+  "schemaVersion": 1,
+  "reportId": "source-diff-report-single-pdf-process-2026-05-02",
+  "generatedAt": "2026-05-02T00:00:00Z",
+  "beforeSnapshotId": "ppd-public-guidance-2026-05-01",
+  "afterSnapshotId": "ppd-public-guidance-2026-05-02",
+  "sourceEvidence": [
+    {
+      "id": "evidence-before-single-pdf-process",
+      "snapshotId": "ppd-public-guidance-2026-05-01",
+      "sourceId": "ppd-devhub-single-pdf-guide",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/single-pdf-process",
+      "anchorId": "single-pdf-process",
+      "contentHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "evidenceText": "Drawing plans are submitted as one searchable PDF, with applications, calculations, and supporting documents submitted as separate PDFs."
+    },
+    {
+      "id": "evidence-after-single-pdf-process",
+      "snapshotId": "ppd-public-guidance-2026-05-02",
+      "sourceId": "ppd-devhub-single-pdf-guide",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/single-pdf-process",
+      "anchorId": "single-pdf-process-updated",
+      "contentHash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "evidenceText": "Drawing plans must be uploaded as one searchable PDF, and applications, calculations, and supporting documents must be uploaded as separate PDFs."
+    }
+  ],
+  "beforeRequirements": [
+    {
+      "requirementId": "req-single-pdf-process-upload-format",
+      "requirementType": "submittal_requirement",
+      "subject": "applicant",
+      "action": "submit",
+      "object": "drawing plans as one searchable PDF",
+      "sourceEvidenceIds": ["evidence-before-single-pdf-process"]
+    }
+  ],
+  "afterRequirements": [
+    {
+      "requirementId": "req-single-pdf-process-upload-format",
+      "requirementType": "submittal_requirement",
+      "subject": "applicant",
+      "action": "upload",
+      "object": "drawing plans as one searchable PDF",
+      "sourceEvidenceIds": ["evidence-after-single-pdf-process"]
+    }
+  ],
+  "diffs": [
+    {
+      "id": "diff-changed-req-single-pdf-process-upload-format",
+      "kind": "changed",
+      "requirementId": "req-single-pdf-process-upload-format",
+      "beforeRequirementId": "req-single-pdf-process-upload-format",
+      "afterRequirementId": "req-single-pdf-process-upload-format",
+      "changedFields": ["action", "sourceEvidenceIds"],
+      "previousSourceEvidenceIds": ["evidence-before-single-pdf-process"],
+      "currentSourceEvidenceIds": ["evidence-after-single-pdf-process"],
+      "reviewNeeded": true,
+      "reviewReasons": [
+        "changed public guidance text affects a submittal requirement",
+        "agent actions must not rely on the changed requirement until a human review accepts the update"
+      ],
+      "agentImpactSummary": {
+        "mode": "fail_closed",
+        "summary": "Treat the single PDF process upload-format requirement as review-needed. Agents may cite both prior and current public evidence but must not finalize upload, submission, certification, or payment plans from the changed requirement until human review resolves it.",
+        "requiresHumanReview": true,
+        "mayUseForAutomation": false,
+        "blockedAgentActions": [
+          "finalize_upload_plan",
+          "submit_application",
+          "certify_application",
+          "pay_fees"
+        ]
+      }
+    }
+  ]
+}

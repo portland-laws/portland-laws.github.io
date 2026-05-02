@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "fixtureOnly": true,
+  "mockedDevHub": true,
+  "liveDevHubUsed": false,
+  "browserLaunched": false,
+  "contractId": "mock-devhub-exact-confirmation-checkpoint-v1",
+  "sourceEvidence": [
+    {
+      "id": "src-devhub-submit-guidance",
+      "title": "Development Hub PDX public application guidance",
+      "url": "https://www.portland.gov/ppd/development-hub-pdx/apply-permits-devhub",
+      "retrievedAt": "2026-05-01T00:00:00Z",
+      "supports": "DevHub accepts permit requests and related application workflow actions."
+    },
+    {
+      "id": "src-devhub-fee-guidance",
+      "title": "Development Hub PDX public FAQ and fee payment guidance",
+      "url": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
+      "retrievedAt": "2026-05-01T00:00:00Z",
+      "supports": "Public DevHub guidance describes fee payment as an online service category."
+    }
+  ],
+  "checkpoints": [
+    {
+      "checkpointId": "checkpoint-submit-application-default-refusal",
+      "actionId": "submit_application",
+      "classification": "consequential",
+      "mockedPageStateId": "mock-devhub-permit-review-submit-step",
+      "actionPreview": {
+        "label": "Submit application",
+        "redactedTarget": "[REDACTED:mock permit request number]",
+        "redactedUserInputs": [
+          "[REDACTED:project address]",
+          "[REDACTED:applicant name]",
+          "[REDACTED:application narrative]"
+        ],
+        "containsPrivateValues": false
+      },
+      "consequenceSummary": {
+        "summary": "Submitting a permit application may move a draft request into official PP&D intake or review and must not be performed by the agent without exact user confirmation in the active session.",
+        "sourceEvidenceIds": [
+          "src-devhub-submit-guidance"
+        ]
+      },
+      "confirmation": {
+        "exactUserConfirmationPresent": false,
+        "confirmationPhrase": null,
+        "defaultDecision": "refuse",
+        "refusedBeforeConfirmation": true,
+        "executable": false
+      },
+      "auditEventRef": "ppd-audit-event:fixture-devhub-submit-application-2026-05-01T00:00:00Z"
+    },
+    {
+      "checkpointId": "checkpoint-pay-fees-default-refusal",
+      "actionId": "pay_fees",
+      "classification": "financial",
+      "mockedPageStateId": "mock-devhub-fees-due-step",
+      "actionPreview": {
+        "label": "Pay fees",
+        "redactedTarget": "[REDACTED:mock invoice number]",
+        "redactedUserInputs": [
+          "[REDACTED:billing contact]",
+          "[REDACTED:payment amount]",
+          "[REDACTED:payment method]"
+        ],
+        "containsPrivateValues": false
+      },
+      "consequenceSummary": {
+        "summary": "Paying fees is a financial action and must be refused by default unless the user gives exact confirmation for that payment action in the active session.",
+        "sourceEvidenceIds": [
+          "src-devhub-fee-guidance"
+        ]
+      },
+      "confirmation": {
+        "exactUserConfirmationPresent": false,
+        "confirmationPhrase": null,
+        "defaultDecision": "refuse",
+        "refusedBeforeConfirmation": true,
+        "executable": false
+      },
+      "auditEventRef": "ppd-audit-event:fixture-devhub-pay-fees-2026-05-01T00:00:00Z"
+    }
+  ],
+  "nonAutomationAssertions": {
+    "noUpload": true,
+    "noSubmit": true,
+    "noCertification": true,
+    "noPayment": true,
+    "noCancellation": true,
+    "noInspectionScheduling": true,
+    "noMfaAutomation": true,
+    "noCaptchaAutomation": true,
+    "noAccountCreation": true,
+    "noPasswordRecovery": true
+  }
+}

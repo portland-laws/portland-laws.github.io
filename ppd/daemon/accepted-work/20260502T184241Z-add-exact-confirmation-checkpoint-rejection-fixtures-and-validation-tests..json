@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/devhub/exact_confirmation_checkpoint_rejections.json",
+    "ppd/tests/test_exact_confirmation_checkpoint_fixtures.py"
+  ],
+  "created_at": "2026-05-02T18:42:41.903589Z",
+  "impact": "This adds deterministic PP&D coverage proving consequential and financial DevHub actions cannot be planned when confirmation evidence is vague, stale, private, missing audit continuity, or inconsistent with the requested action.",
+  "summary": "Add exact-confirmation checkpoint rejection fixtures and validation tests.",
+  "target_task": "Task checkbox-102: Task checkbox-97: Add validation for exact-confirmation checkpoint fixtures proving vague confirmations, stale source evidence, private values, missing audit-event IDs, and mismatched action strings are rejected before any consequential or financial DevHub action can be planned.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 108 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".........................................................................................................................................................................................................................................................................................................ss..............sss.............................................................................................................................................................................................. ---------------------------------------------------------------------- Ran 506 tests in 0.091s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

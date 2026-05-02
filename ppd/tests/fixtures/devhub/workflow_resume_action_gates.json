@@ -1,0 +1,118 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "mock-devhub-workflow-resume-action-gates",
+  "capturedAt": "2026-05-01T00:00:00Z",
+  "sourceEvidence": [
+    {
+      "id": "devhub-public-guidance-resume-drafts",
+      "sourceType": "public_guidance",
+      "url": "https://www.portland.gov/ppd/devhub",
+      "description": "Public DevHub guidance identifies online permitting workflows and account-scoped permit/request inspection."
+    },
+    {
+      "id": "ppd-agent-guardrail-exact-confirmation",
+      "sourceType": "agent_guardrail",
+      "url": "ppd://guardrails/devhub-action-executor",
+      "description": "PP&D guarded executor policy requires exact user confirmation before consequential or financial actions."
+    }
+  ],
+  "workflowResume": {
+    "id": "resume-synthetic-building-permit-draft",
+    "workflowType": "building_permit_request",
+    "state": "saved_draft",
+    "accountScoped": true,
+    "mockedFixtureOnly": true,
+    "redactionPolicy": "all user values are synthetic or REDACTED placeholders",
+    "privateArtifactsPresent": false
+  },
+  "allowedActions": [
+    {
+      "id": "inspect-draft-status",
+      "label": "Inspect saved draft status",
+      "classification": "safe_read_only_inspection",
+      "operation": "inspect_status",
+      "sourceEvidenceIds": ["devhub-public-guidance-resume-drafts"],
+      "executesLiveAction": false,
+      "mutatesWorkflow": false,
+      "previewOnly": false,
+      "exactConfirmationRequired": false,
+      "confirmationProvided": false,
+      "refusedByDefault": false
+    },
+    {
+      "id": "preview-project-description-fill",
+      "label": "Preview project description draft fill",
+      "classification": "reversible_draft_preview",
+      "operation": "preview_fill_field",
+      "selectorBasis": {
+        "role": "textbox",
+        "accessibleName": "Project description",
+        "labelText": "Project description",
+        "nearbyHeading": "Project Information"
+      },
+      "sourceEvidenceIds": ["devhub-public-guidance-resume-drafts", "ppd-agent-guardrail-exact-confirmation"],
+      "beforeValue": "REDACTED_EMPTY",
+      "afterValue": "REDACTED_SYNTHETIC_DRAFT_VALUE",
+      "executesLiveAction": false,
+      "mutatesWorkflow": false,
+      "previewOnly": true,
+      "exactConfirmationRequired": false,
+      "confirmationProvided": false,
+      "refusedByDefault": false
+    }
+  ],
+  "refusedActions": [
+    {
+      "id": "submit-resumed-application",
+      "label": "Submit application",
+      "classification": "potentially_consequential",
+      "operation": "submit_application",
+      "sourceEvidenceIds": ["ppd-agent-guardrail-exact-confirmation"],
+      "executesLiveAction": false,
+      "mutatesWorkflow": false,
+      "previewOnly": false,
+      "exactConfirmationRequired": true,
+      "exactConfirmationPhrase": "CONFIRM SUBMIT APPLICATION submit-resumed-application",
+      "confirmationProvided": false,
+      "refusedByDefault": true,
+      "refusalReason": "Official submission is consequential and requires exact confirmation in the active user session."
+    },
+    {
+      "id": "upload-official-correction",
+      "label": "Upload official correction",
+      "classification": "potentially_consequential",
+      "operation": "upload_official_correction",
+      "sourceEvidenceIds": ["ppd-agent-guardrail-exact-confirmation"],
+      "executesLiveAction": false,
+      "mutatesWorkflow": false,
+      "previewOnly": false,
+      "exactConfirmationRequired": true,
+      "exactConfirmationPhrase": "CONFIRM UPLOAD OFFICIAL CORRECTION upload-official-correction",
+      "confirmationProvided": false,
+      "refusedByDefault": true,
+      "refusalReason": "Official uploads can affect the permit record and require exact confirmation."
+    },
+    {
+      "id": "pay-resumed-fees",
+      "label": "Pay fees",
+      "classification": "financial",
+      "operation": "pay_fees",
+      "sourceEvidenceIds": ["ppd-agent-guardrail-exact-confirmation"],
+      "executesLiveAction": false,
+      "mutatesWorkflow": false,
+      "previewOnly": false,
+      "exactConfirmationRequired": true,
+      "exactConfirmationPhrase": "CONFIRM PAY FEES pay-resumed-fees",
+      "confirmationProvided": false,
+      "refusedByDefault": true,
+      "refusalReason": "Fee payment is financial and requires exact payment-specific confirmation."
+    }
+  ],
+  "neverAutomateActions": [
+    "captcha",
+    "mfa",
+    "account_creation",
+    "password_recovery",
+    "payment_entry"
+  ]
+}

@@ -1,0 +1,2 @@
+ppd/tests/fixtures/public_pdf_extraction/residential_building_permit_application_extract.json
+ppd/tests/test_public_pdf_extraction_contract.py

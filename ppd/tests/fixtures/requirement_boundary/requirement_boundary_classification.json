@@ -1,0 +1,103 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "requirement-boundary-classification-v1",
+  "description": "Synthetic public-only PP&D requirement boundary fixture proving adjacent requirement-like statements remain separately classified.",
+  "records": [
+    {
+      "id": "rb-legal-obligation-001",
+      "classification": "legal_obligation",
+      "requirementType": "obligation",
+      "subject": "applicant",
+      "statement": "The applicant must obtain the applicable building permit before starting regulated construction work.",
+      "sourceEvidenceIds": ["ppd-public-guidance-building-permit-source"],
+      "citations": [
+        {
+          "sourceUrl": "https://www.portland.gov/ppd/permits",
+          "sourceAnchor": "building-permits",
+          "evidenceId": "ppd-public-guidance-building-permit-source"
+        }
+      ],
+      "reviewNeeded": false
+    },
+    {
+      "id": "rb-operational-ui-hint-001",
+      "classification": "operational_ui_hint",
+      "requirementType": "workflow_hint",
+      "subject": "system",
+      "statement": "The DevHub draft page may show a Save for Later control before final submission.",
+      "sourceEvidenceIds": ["ppd-public-guidance-devhub-save-source"],
+      "citations": [
+        {
+          "sourceUrl": "https://www.portland.gov/ppd/devhub",
+          "sourceAnchor": "save-for-later",
+          "evidenceId": "ppd-public-guidance-devhub-save-source"
+        }
+      ],
+      "reviewNeeded": true
+    },
+    {
+      "id": "rb-user-fact-001",
+      "classification": "user_fact",
+      "requirementType": "precondition",
+      "subject": "user",
+      "statement": "The project street address is a user-supplied fact needed to evaluate the permit request.",
+      "sourceEvidenceIds": ["ppd-public-guidance-address-source"],
+      "citations": [
+        {
+          "sourceUrl": "https://www.portland.gov/ppd/permits/apply-online",
+          "sourceAnchor": "project-information",
+          "evidenceId": "ppd-public-guidance-address-source"
+        }
+      ],
+      "reviewNeeded": false
+    },
+    {
+      "id": "rb-document-requirement-001",
+      "classification": "document_requirement",
+      "requirementType": "submittal_requirement",
+      "subject": "applicant",
+      "statement": "Plans must be provided as a searchable PDF when the Single PDF Process applies.",
+      "sourceEvidenceIds": ["ppd-public-guidance-single-pdf-source"],
+      "citations": [
+        {
+          "sourceUrl": "https://www.portland.gov/ppd/single-pdf-process",
+          "sourceAnchor": "drawing-plans",
+          "evidenceId": "ppd-public-guidance-single-pdf-source"
+        }
+      ],
+      "reviewNeeded": false
+    },
+    {
+      "id": "rb-fee-notice-001",
+      "classification": "fee_notice",
+      "requirementType": "fee_notice",
+      "subject": "applicant",
+      "statement": "Permit fees may be due after intake or review milestones and must be handled as financial actions.",
+      "sourceEvidenceIds": ["ppd-public-guidance-fees-source"],
+      "citations": [
+        {
+          "sourceUrl": "https://www.portland.gov/ppd/fees",
+          "sourceAnchor": "permit-fees",
+          "evidenceId": "ppd-public-guidance-fees-source"
+        }
+      ],
+      "reviewNeeded": true
+    },
+    {
+      "id": "rb-deadline-001",
+      "classification": "deadline",
+      "requirementType": "deadline",
+      "subject": "applicant",
+      "statement": "A correction response or permit action may be subject to a stated due date or expiration window.",
+      "sourceEvidenceIds": ["ppd-public-guidance-deadline-source"],
+      "citations": [
+        {
+          "sourceUrl": "https://www.portland.gov/ppd/permits/revisions-corrections",
+          "sourceAnchor": "corrections-deadlines",
+          "evidenceId": "ppd-public-guidance-deadline-source"
+        }
+      ],
+      "reviewNeeded": true
+    }
+  ]
+}

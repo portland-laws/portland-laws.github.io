@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "extractionId": "ppd-public-pdf-extraction-residential-building-permit-application-fixture",
+  "fixtureOnly": true,
+  "source": {
+    "sourceUrl": "https://www.portland.gov/ppd/documents/residential-building-permit-application-sample",
+    "canonicalUrl": "https://www.portland.gov/ppd/documents/residential-building-permit-application-sample",
+    "bureau": "Portland Permitting & Development",
+    "access": "public",
+    "retrievalMode": "metadata_and_text_snippet_fixture_only",
+    "capturedAt": "2026-05-01T00:00:00Z"
+  },
+  "documentMetadata": {
+    "title": "Residential Building Permit Application Sample",
+    "documentType": "public_form_sample",
+    "contentType": "application/pdf",
+    "language": "en",
+    "pageCount": 2,
+    "checksum": null,
+    "rawPdfBytesStored": false,
+    "downloadedDocumentStored": false,
+    "localDocumentPath": null
+  },
+  "pageAnchors": [
+    {
+      "anchorId": "page-1-applicant-project",
+      "pageNumber": 1,
+      "label": "Applicant and project information"
+    },
+    {
+      "anchorId": "page-1-required-submittals",
+      "pageNumber": 1,
+      "label": "Required submittal documents"
+    },
+    {
+      "anchorId": "page-2-owner-acknowledgment",
+      "pageNumber": 2,
+      "label": "Owner or applicant acknowledgment"
+    }
+  ],
+  "requiredDocumentLabels": [
+    {
+      "labelId": "required-document-site-plan",
+      "label": "Site plan",
+      "pageNumber": 1,
+      "anchorId": "page-1-required-submittals",
+      "snippetEvidenceId": "snippet-site-plan"
+    },
+    {
+      "labelId": "required-document-construction-plans",
+      "label": "Construction plans",
+      "pageNumber": 1,
+      "anchorId": "page-1-required-submittals",
+      "snippetEvidenceId": "snippet-construction-plans"
+    }
+  ],
+  "signatureOrAcknowledgmentMarkers": [
+    {
+      "markerId": "marker-owner-applicant-signature",
+      "markerType": "signature",
+      "label": "Owner or applicant signature",
+      "pageNumber": 2,
+      "anchorId": "page-2-owner-acknowledgment",
+      "snippetEvidenceId": "snippet-signature"
+    },
+    {
+      "markerId": "marker-accuracy-acknowledgment",
+      "markerType": "acknowledgment",
+      "label": "Accuracy acknowledgment",
+      "pageNumber": 2,
+      "anchorId": "page-2-owner-acknowledgment",
+      "snippetEvidenceId": "snippet-acknowledgment"
+    }
+  ],
+  "extractedTextSnippets": [
+    {
+      "snippetId": "snippet-site-plan",
+      "pageNumber": 1,
+      "anchorId": "page-1-required-submittals",
+      "text": "Required submittals include a site plan showing the property and proposed work area."
+    },
+    {
+      "snippetId": "snippet-construction-plans",
+      "pageNumber": 1,
+      "anchorId": "page-1-required-submittals",
+      "text": "Construction plans must describe the proposed scope of residential building work."
+    },
+    {
+      "snippetId": "snippet-signature",
+      "pageNumber": 2,
+      "anchorId": "page-2-owner-acknowledgment",
+      "text": "The owner or applicant signature line appears with printed name and date fields."
+    },
+    {
+      "snippetId": "snippet-acknowledgment",
+      "pageNumber": 2,
+      "anchorId": "page-2-owner-acknowledgment",
+      "text": "The acknowledgment states that submitted information is true and complete to the best of the signer knowledge."
+    }
+  ],
+  "storagePolicy": {
+    "storesRawPdfBytes": false,
+    "storesDownloadedDocument": false,
+    "storesExtractedTextOnly": true,
+    "containsPrivateDevhubData": false,
+    "containsAuthenticationState": false,
+    "containsBrowserTrace": false
+  }
+}

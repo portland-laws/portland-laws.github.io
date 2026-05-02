@@ -1,0 +1,32 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -13,8 +13,23 @@
+ - Do not rewrite shared contracts or broad validation suites while recovering from syntax failures.
+ - For Python, use ordinary annotations only in assignments, parameters, returns, dataclasses, and type aliases.
+ - Never write pseudo type-guard statements such as `if value list[str]:`, `if value tuple[str, ...]:`, or `if object.field dict[str, str]:`.
++- Never return incomplete string calls such as `startswith("` or `assertIn("` split across lines without a closed string literal.
+ - Use `isinstance(value, list)`, `isinstance(value, tuple)`, or explicit helper functions for runtime validation.
+ - Keep every generated Python expression valid under `python3 -m py_compile` before returning JSON.
++- After a syntax-preflight rollback, the next domain retry should use at most one JSON fixture plus one tiny Python unittest file.
++
++## Private Artifact Preflight Recovery
++
++When a proposal is rejected as a private or session artifact, inspect whether the rejection came from the file path, fixture fields, or task wording.
++
++Required recovery behavior:
++
++- Do not create private DevHub session files, auth state, cookies, traces, screenshots, raw browser storage, uploads, submissions, payments, certifications, cancellations, MFA, CAPTCHA, account-creation, password-recovery, or inspection-scheduling artifacts.
++- A redacted audit ledger fixture may be commit-safe only when it stores no private browser/session material and uses placeholder values.
++- Avoid filenames that contain `session` while recovering from private-artifact preflight failures unless the task is explicitly repairing the preflight classifier.
++- Prefer names such as `draft_audit_ledger.json` for redacted audit ledgers.
++- If preflight rejects a commit-safe redacted fixture solely because the task title says `draft-session`, add or update daemon preflight classification coverage before retrying the domain fixture.
++- Keep classifier repair separate from domain implementation; prove true private artifacts remain refused.
+ 
+ ## Replenishment Task Guidance
+ 
+@@ -39,4 +54,4 @@
+ - whether edits were rolled back,
+ - whether the next proposal should shrink scope.
+ 
+-If a selected task has multiple syntax-preflight failures, the worker should repair syntax and tests first, not extend the domain implementation surface.
++If a selected task has multiple syntax-preflight or private-artifact preflight failures, the worker should repair supervision, preflight classification, or retry prompting first, not extend the domain implementation surface.

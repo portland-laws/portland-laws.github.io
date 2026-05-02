@@ -1,0 +1,158 @@
+"""Fixture-only exact-confirmation checkpoint validation for DevHub actions.
+
+This module validates mocked DevHub action checkpoints. It is intentionally
+side-effect free: it does not launch browsers, persist auth state, upload,
+submit, certify, pay, cancel, schedule inspections, or contact live DevHub.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any, Mapping
+
+
+CONSEQUENTIAL_ACTIONS = {
+    "submit_application",
+    "upload_official_correction",
+    "certify_statement",
+    "cancel_request",
+    "schedule_inspection",
+}
+
+FINANCIAL_ACTIONS = {
+    "pay_fees",
+    "enter_payment_details",
+}
+
+BLOCKED_AUTOMATION_ACTIONS = CONSEQUENTIAl_AND_FINANCIAL = CONSEQUENTIAL_ACTIONS | FINANCIAL_ACTIONS | {
+    "automate_mfa",
+    "automate_captcha",
+    "create_account",
+    "recover_password",
+}
+
+REDACTED_PREFIX = "[REDACTED:"
+
+
+@dataclass(frozen=True)
+class ExactConfirmationFinding:
+    path: str
+    message: str
+
+
+def validate_exact_confirmation_checkpoint_contract(data: Mapping[str, Any]) -> list[ExactConfirmationFinding]:
+    """Return validation findings for a fixture-only checkpoint contract."""
+
+    findings: list[ExactConfirmationFinding] = []
+    if data.get("schemaVersion") != 1:
+        findings.append(ExactConfirmationFinding("schemaVersion", "schemaVersion must be 1"))
+    if data.get("fixtureOnly") is not True:
+        findings.append(ExactConfirmationFinding("fixtureOnly", "contract must be fixture-only"))
+    if data.get("mockedDevHub") is not True:
+        findings.append(ExactConfirmationFinding("mockedDevHub", "contract must use mocked DevHub only"))
+    if data.get("liveDevHubUsed") is not False:
+        findings.append(ExactConfirmationFinding("liveDevHubUsed", "live DevHub use must be false"))
+    if data.get("browserLaunched") is not False:
+        findings.append(ExactConfirmationFinding("browserLaunched", "browser launch must be false"))
+
+    checkpoints = data.get("checkpoints")
+    if not isinstance(checkpoints, list) or not checkpoints:
+        findings.append(ExactConfirmationFinding("checkpoints", "at least one checkpoint is required"))
+        return findings
+
+    classes_seen: set[str] = set()
+    audit_refs_seen: set[str] = set()
+    for index, checkpoint in enumerate(checkpoints):
+        path = f"checkpoints[{index}]"
+        if not isinstance(checkpoint, Mapping):
+            findings.append(ExactConfirmationFinding(path, "checkpoint must be an object"))
+            continue
+
+        action_id = str(checkpoint.get("actionId", ""))
+        classification = str(checkpoint.get("classification", ""))
+        classes_seen.add(classification)
+        if classification not in {"consequential", "financial"}:
+            findings.append(ExactConfirmationFinding(f"{path}.classification", "classification must be consequential or financial"))
+        if classification == "consequential" and action_id not in CONSEQUENTIAL_ACTIONS:
+            findings.append(ExactConfirmationFinding(f"{path}.actionId", "consequential actionId is not recognized"))
+        if classification == "financial" and action_id not in FINANCIAL_ACTIONS:
+            findings.append(ExactConfirmationFinding(f"{path}.actionId", "financial actionId is not recognized"))
+
+        confirmation = checkpoint.get("confirmation")
+        if not isinstance(confirmation, Mapping):
+            findings.append(ExactConfirmationFinding(f"{path}.confirmation", "confirmation object is required"))
+            continue
+        if confirmation.get("exactUserConfirmationPresent") is not False:
+            findings.append(ExactConfirmationFinding(f"{path}.confirmation.exactUserConfirmationPresent", "default confirmation must be false"))
+        if confirmation.get("defaultDecision") != "refuse":
+            findings.append(ExactConfirmationFinding(f"{path}.confirmation.defaultDecision", "default decision must refuse"))
+        if confirmation.get("refusedBeforeConfirmation") is not True:
+            findings.append(ExactConfirmationFinding(f"{path}.confirmation.refusedBeforeConfirmation", "checkpoint must refuse before confirmation"))
+        if confirmation.get("executable") is not False:
+            findings.append(ExactConfirmationFinding(f"{path}.confirmation.executable", "checkpoint must not be executable by default"))
+
+        preview = checkpoint.get("actionPreview")
+        if not isinstance(preview, Mapping):
+            findings.append(ExactConfirmationFinding(f"{path}.actionPreview", "action preview is required"))
+        else:
+            for key in ("redactedTarget", "redactedUserInputs"):
+                if not _is_redacted(preview.get(key)):
+                    findings.append(ExactConfirmationFinding(f"{path}.actionPreview.{key}", "preview value must be redacted"))
+            if preview.get("containsPrivateValues") is not False:
+                findings.append(ExactConfirmationFinding(f"{path}.actionPreview.containsPrivateValues", "preview must not contain private values"))
+
+        consequence = checkpoint.get("consequenceSummary")
+        if not isinstance(consequence, Mapping):
+            findings.append(ExactConfirmationFinding(f"{path}.consequenceSummary", "consequence summary is required"))
+        else:
+            summary = str(consequence.get("summary", "")).strip()
+            evidence_ids = consequence.get("sourceEvidenceIds")
+            if not summary:
+                findings.append(ExactConfirmationFinding(f"{path}.consequenceSummary.summary", "summary is required"))
+            if not isinstance(evidence_ids, list) or not evidence_ids:
+                findings.append(ExactConfirmationFinding(f"{path}.consequenceSummary.sourceEvidenceIds", "source evidence ids are required"))
+
+        audit_ref = str(checkpoint.get("auditEventRef", ""))
+        if not audit_ref.startswith("ppd-audit-event:"):
+            findings.append(ExactConfirmationFinding(f"{path}.auditEventRef", "auditEventRef must use the ppd-audit-event durable prefix"))
+        if audit_ref in audit_refs_seen:
+            findings.append(ExactConfirmationFinding(f"{path}.auditEventRef", "auditEventRef must be unique"))
+        audit_refs_seen.add(audit_ref)
+
+    if "consequential" not in classes_seen:
+        findings.append(ExactConfirmationFinding("checkpoints", "one consequential checkpoint is required"))
+    if "financial" not in classes_seen:
+        findings.append(ExactConfirmationFinding("checkpoints", "one financial checkpoint is required"))
+
+    source_evidence = data.get("sourceEvidence")
+    if not isinstance(source_evidence, list) or not source_evidence:
+        findings.append(ExactConfirmationFinding("sourceEvidence", "source evidence is required"))
+    else:
+        evidence_ids = {str(item.get("id", "")) for item in source_evidence if isinstance(item, Mapping)}
+        for index, item in enumerate(source_evidence):
+            if not isinstance(item, Mapping):
+                findings.append(ExactConfirmationFinding(f"sourceEvidence[{index}]", "source evidence must be an object"))
+                continue
+            if not str(item.get("url", "")).startswith("https://www.portland.gov/"):
+                findings.append(ExactConfirmationFinding(f"sourceEvidence[{index}].url", "source evidence must use a public Portland.gov URL"))
+            if not str(item.get("retrievedAt", "")).endswith("Z"):
+                findings.append(ExactConfirmationFinding(f"sourceEvidence[{index}].retrievedAt", "retrievedAt must be an ISO UTC timestamp ending in Z"))
+        for index, checkpoint in enumerate(checkpoints):
+            if not isinstance(checkpoint, Mapping):
+                continue
+            consequence = checkpoint.get("consequenceSummary")
+            if not isinstance(consequence, Mapping):
+                continue
+            for evidence_id in consequence.get("sourceEvidenceIds", []):
+                if str(evidence_id) not in evidence_ids:
+                    findings.append(ExactConfirmationFinding(f"checkpoints[{index}].consequenceSummary.sourceEvidenceIds", f"unknown source evidence id {evidence_id}"))
+
+    return findings
+
+
+def _is_redacted(value: Any) -> bool:
+    if isinstance(value, str):
+        return value.startswith(REDACTED_PREFIX) and value.endswith("]")
+    if isinstance(value, list) and value:
+        return all(_is_redacted(item) for item in value)
+    return False

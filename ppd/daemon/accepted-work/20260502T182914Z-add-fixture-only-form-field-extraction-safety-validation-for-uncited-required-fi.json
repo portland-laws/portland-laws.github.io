@@ -1,0 +1,49 @@
+{
+  "changed_files": [
+    "ppd/extraction/form_field_fixture_validation.py",
+    "ppd/tests/fixtures/form_field_extraction/permit_request_form_fields.json",
+    "ppd/tests/fixtures/form_field_extraction/unsafe_form_field_extraction_fixture.json",
+    "ppd/tests/test_form_field_extraction_safety.py"
+  ],
+  "created_at": "2026-05-02T18:29:14.394316Z",
+  "impact": "This advances the PP&D plan by making form-field extraction fixtures fail closed before any live crawl or DevHub automation can persist raw documents, private values, or consequential action instructions.",
+  "summary": "Add fixture-only form-field extraction safety validation for uncited required fields and unsafe retained content/actions.",
+  "target_task": "Task checkbox-96: Task checkbox-91: Add validation that form-field extraction fixtures reject uncited required fields, raw PDF bodies, downloaded document bytes, private user values, and any instruction to submit, certify, upload, pay, cancel, or schedule inspections.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 100 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".............................................................................................................................................................................................................................................................................................ss..............sss........................................................................................................................................................................................ ---------------------------------------------------------------------- Ran 488 tests in 0.087s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

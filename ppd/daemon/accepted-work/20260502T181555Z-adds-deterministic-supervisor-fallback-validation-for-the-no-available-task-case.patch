@@ -1,0 +1,237 @@
+--- a/ppd/daemon/supervisor_no_available_task_fallback.py
++++ b/ppd/daemon/supervisor_no_available_task_fallback.py
+@@ -0,0 +1,115 @@
++"""Deterministic supervisor fallback for no-available-task planning gaps.
++
++The PP&D daemon should not spin when all known tasks are complete and Codex
++planning cannot provide the next tranche. This helper keeps the recovery path
++small, fixture-first, and free of live DevHub or crawl side effects.
++"""
++
++from __future__ import annotations
++
++from dataclasses import dataclass
++from typing import Mapping
++import re
++
++
++FALLBACK_PLANNING_STATUSES = frozenset({"codex_planning_failed", "codex_planning_timed_out"})
++DEFAULT_FALLBACK_TASK_ID = "checkbox-91"
++DEFAULT_SOURCE_TASK_ID = "checkbox-86"
++DEFAULT_FALLBACK_TITLE = (
++    "Add supervisor no-available-task fallback validation proving the supervisor "
++    "can append a deterministic fixture-first tranche if Codex planning fails or times out."
++)
++
++
++@dataclass(frozen=True)
++class SupervisorNoAvailableTaskState:
++    complete_count: int
++    task_count: int
++    no_available_task: bool
++    planning_status: str
++
++
++def state_from_mapping(data: Mapping[str, object]) -> SupervisorNoAvailableTaskState:
++    """Build a compact state object from daemon progress-like fixture data."""
++
++    return SupervisorNoAvailableTaskState(
++        complete_count=int(data.get("completeCount", data.get("complete_count", 0))),
++        task_count=int(data.get("taskCount", data.get("task_count", 0))),
++        no_available_task=bool(data.get("noAvailableTask", data.get("no_available_task", False))),
++        planning_status=str(data.get("planningStatus", data.get("planning_status", ""))),
++    )
++
++
++def should_append_fixture_first_tranche(state: SupervisorNoAvailableTaskState) -> bool:
++    """Return true only for exhausted task boards with failed or timed-out planning."""
++
++    return (
++        state.no_available_task
++        and state.task_count > 0
++        and state.complete_count >= state.task_count
++        and state.planning_status in FALLBACK_PLANNING_STATUSES
++    )
++
++
++def build_fallback_task_line(
++    task_id: str = DEFAULT_FALLBACK_TASK_ID,
++    source_task_id: str = DEFAULT_SOURCE_TASK_ID,
++    title: str = DEFAULT_FALLBACK_TITLE,
++) -> str:
++    """Return the stable task-board line used by the supervisor fallback."""
++
++    clean_task_id = task_id.strip()
++    clean_source_task_id = source_task_id.strip()
++    clean_title = title.strip()
++    if not clean_task_id:
++        raise ValueError("fallback task_id is required")
++    if not clean_source_task_id:
++        raise ValueError("fallback source_task_id is required")
++    if not clean_title:
++        raise ValueError("fallback title is required")
++    return f"- [ ] Task {clean_task_id}: Task {clean_source_task_id}: {clean_title}"
++
++
++def build_fixture_first_tranche(
++    task_id: str = DEFAULT_FALLBACK_TASK_ID,
++    source_task_id: str = DEFAULT_SOURCE_TASK_ID,
++    title: str = DEFAULT_FALLBACK_TITLE,
++) -> str:
++    """Return a deterministic, narrow fallback tranche for task-board appends."""
++
++    task_line = build_fallback_task_line(task_id=task_id, source_task_id=source_task_id, title=title)
++    return "\n".join(
++        (
++            task_line,
++            "  - Fixture-first scope: use ppd/daemon/ helpers and ppd/tests/fixtures/daemon/ validation only.",
++            "  - Validation: python3 ppd/daemon/ppd_daemon.py --self-test.",
++            "  - Forbidden actions: no live DevHub sessions, browser traces, auth state, raw crawl output, uploads, submissions, payments, CAPTCHA, MFA, account creation, cancellation, certification, or inspection scheduling.",
++        )
++    )
++
++
++def append_fixture_first_tranche_if_needed(
++    board_text: str,
++    state: SupervisorNoAvailableTaskState,
++    task_id: str = DEFAULT_FALLBACK_TASK_ID,
++    source_task_id: str = DEFAULT_SOURCE_TASK_ID,
++    title: str = DEFAULT_FALLBACK_TITLE,
++) -> str:
++    """Append the fallback tranche when the daemon has no task and planning failed.
++
++    The operation is idempotent: an existing fallback task is left unchanged.
++    """
++
++    if not should_append_fixture_first_tranche(state):
++        return board_text
++
++    task_pattern = re.compile(rf"Task\s+{re.escape(task_id)}\s*:")
++    if task_pattern.search(board_text):
++        return board_text
++
++    tranche = build_fixture_first_tranche(task_id=task_id, source_task_id=source_task_id, title=title)
++    stripped_board = board_text.rstrip()
++    heading = "## Next Goal-Aligned Tranche"
++    if heading in stripped_board:
++        return f"{stripped_board}\n\n{tranche}\n"
++    return f"{stripped_board}\n\n{heading}\n\n{tranche}\n"
+--- a/ppd/tests/fixtures/daemon/no_available_task_fallback.json
++++ b/ppd/tests/fixtures/daemon/no_available_task_fallback.json
+@@ -0,0 +1,44 @@
++{
++  "boardBefore": "# PP&D Daemon Task Board\n\n## Completed Work\n\n- [x] Task checkbox-90: Existing accepted supervisor validation.\n\n## Next Goal-Aligned Tranche\n",
++  "expectedTaskLine": "- [ ] Task checkbox-91: Task checkbox-86: Add supervisor no-available-task fallback validation proving the supervisor can append a deterministic fixture-first tranche if Codex planning fails or times out.",
++  "expectedGuidanceContains": [
++    "Fixture-first scope",
++    "python3 ppd/daemon/ppd_daemon.py --self-test",
++    "no live DevHub sessions",
++    "no live DevHub sessions, browser traces, auth state, raw crawl output, uploads, submissions, payments, CAPTCHA, MFA, account creation, cancellation, certification, or inspection scheduling"
++  ],
++  "states": [
++    {
++      "name": "planning failed after board exhaustion",
++      "completeCount": 90,
++      "taskCount": 90,
++      "noAvailableTask": true,
++      "planningStatus": "codex_planning_failed",
++      "shouldAppend": true
++    },
++    {
++      "name": "planning timed out after board exhaustion",
++      "completeCount": 90,
++      "taskCount": 90,
++      "noAvailableTask": true,
++      "planningStatus": "codex_planning_timed_out",
++      "shouldAppend": true
++    },
++    {
++      "name": "validation failure is not a no-task planning fallback",
++      "completeCount": 90,
++      "taskCount": 90,
++      "noAvailableTask": true,
++      "planningStatus": "validation_failed",
++      "shouldAppend": false
++    },
++    {
++      "name": "incomplete board is not eligible",
++      "completeCount": 89,
++      "taskCount": 90,
++      "noAvailableTask": false,
++      "planningStatus": "codex_planning_failed",
++      "shouldAppend": false
++    }
++  ]
++}
+--- a/ppd/tests/test_supervisor_no_available_task_fallback.py
++++ b/ppd/tests/test_supervisor_no_available_task_fallback.py
+@@ -0,0 +1,69 @@
++"""Fixture-first validation for supervisor no-available-task fallback behavior."""
++
++from __future__ import annotations
++
++import json
++from pathlib import Path
++import unittest
++
++from ppd.daemon.supervisor_no_available_task_fallback import (
++    append_fixture_first_tranche_if_needed,
++    build_fallback_task_line,
++    state_from_mapping,
++    should_append_fixture_first_tranche,
++)
++
++
++class SupervisorNoAvailableTaskFallbackTest(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls) -> None:
++        fixture_path = Path(__file__).parent / "fixtures" / "daemon" / "no_available_task_fallback.json"
++        cls.fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
++
++    def test_fallback_is_limited_to_codex_planning_failure_or_timeout(self) -> None:
++        for state_data in self.fixture["states"]:
++            with self.subTest(state=state_data["name"]):
++                state = state_from_mapping(state_data)
++                self.assertIs(should_append_fixture_first_tranche(state), state_data["shouldAppend"])
++
++    def test_fallback_task_line_is_deterministic(self) -> None:
++        self.assertEqual(build_fallback_task_line(), self.fixture["expectedTaskLine"])
++
++    def test_supervisor_appends_fixture_first_tranche_when_planning_fails(self) -> None:
++        state_data = next(item for item in self.fixture["states"] if item["planningStatus"] == "codex_planning_failed")
++        board_after = append_fixture_first_tranche_if_needed(
++            self.fixture["boardBefore"],
++            state_from_mapping(state_data),
++        )
++
++        self.assertIn(self.fixture["expectedTaskLine"], board_after)
++        for expected_text in self.fixture["expectedGuidanceContains"]:
++            self.assertIn(expected_text, board_after)
++
++    def test_supervisor_appends_same_tranche_for_timeout(self) -> None:
++        failed_state = next(item for item in self.fixture["states"] if item["planningStatus"] == "codex_planning_failed")
++        timeout_state = next(item for item in self.fixture["states"] if item["planningStatus"] == "codex_planning_timed_out")
++
++        failed_board = append_fixture_first_tranche_if_needed(
++            self.fixture["boardBefore"],
++            state_from_mapping(failed_state),
++        )
++        timeout_board = append_fixture_first_tranche_if_needed(
++            self.fixture["boardBefore"],
++            state_from_mapping(timeout_state),
++        )
++
++        self.assertEqual(failed_board, timeout_board)
++
++    def test_fallback_append_is_idempotent(self) -> None:
++        state_data = next(item for item in self.fixture["states"] if item["planningStatus"] == "codex_planning_failed")
++        state = state_from_mapping(state_data)
++        once = append_fixture_first_tranche_if_needed(self.fixture["boardBefore"], state)
++        twice = append_fixture_first_tranche_if_needed(once, state)
++
++        self.assertEqual(once, twice)
++        self.assertEqual(once.count(self.fixture["expectedTaskLine"]), 1)
++
++
++if __name__ == "__main__":
++    unittest.main()

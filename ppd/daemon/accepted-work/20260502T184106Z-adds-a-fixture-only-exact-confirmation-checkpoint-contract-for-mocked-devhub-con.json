@@ -1,0 +1,48 @@
+{
+  "changed_files": [
+    "ppd/devhub/exact_confirmation_checkpoint.py",
+    "ppd/tests/fixtures/devhub/exact_confirmation_checkpoint_contract.json",
+    "ppd/tests/test_devhub_exact_confirmation_checkpoint_contract.py"
+  ],
+  "created_at": "2026-05-02T18:41:06.881887Z",
+  "impact": "Advances PP&D DevHub guardrails by making irreversible and payment-like mocked actions fail closed until exact user confirmation is present, while requiring redacted previews, source-backed consequence summaries, and durable audit-event references without launching a browser or touching live DevHub.",
+  "summary": "Adds a fixture-only exact-confirmation checkpoint contract for mocked DevHub consequential and financial actions.",
+  "target_task": "Task checkbox-101: Task checkbox-96: Add a fixture-only exact-confirmation checkpoint contract for mocked DevHub consequential and financial actions, with redacted action previews, source-backed consequence summaries, durable audit-event references, and default refusal before confirmation. Do not launch a browser, store auth state, upload, submit, certify, pay, cancel, schedule inspections, automate MFA or CAPTCHA, or use live DevHub.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 108 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "........................................................................................................................................................................................................................................................................................................ss..............sss.............................................................................................................................................................................................. ---------------------------------------------------------------------- Ran 505 tests in 0.089s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

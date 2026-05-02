@@ -1,0 +1,28 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -17,6 +17,19 @@
+ - Use `isinstance(value, list)`, `isinstance(value, tuple)`, or explicit helper functions for runtime validation.
+ - Keep every generated Python expression valid under `python3 -m py_compile` before returning JSON.
+ - After a syntax-preflight rollback, the next domain retry should use at most one JSON fixture plus one tiny Python unittest file.
++
++## Forbidden-Token Fixture Recovery
++
++When a validation failure reports `assertNotIn(term, serialized)` or says a forbidden token was found in a serialized fixture, treat the failure as a fixture-shape recovery problem, not as permission to rewrite the whole contract.
++
++Required recovery behavior:
++
++- Inspect the failed assertion text and remove the exact forbidden token from committed fixture keys, values, file names, and comments.
++- Do not encode forbidden concepts in negative field names. For example, avoid field names such as `rawPdfBytesStored`; use positive policy fields such as `stores_public_snippets_only`, `download_artifact_policy`, or `raw_content_storage` with a safe enumerated value.
++- Keep the retry to at most one JSON fixture plus one focused unittest file unless the selected task explicitly asks for a reusable implementation module.
++- For public PDF extraction fixtures, store only metadata, page anchors, required document labels, signature or acknowledgment markers, and short extracted snippets.
++- Do not store raw PDF bytes, OCR dumps, downloaded documents, private DevHub state, cookies, traces, screenshots, uploads, submissions, payments, certification text, CAPTCHA, MFA, cancellation, or inspection-scheduling artifacts.
++- If the failing validator bans terms such as `rawpdf`, make sure lowercased serialized fixture content cannot recreate that token through camelCase, snake_case, or concatenated words.
+ 
+ ## Private Artifact Preflight Recovery
+ 
+@@ -54,4 +67,4 @@
+ - whether edits were rolled back,
+ - whether the next proposal should shrink scope.
+ 
+-If a selected task has multiple syntax-preflight or private-artifact preflight failures, the worker should repair supervision, preflight classification, or retry prompting first, not extend the domain implementation surface.
++If a selected task has multiple syntax-preflight, validation, or private-artifact preflight failures, the worker should repair supervision, preflight classification, retry prompting, or fixture-shape guidance first, not extend the domain implementation surface.

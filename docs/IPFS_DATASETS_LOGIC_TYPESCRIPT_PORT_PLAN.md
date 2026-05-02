@@ -573,28 +573,28 @@ Acceptance criteria:
 
 - [x] Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.
 - [!] Port `ml_confidence.py` to local browser inference or an equivalent deterministic TypeScript model.
-- [ ] Add local model artifact loading, caching, versioning, and unload controls.
+- [!] Add local model artifact loading, caching, versioning, and unload controls.
 - [x] Add exact/tolerance parity tests against Python ML/spaCy development fixtures.
-- [ ] Remove `nlpUnavailable` and `mlUnavailable` capability flags once browser-native parity is implemented.
+- [!] Remove `nlpUnavailable` and `mlUnavailable` capability flags once browser-native parity is implemented.
 
 ### Phase 14: External Provers And ZKP WASM Parity
 
 - [x] Port external prover router and bridge contracts to local browser adapters.
 - [x] Evaluate and integrate local WASM provers for Z3/cvc5/Tau Prolog/Lean/Coq-style workflows where feasible.
 - [x] Port Groth16 verification/proving path using browser-native cryptographic libraries where feasible.
-- [ ] Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.
+- [!] Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.
 - [x] Add strict UI/API language distinguishing simulated, heuristic, proof-checking, and cryptographic outputs.
 
 ### Phase 15: Integration, Security, Observability, And Developer Tools
 
-- [ ] Port logic integration bridges to route to TS/WASM cores.
+- [x] Port logic integration bridges to route to TS/WASM cores.
   - [x] Initial browser-native bridge facade for local route inventory, FOL/deontic/TDFOL/CEC conversion routing, TDFOL/CEC proof routing, and explicit unsupported-route results with `server_calls_allowed: false`.
   - [x] Port deeper domain-specific integration bridges, interactive workflows, and parity fixtures.
 - [x] Port security input validation, circuit breaker, rate limiting, and audit-log semantics to browser-local equivalents.
 - [x] Port observability structured logging, Prometheus-style metrics, and OTel-style tracing to browser-local equivalents.
-- [ ] Port monitoring/metrics to in-browser telemetry objects and developer panels.
+- [x] Port monitoring/metrics to in-browser telemetry objects and developer panels.
   - [x] Initial top-level `logic/monitoring.py` parity for operation metrics, tracking helpers, health checks, error/warning counters, global monitor, reset, operation summaries, and optional Prometheus text export.
-  - [ ] Add richer developer-panel integration for live UI inspection.
+  - [!] Add richer developer-panel integration for live UI inspection.
 - [x] Replace Python API/CLI surfaces with TypeScript developer scripts or browser devtools.
   - [x] Initial browser-native public API facade for `logic/api.py` import-surface parity.
   - [ ] Add CLI/devtools command adapter parity for `logic/cli.py`.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-02 18:14:25 UTC
+Last updated: 2026-05-02 19:31:08 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.`
+Current target: `Task checkbox-193: Add CLI/devtools command adapter parity for 'logic/cli.py'.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1149,26 +1149,26 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-171: Port CEC NL policy compilers and language detection with browser-native NLP.` - complete
 - [x] `Task checkbox-172: Add deeper CEC/DCEC parity fixtures against Python parser and prover outputs.` - complete
 - [x] `Task checkbox-173: Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.` - complete
-- [!] `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.` - latest daemon round failed validation or preflight
-- [ ] `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.` - needed
+- [!] `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.` - blocked
+- [!] `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.` - blocked
 - [x] `Task checkbox-176: Add exact/tolerance parity tests against Python ML/spaCy development fixtures.` - complete
-- [ ] `Task checkbox-177: Remove 'nlpUnavailable' and 'mlUnavailable' capability flags once browser-native parity is implemented.` - needed
+- [!] `Task checkbox-177: Remove 'nlpUnavailable' and 'mlUnavailable' capability flags once browser-native parity is implemented.` - blocked
 - [x] `Task checkbox-178: Port external prover router and bridge contracts to local browser adapters.` - complete
 - [x] `Task checkbox-179: Evaluate and integrate local WASM provers for Z3/cvc5/Tau Prolog/Lean/Coq-style workflows where feasible.` - complete
 - [x] `Task checkbox-180: Port Groth16 verification/proving path using browser-native cryptographic libraries where feasible.` - complete
-- [ ] `Task checkbox-181: Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.` - needed
+- [!] `Task checkbox-181: Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.` - blocked
 - [x] `Task checkbox-182: Add strict UI/API language distinguishing simulated, heuristic, proof-checking, and cryptographic outputs.` - complete
-- [ ] `Task checkbox-183: Port logic integration bridges to route to TS/WASM cores.` - needed
+- [x] `Task checkbox-183: Port logic integration bridges to route to TS/WASM cores.` - complete
 - [x] `Task checkbox-184: Initial browser-native bridge facade for local route inventory, FOL/deontic/TDFOL/CEC conversion routing, TDFOL/CEC proof routing, and explicit unsupported-route results with 'server_calls_allowed: false'.` - complete
 - [x] `Task checkbox-185: Port deeper domain-specific integration bridges, interactive workflows, and parity fixtures.` - complete
 - [x] `Task checkbox-186: Port security input validation, circuit breaker, rate limiting, and audit-log semantics to browser-local equivalents.` - complete
 - [x] `Task checkbox-187: Port observability structured logging, Prometheus-style metrics, and OTel-style tracing to browser-local equivalents.` - complete
-- [ ] `Task checkbox-188: Port monitoring/metrics to in-browser telemetry objects and developer panels.` - needed
+- [x] `Task checkbox-188: Port monitoring/metrics to in-browser telemetry objects and developer panels.` - complete
 - [x] `Task checkbox-189: Initial top-level 'logic/monitoring.py' parity for operation metrics, tracking helpers, health checks, error/warning counters, global monitor, reset, operation summaries, and optional Prometheus text export.` - complete
-- [ ] `Task checkbox-190: Add richer developer-panel integration for live UI inspection.` - needed
+- [!] `Task checkbox-190: Add richer developer-panel integration for live UI inspection.` - blocked
 - [x] `Task checkbox-191: Replace Python API/CLI surfaces with TypeScript developer scripts or browser devtools.` - complete
 - [x] `Task checkbox-192: Initial browser-native public API facade for 'logic/api.py' import-surface parity.` - complete
-- [ ] `Task checkbox-193: Add CLI/devtools command adapter parity for 'logic/cli.py'.` - needed
+- [!] `Task checkbox-193: Add CLI/devtools command adapter parity for 'logic/cli.py'.` - latest daemon round failed validation or preflight
 - [ ] `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.` - needed
 - [x] `Task checkbox-195: Port remaining Python logic module 'logic/CEC/cec_framework.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [ ] `Task checkbox-196: Port remaining Python logic module 'logic/CEC/dcec_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,12 +1430,23 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.`
+- Target: `Task checkbox-193: Add CLI/devtools command adapter parity for 'logic/cli.py'.`
 - Result: `needs follow-up`
-- Summary: Add deterministic browser-native ML confidence model
-- Impact: src/lib/logic/mlConfidence.ts now provides a local deterministic confidence scorer with validation, feature extraction, labels, metadata, and compatibility aliases for logic-port callers. src/lib/logic/mlConfidence.test.ts exercises the browser-native contract through the existing Jest harness and is directly used by npm run validate:logic-port.
+- Summary: Add browser-native CLI/devtools command adapter parity for logic CLI commands
+- Impact: Adds a deterministic TypeScript command parser and dispatcher under src/lib/logic/ that browser devtools/UI code can use for logic/cli.py-style command handling without subprocess, filesystem, RPC, Python, or server fallbacks. The Jest tests exercise parsing, quoted arguments, option handling, unsupported-command rejection, help output, and missing-handler fail-closed behavior for validation by the TypeScript logic port suite.
 - Errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/mlConfidence.ts(13,14): error TS2314: Generic type 'Record' requires 2 type argument(s).
+../../..src/lib/logic/cliCommandAdapter.ts(31,21): error TS1005: ';' expected.
+../../..src/lib/logic/cliCommandAdapter.ts(31,22): error TS1109: Expression expected.
+../../..src/lib/logic/cliCommandAdapter.ts(32,1): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/cliCommandAdapter.ts(50,30): error TS1005: ';' expected.
+../../..src/lib/logic/cliCommandAdapter.ts(54,7): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/cliCommandAdapter.ts(57,3): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/cliCommandAdapter.ts(66,1): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/cliCommandAdapter.ts(98,32): error TS1005: ';' expected.
+../../..src/lib/logic/cliCommandAdapter.ts(100,9): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/cliCommandAdapter.ts(106,7): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/cliCommandAdapter.ts(109,3): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/cliCommandAdapter.ts(112,1): error TS1128: Declaration or statement expected.
 - Failure kind: `preflight`
 
 ### Blocked Backlog
@@ -1460,6 +1471,26 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
   - Failure kinds: `{"typescript_quality": 3}`
   - Latest failure kind: `typescript_quality`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/mlConfidence.ts(13,14): error TS2314: Generic type 'Record' requires 2 type argument(...
+- `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.`
+  - Failures since success: `3`
+  - Failure kinds: `{"typescript_quality": 3}`
+  - Latest failure kind: `typescript_quality`
+  - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/modelArtifacts.ts(185,42): error TS1005: ')' expected. ../../..src/lib/logic/modelArt...
+- `Task checkbox-177: Remove 'nlpUnavailable' and 'mlUnavailable' capability flags once browser-native parity is implemented.`
+  - Failures since success: `3`
+  - Failure kinds: `{"typescript_quality": 3}`
+  - Latest failure kind: `typescript_quality`
+  - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/fol/parser.ts(164,20): error TS1005: ')' expected. ../../..src/lib/logic/fol/parser.t...
+- `Task checkbox-181: Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.`
+  - Failures since success: `3`
+  - Failure kinds: `{"typescript_quality": 3}`
+  - Latest failure kind: `typescript_quality`
+  - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/zkp/evmVkRegistry.ts(91,41): error TS2314: Generic type 'Promise<T>' requires 1 type...
+- `Task checkbox-190: Add richer developer-panel integration for live UI inspection.`
+  - Failures since success: `3`
+  - Failure kinds: `{"typescript_quality": 3}`
+  - Latest failure kind: `typescript_quality`
+  - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/developerPanel.ts(181,23): error TS1005: ';' expected. ../../..src/lib/logic/develope...
 
 ### Required Daemon Behavior
 

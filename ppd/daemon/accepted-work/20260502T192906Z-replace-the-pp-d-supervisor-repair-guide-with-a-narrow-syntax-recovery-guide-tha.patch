@@ -1,0 +1,94 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,70 +1,47 @@
+ # PP&D Supervisor Repair Guide
+ 
+-This guide is for isolated PP&D daemon supervisor repair rounds after repeated failed daemon cycles. A supervisor repair must improve daemon prompting, preflight, retry selection, diagnostics, or task-board recovery. It must not implement the stalled PP&D domain task directly.
++This guide is for supervisor repair cycles after repeated daemon rounds fail without an accepted patch. It is intentionally narrow and applies to daemon prompt, preflight, retry, recovery, and diagnostics work only.
+ 
+-## Current Recovery Trigger
++## Current Recovery Target
+ 
+-Use this guide when several consecutive daemon rounds fail without an accepted patch, especially when the active task remains in `calling_llm` or repeatedly rolls back during syntax preflight.
+-
+-The current failure pattern is malformed Python generated for public PDF fixture validation. Recent invalid fragments include:
++Recent failed patches repeatedly targeted the public PDF extraction fixture validator and were rolled back by Python syntax preflight. The recurring malformed fragments looked like Python conditionals polluted with TypeScript-style type fragments, including these exact failure shapes:
+ 
+ - `page_number None`
+ - `page_number list[str]`
+ - `page_count list[str]`
+ - `if self.page_count list[str]`
+-- Unterminated string literals introduced while writing conditional diagnostics
+ 
+-These are parser failures, not domain-contract failures. They indicate that the worker is mixing TypeScript-style type fragments into Python conditionals or attempting broad validator rewrites before proving the changed file can parse.
+-
+-## Repair Scope
+-
+-A repair round may edit daemon supervision files, daemon diagnostics, daemon prompt guidance, task-board recovery notes, or focused daemon tests. It must not add the public PDF extraction validator, replace public PDF fixtures to complete the stalled task, download documents, run live crawling, or create private DevHub artifacts.
+-
+-Private DevHub artifacts include auth state, cookies, traces, screenshots, raw browser storage, account identifiers, uploaded documents, payment records, and live session captures.
++A supervisor repair patch must not implement the stalled PP&D domain task directly. It should improve the daemon instructions, diagnostics, or retry constraints so a later worker can resume the domain task with a smaller syntactically valid patch.
+ 
+ ## Required Retry Shape
+ 
+-After this failure pattern, the next worker should use one of these shapes only:
++When the previous failure kind is `syntax_preflight`, the next domain retry must use one of these shapes:
+ 
+ - One syntax-valid Python unittest file
+ - One small JSON fixture plus one syntax-valid Python unittest file
+-- One daemon prompt, diagnostic, or preflight file plus one focused syntax-valid test
+ 
+-Avoid broad contract rewrites. Avoid introducing new helper modules unless the repair is specifically about daemon preflight or diagnostics. If the active public PDF extraction validation task has already failed twice for syntax reasons, the supervisor should pause that domain retry and append or select a daemon-repair task first.
++The retry should not broaden schemas, rewrite multiple unrelated contracts, or create a new live automation path. If a fixture is needed, keep it small, redacted, and committed under `ppd/tests/fixtures/`.
+ 
+-## Syntax Guardrails
++## Python Syntax Guardrails
+ 
+-Every Python conditional uses complete comparisons. Examples of acceptable forms:
++Every Python file proposed after a syntax-preflight rollback must satisfy these rules before full validation:
+ 
+-- `page_number is None`
+-- `page_number is not None`
+-- `not isinstance(page_number, int)`
+-- `isinstance(page_count, int)`
+-- `isinstance(values, list)`
++- Every Python conditional uses complete comparisons such as `value is None`, `value is not None`, `isinstance(value, list)`, or `len(value) > 0`.
++- No Python file contains TypeScript-style expression fragments such as `field list[str]`, `field string`, `field?:`, or inline type fragments inside `if`, `return`, `assert`, list comprehensions, or boolean expressions.
++- Python type hints may appear only in valid Python locations: function signatures, variable annotations, class attributes, or `typing` aliases.
++- The daemon should run `python3 -m py_compile` for changed Python files before broader unittest or repository validation.
+ 
+-No Python file contains TypeScript-style expression fragments. Do not place `list[str]`, `dict[str, object]`, `tuple[str, ...]`, or similar annotations inside `if` statements, return expressions, boolean expressions, or assertions unless they are inside a valid Python type annotation context.
++## Repair Scope Boundaries
+ 
+-Before broader validation, changed Python files should be checked with `py_compile`. Changed TypeScript files should be checked by the daemon syntax preflight path. Parser failures should be classified as `syntax_preflight` and should produce compact guidance that names the malformed line and asks for a smaller syntax-first retry.
++Supervisor repair changes stay in daemon programming, diagnostics, preflight, retry policy, task selection, or recovery documentation. A repair patch must not implement the stalled PP&D domain task directly, does not download documents, does not crawl live public pages, and does not create private DevHub artifacts.
+ 
+-## Domain Safety Boundary
++Forbidden repair outputs include:
+ 
+-For the stalled public PDF extraction validation task, supervisor repair can explain how to retry safely, but it must not implement the stalled PP&D domain task directly. A valid later domain retry should be fixture-first, should use only committed redacted public fixtures, does not download documents, does not persist raw PDF bytes or OCR output, and rejects private DevHub artifacts by default.
++- private DevHub artifacts
++- auth state, cookies, sessions, traces, screenshots, or browser storage
++- raw crawl output, raw PDF bytes, OCR dumps, or downloaded documents
++- upload, submit, certify, pay, cancel, inspection scheduling, MFA, CAPTCHA, account creation, or password recovery automation
+ 
+-## Recovery Decision Rule
++## Supervisor Action Rule
+ 
+-When four or more consecutive daemon rounds fail without an accepted patch while the daemon is waiting on the model, select repair work before selecting the same domain task again. When the failure kind is `syntax_preflight`, prefer prompt, preflight, or diagnostic repairs over larger fixture contracts. When validation failures report missing fixture fields, inspect and report the committed fixture shape before proposing a replacement.
+-
+-## Supervisor Acceptance Checklist
+-
+-A supervisor repair proposal is acceptable only when all of these are true:
+-
+-- It changes daemon supervision, retry guidance, prompt guidance, preflight diagnostics, focused daemon tests, or the task board.
+-- It does not complete the stalled public PDF extraction fixture task itself.
+-- It keeps the file set smaller than the repeated failed proposals unless the daemon code itself must be replaced.
+-- It preserves completed task-board checkboxes and does not mark domain work complete by documentation alone.
+-- It uses fixture-first and validation-first instructions before any live or authenticated automation.
+-- It creates no private DevHub artifacts, raw crawl output, downloaded documents, auth state, traces, or session files.
+-
+-## Suggested Next Daemon Instruction
+-
+-Pause the repeated public PDF validation retry until the worker has read this guide. Then resume with the smallest syntax-valid patch that can pass `python3 -m py_compile` before running full PP&D validation. If another `syntax_preflight` rollback occurs for the same malformed expression family, append a daemon preflight or prompt repair task before selecting the domain task again.
++If the daemon has failed four or more consecutive rounds on the same parser or compiler error family, pause that domain task and accept only a narrow repair patch that improves prompt constraints or diagnostics. After the repair passes validation, resume the domain task with the smallest fixture-first retry shape listed above.
