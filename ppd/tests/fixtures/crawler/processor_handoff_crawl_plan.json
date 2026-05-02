@@ -1,0 +1,90 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-02T06:30:00Z",
+  "fixtureOnly": true,
+  "networkAccess": false,
+  "processorInvocation": false,
+  "backendRoot": "ipfs_datasets_py/ipfs_datasets_py/processors",
+  "plannedPublicFetches": [
+    {
+      "id": "ppd-public-guidance-html",
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "canonicalUrl": "https://www.portland.gov/ppd",
+      "contentType": "text/html",
+      "decision": "fetch",
+      "policyPreflight": {
+        "allowlisted": true,
+        "robotsAllowed": true,
+        "noPersist": true,
+        "timeoutSeconds": 20
+      },
+      "processorHandoff": {
+        "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors/web_archiving",
+        "processorName": "web_archiving",
+        "processorFamily": "web_archiving",
+        "metadataKind": "backend_directory",
+        "handoffMode": "manifest_only"
+      }
+    },
+    {
+      "id": "ppd-public-legal-archive-cache",
+      "sourceUrl": "https://www.portland.gov/ppd/permits",
+      "canonicalUrl": "https://www.portland.gov/ppd/permits",
+      "contentType": "text/html",
+      "decision": "fetch",
+      "policyPreflight": {
+        "allowlisted": true,
+        "robotsAllowed": true,
+        "noPersist": true,
+        "timeoutSeconds": 20
+      },
+      "processorHandoff": {
+        "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors/legal_scrapers/url_archive_cache.py",
+        "processorName": "url_archive_cache",
+        "processorFamily": "legal_scraper",
+        "metadataKind": "python_module",
+        "handoffMode": "manifest_only"
+      }
+    },
+    {
+      "id": "ppd-public-forms-pdf",
+      "sourceUrl": "https://www.portland.gov/ppd/permits-and-inspections-applications",
+      "canonicalUrl": "https://www.portland.gov/ppd/permits-and-inspections-applications",
+      "contentType": "text/html",
+      "decision": "fetch",
+      "policyPreflight": {
+        "allowlisted": true,
+        "robotsAllowed": true,
+        "noPersist": true,
+        "timeoutSeconds": 20
+      },
+      "processorHandoff": {
+        "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors/adapters/web_archive_adapter.py",
+        "processorName": "web_archive_adapter",
+        "processorFamily": "adapter",
+        "metadataKind": "python_module",
+        "handoffMode": "manifest_only"
+      }
+    },
+    {
+      "id": "ppd-public-devhub-guidance",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub",
+      "canonicalUrl": "https://www.portland.gov/ppd/devhub",
+      "contentType": "text/html",
+      "decision": "fetch",
+      "policyPreflight": {
+        "allowlisted": true,
+        "robotsAllowed": true,
+        "noPersist": true,
+        "timeoutSeconds": 20
+      },
+      "processorHandoff": {
+        "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors/website_graphrag_processor.py",
+        "processorName": "website_graphrag_processor",
+        "processorFamily": "website_graphrag",
+        "metadataKind": "python_module",
+        "handoffMode": "manifest_only"
+      }
+    }
+  ]
+}

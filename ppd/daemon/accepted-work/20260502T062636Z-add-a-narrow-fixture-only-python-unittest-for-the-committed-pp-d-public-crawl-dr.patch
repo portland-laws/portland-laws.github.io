@@ -1,0 +1,300 @@
+--- a/ppd/tests/test_public_crawl_dry_run_plan.py
++++ b/ppd/tests/test_public_crawl_dry_run_plan.py
+@@ -0,0 +1,297 @@
++#!/usr/bin/env python3
++"""Validate the committed PP&D public-crawl dry-run plan fixture.
++
++This test is intentionally fixture-only. It performs no network access and does
++not invoke crawler, browser, DevHub, or processor automation.
++"""
++
++from __future__ import annotations
++
++import copy
++import json
++import unittest
++from pathlib import Path
++from typing import Any, Mapping
++from urllib.parse import urlparse
++
++
++FIXTURE_PATH = Path(__file__).parent / "fixtures" / "crawler" / "public_crawl_dry_run_plan.json"
++PROCESSOR_BACKEND = "ipfs_datasets_py/ipfs_datasets_py/processors"
++EXPECTED_ALLOWED_HOSTS = {
++    "www.portland.gov",
++    "devhub.portlandoregon.gov",
++    "www.portlandoregon.gov",
++    "www.portlandmaps.com",
++}
++FETCH_REQUIRED_FIELDS = (
++    "allowlist_decision",
++    "robots_preflight",
++    "no_persist_preflight",
++    "timeout_policy",
++    "expected_content_type",
++    "processor_handoff",
++)
++ROBOTS_REQUIRED_FIELDS = (
++    "robots_checked",
++    "robots_source_url",
++    "robots_decision",
++    "robots_checked_at",
++    "user_agent",
++)
++NO_PERSIST_REQUIRED_FIELDS = (
++    "manifest_only",
++    "persist_raw_response_bodies",
++    "persist_downloaded_documents",
++    "persist_browser_traces",
++    "persist_screenshots",
++)
++TIMEOUT_REQUIRED_FIELDS = (
++    "connect_timeout_seconds",
++    "read_timeout_seconds",
++    "overall_fetch_timeout_seconds",
++    "max_redirects",
++    "on_timeout",
++)
++PROCESSOR_HANDOFF_REQUIRED_FIELDS = (
++    "eligible_after_live_preflight",
++    "processor_backend",
++    "network_invocation_performed",
++)
++
++
++class PublicCrawlDryRunPlanFixtureTest(unittest.TestCase):
++    maxDiff = None
++
++    def load_fixture(self) -> dict[str, Any]:
++        with FIXTURE_PATH.open(encoding="utf-8") as handle:
++            fixture = json.load(handle)
++        self.assertIsInstance(fixture, dict)
++        return fixture
++
++    def test_public_crawl_dry_run_plan_matches_committed_shape(self) -> None:
++        self.assert_manifest_valid(self.load_fixture())
++
++    def test_planned_fetch_validation_fails_closed_on_missing_preflight_fields(self) -> None:
++        for field in FETCH_REQUIRED_FIELDS:
++            with self.subTest(field=field):
++                manifest = self.load_fixture()
++                manifest["planned_fetches"][0].pop(field)
++                with self.assertRaisesRegex(AssertionError, field):
++                    self.assert_manifest_valid(manifest)
++
++    def test_nested_preflight_validation_fails_closed_on_missing_fields(self) -> None:
++        nested_cases = (
++            ("robots_preflight", ROBOTS_REQUIRED_FIELDS),
++            ("no_persist_preflight", NO_PERSIST_REQUIRED_FIELDS),
++            ("timeout_policy", TIMEOUT_REQUIRED_FIELDS),
++            ("processor_handoff", PROCESSOR_HANDOFF_REQUIRED_FIELDS),
++        )
++        for container, fields in nested_cases:
++            for field in fields:
++                with self.subTest(container=container, field=field):
++                    manifest = self.load_fixture()
++                    manifest["planned_fetches"][0][container].pop(field)
++                    with self.assertRaisesRegex(AssertionError, field):
++                        self.assert_manifest_valid(manifest)
++
++    def assert_manifest_valid(self, manifest: Mapping[str, Any]) -> None:
++        self.assertEqual(manifest.get("fixture_kind"), "ppd_planned_crawl_manifest")
++        self.assertEqual(manifest.get("schema_version"), 1)
++        self.assertEqual(manifest.get("dry_run"), True)
++        self.assertEqual(manifest.get("network_access_performed"), False)
++        self.assertEqual(manifest.get("stores_raw_response_bodies"), False)
++        self.assert_non_empty_string(manifest.get("crawl_plan_id"), "crawl_plan_id")
++        self.assert_non_empty_string(manifest.get("generated_at"), "generated_at")
++        self.assertTrue(str(manifest["generated_at"]).endswith("Z"), "generated_at must be UTC")
++
++        allowed_hosts = manifest.get("allowed_hosts")
++        self.assertIsInstance(allowed_hosts, list, "allowed_hosts must be a list")
++        self.assertTrue(EXPECTED_ALLOWED_HOSTS.issubset(set(allowed_hosts)), "allowed_hosts omits public crawl hosts")
++
++        self.assert_top_level_policy_valid(manifest)
++        self.assert_planned_fetches_valid(manifest)
++        self.assert_skipped_urls_valid(manifest)
++
++    def assert_top_level_policy_valid(self, manifest: Mapping[str, Any]) -> None:
++        timeout_policy = self.require_mapping(manifest, "timeout_policy")
++        self.assert_timeout_policy_valid(timeout_policy, "timeout_policy")
++        self.assertEqual(timeout_policy.get("timeout_reason_code"), "timeout_policy_exceeded")
++
++        robots_policy = self.require_mapping(manifest, "robots_preflight_policy")
++        self.assertEqual(robots_policy.get("required_before_live_fetch"), True)
++        self.assertEqual(robots_policy.get("network_access_performed_in_fixture"), False)
++        self.assertEqual(robots_policy.get("dry_run_decision"), "not_fetched_dry_run")
++        self.assertEqual(robots_policy.get("fail_closed_if_missing_in_live_run"), True)
++        self.assert_required_field_list(robots_policy, "required_fields", ROBOTS_REQUIRED_FIELDS)
++
++        no_persist_policy = self.require_mapping(manifest, "no_persist_policy")
++        self.assert_no_persist_valid(no_persist_policy, "no_persist_policy")
++
++        processor_policy = self.require_mapping(manifest, "processor_adapter_preflight_policy")
++        self.assertEqual(processor_policy.get("required_before_processor_handoff"), True)
++        self.assertEqual(processor_policy.get("processor_backend"), PROCESSOR_BACKEND)
++        self.assert_required_field_list(processor_policy, "required_fields", FETCH_REQUIRED_FIELDS)
++
++    def assert_planned_fetches_valid(self, manifest: Mapping[str, Any]) -> None:
++        planned_fetches = manifest.get("planned_fetches")
++        self.assertIsInstance(planned_fetches, list, "planned_fetches must be a list")
++        self.assertTrue(planned_fetches, "planned_fetches must not be empty")
++
++        seen_ids: set[str] = set()
++        for index, fetch in enumerate(planned_fetches):
++            self.assertIsInstance(fetch, dict, f"planned_fetches[{index}] must be an object")
++            location = f"planned_fetches[{index}]"
++            self.assert_required_keys(fetch, FETCH_REQUIRED_FIELDS, location)
++            fetch_id = self.assert_non_empty_string(fetch.get("id"), f"{location}.id")
++            self.assertNotIn(fetch_id, seen_ids, f"duplicate planned fetch id {fetch_id}")
++            seen_ids.add(fetch_id)
++            self.assertEqual(fetch.get("method"), "GET", f"{location}.method")
++            self.assertEqual(fetch.get("decision"), "allowed", f"{location}.decision")
++            self.assert_https_url(fetch.get("url"), f"{location}.url")
++            self.assert_https_url(fetch.get("canonical_url"), f"{location}.canonical_url")
++            self.assertIn("/", str(fetch.get("expected_content_type")), f"{location}.expected_content_type")
++
++            host = urlparse(str(fetch["url"])).netloc
++            allowlist = self.require_mapping(fetch, "allowlist_decision")
++            self.assertEqual(allowlist.get("host"), host, f"{location}.allowlist_decision.host")
++            self.assertEqual(allowlist.get("allowed"), True, f"{location}.allowlist_decision.allowed")
++            self.assertIn(host, EXPECTED_ALLOWED_HOSTS, f"{location}.allowlist_decision.host must be allowlisted")
++            self.assertEqual(allowlist.get("reason_code"), "allowlisted_public_url")
++
++            robots = self.require_mapping(fetch, "robots_preflight")
++            self.assert_robots_preflight_valid(robots, location, expected_checked=False, expected_decision="not_fetched_dry_run")
++            self.assert_https_url(robots.get("robots_source_url"), f"{location}.robots_preflight.robots_source_url")
++
++            self.assert_no_persist_valid(self.require_mapping(fetch, "no_persist_preflight"), f"{location}.no_persist_preflight")
++            self.assert_timeout_policy_valid(self.require_mapping(fetch, "timeout_policy"), f"{location}.timeout_policy")
++            self.assert_processor_handoff_valid(
++                self.require_mapping(fetch, "processor_handoff"),
++                f"{location}.processor_handoff",
++                eligible=True,
++            )
++
++            policy_reasons = self.policy_reasons(fetch, location)
++            self.assertTrue(
++                {"allowlisted_public_url", "robots_allowed", "no_persist_raw_body", "fixture_only"}.issubset(policy_reasons),
++                f"{location}.policy_decisions must include crawl dry-run policy reasons",
++            )
++
++    def assert_skipped_urls_valid(self, manifest: Mapping[str, Any]) -> None:
++        reason_codes = manifest.get("skipped_url_reason_codes")
++        self.assertIsInstance(reason_codes, list, "skipped_url_reason_codes must be a list")
++        self.assertIn("timeout_policy_exceeded", reason_codes)
++        self.assertIn("private_or_authenticated", reason_codes)
++        self.assertIn("disallowed_domain", reason_codes)
++        self.assertIn("unsupported_scheme", reason_codes)
++
++        skipped_urls = manifest.get("skipped_urls")
++        self.assertIsInstance(skipped_urls, list, "skipped_urls must be a list")
++        self.assertTrue(skipped_urls, "skipped_urls must not be empty")
++        for index, skipped in enumerate(skipped_urls):
++            self.assertIsInstance(skipped, dict, f"skipped_urls[{index}] must be an object")
++            location = f"skipped_urls[{index}]"
++            self.assert_non_empty_string(skipped.get("id"), f"{location}.id")
++            self.assertEqual(skipped.get("decision"), "skipped", f"{location}.decision")
++            self.assertIn(skipped.get("reason_code"), reason_codes, f"{location}.reason_code")
++            self.assert_required_keys(
++                skipped,
++                ("allowlist_decision", "robots_preflight", "no_persist_preflight", "processor_handoff"),
++                location,
++            )
++            allowlist = self.require_mapping(skipped, "allowlist_decision")
++            self.assertEqual(allowlist.get("allowed"), False, f"{location}.allowlist_decision.allowed")
++            self.assertEqual(allowlist.get("reason_code"), skipped.get("reason_code"), f"{location}.allowlist_decision.reason_code")
++            self.assert_robots_preflight_valid(
++                self.require_mapping(skipped, "robots_preflight"),
++                location,
++                expected_checked=False,
++                expected_decision_prefix="not_",
++            )
++            self.assert_no_persist_valid(self.require_mapping(skipped, "no_persist_preflight"), f"{location}.no_persist_preflight")
++            self.assert_processor_handoff_valid(
++                self.require_mapping(skipped, "processor_handoff"),
++                f"{location}.processor_handoff",
++                eligible=False,
++            )
++
++    def assert_required_keys(self, data: Mapping[str, Any], keys: tuple[str, ...], location: str) -> None:
++        for key in keys:
++            self.assertIn(key, data, f"{location} missing {key}")
++
++    def assert_required_field_list(self, data: Mapping[str, Any], key: str, expected_fields: tuple[str, ...]) -> None:
++        fields = data.get(key)
++        self.assertIsInstance(fields, list, f"{key} must be a list")
++        for expected in expected_fields:
++            self.assertIn(expected, fields, f"{key} missing {expected}")
++
++    def require_mapping(self, data: Mapping[str, Any], key: str) -> Mapping[str, Any]:
++        value = data.get(key)
++        self.assertIsInstance(value, dict, f"{key} must be an object")
++        return value
++
++    def assert_robots_preflight_valid(
++        self,
++        robots: Mapping[str, Any],
++        location: str,
++        *,
++        expected_checked: bool,
++        expected_decision: str | None = None,
++        expected_decision_prefix: str | None = None,
++    ) -> None:
++        self.assert_required_keys(robots, ROBOTS_REQUIRED_FIELDS, f"{location}.robots_preflight")
++        self.assertEqual(robots.get("robots_checked"), expected_checked, f"{location}.robots_preflight.robots_checked")
++        self.assertEqual(robots.get("robots_checked_at"), None, f"{location}.robots_preflight.robots_checked_at")
++        self.assert_non_empty_string(robots.get("user_agent"), f"{location}.robots_preflight.user_agent")
++        decision = robots.get("robots_decision")
++        if expected_decision is not None:
++            self.assertEqual(decision, expected_decision, f"{location}.robots_preflight.robots_decision")
++        if expected_decision_prefix is not None:
++            self.assertTrue(str(decision).startswith(expected_decision_prefix), f"{location}.robots_preflight.robots_decision")
++
++    def assert_no_persist_valid(self, policy: Mapping[str, Any], location: str) -> None:
++        self.assert_required_keys(policy, NO_PERSIST_REQUIRED_FIELDS, location)
++        self.assertEqual(policy.get("manifest_only"), True, f"{location}.manifest_only")
++        for field in NO_PERSIST_REQUIRED_FIELDS:
++            if field == "manifest_only":
++                continue
++            self.assertEqual(policy.get(field), False, f"{location}.{field}")
++
++    def assert_timeout_policy_valid(self, policy: Mapping[str, Any], location: str) -> None:
++        self.assert_required_keys(policy, TIMEOUT_REQUIRED_FIELDS, location)
++        for field in ("connect_timeout_seconds", "read_timeout_seconds", "overall_fetch_timeout_seconds", "max_redirects"):
++            value = policy.get(field)
++            self.assertIsInstance(value, int, f"{location}.{field}")
++            self.assertGreater(value, 0, f"{location}.{field}")
++        self.assertEqual(policy.get("on_timeout"), "skip_with_reason_code", f"{location}.on_timeout")
++
++    def assert_processor_handoff_valid(self, handoff: Mapping[str, Any], location: str, *, eligible: bool) -> None:
++        self.assert_required_keys(handoff, PROCESSOR_HANDOFF_REQUIRED_FIELDS, location)
++        self.assertEqual(handoff.get("eligible_after_live_preflight"), eligible, f"{location}.eligible_after_live_preflight")
++        self.assertEqual(handoff.get("processor_backend"), PROCESSOR_BACKEND, f"{location}.processor_backend")
++        self.assertEqual(handoff.get("network_invocation_performed"), False, f"{location}.network_invocation_performed")
++
++    def policy_reasons(self, fetch: Mapping[str, Any], location: str) -> set[str]:
++        policies = fetch.get("policy_decisions")
++        self.assertIsInstance(policies, list, f"{location}.policy_decisions must be a list")
++        reasons: set[str] = set()
++        for index, policy in enumerate(policies):
++            self.assertIsInstance(policy, dict, f"{location}.policy_decisions[{index}] must be an object")
++            self.assertEqual(policy.get("allowed"), True, f"{location}.policy_decisions[{index}].allowed")
++            reason = self.assert_non_empty_string(policy.get("reason"), f"{location}.policy_decisions[{index}].reason")
++            reasons.add(reason)
++        return reasons
++
++    def assert_https_url(self, value: Any, location: str) -> None:
++        self.assertIsInstance(value, str, f"{location} must be a string")
++        parsed = urlparse(value)
++        self.assertEqual(parsed.scheme, "https", f"{location} must use HTTPS")
++        self.assertTrue(parsed.netloc, f"{location} must include a host")
++
++    def assert_non_empty_string(self, value: Any, location: str) -> str:
++        self.assertIsInstance(value, str, f"{location} must be a string")
++        self.assertTrue(value.strip(), f"{location} must not be blank")
++        return value
++
++
++if __name__ == "__main__":
++    unittest.main()

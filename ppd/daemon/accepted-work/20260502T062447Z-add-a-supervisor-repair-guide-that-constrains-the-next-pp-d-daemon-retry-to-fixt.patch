@@ -1,0 +1,52 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,26 +1,33 @@
+ # PP&D Supervisor Repair Guide
+ 
+-Use this guide when the PP&D daemon stalls after repeated rejected patches.
++This guide is daemon-local operational guidance for recovering from repeated failed PP&D daemon rounds. It is not a PP&D domain artifact and must not be used to mark application progress.
+ 
+-## Current Recovery Rule
++## Current Recovery Focus
+ 
+-When recent failures are validator assertion failures against a committed JSON fixture, the next daemon cycle must not guess the fixture schema. Add or use a daemon diagnostic that reports the committed fixture shape first, then constrain the retry to that observed shape.
++The blocked public-crawl dry-run validator work must resume fixture-shape first.
+ 
+-## Narrow Retry Pattern
++Before writing another validator for `ppd/tests/fixtures/crawler/public_crawl_dry_run_plan.json`, inspect the committed fixture structure and match the validator to the fields that actually exist. The known committed structure uses top-level policy fields such as `allowed_hosts`, `timeout_policy`, `robots_preflight_policy`, `no_persist_policy`, `processor_adapter_preflight_policy`, and a `planned_fetches` list whose items contain `url`, `allowlist_decision`, `robots_preflight`, `no_persist_preflight`, `timeout_policy`, and `processor_handoff`.
+ 
+-1. Keep the failed domain task blocked while repairing supervision.
+-2. Add a deterministic helper or prompt guardrail under `ppd/daemon/` that reports only structural JSON information: top-level keys, candidate list fields, and first object keys.
+-3. Add synthetic self-test coverage for the helper or prompt guardrail.
+-4. Resume the domain task with one syntax-valid test file, or one test file plus one minimal fixture path correction only when the fixture path is wrong.
++Do not assume alternate names such as `seeds`, `seed_urls`, `allowlist_decisions`, or root-level skipped URL entries unless they are present in the committed fixture.
+ 
+-## Do Not Do This During Repair
++## Required Retry Shape
+ 
+-- Do not add `ppd/contracts/planned_crawl_manifest.py` for the public-crawl fixture retry.
+-- Do not rewrite broad shared contracts to satisfy one fixture validator.
+-- Do not perform live crawling or authenticated DevHub automation.
+-- Do not create private session, trace, screenshot, raw crawl, or downloaded document artifacts.
+-- Do not change application or domain artifacts just to mark progress.
++For the next retry of the checkbox-59 / checkbox-48 path:
+ 
+-## Acceptance Signal
++- Use exactly one syntax-valid Python test file under `ppd/tests/`, unless the fixture path itself is wrong.
++- If the fixture path is wrong, use one syntax-valid Python test file plus one minimal fixture path correction only.
++- Derive the fixture path from the test file location with `Path(__file__).parent / "fixtures" / ...`.
++- Validate fail-closed policy requirements from the committed fixture shape, not from a new shared contract.
++- Keep tests read-only and fixture-only; they must not perform network access.
++- Do not add `ppd/contracts/planned_crawl_manifest.py`.
++- Do not add live crawling, authenticated DevHub automation, processor implementations, broad schema rewrites, or shared contract rewrites.
+ 
+-A repair cycle is meaningful when the daemon can explain the fixture shape in compact diagnostics and the next selected task is narrow enough to complete in one cycle without inventing fields that are absent from the committed fixture.
++## Syntax Guardrail
++
++When adding the retry test, keep helper functions small and run through Python syntax preflight before broader validation. Avoid clever assertion builders or incomplete comparison expressions. Prefer direct `unittest` assertions over generated code or dynamic source construction.
++
++## Validation Expectation
++
++The expected validation command remains:
++
++`python3 ppd/tests/validate_ppd.py`

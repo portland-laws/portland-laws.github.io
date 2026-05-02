@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/test_public_crawl_dry_run_plan.py"
+  ],
+  "created_at": "2026-05-02T06:26:36.910135Z",
+  "impact": "This resumes checkbox-48/59 by validating the existing dry-run fixture shape in place, including fail-closed coverage for missing allowlist, robots, timeout, no-persist, and processor handoff preflight fields without adding live crawl code or broad contracts.",
+  "summary": "Add a narrow fixture-only Python unittest for the committed PP&D public-crawl dry-run plan fixture.",
+  "target_task": "Task checkbox-64: Task checkbox-59: Resume checkbox-48 only after checkbox-56 through checkbox-58 pass. Use one syntax-valid Python test file that validates the existing public-crawl dry-run fixture according to its actual committed structure, or use one test file plus one minimal fixture path correction if the fixture path is wrong. Do not add `ppd/contracts/planned_crawl_manifest.py`, live crawling, authenticated automation, or broad shared-contract rewrites.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 64 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "..................................................................................................................................................................................................................................ss..............sss........................................................................................................................................... ---------------------------------------------------------------------- Ran 384 tests in 0.054s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

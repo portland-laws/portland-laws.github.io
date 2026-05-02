@@ -1,0 +1,121 @@
+--- a/ppd/daemon/fixture_failure_guidance.py
++++ b/ppd/daemon/fixture_failure_guidance.py
+@@ -0,0 +1,118 @@
++"""Failure-context guidance for JSON fixture shape mismatches.
++
++This module is intentionally daemon-local. It does not validate PP&D domain
++semantics; it only recognizes validator failures that are likely caused by a
++validator expecting fields absent from a committed JSON fixture and emits a
++compact retry instruction for the next worker.
++"""
++
++from __future__ import annotations
++
++import re
++from dataclasses import dataclass
++from pathlib import PurePosixPath
++from typing import Iterable, Optional
++
++from .fixture_shape_diagnostic import describe_json_fixture_shape
++
++
++_JSON_FIXTURE_PATTERN = re.compile(r"ppd/tests/fixtures/[A-Za-z0-9_./-]+\.json")
++_MISSING_FIELD_PATTERNS = (
++    "missing required field",
++    "missing required fields",
++    "required field",
++    "required fields",
++    "absent field",
++    "absent fields",
++    "missing seed url",
++    "missing seed urls",
++    "missing preflight",
++    "missing allowlist",
++    "missing robots",
++    "missing timeout",
++    "missing no-persist",
++    "missing processor-adapter",
++    "missing processor adapter",
++)
++
++
++@dataclass(frozen=True)
++class FixtureFailureGuidance:
++    """Prompt guidance for a fixture-shape retry."""
++
++    fixture_path: Optional[str]
++    fixture_shape: Optional[str]
++    guidance: str
++
++
++def build_fixture_failure_guidance(
++    failure_text: str,
++    *,
++    repo_root: PurePosixPath | str = PurePosixPath("."),
++) -> Optional[FixtureFailureGuidance]:
++    """Return retry guidance when a validator failure mentions absent JSON fields.
++
++    The daemon should append this guidance to the next worker prompt only for
++    validation failures that look like JSON fixture shape mismatches. The
++    returned text deliberately constrains the retry to fixture inspection and a
++    narrow validator repair.
++    """
++
++    if not failure_text or not _mentions_missing_fixture_fields(failure_text):
++        return None
++
++    fixture_path = _first_json_fixture_path(failure_text)
++    fixture_shape = None
++    if fixture_path is not None:
++        try:
++            fixture_shape = describe_json_fixture_shape(fixture_path, repo_root=repo_root)
++        except Exception as exc:  # pragma: no cover - defensive daemon guidance path
++            fixture_shape = f"fixture shape diagnostic unavailable for {fixture_path}: {exc}"
++
++    guidance_lines = [
++        "Fixture-shape retry guidance:",
++        "Inspect the committed JSON fixture shape before writing or changing a validator.",
++        "Use the daemon fixture-shape diagnostic to compare expected fields with the fields actually present in the committed fixture.",
++        "Constrain the retry to the existing fixture structure unless the selected task explicitly permits fixture replacement.",
++        "Do not add broad shared contracts, live crawl code, authenticated automation, or new processor-adapter implementations for this retry.",
++    ]
++    if fixture_path is not None:
++        guidance_lines.append(f"Committed fixture to inspect: {fixture_path}")
++    if fixture_shape:
++        guidance_lines.append("Committed fixture shape:")
++        guidance_lines.append(fixture_shape)
++
++    return FixtureFailureGuidance(
++        fixture_path=fixture_path,
++        fixture_shape=fixture_shape,
++        guidance="\n".join(guidance_lines),
++    )
++
++
++def append_fixture_failure_guidance(
++    prompt_parts: Iterable[str],
++    failure_text: str,
++    *,
++    repo_root: PurePosixPath | str = PurePosixPath("."),
++) -> list[str]:
++    """Append fixture-shape guidance to prompt parts when the failure warrants it."""
++
++    parts = list(prompt_parts)
++    guidance = build_fixture_failure_guidance(failure_text, repo_root=repo_root)
++    if guidance is not None:
++        parts.append(guidance.guidance)
++    return parts
++
++
++def _mentions_missing_fixture_fields(text: str) -> bool:
++    normalized = text.lower()
++    if ".json" not in normalized and "fixture" not in normalized:
++        return False
++    return any(pattern in normalized for pattern in _MISSING_FIELD_PATTERNS)
++
++
++def _first_json_fixture_path(text: str) -> Optional[str]:
++    match = _JSON_FIXTURE_PATTERN.search(text)
++    if match is None:
++        return None
++    return match.group(0)

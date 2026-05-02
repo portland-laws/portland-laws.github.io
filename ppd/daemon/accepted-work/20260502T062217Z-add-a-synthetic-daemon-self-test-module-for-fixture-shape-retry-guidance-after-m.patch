@@ -1,0 +1,58 @@
+--- a/ppd/daemon/test_fixture_shape_guidance.py
++++ b/ppd/daemon/test_fixture_shape_guidance.py
+@@ -0,0 +1,55 @@
++"""Daemon self-test coverage for JSON fixture-shape retry guidance.
++
++These tests stay synthetic: they do not read or validate crawler fixtures. They
++only assert that the daemon source contains the recovery guidance added for
++missing-field JSON fixture validation failures.
++"""
++
++from __future__ import annotations
++
++from pathlib import Path
++
++
++DAEMON_SOURCE = Path(__file__).with_name("ppd_daemon.py")
++
++
++def _daemon_source_text() -> str:
++    return DAEMON_SOURCE.read_text(encoding="utf-8")
++
++
++def test_missing_seed_url_failure_triggers_fixture_shape_guidance() -> None:
++    source = _daemon_source_text().lower()
++
++    synthetic_failure_terms = (
++        "missing",
++        "required",
++        "seed",
++        "url",
++        "fixture shape",
++        "inspect the committed fixture shape",
++    )
++
++    missing_terms = [term for term in synthetic_failure_terms if term not in source]
++    assert not missing_terms, (
++        "daemon failure-context guidance must cover synthetic missing seed URL "
++        f"validator failures; absent terms: {missing_terms}"
++    )
++
++
++def test_missing_preflight_policy_failure_forbids_broad_retry() -> None:
++    source = _daemon_source_text().lower()
++
++    synthetic_failure_terms = (
++        "missing",
++        "preflight",
++        "policy",
++        "json fixture",
++        "broad contracts",
++        "live crawl",
++    )
++
++    missing_terms = [term for term in synthetic_failure_terms if term not in source]
++    assert not missing_terms, (
++        "daemon failure-context guidance must cover synthetic missing preflight "
++        f"policy field failures and constrain the retry; absent terms: {missing_terms}"
++    )

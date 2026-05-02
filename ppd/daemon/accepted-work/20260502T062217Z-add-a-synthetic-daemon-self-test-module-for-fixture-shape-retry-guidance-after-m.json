@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/test_fixture_shape_guidance.py"
+  ],
+  "created_at": "2026-05-02T06:22:17.184506Z",
+  "impact": "This advances the PP&D daemon recovery path by locking in the prompt guidance needed before resuming the blocked public-crawl fixture validator work, without editing crawler fixtures or adding live crawl behavior.",
+  "summary": "Add a synthetic daemon self-test module for fixture-shape retry guidance after missing-field validator failures.",
+  "target_task": "Task checkbox-63: Task checkbox-58: Add daemon self-test coverage proving the fixture-shape guidance appears after a failed validator reports absent fields such as missing seed URLs or missing preflight policy fields. Keep the test synthetic and under `ppd/daemon/` or `ppd/tests/`; do not edit crawler fixtures.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 64 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "..................................................................................................................................................................................................................................ss..............sss........................................................................................................................................ ---------------------------------------------------------------------- Ran 381 tests in 0.052s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

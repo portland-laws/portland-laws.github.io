@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-02T06:27:23.965655Z",
+  "impact": "This gives the PP&D daemon deterministic retry guidance for the exact stall pattern: do not keep reselecting stale checkbox-48 descendants once a later fixture-shaped validator has passed, mark the older blocked retries as superseded in supervisor context, and resume with the next narrow fixture-first task instead of broad rewrites or live crawling.",
+  "summary": "Add a supervisor repair guide for stale blocked-task recovery after fixture-shape diagnostics have succeeded.",
+  "target_task": "Supervisor repair: 3 task(s) are blocked and no independent selectable task remains: Task checkbox-53: Task checkbox-48: Add validation for the public-crawl dry-run plan fixture from checkbox-47. The validator must fail closed on missing allowlist, robots, timeout, no-persist, or processor-adapter preflight fields. Blocked pending fixture-shape diagnostics after repeated validators expected fields that were absent from the committed fixture.; Task checkbox-56: Task checkbox-51: Resume checkbox-48 with the smallest fixture-first validator after checkbox-49 and checkbox-50 pass. Limit the proposal to one syntax-valid Python test file or one syntax-valid helper plus one test fixture path correction; do not add live crawling or authenticated automation. Blocked because the last validator retry did not match the committed fixture shape.; Task checkbox-60: Task checkbox-55: Resume checkbox-48 only after checkbox-52 through checkbox-54 pass. Use a single syntax-valid Python test file that validates the committed `ppd/tests/fixtures/crawler/public_crawl_dry_run_plan.json` fixture in place; do not introduce `ppd/contracts/planned_crawl_manifest.py`, live crawling, authenticated automation, or broad shared-contract rewrites. Blocked until the daemon adds fixture-shape diagnostics and retry guidance.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 64 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "..................................................................................................................................................................................................................................ss..............sss........................................................................................................................................... ---------------------------------------------------------------------- Ran 384 tests in 0.054s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

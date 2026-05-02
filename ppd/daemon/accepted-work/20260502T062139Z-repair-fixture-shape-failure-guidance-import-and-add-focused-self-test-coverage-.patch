@@ -1,0 +1,205 @@
+--- a/ppd/daemon/fixture_failure_guidance.py
++++ b/ppd/daemon/fixture_failure_guidance.py
+@@ -8,12 +8,17 @@
+ 
+ from __future__ import annotations
+ 
++import json
+ import re
++import tempfile
+ from dataclasses import dataclass
+-from pathlib import PurePosixPath
++from pathlib import Path, PurePosixPath
+ from typing import Iterable, Optional
+ 
+-from .fixture_shape_diagnostic import describe_json_fixture_shape
++try:  # pragma: no cover - script fallback for direct daemon diagnostics
++    from .fixture_shape import JsonFixtureShape, describe_json_fixture
++except ImportError:  # pragma: no cover
++    from fixture_shape import JsonFixtureShape, describe_json_fixture
+ 
+ 
+ _JSON_FIXTURE_PATTERN = re.compile(r"ppd/tests/fixtures/[A-Za-z0-9_./-]+\.json")
+@@ -48,15 +53,9 @@
+ def build_fixture_failure_guidance(
+     failure_text: str,
+     *,
+-    repo_root: PurePosixPath | str = PurePosixPath("."),
++    repo_root: PurePosixPath | Path | str = PurePosixPath("."),
+ ) -> Optional[FixtureFailureGuidance]:
+-    """Return retry guidance when a validator failure mentions absent JSON fields.
+-
+-    The daemon should append this guidance to the next worker prompt only for
+-    validation failures that look like JSON fixture shape mismatches. The
+-    returned text deliberately constrains the retry to fixture inspection and a
+-    narrow validator repair.
+-    """
++    """Return retry guidance when a validator failure mentions absent JSON fields."""
+ 
+     if not failure_text or not _mentions_missing_fixture_fields(failure_text):
+         return None
+@@ -65,7 +64,8 @@
+     fixture_shape = None
+     if fixture_path is not None:
+         try:
+-            fixture_shape = describe_json_fixture_shape(fixture_path, repo_root=repo_root)
++            shape = describe_json_fixture(Path(repo_root), fixture_path)
++            fixture_shape = _format_fixture_shape(shape)
+         except Exception as exc:  # pragma: no cover - defensive daemon guidance path
+             fixture_shape = f"fixture shape diagnostic unavailable for {fixture_path}: {exc}"
+ 
+@@ -93,7 +93,7 @@
+     prompt_parts: Iterable[str],
+     failure_text: str,
+     *,
+-    repo_root: PurePosixPath | str = PurePosixPath("."),
++    repo_root: PurePosixPath | Path | str = PurePosixPath("."),
+ ) -> list[str]:
+     """Append fixture-shape guidance to prompt parts when the failure warrants it."""
+ 
+@@ -116,3 +116,77 @@
+     if match is None:
+         return None
+     return match.group(0)
++
++
++def _format_fixture_shape(shape: JsonFixtureShape) -> str:
++    data = shape.to_dict()
++    lines = [
++        f"fixture_path: {data['fixture_path']}",
++        f"top_level_type: {data['top_level_type']}",
++        f"top_level_keys: {', '.join(data['top_level_keys']) if data['top_level_keys'] else '(none)'}",
++        f"list_fields: {', '.join(data['list_fields']) if data['list_fields'] else '(none)'}",
++    ]
++    first_object_keys = data["first_object_keys"]
++    if first_object_keys:
++        for field, keys in sorted(first_object_keys.items()):
++            label = field if field else ""
++            lines.append(f"first_object_keys[{label}]: {', '.join(keys) if keys else '(none)'}")
++    else:
++        lines.append("first_object_keys: (none)")
++    return "\n".join(lines)
++
++
++def self_test() -> int:
++    errors: list[str] = []
++    with tempfile.TemporaryDirectory() as tmpdir:
++        repo_root = Path(tmpdir)
++        fixture_path = "ppd/tests/fixtures/crawler/public_crawl_dry_run_plan.json"
++        fixture = repo_root / fixture_path
++        fixture.parent.mkdir(parents=True)
++        fixture.write_text(
++            json.dumps(
++                {
++                    "schemaVersion": 1,
++                    "plannedSeeds": [
++                        {
++                            "id": "seed-ppd-landing",
++                            "url": "https://www.portland.gov/ppd",
++                            "preflight": {"robots": "respect", "timeoutSeconds": 20},
++                        }
++                    ],
++                    "skippedUrls": [{"url": "mailto:test@example.invalid", "reasonCode": "unsupported-scheme"}],
++                },
++                sort_keys=True,
++            ),
++            encoding="utf-8",
++        )
++        failure_text = (
++            "AssertionError: missing required field; expected one of: seedUrls, seeds\n"
++            f"fixture path: {fixture_path}\n"
++            "missing preflight policy fields"
++        )
++        guidance = build_fixture_failure_guidance(failure_text, repo_root=repo_root)
++        if guidance is None:
++            errors.append("missing-field fixture failure did not produce guidance")
++        else:
++            required_fragments = (
++                "Inspect the committed JSON fixture shape",
++                "Do not add broad shared contracts",
++                fixture_path,
++                "top_level_keys: plannedSeeds, schemaVersion, skippedUrls",
++                "list_fields: plannedSeeds, skippedUrls",
++                "first_object_keys[plannedSeeds]: id, preflight, url",
++            )
++            for fragment in required_fragments:
++                if fragment not in guidance.guidance:
++                    errors.append(f"guidance missing fragment: {fragment}")
++
++    if errors:
++        print(json.dumps({"ok": False, "errors": errors}, indent=2), flush=True)
++        return 1
++    print(json.dumps({"ok": True}, indent=2), flush=True)
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(self_test())
+--- a/ppd/tests/test_fixture_failure_guidance.py
++++ b/ppd/tests/test_fixture_failure_guidance.py
+@@ -0,0 +1,65 @@
++import json
++import tempfile
++import unittest
++from pathlib import Path
++
++from ppd.daemon.fixture_failure_guidance import (
++    append_fixture_failure_guidance,
++    build_fixture_failure_guidance,
++)
++
++
++class FixtureFailureGuidanceTest(unittest.TestCase):
++    def test_missing_field_failure_includes_committed_fixture_shape(self):
++        with tempfile.TemporaryDirectory() as tmpdir:
++            repo_root = Path(tmpdir)
++            fixture_path = "ppd/tests/fixtures/crawler/public_crawl_dry_run_plan.json"
++            fixture = repo_root / fixture_path
++            fixture.parent.mkdir(parents=True)
++            fixture.write_text(
++                json.dumps(
++                    {
++                        "schemaVersion": 1,
++                        "plannedSeeds": [
++                            {
++                                "id": "seed-ppd-landing",
++                                "url": "https://www.portland.gov/ppd",
++                                "preflight": {"robots": "respect", "timeoutSeconds": 20},
++                            }
++                        ],
++                        "skippedUrls": [
++                            {"url": "mailto:test@example.invalid", "reasonCode": "unsupported-scheme"}
++                        ],
++                    },
++                    sort_keys=True,
++                ),
++                encoding="utf-8",
++            )
++            failure_text = (
++                "AssertionError: missing required field; expected one of: seedUrls, seeds\n"
++                f"while validating fixture {fixture_path}\n"
++                "missing preflight policy fields"
++            )
++
++            guidance = build_fixture_failure_guidance(failure_text, repo_root=repo_root)
++
++        self.assertIsNotNone(guidance)
++        assert guidance is not None
++        self.assertEqual(fixture_path, guidance.fixture_path)
++        self.assertIn("Inspect the committed JSON fixture shape", guidance.guidance)
++        self.assertIn("Use the daemon fixture-shape diagnostic", guidance.guidance)
++        self.assertIn("Do not add broad shared contracts", guidance.guidance)
++        self.assertIn("Do not add broad shared contracts", guidance.guidance)
++        self.assertIn("live crawl code", guidance.guidance)
++        self.assertIn("authenticated automation", guidance.guidance)
++        self.assertIn("top_level_keys: plannedSeeds, schemaVersion, skippedUrls", guidance.guidance)
++        self.assertIn("list_fields: plannedSeeds, skippedUrls", guidance.guidance)
++        self.assertIn("first_object_keys[plannedSeeds]: id, preflight, url", guidance.guidance)
++
++    def test_non_fixture_failure_does_not_add_guidance(self):
++        self.assertIsNone(build_fixture_failure_guidance("RuntimeError: network unavailable"))
++        self.assertEqual(["base"], append_fixture_failure_guidance(["base"], "RuntimeError: network unavailable"))
++
++
++if __name__ == "__main__":
++    unittest.main()

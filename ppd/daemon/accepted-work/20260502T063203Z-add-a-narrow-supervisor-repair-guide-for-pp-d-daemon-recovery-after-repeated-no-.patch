@@ -1,0 +1,82 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,52 +1,46 @@
+ # PP&D Supervisor Repair Guide
+ 
+-## Purpose
++This guide is for supervisor repair cycles after the PP&D daemon records repeated failed rounds without an accepted patch.
+ 
+-This guide records deterministic recovery rules for the PP&D daemon when task selection stalls on blocked retry tasks. It is operations guidance for the daemon and supervisor only; it must not implement PP&D crawler, DevHub, extraction, or guardrail domain behavior.
++## Immediate Recovery Rule
+ 
+-## Current Recovery Rule: Stale Fixture-Validator Blocks
++When recent failures include no proposed files, invalid JSON generation, Python `SyntaxError`, `py_compile` failures, or TypeScript parser errors such as `TS1005`, `TS1109`, or `TS1128`, the next daemon task must be smaller than the failed task.
+ 
+-When the supervisor reports blocked tasks that are older descendants of the public-crawl dry-run validator work, first compare them with the latest accepted daemon result.
++Prefer one of these recovery shapes:
+ 
+-If a later task has already passed validation for `ppd/tests/test_public_crawl_dry_run_plan.py` against the committed `ppd/tests/fixtures/crawler/public_crawl_dry_run_plan.json` fixture, then earlier blocked retries for the same checkbox-48 lineage are stale. The supervisor should not reselect those older retries unless the passing test is removed or the fixture path changes.
++- One syntax-valid Python test file under `ppd/tests/`.
++- One small daemon guidance or diagnostic file under `ppd/daemon/`.
++- One minimal fixture correction plus one matching fixture-only test.
++- One task-board update that appends narrow unchecked tasks without changing completed tasks.
+ 
+-For this stall pattern, treat these task descriptions as superseded by the later accepted validator result:
++Do not retry broad daemon rewrites, shared contract rewrites, live crawler code, or authenticated automation until a narrow fixture-first or validation-first task has passed.
+ 
+-- `Task checkbox-53` / `Task checkbox-48` retry blocked on fixture-shape diagnostics.
+-- `Task checkbox-56` / `Task checkbox-51` retry blocked because expected fields were absent.
+-- `Task checkbox-60` / `Task checkbox-55` retry blocked until fixture-shape diagnostics and retry guidance were added.
++## Fixture-First Retry Checklist
+ 
+-The daemon should resume from the next unchecked task that is independent of those stale retry branches. If no such task exists, the next planned task must be appended as a new narrow checkbox instead of re-opening the stale blocked items.
++Before writing a validator for an existing JSON fixture, the worker must inspect the committed fixture shape first. The validator should match the actual fixture structure instead of assuming field names from a desired future contract.
+ 
+-## Fixture-First Retry Requirements
++For missing-field validation failures, the worker should:
+ 
+-When a validator failure mentions missing JSON fields, missing seed URLs, missing allowlist decisions, missing no-persist policy, missing robots policy, missing timeout policy, or missing processor-adapter preflight fields:
++1. Identify the exact fixture path from the failed test output or task text.
++2. Inspect top-level keys, list fields, and first object keys.
++3. Write assertions against the committed structure.
++4. Keep PP&D domain semantics out of generic fixture-shape diagnostics.
++5. Avoid adding live network access, DevHub login, browser state, raw crawl output, or downloaded documents.
+ 
+-1. Inspect the committed fixture shape before proposing a validator.
+-2. Use the daemon fixture-shape diagnostic helper for repository-relative JSON fixture paths when available.
+-3. Match the validator to the observed fixture structure instead of inventing a contract module.
+-4. Keep the proposal to one syntax-valid Python test file, or one syntax-valid helper plus one fixture path correction.
+-5. Do not add live crawling, authenticated DevHub automation, broad shared contracts, or crawler implementation code as part of a fixture-validator retry.
++## Syntax Guardrail
+ 
+-## Syntax-Failure Recovery Requirements
++When editing Python files, keep generated replacements small enough to review visually. Avoid large raw multiline prompt rewrites inside Python string literals unless they are already covered by syntax preflight.
+ 
+-When recent daemon failures include `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128`, the next retry must use the smallest file set that can make progress. Prefer a single replacement file with explicit syntactic-validity guardrails over multi-file refactors.
++When editing TypeScript files, avoid broad object-literal or template-string rewrites after `TS1005`, `TS1109`, or `TS1128` failures. Prefer a small test, fixture, or helper that does not require changing parser-sensitive daemon flow.
+ 
+-A failed syntax preflight should be classified as `syntax_preflight`, rolled back immediately, and summarized with compact diagnostics. The daemon should avoid running the full unittest suite after a parser failure because the parser error is already the blocking signal.
++A successful recovery task should pass:
+ 
+-## Task Selection Requirements
++- `python3 ppd/daemon/ppd_daemon.py --self-test`
++- `python3 -m unittest discover -s ppd/tests -p test_*.py`
++- the PP&D TypeScript typecheck when TypeScript files exist
+ 
+-The supervisor should select tasks in this order:
++## Current Safe Next-Step Pattern
+ 
+-1. Unblocked validation or fixture tasks that operate only on committed fixtures.
+-2. Narrow daemon repair tasks that improve preflight, retry guidance, diagnostics, or task selection.
+-3. Public dry-run work only after fixture validators pass.
+-4. Authenticated DevHub automation only after explicit user authorization and after public fixture-first work is complete.
++For source-provenance continuity work, keep the next patch fixture-only and validation-only. Link existing public crawl dry-run records, source index records, normalized document fixtures, and requirement fixtures by canonical URL or source evidence ID. Do not fetch live pages, invoke processors, log in to DevHub, or create private session artifacts.
+ 
+-The supervisor must not select tasks that would create private DevHub session files, authentication state, traces, raw crawl output, downloaded documents, CAPTCHA/MFA automation, payment actions, submissions, certifications, cancellations, official uploads, or inspection scheduling.
+-
+-## Planning New Work
+-
+-If all remaining selectable tasks are stale or blocked, append a new unchecked task to `ppd/daemon/task-board.md` rather than modifying completed tasks. New tasks must be narrow enough for one daemon cycle and should prefer fixture-first or validation-first work before live or authenticated automation.
+-
+-A suitable next task after the public-crawl dry-run fixture validator has passed is a daemon task that records stale-block supersession in supervisor diagnostics or task selection, without editing crawler fixtures or PP&D domain code.
++If the fixture relationship is unclear, add a diagnostic or test that reports the missing linkage narrowly rather than inventing a broad manifest contract.

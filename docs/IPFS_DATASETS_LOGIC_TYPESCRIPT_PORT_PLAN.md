@@ -698,14 +698,34 @@ The first implementation PR should be intentionally small:
 
 That PR gives the project immediate product value without committing to a full theorem prover port.
 
+
+## Daemon-Discovered Implementation Gaps
+
+Last replenished: 2026-05-02 06:31:29 UTC
+
+These tasks were added automatically after the daemon found no eligible unchecked port-plan items. They are derived from the current Python logic inventory, TypeScript/WASM implementation state, accepted-work evidence, and the original browser-native parity goal.
+
+- [ ] Port remaining Python logic module `logic/CEC/cec_framework.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/dcec_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/eng_dcec_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/advanced_inference.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/ambiguity_resolver.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/cec_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/cec_zkp_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/context_manager.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/dcec_cleaning.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/dcec_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/dcec_english_grammar.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/dcec_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-02 06:13:08 UTC
+Last updated: 2026-05-02 06:31:29 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.`
+Current target: `Task checkbox-195: Port remaining Python logic module 'logic/CEC/cec_framework.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -808,7 +828,7 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-95: Port every TDFOL inference rule from 'logic/TDFOL/tdfol_inference_rules.py'.` - complete
 - [x] `Task checkbox-96: Initial first-order rule slice: universal modus ponens, existential instantiation, existential generalization, and universal generalization.` - complete
 - [x] `Task checkbox-97: Port propositional tableaux expansion rules from 'logic/TDFOL/expansion_rules.py'.` - complete
-- [x] `Task checkbox-98: Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.` - validated by latest daemon round
+- [x] `Task checkbox-98: Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.` - complete
 - [x] `Task checkbox-99: Initial forward-chaining strategy and selector parity.` - complete
 - [x] `Task checkbox-100: Initial backward-chaining strategy parity for direct goals, conjunctive goals, and implication-goal reduction.` - complete
 - [x] `Task checkbox-101: Initial bidirectional strategy parity with backward-first proof search and bounded forward fallback.` - complete
@@ -905,63 +925,83 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-192: Initial browser-native public API facade for 'logic/api.py' import-surface parity.` - complete
 - [!] `Task checkbox-193: Add CLI/devtools command adapter parity for 'logic/cli.py'.` - blocked
 - [!] `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.` - blocked
+- [~] `Task checkbox-195: Port remaining Python logic module 'logic/CEC/cec_framework.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - selected for next daemon round
+- [ ] `Task checkbox-196: Port remaining Python logic module 'logic/CEC/dcec_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-197: Port remaining Python logic module 'logic/CEC/eng_dcec_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-198: Port remaining Python logic module 'logic/CEC/native/advanced_inference.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-199: Port remaining Python logic module 'logic/CEC/native/ambiguity_resolver.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-200: Port remaining Python logic module 'logic/CEC/native/cec_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-201: Port remaining Python logic module 'logic/CEC/native/cec_zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-202: Port remaining Python logic module 'logic/CEC/native/context_manager.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-203: Port remaining Python logic module 'logic/CEC/native/dcec_cleaning.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-204: Port remaining Python logic module 'logic/CEC/native/dcec_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-205: Port remaining Python logic module 'logic/CEC/native/dcec_english_grammar.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-206: Port remaining Python logic module 'logic/CEC/native/dcec_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 
 ### Latest Round
 
-- Target: `Task checkbox-98: Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.`
-- Result: `valid`
-- Summary: Add CEC proof explainer dependency graph metadata parity.
-- Impact: The CEC proof explainer now exposes browser-native dependency metadata derived from ProofResult steps, including topological order, leaf premises, premise-to-theorem paths, critical path, and graph size. The focused Jest test asserts that metadata and rendered text so validate:logic-port exercises the parity surface without Python, filesystem, RPC, or server fallbacks.
-- Accepted changed files: `src/lib/logic/cec/proofExplainer.test.ts`, `src/lib/logic/cec/proofExplainer.ts`
+- Target: `Task checkbox-195: Port remaining Python logic module 'logic/CEC/cec_framework.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Result: `needs follow-up`
+- Summary: No summary
 
 ### Blocked Backlog
 
 - `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.`
   - Failures since success: `15`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"file_repair_validation": 1, "preflight": 9, "validation": 4, "validation_repair": 1}`
   - Latest failure kind: `preflight`
   - Latest errors: Rejected proposal because fixture/capture/parity work must update a src/lib/logic/*.test.ts file that loads or asserts the generated fixture.; Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/zkpAcceleration.ts(7,22): error TS1005: ';' expected. ../../..src/lib/logic/zkpAccele...
 - `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.`
   - Failures since success: `40`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"apply_check": 15, "file_repair_validation": 2, "invalid_no_change": 4, "parse": 16, "validation": 3}`
   - Latest failure kind: `apply_check`
   - Latest errors: Patch failed git apply --check.
 - `Task checkbox-111: Complete TDFOL security validator parity.`
   - Failures since success: `18`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"file_repair_validation": 6, "preflight": 3, "validation": 9}`
   - Latest failure kind: `validation`
   - Latest errors: File edits failed validation and were rolled back.
 - `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.`
   - Failures since success: `110`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"apply_check": 20, "invalid_no_change": 14, "parse": 73, "preflight": 1, "validation": 2}`
   - Latest failure kind: `invalid_no_change`
 - `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.`
   - Failures since success: `15`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"preflight": 7, "validation": 3, "validation_repair": 5}`
   - Latest failure kind: `preflight`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/mlConfidence.ts(37,14): error TS1005: ')' expected. ../../..src/lib/logic/mlConfidenc...
 - `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.`
-  - Failures since success: `15`
-  - Failure kinds: `{"file_repair_validation": 1, "preflight": 8, "validation": 1, "validation_repair": 5}`
+  - Failures since success: `16`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
+  - Failure kinds: `{"file_repair_validation": 1, "preflight": 9, "validation": 1, "validation_repair": 5}`
   - Latest failure kind: `preflight`
-  - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/modelArtifacts.ts(138,42): error TS1005: ')' expected. ../../..src/lib/logic/modelArt...
+  - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/modelArtifacts.ts(143,93): error TS1005: ';' expected. ../../..src/lib/logic/modelArt...
 - `Task checkbox-177: Remove 'nlpUnavailable' and 'mlUnavailable' capability flags once browser-native parity is implemented.`
   - Failures since success: `5`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"validation_repair": 5}`
   - Latest failure kind: `validation_repair`
   - Latest errors: File edits failed validation and were rolled back.
 - `Task checkbox-181: Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.`
   - Failures since success: `15`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"preflight": 10, "validation": 1, "validation_repair": 4}`
   - Latest failure kind: `preflight`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/evm.ts(37,33): error TS1005: ')' expected. ../../..src/lib/logic/evm.ts(37,44): error...
 - `Task checkbox-183: Port logic integration bridges to route to TS/WASM cores.`
-  - Failures since success: `15`
-  - Failure kinds: `{"file_repair_validation": 1, "preflight": 7, "validation": 2, "validation_repair": 5}`
+  - Failures since success: `16`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
+  - Failure kinds: `{"file_repair_validation": 1, "preflight": 7, "validation": 3, "validation_repair": 5}`
   - Latest failure kind: `validation`
   - Latest errors: File edits failed validation and were rolled back.
 - `Task checkbox-188: Port monitoring/metrics to in-browser telemetry objects and developer panels.`
   - Failures since success: `15`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"preflight": 9, "validation": 2, "validation_repair": 4}`
   - Latest failure kind: `preflight`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/telemetry.ts(34,34): error TS1005: ';' expected. ../../..src/lib/logic/telemetry.ts(3...

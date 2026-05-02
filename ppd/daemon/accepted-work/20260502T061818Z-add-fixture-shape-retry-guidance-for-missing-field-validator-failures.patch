@@ -1,0 +1,241 @@
+--- a/ppd/daemon/syntax_rollback_guidance.py
++++ b/ppd/daemon/syntax_rollback_guidance.py
+@@ -1,14 +1,18 @@
+-"""Prompt guidance for PP&D daemon syntax-preflight rollbacks.
++"""Prompt guidance for PP&D daemon failure-context rollbacks.
+ 
+ This module is intentionally narrow: it detects parser/compiler failure context
+-and returns a compact instruction block that supervisors can include in daemon
+-prompts before retrying a failed proposal.
++and fixture-validator failure context, then returns compact instruction blocks
++that supervisors can include in daemon prompts before retrying a failed proposal.
+ """
+ 
+ from __future__ import annotations
+ 
++import re
+ from dataclasses import dataclass
+-from typing import Iterable
++from pathlib import Path
++from typing import Iterable, Optional
++
++from ppd.daemon.fixture_shape import describe_json_fixture
+ 
+ 
+ SYNTAX_FAILURE_MARKERS: tuple[str, ...] = (
+@@ -19,6 +23,23 @@
+     "TS1128",
+ )
+ 
++FIXTURE_MISSING_FIELD_MARKERS: tuple[str, ...] = (
++    "missing required field",
++    "missing allowlist",
++    "missing robots",
++    "missing timeout",
++    "missing no-persist",
++    "missing no_persist",
++    "missing processor-adapter",
++    "missing processor adapter",
++    "missing preflight",
++    "missing seed URLs",
++    "missing seed urls",
++    "expected one of:",
++)
++
++JSON_FIXTURE_PATH_RE = re.compile(r"ppd/(?:tests/fixtures|data/manifests)/[^\s'\"):,]+\.json")
++
+ 
+ @dataclass(frozen=True)
+ class SyntaxRollbackDiagnostics:
+@@ -29,10 +50,21 @@
+     guidance: str
+ 
+ 
++@dataclass(frozen=True)
++class FixtureShapeRetryDiagnostics:
++    """Compact diagnostics for validators that expected absent fixture fields."""
++
++    has_missing_field_failure: bool
++    matched_markers: tuple[str, ...]
++    fixture_paths: tuple[str, ...]
++    fixture_shapes: tuple[dict[str, object], ...]
++    guidance: str
++
++
+ def diagnose_syntax_rollback(failure_context: Iterable[str]) -> SyntaxRollbackDiagnostics:
+     """Return prompt guidance when recent failures show syntax-preflight errors."""
+ 
+-    context_text = "\n".join(str(item) for item in failure_context)
++    context_text = _join_context(failure_context)
+     matched_markers = tuple(marker for marker in SYNTAX_FAILURE_MARKERS if marker in context_text)
+     has_syntax_failure = bool(matched_markers)
+     guidance = syntax_recovery_prompt_guidance(matched_markers) if has_syntax_failure else ""
+@@ -41,6 +73,62 @@
+         matched_markers=matched_markers,
+         guidance=guidance,
+     )
++
++
++def diagnose_fixture_shape_retry(
++    failure_context: Iterable[str],
++    *,
++    repo_root: Optional[Path] = None,
++) -> FixtureShapeRetryDiagnostics:
++    """Return prompt guidance for missing-field validation failures on JSON fixtures.
++
++    The diagnostic reports only committed fixture shape. It does not infer PP&D
++    domain semantics, required fields, crawl behavior, or authenticated workflow
++    behavior.
++    """
++
++    context_text = _join_context(failure_context)
++    context_lower = context_text.lower()
++    matched_markers = tuple(
++        marker for marker in FIXTURE_MISSING_FIELD_MARKERS if marker.lower() in context_lower
++    )
++    fixture_paths = _extract_fixture_paths(context_text)
++    fixture_shapes = _describe_fixture_paths(repo_root, fixture_paths) if repo_root is not None else ()
++    has_missing_field_failure = bool(matched_markers)
++    guidance = (
++        fixture_shape_retry_prompt_guidance(
++            matched_markers,
++            fixture_paths=fixture_paths,
++            fixture_shapes=fixture_shapes,
++        )
++        if has_missing_field_failure
++        else ""
++    )
++    return FixtureShapeRetryDiagnostics(
++        has_missing_field_failure=has_missing_field_failure,
++        matched_markers=matched_markers,
++        fixture_paths=fixture_paths,
++        fixture_shapes=fixture_shapes,
++        guidance=guidance,
++    )
++
++
++def failure_context_prompt_guidance(
++    failure_context: Iterable[str],
++    *,
++    repo_root: Optional[Path] = None,
++) -> str:
++    """Build all deterministic prompt guardrails implied by recent failures."""
++
++    context_items = tuple(str(item) for item in failure_context)
++    guidance_parts: list[str] = []
++    syntax = diagnose_syntax_rollback(context_items)
++    if syntax.guidance:
++        guidance_parts.append(syntax.guidance)
++    fixture_shape = diagnose_fixture_shape_retry(context_items, repo_root=repo_root)
++    if fixture_shape.guidance:
++        guidance_parts.append(fixture_shape.guidance)
++    return "\n\n".join(guidance_parts)
+ 
+ 
+ def syntax_recovery_prompt_guidance(matched_markers: Iterable[str]) -> str:
+@@ -60,6 +148,70 @@
+     )
+ 
+ 
++def fixture_shape_retry_prompt_guidance(
++    matched_markers: Iterable[str],
++    *,
++    fixture_paths: Iterable[str] = (),
++    fixture_shapes: Iterable[dict[str, object]] = (),
++) -> str:
++    """Build deterministic daemon prompt guidance for fixture-shape retries."""
++
++    unique_markers = tuple(dict.fromkeys(str(marker) for marker in matched_markers if str(marker).strip()))
++    marker_text = ", ".join(unique_markers) if unique_markers else "missing required fixture fields"
++    paths = tuple(dict.fromkeys(str(path) for path in fixture_paths if str(path).strip()))
++    path_text = ", ".join(paths) if paths else "the committed JSON fixture named by the failing test"
++    shape_text = _format_fixture_shapes(fixture_shapes)
++    return (
++        "Recent PP&D validation failed because a validator expected fields that were absent "
++        f"from a JSON fixture ({marker_text}). Before writing or retrying the validator, "
++        f"inspect the committed fixture shape for {path_text} with ppd/daemon/fixture_shape.py "
++        "or the existing fixture-shape helper, then constrain the retry to the fields that "
++        "actually exist unless the selected task explicitly permits replacing that fixture. "
++        "Do not introduce broad shared contracts, live crawl code, authenticated DevHub "
++        "automation, or fixture rewrites for this retry."
++        f"{shape_text}"
++    )
++
++
++def _join_context(failure_context: Iterable[str]) -> str:
++    return "\n".join(str(item) for item in failure_context)
++
++
++def _extract_fixture_paths(context_text: str) -> tuple[str, ...]:
++    return tuple(dict.fromkeys(match.group(0) for match in JSON_FIXTURE_PATH_RE.finditer(context_text)))
++
++
++def _describe_fixture_paths(repo_root: Optional[Path], fixture_paths: Iterable[str]) -> tuple[dict[str, object], ...]:
++    if repo_root is None:
++        return ()
++    shapes: list[dict[str, object]] = []
++    for fixture_path in fixture_paths:
++        try:
++            shapes.append(describe_json_fixture(repo_root, fixture_path).to_dict())
++        except ValueError as exc:
++            shapes.append({"fixture_path": fixture_path, "error": str(exc)})
++    return tuple(shapes)
++
++
++def _format_fixture_shapes(fixture_shapes: Iterable[dict[str, object]]) -> str:
++    summaries: list[str] = []
++    for shape in fixture_shapes:
++        fixture_path = str(shape.get("fixture_path", ""))
++        if "error" in shape:
++            summaries.append(f"{fixture_path}: error={shape['error']}")
++            continue
++        top_level_keys = ", ".join(str(item) for item in shape.get("top_level_keys", []))
++        list_fields = ", ".join(str(item) for item in shape.get("list_fields", []))
++        first_object_keys = shape.get("first_object_keys", {})
++        summaries.append(
++            f"{fixture_path}: top_level_keys=[{top_level_keys}], "
++            f"list_fields=[{list_fields}], first_object_keys={first_object_keys}"
++        )
++    if not summaries:
++        return ""
++    return " Committed fixture shape: " + " | ".join(summaries)
++
++
+ def _self_test() -> None:
+     diagnostics = diagnose_syntax_rollback([
+         "rollback failure_kind=syntax_preflight",
+@@ -71,11 +223,34 @@
+     assert "one narrow test file plus one adjacent deterministic fixture" in diagnostics.guidance
+     assert "Do not rewrite broad shared contracts" in diagnostics.guidance
+ 
++    fixture = diagnose_fixture_shape_retry([
++        "AssertionError: missing required field; expected one of: url, sourceUrl, source_url",
++        "ppd/tests/fixtures/crawler/public_crawl_dry_run_plan.json",
++    ])
++    assert fixture.has_missing_field_failure
++    assert fixture.fixture_paths == ("ppd/tests/fixtures/crawler/public_crawl_dry_run_plan.json",)
++    assert "inspect the committed fixture shape" in fixture.guidance
++    assert "Do not introduce broad shared contracts" in fixture.guidance
++    assert "live crawl code" in fixture.guidance
++    assert "authenticated DevHub automation" in fixture.guidance
++
++    combined = failure_context_prompt_guidance([
++        "py_compile failed: SyntaxError: invalid syntax",
++        "missing required field in ppd/tests/fixtures/crawler/public_crawl_dry_run_plan.json",
++    ])
++    assert "Recent PP&D validation failed during syntax preflight" in combined
++    assert "Recent PP&D validation failed because a validator expected fields" in combined
++
+     clean = diagnose_syntax_rollback(["unit test assertion failed"])
+     assert not clean.has_syntax_failure
+     assert clean.matched_markers == ()
+     assert clean.guidance == ""
+ 
++    clean_fixture = diagnose_fixture_shape_retry(["unit test assertion failed"])
++    assert not clean_fixture.has_missing_field_failure
++    assert clean_fixture.matched_markers == ()
++    assert clean_fixture.guidance == ""
++
+ 
+ if __name__ == "__main__":
+     _self_test()
