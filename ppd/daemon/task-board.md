@@ -111,11 +111,11 @@ Last updated: 2026-05-02T06:45:00Z
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-02T12:59:43.602032Z
+Last updated: 2026-05-02T16:13:15.304110Z
 
 - Latest target: `Task checkbox-73: Task checkbox-68: Add a daemon fixture-shape retry self-test for DevHub draft-action preview validation failures. Use only `ppd/daemon/` or `ppd/tests/`, keep it synthetic, and prove KeyError or assertion failures for absent fixture keys such as `draftActionPreviews` produce guidance to inspect the committed fixture shape before retrying. Do not edit DevHub fixtures or implement the domain validator in this task.`
-- Latest result: `llm`
-- Latest summary: LLM proposal failed.
+- Latest result: `parse`
+- Latest summary: 
 - Counts: `{"blocked": 1, "complete": 71, "in_progress": 0, "needed": 2}`
 
 <!-- ppd-daemon-task-board:end -->

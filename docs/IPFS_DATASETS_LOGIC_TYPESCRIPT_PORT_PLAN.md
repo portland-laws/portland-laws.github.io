@@ -498,18 +498,18 @@ Acceptance criteria:
   - [x] Initial local CEC delegate replacement that translates TDFOL to browser-native CEC expressions and returns explicit unknown results instead of calling Python or a server.
   - [x] Initial indexed-KB and cache-aware optimization facade.
   - [x] Deeper CEC delegate parity for native CEC inference rule groups and proof traces.
-  - [!] Browser-native ZKP acceleration and parallel proof search parity.
-- [!] Complete modal tableaux and countermodel generation/visualization parity.
+  - [ ] Browser-native ZKP acceleration and parallel proof search parity.
+- [ ] Complete modal tableaux and countermodel generation/visualization parity.
   - [x] Initial modal tableaux proof search for propositional, temporal, deontic modal formulas and K/T/D/S4/S5 accessibility.
   - [x] Initial countermodel model, extractor, and self-contained visual exports.
   - [x] Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.
-- [!] Complete TDFOL security validator parity.
+- [ ] Complete TDFOL security validator parity.
 - [x] Add Python parity fixtures for each TDFOL rule category.
 - [x] Add browser performance budgets for proof search.
   - [x] Initial in-memory performance engine and strategy profiler.
   - [x] Initial browser performance dashboard data model and renderer.
   - [x] Initial browser performance profiler with repeated timing samples, memory snapshots, bottleneck classification, benchmark suites, and report strings.
-  - [!] Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.
+  - [ ] Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.
 
 ### Phase 12: Full CEC/DCEC Parity
 
@@ -572,33 +572,33 @@ Acceptance criteria:
 ### Phase 13: Browser-Native ML/NLP Parity
 
 - [x] Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.
-- [!] Port `ml_confidence.py` to local browser inference or an equivalent deterministic TypeScript model.
-- [!] Add local model artifact loading, caching, versioning, and unload controls.
+- [ ] Port `ml_confidence.py` to local browser inference or an equivalent deterministic TypeScript model.
+- [ ] Add local model artifact loading, caching, versioning, and unload controls.
 - [x] Add exact/tolerance parity tests against Python ML/spaCy development fixtures.
-- [!] Remove `nlpUnavailable` and `mlUnavailable` capability flags once browser-native parity is implemented.
+- [ ] Remove `nlpUnavailable` and `mlUnavailable` capability flags once browser-native parity is implemented.
 
 ### Phase 14: External Provers And ZKP WASM Parity
 
 - [x] Port external prover router and bridge contracts to local browser adapters.
 - [x] Evaluate and integrate local WASM provers for Z3/cvc5/Tau Prolog/Lean/Coq-style workflows where feasible.
 - [x] Port Groth16 verification/proving path using browser-native cryptographic libraries where feasible.
-- [!] Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.
+- [ ] Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.
 - [x] Add strict UI/API language distinguishing simulated, heuristic, proof-checking, and cryptographic outputs.
 
 ### Phase 15: Integration, Security, Observability, And Developer Tools
 
-- [!] Port logic integration bridges to route to TS/WASM cores.
+- [ ] Port logic integration bridges to route to TS/WASM cores.
   - [x] Initial browser-native bridge facade for local route inventory, FOL/deontic/TDFOL/CEC conversion routing, TDFOL/CEC proof routing, and explicit unsupported-route results with `server_calls_allowed: false`.
   - [x] Port deeper domain-specific integration bridges, interactive workflows, and parity fixtures.
 - [x] Port security input validation, circuit breaker, rate limiting, and audit-log semantics to browser-local equivalents.
 - [x] Port observability structured logging, Prometheus-style metrics, and OTel-style tracing to browser-local equivalents.
-- [!] Port monitoring/metrics to in-browser telemetry objects and developer panels.
+- [ ] Port monitoring/metrics to in-browser telemetry objects and developer panels.
   - [x] Initial top-level `logic/monitoring.py` parity for operation metrics, tracking helpers, health checks, error/warning counters, global monitor, reset, operation summaries, and optional Prometheus text export.
-  - [!] Add richer developer-panel integration for live UI inspection.
+  - [ ] Add richer developer-panel integration for live UI inspection.
 - [x] Replace Python API/CLI surfaces with TypeScript developer scripts or browser devtools.
   - [x] Initial browser-native public API facade for `logic/api.py` import-surface parity.
-  - [!] Add CLI/devtools command adapter parity for `logic/cli.py`.
-- [!] Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.
+  - [ ] Add CLI/devtools command adapter parity for `logic/cli.py`.
+- [ ] Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.
 
 ## Full-Port Completion Definition
 
@@ -706,271 +706,271 @@ Last replenished: 2026-05-02 06:31:29 UTC
 These tasks were added automatically after the daemon found no eligible unchecked port-plan items. They are derived from the current Python logic inventory, TypeScript/WASM implementation state, accepted-work evidence, and the original browser-native parity goal.
 
 - [x] Port remaining Python logic module `logic/CEC/cec_framework.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/dcec_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/dcec_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/CEC/eng_dcec_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/advanced_inference.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/ambiguity_resolver.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/cec_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/cec_zkp_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/context_manager.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/dcec_cleaning.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/dcec_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/dcec_english_grammar.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/dcec_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/dcec_namespace.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/dcec_parsing.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/dcec_prototypes.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/dcec_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/enhanced_grammar_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/error_handling.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/event_calculus.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/exceptions.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/grammar_engine.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/grammar_loader.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/inference_rules/base.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/inference_rules/cognitive.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/inference_rules/deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/inference_rules/modal.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/inference_rules/propositional.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/inference_rules/resolution.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/inference_rules/specialized.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/lemma_generation.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/modal_tableaux.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/nl_converter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/problem_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/proof_optimization.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/proof_strategies.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/prover_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/prover_core_extended_rules.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/shadow_prover.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/native/syntax_tree.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/nl/base_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/nl/dcec_to_ucan_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/nl/domain_vocabularies/domain_vocab.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/nl/french_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/nl/german_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/nl/grammar_nl_policy_compiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/nl/language_detector.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/nl/nl_policy_conflict_detector.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/nl/nl_to_policy_compiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/nl/portuguese_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/nl/spanish_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/optimization/formula_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/optimization/profiling_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/provers/e_prover_adapter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/provers/prover_manager.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/provers/tptp_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/provers/vampire_adapter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/provers/z3_adapter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/shadow_prover_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/CEC/talos_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/countermodel_visualizer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/demonstrate_countermodel_visualizer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/demonstrate_performance_dashboard.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/example_formula_dependency_graph.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/example_performance_profiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/exceptions.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/expansion_rules.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/formula_dependency_graph.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/inference_rules/base.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/inference_rules/deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/inference_rules/first_order.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/inference_rules/propositional.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/inference_rules/temporal_deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/modal_tableaux.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/nl/demonstrate_ipfs_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/nl/llm.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_api.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_context.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_generator.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_patterns.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_preprocessor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/nl/utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/p2p/ipfs_proof_storage.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/performance_dashboard.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/performance_metrics.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/performance_profiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/proof_explainer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/proof_tree_visualizer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/quickstart_visualizer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/security_validator.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/strategies/base.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/strategies/cec_delegate.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/strategies/forward_chaining.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/strategies/modal_tableaux.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/strategies/strategy_selector.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/tdfol_converter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/tdfol_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/tdfol_dcec_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/tdfol_inference_rules.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/tdfol_optimization.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/tdfol_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/tdfol_performance_engine.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/tdfol_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/tdfol_prover.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/TDFOL/zkp_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/api_server.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/batch_processing.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/cli.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/common/bounded_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/common/feature_detection.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/common/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/common/utility_monitor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/common/validators.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/deontic/decoder.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/deontic/exports.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/deontic/formula_builder.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/deontic/ir.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/deontic/knowledge_base.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/deontic/legal_text_to_deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/deontic/metrics.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/deontic/prover_syntax.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/deontic/support_map.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/deontic/utils/deontic_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/e2e_validation.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/external_provers/formula_analyzer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/external_provers/interactive/coq_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/external_provers/interactive/lean_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/external_provers/neural/symbolicai_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/external_provers/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/external_provers/prover_router.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/external_provers/smt/cvc5_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/external_provers/smt/z3_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/flogic/ergoai_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/flogic/flogic_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/flogic/flogic_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/flogic/flogic_zkp_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/flogic/semantic_normalizer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/fol/text_to_fol.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/fol/utils/deontic_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/fol/utils/fol_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/fol/utils/logic_formatter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/fol/utils/nlp_predicate_extractor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/fol/utils/predicate_extractor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/base_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/bridges/base_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/bridges/external_provers.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/bridges/prover_installer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/bridges/symbolic_fol_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/bridges/tdfol_cec_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/bridges/tdfol_grammar_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/bridges/tdfol_shadowprover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/caching/ipfs_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/caching/ipld_logic_storage.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/caching/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/cec_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/converters/deontic_logic_converter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/converters/deontic_logic_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/converters/logic_translation_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/converters/modal_logic_extension.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/converters/symbolic_fol_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/demos/demo_temporal_deontic_rag.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/deontic_logic_converter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/deontic_logic_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/domain/caselaw_bulk_processor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/domain/deontic_query_engine.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/domain/document_consistency_checker.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/domain/legal_domain_knowledge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/domain/legal_symbolic_analyzer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/domain/medical_theorem_framework.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/domain/symbolic_contracts.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/domain/temporal_deontic_api.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/domain/temporal_deontic_rag_store.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/interactive/_fol_constructor_io.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/interactive/interactive_fol_constructor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/interactive/interactive_fol_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/interactive/interactive_fol_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/interactive_fol_constructor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/logic_translation_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/logic_verification.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/logic_verification_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/logic_verification_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/modal_logic_extension.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/neurosymbolic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/neurosymbolic_graphrag.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/nl_ucan_policy_compiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/reasoning/_deontic_conflict_mixin.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/reasoning/_logic_verifier_backends_mixin.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/reasoning/_prover_backend_mixin.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/reasoning/deontological_reasoning.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/reasoning/deontological_reasoning_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/reasoning/deontological_reasoning_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/reasoning/logic_verification.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/reasoning/logic_verification_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/reasoning/logic_verification_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/reasoning/proof_execution_engine.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/reasoning/proof_execution_engine_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/reasoning/proof_execution_engine_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/symbolic/neurosymbolic/embedding_prover.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/symbolic/neurosymbolic/hybrid_confidence.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/symbolic/neurosymbolic/reasoning_coordinator.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/symbolic/neurosymbolic_api.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/symbolic/neurosymbolic_graphrag.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/symbolic/symbolic_logic_primitives.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/symbolic_contracts.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/symbolic_fol_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/symbolic_logic_primitives.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/tdfol_cec_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/tdfol_grammar_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/tdfol_shadowprover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integration/ucan_policy_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integrations/enhanced_graphrag_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integrations/phase7_complete_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/integrations/unixfs_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/ml_confidence.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/observability/metrics_prometheus.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/observability/otel_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/observability/structured_logging.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/phase7_4_benchmarks.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/security/audit_log.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/security/input_validation.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/security/llm_circuit_breaker.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/security/rate_limiting.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/types/bridge_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/types/common_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/types/deontic_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/types/fol_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/types/proof_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/types/translation_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/backends/backend_protocol.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/backends/groth16_backup.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/backends/groth16_ffi.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/backends/simulated.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/eth_contract_artifacts.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/eth_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/eth_vk_registry_payloads.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/evm_harness.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/evm_public_inputs.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/examples/zkp_advanced_demo.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/examples/zkp_basic_demo.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/examples/zkp_ipfs_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/legal_theorem_semantics.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/onchain_pipeline.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/setup_artifacts.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/ucan_zkp_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/vk_registry.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/witness_manager.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/zkp_prover.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Port remaining Python logic module `logic/zkp/zkp_verifier.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [!] Replace remaining `nlpUnavailable` capability paths with browser-native NLP parity or explicit local model artifact loading.
-- [!] Replace remaining `mlUnavailable` capability paths with browser-native ML confidence parity or explicit local model artifact loading.
-- [!] Audit remaining TypeScript logic `unsupported` paths and convert feasible ones into browser-native TypeScript/WASM implementations.
-- [!] Reconcile the Python logic inventory (269 files) with the TypeScript/WASM implementation (253 files) and add browser-native port tasks for uncovered behavior.
-- [!] Review the accepted TypeScript logic changes against the original browser-native TypeScript/WASM port goal, then add or implement any missing parity tasks for Python logic behavior that lacks accepted-work evidence.
-- [!] Add end-to-end browser-native validation proving the converted logic runs without Python, spaCy, or server-side calls, including deterministic coverage for ML and NLP capability surfaces.
-- [!] Audit Python ML and spaCy expectations against the TypeScript/WASM implementation and add focused parity tests or local-model artifact loading tasks for unsupported browser-native behavior.
-- [!] Refresh the TypeScript port plan with a parity matrix mapping Python logic modules, TypeScript/WASM files, validation evidence, accepted work, and remaining browser-native tasks.
-- [!] Compare TypeScript logic public exports against Python logic module public APIs and add missing browser-native compatibility adapters or parity tests.
+- [ ] Port remaining Python logic module `logic/CEC/native/advanced_inference.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/ambiguity_resolver.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/cec_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/cec_zkp_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/context_manager.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/dcec_cleaning.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/dcec_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/dcec_english_grammar.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/dcec_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/dcec_namespace.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/dcec_parsing.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/dcec_prototypes.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/dcec_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/enhanced_grammar_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/error_handling.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/event_calculus.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/exceptions.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/grammar_engine.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/grammar_loader.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/inference_rules/base.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/inference_rules/cognitive.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/inference_rules/deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/inference_rules/modal.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/inference_rules/propositional.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/inference_rules/resolution.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/inference_rules/specialized.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/lemma_generation.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/modal_tableaux.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/nl_converter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/problem_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/proof_optimization.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/proof_strategies.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/prover_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/prover_core_extended_rules.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/shadow_prover.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/native/syntax_tree.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/nl/base_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/nl/dcec_to_ucan_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/nl/domain_vocabularies/domain_vocab.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/nl/french_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/nl/german_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/nl/grammar_nl_policy_compiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/nl/language_detector.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/nl/nl_policy_conflict_detector.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/nl/nl_to_policy_compiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/nl/portuguese_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/nl/spanish_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/optimization/formula_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/optimization/profiling_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/provers/e_prover_adapter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/provers/prover_manager.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/provers/tptp_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/provers/vampire_adapter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/provers/z3_adapter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/shadow_prover_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/CEC/talos_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/countermodel_visualizer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/demonstrate_countermodel_visualizer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/demonstrate_performance_dashboard.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/example_formula_dependency_graph.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/example_performance_profiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/exceptions.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/expansion_rules.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/formula_dependency_graph.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/inference_rules/base.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/inference_rules/deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/inference_rules/first_order.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/inference_rules/propositional.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/inference_rules/temporal_deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/modal_tableaux.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/nl/demonstrate_ipfs_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/nl/llm.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_api.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_context.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_generator.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_patterns.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_preprocessor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/nl/utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/p2p/ipfs_proof_storage.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/performance_dashboard.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/performance_metrics.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/performance_profiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/proof_explainer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/proof_tree_visualizer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/quickstart_visualizer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/security_validator.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/strategies/base.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/strategies/cec_delegate.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/strategies/forward_chaining.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/strategies/modal_tableaux.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/strategies/strategy_selector.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/tdfol_converter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/tdfol_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/tdfol_dcec_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/tdfol_inference_rules.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/tdfol_optimization.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/tdfol_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/tdfol_performance_engine.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/tdfol_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/tdfol_prover.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/TDFOL/zkp_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/api_server.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/batch_processing.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/cli.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/common/bounded_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/common/feature_detection.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/common/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/common/utility_monitor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/common/validators.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/deontic/decoder.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/deontic/exports.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/deontic/formula_builder.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/deontic/ir.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/deontic/knowledge_base.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/deontic/legal_text_to_deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/deontic/metrics.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/deontic/prover_syntax.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/deontic/support_map.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/deontic/utils/deontic_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/e2e_validation.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/external_provers/formula_analyzer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/external_provers/interactive/coq_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/external_provers/interactive/lean_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/external_provers/neural/symbolicai_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/external_provers/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/external_provers/prover_router.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/external_provers/smt/cvc5_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/external_provers/smt/z3_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/flogic/ergoai_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/flogic/flogic_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/flogic/flogic_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/flogic/flogic_zkp_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/flogic/semantic_normalizer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/fol/text_to_fol.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/fol/utils/deontic_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/fol/utils/fol_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/fol/utils/logic_formatter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/fol/utils/nlp_predicate_extractor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/fol/utils/predicate_extractor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/base_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/bridges/base_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/bridges/external_provers.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/bridges/prover_installer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/bridges/symbolic_fol_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/bridges/tdfol_cec_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/bridges/tdfol_grammar_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/bridges/tdfol_shadowprover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/caching/ipfs_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/caching/ipld_logic_storage.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/caching/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/cec_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/converters/deontic_logic_converter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/converters/deontic_logic_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/converters/logic_translation_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/converters/modal_logic_extension.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/converters/symbolic_fol_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/demos/demo_temporal_deontic_rag.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/deontic_logic_converter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/deontic_logic_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/domain/caselaw_bulk_processor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/domain/deontic_query_engine.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/domain/document_consistency_checker.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/domain/legal_domain_knowledge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/domain/legal_symbolic_analyzer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/domain/medical_theorem_framework.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/domain/symbolic_contracts.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/domain/temporal_deontic_api.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/domain/temporal_deontic_rag_store.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/interactive/_fol_constructor_io.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/interactive/interactive_fol_constructor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/interactive/interactive_fol_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/interactive/interactive_fol_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/interactive_fol_constructor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/logic_translation_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/logic_verification.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/logic_verification_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/logic_verification_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/modal_logic_extension.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/neurosymbolic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/neurosymbolic_graphrag.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/nl_ucan_policy_compiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/reasoning/_deontic_conflict_mixin.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/reasoning/_logic_verifier_backends_mixin.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/reasoning/_prover_backend_mixin.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/reasoning/deontological_reasoning.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/reasoning/deontological_reasoning_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/reasoning/deontological_reasoning_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/reasoning/logic_verification.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/reasoning/logic_verification_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/reasoning/logic_verification_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/reasoning/proof_execution_engine.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/reasoning/proof_execution_engine_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/reasoning/proof_execution_engine_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/symbolic/neurosymbolic/embedding_prover.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/symbolic/neurosymbolic/hybrid_confidence.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/symbolic/neurosymbolic/reasoning_coordinator.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/symbolic/neurosymbolic_api.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/symbolic/neurosymbolic_graphrag.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/symbolic/symbolic_logic_primitives.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/symbolic_contracts.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/symbolic_fol_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/symbolic_logic_primitives.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/tdfol_cec_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/tdfol_grammar_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/tdfol_shadowprover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integration/ucan_policy_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integrations/enhanced_graphrag_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integrations/phase7_complete_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/integrations/unixfs_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/ml_confidence.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/observability/metrics_prometheus.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/observability/otel_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/observability/structured_logging.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/phase7_4_benchmarks.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/security/audit_log.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/security/input_validation.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/security/llm_circuit_breaker.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/security/rate_limiting.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/types/bridge_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/types/common_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/types/deontic_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/types/fol_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/types/proof_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/types/translation_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/backends/backend_protocol.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/backends/groth16_backup.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/backends/groth16_ffi.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/backends/simulated.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/eth_contract_artifacts.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/eth_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/eth_vk_registry_payloads.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/evm_harness.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/evm_public_inputs.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/examples/zkp_advanced_demo.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/examples/zkp_basic_demo.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/examples/zkp_ipfs_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/legal_theorem_semantics.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/onchain_pipeline.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/setup_artifacts.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/ucan_zkp_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/vk_registry.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/witness_manager.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/zkp_prover.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Port remaining Python logic module `logic/zkp/zkp_verifier.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [ ] Replace remaining `nlpUnavailable` capability paths with browser-native NLP parity or explicit local model artifact loading.
+- [ ] Replace remaining `mlUnavailable` capability paths with browser-native ML confidence parity or explicit local model artifact loading.
+- [ ] Audit remaining TypeScript logic `unsupported` paths and convert feasible ones into browser-native TypeScript/WASM implementations.
+- [ ] Reconcile the Python logic inventory (269 files) with the TypeScript/WASM implementation (253 files) and add browser-native port tasks for uncovered behavior.
+- [ ] Review the accepted TypeScript logic changes against the original browser-native TypeScript/WASM port goal, then add or implement any missing parity tasks for Python logic behavior that lacks accepted-work evidence.
+- [ ] Add end-to-end browser-native validation proving the converted logic runs without Python, spaCy, or server-side calls, including deterministic coverage for ML and NLP capability surfaces.
+- [ ] Audit Python ML and spaCy expectations against the TypeScript/WASM implementation and add focused parity tests or local-model artifact loading tasks for unsupported browser-native behavior.
+- [ ] Refresh the TypeScript port plan with a parity matrix mapping Python logic modules, TypeScript/WASM files, validation evidence, accepted work, and remaining browser-native tasks.
+- [ ] Compare TypeScript logic public exports against Python logic module public APIs and add missing browser-native compatibility adapters or parity tests.
 
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-02 14:12:08 UTC
+Last updated: 2026-05-02 16:03:44 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `none`
+Current target: `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1081,18 +1081,18 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-103: Initial local CEC delegate replacement that translates TDFOL to browser-native CEC expressions and returns explicit unknown results instead of calling Python or a server.` - complete
 - [x] `Task checkbox-104: Initial indexed-KB and cache-aware optimization facade.` - complete
 - [x] `Task checkbox-105: Deeper CEC delegate parity for native CEC inference rule groups and proof traces.` - complete
-- [!] `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.` - blocked
-- [!] `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.` - blocked
+- [!] `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.` - latest daemon round failed validation or preflight
+- [ ] `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.` - needed
 - [x] `Task checkbox-108: Initial modal tableaux proof search for propositional, temporal, deontic modal formulas and K/T/D/S4/S5 accessibility.` - complete
 - [x] `Task checkbox-109: Initial countermodel model, extractor, and self-contained visual exports.` - complete
 - [x] `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.` - complete
-- [!] `Task checkbox-111: Complete TDFOL security validator parity.` - blocked
+- [ ] `Task checkbox-111: Complete TDFOL security validator parity.` - needed
 - [x] `Task checkbox-112: Add Python parity fixtures for each TDFOL rule category.` - complete
 - [x] `Task checkbox-113: Add browser performance budgets for proof search.` - complete
 - [x] `Task checkbox-114: Initial in-memory performance engine and strategy profiler.` - complete
 - [x] `Task checkbox-115: Initial browser performance dashboard data model and renderer.` - complete
 - [x] `Task checkbox-116: Initial browser performance profiler with repeated timing samples, memory snapshots, bottleneck classification, benchmark suites, and report strings.` - complete
-- [!] `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.` - blocked
+- [ ] `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.` - needed
 - [x] `Task checkbox-118: Port CEC syntax tree, grammar loader, grammar engine, problem parser, and DCEC parsers.` - complete
 - [x] `Task checkbox-119: Initial browser-native CEC/DCEC s-expression AST, parser, formatter, validator, and Portland DCEC unit coverage.` - complete
 - [x] `Task checkbox-120: Initial CEC/DCEC expression analyzer for predicates, atoms, section refs, quantifiers, deontic operators, temporal operators, and expression complexity.` - complete
@@ -1149,354 +1149,296 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-171: Port CEC NL policy compilers and language detection with browser-native NLP.` - complete
 - [x] `Task checkbox-172: Add deeper CEC/DCEC parity fixtures against Python parser and prover outputs.` - complete
 - [x] `Task checkbox-173: Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.` - complete
-- [!] `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.` - blocked
-- [!] `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.` - blocked
+- [ ] `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.` - needed
+- [ ] `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.` - needed
 - [x] `Task checkbox-176: Add exact/tolerance parity tests against Python ML/spaCy development fixtures.` - complete
-- [!] `Task checkbox-177: Remove 'nlpUnavailable' and 'mlUnavailable' capability flags once browser-native parity is implemented.` - blocked
+- [ ] `Task checkbox-177: Remove 'nlpUnavailable' and 'mlUnavailable' capability flags once browser-native parity is implemented.` - needed
 - [x] `Task checkbox-178: Port external prover router and bridge contracts to local browser adapters.` - complete
 - [x] `Task checkbox-179: Evaluate and integrate local WASM provers for Z3/cvc5/Tau Prolog/Lean/Coq-style workflows where feasible.` - complete
 - [x] `Task checkbox-180: Port Groth16 verification/proving path using browser-native cryptographic libraries where feasible.` - complete
-- [!] `Task checkbox-181: Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.` - blocked
+- [ ] `Task checkbox-181: Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.` - needed
 - [x] `Task checkbox-182: Add strict UI/API language distinguishing simulated, heuristic, proof-checking, and cryptographic outputs.` - complete
-- [!] `Task checkbox-183: Port logic integration bridges to route to TS/WASM cores.` - blocked
+- [ ] `Task checkbox-183: Port logic integration bridges to route to TS/WASM cores.` - needed
 - [x] `Task checkbox-184: Initial browser-native bridge facade for local route inventory, FOL/deontic/TDFOL/CEC conversion routing, TDFOL/CEC proof routing, and explicit unsupported-route results with 'server_calls_allowed: false'.` - complete
 - [x] `Task checkbox-185: Port deeper domain-specific integration bridges, interactive workflows, and parity fixtures.` - complete
 - [x] `Task checkbox-186: Port security input validation, circuit breaker, rate limiting, and audit-log semantics to browser-local equivalents.` - complete
 - [x] `Task checkbox-187: Port observability structured logging, Prometheus-style metrics, and OTel-style tracing to browser-local equivalents.` - complete
-- [!] `Task checkbox-188: Port monitoring/metrics to in-browser telemetry objects and developer panels.` - blocked
+- [ ] `Task checkbox-188: Port monitoring/metrics to in-browser telemetry objects and developer panels.` - needed
 - [x] `Task checkbox-189: Initial top-level 'logic/monitoring.py' parity for operation metrics, tracking helpers, health checks, error/warning counters, global monitor, reset, operation summaries, and optional Prometheus text export.` - complete
-- [!] `Task checkbox-190: Add richer developer-panel integration for live UI inspection.` - blocked
+- [ ] `Task checkbox-190: Add richer developer-panel integration for live UI inspection.` - needed
 - [x] `Task checkbox-191: Replace Python API/CLI surfaces with TypeScript developer scripts or browser devtools.` - complete
 - [x] `Task checkbox-192: Initial browser-native public API facade for 'logic/api.py' import-surface parity.` - complete
-- [!] `Task checkbox-193: Add CLI/devtools command adapter parity for 'logic/cli.py'.` - blocked
-- [!] `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.` - blocked
+- [ ] `Task checkbox-193: Add CLI/devtools command adapter parity for 'logic/cli.py'.` - needed
+- [ ] `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.` - needed
 - [x] `Task checkbox-195: Port remaining Python logic module 'logic/CEC/cec_framework.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [!] `Task checkbox-196: Port remaining Python logic module 'logic/CEC/dcec_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [ ] `Task checkbox-196: Port remaining Python logic module 'logic/CEC/dcec_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [x] `Task checkbox-197: Port remaining Python logic module 'logic/CEC/eng_dcec_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [!] `Task checkbox-198: Port remaining Python logic module 'logic/CEC/native/advanced_inference.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-199: Port remaining Python logic module 'logic/CEC/native/ambiguity_resolver.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-200: Port remaining Python logic module 'logic/CEC/native/cec_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-201: Port remaining Python logic module 'logic/CEC/native/cec_zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-202: Port remaining Python logic module 'logic/CEC/native/context_manager.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-203: Port remaining Python logic module 'logic/CEC/native/dcec_cleaning.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-204: Port remaining Python logic module 'logic/CEC/native/dcec_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-205: Port remaining Python logic module 'logic/CEC/native/dcec_english_grammar.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-206: Port remaining Python logic module 'logic/CEC/native/dcec_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-207: Port remaining Python logic module 'logic/CEC/native/dcec_namespace.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-208: Port remaining Python logic module 'logic/CEC/native/dcec_parsing.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-209: Port remaining Python logic module 'logic/CEC/native/dcec_prototypes.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-210: Port remaining Python logic module 'logic/CEC/native/dcec_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-211: Port remaining Python logic module 'logic/CEC/native/enhanced_grammar_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-212: Port remaining Python logic module 'logic/CEC/native/error_handling.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-213: Port remaining Python logic module 'logic/CEC/native/event_calculus.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-214: Port remaining Python logic module 'logic/CEC/native/exceptions.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-215: Port remaining Python logic module 'logic/CEC/native/grammar_engine.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-216: Port remaining Python logic module 'logic/CEC/native/grammar_loader.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-217: Port remaining Python logic module 'logic/CEC/native/inference_rules/base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-218: Port remaining Python logic module 'logic/CEC/native/inference_rules/cognitive.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-219: Port remaining Python logic module 'logic/CEC/native/inference_rules/deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-220: Port remaining Python logic module 'logic/CEC/native/inference_rules/modal.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-221: Port remaining Python logic module 'logic/CEC/native/inference_rules/propositional.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-222: Port remaining Python logic module 'logic/CEC/native/inference_rules/resolution.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-223: Port remaining Python logic module 'logic/CEC/native/inference_rules/specialized.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-224: Port remaining Python logic module 'logic/CEC/native/lemma_generation.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-225: Port remaining Python logic module 'logic/CEC/native/modal_tableaux.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-226: Port remaining Python logic module 'logic/CEC/native/nl_converter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-227: Port remaining Python logic module 'logic/CEC/native/problem_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-228: Port remaining Python logic module 'logic/CEC/native/proof_optimization.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-229: Port remaining Python logic module 'logic/CEC/native/proof_strategies.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-230: Port remaining Python logic module 'logic/CEC/native/prover_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-231: Port remaining Python logic module 'logic/CEC/native/prover_core_extended_rules.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-232: Port remaining Python logic module 'logic/CEC/native/shadow_prover.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-233: Port remaining Python logic module 'logic/CEC/native/syntax_tree.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-234: Port remaining Python logic module 'logic/CEC/nl/base_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-235: Port remaining Python logic module 'logic/CEC/nl/dcec_to_ucan_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-236: Port remaining Python logic module 'logic/CEC/nl/domain_vocabularies/domain_vocab.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-237: Port remaining Python logic module 'logic/CEC/nl/french_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-238: Port remaining Python logic module 'logic/CEC/nl/german_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-239: Port remaining Python logic module 'logic/CEC/nl/grammar_nl_policy_compiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-240: Port remaining Python logic module 'logic/CEC/nl/language_detector.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-241: Port remaining Python logic module 'logic/CEC/nl/nl_policy_conflict_detector.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-242: Port remaining Python logic module 'logic/CEC/nl/nl_to_policy_compiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-243: Port remaining Python logic module 'logic/CEC/nl/portuguese_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-244: Port remaining Python logic module 'logic/CEC/nl/spanish_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-245: Port remaining Python logic module 'logic/CEC/optimization/formula_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-246: Port remaining Python logic module 'logic/CEC/optimization/profiling_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-247: Port remaining Python logic module 'logic/CEC/provers/e_prover_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-248: Port remaining Python logic module 'logic/CEC/provers/prover_manager.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-249: Port remaining Python logic module 'logic/CEC/provers/tptp_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-250: Port remaining Python logic module 'logic/CEC/provers/vampire_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-251: Port remaining Python logic module 'logic/CEC/provers/z3_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-252: Port remaining Python logic module 'logic/CEC/shadow_prover_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-253: Port remaining Python logic module 'logic/CEC/talos_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-254: Port remaining Python logic module 'logic/TDFOL/countermodel_visualizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-255: Port remaining Python logic module 'logic/TDFOL/demonstrate_countermodel_visualizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-256: Port remaining Python logic module 'logic/TDFOL/demonstrate_performance_dashboard.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-257: Port remaining Python logic module 'logic/TDFOL/example_formula_dependency_graph.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-258: Port remaining Python logic module 'logic/TDFOL/example_performance_profiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-259: Port remaining Python logic module 'logic/TDFOL/exceptions.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-260: Port remaining Python logic module 'logic/TDFOL/expansion_rules.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-261: Port remaining Python logic module 'logic/TDFOL/formula_dependency_graph.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-262: Port remaining Python logic module 'logic/TDFOL/inference_rules/base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-263: Port remaining Python logic module 'logic/TDFOL/inference_rules/deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-264: Port remaining Python logic module 'logic/TDFOL/inference_rules/first_order.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-265: Port remaining Python logic module 'logic/TDFOL/inference_rules/propositional.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-266: Port remaining Python logic module 'logic/TDFOL/inference_rules/temporal_deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-267: Port remaining Python logic module 'logic/TDFOL/modal_tableaux.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-268: Port remaining Python logic module 'logic/TDFOL/nl/demonstrate_ipfs_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-269: Port remaining Python logic module 'logic/TDFOL/nl/llm.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-270: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_api.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-271: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_context.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-272: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_generator.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-273: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_patterns.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-274: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_preprocessor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-275: Port remaining Python logic module 'logic/TDFOL/nl/utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-276: Port remaining Python logic module 'logic/TDFOL/p2p/ipfs_proof_storage.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-277: Port remaining Python logic module 'logic/TDFOL/performance_dashboard.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-278: Port remaining Python logic module 'logic/TDFOL/performance_metrics.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-279: Port remaining Python logic module 'logic/TDFOL/performance_profiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-280: Port remaining Python logic module 'logic/TDFOL/proof_explainer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-281: Port remaining Python logic module 'logic/TDFOL/proof_tree_visualizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-282: Port remaining Python logic module 'logic/TDFOL/quickstart_visualizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-283: Port remaining Python logic module 'logic/TDFOL/security_validator.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-284: Port remaining Python logic module 'logic/TDFOL/strategies/base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-285: Port remaining Python logic module 'logic/TDFOL/strategies/cec_delegate.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-286: Port remaining Python logic module 'logic/TDFOL/strategies/forward_chaining.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-287: Port remaining Python logic module 'logic/TDFOL/strategies/modal_tableaux.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-288: Port remaining Python logic module 'logic/TDFOL/strategies/strategy_selector.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-289: Port remaining Python logic module 'logic/TDFOL/tdfol_converter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-290: Port remaining Python logic module 'logic/TDFOL/tdfol_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-291: Port remaining Python logic module 'logic/TDFOL/tdfol_dcec_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-292: Port remaining Python logic module 'logic/TDFOL/tdfol_inference_rules.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-293: Port remaining Python logic module 'logic/TDFOL/tdfol_optimization.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-294: Port remaining Python logic module 'logic/TDFOL/tdfol_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-295: Port remaining Python logic module 'logic/TDFOL/tdfol_performance_engine.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-296: Port remaining Python logic module 'logic/TDFOL/tdfol_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-297: Port remaining Python logic module 'logic/TDFOL/tdfol_prover.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-298: Port remaining Python logic module 'logic/TDFOL/zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-299: Port remaining Python logic module 'logic/api_server.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-300: Port remaining Python logic module 'logic/batch_processing.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-301: Port remaining Python logic module 'logic/cli.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-302: Port remaining Python logic module 'logic/common/bounded_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-303: Port remaining Python logic module 'logic/common/feature_detection.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-304: Port remaining Python logic module 'logic/common/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-305: Port remaining Python logic module 'logic/common/utility_monitor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-306: Port remaining Python logic module 'logic/common/validators.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-307: Port remaining Python logic module 'logic/deontic/decoder.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-308: Port remaining Python logic module 'logic/deontic/exports.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-309: Port remaining Python logic module 'logic/deontic/formula_builder.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-310: Port remaining Python logic module 'logic/deontic/ir.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-311: Port remaining Python logic module 'logic/deontic/knowledge_base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-312: Port remaining Python logic module 'logic/deontic/legal_text_to_deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-313: Port remaining Python logic module 'logic/deontic/metrics.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-314: Port remaining Python logic module 'logic/deontic/prover_syntax.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-315: Port remaining Python logic module 'logic/deontic/support_map.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-316: Port remaining Python logic module 'logic/deontic/utils/deontic_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-317: Port remaining Python logic module 'logic/e2e_validation.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-318: Port remaining Python logic module 'logic/external_provers/formula_analyzer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-319: Port remaining Python logic module 'logic/external_provers/interactive/coq_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-320: Port remaining Python logic module 'logic/external_provers/interactive/lean_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-321: Port remaining Python logic module 'logic/external_provers/neural/symbolicai_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-322: Port remaining Python logic module 'logic/external_provers/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-323: Port remaining Python logic module 'logic/external_provers/prover_router.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-324: Port remaining Python logic module 'logic/external_provers/smt/cvc5_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-325: Port remaining Python logic module 'logic/external_provers/smt/z3_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-326: Port remaining Python logic module 'logic/flogic/ergoai_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-327: Port remaining Python logic module 'logic/flogic/flogic_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-328: Port remaining Python logic module 'logic/flogic/flogic_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-329: Port remaining Python logic module 'logic/flogic/flogic_zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-330: Port remaining Python logic module 'logic/flogic/semantic_normalizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-331: Port remaining Python logic module 'logic/fol/text_to_fol.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-332: Port remaining Python logic module 'logic/fol/utils/deontic_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-333: Port remaining Python logic module 'logic/fol/utils/fol_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-334: Port remaining Python logic module 'logic/fol/utils/logic_formatter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-335: Port remaining Python logic module 'logic/fol/utils/nlp_predicate_extractor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-336: Port remaining Python logic module 'logic/fol/utils/predicate_extractor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-337: Port remaining Python logic module 'logic/integration/base_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-338: Port remaining Python logic module 'logic/integration/bridges/base_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-339: Port remaining Python logic module 'logic/integration/bridges/external_provers.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-340: Port remaining Python logic module 'logic/integration/bridges/prover_installer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-341: Port remaining Python logic module 'logic/integration/bridges/symbolic_fol_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-342: Port remaining Python logic module 'logic/integration/bridges/tdfol_cec_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-343: Port remaining Python logic module 'logic/integration/bridges/tdfol_grammar_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-344: Port remaining Python logic module 'logic/integration/bridges/tdfol_shadowprover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-345: Port remaining Python logic module 'logic/integration/caching/ipfs_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-346: Port remaining Python logic module 'logic/integration/caching/ipld_logic_storage.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-347: Port remaining Python logic module 'logic/integration/caching/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-348: Port remaining Python logic module 'logic/integration/cec_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-349: Port remaining Python logic module 'logic/integration/converters/deontic_logic_converter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-350: Port remaining Python logic module 'logic/integration/converters/deontic_logic_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-351: Port remaining Python logic module 'logic/integration/converters/logic_translation_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-352: Port remaining Python logic module 'logic/integration/converters/modal_logic_extension.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-353: Port remaining Python logic module 'logic/integration/converters/symbolic_fol_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-354: Port remaining Python logic module 'logic/integration/demos/demo_temporal_deontic_rag.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-355: Port remaining Python logic module 'logic/integration/deontic_logic_converter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-356: Port remaining Python logic module 'logic/integration/deontic_logic_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-357: Port remaining Python logic module 'logic/integration/domain/caselaw_bulk_processor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-358: Port remaining Python logic module 'logic/integration/domain/deontic_query_engine.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-359: Port remaining Python logic module 'logic/integration/domain/document_consistency_checker.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-360: Port remaining Python logic module 'logic/integration/domain/legal_domain_knowledge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-361: Port remaining Python logic module 'logic/integration/domain/legal_symbolic_analyzer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-362: Port remaining Python logic module 'logic/integration/domain/medical_theorem_framework.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-363: Port remaining Python logic module 'logic/integration/domain/symbolic_contracts.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-364: Port remaining Python logic module 'logic/integration/domain/temporal_deontic_api.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-365: Port remaining Python logic module 'logic/integration/domain/temporal_deontic_rag_store.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-366: Port remaining Python logic module 'logic/integration/interactive/_fol_constructor_io.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-367: Port remaining Python logic module 'logic/integration/interactive/interactive_fol_constructor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-368: Port remaining Python logic module 'logic/integration/interactive/interactive_fol_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-369: Port remaining Python logic module 'logic/integration/interactive/interactive_fol_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-370: Port remaining Python logic module 'logic/integration/interactive_fol_constructor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-371: Port remaining Python logic module 'logic/integration/logic_translation_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-372: Port remaining Python logic module 'logic/integration/logic_verification.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-373: Port remaining Python logic module 'logic/integration/logic_verification_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-374: Port remaining Python logic module 'logic/integration/logic_verification_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-375: Port remaining Python logic module 'logic/integration/modal_logic_extension.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-376: Port remaining Python logic module 'logic/integration/neurosymbolic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-377: Port remaining Python logic module 'logic/integration/neurosymbolic_graphrag.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-378: Port remaining Python logic module 'logic/integration/nl_ucan_policy_compiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-379: Port remaining Python logic module 'logic/integration/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-380: Port remaining Python logic module 'logic/integration/reasoning/_deontic_conflict_mixin.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-381: Port remaining Python logic module 'logic/integration/reasoning/_logic_verifier_backends_mixin.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-382: Port remaining Python logic module 'logic/integration/reasoning/_prover_backend_mixin.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-383: Port remaining Python logic module 'logic/integration/reasoning/deontological_reasoning.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-384: Port remaining Python logic module 'logic/integration/reasoning/deontological_reasoning_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-385: Port remaining Python logic module 'logic/integration/reasoning/deontological_reasoning_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-386: Port remaining Python logic module 'logic/integration/reasoning/logic_verification.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-387: Port remaining Python logic module 'logic/integration/reasoning/logic_verification_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-388: Port remaining Python logic module 'logic/integration/reasoning/logic_verification_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-389: Port remaining Python logic module 'logic/integration/reasoning/proof_execution_engine.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-390: Port remaining Python logic module 'logic/integration/reasoning/proof_execution_engine_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-391: Port remaining Python logic module 'logic/integration/reasoning/proof_execution_engine_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-392: Port remaining Python logic module 'logic/integration/symbolic/neurosymbolic/embedding_prover.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-393: Port remaining Python logic module 'logic/integration/symbolic/neurosymbolic/hybrid_confidence.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-394: Port remaining Python logic module 'logic/integration/symbolic/neurosymbolic/reasoning_coordinator.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-395: Port remaining Python logic module 'logic/integration/symbolic/neurosymbolic_api.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-396: Port remaining Python logic module 'logic/integration/symbolic/neurosymbolic_graphrag.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-397: Port remaining Python logic module 'logic/integration/symbolic/symbolic_logic_primitives.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-398: Port remaining Python logic module 'logic/integration/symbolic_contracts.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-399: Port remaining Python logic module 'logic/integration/symbolic_fol_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-400: Port remaining Python logic module 'logic/integration/symbolic_logic_primitives.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-401: Port remaining Python logic module 'logic/integration/tdfol_cec_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-402: Port remaining Python logic module 'logic/integration/tdfol_grammar_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-403: Port remaining Python logic module 'logic/integration/tdfol_shadowprover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-404: Port remaining Python logic module 'logic/integration/ucan_policy_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-405: Port remaining Python logic module 'logic/integrations/enhanced_graphrag_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-406: Port remaining Python logic module 'logic/integrations/phase7_complete_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-407: Port remaining Python logic module 'logic/integrations/unixfs_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-408: Port remaining Python logic module 'logic/ml_confidence.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-409: Port remaining Python logic module 'logic/observability/metrics_prometheus.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-410: Port remaining Python logic module 'logic/observability/otel_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-411: Port remaining Python logic module 'logic/observability/structured_logging.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-412: Port remaining Python logic module 'logic/phase7_4_benchmarks.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-413: Port remaining Python logic module 'logic/security/audit_log.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-414: Port remaining Python logic module 'logic/security/input_validation.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-415: Port remaining Python logic module 'logic/security/llm_circuit_breaker.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-416: Port remaining Python logic module 'logic/security/rate_limiting.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-417: Port remaining Python logic module 'logic/types/bridge_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-418: Port remaining Python logic module 'logic/types/common_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-419: Port remaining Python logic module 'logic/types/deontic_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-420: Port remaining Python logic module 'logic/types/fol_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-421: Port remaining Python logic module 'logic/types/proof_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-422: Port remaining Python logic module 'logic/types/translation_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-423: Port remaining Python logic module 'logic/zkp/backends/backend_protocol.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-424: Port remaining Python logic module 'logic/zkp/backends/groth16_backup.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-425: Port remaining Python logic module 'logic/zkp/backends/groth16_ffi.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-426: Port remaining Python logic module 'logic/zkp/backends/simulated.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-427: Port remaining Python logic module 'logic/zkp/eth_contract_artifacts.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-428: Port remaining Python logic module 'logic/zkp/eth_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-429: Port remaining Python logic module 'logic/zkp/eth_vk_registry_payloads.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-430: Port remaining Python logic module 'logic/zkp/evm_harness.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-431: Port remaining Python logic module 'logic/zkp/evm_public_inputs.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-432: Port remaining Python logic module 'logic/zkp/examples/zkp_advanced_demo.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-433: Port remaining Python logic module 'logic/zkp/examples/zkp_basic_demo.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-434: Port remaining Python logic module 'logic/zkp/examples/zkp_ipfs_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-435: Port remaining Python logic module 'logic/zkp/legal_theorem_semantics.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-436: Port remaining Python logic module 'logic/zkp/onchain_pipeline.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-437: Port remaining Python logic module 'logic/zkp/setup_artifacts.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-438: Port remaining Python logic module 'logic/zkp/ucan_zkp_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-439: Port remaining Python logic module 'logic/zkp/vk_registry.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-440: Port remaining Python logic module 'logic/zkp/witness_manager.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-441: Port remaining Python logic module 'logic/zkp/zkp_prover.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-442: Port remaining Python logic module 'logic/zkp/zkp_verifier.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-443: Replace remaining 'nlpUnavailable' capability paths with browser-native NLP parity or explicit local model artifact loading.` - blocked
-- [!] `Task checkbox-444: Replace remaining 'mlUnavailable' capability paths with browser-native ML confidence parity or explicit local model artifact loading.` - blocked
-- [!] `Task checkbox-445: Audit remaining TypeScript logic 'unsupported' paths and convert feasible ones into browser-native TypeScript/WASM implementations.` - blocked
-- [!] `Task checkbox-446: Reconcile the Python logic inventory (269 files) with the TypeScript/WASM implementation (253 files) and add browser-native port tasks for uncovered behavior.` - blocked
-- [!] `Task checkbox-447: Review the accepted TypeScript logic changes against the original browser-native TypeScript/WASM port goal, then add or implement any missing parity tasks for Python logic behavior that lacks accepted-work evidence.` - blocked
-- [!] `Task checkbox-448: Add end-to-end browser-native validation proving the converted logic runs without Python, spaCy, or server-side calls, including deterministic coverage for ML and NLP capability surfaces.` - blocked
-- [!] `Task checkbox-449: Audit Python ML and spaCy expectations against the TypeScript/WASM implementation and add focused parity tests or local-model artifact loading tasks for unsupported browser-native behavior.` - blocked
-- [!] `Task checkbox-450: Refresh the TypeScript port plan with a parity matrix mapping Python logic modules, TypeScript/WASM files, validation evidence, accepted work, and remaining browser-native tasks.` - blocked
-- [!] `Task checkbox-451: Compare TypeScript logic public exports against Python logic module public APIs and add missing browser-native compatibility adapters or parity tests.` - blocked
+- [ ] `Task checkbox-198: Port remaining Python logic module 'logic/CEC/native/advanced_inference.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-199: Port remaining Python logic module 'logic/CEC/native/ambiguity_resolver.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-200: Port remaining Python logic module 'logic/CEC/native/cec_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-201: Port remaining Python logic module 'logic/CEC/native/cec_zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-202: Port remaining Python logic module 'logic/CEC/native/context_manager.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-203: Port remaining Python logic module 'logic/CEC/native/dcec_cleaning.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-204: Port remaining Python logic module 'logic/CEC/native/dcec_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-205: Port remaining Python logic module 'logic/CEC/native/dcec_english_grammar.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-206: Port remaining Python logic module 'logic/CEC/native/dcec_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-207: Port remaining Python logic module 'logic/CEC/native/dcec_namespace.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-208: Port remaining Python logic module 'logic/CEC/native/dcec_parsing.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-209: Port remaining Python logic module 'logic/CEC/native/dcec_prototypes.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-210: Port remaining Python logic module 'logic/CEC/native/dcec_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-211: Port remaining Python logic module 'logic/CEC/native/enhanced_grammar_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-212: Port remaining Python logic module 'logic/CEC/native/error_handling.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-213: Port remaining Python logic module 'logic/CEC/native/event_calculus.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-214: Port remaining Python logic module 'logic/CEC/native/exceptions.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-215: Port remaining Python logic module 'logic/CEC/native/grammar_engine.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-216: Port remaining Python logic module 'logic/CEC/native/grammar_loader.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-217: Port remaining Python logic module 'logic/CEC/native/inference_rules/base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-218: Port remaining Python logic module 'logic/CEC/native/inference_rules/cognitive.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-219: Port remaining Python logic module 'logic/CEC/native/inference_rules/deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-220: Port remaining Python logic module 'logic/CEC/native/inference_rules/modal.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-221: Port remaining Python logic module 'logic/CEC/native/inference_rules/propositional.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-222: Port remaining Python logic module 'logic/CEC/native/inference_rules/resolution.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-223: Port remaining Python logic module 'logic/CEC/native/inference_rules/specialized.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-224: Port remaining Python logic module 'logic/CEC/native/lemma_generation.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-225: Port remaining Python logic module 'logic/CEC/native/modal_tableaux.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-226: Port remaining Python logic module 'logic/CEC/native/nl_converter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-227: Port remaining Python logic module 'logic/CEC/native/problem_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-228: Port remaining Python logic module 'logic/CEC/native/proof_optimization.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-229: Port remaining Python logic module 'logic/CEC/native/proof_strategies.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-230: Port remaining Python logic module 'logic/CEC/native/prover_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-231: Port remaining Python logic module 'logic/CEC/native/prover_core_extended_rules.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-232: Port remaining Python logic module 'logic/CEC/native/shadow_prover.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-233: Port remaining Python logic module 'logic/CEC/native/syntax_tree.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-234: Port remaining Python logic module 'logic/CEC/nl/base_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-235: Port remaining Python logic module 'logic/CEC/nl/dcec_to_ucan_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-236: Port remaining Python logic module 'logic/CEC/nl/domain_vocabularies/domain_vocab.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-237: Port remaining Python logic module 'logic/CEC/nl/french_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-238: Port remaining Python logic module 'logic/CEC/nl/german_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-239: Port remaining Python logic module 'logic/CEC/nl/grammar_nl_policy_compiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-240: Port remaining Python logic module 'logic/CEC/nl/language_detector.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-241: Port remaining Python logic module 'logic/CEC/nl/nl_policy_conflict_detector.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-242: Port remaining Python logic module 'logic/CEC/nl/nl_to_policy_compiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-243: Port remaining Python logic module 'logic/CEC/nl/portuguese_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-244: Port remaining Python logic module 'logic/CEC/nl/spanish_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-245: Port remaining Python logic module 'logic/CEC/optimization/formula_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-246: Port remaining Python logic module 'logic/CEC/optimization/profiling_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-247: Port remaining Python logic module 'logic/CEC/provers/e_prover_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-248: Port remaining Python logic module 'logic/CEC/provers/prover_manager.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-249: Port remaining Python logic module 'logic/CEC/provers/tptp_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-250: Port remaining Python logic module 'logic/CEC/provers/vampire_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-251: Port remaining Python logic module 'logic/CEC/provers/z3_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-252: Port remaining Python logic module 'logic/CEC/shadow_prover_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-253: Port remaining Python logic module 'logic/CEC/talos_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-254: Port remaining Python logic module 'logic/TDFOL/countermodel_visualizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-255: Port remaining Python logic module 'logic/TDFOL/demonstrate_countermodel_visualizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-256: Port remaining Python logic module 'logic/TDFOL/demonstrate_performance_dashboard.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-257: Port remaining Python logic module 'logic/TDFOL/example_formula_dependency_graph.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-258: Port remaining Python logic module 'logic/TDFOL/example_performance_profiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-259: Port remaining Python logic module 'logic/TDFOL/exceptions.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-260: Port remaining Python logic module 'logic/TDFOL/expansion_rules.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-261: Port remaining Python logic module 'logic/TDFOL/formula_dependency_graph.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-262: Port remaining Python logic module 'logic/TDFOL/inference_rules/base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-263: Port remaining Python logic module 'logic/TDFOL/inference_rules/deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-264: Port remaining Python logic module 'logic/TDFOL/inference_rules/first_order.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-265: Port remaining Python logic module 'logic/TDFOL/inference_rules/propositional.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-266: Port remaining Python logic module 'logic/TDFOL/inference_rules/temporal_deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-267: Port remaining Python logic module 'logic/TDFOL/modal_tableaux.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-268: Port remaining Python logic module 'logic/TDFOL/nl/demonstrate_ipfs_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-269: Port remaining Python logic module 'logic/TDFOL/nl/llm.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-270: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_api.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-271: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_context.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-272: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_generator.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-273: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_patterns.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-274: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_preprocessor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-275: Port remaining Python logic module 'logic/TDFOL/nl/utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-276: Port remaining Python logic module 'logic/TDFOL/p2p/ipfs_proof_storage.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-277: Port remaining Python logic module 'logic/TDFOL/performance_dashboard.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-278: Port remaining Python logic module 'logic/TDFOL/performance_metrics.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-279: Port remaining Python logic module 'logic/TDFOL/performance_profiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-280: Port remaining Python logic module 'logic/TDFOL/proof_explainer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-281: Port remaining Python logic module 'logic/TDFOL/proof_tree_visualizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-282: Port remaining Python logic module 'logic/TDFOL/quickstart_visualizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-283: Port remaining Python logic module 'logic/TDFOL/security_validator.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-284: Port remaining Python logic module 'logic/TDFOL/strategies/base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-285: Port remaining Python logic module 'logic/TDFOL/strategies/cec_delegate.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-286: Port remaining Python logic module 'logic/TDFOL/strategies/forward_chaining.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-287: Port remaining Python logic module 'logic/TDFOL/strategies/modal_tableaux.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-288: Port remaining Python logic module 'logic/TDFOL/strategies/strategy_selector.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-289: Port remaining Python logic module 'logic/TDFOL/tdfol_converter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-290: Port remaining Python logic module 'logic/TDFOL/tdfol_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-291: Port remaining Python logic module 'logic/TDFOL/tdfol_dcec_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-292: Port remaining Python logic module 'logic/TDFOL/tdfol_inference_rules.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-293: Port remaining Python logic module 'logic/TDFOL/tdfol_optimization.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-294: Port remaining Python logic module 'logic/TDFOL/tdfol_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-295: Port remaining Python logic module 'logic/TDFOL/tdfol_performance_engine.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-296: Port remaining Python logic module 'logic/TDFOL/tdfol_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-297: Port remaining Python logic module 'logic/TDFOL/tdfol_prover.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-298: Port remaining Python logic module 'logic/TDFOL/zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-299: Port remaining Python logic module 'logic/api_server.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-300: Port remaining Python logic module 'logic/batch_processing.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-301: Port remaining Python logic module 'logic/cli.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-302: Port remaining Python logic module 'logic/common/bounded_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-303: Port remaining Python logic module 'logic/common/feature_detection.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-304: Port remaining Python logic module 'logic/common/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-305: Port remaining Python logic module 'logic/common/utility_monitor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-306: Port remaining Python logic module 'logic/common/validators.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-307: Port remaining Python logic module 'logic/deontic/decoder.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-308: Port remaining Python logic module 'logic/deontic/exports.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-309: Port remaining Python logic module 'logic/deontic/formula_builder.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-310: Port remaining Python logic module 'logic/deontic/ir.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-311: Port remaining Python logic module 'logic/deontic/knowledge_base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-312: Port remaining Python logic module 'logic/deontic/legal_text_to_deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-313: Port remaining Python logic module 'logic/deontic/metrics.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-314: Port remaining Python logic module 'logic/deontic/prover_syntax.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-315: Port remaining Python logic module 'logic/deontic/support_map.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-316: Port remaining Python logic module 'logic/deontic/utils/deontic_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-317: Port remaining Python logic module 'logic/e2e_validation.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-318: Port remaining Python logic module 'logic/external_provers/formula_analyzer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-319: Port remaining Python logic module 'logic/external_provers/interactive/coq_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-320: Port remaining Python logic module 'logic/external_provers/interactive/lean_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-321: Port remaining Python logic module 'logic/external_provers/neural/symbolicai_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-322: Port remaining Python logic module 'logic/external_provers/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-323: Port remaining Python logic module 'logic/external_provers/prover_router.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-324: Port remaining Python logic module 'logic/external_provers/smt/cvc5_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-325: Port remaining Python logic module 'logic/external_provers/smt/z3_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-326: Port remaining Python logic module 'logic/flogic/ergoai_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-327: Port remaining Python logic module 'logic/flogic/flogic_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-328: Port remaining Python logic module 'logic/flogic/flogic_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-329: Port remaining Python logic module 'logic/flogic/flogic_zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-330: Port remaining Python logic module 'logic/flogic/semantic_normalizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-331: Port remaining Python logic module 'logic/fol/text_to_fol.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-332: Port remaining Python logic module 'logic/fol/utils/deontic_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-333: Port remaining Python logic module 'logic/fol/utils/fol_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-334: Port remaining Python logic module 'logic/fol/utils/logic_formatter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-335: Port remaining Python logic module 'logic/fol/utils/nlp_predicate_extractor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-336: Port remaining Python logic module 'logic/fol/utils/predicate_extractor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-337: Port remaining Python logic module 'logic/integration/base_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-338: Port remaining Python logic module 'logic/integration/bridges/base_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-339: Port remaining Python logic module 'logic/integration/bridges/external_provers.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-340: Port remaining Python logic module 'logic/integration/bridges/prover_installer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-341: Port remaining Python logic module 'logic/integration/bridges/symbolic_fol_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-342: Port remaining Python logic module 'logic/integration/bridges/tdfol_cec_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-343: Port remaining Python logic module 'logic/integration/bridges/tdfol_grammar_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-344: Port remaining Python logic module 'logic/integration/bridges/tdfol_shadowprover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-345: Port remaining Python logic module 'logic/integration/caching/ipfs_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-346: Port remaining Python logic module 'logic/integration/caching/ipld_logic_storage.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-347: Port remaining Python logic module 'logic/integration/caching/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-348: Port remaining Python logic module 'logic/integration/cec_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-349: Port remaining Python logic module 'logic/integration/converters/deontic_logic_converter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-350: Port remaining Python logic module 'logic/integration/converters/deontic_logic_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-351: Port remaining Python logic module 'logic/integration/converters/logic_translation_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-352: Port remaining Python logic module 'logic/integration/converters/modal_logic_extension.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-353: Port remaining Python logic module 'logic/integration/converters/symbolic_fol_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-354: Port remaining Python logic module 'logic/integration/demos/demo_temporal_deontic_rag.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-355: Port remaining Python logic module 'logic/integration/deontic_logic_converter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-356: Port remaining Python logic module 'logic/integration/deontic_logic_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-357: Port remaining Python logic module 'logic/integration/domain/caselaw_bulk_processor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-358: Port remaining Python logic module 'logic/integration/domain/deontic_query_engine.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-359: Port remaining Python logic module 'logic/integration/domain/document_consistency_checker.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-360: Port remaining Python logic module 'logic/integration/domain/legal_domain_knowledge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-361: Port remaining Python logic module 'logic/integration/domain/legal_symbolic_analyzer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-362: Port remaining Python logic module 'logic/integration/domain/medical_theorem_framework.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-363: Port remaining Python logic module 'logic/integration/domain/symbolic_contracts.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-364: Port remaining Python logic module 'logic/integration/domain/temporal_deontic_api.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-365: Port remaining Python logic module 'logic/integration/domain/temporal_deontic_rag_store.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-366: Port remaining Python logic module 'logic/integration/interactive/_fol_constructor_io.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-367: Port remaining Python logic module 'logic/integration/interactive/interactive_fol_constructor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-368: Port remaining Python logic module 'logic/integration/interactive/interactive_fol_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-369: Port remaining Python logic module 'logic/integration/interactive/interactive_fol_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-370: Port remaining Python logic module 'logic/integration/interactive_fol_constructor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-371: Port remaining Python logic module 'logic/integration/logic_translation_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-372: Port remaining Python logic module 'logic/integration/logic_verification.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-373: Port remaining Python logic module 'logic/integration/logic_verification_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-374: Port remaining Python logic module 'logic/integration/logic_verification_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-375: Port remaining Python logic module 'logic/integration/modal_logic_extension.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-376: Port remaining Python logic module 'logic/integration/neurosymbolic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-377: Port remaining Python logic module 'logic/integration/neurosymbolic_graphrag.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-378: Port remaining Python logic module 'logic/integration/nl_ucan_policy_compiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-379: Port remaining Python logic module 'logic/integration/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-380: Port remaining Python logic module 'logic/integration/reasoning/_deontic_conflict_mixin.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-381: Port remaining Python logic module 'logic/integration/reasoning/_logic_verifier_backends_mixin.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-382: Port remaining Python logic module 'logic/integration/reasoning/_prover_backend_mixin.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-383: Port remaining Python logic module 'logic/integration/reasoning/deontological_reasoning.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-384: Port remaining Python logic module 'logic/integration/reasoning/deontological_reasoning_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-385: Port remaining Python logic module 'logic/integration/reasoning/deontological_reasoning_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-386: Port remaining Python logic module 'logic/integration/reasoning/logic_verification.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-387: Port remaining Python logic module 'logic/integration/reasoning/logic_verification_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-388: Port remaining Python logic module 'logic/integration/reasoning/logic_verification_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-389: Port remaining Python logic module 'logic/integration/reasoning/proof_execution_engine.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-390: Port remaining Python logic module 'logic/integration/reasoning/proof_execution_engine_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-391: Port remaining Python logic module 'logic/integration/reasoning/proof_execution_engine_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-392: Port remaining Python logic module 'logic/integration/symbolic/neurosymbolic/embedding_prover.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-393: Port remaining Python logic module 'logic/integration/symbolic/neurosymbolic/hybrid_confidence.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-394: Port remaining Python logic module 'logic/integration/symbolic/neurosymbolic/reasoning_coordinator.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-395: Port remaining Python logic module 'logic/integration/symbolic/neurosymbolic_api.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-396: Port remaining Python logic module 'logic/integration/symbolic/neurosymbolic_graphrag.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-397: Port remaining Python logic module 'logic/integration/symbolic/symbolic_logic_primitives.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-398: Port remaining Python logic module 'logic/integration/symbolic_contracts.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-399: Port remaining Python logic module 'logic/integration/symbolic_fol_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-400: Port remaining Python logic module 'logic/integration/symbolic_logic_primitives.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-401: Port remaining Python logic module 'logic/integration/tdfol_cec_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-402: Port remaining Python logic module 'logic/integration/tdfol_grammar_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-403: Port remaining Python logic module 'logic/integration/tdfol_shadowprover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-404: Port remaining Python logic module 'logic/integration/ucan_policy_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-405: Port remaining Python logic module 'logic/integrations/enhanced_graphrag_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-406: Port remaining Python logic module 'logic/integrations/phase7_complete_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-407: Port remaining Python logic module 'logic/integrations/unixfs_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-408: Port remaining Python logic module 'logic/ml_confidence.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-409: Port remaining Python logic module 'logic/observability/metrics_prometheus.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-410: Port remaining Python logic module 'logic/observability/otel_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-411: Port remaining Python logic module 'logic/observability/structured_logging.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-412: Port remaining Python logic module 'logic/phase7_4_benchmarks.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-413: Port remaining Python logic module 'logic/security/audit_log.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-414: Port remaining Python logic module 'logic/security/input_validation.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-415: Port remaining Python logic module 'logic/security/llm_circuit_breaker.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-416: Port remaining Python logic module 'logic/security/rate_limiting.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-417: Port remaining Python logic module 'logic/types/bridge_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-418: Port remaining Python logic module 'logic/types/common_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-419: Port remaining Python logic module 'logic/types/deontic_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-420: Port remaining Python logic module 'logic/types/fol_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-421: Port remaining Python logic module 'logic/types/proof_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-422: Port remaining Python logic module 'logic/types/translation_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-423: Port remaining Python logic module 'logic/zkp/backends/backend_protocol.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-424: Port remaining Python logic module 'logic/zkp/backends/groth16_backup.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-425: Port remaining Python logic module 'logic/zkp/backends/groth16_ffi.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-426: Port remaining Python logic module 'logic/zkp/backends/simulated.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-427: Port remaining Python logic module 'logic/zkp/eth_contract_artifacts.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-428: Port remaining Python logic module 'logic/zkp/eth_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-429: Port remaining Python logic module 'logic/zkp/eth_vk_registry_payloads.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-430: Port remaining Python logic module 'logic/zkp/evm_harness.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-431: Port remaining Python logic module 'logic/zkp/evm_public_inputs.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-432: Port remaining Python logic module 'logic/zkp/examples/zkp_advanced_demo.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-433: Port remaining Python logic module 'logic/zkp/examples/zkp_basic_demo.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-434: Port remaining Python logic module 'logic/zkp/examples/zkp_ipfs_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-435: Port remaining Python logic module 'logic/zkp/legal_theorem_semantics.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-436: Port remaining Python logic module 'logic/zkp/onchain_pipeline.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-437: Port remaining Python logic module 'logic/zkp/setup_artifacts.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-438: Port remaining Python logic module 'logic/zkp/ucan_zkp_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-439: Port remaining Python logic module 'logic/zkp/vk_registry.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-440: Port remaining Python logic module 'logic/zkp/witness_manager.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-441: Port remaining Python logic module 'logic/zkp/zkp_prover.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-442: Port remaining Python logic module 'logic/zkp/zkp_verifier.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [ ] `Task checkbox-443: Replace remaining 'nlpUnavailable' capability paths with browser-native NLP parity or explicit local model artifact loading.` - needed
+- [ ] `Task checkbox-444: Replace remaining 'mlUnavailable' capability paths with browser-native ML confidence parity or explicit local model artifact loading.` - needed
+- [ ] `Task checkbox-445: Audit remaining TypeScript logic 'unsupported' paths and convert feasible ones into browser-native TypeScript/WASM implementations.` - needed
+- [ ] `Task checkbox-446: Reconcile the Python logic inventory (269 files) with the TypeScript/WASM implementation (253 files) and add browser-native port tasks for uncovered behavior.` - needed
+- [ ] `Task checkbox-447: Review the accepted TypeScript logic changes against the original browser-native TypeScript/WASM port goal, then add or implement any missing parity tasks for Python logic behavior that lacks accepted-work evidence.` - needed
+- [ ] `Task checkbox-448: Add end-to-end browser-native validation proving the converted logic runs without Python, spaCy, or server-side calls, including deterministic coverage for ML and NLP capability surfaces.` - needed
+- [ ] `Task checkbox-449: Audit Python ML and spaCy expectations against the TypeScript/WASM implementation and add focused parity tests or local-model artifact loading tasks for unsupported browser-native behavior.` - needed
+- [ ] `Task checkbox-450: Refresh the TypeScript port plan with a parity matrix mapping Python logic modules, TypeScript/WASM files, validation evidence, accepted work, and remaining browser-native tasks.` - needed
+- [ ] `Task checkbox-451: Compare TypeScript logic public exports against Python logic module public APIs and add missing browser-native compatibility adapters or parity tests.` - needed
 
 ### Latest Round
 
-- Target: `none`
-- Result: `valid`
-- Summary: No eligible TypeScript port-plan tasks remain. Blocked tasks require plan updates or a deliberate unblock before more autonomous work can run.
-- Impact: The daemon stopped before calling the LLM because every parsed port-plan task is complete or blocked.
-- Failure kind: `no_eligible_tasks`
+- Target: `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.`
+- Result: `needs follow-up`
+- Summary: No summary
+- Errors: LLM response did not contain JSON or a fenced diff patch.
+- Failure kind: `parse`
 
 ### Blocked Backlog
 
-- `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.`
-  - Failures since success: `15`
-  - Autonomous revisit: `skipped; task failure budget exhausted`
-  - Failure kinds: `{"typescript_quality": 15}`
-  - Latest failure kind: `typescript_quality`
-  - Latest errors: Rejected proposal because fixture/capture/parity work must update a src/lib/logic/*.test.ts file that loads or asserts the generated fixture.; Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/zkpAcceleration.ts(7,22): error TS1005: ';' expected. ../../..src/lib/logic/zkpAccele...
-- `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.`
-  - Failures since success: `40`
-  - Autonomous revisit: `skipped; task failure budget exhausted`
-  - Failure kinds: `{"apply_check": 15, "invalid_no_change": 4, "parse": 16, "typescript_quality": 5}`
-  - Latest failure kind: `apply_check`
-  - Latest errors: Patch failed git apply --check.
-- `Task checkbox-111: Complete TDFOL security validator parity.`
-  - Failures since success: `18`
-  - Autonomous revisit: `skipped; task failure budget exhausted`
-  - Failure kinds: `{"preflight": 3, "typescript_quality": 15}`
-  - Latest failure kind: `typescript_quality`
-  - Latest errors: File edits failed validation and were rolled back.
-- `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.`
-  - Failures since success: `110`
-  - Autonomous revisit: `skipped; task failure budget exhausted`
-  - Failure kinds: `{"apply_check": 20, "invalid_no_change": 14, "parse": 73, "preflight": 1, "typescript_quality": 2}`
-  - Latest failure kind: `invalid_no_change`
-- `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.`
-  - Failures since success: `15`
-  - Autonomous revisit: `skipped; task failure budget exhausted`
-  - Failure kinds: `{"typescript_quality": 12, "validation": 3}`
-  - Latest failure kind: `typescript_quality`
-  - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/mlConfidence.ts(37,14): error TS1005: ')' expected. ../../..src/lib/logic/mlConfidenc...
-- `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.`
-  - Failures since success: `16`
-  - Autonomous revisit: `skipped; task failure budget exhausted`
-  - Failure kinds: `{"typescript_quality": 16}`
-  - Latest failure kind: `typescript_quality`
-  - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/modelArtifacts.ts(143,93): error TS1005: ';' expected. ../../..src/lib/logic/modelArt...
-- `Task checkbox-177: Remove 'nlpUnavailable' and 'mlUnavailable' capability flags once browser-native parity is implemented.`
-  - Failures since success: `5`
-  - Autonomous revisit: `skipped; task failure budget exhausted`
-  - Failure kinds: `{"typescript_quality": 5}`
-  - Latest failure kind: `typescript_quality`
-  - Latest errors: File edits failed validation and were rolled back.
-- `Task checkbox-181: Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.`
-  - Failures since success: `15`
-  - Autonomous revisit: `skipped; task failure budget exhausted`
-  - Failure kinds: `{"typescript_quality": 15}`
-  - Latest failure kind: `typescript_quality`
-  - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/evm.ts(37,33): error TS1005: ')' expected. ../../..src/lib/logic/evm.ts(37,44): error...
-- `Task checkbox-183: Port logic integration bridges to route to TS/WASM cores.`
-  - Failures since success: `16`
-  - Autonomous revisit: `skipped; task failure budget exhausted`
-  - Failure kinds: `{"typescript_quality": 14, "validation": 2}`
-  - Latest failure kind: `validation`
-  - Latest errors: File edits failed validation and were rolled back.
-- `Task checkbox-188: Port monitoring/metrics to in-browser telemetry objects and developer panels.`
-  - Failures since success: `15`
-  - Autonomous revisit: `skipped; task failure budget exhausted`
-  - Failure kinds: `{"typescript_quality": 14, "validation": 1}`
-  - Latest failure kind: `typescript_quality`
-  - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/telemetry.ts(34,34): error TS1005: ';' expected. ../../..src/lib/logic/telemetry.ts(3...
+- No blocked tasks in the current daemon backlog.
 
 ### Required Daemon Behavior
 
