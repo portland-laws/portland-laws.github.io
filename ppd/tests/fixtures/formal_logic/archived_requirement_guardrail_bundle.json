@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "archived_requirement_guardrail_bundle",
+  "bundleId": "guardrail-ppd-archived-requirements-building-permit-v1",
+  "generatedAt": "2026-05-02T00:00:00Z",
+  "archiveManifestId": "ppd-processor-archive-integration-2026-05-02",
+  "processorSuite": {
+    "submodulePath": "ipfs_datasets_py",
+    "processorPackage": "ipfs_datasets_py.processor",
+    "integrationMode": "manifest_only"
+  },
+  "processorHandoffIds": [
+    "handoff-ppd-permits-guidance-formal-logic"
+  ],
+  "automationBoundary": {
+    "planningMode": "fixture_only_no_browser",
+    "draftPreviewOnly": true,
+    "browserLaunchRequested": false,
+    "liveBrowserStarted": false,
+    "networkAccess": false,
+    "storesPrivateValues": false,
+    "storesRawBodies": false
+  },
+  "sourceEvidence": [
+    {
+      "sourceEvidenceId": "src-ppd-building-permit-public-guidance",
+      "canonicalDocumentId": "doc-ppd-building-permit-public-guidance",
+      "processorArchiveRecordId": "archive-ppd-building-permit-public-guidance",
+      "processorHandoffId": "handoff-ppd-permits-guidance-formal-logic",
+      "sourceUrl": "https://www.portland.gov/ppd/permits",
+      "canonicalUrl": "https://www.portland.gov/ppd/permits",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "contentHashPlaceholder": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "stale": false,
+      "citation": {
+        "title": "PP&D public permit guidance",
+        "locator": "fixture-public-guidance-section-building-permits",
+        "paraphrase": "The public guidance identifies project location and applicant contact information as inputs needed before a permit request can be prepared."
+      }
+    },
+    {
+      "sourceEvidenceId": "src-ppd-devhub-public-application-guidance",
+      "canonicalDocumentId": "doc-ppd-devhub-public-application-guidance",
+      "processorArchiveRecordId": "archive-ppd-devhub-public-application-guidance",
+      "processorHandoffId": "handoff-ppd-permits-guidance-formal-logic",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/how-apply-permit-devhub",
+      "canonicalUrl": "https://www.portland.gov/ppd/devhub/how-apply-permit-devhub",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "contentHashPlaceholder": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "stale": false,
+      "citation": {
+        "title": "PP&D public DevHub application guidance",
+        "locator": "fixture-public-guidance-section-application-draft",
+        "paraphrase": "The public guidance separates draft preparation from later application submission and payment actions."
+      }
+    }
+  ],
+  "requirements": [
+    {
+      "requirementId": "req-building-permit-project-location",
+      "requirementType": "user_fact",
+      "sourceEvidenceIds": [
+        "src-ppd-building-permit-public-guidance"
+      ],
+      "obligation": {
+        "kind": "provide_fact",
+        "actor": "applicant",
+        "factKey": "project.site_address",
+        "formalRule": "OBLIGATED(applicant, provide(project.site_address), before(agent.preview_draft_fields))"
+      },
+      "prerequisites": [
+        {
+          "prerequisiteId": "pre-project-location-known",
+          "predicate": "known(project.site_address)",
+          "requiredBefore": "preview_draft_fields"
+        }
+      ],
+      "stopGates": [
+        {
+          "gateId": "gate-missing-project-location",
+          "predicate": "missing(project.site_address)",
+          "defaultOutcome": "ask_user",
+          "blocksActionClasses": [
+            "reversible_draft_edit",
+            "consequential",
+            "financial"
+          ]
+        }
+      ],
+      "reversibleActions": [
+        {
+          "actionId": "preview-fill-project-site-address",
+          "actionClass": "reversible_draft_edit",
+          "mode": "preview_only",
+          "fieldKey": "project.site_address",
+          "beforeValue": "[REDACTED_EMPTY]",
+          "afterValue": "[REDACTED_USER_SUPPLIED_PROJECT_LOCATION]",
+          "executesInFixture": false
+        }
+      ],
+      "exactConfirmationRequiredFor": [
+        "submit_application",
+        "pay_fee",
+        "certify_statement"
+      ]
+    },
+    {
+      "requirementId": "req-building-permit-applicant-contact",
+      "requirementType": "user_fact",
+      "sourceEvidenceIds": [
+        "src-ppd-building-permit-public-guidance",
+        "src-ppd-devhub-public-application-guidance"
+      ],
+      "obligation": {
+        "kind": "provide_fact",
+        "actor": "applicant",
+        "factKey": "applicant.contact_email",
+        "formalRule": "OBLIGATED(applicant, provide(applicant.contact_email), before(agent.preview_draft_fields))"
+      },
+      "prerequisites": [
+        {
+          "prerequisiteId": "pre-applicant-contact-known",
+          "predicate": "known(applicant.contact_email)",
+          "requiredBefore": "preview_draft_fields"
+        }
+      ],
+      "stopGates": [
+        {
+          "gateId": "gate-missing-applicant-contact",
+          "predicate": "missing(applicant.contact_email)",
+          "defaultOutcome": "ask_user",
+          "blocksActionClasses": [
+            "reversible_draft_edit",
+            "consequential",
+            "financial"
+          ]
+        }
+      ],
+      "reversibleActions": [
+        {
+          "actionId": "preview-fill-applicant-contact-email",
+          "actionClass": "reversible_draft_edit",
+          "mode": "preview_only",
+          "fieldKey": "applicant.contact_email",
+          "beforeValue": "[REDACTED_EMPTY]",
+          "afterValue": "[REDACTED_USER_SUPPLIED_CONTACT_EMAIL]",
+          "executesInFixture": false
+        }
+      ],
+      "exactConfirmationRequiredFor": [
+        "submit_application",
+        "pay_fee",
+        "certify_statement"
+      ]
+    }
+  ],
+  "guardrails": [
+    {
+      "guardrailId": "guardrail-fail-closed-evidence-and-privacy",
+      "requirementIds": [
+        "req-building-permit-project-location",
+        "req-building-permit-applicant-contact"
+      ],
+      "defaultOutcome": "fail_closed",
+      "blockedWhen": [
+        "missing_citation",
+        "stale_evidence",
+        "private_value_present",
+        "raw_body_present"
+      ],
+      "formalRule": "PROHIBITED(agent, plan_autonomous_completion, if(any(missing_citation, stale_evidence, private_value_present, raw_body_present)))"
+    },
+    {
+      "guardrailId": "guardrail-exact-confirmation-for-risk-actions",
+      "requirementIds": [
+        "req-building-permit-project-location",
+        "req-building-permit-applicant-contact"
+      ],
+      "defaultOutcome": "fail_closed",
+      "blockedWhen": [
+        "consequential_action_without_exact_confirmation",
+        "financial_action_without_exact_confirmation"
+      ],
+      "formalRule": "PROHIBITED(agent, perform(consequential_or_financial_action), unless(exact_user_confirmation(action_id)))"
+    }
+  ],
+  "blockedActions": [
+    {
+      "actionId": "upload_official_document",
+      "actionClass": "consequential",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "defaultDecision": "refuse"
+    },
+    {
+      "actionId": "submit_application",
+      "actionClass": "consequential",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "defaultDecision": "refuse"
+    },
+    {
+      "actionId": "certify_statement",
+      "actionClass": "consequential",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "defaultDecision": "refuse"
+    },
+    {
+      "actionId": "pay_fee",
+      "actionClass": "financial",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "defaultDecision": "refuse"
+    },
+    {
+      "actionId": "schedule_inspection",
+      "actionClass": "consequential",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "defaultDecision": "refuse"
+    }
+  ],
+  "agentPlannerOutcome": {
+    "whenComplete": "ask_for_missing_facts_then_preview_reversible_draft_edits",
+    "whenBlocked": "fail_closed_and_request_user_or_human_review",
+    "mayAutonomouslySubmit": false,
+    "mayAutonomouslyPay": false,
+    "mayAutonomouslyUpload": false
+  }
+}

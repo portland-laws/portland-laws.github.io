@@ -1,0 +1,74 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "processor_archive_integration_manifest",
+  "manifestId": "ppd-processor-archive-integration-2026-05-02",
+  "manifestOnly": true,
+  "networkAccess": false,
+  "downloadedDocumentsIncluded": false,
+  "rawBodiesIncluded": false,
+  "privateDevhubArtifactsIncluded": false,
+  "processorSuite": {
+    "name": "ipfs_datasets_py processor",
+    "submodulePath": "ipfs_datasets_py",
+    "processorPackage": "ipfs_datasets_py.processor",
+    "usageMode": "read_only_archive_handoff_fixture"
+  },
+  "records": [
+    {
+      "sourceUrl": "https://www.portland.gov/ppd/permits",
+      "canonicalUrl": "https://www.portland.gov/ppd/permits",
+      "sourceEvidenceId": "src-ppd-permits-public-guidance",
+      "canonicalDocumentId": "doc-ppd-permits-public-guidance",
+      "contentHashPlaceholder": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "httpCachePlaceholder": {
+        "etag": "fixture-etag-ppd-permits",
+        "lastModified": "2026-05-01T00:00:00Z"
+      },
+      "processorHandoffId": "handoff-ppd-permits-public-guidance-to-formal-logic",
+      "processorArchiveRecordId": "archive-ppd-permits-public-guidance",
+      "archiveIntent": "normalize_public_guidance_for_requirement_extraction",
+      "skippedArtifacts": [
+        "raw_http_body",
+        "downloaded_document_bytes",
+        "browser_trace",
+        "screenshot",
+        "private_devhub_state"
+      ]
+    },
+    {
+      "sourceUrl": "https://www.portland.gov/ppd/building-permit-application-forms",
+      "canonicalUrl": "https://www.portland.gov/ppd/building-permit-application-forms",
+      "sourceEvidenceId": "src-ppd-building-forms-public-index",
+      "canonicalDocumentId": "doc-ppd-building-forms-public-index",
+      "contentHashPlaceholder": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "httpCachePlaceholder": {
+        "etag": "fixture-etag-ppd-building-forms",
+        "lastModified": "2026-05-01T00:00:00Z"
+      },
+      "processorHandoffId": "handoff-ppd-building-forms-to-formal-logic",
+      "processorArchiveRecordId": "archive-ppd-building-forms-public-index",
+      "archiveIntent": "normalize_public_form_index_for_document_requirement_extraction",
+      "skippedArtifacts": [
+        "raw_http_body",
+        "downloaded_document_bytes",
+        "browser_trace",
+        "screenshot",
+        "private_devhub_state"
+      ]
+    }
+  ],
+  "forbiddenActions": [
+    "crawl_network",
+    "download_documents",
+    "store_raw_bodies",
+    "read_private_devhub_data",
+    "launch_browser",
+    "authenticate",
+    "upload",
+    "submit",
+    "pay",
+    "certify",
+    "cancel",
+    "schedule_inspection"
+  ]
+}

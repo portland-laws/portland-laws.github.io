@@ -18,6 +18,7 @@ import py_compile
 import re
 import subprocess
 import sys
+import tempfile
 import threading
 import time
 import uuid
@@ -698,19 +699,70 @@ def call_llm(prompt: str, config: Config) -> str:
     backend = os.environ.get("PPD_LLM_BACKEND", "llm_router")
     if backend != "llm_router":
         raise RuntimeError(f"Unsupported PP&D LLM backend {backend!r}; expected 'llm_router'.")
+    prompt_file: Optional[Path] = None
     try:
-        from ipfs_datasets_py import llm_router
-    except Exception as exc:  # pragma: no cover - environment-dependent
-        raise RuntimeError(f"Could not import ipfs_datasets_py.llm_router: {exc}") from exc
-    return llm_router.generate_text(
-        prompt,
-        model_name=config.model_name,
-        provider=config.provider,
-        allow_local_fallback=config.allow_local_fallback,
-        timeout=config.llm_timeout_seconds,
-        max_new_tokens=4096,
-        temperature=0.1,
-    )
+        with tempfile.NamedTemporaryFile(
+            "w",
+            encoding="utf-8",
+            delete=False,
+            prefix="ppd-llm-prompt-",
+            suffix=".txt",
+        ) as handle:
+            handle.write(prompt)
+            prompt_file = Path(handle.name)
+        env = os.environ.copy()
+        env.update(
+            {
+                "PPD_LLM_PROMPT_FILE": str(prompt_file),
+                "PPD_LLM_MODEL_NAME": config.model_name,
+                "PPD_LLM_PROVIDER": config.provider or "",
+                "PPD_LLM_ALLOW_LOCAL_FALLBACK": "1" if config.allow_local_fallback else "0",
+                "PPD_LLM_TIMEOUT": str(config.llm_timeout_seconds),
+            }
+        )
+        child_code = r"""
+import os
+import pathlib
+import sys
+
+from ipfs_datasets_py import llm_router
+
+prompt = pathlib.Path(os.environ["PPD_LLM_PROMPT_FILE"]).read_text(encoding="utf-8")
+provider = os.environ.get("PPD_LLM_PROVIDER") or None
+text = llm_router.generate_text(
+    prompt,
+    model_name=os.environ["PPD_LLM_MODEL_NAME"],
+    provider=provider,
+    allow_local_fallback=os.environ.get("PPD_LLM_ALLOW_LOCAL_FALLBACK") == "1",
+    timeout=int(os.environ["PPD_LLM_TIMEOUT"]),
+    max_new_tokens=4096,
+    temperature=0.1,
+)
+sys.stdout.write("" if text is None else str(text))
+"""
+        completed = subprocess.run(
+            ["python3", "-c", child_code],
+            cwd=str(config.repo_root),
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            env=env,
+            timeout=config.llm_timeout_seconds + 30,
+            check=False,
+            start_new_session=True,
+        )
+    except subprocess.TimeoutExpired as exc:
+        raise RuntimeError(f"llm_router child timed out after {config.llm_timeout_seconds + 30} seconds") from exc
+    finally:
+        if prompt_file is not None:
+            try:
+                prompt_file.unlink()
+            except FileNotFoundError:
+                pass
+    if completed.returncode != 0:
+        details = compact_message((completed.stdout or "") + " " + (completed.stderr or ""), limit=1200)
+        raise RuntimeError(f"llm_router child exited with code {completed.returncode}: {details}")
+    return completed.stdout
 
 
 class Daemon:
@@ -764,7 +816,9 @@ class Daemon:
         try:
             raw = call_llm(build_prompt(self.config, selected), self.config)
             proposal = parse_proposal(raw)
-        except Exception as exc:
+        except KeyboardInterrupt:
+            raise
+        except BaseException as exc:
             proposal = Proposal(summary="LLM proposal failed.", errors=[compact_message(exc)], failure_kind="llm")
         proposal.target_task = selected.label
         proposal.dry_run = not self.config.apply
@@ -828,8 +882,11 @@ class Daemon:
             count = 0
             while True:
                 count += 1
-                proposals.append(self.run_cycle())
+                proposal = self.run_cycle()
+                proposals.append(proposal)
                 if not self.config.watch:
+                    break
+                if proposal.failure_kind == "no_eligible_tasks":
                     break
                 if self.config.iterations > 0 and count >= self.config.iterations:
                     break

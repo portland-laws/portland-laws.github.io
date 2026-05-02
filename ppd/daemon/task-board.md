@@ -190,12 +190,12 @@ Last updated: 2026-05-02T21:20:00.000000Z
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-02T21:42:25.792145Z
+Last updated: 2026-05-02T22:28:44.519436Z
 
-- Latest target: `Task checkbox-133: Task checkbox-133: Append a task-board-only supersession note for checkbox-108 only after checkbox-130 through checkbox-132 pass, preserving completed tasks and citing the accepted checkbox-109 evidence instead of implementing new domain artifacts.`
+- Latest target: `Task checkbox-140: Task checkbox-140: Add an end-to-end fixture-only handoff scenario plus focused validation linking processor archival evidence, extracted requirement nodes, formal-logic guardrails, and draft-only Playwright planning without live crawling, authenticated automation, raw browser state, or official DevHub actions.`
 - Latest result: `parse`
 - Latest summary: 
-- Counts: `{"blocked": 2, "complete": 130, "in_progress": 0, "needed": 1}`
+- Counts: `{"blocked": 0, "complete": 139, "in_progress": 0, "needed": 4}`
 
 <!-- ppd-daemon-task-board:end -->
 ## Checkbox-108 Supersession Note
@@ -204,12 +204,23 @@ Last updated: 2026-05-02T21:42:25.792145Z
 
 ## Built-In Goal Replenishment Tranche
 
-- [~] Task checkbox-134: Add a fixture-only processor archive integration manifest that maps PP&D public source URLs, canonical document IDs, content-hash placeholders, and processor handoff IDs without crawling, downloading documents, or storing raw bodies.
-- [ ] Task checkbox-135: Add validation for the processor archive integration manifest proving every archived public source has citation-backed provenance, no private DevHub data, no raw crawl output, and a deterministic handoff ID for formal-logic extraction.
-- [ ] Task checkbox-136: Add a mocked Playwright draft-fill plan fixture for one PP&D form that ranks selectors by evidence confidence, maps missing user facts to questions, and limits automation to reversible draft-only field previews.
-- [ ] Task checkbox-137: Add validation for the Playwright draft-fill plan fixture proving low-confidence selectors, uploads, submissions, payments, certifications, cancellations, MFA, CAPTCHA, and inspection scheduling remain refused by default.
-- [ ] Task checkbox-138: Add a fixture-only formal-logic guardrail bundle that translates one archived PP&D requirement set into obligations, prerequisites, stop gates, reversible actions, and exact-confirmation requirements.
-- [ ] Task checkbox-139: Add validation for formal-logic guardrail bundles proving missing citations, stale evidence, private values, and consequential or financial actions fail closed before any LLM agent may plan autonomous completion.
+- [x] Task checkbox-134: Add a fixture-only processor archive integration manifest that maps PP&D public source URLs, canonical document IDs, content-hash placeholders, and processor handoff IDs without crawling, downloading documents, or storing raw bodies.
+- [x] Task checkbox-135: Add validation for the processor archive integration manifest proving every archived public source has citation-backed provenance, no private DevHub data, no raw crawl output, and a deterministic handoff ID for formal-logic extraction.
+- [x] Task checkbox-136: Add a mocked Playwright draft-fill plan fixture for one PP&D form that ranks selectors by evidence confidence, maps missing user facts to questions, and limits automation to reversible draft-only field previews.
+- [x] Task checkbox-137: Add validation for the Playwright draft-fill plan fixture proving low-confidence selectors, uploads, submissions, payments, certifications, cancellations, MFA, CAPTCHA, and inspection scheduling remain refused by default.
+- [x] Task checkbox-138: Add a fixture-only formal-logic guardrail bundle that translates one archived PP&D requirement set into obligations, prerequisites, stop gates, reversible actions, and exact-confirmation requirements.
+- [x] Task checkbox-139: Add validation for formal-logic guardrail bundles proving missing citations, stale evidence, private values, and consequential or financial actions fail closed before any LLM agent may plan autonomous completion.
 ## Built-In Supervisor Planning Notes
 
 - The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
+
+## Built-In Goal Replenishment Tranche 2
+
+- [x] Task checkbox-140: Add an end-to-end fixture-only handoff scenario plus focused validation linking processor archival evidence, extracted requirement nodes, formal-logic guardrails, and draft-only Playwright planning without live crawling, authenticated automation, raw browser state, or official DevHub actions.
+- [~] Task checkbox-141: Add a fixture-only user gap-resolution scenario plus focused validation that turns missing PP&D facts, stale evidence flags, and document placeholders into source-linked user questions and refuses autonomous completion while gaps remain.
+- [ ] Task checkbox-142: Add supervisor adaptive-slice regression coverage proving completed board-level recovery tranches enable broader non-duplicate goal slices even when accepted daemon ledger rows lag behind manual validated recovery work.
+- [ ] Task checkbox-143: Add an offline Playwright draft transcript fixture plus focused validation proving future agents can plan accessible-selector fills from redacted state while preserving exact-confirmation gates for upload, submit, payment, certification, cancellation, MFA, CAPTCHA, and inspection scheduling.
+## Built-In Supervisor Planning Notes
+
+- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
+- Slice policy: `broad_integrated_after_green_streak`. Small slices are used after parse, syntax, validation, or task-board repair failures; broader integrated slices are used after a green accepted streak or a fully completed board-level recovery tranche.

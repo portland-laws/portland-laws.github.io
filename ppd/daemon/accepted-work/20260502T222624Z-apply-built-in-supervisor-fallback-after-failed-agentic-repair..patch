@@ -1,0 +1,99 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,5 +1,5 @@
+ {
+-  "createdAt": "2026-05-02T22:26:18.204555Z",
++  "createdAt": "2026-05-02T22:26:23.312656Z",
+   "decision": {
+     "action": "plan_next_tasks",
+     "reason": "all PP&D daemon tasks are complete; review the original PP&D goal and add the next task-board tranche",
+@@ -7,48 +7,10 @@
+   },
+   "failedAgenticRepair": {
+     "changedFiles": [],
+-    "errors": [
+-      "LLM response did not contain a JSON object."
+-    ],
+-    "failureKind": "parse",
+-    "summary": "",
+-    "validationResults": [
+-      {
+-        "command": [
+-          "python3",
+-          "ppd/daemon/ppd_daemon.py",
+-          "--self-test"
+-        ],
+-        "returncode": 0,
+-        "stderr": "",
+-        "stdout": "{ \"ok\": true, \"task_count\": 139 }"
+-      },
+-      {
+-        "command": [
+-          "python3",
+-          "-m",
+-          "unittest",
+-          "discover",
+-          "-s",
+-          "ppd/tests",
+-          "-p",
+-          "test_*.py"
+-        ],
+-        "returncode": 0,
+-        "stderr": ".....................................................................................................................................................................................................................................................................................................................................ss..............sss............................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 583 tests in 0.103s OK (skipped=5)",
+-        "stdout": ""
+-      },
+-      {
+-        "command": [
+-          "bash",
+-          "-lc",
+-          "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+-        ],
+-        "returncode": 0,
+-        "stderr": "",
+-        "stdout": ""
+-      }
+-    ]
++    "errors": [],
++    "failureKind": "no_eligible_tasks",
++    "summary": "All currently planned PP&D tasks are complete.",
++    "validationResults": []
+   },
+   "fallbackActions": [
+     "preserve failed repair diagnostics without accepting the invalid patch",
+@@ -68,8 +30,15 @@
+   "schemaVersion": 1,
+   "taskBoardRepair": {
+     "parkedRepeatedSyntaxLoopTasks": [],
+-    "replenishedGoalTaskLabels": [],
++    "replenishedGoalTaskLabels": [
++      "checkbox-140",
++      "checkbox-141",
++      "checkbox-142",
++      "checkbox-143",
++      "checkbox-144",
++      "checkbox-145"
++    ],
+     "supersededTaskBoardOnlyLabels": [],
+-    "taskBoardUpdated": false
++    "taskBoardUpdated": true
+   }
+ }
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -213,3 +213,16 @@
+ ## Built-In Supervisor Planning Notes
+ 
+ - The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
++
++## Built-In Goal Replenishment Tranche 2
++
++- [ ] Task checkbox-140: Add a fixture-only processor archive integration manifest that maps PP&D public source URLs, canonical document IDs, content-hash placeholders, and processor handoff IDs without crawling, downloading documents, or storing raw bodies.
++- [ ] Task checkbox-141: Add validation for the processor archive integration manifest proving every archived public source has citation-backed provenance, no private DevHub data, no raw crawl output, and a deterministic handoff ID for formal-logic extraction.
++- [ ] Task checkbox-142: Add a mocked Playwright draft-fill plan fixture for one PP&D form that ranks selectors by evidence confidence, maps missing user facts to questions, and limits automation to reversible draft-only field previews.
++- [ ] Task checkbox-143: Add validation for the Playwright draft-fill plan fixture proving low-confidence selectors, uploads, submissions, payments, certifications, cancellations, MFA, CAPTCHA, and inspection scheduling remain refused by default.
++- [ ] Task checkbox-144: Add a fixture-only formal-logic guardrail bundle that translates one archived PP&D requirement set into obligations, prerequisites, stop gates, reversible actions, and exact-confirmation requirements.
++- [ ] Task checkbox-145: Add validation for formal-logic guardrail bundles proving missing citations, stale evidence, private values, and consequential or financial actions fail closed before any LLM agent may plan autonomous completion.
++## Built-In Supervisor Planning Notes
++
++- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
++- Slice policy: `small_recovery_safe_after_failures`. Small slices are used after parse, syntax, validation, or task-board repair failures; broader integrated slices are used after a green accepted streak.

@@ -1,0 +1,171 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "archival_logic_playwright_handoff_scenario",
+  "scenarioId": "scenario-ppd-archive-logic-playwright-draft-v1",
+  "generatedAt": "2026-05-02T00:00:00Z",
+  "boundary": {
+    "fixtureOnly": true,
+    "networkAccess": false,
+    "liveBrowserStarted": false,
+    "authenticatedAutomation": false,
+    "rawBrowserStateStored": false,
+    "officialDevhubActionsAllowed": false
+  },
+  "archiveEvidence": [
+    {
+      "evidenceId": "src-ppd-public-permit-guidance",
+      "archiveManifestId": "ppd-processor-archive-integration-2026-05-02",
+      "processorHandoffId": "handoff-ppd-permits-guidance-formal-logic",
+      "sourceUrl": "https://www.portland.gov/ppd/permits",
+      "canonicalDocumentId": "doc-ppd-building-permit-public-guidance",
+      "contentHashPlaceholder": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "citation": {
+        "locator": "fixture-public-guidance-building-permit-inputs",
+        "paraphrase": "Public PP&D permit guidance requires enough project and applicant information to prepare a draft permit request."
+      }
+    },
+    {
+      "evidenceId": "src-ppd-public-devhub-guidance",
+      "archiveManifestId": "ppd-processor-archive-integration-2026-05-02",
+      "processorHandoffId": "handoff-ppd-devhub-guidance-playwright-draft",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/how-apply-permit-devhub",
+      "canonicalDocumentId": "doc-ppd-devhub-public-application-guidance",
+      "contentHashPlaceholder": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+      "citation": {
+        "locator": "fixture-public-guidance-devhub-draft-boundary",
+        "paraphrase": "Public DevHub guidance separates preparing draft information from later official submission, upload, certification, and payment steps."
+      }
+    }
+  ],
+  "requirementNodes": [
+    {
+      "nodeId": "req-project-site-address",
+      "nodeType": "required_user_fact",
+      "sourceEvidenceIds": [
+        "src-ppd-public-permit-guidance"
+      ],
+      "formalPredicate": "required(project.site_address)",
+      "obligation": "OBLIGATED(applicant, provide(project.site_address), before(agent.preview_draft_fields))"
+    },
+    {
+      "nodeId": "req-applicant-contact-email",
+      "nodeType": "required_user_fact",
+      "sourceEvidenceIds": [
+        "src-ppd-public-permit-guidance",
+        "src-ppd-public-devhub-guidance"
+      ],
+      "formalPredicate": "required(applicant.contact_email)",
+      "obligation": "OBLIGATED(applicant, provide(applicant.contact_email), before(agent.preview_draft_fields))"
+    }
+  ],
+  "guardrailNodes": [
+    {
+      "nodeId": "gate-missing-required-facts",
+      "nodeType": "stop_gate",
+      "sourceEvidenceIds": [
+        "src-ppd-public-permit-guidance"
+      ],
+      "defaultOutcome": "ask_user",
+      "blocksWhen": [
+        "missing(project.site_address)",
+        "missing(applicant.contact_email)"
+      ]
+    },
+    {
+      "nodeId": "gate-official-devhub-actions",
+      "nodeType": "exact_confirmation_gate",
+      "sourceEvidenceIds": [
+        "src-ppd-public-devhub-guidance"
+      ],
+      "defaultOutcome": "refuse",
+      "blocksActions": [
+        "upload_official_document",
+        "submit_application",
+        "certify_statement",
+        "pay_fee",
+        "cancel_request",
+        "schedule_inspection",
+        "mfa",
+        "captcha"
+      ],
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false
+    }
+  ],
+  "playwrightDraftPlan": {
+    "planId": "draft-plan-redacted-building-permit-inputs",
+    "mode": "preview_only",
+    "sourceEvidenceIds": [
+      "src-ppd-public-devhub-guidance"
+    ],
+    "actions": [
+      {
+        "actionId": "preview-fill-project-site-address",
+        "linkedRequirementNodeId": "req-project-site-address",
+        "linkedGuardrailNodeId": "gate-missing-required-facts",
+        "actionClass": "reversible_draft_edit",
+        "selector": {
+          "basis": "role_and_accessible_name",
+          "role": "textbox",
+          "accessibleName": "Project site address",
+          "confidence": 0.93
+        },
+        "beforeValue": "[REDACTED_EMPTY]",
+        "afterValue": "[REDACTED_USER_SUPPLIED_PROJECT_LOCATION]",
+        "executesInFixture": false
+      },
+      {
+        "actionId": "preview-fill-applicant-contact-email",
+        "linkedRequirementNodeId": "req-applicant-contact-email",
+        "linkedGuardrailNodeId": "gate-missing-required-facts",
+        "actionClass": "reversible_draft_edit",
+        "selector": {
+          "basis": "label_text",
+          "role": "textbox",
+          "accessibleName": "Applicant email",
+          "confidence": 0.91
+        },
+        "beforeValue": "[REDACTED_EMPTY]",
+        "afterValue": "[REDACTED_USER_SUPPLIED_CONTACT_EMAIL]",
+        "executesInFixture": false
+      }
+    ]
+  },
+  "handoffEdges": [
+    {
+      "from": "src-ppd-public-permit-guidance",
+      "to": "req-project-site-address",
+      "edgeType": "evidence_supports_requirement"
+    },
+    {
+      "from": "src-ppd-public-devhub-guidance",
+      "to": "gate-official-devhub-actions",
+      "edgeType": "evidence_supports_guardrail"
+    },
+    {
+      "from": "req-project-site-address",
+      "to": "preview-fill-project-site-address",
+      "edgeType": "requirement_enables_reversible_preview"
+    },
+    {
+      "from": "req-applicant-contact-email",
+      "to": "preview-fill-applicant-contact-email",
+      "edgeType": "requirement_enables_reversible_preview"
+    },
+    {
+      "from": "gate-official-devhub-actions",
+      "to": "submit_application",
+      "edgeType": "guardrail_blocks_official_action_by_default"
+    }
+  ],
+  "refusedOfficialActions": [
+    "upload_official_document",
+    "submit_application",
+    "certify_statement",
+    "pay_fee",
+    "cancel_request",
+    "schedule_inspection",
+    "mfa",
+    "captcha"
+  ]
+}

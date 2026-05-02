@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "mocked_playwright_draft_fill_plan",
+  "planId": "mocked-playwright-draft-fill-plan-building-permit-contact-v1",
+  "planningMode": "fixture_only_no_browser",
+  "browserLaunchRequested": false,
+  "liveBrowserStarted": false,
+  "targetForm": {
+    "formId": "building-permit-contact-information",
+    "processId": "single-family-residence-building-permit-synthetic",
+    "stableUrlState": "devhub:building-permit:contact-information-draft",
+    "sourceEvidenceIds": [
+      "src-ppd-permits-public-guidance",
+      "src-ppd-building-forms-public-index"
+    ]
+  },
+  "selectorPolicy": {
+    "minimumConfidence": 0.82,
+    "allowedSelectorBasis": [
+      "role_and_accessible_name",
+      "label_text",
+      "nearby_heading_and_label"
+    ],
+    "disallowedSelectorBasis": [
+      "css_only",
+      "xpath_only",
+      "placeholder_only",
+      "unlabeled_input_index"
+    ],
+    "refuseLowConfidenceBeforeBrowser": true
+  },
+  "draftPreviewOnly": true,
+  "fields": [
+    {
+      "fieldId": "applicant-email",
+      "requiredUserFactId": "user.applicant.email",
+      "missingFactQuestion": "What email address should the City use for application contact notices?",
+      "redactedPreviewValue": "",
+      "plannedMutation": "set_text_preview_only",
+      "mutationReversible": true,
+      "rankedSelectors": [
+        {
+          "rank": 1,
+          "selector": "getByRole('textbox', { name: 'Applicant email address' })",
+          "selectorBasis": "role_and_accessible_name",
+          "role": "textbox",
+          "accessibleName": "Applicant email address",
+          "labelText": "Applicant email address",
+          "nearbyHeading": "Applicant contact",
+          "confidence": 0.97,
+          "decision": "allow_draft_preview",
+          "evidence": [
+            "role=textbox",
+            "accessibleName=Applicant email address",
+            "labelText=Applicant email address",
+            "nearbyHeading=Applicant contact"
+          ]
+        },
+        {
+          "rank": 2,
+          "selector": "getByLabel('Applicant email address')",
+          "selectorBasis": "label_text",
+          "role": "textbox",
+          "accessibleName": "Applicant email address",
+          "labelText": "Applicant email address",
+          "nearbyHeading": "Applicant contact",
+          "confidence": 0.9,
+          "decision": "allow_draft_preview",
+          "evidence": [
+            "labelText=Applicant email address",
+            "nearbyHeading=Applicant contact"
+          ]
+        },
+        {
+          "rank": 3,
+          "selector": "input[name='email']",
+          "selectorBasis": "css_only",
+          "role": "textbox",
+          "accessibleName": "",
+          "labelText": "",
+          "nearbyHeading": "Applicant contact",
+          "confidence": 0.44,
+          "decision": "refuse_low_confidence",
+          "refusalReason": "Selector lacks accessible name and label evidence."
+        }
+      ]
+    },
+    {
+      "fieldId": "project-description",
+      "requiredUserFactId": "user.project.scope_summary",
+      "missingFactQuestion": "Briefly describe the work proposed for this permit.",
+      "redactedPreviewValue": "",
+      "plannedMutation": "set_text_preview_only",
+      "mutationReversible": true,
+      "rankedSelectors": [
+        {
+          "rank": 1,
+          "selector": "getByRole('textbox', { name: 'Project description' })",
+          "selectorBasis": "role_and_accessible_name",
+          "role": "textbox",
+          "accessibleName": "Project description",
+          "labelText": "Project description",
+          "nearbyHeading": "Project information",
+          "confidence": 0.95,
+          "decision": "allow_draft_preview",
+          "evidence": [
+            "role=textbox",
+            "accessibleName=Project description",
+            "labelText=Project description",
+            "nearbyHeading=Project information"
+          ]
+        },
+        {
+          "rank": 2,
+          "selector": "textarea:nth-of-type(2)",
+          "selectorBasis": "css_only",
+          "role": "textbox",
+          "accessibleName": "",
+          "labelText": "",
+          "nearbyHeading": "Project information",
+          "confidence": 0.31,
+          "decision": "refuse_low_confidence",
+          "refusalReason": "Selector is positional CSS without accessible evidence."
+        }
+      ]
+    }
+  ],
+  "refusedActions": [
+    "upload",
+    "submit",
+    "payment",
+    "certify",
+    "cancel",
+    "schedule_inspection",
+    "mfa",
+    "captcha",
+    "account_creation",
+    "password_recovery"
+  ],
+  "forbiddenArtifacts": [
+    "auth_state",
+    "storage_state",
+    "browser_trace",
+    "screenshot",
+    "downloaded_document",
+    "private_user_value"
+  ]
+}

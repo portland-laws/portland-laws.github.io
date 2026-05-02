@@ -349,32 +349,68 @@ def next_checkbox_number(markdown: str) -> int:
     return (max(values) + 1) if values else 1
 
 
-def builtin_replenish_goal_tasks(markdown: str) -> tuple[str, tuple[str, ...]]:
-    """Append a deterministic fixture-first tranche when agentic planning fails."""
+def recent_accepted_streak(rows: list[dict[str, Any]], *, limit: int = 8) -> int:
+    streak = 0
+    for row in reversed(rows):
+        if row.get("applied") and row.get("validation_passed") and not row.get("errors"):
+            streak += 1
+            if streak >= limit:
+                break
+            continue
+        break
+    return streak
+
+
+def should_use_broader_goal_slices(rows: list[dict[str, Any]]) -> bool:
+    """Allow wider fallback tasks only after the daemon has proven stability."""
+
+    return recent_accepted_streak(rows, limit=4) >= 4
+
+
+def builtin_replenish_goal_tasks(markdown: str, rows: Optional[list[dict[str, Any]]] = None) -> tuple[str, tuple[str, ...]]:
+    """Append a deterministic fixture-first tranche when agentic planning fails.
+
+    The fallback starts with small recovery-safe slices after failures, then uses
+    broader implementation-plus-validation slices after a healthy accepted streak.
+    """
 
     tasks = parse_tasks(markdown)
     if not tasks or any(task.status in {"needed", "in-progress"} for task in tasks):
         return markdown, ()
-    if "## Built-In Goal Replenishment Tranche" in markdown:
-        return markdown, ()
 
     start = next_checkbox_number(markdown)
-    templates = [
-        "Add a fixture-only processor archive integration manifest that maps PP&D public source URLs, canonical document IDs, content-hash placeholders, and processor handoff IDs without crawling, downloading documents, or storing raw bodies.",
-        "Add validation for the processor archive integration manifest proving every archived public source has citation-backed provenance, no private DevHub data, no raw crawl output, and a deterministic handoff ID for formal-logic extraction.",
-        "Add a mocked Playwright draft-fill plan fixture for one PP&D form that ranks selectors by evidence confidence, maps missing user facts to questions, and limits automation to reversible draft-only field previews.",
-        "Add validation for the Playwright draft-fill plan fixture proving low-confidence selectors, uploads, submissions, payments, certifications, cancellations, MFA, CAPTCHA, and inspection scheduling remain refused by default.",
-        "Add a fixture-only formal-logic guardrail bundle that translates one archived PP&D requirement set into obligations, prerequisites, stop gates, reversible actions, and exact-confirmation requirements.",
-        "Add validation for formal-logic guardrail bundles proving missing citations, stale evidence, private values, and consequential or financial actions fail closed before any LLM agent may plan autonomous completion.",
-    ]
+    existing_tranche_count = markdown.count("## Built-In Goal Replenishment Tranche")
+    heading = "## Built-In Goal Replenishment Tranche"
+    if existing_tranche_count:
+        heading = f"## Built-In Goal Replenishment Tranche {existing_tranche_count + 1}"
+    broader = should_use_broader_goal_slices(rows or []) or existing_tranche_count > 0
+    if broader:
+        templates = [
+            "Add an end-to-end fixture-only handoff scenario plus focused validation linking processor archival evidence, extracted requirement nodes, formal-logic guardrails, and draft-only Playwright planning without live crawling, authenticated automation, raw browser state, or official DevHub actions.",
+            "Add a fixture-only user gap-resolution scenario plus focused validation that turns missing PP&D facts, stale evidence flags, and document placeholders into source-linked user questions and refuses autonomous completion while gaps remain.",
+            "Add supervisor adaptive-slice regression coverage proving completed board-level recovery tranches enable broader non-duplicate goal slices even when accepted daemon ledger rows lag behind manual validated recovery work.",
+            "Add an offline Playwright draft transcript fixture plus focused validation proving future agents can plan accessible-selector fills from redacted state while preserving exact-confirmation gates for upload, submit, payment, certification, cancellation, MFA, CAPTCHA, and inspection scheduling.",
+        ]
+        policy = "broad_integrated_after_green_streak"
+    else:
+        templates = [
+            "Add a fixture-only processor archive integration manifest that maps PP&D public source URLs, canonical document IDs, content-hash placeholders, and processor handoff IDs without crawling, downloading documents, or storing raw bodies.",
+            "Add validation for the processor archive integration manifest proving every archived public source has citation-backed provenance, no private DevHub data, no raw crawl output, and a deterministic handoff ID for formal-logic extraction.",
+            "Add a mocked Playwright draft-fill plan fixture for one PP&D form that ranks selectors by evidence confidence, maps missing user facts to questions, and limits automation to reversible draft-only field previews.",
+            "Add validation for the Playwright draft-fill plan fixture proving low-confidence selectors, uploads, submissions, payments, certifications, cancellations, MFA, CAPTCHA, and inspection scheduling remain refused by default.",
+            "Add a fixture-only formal-logic guardrail bundle that translates one archived PP&D requirement set into obligations, prerequisites, stop gates, reversible actions, and exact-confirmation requirements.",
+            "Add validation for formal-logic guardrail bundles proving missing citations, stale evidence, private values, and consequential or financial actions fail closed before any LLM agent may plan autonomous completion.",
+        ]
+        policy = "small_recovery_safe_after_failures"
     labels = tuple(f"checkbox-{start + offset}" for offset in range(len(templates)))
-    lines = ["", "## Built-In Goal Replenishment Tranche", ""]
+    lines = ["", heading, ""]
     for offset, text in enumerate(templates):
         lines.append(f"- [ ] Task checkbox-{start + offset}: {text}")
     note = (
         "\n"
         "## Built-In Supervisor Planning Notes\n\n"
         "- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.\n"
+        f"- Slice policy: `{policy}`. Small slices are used after parse, syntax, validation, or task-board repair failures; broader integrated slices are used after a green accepted streak.\n"
     )
     return markdown.rstrip() + "\n" + "\n".join(lines) + note, labels
 
@@ -770,7 +806,7 @@ def invoke_builtin_repair(
     repaired_board, superseded_labels = builtin_supersession_repair_task_board(repaired_board, rows)
     replenished_labels: tuple[str, ...] = ()
     if decision.action == "plan_next_tasks":
-        repaired_board, replenished_labels = builtin_replenish_goal_tasks(repaired_board)
+        repaired_board, replenished_labels = builtin_replenish_goal_tasks(repaired_board, rows)
     payload = build_builtin_repair_status_payload(decision, failed_proposal)
     payload["taskBoardRepair"] = {
         "parkedRepeatedSyntaxLoopTasks": list(parked_titles),
@@ -858,6 +894,20 @@ def run_once(config: SupervisorConfig) -> SupervisorDecision:
             config,
             decision,
             Proposal(summary="Worker returned empty task-board truncation proposal.", failure_kind="no_change"),
+        )
+        if config.restart_daemon:
+            run_control(config, "start")
+    elif decision.action == "plan_next_tasks" and config.apply:
+        if config.restart_daemon:
+            run_control(config, "stop")
+        proposal = invoke_builtin_repair(
+            config,
+            decision,
+            Proposal(
+                summary="All currently planned PP&D tasks are complete.",
+                impact="Supervisor used deterministic goal review to append the next daemon tranche.",
+                failure_kind="no_eligible_tasks",
+            ),
         )
         if config.restart_daemon:
             run_control(config, "start")
@@ -1033,7 +1083,31 @@ def self_test(repo_root: Path) -> int:
     if replenished_labels != ("checkbox-3", "checkbox-4", "checkbox-5", "checkbox-6", "checkbox-7", "checkbox-8"):
         errors.append(f"unexpected replenished labels: {replenished_labels}")
     if builtin_replenish_goal_tasks(replenished_board)[1]:
-        errors.append("built-in goal replenishment should be idempotent")
+        errors.append("built-in goal replenishment should not append while new tasks remain selectable")
+    completed_first_tranche = replenished_board.replace("- [ ] Task checkbox-3:", "- [x] Task checkbox-3:")
+    completed_first_tranche = completed_first_tranche.replace("- [ ] Task checkbox-4:", "- [x] Task checkbox-4:")
+    completed_first_tranche = completed_first_tranche.replace("- [ ] Task checkbox-5:", "- [x] Task checkbox-5:")
+    completed_first_tranche = completed_first_tranche.replace("- [ ] Task checkbox-6:", "- [x] Task checkbox-6:")
+    completed_first_tranche = completed_first_tranche.replace("- [ ] Task checkbox-7:", "- [x] Task checkbox-7:")
+    completed_first_tranche = completed_first_tranche.replace("- [ ] Task checkbox-8:", "- [x] Task checkbox-8:")
+    second_tranche, second_labels = builtin_replenish_goal_tasks(completed_first_tranche)
+    if second_labels != ("checkbox-9", "checkbox-10", "checkbox-11", "checkbox-12"):
+        errors.append(f"unexpected second replenishment labels: {second_labels}")
+    if "## Built-In Goal Replenishment Tranche 2" not in second_tranche:
+        errors.append("second built-in replenishment should use a numbered heading")
+    accepted_rows = [
+        {"applied": True, "validation_passed": True},
+        {"applied": True, "validation_passed": True},
+        {"applied": True, "validation_passed": True},
+        {"applied": True, "validation_passed": True},
+    ]
+    if not should_use_broader_goal_slices(accepted_rows):
+        errors.append("green accepted streak should enable broader goal slices")
+    broad_board, broad_labels = builtin_replenish_goal_tasks(complete_goal_board, accepted_rows)
+    if broad_labels != ("checkbox-3", "checkbox-4", "checkbox-5", "checkbox-6"):
+        errors.append(f"unexpected broader replenished labels: {broad_labels}")
+    if "broad_integrated_after_green_streak" not in broad_board:
+        errors.append("broader replenishment should record adaptive slice policy")
     invalid_repair = Proposal(summary="bad repair", errors=["Validation failed"], failure_kind="validation")
     repair_decision = SupervisorDecision(
         action="repair_daemon_programming",
@@ -1053,6 +1127,14 @@ def self_test(repo_root: Path) -> int:
         errors.append("built-in repair payload must preserve llm_router backend")
     if "failedAgenticRepair" not in payload:
         errors.append("built-in repair payload missing failed repair diagnostics")
+    plan_decision = SupervisorDecision(
+        action="plan_next_tasks",
+        reason="synthetic complete board",
+        severity="info",
+        should_invoke_codex=True,
+    )
+    if not should_apply_builtin_repair(plan_decision, invalid_repair):
+        errors.append("plan-next-tasks fallback should remain available")
     nested_title = title_from_task_label("Task checkbox-113: Task checkbox-108: Add frontier checkpoint.")
     if nested_title != "Add frontier checkpoint.":
         errors.append(f"nested task title parsing failed: {nested_title}")
