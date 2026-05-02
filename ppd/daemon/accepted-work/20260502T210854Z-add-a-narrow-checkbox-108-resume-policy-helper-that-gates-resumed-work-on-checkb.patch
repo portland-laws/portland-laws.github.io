@@ -1,0 +1,188 @@
+--- a/ppd/daemon/checkbox_108_resume_policy.py
++++ b/ppd/daemon/checkbox_108_resume_policy.py
+@@ -0,0 +1,185 @@
++"""Resume policy for parked checkbox-108 public frontier checkpoint work.
++
++This module is intentionally daemon-local and artifact-free. It does not add
++crawler contracts, public corpus fixtures, raw crawl output, or network behavior.
++It only captures the narrow recovery rule for checkbox-126:
++
++* checkbox-108 may be resumed only after checkbox-122 through checkbox-125 pass.
++* if checkbox-109 already proves the checkpoint fixture contract, checkbox-108 is
++  superseded instead of retried with new domain artifacts.
++* any real retry must be exactly one syntax-preflightable Python test file or one
++  small JSON fixture file.
++"""
++
++from __future__ import annotations
++
++from dataclasses import dataclass
++from enum import Enum
++from pathlib import PurePosixPath
++from typing import Iterable, Mapping, Sequence
++
++
++CHECKBOX_108 = "checkbox-108"
++CHECKBOX_109 = "checkbox-109"
++REQUIRED_GATE_TASKS = frozenset({"checkbox-122", "checkbox-123", "checkbox-124", "checkbox-125"})
++
++ALLOWED_RETRY_SUFFIXES = frozenset({".py", ".json"})
++FORBIDDEN_RETRY_PATH_PARTS = frozenset(
++    {
++        "crawler",
++        "public",
++        "raw",
++        "src",
++        "ipfs_datasets_py",
++        "private",
++        "traces",
++        "downloads",
++    }
++)
++FORBIDDEN_RETRY_FILENAMES = frozenset(
++    {
++        "frontier.py",
++        "documents.py",
++        "ppd_daemon.ts",
++    }
++)
++
++
++class Checkbox108Decision(str, Enum):
++    BLOCKED = "blocked"
++    SUPERSEDED = "superseded"
++    RETRY_ALLOWED = "retry_allowed"
++
++
++@dataclass(frozen=True)
++class ResumeProposal:
++    """Candidate resumed-worker proposal shape for checkbox-108."""
++
++    changed_files: tuple[str, ...]
++
++
++@dataclass(frozen=True)
++class ResumeDecision:
++    decision: Checkbox108Decision
++    reasons: tuple[str, ...]
++
++    @property
++    def allowed(self) -> bool:
++        return self.decision in {Checkbox108Decision.SUPERSEDED, Checkbox108Decision.RETRY_ALLOWED}
++
++
++def decide_checkbox_108_resume(
++    completed_tasks: Iterable[str],
++    accepted_evidence: Mapping[str, Sequence[str]],
++    proposal: ResumeProposal | None = None,
++) -> ResumeDecision:
++    """Return the daemon decision for a checkbox-108 resume attempt.
++
++    accepted_evidence maps task ids to file-level evidence strings such as test,
++    fixture, or accepted-work paths. The helper deliberately treats checkbox-109
++    evidence as enough to supersede checkbox-108 only after the supervisor repair
++    gate tasks have passed.
++    """
++
++    completed = frozenset(completed_tasks)
++    missing_gates = tuple(sorted(REQUIRED_GATE_TASKS.difference(completed)))
++    if missing_gates:
++        return ResumeDecision(
++            decision=Checkbox108Decision.BLOCKED,
++            reasons=(
++                "checkbox-108 resume is blocked until checkbox-122 through checkbox-125 pass",
++                "missing gate tasks: " + ", ".join(missing_gates),
++            ),
++        )
++
++    checkbox_109_evidence = tuple(item for item in accepted_evidence.get(CHECKBOX_109, ()) if item.strip())
++    if CHECKBOX_109 in completed and checkbox_109_evidence:
++        return ResumeDecision(
++            decision=Checkbox108Decision.SUPERSEDED,
++            reasons=(
++                "checkbox-109 is complete and has file-level accepted evidence",
++                "mark checkbox-108 superseded instead of adding public crawl frontier artifacts",
++                "evidence: " + ", ".join(checkbox_109_evidence),
++            ),
++        )
++
++    if proposal is None:
++        return ResumeDecision(
++            decision=Checkbox108Decision.BLOCKED,
++            reasons=(
++                "checkbox-109 supersession evidence is absent",
++                "a resumed checkbox-108 retry must include a one-file syntax-preflightable proposal",
++            ),
++        )
++
++    proposal_errors = validate_checkbox_108_retry_proposal(proposal)
++    if proposal_errors:
++        return ResumeDecision(decision=Checkbox108Decision.BLOCKED, reasons=tuple(proposal_errors))
++
++    return ResumeDecision(
++        decision=Checkbox108Decision.RETRY_ALLOWED,
++        reasons=(
++            "gate tasks passed",
++            "checkbox-109 supersession evidence is absent",
++            "retry proposal is exactly one syntax-preflightable Python or JSON file",
++        ),
++    )
++
++
++def validate_checkbox_108_retry_proposal(proposal: ResumeProposal) -> list[str]:
++    """Validate the deliberately small resumed-worker proposal shape."""
++
++    errors: list[str] = []
++    if len(proposal.changed_files) != 1:
++        errors.append("resumed checkbox-108 proposal must change exactly one file")
++        return errors
++
++    raw_path = proposal.changed_files[0]
++    path = PurePosixPath(raw_path)
++    suffix = path.suffix.lower()
++    parts = set(path.parts)
++
++    if not raw_path.startswith("ppd/"):
++        errors.append("resumed checkbox-108 proposal must stay under ppd/")
++    if suffix not in ALLOWED_RETRY_SUFFIXES:
++        errors.append("resumed checkbox-108 proposal must be syntax-preflightable .py or .json")
++    if path.name in FORBIDDEN_RETRY_FILENAMES:
++        errors.append(f"resumed checkbox-108 proposal may not rewrite shared or crawler file {path.name}")
++    forbidden_parts = sorted(FORBIDDEN_RETRY_PATH_PARTS.intersection(parts))
++    if forbidden_parts:
++        errors.append("resumed checkbox-108 proposal uses forbidden path parts: " + ", ".join(forbidden_parts))
++    if suffix == ".py" and not raw_path.startswith("ppd/tests/"):
++        errors.append("resumed checkbox-108 Python retry must be a focused test under ppd/tests/")
++    if suffix == ".json" and not raw_path.startswith("ppd/tests/fixtures/"):
++        errors.append("resumed checkbox-108 JSON retry must be a committed test fixture under ppd/tests/fixtures/")
++
++    return errors
++
++
++def _self_test() -> None:
++    blocked = decide_checkbox_108_resume({"checkbox-122"}, {})
++    assert blocked.decision == Checkbox108Decision.BLOCKED
++
++    superseded = decide_checkbox_108_resume(
++        REQUIRED_GATE_TASKS.union({CHECKBOX_109}),
++        {CHECKBOX_109: ("ppd/tests/test_frontier_checkpoint_contract.py",)},
++    )
++    assert superseded.decision == Checkbox108Decision.SUPERSEDED
++
++    retry_allowed = decide_checkbox_108_resume(
++        REQUIRED_GATE_TASKS,
++        {},
++        ResumeProposal(("ppd/tests/test_checkbox_108_frontier_checkpoint.py",)),
++    )
++    assert retry_allowed.decision == Checkbox108Decision.RETRY_ALLOWED
++
++    retry_blocked = decide_checkbox_108_resume(
++        REQUIRED_GATE_TASKS,
++        {},
++        ResumeProposal(("ppd/crawler/frontier.py",)),
++    )
++    assert retry_blocked.decision == Checkbox108Decision.BLOCKED
++
++
++if __name__ == "__main__":
++    _self_test()

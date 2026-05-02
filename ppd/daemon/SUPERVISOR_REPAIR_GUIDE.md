@@ -27,13 +27,33 @@ The daemon should classify this condition as syntax-preflight recovery, not as a
 - Run syntax-only preflight mentally for every changed Python or TypeScript file before returning JSON.
 - Prefer adding or tightening daemon guidance, preflight, diagnostics, task selection, retry handling, or tests over editing PP&D crawler, DevHub, extraction, logic, or contract artifacts.
 
+## Early Detection Scope Gate
+
+Before full validation, the daemon or supervisor prompt should reject a syntax-recovery proposal that combines broad domain implementation with parser-bearing files. The early gate should fire when recent failures mention `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128` and the proposal touches frontier, crawler, PP&D contract, DevHub automation, extraction, or logic implementation paths.
+
+Allowed retry shapes in syntax-recovery mode are:
+
+- One syntax-valid Python file.
+- One syntax-valid TypeScript file.
+- One small JSON fixture plus one syntax-valid Python unittest file.
+- One daemon prompt, diagnostic, preflight, retry, recovery, or task-selection file under `ppd/daemon/`.
+
+Rejected retry shapes in syntax-recovery mode are:
+
+- A contract file plus a test file plus a fixture in one proposal.
+- A new near-duplicate domain contract while an accepted committed contract already covers the same fixture shape.
+- Any proposal that mixes crawler code, crawl contracts, public fixtures, and tests before the parser-clean source file is accepted.
+- Any proposal that resumes live crawl, authenticated DevHub automation, upload, submission, payment, certification, cancellation, or inspection scheduling work.
+
+The supervisor prompt should name the failed syntax kind, name the failed file when known, and explicitly instruct the next worker to repair only that syntactic surface before adding richer assertions or domain behavior.
+
 ## Retry Scope
 
 When three or more consecutive rounds fail with `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128`, shrink the next daemon attempt to one of these file sets:
 
-- One syntax-valid Python unittest file
-- One small JSON fixture plus one syntax-valid Python unittest file
-- One daemon prompt, diagnostic, preflight, or task-selection file under `ppd/daemon/`
+- One syntax-valid Python unittest file.
+- One small JSON fixture plus one syntax-valid Python unittest file.
+- One daemon prompt, diagnostic, preflight, or task-selection file under `ppd/daemon/`.
 
 Do not broaden the retry into contract rewrites, crawler changes, DevHub automation, or application/domain artifacts. If a fixture and a test are both needed, keep both files short and deterministic.
 
@@ -70,6 +90,8 @@ For any retry that touches Python files, the daemon should run syntax-only check
 2. `python3 ppd/tests/validate_ppd.py`
 
 For any retry that touches TypeScript files, the daemon should run strict TypeScript parsing before the full PP&D validation suite. If syntax preflight fails, reject the patch immediately and preserve the failure kind as `syntax_preflight`. Do not run broader validation after a syntax failure.
+
+The syntax preflight should also reject broad parser-bearing retries before full validation. A retry that touches frontier, crawler, or PP&D contract paths after repeated parser failures may change only one Python or TypeScript source file. A tiny JSON fixture may accompany one focused Python unittest, but source-plus-contract-plus-test proposals must be split into separate daemon cycles.
 
 ## Separation From Domain Work
 

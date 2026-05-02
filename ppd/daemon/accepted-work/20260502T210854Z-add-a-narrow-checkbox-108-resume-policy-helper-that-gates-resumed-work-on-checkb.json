@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/checkbox_108_resume_policy.py"
+  ],
+  "created_at": "2026-05-02T21:08:54.744776Z",
+  "impact": "This advances checkbox-126 without adding crawler/domain artifacts: the resumed checkbox-108 path now has a deterministic daemon-local policy for either superseding from existing checkbox-109 evidence or constraining any retry to one small preflightable file.",
+  "summary": "Add a narrow checkbox-108 resume policy helper that gates resumed work on checkbox-122 through checkbox-125, detects checkbox-109 supersession evidence, and enforces a one-file syntax-preflightable retry shape.",
+  "target_task": "Task checkbox-126: Task checkbox-126: Resume checkbox-108 only after checkbox-122 through checkbox-125 pass, and limit the resumed worker proposal to one file that is syntax-preflightable before full validation; if checkbox-109 already proves the checkpoint fixture contract, mark checkbox-108 superseded in the task board instead of adding domain artifacts.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 129 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".......................................................................................................................................................................................................................................................................................................................ss..............sss....................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 561 tests in 0.097s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

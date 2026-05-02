@@ -156,12 +156,12 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 - [x] Task checkbox-122: Add a daemon diagnostic fixture proving the blocked checkbox-108 public crawl frontier task is resumable only as one syntax-valid replacement file, or can be superseded when checkbox-109 validation already covers the fixture shape. Do not edit crawl contracts, crawler code, or public fixtures.
 - [x] Task checkbox-123: Add validation for the checkbox-122 diagnostic proving it reports the blocked task ID, the accepted successor validation task ID, the allowed one-file retry shape, and the prohibited broad rewrite shape without implementing the public crawl frontier checkpoint.
 - [x] Task checkbox-124: Add daemon prompt guidance that converts the checkbox-108 blocked state into a deterministic next instruction: inspect committed frontier-related tests first, then either mark the task superseded with evidence or retry with exactly one syntactically valid Python test or one small JSON fixture. Do not create new crawl output.
-- [~] Task checkbox-125: Add task-board replenishment validation proving a board with one blocked domain task and no selectable tasks gets this narrow supervisor tranche appended while preserving all completed tasks and leaving the blocked task parked.
-- [ ] Task checkbox-126: Resume checkbox-108 only after checkbox-122 through checkbox-125 pass, and limit the resumed worker proposal to one file that is syntax-preflightable before full validation; if checkbox-109 already proves the checkpoint fixture contract, mark checkbox-108 superseded in the task board instead of adding domain artifacts.
+- [x] Task checkbox-125: Add task-board replenishment validation proving a board with one blocked domain task and no selectable tasks gets this narrow supervisor tranche appended while preserving all completed tasks and leaving the blocked task parked.
+- [x] Task checkbox-126: Resume checkbox-108 only after checkbox-122 through checkbox-125 pass, and limit the resumed worker proposal to one file that is syntax-preflightable before full validation; if checkbox-109 already proves the checkpoint fixture contract, mark checkbox-108 superseded in the task board instead of adding domain artifacts.
 
 ## Supervisor Syntax-Validity Guardrail Tranche
 
-- [ ] Task checkbox-127: Add daemon validation that a syntax-recovery worker proposal touching a blocked domain task is rejected when it changes more than one source file or omits syntax-preflight evidence for every changed Python or TypeScript file.
+- [~] Task checkbox-127: Add daemon validation that a syntax-recovery worker proposal touching a blocked domain task is rejected when it changes more than one source file or omits syntax-preflight evidence for every changed Python or TypeScript file.
 - [ ] Task checkbox-128: Add a tiny fixture proving repeated Python SyntaxError, py_compile, TS1005, TS1109, or TS1128 failures convert the next daemon prompt into a one-file repair instruction rather than a broad domain contract rewrite.
 - [ ] Task checkbox-129: Add validation for the checkbox-128 fixture proving the prompt names the failed syntax kind, lists the allowed one-file retry shape, and explicitly defers live crawl, authenticated automation, and crawler contract implementation.
 
@@ -181,3 +181,14 @@ Last updated: 2026-05-02T21:00:00.000000Z
 - Counts: `{"blocked": 1, "complete": 123, "in_progress": 0, "needed": 5}`
 
 
+<!-- ppd-daemon-task-board:start -->
+## Generated Status
+
+Last updated: 2026-05-02T21:08:54.746679Z
+
+- Latest target: `Task checkbox-126: Task checkbox-126: Resume checkbox-108 only after checkbox-122 through checkbox-125 pass, and limit the resumed worker proposal to one file that is syntax-preflightable before full validation; if checkbox-109 already proves the checkpoint fixture contract, mark checkbox-108 superseded in the task board instead of adding domain artifacts.`
+- Latest result: `accepted`
+- Latest summary: Add a narrow checkbox-108 resume policy helper that gates resumed work on checkbox-122 through checkbox-125, detects checkbox-109 supersession evidence, and enforces a one-file syntax-preflightable retry shape.
+- Counts: `{"blocked": 1, "complete": 125, "in_progress": 0, "needed": 3}`
+
+<!-- ppd-daemon-task-board:end -->
