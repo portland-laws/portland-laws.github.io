@@ -1,0 +1,189 @@
+#!/usr/bin/env python3
+"""Shape diagnostics for PP&D JSON fixtures.
+
+This helper intentionally reports only structural hints: top-level keys,
+obvious list fields, and first object keys. It does not validate PP&D domain
+semantics or infer required fields.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import tempfile
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Any, Optional
+
+
+@dataclass(frozen=True)
+class JsonFixtureShape:
+    fixture_path: str
+    top_level_type: str
+    top_level_keys: tuple[str, ...]
+    list_fields: tuple[str, ...]
+    first_object_keys: dict[str, tuple[str, ...]]
+
+    def to_dict(self) -> dict[str, Any]:
+        return {
+            "fixture_path": self.fixture_path,
+            "top_level_type": self.top_level_type,
+            "top_level_keys": list(self.top_level_keys),
+            "list_fields": list(self.list_fields),
+            "first_object_keys": {
+                key: list(value)
+                for key, value in sorted(self.first_object_keys.items())
+            },
+        }
+
+
+def describe_json_fixture(repo_root: Path, fixture_path: str) -> JsonFixtureShape:
+    """Return narrow shape diagnostics for a repository-relative JSON fixture."""
+
+    normalized = _normalize_repo_relative_path(fixture_path)
+    path = repo_root / normalized
+    data = _load_json(path)
+    return describe_json_object(data, normalized)
+
+
+def describe_json_object(data: Any, fixture_path: str = "") -> JsonFixtureShape:
+    """Describe top-level JSON shape without applying domain validation."""
+
+    top_level_type = _json_type_name(data)
+    if isinstance(data, dict):
+        top_level_keys = tuple(sorted(str(key) for key in data.keys()))
+        list_fields = tuple(
+            sorted(str(key) for key, value in data.items() if isinstance(value, list))
+        )
+        first_object_keys = _first_object_keys_for_mapping(data)
+    elif isinstance(data, list):
+        top_level_keys = ()
+        list_fields = ("",)
+        first_object_keys = _first_object_keys_for_sequence(data, "")
+    else:
+        top_level_keys = ()
+        list_fields = ()
+        first_object_keys = {}
+    return JsonFixtureShape(
+        fixture_path=fixture_path,
+        top_level_type=top_level_type,
+        top_level_keys=top_level_keys,
+        list_fields=list_fields,
+        first_object_keys=first_object_keys,
+    )
+
+
+def _normalize_repo_relative_path(path: str) -> str:
+    candidate = Path(path)
+    if candidate.is_absolute():
+        raise ValueError(f"fixture path must be repository-relative: {path}")
+    normalized = candidate.as_posix()
+    if normalized in {"", ".", ".."} or normalized.startswith("../") or "/../" in normalized:
+        raise ValueError(f"fixture path must stay within the repository: {path}")
+    if not normalized.endswith(".json"):
+        raise ValueError(f"fixture path must point to a JSON file: {path}")
+    return normalized
+
+
+def _load_json(path: Path) -> Any:
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except FileNotFoundError as exc:
+        raise ValueError(f"fixture does not exist: {path}") from exc
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"fixture is not valid JSON: {path}: {exc}") from exc
+
+
+def _first_object_keys_for_mapping(data: dict[Any, Any]) -> dict[str, tuple[str, ...]]:
+    result: dict[str, tuple[str, ...]] = {}
+    for key, value in data.items():
+        field = str(key)
+        if isinstance(value, dict):
+            result[field] = tuple(sorted(str(child_key) for child_key in value.keys()))
+        elif isinstance(value, list):
+            result.update(_first_object_keys_for_sequence(value, field))
+    return result
+
+
+def _first_object_keys_for_sequence(data: list[Any], field: str) -> dict[str, tuple[str, ...]]:
+    for item in data:
+        if isinstance(item, dict):
+            return {field: tuple(sorted(str(key) for key in item.keys()))}
+    return {}
+
+
+def _json_type_name(value: Any) -> str:
+    if isinstance(value, dict):
+        return "object"
+    if isinstance(value, list):
+        return "array"
+    if isinstance(value, str):
+        return "string"
+    if isinstance(value, bool):
+        return "boolean"
+    if isinstance(value, (int, float)) and not isinstance(value, bool):
+        return "number"
+    if value is None:
+        return "null"
+    return type(value).__name__
+
+
+def self_test() -> int:
+    errors: list[str] = []
+    synthetic = {
+        "schemaVersion": 1,
+        "seeds": [
+            {"id": "seed-a", "url": "https://www.portland.gov/ppd"},
+            {"id": "seed-b", "url": "https://www.portland.gov/ppd/permits"},
+        ],
+        "policy": {"robots": "respect", "timeoutSeconds": 20},
+        "notes": [],
+    }
+    shape = describe_json_object(synthetic).to_dict()
+    if shape["top_level_keys"] != ["notes", "policy", "schemaVersion", "seeds"]:
+        errors.append(f"unexpected top-level keys: {shape['top_level_keys']}")
+    if shape["list_fields"] != ["notes", "seeds"]:
+        errors.append(f"unexpected list fields: {shape['list_fields']}")
+    if shape["first_object_keys"].get("seeds") != ["id", "url"]:
+        errors.append(f"unexpected first object keys: {shape['first_object_keys']}")
+
+    with tempfile.TemporaryDirectory() as tmpdir:
+        repo_root = Path(tmpdir)
+        fixture = repo_root / "ppd/tests/fixtures/synthetic_shape.json"
+        fixture.parent.mkdir(parents=True)
+        fixture.write_text(json.dumps(synthetic, sort_keys=True), encoding="utf-8")
+        file_shape = describe_json_fixture(repo_root, "ppd/tests/fixtures/synthetic_shape.json")
+        if file_shape.to_dict() != {
+            **shape,
+            "fixture_path": "ppd/tests/fixtures/synthetic_shape.json",
+        }:
+            errors.append("temporary fixture shape did not match in-memory shape")
+
+    if errors:
+        print(json.dumps({"ok": False, "errors": errors}, indent=2), flush=True)
+        return 1
+    print(json.dumps({"ok": True, "shape": shape}, indent=2), flush=True)
+    return 0
+
+
+def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description="Report narrow JSON fixture shape diagnostics.")
+    parser.add_argument("fixture_path", nargs="?", help="Repository-relative JSON fixture path")
+    parser.add_argument("--repo-root", default=".", help="Repository root")
+    parser.add_argument("--self-test", action="store_true", help="Run deterministic helper self-test")
+    return parser.parse_args(argv)
+
+
+def main(argv: Optional[list[str]] = None) -> int:
+    args = parse_args(argv)
+    if args.self_test:
+        return self_test()
+    if not args.fixture_path:
+        raise SystemExit("fixture_path is required unless --self-test is used")
+    shape = describe_json_fixture(Path(args.repo_root).resolve(), str(args.fixture_path))
+    print(json.dumps(shape.to_dict(), indent=2, sort_keys=True))
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

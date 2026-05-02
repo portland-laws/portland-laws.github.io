@@ -490,7 +490,7 @@ Acceptance criteria:
 - [x] Port every TDFOL inference rule from `logic/TDFOL/tdfol_inference_rules.py`.
   - [x] Initial first-order rule slice: universal modus ponens, existential instantiation, existential generalization, and universal generalization.
 - [x] Port propositional tableaux expansion rules from `logic/TDFOL/expansion_rules.py`.
-- [!] Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.
+- [x] Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.
   - [x] Initial forward-chaining strategy and selector parity.
   - [x] Initial backward-chaining strategy parity for direct goals, conjunctive goals, and implication-goal reduction.
   - [x] Initial bidirectional strategy parity with backward-first proof search and bounded forward fallback.
@@ -701,11 +701,11 @@ That PR gives the project immediate product value without committing to a full t
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-02 06:07:48 UTC
+Last updated: 2026-05-02 06:13:08 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.`
+Current target: `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -808,7 +808,7 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-95: Port every TDFOL inference rule from 'logic/TDFOL/tdfol_inference_rules.py'.` - complete
 - [x] `Task checkbox-96: Initial first-order rule slice: universal modus ponens, existential instantiation, existential generalization, and universal generalization.` - complete
 - [x] `Task checkbox-97: Port propositional tableaux expansion rules from 'logic/TDFOL/expansion_rules.py'.` - complete
-- [!] `Task checkbox-98: Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.` - blocked
+- [x] `Task checkbox-98: Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.` - validated by latest daemon round
 - [x] `Task checkbox-99: Initial forward-chaining strategy and selector parity.` - complete
 - [x] `Task checkbox-100: Initial backward-chaining strategy parity for direct goals, conjunctive goals, and implication-goal reduction.` - complete
 - [x] `Task checkbox-101: Initial bidirectional strategy parity with backward-first proof search and bounded forward fallback.` - complete
@@ -904,31 +904,18 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-191: Replace Python API/CLI surfaces with TypeScript developer scripts or browser devtools.` - complete
 - [x] `Task checkbox-192: Initial browser-native public API facade for 'logic/api.py' import-surface parity.` - complete
 - [!] `Task checkbox-193: Add CLI/devtools command adapter parity for 'logic/cli.py'.` - blocked
-- [!] `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.` - latest daemon round failed validation or preflight
+- [!] `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.` - blocked
 
 ### Latest Round
 
-- Target: `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.`
-- Result: `needs follow-up`
-- Summary: Add browser-native IPLD proof cache contract with fail-closed verification
-- Impact: Adds a deterministic TypeScript IPLD proof cache under src/lib/logic/ and focused Jest coverage. The logic-port validation suite can exercise cache persistence, expiry, browser IPFS block hydration, and fail-closed verification without server, filesystem, subprocess, RPC, Python, or Node-only fallbacks.
-- Errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/ipldProofCache.ts(98,80): error TS1005: ')' expected.
-../../..src/lib/logic/ipldProofCache.ts(109,3): error TS1434: Unexpected keyword or identifier.
-../../..src/lib/logic/ipldProofCache.ts(109,28): error TS1005: ',' expected.
-../../..src/lib/logic/ipldProofCache.ts(109,42): error TS1005: ',' expected.
-../../..src/lib/logic/ipldProofCache.ts(109,51): error TS1005: ';' expected.
-../../..src/lib/logic/ipldProofCache.ts(109,53): error TS1434: Unexpected keyword or identifier.
-../../..src/lib/logic/ipldProofCache.ts(127,3): error TS1128: Declaration or statement expected.
-- Failure kind: `preflight`
+- Target: `Task checkbox-98: Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.`
+- Result: `valid`
+- Summary: Add CEC proof explainer dependency graph metadata parity.
+- Impact: The CEC proof explainer now exposes browser-native dependency metadata derived from ProofResult steps, including topological order, leaf premises, premise-to-theorem paths, critical path, and graph size. The focused Jest test asserts that metadata and rendered text so validate:logic-port exercises the parity surface without Python, filesystem, RPC, or server fallbacks.
+- Accepted changed files: `src/lib/logic/cec/proofExplainer.test.ts`, `src/lib/logic/cec/proofExplainer.ts`
 
 ### Blocked Backlog
 
-- `Task checkbox-98: Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.`
-  - Failures since success: `15`
-  - Failure kinds: `{"file_repair_validation": 5, "parse": 1, "preflight": 1, "validation": 8}`
-  - Latest failure kind: `preflight`
-  - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/proofTools.ts(89,26): error TS1442: Expected '=' for property initializer. ../../..sr...
 - `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.`
   - Failures since success: `15`
   - Failure kinds: `{"file_repair_validation": 1, "preflight": 9, "validation": 4, "validation_repair": 1}`
@@ -973,6 +960,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
   - Failure kinds: `{"file_repair_validation": 1, "preflight": 7, "validation": 2, "validation_repair": 5}`
   - Latest failure kind: `validation`
   - Latest errors: File edits failed validation and were rolled back.
+- `Task checkbox-188: Port monitoring/metrics to in-browser telemetry objects and developer panels.`
+  - Failures since success: `15`
+  - Failure kinds: `{"preflight": 9, "validation": 2, "validation_repair": 4}`
+  - Latest failure kind: `preflight`
+  - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/telemetry.ts(34,34): error TS1005: ';' expected. ../../..src/lib/logic/telemetry.ts(3...
 
 ### Required Daemon Behavior
 

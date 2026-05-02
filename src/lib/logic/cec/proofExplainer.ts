@@ -1,4 +1,5 @@
 import type { ProofResult, ProofStep } from '../types';
+import { buildCecDependencyGraph } from './dependencyGraph';
 
 export type CecProofType = 'forward_chaining' | 'cached_forward' | 'strategy_selection' | 'hybrid';
 export type CecExplanationLevel = 'brief' | 'normal' | 'detailed';
@@ -12,18 +13,36 @@ export interface CecExplainedStep {
   naturalLanguage: string;
 }
 
-export interface CecProofExplanation {
+export interface CecProofDependencyPath {
+  premise: string;
+  path: string[];
+}
+
+export interface CecProofDependencyMetadata {
+  nodes: number;
+  edges: number;
+  topologicalOrder: string[];
+  leafPremises: string[];
+  criticalPath: string[];
+  premisePaths: CecProofDependencyPath[];
+}
+
+interface CecProofExplanationBase {
   expression: string;
   isProved: boolean;
   proofType: CecProofType;
   steps: CecExplainedStep[];
   summary: string;
   inferenceChain: string[];
-  statistics: Record<string, unknown>;
+  statistics: { [key: string]: unknown };
+  dependencyGraph: CecProofDependencyMetadata;
+}
+
+export interface CecProofExplanation extends CecProofExplanationBase {
   text: string;
 }
 
-const CEC_RULE_DESCRIPTIONS: Record<string, string> = {
+const CEC_RULE_DESCRIPTIONS: { [ruleName: string]: string } = {
   CecModusPonens: 'Given an implication and its antecedent, conclude the consequent.',
   CecConjunctionEliminationLeft: 'Take the left expression from a CEC conjunction.',
   CecConjunctionEliminationRight: 'Take the right expression from a CEC conjunction.',
@@ -36,16 +55,23 @@ const CEC_RULE_DESCRIPTIONS: Record<string, string> = {
 export class CecProofExplainer {
   constructor(private readonly level: CecExplanationLevel = 'normal') {}
 
-  explainProof(result: ProofResult, proofType: CecProofType = 'forward_chaining'): CecProofExplanation {
-    const steps = result.steps.map((step, index) => this.explainStep(step, index + 1));
-    const explanation: Omit<CecProofExplanation, 'text'> = {
+  explainProof(
+    result: ProofResult,
+    proofType: CecProofType = 'forward_chaining',
+  ): CecProofExplanation {
+    const steps = result.steps.map((step: ProofStep, index: number) =>
+      this.explainStep(step, index + 1),
+    );
+    const dependencyGraph = buildDependencyMetadata(result);
+    const explanation: CecProofExplanationBase = {
       expression: result.theorem,
       isProved: result.status === 'proved',
       proofType,
       steps,
       summary: this.generateSummary(result, steps, proofType),
-      inferenceChain: steps.map((step) => step.naturalLanguage),
-      statistics: this.computeStatistics(result, steps),
+      inferenceChain: steps.map((step: CecExplainedStep) => step.naturalLanguage),
+      statistics: this.computeStatistics(result, steps, dependencyGraph),
+      dependencyGraph,
     };
     return { ...explanation, text: renderCecProofExplanation(explanation) };
   }
@@ -60,9 +86,10 @@ export class CecProofExplainer {
   }
 
   private explainStep(step: ProofStep, stepNumber: number): CecExplainedStep {
-    const naturalLanguage = this.level === 'brief'
-      ? `Step ${stepNumber}: derived ${step.conclusion}.`
-      : `Step ${stepNumber}: applied ${step.rule} to derive ${step.conclusion}.`;
+    const naturalLanguage =
+      this.level === 'brief'
+        ? `Step ${stepNumber}: derived ${step.conclusion}.`
+        : `Step ${stepNumber}: applied ${step.rule} to derive ${step.conclusion}.`;
     return {
       stepNumber,
       ruleName: step.rule,
@@ -73,7 +100,11 @@ export class CecProofExplainer {
     };
   }
 
-  private generateSummary(result: ProofResult, steps: CecExplainedStep[], proofType: CecProofType): string {
+  private generateSummary(
+    result: ProofResult,
+    steps: CecExplainedStep[],
+    proofType: CecProofType,
+  ): string {
     if (result.status === 'proved') {
       return `Proved ${result.theorem} using ${proofType} in ${steps.length} step${steps.length === 1 ? '' : 's'}.`;
     }
@@ -83,13 +114,25 @@ export class CecProofExplainer {
     return `No CEC proof for ${result.theorem} was found with the selected local rules.`;
   }
 
-  private computeStatistics(result: ProofResult, steps: CecExplainedStep[]): Record<string, unknown> {
+  private computeStatistics(
+    result: ProofResult,
+    steps: CecExplainedStep[],
+    dependencyGraph: CecProofDependencyMetadata,
+  ): { [key: string]: unknown } {
     return {
       status: result.status,
       method: result.method ?? 'unknown',
       step_count: steps.length,
-      rules_used: [...new Set(steps.map((step) => step.ruleName).filter(Boolean))],
-      proof_depth: steps.length,
+      rules_used: [
+        ...new Set(steps.map((step: CecExplainedStep) => step.ruleName).filter(Boolean)),
+      ],
+      proof_depth:
+        dependencyGraph.criticalPath.length > 0
+          ? dependencyGraph.criticalPath.length - 1
+          : steps.length,
+      dependency_nodes: dependencyGraph.nodes,
+      dependency_edges: dependencyGraph.edges,
+      leaf_premise_count: dependencyGraph.leafPremises.length,
     };
   }
 }
@@ -102,7 +145,7 @@ export function explainCecProof(
   return new CecProofExplainer(level).explainProof(result, proofType);
 }
 
-export function renderCecProofExplanation(explanation: Omit<CecProofExplanation, 'text'>): string {
+export function renderCecProofExplanation(explanation: CecProofExplanationBase): string {
   const lines = [
     `CEC proof of: ${explanation.expression}`,
     `Result: ${explanation.isProved ? 'PROVED' : 'NOT PROVED'}`,
@@ -120,7 +163,55 @@ export function renderCecProofExplanation(explanation: Omit<CecProofExplanation,
   }
   if (explanation.inferenceChain.length > 0) {
     lines.push('', 'Reasoning Chain:');
-    explanation.inferenceChain.forEach((item, index) => lines.push(`  ${index + 1}. ${item}`));
+    explanation.inferenceChain.forEach((item: string, index: number) =>
+      lines.push(`  ${index + 1}. ${item}`),
+    );
+  }
+  if (explanation.dependencyGraph.criticalPath.length > 0) {
+    lines.push('', 'Dependency Graph:');
+    lines.push(
+      `  Nodes: ${explanation.dependencyGraph.nodes}; edges: ${explanation.dependencyGraph.edges}`,
+    );
+    lines.push(`  Critical path: ${explanation.dependencyGraph.criticalPath.join(' -> ')}`);
   }
   return lines.join('\n');
+}
+
+function buildDependencyMetadata(result: ProofResult): CecProofDependencyMetadata {
+  const graph = buildCecDependencyGraph(result);
+  const graphJson = graph.toJson();
+  const topologicalOrder = safeTopologicalOrder(graph);
+  const theorem = result.theorem;
+  const leafPremises = graphJson.nodes
+    .filter(
+      (node) =>
+        (node.type === 'premise' || node.type === 'axiom') &&
+        !graphJson.edges.some((edge) => edge.target === node.id),
+    )
+    .map((node) => node.formula)
+    .sort();
+  const premisePaths = leafPremises
+    .map((premise: string) => ({ premise, path: graph.findPath(premise, theorem) }))
+    .filter((item: CecProofDependencyPath) => item.path.length > 0);
+  const criticalPath = premisePaths.reduce(
+    (longest: string[], item: CecProofDependencyPath) =>
+      item.path.length > longest.length ? item.path : longest,
+    [] as string[],
+  );
+  return {
+    nodes: graphJson.nodes.length,
+    edges: graphJson.edges.length,
+    topologicalOrder,
+    leafPremises,
+    criticalPath,
+    premisePaths,
+  };
+}
+
+function safeTopologicalOrder(graph: { topologicalOrder(): string[] }): string[] {
+  try {
+    return graph.topologicalOrder();
+  } catch {
+    return [];
+  }
 }

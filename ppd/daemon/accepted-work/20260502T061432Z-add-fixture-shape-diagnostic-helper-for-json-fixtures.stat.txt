@@ -1,0 +1,2 @@
+ppd/daemon/fixture_shape.py
+ppd/tests/test_fixture_shape.py

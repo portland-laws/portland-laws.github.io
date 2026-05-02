@@ -191,3 +191,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T050759Z-add-browser-native-expansion-rule-parity-helper-with-diagnostics-strategy-orderi.json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T050759Z-add-browser-native-expansion-rule-parity-helper-with-diagnostics-strategy-orderi.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T050759Z-add-browser-native-expansion-rule-parity-helper-with-diagnostics-strategy-orderi.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-02 06:13:09 UTC
+
+- Target: `Task checkbox-98: Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.`
+- Summary: Add CEC proof explainer dependency graph metadata parity.
+- Impact: The CEC proof explainer now exposes browser-native dependency metadata derived from ProofResult steps, including topological order, leaf premises, premise-to-theorem paths, critical path, and graph size. The focused Jest test asserts that metadata and rendered text so validate:logic-port exercises the parity surface without Python, filesystem, RPC, or server fallbacks.
+- Changed files: `src/lib/logic/cec/proofExplainer.test.ts`, `src/lib/logic/cec/proofExplainer.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T061309Z-add-cec-proof-explainer-dependency-graph-metadata-parity..json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T061309Z-add-cec-proof-explainer-dependency-graph-metadata-parity..patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T061309Z-add-cec-proof-explainer-dependency-graph-metadata-parity..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
