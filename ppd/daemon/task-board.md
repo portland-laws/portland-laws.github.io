@@ -108,11 +108,11 @@ Last updated: 2026-05-02T05:35:00Z
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-02T05:59:32.743953Z
+Last updated: 2026-05-02T06:10:38.809777Z
 
-- Latest target: `Task checkbox-57: Task checkbox-52: Wire the existing `ppd/daemon/syntax_preflight.py` helper into `ppd/daemon/ppd_daemon.py` apply flow. After file replacements are written and before full validation, run changed-file syntax preflight; on parser failure, roll back immediately with failure kind `syntax_preflight`, compact diagnostics, and no broad unittest run. Keep this to one daemon file if possible.`
-- Latest result: `not_applied`
-- Latest summary: Unable to safely produce the required complete-file JSON replacement in this read-only execution context.
-- Counts: `{"blocked": 2, "complete": 54, "in_progress": 0, "needed": 4}`
+- Latest target: `Task checkbox-60: Task checkbox-55: Resume checkbox-48 only after checkbox-52 through checkbox-54 pass. Use a single syntax-valid Python test file that validates the committed `ppd/tests/fixtures/crawler/public_crawl_dry_run_plan.json` fixture in place; do not introduce `ppd/contracts/planned_crawl_manifest.py`, live crawling, authenticated automation, or broad shared-contract rewrites.`
+- Latest result: `validation`
+- Latest summary: Add a single fixture-only Python validation test for the committed public crawl dry-run plan fixture.
+- Counts: `{"blocked": 2, "complete": 57, "in_progress": 0, "needed": 1}`
 
 <!-- ppd-daemon-task-board:end -->
