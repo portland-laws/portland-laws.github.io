@@ -1,0 +1,96 @@
+import json
+import unittest
+from pathlib import Path
+from typing import Any
+
+
+FIXTURE_PATH = Path(__file__).parent / "fixtures" / "user_case_state" / "redacted_case_state.json"
+REDACTED_MARKERS = ("[REDACTED]", "[REDACTED FILE PLACEHOLDER]", "[REDACTED STATUS]", "[REDACTED PAYMENT STATUS]", "[REDACTED MESSAGE SUBJECT]", "[REDACTED MESSAGE BODY]", "[REDACTED TASK LABEL]")
+FORBIDDEN_ACTIONS = {"submit_application", "upload_official_correction", "pay_fees"}
+FORBIDDEN_RAW_KEYS = {"rawValue", "unredactedValue", "localFilePath", "browserTrace", "screenshotPath", "downloadPath"}
+
+
+class UserCaseStateRedactionFixtureTest(unittest.TestCase):
+    maxDiff = None
+
+    def setUp(self) -> None:
+        with FIXTURE_PATH.open(encoding="utf-8") as fixture_file:
+            self.fixture: dict[str, Any] = json.load(fixture_file)
+        self.evidence_ids = {item["id"] for item in self.fixture["requirementEvidence"]}
+
+    def test_missing_facts_are_redacted_source_linked_and_non_actionable(self) -> None:
+        missing_facts = self.fixture["missingFacts"]
+        self.assertGreaterEqual(len(missing_facts), 1)
+        for fact in missing_facts:
+            self.assertIn(fact["value"], REDACTED_MARKERS)
+            self.assertEqual(fact["planningDefault"], "ask_user_only")
+            self.assert_sources_exist(fact)
+            self.assert_no_forbidden_raw_keys(fact)
+
+    def test_file_placeholders_are_redacted_and_do_not_reference_private_files(self) -> None:
+        placeholders = self.fixture["filePlaceholders"]
+        self.assertGreaterEqual(len(placeholders), 1)
+        for placeholder in placeholders:
+            self.assertEqual(placeholder["displayName"], "[REDACTED FILE PLACEHOLDER]")
+            self.assertIsNone(placeholder["storagePath"])
+            self.assertIsNone(placeholder["contentHash"])
+            self.assertEqual(placeholder["planningDefault"], "prepare_checklist_only")
+            self.assert_sources_exist(placeholder)
+            self.assert_no_forbidden_raw_keys(placeholder)
+
+    def test_draft_and_submitted_statuses_are_redacted_and_block_consequential_planning(self) -> None:
+        statuses = self.fixture["applicationStatus"]
+        for status_key in ("draftStatus", "submittedStatus"):
+            status = statuses[status_key]
+            self.assertIn(status["visibleLabel"], REDACTED_MARKERS)
+            self.assertIs(status["blocksConsequentialPlanningByDefault"], True)
+            self.assert_sources_exist(status)
+            self.assert_no_forbidden_raw_keys(status)
+
+    def test_payment_status_is_redacted_source_linked_and_blocks_financial_planning(self) -> None:
+        payment_status = self.fixture["paymentStatus"]
+        self.assertEqual(payment_status["visibleLabel"], "[REDACTED PAYMENT STATUS]")
+        self.assertEqual(payment_status["amountDue"], "[REDACTED]")
+        self.assertIsNone(payment_status["paymentMethod"])
+        self.assertIs(payment_status["blocksFinancialPlanningByDefault"], True)
+        self.assert_sources_exist(payment_status)
+        self.assert_no_forbidden_raw_keys(payment_status)
+
+    def test_messages_and_outstanding_tasks_remain_redacted_and_source_linked(self) -> None:
+        for message in self.fixture["messages"]:
+            self.assertEqual(message["sender"], "[REDACTED]")
+            self.assertEqual(message["subject"], "[REDACTED MESSAGE SUBJECT]")
+            self.assertEqual(message["body"], "[REDACTED MESSAGE BODY]")
+            self.assert_sources_exist(message)
+            self.assert_no_forbidden_raw_keys(message)
+
+        for task in self.fixture["outstandingTasks"]:
+            self.assertEqual(task["label"], "[REDACTED TASK LABEL]")
+            self.assert_sources_exist(task)
+            self.assert_no_forbidden_raw_keys(task)
+            if task["requiredAction"] == "pay_fees":
+                self.assertIs(task["blocksFinancialPlanningByDefault"], True)
+            else:
+                self.assertIs(task["blocksConsequentialPlanningByDefault"], True)
+
+    def test_consequential_and_financial_action_planning_is_blocked_by_default(self) -> None:
+        action_defaults = self.fixture["actionPlanningDefaults"]
+        actions = {item["action"] for item in action_defaults}
+        self.assertTrue(FORBIDDEN_ACTIONS.issubset(actions))
+        for action_default in action_defaults:
+            self.assertIn(action_default["classification"], {"consequential", "financial"})
+            self.assertIs(action_default["exactUserConfirmationPresent"], False)
+            self.assertIs(action_default["blockedByDefault"], True)
+            self.assert_sources_exist(action_default)
+
+    def assert_sources_exist(self, item: dict[str, Any]) -> None:
+        source_ids = item.get("sourceEvidenceIds", [])
+        self.assertGreaterEqual(len(source_ids), 1)
+        self.assertTrue(set(source_ids).issubset(self.evidence_ids), source_ids)
+
+    def assert_no_forbidden_raw_keys(self, item: dict[str, Any]) -> None:
+        self.assertTrue(FORBIDDEN_RAW_KEYS.isdisjoint(item.keys()), item)
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "redacted-user-case-state-fixture-001",
+  "fixtureOnly": true,
+  "redactionPolicy": {
+    "privateDocumentsStored": false,
+    "liveDevHubStateStored": false,
+    "usesSyntheticValuesOnly": true,
+    "redactedValueToken": "[REDACTED]"
+  },
+  "projectCase": {
+    "caseReference": "synthetic-case-001",
+    "processId": "single-family-residential-addition-process-fixture",
+    "permitType": "building_permit_plan_review",
+    "draftStatus": {
+      "state": "draft_not_submitted",
+      "submitted": false,
+      "officialUploadPerformed": false,
+      "certificationCompleted": false,
+      "lastMockedStateObservedAt": "2026-05-01T00:00:00Z",
+      "sourceEvidenceIds": [
+        "src-devhub-public-guidance-001"
+      ]
+    }
+  },
+  "projectFactInventory": [
+    {
+      "factId": "fact-project-scope",
+      "requirementId": "req-project-description",
+      "label": "Project scope description",
+      "valueState": "known_redacted",
+      "redactedValue": "[REDACTED]",
+      "sourceEvidenceIds": [
+        "src-public-process-001"
+      ]
+    },
+    {
+      "factId": "fact-property-identifier",
+      "requirementId": "req-property-identifier",
+      "label": "Property identifier",
+      "valueState": "missing",
+      "redactedValue": null,
+      "sourceEvidenceIds": [
+        "src-public-process-002"
+      ]
+    }
+  ],
+  "missingInformationQuestions": [
+    {
+      "questionId": "question-property-identifier",
+      "factId": "fact-property-identifier",
+      "requirementId": "req-property-identifier",
+      "prompt": "What is the property identifier for the project?",
+      "answerState": "unanswered",
+      "sourceEvidenceIds": [
+        "src-public-process-002"
+      ]
+    }
+  ],
+  "uploadedFilePlaceholders": [
+    {
+      "placeholderId": "file-application-form-placeholder",
+      "requirementId": "req-application-form-pdf",
+      "documentType": "application_form_pdf",
+      "status": "not_uploaded",
+      "fileStored": false,
+      "redactedDisplayName": "[REDACTED_APPLICATION_FORM_PDF]",
+      "contentHashStored": false,
+      "sourceEvidenceIds": [
+        "src-public-process-003"
+      ]
+    },
+    {
+      "placeholderId": "file-plan-set-placeholder",
+      "requirementId": "req-single-pdf-plan-set",
+      "documentType": "single_drawing_plan_pdf",
+      "status": "placeholder_only",
+      "fileStored": false,
+      "redactedDisplayName": "[REDACTED_PLAN_SET_PDF]",
+      "contentHashStored": false,
+      "sourceEvidenceIds": [
+        "src-single-pdf-guidance-001"
+      ]
+    }
+  ],
+  "sourceEvidence": [
+    {
+      "evidenceId": "src-public-process-001",
+      "sourceType": "public_guidance_fixture",
+      "citation": "Synthetic public PP&D process fixture describing project description requirements.",
+      "url": "https://www.portland.gov/ppd/permits",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "evidenceId": "src-public-process-002",
+      "sourceType": "public_guidance_fixture",
+      "citation": "Synthetic public PP&D process fixture describing property lookup requirements.",
+      "url": "https://www.portland.gov/ppd/permits",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "evidenceId": "src-public-process-003",
+      "sourceType": "public_guidance_fixture",
+      "citation": "Synthetic public PP&D process fixture describing application form document requirements.",
+      "url": "https://www.portland.gov/ppd/permits",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "evidenceId": "src-single-pdf-guidance-001",
+      "sourceType": "public_guidance_fixture",
+      "citation": "Synthetic public PP&D guidance fixture describing single PDF plan process expectations.",
+      "url": "https://www.portland.gov/ppd/devhub",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "evidenceId": "src-devhub-public-guidance-001",
+      "sourceType": "public_devhub_guidance_fixture",
+      "citation": "Synthetic public DevHub guidance fixture describing draft workflow status before submission.",
+      "url": "https://www.portland.gov/ppd/devhub",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    }
+  ]
+}

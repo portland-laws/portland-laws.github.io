@@ -1,0 +1,114 @@
+{
+  "schemaVersion": 1,
+  "manifestId": "public-source-freshness-v1",
+  "fixtureOnly": true,
+  "asOf": "2026-05-02T00:00:00Z",
+  "liveCrawlPlanned": false,
+  "networkAccessAllowed": false,
+  "rawResponseBodiesStored": false,
+  "privateDevhubArtifactsStored": false,
+  "sources": [
+    {
+      "sourceId": "ppd-devhub-faq-public-guidance",
+      "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
+      "canonicalUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
+      "title": "Development Hub PDX FAQ",
+      "sourceEvidenceId": "src-devhub-faq-guidance",
+      "lastSeenAt": "2026-05-01T00:00:00Z",
+      "recrawlCadenceDays": 7,
+      "contentHashPlaceholder": "sha256:placeholder-devhub-faq-normalized-content",
+      "httpCacheMetadataPlaceholder": {
+        "etag": "placeholder-etag-devhub-faq",
+        "lastModified": null,
+        "cacheControl": null
+      },
+      "reviewNeeded": false,
+      "stale": false,
+      "skippedActions": [
+        {
+          "action": "live_public_crawl",
+          "reasonCode": "fixture_only_no_network_access"
+        },
+        {
+          "action": "private_devhub_data_access",
+          "reasonCode": "private_devhub_data_not_authorized"
+        }
+      ]
+    },
+    {
+      "sourceId": "ppd-permit-forms-index",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/permits-and-inspections-applications",
+      "canonicalUrl": "https://www.portland.gov/ppd/permits/permits-and-inspections-applications",
+      "title": "Permit applications and forms index",
+      "sourceEvidenceId": "src-ppd-permit-forms-index",
+      "lastSeenAt": "2026-04-25T00:00:00Z",
+      "recrawlCadenceDays": 30,
+      "contentHashPlaceholder": null,
+      "httpCacheMetadataPlaceholder": {
+        "etag": null,
+        "lastModified": "placeholder-last-modified-permit-forms",
+        "cacheControl": "placeholder-cache-control-permit-forms"
+      },
+      "reviewNeeded": true,
+      "stale": false,
+      "skippedActions": [
+        {
+          "action": "live_public_crawl",
+          "reasonCode": "fixture_only_no_network_access"
+        },
+        {
+          "action": "private_devhub_data_access",
+          "reasonCode": "private_devhub_data_not_authorized"
+        }
+      ]
+    }
+  ],
+  "rejectionCases": [
+    {
+      "caseId": "missing-last-seen",
+      "mutation": {
+        "sourceId": "ppd-devhub-faq-public-guidance",
+        "removeField": "lastSeenAt"
+      },
+      "expectedReason": "lastSeenAt timestamp is required"
+    },
+    {
+      "caseId": "uncited-source-url",
+      "mutation": {
+        "sourceId": "ppd-devhub-faq-public-guidance",
+        "removeField": "sourceEvidenceId"
+      },
+      "expectedReason": "sourceEvidenceId is required"
+    },
+    {
+      "caseId": "missing-hash-cache-placeholder",
+      "mutation": {
+        "sourceId": "ppd-permit-forms-index",
+        "setFields": {
+          "contentHashPlaceholder": null,
+          "httpCacheMetadataPlaceholder": {
+            "etag": null,
+            "lastModified": null,
+            "cacheControl": null
+          }
+        }
+      },
+      "expectedReason": "content hash or HTTP cache placeholder is required"
+    },
+    {
+      "caseId": "raw-response-body",
+      "payload": {
+        "rawResponseBody": "<html>raw body omitted</html>"
+      },
+      "expectedReason": "raw response bodies are not allowed"
+    },
+    {
+      "caseId": "private-devhub-artifact",
+      "payload": {
+        "sourceUrl": "https://devhub.portlandoregon.gov/secure/permits/123",
+        "authState": "[REDACTED:AUTH_STATE]"
+      },
+      "expectedReason": "private DevHub artifacts are not allowed"
+    }
+  ]
+}

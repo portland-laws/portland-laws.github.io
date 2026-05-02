@@ -1,0 +1,48 @@
+{
+  "changed_files": [
+    "ppd/logic/requirement_process_dependency_graph.py",
+    "ppd/tests/fixtures/requirement_process_dependency_graph.json",
+    "ppd/tests/test_requirement_process_dependency_graph.py"
+  ],
+  "created_at": "2026-05-02T20:04:23.185723Z",
+  "impact": "This advances the PP&D plan by proving process dependency graph fixtures fail closed before live crawl or authenticated DevHub automation: edges must reference known nodes, consequential and financial nodes are blocked by default, citations are mandatory, and private values cannot enter committed fixtures.",
+  "summary": "Add fixture-first validation for PP&D requirement-to-process dependency graph guardrails.",
+  "target_task": "Task checkbox-112: Task checkbox-107: Add validation for requirement-to-process dependency graph fixtures proving every edge has a known source node, every consequential or financial node is blocked by default, and missing citations or private values fail closed.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 116 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".........................................................................................................................................................................................................................................................................................................ss..............sss................................................................................................................................................................................................................................ ---------------------------------------------------------------------- Ran 540 tests in 0.097s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

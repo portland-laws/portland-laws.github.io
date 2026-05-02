@@ -1,0 +1,214 @@
+{
+  "schemaVersion": 1,
+  "graphId": "ppd_fixture_public_building_permit_requirement_process_graph_v1",
+  "processId": "ppd_public_building_permit_plan_review_fixture",
+  "processName": "Public PP&D building permit request requiring plan review fixture",
+  "fixtureOnly": true,
+  "redactionPolicy": {
+    "valuesAreRedacted": true,
+    "privateDevhubStateIncluded": false,
+    "rawCrawlOutputIncluded": false,
+    "downloadedDocumentsIncluded": false
+  },
+  "sourceEvidence": [
+    {
+      "id": "src_devhub_application_guidance",
+      "url": "https://www.portland.gov/ppd/devhub/apply-permit",
+      "title": "Apply for permits through Development Hub PDX",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "citation": "Public PP&D guidance for using DevHub to request permits. Fixture citation only; no raw page body is stored."
+    },
+    {
+      "id": "src_single_pdf_process_guidance",
+      "url": "https://www.portland.gov/ppd/single-pdf-process",
+      "title": "Single PDF Process guidance",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "citation": "Public PP&D guidance describing drawing plans as one searchable PDF with supporting documents as separate PDFs. Fixture citation only."
+    },
+    {
+      "id": "src_devhub_faq",
+      "url": "https://www.portland.gov/ppd/devhub-faq",
+      "title": "Development Hub PDX FAQ",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "citation": "Public DevHub FAQ covering permit requests, correction uploads, fee payments, and inspection-related service categories. Fixture citation only."
+    }
+  ],
+  "nodes": [
+    {
+      "id": "node_source_devhub_application_guidance",
+      "type": "source_evidence",
+      "label": "DevHub application guidance source",
+      "sourceEvidenceId": "src_devhub_application_guidance"
+    },
+    {
+      "id": "node_source_single_pdf_process_guidance",
+      "type": "source_evidence",
+      "label": "Single PDF process guidance source",
+      "sourceEvidenceId": "src_single_pdf_process_guidance"
+    },
+    {
+      "id": "node_obligation_request_plan_review_permit",
+      "type": "extracted_obligation",
+      "label": "Applicant must use the public permit request process for a plan-review permit",
+      "subject": "applicant",
+      "action": "request_plan_review_permit",
+      "object": "building_permit_request",
+      "redactedValue": "[REDACTED]",
+      "evidenceIds": ["src_devhub_application_guidance"],
+      "confidence": 0.86
+    },
+    {
+      "id": "node_obligation_prepare_single_pdf_plan_set",
+      "type": "extracted_obligation",
+      "label": "Applicant must prepare drawing plans as a single searchable PDF when the Single PDF Process applies",
+      "subject": "applicant",
+      "action": "prepare_single_searchable_pdf",
+      "object": "drawing_plan_set",
+      "redactedValue": "[REDACTED]",
+      "evidenceIds": ["src_single_pdf_process_guidance"],
+      "confidence": 0.84
+    },
+    {
+      "id": "node_required_document_application_pdf",
+      "type": "required_document",
+      "label": "Permit application PDF",
+      "documentKind": "application_pdf",
+      "redactedValue": "[REDACTED]",
+      "evidenceIds": ["src_devhub_application_guidance"],
+      "requiredBeforeNodeIds": ["node_stop_gate_no_submission_without_confirmation"]
+    },
+    {
+      "id": "node_required_document_single_plan_pdf",
+      "type": "required_document",
+      "label": "Single searchable drawing plan PDF",
+      "documentKind": "single_drawing_plan_pdf",
+      "redactedValue": "[REDACTED]",
+      "evidenceIds": ["src_single_pdf_process_guidance"],
+      "requiredBeforeNodeIds": ["node_stop_gate_no_submission_without_confirmation"]
+    },
+    {
+      "id": "node_required_document_supporting_documents_pdf",
+      "type": "required_document",
+      "label": "Separate supporting documents PDF set",
+      "documentKind": "supporting_documents_pdf",
+      "redactedValue": "[REDACTED]",
+      "evidenceIds": ["src_single_pdf_process_guidance"],
+      "requiredBeforeNodeIds": ["node_stop_gate_no_submission_without_confirmation"]
+    },
+    {
+      "id": "node_user_fact_property_identifier",
+      "type": "user_fact",
+      "label": "Project property identifier",
+      "factKind": "property_identifier",
+      "redactedValue": "[REDACTED]",
+      "evidenceIds": ["src_devhub_application_guidance"],
+      "requiredByNodeIds": ["node_obligation_request_plan_review_permit"]
+    },
+    {
+      "id": "node_user_fact_project_scope",
+      "type": "user_fact",
+      "label": "Project scope description",
+      "factKind": "project_scope_description",
+      "redactedValue": "[REDACTED]",
+      "evidenceIds": ["src_devhub_application_guidance"],
+      "requiredByNodeIds": ["node_obligation_request_plan_review_permit"]
+    },
+    {
+      "id": "node_stop_gate_missing_required_inputs",
+      "type": "stop_gate",
+      "label": "Stop when required user facts or documents are missing",
+      "gateKind": "missing_information",
+      "defaultState": "blocked",
+      "redactedValue": "[REDACTED]",
+      "evidenceIds": ["src_devhub_application_guidance", "src_single_pdf_process_guidance"]
+    },
+    {
+      "id": "node_stop_gate_no_submission_without_confirmation",
+      "type": "stop_gate",
+      "label": "Stop before official submission, certification, upload, payment, or cancellation unless exact user confirmation is present",
+      "gateKind": "consequential_action_confirmation",
+      "defaultState": "blocked",
+      "explicitUserConfirmationPresent": false,
+      "redactedValue": "[REDACTED]",
+      "evidenceIds": ["src_devhub_faq"]
+    },
+    {
+      "id": "node_plan_ask_property_identifier",
+      "type": "draft_plan_node",
+      "label": "Ask for the redacted property identifier before drafting",
+      "planningAction": "ask_user_for_fact",
+      "reversible": true,
+      "draftOnly": true,
+      "redactedValue": "[REDACTED]",
+      "evidenceIds": ["src_devhub_application_guidance"],
+      "dependsOnNodeIds": ["node_user_fact_property_identifier"]
+    },
+    {
+      "id": "node_plan_preview_document_checklist",
+      "type": "draft_plan_node",
+      "label": "Preview a draft-only document checklist with redacted file names",
+      "planningAction": "preview_document_checklist",
+      "reversible": true,
+      "draftOnly": true,
+      "redactedValue": "[REDACTED]",
+      "evidenceIds": ["src_single_pdf_process_guidance"],
+      "dependsOnNodeIds": ["node_required_document_application_pdf", "node_required_document_single_plan_pdf", "node_required_document_supporting_documents_pdf"]
+    }
+  ],
+  "edges": [
+    {
+      "from": "node_source_devhub_application_guidance",
+      "to": "node_obligation_request_plan_review_permit",
+      "relation": "supports_extraction",
+      "evidenceIds": ["src_devhub_application_guidance"]
+    },
+    {
+      "from": "node_source_single_pdf_process_guidance",
+      "to": "node_obligation_prepare_single_pdf_plan_set",
+      "relation": "supports_extraction",
+      "evidenceIds": ["src_single_pdf_process_guidance"]
+    },
+    {
+      "from": "node_obligation_prepare_single_pdf_plan_set",
+      "to": "node_required_document_single_plan_pdf",
+      "relation": "requires_document",
+      "evidenceIds": ["src_single_pdf_process_guidance"]
+    },
+    {
+      "from": "node_obligation_request_plan_review_permit",
+      "to": "node_user_fact_property_identifier",
+      "relation": "requires_user_fact",
+      "evidenceIds": ["src_devhub_application_guidance"]
+    },
+    {
+      "from": "node_obligation_request_plan_review_permit",
+      "to": "node_user_fact_project_scope",
+      "relation": "requires_user_fact",
+      "evidenceIds": ["src_devhub_application_guidance"]
+    },
+    {
+      "from": "node_user_fact_property_identifier",
+      "to": "node_plan_ask_property_identifier",
+      "relation": "drives_reversible_draft_plan",
+      "evidenceIds": ["src_devhub_application_guidance"]
+    },
+    {
+      "from": "node_required_document_single_plan_pdf",
+      "to": "node_plan_preview_document_checklist",
+      "relation": "drives_reversible_draft_plan",
+      "evidenceIds": ["src_single_pdf_process_guidance"]
+    },
+    {
+      "from": "node_stop_gate_missing_required_inputs",
+      "to": "node_plan_preview_document_checklist",
+      "relation": "blocks_until_requirements_known",
+      "evidenceIds": ["src_devhub_application_guidance", "src_single_pdf_process_guidance"]
+    },
+    {
+      "from": "node_stop_gate_no_submission_without_confirmation",
+      "to": "node_plan_preview_document_checklist",
+      "relation": "limits_plan_to_draft_only",
+      "evidenceIds": ["src_devhub_faq"]
+    }
+  ]
+}

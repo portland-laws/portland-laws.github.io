@@ -679,6 +679,9 @@ Current files:
 
 
 def call_llm(prompt: str, config: Config) -> str:
+    backend = os.environ.get("PPD_LLM_BACKEND", "llm_router")
+    if backend != "llm_router":
+        raise RuntimeError(f"Unsupported PP&D LLM backend {backend!r}; expected 'llm_router'.")
     try:
         from ipfs_datasets_py import llm_router
     except Exception as exc:  # pragma: no cover - environment-dependent
@@ -764,7 +767,7 @@ class Daemon:
                 prior_failures = task_failure_count(
                     self.config,
                     selected.label,
-                    kinds={"validation", "preflight", "no_change"},
+                    kinds={"validation", "preflight", "no_change", "syntax_preflight"},
                 )
                 mark = "!" if prior_failures + 1 >= self.config.max_task_failures_before_block else " "
                 board = replace_task_mark(board, selected, mark)

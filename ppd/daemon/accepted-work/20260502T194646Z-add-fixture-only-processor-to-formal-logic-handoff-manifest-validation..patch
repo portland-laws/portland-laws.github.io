@@ -1,0 +1,324 @@
+--- a/ppd/tests/fixtures/handoff/processor_to_formal_logic_handoff_manifest.json
++++ b/ppd/tests/fixtures/handoff/processor_to_formal_logic_handoff_manifest.json
+@@ -0,0 +1,162 @@
++{
++  "fixtureKind": "processor_to_formal_logic_handoff_manifest",
++  "schemaVersion": 1,
++  "generatedAt": "2026-05-02T00:00:00Z",
++  "manifestOnly": true,
++  "networkAccess": false,
++  "rawProcessorOutputIncluded": false,
++  "privateDevhubArtifactsIncluded": false,
++  "processorManifestId": "ppd-processor-manifest-fixture-001",
++  "processorArchiveRecords": [
++    {
++      "id": "archive-record-devhub-single-pdf-process",
++      "processorName": "ipfs_datasets_py.web_archiving.fixture_manifest",
++      "processorVersion": "fixture-only",
++      "sourceUrl": "https://www.portland.gov/ppd/devhub",
++      "canonicalUrl": "https://www.portland.gov/ppd/devhub",
++      "contentHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
++      "policyDecision": "allow",
++      "policyReasons": [
++        "public_ppd_allowlisted",
++        "robots_allowed",
++        "no_persist_approved"
++      ],
++      "manifestOnly": true
++    }
++  ],
++  "sourceEvidence": [
++    {
++      "id": "evidence-devhub-public-services",
++      "sourceUrl": "https://www.portland.gov/ppd/devhub",
++      "canonicalUrl": "https://www.portland.gov/ppd/devhub",
++      "documentId": "normalized-devhub-public-guidance",
++      "anchor": "#devhub-services",
++      "capturedAt": "2026-05-01T00:00:00Z",
++      "contentHash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
++      "excerpt": "DevHub is Portland's online permitting system for permit requests, plan review, corrections, inspections, and payments."
++    },
++    {
++      "id": "evidence-single-pdf-process",
++      "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
++      "canonicalUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
++      "documentId": "normalized-single-pdf-process-guidance",
++      "anchor": "#single-pdf-process",
++      "capturedAt": "2026-05-01T00:00:00Z",
++      "contentHash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
++      "excerpt": "Projects using the Single PDF Process keep drawing plans in one searchable PDF and applications or calculations in separate PDFs."
++    }
++  ],
++  "normalizedDocuments": [
++    {
++      "id": "normalized-devhub-public-guidance",
++      "documentRole": "public_guidance",
++      "title": "Development Hub PDX public guidance",
++      "fixturePath": "ppd/tests/fixtures/normalized-documents/devhub_public_guidance.fixture.json",
++      "processorArchiveRecordId": "archive-record-devhub-single-pdf-process",
++      "sourceEvidenceIds": [
++        "evidence-devhub-public-services"
++      ],
++      "contentHash": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
++    },
++    {
++      "id": "normalized-single-pdf-process-guidance",
++      "documentRole": "public_guidance",
++      "title": "Single PDF Process public guidance",
++      "fixturePath": "ppd/tests/fixtures/normalized-documents/single_pdf_process.fixture.json",
++      "processorArchiveRecordId": "archive-record-devhub-single-pdf-process",
++      "sourceEvidenceIds": [
++        "evidence-single-pdf-process"
++      ],
++      "contentHash": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
++    }
++  ],
++  "extractedRequirements": [
++    {
++      "id": "requirement-single-drawing-plan-pdf",
++      "type": "obligation",
++      "subject": "applicant",
++      "action": "prepare",
++      "object": "one searchable drawing plan PDF when the Single PDF Process applies",
++      "normalizedDocumentId": "normalized-single-pdf-process-guidance",
++      "sourceEvidenceIds": [
++        "evidence-single-pdf-process"
++      ],
++      "formalizationStatus": "ready_for_guardrail_fixture",
++      "confidence": 0.91
++    },
++    {
++      "id": "requirement-agent-stop-before-submission",
++      "type": "action_gate",
++      "subject": "agent",
++      "action": "stop_before",
++      "object": "official DevHub submission, upload, certification, payment, cancellation, MFA, CAPTCHA, account creation, or inspection scheduling",
++      "normalizedDocumentId": "normalized-devhub-public-guidance",
++      "sourceEvidenceIds": [
++        "evidence-devhub-public-services"
++      ],
++      "formalizationStatus": "ready_for_guardrail_fixture",
++      "confidence": 1.0
++    }
++  ],
++  "guardrailBundles": [
++    {
++      "id": "guardrail-bundle-single-pdf-devhub-stop-v1",
++      "bundleKind": "formal_logic_fixture",
++      "compilerTarget": "ppd.logic.guardrailCompiler.fixture",
++      "requirementIds": [
++        "requirement-single-drawing-plan-pdf",
++        "requirement-agent-stop-before-submission"
++      ],
++      "sourceEvidenceIds": [
++        "evidence-devhub-public-services",
++        "evidence-single-pdf-process"
++      ],
++      "formalRuleIds": [
++        "OBLIGATED_applicant_prepare_single_drawing_plan_pdf_fixture",
++        "PROHIBITED_agent_consequential_devhub_action_without_confirmation_fixture"
++      ],
++      "bundleHash": "sha256:6666666666666666666666666666666666666666666666666666666666666666"
++    }
++  ],
++  "handoffs": [
++    {
++      "id": "handoff-processor-to-formal-logic-single-pdf-v1",
++      "fromProcessorManifestId": "ppd-processor-manifest-fixture-001",
++      "toFormalLogicBundleId": "guardrail-bundle-single-pdf-devhub-stop-v1",
++      "normalizedDocumentIds": [
++        "normalized-devhub-public-guidance",
++        "normalized-single-pdf-process-guidance"
++      ],
++      "requirementIds": [
++        "requirement-single-drawing-plan-pdf",
++        "requirement-agent-stop-before-submission"
++      ],
++      "sourceEvidenceIds": [
++        "evidence-devhub-public-services",
++        "evidence-single-pdf-process"
++      ],
++      "guardrailBundleIds": [
++        "guardrail-bundle-single-pdf-devhub-stop-v1"
++      ],
++      "allowedActions": [
++        "read_committed_fixture",
++        "validate_manifest_links",
++        "compile_guardrails_from_fixture"
++      ],
++      "forbiddenActions": [
++        "network_request",
++        "read_raw_processor_output",
++        "read_private_devhub_artifact",
++        "launch_browser",
++        "authenticate",
++        "upload",
++        "submit",
++        "certify",
++        "pay",
++        "cancel",
++        "schedule_inspection",
++        "automate_mfa_or_captcha"
++      ]
++    }
++  ]
++}
+--- a/ppd/tests/test_processor_to_formal_logic_handoff_manifest.py
++++ b/ppd/tests/test_processor_to_formal_logic_handoff_manifest.py
+@@ -0,0 +1,156 @@
++from __future__ import annotations
++
++import json
++import re
++import unittest
++from pathlib import Path
++from typing import Any
++
++
++SHA256_RE = re.compile(r"^sha256:[0-9a-f]{64}$")
++
++FORBIDDEN_KEYS = {
++    "authState",
++    "auth_state",
++    "body",
++    "cookies",
++    "downloadPath",
++    "download_path",
++    "html",
++    "password",
++    "rawBody",
++    "rawOutputPath",
++    "rawProcessorOutputPath",
++    "raw_body",
++    "raw_output_path",
++    "screenshotPath",
++    "screenshot_path",
++    "sessionState",
++    "session_state",
++    "storageState",
++    "storage_state",
++    "token",
++    "tracePath",
++    "trace_path",
++}
++
++FORBIDDEN_VALUE_MARKERS = (
++    "ppd/data/private",
++    "ppd/data/raw",
++    "devhub/.auth",
++    "storage-state",
++    "auth-state",
++    "trace.zip",
++    ".har",
++    "private devhub",
++)
++
++BLOCKED_ACTIONS = {
++    "network_request",
++    "read_raw_processor_output",
++    "read_private_devhub_artifact",
++    "launch_browser",
++    "authenticate",
++    "upload",
++    "submit",
++    "certify",
++    "pay",
++    "cancel",
++    "schedule_inspection",
++    "automate_mfa_or_captcha",
++}
++
++
++class ProcessorToFormalLogicHandoffManifestTest(unittest.TestCase):
++    def setUp(self) -> None:
++        self.fixture_path = (
++            Path(__file__).parent
++            / "fixtures"
++            / "handoff"
++            / "processor_to_formal_logic_handoff_manifest.json"
++        )
++        self.manifest = json.loads(self.fixture_path.read_text(encoding="utf-8"))
++
++    def test_manifest_declares_fixture_only_boundary(self) -> None:
++        self.assertEqual(self.manifest["fixtureKind"], "processor_to_formal_logic_handoff_manifest")
++        self.assertEqual(self.manifest["schemaVersion"], 1)
++        self.assertTrue(self.manifest["manifestOnly"])
++        self.assertFalse(self.manifest["networkAccess"])
++        self.assertFalse(self.manifest["rawProcessorOutputIncluded"])
++        self.assertFalse(self.manifest["privateDevhubArtifactsIncluded"])
++        self.assertTrue(self.manifest["generatedAt"].endswith("Z"))
++
++    def test_records_link_processor_documents_requirements_evidence_and_guardrails(self) -> None:
++        archive_ids = {record["id"] for record in self.manifest["processorArchiveRecords"]}
++        evidence_ids = {record["id"] for record in self.manifest["sourceEvidence"]}
++        document_ids = {record["id"] for record in self.manifest["normalizedDocuments"]}
++        requirement_ids = {record["id"] for record in self.manifest["extractedRequirements"]}
++        bundle_ids = {record["id"] for record in self.manifest["guardrailBundles"]}
++
++        self.assertTrue(archive_ids)
++        self.assertTrue(evidence_ids)
++        self.assertTrue(document_ids)
++        self.assertTrue(requirement_ids)
++        self.assertTrue(bundle_ids)
++
++        for document in self.manifest["normalizedDocuments"]:
++            self.assertIn(document["processorArchiveRecordId"], archive_ids)
++            self.assertTrue(document["fixturePath"].startswith("ppd/tests/fixtures/"))
++            self.assertRegex(document["contentHash"], SHA256_RE)
++            self.assertTrue(set(document["sourceEvidenceIds"]).issubset(evidence_ids))
++
++        for requirement in self.manifest["extractedRequirements"]:
++            self.assertIn(requirement["normalizedDocumentId"], document_ids)
++            self.assertTrue(set(requirement["sourceEvidenceIds"]).issubset(evidence_ids))
++            self.assertGreaterEqual(requirement["confidence"], 0.0)
++            self.assertLessEqual(requirement["confidence"], 1.0)
++            self.assertEqual(requirement["formalizationStatus"], "ready_for_guardrail_fixture")
++
++        for bundle in self.manifest["guardrailBundles"]:
++            self.assertTrue(set(bundle["requirementIds"]).issubset(requirement_ids))
++            self.assertTrue(set(bundle["sourceEvidenceIds"]).issubset(evidence_ids))
++            self.assertRegex(bundle["bundleHash"], SHA256_RE)
++
++        for handoff in self.manifest["handoffs"]:
++            self.assertEqual(handoff["fromProcessorManifestId"], self.manifest["processorManifestId"])
++            self.assertIn(handoff["toFormalLogicBundleId"], bundle_ids)
++            self.assertTrue(set(handoff["normalizedDocumentIds"]).issubset(document_ids))
++            self.assertTrue(set(handoff["requirementIds"]).issubset(requirement_ids))
++            self.assertTrue(set(handoff["sourceEvidenceIds"]).issubset(evidence_ids))
++            self.assertTrue(set(handoff["guardrailBundleIds"]).issubset(bundle_ids))
++
++    def test_handoff_refuses_network_raw_output_and_private_devhub_artifacts(self) -> None:
++        for handoff in self.manifest["handoffs"]:
++            self.assertFalse(BLOCKED_ACTIONS.intersection(handoff["allowedActions"]))
++            self.assertTrue(BLOCKED_ACTIONS.issubset(set(handoff["forbiddenActions"])))
++
++        findings = list(self._forbidden_artifact_findings(self.manifest))
++        self.assertEqual(findings, [])
++
++    def test_source_evidence_is_public_and_hash_backed(self) -> None:
++        for evidence in self.manifest["sourceEvidence"]:
++            self.assertTrue(evidence["sourceUrl"].startswith("https://www.portland.gov/ppd"))
++            self.assertTrue(evidence["canonicalUrl"].startswith("https://www.portland.gov/ppd"))
++            self.assertTrue(evidence["capturedAt"].endswith("Z"))
++            self.assertRegex(evidence["contentHash"], SHA256_RE)
++            self.assertIn(evidence["documentId"], {doc["id"] for doc in self.manifest["normalizedDocuments"]})
++
++    def _forbidden_artifact_findings(self, value: Any, path: str = "$", key: str = "") -> list[str]:
++        findings: list[str] = []
++        if key in FORBIDDEN_KEYS:
++            findings.append(f"{path}.{key}")
++        if isinstance(value, dict):
++            for child_key, child_value in value.items():
++                findings.extend(self._forbidden_artifact_findings(child_value, f"{path}.{child_key}", str(child_key)))
++        elif isinstance(value, list):
++            for index, child_value in enumerate(value):
++                findings.extend(self._forbidden_artifact_findings(child_value, f"{path}[{index}]", key))
++        elif isinstance(value, str):
++            lowered = value.lower()
++            if any(marker in lowered for marker in FORBIDDEN_VALUE_MARKERS):
++                findings.append(path)
++        return findings
++
++
++if __name__ == "__main__":
++    unittest.main()

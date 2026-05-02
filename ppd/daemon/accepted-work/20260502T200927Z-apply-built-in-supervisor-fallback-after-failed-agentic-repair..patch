@@ -1,0 +1,63 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,18 +1,54 @@
+ {
+-  "createdAt": "2026-05-02T20:02:34.337366Z",
++  "createdAt": "2026-05-02T20:09:25.789248Z",
+   "decision": {
+     "action": "repair_daemon_programming",
+-    "reason": "synthetic validation of built-in fallback repair",
++    "reason": "2 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
+     "severity": "warning"
+   },
+   "failedAgenticRepair": {
+     "changedFiles": [],
+     "errors": [
+-      "Validation failed; synthetic check."
++      "LLM response did not contain a JSON object."
+     ],
+-    "failureKind": "validation",
+-    "summary": "Synthetic failed agentic repair.",
+-    "validationResults": []
++    "failureKind": "parse",
++    "summary": "",
++    "validationResults": [
++      {
++        "command": [
++          "python3",
++          "ppd/daemon/ppd_daemon.py",
++          "--self-test"
++        ],
++        "returncode": 0,
++        "stderr": "",
++        "stdout": "{ \"ok\": true, \"task_count\": 116 }"
++      },
++      {
++        "command": [
++          "python3",
++          "-m",
++          "unittest",
++          "discover",
++          "-s",
++          "ppd/tests",
++          "-p",
++          "test_*.py"
++        ],
++        "returncode": 0,
++        "stderr": ".........................................................................................................................................................................................................................................................................................................ss..............sss................................................................................................................................................................................................................................ ---------------------------------------------------------------------- Ran 540 tests in 0.095s OK (skipped=5)",
++        "stdout": ""
++      },
++      {
++        "command": [
++          "bash",
++          "-lc",
++          "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
++        ],
++        "returncode": 0,
++        "stderr": "",
++        "stdout": ""
++      }
++    ]
+   },
+   "fallbackActions": [
+     "preserve failed repair diagnostics without accepting the invalid patch",

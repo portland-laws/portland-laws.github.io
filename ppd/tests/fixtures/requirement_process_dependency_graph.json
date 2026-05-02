@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "ppd-requirement-process-dependency-graph-v1",
+  "description": "Synthetic public-only dependency graph linking PP&D requirements, process steps, missing information, and stop gates.",
+  "validGraph": {
+    "nodes": [
+      {
+        "id": "req-single-pdf-process",
+        "kind": "requirement",
+        "label": "Single PDF Process applies to drawing plans",
+        "citations": [
+          {
+            "sourceEvidenceId": "ppd-public-devhub-single-pdf-guidance",
+            "url": "https://www.portland.gov/ppd/devhub"
+          }
+        ],
+        "failClosed": true
+      },
+      {
+        "id": "process-prepare-documents",
+        "kind": "process_stage",
+        "label": "Prepare application documents",
+        "citations": [
+          {
+            "sourceEvidenceId": "ppd-public-devhub-application-guidance",
+            "url": "https://www.portland.gov/ppd/devhub"
+          }
+        ],
+        "failClosed": true
+      },
+      {
+        "id": "fact-project-description",
+        "kind": "missing_user_fact",
+        "label": "Project description is needed before draft form entry",
+        "value": "[UNKNOWN]",
+        "citations": [
+          {
+            "sourceEvidenceId": "ppd-public-devhub-application-guidance",
+            "url": "https://www.portland.gov/ppd/devhub"
+          }
+        ],
+        "failClosed": true
+      },
+      {
+        "id": "gate-submit-application",
+        "kind": "agent_action_gate",
+        "label": "Stop before submitting an application",
+        "classification": "consequential",
+        "blockedByDefault": true,
+        "explicitConfirmationDefault": false,
+        "citations": [
+          {
+            "sourceEvidenceId": "ppd-plan-authenticated-devhub-guarded-action-executor",
+            "url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md"
+          }
+        ],
+        "failClosed": true
+      },
+      {
+        "id": "gate-pay-fees",
+        "kind": "agent_action_gate",
+        "label": "Stop before fee payment",
+        "classification": "financial",
+        "blockedByDefault": true,
+        "explicitConfirmationDefault": false,
+        "citations": [
+          {
+            "sourceEvidenceId": "ppd-plan-authenticated-devhub-guarded-action-executor",
+            "url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md"
+          }
+        ],
+        "failClosed": true
+      }
+    ],
+    "edges": [
+      {
+        "id": "edge-requirement-to-prepare-documents",
+        "source": "req-single-pdf-process",
+        "target": "process-prepare-documents",
+        "relation": "constrains",
+        "citations": [
+          {
+            "sourceEvidenceId": "ppd-public-devhub-single-pdf-guidance",
+            "url": "https://www.portland.gov/ppd/devhub"
+          }
+        ],
+        "failClosed": true
+      },
+      {
+        "id": "edge-missing-fact-to-prepare-documents",
+        "source": "fact-project-description",
+        "target": "process-prepare-documents",
+        "relation": "blocks_until_known",
+        "citations": [
+          {
+            "sourceEvidenceId": "ppd-public-devhub-application-guidance",
+            "url": "https://www.portland.gov/ppd/devhub"
+          }
+        ],
+        "failClosed": true
+      },
+      {
+        "id": "edge-prepare-to-submit-stop-gate",
+        "source": "process-prepare-documents",
+        "target": "gate-submit-application",
+        "relation": "precedes_stop_gate",
+        "citations": [
+          {
+            "sourceEvidenceId": "ppd-plan-authenticated-devhub-guarded-action-executor",
+            "url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md"
+          }
+        ],
+        "failClosed": true
+      },
+      {
+        "id": "edge-prepare-to-payment-stop-gate",
+        "source": "process-prepare-documents",
+        "target": "gate-pay-fees",
+        "relation": "precedes_stop_gate",
+        "citations": [
+          {
+            "sourceEvidenceId": "ppd-plan-authenticated-devhub-guarded-action-executor",
+            "url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md"
+          }
+        ],
+        "failClosed": true
+      }
+    ]
+  },
+  "invalidCases": [
+    {
+      "caseId": "unknown-source-node",
+      "mutate": {
+        "edges": [
+          {
+            "id": "edge-unknown-source",
+            "source": "req-not-in-graph",
+            "target": "process-prepare-documents",
+            "relation": "constrains",
+            "citations": [
+              {
+                "sourceEvidenceId": "ppd-public-devhub-single-pdf-guidance",
+                "url": "https://www.portland.gov/ppd/devhub"
+              }
+            ],
+            "failClosed": true
+          }
+        ]
+      },
+      "expectedFinding": "edge source req-not-in-graph is not a known node"
+    },
+    {
+      "caseId": "consequential-node-not-blocked",
+      "mutate": {
+        "nodes": [
+          {
+            "id": "gate-submit-application",
+            "blockedByDefault": false
+          }
+        ]
+      },
+      "expectedFinding": "consequential node must set blockedByDefault to true"
+    },
+    {
+      "caseId": "financial-node-confirmation-default-open",
+      "mutate": {
+        "nodes": [
+          {
+            "id": "gate-pay-fees",
+            "explicitConfirmationDefault": true
+          }
+        ]
+      },
+      "expectedFinding": "financial node must set explicitConfirmationDefault to false"
+    },
+    {
+      "caseId": "missing-edge-citation",
+      "mutate": {
+        "edges": [
+          {
+            "id": "edge-requirement-to-prepare-documents",
+            "citations": []
+          }
+        ]
+      },
+      "expectedFinding": "edge must include at least one citation"
+    },
+    {
+      "caseId": "private-value-not-redacted",
+      "mutate": {
+        "nodes": [
+          {
+            "id": "fact-project-description",
+            "value": "Build a private project at 123 Example Street"
+          }
+        ]
+      },
+      "expectedFinding": "private values must be redacted or unknown"
+    }
+  ]
+}

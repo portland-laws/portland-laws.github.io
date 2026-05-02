@@ -1,0 +1,144 @@
+{
+  "schemaVersion": 1,
+  "caseStateId": "synthetic-redacted-user-case-state-001",
+  "processId": "synthetic-single-pdf-process",
+  "requirementEvidence": [
+    {
+      "id": "src-devhub-application-guidance",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
+      "title": "DevHub permit application guidance",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "id": "src-devhub-fee-guidance",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/pay-fees",
+      "title": "DevHub fee payment guidance",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "id": "src-devhub-corrections-guidance",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/upload-corrections",
+      "title": "DevHub correction upload guidance",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    }
+  ],
+  "missingFacts": [
+    {
+      "id": "fact-project-address",
+      "label": "Project address",
+      "value": "[REDACTED]",
+      "sourceEvidenceIds": ["src-devhub-application-guidance"],
+      "redactionReason": "user_specific_project_fact",
+      "planningDefault": "ask_user_only"
+    },
+    {
+      "id": "fact-property-owner",
+      "label": "Property owner name",
+      "value": "[REDACTED]",
+      "sourceEvidenceIds": ["src-devhub-application-guidance"],
+      "redactionReason": "personally_identifying_information",
+      "planningDefault": "ask_user_only"
+    }
+  ],
+  "filePlaceholders": [
+    {
+      "id": "file-application-pdf",
+      "documentType": "application_pdf",
+      "displayName": "[REDACTED FILE PLACEHOLDER]",
+      "storagePath": null,
+      "contentHash": null,
+      "sourceEvidenceIds": ["src-devhub-application-guidance"],
+      "redactionReason": "user_uploaded_file_placeholder",
+      "planningDefault": "prepare_checklist_only"
+    },
+    {
+      "id": "file-plan-set-pdf",
+      "documentType": "single_drawing_plan_pdf",
+      "displayName": "[REDACTED FILE PLACEHOLDER]",
+      "storagePath": null,
+      "contentHash": null,
+      "sourceEvidenceIds": ["src-devhub-application-guidance"],
+      "redactionReason": "user_uploaded_file_placeholder",
+      "planningDefault": "prepare_checklist_only"
+    }
+  ],
+  "applicationStatus": {
+    "draftStatus": {
+      "state": "draft",
+      "visibleLabel": "[REDACTED STATUS]",
+      "sourceEvidenceIds": ["src-devhub-application-guidance"],
+      "redactionReason": "account_scoped_workflow_state",
+      "blocksConsequentialPlanningByDefault": true
+    },
+    "submittedStatus": {
+      "state": "not_submitted",
+      "visibleLabel": "[REDACTED STATUS]",
+      "sourceEvidenceIds": ["src-devhub-application-guidance"],
+      "redactionReason": "account_scoped_workflow_state",
+      "blocksConsequentialPlanningByDefault": true
+    }
+  },
+  "paymentStatus": {
+    "state": "unknown_or_unpaid",
+    "visibleLabel": "[REDACTED PAYMENT STATUS]",
+    "amountDue": "[REDACTED]",
+    "paymentMethod": null,
+    "sourceEvidenceIds": ["src-devhub-fee-guidance"],
+    "redactionReason": "financial_account_scoped_state",
+    "blocksFinancialPlanningByDefault": true
+  },
+  "messages": [
+    {
+      "id": "message-intake-placeholder",
+      "sender": "[REDACTED]",
+      "subject": "[REDACTED MESSAGE SUBJECT]",
+      "body": "[REDACTED MESSAGE BODY]",
+      "sourceEvidenceIds": ["src-devhub-corrections-guidance"],
+      "redactionReason": "account_scoped_message",
+      "planningDefault": "summarize_status_only"
+    }
+  ],
+  "outstandingTasks": [
+    {
+      "id": "task-upload-corrections-placeholder",
+      "label": "[REDACTED TASK LABEL]",
+      "requiredAction": "upload_corrections",
+      "sourceEvidenceIds": ["src-devhub-corrections-guidance"],
+      "redactionReason": "account_scoped_task",
+      "blocksConsequentialPlanningByDefault": true,
+      "planningDefault": "ask_user_or_prepare_checklist_only"
+    },
+    {
+      "id": "task-pay-fees-placeholder",
+      "label": "[REDACTED TASK LABEL]",
+      "requiredAction": "pay_fees",
+      "sourceEvidenceIds": ["src-devhub-fee-guidance"],
+      "redactionReason": "financial_account_scoped_task",
+      "blocksFinancialPlanningByDefault": true,
+      "planningDefault": "explain_stop_gate_only"
+    }
+  ],
+  "actionPlanningDefaults": [
+    {
+      "action": "submit_application",
+      "classification": "consequential",
+      "exactUserConfirmationPresent": false,
+      "blockedByDefault": true,
+      "sourceEvidenceIds": ["src-devhub-application-guidance"]
+    },
+    {
+      "action": "upload_official_correction",
+      "classification": "consequential",
+      "exactUserConfirmationPresent": false,
+      "blockedByDefault": true,
+      "sourceEvidenceIds": ["src-devhub-corrections-guidance"]
+    },
+    {
+      "action": "pay_fees",
+      "classification": "financial",
+      "exactUserConfirmationPresent": false,
+      "blockedByDefault": true,
+      "sourceEvidenceIds": ["src-devhub-fee-guidance"]
+    }
+  ]
+}

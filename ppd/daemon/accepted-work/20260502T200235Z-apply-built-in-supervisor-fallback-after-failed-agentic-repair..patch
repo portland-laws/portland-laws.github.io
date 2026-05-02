@@ -1,0 +1,36 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -0,0 +1,33 @@
++{
++  "createdAt": "2026-05-02T20:02:34.337366Z",
++  "decision": {
++    "action": "repair_daemon_programming",
++    "reason": "synthetic validation of built-in fallback repair",
++    "severity": "warning"
++  },
++  "failedAgenticRepair": {
++    "changedFiles": [],
++    "errors": [
++      "Validation failed; synthetic check."
++    ],
++    "failureKind": "validation",
++    "summary": "Synthetic failed agentic repair.",
++    "validationResults": []
++  },
++  "fallbackActions": [
++    "preserve failed repair diagnostics without accepting the invalid patch",
++    "run full PP&D daemon validation before restarting unattended worker attempts",
++    "restart the worker with PPD_LLM_BACKEND=llm_router after fallback validation passes",
++    "keep future retry scope narrow and fixture-first"
++  ],
++  "llmBackend": "llm_router",
++  "repairKind": "builtin_supervisor_fallback",
++  "safetyBoundaries": [
++    "no private DevHub session artifacts",
++    "no raw crawl output",
++    "no downloaded documents",
++    "no browser traces or screenshots",
++    "no consequential DevHub actions"
++  ],
++  "schemaVersion": 1
++}

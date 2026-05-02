@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/requirement_process_dependency_graph/public_building_permit_graph.json",
+    "ppd/tests/test_requirement_process_dependency_graph.py"
+  ],
+  "created_at": "2026-05-02T20:01:20.059989Z",
+  "impact": "This advances the PP&D plan by connecting public source evidence to extracted obligations, required documents, missing user facts, stop gates, and reversible draft-only planning nodes without live crawling, private DevHub state, or irreversible automation.",
+  "summary": "Add a redacted fixture-only requirement-to-process dependency graph for one public PP&D permit process, plus a narrow validator test.",
+  "target_task": "Task checkbox-111: Task checkbox-106: Add a fixture-only requirement-to-process dependency graph for one public PP&D permit process that links source evidence, extracted obligations, required documents, user facts, stop gates, and reversible draft-only planning nodes. Keep all values redacted and citation-backed.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 116 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".........................................................................................................................................................................................................................................................................................................ss..............sss.............................................................................................................................................................................................................................. ---------------------------------------------------------------------- Ran 538 tests in 0.092s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

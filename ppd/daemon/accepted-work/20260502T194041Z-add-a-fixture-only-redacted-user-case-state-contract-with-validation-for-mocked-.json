@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/user_case_state/redacted_user_case_state.json",
+    "ppd/tests/test_user_case_state_contract.py"
+  ],
+  "created_at": "2026-05-02T19:40:41.004765Z",
+  "impact": "This advances the PP&D plan by creating a deterministic, privacy-preserving user-case-state fixture that can drive missing-information and DevHub draft planning without storing private documents, account identifiers, cookies, traces, screenshots, payments, or live DevHub state.",
+  "summary": "Add a fixture-only redacted user-case-state contract with validation for mocked project facts, missing-information questions, uploaded-file placeholders, draft status, and source evidence.",
+  "target_task": "Task checkbox-107: Task checkbox-102: Add a fixture-only redacted user-case-state contract that links a mocked project fact inventory, missing-information questions, uploaded-file placeholders, draft status, and source evidence without storing private documents, account identifiers, cookies, traces, screenshots, payments, or live DevHub state.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 108 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".........................................................................................................................................................................................................................................................................................................ss..............sss................................................................................................................................................................................................................. ---------------------------------------------------------------------- Ran 525 tests in 0.092s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

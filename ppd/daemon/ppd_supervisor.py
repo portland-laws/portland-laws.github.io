@@ -241,6 +241,23 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
     tasks = parse_tasks(board)
     completed_task_labels = {task.label for task in tasks if task.status == "complete"}
     rows = read_result_log(config.resolve(config.result_log))
+    latest = progress.get("latest") if isinstance(progress.get("latest"), dict) else {}
+
+    if tasks and all(task.status == "complete" for task in tasks):
+        return SupervisorDecision(
+            action="plan_next_tasks",
+            reason="all PP&D daemon tasks are complete; review the original PP&D goal and add the next task-board tranche",
+            severity="info",
+            should_invoke_codex=True,
+        )
+
+    if latest.get("failure_kind") == "no_eligible_tasks" and tasks and all(task.status == "complete" for task in tasks):
+        return SupervisorDecision(
+            action="plan_next_tasks",
+            reason="daemon has no eligible tasks; review completed work against the PP&D plan and add the next backlog tranche",
+            severity="info",
+            should_invoke_codex=True,
+        )
 
     if not running:
         return SupervisorDecision(
@@ -282,14 +299,6 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
                 should_restart_daemon=True,
             )
 
-    if tasks and all(task.status == "complete" for task in tasks):
-        return SupervisorDecision(
-            action="plan_next_tasks",
-            reason="all PP&D daemon tasks are complete; review the original PP&D goal and add the next task-board tranche",
-            severity="info",
-            should_invoke_codex=True,
-        )
-
     malformed_count = repeated_malformed_syntax_count(rows, completed_task_labels=completed_task_labels)
     if malformed_count >= 2:
         return SupervisorDecision(
@@ -311,15 +320,6 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
             reason=f"{len(blocked)} task(s) are blocked and no independent selectable task remains: "
             + "; ".join(task.label for task in blocked[:3]),
             severity="warning",
-            should_invoke_codex=True,
-        )
-
-    latest = progress.get("latest") if isinstance(progress.get("latest"), dict) else {}
-    if latest.get("failure_kind") == "no_eligible_tasks" and all(task.status == "complete" for task in tasks):
-        return SupervisorDecision(
-            action="plan_next_tasks",
-            reason="daemon has no eligible tasks; review completed work against the PP&D plan and add the next backlog tranche",
-            severity="info",
             should_invoke_codex=True,
         )
 
@@ -441,6 +441,9 @@ Current source files:
 
 
 def call_codex(prompt: str, config: SupervisorConfig) -> str:
+    backend = os.environ.get("PPD_LLM_BACKEND", "llm_router")
+    if backend != "llm_router":
+        raise RuntimeError(f"Unsupported PP&D LLM backend {backend!r}; expected 'llm_router'.")
     try:
         from ipfs_datasets_py import llm_router
     except Exception as exc:  # pragma: no cover - environment-dependent
@@ -471,6 +474,87 @@ def supervisor_daemon_config(config: SupervisorConfig) -> DaemonConfig:
     return DaemonConfig(repo_root=config.repo_root, apply=True)
 
 
+def should_apply_builtin_repair(decision: SupervisorDecision, proposal: Proposal) -> bool:
+    """Return True when agentic repair failed and deterministic fallback is useful."""
+
+    if proposal.valid:
+        return False
+    return decision.action in {
+        "invoke_codex",
+        "repair_daemon_programming",
+        "plan_next_tasks",
+    }
+
+
+def build_builtin_repair_status_payload(
+    decision: SupervisorDecision,
+    failed_proposal: Proposal,
+) -> dict[str, Any]:
+    """Build a small runtime-safe repair record for failed self-heal attempts."""
+
+    return {
+        "schemaVersion": 1,
+        "createdAt": utc_now(),
+        "repairKind": "builtin_supervisor_fallback",
+        "llmBackend": os.environ.get("PPD_LLM_BACKEND", "llm_router"),
+        "decision": {
+            "action": decision.action,
+            "reason": decision.reason,
+            "severity": decision.severity,
+        },
+        "failedAgenticRepair": {
+            "summary": failed_proposal.summary,
+            "failureKind": failed_proposal.failure_kind or "not_applied",
+            "errors": [compact_message(error) for error in failed_proposal.errors],
+            "changedFiles": list(failed_proposal.changed_files),
+            "validationResults": [result.compact(limit=900) for result in failed_proposal.validation_results],
+        },
+        "fallbackActions": [
+            "preserve failed repair diagnostics without accepting the invalid patch",
+            "run full PP&D daemon validation before restarting unattended worker attempts",
+            "restart the worker with PPD_LLM_BACKEND=llm_router after fallback validation passes",
+            "keep future retry scope narrow and fixture-first",
+        ],
+        "safetyBoundaries": [
+            "no private DevHub session artifacts",
+            "no raw crawl output",
+            "no downloaded documents",
+            "no browser traces or screenshots",
+            "no consequential DevHub actions",
+        ],
+    }
+
+
+def invoke_builtin_repair(
+    config: SupervisorConfig,
+    decision: SupervisorDecision,
+    failed_proposal: Proposal,
+) -> Proposal:
+    """Apply deterministic supervisor fallback when Codex self-heal fails."""
+
+    payload = build_builtin_repair_status_payload(decision, failed_proposal)
+    proposal = Proposal(
+        summary="Apply built-in supervisor fallback after failed agentic repair.",
+        impact=(
+            "The supervisor now records the failed self-heal diagnostics, validates the daemon "
+            "without accepting the invalid patch, and can restart the worker on the explicit "
+            "llm_router path instead of waiting for manual intervention."
+        ),
+        files=[
+            {
+                "path": "ppd/daemon/builtin-repair-status.json",
+                "content": json.dumps(payload, indent=2, sort_keys=True) + "\n",
+            }
+        ],
+    )
+    proposal.target_task = f"Built-in supervisor fallback: {decision.reason}"
+    proposal.dry_run = not config.apply
+    if config.apply:
+        return apply_files_with_validation(proposal, supervisor_daemon_config(config))
+    proposal.validation_results = run_validation(supervisor_daemon_config(config))
+    return proposal
+
+
 def invoke_codex_repair(config: SupervisorConfig, decision: SupervisorDecision) -> Proposal:
     if config.apply:
         run_control(config, "stop")
@@ -490,6 +574,9 @@ def invoke_codex_repair(config: SupervisorConfig, decision: SupervisorDecision) 
         proposal = apply_files_with_validation(proposal, supervisor_daemon_config(config))
     else:
         proposal.validation_results = run_validation(supervisor_daemon_config(config))
+
+    if should_apply_builtin_repair(decision, proposal):
+        proposal = invoke_builtin_repair(config, decision, proposal)
 
     if config.apply and config.restart_daemon:
         run_control(config, "start")
@@ -593,6 +680,25 @@ def self_test(repo_root: Path) -> int:
         errors.append("malformed return annotation-like syntax marker classification failed")
     if repeated_malformed_syntax_count([malformed_confidence_failure, malformed_return_failure]) != 2:
         errors.append("repeated malformed syntax count failed")
+    invalid_repair = Proposal(summary="bad repair", errors=["Validation failed"], failure_kind="validation")
+    repair_decision = SupervisorDecision(
+        action="repair_daemon_programming",
+        reason="synthetic failed self-heal",
+        severity="warning",
+        should_invoke_codex=True,
+        should_restart_daemon=True,
+    )
+    if not should_apply_builtin_repair(repair_decision, invalid_repair):
+        errors.append("failed agentic repair should trigger built-in fallback")
+    accepted_repair = Proposal(summary="accepted repair", applied=True)
+    accepted_repair.validation_results = []
+    if should_apply_builtin_repair(repair_decision, accepted_repair):
+        errors.append("accepted repair must not trigger built-in fallback")
+    payload = build_builtin_repair_status_payload(repair_decision, invalid_repair)
+    if payload.get("llmBackend") != os.environ.get("PPD_LLM_BACKEND", "llm_router"):
+        errors.append("built-in repair payload must preserve llm_router backend")
+    if "failedAgenticRepair" not in payload:
+        errors.append("built-in repair payload missing failed repair diagnostics")
     non_syntax_failure = {
         "failure_kind": "validation",
         "validation_results": [{"command": ["python3", "-m", "unittest"], "returncode": 1, "stderr": "AssertionError"}],

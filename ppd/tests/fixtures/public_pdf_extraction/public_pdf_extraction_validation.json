@@ -1,0 +1,82 @@
+{
+  "fixtureId": "public-pdf-extraction-validation-v1",
+  "fixtureOnly": true,
+  "sourceDocument": {
+    "documentId": "residential-building-permit-application-extract",
+    "title": "Residential Building Permit Application PDF fixture",
+    "sourceUrl": "https://www.portland.gov/ppd/forms/building-permit-application.pdf",
+    "canonicalUrl": "https://www.portland.gov/ppd/forms/building-permit-application.pdf",
+    "contentType": "application/pdf",
+    "access": "public",
+    "retrievalMode": "fixture_only_no_download",
+    "checksum": "sha256:placeholder-public-pdf-hash-not-downloaded",
+    "checksumStatus": "placeholder_until_public_processor_capture",
+    "skippedRawByteReason": "raw PDF bytes are not stored in PP&D daemon fixtures",
+    "skippedOcrOutputReason": "full OCR output is not stored; only short cited snippets are retained"
+  },
+  "pageAnchors": [
+    {
+      "anchorId": "page-1-title",
+      "pageNumber": 1,
+      "sourceUrl": "https://www.portland.gov/ppd/forms/building-permit-application.pdf#page=1",
+      "label": "Application title",
+      "snippet": "Building Permit Application"
+    },
+    {
+      "anchorId": "page-2-signature",
+      "pageNumber": 2,
+      "sourceUrl": "https://www.portland.gov/ppd/forms/building-permit-application.pdf#page=2",
+      "label": "Applicant acknowledgment",
+      "snippet": "Applicant signature and date"
+    }
+  ],
+  "extractedFields": [
+    {
+      "fieldId": "project-address",
+      "label": "Project address",
+      "pageAnchorId": "page-1-title",
+      "sourceUrl": "https://www.portland.gov/ppd/forms/building-permit-application.pdf#page=1",
+      "redactedValue": "[REDACTED:PROJECT_ADDRESS]",
+      "valuePolicy": "placeholder_only"
+    },
+    {
+      "fieldId": "applicant-signature",
+      "label": "Applicant signature",
+      "pageAnchorId": "page-2-signature",
+      "sourceUrl": "https://www.portland.gov/ppd/forms/building-permit-application.pdf#page=2",
+      "redactedValue": "[REDACTED:APPLICANT_SIGNATURE]",
+      "valuePolicy": "placeholder_only"
+    }
+  ],
+  "rejectionCases": [
+    {
+      "caseId": "reject-raw-body",
+      "payload": {
+        "rawBody": "%PDF raw bytes omitted"
+      },
+      "expectedReason": "raw PDF bodies are not allowed"
+    },
+    {
+      "caseId": "reject-private-devhub",
+      "payload": {
+        "sourceUrl": "https://devhub.portlandoregon.gov/secure/permits/123",
+        "authState": "[REDACTED:AUTH_STATE]"
+      },
+      "expectedReason": "private DevHub artifacts are not allowed"
+    },
+    {
+      "caseId": "reject-full-ocr-output",
+      "payload": {
+        "ocrOutputPath": "ppd/data/raw/private-ocr-output.txt"
+      },
+      "expectedReason": "raw OCR output paths are not allowed"
+    }
+  ],
+  "storagePolicy": {
+    "storesRawPdfBytes": false,
+    "storesDownloadedDocument": false,
+    "storesFullOcrOutput": false,
+    "storesPrivateDevhubArtifacts": false,
+    "storesRedactedFixtureValuesOnly": true
+  }
+}

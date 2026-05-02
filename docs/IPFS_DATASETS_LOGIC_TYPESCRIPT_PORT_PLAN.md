@@ -597,7 +597,7 @@ Acceptance criteria:
   - [!] Add richer developer-panel integration for live UI inspection.
 - [x] Replace Python API/CLI surfaces with TypeScript developer scripts or browser devtools.
   - [x] Initial browser-native public API facade for `logic/api.py` import-surface parity.
-  - [ ] Add CLI/devtools command adapter parity for `logic/cli.py`.
+  - [!] Add CLI/devtools command adapter parity for `logic/cli.py`.
 - [ ] Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.
 
 ## Full-Port Completion Definition
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-02 19:31:08 UTC
+Last updated: 2026-05-02 19:50:34 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-193: Add CLI/devtools command adapter parity for 'logic/cli.py'.`
+Current target: `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1168,8 +1168,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [!] `Task checkbox-190: Add richer developer-panel integration for live UI inspection.` - blocked
 - [x] `Task checkbox-191: Replace Python API/CLI surfaces with TypeScript developer scripts or browser devtools.` - complete
 - [x] `Task checkbox-192: Initial browser-native public API facade for 'logic/api.py' import-surface parity.` - complete
-- [!] `Task checkbox-193: Add CLI/devtools command adapter parity for 'logic/cli.py'.` - latest daemon round failed validation or preflight
-- [ ] `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.` - needed
+- [!] `Task checkbox-193: Add CLI/devtools command adapter parity for 'logic/cli.py'.` - blocked
+- [!] `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.` - latest daemon round failed validation or preflight
 - [x] `Task checkbox-195: Port remaining Python logic module 'logic/CEC/cec_framework.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [ ] `Task checkbox-196: Port remaining Python logic module 'logic/CEC/dcec_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [x] `Task checkbox-197: Port remaining Python logic module 'logic/CEC/eng_dcec_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
@@ -1430,23 +1430,17 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-193: Add CLI/devtools command adapter parity for 'logic/cli.py'.`
+- Target: `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.`
 - Result: `needs follow-up`
-- Summary: Add browser-native CLI/devtools command adapter parity for logic CLI commands
-- Impact: Adds a deterministic TypeScript command parser and dispatcher under src/lib/logic/ that browser devtools/UI code can use for logic/cli.py-style command handling without subprocess, filesystem, RPC, Python, or server fallbacks. The Jest tests exercise parsing, quoted arguments, option handling, unsupported-command rejection, help output, and missing-handler fail-closed behavior for validation by the TypeScript logic port suite.
+- Summary: Add browser-native proof cache storage and IPFS/IPLD semantics
+- Impact: src/lib/logic/proofCache.ts now records deterministic IPLD metadata for cached proofs, persists entries through an optional browser storage contract, and exposes browser-native IPFS client import/export helpers that fail closed when required client methods are unavailable. src/lib/logic/proofCache.test.ts validates the new behavior through the existing Jest logic-port test harness.
 - Errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/cliCommandAdapter.ts(31,21): error TS1005: ';' expected.
-../../..src/lib/logic/cliCommandAdapter.ts(31,22): error TS1109: Expression expected.
-../../..src/lib/logic/cliCommandAdapter.ts(32,1): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/cliCommandAdapter.ts(50,30): error TS1005: ';' expected.
-../../..src/lib/logic/cliCommandAdapter.ts(54,7): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/cliCommandAdapter.ts(57,3): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/cliCommandAdapter.ts(66,1): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/cliCommandAdapter.ts(98,32): error TS1005: ';' expected.
-../../..src/lib/logic/cliCommandAdapter.ts(100,9): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/cliCommandAdapter.ts(106,7): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/cliCommandAdapter.ts(109,3): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/cliCommandAdapter.ts(112,1): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/proofCache.ts(80,37): error TS1109: Expression expected.
+../../..src/lib/logic/proofCache.ts(251,35): error TS1005: ')' expected.
+../../..src/lib/logic/proofCache.ts(261,7): error TS1005: 'try' expected.
+../../..src/lib/logic/proofCache.ts(266,3): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/proofCache.ts(348,33): error TS1005: ';' expected.
+../../..src/lib/logic/proofCache.ts(348,34): error TS1109: Expression expected.
 - Failure kind: `preflight`
 
 ### Blocked Backlog
@@ -1491,6 +1485,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
   - Failure kinds: `{"typescript_quality": 3}`
   - Latest failure kind: `typescript_quality`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/developerPanel.ts(181,23): error TS1005: ';' expected. ../../..src/lib/logic/develope...
+- `Task checkbox-193: Add CLI/devtools command adapter parity for 'logic/cli.py'.`
+  - Failures since success: `3`
+  - Failure kinds: `{"typescript_quality": 3}`
+  - Latest failure kind: `typescript_quality`
+  - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/cliCommandAdapter.ts(125,61): error TS1005: ';' expected. ../../..src/lib/logic/cliCo...
 
 ### Required Daemon Behavior
 

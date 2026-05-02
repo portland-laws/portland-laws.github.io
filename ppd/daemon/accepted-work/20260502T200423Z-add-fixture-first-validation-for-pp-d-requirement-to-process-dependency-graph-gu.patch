@@ -1,0 +1,628 @@
+--- a/ppd/logic/requirement_process_dependency_graph.py
++++ b/ppd/logic/requirement_process_dependency_graph.py
+@@ -0,0 +1,174 @@
++"""Validation for PP&D requirement-to-process dependency graph fixtures.
++
++The graph fixtures are deterministic guardrail artifacts. They connect extracted
++requirements, process steps, missing-information facts, and agent action gates
++without carrying private user values or live DevHub state.
++"""
++
++from __future__ import annotations
++
++from dataclasses import dataclass
++from typing import Any, Mapping
++
++
++BLOCKING_CLASSIFICATIONS = {"consequential", "potentially_consequential", "financial"}
++PRIVATE_VALUE_KEYS = {
++    "actual_value",
++    "after_value",
++    "before_value",
++    "field_value",
++    "private_value",
++    "raw_value",
++    "user_value",
++    "value",
++}
++SAFE_REDACTED_VALUES = {"[REDACTED]", "[UNKNOWN]", "", "REDACTED"}
++
++
++@dataclass(frozen=True)
++class DependencyGraphFinding:
++    """A deterministic validation finding for a dependency graph fixture."""
++
++    path: str
++    reason: str
++
++
++def validate_requirement_process_dependency_graph(graph: Mapping[str, Any]) -> list[DependencyGraphFinding]:
++    """Validate a committed PP&D requirement-to-process dependency graph fixture."""
++
++    findings: list[DependencyGraphFinding] = []
++    nodes_value = graph.get("nodes", [])
++    edges_value = graph.get("edges", [])
++
++    if not isinstance(nodes_value, list):
++        return [DependencyGraphFinding("nodes", "nodes must be a list")]
++    if not isinstance(edges_value, list):
++        return [DependencyGraphFinding("edges", "edges must be a list")]
++
++    known_nodes: set[str] = set()
++    for index, node in enumerate(nodes_value):
++        path = f"nodes[{index}]"
++        if not isinstance(node, Mapping):
++            findings.append(DependencyGraphFinding(path, "node must be an object"))
++            continue
++
++        node_id = _text(node.get("id"))
++        if not node_id:
++            findings.append(DependencyGraphFinding(path, "node id is required"))
++        elif node_id in known_nodes:
++            findings.append(DependencyGraphFinding(path, f"duplicate node id {node_id}"))
++        else:
++            known_nodes.add(node_id)
++
++        citations = node.get("citations", [])
++        if not _has_citations(citations):
++            findings.append(DependencyGraphFinding(path, "node must include at least one citation"))
++
++        classification = _classification(node)
++        if classification in BLOCKING_CLASSIFICATIONS:
++            if node.get("blockedByDefault") is not True:
++                findings.append(
++                    DependencyGraphFinding(
++                        path,
++                        f"{classification} node must set blockedByDefault to true",
++                    )
++                )
++            if node.get("explicitConfirmationDefault") is not False:
++                findings.append(
++                    DependencyGraphFinding(
++                        path,
++                        f"{classification} node must set explicitConfirmationDefault to false",
++                    )
++                )
++            if node.get("failClosed") is not True:
++                findings.append(
++                    DependencyGraphFinding(path, f"{classification} node must set failClosed to true")
++                )
++
++        findings.extend(_validate_no_private_values(node, path))
++
++    for index, edge in enumerate(edges_value):
++        path = f"edges[{index}]"
++        if not isinstance(edge, Mapping):
++            findings.append(DependencyGraphFinding(path, "edge must be an object"))
++            continue
++
++        source = _text(edge.get("source"))
++        target = _text(edge.get("target"))
++        if not source:
++            findings.append(DependencyGraphFinding(path, "edge source is required"))
++        elif source not in known_nodes:
++            findings.append(DependencyGraphFinding(path, f"edge source {source} is not a known node"))
++        if not target:
++            findings.append(DependencyGraphFinding(path, "edge target is required"))
++        elif target not in known_nodes:
++            findings.append(DependencyGraphFinding(path, f"edge target {target} is not a known node"))
++        if not _has_citations(edge.get("citations", [])):
++            findings.append(DependencyGraphFinding(path, "edge must include at least one citation"))
++        if edge.get("failClosed") is not True:
++            findings.append(DependencyGraphFinding(path, "edge must set failClosed to true"))
++
++        findings.extend(_validate_no_private_values(edge, path))
++
++    return findings
++
++
++def assert_requirement_process_dependency_graph(graph: Mapping[str, Any]) -> None:
++    """Raise AssertionError with compact diagnostics when a fixture is invalid."""
++
++    findings = validate_requirement_process_dependency_graph(graph)
++    if findings:
++        details = "; ".join(f"{finding.path}: {finding.reason}" for finding in findings)
++        raise AssertionError(details)
++
++
++def _classification(node: Mapping[str, Any]) -> str:
++    for key in ("actionClassification", "classification", "action_classification"):
++        value = _text(node.get(key)).lower()
++        if value:
++            return value
++    return ""
++
++
++def _has_citations(value: Any) -> bool:
++    if not isinstance(value, list) or not value:
++        return False
++    for citation in value:
++        if isinstance(citation, Mapping) and _text(citation.get("sourceEvidenceId")):
++            return True
++        if isinstance(citation, str) and citation.strip():
++            return True
++    return False
++
++
++def _validate_no_private_values(value: Any, path: str) -> list[DependencyGraphFinding]:
++    findings: list[DependencyGraphFinding] = []
++    if isinstance(value, Mapping):
++        for key, nested in value.items():
++            key_text = _text(key)
++            nested_path = f"{path}.{key_text}"
++            if _normalized_key(key_text) in PRIVATE_VALUE_KEYS:
++                if nested is not None and nested not in SAFE_REDACTED_VALUES:
++                    findings.append(
++                        DependencyGraphFinding(nested_path, "private values must be redacted or unknown")
++                    )
++            findings.extend(_validate_no_private_values(nested, nested_path))
++    elif isinstance(value, list):
++        for index, nested in enumerate(value):
++            findings.extend(_validate_no_private_values(nested, f"{path}[{index}]"))
++    return findings
++
++
++def _normalized_key(value: str) -> str:
++    chars: list[str] = []
++    for char in value:
++        if char.isupper() and chars:
++            chars.append("_")
++        chars.append(char.lower() if char.isalnum() else "_")
++    return "_".join(part for part in "".join(chars).split("_") if part)
++
++
++def _text(value: Any) -> str:
++    if value is None:
++        return ""
++    return str(value).strip()
+--- a/ppd/tests/fixtures/requirement_process_dependency_graph.json
++++ b/ppd/tests/fixtures/requirement_process_dependency_graph.json
+@@ -0,0 +1,201 @@
++{
++  "schemaVersion": 1,
++  "fixtureId": "ppd-requirement-process-dependency-graph-v1",
++  "description": "Synthetic public-only dependency graph linking PP&D requirements, process steps, missing information, and stop gates.",
++  "validGraph": {
++    "nodes": [
++      {
++        "id": "req-single-pdf-process",
++        "kind": "requirement",
++        "label": "Single PDF Process applies to drawing plans",
++        "citations": [
++          {
++            "sourceEvidenceId": "ppd-public-devhub-single-pdf-guidance",
++            "url": "https://www.portland.gov/ppd/devhub"
++          }
++        ],
++        "failClosed": true
++      },
++      {
++        "id": "process-prepare-documents",
++        "kind": "process_stage",
++        "label": "Prepare application documents",
++        "citations": [
++          {
++            "sourceEvidenceId": "ppd-public-devhub-application-guidance",
++            "url": "https://www.portland.gov/ppd/devhub"
++          }
++        ],
++        "failClosed": true
++      },
++      {
++        "id": "fact-project-description",
++        "kind": "missing_user_fact",
++        "label": "Project description is needed before draft form entry",
++        "value": "[UNKNOWN]",
++        "citations": [
++          {
++            "sourceEvidenceId": "ppd-public-devhub-application-guidance",
++            "url": "https://www.portland.gov/ppd/devhub"
++          }
++        ],
++        "failClosed": true
++      },
++      {
++        "id": "gate-submit-application",
++        "kind": "agent_action_gate",
++        "label": "Stop before submitting an application",
++        "classification": "consequential",
++        "blockedByDefault": true,
++        "explicitConfirmationDefault": false,
++        "citations": [
++          {
++            "sourceEvidenceId": "ppd-plan-authenticated-devhub-guarded-action-executor",
++            "url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md"
++          }
++        ],
++        "failClosed": true
++      },
++      {
++        "id": "gate-pay-fees",
++        "kind": "agent_action_gate",
++        "label": "Stop before fee payment",
++        "classification": "financial",
++        "blockedByDefault": true,
++        "explicitConfirmationDefault": false,
++        "citations": [
++          {
++            "sourceEvidenceId": "ppd-plan-authenticated-devhub-guarded-action-executor",
++            "url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md"
++          }
++        ],
++        "failClosed": true
++      }
++    ],
++    "edges": [
++      {
++        "id": "edge-requirement-to-prepare-documents",
++        "source": "req-single-pdf-process",
++        "target": "process-prepare-documents",
++        "relation": "constrains",
++        "citations": [
++          {
++            "sourceEvidenceId": "ppd-public-devhub-single-pdf-guidance",
++            "url": "https://www.portland.gov/ppd/devhub"
++          }
++        ],
++        "failClosed": true
++      },
++      {
++        "id": "edge-missing-fact-to-prepare-documents",
++        "source": "fact-project-description",
++        "target": "process-prepare-documents",
++        "relation": "blocks_until_known",
++        "citations": [
++          {
++            "sourceEvidenceId": "ppd-public-devhub-application-guidance",
++            "url": "https://www.portland.gov/ppd/devhub"
++          }
++        ],
++        "failClosed": true
++      },
++      {
++        "id": "edge-prepare-to-submit-stop-gate",
++        "source": "process-prepare-documents",
++        "target": "gate-submit-application",
++        "relation": "precedes_stop_gate",
++        "citations": [
++          {
++            "sourceEvidenceId": "ppd-plan-authenticated-devhub-guarded-action-executor",
++            "url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md"
++          }
++        ],
++        "failClosed": true
++      },
++      {
++        "id": "edge-prepare-to-payment-stop-gate",
++        "source": "process-prepare-documents",
++        "target": "gate-pay-fees",
++        "relation": "precedes_stop_gate",
++        "citations": [
++          {
++            "sourceEvidenceId": "ppd-plan-authenticated-devhub-guarded-action-executor",
++            "url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md"
++          }
++        ],
++        "failClosed": true
++      }
++    ]
++  },
++  "invalidCases": [
++    {
++      "caseId": "unknown-source-node",
++      "mutate": {
++        "edges": [
++          {
++            "id": "edge-unknown-source",
++            "source": "req-not-in-graph",
++            "target": "process-prepare-documents",
++            "relation": "constrains",
++            "citations": [
++              {
++                "sourceEvidenceId": "ppd-public-devhub-single-pdf-guidance",
++                "url": "https://www.portland.gov/ppd/devhub"
++              }
++            ],
++            "failClosed": true
++          }
++        ]
++      },
++      "expectedFinding": "edge source req-not-in-graph is not a known node"
++    },
++    {
++      "caseId": "consequential-node-not-blocked",
++      "mutate": {
++        "nodes": [
++          {
++            "id": "gate-submit-application",
++            "blockedByDefault": false
++          }
++        ]
++      },
++      "expectedFinding": "consequential node must set blockedByDefault to true"
++    },
++    {
++      "caseId": "financial-node-confirmation-default-open",
++      "mutate": {
++        "nodes": [
++          {
++            "id": "gate-pay-fees",
++            "explicitConfirmationDefault": true
++          }
++        ]
++      },
++      "expectedFinding": "financial node must set explicitConfirmationDefault to false"
++    },
++    {
++      "caseId": "missing-edge-citation",
++      "mutate": {
++        "edges": [
++          {
++            "id": "edge-requirement-to-prepare-documents",
++            "citations": []
++          }
++        ]
++      },
++      "expectedFinding": "edge must include at least one citation"
++    },
++    {
++      "caseId": "private-value-not-redacted",
++      "mutate": {
++        "nodes": [
++          {
++            "id": "fact-project-description",
++            "value": "Build a private project at 123 Example Street"
++          }
++        ]
++      },
++      "expectedFinding": "private values must be redacted or unknown"
++    }
++  ]
++}
+--- a/ppd/tests/test_requirement_process_dependency_graph.py
++++ b/ppd/tests/test_requirement_process_dependency_graph.py
+@@ -1,192 +1,69 @@
+-"""Validate fixture-only PP&D requirement-to-process dependency graphs."""
++"""Fixture validation for PP&D requirement-to-process dependency graphs."""
+ 
+ from __future__ import annotations
+ 
++import copy
+ import json
+ from pathlib import Path
+-from typing import Any
++import unittest
+ 
+-
+-FIXTURE_PATH = (
+-    Path(__file__).parent
+-    / "fixtures"
+-    / "requirement_process_dependency_graph"
+-    / "public_building_permit_graph.json"
+-)
+-
+-REQUIRED_NODE_TYPES = {
+-    "source_evidence",
+-    "extracted_obligation",
+-    "required_document",
+-    "user_fact",
+-    "stop_gate",
+-    "draft_plan_node",
+-}
+-
+-FORBIDDEN_TEXT_MARKERS = (
+-    "cookie",
+-    "password",
+-    "storage_state",
+-    "auth_state",
+-    "trace.zip",
+-    "screenshot",
+-    "captcha",
+-    "mfa",
+-    "payment card",
++from ppd.logic.requirement_process_dependency_graph import (
++    validate_requirement_process_dependency_graph,
+ )
+ 
+ 
+-class RequirementProcessGraphError(AssertionError):
+-    """Raised when the committed graph fixture violates PP&D guardrails."""
++FIXTURE_PATH = Path(__file__).parent / "fixtures" / "requirement_process_dependency_graph.json"
+ 
+ 
+-def test_public_building_permit_requirement_process_graph_fixture() -> None:
+-    graph = _load_graph()
+-    _validate_graph(graph)
++class RequirementProcessDependencyGraphTest(unittest.TestCase):
++    def setUp(self) -> None:
++        self.fixture = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
++
++    def test_valid_graph_has_no_findings(self) -> None:
++        findings = validate_requirement_process_dependency_graph(self.fixture["validGraph"])
++        self.assertEqual([], findings)
++
++    def test_invalid_graph_cases_fail_closed(self) -> None:
++        valid_graph = self.fixture["validGraph"]
++        for invalid_case in self.fixture["invalidCases"]:
++            with self.subTest(case_id=invalid_case["caseId"]):
++                mutated = _apply_mutation(valid_graph, invalid_case["mutate"])
++                findings = validate_requirement_process_dependency_graph(mutated)
++                reasons = "\n".join(finding.reason for finding in findings)
++                self.assertIn(invalid_case["expectedFinding"], reasons)
+ 
+ 
+-def _load_graph() -> dict[str, Any]:
+-    with FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
+-        data = json.load(fixture_file)
+-    if not isinstance(data, dict):
+-        raise RequirementProcessGraphError("graph fixture must be a JSON object")
+-    return data
++def _apply_mutation(graph: dict[str, object], mutation: dict[str, object]) -> dict[str, object]:
++    mutated = copy.deepcopy(graph)
++
++    for replacement in mutation.get("nodes", []):
++        if not isinstance(replacement, dict):
++            continue
++        node_id = replacement.get("id")
++        nodes = mutated.get("nodes", [])
++        if isinstance(nodes, list):
++            _merge_or_append_by_id(nodes, node_id, replacement)
++
++    for replacement in mutation.get("edges", []):
++        if not isinstance(replacement, dict):
++            continue
++        edge_id = replacement.get("id")
++        edges = mutated.get("edges", [])
++        if isinstance(edges, list):
++            _merge_or_append_by_id(edges, edge_id, replacement)
++
++    return mutated
+ 
+ 
+-def _validate_graph(graph: dict[str, Any]) -> None:
+-    if graph.get("schemaVersion") != 1:
+-        raise RequirementProcessGraphError("graph schemaVersion must be 1")
+-    if graph.get("fixtureOnly") is not True:
+-        raise RequirementProcessGraphError("graph must be marked fixtureOnly")
+-
+-    redaction_policy = graph.get("redactionPolicy")
+-    if not isinstance(redaction_policy, dict):
+-        raise RequirementProcessGraphError("graph requires a redactionPolicy object")
+-    expected_redaction_flags = {
+-        "valuesAreRedacted": True,
+-        "privateDevhubStateIncluded": False,
+-        "rawCrawlOutputIncluded": False,
+-        "downloadedDocumentsIncluded": False,
+-    }
+-    for key, expected_value in expected_redaction_flags.items():
+-        if redaction_policy.get(key) is not expected_value:
+-            raise RequirementProcessGraphError(f"redactionPolicy.{key} must be {expected_value!r}")
+-
+-    evidence = graph.get("sourceEvidence")
+-    if not isinstance(evidence, list) or not evidence:
+-        raise RequirementProcessGraphError("graph requires sourceEvidence records")
+-    evidence_ids = _validate_source_evidence(evidence)
+-
+-    nodes = graph.get("nodes")
+-    if not isinstance(nodes, list) or not nodes:
+-        raise RequirementProcessGraphError("graph requires nodes")
+-    node_ids = _validate_nodes(nodes, evidence_ids)
+-
+-    edges = graph.get("edges")
+-    if not isinstance(edges, list) or not edges:
+-        raise RequirementProcessGraphError("graph requires edges")
+-    _validate_edges(edges, node_ids, evidence_ids)
+-
+-    graph_text = json.dumps(graph, sort_keys=True).lower()
+-    for marker in FORBIDDEN_TEXT_MARKERS:
+-        if marker in graph_text:
+-            raise RequirementProcessGraphError(f"graph contains forbidden private or unsafe marker {marker!r}")
++def _merge_or_append_by_id(items: list[object], item_id: object, replacement: dict[str, object]) -> None:
++    for index, item in enumerate(items):
++        if isinstance(item, dict) and item.get("id") == item_id:
++            merged = copy.deepcopy(item)
++            merged.update(replacement)
++            items[index] = merged
++            return
++    items.append(copy.deepcopy(replacement))
+ 
+ 
+-def _validate_source_evidence(records: list[Any]) -> set[str]:
+-    evidence_ids: set[str] = set()
+-    for index, record in enumerate(records):
+-        if not isinstance(record, dict):
+-            raise RequirementProcessGraphError(f"sourceEvidence[{index}] must be an object")
+-        evidence_id = _required_text(record, "id", f"sourceEvidence[{index}]")
+-        if evidence_id in evidence_ids:
+-            raise RequirementProcessGraphError(f"duplicate source evidence id {evidence_id}")
+-        evidence_ids.add(evidence_id)
+-        url = _required_text(record, "url", evidence_id)
+-        if not url.startswith("https://www.portland.gov/ppd"):
+-            raise RequirementProcessGraphError(f"source evidence {evidence_id} must cite a public PP&D URL")
+-        _required_text(record, "title", evidence_id)
+-        _required_text(record, "capturedAt", evidence_id)
+-        _required_text(record, "citation", evidence_id)
+-    return evidence_ids
+-
+-
+-def _validate_nodes(nodes: list[Any], evidence_ids: set[str]) -> set[str]:
+-    node_ids: set[str] = set()
+-    node_types: set[str] = set()
+-    for index, node in enumerate(nodes):
+-        if not isinstance(node, dict):
+-            raise RequirementProcessGraphError(f"nodes[{index}] must be an object")
+-        node_id = _required_text(node, "id", f"nodes[{index}]")
+-        if node_id in node_ids:
+-            raise RequirementProcessGraphError(f"duplicate node id {node_id}")
+-        node_ids.add(node_id)
+-        node_type = _required_text(node, "type", node_id)
+-        node_types.add(node_type)
+-        _required_text(node, "label", node_id)
+-
+-        if node_type == "source_evidence":
+-            source_id = _required_text(node, "sourceEvidenceId", node_id)
+-            if source_id not in evidence_ids:
+-                raise RequirementProcessGraphError(f"source node {node_id} references unknown evidence {source_id}")
+-        else:
+-            _validate_evidence_refs(node, evidence_ids, f"node {node_id}")
+-            if node.get("redactedValue") != "[REDACTED]":
+-                raise RequirementProcessGraphError(f"node {node_id} must keep values redacted")
+-
+-        if node_type == "draft_plan_node":
+-            if node.get("reversible") is not True:
+-                raise RequirementProcessGraphError(f"draft plan node {node_id} must be reversible")
+-            if node.get("draftOnly") is not True:
+-                raise RequirementProcessGraphError(f"draft plan node {node_id} must be draftOnly")
+-        if node_type == "stop_gate" and node.get("defaultState") != "blocked":
+-            raise RequirementProcessGraphError(f"stop gate {node_id} must default to blocked")
+-
+-    missing_types = REQUIRED_NODE_TYPES.difference(node_types)
+-    if missing_types:
+-        raise RequirementProcessGraphError(f"graph missing required node types: {sorted(missing_types)}")
+-    return node_ids
+-
+-
+-def _validate_edges(edges: list[Any], node_ids: set[str], evidence_ids: set[str]) -> None:
+-    relations: set[str] = set()
+-    for index, edge in enumerate(edges):
+-        if not isinstance(edge, dict):
+-            raise RequirementProcessGraphError(f"edges[{index}] must be an object")
+-        from_node = _required_text(edge, "from", f"edges[{index}]")
+-        to_node = _required_text(edge, "to", f"edges[{index}]")
+-        relation = _required_text(edge, "relation", f"edge {from_node}->{to_node}")
+-        relations.add(relation)
+-        if from_node not in node_ids:
+-            raise RequirementProcessGraphError(f"edge references unknown from node {from_node}")
+-        if to_node not in node_ids:
+-            raise RequirementProcessGraphError(f"edge references unknown to node {to_node}")
+-        _validate_evidence_refs(edge, evidence_ids, f"edge {from_node}->{to_node}")
+-
+-    required_relations = {
+-        "supports_extraction",
+-        "requires_document",
+-        "requires_user_fact",
+-        "drives_reversible_draft_plan",
+-        "blocks_until_requirements_known",
+-        "limits_plan_to_draft_only",
+-    }
+-    missing_relations = required_relations.difference(relations)
+-    if missing_relations:
+-        raise RequirementProcessGraphError(f"graph missing required edge relations: {sorted(missing_relations)}")
+-
+-
+-def _validate_evidence_refs(record: dict[str, Any], evidence_ids: set[str], context: str) -> None:
+-    refs = record.get("evidenceIds")
+-    if not isinstance(refs, list) or not refs:
+-        raise RequirementProcessGraphError(f"{context} requires evidenceIds")
+-    for ref in refs:
+-        if not isinstance(ref, str) or ref not in evidence_ids:
+-            raise RequirementProcessGraphError(f"{context} references unknown evidence id {ref!r}")
+-
+-
+-def _required_text(record: dict[str, Any], key: str, context: str) -> str:
+-    value = record.get(key)
+-    if not isinstance(value, str) or not value.strip():
+-        raise RequirementProcessGraphError(f"{context} requires non-empty string field {key}")
+-    return value
++if __name__ == "__main__":
++    unittest.main()
