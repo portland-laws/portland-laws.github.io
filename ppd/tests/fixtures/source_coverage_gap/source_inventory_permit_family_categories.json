@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "fixturePurpose": "validation_only_source_coverage_gap_report",
+  "categories": [
+    {
+      "category_id": "single-pdf-process-guidance",
+      "permit_family": "single-pdf-process",
+      "canonical_url": "https://www.portland.gov/ppd/single-pdf-process",
+      "authority_label": "PP&D public guidance",
+      "recrawl_cadence": "monthly"
+    },
+    {
+      "category_id": "trade-permit-plan-review-guidance",
+      "permit_family": "trade-permit-with-plan-review",
+      "canonical_url": "https://www.portland.gov/ppd/permits/trade-permits-plan-review",
+      "authority_label": "PP&D public guidance",
+      "recrawl_cadence": "weekly"
+    },
+    {
+      "category_id": "residential-building-permit-guidance",
+      "permit_family": "residential-building-permit",
+      "canonical_url": "https://www.portland.gov/ppd/permits/residential-building-permits",
+      "authority_label": "PP&D public guidance",
+      "recrawl_cadence": "weekly"
+    },
+    {
+      "category_id": "solar-permit-guidance",
+      "permit_family": "solar-permit",
+      "canonical_url": "https://www.portland.gov/ppd/permits/solar-permits",
+      "authority_label": "PP&D public guidance",
+      "recrawl_cadence": "weekly"
+    },
+    {
+      "category_id": "demolition-permit-guidance",
+      "permit_family": "demolition-permit",
+      "canonical_url": "https://www.portland.gov/ppd/permits/demolition-permits",
+      "authority_label": "PP&D public guidance",
+      "recrawl_cadence": "weekly"
+    },
+    {
+      "category_id": "sign-permit-guidance",
+      "permit_family": "sign-permit",
+      "canonical_url": "https://www.portland.gov/ppd/permits/sign-permits",
+      "authority_label": "PP&D public guidance",
+      "recrawl_cadence": "monthly"
+    },
+    {
+      "category_id": "urban-forestry-permit-guidance",
+      "permit_family": "urban-forestry-permit",
+      "canonical_url": "https://www.portland.gov/trees/permits",
+      "authority_label": "PP&D and Urban Forestry public guidance",
+      "recrawl_cadence": "monthly"
+    }
+  ]
+}

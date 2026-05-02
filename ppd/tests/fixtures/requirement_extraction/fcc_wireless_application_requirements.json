@@ -1,0 +1,164 @@
+{
+  "fixtureId": "fcc_wireless_application_requirements",
+  "sourceEvidence": [
+    {
+      "evidenceId": "fcc-wireless-devhub-type",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub-pdx/apply-permit",
+      "title": "Apply for permits online using Development Hub PDX",
+      "anchor": "fcc-wireless-applications",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "evidenceId": "fcc-wireless-submittal-package",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/forms",
+      "title": "Permits and Inspections Applications",
+      "anchor": "wireless-applications-and-forms",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "evidenceId": "fcc-wireless-site-information",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/forms",
+      "title": "Permits and Inspections Applications",
+      "anchor": "site-and-property-information",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "evidenceId": "fcc-wireless-facility-details",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/forms",
+      "title": "Permits and Inspections Applications",
+      "anchor": "wireless-facility-details",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "evidenceId": "fcc-wireless-plan-review",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub-pdx/apply-permit",
+      "title": "Apply for permits online using Development Hub PDX",
+      "anchor": "permit-requests-requiring-plan-review",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "evidenceId": "fcc-wireless-fees",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub-pdx/faq",
+      "title": "Development Hub PDX frequently asked questions",
+      "anchor": "fee-payments",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "evidenceId": "fcc-wireless-agent-gates",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub-pdx/apply-permit",
+      "title": "Apply for permits online using Development Hub PDX",
+      "anchor": "submit-application-online",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    }
+  ],
+  "requirements": [
+    {
+      "requirementId": "fcc-wireless-application-intake-devhub",
+      "category": "application_intake",
+      "type": "precondition",
+      "subject": "applicant",
+      "action": "select",
+      "object": "FCC wireless application request type in DevHub",
+      "conditions": ["project is an FCC wireless application"],
+      "evidenceIds": ["fcc-wireless-devhub-type"],
+      "confidence": 0.86,
+      "formalizationStatus": "fixture_validated"
+    },
+    {
+      "requirementId": "fcc-wireless-submittal-package-required",
+      "category": "submittal_documents",
+      "type": "obligation",
+      "subject": "applicant",
+      "action": "prepare",
+      "object": "wireless application submittal package",
+      "conditions": ["before DevHub request submission"],
+      "evidenceIds": ["fcc-wireless-submittal-package"],
+      "confidence": 0.82,
+      "formalizationStatus": "fixture_validated"
+    },
+    {
+      "requirementId": "fcc-wireless-site-property-information",
+      "category": "site_information",
+      "type": "obligation",
+      "subject": "applicant",
+      "action": "provide",
+      "object": "site and property information for the wireless location",
+      "conditions": ["application package is being drafted"],
+      "evidenceIds": ["fcc-wireless-site-information"],
+      "confidence": 0.79,
+      "formalizationStatus": "fixture_validated"
+    },
+    {
+      "requirementId": "fcc-wireless-facility-technical-details",
+      "category": "wireless_facility_details",
+      "type": "obligation",
+      "subject": "applicant",
+      "action": "describe",
+      "object": "wireless facility scope and technical details",
+      "conditions": ["application package is being drafted"],
+      "evidenceIds": ["fcc-wireless-facility-details"],
+      "confidence": 0.78,
+      "formalizationStatus": "fixture_validated"
+    },
+    {
+      "requirementId": "fcc-wireless-plan-review-routing",
+      "category": "plan_review",
+      "type": "dependency",
+      "subject": "system",
+      "action": "route",
+      "object": "FCC wireless application for plan review when required",
+      "conditions": ["request requires plan review"],
+      "evidenceIds": ["fcc-wireless-plan-review"],
+      "confidence": 0.8,
+      "formalizationStatus": "fixture_validated"
+    },
+    {
+      "requirementId": "fcc-wireless-fee-payment-stop",
+      "category": "fees",
+      "type": "action_gate",
+      "subject": "agent",
+      "action": "pay",
+      "object": "FCC wireless application fees",
+      "conditions": ["fees are due in DevHub"],
+      "evidenceIds": ["fcc-wireless-fees"],
+      "confidence": 0.84,
+      "formalizationStatus": "fixture_validated",
+      "stopGate": {
+        "classification": "financial",
+        "requiresExactUserConfirmation": true
+      }
+    },
+    {
+      "requirementId": "fcc-wireless-submit-application-stop",
+      "category": "agent_stop_gates",
+      "type": "action_gate",
+      "subject": "agent",
+      "action": "submit",
+      "object": "FCC wireless application request",
+      "conditions": ["application is ready for official submission"],
+      "evidenceIds": ["fcc-wireless-agent-gates"],
+      "confidence": 0.88,
+      "formalizationStatus": "fixture_validated",
+      "stopGate": {
+        "classification": "potentially_consequential",
+        "requiresExactUserConfirmation": true
+      }
+    },
+    {
+      "requirementId": "fcc-wireless-certification-stop",
+      "category": "agent_stop_gates",
+      "type": "action_gate",
+      "subject": "agent",
+      "action": "certify",
+      "object": "FCC wireless application acknowledgment",
+      "conditions": ["certification or acknowledgment is presented before submission"],
+      "evidenceIds": ["fcc-wireless-agent-gates"],
+      "confidence": 0.81,
+      "formalizationStatus": "fixture_validated",
+      "stopGate": {
+        "classification": "potentially_consequential",
+        "requiresExactUserConfirmation": true
+      }
+    }
+  ]
+}

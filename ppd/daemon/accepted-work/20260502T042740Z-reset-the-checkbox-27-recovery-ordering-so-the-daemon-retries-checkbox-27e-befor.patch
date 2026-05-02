@@ -1,0 +1,66 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -42,32 +42,30 @@
+ - [x] Recovery for checkbox-27b: after checkbox-27a passes, add one mutation case for missing `categoryId` only. Do not add the other mutation cases in the same daemon cycle.
+ - [x] Recovery for checkbox-27c: after checkbox-27b passes, add one mutation case for missing `sourceEvidenceIds` only.
+ - [x] Recovery for checkbox-27d: after checkbox-27c passes, add one mutation case for missing local `evidence[].evidenceId` only.
+-- [!] Recovery for checkbox-27e: after checkbox-27d passes, add one mutation case for out-of-range `confidence` only. Use only complete Python comparisons such as `if not isinstance(confidence, (int, float)):` and `if confidence > 1:`.
++- [ ] Recovery for checkbox-27e: after checkbox-27d passes, add one mutation case for out-of-range `confidence` only. Use only complete Python comparisons such as `if not isinstance(confidence, (int, float)):` and `if confidence > 1:`.
+ - [x] Recovery for checkbox-27f: after checkbox-27e passes, add one mutation case for duplicate `(categoryId, action, object, sourceEvidenceIds)` only.
+-- [~] Recovery for checkbox-27g: after checkbox-27f passes, add one mutation case for `stopGate: true` with a classification that does not end in `_stop_gate` only.
++- [ ] Recovery for checkbox-27g: after checkbox-27f passes, add one mutation case for `stopGate: true` with a classification that does not end in `_stop_gate` only.
+ - [ ] Add a daemon preflight regression test that selects the lowest incomplete checkbox-27 prerequisite when later checkbox-27 tasks are stale, blocked, or marked in progress.
+ - [ ] Add a daemon prompt regression test that fails if supervisor context for confidence-bound tasks contains malformed comparison fragments such as `confidence  1` or `if confidence 1:`.
+ - [ ] Add a daemon prompt sanitization guard that rewrites malformed confidence comparison fragments in selected task text, generated status text, and recent failure summaries before building the next LLM prompt.
+ 
++## Generated Status
++
++Last updated: 2026-05-02T04:30:00.000000Z
++
++- Latest target: `Task checkbox-35: Recovery for checkbox-27e: after checkbox-27d passes, add one mutation case for out-of-range confidence only.`
++- Latest result: `supervisor_repair`
++- Latest summary: Reset checkbox-27 recovery ordering so the next daemon cycle retries the confidence-bound mutation before stop-gate mutation work.
++- Counts: `{"blocked": 0, "complete": 35, "in_progress": 0, "needed": 5}`
++
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T04:20:00.000000Z
++Last updated: 2026-05-02T04:30:00.000000Z
+ 
+ - Latest target: `Task checkbox-35: Recovery for checkbox-27e: after checkbox-27d passes, add one mutation case for out-of-range confidence only.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Removed malformed confidence comparison examples from task text and supervisor guidance before another worker attempt.
+-- Counts: `{"blocked": 0, "complete": 35, "in_progress": 0, "needed": 4}`
++- Latest summary: Reset checkbox-27 recovery ordering and cleared stale in-progress state from checkbox-27g.
++- Counts: `{"blocked": 0, "complete": 35, "in_progress": 0, "needed": 5}`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-02T04:25:44.574871Z
+-
+-- Latest target: `Task checkbox-37: Recovery for checkbox-27g: after checkbox-27f passes, add one mutation case for `stopGate: true` with a classification that does not end in `_stop_gate` only.`
+-- Latest result: `validation`
+-- Latest summary: Add checkbox-27g stop-gate classification mutation coverage to the lifecycle requirement extraction mutation test.
+-- Counts: `{"blocked": 1, "complete": 35, "in_progress": 0, "needed": 4}`
+-
+-<!-- ppd-daemon-task-board:end -->
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -61,10 +61,12 @@
+ 
+ When a checkbox recovery sequence has accepted later tasks but an earlier prerequisite remains incomplete or previously blocked, select the lowest incomplete prerequisite first. For the checkbox-27 mutation sequence, checkbox-27e must be retried before checkbox-27g, even if checkbox-27f is already complete.
+ 
++If checkbox-27e is blocked while checkbox-27g is marked in progress, supervisor repair should reset checkbox-27e to needed and checkbox-27g to needed. The next daemon cycle should then select checkbox-27e as the lowest incomplete prerequisite.
++
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T04:24:00.000000Z
++Last updated: 2026-05-02T04:30:00.000000Z
+ 
+ - Latest target: `Task checkbox-35: Recovery for checkbox-27e: add one mutation case for out-of-range confidence only.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Tightened syntax-recovery guidance and removed malformed confidence comparison examples from supervisor context.
++- Latest summary: Tightened syntax-recovery guidance, removed malformed confidence comparison examples, and clarified recovery ordering for checkbox-27e before checkbox-27g.

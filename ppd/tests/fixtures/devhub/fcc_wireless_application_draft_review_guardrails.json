@@ -1,0 +1,146 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "devhub_fcc_wireless_application_draft_review_guardrails",
+  "workflow": "fcc_wireless_application_draft_review",
+  "currentSessionId": "session-fcc-wireless-2026-05-02T00-00-00Z",
+  "sourceEvidence": [
+    {
+      "id": "devhub_application_guidance_fcc_wireless",
+      "label": "DevHub application guidance lists FCC wireless applications as a permit request type.",
+      "url": "https://www.portland.gov/ppd/devhub"
+    },
+    {
+      "id": "ppd_guarded_action_executor_plan",
+      "label": "PP&D guarded action executor requires exact user confirmation for consequential and financial DevHub actions.",
+      "url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md"
+    }
+  ],
+  "workflowState": {
+    "stateId": "fcc_wireless_draft_review",
+    "urlState": "https://devhub.portlandoregon.gov/mock/fcc-wireless/draft-review",
+    "redactionStatus": "fixture_contains_only_redacted_values",
+    "visibleHeading": "FCC Wireless Application Draft Review",
+    "summary": "Synthetic mocked DevHub state for reviewing a draft FCC wireless application before official user-controlled actions."
+  },
+  "actions": [
+    {
+      "id": "preview_fcc_wireless_draft_review",
+      "label": "Preview FCC wireless application draft review",
+      "classification": "draft_preview",
+      "operation": "preview",
+      "requiresExactSessionConfirmation": false,
+      "allowedWithoutConfirmation": true,
+      "expectedPreview": {
+        "mode": "preview_only",
+        "mayMutateDevHub": false,
+        "mayCreateOfficialRecord": false,
+        "mayChargeFees": false,
+        "mayScheduleInspection": false
+      },
+      "evidenceIds": ["devhub_application_guidance_fcc_wireless", "ppd_guarded_action_executor_plan"]
+    },
+    {
+      "id": "official_upload_fcc_wireless_application",
+      "label": "Officially upload FCC wireless application materials",
+      "classification": "consequential",
+      "operation": "official_upload",
+      "requiresExactSessionConfirmation": true,
+      "exactConfirmationText": "I confirm official upload of FCC wireless application materials in session session-fcc-wireless-2026-05-02T00-00-00Z",
+      "blockedWithoutExactSessionConfirmation": true,
+      "evidenceIds": ["ppd_guarded_action_executor_plan"]
+    },
+    {
+      "id": "certify_fcc_wireless_application",
+      "label": "Certify FCC wireless application statements",
+      "classification": "consequential",
+      "operation": "certification",
+      "requiresExactSessionConfirmation": true,
+      "exactConfirmationText": "I confirm certification of FCC wireless application statements in session session-fcc-wireless-2026-05-02T00-00-00Z",
+      "blockedWithoutExactSessionConfirmation": true,
+      "evidenceIds": ["ppd_guarded_action_executor_plan"]
+    },
+    {
+      "id": "submit_fcc_wireless_application",
+      "label": "Submit FCC wireless application",
+      "classification": "consequential",
+      "operation": "submission",
+      "requiresExactSessionConfirmation": true,
+      "exactConfirmationText": "I confirm submission of the FCC wireless application in session session-fcc-wireless-2026-05-02T00-00-00Z",
+      "blockedWithoutExactSessionConfirmation": true,
+      "evidenceIds": ["ppd_guarded_action_executor_plan"]
+    },
+    {
+      "id": "pay_fcc_wireless_application_fees",
+      "label": "Pay FCC wireless application fees",
+      "classification": "financial",
+      "operation": "payment",
+      "requiresExactSessionConfirmation": true,
+      "exactConfirmationText": "I confirm payment action for FCC wireless application fees in session session-fcc-wireless-2026-05-02T00-00-00Z",
+      "blockedWithoutExactSessionConfirmation": true,
+      "evidenceIds": ["ppd_guarded_action_executor_plan"]
+    },
+    {
+      "id": "cancel_fcc_wireless_application_request",
+      "label": "Cancel FCC wireless application request",
+      "classification": "consequential",
+      "operation": "cancellation",
+      "requiresExactSessionConfirmation": true,
+      "exactConfirmationText": "I confirm cancellation of the FCC wireless application request in session session-fcc-wireless-2026-05-02T00-00-00Z",
+      "blockedWithoutExactSessionConfirmation": true,
+      "evidenceIds": ["ppd_guarded_action_executor_plan"]
+    },
+    {
+      "id": "schedule_fcc_wireless_application_inspection",
+      "label": "Schedule FCC wireless application inspection",
+      "classification": "consequential",
+      "operation": "inspection_scheduling",
+      "requiresExactSessionConfirmation": true,
+      "exactConfirmationText": "I confirm inspection scheduling for the FCC wireless application in session session-fcc-wireless-2026-05-02T00-00-00Z",
+      "blockedWithoutExactSessionConfirmation": true,
+      "evidenceIds": ["ppd_guarded_action_executor_plan"]
+    }
+  ],
+  "negativeConfirmationCases": [
+    {
+      "id": "missing_confirmation",
+      "confirmation": null,
+      "expectedAllowed": false,
+      "expectedReason": "missing_exact_session_confirmation"
+    },
+    {
+      "id": "generic_confirmation",
+      "confirmation": {
+        "sessionId": "session-fcc-wireless-2026-05-02T00-00-00Z",
+        "text": "yes, continue"
+      },
+      "expectedAllowed": false,
+      "expectedReason": "confirmation_text_mismatch"
+    },
+    {
+      "id": "stale_session_confirmation",
+      "confirmation": {
+        "sessionId": "session-fcc-wireless-previous",
+        "text": "I confirm submission of the FCC wireless application in session session-fcc-wireless-2026-05-02T00-00-00Z"
+      },
+      "expectedAllowed": false,
+      "expectedReason": "session_mismatch"
+    },
+    {
+      "id": "wrong_action_confirmation",
+      "confirmation": {
+        "sessionId": "session-fcc-wireless-2026-05-02T00-00-00Z",
+        "text": "I confirm preview of the FCC wireless application draft in session session-fcc-wireless-2026-05-02T00-00-00Z"
+      },
+      "expectedAllowed": false,
+      "expectedReason": "confirmation_text_mismatch"
+    }
+  ],
+  "privacyAssertions": {
+    "containsCredentials": false,
+    "containsAuthState": false,
+    "containsTracePath": false,
+    "containsScreenshotPath": false,
+    "containsRawCrawlOutput": false,
+    "containsPrivateUserValues": false
+  }
+}

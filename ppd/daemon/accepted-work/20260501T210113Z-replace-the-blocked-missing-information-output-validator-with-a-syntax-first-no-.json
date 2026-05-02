@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/contracts/missing_information_output_validation.py"
+  ],
+  "created_at": "2026-05-01T21:01:13.514754Z",
+  "impact": "Restores the narrow validator needed for the four-item missing-information fixture: source-backed items, deduplication, canonical action classifications, and private-value rejection without touching broader PP&D contracts or tests.",
+  "summary": "Replace the blocked missing-information output validator with a syntax-first, no-dataclass Python module.",
+  "target_task": "Task checkbox-64: Recover the blocked missing-information output validator with one file only: replace `ppd/contracts/missing_information_output_validation.py` as a no-dataclass module that exposes `MODULE_STATUS = \"syntax_first_import_ready\"` and validates only `ppd/tests/fixtures/missing_information_output/four_requested_items.json` semantics already covered by existing tests.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 67 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................ ---------------------------------------------------------------------- Ran 140 tests in 0.018s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

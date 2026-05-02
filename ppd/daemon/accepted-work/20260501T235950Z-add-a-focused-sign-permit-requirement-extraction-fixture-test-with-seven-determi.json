@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/requirement_extraction/sign_permit_requirements.json",
+    "ppd/tests/test_sign_permit_requirement_extraction.py"
+  ],
+  "created_at": "2026-05-01T23:59:50.945726Z",
+  "impact": "This advances the PP&D plan by adding narrow, fixture-only validation for source-grounded sign permit requirement extraction without live crawling or shared contract churn.",
+  "summary": "Add a focused sign-permit requirement extraction fixture test with seven deterministic categories and explicit stop-gate checks.",
+  "target_task": "Task checkbox-98: Add a focused validation test for sign permit requirement extraction that checks only the seven fixture categories, source evidence IDs, confidence bounds, deduplication, and explicit stop-gate classifications.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 102 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 239 tests in 0.027s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

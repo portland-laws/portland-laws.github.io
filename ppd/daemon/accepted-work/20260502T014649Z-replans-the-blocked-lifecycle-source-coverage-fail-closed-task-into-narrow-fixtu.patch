@@ -1,0 +1,107 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -2,7 +2,7 @@
+ 
+ This is the controlling backlog for the PP&D autonomous daemon. The daemon should work one narrow item at a time and should only accept changes that pass PP&D validation.
+ 
+-Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked. Broad failed work is parked in Deferred Repair Notes while narrow recovery tasks remain selectable.
++Legend: `[ ]` needed, `[~]` in progress, `[x]` complete. Broad failed work is parked in Deferred Repair Notes while narrow recovery tasks remain selectable.
+ 
+ ## Checklist
+ 
+@@ -20,8 +20,9 @@
+ - [x] Add guarded action classification for read-only, draft-edit, consequential, and financial DevHub actions.
+ - [x] Preserve all accepted PP&D daemon work through checkbox-126 from the prior board, including the accepted online trade permit syntax-first import sentinel repair.
+ - [x] Add a fixture-only public source inventory coverage report for PP&D permit extension, permit reactivation, cancellation, refund, and inspection-result guidance categories, using existing public fixture/source-inventory evidence only and no live crawling.
+-- [!] Add a validation-only test for the extension/cancellation/refund/inspection-result source coverage report proving it fails closed for missing authority labels, missing recrawl cadence, private DevHub paths, raw response bodies, credentials, traces, screenshots, downloaded documents, and uncited category claims.
+ - [~] Add a fixture-only cross-cutting permit lifecycle process skeleton for extension, reactivation, cancellation, refund, inspection scheduling, and inspection-result follow-up gates, with required facts, required documents, user decisions, fee/payment gates, and citation-backed action gates from existing fixtures only.
++- [ ] Add fixture-only authority-label and recrawl-cadence metadata to the existing lifecycle source coverage report for extension, cancellation, refund, and inspection-result evidence only, preserving existing citations and avoiding validator code changes.
++- [ ] Add a one-file validation-only lifecycle source coverage fail-closed test that first asserts the committed fixture is valid, then mutates one field at a time for missing authority labels, missing recrawl cadence, private DevHub paths, raw response bodies, credentials, traces, screenshots, downloaded documents, and uncited category claims.
+ - [ ] Add a minimal lifecycle requirement extraction expected-output fixture with exactly eight category records: extension eligibility, reactivation eligibility, cancellation eligibility, refund eligibility, inspection scheduling, inspection-result follow-up, fee/payment checkpoints, and explicit-confirmation gates, all source-backed and redacted.
+ - [ ] Add a one-file syntax-first import test for `ppd.extraction.permit_lifecycle_requirements` that imports only that module, skips if absent, and fails malformed Python before broad lifecycle requirement validation runs.
+ - [ ] Add a focused validation test for permit lifecycle requirement extraction that checks only the eight fixture categories, source evidence IDs, confidence bounds, deduplication, and explicit stop-gate classifications.
+@@ -32,6 +33,7 @@
+ 
+ These items failed as broad tasks and are intentionally not selectable while narrower recovery work remains available. Do not re-add them as selectable checklist tasks until their syntax-first and fixture-first prerequisites pass.
+ 
++- Parked checkbox-13: Add a validation-only test for the extension/cancellation/refund/inspection-result source coverage report proving it fails closed for missing authority labels, missing recrawl cadence, private DevHub paths, raw response bodies, credentials, traces, screenshots, downloaded documents, and uncited category claims. This repeated retry assumed authority-label and recrawl-cadence fields were already present in the committed lifecycle coverage fixture. Recovery is split into a fixture metadata task first, then a one-file mutation validator task.
+ - Parked checkbox-121: Add a one-file syntax-first import test for `ppd.extraction.online_trade_permit_requirements` that imports only that module and fails malformed Python before broad online trade permit requirement validation runs. This stale blocked checkbox is superseded by the accepted one-file repair task because later online trade permit focused validation, size guard, guardrail, and mocked DevHub tasks have already passed.
+ - Parked source freshness broad task: Add a source freshness fixture that classifies stale PP&D guidance, changed content hashes, removed pages, and recrawl priority without performing a live recrawl.
+ - Parked source freshness renderer task: Add a fixture-only change report renderer for public PP&D source freshness results that summarizes changed requirements, new or removed links, and affected permit-process fixtures with citation references.
+@@ -40,6 +42,8 @@
+ - Parked solar requirement extraction broad task and stale retries: Do not select directly while syntax-first, size-guard, malformed-comparison diagnostic, and prompt-preflight guardrails remain the recovery path.
+ 
+ ## Deferred Repair Notes
++
++The lifecycle source coverage fail-closed validator failed repeatedly because it validated fields that the committed report did not yet contain. The daemon should not retry that validator directly. It must first add only the missing public fixture metadata, then add the mutation-based validator as a separate one-file task.
+ 
+ The online trade permit syntax-first task was stale-blocked after later online trade permit requirement validation, size guard, guardrail compiler, mocked DevHub snapshot, and DevHub guardrail tasks passed. The one-test-file repair has now passed and should stay complete.
+ 
+@@ -53,18 +57,20 @@
+ 
+ When no independent task is active, prefer recovery tasks in this order:
+ 
+-1. Restore any missing syntax sentinel without broad validator rewrites.
+-2. Add fixture-name compatibility only when validation names the missing path.
+-3. Add malformed-proposal diagnostics before retrying an implementation that has already produced repeated `SyntaxError` failures.
+-4. Retry behavior as a one-file no-dataclass implementation only after syntax-first tests and minimal fixtures pass.
+-5. If validation reports that a sentinel helper returned extra keys or readiness flags, retry only with a sentinel-preserving implementation and expose behavior through separate functions.
+-6. After a later narrower recovery passes, park earlier blocked retries as superseded so they do not count as active blockers.
+-7. Do not select parked broad validation tasks directly.
+-8. For new permit-family or lifecycle work, add the process skeleton and expected-output fixture before adding extractor tests or implementation tasks.
++1. Finish any current `[~]` fixture-only task if it can validate without touching blocked work.
++2. Restore any missing syntax sentinel without broad validator rewrites.
++3. Add fixture-name or fixture-schema compatibility only when validation names the missing path or missing field.
++4. Add malformed-proposal diagnostics before retrying an implementation that has already produced repeated `SyntaxError` failures.
++5. Retry behavior as a one-file no-dataclass implementation only after syntax-first tests and minimal fixtures pass.
++6. If validation reports that a sentinel helper returned extra keys or readiness flags, retry only with a sentinel-preserving implementation and expose behavior through separate functions.
++7. After a later narrower recovery passes, park earlier blocked retries as superseded so they do not count as active blockers.
++8. Do not select parked broad validation tasks directly.
++9. For new permit-family or lifecycle work, add the process skeleton and expected-output fixture before adding extractor tests or implementation tasks.
+ 
+ ## Supervisor Recovery Rules
+ 
+ - Treat repeated `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128` failures as a signal to split the task into syntax-first import tests, minimal fixtures, proposal-size guards, then implementation.
++- Treat validation failures caused by missing fixture fields as fixture-first recovery, not as permission to weaken fail-closed assertions.
+ - Treat malformed comparison-like fragments such as `confidence 1`, `confidence 1.0`, or `return 0.0 list[str]` as retry-stop diagnostics for the same target task until a smaller validation-first guard has passed.
+ - Treat `dataclasses.py` import-time failures under `importlib.util.module_from_spec` as a hard no-dataclass constraint for daemon-authored Python validator modules; use plain functions/constants/dicts instead of asking tests to alter import mechanics.
+ - Treat missing sentinel constants such as `MODULE_STATUS` or `MODULE_PURPOSE` as a contract-preservation repair, not as permission to redesign validator behavior.
+@@ -75,25 +81,23 @@
+ - Prefer deterministic fixtures and validation-only changes before adding live crawl, authenticated DevHub, browser, or network behavior.
+ - Do not create private DevHub session files, auth state, traces, raw crawl output, screenshots, or downloaded documents in repair cycles.
+ 
++## Generated Status
++
++Last updated: 2026-05-02T01:50:00Z
++
++- Latest target: `Supervisor repair: split blocked lifecycle source coverage fail-closed validator into fixture-first recovery tasks.`
++- Latest result: `supervisor_repair`
++- Latest summary: Parked repeated checkbox-13 validator retries and added narrow fixture metadata plus one-file mutation validator tasks.
++- Counts: `{"blocked": 0, "complete": 12, "in_progress": 1, "needed": 6}`
++
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T01:36:30Z
++Last updated: 2026-05-02T01:50:00Z
+ 
+-- Latest target: `Supervisor repair: append next fixture-first permit lifecycle tranche after no eligible tasks remained.`
++- Latest target: `Supervisor repair: split blocked lifecycle source coverage fail-closed validator into fixture-first recovery tasks.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Added eight narrow fixture-first and validation-first permit lifecycle tasks so the daemon can continue without live crawling or authenticated automation.
+-- Counts: `{"blocked": 0, "complete": 126, "in_progress": 0, "needed": 8}`
++- Latest summary: Parked repeated checkbox-13 validator retries and added narrow fixture metadata plus one-file mutation validator tasks.
++- Counts: `{"blocked": 0, "complete": 12, "in_progress": 1, "needed": 6}`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-02T01:43:51.303027Z
+-
+-- Latest target: `Task checkbox-13: Add a validation-only test for the extension/cancellation/refund/inspection-result source coverage report proving it fails closed for missing authority labels, missing recrawl cadence, private DevHub paths, raw response bodies, credentials, traces, screenshots, downloaded documents, and uncited category claims.`
+-- Latest result: `validation`
+-- Latest summary: Adds a narrow fixture-only fail-closed validation test for lifecycle source coverage reports.
+-- Counts: `{"blocked": 1, "complete": 12, "in_progress": 0, "needed": 6}`
+-
+-<!-- ppd-daemon-task-board:end -->

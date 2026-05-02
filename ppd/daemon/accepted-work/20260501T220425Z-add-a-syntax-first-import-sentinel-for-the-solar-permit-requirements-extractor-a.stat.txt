@@ -1,0 +1,2 @@
+ppd/extraction/solar_permit_requirements.py
+ppd/tests/test_solar_permit_requirements_syntax_first_import.py

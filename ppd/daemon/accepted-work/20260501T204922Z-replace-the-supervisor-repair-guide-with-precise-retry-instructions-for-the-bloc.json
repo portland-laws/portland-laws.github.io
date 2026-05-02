@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-01T20:49:22.878950Z",
+  "impact": "The previous guide contradicted the committed tests by describing a dict-returning API, wrong action classes, and overbroad private-key rejection that treated the fixture redaction token as invalid. This repair narrows the next retry to one plain Python module, preserves the import sentinel, requires a list-of-errors API, maps the existing fixture action classifications deterministically, and adds syntax-first guardrails so the worker can resume without repeating the same validation failures.",
+  "summary": "Replace the supervisor repair guide with precise retry instructions for the blocked missing-information output validator.",
+  "target_task": "Supervisor repair: 1 task(s) are blocked: Task checkbox-63: Add the missing-information output validator as a single no-dataclass Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection using only `ppd/tests/fixtures/missing_information_output/four_requested_items.json`.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 66 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................ ---------------------------------------------------------------------- Ran 140 tests in 0.019s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

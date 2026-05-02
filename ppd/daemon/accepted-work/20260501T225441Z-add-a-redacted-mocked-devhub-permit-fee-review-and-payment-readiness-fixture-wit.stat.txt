@@ -1,0 +1,2 @@
+ppd/tests/fixtures/devhub_workflow_snapshots/permit_fee_review_payment_readiness.json
+ppd/tests/test_devhub_permit_fee_review_payment_readiness_fixture.py

@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-02T01:17:30.146486Z",
+  "impact": "The recent blocked task repeatedly failed because the worker wrote a mandatory import test for an optional future module. This repair gives the supervisor deterministic retry guidance: syntax-first tests for future modules must skip cleanly until the module exists, then compile and import only the target file. That lets the daemon resume useful validation-first work without broad extractor rewrites or repeated failing patches.",
+  "summary": "Add a supervisor repair guide entry that tells PP&D daemon workers how to recover from syntax-first test failures when the target module does not exist yet.",
+  "target_task": "Supervisor repair: 1 task(s) are blocked: Task checkbox-121: Add a one-file syntax-first import test for `ppd.extraction.online_trade_permit_requirements` that imports only that module and fails malformed Python before broad online trade permit requirement validation runs.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 126 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "......................................................................................................................................................................................................ss.................................................................................................................................................. ---------------------------------------------------------------------- Ran 346 tests in 0.033s OK (skipped=2)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

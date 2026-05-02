@@ -1,0 +1,2 @@
+ppd/extraction/fcc_wireless_permit_requirements.py
+ppd/tests/test_000_fcc_wireless_permit_requirements_syntax_first.py

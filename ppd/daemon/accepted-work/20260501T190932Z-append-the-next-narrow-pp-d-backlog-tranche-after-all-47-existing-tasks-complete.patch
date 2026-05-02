@@ -1,0 +1,32 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -53,9 +53,22 @@
+ - [x] Add a Playwright form-drafting scaffold that can fill reversible draft fields only in mocked DevHub fixtures and produces an action preview instead of touching live DevHub.
+ - [x] Add Playwright guardrail tests proving upload, submit, certify, pay, cancel, schedule inspection, MFA, CAPTCHA, account creation, and password recovery actions are refused unless exact user confirmation is present.
+ - [x] Add a Playwright audit-event fixture that records selector basis, source requirement, user-confirmation state, action classification, and before/after redacted field state for draft-only form edits.
++- [ ] Add a fixture-only public source inventory for PP&D permit application, forms, handout, fee, and DevHub guide page categories with canonical URLs, authority labels, and recrawl cadence hints.
++- [ ] Add validation for the public source inventory that rejects non-allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and missing provenance fields.
++- [ ] Add a fixture-only normalized document link graph that connects public PP&D guidance pages to linked forms, PDFs, DevHub guides, and Portland Maps references with skipped-link reason codes.
++- [ ] Add deterministic validation for the normalized document link graph covering canonical URL matching, content-type classification, source-index references, and no private or live crawl artifacts.
++- [ ] Add a third permit-process fixture for a residential building permit or new single-family residence workflow with stages, required facts, required documents, file rules, fee/payment gates, and citation-backed evidence.
++- [ ] Add requirement extraction validation for the residential building permit fixture covering eligibility, submittal package requirements, plan-review stages, corrections, inspections, expiration/reactivation, and explicit-confirmation gates.
++- [ ] Add guardrail compiler fixture tests for the residential building permit workflow covering missing facts, required document groups, Single PDF Process compatibility, inspection-scheduling stop points, and payment stop points.
++- [ ] Add a source freshness fixture that classifies stale PP&D guidance, changed content hashes, removed pages, and recrawl priority without performing a live recrawl.
++- [ ] Add a fixture-only change report renderer for public PP&D source freshness results that summarizes changed requirements, new or removed links, and affected permit-process fixtures with citation references.
++- [ ] Add a DevHub mocked workflow snapshot fixture for correction upload review that records upload controls, accepted file hints, validation messages, draft state, and exact confirmation gates using only redacted values.
++- [ ] Add DevHub guardrail tests proving correction-upload review can produce a preview but cannot perform official upload or certification without exact session-specific user confirmation.
++- [ ] Add a missing-information detector fixture that compares a residential permit user-case fact inventory against the residential permit process requirements and returns only missing facts, files, acknowledgments, and decisions.
++- [ ] Add validation for missing-information detector output proving every requested user item is source-backed, deduplicated, action-classified, and free of private fixture values.
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
++
+ ## Generated Status
+ 
+ Last updated: 2026-05-01T19:07:38.206599Z
+@@ -65,4 +78,4 @@
+ - Latest summary: Add a deterministic Playwright audit-event fixture and validation test for draft-only DevHub form edits.
+ - Counts: `{"blocked": 0, "complete": 47, "in_progress": 0, "needed": 0}`
+ 
+-<!-- ppd-daemon-task-board:end -->
++

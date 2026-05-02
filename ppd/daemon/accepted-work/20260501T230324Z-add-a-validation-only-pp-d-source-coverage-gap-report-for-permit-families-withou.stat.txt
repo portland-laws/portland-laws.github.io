@@ -1,0 +1,4 @@
+ppd/contracts/source_coverage_gap_report.py
+ppd/tests/fixtures/source_coverage_gap/source_inventory_permit_family_categories.json
+ppd/tests/fixtures/source_coverage_gap/permit_process_fixture_index.json
+ppd/tests/test_source_coverage_gap_report.py

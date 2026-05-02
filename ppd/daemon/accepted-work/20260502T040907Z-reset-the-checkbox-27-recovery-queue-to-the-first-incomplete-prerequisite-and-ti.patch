@@ -1,0 +1,57 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -22,7 +22,7 @@
+ 
+ The checkbox-27 recovery tasks are ordered prerequisites. A later active target, heartbeat target, generated status target, or in-progress marker is not authoritative when an earlier checkbox-27 prerequisite is incomplete.
+ 
+-Before invoking a worker for any checkbox-27 task, the supervisor must scan the task board and choose the lowest incomplete checkbox-27 prerequisite in this order:
++Before invoking a worker for any checkbox-27 task, the supervisor must scan `ppd/daemon/task-board.md` and choose the lowest incomplete checkbox-27 prerequisite in this order:
+ 
+ 1. checkbox-27a
+ 2. checkbox-27b
+@@ -32,9 +32,9 @@
+ 6. checkbox-27f
+ 7. checkbox-27g
+ 
+-If checkbox-27a, checkbox-27b, or checkbox-27c is marked `[!]`, `[~]`, or `[ ]`, the next daemon target must be that lowest incomplete task, even if runtime status says checkbox-27d or later is active.
++For this recovery, `[!]`, `[~]`, and `[ ]` all mean the checkbox-27 prerequisite is incomplete. Do not skip a checkbox-27 prerequisite unless it is marked `[x]` on the task board.
+ 
+-For this recovery, `[!]` means the task is incomplete but eligible for a narrowed syntax-recovery retry. Do not skip a blocked checkbox-27 prerequisite unless it is marked `[x]`.
++If any earlier checkbox-27 prerequisite is incomplete, a later checkbox-27 task must be reset to `[ ]` before the next daemon cycle. Do not allow checkbox-27e, checkbox-27f, or checkbox-27g to remain `[~]` while checkbox-27a, checkbox-27b, or checkbox-27c is incomplete.
+ 
+ ## Current Recovery Priority
+ 
+@@ -74,23 +74,19 @@
+ - `self.assertIn(value, collection)`
+ - `self.assertRaises(ExceptionType)`
+ - `isinstance(value, str)` for runtime type checks
+-- complete numeric comparisons such as `0 <= confidence <= 1`; never emit `confidence  1` or `if confidence 1:`
++- complete numeric comparisons such as `0  1`.
++- [ ] Recovery for checkbox-27f: after checkbox-27e passes, add one mutation case for duplicate `(categoryId, action, object, sourceEvidenceIds)` only.
++- [ ] Recovery for checkbox-27g: after checkbox-27f passes, add one mutation case for `stopGate: true` with a classification that does not end in `_stop_gate` only.
++- [ ] Add a daemon preflight regression test that selects the lowest incomplete checkbox-27 prerequisite when later checkbox-27 tasks are stale, blocked, or marked in progress.
+ 
+-## Repeated Same-File Syntax Failure Rule
+-
+-If three or more recent failures name `ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py` and all fail during `py_compile` or unittest import, the next worker prompt must be reduced to checkbox-27a only.
+-
+-The worker must replace exactly one file: `ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py`.
+-
+-The worker must not include mutation tests, parametrized generators, dynamic code, dataclasses, extraction implementation, broad schema rewrites, task-board edits, or guide edits in that proposal.
+-
+-The supervisor must reject any proposal for that file before validation if the proposed content contains the exact invalid fragments `confidence  1`, `confidence 1`, or `if confidence 1:`.
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T04:05:00.000000Z
++Last updated: 2026-05-02T04:08:00.000000Z
+ 
+-- Latest target: `Task checkbox-31: Recovery for checkbox-27a prerequisite recovery`
++- Latest target: `Task checkbox-31: Recovery for checkbox-27a: add only a py_compile-safe skeleton for `ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py` that loads `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json` and asserts the committed top-level `categoryRecords` fixture is valid using the accepted checkbox-24 schema. Do not add mutation cases in this task. Follow `ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md` exactly for this recovery and keep the proposal to one Python test file.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Reasserted stale-target override and corrected Python comparison guardrails for the checkbox-27 recovery sequence.
+-- Counts: `{"blocked": 0, "complete": 30, "in_progress": 0, "needed": 8}`
++- Latest summary: Reset stale checkbox-27e selection so the next daemon cycle retries checkbox-27a first.
++- Counts: `{"blocked": 0, "complete": 31, "in_progress": 0, "needed": 7}`
++
++

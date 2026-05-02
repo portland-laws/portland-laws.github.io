@@ -1,0 +1,50 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -100,6 +100,14 @@
+ - [x] Add guardrail compiler fixture tests for the demolition permit workflow covering missing facts, required document groups, payment stop points, correction-upload stop points, and any inspection/finalization stop points, using only fixture data.
+ - [x] Add a mocked DevHub workflow snapshot fixture for demolition application draft review that records semantic selectors, required fields, upload controls, validation messages, save-for-later state, and exact confirmation gates using only redacted values.
+ - [x] Add DevHub guardrail tests proving demolition application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.
++- [ ] Add a fixture-only permit-process skeleton for a sign permit workflow using existing public fixture/source-inventory evidence only, with stages, required facts, required documents, file rules, fee/payment gates, inspection/finalization gates, and citation-backed action gates.
++- [ ] Add a minimal sign permit requirement extraction expected-output fixture with exactly seven category records: eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections/finalization, and explicit-confirmation gates, all source-backed and redacted.
++- [ ] Add a one-file syntax-first import test for `ppd.extraction.sign_permit_requirements` that imports only that module and fails malformed Python before broad sign requirement validation runs.
++- [ ] Add a focused validation test for sign permit requirement extraction that checks only the seven fixture categories, source evidence IDs, confidence bounds, deduplication, and explicit stop-gate classifications.
++- [ ] Add a one-file replacement-size guard test for `ppd.extraction.sign_permit_requirements` proposals that rejects broad generated modules and requires the extractor implementation to stay under 180 physical lines with no dataclasses.
++- [ ] Add guardrail compiler fixture tests for the sign permit workflow covering missing facts, required document groups, payment stop points, correction-upload stop points, and any inspection/finalization stop points, using only fixture data.
++- [ ] Add a mocked DevHub workflow snapshot fixture for sign application draft review that records semantic selectors, required fields, upload controls, validation messages, save-for-later state, and exact confirmation gates using only redacted values.
++- [ ] Add DevHub guardrail tests proving sign application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.
+ 
+ ## Deferred Broad Items
+ 
+@@ -164,22 +172,22 @@
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T23:32:30Z
++Last updated: 2026-05-01T23:50:00Z
+ 
+ - Latest target: `Supervisor repair: append next fixture-first PP&D permit-family tranche after no eligible tasks remained.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Added eight narrow demolition-permit fixture, validation, syntax-guard, guardrail, and mocked DevHub tasks so the daemon can continue without live or authenticated automation.
+-- Counts: `{"blocked": 0, "complete": 86, "in_progress": 0, "needed": 8}`
++- Latest summary: Added eight narrow sign-permit fixture, validation, syntax-guard, guardrail, and mocked DevHub tasks so the daemon can continue without live or authenticated automation.
++- Counts: `{blocked: 0, complete: 94, in_progress: 0, needed: 8}`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
++
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T23:47:40.362765Z
++Last updated: 2026-05-01T23:50:00Z
+ 
+-- Latest target: `Task checkbox-94: Add DevHub guardrail tests proving demolition application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.`
+-- Latest result: `accepted`
+-- Latest summary: Adds fixture-backed DevHub guardrail tests for demolition application draft review preview and exact session confirmation gates.
+-- Counts: `{"blocked": 0, "complete": 94, "in_progress": 0, "needed": 0}`
++- Latest target: `Supervisor repair: append next fixture-first PP&D permit-family tranche after no eligible tasks remained.`
++- Latest result: `supervisor_repair`
++- Latest summary: Added eight narrow sign-permit fixture, validation, syntax-guard, guardrail, and mocked DevHub tasks so the daemon can continue without live or authenticated automation.
++- Counts: `{blocked: 0, complete: 94, in_progress: 0, needed: 8}`
+ 
+-<!-- ppd-daemon-task-board:end -->
++

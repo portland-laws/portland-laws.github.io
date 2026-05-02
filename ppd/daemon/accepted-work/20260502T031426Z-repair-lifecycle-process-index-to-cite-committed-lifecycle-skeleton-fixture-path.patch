@@ -1,0 +1,11 @@
+--- a/ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json
++++ b/ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json
+@@ -1,7 +1,7 @@
+ {
+   "schemaVersion": 1,
+   "fixtureKind": "permit_lifecycle_process_index",
+-  "generatedFrom": "accepted_lifecycle_process_skeleton_fixtures_only",
++  "generatedFrom": "committed_lifecycle_process_skeleton_fixtures_only",
+   "manifestOnly": true,
+   "entries": [
+     {

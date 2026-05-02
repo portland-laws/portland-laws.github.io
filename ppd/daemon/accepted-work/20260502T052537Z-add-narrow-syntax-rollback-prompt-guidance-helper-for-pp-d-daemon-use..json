@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/syntax_rollback_guidance.py"
+  ],
+  "created_at": "2026-05-02T05:25:37.469399Z",
+  "impact": "This gives the PP&D daemon deterministic failure-context diagnostics and a reusable prompt fragment that narrows syntax-recovery proposals to one file or one test plus fixture while forbidding broad shared-contract rewrites.",
+  "summary": "Add narrow syntax rollback prompt guidance helper for PP&D daemon use.",
+  "target_task": "Task checkbox-55: Task checkbox-50: Add daemon prompt guidance and failure-context diagnostics for syntax-preflight rollbacks. When recent failures include `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128`, the prompt must ask for a one-file or one-test-plus-fixture proposal and forbid broad shared-contract rewrites.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 58 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................................................................................................ss..............sss........................................................................................................................................ ---------------------------------------------------------------------- Ran 375 tests in 0.049s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

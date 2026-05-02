@@ -1,0 +1,2 @@
+ppd/tests/fixtures/requirement_extraction/sign_permit_requirements.json
+ppd/tests/test_sign_permit_requirement_extraction.py

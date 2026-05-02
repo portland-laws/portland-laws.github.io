@@ -1,0 +1,931 @@
+--- a/ppd/tests/fixtures/permit-processes/solar_permit_workflow.json
++++ b/ppd/tests/fixtures/permit-processes/solar_permit_workflow.json
+@@ -0,0 +1,769 @@
++{
++  "fixtureKind": "permit_process",
++  "schemaVersion": 1,
++  "generatedAt": "2026-05-01T19:20:00Z",
++  "sourceMode": "existing_public_fixtures_only",
++  "process": {
++    "id": "solar-permit-workflow",
++    "name": "Solar Permit Workflow",
++    "permitTypes": [
++      "Solar permits",
++      "Solar permit requests submitted through DevHub",
++      "Solar permit requests that require plan review or Single PDF Process upload rules when applicable"
++    ],
++    "sourceIds": [
++      "ppd-devhub-application-guidance",
++      "ppd-devhub-faq",
++      "ppd-single-pdf-process-guidance"
++    ],
++    "stages": [
++      {
++        "id": "confirm-solar-permit-type",
++        "name": "Confirm solar permit type",
++        "kind": "permit_type_selection",
++        "sequence": 0,
++        "description": "Confirm that the project is a solar permit request listed in public DevHub application guidance before preparing a fixture-only submittal checklist.",
++        "entryConditions": [],
++        "exitConditions": [
++          "solar_permit_type_selected"
++        ],
++        "nextStageIds": [
++          "screen-solar-scope"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-application-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
++            "anchorId": "devhub-request-types",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing public DevHub application guidance fixture identifies solar permits as a DevHub permit request type."
++          }
++        ]
++      },
++      {
++        "id": "screen-solar-scope",
++        "name": "Screen solar project scope",
++        "kind": "eligibility_screening",
++        "sequence": 1,
++        "description": "Collect only the project facts needed to decide whether the solar work can follow this solar permit skeleton and whether plan-review-style upload rules apply.",
++        "entryConditions": [
++          "solar_permit_type_selected"
++        ],
++        "exitConditions": [
++          "solar_scope_known",
++          "property_identifier_known",
++          "applicant_contact_known"
++        ],
++        "nextStageIds": [
++          "prepare-solar-documents"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-application-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
++            "anchorId": "devhub-application-submission",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "DevHub permit requests are project-specific online permitting transactions."
++          }
++        ]
++      },
++      {
++        "id": "prepare-solar-documents",
++        "name": "Prepare solar permit documents",
++        "kind": "document_preparation",
++        "sequence": 2,
++        "description": "Prepare the solar application, drawing plans, and supporting calculations or reports as fixture-described PDFs before any DevHub upload is attempted.",
++        "entryConditions": [
++          "solar_scope_known",
++          "property_identifier_known"
++        ],
++        "exitConditions": [
++          "solar_application_pdf_ready",
++          "solar_plan_pdf_ready",
++          "supporting_solar_documents_ready_when_required"
++        ],
++        "nextStageIds": [
++          "enter-devhub-solar-request"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-single-pdf-process-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
++            "anchorId": "single-pdf-file-rules",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing Single PDF Process fixture says drawing plans are one searchable PDF and applications, calculations, and supporting documents are separate PDFs."
++          }
++        ]
++      },
++      {
++        "id": "enter-devhub-solar-request",
++        "name": "Enter DevHub solar request",
++        "kind": "application_data_entry",
++        "sequence": 3,
++        "description": "Use DevHub only as a modeled workflow step in this fixture, requiring project, applicant, property, contractor, and scope facts before upload preview.",
++        "entryConditions": [
++          "devhub_account_available",
++          "required_solar_facts_available"
++        ],
++        "exitConditions": [
++          "devhub_solar_request_ready_for_upload_preview"
++        ],
++        "nextStageIds": [
++          "preview-solar-upload-package"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-application-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
++            "anchorId": "devhub-request-types",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing public guidance fixture lists solar permits among DevHub permit request types."
++          }
++        ]
++      },
++      {
++        "id": "preview-solar-upload-package",
++        "name": "Preview solar upload package",
++        "kind": "upload",
++        "sequence": 4,
++        "description": "Produce a reversible preview of the solar PDF package and file-rule checks; do not perform an official upload without exact user confirmation.",
++        "entryConditions": [
++          "devhub_solar_request_ready_for_upload_preview",
++          "solar_application_pdf_ready",
++          "solar_plan_pdf_ready"
++        ],
++        "exitConditions": [
++          "solar_upload_package_previewed"
++        ],
++        "nextStageIds": [
++          "review-certification-and-submit"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-faq",
++            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
++            "anchorId": "devhub-service-categories",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing DevHub FAQ fixture lists permit requests requiring plan review, correction uploads, and fee payments as online services."
++          }
++        ]
++      },
++      {
++        "id": "review-certification-and-submit",
++        "name": "Review certification and submit",
++        "kind": "acknowledgment_certification",
++        "sequence": 5,
++        "description": "Stop for user review of the solar request, uploaded-file list, and any certification language before certification or submission.",
++        "entryConditions": [
++          "solar_upload_package_previewed"
++        ],
++        "exitConditions": [
++          "user_explicitly_confirms_certification_and_submission"
++        ],
++        "nextStageIds": [
++          "prescreen-intake-and-fees"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-application-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
++            "anchorId": "devhub-application-submission",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Submitting a DevHub permit request is an official workflow action and is modeled as a confirmation gate."
++          }
++        ]
++      },
++      {
++        "id": "prescreen-intake-and-fees",
++        "name": "Prescreen, intake, and fee payment checkpoints",
++        "kind": "fee_payment",
++        "sequence": 6,
++        "description": "After submission, track PP&D intake status and any fee-payment checkpoint; payment remains a financial action requiring exact confirmation.",
++        "entryConditions": [
++          "solar_request_submitted_to_ppd"
++        ],
++        "exitConditions": [
++          "intake_status_available",
++          "fees_paid_when_due"
++        ],
++        "nextStageIds": [
++          "solar-plan-review-and-corrections"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-faq",
++            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
++            "anchorId": "devhub-fee-payment",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing DevHub FAQ fixture identifies fee payments as an online permitting service."
++          }
++        ]
++      },
++      {
++        "id": "solar-plan-review-and-corrections",
++        "name": "Solar plan review and corrections",
++        "kind": "corrections",
++        "sequence": 7,
++        "description": "Track plan review and prepare correction response PDFs if PP&D issues checksheets or correction requests; official correction upload remains confirmation-gated.",
++        "entryConditions": [
++          "intake_status_available"
++        ],
++        "exitConditions": [
++          "review_complete_or_corrections_resolved"
++        ],
++        "nextStageIds": [
++          "solar-approval-inspections-and-closeout"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-faq",
++            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
++            "anchorId": "devhub-correction-upload",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing DevHub FAQ fixture identifies correction uploads as an online permitting service."
++          }
++        ]
++      },
++      {
++        "id": "solar-approval-inspections-and-closeout",
++        "name": "Approval, inspections, and closeout",
++        "kind": "inspections",
++        "sequence": 8,
++        "description": "After approval or issuance, inspection scheduling and closeout actions are modeled as user-confirmed workflow steps, not automated fixture behavior.",
++        "entryConditions": [
++          "review_complete_or_corrections_resolved"
++        ],
++        "exitConditions": [
++          "solar_permit_closed_or_followup_needed"
++        ],
++        "nextStageIds": [],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-faq",
++            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
++            "anchorId": "devhub-service-categories",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing DevHub FAQ fixture lists inspection scheduling for online trade permits among service categories; this solar skeleton treats any scheduling action as confirmation-gated until a solar-specific fixture is added."
++          }
++        ]
++      }
++    ],
++    "requiredFacts": [
++      {
++        "id": "solar-property-identifier",
++        "label": "Solar project property address or property identifier",
++        "kind": "property",
++        "required": true,
++        "description": "The solar permit request needs the project location before DevHub request preparation.",
++        "appliesWhen": [
++          "all_solar_permit_requests"
++        ],
++        "sourceStageIds": [
++          "screen-solar-scope",
++          "enter-devhub-solar-request"
++        ],
++        "validationHint": "Ask for the project address or a public property identifier.",
++        "containsPrivateOrUserSpecificData": true,
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-application-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
++            "anchorId": "devhub-application-submission",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Permit requests are project-specific DevHub transactions."
++          }
++        ]
++      },
++      {
++        "id": "solar-project-scope",
++        "label": "Solar project scope and equipment summary",
++        "kind": "project_scope",
++        "required": true,
++        "description": "The fixture needs a concise description of the proposed solar work to keep the permit type and document checklist aligned.",
++        "appliesWhen": [
++          "all_solar_permit_requests"
++        ],
++        "sourceStageIds": [
++          "screen-solar-scope",
++          "prepare-solar-documents"
++        ],
++        "validationHint": "Ask whether the work is solar PV, solar thermal, battery-related, roof-mounted, ground-mounted, new, replacement, or revision work when known.",
++        "containsPrivateOrUserSpecificData": true,
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-application-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
++            "anchorId": "devhub-request-types",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing public guidance fixture distinguishes solar permits as a selectable request type."
++          }
++        ]
++      },
++      {
++        "id": "solar-applicant-contact",
++        "label": "Applicant contact information",
++        "kind": "applicant",
++        "required": true,
++        "description": "A DevHub permit request needs an applicant or account contact for the project transaction.",
++        "appliesWhen": [
++          "all_solar_permit_requests"
++        ],
++        "sourceStageIds": [
++          "enter-devhub-solar-request"
++        ],
++        "validationHint": "Ask for applicant identity only in redacted or user-provided form; never place private values in fixtures.",
++        "containsPrivateOrUserSpecificData": true,
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-application-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
++            "anchorId": "devhub-application-submission",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "DevHub is the online system for permit request transactions."
++          }
++        ]
++      },
++      {
++        "id": "solar-contractor-or-installer",
++        "label": "Contractor or installer identity and license facts when applicable",
++        "kind": "contractor",
++        "required": true,
++        "description": "The fixture treats installer and license facts as required planning facts until solar-specific public fixture extraction narrows the conditions.",
++        "appliesWhen": [
++          "solar_work_performed_by_contractor_or_installer",
++          "license_required_by_selected_solar_workflow"
++        ],
++        "sourceStageIds": [
++          "screen-solar-scope",
++          "enter-devhub-solar-request"
++        ],
++        "validationHint": "Ask for contractor or installer information only when applicable and keep private values out of committed fixtures.",
++        "containsPrivateOrUserSpecificData": true,
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-application-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
++            "anchorId": "devhub-application-submission",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing DevHub fixture supports project-specific permit request data entry; contractor specifics require later solar extraction."
++          }
++        ]
++      },
++      {
++        "id": "solar-project-valuation",
++        "label": "Solar project valuation when requested",
++        "kind": "valuation",
++        "required": true,
++        "description": "Valuation is tracked as a missing fact because fees and review routing may depend on project-specific permit request data.",
++        "appliesWhen": [
++          "valuation_requested_by_devhub_or_ppd_review"
++        ],
++        "sourceStageIds": [
++          "screen-solar-scope",
++          "prescreen-intake-and-fees"
++        ],
++        "validationHint": "Ask for valuation only when required by the selected DevHub fixture state or later solar guidance extraction.",
++        "containsPrivateOrUserSpecificData": true,
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-faq",
++            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
++            "anchorId": "devhub-fee-payment",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing DevHub FAQ fixture includes fee payment as an online permitting service."
++          }
++        ]
++      }
++    ],
++    "requiredDocuments": [
++      {
++        "id": "solar-permit-application-pdf",
++        "name": "Solar permit application PDF",
++        "kind": "application_form",
++        "required": true,
++        "description": "Application material is modeled as a separate PDF from drawing plans under the existing Single PDF Process fixture rules.",
++        "appliesWhen": [
++          "all_solar_permit_requests"
++        ],
++        "acceptedFileTypes": [
++          "application/pdf"
++        ],
++        "sourceStageIds": [
++          "prepare-solar-documents",
++          "preview-solar-upload-package"
++        ],
++        "singlePdfProcessRole": "separate_application_pdf",
++        "requiresSignature": true,
++        "evidence": [
++          {
++            "sourceId": "ppd-single-pdf-process-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
++            "anchorId": "single-pdf-file-rules",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing Single PDF Process fixture treats applications as separate PDFs from drawing plans."
++          }
++        ]
++      },
++      {
++        "id": "solar-drawing-plan-pdf",
++        "name": "Solar drawing plan PDF",
++        "kind": "drawing_plan",
++        "required": true,
++        "description": "Solar plans are modeled as one searchable drawing-plan PDF when Single PDF Process upload rules apply.",
++        "appliesWhen": [
++          "solar_plan_review_or_single_pdf_process_applies"
++        ],
++        "acceptedFileTypes": [
++          "application/pdf"
++        ],
++        "sourceStageIds": [
++          "prepare-solar-documents",
++          "preview-solar-upload-package"
++        ],
++        "singlePdfProcessRole": "single_searchable_plan_pdf",
++        "requiresSignature": false,
++        "evidence": [
++          {
++            "sourceId": "ppd-single-pdf-process-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
++            "anchorId": "single-pdf-file-rules",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing Single PDF Process fixture says drawing plans are one searchable PDF."
++          }
++        ]
++      },
++      {
++        "id": "solar-structural-or-electrical-supporting-pdf",
++        "name": "Solar structural, electrical, or equipment supporting PDFs",
++        "kind": "calculation",
++        "required": false,
++        "description": "Calculations, equipment details, reports, and other supporting solar documents are modeled as separate PDFs when required by the selected solar scope.",
++        "appliesWhen": [
++          "supporting_calculations_or_reports_required_for_solar_scope"
++        ],
++        "acceptedFileTypes": [
++          "application/pdf"
++        ],
++        "sourceStageIds": [
++          "prepare-solar-documents",
++          "preview-solar-upload-package"
++        ],
++        "singlePdfProcessRole": "separate_supporting_pdf",
++        "requiresSignature": false,
++        "evidence": [
++          {
++            "sourceId": "ppd-single-pdf-process-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
++            "anchorId": "single-pdf-file-rules",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing Single PDF Process fixture says calculations and supporting documents are separate PDFs."
++          }
++        ]
++      },
++      {
++        "id": "solar-correction-response-pdf",
++        "name": "Solar correction response PDF",
++        "kind": "correction_response",
++        "required": false,
++        "description": "If PP&D issues checksheets or corrections, the response package is modeled as a separate PDF and remains official-upload gated.",
++        "appliesWhen": [
++          "solar_corrections_or_checksheets_issued"
++        ],
++        "acceptedFileTypes": [
++          "application/pdf"
++        ],
++        "sourceStageIds": [
++          "solar-plan-review-and-corrections"
++        ],
++        "singlePdfProcessRole": "separate_correction_response_pdf",
++        "requiresSignature": false,
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-faq",
++            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
++            "anchorId": "devhub-correction-upload",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing DevHub FAQ fixture identifies correction uploads as an online permitting service."
++          }
++        ]
++      },
++      {
++        "id": "solar-fee-payment-notice",
++        "name": "Solar fee payment notice or invoice",
++        "kind": "payment_notice",
++        "required": false,
++        "description": "Fee notices or payment prompts are tracked as financial checkpoints rather than files an agent may pay automatically.",
++        "appliesWhen": [
++          "ppd_fees_assessed_or_devhub_payment_prompt_presented"
++        ],
++        "acceptedFileTypes": [
++          "application/pdf"
++        ],
++        "sourceStageIds": [
++          "prescreen-intake-and-fees"
++        ],
++        "singlePdfProcessRole": "separate_payment_notice_pdf",
++        "requiresSignature": false,
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-faq",
++            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
++            "anchorId": "devhub-fee-payment",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing DevHub FAQ fixture identifies fee payments as an online permitting service."
++          }
++        ]
++      }
++    ],
++    "fileRules": [
++      {
++        "id": "solar-plans-one-searchable-pdf",
++        "description": "Solar drawing plans are represented as one searchable PDF when plan-review or Single PDF Process rules apply.",
++        "appliesToDocumentIds": [
++          "solar-drawing-plan-pdf"
++        ],
++        "required": true,
++        "acceptedFileTypes": [
++          "application/pdf"
++        ],
++        "prohibitedPatterns": [
++          "multiple_plan_pdf_files_for_same_initial_solar_submittal",
++          "image_only_or_unsearchable_plan_pdf_when_searchable_pdf_can_be_produced"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-single-pdf-process-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
++            "anchorId": "single-pdf-file-rules",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing Single PDF Process fixture says drawing plans are one searchable PDF."
++          }
++        ]
++      },
++      {
++        "id": "solar-application-and-supporting-documents-separate-pdfs",
++        "description": "Solar applications, calculations, reports, equipment documents, and correction responses stay separate from the drawing-plan PDF.",
++        "appliesToDocumentIds": [
++          "solar-permit-application-pdf",
++          "solar-structural-or-electrical-supporting-pdf",
++          "solar-correction-response-pdf",
++          "solar-fee-payment-notice"
++        ],
++        "required": true,
++        "acceptedFileTypes": [
++          "application/pdf"
++        ],
++        "prohibitedPatterns": [
++          "application_pages_embedded_in_solar_plan_pdf",
++          "supporting_calculations_embedded_in_plan_pdf_when_separate_pdf_required"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-single-pdf-process-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
++            "anchorId": "single-pdf-file-rules",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing Single PDF Process fixture says applications, calculations, and supporting documents are separate PDFs."
++          }
++        ]
++      },
++      {
++        "id": "solar-official-actions-require-user-confirmation",
++        "description": "The fixture permits checklist and preview work only; official upload, certification, submission, correction upload, inspection scheduling, and payment actions require exact user confirmation.",
++        "appliesToDocumentIds": [
++          "solar-permit-application-pdf",
++          "solar-drawing-plan-pdf",
++          "solar-structural-or-electrical-supporting-pdf",
++          "solar-correction-response-pdf",
++          "solar-fee-payment-notice"
++        ],
++        "required": true,
++        "acceptedFileTypes": [
++          "application/pdf"
++        ],
++        "prohibitedPatterns": [
++          "unconfirmed_official_upload",
++          "unconfirmed_certification",
++          "unconfirmed_submission",
++          "unconfirmed_payment",
++          "unconfirmed_correction_upload",
++          "unconfirmed_inspection_scheduling"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-faq",
++            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
++            "anchorId": "devhub-service-categories",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing DevHub FAQ fixture describes official online permit services including permit requests, corrections, fee payments, and inspections."
++          }
++        ]
++      }
++    ],
++    "actionGates": [
++      {
++        "id": "solar-official-upload-gate",
++        "name": "Solar official upload gate",
++        "kind": "official_upload",
++        "classification": "potentially_consequential",
++        "description": "Uploading solar documents to an official DevHub request may affect the permit record and requires exact user confirmation.",
++        "requiredConfirmation": "User explicitly confirms uploading these named solar permit files to this DevHub request.",
++        "blocksUntil": [
++          "required_solar_documents_present",
++          "solar_file_rules_pass",
++          "user_explicit_upload_confirmation"
++        ],
++        "prohibitedWithoutConfirmation": true,
++        "sourceStageIds": [
++          "preview-solar-upload-package"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-faq",
++            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
++            "anchorId": "devhub-service-categories",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing DevHub FAQ fixture lists permit request and correction upload services."
++          }
++        ]
++      },
++      {
++        "id": "solar-certification-gate",
++        "name": "Solar certification gate",
++        "kind": "certification",
++        "classification": "potentially_consequential",
++        "description": "Any certification or acknowledgment text must be reviewed and confirmed by the user before proceeding.",
++        "requiredConfirmation": "User explicitly confirms the certification or acknowledgment text for this solar permit request.",
++        "blocksUntil": [
++          "user_reviews_certification_text",
++          "user_explicit_certification_confirmation"
++        ],
++        "prohibitedWithoutConfirmation": true,
++        "sourceStageIds": [
++          "review-certification-and-submit"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-application-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
++            "anchorId": "devhub-application-submission",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing DevHub application fixture models permit request submission as an official workflow action."
++          }
++        ]
++      },
++      {
++        "id": "solar-submission-gate",
++        "name": "Solar submission gate",
++        "kind": "submission",
++        "classification": "potentially_consequential",
++        "description": "The agent must stop before submitting the solar permit request unless the user confirms this exact submission.",
++        "requiredConfirmation": "User explicitly confirms submitting this completed solar permit request to PP&D.",
++        "blocksUntil": [
++          "required_solar_facts_available",
++          "required_solar_documents_present",
++          "solar_file_rules_pass",
++          "user_explicit_submission_confirmation"
++        ],
++        "prohibitedWithoutConfirmation": true,
++        "sourceStageIds": [
++          "review-certification-and-submit"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-application-guidance",
++            "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
++            "anchorId": "devhub-application-submission",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing DevHub guidance fixture identifies DevHub as the online permitting system for permit requests."
++          }
++        ]
++      },
++      {
++        "id": "solar-payment-gate",
++        "name": "Solar fee payment gate",
++        "kind": "payment",
++        "classification": "financial",
++        "description": "Any fee payment prompt is a financial action and cannot be executed from the fixture without exact user confirmation.",
++        "requiredConfirmation": "User explicitly confirms paying the displayed PP&D solar permit fee amount for this permit request in this session.",
++        "blocksUntil": [
++          "fee_amount_displayed_to_user",
++          "payment_consequence_previewed",
++          "user_explicit_payment_confirmation"
++        ],
++        "prohibitedWithoutConfirmation": true,
++        "sourceStageIds": [
++          "prescreen-intake-and-fees"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-faq",
++            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
++            "anchorId": "devhub-fee-payment",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing DevHub FAQ fixture lists fee payments as an online permitting service."
++          }
++        ]
++      },
++      {
++        "id": "solar-correction-upload-gate",
++        "name": "Solar correction upload gate",
++        "kind": "official_upload",
++        "classification": "potentially_consequential",
++        "description": "Uploading solar correction responses is an official correction action and requires exact user confirmation.",
++        "requiredConfirmation": "User explicitly confirms uploading these named solar correction response files to this permit request.",
++        "blocksUntil": [
++          "correction_response_pdf_ready",
++          "correction_upload_previewed",
++          "user_explicit_correction_upload_confirmation"
++        ],
++        "prohibitedWithoutConfirmation": true,
++        "sourceStageIds": [
++          "solar-plan-review-and-corrections"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-faq",
++            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
++            "anchorId": "devhub-correction-upload",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing DevHub FAQ fixture identifies correction uploads as an online permitting service."
++          }
++        ]
++      },
++      {
++        "id": "solar-inspection-scheduling-gate",
++        "name": "Solar inspection scheduling gate",
++        "kind": "inspection_scheduling",
++        "classification": "potentially_consequential",
++        "description": "Inspection scheduling is treated as consequential until a later solar-specific fixture narrows the exact workflow.",
++        "requiredConfirmation": "User explicitly confirms scheduling the selected inspection for this solar permit request.",
++        "blocksUntil": [
++          "inspection_options_displayed_to_user",
++          "user_explicit_inspection_scheduling_confirmation"
++        ],
++        "prohibitedWithoutConfirmation": true,
++        "sourceStageIds": [
++          "solar-approval-inspections-and-closeout"
++        ],
++        "evidence": [
++          {
++            "sourceId": "ppd-devhub-faq",
++            "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
++            "anchorId": "devhub-service-categories",
++            "capturedAt": "2026-05-01T19:20:00Z",
++            "note": "Existing DevHub FAQ fixture lists inspection scheduling for online trade permits among service categories; this fixture fails closed for solar until later extraction."
++          }
++        ]
++      }
++    ],
++    "formalRequirementIds": [
++      "solar-permit-workflow:solar-permit-type-listed-in-devhub",
++      "solar-permit-workflow:required-facts-before-request-preview",
++      "solar-permit-workflow:plans-one-searchable-pdf-when-applicable",
++      "solar-permit-workflow:application-and-supporting-documents-separate-pdfs",
++      "solar-permit-workflow:official-actions-require-confirmation",
++      "solar-permit-workflow:fee-payment-requires-exact-confirmation"
++    ]
++  }
++}
+--- a/ppd/tests/test_solar_permit_process_fixture.py
++++ b/ppd/tests/test_solar_permit_process_fixture.py
+@@ -0,0 +1,156 @@
++from __future__ import annotations
++
++import json
++import unittest
++from pathlib import Path
++from typing import Any
++from urllib.parse import urlparse
++
++
++FIXTURE_PATH = Path(__file__).parent / "fixtures" / "permit-processes" / "solar_permit_workflow.json"
++ALLOWED_SOURCE_IDS = {
++    "ppd-devhub-application-guidance",
++    "ppd-devhub-faq",
++    "ppd-single-pdf-process-guidance",
++}
++CONSEQUENTIAL_CLASSIFICATIONS = {"potentially_consequential", "financial"}
++PRIVATE_TEXT_MARKERS = (
++    "password",
++    "token",
++    "cookie",
++    "credential",
++    "storage-state",
++    "auth-state",
++    "trace.zip",
++    "screenshot",
++    "ppd/data/private",
++    "ppd/data/raw",
++)
++
++
++class SolarPermitProcessFixtureTest(unittest.TestCase):
++    def setUp(self) -> None:
++        self.fixture = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
++        self.process = self.fixture["process"]
++        self.stage_ids = {stage["id"] for stage in self.process["stages"]}
++        self.document_ids = {document["id"] for document in self.process["requiredDocuments"]}
++
++    def test_fixture_is_existing_public_source_backed_solar_skeleton(self) -> None:
++        self.assertEqual(self.fixture["fixtureKind"], "permit_process")
++        self.assertEqual(self.fixture["schemaVersion"], 1)
++        self.assertEqual(self.fixture["sourceMode"], "existing_public_fixtures_only")
++        self.assertEqual(self.process["id"], "solar-permit-workflow")
++        self.assertIn("Solar permits", self.process["permitTypes"])
++        self.assertEqual(set(self.process["sourceIds"]), ALLOWED_SOURCE_IDS)
++
++    def test_stages_cover_solar_workflow_without_unknown_edges(self) -> None:
++        kinds = [stage["kind"] for stage in self.process["stages"]]
++        expected_kinds = {
++            "permit_type_selection",
++            "eligibility_screening",
++            "document_preparation",
++            "application_data_entry",
++            "upload",
++            "acknowledgment_certification",
++            "fee_payment",
++            "corrections",
++            "inspections",
++        }
++        self.assertTrue(expected_kinds.issubset(set(kinds)))
++        self.assertEqual([stage["sequence"] for stage in self.process["stages"]], list(range(len(self.process["stages"]))))
++        for stage in self.process["stages"]:
++            for next_stage_id in stage.get("nextStageIds", []):
++                self.assertIn(next_stage_id, self.stage_ids)
++            self.assertEvidence(stage)
++
++    def test_required_facts_documents_file_rules_and_gates_are_source_backed(self) -> None:
++        fact_ids = {fact["id"] for fact in self.process["requiredFacts"]}
++        self.assertTrue(
++            {
++                "solar-property-identifier",
++                "solar-project-scope",
++                "solar-applicant-contact",
++                "solar-contractor-or-installer",
++                "solar-project-valuation",
++            }.issubset(fact_ids)
++        )
++        for fact in self.process["requiredFacts"]:
++            self.assertTrue(fact["required"])
++            self.assertStageReferences(fact)
++            self.assertEvidence(fact)
++
++        self.assertTrue(
++            {
++                "solar-permit-application-pdf",
++                "solar-drawing-plan-pdf",
++                "solar-structural-or-electrical-supporting-pdf",
++                "solar-correction-response-pdf",
++                "solar-fee-payment-notice",
++            }.issubset(self.document_ids)
++        )
++        for document in self.process["requiredDocuments"]:
++            self.assertIn("application/pdf", document["acceptedFileTypes"])
++            self.assertStageReferences(document)
++            self.assertEvidence(document)
++
++        rule_ids = {rule["id"] for rule in self.process["fileRules"]}
++        self.assertTrue(
++            {
++                "solar-plans-one-searchable-pdf",
++                "solar-application-and-supporting-documents-separate-pdfs",
++                "solar-official-actions-require-user-confirmation",
++            }.issubset(rule_ids)
++        )
++        for rule in self.process["fileRules"]:
++            self.assertTrue(rule["required"])
++            self.assertIn("application/pdf", rule["acceptedFileTypes"])
++            self.assertTrue(set(rule["appliesToDocumentIds"]).issubset(self.document_ids))
++            self.assertEvidence(rule)
++
++        gate_ids = {gate["id"] for gate in self.process["actionGates"]}
++        self.assertTrue(
++            {
++                "solar-official-upload-gate",
++                "solar-certification-gate",
++                "solar-submission-gate",
++                "solar-payment-gate",
++                "solar-correction-upload-gate",
++                "solar-inspection-scheduling-gate",
++            }.issubset(gate_ids)
++        )
++        payment_gate = next(gate for gate in self.process["actionGates"] if gate["id"] == "solar-payment-gate")
++        self.assertEqual(payment_gate["classification"], "financial")
++        for gate in self.process["actionGates"]:
++            self.assertStageReferences(gate)
++            self.assertEvidence(gate)
++            if gate["classification"] in CONSEQUENTIAL_CLASSIFICATIONS:
++                self.assertTrue(gate["prohibitedWithoutConfirmation"])
++                self.assertIn("User explicitly confirms", gate["requiredConfirmation"])
++
++    def test_fixture_contains_no_private_or_live_artifacts(self) -> None:
++        serialized = json.dumps(self.fixture, sort_keys=True).lower()
++        for marker in PRIVATE_TEXT_MARKERS:
++            self.assertNotIn(marker, serialized)
++
++    def assertStageReferences(self, item: dict[str, Any]) -> None:
++        for stage_id in item.get("sourceStageIds", []):
++            self.assertIn(stage_id, self.stage_ids)
++
++    def assertEvidence(self, item: dict[str, Any]) -> None:
++        evidence = item.get("evidence")
++        self.assertIsInstance(evidence, list)
++        self.assertGreater(len(evidence), 0)
++        for evidence_ref in evidence:
++            self.assertIn(evidence_ref["sourceId"], ALLOWED_SOURCE_IDS)
++            self.assertIn(evidence_ref["sourceId"], self.process["sourceIds"])
++            source_url = evidence_ref["sourceUrl"]
++            parsed = urlparse(source_url)
++            self.assertEqual(parsed.scheme, "https")
++            self.assertIn(parsed.netloc, {"www.portland.gov"})
++            self.assertTrue(evidence_ref["anchorId"].strip())
++            self.assertTrue(evidence_ref["capturedAt"].endswith("Z"))
++            self.assertTrue(evidence_ref["note"].strip())
++
++
++if __name__ == "__main__":
++    unittest.main()

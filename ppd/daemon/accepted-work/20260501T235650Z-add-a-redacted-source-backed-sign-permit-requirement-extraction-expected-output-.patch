@@ -1,0 +1,315 @@
+--- a/ppd/tests/fixtures/sign_permit_requirement_extraction/expected_output.json
++++ b/ppd/tests/fixtures/sign_permit_requirement_extraction/expected_output.json
+@@ -0,0 +1,227 @@
++{
++  "schema_version": 1,
++  "fixture_id": "sign-permit-requirement-extraction-expected-output-v1",
++  "permit_type": "sign_permit",
++  "jurisdiction": "Portland, Oregon",
++  "authority_label": "Portland Permitting & Development",
++  "captured_for_task": "checkbox-96",
++  "redaction_policy": "Public guidance only; no account data, credentials, addresses, owner names, contractor names, payment data, uploaded documents, screenshots, traces, or private DevHub session values are included.",
++  "category_records": [
++    {
++      "category": "eligibility",
++      "requirement_id": "sign-permit-eligibility-001",
++      "type": "precondition",
++      "subject": "applicant",
++      "action": "determine whether the proposed sign or awning requires a sign permit or registration",
++      "object": "sign or awning project scope",
++      "conditions": [
++        "The project places, constructs, projects, modifies, relocates, illuminates, or structurally alters a sign or awning used to inform or attract public attention.",
++        "Portable signs, temporary signs, signs in the public right-of-way, utility-pole signs, exempt signs, and prohibited signs require separate routing or eligibility checks before a sign permit workflow is selected."
++      ],
++      "expected_agent_output": "Ask the user only for missing scope facts needed to classify the sign type, location, illumination, modification status, and whether an exemption or alternate permitting path may apply.",
++      "redaction_status": "redacted_public_fixture",
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/sign-permits",
++          "source_title": "Sign and awning permits",
++          "source_anchor": "When a sign permit is required",
++          "evidence_note": "PP&D explains when sign permits are required and identifies sign categories, exemptions, prohibited signs, and alternate routing for some sign types."
++        }
++      ],
++      "confidence": "high",
++      "formalization_status": "fixture_expected_output"
++    },
++    {
++      "category": "plan-review applicability",
++      "requirement_id": "sign-permit-plan-review-001",
++      "type": "dependency",
++      "subject": "applicant",
++      "action": "identify land use, structural, electrical, and technical review dependencies before issuance",
++      "object": "review path for a sign permit request",
++      "conditions": [
++        "A land use review may be required when land use sign standards are not met or when overlay, historic, plan district, or recorded land use decision conditions apply.",
++        "Structural review applies to signs except those described by PP&D as painted, adhered, or flush-mounted without air or water access behind the sign.",
++        "Illuminated signs may require electrical permit materials and electrician or owner signature requirements."
++      ],
++      "expected_agent_output": "Flag review dependencies and ask for missing zoning, overlay, historic-resource, structural attachment, illumination, and existing-sign facts before concluding the request is intake-ready.",
++      "redaction_status": "redacted_public_fixture",
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/sign-permits",
++          "source_title": "Sign and awning permits",
++          "source_anchor": "Step 3: Technical Reviews",
++          "evidence_note": "PP&D describes technical review, land use review, structural review, and electrical-related sign application requirements."
++        }
++      ],
++      "confidence": "high",
++      "formalization_status": "fixture_expected_output"
++    },
++    {
++      "category": "upload requirements",
++      "requirement_id": "sign-permit-upload-001",
++      "type": "obligation",
++      "subject": "applicant",
++      "action": "prepare and upload a complete sign permit application package through DevHub",
++      "object": "sign permit application, plans, calculations, and supporting documents",
++      "conditions": [
++        "One sign or awning permit application is expected per sign.",
++        "Application materials may include site plan, elevation plans, sign and attachment details, sign-area measurements, structural calculations, electrical materials, and recorded land use decision documents when applicable.",
++        "Plan materials must follow PP&D plan-content restrictions, including no Google Maps, no photos, no color dependency, and no 3D renderings where those restrictions are listed."
++      ],
++      "expected_agent_output": "Return a file checklist grouped by required, conditionally required, and unresolved documents; never include private file contents or local download paths in the fixture output.",
++      "redaction_status": "redacted_public_fixture",
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/sign-permits",
++          "source_title": "Sign and awning permits",
++          "source_anchor": "Step 2: Apply for a sign permit",
++          "evidence_note": "PP&D says complete sign permit applications and materials may be uploaded through DevHub using the Sign Permit Request workflow."
++        },
++        {
++          "source_url": "https://www.portland.gov/ppd/sign-permits",
++          "source_title": "Sign and awning permits",
++          "source_anchor": "Plans and calculations requirements",
++          "evidence_note": "PP&D lists required plan and calculation content for sign permit application materials."
++        }
++      ],
++      "confidence": "high",
++      "formalization_status": "fixture_expected_output"
++    },
++    {
++      "category": "fee/payment checkpoints",
++      "requirement_id": "sign-permit-fees-001",
++      "type": "action_gate",
++      "subject": "agent",
++      "action": "stop before fee payment or payment-detail entry and require exact user confirmation",
++      "object": "intake fees, land use review fees, permit fees, and final issuance fees",
++      "conditions": [
++        "PP&D may notify the applicant of intake fees after prescreen acceptance.",
++        "Land use review fees are paid with the land use review application when that review is required.",
++        "The approved permit is issued after applicable fees are paid."
++      ],
++      "expected_agent_output": "Classify fee lookup as read-only, fee-payment planning as consequential, and any payment action or payment-detail entry as financial requiring exact session-specific confirmation.",
++      "redaction_status": "redacted_public_fixture",
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/sign-permits",
++          "source_title": "Sign and awning permits",
++          "source_anchor": "Sign and awning permit fees",
++          "evidence_note": "PP&D directs applicants to the current fee page for sign, awning permit, and registration fees."
++        },
++        {
++          "source_url": "https://www.portland.gov/ppd/sign-permits",
++          "source_title": "Sign and awning permits",
++          "source_anchor": "Step 4: Get your sign permit",
++          "evidence_note": "PP&D states that issuance follows completed review, final quality check, and payment of fees."
++        },
++        {
++          "source_url": "https://www.portland.gov/ppd/devhub-faqs",
++          "source_title": "Frequently Asked Questions about Development Hub PDX",
++          "source_anchor": "What services can I access in DevHub?",
++          "evidence_note": "The DevHub FAQ identifies fee payment as a DevHub service category."
++        }
++      ],
++      "confidence": "high",
++      "formalization_status": "fixture_expected_output"
++    },
++    {
++      "category": "corrections",
++      "requirement_id": "sign-permit-corrections-001",
++      "type": "obligation",
++      "subject": "applicant",
++      "action": "review checksheets and upload corrected information when requested",
++      "object": "review corrections and checksheet responses",
++      "conditions": [
++        "If minimum submittal requirements are not met, PP&D provides the missing-items list through DevHub.",
++        "If additional information is required during technical review, PP&D sends a checksheet requesting corrections or clarification.",
++        "The review and correction cycle may repeat until reviewers approve or no review is required."
++      ],
++      "expected_agent_output": "Produce a correction-response preview and missing-item list, but do not perform official correction upload, acknowledgment, or submission without exact user confirmation.",
++      "redaction_status": "redacted_public_fixture",
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/sign-permits",
++          "source_title": "Sign and awning permits",
++          "source_anchor": "Step 2: Apply for a sign permit",
++          "evidence_note": "PP&D says missing submittal requirements are provided through DevHub after application review."
++        },
++        {
++          "source_url": "https://www.portland.gov/ppd/sign-permits",
++          "source_title": "Sign and awning permits",
++          "source_anchor": "Step 3: Technical Reviews",
++          "evidence_note": "PP&D describes checksheets requesting additional information during technical review."
++        },
++        {
++          "source_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
++          "source_title": "Submit Plans Online",
++          "source_anchor": "Corrections",
++          "evidence_note": "PP&D describes the DevHub Upload Corrections path, checksheet review, corrected file upload, acknowledgments, and repeated review cycles."
++        }
++      ],
++      "confidence": "high",
++      "formalization_status": "fixture_expected_output"
++    },
++    {
++      "category": "inspections/finalization",
++      "requirement_id": "sign-permit-inspections-001",
++      "type": "obligation",
++      "subject": "applicant",
++      "action": "obtain required inspections and final permit closeout after issuance",
++      "object": "sign and awning permit inspection milestones",
++      "conditions": [
++        "All sign and awning permits need inspection.",
++        "Inspection points may include before footing pours, after wall anchors are installed but before sign attachment, and project completion.",
++        "Complex signs may require special inspection by a City of Portland certified testing agency when required through structural review."
++      ],
++      "expected_agent_output": "List inspection milestones and classify inspection scheduling as a consequential action that needs exact user confirmation before automation performs scheduling.",
++      "redaction_status": "redacted_public_fixture",
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/sign-permits",
++          "source_title": "Sign and awning permits",
++          "source_anchor": "Step 5: Start the work and get ready for inspections",
++          "evidence_note": "PP&D lists sign and awning inspection requirements, inspection codes, and special inspection conditions."
++        }
++      ],
++      "confidence": "high",
++      "formalization_status": "fixture_expected_output"
++    },
++    {
++      "category": "explicit-confirmation gates",
++      "requirement_id": "sign-permit-confirmation-gates-001",
++      "type": "action_gate",
++      "subject": "agent",
++      "action": "pause for exact user confirmation before consequential or financial DevHub actions",
++      "object": "submission, certification, official correction upload, inspection scheduling, fee payment, cancellation, and payment-detail entry",
++      "conditions": [
++        "Submitting a Sign Permit Request sends the request to PP&D for review.",
++        "Correction upload workflows include an acknowledgment that the uploader is authorized to upload and submit corrections.",
++        "Fee payment and permit issuance are financially consequential workflow checkpoints."
++      ],
++      "expected_agent_output": "Allow read-only summaries and draft previews, but stop before Submit, certification or acknowledgment checkboxes, official upload, fee payment, cancellation, or inspection scheduling unless the user gives exact session-specific confirmation for that action.",
++      "redaction_status": "redacted_public_fixture",
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/sign-permits",
++          "source_title": "Sign and awning permits",
++          "source_anchor": "Step 2: Apply for a sign permit",
++          "evidence_note": "PP&D describes selecting Submit at the end of DevHub's Sign Permit Request process to send the request."
++        },
++        {
++          "source_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
++          "source_title": "Submit Plans Online",
++          "source_anchor": "Corrections",
++          "evidence_note": "PP&D describes correction upload acknowledgment and submission steps in DevHub."
++        },
++        {
++          "source_url": "https://www.portland.gov/ppd/devhub-faqs",
++          "source_title": "Frequently Asked Questions about Development Hub PDX",
++          "source_anchor": "What services can I access in DevHub?",
++          "evidence_note": "The DevHub FAQ lists upload corrections, fee payment, permit requests requiring plan review, and inspection scheduling service categories."
++        }
++      ],
++      "confidence": "high",
++      "formalization_status": "fixture_expected_output"
++    }
++  ]
++}
+--- a/ppd/tests/test_sign_permit_requirement_expected_output.py
++++ b/ppd/tests/test_sign_permit_requirement_expected_output.py
+@@ -0,0 +1,82 @@
++"""Validate the minimal sign permit requirement extraction expected-output fixture."""
++
++from __future__ import annotations
++
++import json
++import re
++import unittest
++from pathlib import Path
++from typing import Any
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "sign_permit_requirement_extraction"
++    / "expected_output.json"
++)
++
++EXPECTED_CATEGORIES = [
++    "eligibility",
++    "plan-review applicability",
++    "upload requirements",
++    "fee/payment checkpoints",
++    "corrections",
++    "inspections/finalization",
++    "explicit-confirmation gates",
++]
++
++PRIVATE_VALUE_PATTERNS = (
++    re.compile(r"\b\d{3}[-. ]\d{2}[-. ]\d{4}\b"),
++    re.compile(r"\b\d{16}\b"),
++    re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.IGNORECASE),
++    re.compile(r"\b(?:password|credential|auth[_-]?state|storage[_-]?state|session[_-]?cookie|bearer\s+[a-z0-9._-]+)\b", re.IGNORECASE),
++)
++
++FORBIDDEN_STRINGS = (
++    "ppd/data/private",
++    "ppd/data/raw",
++    "trace.zip",
++    "playwright-report",
++    "screenshot.png",
++    "cookies.json",
++    "localstorage.json",
++)
++
++
++class SignPermitRequirementExpectedOutputTest(unittest.TestCase):
++    def setUp(self) -> None:
++        with FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
++            self.fixture: dict[str, Any] = json.load(fixture_file)
++
++    def test_fixture_has_exactly_seven_expected_categories(self) -> None:
++        records = self.fixture["category_records"]
++        self.assertEqual(7, len(records))
++        self.assertEqual(EXPECTED_CATEGORIES, [record["category"] for record in records])
++
++    def test_each_record_is_source_backed_and_redacted(self) -> None:
++        for record in self.fixture["category_records"]:
++            with self.subTest(category=record["category"]):
++                self.assertTrue(record["requirement_id"].startswith("sign-permit-"))
++                self.assertEqual("redacted_public_fixture", record["redaction_status"])
++                self.assertGreaterEqual(len(record.get("conditions", [])), 1)
++                self.assertTrue(record.get("expected_agent_output"))
++                evidence_items = record.get("evidence", [])
++                self.assertGreaterEqual(len(evidence_items), 1)
++                for evidence in evidence_items:
++                    self.assertTrue(evidence["source_url"].startswith("https://www.portland.gov/ppd/"))
++                    self.assertTrue(evidence["source_title"])
++                    self.assertTrue(evidence["source_anchor"])
++                    self.assertTrue(evidence["evidence_note"])
++
++    def test_fixture_contains_no_private_values_or_artifact_paths(self) -> None:
++        fixture_text = json.dumps(self.fixture, sort_keys=True)
++        lowered = fixture_text.lower()
++        for forbidden in FORBIDDEN_STRINGS:
++            self.assertNotIn(forbidden, lowered)
++        for pattern in PRIVATE_VALUE_PATTERNS:
++            self.assertIsNone(pattern.search(fixture_text))
++
++
++if __name__ == "__main__":
++    unittest.main()

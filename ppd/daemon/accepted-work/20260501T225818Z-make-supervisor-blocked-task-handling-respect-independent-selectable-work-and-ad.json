@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/ppd_supervisor.py"
+  ],
+  "created_at": "2026-05-01T22:58:18.739652Z",
+  "impact": "The supervisor will no longer interrupt the daemon solely because older recovery tasks are blocked while a needed or in-progress independent task remains selectable. It also classifies repeated malformed Python fragments such as `confidence 1`, `confidence 1.0`, and `return 0.0 list[str]` as syntax-first repair signals, steering future recovery toward smaller syntactic guardrails.",
+  "summary": "Make supervisor blocked-task handling respect independent selectable work and add malformed Python syntax diagnostics.",
+  "target_task": "Supervisor repair: 2 task(s) are blocked: Task checkbox-80: Add a daemon diagnostic fixture that classifies repeated malformed comparison syntax in Python proposals, including `confidence 1`, `confidence 1.0`, and `return 0.0 list[str]`, as a syntax-first retry stop condition for the same target task.; Task checkbox-81: Retry the solar permit requirement extractor as a no-dataclass one-file implementation only after the replacement-size guard and malformed-comparison diagnostic pass; use plain constants and functions, preserve the syntax sentinel, and compare against the existing seven-record expected-output fixture only.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 84 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 179 tests in 0.022s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "fixturePurpose": "minimal source freshness classifier input",
+  "generatedAt": "2026-05-01T00:00:00Z",
+  "records": [
+    {
+      "id": "freshness-stale-guidance-single-pdf-process",
+      "case": "stale_guidance_page",
+      "canonicalUrl": "https://www.portland.gov/ppd/single-pdf-process",
+      "sourceIndexId": "source-single-pdf-process-guidance",
+      "authorityLabel": "Portland Permitting & Development public guidance",
+      "pageType": "guidance",
+      "lastVerifiedAt": "2026-03-01T00:00:00Z",
+      "lastSeenAt": "2026-03-01T00:00:00Z",
+      "recrawlCadenceDays": 30,
+      "contentHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "crawlStatus": "active",
+      "expectedFreshnessFinding": "stale_guidance",
+      "priority": "normal",
+      "evidence": [
+        {
+          "kind": "fixture_source_index",
+          "ref": "source-single-pdf-process-guidance",
+          "note": "Guidance page has exceeded its fixture recrawl cadence."
+        }
+      ]
+    },
+    {
+      "id": "freshness-changed-hash-devhub-faq",
+      "case": "changed_content_hash",
+      "canonicalUrl": "https://www.portland.gov/ppd/devhub-faq",
+      "sourceIndexId": "source-devhub-faq-guidance",
+      "authorityLabel": "Portland Permitting & Development DevHub FAQ",
+      "pageType": "faq",
+      "lastVerifiedAt": "2026-04-28T00:00:00Z",
+      "lastSeenAt": "2026-04-28T00:00:00Z",
+      "recrawlCadenceDays": 7,
+      "previousContentHash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "contentHash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "crawlStatus": "active",
+      "expectedFreshnessFinding": "changed_content_hash",
+      "priority": "high",
+      "evidence": [
+        {
+          "kind": "fixture_source_index",
+          "ref": "source-devhub-faq-guidance",
+          "note": "Fixture hashes differ between prior and current normalized source-index snapshots."
+        }
+      ]
+    },
+    {
+      "id": "freshness-removed-guidance-page",
+      "case": "removed_page",
+      "canonicalUrl": "https://www.portland.gov/ppd/obsolete-example-guidance",
+      "sourceIndexId": "source-obsolete-example-guidance",
+      "authorityLabel": "Portland Permitting & Development public guidance",
+      "pageType": "guidance",
+      "lastVerifiedAt": "2026-04-01T00:00:00Z",
+      "lastSeenAt": "2026-04-01T00:00:00Z",
+      "removedDetectedAt": "2026-05-01T00:00:00Z",
+      "recrawlCadenceDays": 30,
+      "contentHash": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "crawlStatus": "removed",
+      "expectedFreshnessFinding": "removed_page",
+      "priority": "high",
+      "evidence": [
+        {
+          "kind": "fixture_source_index",
+          "ref": "source-obsolete-example-guidance",
+          "note": "Fixture marks the previously indexed guidance URL as removed."
+        }
+      ]
+    },
+    {
+      "id": "freshness-high-priority-fee-page",
+      "case": "high_priority_recrawl_candidate",
+      "canonicalUrl": "https://www.portland.gov/ppd/fees",
+      "sourceIndexId": "source-ppd-fees",
+      "authorityLabel": "Portland Permitting & Development fee guidance",
+      "pageType": "fee",
+      "lastVerifiedAt": "2026-04-24T00:00:00Z",
+      "lastSeenAt": "2026-04-24T00:00:00Z",
+      "recrawlCadenceDays": 7,
+      "contentHash": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "crawlStatus": "active",
+      "expectedFreshnessFinding": "high_priority_recrawl_candidate",
+      "priority": "high",
+      "recrawlReasons": [
+        "fee_page",
+        "cadence_due",
+        "agent_action_gate_source"
+      ],
+      "evidence": [
+        {
+          "kind": "fixture_source_index",
+          "ref": "source-ppd-fees",
+          "note": "Fee guidance is modeled as a high-priority recrawl candidate when cadence is due."
+        }
+      ]
+    }
+  ]
+}

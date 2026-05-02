@@ -1,0 +1,251 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -37,8 +37,14 @@
+ - [x] Add a JSON-only cross-cutting lifecycle process index fixture at `ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json` that references only the accepted extension, reactivation, cancellation/refund, and inspection lifecycle skeleton fixture paths, records their lifecycle category ids, and includes no raw source bodies, downloaded documents, private DevHub paths, screenshots, traces, or live crawl output.
+ - [x] Add a fixture-only lifecycle missing-information expected-output fixture at `ppd/tests/fixtures/lifecycle/permit_lifecycle_missing_information_expected_output.json` with exactly one redacted missing-information record for each accepted lifecycle category, source-backed to the lifecycle process skeleton fixtures, deduplicated by `(categoryId, neededItemId)`, and classified as read-only, draft-preview, consequential-stop, or financial-stop.
+ - [x] Recovery for checkbox-29: first repair only `ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json` so every skeleton fixture path names an already committed lifecycle skeleton fixture. In particular, do not leave a reference to nonexistent `ppd/tests/fixtures/lifecycle/inspection_lifecycle_process_skeleton.json`; use the committed inspection lifecycle skeleton path exactly as it exists on disk. Do not add validator code in this recovery task.
+-- [~] Recovery for checkbox-29: after the process index fixture path repair passes, add one small exact-path validator for `ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json` that checks referenced skeleton fixtures exist, category ids are unique, entries cite only committed lifecycle fixture paths, and no entry authorizes live crawling, login, payment, submission, upload, certification, cancellation, official refund, official extension, or inspection scheduling.
+-- [ ] Recovery for checkbox-27: add the one-file mutation validator for `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json` using only syntactically simple Python, standard-library `unittest`, exact fixture loading, an initial committed-fixture-valid assertion, one mutation per test, and an explicit `py_compile`-first self-check. Cover missing `categoryId`, missing `sourceEvidenceIds`, missing local `evidence[].evidenceId`, out-of-range `confidence`, duplicate `(categoryId, action, object, sourceEvidenceIds)` tuples, and malformed stop-gate classification. Do not add extractor implementation code. Use only plain `if not ...: raise AssertionError(...)`, `self.assertRaises`, `self.assertEqual`, `self.assertIn`, and complete comparisons such as `confidence  1`; do not emit fragments like `if confidence 1:`.
++- [ ] Recovery for checkbox-30: add the smallest possible exact-path validator for `ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json` in one Python unittest file. The file must first load only that exact fixture path, assert the committed fixture is valid, and use only plain helper functions, `if not ...: raise AssertionError(...)`, `self.assertEqual`, `self.assertIn`, and `self.assertRaises`. Check that referenced skeleton fixtures exist, category ids are unique, skeleton paths start with `ppd/tests/fixtures/lifecycle/` and end with `.json`, and serialized entries do not contain live crawling, login, payment, submission, upload, certification, cancellation, official refund, official extension, or inspection scheduling authorization. Before broader validation, run py_compile on the changed file and reject fragments such as `if index list`, `if confidence 1`, `assert name None`, or incomplete comparisons. Do not add mutation tests in this task.
++- [ ] Recovery for checkbox-27a: add only a py_compile-safe skeleton for `ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py` that loads `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json` and asserts the committed top-level `categoryRecords` fixture is valid using the accepted checkbox-24 schema. Do not add mutation cases in this task.
++- [ ] Recovery for checkbox-27b: after checkbox-27a passes, add one mutation case for missing `categoryId` only. Do not add the other mutation cases in the same daemon cycle.
++- [ ] Recovery for checkbox-27c: after checkbox-27b passes, add one mutation case for missing `sourceEvidenceIds` only.
++- [ ] Recovery for checkbox-27d: after checkbox-27c passes, add one mutation case for missing local `evidence[].evidenceId` only.
++- [ ] Recovery for checkbox-27e: after checkbox-27d passes, add one mutation case for out-of-range `confidence` only, using complete comparisons such as `confidence  1`.
++- [ ] Recovery for checkbox-27f: after checkbox-27e passes, add one mutation case for duplicate `(categoryId, action, object, sourceEvidenceIds)` tuples only.
++- [ ] Recovery for checkbox-27g: after checkbox-27f passes, add one mutation case for malformed stop-gate classification only.
+ - [ ] Add a one-file validator for the lifecycle missing-information expected-output fixture that checks exact top-level schema, redacted placeholder values only, local fixture citations, deduplication, and stop-gate classifications before any missing-information detector implementation is added.
+ - [ ] Add a syntax-first import sentinel for `ppd.extraction.permit_lifecycle_missing_information` that imports only that module, skips if absent, requires preserved sentinel metadata when present, and fails malformed Python before broad missing-information validation runs.
+ - [ ] Add a one-file size guard for future `ppd.extraction.permit_lifecycle_missing_information` implementation proposals that rejects generated broad modules, dataclasses, live crawl or Playwright imports, and files over 180 physical lines.
+@@ -49,9 +55,9 @@
+ 
+ These items failed as broad tasks or were superseded by narrower recovery work. They are intentionally not selectable while narrower fixture-first and validation-first work remains available. Do not re-add them as selectable checklist tasks unless a new failing validator names a concrete regression.
+ 
+-- Parked checkbox-27 malformed retry attempts: repeated fixture-only mutation validator proposals failed only because they generated syntactically invalid Python such as `if confidence 1:` or malformed inline type fragments. The selected recovery is now a narrower syntax-first task that requires exact fixture loading, simple `unittest` code, and `python3 -m py_compile ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py` before broader validation.
+-- Parked checkbox-29 validator attempts: repeated process-index validators correctly identified that `ppd/tests/fixtures/lifecycle/inspection_lifecycle_process_skeleton.json` is not committed. The selected recovery is now fixture-first: repair `permit_lifecycle_process_index.json` to cite the committed inspection lifecycle skeleton path before adding the validator.
+-- Parked checkbox-24 validator attempts: repeated focused lifecycle requirement extraction validators failed because they used the wrong fixture name, assumed a top-level `requirements` or `records` list instead of the committed top-level `categoryRecords`, or required a separate stop-gate classification field that the accepted fixture does not expose. The committed fixture path is exactly `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json`; explicit stop-gate classification is represented by `stopGate: true` and `classification` values such as `consequential_stop_gate`, `financial_stop_gate`, and `explicit_confirmation_stop_gate`.
++- Parked checkbox-27 malformed retry attempts: repeated fixture-only mutation validator proposals failed only because they generated syntactically invalid Python such as `if confidence 1:` or malformed inline type fragments. The selected recovery is now split into py_compile-safe committed-fixture validation followed by one mutation case per daemon cycle.
++- Parked checkbox-29 validator attempts: repeated process-index validators either generated malformed Python such as `if index list[...]` or correctly identified that `ppd/tests/fixtures/lifecycle/inspection_lifecycle_process_skeleton.json` was not committed. The fixture path repair has passed; the next retry is a minimal exact-path validator with no mutation tests and py_compile before broad validation.
++- Parked checkbox-24 validator attempts: repeated focused lifecycle requirement extraction validators failed because they used the wrong fixture name, assumed a top-level `requirements` or `records` list instead of the committed top-level `categoryRecords`, or required a separate stop-gate classification field that the accepted fixture does not expose. The committed fixture path is exactly `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json`; explicit stop-gate classification is represented by `stopGate: true` and `classification` values ending in `_stop_gate`.
+ - Parked lifecycle skeleton broad task: Add a fixture-only cross-cutting permit lifecycle process skeleton for extension, reactivation, cancellation, refund, inspection scheduling, and inspection-result follow-up gates, with required facts, required documents, user decisions, fee/payment gates, and citation-backed action gates from existing fixtures only. This was too broad while the lifecycle coverage report still lacked authority-label and recrawl-cadence metadata. It is split into extension-only, reactivation-only, cancellation/refund, and inspection scheduling/result follow-up fixture tasks.
+ - Parked source freshness broad task: Add a source freshness fixture that classifies stale PP&D guidance, changed content hashes, removed pages, and recrawl priority without performing a live recrawl.
+ - Parked source freshness renderer task: Add a fixture-only change report renderer for public PP&D source freshness results that summarizes changed requirements, new or removed links, and affected permit-process fixtures with citation references.
+@@ -61,19 +67,17 @@
+ 
+ ## Deferred Repair Notes
+ 
+-For checkbox-27 recovery, the mutation validator should mirror the accepted checkbox-24 schema rules and mutate only in-memory copies of the committed fixture. Do not change the fixture. Do not add extractor code. The validator should use explicit assertion methods or raise `AssertionError`; it should not contain pseudo-code, bare generated fragments, or malformed comparisons.
++For checkbox-30 recovery, keep the validator smaller than the failed attempts. Do not add mutation tests, table-driven schema rewrites, dataclasses, implementation modules, broad discovery, live crawl behavior, authenticated DevHub behavior, downloaded documents, private DevHub artifacts, screenshots, or traces. The only target fixture is `ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json`.
+ 
+-For checkbox-29 recovery, validation has already proven the process index references a nonexistent inspection skeleton path. First repair the committed JSON fixture to cite the already committed inspection lifecycle skeleton file. Only after that fixture-only repair passes should the daemon add the exact-path validator.
++For checkbox-27 recovery, the mutation validator must now be built in increments. First accept a py_compile-safe committed-fixture validator. Then add exactly one mutation case per daemon cycle. Do not write multiple mutation tests until each earlier narrow task passes. Do not change the fixture. Do not add extractor code. Do not emit pseudo-code, bare generated fragments, inline type fragments in `if` statements, or malformed comparisons.
+ 
+-For checkbox-24 recovery, the committed expected-output fixture is exactly `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json`. It exposes top-level `categoryRecords`, not `requirements`, `records`, `items`, or `lifecycleRequirements`. The eight accepted `categoryId` values are `extension_eligibility`, `reactivation_eligibility`, `cancellation_eligibility`, `refund_eligibility`, `inspection_scheduling`, `inspection_result_follow_up`, `fee_payment_checkpoints`, and `explicit_confirmation_gates`. Every focused validator should load this exact file with `Path(__file__).parent / "fixtures" / "lifecycle" / "permit_lifecycle_requirement_extraction_expected_output.json"`.
++For checkbox-24 recovery, the committed expected-output fixture is exactly `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json`. It exposes top-level `categoryRecords`, not `requirements`, `records`, `items`, or `lifecycleRequirements`. The eight accepted `categoryId` values are `extension_eligibility`, `reactivation_eligibility`, `cancellation_eligibility`, `refund_eligibility`, `inspection_scheduling`, `inspection_result_follow_up`, `fee_payment_checkpoints`, and `explicit_confirmation_gates`.
+ 
+-For checkbox-24 stop-gate validation, do not invent or require a separate `stopGateClassifications` field. The accepted fixture classifies explicit stop gates with the boolean `stopGate` and the string `classification`. Valid explicit stop-gate records have `stopGate: true` and a `classification` string ending in `_stop_gate`; current examples include consequential, financial, and explicit-confirmation stop gates.
++For checkbox-24 stop-gate validation, do not invent or require a separate `stopGateClassifications` field. The accepted fixture classifies explicit stop gates with the boolean `stopGate` and the string `classification`. Valid explicit stop-gate records have `stopGate: true` and a `classification` string ending in `_stop_gate`.
+ 
+-The lifecycle source coverage fail-closed validator failed repeatedly because earlier attempts assumed fields or fixture names that did not match the committed report. The committed fixture is exactly `ppd/tests/fixtures/source_inventory/permit_lifecycle_source_coverage_report.json`. It uses top-level `coverageCategories`, top-level `evidence`, category ids such as `permit_extension_guidance`, and metadata fields `authorityLabel` and `recrawlCadence` on each evidence object. The validator should load that exact path from `Path(__file__).parent / "fixtures" / "source_inventory" / "permit_lifecycle_source_coverage_report.json"`; it should not glob for alternate lifecycle reports.
++The lifecycle source coverage fail-closed validator failed repeatedly because earlier attempts assumed fields or fixture names that did not match the committed report. The committed fixture is exactly `ppd/tests/fixtures/source_inventory/permit_lifecycle_source_coverage_report.json`. It uses top-level `coverageCategories`, top-level `evidence`, category ids such as `permit_extension_guidance`, and metadata fields `authorityLabel` and `recrawlCadence` on each evidence object.
+ 
+-For checkbox-15, checkbox-18, and checkbox-19 recovery, keep accepted patches fixture-only or validation-only. Do not add extractor modules, dataclasses, generated Python implementation modules, TypeScript modules, live crawl behavior, downloaded documents, private DevHub artifacts, screenshots, traces, or authenticated automation. The exact extension skeleton fixture path is `ppd/tests/fixtures/lifecycle/extension_lifecycle_process_skeleton.json`; the exact extension evidence map path is `ppd/tests/fixtures/lifecycle/extension_lifecycle_evidence_map.json`.
+-
+-The extension evidence map intentionally maps extension lifecycle work to source inventory categories. It has `categories[].sourceInventoryEvidenceIds` with category-like references. The extension skeleton carries the committed evidence ids that validators should check: top-level `sourceInventoryEvidenceIds` and `authoritySources[].evidenceId`. A lifecycle validator must not fail only because the evidence map lacks a top-level evidence array or actual evidence-id list.
++For checkbox-15, checkbox-18, and checkbox-19 recovery, keep accepted patches fixture-only or validation-only. Do not add extractor modules, dataclasses, generated Python implementation modules, TypeScript modules, live crawl behavior, downloaded documents, private DevHub artifacts, screenshots, traces, or authenticated automation.
+ 
+ The next tranche stays fixture-only and validation-first: public process fixtures before extractors, syntax-first import tests before Python implementation, size guards before generated modules, mocked DevHub snapshots before browser behavior, and guardrail tests before any irreversible action support. No task in this tranche authorizes live crawling, login, payment entry, submission, upload, certification, cancellation, official extension, official refund, or inspection scheduling.
+ 
+@@ -84,20 +88,21 @@
+ When no independent task is active, prefer recovery tasks in this order:
+ 
+ 1. Add missing fixture metadata or repair missing fixture paths when validation names a missing path or missing field.
+-2. Add one-file mutation validators only after the committed fixture validates cleanly.
+-3. Split broad lifecycle fixtures by category before attempting cross-cutting fixtures or extractors.
+-4. For a task that failed three daemon rounds, park the broad checkbox and add a JSON-only evidence-map or exact-fixture repair task before retrying fixture or validator work.
+-5. Restore any missing syntax sentinel without broad validator rewrites.
+-6. Add fixture-name or fixture-schema compatibility only when validation names the missing path or missing field.
+-7. Add malformed-proposal diagnostics before retrying an implementation that has already produced repeated `SyntaxError` failures.
+-8. Retry behavior as a one-file no-dataclass implementation only after syntax-first tests and minimal fixtures pass.
+-9. If validation reports that a sentinel helper returned extra keys or readiness flags, retry only with a sentinel-preserving implementation and expose behavior through separate functions.
+-10. After a later narrower recovery passes, park earlier blocked retries as superseded so they do not count as active blockers.
+-11. Do not select parked broad validation tasks directly.
+-12. For new permit-family or lifecycle work, add the process skeleton and expected-output fixture before adding extractor tests or implementation tasks.
+-13. For checkbox-19 follow-up work, compile the changed Python test file first, use exact fixture paths, and add only mutation coverage against the already-accepted schema.
+-14. For checkbox-24 and checkbox-27 recovery, compile the changed Python test file first, use only complete Python conditionals and explicit unittest assertion methods, and validate the exact committed `categoryRecords` schema before adding any mutation coverage.
+-15. For checkbox-29 recovery, repair the exact JSON fixture path before writing the validator that requires that path to exist.
++2. Add one-file validators only after the committed fixture validates cleanly.
++3. Split broad mutation validators into one committed-fixture validator plus one mutation case per daemon cycle.
++4. Split broad lifecycle fixtures by category before attempting cross-cutting fixtures or extractors.
++5. For a task that failed three daemon rounds, park the broad checkbox and add a JSON-only evidence-map, exact-fixture repair task, or syntax-only validator task before retrying fixture or validator work.
++6. Restore any missing syntax sentinel without broad validator rewrites.
++7. Add fixture-name or fixture-schema compatibility only when validation names the missing path or missing field.
++8. Add malformed-proposal diagnostics before retrying an implementation that has already produced repeated `SyntaxError` failures.
++9. Retry behavior as a one-file no-dataclass implementation only after syntax-first tests and minimal fixtures pass.
++10. If validation reports that a sentinel helper returned extra keys or readiness flags, retry only with a sentinel-preserving implementation and expose behavior through separate functions.
++11. After a later narrower recovery passes, park earlier blocked retries as superseded so they do not count as active blockers.
++12. Do not select parked broad validation tasks directly.
++13. For new permit-family or lifecycle work, add the process skeleton and expected-output fixture before adding extractor tests or implementation tasks.
++14. For checkbox-19 follow-up work, compile the changed Python test file first, use exact fixture paths, and add only mutation coverage against the already-accepted schema.
++15. For checkbox-24 and checkbox-27 recovery, compile the changed Python test file first, use only complete Python conditionals and explicit unittest assertion methods, and validate the exact committed `categoryRecords` schema before adding any mutation coverage.
++16. For checkbox-30 recovery, compile the changed Python test file first and keep the first accepted validator to exact-path committed-fixture checks only.
+ 
+ ## Supervisor Recovery Rules
+ 
+@@ -105,7 +110,7 @@
+ - Treat validation failures caused by missing fixture fields or missing fixture paths as fixture-first recovery, not as permission to weaken fail-closed assertions.
+ - Treat fixture-discovery failures as exact-path recovery. The next retry should name the fixture path and schema keys in the selectable task instead of adding broad search logic.
+ - Treat schema-shape failures in fixture validators as exact-schema recovery. The next retry should name the accepted fixture paths and keys instead of adding broad discovery or assuming alternate fixture shapes.
+-- Treat bare malformed fragments such as `assert NAME None`, `confidence 1`, `confidence 1.0`, or `return 0.0 list[str]` as retry-stop diagnostics for the same target task until a smaller validation-first guard has passed.
++- Treat bare malformed fragments such as `assert NAME None`, `confidence 1`, `confidence 1.0`, `if index list`, or `return 0.0 list[str]` as retry-stop diagnostics for the same target task until a smaller validation-first guard has passed.
+ - Treat dataclass import-time failures under `importlib.util.module_from_spec` as a hard no-dataclass constraint for daemon-authored Python validator modules; use plain functions/constants/dicts instead of asking tests to alter import mechanics.
+ - Treat missing sentinel constants such as `MODULE_STATUS` or `MODULE_PURPOSE` as a contract-preservation repair, not as permission to redesign validator behavior.
+ - Treat a failing assertion on `validator_status()` as a sentinel-contract failure. Do not change `validator_status()` to announce implementation readiness unless the syntax-first test has first been changed by an explicit validation-first task.
+@@ -118,32 +123,11 @@
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T03:12:00.000000Z
++Last updated: 2026-05-02T03:20:00.000000Z
+ 
+-- Latest target: `supervisor repair for blocked checkbox-27 and checkbox-29`
++- Latest target: `supervisor repair for repeated malformed checkbox-27 and checkbox-30 validator retries`
+ - Latest result: `supervisor_repair_planned`
+-- Latest summary: Parked repeated malformed validator retries and appended narrower syntax-first and fixture-path-first recovery tasks.
+-- Counts: `{"blocked": 0, "complete": 27, "in_progress": 1, "needed": 8}`
++- Latest summary: Split malformed broad validator retries into py_compile-safe exact-path validator cycles and one-mutation-per-cycle recovery tasks.
++- Counts: `{"blocked": 0, "complete": 29, "in_progress": 0, "needed": 12}`
+ 
+ 
+-## Generated Status
+-
+-Last updated: 2026-05-02T03:12:00.000000Z
+-
+-- Latest target: `supervisor repair for blocked checkbox-27 and checkbox-29`
+-- Latest result: `supervisor_repair_planned`
+-- Latest summary: Parked repeated malformed validator retries and appended narrower syntax-first and fixture-path-first recovery tasks.
+-- Counts: `{"blocked": 0, "complete": 27, "in_progress": 1, "needed": 8}`
+-
+-
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-02T03:14:26.946413Z
+-
+-- Latest target: `Task checkbox-29: Recovery for checkbox-29: first repair only `ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json` so every skeleton fixture path names an already committed lifecycle skeleton fixture. In particular, do not leave a reference to nonexistent `ppd/tests/fixtures/lifecycle/inspection_lifecycle_process_skeleton.json`; use the committed inspection lifecycle skeleton path exactly as it exists on disk. Do not add validator code in this recovery task.`
+-- Latest result: `accepted`
+-- Latest summary: Repair lifecycle process index to cite committed lifecycle skeleton fixture paths, including the committed inspection scheduling/result follow-up skeleton path.
+-- Counts: `{"blocked": 0, "complete": 29, "in_progress": 0, "needed": 7}`
+-
+-<!-- ppd-daemon-task-board:end -->
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,65 +1,58 @@
+ # PP&D Supervisor Repair Guide
+ 
+-## Purpose
++This guide is for daemon recovery cycles only. It does not authorize PP&D domain automation and must not be used to implement live crawling, DevHub login, payment, upload, certification, cancellation, official extension, official refund, submission, account creation, MFA, CAPTCHA handling, or inspection scheduling.
+ 
+-This guide is for supervisor repair cycles when the isolated PP&D daemon is blocked by repeated validation failures. Repairs should improve daemon task selection, retry behavior, prompt constraints, validation ordering, or diagnostics. Do not implement PP&D domain extractor code from this guide.
++## Current Recovery Focus
+ 
+-## SyntaxError Recovery Protocol
++Recent failures are syntactic, not domain-model failures. The daemon repeatedly proposed Python test files containing malformed fragments such as `elif confidence 1:` and `if index list[tuple[str, Any]]:`. The next accepted work should therefore be smaller than the failed validator attempts.
+ 
+-Use this protocol whenever recent daemon failures include Python `SyntaxError`, `py_compile`, or malformed generated Python such as missing comparison operators.
++## Required Retry Shape
+ 
+-1. Keep the next daemon task narrow and file-local.
+-2. Prefer one test file or one daemon diagnostic file over broad contract rewrites.
+-3. Require a `py_compile` check before `unittest` discovery.
+-4. Use syntactically simple Python only:
+-   - standard-library imports only.
+-   - `unittest` only for tests.
+-   - no complex type annotations.
+-   - no parameterized metaprogramming.
+-   - no generated expressions that combine comparisons and collection constructors.
+-   - no walrus operator.
+-   - no f-string expressions with complex indexing.
+-5. Load fixtures by exact committed path.
+-6. Assert the committed fixture is valid before mutation tests.
+-7. Mutate one field per test.
+-8. Keep helper functions small and explicit.
+-9. Do not add extractor implementation code while repairing validator tasks.
++When retrying a Python validator after a `SyntaxError` or `py_compile` failure:
+ 
+-## Checkbox-27 Recovery Requirements
++1. Edit one Python test file only.
++2. Use exact fixture paths. Do not glob or discover alternate fixture names.
++3. Use plain functions and constants. Do not use dataclasses.
++4. Prefer direct `if not condition: raise AssertionError(message)` checks.
++5. Use only complete comparisons, for example `confidence  1`.
++6. Run `python3 -m py_compile ` before unittest discovery.
++7. If py_compile fails, reject the proposal without attempting to repair by broadening the task.
+ 
+-For the blocked checkbox-27 task, the worker should add only a focused validator test for:
++## Checkbox-30 Exact-Path Validator Contract
++
++The checkbox-30 retry should add only the first process-index validator. It should load exactly:
++
++`ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json`
++
++It should check only:
++
++- the committed fixture loads as JSON;
++- referenced skeleton fixture paths exist;
++- category ids are unique;
++- referenced skeleton paths stay under `ppd/tests/fixtures/lifecycle/` and end in `.json`;
++- serialized entries do not authorize live crawl, login, payment, submission, upload, certification, cancellation, official refund, official extension, or inspection scheduling.
++
++Do not add mutation tests for checkbox-30 in the same cycle.
++
++## Checkbox-27 Recovery Contract
++
++The checkbox-27 mutation validator is now split into separate tasks. The first task must only add a py_compile-safe committed-fixture validator for:
+ 
+ `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json`
+ 
+-The validator should prove the committed fixture is valid, then cover exactly these one-mutation cases:
++The fixture exposes top-level `categoryRecords`. It does not expose `requirements`, `records`, `items`, or `lifecycleRequirements`. After that committed-fixture validator passes, add exactly one mutation case per daemon cycle.
+ 
+-- missing `categoryId`.
+-- missing `sourceEvidenceIds`.
+-- missing local `evidence[].evidenceId`.
+-- out-of-range `confidence`.
+-- duplicate `(categoryId, action, object, sourceEvidenceIds)` tuples.
+-- malformed stop-gate classification.
++## Malformed Fragment Stop List
+ 
+-The worker should run validation in this order:
++Reject any proposal containing these patterns in Python code:
+ 
+-1. `python3 -m py_compile ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py`
+-2. `python3 -m unittest ppd.tests.test_permit_lifecycle_requirement_extraction_mutations`
+-3. `python3 ppd/daemon/ppd_daemon.py --self-test`
+-4. `python3 -m unittest discover -s ppd/tests -p 'test_*.py'`
++- `if index list`
++- `elif index list`
++- `if confidence 1`
++- `elif confidence 1`
++- `confidence 1.0`
++- `assert ` followed by two bare names with no operator
++- `return 0.0 list`
++- inline type syntax placed where a boolean expression is required
+ 
+-If step 1 fails, the daemon should not continue to broader validation. It should capture the compile error, roll back the attempted test file, and retry with a smaller plain-Python file.
+-
+-## Retry Prompt Addendum
+-
+-When retrying a Python validator after a syntax failure, prepend this instruction to the worker prompt:
+-
+-"Previous attempts failed at Python parsing. Write plain Python 3 unittest code. Before proposing the file, mentally check every `if`, `elif`, comparison, and collection literal. Do not use type annotations inside executable statements. Do not abbreviate comparisons. The first validation command must be `python3 -m py_compile` on the new test file."
+-
+-## Stop Conditions
+-
+-Stop and ask for supervisor repair instead of retrying the same task when:
+-
+-- two consecutive attempts fail `py_compile` on the same target file.
+-- a retry changes more than one test file for a syntax-only recovery task.
+-- a validator task starts adding extractor implementation code.
+-- a task attempts live crawling, login, payment, submission, upload, certification, cancellation, official refund, official extension, or inspection scheduling.
++The repair response to these patterns is not a broader rewrite. The repair response is a smaller syntax-first task.

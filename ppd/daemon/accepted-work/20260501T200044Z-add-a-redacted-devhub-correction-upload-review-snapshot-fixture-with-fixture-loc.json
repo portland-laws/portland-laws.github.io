@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/devhub/correction_upload_review_snapshot.json",
+    "ppd/tests/test_devhub_correction_upload_review_snapshot.py"
+  ],
+  "created_at": "2026-05-01T20:00:44.061938Z",
+  "impact": "Advances the PP&D DevHub recorder plan by capturing a deterministic mocked correction-upload review state, including upload controls, accepted file hints, validation feedback, draft status, and exact confirmation gates without live DevHub automation or private artifacts.",
+  "summary": "Add a redacted DevHub correction-upload review snapshot fixture with fixture-local validation.",
+  "target_task": "Task checkbox-56: Add a DevHub mocked workflow snapshot fixture for correction upload review that records upload controls, accepted file hints, validation messages, draft state, and exact confirmation gates using only redacted values.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 66 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................. ---------------------------------------------------------------------- Ran 125 tests in 0.012s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

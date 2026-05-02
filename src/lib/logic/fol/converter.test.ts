@@ -1,3 +1,4 @@
+import { extractBrowserNativeFolNlp } from './browserNativeNlp';
 import { FOLConverter, convertFolFormulaToProlog, convertFolFormulaToTptp } from './converter';
 
 describe('FOLConverter', () => {
@@ -31,13 +32,40 @@ describe('FOLConverter', () => {
     });
   });
 
+  it('classifies FOL NLP tokens without spaCy, Python, or server fallbacks', () => {
+    const extraction = extractBrowserNativeFolNlp(
+      'All tenants are not evicted and some occupants appeal.',
+    );
+
+    expect(extraction).toMatchObject({
+      provider: 'deterministic-token-classifier',
+      backend: 'typescript-token-classifier',
+      candidateBackends: ['transformers.js-token-classification', 'onnx-webgpu', 'wasm-nlp'],
+      wasmCompatible: true,
+      serverCallsAllowed: false,
+      pythonSpacy: false,
+      fallback: 'none',
+      metadata: {
+        quantifierCount: 2,
+        operatorCount: 1,
+        negationCount: 1,
+      },
+    });
+    expect(extraction.predicateCandidates).toEqual(['tenants', 'evicted', 'occupants', 'appeal']);
+    expect(extraction.tokens.map((token) => token.role)).toEqual(
+      expect.arrayContaining(['quantifier', 'negation', 'operator', 'predicate_candidate']),
+    );
+  });
+
   it('supports cache, batch, async, and convenience conversion APIs', async () => {
     const converter = new FOLConverter();
 
     expect(converter.toFol('If tenant then resident')).toBe('∀x (Tenant(x) → Resident(x))');
     expect(converter.convert('Some tenants are residents').status).toBe('partial');
     expect(converter.convert('Some tenants are residents').status).toBe('cached');
-    expect(converter.convertBatch(['All humans are mortal', 'If tenant then resident'])).toHaveLength(2);
+    expect(
+      converter.convertBatch(['All humans are mortal', 'If tenant then resident']),
+    ).toHaveLength(2);
     await expect(converter.convertAsync('All humans are mortal')).resolves.toMatchObject({
       success: true,
     });
@@ -47,7 +75,9 @@ describe('FOLConverter', () => {
     const formula = '∀x (Tenant(x) → Resident(x))';
 
     expect(convertFolFormulaToProlog(formula)).toBe('resident(X) :- tenant(X).');
-    expect(convertFolFormulaToTptp(formula)).toBe('fof(formula_1, axiom, ![x]: (Tenant(x)  =>  Resident(x))).');
+    expect(convertFolFormulaToTptp(formula)).toBe(
+      'fof(formula_1, axiom, ![x]: (Tenant(x)  =>  Resident(x))).',
+    );
   });
 
   it('reports validation failures before conversion', () => {

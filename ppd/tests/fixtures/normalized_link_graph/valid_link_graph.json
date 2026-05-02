@@ -1,0 +1,94 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-01T19:40:00Z",
+  "sourceIndex": [
+    {
+      "id": "src-ppd-single-pdf",
+      "canonicalUrl": "https://www.portland.gov/ppd/single-pdf-process",
+      "contentType": "html",
+      "title": "Single PDF Process",
+      "crawlStatus": "fixture"
+    },
+    {
+      "id": "src-ppd-forms-index",
+      "canonicalUrl": "https://www.portland.gov/ppd/permits/permits-and-inspections-applications",
+      "contentType": "html",
+      "title": "Permits and Inspections Applications",
+      "crawlStatus": "fixture"
+    },
+    {
+      "id": "src-building-permit-app-pdf",
+      "canonicalUrl": "https://www.portland.gov/ppd/documents/building-permit-application/download",
+      "contentType": "pdf",
+      "title": "Building Permit Application",
+      "crawlStatus": "fixture"
+    },
+    {
+      "id": "src-devhub-faq",
+      "canonicalUrl": "https://devhub.portlandoregon.gov/DevHub/FAQ",
+      "contentType": "html",
+      "title": "DevHub FAQ",
+      "crawlStatus": "fixture"
+    },
+    {
+      "id": "src-portlandmaps-property",
+      "canonicalUrl": "https://www.portlandmaps.com/detail/property/fixture",
+      "contentType": "external_site",
+      "title": "Portland Maps public property reference",
+      "crawlStatus": "fixture"
+    }
+  ],
+  "documents": [
+    {
+      "id": "doc-single-pdf",
+      "sourceIndexId": "src-ppd-single-pdf",
+      "canonicalUrl": "https://www.portland.gov/ppd/single-pdf-process",
+      "contentType": "html",
+      "links": [
+        {
+          "label": "Permits and Inspections Applications",
+          "targetSourceIndexId": "src-ppd-forms-index",
+          "targetCanonicalUrl": "https://www.portland.gov/ppd/permits/permits-and-inspections-applications",
+          "contentType": "html"
+        },
+        {
+          "label": "Building Permit Application PDF",
+          "targetSourceIndexId": "src-building-permit-app-pdf",
+          "targetCanonicalUrl": "https://www.portland.gov/ppd/documents/building-permit-application/download",
+          "contentType": "pdf"
+        },
+        {
+          "label": "DevHub FAQ",
+          "targetSourceIndexId": "src-devhub-faq",
+          "targetCanonicalUrl": "https://devhub.portlandoregon.gov/DevHub/FAQ",
+          "contentType": "html"
+        },
+        {
+          "label": "Contact PP&D",
+          "targetCanonicalUrl": "mailto:ppd@example.invalid",
+          "contentType": "mailto"
+        }
+      ]
+    },
+    {
+      "id": "doc-forms-index",
+      "sourceIndexId": "src-ppd-forms-index",
+      "canonicalUrl": "https://www.portland.gov/ppd/permits/permits-and-inspections-applications",
+      "contentType": "html",
+      "links": [
+        {
+          "label": "Public Portland Maps reference",
+          "targetSourceIndexId": "src-portlandmaps-property",
+          "targetCanonicalUrl": "https://www.portlandmaps.com/detail/property/fixture",
+          "contentType": "external_site"
+        },
+        {
+          "label": "Skipped social media share link",
+          "targetCanonicalUrl": "https://social.example.invalid/share",
+          "contentType": "skipped",
+          "skippedReason": "non_authoritative_external_site"
+        }
+      ]
+    }
+  ]
+}

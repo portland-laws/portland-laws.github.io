@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-01T21:02:09.789119Z",
+  "impact": "This gives the daemon deterministic retry policy for the exact failure pattern shown: keep repairs small after SyntaxError/py_compile failures, preserve syntax-first sentinel exports, avoid broad contract rewrites, and split fixture-name or missing-sentinel problems into prerequisite repair cycles before retrying validator implementation.",
+  "summary": "Add a narrow supervisor repair guide for blocked PP&D daemon retries after syntax and fixture-contract failures.",
+  "target_task": "Supervisor repair: 1 task(s) are blocked: Task checkbox-63: Add the missing-information output validator as a single no-dataclass Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection using only `ppd/tests/fixtures/missing_information_output/four_requested_items.json`.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 67 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................ ---------------------------------------------------------------------- Ran 140 tests in 0.018s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

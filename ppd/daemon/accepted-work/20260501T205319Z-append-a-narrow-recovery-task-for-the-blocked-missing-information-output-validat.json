@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/daemon/task-board.md",
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-01T20:53:19.527647Z",
+  "impact": "The daemon currently has a blocked broad validator task and an unrelated in-progress validator task. This keeps completed work intact, leaves the active task alone, and gives the supervisor a deterministic next recovery item that is small enough for one daemon cycle: one no-dataclass module, existing fixture only, and syntax-first guardrails from the recent failures.",
+  "summary": "Append a narrow recovery task for the blocked missing-information output validator and add explicit supervisor repair guidance for that failure mode.",
+  "target_task": "Supervisor repair: 1 task(s) are blocked: Task checkbox-63: Add the missing-information output validator as a single no-dataclass Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection using only `ppd/tests/fixtures/missing_information_output/four_requested_items.json`.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 67 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................ ---------------------------------------------------------------------- Ran 140 tests in 0.017s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

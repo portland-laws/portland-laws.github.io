@@ -1,0 +1,164 @@
+--- a/ppd/tests/fixtures/public_source_inventory/ppd_public_source_inventory.json
++++ b/ppd/tests/fixtures/public_source_inventory/ppd_public_source_inventory.json
+@@ -0,0 +1,161 @@
++{
++  "schemaVersion": 1,
++  "fixtureKind": "ppd_public_source_inventory",
++  "generatedAt": "2026-05-01T19:15:00Z",
++  "generatedBy": "fixture-only-ppd-daemon-task-checkbox-48",
++  "notes": [
++    "Fixture-only inventory for public PP&D discovery planning.",
++    "Records contain canonical public URLs and crawl hints only; no response bodies, downloaded documents, browser traces, screenshots, credentials, or private DevHub session paths are present.",
++    "Authority labels identify the public source owner or portal role to support later provenance validation."
++  ],
++  "allowedHosts": [
++    "www.portland.gov",
++    "devhub.portlandoregon.gov",
++    "www.portlandoregon.gov",
++    "www.portlandmaps.com"
++  ],
++  "recrawlCadenceHints": {
++    "daily": "High-change operational guidance such as DevHub FAQ, payment, outage, or current process pages.",
++    "weekly": "Permit application and guide pages where workflow text may change but is not expected to change daily.",
++    "monthly": "Stable forms, handouts, and PDF index pages unless linked source-index hashes change sooner.",
++    "on_source_index_change": "Recrawl when a parent source-index record has a changed content hash, redirect, modified-date evidence, or link inventory change."
++  },
++  "sources": [
++    {
++      "id": "ppd-permit-application-index",
++      "category": "permit_application",
++      "title": "PP&D permits public guidance index",
++      "canonicalUrl": "https://www.portland.gov/ppd/permits",
++      "authorityLabel": "Portland Permitting & Development public permit guidance",
++      "sourceOwner": "City of Portland, Portland Permitting & Development",
++      "publicAccess": "public_html",
++      "contentRole": "permit application and permit-type discovery starting point",
++      "recrawlCadenceHint": "weekly",
++      "provenance": {
++        "seededFrom": "PP&D plan public source landscape",
++        "capturedAt": "2026-05-01T19:15:00Z",
++        "fixtureOnly": true,
++        "retrievalPerformed": false
++      }
++    },
++    {
++      "id": "ppd-permit-review-process",
++      "category": "permit_application",
++      "title": "PP&D permit review process guidance",
++      "canonicalUrl": "https://www.portland.gov/ppd/permit-review-process",
++      "authorityLabel": "Portland Permitting & Development permit process guidance",
++      "sourceOwner": "City of Portland, Portland Permitting & Development",
++      "publicAccess": "public_html",
++      "contentRole": "permit application stages, review checkpoints, and process expectations",
++      "recrawlCadenceHint": "weekly",
++      "provenance": {
++        "seededFrom": "PP&D plan process model source categories",
++        "capturedAt": "2026-05-01T19:15:00Z",
++        "fixtureOnly": true,
++        "retrievalPerformed": false
++      }
++    },
++    {
++      "id": "ppd-applications-forms-index",
++      "category": "forms",
++      "title": "PP&D applications and forms public index",
++      "canonicalUrl": "https://www.portland.gov/ppd/applications-forms",
++      "authorityLabel": "Portland Permitting & Development applications and forms",
++      "sourceOwner": "City of Portland, Portland Permitting & Development",
++      "publicAccess": "public_html_or_linked_public_documents",
++      "contentRole": "public application forms, permit forms, and linked submittal documents",
++      "recrawlCadenceHint": "monthly",
++      "provenance": {
++        "seededFrom": "PP&D task checkbox-48 public source category",
++        "capturedAt": "2026-05-01T19:15:00Z",
++        "fixtureOnly": true,
++        "retrievalPerformed": false
++      }
++    },
++    {
++      "id": "ppd-permits-inspections-applications-index",
++      "category": "forms",
++      "title": "Permits and inspections applications index",
++      "canonicalUrl": "https://www.portland.gov/ppd/permits-inspections-applications",
++      "authorityLabel": "Portland Permitting & Development permits and inspections applications",
++      "sourceOwner": "City of Portland, Portland Permitting & Development",
++      "publicAccess": "public_html_or_linked_public_documents",
++      "contentRole": "application and inspection form discovery index",
++      "recrawlCadenceHint": "monthly",
++      "provenance": {
++        "seededFrom": "PP&D plan current source landscape",
++        "capturedAt": "2026-05-01T19:15:00Z",
++        "fixtureOnly": true,
++        "retrievalPerformed": false
++      }
++    },
++    {
++      "id": "ppd-building-permit-handouts",
++      "category": "handout",
++      "title": "PP&D building permit handouts",
++      "canonicalUrl": "https://www.portland.gov/ppd/building-permit-handouts",
++      "authorityLabel": "Portland Permitting & Development public handouts",
++      "sourceOwner": "City of Portland, Portland Permitting & Development",
++      "publicAccess": "public_html_or_linked_public_documents",
++      "contentRole": "handouts, checklists, and explanatory guidance for permit preparation",
++      "recrawlCadenceHint": "monthly",
++      "provenance": {
++        "seededFrom": "PP&D task checkbox-48 public source category",
++        "capturedAt": "2026-05-01T19:15:00Z",
++        "fixtureOnly": true,
++        "retrievalPerformed": false
++      }
++    },
++    {
++      "id": "ppd-fees-index",
++      "category": "fee",
++      "title": "PP&D fees public guidance",
++      "canonicalUrl": "https://www.portland.gov/ppd/fees",
++      "authorityLabel": "Portland Permitting & Development fee guidance",
++      "sourceOwner": "City of Portland, Portland Permitting & Development",
++      "publicAccess": "public_html_or_linked_public_documents",
++      "contentRole": "permit fee, payment, and charge guidance source",
++      "recrawlCadenceHint": "daily",
++      "provenance": {
++        "seededFrom": "PP&D plan change-monitoring high-change page category",
++        "capturedAt": "2026-05-01T19:15:00Z",
++        "fixtureOnly": true,
++        "retrievalPerformed": false
++      }
++    },
++    {
++      "id": "ppd-devhub-public-guide",
++      "category": "devhub_guide",
++      "title": "DevHub public guide on Portland.gov",
++      "canonicalUrl": "https://www.portland.gov/ppd/devhub",
++      "authorityLabel": "Portland Permitting & Development DevHub guidance",
++      "sourceOwner": "City of Portland, Portland Permitting & Development",
++      "publicAccess": "public_html",
++      "contentRole": "public DevHub account, application, upload, payment, and workflow guide source",
++      "recrawlCadenceHint": "daily",
++      "provenance": {
++        "seededFrom": "PP&D plan DevHub public guide source category",
++        "capturedAt": "2026-05-01T19:15:00Z",
++        "fixtureOnly": true,
++        "retrievalPerformed": false
++      }
++    },
++    {
++      "id": "devhub-public-portal",
++      "category": "devhub_guide",
++      "title": "Development Hub PDX public portal",
++      "canonicalUrl": "https://devhub.portlandoregon.gov/",
++      "authorityLabel": "Development Hub PDX public portal",
++      "sourceOwner": "City of Portland Development Hub PDX",
++      "publicAccess": "public_portal_landing_only",
++      "contentRole": "public portal entry point; authenticated account areas are out of scope for fixture-only crawling",
++      "recrawlCadenceHint": "daily",
++      "provenance": {
++        "seededFrom": "PP&D plan DevHub public portal starting point",
++        "capturedAt": "2026-05-01T19:15:00Z",
++        "fixtureOnly": true,
++        "retrievalPerformed": false
++      }
++    }
++  ]
++}

@@ -1,0 +1,156 @@
+{
+  "schemaVersion": 1,
+  "fixtureType": "ppd_lifecycle_extension_process_skeleton",
+  "fixtureOnly": true,
+  "processId": "permit_extension_lifecycle_skeleton",
+  "lifecycleAction": "extension",
+  "evidenceMapFixture": "ppd/tests/fixtures/lifecycle/extension_lifecycle_evidence_map.json",
+  "sourceInventoryFixture": "ppd/tests/fixtures/source_inventory/permit_lifecycle_source_coverage_report.json",
+  "sourceInventoryCategoryId": "permit_extension_guidance",
+  "sourceInventoryEvidenceIds": [
+    "ppd_lifecycle_extension_reactivation_public_guidance"
+  ],
+  "authoritySources": [
+    {
+      "evidenceId": "ppd_lifecycle_extension_reactivation_public_guidance",
+      "categoryId": "permit_extension_guidance",
+      "title": "Permit extension and reactivation guidance",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/permit-extension-reactivation",
+      "canonicalUrl": "https://www.portland.gov/ppd/permits/permit-extension-reactivation",
+      "authorityLabel": "Portland Permitting & Development public permit lifecycle guidance",
+      "recrawlCadence": "monthly",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    }
+  ],
+  "requiredFacts": [
+    {
+      "id": "permit_identifier",
+      "label": "Permit or request identifier",
+      "requiredFor": "extension_request_preparation",
+      "evidenceIds": [
+        "ppd_lifecycle_extension_reactivation_public_guidance"
+      ]
+    },
+    {
+      "id": "permit_status",
+      "label": "Current permit status or lifecycle state",
+      "requiredFor": "extension_eligibility_review",
+      "evidenceIds": [
+        "ppd_lifecycle_extension_reactivation_public_guidance"
+      ]
+    },
+    {
+      "id": "extension_reason",
+      "label": "Reason the permit holder is requesting more time",
+      "requiredFor": "extension_request_preparation",
+      "evidenceIds": [
+        "ppd_lifecycle_extension_reactivation_public_guidance"
+      ]
+    },
+    {
+      "id": "applicant_or_authorized_contact",
+      "label": "Applicant, owner, contractor, or authorized contact identity",
+      "requiredFor": "authorization_check",
+      "evidenceIds": [
+        "ppd_lifecycle_extension_reactivation_public_guidance"
+      ]
+    }
+  ],
+  "requiredDocuments": [
+    {
+      "id": "extension_request_materials",
+      "label": "Public-guidance-backed extension request materials, if required for the permit type",
+      "requiredFor": "extension_request_preparation",
+      "evidenceIds": [
+        "ppd_lifecycle_extension_reactivation_public_guidance"
+      ],
+      "notes": "This fixture records the document placeholder only. It does not download, upload, or submit documents."
+    }
+  ],
+  "userDecisions": [
+    {
+      "id": "confirm_extension_goal",
+      "prompt": "Confirm that the user wants to evaluate or prepare a permit extension request.",
+      "requiredBefore": "draft_extension_request",
+      "evidenceIds": [
+        "ppd_lifecycle_extension_reactivation_public_guidance"
+      ]
+    },
+    {
+      "id": "confirm_official_extension_action",
+      "prompt": "Confirm the exact official extension action in the active user session before any official request, upload, certification, payment, or submission step.",
+      "requiredBefore": "official_extension_action",
+      "evidenceIds": [
+        "ppd_lifecycle_extension_reactivation_public_guidance"
+      ]
+    }
+  ],
+  "actionGates": [
+    {
+      "id": "extension_guidance_lookup_gate",
+      "classification": "safe_read_only",
+      "action": "review_public_extension_guidance",
+      "allowedInFixture": true,
+      "requiresExactUserConfirmation": false,
+      "evidenceIds": [
+        "ppd_lifecycle_extension_reactivation_public_guidance"
+      ]
+    },
+    {
+      "id": "extension_draft_preparation_gate",
+      "classification": "reversible_draft_edit",
+      "action": "prepare_extension_request_draft_or_checklist",
+      "allowedInFixture": true,
+      "requiresExactUserConfirmation": true,
+      "evidenceIds": [
+        "ppd_lifecycle_extension_reactivation_public_guidance"
+      ]
+    },
+    {
+      "id": "official_extension_submission_gate",
+      "classification": "potentially_consequential",
+      "action": "submit_or_send_official_extension_request",
+      "allowedInFixture": false,
+      "requiresExactUserConfirmation": true,
+      "stopBeforeAction": true,
+      "evidenceIds": [
+        "ppd_lifecycle_extension_reactivation_public_guidance"
+      ]
+    },
+    {
+      "id": "extension_payment_gate",
+      "classification": "financial",
+      "action": "pay_extension_or_permit_related_fee",
+      "allowedInFixture": false,
+      "requiresExactUserConfirmation": true,
+      "stopBeforeAction": true,
+      "evidenceIds": [
+        "ppd_lifecycle_extension_reactivation_public_guidance"
+      ]
+    }
+  ],
+  "noLiveAutomationNotes": {
+    "liveCrawling": false,
+    "devhubLogin": false,
+    "officialExtensionAction": false,
+    "paymentAction": false,
+    "submissionAction": false,
+    "uploadAction": false,
+    "certificationAction": false,
+    "captchaOrMfaAutomation": false,
+    "notes": "This committed fixture is deterministic JSON evidence and process skeleton data only. It does not authorize live crawling, authenticated DevHub activity, official extension requests, uploads, payments, submissions, certifications, CAPTCHA handling, or MFA automation."
+  },
+  "excludedArtifacts": [
+    "python_modules",
+    "typescript_modules",
+    "dataclasses",
+    "process_model_implementation_code",
+    "live_crawl_output",
+    "private_devhub_session_state",
+    "browser_traces",
+    "screenshots",
+    "downloaded_documents",
+    "credentials",
+    "official_action_automation"
+  ]
+}

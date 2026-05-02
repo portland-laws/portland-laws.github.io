@@ -1,0 +1,98 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,73 +1,34 @@
+ # PP&D Supervisor Repair Guide
+ 
+-This guide is daemon programming context for supervisor repair cycles. It is intentionally operational and fixture-first; it does not implement PP&D domain scraping tasks.
++## Syntax-preflight recovery
+ 
+-## Syntax Failure Recovery
+-
+-When a recent daemon failure includes `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, `TS1128`, or `syntax_preflight`, the supervisor must stop retrying the blocked domain task and repair daemon execution first.
++When recent daemon failures include `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128`, the supervisor should prefer a small repair cycle before resuming domain work.
+ 
+ Required recovery behavior:
+ 
+-- Select a daemon-repair task before returning to the domain task.
+-- Keep the repair proposal to one daemon file unless one tiny adjacent daemon test or fixture is strictly necessary.
+-- Reject proposals that rewrite shared PP&D contracts while the active failure is parser-level syntax.
+-- Require changed Python files to pass `py_compile` before full validation.
+-- Require changed TypeScript files to pass the existing strict `tsc --noEmit` command scoped only to changed `.ts` and `.tsx` files before full validation.
+-- On parser failure, rollback immediately and record `failure_kind` as `syntax_preflight`.
+-- Persist compact diagnostics only: command, return code, and the first relevant parser message.
+-- Include the compact syntax diagnostic in the next LLM prompt so the worker repairs the actual parser failure instead of guessing.
++- Select a daemon-programming task before retrying the blocked domain task.
++- Limit the next proposal to one syntax-valid daemon file, or one syntax-valid test file plus one adjacent deterministic fixture when the fixture is required by that test.
++- Run changed-file syntax preflight immediately after file replacement and before the full validation suite.
++- For changed Python files, run `py_compile` only on those changed files.
++- For changed TypeScript files, run strict `tsc --noEmit` only on those changed `.ts` or `.tsx` files.
++- On parser failure, roll back the proposal immediately with failure kind `syntax_preflight`.
++- Store compact diagnostics in the failed-patch manifest.
++- Do not run broad unittest discovery after a syntax-preflight failure.
++- Do not rewrite broad shared contracts to recover from parser mistakes unless the selected task explicitly requires that contract change.
+ 
+-## Syntax-Preflight Implementation Constraints
++## Blocked public-crawl fixture tasks
+ 
+-The daemon syntax-preflight repair must be narrow and deterministic:
++For the public-crawl dry-run plan validator, resume fixture-first work only after daemon syntax-preflight behavior is active in the apply path.
+ 
+-- Change `ppd/daemon/ppd_daemon.py` only, unless a focused daemon test is explicitly required by the active task.
+-- Derive changed Python, TypeScript, and TSX files from `proposal.changed_files` after file replacement.
+-- Check each changed Python file with `py_compile` or an equivalent `python3 -m py_compile` parser check.
+-- Check changed TypeScript files with the existing strict `npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node` command scoped to only the changed `.ts` and `.tsx` files.
+-- Run syntax-preflight after file replacement and before full validation.
+-- If syntax-preflight fails, restore all backed-up files immediately, set `failure_kind` to `syntax_preflight`, persist the failed patch, and skip full validation for that proposal.
+-- If no changed `.py`, `.ts`, or `.tsx` files exist, syntax-preflight must run no commands and full validation may proceed normally.
+-- Do not implement or retry `ppd/contracts/planned_crawl_manifest.py` while repairing syntax-preflight.
++The next domain proposal should be narrow:
+ 
+-## Prompt Guardrails
++- Prefer one Python test file that validates the existing committed fixture.
++- If a helper is necessary, add one small syntax-valid helper plus one fixture path correction.
++- Do not perform network access.
++- Do not add live crawling.
++- Do not add authenticated DevHub automation.
++- Validate fail-closed behavior for missing allowlist, robots, timeout, no-persist, and processor-adapter preflight fields.
+ 
+-For syntax-recovery tasks, the supervisor prompt should include these hard requirements:
++## Supervisor task selection
+ 
+-- Return only JSON file replacements.
+-- When recent failure context includes `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, `TS1128`, or `syntax_preflight`, return exactly one changed file, or exactly one focused test plus one adjacent fixture.
+-- Do not edit `ppd/contracts/` unless the selected task is specifically a contract task and the syntax-preflight repair has already passed.
+-- Do not retry `planned_crawl_manifest.py` validation work until daemon syntax preflight and syntax-failure prompt guidance are accepted.
+-- Do not mix Python and TypeScript syntax. Examples that must be rejected include `if value list[str]:` in Python and Python-style type annotations in TypeScript expressions.
+-- Prefer one small syntactically complete function over a broad shared-contract rewrite.
+-- For repeated parser failures, explicitly instruct the model to preserve existing stable contracts and to repair only the narrow syntactic surface named in the compact diagnostic.
+-
+-## Retry And Blocking Rules
+-
+-The supervisor should classify repeated parser failures as a daemon-control problem, not as evidence that the domain task needs a larger rewrite.
+-
+-- One parser failure may be retried with a narrower prompt.
+-- Two parser failures on the same domain task should block that domain task and append or select daemon-repair work.
+-- A blocked domain task should not be revisited until the daemon has accepted syntax-preflight rollback and syntax-sensitive prompt diagnostics.
+-- The next resumed domain proposal must be smaller than the failed proposal and must avoid package-wide exports or shared-contract rewrites unless the task explicitly requires them.
+-
+-## Resume Criteria
+-
+-The blocked public-crawl dry-run validator task may be resumed only after all of the following are true:
+-
+-- The daemon has a changed-file syntax-preflight step.
+-- Syntax-preflight failures rollback before full validation.
+-- Syntax-preflight failures are recorded as `syntax_preflight`, not generic `validation`.
+-- The prompt includes narrower retry guidance for parser failures.
+-- The prompt includes compact recent failure context with parser diagnostics.
+-- The next domain proposal is limited to one syntax-valid Python test file or one syntax-valid helper plus one fixture path correction.
+-
+-## Forbidden Recovery Shortcuts
+-
+-Do not repair parser failures by:
+-
+-- Creating private DevHub session files, traces, screenshots, downloads, or raw crawl output.
+-- Running live public crawling or authenticated automation.
+-- Marking domain tasks complete without accepted validation.
+-- Retrying the same broad contract rewrite after two parser failures.
+-- Editing application/domain artifacts solely to move the task board forward.
++If two or more attempts fail on the same task with parser errors, mark the domain task blocked and append a daemon repair task that wires or verifies syntax preflight. After that repair passes, append a new narrow resume task for the original domain work instead of repeatedly selecting the blocked task.

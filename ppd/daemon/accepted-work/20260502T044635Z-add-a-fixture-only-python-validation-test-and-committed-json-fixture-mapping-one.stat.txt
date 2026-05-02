@@ -1,0 +1,2 @@
+ppd/tests/test_guardrail_stop_gate_mapping.py
+ppd/tests/fixtures/guardrails/stop_gate_action_gate_mapping.json

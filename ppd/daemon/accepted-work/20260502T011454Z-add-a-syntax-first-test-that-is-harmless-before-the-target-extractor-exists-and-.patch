@@ -1,0 +1,43 @@
+--- a/ppd/tests/test_online_trade_permit_requirements_syntax_first.py
++++ b/ppd/tests/test_online_trade_permit_requirements_syntax_first.py
+@@ -0,0 +1,40 @@
++import importlib.util
++import py_compile
++import sys
++import unittest
++from pathlib import Path
++
++
++REPO_ROOT = Path(__file__).resolve().parents[2]
++TARGET_PATH = REPO_ROOT / "ppd" / "extraction" / "online_trade_permit_requirements.py"
++MODULE_NAME = "ppd.extraction.online_trade_permit_requirements"
++
++
++class OnlineTradePermitRequirementsSyntaxFirstTest(unittest.TestCase):
++    def test_online_trade_permit_requirements_compiles_and_imports_alone(self):
++        if not TARGET_PATH.exists():
++            self.skipTest(
++                "ppd.extraction.online_trade_permit_requirements is not implemented yet; "
++                "syntax-first guard becomes active when that one module is added"
++            )
++
++        py_compile.compile(str(TARGET_PATH), doraise=True)
++
++        spec = importlib.util.spec_from_file_location(MODULE_NAME, TARGET_PATH)
++        self.assertIsNotNone(spec)
++        self.assertIsNotNone(spec.loader)
++
++        module = importlib.util.module_from_spec(spec)
++        previous_module = sys.modules.get(MODULE_NAME)
++        sys.modules[MODULE_NAME] = module
++        try:
++            spec.loader.exec_module(module)
++        finally:
++            if previous_module is None:
++                sys.modules.pop(MODULE_NAME, None)
++            else:
++                sys.modules[MODULE_NAME] = previous_module
++
++
++if __name__ == "__main__":
++    unittest.main()

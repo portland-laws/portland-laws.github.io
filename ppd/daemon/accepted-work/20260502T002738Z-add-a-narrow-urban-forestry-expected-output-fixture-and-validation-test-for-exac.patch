@@ -1,0 +1,315 @@
+--- a/ppd/tests/fixtures/requirement_extraction/urban_forestry_expected_output.json
++++ b/ppd/tests/fixtures/requirement_extraction/urban_forestry_expected_output.json
+@@ -0,0 +1,177 @@
++{
++  "schema_version": 1,
++  "fixture_id": "urban_forestry_permit_requirement_expected_output_minimal_v1",
++  "permit_type": "urban_forestry_permit",
++  "redaction_status": "redacted_public_fixture",
++  "generated_from": "public_guidance_summary_only",
++  "records": [
++    {
++      "category": "eligibility",
++      "requirement_id": "uf-eligibility-001",
++      "requirement_type": "precondition",
++      "subject": "applicant",
++      "action": "determine whether tree work needs an Urban Forestry permit before work begins",
++      "object": "regulated tree pruning, planting, removal, or related tree work",
++      "conditions": [
++        "Project involves trees regulated by City of Portland Urban Forestry guidance.",
++        "Applicant must use public Urban Forestry permit guidance to identify the applicable permit path."
++      ],
++      "expected_agent_behavior": "Ask only for non-private project facts needed to identify the applicable Urban Forestry permit path.",
++      "redactions": ["project address redacted", "applicant identity redacted"],
++      "source_refs": [
++        {
++          "source_id": "uf-public-permits-index",
++          "title": "Tree permits",
++          "url": "https://www.portland.gov/trees/treepermits",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "evidence_summary": "Public Urban Forestry guidance describes tree permit paths and directs applicants to determine whether planned tree work requires a permit."
++        }
++      ]
++    },
++    {
++      "category": "plan-review applicability",
++      "requirement_id": "uf-plan-review-001",
++      "requirement_type": "dependency",
++      "subject": "applicant",
++      "action": "check whether Urban Forestry review is part of a broader development or building permit workflow",
++      "object": "tree preservation, planting, or removal review associated with development activity",
++      "conditions": [
++        "Some Urban Forestry reviews are connected to development permit review rather than a standalone tree permit path.",
++        "The applicant should identify whether the work is independent tree work or tied to a development proposal."
++      ],
++      "expected_agent_behavior": "Route the user to a human or ask clarifying facts when standalone tree-permit guidance and development-review guidance could both apply.",
++      "redactions": ["site plan details redacted", "parcel identifier redacted"],
++      "source_refs": [
++        {
++          "source_id": "uf-development-review",
++          "title": "Trees and development",
++          "url": "https://www.portland.gov/trees/treepermits/development-permits",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "evidence_summary": "Urban Forestry public guidance distinguishes tree requirements connected to development review from other tree permit paths."
++        }
++      ]
++    },
++    {
++      "category": "upload requirements",
++      "requirement_id": "uf-upload-001",
++      "requirement_type": "obligation",
++      "subject": "applicant",
++      "action": "prepare and attach required public-form documents and supporting materials through the applicable permit channel",
++      "object": "application materials, tree information, site information, and supporting documentation",
++      "conditions": [
++        "Required materials depend on the Urban Forestry permit path selected.",
++        "The fixture records only expected categories of materials and does not include user files."
++      ],
++      "expected_agent_behavior": "Produce a checklist of missing document categories without storing uploaded files or private field values.",
++      "redactions": ["uploaded file names redacted", "private notes redacted"],
++      "source_refs": [
++        {
++          "source_id": "uf-private-property-tree-permits",
++          "title": "Private property tree permits",
++          "url": "https://www.portland.gov/trees/treepermits/private-property-tree-permits",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "evidence_summary": "Public Urban Forestry guidance identifies application paths and supporting information for private-property tree permit requests."
++        }
++      ]
++    },
++    {
++      "category": "fee/payment checkpoints",
++      "requirement_id": "uf-payment-001",
++      "requirement_type": "action_gate",
++      "subject": "agent",
++      "action": "stop before initiating fee payment or entering payment details",
++      "object": "Urban Forestry permit fees or related PP&D/DevHub charges",
++      "conditions": [
++        "Fees may apply depending on the selected permit path and review outcome.",
++        "Payment is a financial action and requires exact user confirmation in the active session."
++      ],
++      "expected_agent_behavior": "Summarize the fee checkpoint and request explicit confirmation before any payment-related action.",
++      "redactions": ["payment account redacted", "billing contact redacted"],
++      "source_refs": [
++        {
++          "source_id": "uf-fees",
++          "title": "Tree permit fees",
++          "url": "https://www.portland.gov/trees/treepermits/tree-permit-fees",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "evidence_summary": "Public Urban Forestry fee guidance describes fee checkpoints for tree permit activity."
++        },
++        {
++          "source_id": "ppd-devhub-faq-payments",
++          "title": "DevHub FAQ",
++          "url": "https://www.portland.gov/ppd/development-services/devhub/devhub-faq",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "evidence_summary": "Public DevHub FAQ identifies fee payment as a supported online permitting service category."
++        }
++      ]
++    },
++    {
++      "category": "corrections",
++      "requirement_id": "uf-corrections-001",
++      "requirement_type": "dependency",
++      "subject": "applicant",
++      "action": "respond to reviewer requests for corrected or additional Urban Forestry materials",
++      "object": "review comments, checksheets, or corrected supporting materials",
++      "conditions": [
++        "Corrections may be required after staff review.",
++        "Official correction upload or response is consequential and must be confirmed before action."
++      ],
++      "expected_agent_behavior": "Prepare a redacted correction-response preview and stop before official upload or certification.",
++      "redactions": ["review comment details redacted", "case identifier redacted"],
++      "source_refs": [
++        {
++          "source_id": "ppd-devhub-faq-corrections",
++          "title": "DevHub FAQ",
++          "url": "https://www.portland.gov/ppd/development-services/devhub/devhub-faq",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "evidence_summary": "Public DevHub FAQ lists correction uploads among online permitting service categories."
++        }
++      ]
++    },
++    {
++      "category": "inspections/finalization",
++      "requirement_id": "uf-finalization-001",
++      "requirement_type": "deadline",
++      "subject": "applicant",
++      "action": "complete required follow-up steps before relying on the Urban Forestry permit as final",
++      "object": "approval conditions, planting obligations, inspections, or closeout instructions",
++      "conditions": [
++        "Some Urban Forestry outcomes include conditions or follow-up steps.",
++        "Finalization depends on the specific permit path and approval terms."
++      ],
++      "expected_agent_behavior": "Ask for the public approval-condition category or route to PP&D when closeout requirements are unclear.",
++      "redactions": ["approval record redacted", "property details redacted"],
++      "source_refs": [
++        {
++          "source_id": "uf-public-permits-index",
++          "title": "Tree permits",
++          "url": "https://www.portland.gov/trees/treepermits",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "evidence_summary": "Public Urban Forestry permit guidance describes permit outcomes and follow-up responsibilities by permit type."
++        }
++      ]
++    },
++    {
++      "category": "explicit-confirmation gates",
++      "requirement_id": "uf-confirmation-001",
++      "requirement_type": "action_gate",
++      "subject": "agent",
++      "action": "require exact user confirmation before consequential or financial Urban Forestry permit actions",
++      "object": "submission, official upload, certification, cancellation, inspection request, or payment",
++      "conditions": [
++        "The agent may draft summaries and previews using redacted fixtures.",
++        "The agent must not submit, certify, cancel, schedule, upload officially, or pay without exact session-specific confirmation."
++      ],
++      "expected_agent_behavior": "Refuse automation of consequential or financial actions until the user explicitly authorizes the exact action in the active session.",
++      "redactions": ["session state redacted", "authorization secret redacted"],
++      "source_refs": [
++        {
++          "source_id": "ppd-plan-guarded-action-executor",
++          "title": "PP&D guarded action executor plan",
++          "url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "evidence_summary": "The PP&D plan requires exact confirmation for consequential and financial actions and forbids unattended irreversible automation."
++        }
++      ]
++    }
++  ]
++}
+--- a/ppd/tests/test_urban_forestry_requirement_expected_output.py
++++ b/ppd/tests/test_urban_forestry_requirement_expected_output.py
+@@ -0,0 +1,132 @@
++"""Validate the minimal Urban Forestry requirement expected-output fixture."""
++
++from __future__ import annotations
++
++import json
++import unittest
++from pathlib import Path
++from typing import Any
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "requirement_extraction"
++    / "urban_forestry_expected_output.json"
++)
++
++EXPECTED_CATEGORIES = [
++    "eligibility",
++    "plan-review applicability",
++    "upload requirements",
++    "fee/payment checkpoints",
++    "corrections",
++    "inspections/finalization",
++    "explicit-confirmation gates",
++]
++
++PRIVATE_MARKERS = [
++    "password",
++    "credential",
++    "auth_state",
++    "bearer ",
++    "access_token",
++    "refresh_token",
++    "sessionid",
++    "trace.zip",
++    "screen capture",
++    "raw response body",
++    "downloaded document",
++    "ppd/data/private",
++    "devhub private",
++]
++
++
++class UrbanForestryRequirementExpectedOutputTest(unittest.TestCase):
++    def load_fixture(self) -> dict[str, Any]:
++        with FIXTURE_PATH.open(encoding="utf-8") as handle:
++            return json.load(handle)
++
++    def test_fixture_has_exactly_seven_expected_categories(self) -> None:
++        fixture = self.load_fixture()
++        records = fixture.get("records")
++
++        self.assertEqual(fixture.get("schema_version"), 1)
++        self.assertEqual(fixture.get("permit_type"), "urban_forestry_permit")
++        self.assertEqual(fixture.get("redaction_status"), "redacted_public_fixture")
++        self.assertIsInstance(records, list)
++        self.assertEqual(len(records), 7)
++        self.assertEqual([record.get("category") for record in records], EXPECTED_CATEGORIES)
++
++    def test_each_category_record_is_source_backed(self) -> None:
++        fixture = self.load_fixture()
++
++        seen_requirement_ids: set[str] = set()
++        for record in fixture["records"]:
++            requirement_id = record.get("requirement_id")
++            self.assertIsInstance(requirement_id, str)
++            self.assertTrue(requirement_id.startswith("uf-"))
++            self.assertNotIn(requirement_id, seen_requirement_ids)
++            seen_requirement_ids.add(requirement_id)
++
++            for field in (
++                "requirement_type",
++                "subject",
++                "action",
++                "object",
++                "expected_agent_behavior",
++            ):
++                self.assertIsInstance(record.get(field), str, field)
++                self.assertTrue(record[field].strip(), field)
++
++            self.assertIsInstance(record.get("conditions"), list)
++            self.assertGreaterEqual(len(record["conditions"]), 1)
++            self.assertIsInstance(record.get("redactions"), list)
++            self.assertGreaterEqual(len(record["redactions"]), 1)
++            self.assertTrue(all("redacted" in item for item in record["redactions"]))
++
++            source_refs = record.get("source_refs")
++            self.assertIsInstance(source_refs, list)
++            self.assertGreaterEqual(len(source_refs), 1)
++            for source in source_refs:
++                self.assertTrue(source.get("source_id"))
++                self.assertTrue(source.get("title"))
++                self.assertTrue(source.get("url"))
++                self.assertTrue(
++                    source["url"].startswith("https://www.portland.gov/")
++                    or source["url"].startswith("docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md")
++                )
++                self.assertTrue(source.get("captured_at", "").endswith("Z"))
++                self.assertTrue(source.get("evidence_summary"))
++
++    def test_fixture_is_redacted_and_contains_no_private_artifacts(self) -> None:
++        fixture = self.load_fixture()
++        serialized = json.dumps(fixture, sort_keys=True).lower()
++
++        for marker in PRIVATE_MARKERS:
++            with self.subTest(marker=marker):
++                self.assertNotIn(marker, serialized)
++
++        self.assertNotIn("@", serialized)
++        self.assertNotIn("private_value", serialized)
++        self.assertNotIn("unredacted", serialized)
++
++    def test_action_gates_stop_consequential_and_financial_actions(self) -> None:
++        fixture = self.load_fixture()
++        records_by_category = {record["category"]: record for record in fixture["records"]}
++
++        payment = records_by_category["fee/payment checkpoints"]
++        self.assertEqual(payment["requirement_type"], "action_gate")
++        self.assertIn("exact user confirmation", payment["conditions"][1])
++        self.assertIn("payment", payment["expected_agent_behavior"].lower())
++
++        confirmation = records_by_category["explicit-confirmation gates"]
++        self.assertEqual(confirmation["requirement_type"], "action_gate")
++        confirmation_text = json.dumps(confirmation, sort_keys=True).lower()
++        for action in ("submit", "certify", "cancel", "schedule", "upload", "pay"):
++            with self.subTest(action=action):
++                self.assertIn(action, confirmation_text)
++
++
++if __name__ == "__main__":
++    unittest.main()

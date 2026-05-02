@@ -1,0 +1,98 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -54,9 +54,9 @@
+ - [x] Add Playwright guardrail tests proving upload, submit, certify, pay, cancel, schedule inspection, MFA, CAPTCHA, account creation, and password recovery actions are refused unless exact user confirmation is present.
+ - [x] Add a Playwright audit-event fixture that records selector basis, source requirement, user-confirmation state, action classification, and before/after redacted field state for draft-only form edits.
+ - [x] Add a fixture-only public source inventory for PP&D permit application, forms, handout, fee, and DevHub guide page categories with canonical URLs, authority labels, and recrawl cadence hints.
+-- [~] Add validation for the public source inventory that rejects non-allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and missing provenance fields.
++- [!] Add validation for the public source inventory that rejects non-allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and missing provenance fields.
+ - [x] Add a fixture-only normalized document link graph that connects public PP&D guidance pages to linked forms, PDFs, DevHub guides, and Portland Maps references with skipped-link reason codes.
+-- [~] Add deterministic validation for the normalized document link graph covering canonical URL matching, content-type classification, source-index references, and no private or live crawl artifacts.
++- [ ] Add deterministic validation for the normalized document link graph covering canonical URL matching, content-type classification, source-index references, and no private or live crawl artifacts.
+ - [ ] Add a third permit-process fixture for a residential building permit or new single-family residence workflow with stages, required facts, required documents, file rules, fee/payment gates, and citation-backed evidence.
+ - [ ] Add requirement extraction validation for the residential building permit fixture covering eligibility, submittal package requirements, plan-review stages, corrections, inspections, expiration/reactivation, and explicit-confirmation gates.
+ - [ ] Add guardrail compiler fixture tests for the residential building permit workflow covering missing facts, required document groups, Single PDF Process compatibility, inspection-scheduling stop points, and payment stop points.
+@@ -69,15 +69,16 @@
+ - [ ] Add a one-file syntax-first repair test for public source inventory validation that imports only `ppd.contracts.public_source_inventory` and rejects malformed Python before broad unittest discovery.
+ - [ ] Add a minimal invalid public source inventory fixture with exactly one unsafe field per entry so rejection reasons for raw bodies, credentials, traces, screenshots, downloaded documents, private DevHub paths, and missing provenance are deterministic.
+ 
++## Supervisor Notes
+ 
++- Task checkbox-49 is blocked because repeated daemon proposals for that task failed validation, including Python syntax failures and a mismatched expected rejection reason. Resume autonomous work on the next needed fixture or validation task instead of retrying that broad contract task without a narrower repair.
++- Any future repair for checkbox-49 should be split into a one-file syntax-first import test, then a minimal invalid fixture with one unsafe field per entry, then the actual inventory validator implementation.
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T19:20:19.072447Z
++Last updated: 2026-05-01T19:27:00Z
+ 
+-- Latest target: `Task checkbox-50: Add a fixture-only normalized document link graph that connects public PP&D guidance pages to linked forms, PDFs, DevHub guides, and Portland Maps references with skipped-link reason codes.`
+-- Latest result: `accepted`
+-- Latest summary: Add a fixture-only normalized document link graph for public PP&D guidance pages and linked resources.
+-- Counts: `{"blocked": 1, "complete": 49, "in_progress": 0, "needed": 10}`
+-
+-
++- Latest target: `Supervisor repair: unblock repeated public source inventory validation failures`
++- Latest result: `task-board repaired`
++- Latest summary: Mark the repeated public source inventory validation task blocked and return the next link-graph validation task to the normal needed queue.
++- Counts: `{"blocked": 2, "complete": 49, "in_progress": 0, "needed": 11}`
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,41 +1,29 @@
+ # PP&D Supervisor Repair Guide
+ 
+-This guide is prompt context for supervisor repair rounds. It exists to keep the isolated PP&D daemon moving after blocked or repeated validation failures without changing application/domain artifacts just to mark progress.
++This guide exists so supervisor repairs stay narrow when the worker daemon has failed several rounds without an accepted patch.
+ 
+-## Recovery Rules
++## Current Recovery Rule
+ 
+-When a recent daemon failure includes `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128`:
++When recent failed manifests include Python `SyntaxError`, `py_compile`, or TypeScript `TS1005`/`TS1109`/`TS1128`, do not ask the worker to retry a broad contract rewrite. Move to a smaller recovery path:
+ 
+-- Return a smaller proposal than the failed attempt.
+-- Prefer one implementation file plus one focused test file and, only when necessary, one or two tiny fixtures.
+-- Avoid broad contract rewrites, multi-module refactors, or task-board status edits.
+-- Keep Python annotations on function definitions or assignments only; never splice annotations into ternary expressions or return expressions.
+-- Before returning a proposal, mentally validate that every edited Python file can pass `py_compile` and every edited TypeScript file is syntactically complete.
++1. Prefer a one-file syntactic guard first, such as importing or compiling only the failing module.
++2. Add or repair the smallest fixture that proves one rejection reason at a time.
++3. Only after syntax and deterministic fixture shape are stable, implement the broader validator behavior.
+ 
+-## Public Source Inventory Repair Notes
++## Task Selection Guidance
+ 
+-For the blocked public source inventory validation task, the next retry should be fixture-first and narrow:
++The daemon should not keep selecting an in-progress task after repeated validation rollbacks when later work has already been accepted. Mark that task `[!]` and let the worker proceed to the next `[ ]` task. Leave the blocked task in the board with enough context for a later narrow repair.
+ 
+-- Implement a deterministic validator under `ppd/contracts/` or another existing PP&D-local contract location.
+-- Add focused tests under `ppd/tests/` that load fixtures from `Path(__file__).parent / "fixtures" / ...`.
+-- Fixtures may describe public source records and policy decisions, but must not contain raw HTML, raw response bodies, private DevHub session paths, browser traces, screenshots, credentials, auth state, downloaded documents, or live crawl output.
+-- Validation findings should use stable reason strings for each rejected condition so tests can assert exact coverage.
+-- The invalid fixture should independently trigger these reasons: non-allowlisted host, private DevHub path, raw response body field, downloaded document path or file path, credential field, browser trace path, screenshot path, and missing provenance field.
+-- The valid fixture should use only allowlisted HTTPS hosts and complete provenance such as canonical URL, retrieval timestamp or fixture timestamp, source category, authority label, and citation/source reference.
++## Public Source Inventory Recovery
+ 
+-## Prompting Guardrails
++The public source inventory validation task should be resumed only as a split repair:
+ 
+-If a task is blocked after repeated validation failures, the worker should repair the underlying validation or diagnostic weakness before attempting adjacent domain work. Keep the repair deterministic:
++- First cycle: add a syntax-first test that imports only `ppd.contracts.public_source_inventory` or compiles the proposed validator module before unittest discovery.
++- Second cycle: add a minimal invalid inventory fixture where each entry contains exactly one unsafe condition, so expected rejection reasons are deterministic.
++- Third cycle: add the validator implementation and focused tests.
+ 
+-- Do not create private DevHub session files, auth state, traces, screenshots, raw crawl output, or downloaded documents.
+-- Do not automate CAPTCHA, MFA, account creation, payment, submission, certification, cancellation, official upload, or inspection scheduling.
+-- Do not edit `src/lib/logic/`, `public/corpus/portland-or/current/`, `ipfs_datasets_py/.daemon/`, or TypeScript-port daemon ledgers.
+-- Do not mark a checkbox complete manually. The daemon marks successful tasks complete after validation passes.
++Do not combine those three steps in one daemon proposal. The recent failures show that broad multi-file attempts have produced syntax errors and assertion mismatches.
+ 
+-## Validation Expectation
++## Forbidden Recovery Shortcuts
+ 
+-A repair proposal is acceptable only when it is designed to pass:
+-
+-- `python3 ppd/daemon/ppd_daemon.py --self-test`
+-- `python3 -m unittest discover -s ppd/tests -p test_*.py`
+-- the PP&D TypeScript syntax/typecheck command when TypeScript files exist
++Do not create private DevHub session files, auth state, traces, screenshots, raw crawl output, downloaded documents, credentials, or live crawler output as part of supervisor repair. Do not mark PP&D domain tasks complete unless validation has accepted the implementation artifacts for that task.

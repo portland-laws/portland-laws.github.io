@@ -1,0 +1,2 @@
+ppd/tests/fixtures/public_source_inventory/coverage_report_fail_closed.json
+ppd/tests/test_public_source_inventory_coverage_report_fail_closed.py

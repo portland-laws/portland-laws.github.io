@@ -1,0 +1,81 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,6 +1,22 @@
+ # PP&D Supervisor Repair Guide
+ 
+-This guide is daemon context for recovery after repeated malformed Python proposals. It is not a domain artifact and does not authorize live crawling, DevHub login, payment, submission, upload, certification, cancellation, official extension, official refund, or inspection scheduling.
++This guide is daemon context for recovery after repeated malformed Python or TypeScript proposals. It is not a domain artifact and does not authorize live crawling, DevHub login, payment, submission, upload, certification, cancellation, official extension, official refund, or inspection scheduling.
++
++## Two-Strike Syntax Recovery Rule
++
++When the recent daemon failure context for the selected task includes two validation rollbacks caused by Python `SyntaxError`, `py_compile`, or TypeScript `TS1005`, `TS1109`, or `TS1128`, the next proposal must be a syntax-recovery proposal.
++
++A syntax-recovery proposal must:
++
++- edit the smallest possible file set, normally one file
++- avoid broad contract rewrites and avoid adding implementation modules unless the task explicitly requires them
++- use only complete file replacements
++- include no pseudo-code, placeholders, malformed comparisons, or mixed-language fragments
++- keep Python test files plain `unittest` files with helper functions and direct assertions
++- keep the changed Python file py_compile-safe before any broader unittest behavior is considered
++- stop after validating the committed fixture or adding the single requested mutation case
++
++If the task asks for a Python test repair, first mentally compile the replacement file. Reject the proposal and simplify it if any line would fail `python3 -m py_compile`.
+ 
+ ## Current Recovery Priority
+ 
+@@ -16,8 +32,9 @@
+ - no extractor implementation
+ - no dataclasses
+ - no generated pseudo-code
++- no task-board edits in the same proposal
+ 
+-## Syntax Guardrails
++## Python Syntax Guardrails
+ 
+ Before returning a proposal for any Python test repair, ensure the file would pass `py_compile`.
+ 
+@@ -28,6 +45,8 @@
+ - `if index list`
+ - `assert name None`
+ - `return 0.0 list[str]`
++- `value is str`
++- `for item in list[str]`
+ - any incomplete comparison
+ - any TypeScript-style syntax inside Python
+ 
+@@ -39,6 +58,16 @@
+ - `self.assertRaises(ExceptionType)`
+ - plain helper functions
+ - constants for exact category ids and fixture path pieces
++- `isinstance(value, str)` instead of type-expression fragments
++- complete comparisons such as `confidence  1`
++
++Avoid clever constructs during recovery:
++
++- no dataclasses
++- no decorators other than ordinary `unittest` methods
++- no metaprogramming
++- no dynamically generated tests
++- no broad schema frameworks
+ 
+ ## Checkbox-27a Acceptance Boundary
+ 
+@@ -66,3 +95,17 @@
+ 6. Stop there.
+ 
+ Do not add mutation tests until checkbox-27a is accepted. Checkbox-27b through checkbox-27g add one mutation case per daemon cycle.
++
++## Recovery Proposal Checklist
++
++For the next checkbox-27a worker proposal, the replacement file should be small enough to inspect line by line. It should have this rough shape:
++
++- imports: `json`, `unittest`, and `Path`
++- constants: fixture path and accepted category id set
++- one loader helper for the exact fixture
++- one `_assert_valid_category_records` helper
++- one `_assert_valid_category_record` helper
++- one `unittest.TestCase` with one committed-fixture test
++- `if __name__ == "__main__": unittest.main()`
++
++Do not include mutation helpers in checkbox-27a unless the selected task has advanced to checkbox-27b or later.

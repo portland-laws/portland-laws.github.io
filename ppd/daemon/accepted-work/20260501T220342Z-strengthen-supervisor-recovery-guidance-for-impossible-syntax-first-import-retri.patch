@@ -1,0 +1,46 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -16,6 +16,19 @@
+ - Prefer fixture-first and validation-first tasks over live crawl or authenticated automation.
+ - Keep broad shared contract rewrites out of syntax recovery unless the failed task directly requires that contract.
+ 
++## Missing Module Recovery
++
++When a syntax-first import test fails with `ModuleNotFoundError`, treat it as task-ordering drift rather than a useful syntax guard failure.
++
++Required recovery behavior:
++
++- Do not retry a test-only import guard while the target module is absent.
++- Park the impossible import-test retry outside selectable checkbox form if the task board allows it.
++- Add or select a narrower prerequisite task that creates only a minimal sentinel module, for example a Python file exposing `MODULE_STATUS = "syntax_first_import_ready"` and no behavior.
++- After the sentinel module exists, retry the import guard as a separate one-file validation task.
++- If the selected task explicitly requires the import guard and no task-board edit is available, allow only a two-file proposal containing the minimal sentinel module and the import test; do not add extractor behavior, fixtures, or broad validation in that same proposal.
++- A `ModuleNotFoundError` from an import guard should not count as evidence that the domain extractor behavior is wrong.
++
+ ## Worker Prompt Guardrails
+ 
+ A repair cycle responding to syntax failures should preserve or add instructions equivalent to these guardrails in the worker prompt:
+@@ -26,6 +39,7 @@
+ - Keep proposals to the smallest file set that can satisfy the selected task.
+ - If the last failure was syntax-only, first return a minimal syntactically valid implementation rather than expanding behavior.
+ - Do not mix fixture creation, production extractor rewrites, and broad contract changes in one proposal unless all are strictly necessary.
++- If adding a syntax-first import test, confirm the imported module already exists or include only the minimal sentinel module required for the import to succeed.
+ 
+ ## Preflight Expectations
+ 
+@@ -35,6 +49,7 @@
+ - A JSON replacement cannot be decoded.
+ - A proposal touches more files than needed after repeated syntax failures.
+ - A repair proposal tries to implement the active PP&D domain task instead of repairing daemon or supervisor behavior.
++- A syntax-first import test targets a module path that does not exist and the proposal does not also create a minimal sentinel module for that exact path.
+ - A proposed path creates private DevHub state, traces, screenshots, raw crawl output, downloaded documents, or auth/session artifacts.
+ 
+ ## Retry Policy
+@@ -44,6 +59,7 @@
+ - The next worker proposal should be limited to the directly needed implementation and fixture/test files.
+ - If the selected task already failed twice with syntax errors, the daemon should include the exact compiler message in the next prompt and ask for a smaller proposal.
+ - If the same task fails again with syntax errors, the supervisor should repair prompt or preflight behavior before allowing another worker attempt.
++- If a syntax-first import test fails because the module is missing, the next attempt should create only the sentinel module or park the test until that prerequisite exists.
+ - Non-syntax assertion failures should be handled separately; they do not require this syntax recovery path unless they follow a syntax-failure streak.
+ 
+ ## Scope Limits

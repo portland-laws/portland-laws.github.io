@@ -1,0 +1,438 @@
+--- a/ppd/crawler/archive_adapter_preflight.py
++++ b/ppd/crawler/archive_adapter_preflight.py
+@@ -0,0 +1,158 @@
++"""Preflight boundary for PP&D archive processor handoff.
++
++The PP&D archive adapter must fail closed before invoking the archival
++processor backend. This module accepts manifest-like adapter records, checks
++public-source and no-private-artifact policy, and only then calls the injected
++processor backend.
++"""
++
++from __future__ import annotations
++
++from dataclasses import dataclass
++from typing import Any, Mapping, Protocol
++from urllib.parse import urlparse
++
++from ppd.contracts.archive_adapter import (
++    ArchivePolicyDecision,
++    PpdArchiveAdapterRecord,
++    archive_adapter_record_from_dict,
++)
++from ppd.contracts.crawl_manifest_privacy import validate_crawl_manifest_privacy
++
++
++ALLOWED_ARCHIVE_HOSTS = frozenset(
++    {
++        "www.portland.gov",
++        "devhub.portlandoregon.gov",
++        "www.portlandoregon.gov",
++        "www.portlandmaps.com",
++    }
++)
++
++PRIVATE_DEVHUB_PATH_PREFIXES = (
++    "/account",
++    "/accounts",
++    "/application",
++    "/applications",
++    "/cart",
++    "/dashboard",
++    "/document",
++    "/documents",
++    "/inspection",
++    "/inspections",
++    "/my",
++    "/payment",
++    "/payments",
++    "/permit",
++    "/permits",
++    "/secure",
++    "/session",
++    "/sessions",
++    "/upload",
++    "/uploads",
++)
++
++
++class ArchiveProcessorBackend(Protocol):
++    """Injected archival backend interface used by fixture tests."""
++
++    def archive(self, record: PpdArchiveAdapterRecord) -> Mapping[str, Any]:
++        """Archive a validated public PP&D record."""
++
++
++@dataclass(frozen=True)
++class ArchiveProcessorInvocationResult:
++    record_id: str
++    status: str
++    invoked_processor: bool
++    errors: tuple[str, ...]
++    processor_response: Mapping[str, Any] | None = None
++
++
++def invoke_archive_processor_from_dict(
++    record_data: Mapping[str, Any],
++    backend: ArchiveProcessorBackend,
++) -> ArchiveProcessorInvocationResult:
++    """Validate a record-like payload and invoke the backend only when allowed."""
++
++    record_id = str(record_data.get("id", ""))
++    preflight_errors = validate_archive_adapter_preflight_payload(record_data)
++    if preflight_errors:
++        return ArchiveProcessorInvocationResult(
++            record_id=record_id,
++            status="refused",
++            invoked_processor=False,
++            errors=tuple(preflight_errors),
++        )
++
++    try:
++        record = archive_adapter_record_from_dict(record_data)
++    except ValueError as exc:
++        return ArchiveProcessorInvocationResult(
++            record_id=record_id,
++            status="refused",
++            invoked_processor=False,
++            errors=(f"archive adapter record could not be parsed: {exc}",),
++        )
++
++    validation_errors = record.validate()
++    if validation_errors:
++        return ArchiveProcessorInvocationResult(
++            record_id=record.id,
++            status="refused",
++            invoked_processor=False,
++            errors=tuple(validation_errors),
++        )
++
++    if record.policy_decision.decision != ArchivePolicyDecision.ALLOW:
++        reasons = ", ".join(reason.value for reason in record.policy_decision.reasons)
++        return ArchiveProcessorInvocationResult(
++            record_id=record.id,
++            status="refused",
++            invoked_processor=False,
++            errors=(f"policy decision refuses processor archival invocation: {reasons}",),
++        )
++
++    response = backend.archive(record)
++    return ArchiveProcessorInvocationResult(
++        record_id=record.id,
++        status="invoked",
++        invoked_processor=True,
++        errors=(),
++        processor_response=response,
++    )
++
++
++def validate_archive_adapter_preflight_payload(record_data: Mapping[str, Any]) -> list[str]:
++    """Return pre-parser policy errors for an archive adapter payload."""
++
++    errors: list[str] = []
++
++    for finding in validate_crawl_manifest_privacy(record_data):
++        errors.append(f"{finding.path}: {finding.reason}")
++
++    for field in ("sourceUrl", "source_url", "canonicalUrl", "canonical_url"):
++        value = record_data.get(field)
++        if isinstance(value, str) and value.strip():
++            errors.extend(_validate_public_archive_url(value, field))
++
++    return errors
++
++
++def _validate_public_archive_url(value: str, field: str) -> list[str]:
++    errors: list[str] = []
++    parsed = urlparse(value)
++    host = parsed.hostname or ""
++    if host not in ALLOWED_ARCHIVE_HOSTS:
++        errors.append(f"{field} host is not PP&D archive allowlisted: {host or ''}")
++    if host == "devhub.portlandoregon.gov" and _is_private_devhub_path(parsed.path):
++        errors.append(f"{field} is a private DevHub path and cannot be archived: {parsed.path}")
++    return errors
++
++
++def _is_private_devhub_path(path: str) -> bool:
++    normalized = "/" + path.strip("/").lower()
++    return any(
++        normalized == prefix or normalized.startswith(f"{prefix}/")
++        for prefix in PRIVATE_DEVHUB_PATH_PREFIXES
++    )
+--- a/ppd/tests/fixtures/archive-adapter/refusal_cases.json
++++ b/ppd/tests/fixtures/archive-adapter/refusal_cases.json
+@@ -0,0 +1,215 @@
++{
++  "fixtureKind": "archive_adapter_refusal_cases",
++  "schemaVersion": 1,
++  "generatedAt": "2026-05-01T19:10:00Z",
++  "cases": [
++    {
++      "id": "refuse-non-allowlisted-url",
++      "expectedInvoke": false,
++      "expectedErrorContains": "not PP&D archive allowlisted",
++      "record": {
++        "id": "refuse-non-allowlisted-url",
++        "sourceUrl": "https://example.com/ppd/public-guidance",
++        "canonicalUrl": "https://example.com/ppd/public-guidance",
++        "contentHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
++        "processor": {
++          "name": "web_archive_adapter",
++          "version": "fixture-1",
++          "family": "web_archiving",
++          "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
++        },
++        "policyDecision": {
++          "decision": "refuse",
++          "reasons": ["non_allowlisted_host"],
++          "evaluatedAt": "2026-05-01T19:10:00Z",
++          "evaluator": "ppd.tests.fixture"
++        },
++        "createdAt": "2026-05-01T19:10:00Z",
++        "manifestOnly": true
++      }
++    },
++    {
++      "id": "refuse-private-devhub-path",
++      "expectedInvoke": false,
++      "expectedErrorContains": "private DevHub path",
++      "record": {
++        "id": "refuse-private-devhub-path",
++        "sourceUrl": "https://devhub.portlandoregon.gov/secure/permits/REDACTED",
++        "canonicalUrl": "https://devhub.portlandoregon.gov/secure/permits/REDACTED",
++        "contentHash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
++        "processor": {
++          "name": "web_archive_adapter",
++          "version": "fixture-1",
++          "family": "web_archiving",
++          "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
++        },
++        "policyDecision": {
++          "decision": "refuse",
++          "reasons": ["private_devhub_path"],
++          "evaluatedAt": "2026-05-01T19:10:00Z",
++          "evaluator": "ppd.tests.fixture"
++        },
++        "createdAt": "2026-05-01T19:10:00Z",
++        "manifestOnly": true
++      }
++    },
++    {
++      "id": "refuse-raw-response-body",
++      "expectedInvoke": false,
++      "expectedErrorContains": "raw response body",
++      "record": {
++        "id": "refuse-raw-response-body",
++        "sourceUrl": "https://www.portland.gov/ppd/public-guidance",
++        "canonicalUrl": "https://www.portland.gov/ppd/public-guidance",
++        "contentHash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
++        "responseBody": "raw fixture body must not be persisted",
++        "processor": {
++          "name": "web_archive_adapter",
++          "version": "fixture-1",
++          "family": "web_archiving",
++          "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
++        },
++        "policyDecision": {
++          "decision": "refuse",
++          "reasons": ["raw_body_persistence_requested"],
++          "evaluatedAt": "2026-05-01T19:10:00Z",
++          "evaluator": "ppd.tests.fixture"
++        },
++        "createdAt": "2026-05-01T19:10:00Z",
++        "manifestOnly": false
++      }
++    },
++    {
++      "id": "refuse-credentials",
++      "expectedInvoke": false,
++      "expectedErrorContains": "credential field",
++      "record": {
++        "id": "refuse-credentials",
++        "sourceUrl": "https://www.portland.gov/ppd/public-guidance",
++        "canonicalUrl": "https://www.portland.gov/ppd/public-guidance",
++        "contentHash": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
++        "headers": {
++          "authorization": "REDACTED_TOKEN_SHOULD_NOT_BE_IN_ARCHIVE_MANIFEST"
++        },
++        "processor": {
++          "name": "web_archive_adapter",
++          "version": "fixture-1",
++          "family": "web_archiving",
++          "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
++        },
++        "policyDecision": {
++          "decision": "refuse",
++          "reasons": ["credential_or_trace_risk"],
++          "evaluatedAt": "2026-05-01T19:10:00Z",
++          "evaluator": "ppd.tests.fixture"
++        },
++        "createdAt": "2026-05-01T19:10:00Z",
++        "manifestOnly": true
++      }
++    },
++    {
++      "id": "refuse-browser-trace",
++      "expectedInvoke": false,
++      "expectedErrorContains": "browser trace path",
++      "record": {
++        "id": "refuse-browser-trace",
++        "sourceUrl": "https://www.portland.gov/ppd/public-guidance",
++        "canonicalUrl": "https://www.portland.gov/ppd/public-guidance",
++        "contentHash": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
++        "trace_path": "ppd/devhub/traces/trace.zip",
++        "processor": {
++          "name": "web_archive_adapter",
++          "version": "fixture-1",
++          "family": "web_archiving",
++          "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
++        },
++        "policyDecision": {
++          "decision": "refuse",
++          "reasons": ["credential_or_trace_risk"],
++          "evaluatedAt": "2026-05-01T19:10:00Z",
++          "evaluator": "ppd.tests.fixture"
++        },
++        "createdAt": "2026-05-01T19:10:00Z",
++        "manifestOnly": true
++      }
++    },
++    {
++      "id": "refuse-private-screenshot",
++      "expectedInvoke": false,
++      "expectedErrorContains": "screenshot path",
++      "record": {
++        "id": "refuse-private-screenshot",
++        "sourceUrl": "https://www.portland.gov/ppd/public-guidance",
++        "canonicalUrl": "https://www.portland.gov/ppd/public-guidance",
++        "contentHash": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
++        "screenshot_path": "ppd/devhub/screenshots/private-screenshot.png",
++        "processor": {
++          "name": "web_archive_adapter",
++          "version": "fixture-1",
++          "family": "web_archiving",
++          "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
++        },
++        "policyDecision": {
++          "decision": "refuse",
++          "reasons": ["credential_or_trace_risk"],
++          "evaluatedAt": "2026-05-01T19:10:00Z",
++          "evaluator": "ppd.tests.fixture"
++        },
++        "createdAt": "2026-05-01T19:10:00Z",
++        "manifestOnly": true
++      }
++    },
++    {
++      "id": "refuse-downloaded-private-document",
++      "expectedInvoke": false,
++      "expectedErrorContains": "downloaded document",
++      "record": {
++        "id": "refuse-downloaded-private-document",
++        "sourceUrl": "https://www.portland.gov/ppd/public-guidance",
++        "canonicalUrl": "https://www.portland.gov/ppd/public-guidance",
++        "contentHash": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
++        "document_path": "ppd/data/private/devhub/downloads/private-plan.pdf",
++        "processor": {
++          "name": "web_archive_adapter",
++          "version": "fixture-1",
++          "family": "web_archiving",
++          "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
++        },
++        "policyDecision": {
++          "decision": "refuse",
++          "reasons": ["credential_or_trace_risk"],
++          "evaluatedAt": "2026-05-01T19:10:00Z",
++          "evaluator": "ppd.tests.fixture"
++        },
++        "createdAt": "2026-05-01T19:10:00Z",
++        "manifestOnly": true
++      }
++    },
++    {
++      "id": "allow-public-ppd-control",
++      "expectedInvoke": true,
++      "expectedErrorContains": "",
++      "record": {
++        "id": "allow-public-ppd-control",
++        "sourceUrl": "https://www.portland.gov/ppd/public-guidance",
++        "canonicalUrl": "https://www.portland.gov/ppd/public-guidance",
++        "contentHash": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
++        "processor": {
++          "name": "web_archive_adapter",
++          "version": "fixture-1",
++          "family": "web_archiving",
++          "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
++        },
++        "policyDecision": {
++          "decision": "allow",
++          "reasons": ["public_ppd_allowlisted", "robots_allowed", "no_persist_approved"],
++          "evaluatedAt": "2026-05-01T19:10:00Z",
++          "evaluator": "ppd.tests.fixture"
++        },
++        "createdAt": "2026-05-01T19:10:00Z",
++        "archiveJobId": "fixture-public-ppd-control",
++        "manifestOnly": true
++      }
++    }
++  ]
++}
+--- a/ppd/tests/test_archive_adapter_refusals.py
++++ b/ppd/tests/test_archive_adapter_refusals.py
+@@ -0,0 +1,56 @@
++from __future__ import annotations
++
++import json
++from pathlib import Path
++from typing import Any, Mapping
++
++from ppd.contracts.archive_adapter import PpdArchiveAdapterRecord
++from ppd.crawler.archive_adapter_preflight import invoke_archive_processor_from_dict
++
++
++FIXTURE_PATH = Path(__file__).parent / "fixtures" / "archive-adapter" / "refusal_cases.json"
++
++
++class RecordingArchiveBackend:
++    def __init__(self) -> None:
++        self.records: list[PpdArchiveAdapterRecord] = []
++
++    def archive(self, record: PpdArchiveAdapterRecord) -> Mapping[str, Any]:
++        self.records.append(record)
++        return {"archivedRecordId": record.id, "backend": record.processor.backend_path}
++
++
++def test_archive_adapter_refuses_unsafe_fixtures_before_processor_invocation() -> None:
++    fixture = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
++    assert fixture["fixtureKind"] == "archive_adapter_refusal_cases"
++
++    refusal_cases = [case for case in fixture["cases"] if not case["expectedInvoke"]]
++    assert refusal_cases, "fixture must include unsafe refusal cases"
++
++    for case in refusal_cases:
++        backend = RecordingArchiveBackend()
++        result = invoke_archive_processor_from_dict(case["record"], backend)
++
++        assert result.status == "refused", case["id"]
++        assert result.invoked_processor is False, case["id"]
++        assert backend.records == [], case["id"]
++        assert result.errors, case["id"]
++        assert case["expectedErrorContains"] in "\n".join(result.errors), case["id"]
++
++
++def test_archive_adapter_invokes_processor_for_public_allowlisted_control() -> None:
++    fixture = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
++    control_cases = [case for case in fixture["cases"] if case["expectedInvoke"]]
++    assert len(control_cases) == 1
++
++    backend = RecordingArchiveBackend()
++    result = invoke_archive_processor_from_dict(control_cases[0]["record"], backend)
++
++    assert result.status == "invoked"
++    assert result.invoked_processor is True
++    assert result.errors == ()
++    assert [record.id for record in backend.records] == ["allow-public-ppd-control"]
++    assert result.processor_response == {
++        "archivedRecordId": "allow-public-ppd-control",
++        "backend": "ipfs_datasets_py/ipfs_datasets_py/processors",
++    }

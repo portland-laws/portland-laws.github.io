@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py"
+  ],
+  "created_at": "2026-05-02T04:06:00.350566Z",
+  "impact": "This advances the PP&D lifecycle requirement fixture validation by proving local evidence records cannot omit their evidenceId, without expanding scope beyond the selected recovery mutation.",
+  "summary": "Add the checkbox-27d mutation validator for a missing local evidence[].evidenceId field while preserving the accepted checkbox-27a through 27c checks.",
+  "target_task": "Task checkbox-34: Recovery for checkbox-27d: after checkbox-27c passes, add one mutation case for missing local `evidence[].evidenceId` only.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 38 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "..........................................................................................................................................................................................................................ss.............sss...................................................................................................................................... ---------------------------------------------------------------------- Ran 370 tests in 0.044s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

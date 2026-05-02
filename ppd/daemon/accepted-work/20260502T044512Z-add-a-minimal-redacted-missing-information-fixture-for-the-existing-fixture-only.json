@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/missing_information/placeholder_user_case_missing_facts.json"
+  ],
+  "created_at": "2026-05-02T04:45:12.358986Z",
+  "impact": "Provides the committed placeholder user-case data needed to validate that PP&D can derive missing reversible request fields from a public process fixture without storing PII, account state, screenshots, traces, uploads, or private artifacts.",
+  "summary": "Add a minimal redacted missing-information fixture for the existing fixture-only missing-information schema test.",
+  "target_task": "Task checkbox-47: Task checkbox-42: Add the smallest committed missing-information fixture for checkbox-41 using placeholder user case facts and public-only citations. Do not store PII, account state, screenshots, traces, or uploads.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 53 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "...........................................................................................................................................................................................................................ss..............sss........................................................................................................................................ ---------------------------------------------------------------------- Ran 374 tests in 0.051s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

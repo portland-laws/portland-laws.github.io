@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/requirement_extraction/demolition_permit_requirements.json",
+    "ppd/tests/test_demolition_requirement_extraction.py"
+  ],
+  "created_at": "2026-05-01T23:42:53.642572Z",
+  "impact": "This advances the PP&D plan by adding deterministic, fixture-only coverage for demolition permit requirement extraction quality without broadening shared contracts or touching live crawl/authenticated automation.",
+  "summary": "Add focused demolition permit extraction validation fixture and test",
+  "target_task": "Task checkbox-90: Add a focused validation test for demolition permit requirement extraction that checks only the seven fixture categories, source evidence IDs, confidence bounds, deduplication, and explicit stop-gate classifications.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 94 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................................................................................. ---------------------------------------------------------------------- Ran 205 tests in 0.024s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

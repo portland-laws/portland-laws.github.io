@@ -1,0 +1,2 @@
+ppd/tests/fixtures/permit_processes/demolition_permit_process_skeleton.json
+ppd/tests/test_demolition_permit_process_fixture.py

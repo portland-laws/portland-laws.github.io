@@ -1,0 +1,103 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,65 +1,56 @@
+ # PP&D Supervisor Repair Guide
+ 
+-This guide records narrow repair rules for the PP&D daemon supervisor when a task repeatedly fails for supervision, task-shaping, or validation-order reasons. Repairs must keep the daemon focused on fixture-first and validation-first work, and must not implement PP&D domain artifacts merely to mark progress.
++## Purpose
+ 
+-## Syntax-First Python Import Tests
++This guide records narrow recovery rules for PP&D daemon failures that should be repaired through supervision, task selection, validation ordering, or diagnostics rather than by implementing PP&D domain artifacts directly.
+ 
+-When a task asks for a syntax-first import test for a module that may not exist yet, the test must be shaped as an optional guard until the target module is created by a later implementation task.
++## Syntax-First Import Test Recovery
+ 
+-Required behavior:
++When a daemon task asks for a syntax-first import test for a module and recent validation fails because the target module is missing, the daemon must not keep retrying the same test as a hard failure.
+ 
+-- The test file may import only Python standard-library modules at module import time.
+-- The test must locate the target module path from the repository root, not from a live crawl, authenticated session, or generated artifact.
+-- If the target module file does not exist, the test must call `self.skipTest(...)` with a message that names the missing module.
+-- If the target module file exists, the test must first compile the file source with `compile(source, str(path), "exec")` so malformed Python fails before broader validation runs.
+-- After compilation succeeds, the test may import only that target file using `importlib.util.spec_from_file_location` and `module_from_spec`.
+-- The test must not import sibling PP&D extraction modules, run broad requirement validation, read live crawl output, or require DevHub credentials.
++Use this rule for failures like:
+ 
+-Recommended retry prompt fragment for the worker:
++- `FileNotFoundError` while reading `ppd/extraction/online_trade_permit_requirements.py`
++- `AssertionError: ... must exist`
++- import-test tasks that run before the implementation module has been scaffolded
+ 
+-```text
+-Create exactly one unittest file under ppd/tests/ for ppd.extraction.online_trade_permit_requirements. The module may not exist yet, so skip cleanly when ppd/extraction/online_trade_permit_requirements.py is absent. When it exists, read that file, compile it with compile(..., "exec"), then import only that file with importlib.util.spec_from_file_location. Do not import broad extraction validation, do not create the extractor module, and do not touch application/domain artifacts.
+-```
++Required recovery behavior:
+ 
+-Minimal acceptable test shape:
++1. Treat the task as blocked by ordering, not by malformed Python.
++2. Do not implement the domain extractor as a supervisor repair.
++3. Convert any future syntax-first test proposal for a not-yet-created optional module into a skip-on-missing test.
++4. Add or select a separate narrow scaffold task before enforcing hard import or size checks for that module.
++5. Keep the syntax-first guard focused on `py_compile` and isolated import once the module exists.
+ 
+-```python
+-import importlib.util
+-from pathlib import Path
+-import unittest
++A valid syntax-first test for an optional future module should:
+ 
++- resolve the repository root deterministically from the test file,
++- check whether the target file exists,
++- call `self.skipTest(...)` when the module is not present yet,
++- run `py_compile.compile(..., doraise=True)` before import,
++- import only the target module by file path with `importlib.util.spec_from_file_location`, and
++- avoid importing broad PP&D extraction packages or live crawler/authenticated DevHub code.
+ 
+-REPO_ROOT = Path(__file__).resolve().parents[2]
+-TARGET_PATH = REPO_ROOT / "ppd" / "extraction" / "online_trade_permit_requirements.py"
++## Blocked Task checkbox-121
+ 
++Task checkbox-121 is blocked because the requested module `ppd.extraction.online_trade_permit_requirements` is not present yet. The next daemon cycle should not retry a hard existence assertion for that file.
+ 
+-class OnlineTradePermitRequirementsSyntaxFirstTest(unittest.TestCase):
+-    def test_online_trade_permit_requirements_compiles_and_imports_alone(self):
+-        if not TARGET_PATH.exists():
+-            self.skipTest("ppd.extraction.online_trade_permit_requirements is not present yet")
++Acceptable next work:
+ 
+-        source = TARGET_PATH.read_text(encoding="utf-8")
+-        compile(source, str(TARGET_PATH), "exec")
++- add a skip-on-missing syntax-first test for `ppd.extraction.online_trade_permit_requirements`, or
++- add a separate one-cycle scaffold task for the module with no broad extraction contract, then add the syntax-first import guard after the scaffold passes validation.
+ 
+-        spec = importlib.util.spec_from_file_location(
+-            "ppd.extraction.online_trade_permit_requirements.syntax_first",
+-            TARGET_PATH,
+-        )
+-        self.assertIsNotNone(spec)
+-        self.assertIsNotNone(spec.loader)
+-        module = importlib.util.module_from_spec(spec)
+-        spec.loader.exec_module(module)
++Unacceptable supervisor repair:
+ 
++- creating a full online trade permit requirements extractor,
++- adding broad requirement validation to unblock a syntax guard,
++- writing live crawl output, authenticated DevHub artifacts, private session files, traces, or downloaded documents,
++- automating CAPTCHA, MFA, account creation, payment, submission, certification, cancellation, official upload, or inspection scheduling.
+ 
+-if __name__ == "__main__":
+-    unittest.main()
+-```
++## Recent Fixture Privacy Failure Pattern
+ 
+-## Blocked-Task Diagnosis Rule
++When validating mocked DevHub workflow fixtures, privacy scanners may flag prohibited words inside the names of prohibited artifacts or prohibited actions. Fixture authors should express negative permissions with neutral key names and boolean values rather than embedding banned artifact names in field names.
+ 
+-If the same task fails more than once because a guard test assumes a not-yet-created module or fixture exists, classify the task as a task-shaping problem, not as a domain implementation problem. The next retry should repair the guard to skip on absence or should split the work into two tasks:
++For example, prefer `agentMayHandlePaymentInstrument: false` over a key containing `paymentDetails`.
+ 
+-- first, add the optional syntax or size guard that skips until the target exists;
+-- later, add the fixture-backed module or extractor implementation with its own narrow validation.
+-
+-Do not unblock this class of failure by creating broad generated modules, private DevHub session files, raw crawl output, or authenticated workflow artifacts.
++The scanner itself should remain strict for actual fixture payloads, selectors, values, and workflow state.

@@ -1,0 +1,177 @@
+{
+  "schema_version": 1,
+  "fixture_id": "urban_forestry_permit_requirement_expected_output_minimal_v1",
+  "permit_type": "urban_forestry_permit",
+  "redaction_status": "redacted_public_fixture",
+  "generated_from": "public_guidance_summary_only",
+  "records": [
+    {
+      "category": "eligibility",
+      "requirement_id": "uf-eligibility-001",
+      "requirement_type": "precondition",
+      "subject": "applicant",
+      "action": "determine whether tree work needs an Urban Forestry permit before work begins",
+      "object": "regulated tree pruning, planting, removal, or related tree work",
+      "conditions": [
+        "Project involves trees regulated by City of Portland Urban Forestry guidance.",
+        "Applicant must use public Urban Forestry permit guidance to identify the applicable permit path."
+      ],
+      "expected_agent_behavior": "Ask only for non-private project facts needed to identify the applicable Urban Forestry permit path.",
+      "redactions": ["project address redacted", "applicant identity redacted"],
+      "source_refs": [
+        {
+          "source_id": "uf-public-permits-index",
+          "title": "Tree permits",
+          "url": "https://www.portland.gov/trees/treepermits",
+          "captured_at": "2026-05-01T00:00:00Z",
+          "evidence_summary": "Public Urban Forestry guidance describes tree permit paths and directs applicants to determine whether planned tree work requires a permit."
+        }
+      ]
+    },
+    {
+      "category": "plan-review applicability",
+      "requirement_id": "uf-plan-review-001",
+      "requirement_type": "dependency",
+      "subject": "applicant",
+      "action": "check whether Urban Forestry review is part of a broader development or building permit workflow",
+      "object": "tree preservation, planting, or removal review associated with development activity",
+      "conditions": [
+        "Some Urban Forestry reviews are connected to development permit review rather than a standalone tree permit path.",
+        "The applicant should identify whether the work is independent tree work or tied to a development proposal."
+      ],
+      "expected_agent_behavior": "Route the user to a human or ask clarifying facts when standalone tree-permit guidance and development-review guidance could both apply.",
+      "redactions": ["site plan details redacted", "parcel identifier redacted"],
+      "source_refs": [
+        {
+          "source_id": "uf-development-review",
+          "title": "Trees and development",
+          "url": "https://www.portland.gov/trees/treepermits/development-permits",
+          "captured_at": "2026-05-01T00:00:00Z",
+          "evidence_summary": "Urban Forestry public guidance distinguishes tree requirements connected to development review from other tree permit paths."
+        }
+      ]
+    },
+    {
+      "category": "upload requirements",
+      "requirement_id": "uf-upload-001",
+      "requirement_type": "obligation",
+      "subject": "applicant",
+      "action": "prepare and attach required public-form documents and supporting materials through the applicable permit channel",
+      "object": "application materials, tree information, site information, and supporting documentation",
+      "conditions": [
+        "Required materials depend on the Urban Forestry permit path selected.",
+        "The fixture records only expected categories of materials and does not include user files."
+      ],
+      "expected_agent_behavior": "Produce a checklist of missing document categories without storing uploaded files or private field values.",
+      "redactions": ["uploaded file names redacted", "private notes redacted"],
+      "source_refs": [
+        {
+          "source_id": "uf-private-property-tree-permits",
+          "title": "Private property tree permits",
+          "url": "https://www.portland.gov/trees/treepermits/private-property-tree-permits",
+          "captured_at": "2026-05-01T00:00:00Z",
+          "evidence_summary": "Public Urban Forestry guidance identifies application paths and supporting information for private-property tree permit requests."
+        }
+      ]
+    },
+    {
+      "category": "fee/payment checkpoints",
+      "requirement_id": "uf-payment-001",
+      "requirement_type": "action_gate",
+      "subject": "agent",
+      "action": "stop before initiating fee payment or entering payment details",
+      "object": "Urban Forestry permit fees or related PP&D/DevHub charges",
+      "conditions": [
+        "Fees may apply depending on the selected permit path and review outcome.",
+        "Payment is a financial action and requires exact user confirmation in the active session."
+      ],
+      "expected_agent_behavior": "Summarize the fee checkpoint and request explicit confirmation before any payment-related action.",
+      "redactions": ["payment account redacted", "billing contact redacted"],
+      "source_refs": [
+        {
+          "source_id": "uf-fees",
+          "title": "Tree permit fees",
+          "url": "https://www.portland.gov/trees/treepermits/tree-permit-fees",
+          "captured_at": "2026-05-01T00:00:00Z",
+          "evidence_summary": "Public Urban Forestry fee guidance describes fee checkpoints for tree permit activity."
+        },
+        {
+          "source_id": "ppd-devhub-faq-payments",
+          "title": "DevHub FAQ",
+          "url": "https://www.portland.gov/ppd/development-services/devhub/devhub-faq",
+          "captured_at": "2026-05-01T00:00:00Z",
+          "evidence_summary": "Public DevHub FAQ identifies fee payment as a supported online permitting service category."
+        }
+      ]
+    },
+    {
+      "category": "corrections",
+      "requirement_id": "uf-corrections-001",
+      "requirement_type": "dependency",
+      "subject": "applicant",
+      "action": "respond to reviewer requests for corrected or additional Urban Forestry materials",
+      "object": "review comments, checksheets, or corrected supporting materials",
+      "conditions": [
+        "Corrections may be required after staff review.",
+        "Official correction upload or response is consequential and must be confirmed before action."
+      ],
+      "expected_agent_behavior": "Prepare a redacted correction-response preview and stop before official upload or certification.",
+      "redactions": ["review comment details redacted", "case identifier redacted"],
+      "source_refs": [
+        {
+          "source_id": "ppd-devhub-faq-corrections",
+          "title": "DevHub FAQ",
+          "url": "https://www.portland.gov/ppd/development-services/devhub/devhub-faq",
+          "captured_at": "2026-05-01T00:00:00Z",
+          "evidence_summary": "Public DevHub FAQ lists correction uploads among online permitting service categories."
+        }
+      ]
+    },
+    {
+      "category": "inspections/finalization",
+      "requirement_id": "uf-finalization-001",
+      "requirement_type": "deadline",
+      "subject": "applicant",
+      "action": "complete required follow-up steps before relying on the Urban Forestry permit as final",
+      "object": "approval conditions, planting obligations, inspections, or closeout instructions",
+      "conditions": [
+        "Some Urban Forestry outcomes include conditions or follow-up steps.",
+        "Finalization depends on the specific permit path and approval terms."
+      ],
+      "expected_agent_behavior": "Ask for the public approval-condition category or route to PP&D when closeout requirements are unclear.",
+      "redactions": ["approval record redacted", "property details redacted"],
+      "source_refs": [
+        {
+          "source_id": "uf-public-permits-index",
+          "title": "Tree permits",
+          "url": "https://www.portland.gov/trees/treepermits",
+          "captured_at": "2026-05-01T00:00:00Z",
+          "evidence_summary": "Public Urban Forestry permit guidance describes permit outcomes and follow-up responsibilities by permit type."
+        }
+      ]
+    },
+    {
+      "category": "explicit-confirmation gates",
+      "requirement_id": "uf-confirmation-001",
+      "requirement_type": "action_gate",
+      "subject": "agent",
+      "action": "require exact user confirmation before consequential or financial Urban Forestry permit actions",
+      "object": "submission, official upload, certification, cancellation, inspection request, or payment",
+      "conditions": [
+        "The agent may draft summaries and previews using redacted fixtures.",
+        "The agent must not submit, certify, cancel, schedule, upload officially, or pay without exact session-specific confirmation."
+      ],
+      "expected_agent_behavior": "Refuse automation of consequential or financial actions until the user explicitly authorizes the exact action in the active session.",
+      "redactions": ["session state redacted", "authorization secret redacted"],
+      "source_refs": [
+        {
+          "source_id": "ppd-plan-guarded-action-executor",
+          "title": "PP&D guarded action executor plan",
+          "url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md",
+          "captured_at": "2026-05-01T00:00:00Z",
+          "evidence_summary": "The PP&D plan requires exact confirmation for consequential and financial actions and forbids unattended irreversible automation."
+        }
+      ]
+    }
+  ]
+}

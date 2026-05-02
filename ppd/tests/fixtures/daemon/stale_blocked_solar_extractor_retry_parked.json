@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "fixture_id": "stale_blocked_solar_extractor_retry_parked",
+  "description": "A stale blocked solar extractor retry has already passed the proposal-size guard and malformed-comparison diagnostic, so it is parked outside selectable checkbox form and the supervisor can continue with the next independent needed item.",
+  "stale_retry": {
+    "task_label": "Task checkbox-84: Retry the blocked solar extractor after the syntax-first import test and malformed comparison diagnostic pass",
+    "domain": "solar_permit_extractor",
+    "previous_status": "blocked",
+    "retry_state": "stale",
+    "size_guard_passed": true,
+    "malformed_comparison_diagnostic_passed": true,
+    "parked_after_diagnostics": true,
+    "parked_reason": "stale_blocked_retry_after_size_guard_and_malformed_comparison_diagnostic",
+    "selectable_checkbox_expected": false
+  },
+  "fixture_task_board_lines": [
+    "# Fixture Supervisor Board",
+    "",
+    "## Checklist",
+    "",
+    "- [x] Add a fixture-only permit-process skeleton for a solar permit workflow.",
+    "- [!] Retry the blocked solar extractor after the syntax-first import test and malformed comparison diagnostic pass.",
+    "Parked stale retry: solar extractor retry already passed the size guard and malformed-comparison diagnostic; do not render as a selectable checkbox.",
+    "- [ ] Add the next independent fixture-only PP&D validation task."
+  ],
+  "expected": {
+    "blocked_task_title": "Retry the blocked solar extractor after the syntax-first import test and malformed comparison diagnostic pass.",
+    "next_selected_label": "Task checkbox-3: Add the next independent fixture-only PP&D validation task.",
+    "no_eligible_tasks": false,
+    "revisit_blocked": false
+  }
+}

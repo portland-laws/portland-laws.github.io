@@ -1,0 +1,49 @@
+{
+  "changed_files": [
+    "ppd/contracts/source_coverage_gap_report.py",
+    "ppd/tests/fixtures/source_coverage_gap/source_inventory_permit_family_categories.json",
+    "ppd/tests/fixtures/source_coverage_gap/permit_process_fixture_index.json",
+    "ppd/tests/test_source_coverage_gap_report.py"
+  ],
+  "created_at": "2026-05-01T23:03:24.781672Z",
+  "impact": "This advances the PP&D plan by making the public source inventory actionable: validation can now identify authoritative permit family categories that still need deterministic process fixtures before live crawling or authenticated DevHub automation expands.",
+  "summary": "Add a validation-only PP&D source coverage gap report for permit families without fixture-backed process models.",
+  "target_task": "Task checkbox-84: Add a validation-only source coverage gap report that compares permit-process fixtures against public source inventory categories and reports which PP&D permit families still lack fixture-backed process models.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 84 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".......................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 186 tests in 0.023s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

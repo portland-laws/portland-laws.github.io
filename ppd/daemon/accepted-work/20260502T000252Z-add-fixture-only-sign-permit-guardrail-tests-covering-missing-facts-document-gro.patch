@@ -1,0 +1,395 @@
+--- a/ppd/tests/fixtures/guardrails/sign_permit_workflow_guardrails.json
++++ b/ppd/tests/fixtures/guardrails/sign_permit_workflow_guardrails.json
+@@ -0,0 +1,231 @@
++{
++  "schemaVersion": 1,
++  "fixtureId": "sign_permit_workflow_guardrails",
++  "permitProcessId": "sign_permit_workflow_fixture",
++  "permitType": "sign_permit",
++  "sourceMode": "fixture_only",
++  "redactionStatus": "redacted_public_fixture",
++  "authoritySources": [
++    {
++      "id": "src-sign-devhub-guidance",
++      "label": "Public DevHub sign permit application guidance fixture",
++      "canonicalUrl": "https://www.portland.gov/ppd/devhub/apply-sign-permit-fixture",
++      "retrievedAt": "2026-05-01T00:00:00Z",
++      "contentHash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
++    },
++    {
++      "id": "src-sign-submittal-checklist",
++      "label": "Public PP&D sign permit submittal checklist fixture",
++      "canonicalUrl": "https://www.portland.gov/ppd/forms/sign-permit-checklist-fixture",
++      "retrievedAt": "2026-05-01T00:00:00Z",
++      "contentHash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
++    }
++  ],
++  "knownUserCase": {
++    "caseId": "redacted-sign-case-fixture",
++    "facts": {
++      "project_address": "REDACTED",
++      "sign_location_description": "north building wall",
++      "sign_type": "wall_sign"
++    },
++    "documents": {
++      "application_form": [
++        {
++          "name": "REDACTED_application.pdf",
++          "mimeType": "application/pdf",
++          "redacted": true
++        }
++      ],
++      "site_plan": [
++        {
++          "name": "REDACTED_site_plan.pdf",
++          "mimeType": "application/pdf",
++          "redacted": true
++        }
++      ]
++    },
++    "acknowledgments": [],
++    "decisions": []
++  },
++  "requiredFacts": [
++    {
++      "id": "fact-project-address",
++      "label": "Project address",
++      "predicate": "has_project_address",
++      "sourceId": "src-sign-devhub-guidance"
++    },
++    {
++      "id": "fact-property-owner",
++      "label": "Property owner name or authorized representative",
++      "predicate": "has_property_owner_or_authorized_representative",
++      "sourceId": "src-sign-submittal-checklist"
++    },
++    {
++      "id": "fact-sign-type",
++      "label": "Sign type",
++      "predicate": "has_sign_type",
++      "sourceId": "src-sign-devhub-guidance"
++    },
++    {
++      "id": "fact-sign-dimensions",
++      "label": "Sign dimensions and area",
++      "predicate": "has_sign_dimensions_and_area",
++      "sourceId": "src-sign-submittal-checklist"
++    },
++    {
++      "id": "fact-installation-method",
++      "label": "Installation or attachment method",
++      "predicate": "has_installation_method",
++      "sourceId": "src-sign-submittal-checklist"
++    }
++  ],
++  "requiredDocumentGroups": [
++    {
++      "id": "doc-group-application",
++      "label": "Application materials",
++      "requiredAnyOf": [
++        "application_form"
++      ],
++      "sourceId": "src-sign-devhub-guidance"
++    },
++    {
++      "id": "doc-group-plans",
++      "label": "Sign plans and location materials",
++      "requiredAllOf": [
++        "site_plan",
++        "sign_elevation_or_drawings"
++      ],
++      "sourceId": "src-sign-submittal-checklist"
++    },
++    {
++      "id": "doc-group-supporting",
++      "label": "Supporting calculations or authorization when applicable",
++      "requiredAnyOf": [
++        "structural_calculations",
++        "engineer_statement",
++        "owner_authorization"
++      ],
++      "condition": "required when fixture facts indicate engineered support or non-owner applicant",
++      "sourceId": "src-sign-submittal-checklist"
++    }
++  ],
++  "compiledGuardrails": [
++    {
++      "id": "guard-missing-facts-before-submit",
++      "kind": "missing_fact",
++      "stage": "application_data_entry",
++      "predicate": "all_required_sign_facts_present",
++      "statusForKnownCase": "blocked",
++      "missingItemsForKnownCase": [
++        "fact-property-owner",
++        "fact-sign-dimensions",
++        "fact-installation-method"
++      ],
++      "agentInstruction": "Ask only for missing sign permit facts before preparing submission guidance.",
++      "sourceIds": [
++        "src-sign-devhub-guidance",
++        "src-sign-submittal-checklist"
++      ]
++    },
++    {
++      "id": "guard-required-document-groups-before-upload",
++      "kind": "required_document_group",
++      "stage": "document_preparation",
++      "predicate": "required_sign_document_groups_complete",
++      "statusForKnownCase": "blocked",
++      "missingItemsForKnownCase": [
++        "sign_elevation_or_drawings",
++        "structural_calculations_or_engineer_statement_or_owner_authorization"
++      ],
++      "agentInstruction": "Report incomplete sign permit document groups and do not claim the package is upload-ready.",
++      "sourceIds": [
++        "src-sign-submittal-checklist"
++      ]
++    },
++    {
++      "id": "guard-payment-stop-point",
++      "kind": "action_gate",
++      "stage": "fee_payment",
++      "predicate": "explicit_user_confirmation_pay_sign_permit_fees",
++      "classification": "financial",
++      "statusForKnownCase": "stop_required",
++      "prohibitedActions": [
++        "pay_fees",
++        "enter_payment_details",
++        "authorize_payment"
++      ],
++      "requiredConfirmation": "Exact session-specific user confirmation is required before any payment action.",
++      "agentInstruction": "Stop at sign permit fee payment and provide a preview only.",
++      "sourceIds": [
++        "src-sign-devhub-guidance"
++      ]
++    },
++    {
++      "id": "guard-correction-upload-stop-point",
++      "kind": "action_gate",
++      "stage": "corrections",
++      "predicate": "explicit_user_confirmation_upload_sign_corrections",
++      "classification": "potentially_consequential",
++      "statusForKnownCase": "stop_required",
++      "prohibitedActions": [
++        "official_correction_upload",
++        "certify_correction_response",
++        "submit_correction_response"
++      ],
++      "requiredConfirmation": "Exact session-specific user confirmation is required before official correction upload or certification.",
++      "agentInstruction": "A correction response preview is allowed; official upload and certification are stopped.",
++      "sourceIds": [
++        "src-sign-devhub-guidance"
++      ]
++    },
++    {
++      "id": "guard-inspection-stop-point",
++      "kind": "action_gate",
++      "stage": "inspections",
++      "predicate": "explicit_user_confirmation_schedule_sign_inspection",
++      "classification": "potentially_consequential",
++      "statusForKnownCase": "stop_required",
++      "prohibitedActions": [
++        "schedule_inspection",
++        "reschedule_inspection",
++        "cancel_inspection"
++      ],
++      "requiredConfirmation": "Exact session-specific user confirmation is required before scheduling, rescheduling, or canceling inspections.",
++      "agentInstruction": "Stop before inspection scheduling actions and summarize the proposed inspection request.",
++      "sourceIds": [
++        "src-sign-devhub-guidance"
++      ]
++    },
++    {
++      "id": "guard-finalization-stop-point",
++      "kind": "action_gate",
++      "stage": "finalization",
++      "predicate": "explicit_user_confirmation_finalize_sign_permit_workflow",
++      "classification": "potentially_consequential",
++      "statusForKnownCase": "stop_required",
++      "prohibitedActions": [
++        "submit_application",
++        "certify_application",
++        "accept_issuance_terms",
++        "finalize_permit_request"
++      ],
++      "requiredConfirmation": "Exact session-specific user confirmation is required before submission, certification, issuance acceptance, or finalization.",
++      "agentInstruction": "Prepare a final review summary only; do not finalize the sign permit workflow from fixture data.",
++      "sourceIds": [
++        "src-sign-devhub-guidance",
++        "src-sign-submittal-checklist"
++      ]
++    }
++  ],
++  "forbiddenAutomation": [
++    "captcha",
++    "mfa",
++    "account_creation",
++    "payment",
++    "submission",
++    "certification",
++    "official_upload",
++    "inspection_scheduling",
++    "finalization"
++  ]
++}
+--- a/ppd/tests/test_sign_permit_guardrail_fixtures.py
++++ b/ppd/tests/test_sign_permit_guardrail_fixtures.py
+@@ -0,0 +1,158 @@
++"""Fixture-only guardrail tests for the PP&D sign permit workflow."""
++
++from __future__ import annotations
++
++import json
++import re
++import unittest
++from pathlib import Path
++from urllib.parse import urlparse
++
++
++FIXTURE_PATH = Path(__file__).parent / "fixtures" / "guardrails" / "sign_permit_workflow_guardrails.json"
++_ALLOWED_HOSTS = {"www.portland.gov", "devhub.portlandoregon.gov", "www.portlandoregon.gov", "www.portlandmaps.com"}
++_PRIVATE_MARKERS = (
++    "password",
++    "credential",
++    "auth_state",
++    "storage_state",
++    "cookie",
++    "token",
++    "trace.zip",
++    "screenshot",
++    "ppd/data/private",
++    "ppd/data/raw",
++    "downloaded_documents",
++)
++
++
++class SignPermitGuardrailFixtureTests(unittest.TestCase):
++    def setUp(self) -> None:
++        with FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
++            self.fixture = json.load(fixture_file)
++        self.guardrails = {guardrail["id"]: guardrail for guardrail in self.fixture["compiledGuardrails"]}
++
++    def test_fixture_is_public_redacted_and_source_backed(self) -> None:
++        self.assertEqual(self.fixture["sourceMode"], "fixture_only")
++        self.assertEqual(self.fixture["redactionStatus"], "redacted_public_fixture")
++        serialized = json.dumps(self.fixture, sort_keys=True).lower()
++        for marker in _PRIVATE_MARKERS:
++            self.assertNotIn(marker, serialized)
++
++        source_ids = {source["id"] for source in self.fixture["authoritySources"]}
++        self.assertGreaterEqual(len(source_ids), 2)
++        for source in self.fixture["authoritySources"]:
++            parsed = urlparse(source["canonicalUrl"])
++            self.assertEqual(parsed.scheme, "https")
++            self.assertIn(parsed.netloc, _ALLOWED_HOSTS)
++            self.assertRegex(source["contentHash"], r"^sha256:[0-9a-f]{64}$")
++            self.assertTrue(source["retrievedAt"].endswith("Z"))
++
++        for guardrail in self.fixture["compiledGuardrails"]:
++            self.assertTrue(set(guardrail["sourceIds"]).issubset(source_ids))
++            self.assertTrue(guardrail["agentInstruction"].strip())
++
++    def test_missing_fact_guardrail_reports_only_unknown_required_facts(self) -> None:
++        known_fact_keys = set(self.fixture["knownUserCase"]["facts"].keys())
++        required_by_predicate = {fact["id"]: fact["predicate"] for fact in self.fixture["requiredFacts"]}
++        guardrail = self.guardrails["guard-missing-facts-before-submit"]
++
++        self.assertEqual(guardrail["kind"], "missing_fact")
++        self.assertEqual(guardrail["statusForKnownCase"], "blocked")
++        self.assertEqual(
++            guardrail["missingItemsForKnownCase"],
++            ["fact-property-owner", "fact-sign-dimensions", "fact-installation-method"],
++        )
++        self.assertNotIn("fact-project-address", guardrail["missingItemsForKnownCase"])
++        self.assertNotIn("fact-sign-type", guardrail["missingItemsForKnownCase"])
++
++        for missing_fact_id in guardrail["missingItemsForKnownCase"]:
++            self.assertIn(missing_fact_id, required_by_predicate)
++            normalized_name = re.sub(r"^has_", "", required_by_predicate[missing_fact_id])
++            self.assertNotIn(normalized_name, known_fact_keys)
++
++    def test_required_document_group_guardrail_blocks_incomplete_sign_package(self) -> None:
++        known_document_groups = set(self.fixture["knownUserCase"]["documents"].keys())
++        guardrail = self.guardrails["guard-required-document-groups-before-upload"]
++
++        self.assertEqual(guardrail["kind"], "required_document_group")
++        self.assertEqual(guardrail["stage"], "document_preparation")
++        self.assertEqual(guardrail["statusForKnownCase"], "blocked")
++        self.assertIn("sign_elevation_or_drawings", guardrail["missingItemsForKnownCase"])
++        self.assertIn(
++            "structural_calculations_or_engineer_statement_or_owner_authorization",
++            guardrail["missingItemsForKnownCase"],
++        )
++        self.assertTrue({"application_form", "site_plan"}.issubset(known_document_groups))
++
++        document_group_ids = {group["id"] for group in self.fixture["requiredDocumentGroups"]}
++        self.assertEqual(
++            document_group_ids,
++            {"doc-group-application", "doc-group-plans", "doc-group-supporting"},
++        )
++
++    def test_payment_stop_point_is_financial_and_requires_exact_confirmation(self) -> None:
++        guardrail = self.guardrails["guard-payment-stop-point"]
++
++        self.assertEqual(guardrail["kind"], "action_gate")
++        self.assertEqual(guardrail["stage"], "fee_payment")
++        self.assertEqual(guardrail["classification"], "financial")
++        self.assertEqual(guardrail["statusForKnownCase"], "stop_required")
++        self.assertIn("pay_fees", guardrail["prohibitedActions"])
++        self.assertIn("enter_payment_details", guardrail["prohibitedActions"])
++        self.assertIn("Exact session-specific user confirmation", guardrail["requiredConfirmation"])
++
++    def test_correction_upload_stop_point_blocks_official_upload_and_certification(self) -> None:
++        guardrail = self.guardrails["guard-correction-upload-stop-point"]
++
++        self.assertEqual(guardrail["kind"], "action_gate")
++        self.assertEqual(guardrail["stage"], "corrections")
++        self.assertEqual(guardrail["classification"], "potentially_consequential")
++        self.assertEqual(guardrail["statusForKnownCase"], "stop_required")
++        self.assertEqual(
++            set(guardrail["prohibitedActions"]),
++            {"official_correction_upload", "certify_correction_response", "submit_correction_response"},
++        )
++        self.assertIn("preview is allowed", guardrail["agentInstruction"])
++
++    def test_inspection_and_finalization_stop_points_are_consequential(self) -> None:
++        inspection_guardrail = self.guardrails["guard-inspection-stop-point"]
++        finalization_guardrail = self.guardrails["guard-finalization-stop-point"]
++
++        self.assertEqual(inspection_guardrail["stage"], "inspections")
++        self.assertEqual(inspection_guardrail["classification"], "potentially_consequential")
++        self.assertEqual(inspection_guardrail["statusForKnownCase"], "stop_required")
++        self.assertEqual(
++            set(inspection_guardrail["prohibitedActions"]),
++            {"schedule_inspection", "reschedule_inspection", "cancel_inspection"},
++        )
++
++        self.assertEqual(finalization_guardrail["stage"], "finalization")
++        self.assertEqual(finalization_guardrail["classification"], "potentially_consequential")
++        self.assertEqual(finalization_guardrail["statusForKnownCase"], "stop_required")
++        self.assertTrue(
++            {"submit_application", "certify_application", "accept_issuance_terms", "finalize_permit_request"}.issubset(
++                set(finalization_guardrail["prohibitedActions"])
++            )
++        )
++        self.assertIn("do not finalize", finalization_guardrail["agentInstruction"])
++
++    def test_forbidden_automation_covers_irreversible_sign_workflow_actions(self) -> None:
++        forbidden = set(self.fixture["forbiddenAutomation"])
++        self.assertTrue(
++            {
++                "captcha",
++                "mfa",
++                "account_creation",
++                "payment",
++                "submission",
++                "certification",
++                "official_upload",
++                "inspection_scheduling",
++                "finalization",
++            }.issubset(forbidden)
++        )
++
++
++if __name__ == "__main__":
++    unittest.main()

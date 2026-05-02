@@ -1,0 +1,118 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,81 +1,51 @@
+ # PP&D Supervisor Repair Guide
+ 
+-## Purpose
++This guide is for supervisor-triggered repair cycles only. It is not a PP&D domain backlog and must not be used to implement permit, crawler, extraction, DevHub, or guardrail features directly.
+ 
+-This guide tells the PP&D supervisor how to recover daemon progress when a task is blocked by repeated validation failures. It is intentionally narrow: repair supervision, task selection, retry policy, and diagnostics before asking the worker to attempt another PP&D domain implementation.
++## Syntax and Compile Failure Recovery
+ 
+-## Syntax-First Recovery Policy
++When two recent daemon validation rollbacks include Python `SyntaxError`, `py_compile` failures, or TypeScript parser errors such as `TS1005`, `TS1109`, or `TS1128`, the supervisor repair response must narrow the next worker attempt before any more domain work is requested.
+ 
+-When a recent failed patch reports Python `SyntaxError`, `py_compile` failure, or TypeScript `TS1005`, `TS1109`, or `TS1128`, the next daemon cycle must choose a syntax-first repair task instead of a broad implementation task.
++Required recovery behavior:
+ 
+-For `ppd/contracts/public_source_inventory.py`, the supervisor must preserve the import sentinel before any validator behavior changes:
++- Treat repeated syntax or compile failures as daemon-programming drift, not as a domain-task failure.
++- Do not implement the selected PP&D domain task in the supervisor repair proposal.
++- Prefer editing daemon prompt, preflight, retry, diagnostics, or this guide.
++- Direct the worker toward a smaller file set on the next attempt.
++- Require syntax-valid complete replacements for every proposed Python, TypeScript, JavaScript, and JSON file.
++- Prefer fixture-first and validation-first tasks over live crawl or authenticated automation.
++- Keep broad shared contract rewrites out of syntax recovery unless the failed task directly requires that contract.
+ 
+-- `MODULE_PURPOSE` remains `syntax_first_public_source_inventory_validation`.
+-- `validator_status()` remains exactly `{"module": "ppd.contracts.public_source_inventory", "syntax_first_probe": true, "validator_ready": false}` when serialized to JSON-equivalent values.
+-- The module must compile with `py_compile` before unit discovery runs.
+-- Do not use `dataclasses` in this module unless the syntax-first import test is updated first, because the existing import probe can load the module outside normal `sys.modules` registration.
++## Worker Prompt Guardrails
+ 
+-## Retry Selection Rules
++A repair cycle responding to syntax failures should preserve or add instructions equivalent to these guardrails in the worker prompt:
+ 
+-The supervisor should not keep retrying the same broad task after a syntax failure. Use this order instead:
++- Return only complete file replacements in JSON.
++- For Python files, avoid TypeScript syntax and validate mentally against `python3 -m py_compile` before returning.
++- For TypeScript files, avoid Python control-flow and type syntax.
++- Keep proposals to the smallest file set that can satisfy the selected task.
++- If the last failure was syntax-only, first return a minimal syntactically valid implementation rather than expanding behavior.
++- Do not mix fixture creation, production extractor rewrites, and broad contract changes in one proposal unless all are strictly necessary.
+ 
+-1. If the sentinel import test fails, select only the sentinel repair task.
+-2. If the expected one-unsafe-field fixture path is missing, select only the fixture compatibility task.
+-3. If both the sentinel import test and fixture path pass, select a one-file validator retry that preserves the sentinel status helper exactly.
+-4. If a broad validator task reintroduces syntax errors after a narrower validator has already passed, block the broad task and append a narrower follow-up task instead of reselecting it.
+-5. If a later narrower task passes and explicitly supersedes older blocked retries, park those older retries outside selectable checkbox form so they do not leave the daemon with only blocked work.
++## Preflight Expectations
+ 
+-## Public Source Inventory Validator Guardrails
++Daemon preflight should reject or warn on proposals before write/rollback churn when any of the following are true:
+ 
+-A validator retry may cover only committed fixtures and metadata. It must not create or persist live crawl output, raw response bodies, downloaded documents, screenshots, traces, credentials, private DevHub session state, or authenticated artifacts.
++- A Python replacement cannot be parsed or compiled.
++- A JSON replacement cannot be decoded.
++- A proposal touches more files than needed after repeated syntax failures.
++- A repair proposal tries to implement the active PP&D domain task instead of repairing daemon or supervisor behavior.
++- A proposed path creates private DevHub state, traces, screenshots, raw crawl output, downloaded documents, or auth/session artifacts.
+ 
+-Required fixture checks should stay deterministic and local:
++## Retry Policy
+ 
+-- allowlisted hosts only.
+-- private DevHub paths rejected.
+-- raw response body fields rejected.
+-- downloaded document payloads rejected.
+-- credential-like fields rejected.
+-- trace and screenshot paths rejected.
+-- provenance fields required for each source entry.
++After a syntax-failure streak:
+ 
+-## Supervisor Diagnostics
++- The next worker proposal should be limited to the directly needed implementation and fixture/test files.
++- If the selected task already failed twice with syntax errors, the daemon should include the exact compiler message in the next prompt and ask for a smaller proposal.
++- If the same task fails again with syntax errors, the supervisor should repair prompt or preflight behavior before allowing another worker attempt.
++- Non-syntax assertion failures should be handled separately; they do not require this syntax recovery path unless they follow a syntax-failure streak.
+ 
+-When validation fails, the supervisor should record the smallest actionable reason:
++## Scope Limits
+ 
+-- `syntax` for compile or parser failures.
+-- `import_guard` for sentinel status or import-probe mismatches.
+-- `fixture_missing` for expected committed fixture paths.
+-- `validator_behavior` for deterministic fixture assertion failures.
+-- `superseded_blocked` for an older blocked retry whose narrower follow-up has already passed.
+-- `no_change` only when validation passed but the patch produced no content difference.
+-
+-A `no_change` result after passing validation should not block later meaningful progress. It means the repository already contained the proposed repair. The next task should advance to the next prerequisite instead of retrying the identical proposal.
+-
+-## Blocked Task Handling
+-
+-When a task remains blocked after two failed attempts with the same failure kind, the supervisor should append a new narrow recovery task to `ppd/daemon/task-board.md` and prefer that task on the next cycle. The new task must name the exact failing guard and the expected validation command.
+-
+-When the narrow recovery task passes, the supervisor should reconcile the board before the next autonomous cycle:
+-
+-- Keep the accepted narrow task marked complete.
+-- Move superseded blocked retries into Deferred Broad Items or Deferred Repair Notes as plain bullets, not checkbox tasks.
+-- Append a new `[ ]` task only when there is a concrete fixture-first or validation-first next step.
+-- Do not reselect an older blocked retry just because no needed tasks remain.
+-
+-For the current public source inventory sequence, prefer tasks with this shape:
+-
+-- Restore or preserve the syntax-first sentinel only.
+-- Add or verify one missing committed fixture path only.
+-- Add one validator behavior group at a time while keeping `validator_status()` unchanged.
+-- Add a regression test for the observed supervisor failure before any live crawl or authenticated automation.
+-
+-## Validation Command
+-
+-The repair loop should use the repository PP&D validator as the supervisor-facing validation entry point:
+-
+-```text
+-python3 ppd/tests/validate_ppd.py
+-```
+-
+-If that validator expands into lower-level commands, syntax checks must run before unit discovery and before TypeScript checks. This keeps parser failures from being hidden behind broader test output.
++Supervisor repair proposals may edit only daemon, supervisor, validation, test, ignore, or operations documentation files allowed by the PP&D daemon policy. They must not mark domain progress by editing application artifacts, live crawl output, or DevHub private state.

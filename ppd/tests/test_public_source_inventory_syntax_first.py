@@ -1,0 +1,61 @@
+"""Syntax-first repair tests for public source inventory validation.
+
+These tests deliberately load only ppd.contracts.public_source_inventory from
+its file path. That keeps malformed contract Python from being hidden by broad
+unittest discovery or unrelated package imports.
+"""
+
+import importlib.util
+import py_compile
+import tempfile
+import unittest
+from pathlib import Path
+
+
+MODULE_PATH = Path(__file__).resolve().parents[1] / "contracts" / "public_source_inventory.py"
+
+
+class PublicSourceInventorySyntaxFirstTest(unittest.TestCase):
+    def test_contract_compiles_before_broad_discovery(self):
+        self.assertTrue(MODULE_PATH.is_file(), f"missing syntax-first target: {MODULE_PATH}")
+        py_compile.compile(str(MODULE_PATH), doraise=True)
+
+        spec = importlib.util.spec_from_file_location(
+            "ppd.contracts.public_source_inventory",
+            MODULE_PATH,
+        )
+        self.assertIsNotNone(spec)
+        self.assertIsNotNone(spec.loader)
+
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+
+        self.assertEqual(
+            module.MODULE_PURPOSE,
+            "syntax_first_public_source_inventory_validation",
+        )
+        self.assertEqual(
+            module.validator_status(),
+            {
+                "module": "ppd.contracts.public_source_inventory",
+                "syntax_first_probe": True,
+                "validator_ready": False,
+            },
+        )
+
+    def test_malformed_python_is_rejected_before_broad_inventory_validation(self):
+        with tempfile.TemporaryDirectory() as temp_dir:
+            malformed_path = Path(temp_dir) / "public_source_inventory.py"
+            malformed_path.write_text(
+                "def broken_public_source_inventory(:\n    return True\n",
+                encoding="utf-8",
+            )
+
+            with self.assertRaises(py_compile.PyCompileError) as raised:
+                py_compile.compile(str(malformed_path), doraise=True)
+
+        self.assertIn("SyntaxError", str(raised.exception))
+
+
+if __name__ == "__main__":
+    unittest.main()

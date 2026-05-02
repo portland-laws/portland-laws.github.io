@@ -1,0 +1,53 @@
+{
+  "processId": "ppd-public-residential-building-permit",
+  "sourceEvidenceIds": [
+    "ppd-devhub-apply-for-permits-guidance",
+    "ppd-single-pdf-process-guidance"
+  ],
+  "stages": [
+    {
+      "id": "prepare-public-submittal-documents",
+      "sourceEvidenceIds": [
+        "ppd-single-pdf-process-guidance"
+      ]
+    },
+    {
+      "id": "create-or-use-devhub-account",
+      "sourceEvidenceIds": [
+        "ppd-devhub-apply-for-permits-guidance"
+      ]
+    }
+  ],
+  "requiredInputs": [
+    {
+      "id": "project-property-reference",
+      "sourceEvidenceIds": [
+        "ppd-devhub-apply-for-permits-guidance"
+      ]
+    }
+  ],
+  "requiredDocuments": [
+    {
+      "id": "searchable-drawing-plan-pdf",
+      "sourceEvidenceIds": [
+        "ppd-single-pdf-process-guidance"
+      ]
+    },
+    {
+      "id": "application-and-supporting-documents-pdf",
+      "sourceEvidenceIds": [
+        "ppd-single-pdf-process-guidance",
+        "ppd-devhub-apply-for-permits-guidance"
+      ]
+    }
+  ],
+  "stopGates": [
+    {
+      "id": "stop-before-official-submission",
+      "sourceEvidenceIds": [
+        "ppd-devhub-apply-for-permits-guidance"
+      ]
+    }
+  ],
+  "lastReviewed": "2026-05-01"
+}

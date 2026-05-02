@@ -1,0 +1,94 @@
+--- a/ppd/tests/test_permit_lifecycle_requirements_size_guard.py
++++ b/ppd/tests/test_permit_lifecycle_requirements_size_guard.py
+@@ -0,0 +1,91 @@
++"""Size guard for the permit lifecycle requirements extractor.
++
++This intentionally inspects only the implementation module shape. Behavioral
++validation belongs in the focused lifecycle extraction tests.
++"""
++
++from __future__ import annotations
++
++import ast
++import importlib.util
++import unittest
++from pathlib import Path
++
++
++MODULE_NAME = "ppd.extraction.permit_lifecycle_requirements"
++MAX_PHYSICAL_LINES = 180
++
++
++class PermitLifecycleRequirementsSizeGuardTest(unittest.TestCase):
++    def setUp(self) -> None:
++        spec = importlib.util.find_spec(MODULE_NAME)
++        if spec is None or spec.origin is None:
++            self.skipTest(f"{MODULE_NAME} is not implemented yet")
++        self.module_path = Path(spec.origin)
++        if self.module_path.suffix != ".py":
++            self.fail(f"{MODULE_NAME} must resolve to a Python source file")
++
++    def test_extractor_stays_under_replacement_size_limit(self) -> None:
++        source = self.module_path.read_text(encoding="utf-8")
++        line_count = len(source.splitlines())
++
++        self.assertLessEqual(
++            line_count,
++            MAX_PHYSICAL_LINES,
++            (
++                f"{MODULE_NAME} has {line_count} physical lines; keep the "
++                f"extractor under {MAX_PHYSICAL_LINES} lines so generated "
++                "broad replacement modules are rejected"
++            ),
++        )
++
++    def test_extractor_does_not_use_dataclasses(self) -> None:
++        source = self.module_path.read_text(encoding="utf-8")
++        tree = ast.parse(source, filename=str(self.module_path))
++        violations: list[str] = []
++
++        for node in ast.walk(tree):
++            if isinstance(node, ast.Import):
++                for alias in node.names:
++                    if alias.name == "dataclasses":
++                        violations.append("import dataclasses")
++            elif isinstance(node, ast.ImportFrom):
++                if node.module == "dataclasses":
++                    imported = ", ".join(alias.name for alias in node.names)
++                    violations.append(f"from dataclasses import {imported}")
++            elif isinstance(node, ast.ClassDef):
++                for decorator in node.decorator_list:
++                    if _is_dataclass_decorator(decorator):
++                        violations.append(f"@dataclass on class {node.name}")
++            elif isinstance(node, ast.Call):
++                if _is_dataclasses_make_dataclass(node.func):
++                    violations.append("dataclasses.make_dataclass")
++
++        self.assertEqual(
++            [],
++            violations,
++            f"{MODULE_NAME} must not use dataclasses: {violations}",
++        )
++
++
++def _is_dataclass_decorator(node: ast.AST) -> bool:
++    if isinstance(node, ast.Name):
++        return node.id == "dataclass"
++    if isinstance(node, ast.Attribute):
++        return isinstance(node.value, ast.Name) and node.value.id == "dataclasses" and node.attr == "dataclass"
++    if isinstance(node, ast.Call):
++        return _is_dataclass_decorator(node.func)
++    return False
++
++
++def _is_dataclasses_make_dataclass(node: ast.AST) -> bool:
++    return (
++        isinstance(node, ast.Attribute)
++        and isinstance(node.value, ast.Name)
++        and node.value.id == "dataclasses"
++        and node.attr == "make_dataclass"
++    )
++
++
++if __name__ == "__main__":
++    unittest.main()

@@ -1,0 +1,102 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -83,8 +83,10 @@
+ - [x] Add guardrail compiler fixture tests for the solar permit workflow covering missing facts, required document groups, payment stop points, correction-upload stop points, and inspection-scheduling stop points.
+ - [x] Add a one-file syntax-first import test for `ppd.extraction.solar_permit_requirements` that imports only that module and fails malformed Python before broad solar requirement validation resumes.
+ - [x] Add a minimal solar permit requirement extraction expected-output fixture with exactly seven category records: eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections, and explicit-confirmation gates, all source-backed and redacted.
+-- [!] Add the solar permit requirement extractor as a no-dataclass one-file implementation only after the syntax-first import test and seven-record fixture pass; expose plain functions/constants and avoid broad contract rewrites.
+ - [~] Add a focused validation test for solar permit requirement extraction that checks only the seven fixture categories, source evidence IDs, confidence bounds, and explicit stop-gate classifications.
++- [ ] Add a one-file replacement-size guard test for `ppd.extraction.solar_permit_requirements` proposals that rejects broad generated modules and requires the extractor implementation to stay under 180 physical lines.
++- [ ] Add a daemon diagnostic fixture that classifies repeated malformed comparison syntax in Python proposals, including `confidence 1`, `confidence 1.0`, and `return 0.0 list[str]`, as a syntax-first retry stop condition for the same target task.
++- [ ] Retry the solar permit requirement extractor as a no-dataclass one-file implementation only after the replacement-size guard and malformed-comparison diagnostic pass; use plain constants and functions, preserve the syntax sentinel, and compare against the existing seven-record expected-output fixture only.
+ - [ ] Add a mocked DevHub workflow snapshot fixture for permit fee review and payment-readiness that records visible balances, payment instructions, safe read-only status, and financial-action stop points using only redacted values.
+ - [ ] Add DevHub guardrail tests proving fee review can summarize payment readiness from mocked fixtures but cannot enter payment details or execute payment without exact session-specific user confirmation.
+ - [ ] Add a validation-only source coverage gap report that compares permit-process fixtures against public source inventory categories and reports which PP&D permit families still lack fixture-backed process models.
+@@ -97,7 +99,8 @@
+ - Parked source freshness renderer task: Add a fixture-only change report renderer for public PP&D source freshness results that summarizes changed requirements, new or removed links, and affected permit-process fixtures with citation references.
+ - Parked missing-information validator broad task: Add validation for missing-information detector output proving every requested user item is source-backed, deduplicated, action-classified, and free of private fixture values. This was recovered by the accepted one-file validator replacement and should not be selected again unless a new regression appears.
+ - Parked public-source-inventory validator broad task: Add validation for public source inventory safety. This was recovered by the accepted sentinel-preserving one-file implementation. Do not select the older broad retry tasks again unless a new failing validator points to a concrete regression.
+-- Parked solar requirement extraction broad task: Add requirement extraction validation for the solar permit fixture covering eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections, and explicit-confirmation gates. This repeatedly failed with invalid Python such as `confidence 1`; recover through the new syntax-first import test, seven-record fixture, no-dataclass extractor, and focused validation test before retrying any broader behavior.
++- Parked solar requirement extraction broad task: Add requirement extraction validation for the solar permit fixture covering eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections, and explicit-confirmation gates. This repeatedly failed with invalid Python such as `confidence 1`; recover through the syntax-first import test, seven-record fixture, no-dataclass extractor, and focused validation test before retrying any broader behavior.
++- Parked checkbox-78: Add the solar permit requirement extractor as a no-dataclass one-file implementation only after the syntax-first import test and seven-record fixture pass; expose plain functions/constants and avoid broad contract rewrites. This task has failed repeatedly with `py_compile` SyntaxError variants including `confidence 1.0` and `return 0.0 list[str]`. Do not keep it in selectable checkbox form; resume only through the new size guard, malformed-comparison diagnostic, and narrowed retry task.
+ - Superseded checkbox-70: Retry the public source inventory validator as a one-file implementation only after the `MODULE_PURPOSE` sentinel and expected unsafe-field fixture path pass validation. This was superseded by the accepted sentinel-preserving validator retry.
+ - Superseded checkbox-71: Retry the public source inventory validator as a no-dataclass one-file implementation only. This was superseded by the accepted sentinel-preserving validator retry that preserves `validator_status()` exactly.
+ - Superseded checkbox-75: The broad solar requirement extraction validation task is parked because three consecutive attempts produced Python `SyntaxError` failures. Do not select it directly while the narrower solar recovery tasks remain available.
+@@ -112,7 +115,7 @@
+ 
+ The public-source-inventory validation sequence produced useful narrow repairs after repeated failures: sentinel restoration, fixture-name compatibility, and a final sentinel-preserving no-dataclass validator. Older blocked retries are now parked because selecting them again would regress into stale failure modes. The accepted validator recovery keeps `validator_status()` as an import sentinel and exposes behavior through separate plain functions/constants/dicts.
+ 
+-The solar permit requirement extraction task is now split because the latest attempts failed before import under `py_compile`. The daemon should first add a one-file import sentinel test, then a small expected-output fixture, then a no-dataclass extractor, and only then the focused validation test. The recovery implementation should not use dataclasses, generated comparison operators, broad schemas, live crawl data, DevHub session files, or private artifacts.
++The solar permit requirement extraction task is split further because the latest extractor attempts still failed before import under `py_compile`. The daemon should add a size guard and malformed-comparison diagnostic before any extractor implementation retry. The recovery implementation must not use dataclasses, generated comparison operators, broad schemas, live crawl data, DevHub session files, private artifacts, or more than one implementation file.
+ 
+ ## Task Selection Notes
+ 
+@@ -122,19 +125,21 @@
+ 
+ When no independent task is active, prefer recovery tasks in this order:
+ 
+-1. Restore the `MODULE_PURPOSE` sentinel in `ppd/contracts/public_source_inventory.py` without broad validator rewrites.
+-2. If validation next reports a missing public-source-inventory unsafe-field fixture path, add only the fixture-name compatibility repair.
+-3. Retry the public source inventory validator as a one-file no-dataclass implementation after the sentinel and fixture-contract prerequisites pass.
+-4. If validation reports that `validator_status()` returned extra keys or readiness flags, retry only with a sentinel-preserving implementation that leaves `validator_status()` exactly as the syntax-first test expects and exposes validator behavior through separate functions.
+-5. After a later narrower recovery passes, park earlier blocked retries as superseded so they do not count as active blockers.
+-6. Do not select the parked broad missing-information validator directly.
+-7. For solar requirement extraction, do not select the parked broad checkbox-75 task directly; run the syntax-first import test, seven-record fixture, no-dataclass extractor, and focused validation tasks in order.
++1. Restore any missing syntax sentinel without broad validator rewrites.
++2. Add fixture-name compatibility only when validation names the missing path.
++3. Add malformed-proposal diagnostics before retrying an implementation that has already produced repeated `SyntaxError` failures.
++4. Retry behavior as a one-file no-dataclass implementation only after syntax-first tests and minimal fixtures pass.
++5. If validation reports that a sentinel helper returned extra keys or readiness flags, retry only with a sentinel-preserving implementation and expose behavior through separate functions.
++6. After a later narrower recovery passes, park earlier blocked retries as superseded so they do not count as active blockers.
++7. Do not select parked broad validation tasks directly.
++8. For solar requirement extraction, do not select parked checkbox-78 directly; run the size guard, malformed-comparison diagnostic, narrowed extractor retry, and focused validation tasks in order.
+ 
+ Each recovery proposal should keep to one file unless the task explicitly requires a fixture plus its focused test. For public source inventory recovery, keep syntax sentinel repair separate from behavior repair, and keep the sentinel helper stable even after validator functions are added.
+ 
+ ## Supervisor Recovery Rules
+ 
+-- Treat repeated `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128` failures as a signal to split the task into syntax-first import tests, minimal fixtures, then implementation.
++- Treat repeated `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128` failures as a signal to split the task into syntax-first import tests, minimal fixtures, proposal-size guards, then implementation.
++- Treat malformed comparison-like fragments such as `confidence 1`, `confidence 1.0`, or `return 0.0 list[str]` as retry-stop diagnostics for the same target task until a smaller validation-first guard has passed.
+ - Treat `dataclasses.py` import-time failures under `importlib.util.module_from_spec` as a hard no-dataclass constraint for daemon-authored Python validator modules; use plain functions/constants/dicts instead of asking tests to alter import mechanics.
+ - Treat missing sentinel constants such as `MODULE_STATUS` or `MODULE_PURPOSE` as a contract-preservation repair, not as permission to redesign validator behavior.
+ - Treat a failing assertion on `validator_status()` as a sentinel-contract failure. Do not change `validator_status()` to announce implementation readiness unless the syntax-first test has first been changed by an explicit validation-first task.
+@@ -144,34 +149,14 @@
+ - Prefer deterministic fixtures and validation-only changes before adding live crawl, authenticated DevHub, browser, or network behavior.
+ - Do not create private DevHub session files, auth state, traces, raw crawl output, screenshots, or downloaded documents in repair cycles.
+ 
+-## Generated Status
+-
+-Last updated: 2026-05-01T21:58:30.000000Z
+-
+-- Latest target: `Supervisor repair: park repeated solar requirement extraction SyntaxError task and append narrow recovery tasks.`
+-- Latest result: `supervisor_repair`
+-- Latest summary: Park checkbox-75 outside selectable checklist form and split recovery into syntax-first import, minimal fixture, no-dataclass extractor, and focused validation tasks.
+-- Counts: blocked 0, complete 74, in_progress 1, needed 7
+-
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T21:58:30.000000Z
++Last updated: 2026-05-01T22:20:38.351578Z
+ 
+-- Latest target: `Supervisor repair: park repeated solar requirement extraction SyntaxError task and append narrow recovery tasks.`
++- Latest target: `Supervisor repair: park repeated checkbox-78 solar extractor SyntaxError task and append narrower syntax guard recovery tasks.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Park checkbox-75 outside selectable checklist form and split recovery into syntax-first import, minimal fixture, no-dataclass extractor, and focused validation tasks.
+-- Counts: `{"blocked": 0, "complete": 74, "in_progress": 1, "needed": 7}`
++- Latest summary: Parked checkbox-78 outside selectable checklist form after repeated py_compile failures and appended validation-first guard tasks before retrying the extractor.
++- Counts: `{"blocked": 0, "complete": 77, "in_progress": 1, "needed": 6}`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-01T22:20:16.950176Z
+-
+-- Latest target: `Task checkbox-78: Add the solar permit requirement extractor as a no-dataclass one-file implementation only after the syntax-first import test and seven-record fixture pass; expose plain functions/constants and avoid broad contract rewrites.`
+-- Latest result: `validation`
+-- Latest summary: Add a syntax-valid no-dataclass solar permit requirement extractor as a single narrow module.
+-- Counts: `{"blocked": 1, "complete": 77, "in_progress": 0, "needed": 4}`
+-
+-<!-- ppd-daemon-task-board:end -->

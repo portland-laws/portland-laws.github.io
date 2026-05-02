@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/permit_processes/residential_new_single_family_residence.json",
+    "ppd/tests/test_residential_new_single_family_residence_fixture.py"
+  ],
+  "created_at": "2026-05-01T19:43:25.488571Z",
+  "impact": "This adds the third permit-process fixture under ppd/tests/fixtures and validates the residential workflow without live crawling, DevHub login, private artifacts, uploads, submissions, or payments.",
+  "summary": "Add a deterministic new single-family residence permit-process fixture and a focused validation test for stages, facts, documents, file rules, fee gates, and citation-backed evidence.",
+  "target_task": "Task checkbox-51: Add a third permit-process fixture for a residential building permit or new single-family residence workflow with stages, required facts, required documents, file rules, fee/payment gates, and citation-backed evidence.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 62 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "....................................................................................................... ---------------------------------------------------------------------- Ran 103 tests in 0.011s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

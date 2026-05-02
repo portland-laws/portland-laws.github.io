@@ -1,0 +1,194 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "solar_permit_workflow_guardrails",
+  "process": {
+    "id": "solar-permit-workflow",
+    "permitType": "solar_permit",
+    "requiredFacts": [
+      {
+        "id": "property_identifier",
+        "label": "Property address or tax account identifier",
+        "required": true,
+        "evidenceId": "solar-devhub-guidance"
+      },
+      {
+        "id": "contractor_license_number",
+        "label": "Contractor license number when a contractor is used",
+        "required": true,
+        "evidenceId": "solar-application-guidance"
+      },
+      {
+        "id": "solar_array_scope",
+        "label": "Solar array scope and system description",
+        "required": true,
+        "evidenceId": "solar-application-guidance"
+      }
+    ],
+    "requiredDocumentGroups": [
+      {
+        "id": "application_form",
+        "label": "Solar permit application form",
+        "required": true,
+        "evidenceId": "solar-application-guidance"
+      },
+      {
+        "id": "solar_plans",
+        "label": "Solar plans and equipment layout",
+        "required": true,
+        "evidenceId": "solar-single-pdf-process"
+      },
+      {
+        "id": "structural_roof_documentation",
+        "label": "Roof structure or mounting documentation",
+        "required": true,
+        "evidenceId": "solar-application-guidance"
+      }
+    ],
+    "actionGates": [
+      {
+        "id": "solar-payment-gate",
+        "action": "pay_fees",
+        "workflowState": "fees_due",
+        "classification": "financial",
+        "requiresExactConfirmation": true,
+        "previewAction": "produce_payment_preview",
+        "evidenceId": "solar-payment-guidance"
+      },
+      {
+        "id": "solar-correction-upload-gate",
+        "action": "upload_corrections",
+        "workflowState": "corrections_requested",
+        "classification": "potentially_consequential",
+        "requiresExactConfirmation": true,
+        "previewAction": "produce_correction_upload_preview",
+        "evidenceId": "solar-correction-guidance"
+      },
+      {
+        "id": "solar-inspection-scheduling-gate",
+        "action": "schedule_inspection",
+        "workflowState": "inspection_ready",
+        "classification": "potentially_consequential",
+        "requiresExactConfirmation": true,
+        "previewAction": "produce_inspection_scheduling_preview",
+        "evidenceId": "solar-inspection-guidance"
+      }
+    ],
+    "evidence": [
+      {
+        "id": "solar-devhub-guidance",
+        "sourceUrl": "https://www.portland.gov/ppd/devhub",
+        "title": "Development Hub PDX guidance",
+        "retrievedAt": "2026-05-01T00:00:00Z",
+        "summary": "Public DevHub guidance identifies solar permits as an online permit request type."
+      },
+      {
+        "id": "solar-application-guidance",
+        "sourceUrl": "https://www.portland.gov/ppd/permits/solar-permits",
+        "title": "Solar permit public guidance fixture",
+        "retrievedAt": "2026-05-01T00:00:00Z",
+        "summary": "Public solar permit guidance fixture identifies application facts and submittal package components."
+      },
+      {
+        "id": "solar-single-pdf-process",
+        "sourceUrl": "https://www.portland.gov/ppd/single-pdf-process",
+        "title": "Single PDF Process guidance",
+        "retrievedAt": "2026-05-01T00:00:00Z",
+        "summary": "Public fixture guidance separates drawing plans from application and supporting documents."
+      },
+      {
+        "id": "solar-payment-guidance",
+        "sourceUrl": "https://www.portland.gov/ppd/pay-permit-fees",
+        "title": "Permit fee payment guidance",
+        "retrievedAt": "2026-05-01T00:00:00Z",
+        "summary": "Payment is a financial stop point requiring exact user confirmation before action."
+      },
+      {
+        "id": "solar-correction-guidance",
+        "sourceUrl": "https://www.portland.gov/ppd/upload-corrections-devhub",
+        "title": "Correction upload guidance",
+        "retrievedAt": "2026-05-01T00:00:00Z",
+        "summary": "Official correction upload is a consequential stop point requiring exact user confirmation."
+      },
+      {
+        "id": "solar-inspection-guidance",
+        "sourceUrl": "https://www.portland.gov/ppd/schedule-inspection",
+        "title": "Inspection scheduling guidance",
+        "retrievedAt": "2026-05-01T00:00:00Z",
+        "summary": "Inspection scheduling is a consequential stop point requiring exact user confirmation."
+      }
+    ]
+  },
+  "cases": [
+    {
+      "id": "missing_facts",
+      "workflowState": "draft_application",
+      "knownFacts": [
+        "solar_array_scope"
+      ],
+      "uploadedDocumentGroups": [
+        "application_form",
+        "solar_plans",
+        "structural_roof_documentation"
+      ],
+      "exactConfirmations": []
+    },
+    {
+      "id": "missing_required_document_groups",
+      "workflowState": "draft_application",
+      "knownFacts": [
+        "property_identifier",
+        "contractor_license_number",
+        "solar_array_scope"
+      ],
+      "uploadedDocumentGroups": [
+        "application_form"
+      ],
+      "exactConfirmations": []
+    },
+    {
+      "id": "payment_due_no_confirmation",
+      "workflowState": "fees_due",
+      "knownFacts": [
+        "property_identifier",
+        "contractor_license_number",
+        "solar_array_scope"
+      ],
+      "uploadedDocumentGroups": [
+        "application_form",
+        "solar_plans",
+        "structural_roof_documentation"
+      ],
+      "exactConfirmations": []
+    },
+    {
+      "id": "correction_upload_ready_no_confirmation",
+      "workflowState": "corrections_requested",
+      "knownFacts": [
+        "property_identifier",
+        "contractor_license_number",
+        "solar_array_scope"
+      ],
+      "uploadedDocumentGroups": [
+        "application_form",
+        "solar_plans",
+        "structural_roof_documentation"
+      ],
+      "exactConfirmations": []
+    },
+    {
+      "id": "inspection_ready_no_confirmation",
+      "workflowState": "inspection_ready",
+      "knownFacts": [
+        "property_identifier",
+        "contractor_license_number",
+        "solar_array_scope"
+      ],
+      "uploadedDocumentGroups": [
+        "application_form",
+        "solar_plans",
+        "structural_roof_documentation"
+      ],
+      "exactConfirmations": []
+    }
+  ]
+}

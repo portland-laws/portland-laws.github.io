@@ -1,0 +1,90 @@
+{
+  "fixtureId": "solar-permit-requirement-extraction-seven-categories",
+  "permitType": "solar_permit",
+  "sourceEvidence": [
+    {
+      "id": "solar-public-guide",
+      "sourceUrl": "https://www.portland.gov/ppd/residential-permitting/residential-solar-permits",
+      "label": "PP&D residential solar permit public guidance"
+    },
+    {
+      "id": "solar-devhub-application-guide",
+      "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/apply-permit-devhub",
+      "label": "DevHub permit request application guidance"
+    },
+    {
+      "id": "solar-single-pdf-process",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+      "label": "Single PDF Process guidance"
+    },
+    {
+      "id": "solar-fee-payment-guide",
+      "sourceUrl": "https://www.portland.gov/ppd/pay-permit-fees",
+      "label": "Permit fee payment guidance"
+    },
+    {
+      "id": "solar-correction-upload-guide",
+      "sourceUrl": "https://www.portland.gov/ppd/development-hub-pdx/upload-corrections-devhub",
+      "label": "DevHub correction upload guidance"
+    },
+    {
+      "id": "solar-inspection-guide",
+      "sourceUrl": "https://www.portland.gov/ppd/schedule-inspection",
+      "label": "Inspection scheduling guidance"
+    }
+  ],
+  "requirements": [
+    {
+      "id": "solar-eligibility-rooftop-system",
+      "category": "eligibility",
+      "summary": "Solar permit extraction identifies whether the project is a residential solar installation eligible for the solar permit workflow.",
+      "evidenceIds": ["solar-public-guide"],
+      "confidence": 0.91
+    },
+    {
+      "id": "solar-required-facts-property-and-scope",
+      "category": "required_facts",
+      "summary": "Solar permit extraction asks for the property identifier, project scope, contractor or applicant role, and system description when absent.",
+      "evidenceIds": ["solar-public-guide", "solar-devhub-application-guide"],
+      "confidence": 0.88
+    },
+    {
+      "id": "solar-required-documents-plans-and-application",
+      "category": "required_documents",
+      "summary": "Solar permit extraction tracks application materials, plan documents, and supporting calculations as required document groups.",
+      "evidenceIds": ["solar-public-guide", "solar-single-pdf-process"],
+      "confidence": 0.89
+    },
+    {
+      "id": "solar-file-rules-single-pdf-package",
+      "category": "file_rules",
+      "summary": "Solar permit extraction preserves PDF packaging and searchable drawing-plan expectations when the Single PDF Process applies.",
+      "evidenceIds": ["solar-single-pdf-process"],
+      "confidence": 0.93
+    },
+    {
+      "id": "solar-fee-payment-stop-gate",
+      "category": "fee_payment_gates",
+      "summary": "Solar permit extraction classifies fee payment as a financial stop gate that requires exact user confirmation before an agent can proceed.",
+      "evidenceIds": ["solar-fee-payment-guide", "solar-devhub-application-guide"],
+      "confidence": 0.95,
+      "stopGateClassification": "financial"
+    },
+    {
+      "id": "solar-correction-upload-stop-gate",
+      "category": "correction_upload_gates",
+      "summary": "Solar permit extraction classifies official correction upload as a consequential stop gate that requires exact user confirmation.",
+      "evidenceIds": ["solar-correction-upload-guide"],
+      "confidence": 0.94,
+      "stopGateClassification": "consequential"
+    },
+    {
+      "id": "solar-inspection-scheduling-stop-gate",
+      "category": "inspection_scheduling_gates",
+      "summary": "Solar permit extraction classifies inspection scheduling as a consequential stop gate that requires exact user confirmation.",
+      "evidenceIds": ["solar-inspection-guide"],
+      "confidence": 0.94,
+      "stopGateClassification": "consequential"
+    }
+  ]
+}

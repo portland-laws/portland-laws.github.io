@@ -1,0 +1,42 @@
+{
+  "target_task_id": "checkbox-80",
+  "minimum_repetitions": 3,
+  "expected": {
+    "kind": "syntax_first_retry_stop",
+    "syntax_family": "malformed_python_comparison_syntax",
+    "retry_scope": "same_target_task",
+    "should_stop_retry": true,
+    "matched_repetitions": 3,
+    "matched_fragments": [
+      "confidence 1",
+      "confidence 1.0",
+      "return 0.0 list[str]"
+    ]
+  },
+  "failures": [
+    {
+      "task_id": "checkbox-80",
+      "kind": "validation",
+      "summary": "Rejected malformed confidence comparison syntax.",
+      "validation": "python3 ppd/daemon/ppd_daemon.py --self-test: SyntaxError: invalid syntax near confidence 1"
+    },
+    {
+      "task_id": "checkbox-80",
+      "kind": "validation",
+      "summary": "Rejected malformed confidence comparison syntax with float literal.",
+      "validation": "python3 ppd/daemon/ppd_daemon.py --self-test: SyntaxError: invalid syntax near confidence 1.0"
+    },
+    {
+      "task_id": "checkbox-80",
+      "kind": "validation",
+      "summary": "Rejected malformed return annotation fragment.",
+      "validation": "python3 ppd/daemon/ppd_daemon.py --self-test: SyntaxError: invalid syntax near return 0.0 list[str]"
+    },
+    {
+      "task_id": "checkbox-79",
+      "kind": "validation",
+      "summary": "Different task should not count toward checkbox-80 retry stop.",
+      "validation": "python3 ppd/daemon/ppd_daemon.py --self-test: SyntaxError: invalid syntax near confidence 1"
+    }
+  ]
+}

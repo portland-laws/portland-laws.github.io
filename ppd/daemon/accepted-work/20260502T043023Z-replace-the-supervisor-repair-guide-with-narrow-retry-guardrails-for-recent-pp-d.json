@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-02T04:30:23.153600Z",
+  "impact": "This gives the supervisor deterministic diagnostics before retrying checkbox-35 or checkbox-37: reject syntactically invalid Python before running the full suite, spell comparison operators explicitly in prompts, and require mutation cases to mutate a copied fixture while keeping the committed fixture valid. That lets the worker resume autonomous progress without broadening scope or implementing the domain task inside the repair step.",
+  "summary": "Replace the supervisor repair guide with narrow retry guardrails for recent PP&D daemon failures: malformed Python comparisons and mutation tests that accidentally invalidate the committed fixture.",
+  "target_task": "Supervisor repair: 1 task(s) are blocked: Task checkbox-35: Recovery for checkbox-27e: after checkbox-27d passes, add one mutation case for out-of-range `confidence` only. Use only complete Python comparisons such as `if not isinstance(confidence, (int, float)):` and `if confidence > 1:`.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 40 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "..........................................................................................................................................................................................................................ss..............sss...................................................................................................................................... ---------------------------------------------------------------------- Ran 371 tests in 0.046s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

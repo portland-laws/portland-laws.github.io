@@ -1,0 +1,391 @@
+--- a/ppd/tests/fixtures/permit_processes/demolition_permit_process_skeleton.json
++++ b/ppd/tests/fixtures/permit_processes/demolition_permit_process_skeleton.json
+@@ -0,0 +1,262 @@
++{
++  "fixture_id": "demolition_permit_process_skeleton_v1",
++  "generated_from": "fixture_only_public_source_inventory",
++  "process": {
++    "id": "demolition_permit_workflow",
++    "permit_type": "demolition_permit",
++    "display_name": "Demolition Permit Workflow",
++    "scope": "Fixture-only skeleton for a PP&D demolition permit request using public guidance and source-inventory evidence.",
++    "authority_sources": [
++      {
++        "source_id": "ppd_demolition_permit_guidance",
++        "title": "Apply for a demolition permit",
++        "url": "https://www.portland.gov/ppd/permits/apply-demolition-permit",
++        "authority_label": "PP&D public demolition permit guidance",
++        "source_inventory_category": "permit_application_guidance",
++        "captured_as": "public_fixture_reference"
++      },
++      {
++        "source_id": "ppd_devhub_application_guidance",
++        "title": "Apply for permits online using Development Hub PDX",
++        "url": "https://www.portland.gov/ppd/development-hub-pdx/apply-permits-online",
++        "authority_label": "PP&D public DevHub application guidance",
++        "source_inventory_category": "devhub_guide",
++        "captured_as": "public_fixture_reference"
++      },
++      {
++        "source_id": "ppd_permits_and_inspections_applications_index",
++        "title": "Permits and inspections applications",
++        "url": "https://www.portland.gov/ppd/permits/applications-forms",
++        "authority_label": "PP&D public forms and applications index",
++        "source_inventory_category": "forms_index",
++        "captured_as": "public_fixture_reference"
++      },
++      {
++        "source_id": "ppd_single_pdf_process_guidance",
++        "title": "Single PDF Process",
++        "url": "https://www.portland.gov/ppd/development-hub-pdx/single-pdf-process",
++        "authority_label": "PP&D public file-preparation guidance",
++        "source_inventory_category": "devhub_guide",
++        "captured_as": "public_fixture_reference"
++      }
++    ],
++    "required_user_facts": [
++      {
++        "id": "demolition_property_identifier",
++        "kind": "property",
++        "label": "Project property address or property identifier",
++        "required": true,
++        "evidence": ["ppd_demolition_permit_guidance", "ppd_devhub_application_guidance"]
++      },
++      {
++        "id": "demolition_project_scope",
++        "kind": "project_scope",
++        "label": "Description of the structure or work proposed for demolition",
++        "required": true,
++        "evidence": ["ppd_demolition_permit_guidance"]
++      },
++      {
++        "id": "demolition_applicant_contact",
++        "kind": "applicant_identity",
++        "label": "Applicant contact and responsible party information",
++        "required": true,
++        "evidence": ["ppd_devhub_application_guidance"]
++      },
++      {
++        "id": "demolition_owner_or_authorized_agent",
++        "kind": "authorization",
++        "label": "Owner or authorized-agent relationship for the permit request",
++        "required": true,
++        "evidence": ["ppd_demolition_permit_guidance", "ppd_permits_and_inspections_applications_index"]
++      },
++      {
++        "id": "demolition_utility_disconnect_status",
++        "kind": "site_condition",
++        "label": "Utility disconnect or site-safety status when required for demolition review",
++        "required": true,
++        "evidence": ["ppd_demolition_permit_guidance"]
++      }
++    ],
++    "required_documents": [
++      {
++        "id": "demolition_application_form",
++        "kind": "application",
++        "label": "Demolition permit application or DevHub request data",
++        "required": true,
++        "evidence": ["ppd_demolition_permit_guidance", "ppd_permits_and_inspections_applications_index"]
++      },
++      {
++        "id": "demolition_site_plan_or_scope_document",
++        "kind": "plan",
++        "label": "Site plan or demolition scope document showing the proposed demolition work",
++        "required": true,
++        "evidence": ["ppd_demolition_permit_guidance", "ppd_single_pdf_process_guidance"]
++      },
++      {
++        "id": "demolition_supporting_reports_or_clearances",
++        "kind": "supporting_document",
++        "label": "Supporting reports, notices, clearances, or approvals identified by public demolition guidance for the project type",
++        "required": true,
++        "conditional": true,
++        "evidence": ["ppd_demolition_permit_guidance"]
++      },
++      {
++        "id": "demolition_contract_license_documentation",
++        "kind": "license_or_registration",
++        "label": "Contractor license or responsible-party documentation when applicable",
++        "required": true,
++        "conditional": true,
++        "evidence": ["ppd_demolition_permit_guidance", "ppd_devhub_application_guidance"]
++      }
++    ],
++    "file_rules": [
++      {
++        "id": "demolition_files_pdf_only",
++        "rule": "Prepared application, plan, and supporting documents should be represented as PDF files for fixture validation.",
++        "applies_to": ["demolition_application_form", "demolition_site_plan_or_scope_document", "demolition_supporting_reports_or_clearances"],
++        "evidence": ["ppd_single_pdf_process_guidance", "ppd_devhub_application_guidance"]
++      },
++      {
++        "id": "demolition_drawings_single_searchable_pdf_when_applicable",
++        "rule": "When the Single PDF Process applies, drawing plans are modeled as one searchable PDF and applications, calculations, and supporting documents remain separate PDFs.",
++        "applies_to": ["demolition_site_plan_or_scope_document"],
++        "evidence": ["ppd_single_pdf_process_guidance"]
++      },
++      {
++        "id": "demolition_no_private_artifacts",
++        "rule": "The committed fixture stores only public source references and redacted structural requirements; it stores no private session state, raw response bodies, credentials, traces, images, or downloaded documents.",
++        "applies_to": ["fixture"],
++        "evidence": ["ppd_devhub_application_guidance"]
++      }
++    ],
++    "stages": [
++      {
++        "id": "demolition_pre_application_research",
++        "kind": "pre_application_research",
++        "label": "Review demolition permit guidance and identify project-specific prerequisites.",
++        "required_facts": ["demolition_property_identifier", "demolition_project_scope"],
++        "required_documents": [],
++        "evidence": ["ppd_demolition_permit_guidance"]
++      },
++      {
++        "id": "demolition_devhub_account_setup",
++        "kind": "account_setup",
++        "label": "Use DevHub with PortlandOregon.gov credentials for online permitting services.",
++        "required_facts": ["demolition_applicant_contact"],
++        "required_documents": [],
++        "evidence": ["ppd_devhub_application_guidance"]
++      },
++      {
++        "id": "demolition_document_preparation",
++        "kind": "document_preparation",
++        "label": "Prepare the application data, site or scope plan, and conditional supporting documentation.",
++        "required_facts": ["demolition_owner_or_authorized_agent", "demolition_utility_disconnect_status"],
++        "required_documents": ["demolition_application_form", "demolition_site_plan_or_scope_document", "demolition_supporting_reports_or_clearances", "demolition_contract_license_documentation"],
++        "evidence": ["ppd_demolition_permit_guidance", "ppd_single_pdf_process_guidance"]
++      },
++      {
++        "id": "demolition_request_entry_and_upload",
++        "kind": "upload",
++        "label": "Enter the demolition permit request in DevHub and upload prepared PDFs as a draft-only or user-reviewed action.",
++        "required_facts": ["demolition_property_identifier", "demolition_applicant_contact"],
++        "required_documents": ["demolition_application_form", "demolition_site_plan_or_scope_document"],
++        "evidence": ["ppd_devhub_application_guidance", "ppd_single_pdf_process_guidance"]
++      },
++      {
++        "id": "demolition_submission_and_intake",
++        "kind": "submission",
++        "label": "Submit only after source-backed completeness checks and exact user confirmation; PP&D intake or prescreen follows submission.",
++        "required_facts": ["demolition_project_scope"],
++        "required_documents": ["demolition_application_form", "demolition_site_plan_or_scope_document"],
++        "evidence": ["ppd_demolition_permit_guidance", "ppd_devhub_application_guidance"]
++      },
++      {
++        "id": "demolition_fee_payment_gate",
++        "kind": "fee_payment",
++        "label": "Stop before fee payment or payment-detail entry unless the user gives exact confirmation for that financial action.",
++        "required_facts": [],
++        "required_documents": [],
++        "evidence": ["ppd_devhub_application_guidance"]
++      },
++      {
++        "id": "demolition_review_and_corrections",
++        "kind": "plan_review_or_corrections",
++        "label": "Track review status and treat correction upload or official resubmittal as a confirmation-gated consequential action.",
++        "required_facts": [],
++        "required_documents": ["demolition_supporting_reports_or_clearances"],
++        "evidence": ["ppd_demolition_permit_guidance", "ppd_devhub_application_guidance"]
++      },
++      {
++        "id": "demolition_issuance_inspection_or_closeout",
++        "kind": "inspection_or_finalization",
++        "label": "After issuance, inspection, finalization, cancellation, or closeout actions remain user-confirmation gates when handled through an agent workflow.",
++        "required_facts": [],
++        "required_documents": [],
++        "evidence": ["ppd_demolition_permit_guidance", "ppd_devhub_application_guidance"]
++      }
++    ],
++    "fee_payment_gates": [
++      {
++        "id": "demolition_payment_stop_point",
++        "classification": "financial",
++        "action": "pay_demolition_permit_fees",
++        "stop_condition": "No payment, payment-detail entry, or fee acceptance is automated without exact user confirmation in the active session.",
++        "evidence": ["ppd_devhub_application_guidance"]
++      }
++    ],
++    "inspection_or_finalization_gates": [
++      {
++        "id": "demolition_inspection_scheduling_stop_point",
++        "classification": "consequential",
++        "action": "schedule_or_request_demolition_inspection",
++        "stop_condition": "Inspection scheduling or request finalization requires exact user confirmation.",
++        "evidence": ["ppd_demolition_permit_guidance", "ppd_devhub_application_guidance"]
++      },
++      {
++        "id": "demolition_closeout_or_cancellation_stop_point",
++        "classification": "consequential",
++        "action": "finalize_cancel_or_close_demolition_request",
++        "stop_condition": "Finalization, cancellation, or closeout actions require exact user confirmation and an action preview.",
++        "evidence": ["ppd_demolition_permit_guidance", "ppd_devhub_application_guidance"]
++      }
++    ],
++    "action_gates": [
++      {
++        "id": "demolition_submit_application_gate",
++        "kind": "submission",
++        "classification": "consequential",
++        "action": "submit_demolition_permit_request",
++        "requires_exact_user_confirmation": true,
++        "requires_action_preview": true,
++        "citation_source_ids": ["ppd_demolition_permit_guidance", "ppd_devhub_application_guidance"]
++      },
++      {
++        "id": "demolition_certification_acknowledgment_gate",
++        "kind": "certification",
++        "classification": "consequential",
++        "action": "accept_or_certify_demolition_application_statement",
++        "requires_exact_user_confirmation": true,
++        "requires_action_preview": true,
++        "citation_source_ids": ["ppd_devhub_application_guidance"]
++      },
++      {
++        "id": "demolition_upload_official_correction_gate",
++        "kind": "correction_upload",
++        "classification": "consequential",
++        "action": "upload_official_demolition_corrections",
++        "requires_exact_user_confirmation": true,
++        "requires_action_preview": true,
++        "citation_source_ids": ["ppd_demolition_permit_guidance", "ppd_devhub_application_guidance"]
++      },
++      {
++        "id": "demolition_payment_gate",
++        "kind": "payment",
++        "classification": "financial",
++        "action": "pay_demolition_permit_fees",
++        "requires_exact_user_confirmation": true,
++        "requires_action_preview": true,
++        "citation_source_ids": ["ppd_devhub_application_guidance"]
++      }
++    ]
++  }
++}
+--- a/ppd/tests/test_demolition_permit_process_fixture.py
++++ b/ppd/tests/test_demolition_permit_process_fixture.py
+@@ -0,0 +1,123 @@
++import json
++import unittest
++from pathlib import Path
++from urllib.parse import urlparse
++
++
++FIXTURE_PATH = Path(__file__).parent / "fixtures" / "permit_processes" / "demolition_permit_process_skeleton.json"
++
++
++class DemolitionPermitProcessFixtureTest(unittest.TestCase):
++    def setUp(self):
++        with FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
++            self.fixture = json.load(fixture_file)
++        self.process = self.fixture["process"]
++        self.source_ids = {source["source_id"] for source in self.process["authority_sources"]}
++
++    def test_fixture_is_deterministic_and_public_only(self):
++        self.assertEqual(self.fixture["generated_from"], "fixture_only_public_source_inventory")
++        serialized = json.dumps(self.fixture, sort_keys=True).lower()
++        forbidden_markers = (
++            "ppd/data/private",
++            "storage_state",
++            "auth_state",
++            "cookies.json",
++            "localstorage.json",
++            "raw_response_body",
++            "response_body",
++            "password",
++            "secret",
++            "token",
++            "trace.zip",
++            "playwright-report",
++            "downloaded_documents",
++        )
++        for marker in forbidden_markers:
++            self.assertNotIn(marker, serialized)
++
++        for source in self.process["authority_sources"]:
++            parsed = urlparse(source["url"])
++            self.assertEqual(parsed.scheme, "https")
++            self.assertIn(parsed.netloc, {"www.portland.gov", "devhub.portlandoregon.gov", "www.portlandoregon.gov"})
++            self.assertEqual(source["captured_as"], "public_fixture_reference")
++            self.assertTrue(source["authority_label"])
++            self.assertTrue(source["source_inventory_category"])
++
++    def test_has_demolition_stages_required_facts_documents_and_file_rules(self):
++        self.assertEqual(self.process["permit_type"], "demolition_permit")
++        stage_kinds = [stage["kind"] for stage in self.process["stages"]]
++        expected_stage_kinds = {
++            "pre_application_research",
++            "account_setup",
++            "document_preparation",
++            "upload",
++            "submission",
++            "fee_payment",
++            "plan_review_or_corrections",
++            "inspection_or_finalization",
++        }
++        self.assertTrue(expected_stage_kinds.issubset(set(stage_kinds)))
++
++        required_fact_ids = {fact["id"] for fact in self.process["required_user_facts"] if fact["required"]}
++        self.assertTrue(
++            {
++                "demolition_property_identifier",
++                "demolition_project_scope",
++                "demolition_applicant_contact",
++                "demolition_owner_or_authorized_agent",
++                "demolition_utility_disconnect_status",
++            }.issubset(required_fact_ids)
++        )
++
++        required_document_ids = {document["id"] for document in self.process["required_documents"] if document["required"]}
++        self.assertTrue(
++            {
++                "demolition_application_form",
++                "demolition_site_plan_or_scope_document",
++                "demolition_supporting_reports_or_clearances",
++                "demolition_contract_license_documentation",
++            }.issubset(required_document_ids)
++        )
++
++        file_rule_ids = {rule["id"] for rule in self.process["file_rules"]}
++        self.assertIn("demolition_files_pdf_only", file_rule_ids)
++        self.assertIn("demolition_drawings_single_searchable_pdf_when_applicable", file_rule_ids)
++
++    def test_fee_finalization_and_action_gates_are_confirmation_backed(self):
++        payment_gates = self.process["fee_payment_gates"]
++        self.assertEqual(len(payment_gates), 1)
++        self.assertEqual(payment_gates[0]["classification"], "financial")
++        self.assertIn("exact user confirmation", payment_gates[0]["stop_condition"])
++
++        finalization_actions = {gate["action"] for gate in self.process["inspection_or_finalization_gates"]}
++        self.assertIn("schedule_or_request_demolition_inspection", finalization_actions)
++        self.assertIn("finalize_cancel_or_close_demolition_request", finalization_actions)
++
++        gates = self.process["action_gates"]
++        gate_actions = {gate["action"] for gate in gates}
++        self.assertTrue(
++            {
++                "submit_demolition_permit_request",
++                "accept_or_certify_demolition_application_statement",
++                "upload_official_demolition_corrections",
++                "pay_demolition_permit_fees",
++            }.issubset(gate_actions)
++        )
++        for gate in gates:
++            self.assertTrue(gate["requires_exact_user_confirmation"])
++            self.assertTrue(gate["requires_action_preview"])
++            self.assertIn(gate["classification"], {"consequential", "financial"})
++            self.assertTrue(gate["citation_source_ids"])
++            self.assertTrue(set(gate["citation_source_ids"]).issubset(self.source_ids))
++
++    def test_all_process_requirements_are_citation_backed(self):
++        for collection_name in ("required_user_facts", "required_documents", "file_rules", "stages", "fee_payment_gates", "inspection_or_finalization_gates"):
++            for item in self.process[collection_name]:
++                with self.subTest(collection=collection_name, item=item["id"]):
++                    evidence = item.get("evidence", [])
++                    self.assertTrue(evidence)
++                    self.assertTrue(set(evidence).issubset(self.source_ids))
++
++
++if __name__ == "__main__":
++    unittest.main()

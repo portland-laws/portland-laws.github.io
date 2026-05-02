@@ -1,0 +1,408 @@
+{
+  "fixture_id": "devhub_recorder_transition_states_redacted_v1",
+  "fixture_version": 1,
+  "captured_mode": "mocked_redacted_fixture_only",
+  "source_system": "Development Hub PDX mocked workflow recorder",
+  "redaction_policy": {
+    "private_values": "all user-entered, account, property, and file-specific values are replaced with [REDACTED]",
+    "disallowed_artifacts": [
+      "credentials",
+      "auth state",
+      "session cookies",
+      "browser traces",
+      "screenshots",
+      "raw crawl output",
+      "downloaded documents"
+    ]
+  },
+  "workflow": "trade_permit_plan_review_draft_mock",
+  "states": [
+    {
+      "id": "project_info",
+      "state_type": "form_step",
+      "url_pattern": "https://devhub.portlandoregon.gov/permits/draft/[REDACTED]/project-info",
+      "heading": "Project information",
+      "captured_at": "2026-05-01T00:00:00Z",
+      "fields": [
+        {
+          "id": "project_description",
+          "label": "Project description",
+          "kind": "textarea",
+          "required": true,
+          "value_state": "[REDACTED]",
+          "selector": {
+            "role": "textbox",
+            "accessible_name": "Project description",
+            "label_text": "Project description",
+            "nearby_heading": "Project information",
+            "url_state": "project-info"
+          }
+        },
+        {
+          "id": "work_type",
+          "label": "Work type",
+          "kind": "select",
+          "required": true,
+          "value_state": "[REDACTED]",
+          "options": [
+            "Alteration",
+            "Repair",
+            "Replacement"
+          ],
+          "selector": {
+            "role": "combobox",
+            "accessible_name": "Work type",
+            "label_text": "Work type",
+            "nearby_heading": "Project information",
+            "url_state": "project-info"
+          }
+        }
+      ],
+      "actions": [
+        {
+          "id": "save_for_later_project_info",
+          "label": "Save for later",
+          "kind": "save_draft",
+          "enabled": true,
+          "target_state_id": "draft_saved",
+          "confirmation_required": false,
+          "selector": {
+            "role": "button",
+            "accessible_name": "Save for later",
+            "nearby_heading": "Project information",
+            "url_state": "project-info"
+          }
+        },
+        {
+          "id": "continue_to_uploads",
+          "label": "Continue",
+          "kind": "continue",
+          "enabled": true,
+          "target_state_id": "document_upload",
+          "confirmation_required": false,
+          "selector": {
+            "role": "button",
+            "accessible_name": "Continue",
+            "nearby_heading": "Project information",
+            "url_state": "project-info"
+          }
+        }
+      ],
+      "validation_messages": [],
+      "upload_controls": []
+    },
+    {
+      "id": "document_upload",
+      "state_type": "form_step",
+      "url_pattern": "https://devhub.portlandoregon.gov/permits/draft/[REDACTED]/documents",
+      "heading": "Upload documents",
+      "captured_at": "2026-05-01T00:00:00Z",
+      "fields": [],
+      "actions": [
+        {
+          "id": "back_to_project_info",
+          "label": "Back",
+          "kind": "back",
+          "enabled": true,
+          "target_state_id": "project_info",
+          "confirmation_required": false,
+          "selector": {
+            "role": "button",
+            "accessible_name": "Back",
+            "nearby_heading": "Upload documents",
+            "url_state": "documents"
+          }
+        },
+        {
+          "id": "validate_plan_upload",
+          "label": "Upload plan file",
+          "kind": "upload",
+          "enabled": true,
+          "target_state_id": "document_upload_validation",
+          "confirmation_required": true,
+          "selector": {
+            "role": "button",
+            "accessible_name": "Upload plan file",
+            "nearby_heading": "Upload documents",
+            "url_state": "documents"
+          }
+        },
+        {
+          "id": "continue_to_review",
+          "label": "Continue",
+          "kind": "continue",
+          "enabled": false,
+          "target_state_id": "review_draft",
+          "confirmation_required": false,
+          "selector": {
+            "role": "button",
+            "accessible_name": "Continue",
+            "nearby_heading": "Upload documents",
+            "url_state": "documents"
+          }
+        },
+        {
+          "id": "save_for_later_uploads",
+          "label": "Save for later",
+          "kind": "save_draft",
+          "enabled": true,
+          "target_state_id": "draft_saved",
+          "confirmation_required": false,
+          "selector": {
+            "role": "button",
+            "accessible_name": "Save for later",
+            "nearby_heading": "Upload documents",
+            "url_state": "documents"
+          }
+        }
+      ],
+      "validation_messages": [],
+      "upload_controls": [
+        {
+          "id": "plan_pdf_upload",
+          "label": "Plans PDF",
+          "required": true,
+          "accepted_file_types": [
+            "application/pdf"
+          ],
+          "max_file_size_hint": "Displayed size limit is recorded as a redacted portal hint.",
+          "naming_rule_hint": "Use a clear file name; fixture contains no real file names.",
+          "selector": {
+            "role": "button",
+            "accessible_name": "Plans PDF upload",
+            "label_text": "Plans PDF",
+            "nearby_heading": "Upload documents",
+            "url_state": "documents"
+          }
+        }
+      ]
+    },
+    {
+      "id": "document_upload_validation",
+      "state_type": "validation_state",
+      "url_pattern": "https://devhub.portlandoregon.gov/permits/draft/[REDACTED]/documents",
+      "heading": "Upload documents",
+      "captured_at": "2026-05-01T00:00:00Z",
+      "fields": [],
+      "actions": [
+        {
+          "id": "back_to_uploads_after_validation",
+          "label": "Back",
+          "kind": "back",
+          "enabled": true,
+          "target_state_id": "document_upload",
+          "confirmation_required": false,
+          "selector": {
+            "role": "button",
+            "accessible_name": "Back",
+            "nearby_heading": "Upload documents",
+            "url_state": "documents"
+          }
+        },
+        {
+          "id": "continue_blocked_after_validation",
+          "label": "Continue",
+          "kind": "continue",
+          "enabled": false,
+          "target_state_id": "review_draft",
+          "confirmation_required": false,
+          "selector": {
+            "role": "button",
+            "accessible_name": "Continue",
+            "nearby_heading": "Upload documents",
+            "url_state": "documents"
+          }
+        },
+        {
+          "id": "save_for_later_after_validation",
+          "label": "Save for later",
+          "kind": "save_draft",
+          "enabled": true,
+          "target_state_id": "draft_saved",
+          "confirmation_required": false,
+          "selector": {
+            "role": "button",
+            "accessible_name": "Save for later",
+            "nearby_heading": "Upload documents",
+            "url_state": "documents"
+          }
+        }
+      ],
+      "validation_messages": [
+        {
+          "id": "plans_pdf_required",
+          "field_id": "plan_pdf_upload",
+          "severity": "error",
+          "text": "A plans PDF is required before continuing.",
+          "selector": {
+            "role": "alert",
+            "accessible_name": "Plans PDF required",
+            "nearby_heading": "Upload documents",
+            "url_state": "documents"
+          }
+        },
+        {
+          "id": "plans_pdf_type",
+          "field_id": "plan_pdf_upload",
+          "severity": "error",
+          "text": "The selected file must be a PDF.",
+          "selector": {
+            "role": "alert",
+            "accessible_name": "Plans PDF file type",
+            "nearby_heading": "Upload documents",
+            "url_state": "documents"
+          }
+        },
+        {
+          "id": "plans_pdf_size",
+          "field_id": "plan_pdf_upload",
+          "severity": "warning",
+          "text": "The selected file may exceed the displayed upload size limit.",
+          "selector": {
+            "role": "status",
+            "accessible_name": "Plans PDF size warning",
+            "nearby_heading": "Upload documents",
+            "url_state": "documents"
+          }
+        }
+      ],
+      "upload_controls": [
+        {
+          "id": "plan_pdf_upload",
+          "label": "Plans PDF",
+          "required": true,
+          "accepted_file_types": [
+            "application/pdf"
+          ],
+          "max_file_size_hint": "Displayed size limit is recorded as a redacted portal hint.",
+          "naming_rule_hint": "Use a clear file name; fixture contains no real file names.",
+          "selector": {
+            "role": "button",
+            "accessible_name": "Plans PDF upload",
+            "label_text": "Plans PDF",
+            "nearby_heading": "Upload documents",
+            "url_state": "documents"
+          }
+        }
+      ]
+    },
+    {
+      "id": "draft_saved",
+      "state_type": "save_for_later_confirmation",
+      "url_pattern": "https://devhub.portlandoregon.gov/permits/draft/[REDACTED]/saved",
+      "heading": "Draft saved",
+      "captured_at": "2026-05-01T00:00:00Z",
+      "fields": [
+        {
+          "id": "draft_reference",
+          "label": "Draft reference",
+          "kind": "display",
+          "required": false,
+          "value_state": "[REDACTED]",
+          "selector": {
+            "role": "status",
+            "accessible_name": "Draft reference",
+            "label_text": "Draft reference",
+            "nearby_heading": "Draft saved",
+            "url_state": "saved"
+          }
+        }
+      ],
+      "actions": [
+        {
+          "id": "resume_saved_draft",
+          "label": "Resume draft",
+          "kind": "draft_resume",
+          "enabled": true,
+          "target_state_id": "project_info",
+          "confirmation_required": false,
+          "selector": {
+            "role": "link",
+            "accessible_name": "Resume draft",
+            "nearby_heading": "Draft saved",
+            "url_state": "saved"
+          }
+        }
+      ],
+      "validation_messages": [],
+      "upload_controls": []
+    },
+    {
+      "id": "review_draft",
+      "state_type": "review_step",
+      "url_pattern": "https://devhub.portlandoregon.gov/permits/draft/[REDACTED]/review",
+      "heading": "Review draft",
+      "captured_at": "2026-05-01T00:00:00Z",
+      "fields": [],
+      "actions": [
+        {
+          "id": "back_to_uploads_from_review",
+          "label": "Back",
+          "kind": "back",
+          "enabled": true,
+          "target_state_id": "document_upload",
+          "confirmation_required": false,
+          "selector": {
+            "role": "button",
+            "accessible_name": "Back",
+            "nearby_heading": "Review draft",
+            "url_state": "review"
+          }
+        }
+      ],
+      "validation_messages": [],
+      "upload_controls": []
+    }
+  ],
+  "transitions": [
+    {
+      "from_state_id": "project_info",
+      "action_id": "save_for_later_project_info",
+      "to_state_id": "draft_saved",
+      "transition_kind": "save_for_later",
+      "guard": "Draft save is available from the project information step without storing private field values."
+    },
+    {
+      "from_state_id": "project_info",
+      "action_id": "continue_to_uploads",
+      "to_state_id": "document_upload",
+      "transition_kind": "continue",
+      "guard": "Required project information fields are redacted and treated as present in the mocked fixture."
+    },
+    {
+      "from_state_id": "document_upload",
+      "action_id": "back_to_project_info",
+      "to_state_id": "project_info",
+      "transition_kind": "back",
+      "guard": "Back navigation returns to the prior editable draft step."
+    },
+    {
+      "from_state_id": "document_upload",
+      "action_id": "validate_plan_upload",
+      "to_state_id": "document_upload_validation",
+      "transition_kind": "upload_validation",
+      "guard": "Mock upload validation records messages only; it does not upload a real file."
+    },
+    {
+      "from_state_id": "document_upload_validation",
+      "action_id": "save_for_later_after_validation",
+      "to_state_id": "draft_saved",
+      "transition_kind": "save_for_later",
+      "guard": "A draft can be saved after validation messages are displayed."
+    },
+    {
+      "from_state_id": "draft_saved",
+      "action_id": "resume_saved_draft",
+      "to_state_id": "project_info",
+      "transition_kind": "draft_resume",
+      "guard": "Resume returns to a redacted editable draft state."
+    },
+    {
+      "from_state_id": "review_draft",
+      "action_id": "back_to_uploads_from_review",
+      "to_state_id": "document_upload",
+      "transition_kind": "back",
+      "guard": "Review back navigation returns to document uploads."
+    }
+  ]
+}

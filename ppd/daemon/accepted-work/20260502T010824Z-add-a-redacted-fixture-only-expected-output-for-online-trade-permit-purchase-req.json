@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/online_trade_permit_purchase/expected_output.json"
+  ],
+  "created_at": "2026-05-02T01:08:24.489506Z",
+  "impact": "This advances checkbox-120 by adding a deterministic, source-backed PP&D fixture with exactly seven trade-permit purchase requirement categories for future extractor and guardrail validation.",
+  "summary": "Add a redacted fixture-only expected output for online trade permit purchase requirement extraction.",
+  "target_task": "Task checkbox-120: Add a minimal online trade permit purchase requirement extraction expected-output fixture with exactly seven category records: eligibility, trade scope, required applicant/license facts, fee/payment checkpoints, inspection scheduling, cancellation/finalization, and explicit-confirmation gates, all source-backed and redacted.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 126 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................................................................................................................................................................................................................. ---------------------------------------------------------------------- Ran 333 tests in 0.034s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

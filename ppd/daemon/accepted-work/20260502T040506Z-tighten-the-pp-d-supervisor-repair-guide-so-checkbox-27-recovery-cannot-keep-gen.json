@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-02T04:05:06.628268Z",
+  "impact": "This improves autonomous progress by making the supervisor fail closed after repeated py_compile failures, forcing the next worker proposal back to the smallest checkbox-27a skeleton and replacing the malformed comparison example in the guide with syntactically valid Python.",
+  "summary": "Tighten the PP&D supervisor repair guide so checkbox-27 recovery cannot keep generating malformed Python comparisons or chase stale later prerequisites.",
+  "target_task": "Supervisor repair: 3 task(s) are blocked: Task checkbox-31: Recovery for checkbox-27a: add only a py_compile-safe skeleton for `ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py` that loads `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json` and asserts the committed top-level `categoryRecords` fixture is valid using the accepted checkbox-24 schema. Do not add mutation cases in this task. Follow `ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md` exactly for this recovery and keep the proposal to one Python test file.; Task checkbox-32: Recovery for checkbox-27b: after checkbox-27a passes, add one mutation case for missing `categoryId` only. Do not add the other mutation cases in the same daemon cycle.; Task checkbox-33: Recovery for checkbox-27c: after checkbox-27b passes, add one mutation case for missing `sourceEvidenceIds` only.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 38 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "..........................................................................................................................................................................................................................ss..........sss...................................................................................................................................... ---------------------------------------------------------------------- Ran 367 tests in 0.044s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

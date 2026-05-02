@@ -1,0 +1,365 @@
+--- a/ppd/daemon/proposal_syntax_diagnostics.py
++++ b/ppd/daemon/proposal_syntax_diagnostics.py
+@@ -1,98 +1,75 @@
+-"""Syntax diagnostics for repeated malformed PP&D daemon proposals.
+-
+-The helpers in this module are intentionally small and side-effect free. They
+-classify failed proposal records that already exist in daemon progress/result
+-logs; they do not read private data, run validation, or mutate task state.
+-"""
+-
+ from __future__ import annotations
+ 
+-from collections.abc import Iterable
++import re
+ from typing import Any
+ 
+-SYNTAX_FIRST_RETRY_STOP = "syntax_first_retry_stop"
+-MALFORMED_PYTHON_COMPARISON_SYNTAX = "malformed_python_comparison_syntax"
+-
+-MALFORMED_PYTHON_SNIPPETS = (
+-    "confidence 1",
+-    "confidence 1.0",
+-    "return 0.0 list[str]",
++MALFORMED_PYTHON_PROPOSAL_SYNTAX = (
++    ('confidence 1.0', re.compile(r'\bconfidence\s+1\.0\b')),
++    ('confidence 1', re.compile(r'\bconfidence\s+1\b(?!\.)')),
++    ('return 0.0 list[str]', re.compile(r'\breturn\s+0\.0\s+list\s*\[\s*str\s*\]')),
+ )
+ 
+-PYTHON_SYNTAX_MARKERS = (
+-    "SyntaxError",
+-    "py_compile",
+-    "invalid syntax",
+-)
++SYNTAX_FIRST_RETRY_STOP_KIND = 'syntax_first_retry_stop'
+ 
+ 
+-def _collect_text(value: Any) -> str:
+-    if value is None:
+-        return ""
+-    if isinstance(value, str):
+-        return value
+-    if isinstance(value, dict):
+-        return "\n".join(_collect_text(item) for item in value.values())
+-    if isinstance(value, (list, tuple)):
+-        return "\n".join(_collect_text(item) for item in value)
+-    return str(value)
++def proposal_text(proposal: dict[str, Any]) -> str:
++    parts: list[str] = []
++    for key in ('summary', 'impact', 'raw_response', 'failure_kind'):
++        value = proposal.get(key)
++        if value is not None:
++            parts.append(str(value))
++    for error in proposal.get('errors', []) or []:
++        parts.append(str(error))
++    for result in proposal.get('validation_results', []) or []:
++        if not isinstance(result, dict):
++            continue
++        parts.append(' '.join(str(part) for part in result.get('command', []) or []))
++        parts.append(str(result.get('stdout', '')))
++        parts.append(str(result.get('stderr', '')))
++    return '\n'.join(parts)
+ 
+ 
+-def proposal_text(record: dict[str, Any]) -> str:
+-    fields = (
+-        record.get("summary"),
+-        record.get("impact"),
+-        record.get("errors"),
+-        record.get("validation_results"),
+-        record.get("raw_response"),
+-        record.get("stderr"),
+-        record.get("stdout"),
+-    )
+-    return "\n".join(_collect_text(field) for field in fields)
+-
+-
+-def contains_malformed_python_comparison_syntax(text: str) -> bool:
+-    return any(snippet in text for snippet in MALFORMED_PYTHON_SNIPPETS)
+-
+-
+-def contains_python_syntax_failure(text: str) -> bool:
+-    return any(marker in text for marker in PYTHON_SYNTAX_MARKERS)
+-
+-
+-def is_malformed_python_syntax_proposal(record: dict[str, Any]) -> bool:
+-    text = proposal_text(record)
+-    return contains_malformed_python_comparison_syntax(text) and contains_python_syntax_failure(text)
++def malformed_python_syntax_markers(text: str) -> list[str]:
++    markers: list[str] = []
++    for marker, pattern in MALFORMED_PYTHON_PROPOSAL_SYNTAX:
++        if pattern.search(text):
++            markers.append(marker)
++    return markers
+ 
+ 
+ def classify_repeated_malformed_python_syntax(
+-    records: Iterable[dict[str, Any]],
++    proposals: list[dict[str, Any]],
+     *,
+-    target_task: str,
++    target_task: str | None = None,
+     minimum_repetitions: int = 2,
+ ) -> dict[str, Any]:
+-    """Classify repeated malformed Python syntax failures for one target task."""
++    matching: list[dict[str, Any]] = []
++    marker_counts: dict[str, int] = {}
++    task_label = target_task
+ 
+-    matches: list[dict[str, Any]] = []
+-    seen_snippets: set[str] = set()
++    for proposal in proposals:
++        if not isinstance(proposal, dict):
++            continue
++        proposal_task = str(proposal.get('target_task') or '')
++        if task_label is None and proposal_task:
++            task_label = proposal_task
++        if task_label and proposal_task and proposal_task != task_label:
++            continue
++        markers = malformed_python_syntax_markers(proposal_text(proposal))
++        if not markers:
++            continue
++        matching.append({'target_task': proposal_task, 'markers': markers})
++        for marker in markers:
++            marker_counts[marker] = marker_counts.get(marker, 0) + 1
+ 
+-    for record in records:
+-        if record.get("target_task") != target_task:
+-            continue
+-        if not is_malformed_python_syntax_proposal(record):
+-            continue
+-        text = proposal_text(record)
+-        matches.append(record)
+-        for snippet in MALFORMED_PYTHON_SNIPPETS:
+-            if snippet in text:
+-                seen_snippets.add(snippet)
+-
+-    should_stop = len(matches) >= minimum_repetitions and bool(seen_snippets)
++    repeated = len(matching) >= max(1, minimum_repetitions)
+     return {
+-        "target_task": target_task,
+-        "classification": SYNTAX_FIRST_RETRY_STOP if should_stop else "continue_retry",
+-        "reason": MALFORMED_PYTHON_COMPARISON_SYNTAX if should_stop else "insufficient_repetition",
+-        "match_count": len(matches),
+-        "minimum_repetitions": minimum_repetitions,
+-        "matched_snippets": sorted(seen_snippets),
+-        "syntax_first": should_stop,
++        'retry_stop': repeated,
++        'failure_kind': SYNTAX_FIRST_RETRY_STOP_KIND if repeated else '',
++        'target_task': task_label or '',
++        'matching_proposal_count': len(matching),
++        'minimum_repetitions': max(1, minimum_repetitions),
++        'markers': sorted(marker_counts),
++        'marker_counts': marker_counts,
++        'reason': 'Repeated malformed Python comparison or return syntax in proposals for the same target task.' if repeated else '',
+     }
+--- a/ppd/tests/fixtures/daemon_diagnostics/repeated_malformed_python_comparison_syntax.json
++++ b/ppd/tests/fixtures/daemon_diagnostics/repeated_malformed_python_comparison_syntax.json
+@@ -1,57 +1,78 @@
+ {
+-  "fixtureKind": "daemon_repeated_malformed_python_syntax",
++  "fixtureKind": "daemon_repeated_malformed_python_syntax_proposals",
+   "schemaVersion": 1,
+-  "targetTask": "Task checkbox-80: Add a daemon diagnostic fixture that classifies repeated malformed comparison syntax in Python proposals, including `confidence 1`, `confidence 1.0`, and `return 0.0 list[str]`, as a syntax-first retry stop condition for the same target task.",
+-  "minimumRepetitions": 2,
+-  "expectedClassification": "syntax_first_retry_stop",
+-  "records": [
++  "targetTask": "Task checkbox-80: Add a daemon diagnostic fixture that classifies repeated malformed comparison syntax in Python proposals, including confidence literals and invalid typed return syntax, as a syntax-first retry stop condition for the same target task.",
++  "expectedFailureKind": "syntax_first_retry_stop",
++  "expectedMarkers": [
++    "confidence 1",
++    "confidence 1.0",
++    "return 0.0 list[str]"
++  ],
++  "proposals": [
+     {
+-      "target_task": "Task checkbox-80: Add a daemon diagnostic fixture that classifies repeated malformed comparison syntax in Python proposals, including `confidence 1`, `confidence 1.0`, and `return 0.0 list[str]`, as a syntax-first retry stop condition for the same target task.",
+-      "summary": "Rejected malformed comparison syntax in a Python proposal.",
++      "target_task": "Task checkbox-80: Add a daemon diagnostic fixture that classifies repeated malformed comparison syntax in Python proposals, including confidence literals and invalid typed return syntax, as a syntax-first retry stop condition for the same target task.",
++      "failure_kind": "validation",
++      "errors": [
++        "Validation failed; file edits were rolled back."
++      ],
+       "validation_results": [
+         {
+-          "command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
++          "command": [
++            "python3",
++            "ppd/daemon/ppd_daemon.py",
++            "--self-test"
++          ],
+           "returncode": 1,
++          "stdout": "",
+           "stderr": "proposal_syntax_diagnostics.py failed py_compile: line 34 if minimum_repetitions = minimum_repetitions SyntaxError: invalid syntax"
+         }
+       ],
+-      "errors": ["Python proposal also contained confidence 1"]
++      "raw_response": "elif confidence 1: stop retrying"
+     },
+     {
+-      "target_task": "Task checkbox-80: Add a daemon diagnostic fixture that classifies repeated malformed comparison syntax in Python proposals, including `confidence 1`, `confidence 1.0`, and `return 0.0 list[str]`, as a syntax-first retry stop condition for the same target task.",
+-      "summary": "Rejected malformed confidence comparison in generated Python.",
++      "target_task": "Task checkbox-80: Add a daemon diagnostic fixture that classifies repeated malformed comparison syntax in Python proposals, including confidence literals and invalid typed return syntax, as a syntax-first retry stop condition for the same target task.",
++      "failure_kind": "validation",
++      "errors": [
++        "Validation failed; file edits were rolled back."
++      ],
+       "validation_results": [
+         {
+-          "command": ["python3", "-m", "unittest", "discover", "-s", "ppd/tests", "-p", "test_*.py"],
++          "command": [
++            "python3",
++            "-m",
++            "unittest",
++            "discover",
++            "-s",
++            "ppd/tests",
++            "-p",
++            "test_*.py"
++          ],
+           "returncode": 1,
+-          "stderr": "File ppd/extraction/solar_permit_requirements.py, line 191 elif confidence 1.0: SyntaxError: invalid syntax"
++          "stdout": "",
++          "stderr": "ImportError: SyntaxError: invalid syntax near if confidence 1.0"
+         }
+       ],
+-      "errors": []
++      "raw_response": "if confidence 1.0: return result"
+     },
+     {
+-      "target_task": "Task checkbox-80: Add a daemon diagnostic fixture that classifies repeated malformed comparison syntax in Python proposals, including `confidence 1`, `confidence 1.0`, and `return 0.0 list[str]`, as a syntax-first retry stop condition for the same target task.",
+-      "summary": "Rejected malformed typed return expression in generated Python.",
++      "target_task": "Task checkbox-80: Add a daemon diagnostic fixture that classifies repeated malformed comparison syntax in Python proposals, including confidence literals and invalid typed return syntax, as a syntax-first retry stop condition for the same target task.",
++      "failure_kind": "validation",
++      "errors": [
++        "Validation failed; file edits were rolled back."
++      ],
+       "validation_results": [
+         {
+-          "command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
++          "command": [
++            "python3",
++            "ppd/daemon/ppd_daemon.py",
++            "--self-test"
++          ],
+           "returncode": 1,
+-          "stderr": "solar_permit_requirements.py failed py_compile: line 347 return 0.0 list[str]: SyntaxError: invalid syntax"
++          "stdout": "",
++          "stderr": "solar_permit_requirement_extractor.py failed py_compile: line 259 return 0.0 list[str] SyntaxError: invalid syntax"
+         }
+       ],
+-      "errors": []
+-    },
+-    {
+-      "target_task": "Task checkbox-81: Different target task should not drive checkbox-80 classification.",
+-      "summary": "Same syntax shape on a different task is ignored.",
+-      "validation_results": [
+-        {
+-          "command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
+-          "returncode": 1,
+-          "stderr": "elif confidence 1.0: SyntaxError: invalid syntax"
+-        }
+-      ],
+-      "errors": []
++      "raw_response": "def confidence_score(): return 0.0 list[str]"
+     }
+   ]
+ }
+--- a/ppd/tests/test_daemon_proposal_syntax_diagnostics.py
++++ b/ppd/tests/test_daemon_proposal_syntax_diagnostics.py
+@@ -5,52 +5,58 @@
+ from pathlib import Path
+ 
+ from ppd.daemon.proposal_syntax_diagnostics import (
+-    MALFORMED_PYTHON_COMPARISON_SYNTAX,
+-    MALFORMED_PYTHON_SNIPPETS,
+-    SYNTAX_FIRST_RETRY_STOP,
++    SYNTAX_FIRST_RETRY_STOP_KIND,
+     classify_repeated_malformed_python_syntax,
+-    contains_malformed_python_comparison_syntax,
++    malformed_python_syntax_markers,
+ )
+ 
+-ROOT = Path(__file__).resolve().parents[2]
+-FIXTURE = ROOT / "ppd" / "tests" / "fixtures" / "daemon_diagnostics" / "repeated_malformed_python_comparison_syntax.json"
+ 
++class ProposalSyntaxDiagnosticsTest(unittest.TestCase):
++    def setUp(self) -> None:
++        fixture_path = (
++            Path(__file__).parent
++            / 'fixtures'
++            / 'daemon_diagnostics'
++            / 'repeated_malformed_python_comparison_syntax.json'
++        )
++        self.fixture = json.loads(fixture_path.read_text(encoding='utf-8'))
+ 
+-class DaemonProposalSyntaxDiagnosticsTest(unittest.TestCase):
+-    def test_fixture_classifies_repeated_malformed_syntax_for_same_task(self) -> None:
+-        fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+-
++    def test_fixture_classifies_repeated_malformed_syntax_as_retry_stop(self) -> None:
+         result = classify_repeated_malformed_python_syntax(
+-            fixture["records"],
+-            target_task=fixture["targetTask"],
+-            minimum_repetitions=fixture["minimumRepetitions"],
+-        )
+-
+-        self.assertEqual(SYNTAX_FIRST_RETRY_STOP, result["classification"])
+-        self.assertEqual(MALFORMED_PYTHON_COMPARISON_SYNTAX, result["reason"])
+-        self.assertEqual(fixture["expectedClassification"], result["classification"])
+-        self.assertEqual(3, result["match_count"])
+-        self.assertTrue(result["syntax_first"])
+-        self.assertEqual(sorted(MALFORMED_PYTHON_SNIPPETS), result["matched_snippets"])
+-
+-    def test_different_target_does_not_trigger_stop_condition(self) -> None:
+-        fixture = json.loads(FIXTURE.read_text(encoding="utf-8"))
+-
+-        result = classify_repeated_malformed_python_syntax(
+-            fixture["records"],
+-            target_task="Task checkbox-81: Different target task should not drive checkbox-80 classification.",
++            self.fixture['proposals'],
++            target_task=self.fixture['targetTask'],
+             minimum_repetitions=2,
+         )
+ 
+-        self.assertEqual("continue_retry", result["classification"])
+-        self.assertEqual(1, result["match_count"])
+-        self.assertFalse(result["syntax_first"])
++        self.assertTrue(result['retry_stop'])
++        self.assertEqual(SYNTAX_FIRST_RETRY_STOP_KIND, result['failure_kind'])
++        self.assertEqual(self.fixture['targetTask'], result['target_task'])
++        self.assertEqual(3, result['matching_proposal_count'])
++        self.assertEqual(sorted(self.fixture['expectedMarkers']), result['markers'])
+ 
+-    def test_snippet_detection_covers_reported_malformed_forms(self) -> None:
+-        for snippet in ("confidence 1", "confidence 1.0", "return 0.0 list[str]"):
+-            with self.subTest(snippet=snippet):
+-                self.assertTrue(contains_malformed_python_comparison_syntax(snippet))
++    def test_marker_detection_distinguishes_confidence_literals(self) -> None:
++        self.assertEqual(['confidence 1'], malformed_python_syntax_markers('elif confidence 1:'))
++        self.assertEqual(['confidence 1.0'], malformed_python_syntax_markers('elif confidence 1.0:'))
++        self.assertEqual(
++            ['return 0.0 list[str]'],
++            malformed_python_syntax_markers('def f():\n    return 0.0 list[str]'),
++        )
++
++    def test_mixed_target_tasks_do_not_trigger_same_task_retry_stop(self) -> None:
++        proposals = list(self.fixture['proposals'])
++        proposals[1] = dict(proposals[1], target_task='Task checkbox-999: unrelated')
++        proposals[2] = dict(proposals[2], target_task='Task checkbox-999: unrelated')
++
++        result = classify_repeated_malformed_python_syntax(
++            proposals,
++            target_task=self.fixture['targetTask'],
++            minimum_repetitions=2,
++        )
++
++        self.assertFalse(result['retry_stop'])
++        self.assertEqual('', result['failure_kind'])
++        self.assertEqual(1, result['matching_proposal_count'])
+ 
+ 
+-if __name__ == "__main__":
++if __name__ == '__main__':
+     unittest.main()

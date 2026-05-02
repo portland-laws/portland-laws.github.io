@@ -1,0 +1,4 @@
+ppd/contracts/archive_adapter.py
+ppd/contracts/__init__.py
+ppd/tests/fixtures/archive-adapter/archive_adapter_manifest.json
+ppd/tests/test_archive_adapter_contract.py

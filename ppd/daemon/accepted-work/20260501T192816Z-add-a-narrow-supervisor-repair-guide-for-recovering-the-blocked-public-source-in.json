@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-01T19:28:16.401615Z",
+  "impact": "This gives the PP&D daemon deterministic retry instructions for task checkbox-49: use a syntax-first guardrail, split contract and fixture work into smaller cycles, require raw-body rejection to be tested explicitly, and avoid broad rewrites that have already caused blocked progress. It lets the worker continue with checkbox-51 while preserving a safe path to unblock checkbox-49 later.",
+  "summary": "Add a narrow supervisor repair guide for recovering the blocked public source inventory validation task after repeated syntax and assertion failures.",
+  "target_task": "Supervisor repair: 1 task(s) are blocked: Task checkbox-49: Add validation for the public source inventory that rejects non-allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and missing provenance fields.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 62 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "........................................................................................ ---------------------------------------------------------------------- Ran 88 tests in 0.008s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

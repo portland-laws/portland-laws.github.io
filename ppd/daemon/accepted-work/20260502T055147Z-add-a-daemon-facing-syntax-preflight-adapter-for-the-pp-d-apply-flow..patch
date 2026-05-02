@@ -1,0 +1,55 @@
+--- a/ppd/daemon/syntax_preflight.py
++++ b/ppd/daemon/syntax_preflight.py
+@@ -27,6 +27,16 @@
+         return self.returncode == 0
+ 
+ 
++@dataclass(frozen=True)
++class ApplyFlowSyntaxPreflight:
++    """Daemon apply-flow payload for changed-file syntax checks."""
++
++    ok: bool
++    failure_kind: str
++    errors: tuple[str, ...]
++    validation_results: tuple[SyntaxPreflightResult, ...]
++
++
+ def changed_syntax_paths(changed_files: Iterable[str]) -> tuple[tuple[str, ...], tuple[str, ...]]:
+     """Return changed Python and TypeScript paths eligible for syntax preflight."""
+ 
+@@ -53,6 +63,35 @@
+     if typescript_files:
+         results.append(_run_typescript_preflight(repo_root, typescript_files, timeout=timeout))
+     return results
++
++
++def run_apply_flow_syntax_preflight(repo_root: Path, changed_files: Iterable[str], *, timeout: int = 300) -> ApplyFlowSyntaxPreflight:
++    """Return an apply-flow-ready syntax preflight decision.
++
++    The daemon can call this immediately after writing proposed replacements and
++    before broad validation. If ``ok`` is false, the caller should roll back the
++    changed files, persist failed work with ``failure_kind``, and skip broad
++    unittest or TypeScript validation for that cycle.
++    """
++
++    results = tuple(run_changed_syntax_preflight(repo_root, changed_files, timeout=timeout))
++    if not results or all(result.ok for result in results):
++        return ApplyFlowSyntaxPreflight(
++            ok=True,
++            failure_kind="",
++            errors=(),
++            validation_results=results,
++        )
++    diagnostics = compact_syntax_diagnostics(results)
++    message = "Syntax preflight failed; file edits were rolled back."
++    if diagnostics:
++        message = f"{message} {diagnostics}"
++    return ApplyFlowSyntaxPreflight(
++        ok=False,
++        failure_kind="syntax_preflight",
++        errors=(message,),
++        validation_results=results,
++    )
+ 
+ 
+ def compact_syntax_diagnostics(results: Iterable[SyntaxPreflightResult], *, limit: int = 900) -> str:

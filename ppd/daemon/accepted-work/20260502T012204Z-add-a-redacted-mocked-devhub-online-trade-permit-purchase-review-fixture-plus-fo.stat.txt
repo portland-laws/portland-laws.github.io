@@ -1,0 +1,2 @@
+ppd/tests/fixtures/devhub/online_trade_permit_purchase_review_snapshot.json
+ppd/tests/test_devhub_online_trade_permit_purchase_review_fixture.py

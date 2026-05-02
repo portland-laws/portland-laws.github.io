@@ -1,0 +1,124 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,47 +1,91 @@
+ # PP&D Supervisor Repair Guide
+ 
+-This guide is for supervisor repair cycles only. It is intentionally narrow and deterministic.
++## Purpose
+ 
+-## Current Recovery Rule
++This guide is for supervisor repair cycles that unblock the isolated PP&D daemon without implementing PP&D domain tasks directly. Repairs must improve task selection, retry behavior, diagnostics, prompt constraints, or validation sequencing.
+ 
+-When recent daemon failures include `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128`, do not ask the worker for a broad implementation retry. Split recovery into syntax-first and fixture-first work before any broader validation or domain implementation resumes.
++## Current Recovery Focus
+ 
+-For the blocked online trade permit import-test task:
++When checkbox-15 or a recovery task for checkbox-15 is blocked, the daemon must continue with fixture-first, validation-first work only.
+ 
+-- Park stale blocked checkbox-121 outside selectable task form when later online trade permit focused validation, size guard, guardrail, or mocked DevHub tasks have already passed.
+-- Append a new narrow `[ ]` task instead of reselecting the blocked task directly.
+-- The next recovery task must touch one test file only.
+-- A syntax-first import test for `ppd.extraction.online_trade_permit_requirements` must import only that module.
+-- If the target module does not exist yet, the import test should skip cleanly rather than fail the whole suite for a missing future implementation.
+-- If the target module exists and contains malformed Python, the import test must fail before broad online trade permit requirement validation runs.
++The accepted prerequisite fixtures are:
+ 
+-## Worker Prompt Guardrails
++- `ppd/tests/fixtures/lifecycle/extension_lifecycle_evidence_map.json`
++- `ppd/tests/fixtures/lifecycle/extension_lifecycle_process_skeleton.json`
+ 
+-For any retry after a Python syntax failure, the worker prompt must explicitly require:
++The next meaningful task should be a narrow validation-only test for the committed extension lifecycle process skeleton. The worker should not add lifecycle extraction modules, dataclasses, TypeScript modules, crawlers, DevHub automation, browser sessions, or authenticated behavior while recovering this task.
+ 
+-- one-file replacement when repairing syntax or import sentinels;
+-- syntactically valid Python checked before returning JSON;
+-- no `dataclasses` for small validator or extractor modules unless an existing local pattern requires them;
+-- no broad contract rewrites;
+-- no live crawl, login, payment, submission, certification, cancellation, inspection scheduling, private DevHub session state, traces, screenshots, raw crawl output, or downloaded documents;
+-- fixture-first and validation-first sequencing before implementation retries.
++## Recovery Task Selection Rules
+ 
+-## Recommended Next Task Text
++When a task is blocked after validation failures:
+ 
+-Use this selectable task when the board is blocked by stale online trade permit checkbox-121:
++1. Prefer the smallest next task that validates an already accepted fixture.
++2. Use exactly one new test file unless the existing test suite already has a directly matching file to extend.
++3. Load the committed fixture from disk and assert its current shape before adding mutation tests.
++4. Do not infer broad lifecycle schemas beyond the fields present in the accepted fixture.
++5. Do not create implementation modules just to satisfy a validation-only recovery task.
++6. Do not add or modify live crawl, DevHub login, Playwright, credential, session, trace, screenshot, downloaded document, payment, upload, submission, cancellation, certification, or inspection scheduling behavior.
+ 
+-`- [ ] Repair the online trade permit syntax-first import test as one test file only: import only ppd.extraction.online_trade_permit_requirements, skip if the module is absent, and fail malformed Python before broad online trade permit requirement validation runs.`
++## Checkbox-18 Guardrails
+ 
+-If that task passes, append the implementation retry only as a separate task:
++For the active checkbox-18 recovery task, the daemon prompt should require a one-cycle patch with these limits:
+ 
+-`- [ ] Retry ppd.extraction.online_trade_permit_requirements as a one-file no-dataclass implementation under 180 physical lines, preserving the seven-record expected-output fixture and passing the existing focused validation only.`
++- Allowed write target: `ppd/tests/test_extension_lifecycle_process_skeleton.py` or an existing directly equivalent lifecycle fixture test file.
++- Required fixture target: `ppd/tests/fixtures/lifecycle/extension_lifecycle_process_skeleton.json`.
++- Required behavior: assert that the committed skeleton contains required facts, required documents, user decisions, citation-backed action gates, and explicit no-live-automation notes.
++- Required negative checks: mutate one field at a time and prove validation fails for missing required facts, missing required documents, missing user decisions, missing citations on action gates, and missing no-live-automation notes.
++- Forbidden behavior: creating extraction logic, process model classes, broad lifecycle validators, live crawling, DevHub login, browser automation, official upload, certification, submission, payment, cancellation, or inspection scheduling.
+ 
+-## Stop Conditions
++## Preflight Before Editing
+ 
+-Stop retrying the same task and request supervisor repair when:
++Before the worker writes a patch for a fixture-validation task, it should inspect the target fixture and record these facts in its internal plan:
+ 
+-- two consecutive attempts for the same target produce Python syntax failures;
+-- a proposal changes more than one file while syntax repair mode is active;
+-- the worker edits application or domain artifacts only to mark progress;
+-- the worker attempts live DevHub automation or any irreversible action;
+-- the board has only blocked stale tasks and no fixture-first `[ ]` task remains selectable.
++- top-level keys present in the JSON fixture.
++- the exact field names used for facts, documents, decisions, gates, citations, and no-live-automation notes.
++- whether the fixture uses snake_case, camelCase, arrays, or maps.
++- the minimal validator helper shape needed inside the test file.
++
++If the fixture shape differs from the task wording, the worker must adapt the test to the committed fixture instead of inventing a new schema.
++
++## Syntactic Validity Guardrails
++
++For recent failures involving syntax, compile, or parser errors, the next daemon cycle must keep the patch small and run syntax checks before the full validation suite.
++
++For Python-only test patches:
++
++- keep imports to the standard library unless an existing nearby test already imports a PP&D helper.
++- prefer `json`, `copy`, `pathlib`, and `unittest`.
++- avoid dynamic code generation.
++- keep helper functions in the test file when the task is validation-only.
++- validate the exact changed file with Python compilation before broad tests when the daemon supports command sequencing.
++
++For TypeScript patches:
++
++- avoid TypeScript changes during checkbox-15 recovery unless the selected task explicitly requires them.
++- keep generated object literals small and syntactically obvious.
++- run TypeScript syntax/type validation before accepting the patch when any `.ts` file changes.
++
++## Failure Diagnostics
++
++When validation fails, the failed-patch manifest should state whether the failure was caused by:
++
++- fixture schema mismatch.
++- missing fixture metadata.
++- overly broad validator assumptions.
++- private or live artifact violation.
++- syntax or compile error.
++- unrelated existing test failure.
++
++For schema mismatches, the next recovery task should update the test to the committed fixture shape or add fixture metadata only when the accepted fixture is clearly missing a field required by a previously accepted validator. The daemon should not oscillate between broad validators and fixture rewrites.
++
++## Acceptance Criteria For Supervisor Repairs
++
++A supervisor repair is acceptable when it makes the next daemon cycle more deterministic and safer without completing the PP&D domain task itself. Good repairs narrow the task, add guardrails, improve diagnostics, or clarify validation order.
++
++A supervisor repair is not acceptable when it:
++
++- marks task-board progress without accepted validation evidence.
++- edits application or domain artifacts only to make the board look unblocked.
++- creates private DevHub session files, auth state, traces, screenshots, raw crawl output, or downloaded documents.
++- automates CAPTCHA, MFA, account creation, payment, submission, certification, cancellation, official upload, or inspection scheduling.
++- expands a fixture-only recovery into live crawling or authenticated automation.

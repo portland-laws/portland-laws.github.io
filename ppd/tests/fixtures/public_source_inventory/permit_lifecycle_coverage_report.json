@@ -1,0 +1,233 @@
+{
+  "schemaVersion": 1,
+  "reportId": "ppd-permit-lifecycle-public-source-coverage-2026-05-02",
+  "generatedAt": "2026-05-02T00:00:00Z",
+  "sourceMode": "fixture_only_public_source_inventory",
+  "liveCrawlingUsed": false,
+  "authenticatedAutomationUsed": false,
+  "scope": {
+    "bureau": "Portland Permitting & Development",
+    "coverageGoal": "Inventory committed public fixture and source-inventory evidence for permit extension, permit reactivation, cancellation, refund, and inspection-result guidance categories.",
+    "excludedArtifacts": [
+      "private DevHub session state",
+      "raw response bodies",
+      "browser traces",
+      "screenshots",
+      "downloaded documents",
+      "credentials",
+      "live crawl output"
+    ]
+  },
+  "categories": [
+    {
+      "categoryId": "permit_extension",
+      "displayName": "Permit extension guidance",
+      "authorityLabel": "PP&D public permit lifecycle guidance",
+      "recommendedRecrawlCadence": "monthly",
+      "coverageStatus": "public_fixture_evidence_available",
+      "coverageClaims": [
+        "Public PP&D guidance includes permit lifecycle language that should be modeled before any authenticated DevHub action is attempted.",
+        "Extension-related agent behavior must remain advisory until supported by a source-backed process model and exact user confirmation for any official request."
+      ],
+      "publicSourceEvidence": [
+        {
+          "evidenceId": "source-inventory-permit-lifecycle-guidance",
+          "evidenceType": "source_inventory_record",
+          "fixtureRef": "ppd/tests/fixtures/source_inventory/public_ppd_source_inventory.json",
+          "sourceUrl": "https://www.portland.gov/ppd",
+          "citation": "PP&D public guidance source inventory record for Portland.gov PP&D pages.",
+          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
+        },
+        {
+          "evidenceId": "normalized-guidance-devhub-processes",
+          "evidenceType": "normalized_public_guidance_fixture",
+          "fixtureRef": "ppd/tests/fixtures/extraction/devhub_public_guidance_normalized.json",
+          "sourceUrl": "https://www.portland.gov/ppd/devhub",
+          "citation": "Normalized public DevHub guidance fixture covering public process help before authenticated workflow use.",
+          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
+        }
+      ],
+      "agentUse": {
+        "allowed": [
+          "summarize public extension guidance coverage",
+          "identify missing source-backed facts for later lifecycle modeling"
+        ],
+        "stopBefore": [
+          "official extension request",
+          "certification",
+          "payment",
+          "submission"
+        ]
+      }
+    },
+    {
+      "categoryId": "permit_reactivation",
+      "displayName": "Permit reactivation guidance",
+      "authorityLabel": "PP&D public permit lifecycle guidance",
+      "recommendedRecrawlCadence": "monthly",
+      "coverageStatus": "public_fixture_evidence_available",
+      "coverageClaims": [
+        "Public lifecycle guidance should be inventoried for reactivation eligibility and prerequisites before adding extraction or DevHub drafting behavior.",
+        "Reactivation actions are consequential and must not be automated from this coverage report alone."
+      ],
+      "publicSourceEvidence": [
+        {
+          "evidenceId": "source-inventory-permit-lifecycle-guidance",
+          "evidenceType": "source_inventory_record",
+          "fixtureRef": "ppd/tests/fixtures/source_inventory/public_ppd_source_inventory.json",
+          "sourceUrl": "https://www.portland.gov/ppd",
+          "citation": "PP&D public guidance source inventory record for Portland.gov PP&D pages.",
+          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
+        },
+        {
+          "evidenceId": "normalized-guidance-devhub-processes",
+          "evidenceType": "normalized_public_guidance_fixture",
+          "fixtureRef": "ppd/tests/fixtures/extraction/devhub_public_guidance_normalized.json",
+          "sourceUrl": "https://www.portland.gov/ppd/devhub",
+          "citation": "Normalized public DevHub guidance fixture covering public process help before authenticated workflow use.",
+          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
+        }
+      ],
+      "agentUse": {
+        "allowed": [
+          "summarize public reactivation guidance coverage",
+          "flag reactivation as requiring later citation-backed eligibility extraction"
+        ],
+        "stopBefore": [
+          "official reactivation request",
+          "certification",
+          "payment",
+          "submission"
+        ]
+      }
+    },
+    {
+      "categoryId": "permit_cancellation",
+      "displayName": "Permit cancellation guidance",
+      "authorityLabel": "PP&D public permit lifecycle guidance",
+      "recommendedRecrawlCadence": "monthly",
+      "coverageStatus": "public_fixture_evidence_available",
+      "coverageClaims": [
+        "Cancellation is a consequential permit lifecycle category that needs public source inventory coverage before any guardrail or workflow implementation.",
+        "This report can support later validation that cancellation guidance is cited and separated from private DevHub account actions."
+      ],
+      "publicSourceEvidence": [
+        {
+          "evidenceId": "source-inventory-permit-lifecycle-guidance",
+          "evidenceType": "source_inventory_record",
+          "fixtureRef": "ppd/tests/fixtures/source_inventory/public_ppd_source_inventory.json",
+          "sourceUrl": "https://www.portland.gov/ppd",
+          "citation": "PP&D public guidance source inventory record for Portland.gov PP&D pages.",
+          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
+        },
+        {
+          "evidenceId": "normalized-guidance-devhub-processes",
+          "evidenceType": "normalized_public_guidance_fixture",
+          "fixtureRef": "ppd/tests/fixtures/extraction/devhub_public_guidance_normalized.json",
+          "sourceUrl": "https://www.portland.gov/ppd/devhub",
+          "citation": "Normalized public DevHub guidance fixture covering public process help before authenticated workflow use.",
+          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
+        }
+      ],
+      "agentUse": {
+        "allowed": [
+          "summarize public cancellation guidance coverage",
+          "classify cancellation as a later exact-confirmation stop gate"
+        ],
+        "stopBefore": [
+          "official cancellation",
+          "certification",
+          "refund request",
+          "submission"
+        ]
+      }
+    },
+    {
+      "categoryId": "permit_refund",
+      "displayName": "Permit refund guidance",
+      "authorityLabel": "PP&D public permit fee and refund guidance",
+      "recommendedRecrawlCadence": "monthly",
+      "coverageStatus": "public_fixture_evidence_available",
+      "coverageClaims": [
+        "Refund guidance belongs in the public source inventory because it affects fee and payment checkpoints.",
+        "Refund requests can have financial consequences and require later source-backed eligibility and exact user confirmation gates."
+      ],
+      "publicSourceEvidence": [
+        {
+          "evidenceId": "source-inventory-fee-payment-guidance",
+          "evidenceType": "source_inventory_record",
+          "fixtureRef": "ppd/tests/fixtures/source_inventory/public_ppd_source_inventory.json",
+          "sourceUrl": "https://www.portland.gov/ppd",
+          "citation": "PP&D public source inventory record for fee, payment, and lifecycle guidance pages.",
+          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
+        },
+        {
+          "evidenceId": "normalized-guidance-devhub-processes",
+          "evidenceType": "normalized_public_guidance_fixture",
+          "fixtureRef": "ppd/tests/fixtures/extraction/devhub_public_guidance_normalized.json",
+          "sourceUrl": "https://www.portland.gov/ppd/devhub",
+          "citation": "Normalized public DevHub guidance fixture covering fee payment guidance before authenticated workflow use.",
+          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
+        }
+      ],
+      "agentUse": {
+        "allowed": [
+          "summarize public refund guidance coverage",
+          "flag refund handling as financial or consequential for later guardrails"
+        ],
+        "stopBefore": [
+          "official refund request",
+          "payment action",
+          "certification",
+          "submission"
+        ]
+      }
+    },
+    {
+      "categoryId": "inspection_results",
+      "displayName": "Inspection-result guidance",
+      "authorityLabel": "PP&D public inspection and DevHub guidance",
+      "recommendedRecrawlCadence": "weekly",
+      "coverageStatus": "public_fixture_evidence_available",
+      "coverageClaims": [
+        "Inspection-result guidance must be tracked separately from inspection scheduling because results can trigger follow-up obligations or corrections.",
+        "This report only inventories public evidence and does not inspect private permit records or schedule inspections."
+      ],
+      "publicSourceEvidence": [
+        {
+          "evidenceId": "source-inventory-inspection-guidance",
+          "evidenceType": "source_inventory_record",
+          "fixtureRef": "ppd/tests/fixtures/source_inventory/public_ppd_source_inventory.json",
+          "sourceUrl": "https://www.portland.gov/ppd",
+          "citation": "PP&D public source inventory record for inspection-related guidance pages.",
+          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
+        },
+        {
+          "evidenceId": "normalized-guidance-devhub-inspections",
+          "evidenceType": "normalized_public_guidance_fixture",
+          "fixtureRef": "ppd/tests/fixtures/extraction/devhub_public_guidance_normalized.json",
+          "sourceUrl": "https://www.portland.gov/ppd/devhub",
+          "citation": "Normalized public DevHub guidance fixture covering inspection-related public help before authenticated workflow use.",
+          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
+        }
+      ],
+      "agentUse": {
+        "allowed": [
+          "summarize public inspection-result guidance coverage",
+          "identify likely follow-up categories for later source-backed lifecycle requirements"
+        ],
+        "stopBefore": [
+          "inspection scheduling",
+          "official correction upload",
+          "certification",
+          "submission"
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    "This report is a coverage inventory, not a requirement extractor output.",
+    "Coverage claims are limited to committed public fixture and source-inventory metadata.",
+    "No category in this report authorizes live crawling, authenticated DevHub automation, payment, cancellation, upload, certification, official request submission, or inspection scheduling."
+  ]
+}

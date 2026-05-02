@@ -1,0 +1,1 @@
+ppd/tests/fixtures/process_models/synthetic_public_process.json

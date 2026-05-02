@@ -1,0 +1,54 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -108,6 +108,14 @@
+ - [x] Add guardrail compiler fixture tests for the sign permit workflow covering missing facts, required document groups, payment stop points, correction-upload stop points, and any inspection/finalization stop points, using only fixture data.
+ - [x] Add a mocked DevHub workflow snapshot fixture for sign application draft review that records semantic selectors, required fields, upload controls, validation messages, save-for-later state, and exact confirmation gates using only redacted values.
+ - [x] Add DevHub guardrail tests proving sign application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.
++- [ ] Add a fixture-only permit-process skeleton for an Urban Forestry permit workflow using existing public fixture/source-inventory evidence only, with stages, required facts, required documents, file rules, fee/payment gates, inspection/finalization gates, and citation-backed action gates.
++- [ ] Add a minimal Urban Forestry permit requirement extraction expected-output fixture with exactly seven category records: eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections/finalization, and explicit-confirmation gates, all source-backed and redacted.
++- [ ] Add a one-file syntax-first import test for `ppd.extraction.urban_forestry_permit_requirements` that imports only that module and fails malformed Python before broad Urban Forestry requirement validation runs.
++- [ ] Add a focused validation test for Urban Forestry permit requirement extraction that checks only the seven fixture categories, source evidence IDs, confidence bounds, deduplication, and explicit stop-gate classifications.
++- [ ] Add a one-file replacement-size guard test for `ppd.extraction.urban_forestry_permit_requirements` proposals that rejects broad generated modules and requires the extractor implementation to stay under 180 physical lines with no dataclasses.
++- [ ] Add guardrail compiler fixture tests for the Urban Forestry permit workflow covering missing facts, required document groups, payment stop points, correction-upload stop points, and any inspection/finalization stop points, using only fixture data.
++- [ ] Add a mocked DevHub workflow snapshot fixture for Urban Forestry application draft review that records semantic selectors, required fields, upload controls, validation messages, save-for-later state, and exact confirmation gates using only redacted values.
++- [ ] Add DevHub guardrail tests proving Urban Forestry application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.
+ 
+ ## Deferred Broad Items
+ 
+@@ -172,33 +180,11 @@
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T23:50:00Z
++Last updated: 2026-05-02T00:16:51.946400Z
+ 
+ - Latest target: `Supervisor repair: append next fixture-first PP&D permit-family tranche after no eligible tasks remained.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Added eight narrow sign-permit fixture, validation, syntax-guard, guardrail, and mocked DevHub tasks so the daemon can continue without live or authenticated automation.
+-- Counts: `{blocked: 0, complete: 94, in_progress: 0, needed: 8}`
++- Latest summary: Added eight narrow Urban Forestry permit fixture, validation, syntax-guard, guardrail, and mocked DevHub tasks so the daemon can continue without live or authenticated automation.
++- Counts: `{"blocked": 0, "complete": 102, "in_progress": 0, "needed": 8}`
+ 
+ 
+-
+-## Generated Status
+-
+-Last updated: 2026-05-01T23:50:00Z
+-
+-- Latest target: `Supervisor repair: append next fixture-first PP&D permit-family tranche after no eligible tasks remained.`
+-- Latest result: `supervisor_repair`
+-- Latest summary: Added eight narrow sign-permit fixture, validation, syntax-guard, guardrail, and mocked DevHub tasks so the daemon can continue without live or authenticated automation.
+-- Counts: `{blocked: 0, complete: 94, in_progress: 0, needed: 8}`
+-
+-
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-02T00:14:46.332215Z
+-
+-- Latest target: `Task checkbox-102: Add DevHub guardrail tests proving sign application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.`
+-- Latest result: `accepted`
+-- Latest summary: Adds fixture-backed DevHub guardrail tests for sign application draft review preview and exact session-specific confirmation gates.
+-- Counts: `{"blocked": 0, "complete": 102, "in_progress": 0, "needed": 0}`
+-
+-<!-- ppd-daemon-task-board:end -->

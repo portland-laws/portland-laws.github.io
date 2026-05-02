@@ -1,0 +1,43 @@
+--- a/ppd/tests/fixtures/guardrails/guardrail_mapping_fixture.json
++++ b/ppd/tests/fixtures/guardrails/guardrail_mapping_fixture.json
+@@ -0,0 +1,40 @@
++{
++  "schemaVersion": 1,
++  "fixtureId": "checkbox-45-smallest-guardrail-mapping",
++  "processId": "synthetic-public-single-pdf-process",
++  "lastReviewed": "2026-05-02",
++  "mappings": [
++    {
++      "mappingId": "map-stop-gate-review-before-submit-to-read-status",
++      "stopGateId": "stop-before-submission",
++      "agentActionGate": {
++        "actionGateId": "agent-read-public-process-status",
++        "actionClass": "safe_read_only",
++        "allowedAutomation": "inspect_public_guidance_only",
++        "requiresExplicitConfirmation": false,
++        "confirmationDefault": false,
++        "consequenceSummary": "The agent may read and summarize public PP&D guidance or existing fixture-derived process state, but must not submit, pay, certify, cancel, upload, or schedule inspections.",
++        "sourceEvidenceIds": [
++          "public-guidance-devhub-faq",
++          "public-guidance-single-pdf-process"
++        ]
++      }
++    },
++    {
++      "mappingId": "map-stop-gate-missing-fields-to-draft-checklist",
++      "stopGateId": "stop-until-required-fields-known",
++      "agentActionGate": {
++        "actionGateId": "agent-draft-missing-information-checklist",
++        "actionClass": "reversible_draft_edit",
++        "allowedAutomation": "draft_missing_information_checklist_only",
++        "requiresExplicitConfirmation": false,
++        "confirmationDefault": false,
++        "consequenceSummary": "The agent may prepare a reversible draft checklist of missing public-process facts for user review, without changing DevHub account state or performing official actions.",
++        "sourceEvidenceIds": [
++          "public-guidance-devhub-faq",
++          "public-guidance-single-pdf-process"
++        ]
++      }
++    }
++  ]
++}

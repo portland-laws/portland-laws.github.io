@@ -1,0 +1,40 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -12,16 +12,18 @@
+ - TypeScript `TS1109`
+ - TypeScript `TS1128`
+ 
+-After two recent syntax failures for the same task, stop retrying the broad domain task. Block it on the task board and append narrow daemon-repair tasks that improve syntax preflight, retry prompts, or diagnostics.
++After two recent syntax failures for the same task, stop retrying the broad domain task. Block it on the task board and repair daemon syntax preflight before another worker attempt at the blocked domain task.
+ 
+ ## Required Daemon Behavior
+ 
+-The daemon should check syntactic validity before running broad validation:
++The daemon must check syntactic validity before running broad validation:
+ 
+-- For changed `.py` files, run `py_compile` on the changed files before the full test suite.
+-- For changed `.ts` and `.tsx` files, run strict TypeScript parsing/typecheck on the changed files before the full validation suite.
+-- If syntax preflight fails, rollback immediately, record failure kind `syntax_preflight`, and persist a compact diagnostic in failed-patches.
+-- Do not allow a syntax-preflight failure to cascade into hundreds of import errors from the full Python test suite.
++- After applying proposed file replacements, compute the changed file list before any full validation command runs.
++- For changed `.py` files, run `py_compile` only on those changed Python files.
++- For changed `.ts` and `.tsx` files, run the existing strict TypeScript `tsc --noEmit` command, scoped only to the changed TypeScript files.
++- If syntax preflight fails, rollback immediately, record failure kind `syntax_preflight`, and persist a compact diagnostic in `ppd/daemon/failed-patches/`.
++- Do not run the full Python unit suite after a syntax-preflight failure. This prevents one parser error from cascading into hundreds of import errors.
++- Keep syntax-preflight diagnostics compact: include the command, return code, and the first actionable parser message.
+ 
+ ## Required Prompt Behavior
+ 
+@@ -37,6 +39,10 @@
+ ## Recovery Sequence
+ 
+ 1. Add daemon syntax-preflight behavior.
+-2. Add or update prompt diagnostics so parser failures request smaller proposals.
+-3. Resume the blocked domain task with a narrow validator or fixture-only test.
++2. Add or update daemon self-tests so changed Python files require `py_compile` and changed TypeScript files require scoped strict `tsc --noEmit`.
++3. Resume the blocked public-crawl manifest validation task with the smallest validator-only proposal.
+ 4. Keep live crawling and authenticated DevHub automation out of recovery tasks.
++
++## Current Blocker Guidance
++
++The repeated `planned_crawl_manifest.py` failures were parser failures, not failed crawl-policy reasoning. Do not ask the worker to broaden the crawl-manifest contract until syntax preflight is installed. The next worker attempt should either repair daemon preflight or, after that repair validates, add the narrow fail-closed crawl-plan fixture validator.

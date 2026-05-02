@@ -1,0 +1,66 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -124,6 +124,14 @@
+ - [x] Add guardrail compiler fixture tests for the FCC wireless application workflow covering missing facts, required document groups, payment stop points, correction-upload stop points, and any inspection/finalization stop points, using only fixture data.
+ - [x] Add a mocked DevHub workflow snapshot fixture for FCC wireless application draft review that records semantic selectors, required fields, upload controls, validation messages, save-for-later state, and exact confirmation gates using only redacted values.
+ - [x] Add DevHub guardrail tests proving FCC wireless application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.
++- [ ] Add a fixture-only permit-process skeleton for an online trade permit purchase workflow using existing public fixture/source-inventory evidence only, with eligibility facts, trade scope, required license or contractor facts, fee/payment gates, inspection-scheduling stop points, and citation-backed action gates.
++- [ ] Add a minimal online trade permit purchase requirement extraction expected-output fixture with exactly seven category records: eligibility, trade scope, required applicant/license facts, fee/payment checkpoints, inspection scheduling, cancellation/finalization, and explicit-confirmation gates, all source-backed and redacted.
++- [ ] Add a one-file syntax-first import test for `ppd.extraction.online_trade_permit_requirements` that imports only that module and fails malformed Python before broad online trade permit requirement validation runs.
++- [ ] Add a focused validation test for online trade permit purchase requirement extraction that checks only the seven fixture categories, source evidence IDs, confidence bounds, deduplication, and explicit stop-gate classifications.
++- [ ] Add a one-file replacement-size guard test for `ppd.extraction.online_trade_permit_requirements` proposals that rejects broad generated modules and requires the extractor implementation to stay under 180 physical lines with no dataclasses.
++- [ ] Add guardrail compiler fixture tests for the online trade permit purchase workflow covering missing facts, required license or contractor facts, payment stop points, inspection-scheduling stop points, cancellation/finalization stop points, and citation-backed action gates using only fixture data.
++- [ ] Add a mocked DevHub workflow snapshot fixture for online trade permit purchase review that records semantic selectors, required fields, fee-review state, validation messages, save-for-later state, and exact confirmation gates using only redacted values.
++- [ ] Add DevHub guardrail tests proving online trade permit purchase review can produce a preview but cannot perform official purchase, certification, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.
+ 
+ ## Deferred Broad Items
+ 
+@@ -156,7 +164,7 @@
+ 
+ Parked broad tasks should not stop unrelated PP&D progress. Broad failed work belongs in Deferred Broad Items, not in selectable checkbox form, while any independent `[ ]` fixture-first or validation-first task remains selectable.
+ 
+-The next tranche should stay fixture-only and validation-first: public process fixtures before extractors, syntax-first import tests before Python implementation, size guards before generated modules, mocked DevHub snapshots before browser behavior, and guardrail tests before any irreversible action support. No task in this tranche authorizes live crawling, login, payment entry, submission, upload, certification, cancellation, or inspection scheduling.
++The next tranche stays fixture-only and validation-first: public process fixtures before extractors, syntax-first import tests before Python implementation, size guards before generated modules, mocked DevHub snapshots before browser behavior, and guardrail tests before any irreversible action support. No task in this tranche authorizes live crawling, login, payment entry, submission, upload, certification, cancellation, or inspection scheduling.
+ 
+ When no independent task is active, prefer recovery tasks in this order:
+ 
+@@ -188,32 +196,11 @@
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T00:43:00Z
+-
+-- Latest target: `Supervisor repair: append next fixture-first FCC wireless PP&D permit-family tranche after no eligible tasks remained.`
++Last updated: 2026-05-02T01:03:00Z
++
++- Latest target: `Supervisor repair: append next fixture-first online trade permit PP&D permit-family tranche after no eligible tasks remained.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Added eight narrow FCC wireless permit fixture, validation, syntax-guard, guardrail, and mocked DevHub tasks so the daemon can continue without live or authenticated automation.
+-- Counts: `{"blocked": 0, "complete": 110, "in_progress": 0, "needed": 8}`
+-
+-
+-## Generated Status
+-
+-Last updated: 2026-05-02T00:43:00Z
+-
+-- Latest target: `Supervisor repair: append next fixture-first FCC wireless PP&D permit-family tranche after no eligible tasks remained.`
+-- Latest result: `supervisor_repair`
+-- Latest summary: Added eight narrow FCC wireless permit fixture, validation, syntax-guard, guardrail, and mocked DevHub tasks so the daemon can continue without live or authenticated automation.
+-- Counts: `{"blocked": 0, "complete": 110, "in_progress": 0, "needed": 8}`
+-
+-
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-02T01:01:46.801597Z
+-
+-- Latest target: `Task checkbox-118: Add DevHub guardrail tests proving FCC wireless application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.`
+-- Latest result: `accepted`
+-- Latest summary: Add fixture-backed DevHub FCC wireless application guardrail tests for draft preview versus official actions requiring exact session-specific confirmation.
+-- Counts: `{"blocked": 0, "complete": 118, "in_progress": 0, "needed": 0}`
+-
+-<!-- ppd-daemon-task-board:end -->
++- Latest summary: Added eight narrow online trade permit purchase fixture, validation, syntax-guard, guardrail, and mocked DevHub tasks so the daemon can continue without live or authenticated automation.
++- Counts: `{blocked: 0, complete: 118, in_progress: 0, needed: 8}`
++
++

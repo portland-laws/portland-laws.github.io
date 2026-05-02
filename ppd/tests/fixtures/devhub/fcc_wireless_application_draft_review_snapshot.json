@@ -1,0 +1,272 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "devhub-fcc-wireless-application-draft-review-snapshot",
+  "workflow": "fcc_wireless_application",
+  "stateId": "draft_review",
+  "capturedAt": "2026-05-01T00:00:00Z",
+  "captureMode": "mocked_fixture_only",
+  "redactionPolicy": "all user, project, account, parcel, contact, and file values are synthetic redacted placeholders",
+  "urlState": {
+    "kind": "mocked_authenticated_state",
+    "stableState": "devhub:fcc-wireless-application:draft-review",
+    "routeTemplate": "/mock/devhub/fcc-wireless-application/draft-review",
+    "containsPrivateSessionPath": false
+  },
+  "sourceEvidence": [
+    {
+      "id": "public-devhub-application-guidance",
+      "label": "Portland public DevHub application guidance lists FCC wireless applications as a permit request type.",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    }
+  ],
+  "snapshot": {
+    "pageTitle": "Review FCC Wireless Application Draft",
+    "nearbyHeading": "FCC Wireless Application",
+    "draftStatus": {
+      "state": "saved_for_later_available",
+      "lastSavedDisplay": "[REDACTED_TIMESTAMP]",
+      "draftReference": "[REDACTED_DRAFT_REFERENCE]",
+      "resumeState": "devhub:fcc-wireless-application:draft-review"
+    },
+    "semanticSelectors": [
+      {
+        "id": "review-heading",
+        "role": "heading",
+        "accessibleName": "FCC Wireless Application",
+        "labelText": "FCC Wireless Application",
+        "nearbyHeading": "Review Application",
+        "state": "devhub:fcc-wireless-application:draft-review",
+        "fallbackCss": null,
+        "fallbackXPath": null
+      },
+      {
+        "id": "save-for-later-button",
+        "role": "button",
+        "accessibleName": "Save for Later",
+        "labelText": "Save for Later",
+        "nearbyHeading": "Review Application",
+        "state": "devhub:fcc-wireless-application:draft-review",
+        "fallbackCss": null,
+        "fallbackXPath": null
+      },
+      {
+        "id": "continue-to-certification-button",
+        "role": "button",
+        "accessibleName": "Continue to Certification",
+        "labelText": "Continue to Certification",
+        "nearbyHeading": "Review Application",
+        "state": "devhub:fcc-wireless-application:draft-review",
+        "fallbackCss": null,
+        "fallbackXPath": null
+      }
+    ],
+    "requiredFields": [
+      {
+        "id": "project-site-address",
+        "label": "Project site address",
+        "role": "textbox",
+        "required": true,
+        "value": "[REDACTED_PROJECT_SITE_ADDRESS]",
+        "selectorBasis": {
+          "accessibleName": "Project site address",
+          "labelText": "Project site address",
+          "nearbyHeading": "Project Location",
+          "state": "devhub:fcc-wireless-application:draft-review"
+        },
+        "validationMessages": []
+      },
+      {
+        "id": "property-id",
+        "label": "Property ID or tax account number",
+        "role": "textbox",
+        "required": true,
+        "value": "[REDACTED_PROPERTY_IDENTIFIER]",
+        "selectorBasis": {
+          "accessibleName": "Property ID or tax account number",
+          "labelText": "Property ID or tax account number",
+          "nearbyHeading": "Project Location",
+          "state": "devhub:fcc-wireless-application:draft-review"
+        },
+        "validationMessages": []
+      },
+      {
+        "id": "applicant-contact",
+        "label": "Applicant contact",
+        "role": "combobox",
+        "required": true,
+        "value": "[REDACTED_CONTACT_SELECTION]",
+        "selectorBasis": {
+          "accessibleName": "Applicant contact",
+          "labelText": "Applicant contact",
+          "nearbyHeading": "Contacts",
+          "state": "devhub:fcc-wireless-application:draft-review"
+        },
+        "validationMessages": []
+      },
+      {
+        "id": "wireless-facility-type",
+        "label": "Wireless facility type",
+        "role": "combobox",
+        "required": true,
+        "value": "[REDACTED_FACILITY_TYPE]",
+        "selectorBasis": {
+          "accessibleName": "Wireless facility type",
+          "labelText": "Wireless facility type",
+          "nearbyHeading": "Wireless Facility Details",
+          "state": "devhub:fcc-wireless-application:draft-review"
+        },
+        "validationMessages": []
+      },
+      {
+        "id": "project-description",
+        "label": "Project description",
+        "role": "textbox",
+        "required": true,
+        "value": "[REDACTED_PROJECT_DESCRIPTION]",
+        "selectorBasis": {
+          "accessibleName": "Project description",
+          "labelText": "Project description",
+          "nearbyHeading": "Wireless Facility Details",
+          "state": "devhub:fcc-wireless-application:draft-review"
+        },
+        "validationMessages": []
+      }
+    ],
+    "uploadControls": [
+      {
+        "id": "application-packet-upload",
+        "label": "FCC wireless application packet",
+        "role": "button",
+        "required": true,
+        "acceptedFileTypes": ["application/pdf"],
+        "fileSizeHint": "[REDACTED_FILE_SIZE_HINT]",
+        "fileNamingHint": "[REDACTED_FILE_NAMING_HINT]",
+        "currentFiles": ["[REDACTED_UPLOADED_APPLICATION_PACKET_FILENAME]"],
+        "selectorBasis": {
+          "accessibleName": "Upload FCC wireless application packet",
+          "labelText": "FCC wireless application packet",
+          "nearbyHeading": "Documents",
+          "state": "devhub:fcc-wireless-application:draft-review"
+        },
+        "validationMessages": []
+      },
+      {
+        "id": "site-plan-upload",
+        "label": "Site plan or drawings",
+        "role": "button",
+        "required": true,
+        "acceptedFileTypes": ["application/pdf"],
+        "fileSizeHint": "[REDACTED_FILE_SIZE_HINT]",
+        "fileNamingHint": "[REDACTED_FILE_NAMING_HINT]",
+        "currentFiles": [],
+        "selectorBasis": {
+          "accessibleName": "Upload site plan or drawings",
+          "labelText": "Site plan or drawings",
+          "nearbyHeading": "Documents",
+          "state": "devhub:fcc-wireless-application:draft-review"
+        },
+        "validationMessages": [
+          {
+            "id": "site-plan-required",
+            "severity": "error",
+            "text": "A site plan or drawing PDF is required before certification."
+          }
+        ]
+      },
+      {
+        "id": "supporting-documents-upload",
+        "label": "Supporting documents",
+        "role": "button",
+        "required": false,
+        "acceptedFileTypes": ["application/pdf"],
+        "fileSizeHint": "[REDACTED_FILE_SIZE_HINT]",
+        "fileNamingHint": "[REDACTED_FILE_NAMING_HINT]",
+        "currentFiles": ["[REDACTED_SUPPORTING_DOCUMENT_FILENAME]"],
+        "selectorBasis": {
+          "accessibleName": "Upload supporting documents",
+          "labelText": "Supporting documents",
+          "nearbyHeading": "Documents",
+          "state": "devhub:fcc-wireless-application:draft-review"
+        },
+        "validationMessages": []
+      }
+    ],
+    "validationMessages": [
+      {
+        "id": "missing-required-upload",
+        "severity": "error",
+        "fieldOrControlId": "site-plan-upload",
+        "text": "A site plan or drawing PDF is required before certification."
+      },
+      {
+        "id": "review-before-certification",
+        "severity": "warning",
+        "fieldOrControlId": "continue-to-certification-button",
+        "text": "Review all application information and uploaded documents before continuing to certification."
+      }
+    ],
+    "navigationEdges": [
+      {
+        "id": "back-to-documents",
+        "fromState": "devhub:fcc-wireless-application:draft-review",
+        "toState": "devhub:fcc-wireless-application:documents",
+        "actionLabel": "Back",
+        "classification": "safe_read_only",
+        "requiresExactConfirmation": false
+      },
+      {
+        "id": "save-for-later",
+        "fromState": "devhub:fcc-wireless-application:draft-review",
+        "toState": "devhub:fcc-wireless-application:draft-saved",
+        "actionLabel": "Save for Later",
+        "classification": "reversible_draft_edit",
+        "requiresExactConfirmation": false
+      },
+      {
+        "id": "continue-to-certification",
+        "fromState": "devhub:fcc-wireless-application:draft-review",
+        "toState": "devhub:fcc-wireless-application:certification",
+        "actionLabel": "Continue to Certification",
+        "classification": "potentially_consequential",
+        "requiresExactConfirmation": true,
+        "exactConfirmationPhrase": "I confirm this FCC wireless application draft is ready to continue to certification in this DevHub session."
+      }
+    ],
+    "confirmationGates": [
+      {
+        "id": "certification-review-gate",
+        "action": "continue_to_certification",
+        "classification": "potentially_consequential",
+        "gateText": "Continuing to certification prepares the FCC wireless application draft for applicant certification review.",
+        "requiredExactConfirmation": "I confirm this FCC wireless application draft is ready to continue to certification in this DevHub session.",
+        "mayExecuteWithoutConfirmation": false
+      },
+      {
+        "id": "submit-application-gate",
+        "action": "submit_application",
+        "classification": "potentially_consequential",
+        "gateText": "Submitting an FCC wireless application is an official DevHub action and is not performed by this fixture.",
+        "requiredExactConfirmation": "I authorize submission of this FCC wireless application in this DevHub session.",
+        "mayExecuteWithoutConfirmation": false
+      },
+      {
+        "id": "fee-payment-gate",
+        "action": "pay_fees",
+        "classification": "financial",
+        "gateText": "Fee payment is a financial action and is not performed by this fixture.",
+        "requiredExactConfirmation": "I authorize payment of the displayed FCC wireless application fees in this DevHub session.",
+        "mayExecuteWithoutConfirmation": false
+      }
+    ]
+  },
+  "privacyAssertions": {
+    "containsCredentials": false,
+    "containsAuthState": false,
+    "containsTrace": false,
+    "containsScreenshot": false,
+    "containsRawCrawlOutput": false,
+    "containsDownloadedDocument": false,
+    "containsUnredactedPrivateValues": false
+  }
+}

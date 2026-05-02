@@ -1,0 +1,3 @@
+ppd/daemon/proposal_syntax_diagnostics.py
+ppd/tests/fixtures/daemon_diagnostics/repeated_malformed_python_comparison_syntax.json
+ppd/tests/test_daemon_proposal_syntax_diagnostics.py

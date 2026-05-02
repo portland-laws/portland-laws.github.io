@@ -1,0 +1,95 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,59 +1,60 @@
+ # PP&D Supervisor Repair Guide
+ 
+-This guide is supervisor programming for the isolated PP&D daemon. It is used when recent daemon cycles roll back because validation failed before semantic tests could run.
++This guide is for supervisor repair cycles when the PP&D daemon repeatedly rolls back worker proposals during validation.
+ 
+-## Syntax And Compile Rollback Rule
++## Syntax Or Compile Failure Rule
+ 
+-If two or more recent failures for the same task include any of these markers, classify the task as a syntax-first recovery instead of retrying the broad task:
++If recent validation output includes any of these markers, treat the failure as daemon-programming risk rather than ordinary task failure:
+ 
+ - `SyntaxError`
+ - `py_compile`
++- `invalid syntax`
+ - `TS1005`
+ - `TS1109`
+ - `TS1128`
++- `Declaration or statement expected`
++- `Expression expected`
+ 
+-The next worker prompt must ask for a smaller proposal that proves syntactic validity before broader behavior is attempted.
++Do not ask the worker to retry a broad implementation immediately. First narrow the next worker prompt or task-board work so syntax validity is proven before behavior expands.
+ 
+ ## Required Recovery Shape
+ 
+-For Python syntax or `py_compile` failures:
++For repeated syntax or compile failures, recover in this order:
+ 
+-1. Prefer one Python file only.
+-2. Use plain functions, constants, dictionaries, and lists.
+-3. Do not use dataclasses unless an existing passing test already imports the target module through normal package import mechanics.
+-4. Require explicit comparison operators. For example, write `confidence  1.0`; never emit malformed fragments such as `confidence 1`.
+-5. Keep validation focused on `py_compile` or a one-module import before broad unittest discovery.
++1. Add or preserve a syntax-first import or compile test for the exact target module.
++2. Add the smallest committed fixture needed by later behavior tests.
++3. Add a one-file implementation with plain functions, constants, and dictionaries.
++4. Add focused behavior validation only after the implementation imports cleanly.
+ 
+-For TypeScript compile failures:
++Each recovery proposal should usually replace one file. Use two files only when the selected task explicitly requires a fixture plus its narrow validation test.
+ 
+-1. Prefer one TypeScript file only.
+-2. Keep the proposal syntactically complete before adding fixture breadth.
+-3. Avoid broad contract rewrites after `TS1005`, `TS1109`, or `TS1128`; first repair the minimal module or test that fails parsing.
++## Python Guardrails
+ 
+-## Worker Prompt Addendum
++For daemon-authored Python validator or extractor modules:
+ 
+-When syntax-first recovery is active, append this instruction to the worker prompt:
++- Prefer plain functions, constants, tuples, lists, and dictionaries.
++- Avoid dataclasses when prior imports used `importlib.util.module_from_spec` or failed inside `dataclasses.py`.
++- Do not use generated comparison helpers.
++- Do not mix type annotations into expressions or control flow.
++- Write comparisons explicitly, for example `confidence  1.0`.
++- Keep module import side effects at zero.
++- Run syntax-first validation before broad unittest discovery.
+ 
+-Return the smallest syntactically complete proposal that can pass the narrow validation for this task. Do not broaden schemas, contracts, fixtures, or behavior in the same cycle. Before returning JSON, check every Python replacement as if `python3 -m py_compile` were run on it and every TypeScript replacement as if `tsc --noEmit` parsed it. If a value needs a bounds check, use an explicit operator such as ``, or `>=`.
++## TypeScript Guardrails
+ 
+-## Task Board Handling
++For daemon-authored TypeScript modules:
+ 
+-After three failed attempts against one broad task, the supervisor should park that broad task in Deferred Broad Items and append narrow selectable tasks in this order:
++- Keep proposals small enough for parser errors to be obvious.
++- Avoid broad contract rewrites after TS parser failures.
++- Preserve existing exported names unless a task explicitly asks for a contract change.
++- Prefer fixture-only tests before introducing live crawler or browser behavior.
+ 
+-1. Add or restore a syntax-first import or compile sentinel.
+-2. Add the minimal fixture expected by that sentinel or focused test.
+-3. Add the smallest no-dataclass implementation that satisfies the fixture.
+-4. Add a focused validation test only after the implementation imports cleanly.
++## Task Selection Guidance
+ 
+-Do not mark application or domain artifacts as progress just to escape the loop. Repair only daemon prompt, preflight, retry, recovery, diagnostics, or PP&D fixture-first validation programming.
++After three failed attempts against the same broad task, park the broad task in deferred notes and append narrower recovery tasks. Keep completed tasks intact. Do not leave the daemon repeatedly selecting the same broad task when independent fixture-first or validation-first work remains.
+ 
+-## Current Solar Requirement Recovery
++For solar permit requirement extraction specifically, do not retry broad extraction validation after syntax failures. Use the existing order: syntax-first import sentinel, seven-record expected-output fixture, no-dataclass one-file extractor, then focused seven-category validation.
+ 
+-The solar permit requirement extractor has repeatedly failed with malformed Python such as `confidence 1` and `confidence 1.0`. Until a syntax-valid extractor passes, the supervisor should keep worker proposals narrow:
++## Safety Boundaries
+ 
+-- one file for `ppd/extraction/solar_permit_requirements.py` when implementing behavior;
+-- no dataclasses;
+-- no shared contract rewrites;
+-- no live crawl or authenticated DevHub automation;
+-- no payment, submission, certification, upload, cancellation, MFA, CAPTCHA, or inspection scheduling automation;
+-- validation-first work before broader requirement extraction behavior.
++Supervisor repair cycles must not create private DevHub session files, auth state, traces, screenshots, raw crawl output, downloaded documents, or authenticated automation artifacts. They must not automate CAPTCHA, MFA, account creation, payment, submission, certification, cancellation, official upload, or inspection scheduling.

@@ -1,0 +1,483 @@
+--- a/ppd/tests/fixtures/permit_processes/urban_forestry_permit_process.json
++++ b/ppd/tests/fixtures/permit_processes/urban_forestry_permit_process.json
+@@ -0,0 +1,382 @@
++{
++  "schemaVersion": 1,
++  "processId": "urban_forestry_permit_fixture_v1",
++  "permitType": "Urban Forestry permit",
++  "fixtureOnly": true,
++  "generatedFrom": "existing_public_fixture_source_inventory_evidence_only",
++  "scope": "Skeleton workflow for public Urban Forestry tree permit requests that may be started through Portland public guidance or DevHub. This fixture is not a live crawl and contains no private account data.",
++  "authoritySources": [
++    {
++      "evidenceId": "uf-src-001",
++      "sourceInventoryCategory": "permit_application_guidance",
++      "authorityLabel": "Portland.gov Urban Forestry tree permit guidance",
++      "canonicalUrl": "https://www.portland.gov/trees/treepermits",
++      "retrievalTimestamp": "2026-05-01T00:00:00Z",
++      "sourceIndexRef": "fixture_public_source_inventory_portland_trees_treepermits",
++      "supports": ["eligibility_screening", "required_project_facts", "inspection_or_closeout_review"]
++    },
++    {
++      "evidenceId": "uf-src-002",
++      "sourceInventoryCategory": "permit_application_guidance",
++      "authorityLabel": "Portland.gov tree removal and replanting permit guidance",
++      "canonicalUrl": "https://www.portland.gov/trees/tree-removal-and-replanting-permits",
++      "retrievalTimestamp": "2026-05-01T00:00:00Z",
++      "sourceIndexRef": "fixture_public_source_inventory_tree_removal_replanting",
++      "supports": ["tree_work_type", "site_plan_or_tree_information", "replanting_conditions"]
++    },
++    {
++      "evidenceId": "uf-src-003",
++      "sourceInventoryCategory": "permit_application_guidance",
++      "authorityLabel": "Portland.gov tree planting permit guidance",
++      "canonicalUrl": "https://www.portland.gov/trees/tree-planting-permits",
++      "retrievalTimestamp": "2026-05-01T00:00:00Z",
++      "sourceIndexRef": "fixture_public_source_inventory_tree_planting_permits",
++      "supports": ["tree_planting_work", "species_or_location_details", "right_of_way_considerations"]
++    },
++    {
++      "evidenceId": "uf-src-004",
++      "sourceInventoryCategory": "devhub_guide",
++      "authorityLabel": "Portland.gov online permit application guidance listing Urban Forestry permits",
++      "canonicalUrl": "https://www.portland.gov/ppd/apply-online-permits",
++      "retrievalTimestamp": "2026-05-01T00:00:00Z",
++      "sourceIndexRef": "fixture_public_source_inventory_apply_online_permits",
++      "supports": ["devhub_account_setup", "permit_type_selection", "online_application_entry"]
++    },
++    {
++      "evidenceId": "uf-src-005",
++      "sourceInventoryCategory": "devhub_guide",
++      "authorityLabel": "Portland.gov DevHub FAQ and guide evidence for online permit requests, corrections, fee payments, and inspection-related services",
++      "canonicalUrl": "https://www.portland.gov/ppd/devhub-faq",
++      "retrievalTimestamp": "2026-05-01T00:00:00Z",
++      "sourceIndexRef": "fixture_public_source_inventory_devhub_faq",
++      "supports": ["correction_upload_gate", "fee_payment_gate", "status_tracking", "inspection_gate"]
++    },
++    {
++      "evidenceId": "uf-src-006",
++      "sourceInventoryCategory": "file_rule_guidance",
++      "authorityLabel": "Portland.gov Single PDF Process guidance for searchable plan PDFs and separate supporting PDFs when that process applies",
++      "canonicalUrl": "https://www.portland.gov/ppd/single-pdf-process",
++      "retrievalTimestamp": "2026-05-01T00:00:00Z",
++      "sourceIndexRef": "fixture_public_source_inventory_single_pdf_process",
++      "supports": ["pdf_file_rules", "separate_supporting_documents"]
++    }
++  ],
++  "requiredFacts": [
++    {
++      "factId": "uf-fact-001",
++      "kind": "property_identifier",
++      "label": "Project property address or public right-of-way location",
++      "required": true,
++      "redactionPolicy": "project_specific_value_required_from_user",
++      "evidence": ["uf-src-001", "uf-src-003", "uf-src-004"]
++    },
++    {
++      "factId": "uf-fact-002",
++      "kind": "applicant_contact",
++      "label": "Applicant contact information for the Urban Forestry request",
++      "required": true,
++      "redactionPolicy": "private_user_value_never_in_fixture",
++      "evidence": ["uf-src-004"]
++    },
++    {
++      "factId": "uf-fact-003",
++      "kind": "tree_work_type",
++      "label": "Requested tree work type such as planting, removal, pruning, replanting, or related Urban Forestry review",
++      "required": true,
++      "redactionPolicy": "project_specific_value_required_from_user",
++      "evidence": ["uf-src-001", "uf-src-002", "uf-src-003"]
++    },
++    {
++      "factId": "uf-fact-004",
++      "kind": "tree_location_context",
++      "label": "Whether the tree is on private property, in a street right-of-way, or otherwise subject to Urban Forestry review",
++      "required": true,
++      "redactionPolicy": "project_specific_value_required_from_user",
++      "evidence": ["uf-src-001", "uf-src-003"]
++    },
++    {
++      "factId": "uf-fact-005",
++      "kind": "tree_details",
++      "label": "Tree species, diameter or size, quantity, and condition details when applicable",
++      "required": true,
++      "redactionPolicy": "project_specific_value_required_from_user",
++      "evidence": ["uf-src-001", "uf-src-002", "uf-src-003"]
++    },
++    {
++      "factId": "uf-fact-006",
++      "kind": "related_permit_or_case",
++      "label": "Related building, development, public works, or prior tree permit number if known",
++      "required": false,
++      "redactionPolicy": "project_specific_value_required_from_user_when_available",
++      "evidence": ["uf-src-004", "uf-src-005"]
++    }
++  ],
++  "requiredDocuments": [
++    {
++      "documentId": "uf-doc-001",
++      "kind": "application_form_or_online_request",
++      "label": "Urban Forestry permit application or DevHub request entries",
++      "required": true,
++      "acceptableFormats": ["online_form", "pdf_when_public_form_required"],
++      "evidence": ["uf-src-001", "uf-src-004"]
++    },
++    {
++      "documentId": "uf-doc-002",
++      "kind": "site_plan_or_tree_plan",
++      "label": "Site plan, tree plan, or location map showing affected tree locations and work area",
++      "required": true,
++      "acceptableFormats": ["pdf"],
++      "evidence": ["uf-src-001", "uf-src-002", "uf-src-003", "uf-src-006"]
++    },
++    {
++      "documentId": "uf-doc-003",
++      "kind": "supporting_photos_or_arborist_information",
++      "label": "Supporting photos, arborist information, or condition documentation when requested by the public guidance or reviewer",
++      "required": false,
++      "acceptableFormats": ["pdf", "image", "separate_supporting_pdf"],
++      "evidence": ["uf-src-001", "uf-src-002", "uf-src-006"]
++    },
++    {
++      "documentId": "uf-doc-004",
++      "kind": "replanting_or_mitigation_information",
++      "label": "Replanting, replacement, or mitigation information when the request involves tree removal or replanting conditions",
++      "required": false,
++      "acceptableFormats": ["online_form", "pdf"],
++      "conditionalOn": "tree_work_type includes removal, replacement, or replanting",
++      "evidence": ["uf-src-002"]
++    },
++    {
++      "documentId": "uf-doc-005",
++      "kind": "owner_or_applicant_acknowledgment",
++      "label": "Applicant acknowledgment or certification presented by the online request workflow before submission",
++      "required": true,
++      "acceptableFormats": ["devhub_acknowledgment"],
++      "evidence": ["uf-src-004", "uf-src-005"]
++    }
++  ],
++  "fileRules": [
++    {
++      "ruleId": "uf-file-001",
++      "description": "Plans or tree-location drawings should be uploaded as PDF files when a plan document is required.",
++      "appliesTo": ["uf-doc-002"],
++      "predicate": "document_is_pdf(site_plan_or_tree_plan)",
++      "evidence": ["uf-src-006"]
++    },
++    {
++      "ruleId": "uf-file-002",
++      "description": "When Single PDF Process guidance applies, drawing plans belong in one searchable PDF while applications, calculations, photos, and supporting documents remain separate PDFs.",
++      "appliesTo": ["uf-doc-001", "uf-doc-002", "uf-doc-003", "uf-doc-004"],
++      "predicate": "plans_are_single_searchable_pdf_and_supporting_documents_are_separate",
++      "evidence": ["uf-src-006"]
++    },
++    {
++      "ruleId": "uf-file-003",
++      "description": "No fixture may include downloaded permit documents, raw response bodies, private DevHub session files, screenshots, traces, credentials, or unredacted project values.",
++      "appliesTo": ["fixture_validation"],
++      "predicate": "fixture_contains_only_redacted_public_source_inventory_evidence",
++      "evidence": ["uf-src-004", "uf-src-005"]
++    }
++  ],
++  "stages": [
++    {
++      "stageId": "uf-stage-001",
++      "kind": "pre_application_research",
++      "label": "Confirm whether the tree work is an Urban Forestry permit workflow",
++      "requiredFacts": ["uf-fact-001", "uf-fact-003", "uf-fact-004", "uf-fact-005"],
++      "requiredDocuments": [],
++      "entryEvidence": ["uf-src-001", "uf-src-002", "uf-src-003"],
++      "exitGateIds": ["uf-gate-001"]
++    },
++    {
++      "stageId": "uf-stage-002",
++      "kind": "account_setup",
++      "label": "Use DevHub or Portland.gov account path when online application is required",
++      "requiredFacts": ["uf-fact-002"],
++      "requiredDocuments": [],
++      "entryEvidence": ["uf-src-004", "uf-src-005"],
++      "exitGateIds": ["uf-gate-002"]
++    },
++    {
++      "stageId": "uf-stage-003",
++      "kind": "permit_request_type_selection",
++      "label": "Select the Urban Forestry permit or request type",
++      "requiredFacts": ["uf-fact-003", "uf-fact-004"],
++      "requiredDocuments": [],
++      "entryEvidence": ["uf-src-004"],
++      "exitGateIds": ["uf-gate-003"]
++    },
++    {
++      "stageId": "uf-stage-004",
++      "kind": "document_preparation",
++      "label": "Prepare tree permit submittal documents and supporting information",
++      "requiredFacts": ["uf-fact-001", "uf-fact-005", "uf-fact-006"],
++      "requiredDocuments": ["uf-doc-001", "uf-doc-002", "uf-doc-003", "uf-doc-004"],
++      "entryEvidence": ["uf-src-001", "uf-src-002", "uf-src-003", "uf-src-006"],
++      "exitGateIds": ["uf-gate-004"]
++    },
++    {
++      "stageId": "uf-stage-005",
++      "kind": "application_data_entry",
++      "label": "Enter application facts and upload allowed documents in DevHub or the public application path",
++      "requiredFacts": ["uf-fact-001", "uf-fact-002", "uf-fact-003", "uf-fact-004", "uf-fact-005"],
++      "requiredDocuments": ["uf-doc-001", "uf-doc-002"],
++      "entryEvidence": ["uf-src-004", "uf-src-005"],
++      "exitGateIds": ["uf-gate-005", "uf-gate-006"]
++    },
++    {
++      "stageId": "uf-stage-006",
++      "kind": "submission",
++      "label": "Submit the Urban Forestry request only after exact user confirmation",
++      "requiredFacts": [],
++      "requiredDocuments": ["uf-doc-005"],
++      "entryEvidence": ["uf-src-004", "uf-src-005"],
++      "exitGateIds": ["uf-gate-007"]
++    },
++    {
++      "stageId": "uf-stage-007",
++      "kind": "intake_and_fee_payment",
++      "label": "Stop at any fee or payment step until the user confirms the exact payment action",
++      "requiredFacts": [],
++      "requiredDocuments": [],
++      "entryEvidence": ["uf-src-005"],
++      "exitGateIds": ["uf-gate-008"]
++    },
++    {
++      "stageId": "uf-stage-008",
++      "kind": "review_and_corrections",
++      "label": "Track reviewer status and prepare correction uploads only as a preview unless exactly confirmed",
++      "requiredFacts": [],
++      "requiredDocuments": ["uf-doc-003", "uf-doc-004"],
++      "entryEvidence": ["uf-src-005"],
++      "exitGateIds": ["uf-gate-009"]
++    },
++    {
++      "stageId": "uf-stage-009",
++      "kind": "inspection_or_field_review",
++      "label": "Pause before scheduling, requesting, or representing completion of any Urban Forestry inspection or field review",
++      "requiredFacts": ["uf-fact-001"],
++      "requiredDocuments": [],
++      "entryEvidence": ["uf-src-001", "uf-src-005"],
++      "exitGateIds": ["uf-gate-010"]
++    },
++    {
++      "stageId": "uf-stage-010",
++      "kind": "finalization_closeout",
++      "label": "Confirm approval, conditions, replanting obligations, or closeout status from official PP&D or Urban Forestry records",
++      "requiredFacts": [],
++      "requiredDocuments": ["uf-doc-004"],
++      "entryEvidence": ["uf-src-001", "uf-src-002", "uf-src-005"],
++      "exitGateIds": ["uf-gate-011"]
++    }
++  ],
++  "actionGates": [
++    {
++      "gateId": "uf-gate-001",
++      "kind": "eligibility_screening",
++      "classification": "read_only",
++      "agentRule": "Ask for missing property, tree work, and location-context facts before selecting a permit path.",
++      "requiresExactUserConfirmation": false,
++      "evidence": ["uf-src-001", "uf-src-002", "uf-src-003"]
++    },
++    {
++      "gateId": "uf-gate-002",
++      "kind": "account_or_session",
++      "classification": "read_only",
++      "agentRule": "Do not create accounts, recover passwords, automate MFA, or bypass CAPTCHA; the user must control any authenticated session.",
++      "requiresExactUserConfirmation": false,
++      "evidence": ["uf-src-004", "uf-src-005"]
++    },
++    {
++      "gateId": "uf-gate-003",
++      "kind": "permit_type_selection",
++      "classification": "reversible_draft_edit",
++      "agentRule": "A permit type selection may be drafted only in a mocked or user-approved session and only from source-backed project facts.",
++      "requiresExactUserConfirmation": false,
++      "evidence": ["uf-src-004"]
++    },
++    {
++      "gateId": "uf-gate-004",
++      "kind": "document_completeness",
++      "classification": "read_only",
++      "agentRule": "Report missing required documents and file-rule problems; do not fabricate application content or supporting documents.",
++      "requiresExactUserConfirmation": false,
++      "evidence": ["uf-src-001", "uf-src-002", "uf-src-003", "uf-src-006"]
++    },
++    {
++      "gateId": "uf-gate-005",
++      "kind": "draft_field_entry",
++      "classification": "reversible_draft_edit",
++      "agentRule": "Draft only reversible field entries based on redacted user-provided facts or source-backed fixture facts.",
++      "requiresExactUserConfirmation": false,
++      "evidence": ["uf-src-004", "uf-src-005"]
++    },
++    {
++      "gateId": "uf-gate-006",
++      "kind": "file_upload_preview",
++      "classification": "potentially_consequential",
++      "agentRule": "Prepare an upload preview, but do not perform an official upload without exact session-specific user confirmation.",
++      "requiresExactUserConfirmation": true,
++      "evidence": ["uf-src-004", "uf-src-005", "uf-src-006"]
++    },
++    {
++      "gateId": "uf-gate-007",
++      "kind": "submission",
++      "classification": "potentially_consequential",
++      "agentRule": "Stop before certification or submission unless the user explicitly confirms the exact Urban Forestry permit submission action in the active session.",
++      "requiresExactUserConfirmation": true,
++      "evidence": ["uf-src-004", "uf-src-005"]
++    },
++    {
++      "gateId": "uf-gate-008",
++      "kind": "fee_payment",
++      "classification": "financial",
++      "agentRule": "Stop before fee payment, payment-detail entry, or payment confirmation unless the user explicitly confirms the exact financial action.",
++      "requiresExactUserConfirmation": true,
++      "evidence": ["uf-src-005"]
++    },
++    {
++      "gateId": "uf-gate-009",
++      "kind": "correction_upload",
++      "classification": "potentially_consequential",
++      "agentRule": "Prepare correction responses as a preview only; do not officially upload corrections without exact user confirmation.",
++      "requiresExactUserConfirmation": true,
++      "evidence": ["uf-src-005"]
++    },
++    {
++      "gateId": "uf-gate-010",
++      "kind": "inspection_or_field_review",
++      "classification": "potentially_consequential",
++      "agentRule": "Stop before scheduling or requesting an inspection or field review unless the user explicitly confirms that exact action.",
++      "requiresExactUserConfirmation": true,
++      "evidence": ["uf-src-001", "uf-src-005"]
++    },
++    {
++      "gateId": "uf-gate-011",
++      "kind": "finalization_closeout",
++      "classification": "read_only",
++      "agentRule": "Report official status, unresolved conditions, and missing closeout evidence; do not claim approval or completion unless source-backed by official status evidence.",
++      "requiresExactUserConfirmation": false,
++      "evidence": ["uf-src-001", "uf-src-002", "uf-src-005"]
++    }
++  ],
++  "feePaymentGates": ["uf-gate-008"],
++  "inspectionFinalizationGates": ["uf-gate-010", "uf-gate-011"],
++  "irreversibleOrStoppedActions": [
++    "official_upload",
++    "certification",
++    "submission",
++    "fee_payment",
++    "correction_upload",
++    "inspection_request_or_scheduling",
++    "claim_final_approval_without_official_status"
++  ],
++  "privacy": {
++    "containsRawResponseBodies": false,
++    "containsDownloadedDocuments": false,
++    "containsPrivateDevhubSession": false,
++    "containsCredentials": false,
++    "containsScreenshots": false,
++    "containsTraces": false,
++    "containsUnredactedPii": false
++  }
++}
+--- a/ppd/tests/test_urban_forestry_permit_process_fixture.py
++++ b/ppd/tests/test_urban_forestry_permit_process_fixture.py
+@@ -0,0 +1,95 @@
++"""Validate the fixture-only Urban Forestry permit process skeleton."""
++
++from __future__ import annotations
++
++import json
++import unittest
++from pathlib import Path
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "permit_processes"
++    / "urban_forestry_permit_process.json"
++)
++
++
++class UrbanForestryPermitProcessFixtureTest(unittest.TestCase):
++    def setUp(self) -> None:
++        with FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
++            self.fixture = json.load(fixture_file)
++
++    def test_fixture_is_public_redacted_and_fixture_only(self) -> None:
++        self.assertTrue(self.fixture["fixtureOnly"])
++        self.assertEqual(
++            self.fixture["generatedFrom"],
++            "existing_public_fixture_source_inventory_evidence_only",
++        )
++        privacy = self.fixture["privacy"]
++        for key, value in privacy.items():
++            self.assertFalse(value, key)
++
++    def test_core_process_sections_are_present(self) -> None:
++        self.assertEqual(self.fixture["permitType"], "Urban Forestry permit")
++        self.assertGreaterEqual(len(self.fixture["authoritySources"]), 5)
++        self.assertGreaterEqual(len(self.fixture["requiredFacts"]), 5)
++        self.assertGreaterEqual(len(self.fixture["requiredDocuments"]), 5)
++        self.assertGreaterEqual(len(self.fixture["fileRules"]), 3)
++        self.assertGreaterEqual(len(self.fixture["stages"]), 10)
++        self.assertGreaterEqual(len(self.fixture["actionGates"]), 10)
++
++    def test_all_process_items_are_citation_backed(self) -> None:
++        evidence_ids = {source["evidenceId"] for source in self.fixture["authoritySources"]}
++        self.assertIn("uf-src-004", evidence_ids)
++        self.assertIn("uf-src-005", evidence_ids)
++
++        for source in self.fixture["authoritySources"]:
++            self.assertTrue(source["canonicalUrl"].startswith("https://www.portland.gov/"))
++            self.assertTrue(source["authorityLabel"].strip())
++            self.assertTrue(source["sourceInventoryCategory"].strip())
++            self.assertTrue(source["sourceIndexRef"].startswith("fixture_public_source_inventory_"))
++
++        for section_name in ("requiredFacts", "requiredDocuments", "fileRules", "stages", "actionGates"):
++            for item in self.fixture[section_name]:
++                evidence = item.get("evidence") or item.get("entryEvidence")
++                self.assertIsInstance(evidence, list, section_name)
++                self.assertTrue(evidence, item)
++                self.assertTrue(set(evidence).issubset(evidence_ids), item)
++
++    def test_required_gates_cover_payment_inspection_finalization_and_confirmations(self) -> None:
++        gates = {gate["gateId"]: gate for gate in self.fixture["actionGates"]}
++        self.assertEqual(self.fixture["feePaymentGates"], ["uf-gate-008"])
++        self.assertEqual(self.fixture["inspectionFinalizationGates"], ["uf-gate-010", "uf-gate-011"])
++
++        payment_gate = gates["uf-gate-008"]
++        self.assertEqual(payment_gate["classification"], "financial")
++        self.assertTrue(payment_gate["requiresExactUserConfirmation"])
++
++        stopped_gate_ids = {"uf-gate-006", "uf-gate-007", "uf-gate-008", "uf-gate-009", "uf-gate-010"}
++        for gate_id in stopped_gate_ids:
++            with self.subTest(gate_id=gate_id):
++                self.assertTrue(gates[gate_id]["requiresExactUserConfirmation"])
++                self.assertIn(
++                    gates[gate_id]["classification"],
++                    {"potentially_consequential", "financial"},
++                )
++                self.assertTrue(gates[gate_id]["evidence"])
++
++    def test_file_rules_are_document_linked_and_pdf_aware(self) -> None:
++        document_ids = {document["documentId"] for document in self.fixture["requiredDocuments"]}
++        for rule in self.fixture["fileRules"]:
++            self.assertTrue(rule["ruleId"].startswith("uf-file-"))
++            self.assertTrue(rule["description"].strip())
++            self.assertTrue(rule["predicate"].strip())
++            if rule["ruleId"] != "uf-file-003":
++                self.assertTrue(set(rule["appliesTo"]).issubset(document_ids))
++
++        plan_document = next(
++            document for document in self.fixture["requiredDocuments"] if document["documentId"] == "uf-doc-002"
++        )
++        self.assertIn("pdf", plan_document["acceptableFormats"])
++
++
++if __name__ == "__main__":
++    unittest.main()

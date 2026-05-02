@@ -1,0 +1,80 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -25,7 +25,8 @@
+ - [!] Add a minimal extension-only lifecycle process skeleton fixture with required facts, required documents, user decisions, citation-backed action gates, and explicit no-live-automation notes from existing fixtures only.
+ - [x] Recovery for checkbox-15: add a JSON-only extension lifecycle evidence map fixture at `ppd/tests/fixtures/lifecycle/extension_lifecycle_evidence_map.json` with exactly one extension category, source inventory evidence IDs only, required citation fields, and no process-model implementation code.
+ - [x] Recovery for checkbox-15: add the minimal extension-only lifecycle process skeleton fixture as JSON only, using the accepted extension evidence map, with no Python modules, no TypeScript modules, no dataclasses, no live crawling, no DevHub login, and no official action automation.
+-- [~] Recovery for checkbox-15: add one narrow validation test for the extension-only lifecycle skeleton fixture that checks required facts, required documents, user decisions, citation-backed action gates, and explicit no-live-automation notes without broad lifecycle extraction behavior.
++- [!] Recovery for checkbox-15: add one narrow validation test for the extension-only lifecycle skeleton fixture that checks required facts, required documents, user decisions, citation-backed action gates, and explicit no-live-automation notes without broad lifecycle extraction behavior.
++- [ ] Recovery for checkbox-18: add a one-file exact-schema validation test for `ppd/tests/fixtures/lifecycle/extension_lifecycle_process_skeleton.json` and `ppd/tests/fixtures/lifecycle/extension_lifecycle_evidence_map.json`; collect committed evidence ids from `sourceInventoryEvidenceIds` and `authoritySources[].evidenceId` in the skeleton, treat evidence-map `categories[].sourceInventoryEvidenceIds` as source-inventory category references only, and do not require the evidence map to expose a top-level evidence-id list.
+ - [ ] Add a minimal reactivation-only lifecycle process skeleton fixture with required facts, required documents, user decisions, citation-backed action gates, and explicit no-live-automation notes from existing fixtures only.
+ - [ ] Add a minimal cancellation-and-refund lifecycle process skeleton fixture with user decisions, fee/payment gates, citation-backed action gates, and explicit stop gates from existing fixtures only.
+ - [ ] Add a minimal inspection-scheduling-and-result-follow-up lifecycle process skeleton fixture with user decisions, citation-backed action gates, and explicit scheduling/submission stop gates from existing fixtures only.
+@@ -41,6 +42,7 @@
+ 
+ - Parked lifecycle skeleton broad task: Add a fixture-only cross-cutting permit lifecycle process skeleton for extension, reactivation, cancellation, refund, inspection scheduling, and inspection-result follow-up gates, with required facts, required documents, user decisions, fee/payment gates, and citation-backed action gates from existing fixtures only. This was too broad while the lifecycle coverage report still lacked authority-label and recrawl-cadence metadata. It is split into extension-only, reactivation-only, cancellation/refund, and inspection scheduling/result follow-up fixture tasks.
+ - Parked checkbox-15 broad extension skeleton attempt: The extension-only lifecycle process skeleton failed three consecutive daemon rounds without an accepted patch. Do not retry it as one combined fixture-and-validator task. Resume through the three recovery tasks that first create a tiny evidence map, then a JSON-only extension skeleton, then a narrow validation test.
++- Parked checkbox-18 validator attempt: The first narrow validator retry assumed the extension evidence map exposed actual evidence ids and failed with `extension evidence map must expose evidence ids`. The accepted schema has `categories[].sourceInventoryEvidenceIds` in the evidence map as category references, while the skeleton itself carries actual source inventory evidence ids in `sourceInventoryEvidenceIds` and `authoritySources[].evidenceId`. Retry only through the exact-schema checkbox-18 recovery task.
+ - Parked checkbox-13 broad validator attempts: Add a validation-only test for the extension/cancellation/refund/inspection-result source coverage report proving it fails closed for missing authority labels, missing recrawl cadence, private DevHub paths, raw response bodies, credentials, traces, screenshots, downloaded documents, and uncited category claims. Earlier retries used broad fixture discovery or stale field assumptions. The accepted recovery task names the exact committed fixture and schema keys.
+ - Parked checkbox-121: Add a one-file syntax-first import test for `ppd.extraction.online_trade_permit_requirements` that imports only that module and fails malformed Python before broad online trade permit requirement validation runs. This stale blocked checkbox is superseded by the accepted one-file repair task because later online trade permit focused validation, size guard, guardrail, and mocked DevHub tasks have already passed.
+ - Parked source freshness broad task: Add a source freshness fixture that classifies stale PP&D guidance, changed content hashes, removed pages, and recrawl priority without performing a live recrawl.
+@@ -53,7 +55,9 @@
+ 
+ The lifecycle source coverage fail-closed validator failed repeatedly because earlier attempts assumed fields or fixture names that did not match the committed report. The committed fixture is exactly `ppd/tests/fixtures/source_inventory/permit_lifecycle_source_coverage_report.json`. It uses top-level `coverageCategories`, top-level `evidence`, category ids such as `permit_extension_guidance`, and metadata fields `authorityLabel` and `recrawlCadence` on each evidence object. The validator should load that exact path from `Path(__file__).parent / "fixtures" / "source_inventory" / "permit_lifecycle_source_coverage_report.json"`; it should not glob for alternate lifecycle reports.
+ 
+-For checkbox-15 recovery, keep the next accepted patch JSON-only. Do not add extractor modules, dataclasses, generated Python validators, TypeScript modules, live crawl behavior, downloaded documents, private DevHub artifacts, screenshots, traces, or authenticated automation. If a validation task is needed, add it only after the JSON fixture validates as committed data.
++For checkbox-15 and checkbox-18 recovery, keep accepted patches fixture-only or validation-only. Do not add extractor modules, dataclasses, generated Python implementation modules, TypeScript modules, live crawl behavior, downloaded documents, private DevHub artifacts, screenshots, traces, or authenticated automation. The exact extension skeleton fixture path is `ppd/tests/fixtures/lifecycle/extension_lifecycle_process_skeleton.json`; the exact extension evidence map path is `ppd/tests/fixtures/lifecycle/extension_lifecycle_evidence_map.json`.
++
++The extension evidence map intentionally maps extension lifecycle work to source inventory categories. It has `categories[].sourceInventoryEvidenceIds` with category-like references. The extension skeleton carries the committed evidence ids that validators should check: top-level `sourceInventoryEvidenceIds` and `authoritySources[].evidenceId`. A checkbox-18 validator must not fail only because the evidence map lacks a top-level evidence array or actual evidence-id list.
+ 
+ The cross-cutting lifecycle skeleton should not run as a single broad task until the metadata and category-specific skeleton fixtures pass. Category-specific fixture tasks are now selectable and should be completed before any extractor implementation or DevHub behavior is attempted.
+ 
+@@ -81,12 +85,14 @@
+ 10. After a later narrower recovery passes, park earlier blocked retries as superseded so they do not count as active blockers.
+ 11. Do not select parked broad validation tasks directly.
+ 12. For new permit-family or lifecycle work, add the process skeleton and expected-output fixture before adding extractor tests or implementation tasks.
++13. For checkbox-18, use exact fixture paths and the committed schema shape before adding any broader lifecycle extraction assumptions.
+ 
+ ## Supervisor Recovery Rules
+ 
+ - Treat repeated `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128` failures as a signal to split the task into syntax-first import tests, minimal fixtures, proposal-size guards, then implementation.
+ - Treat validation failures caused by missing fixture fields as fixture-first recovery, not as permission to weaken fail-closed assertions.
+ - Treat fixture-discovery failures as exact-path recovery. The next retry should name the fixture path and schema keys in the selectable task instead of adding broad search logic.
++- Treat schema-shape failures in fixture validators as exact-schema recovery. The next retry should name the accepted fixture paths and keys instead of adding broad discovery or assuming alternate fixture shapes.
+ - Treat three consecutive failed daemon rounds without an accepted patch as retry exhaustion for that exact broad task. Park the task, append narrower fixture-first recovery tasks, and select a different independent task if the first recovery task is not immediately actionable.
+ - Treat malformed comparison-like fragments such as `confidence 1`, `confidence 1.0`, or `return 0.0 list[str]` as retry-stop diagnostics for the same target task until a smaller validation-first guard has passed.
+ - Treat `dataclasses.py` import-time failures under `importlib.util.module_from_spec` as a hard no-dataclass constraint for daemon-authored Python validator modules; use plain functions/constants/dicts instead of asking tests to alter import mechanics.
+@@ -101,22 +107,22 @@
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T02:00:00Z
++Last updated: 2026-05-02T02:03:00Z
+ 
+-- Latest target: `Supervisor repair: park retry-exhausted checkbox-15 and add JSON-only extension lifecycle recovery tasks.`
++- Latest target: `Supervisor repair: park checkbox-18 schema-assumption retry and add exact-schema validator recovery task.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Split the failed extension lifecycle skeleton work into evidence-map, JSON-only fixture, and narrow validator recovery tasks.
+-- Counts: `{blocked: 1, complete: 14, in_progress: 0, needed: 12}`
++- Latest summary: Parked the failing extension lifecycle skeleton validator retry and added a narrower exact-schema validation task that names the committed fixture paths and accepted evidence-id locations.
++- Counts: `{blocked: 2, complete: 16, in_progress: 0, needed: 10}`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
++
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T02:01:35.501671Z
++Last updated: 2026-05-02T02:03:00Z
+ 
+-- Latest target: `Task checkbox-18: Recovery for checkbox-15: add one narrow validation test for the extension-only lifecycle skeleton fixture that checks required facts, required documents, user decisions, citation-backed action gates, and explicit no-live-automation notes without broad lifecycle extraction behavior.`
+-- Latest result: `validation`
+-- Latest summary: Add a narrow fixture-only validation test for the extension lifecycle skeleton.
+-- Counts: `{"blocked": 1, "complete": 16, "in_progress": 0, "needed": 9}`
++- Latest target: `Supervisor repair: park checkbox-18 schema-assumption retry and add exact-schema validator recovery task.`
++- Latest result: `supervisor_repair`
++- Latest summary: Parked the failing extension lifecycle skeleton validator retry and added a narrower exact-schema validation task that names the committed fixture paths and accepted evidence-id locations.
++- Counts: `{"blocked": 2, "complete": 16, "in_progress": 0, "needed": 10}`
+ 
+-<!-- ppd-daemon-task-board:end -->
++

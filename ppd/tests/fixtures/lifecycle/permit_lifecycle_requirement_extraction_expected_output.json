@@ -1,0 +1,301 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "permit_lifecycle_requirement_extraction_expected_output_minimal_v1",
+  "fixtureKind": "lifecycle_requirement_extraction_expected_output",
+  "generatedFrom": "curated_public_ppd_lifecycle_fixtures_only",
+  "redactionPolicy": {
+    "containsPrivateDevHubData": false,
+    "containsCredentials": false,
+    "containsRawResponseBodies": false,
+    "containsScreenshotsOrTraces": false,
+    "containsDownloadedDocuments": false,
+    "redactedFields": [
+      "applicant_name",
+      "property_address",
+      "permit_number",
+      "devhub_account_identifier",
+      "payment_method"
+    ]
+  },
+  "categoryRecords": [
+    {
+      "categoryId": "extension_eligibility",
+      "categoryLabel": "Extension eligibility",
+      "requirementType": "precondition",
+      "subject": "applicant",
+      "action": "evaluate whether an active permit can be extended before taking any official extension action",
+      "object": "permit extension request",
+      "conditions": [
+        "permit lifecycle state must be checked from source-backed public PP&D guidance or a user-authorized account view",
+        "agent must not submit or certify an extension request without exact user confirmation"
+      ],
+      "deadlineOrTemporalScope": "before permit expiration or before any official extension request is submitted",
+      "classification": "eligibility_check",
+      "stopGate": false,
+      "sourceEvidenceIds": [
+        "permit_extension_guidance"
+      ],
+      "evidence": [
+        {
+          "evidenceId": "permit_extension_guidance",
+          "sourceUrl": "https://www.portland.gov/ppd",
+          "sourceTitle": "Portland Permitting & Development public permit lifecycle guidance",
+          "authorityLabel": "PP&D public guidance",
+          "recrawlCadence": "weekly",
+          "supports": "Permit extension eligibility must be evaluated from public PP&D lifecycle guidance before official action.",
+          "redacted": true
+        }
+      ],
+      "confidence": 0.72,
+      "formalizationStatus": "fixture_expected_output"
+    },
+    {
+      "categoryId": "reactivation_eligibility",
+      "categoryLabel": "Reactivation eligibility",
+      "requirementType": "precondition",
+      "subject": "applicant",
+      "action": "evaluate whether an expired or inactive permit can be reactivated",
+      "object": "permit reactivation request",
+      "conditions": [
+        "permit status and lifecycle path must be source-backed",
+        "reactivation must be treated as a potentially consequential official request"
+      ],
+      "deadlineOrTemporalScope": "after permit inactivity or expiration is identified and before any official reactivation request",
+      "classification": "eligibility_check",
+      "stopGate": false,
+      "sourceEvidenceIds": [
+        "permit_reactivation_guidance"
+      ],
+      "evidence": [
+        {
+          "evidenceId": "permit_reactivation_guidance",
+          "sourceUrl": "https://www.portland.gov/ppd",
+          "sourceTitle": "Portland Permitting & Development permit reactivation guidance",
+          "authorityLabel": "PP&D public guidance",
+          "recrawlCadence": "weekly",
+          "supports": "Reactivation eligibility depends on the permit lifecycle state and must be verified before official action.",
+          "redacted": true
+        }
+      ],
+      "confidence": 0.72,
+      "formalizationStatus": "fixture_expected_output"
+    },
+    {
+      "categoryId": "cancellation_eligibility",
+      "categoryLabel": "Cancellation eligibility",
+      "requirementType": "action_gate",
+      "subject": "applicant",
+      "action": "determine whether a permit or request can be cancelled",
+      "object": "permit cancellation request",
+      "conditions": [
+        "cancellation must be handled as a consequential lifecycle action",
+        "agent must stop before cancelling unless the user gives exact session-specific confirmation"
+      ],
+      "deadlineOrTemporalScope": "before any official cancellation action",
+      "classification": "consequential_stop_gate",
+      "stopGate": true,
+      "sourceEvidenceIds": [
+        "permit_cancellation_guidance"
+      ],
+      "evidence": [
+        {
+          "evidenceId": "permit_cancellation_guidance",
+          "sourceUrl": "https://www.portland.gov/ppd",
+          "sourceTitle": "Portland Permitting & Development cancellation guidance",
+          "authorityLabel": "PP&D public guidance",
+          "recrawlCadence": "weekly",
+          "supports": "Cancellation is an official lifecycle action requiring eligibility review and explicit user confirmation.",
+          "redacted": true
+        }
+      ],
+      "confidence": 0.74,
+      "formalizationStatus": "fixture_expected_output"
+    },
+    {
+      "categoryId": "refund_eligibility",
+      "categoryLabel": "Refund eligibility",
+      "requirementType": "precondition",
+      "subject": "applicant",
+      "action": "evaluate whether paid fees may qualify for refund review",
+      "object": "permit refund request",
+      "conditions": [
+        "refund eligibility must be tied to fee and permit lifecycle evidence",
+        "agent must not request refund submission or provide payment details without exact user confirmation"
+      ],
+      "deadlineOrTemporalScope": "after payment or cancellation context is known and before an official refund request",
+      "classification": "financial_eligibility_check",
+      "stopGate": true,
+      "sourceEvidenceIds": [
+        "permit_refund_guidance"
+      ],
+      "evidence": [
+        {
+          "evidenceId": "permit_refund_guidance",
+          "sourceUrl": "https://www.portland.gov/ppd",
+          "sourceTitle": "Portland Permitting & Development refund guidance",
+          "authorityLabel": "PP&D public guidance",
+          "recrawlCadence": "weekly",
+          "supports": "Refund paths are fee-related lifecycle actions and require source-backed eligibility review.",
+          "redacted": true
+        }
+      ],
+      "confidence": 0.74,
+      "formalizationStatus": "fixture_expected_output"
+    },
+    {
+      "categoryId": "inspection_scheduling",
+      "categoryLabel": "Inspection scheduling",
+      "requirementType": "action_gate",
+      "subject": "applicant",
+      "action": "prepare or preview inspection scheduling requirements",
+      "object": "inspection scheduling request",
+      "conditions": [
+        "inspection scheduling must be based on the permit type and inspection guidance",
+        "agent may draft a preview but must not schedule an inspection without exact user confirmation"
+      ],
+      "deadlineOrTemporalScope": "after permit issuance or when inspection guidance indicates scheduling is available",
+      "classification": "consequential_stop_gate",
+      "stopGate": true,
+      "sourceEvidenceIds": [
+        "inspection_scheduling_guidance"
+      ],
+      "evidence": [
+        {
+          "evidenceId": "inspection_scheduling_guidance",
+          "sourceUrl": "https://www.portland.gov/ppd",
+          "sourceTitle": "Portland Permitting & Development inspection scheduling guidance",
+          "authorityLabel": "PP&D public guidance",
+          "recrawlCadence": "weekly",
+          "supports": "Inspection scheduling is an official workflow action and must stop for explicit confirmation before scheduling.",
+          "redacted": true
+        }
+      ],
+      "confidence": 0.76,
+      "formalizationStatus": "fixture_expected_output"
+    },
+    {
+      "categoryId": "inspection_result_follow_up",
+      "categoryLabel": "Inspection-result follow-up",
+      "requirementType": "dependency",
+      "subject": "applicant",
+      "action": "review inspection result and identify required follow-up before rescheduling or closeout",
+      "object": "inspection result follow-up task",
+      "conditions": [
+        "failed, pending, or correction-related inspection outcomes must be treated as process dependencies",
+        "agent must not upload official corrections or schedule follow-up inspections without exact user confirmation"
+      ],
+      "deadlineOrTemporalScope": "after inspection result is available and before follow-up action",
+      "classification": "follow_up_dependency",
+      "stopGate": false,
+      "sourceEvidenceIds": [
+        "inspection_result_guidance"
+      ],
+      "evidence": [
+        {
+          "evidenceId": "inspection_result_guidance",
+          "sourceUrl": "https://www.portland.gov/ppd",
+          "sourceTitle": "Portland Permitting & Development inspection result guidance",
+          "authorityLabel": "PP&D public guidance",
+          "recrawlCadence": "weekly",
+          "supports": "Inspection results can create follow-up obligations before rescheduling, correction, or closeout.",
+          "redacted": true
+        }
+      ],
+      "confidence": 0.73,
+      "formalizationStatus": "fixture_expected_output"
+    },
+    {
+      "categoryId": "fee_payment_checkpoints",
+      "categoryLabel": "Fee/payment checkpoints",
+      "requirementType": "action_gate",
+      "subject": "applicant",
+      "action": "identify fee or payment checkpoints before financial action",
+      "object": "permit fee payment workflow",
+      "conditions": [
+        "fee payment must be classified as financial",
+        "agent must not pay fees, enter payment details, or submit payment without exact user confirmation"
+      ],
+      "deadlineOrTemporalScope": "whenever PP&D or DevHub indicates fees are due before issuance, review, refund, or lifecycle action",
+      "classification": "financial_stop_gate",
+      "stopGate": true,
+      "sourceEvidenceIds": [
+        "fee_payment_guidance"
+      ],
+      "evidence": [
+        {
+          "evidenceId": "fee_payment_guidance",
+          "sourceUrl": "https://www.portland.gov/ppd",
+          "sourceTitle": "Portland Permitting & Development fee and payment guidance",
+          "authorityLabel": "PP&D public guidance",
+          "recrawlCadence": "weekly",
+          "supports": "Fee and payment checkpoints are financial workflow gates requiring explicit confirmation.",
+          "redacted": true
+        }
+      ],
+      "confidence": 0.78,
+      "formalizationStatus": "fixture_expected_output"
+    },
+    {
+      "categoryId": "explicit_confirmation_gates",
+      "categoryLabel": "Explicit-confirmation gates",
+      "requirementType": "action_gate",
+      "subject": "agent",
+      "action": "stop before consequential, financial, certification, cancellation, upload, submission, payment, or inspection scheduling actions",
+      "object": "user confirmation checkpoint",
+      "conditions": [
+        "confirmation must name the exact action in the current session",
+        "preview must summarize the planned official action and source-backed consequence before execution",
+        "fixtures must remain redacted and must not contain private DevHub values"
+      ],
+      "deadlineOrTemporalScope": "immediately before any official or financial lifecycle action",
+      "classification": "explicit_confirmation_stop_gate",
+      "stopGate": true,
+      "sourceEvidenceIds": [
+        "devhub_confirmation_gate_guidance",
+        "fee_payment_guidance",
+        "permit_cancellation_guidance",
+        "inspection_scheduling_guidance"
+      ],
+      "evidence": [
+        {
+          "evidenceId": "devhub_confirmation_gate_guidance",
+          "sourceUrl": "https://devhub.portlandoregon.gov",
+          "sourceTitle": "Development Hub PDX public portal",
+          "authorityLabel": "DevHub public portal guidance",
+          "recrawlCadence": "weekly",
+          "supports": "Official DevHub workflow actions must be separated from read-only or draft preview behavior and gated by explicit confirmation.",
+          "redacted": true
+        },
+        {
+          "evidenceId": "fee_payment_guidance",
+          "sourceUrl": "https://www.portland.gov/ppd",
+          "sourceTitle": "Portland Permitting & Development fee and payment guidance",
+          "authorityLabel": "PP&D public guidance",
+          "recrawlCadence": "weekly",
+          "supports": "Financial actions require a stop gate before payment or payment-detail handling.",
+          "redacted": true
+        },
+        {
+          "evidenceId": "permit_cancellation_guidance",
+          "sourceUrl": "https://www.portland.gov/ppd",
+          "sourceTitle": "Portland Permitting & Development cancellation guidance",
+          "authorityLabel": "PP&D public guidance",
+          "recrawlCadence": "weekly",
+          "supports": "Cancellation requires a stop gate before official lifecycle action.",
+          "redacted": true
+        },
+        {
+          "evidenceId": "inspection_scheduling_guidance",
+          "sourceUrl": "https://www.portland.gov/ppd",
+          "sourceTitle": "Portland Permitting & Development inspection scheduling guidance",
+          "authorityLabel": "PP&D public guidance",
+          "recrawlCadence": "weekly",
+          "supports": "Inspection scheduling requires a stop gate before scheduling an official inspection.",
+          "redacted": true
+        }
+      ],
+      "confidence": 0.8,
+      "formalizationStatus": "fixture_expected_output"
+    }
+  ]
+}

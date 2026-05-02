@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "devhub_permit_fee_review_payment_readiness_mock_v1",
+  "sourceKind": "synthetic_mock_devhub_workflow_snapshot",
+  "generatedAt": "2026-05-01T00:00:00Z",
+  "commitSafe": true,
+  "redactionPolicy": {
+    "onlyRedactedUserValues": true,
+    "numericFeeAmountsRedacted": true,
+    "noLiveBrowserArtifacts": true,
+    "noPaymentInstrumentData": true
+  },
+  "workflowState": {
+    "stateId": "permit_fee_review_payment_readiness",
+    "stateLabel": "Permit fee review and payment readiness",
+    "mockUrlState": "mock-devhub://permit-fees/review",
+    "permitReference": "[REDACTED_PERMIT_REFERENCE]",
+    "projectReference": "[REDACTED_PROJECT_REFERENCE]",
+    "readOnlyStatus": {
+      "classification": "safe_read_only",
+      "reviewOnly": true,
+      "draftMutationAllowed": false,
+      "financialActionAllowed": false,
+      "allowedObservations": [
+        "read visible fee labels",
+        "read visible balance labels",
+        "read payment readiness messages",
+        "summarize fee status using redacted values"
+      ]
+    }
+  },
+  "visibleBalances": [
+    {
+      "balanceId": "balance_due_current",
+      "label": "Balance due",
+      "displayValue": "[REDACTED_BALANCE_DUE]",
+      "currency": "USD",
+      "visibleOnPage": true,
+      "amountValue": null,
+      "redacted": true
+    },
+    {
+      "balanceId": "fees_assessed_total",
+      "label": "Fees assessed",
+      "displayValue": "[REDACTED_FEES_ASSESSED_TOTAL]",
+      "currency": "USD",
+      "visibleOnPage": true,
+      "amountValue": null,
+      "redacted": true
+    },
+    {
+      "balanceId": "payments_received_total",
+      "label": "Payments received",
+      "displayValue": "[REDACTED_PAYMENTS_RECEIVED_TOTAL]",
+      "currency": "USD",
+      "visibleOnPage": true,
+      "amountValue": null,
+      "redacted": true
+    }
+  ],
+  "paymentReadiness": {
+    "status": "fees_visible_payment_not_approved_for_automation",
+    "readyForUserReview": true,
+    "readyForAutomatedPayment": false,
+    "instructions": [
+      {
+        "instructionId": "review_fee_lines",
+        "text": "Review each visible fee line and balance label in DevHub before deciding whether to continue."
+      },
+      {
+        "instructionId": "user_controls_payment",
+        "text": "The user must personally choose whether to continue to payment after reviewing redacted fee information."
+      },
+      {
+        "instructionId": "automation_stops_before_finance",
+        "text": "Automation may summarize fee readiness but must stop before selecting payment, entering payment details, or confirming payment."
+      }
+    ]
+  },
+  "semanticSelectors": [
+    {
+      "selectorId": "balance_due_label",
+      "role": "text",
+      "accessibleName": "Balance due",
+      "labelText": "Balance due",
+      "nearbyHeading": "Fees",
+      "urlState": "mock-devhub://permit-fees/review"
+    },
+    {
+      "selectorId": "fee_table_region",
+      "role": "region",
+      "accessibleName": "Fee summary",
+      "labelText": "Fee summary",
+      "nearbyHeading": "Fees",
+      "urlState": "mock-devhub://permit-fees/review"
+    },
+    {
+      "selectorId": "continue_to_payment_button",
+      "role": "button",
+      "accessibleName": "Continue to payment",
+      "labelText": "Continue to payment",
+      "nearbyHeading": "Payment",
+      "urlState": "mock-devhub://permit-fees/review"
+    }
+  ],
+  "financialActionStopPoints": [
+    {
+      "stopPointId": "continue_to_payment",
+      "actionLabel": "Continue to payment",
+      "classification": "financial",
+      "stopBeforeAction": true,
+      "requiresExactUserConfirmation": true,
+      "confirmationIncludedInFixture": false,
+      "reason": "Selecting this action would begin a payment workflow."
+    },
+    {
+      "stopPointId": "enter_payment_details",
+      "actionLabel": "Enter payment details",
+      "classification": "financial",
+      "stopBeforeAction": true,
+      "requiresExactUserConfirmation": true,
+      "confirmationIncludedInFixture": false,
+      "reason": "Payment details are financial data and must not be entered by unattended automation."
+    },
+    {
+      "stopPointId": "confirm_payment",
+      "actionLabel": "Confirm payment",
+      "classification": "financial",
+      "stopBeforeAction": true,
+      "requiresExactUserConfirmation": true,
+      "confirmationIncludedInFixture": false,
+      "reason": "Confirming payment is a financial action."
+    }
+  ],
+  "navigationEdges": [
+    {
+      "fromState": "permit_detail",
+      "toState": "permit_fee_review_payment_readiness",
+      "actionLabel": "View fees",
+      "classification": "safe_read_only"
+    },
+    {
+      "fromState": "permit_fee_review_payment_readiness",
+      "toState": "external_payment_workflow",
+      "actionLabel": "Continue to payment",
+      "classification": "financial",
+      "blockedInFixture": true
+    }
+  ]
+}

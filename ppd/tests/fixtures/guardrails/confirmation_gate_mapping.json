@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "ppd.synthetic.guardrail-confirmation-gates",
+  "description": "Synthetic fixture for mutation testing confirmation gates on consequential and financial action classes. These are preview-only mappings and do not automate DevHub actions.",
+  "guardrailMappings": [
+    {
+      "mappingId": "ppd.synthetic.submit-preview-gate",
+      "processStopGateId": "stop_gate_user_confirmation_before_submission",
+      "agentActionGateId": "agent_gate_preview_submit_request",
+      "actionClass": "potentially_consequential",
+      "consequenceSummary": "Submitting an application can create an official PP&D permit request and must stop for exact user confirmation.",
+      "explicitConfirmation": false,
+      "sourceEvidenceIds": [
+        "ppd_public_devhub_faq_service_categories",
+        "ppd_public_devhub_application_guidance"
+      ]
+    },
+    {
+      "mappingId": "ppd.synthetic.payment-preview-gate",
+      "processStopGateId": "stop_gate_user_confirmation_before_payment",
+      "agentActionGateId": "agent_gate_preview_fee_payment",
+      "actionClass": "financial",
+      "consequenceSummary": "Paying fees is a financial action and must stop for exact user confirmation before any payment step.",
+      "explicitConfirmation": false,
+      "sourceEvidenceIds": [
+        "ppd_public_devhub_faq_service_categories",
+        "ppd_public_fee_payment_guidance"
+      ]
+    }
+  ],
+  "lastReviewed": "2026-05-02"
+}

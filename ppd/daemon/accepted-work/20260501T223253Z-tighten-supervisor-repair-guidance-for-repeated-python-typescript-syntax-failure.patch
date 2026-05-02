@@ -1,0 +1,46 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -16,6 +16,25 @@
+ - `Expression expected`
+ 
+ Do not ask the worker to retry a broad implementation immediately. First narrow the next worker prompt or task-board work so syntax validity is proven before behavior expands.
++
++## Malformed Comparison Stop Rule
++
++If a failed Python proposal contains malformed comparison-like fragments such as:
++
++- `confidence 1`
++- `confidence 1.0`
++- `elif confidence 1.0:`
++- `return 0.0 list[str]`
++
++stop retrying the same implementation task directly. These fragments mean the next worker cycle must be syntax-first and smaller, not a broader contract rewrite.
++
++The next retry should usually replace only one implementation file, and it must keep comparisons and annotations separate. Valid Python shapes include:
++
++- `if confidence >= 1.0:`
++- `return 0.0`
++- `def score_items(items: list[str]) -> float:`
++
++Never put type annotations after a runtime expression, and never omit the comparison operator between a variable and a number.
+ 
+ ## Required Recovery Shape
+ 
+@@ -36,7 +55,7 @@
+ - Avoid dataclasses when prior imports used `importlib.util.module_from_spec` or failed inside `dataclasses.py`.
+ - Do not use generated comparison helpers.
+ - Do not mix type annotations into expressions or control flow.
+-- Write comparisons explicitly, for example `confidence  1.0`.
++- Write comparisons explicitly, for example `confidence >= 1.0`.
+ - Keep module import side effects at zero.
+ - Run syntax-first validation before broad unittest discovery.
+ 
+@@ -53,7 +72,7 @@
+ 
+ After three failed attempts against the same broad task, park the broad task in deferred notes and append narrower recovery tasks. Keep completed tasks intact. Do not leave the daemon repeatedly selecting the same broad task when independent fixture-first or validation-first work remains.
+ 
+-For solar permit requirement extraction specifically, do not retry broad extraction validation after syntax failures. Use the existing order: syntax-first import sentinel, seven-record expected-output fixture, no-dataclass one-file extractor, then focused seven-category validation.
++For solar permit requirement extraction specifically, do not retry broad extraction validation after syntax failures. Use the existing order: syntax-first import sentinel, seven-record expected-output fixture, malformed-comparison daemon diagnostic, no-dataclass one-file extractor, then focused seven-category validation.
+ 
+ ## Safety Boundaries
+ 

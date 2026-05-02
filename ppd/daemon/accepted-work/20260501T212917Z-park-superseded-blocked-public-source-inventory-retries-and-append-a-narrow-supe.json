@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/daemon/task-board.md",
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-01T21:29:17.603699Z",
+  "impact": "The daemon currently has no needed tasks and two blocked retries that were superseded by the accepted sentinel-preserving validator. Moving those superseded retries out of selectable checkbox form and appending one fixture-first supervisor task gives the worker an eligible next cycle without reattempting stale failures.",
+  "summary": "Park superseded blocked public-source-inventory retries and append a narrow supervisor repair task.",
+  "target_task": "Supervisor repair: 2 task(s) are blocked: Task checkbox-70: Retry the public source inventory validator as a one-file implementation only after the `MODULE_PURPOSE` sentinel and expected unsafe-field fixture path pass validation.; Task checkbox-71: Retry the public source inventory validator as a no-dataclass one-file implementation only: preserve `MODULE_PURPOSE`, avoid `dataclasses`, keep to plain functions/constants/dicts, and validate the syntax-first import plus unsafe-field fixture before any broader behavior.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 71 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................ ---------------------------------------------------------------------- Ran 140 tests in 0.019s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

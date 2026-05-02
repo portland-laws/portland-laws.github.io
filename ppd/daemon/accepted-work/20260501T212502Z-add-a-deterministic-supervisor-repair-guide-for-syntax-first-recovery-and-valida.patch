@@ -1,0 +1,139 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -2,92 +2,71 @@
+ 
+ ## Purpose
+ 
+-This guide is a narrow recovery aid for PP&D daemon cycles that repeatedly fail validation or become blocked after rollback. It steers the next daemon prompt toward smaller, syntax-valid, fixture-first work rather than broad contract rewrites.
++This guide tells the PP&D supervisor how to recover daemon progress when a task is blocked by repeated validation failures. It is intentionally narrow: repair supervision, task selection, retry policy, and diagnostics before asking the worker to attempt another PP&D domain implementation.
+ 
+-## Acceptance Reconciliation Rule
++## Syntax-First Recovery Policy
+ 
+-When a later, narrower recovery task is accepted and validated, treat older blocked tasks for the same contract as stale supervisor state instead of active implementation work.
++When a recent failed patch reports Python `SyntaxError`, `py_compile` failure, or TypeScript `TS1005`, `TS1109`, or `TS1128`, the next daemon cycle must choose a syntax-first repair task instead of a broad implementation task.
+ 
+-For the current public source inventory sequence, the accepted sentinel-preserving validator task supersedes these older blocked tasks:
++For `ppd/contracts/public_source_inventory.py`, the supervisor must preserve the import sentinel before any validator behavior changes:
+ 
+-- The original broad public source inventory validator task.
+-- The sentinel-only restore task.
+-- The first one-file validator retry.
+-- The no-dataclass retry that still changed `validator_status()`.
++- `MODULE_PURPOSE` remains `syntax_first_public_source_inventory_validation`.
++- `validator_status()` remains exactly `{"module": "ppd.contracts.public_source_inventory", "syntax_first_probe": true, "validator_ready": false}` when serialized to JSON-equivalent values.
++- The module must compile with `py_compile` before unit discovery runs.
++- Do not use `dataclasses` in this module unless the syntax-first import test is updated first, because the existing import probe can load the module outside normal `sys.modules` registration.
+ 
+-The supervisor must not invoke the worker on those stale blocked tasks again. If the task board still reports only blocked tasks and no selectable work, the next supervisor action should be a planning-only reconciliation that edits `ppd/daemon/task-board.md` to park or annotate the stale blocked tasks and append one narrow `[ ]` daemon-programming task that proves stale blocked tasks are ignored after a later accepted recovery.
++## Retry Selection Rules
+ 
+-Do not edit `ppd/contracts/public_source_inventory.py` for reconciliation. The accepted implementation already passed validation.
++The supervisor should not keep retrying the same broad task after a syntax failure. Use this order instead:
+ 
+-## Public Source Inventory Recovery
++1. If the sentinel import test fails, select only the sentinel repair task.
++2. If the expected one-unsafe-field fixture path is missing, select only the fixture compatibility task.
++3. If both the sentinel import test and fixture path pass, select a one-file validator retry that preserves the sentinel status helper exactly.
++4. If a broad validator task reintroduces syntax errors after a narrower validator has already passed, block the broad task and append a narrower follow-up task instead of reselecting it.
+ 
+-When failures mention `ppd.contracts.public_source_inventory`, `MODULE_PURPOSE`, `validator_status`, `validator_ready`, `py_compile`, `SyntaxError`, `dataclasses.py`, `AttributeError: 'NoneType' object has no attribute '__dict__'`, or the fixture path `ppd/tests/fixtures/public_source_inventory/invalid_one_unsafe_field_inventory.json`, recover in this order:
++## Public Source Inventory Validator Guardrails
+ 
+-1. Restore the syntax sentinel before validator behavior.
+-2. Preserve the exact sentinel value expected by tests: `MODULE_PURPOSE = "syntax_first_public_source_inventory_validation"`.
+-3. Preserve the syntax-first status helper until a test explicitly changes the contract: `validator_status()` must return exactly `{"module": "ppd.contracts.public_source_inventory", "syntax_first_probe": True, "validator_ready": False}`.
+-4. Confirm the compatibility fixture path exists before asking for validator implementation.
+-5. Retry validator behavior as a one-file implementation in `ppd/contracts/public_source_inventory.py` only.
+-6. Do not use `@dataclass` or dataclass-decorated classes in this module. The syntax-first test loads the file with `importlib.util.module_from_spec()` without inserting it into `sys.modules`, which makes dataclasses fail at import time.
+-7. Do not edit `ppd/contracts/__init__.py` or validator tests during the retry unless a later validation error specifically proves they are the blocker.
+-8. Do not use `validator_status()` as the implementation readiness signal while the syntax-first test asserts `validator_ready: False`; expose real validator behavior through separate plain functions.
++A validator retry may cover only committed fixtures and metadata. It must not create or persist live crawl output, raw response bodies, downloaded documents, screenshots, traces, credentials, private DevHub session state, or authenticated artifacts.
+ 
+-## Prompt Guardrail
++Required fixture checks should stay deterministic and local:
+ 
+-For any future daemon cycle targeting public source inventory validation, the supervisor should include these hard requirements in the worker prompt:
++- allowlisted hosts only.
++- private DevHub paths rejected.
++- raw response body fields rejected.
++- downloaded document payloads rejected.
++- credential-like fields rejected.
++- trace and screenshot paths rejected.
++- provenance fields required for each source entry.
+ 
+-- Keep the edit to one file: `ppd/contracts/public_source_inventory.py`.
+-- Keep `MODULE_PURPOSE = "syntax_first_public_source_inventory_validation"` present at module scope.
+-- Keep `validator_status()` returning exactly `{"module": "ppd.contracts.public_source_inventory", "syntax_first_probe": True, "validator_ready": False}`.
+-- Do not add keys such as `purpose` or `uses_dataclasses` to `validator_status()` unless the syntax-first test is explicitly changed first.
+-- Do not use `dataclasses`, `@dataclass`, or import-time decorators that depend on `sys.modules` registration.
+-- Prefer plain dictionaries, tuples, constants, and small pure functions for validator behavior.
+-- Run or satisfy the syntax-first import expectation before adding behavioral validation.
+-- Reject unsafe public inventory entries using fixture-only data, not live crawling.
+-- Cover only these refusal classes: non-allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and missing provenance fields.
+-- Do not create private DevHub session files, auth state, traces, screenshots, raw crawl output, or downloaded documents.
++## Supervisor Diagnostics
+ 
+-## Dataclass Failure Rule
++When validation fails, the supervisor should record the smallest actionable reason:
+ 
+-If validation fails with a stack trace from `/usr/lib/python*/dataclasses.py` while importing `ppd/contracts/public_source_inventory.py`, classify it as a supervisor prompt defect, not a domain-contract defect. The recovery prompt must require a no-dataclass implementation and must not broaden the file set.
++- `syntax` for compile or parser failures.
++- `import_guard` for sentinel status or import-probe mismatches.
++- `fixture_missing` for expected committed fixture paths.
++- `validator_behavior` for deterministic fixture assertion failures.
++- `no_change` only when validation passed but the patch produced no content difference.
+ 
+-The expected repair shape is:
+-
+-- One file only: `ppd/contracts/public_source_inventory.py`.
+-- Module-scope sentinel preserved.
+-- No class decorators.
+-- No package initializer edits.
+-- No new fixtures unless the validator reports a missing fixture path.
+-
+-## Sentinel Status Failure Rule
+-
+-If validation fails because `validator_status()` returned `validator_ready: True` or extra keys, classify it as a sentinel-contract failure. The daemon should not update tests and should not broaden the task. The next patch should preserve `validator_status()` exactly and add implementation through separate functions such as fixture loaders, entry validators, or report builders.
+-
+-The syntax-first import test is a guardrail for import stability, not a complete readiness probe. Passing validator behavior must not require changing the sentinel helper unless a separate validation-first task explicitly revises that contract.
++A `no_change` result after passing validation should not block later meaningful progress. It means the repository already contained the proposed repair. The next task should advance to the next prerequisite instead of retrying the identical proposal.
+ 
+ ## Blocked Task Handling
+ 
+-If the same task fails twice with the same validation signature, the daemon should not immediately retry a broader patch. It should create or select a repair task that addresses only the first failing assertion or missing fixture. After that repair passes full validation, the daemon may return to the original behavioral task only if the original task is not already superseded by a later accepted task.
++When a task remains blocked after two failed attempts with the same failure kind, the supervisor should append a new narrow recovery task to `ppd/daemon/task-board.md` and prefer that task on the next cycle. The new task must name the exact failing guard and the expected validation command.
+ 
+-For the current public source inventory sequence, repeated failures should be interpreted as follows:
++For the current public source inventory sequence, prefer tasks with this shape:
+ 
+-- Missing `MODULE_PURPOSE`: restore sentinel only.
+-- Wrong `MODULE_PURPOSE`: set it exactly to `syntax_first_public_source_inventory_validation`.
+-- Missing unsafe-field fixture path: add only the compatibility fixture path.
+-- `dataclasses.py` import failure: retry the validator as a no-dataclass one-file implementation.
+-- `validator_status()` shape mismatch: retry the validator as a sentinel-preserving one-file implementation and keep `validator_status()` exact.
+-- Later accepted sentinel-preserving validator: stop selecting older blocked retries for the same module and reconcile the task board instead.
++- Restore or preserve the syntax-first sentinel only.
++- Add or verify one missing committed fixture path only.
++- Add one validator behavior group at a time while keeping `validator_status()` unchanged.
++- Add a regression test for the observed supervisor failure before any live crawl or authenticated automation.
+ 
+-## Syntax-First Rule
++## Validation Command
+ 
+-When a recent failure includes `SyntaxError`, `py_compile`, a missing import sentinel, an import-time decorator failure, or a sentinel-status assertion failure, the next proposal should be a small syntax or contract-preservation repair. Do not combine syntax recovery with contract expansion, exported API changes, or new test expectations.
++The repair loop should use the repository PP&D validator as the supervisor-facing validation entry point:
+ 
+-## Stale Blocked Count Rule
++```text
++python3 ppd/tests/validate_ppd.py
++```
+ 
+-Blocked task counts are diagnostic, not a reason to keep retrying obsolete work. If `progress.json` or supervisor diagnosis reports blocked tasks while the latest accepted work already validates the same recovery path, the supervisor should prefer one of these actions:
+-
+-1. Planning-only task-board reconciliation under `ppd/daemon/task-board.md`.
+-2. A daemon-programming test under `ppd/tests/` that proves superseded blocked tasks are skipped after a later accepted task.
+-3. A task-selection logic repair under `ppd/daemon/` that deprioritizes stale blocked tasks when no active `[ ]` task remains.
+-
+-Do not implement additional PP&D domain behavior merely to reduce the blocked count.
++If that validator expands into lower-level commands, syntax checks must run before unit discovery and before TypeScript checks. This keeps parser failures from being hidden behind broader test output.

@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/daemon/task-board.md",
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-02T03:17:12.966136Z",
+  "impact": "This gives the worker a deterministic next cycle after repeated invalid Python proposals: it parks broad retry behavior, removes stale in-progress ambiguity, and tells the daemon to compile the changed test file before broader validation while using exact fixture paths and simple assertions only.",
+  "summary": "Narrow PP&D daemon recovery to an exact-path, syntax-first validator retry with explicit malformed-fragment stop rules.",
+  "target_task": "Supervisor repair: 6 consecutive daemon rounds failed without an accepted patch",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 42 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "..........................................................................................................................................................................................................................ss........sss...................................................................................................................................... ---------------------------------------------------------------------- Ran 365 tests in 0.043s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

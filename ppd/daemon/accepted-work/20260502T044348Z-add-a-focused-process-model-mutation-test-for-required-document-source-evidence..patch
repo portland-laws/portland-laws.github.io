@@ -1,0 +1,148 @@
+--- a/ppd/tests/test_process_model_required_document_source_evidence.py
++++ b/ppd/tests/test_process_model_required_document_source_evidence.py
+@@ -0,0 +1,98 @@
++"""Mutation coverage for process-model required-document source evidence.
++
++This test stays separate from stage validation. It uses a tiny committed
++fixture and mutates only a required document citation so the failure proves the
++required-document rule directly.
++"""
++
++from __future__ import annotations
++
++import json
++from pathlib import Path
++from typing import Any
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "process_models"
++    / "required_document_source_evidence_process.json"
++)
++
++
++REQUIRED_TOP_LEVEL_FIELDS = {
++    "processId",
++    "sourceEvidenceIds",
++    "stages",
++    "requiredInputs",
++    "requiredDocuments",
++    "stopGates",
++    "lastReviewed",
++}
++
++
++def test_process_model_rejects_required_document_without_cited_source_evidence_id() -> None:
++    process_model = _load_fixture()
++    assert _validate_process_model(process_model) == []
++
++    mutated_model = dict(process_model)
++    mutated_documents = [dict(document) for document in process_model["requiredDocuments"]]
++    mutated_documents[0] = dict(mutated_documents[0])
++    mutated_documents[0]["sourceEvidenceIds"] = []
++    mutated_model["requiredDocuments"] = mutated_documents
++
++    errors = _validate_process_model(mutated_model)
++
++    assert errors == [
++        "requiredDocuments[0] must cite at least one source evidence ID",
++    ]
++
++
++def _load_fixture() -> dict[str, Any]:
++    with FIXTURE_PATH.open(encoding="utf-8") as fixture_file:
++        loaded = json.load(fixture_file)
++    assert isinstance(loaded, dict)
++    return loaded
++
++
++def _validate_process_model(process_model: dict[str, Any]) -> list[str]:
++    errors: list[str] = []
++
++    missing_fields = sorted(REQUIRED_TOP_LEVEL_FIELDS.difference(process_model))
++    for field_name in missing_fields:
++        errors.append(f"process model is missing required field {field_name}")
++
++    source_evidence_ids = process_model.get("sourceEvidenceIds", [])
++    if not isinstance(source_evidence_ids, list) or not all(
++        isinstance(evidence_id, str) and evidence_id.strip()
++        for evidence_id in source_evidence_ids
++    ):
++        errors.append("sourceEvidenceIds must be a non-empty list of source evidence IDs")
++        known_evidence_ids: set[str] = set()
++    else:
++        known_evidence_ids = set(source_evidence_ids)
++
++    required_documents = process_model.get("requiredDocuments", [])
++    if not isinstance(required_documents, list):
++        errors.append("requiredDocuments must be a list")
++        return errors
++
++    for index, document in enumerate(required_documents):
++        if not isinstance(document, dict):
++            errors.append(f"requiredDocuments[{index}] must be an object")
++            continue
++
++        cited_evidence_ids = document.get("sourceEvidenceIds", [])
++        if not isinstance(cited_evidence_ids, list) or not cited_evidence_ids:
++            errors.append(
++                f"requiredDocuments[{index}] must cite at least one source evidence ID"
++            )
++            continue
++
++        for evidence_id in cited_evidence_ids:
++            if evidence_id not in known_evidence_ids:
++                errors.append(
++                    f"requiredDocuments[{index}] cites unknown source evidence ID {evidence_id}"
++                )
++
++    return errors
+--- a/ppd/tests/fixtures/process_models/required_document_source_evidence_process.json
++++ b/ppd/tests/fixtures/process_models/required_document_source_evidence_process.json
+@@ -0,0 +1,44 @@
++{
++  "processId": "synthetic-public-single-pdf-process",
++  "sourceEvidenceIds": [
++    "ppd-public-devhub-single-pdf-guidance",
++    "ppd-public-permit-application-guidance"
++  ],
++  "stages": [
++    {
++      "stageId": "prepare-documents",
++      "label": "Prepare documents",
++      "sourceEvidenceIds": [
++        "ppd-public-devhub-single-pdf-guidance"
++      ]
++    }
++  ],
++  "requiredInputs": [
++    {
++      "inputId": "project-description",
++      "label": "Project description",
++      "sourceEvidenceIds": [
++        "ppd-public-permit-application-guidance"
++      ]
++    }
++  ],
++  "requiredDocuments": [
++    {
++      "documentId": "application-pdf",
++      "label": "Permit application PDF",
++      "sourceEvidenceIds": [
++        "ppd-public-permit-application-guidance"
++      ]
++    }
++  ],
++  "stopGates": [
++    {
++      "gateId": "document-check-before-submission",
++      "label": "All required documents are available before submission",
++      "sourceEvidenceIds": [
++        "ppd-public-devhub-single-pdf-guidance"
++      ]
++    }
++  ],
++  "lastReviewed": "2026-05-01"
++}

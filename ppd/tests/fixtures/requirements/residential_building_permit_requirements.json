@@ -1,0 +1,378 @@
+{
+  "fixture_id": "residential_building_permit_requirement_extraction_v1",
+  "permit_process_id": "residential_building_permit",
+  "source_fixture": "ppd/tests/fixtures/processes/residential_building_permit_process.json",
+  "generated_at": "2026-05-01T19:50:00Z",
+  "requirements": [
+    {
+      "requirement_id": "res-bldg-eligibility-zoning-property-001",
+      "category": "eligibility",
+      "type": "precondition",
+      "subject": "applicant",
+      "action": "verify",
+      "object": "property address, zoning constraints, and residential project scope before selecting the residential building permit workflow",
+      "conditions": [
+        "project is for residential building work in Portland",
+        "applicant has a property identifier or project address"
+      ],
+      "deadline_or_temporal_scope": "before application preparation and permit type selection",
+      "evidence": [
+        {
+          "source_id": "residential-building-permit-process",
+          "canonical_url": "https://www.portland.gov/ppd/residential-permitting/residential-building-permits",
+          "section": "Before you apply",
+          "quote": "Review permit requirements, property information, and project scope before applying for a residential building permit."
+        }
+      ],
+      "confidence": 0.84,
+      "formalization_status": "ready_for_guardrail"
+    },
+    {
+      "requirement_id": "res-bldg-eligibility-contractor-owner-002",
+      "category": "eligibility",
+      "type": "precondition",
+      "subject": "applicant",
+      "action": "identify",
+      "object": "owner, applicant, and contractor responsibility information needed for the permit record",
+      "conditions": [
+        "application will be submitted through DevHub or equivalent PP&D intake channel",
+        "work may be performed by owner or contractor"
+      ],
+      "deadline_or_temporal_scope": "before submittal",
+      "evidence": [
+        {
+          "source_id": "residential-building-permit-process",
+          "canonical_url": "https://www.portland.gov/ppd/residential-permitting/residential-building-permits",
+          "section": "Apply for a residential building permit",
+          "quote": "Provide applicant, owner, contractor, project site, and project description information with the permit request."
+        }
+      ],
+      "confidence": 0.82,
+      "formalization_status": "ready_for_guardrail"
+    },
+    {
+      "requirement_id": "res-bldg-submittal-application-003",
+      "category": "submittal_package",
+      "type": "obligation",
+      "subject": "applicant",
+      "action": "submit",
+      "object": "completed residential building permit application information",
+      "conditions": [
+        "residential building permit request is being prepared"
+      ],
+      "deadline_or_temporal_scope": "with initial permit request",
+      "evidence": [
+        {
+          "source_id": "residential-building-permit-process",
+          "canonical_url": "https://www.portland.gov/ppd/residential-permitting/residential-building-permits",
+          "section": "What to include",
+          "quote": "Submit a complete application with project information and required documents."
+        }
+      ],
+      "confidence": 0.9,
+      "formalization_status": "ready_for_guardrail"
+    },
+    {
+      "requirement_id": "res-bldg-submittal-plans-004",
+      "category": "submittal_package",
+      "type": "obligation",
+      "subject": "applicant",
+      "action": "provide",
+      "object": "building plans, site plan, structural details, and other drawings needed for residential plan review",
+      "conditions": [
+        "project requires plan review",
+        "drawing plans are needed to describe proposed construction"
+      ],
+      "deadline_or_temporal_scope": "with initial submittal and before plan review can proceed",
+      "evidence": [
+        {
+          "source_id": "residential-building-permit-process",
+          "canonical_url": "https://www.portland.gov/ppd/residential-permitting/residential-building-permits",
+          "section": "Plans and documents",
+          "quote": "Plans must show the proposed work and include information needed to review the project."
+        }
+      ],
+      "confidence": 0.88,
+      "formalization_status": "ready_for_guardrail"
+    },
+    {
+      "requirement_id": "res-bldg-submittal-supporting-docs-005",
+      "category": "submittal_package",
+      "type": "obligation",
+      "subject": "applicant",
+      "action": "include",
+      "object": "supporting calculations, reports, engineering, energy, and special documentation when applicable to the residential project",
+      "conditions": [
+        "project scope triggers supporting document requirements"
+      ],
+      "deadline_or_temporal_scope": "with initial submittal or when requested during review",
+      "evidence": [
+        {
+          "source_id": "residential-building-permit-process",
+          "canonical_url": "https://www.portland.gov/ppd/residential-permitting/residential-building-permits",
+          "section": "Plans and documents",
+          "quote": "Additional calculations, forms, engineering, or reports may be required depending on the project."
+        }
+      ],
+      "confidence": 0.8,
+      "formalization_status": "needs_human_review"
+    },
+    {
+      "requirement_id": "res-bldg-submittal-single-pdf-006",
+      "category": "submittal_package",
+      "type": "precondition",
+      "subject": "applicant",
+      "action": "format",
+      "object": "drawing plans as one searchable PDF when the Single PDF Process applies and supporting documents as separate PDFs",
+      "conditions": [
+        "Single PDF Process applies to the residential permit submittal",
+        "plans are uploaded electronically"
+      ],
+      "deadline_or_temporal_scope": "before upload and submission",
+      "evidence": [
+        {
+          "source_id": "single-pdf-process",
+          "canonical_url": "https://www.portland.gov/ppd/permits/single-pdf-process",
+          "section": "Single PDF Process",
+          "quote": "Drawing plans are submitted as one searchable PDF; applications, calculations, and supporting documents are separate PDFs."
+        }
+      ],
+      "confidence": 0.92,
+      "formalization_status": "ready_for_guardrail"
+    },
+    {
+      "requirement_id": "res-bldg-plan-review-prescreen-007",
+      "category": "plan_review_stage",
+      "type": "dependency",
+      "subject": "permit technician",
+      "action": "prescreen",
+      "object": "residential building permit submittal package for completeness before technical review",
+      "conditions": [
+        "permit request has been submitted",
+        "uploaded documents are available for intake"
+      ],
+      "deadline_or_temporal_scope": "after submission and before plan review routing",
+      "evidence": [
+        {
+          "source_id": "residential-building-permit-process",
+          "canonical_url": "https://www.portland.gov/ppd/residential-permitting/residential-building-permits",
+          "section": "After you apply",
+          "quote": "Staff review the submittal for completeness before routing the plans for review."
+        }
+      ],
+      "confidence": 0.83,
+      "formalization_status": "ready_for_guardrail"
+    },
+    {
+      "requirement_id": "res-bldg-plan-review-technical-008",
+      "category": "plan_review_stage",
+      "type": "dependency",
+      "subject": "reviewer",
+      "action": "review",
+      "object": "residential building plans for applicable code and program requirements",
+      "conditions": [
+        "submittal passes intake or prescreen completeness review"
+      ],
+      "deadline_or_temporal_scope": "during plan review before approval or checksheet issuance",
+      "evidence": [
+        {
+          "source_id": "residential-building-permit-process",
+          "canonical_url": "https://www.portland.gov/ppd/residential-permitting/residential-building-permits",
+          "section": "Plan review",
+          "quote": "Plans are reviewed by required review groups before a permit can be issued."
+        }
+      ],
+      "confidence": 0.86,
+      "formalization_status": "ready_for_guardrail"
+    },
+    {
+      "requirement_id": "res-bldg-corrections-response-009",
+      "category": "corrections",
+      "type": "obligation",
+      "subject": "applicant",
+      "action": "respond",
+      "object": "checksheets, reviewer comments, corrected plans, and correction response materials",
+      "conditions": [
+        "PP&D issues checksheets or requests corrections during plan review"
+      ],
+      "deadline_or_temporal_scope": "after correction request and before plan review approval can continue",
+      "evidence": [
+        {
+          "source_id": "residential-building-permit-process",
+          "canonical_url": "https://www.portland.gov/ppd/residential-permitting/residential-building-permits",
+          "section": "Corrections",
+          "quote": "If corrections are needed, respond to checksheets and upload corrected plans or documents."
+        }
+      ],
+      "confidence": 0.9,
+      "formalization_status": "ready_for_guardrail"
+    },
+    {
+      "requirement_id": "res-bldg-corrections-upload-gate-010",
+      "category": "corrections",
+      "type": "action_gate",
+      "subject": "agent",
+      "action": "stop_before",
+      "object": "official upload of corrected residential building permit plans or correction response documents",
+      "conditions": [
+        "agent is assisting with a correction response",
+        "upload would become an official correction submission"
+      ],
+      "deadline_or_temporal_scope": "immediately before official correction upload",
+      "evidence": [
+        {
+          "source_id": "devhub-correction-guidance",
+          "canonical_url": "https://www.portland.gov/ppd/devhub",
+          "section": "Upload corrections",
+          "quote": "Use DevHub to upload correction materials when responding to plan review checksheets."
+        }
+      ],
+      "confidence": 0.89,
+      "formalization_status": "ready_for_guardrail",
+      "requires_explicit_confirmation": true,
+      "confirmation_action": "official_correction_upload"
+    },
+    {
+      "requirement_id": "res-bldg-inspections-schedule-011",
+      "category": "inspections",
+      "type": "obligation",
+      "subject": "applicant",
+      "action": "request",
+      "object": "required residential building inspections after permit issuance and before covering or completing regulated work",
+      "conditions": [
+        "permit has been issued",
+        "construction reaches an inspection milestone"
+      ],
+      "deadline_or_temporal_scope": "during construction at required inspection points",
+      "evidence": [
+        {
+          "source_id": "residential-building-permit-process",
+          "canonical_url": "https://www.portland.gov/ppd/inspections",
+          "section": "Schedule inspections",
+          "quote": "Schedule required inspections for permitted work and receive approval before proceeding where required."
+        }
+      ],
+      "confidence": 0.86,
+      "formalization_status": "ready_for_guardrail"
+    },
+    {
+      "requirement_id": "res-bldg-inspections-confirmation-gate-012",
+      "category": "inspections",
+      "type": "action_gate",
+      "subject": "agent",
+      "action": "stop_before",
+      "object": "inspection scheduling request for a residential building permit",
+      "conditions": [
+        "agent is asked to schedule or modify an inspection",
+        "the action affects the official permit record or inspection calendar"
+      ],
+      "deadline_or_temporal_scope": "immediately before scheduling, rescheduling, or cancelling an inspection",
+      "evidence": [
+        {
+          "source_id": "devhub-inspection-guidance",
+          "canonical_url": "https://www.portland.gov/ppd/devhub",
+          "section": "Inspections",
+          "quote": "DevHub supports inspection scheduling for eligible online permits."
+        }
+      ],
+      "confidence": 0.88,
+      "formalization_status": "ready_for_guardrail",
+      "requires_explicit_confirmation": true,
+      "confirmation_action": "schedule_inspection"
+    },
+    {
+      "requirement_id": "res-bldg-expiration-013",
+      "category": "expiration_reactivation",
+      "type": "deadline",
+      "subject": "applicant",
+      "action": "monitor",
+      "object": "residential building permit application and issued permit expiration status",
+      "conditions": [
+        "application or permit remains inactive or work is not completed within applicable PP&D time limits"
+      ],
+      "deadline_or_temporal_scope": "until permit is issued, extended, reactivated, completed, or expired under PP&D policy",
+      "evidence": [
+        {
+          "source_id": "residential-building-permit-process",
+          "canonical_url": "https://www.portland.gov/ppd/residential-permitting/residential-building-permits",
+          "section": "Permit expiration",
+          "quote": "Applications and permits may expire if required steps are not completed within the allowed time."
+        }
+      ],
+      "confidence": 0.79,
+      "formalization_status": "needs_human_review"
+    },
+    {
+      "requirement_id": "res-bldg-reactivation-014",
+      "category": "expiration_reactivation",
+      "type": "permission",
+      "subject": "applicant",
+      "action": "request",
+      "object": "extension, renewal, or reactivation review for an eligible residential building permit record",
+      "conditions": [
+        "permit or application is expired or near expiration",
+        "PP&D policy allows extension, renewal, or reactivation for the record state"
+      ],
+      "deadline_or_temporal_scope": "before or after expiration only when allowed by PP&D policy",
+      "evidence": [
+        {
+          "source_id": "residential-building-permit-process",
+          "canonical_url": "https://www.portland.gov/ppd/residential-permitting/residential-building-permits",
+          "section": "Permit expiration",
+          "quote": "Contact PP&D or use the available process to address expired permits or reactivation questions."
+        }
+      ],
+      "confidence": 0.76,
+      "formalization_status": "needs_human_review"
+    },
+    {
+      "requirement_id": "res-bldg-submit-confirmation-gate-015",
+      "category": "explicit_confirmation_gate",
+      "type": "action_gate",
+      "subject": "agent",
+      "action": "stop_before",
+      "object": "official submission of the residential building permit application",
+      "conditions": [
+        "all required fields and documents appear complete",
+        "agent could press a submit or certify button in DevHub"
+      ],
+      "deadline_or_temporal_scope": "immediately before official submission or certification",
+      "evidence": [
+        {
+          "source_id": "devhub-application-guidance",
+          "canonical_url": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
+          "section": "Submit application",
+          "quote": "Submit the permit request through DevHub after completing the required application steps."
+        }
+      ],
+      "confidence": 0.91,
+      "formalization_status": "ready_for_guardrail",
+      "requires_explicit_confirmation": true,
+      "confirmation_action": "submit_application"
+    },
+    {
+      "requirement_id": "res-bldg-payment-confirmation-gate-016",
+      "category": "explicit_confirmation_gate",
+      "type": "action_gate",
+      "subject": "agent",
+      "action": "stop_before",
+      "object": "fee payment or payment-detail entry for a residential building permit",
+      "conditions": [
+        "DevHub or PP&D requests payment for intake, review, issuance, or permit fees"
+      ],
+      "deadline_or_temporal_scope": "immediately before payment or payment-detail entry",
+      "evidence": [
+        {
+          "source_id": "devhub-payment-guidance",
+          "canonical_url": "https://www.portland.gov/ppd/devhub",
+          "section": "Pay fees",
+          "quote": "DevHub can be used to pay permit fees when payment is due."
+        }
+      ],
+      "confidence": 0.9,
+      "formalization_status": "ready_for_guardrail",
+      "requires_explicit_confirmation": true,
+      "confirmation_action": "pay_fees"
+    }
+  ]
+}

@@ -1,0 +1,241 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "devhub_lifecycle_action_guardrail_cases",
+  "sessionId": "mock-devhub-session-2026-05-02T00:00:00Z",
+  "notes": "Synthetic DevHub lifecycle guardrail cases only. No live login, account data, upload, payment, inspection scheduling, or official portal action is performed.",
+  "previewCases": [
+    {
+      "caseId": "read_only_extension_preview",
+      "actionId": "read_only_extension_preview",
+      "lifecycleAction": "extension",
+      "classification": "read_only",
+      "previewMode": "read_only_preview",
+      "officialAction": false,
+      "expectedDecision": "allow_preview"
+    },
+    {
+      "caseId": "draft_reactivation_preview",
+      "actionId": "draft_reactivation_preview",
+      "lifecycleAction": "reactivation",
+      "classification": "draft_edit",
+      "previewMode": "draft_preview",
+      "officialAction": false,
+      "expectedDecision": "allow_preview"
+    },
+    {
+      "caseId": "read_only_cancellation_preview",
+      "actionId": "read_only_cancellation_preview",
+      "lifecycleAction": "cancellation",
+      "classification": "read_only",
+      "previewMode": "read_only_preview",
+      "officialAction": false,
+      "expectedDecision": "allow_preview"
+    },
+    {
+      "caseId": "draft_refund_preview",
+      "actionId": "draft_refund_preview",
+      "lifecycleAction": "refund",
+      "classification": "draft_edit",
+      "previewMode": "draft_preview",
+      "officialAction": false,
+      "expectedDecision": "allow_preview"
+    },
+    {
+      "caseId": "read_only_inspection_follow_up_preview",
+      "actionId": "read_only_inspection_follow_up_preview",
+      "lifecycleAction": "inspection_result_follow_up",
+      "classification": "read_only",
+      "previewMode": "read_only_preview",
+      "officialAction": false,
+      "expectedDecision": "allow_preview"
+    }
+  ],
+  "noConfirmationDeniedCases": [
+    {
+      "caseId": "deny_official_extension_without_confirmation",
+      "actionId": "official_extension",
+      "lifecycleAction": "extension",
+      "classification": "consequential",
+      "previewMode": "none",
+      "officialAction": true,
+      "expectedDecision": "deny_missing_exact_confirmation"
+    },
+    {
+      "caseId": "deny_official_reactivation_without_confirmation",
+      "actionId": "official_reactivation",
+      "lifecycleAction": "reactivation",
+      "classification": "consequential",
+      "previewMode": "none",
+      "officialAction": true,
+      "expectedDecision": "deny_missing_exact_confirmation"
+    },
+    {
+      "caseId": "deny_official_cancellation_without_confirmation",
+      "actionId": "official_cancellation",
+      "lifecycleAction": "cancellation",
+      "classification": "consequential",
+      "previewMode": "none",
+      "officialAction": true,
+      "expectedDecision": "deny_missing_exact_confirmation"
+    },
+    {
+      "caseId": "deny_official_refund_without_confirmation",
+      "actionId": "official_refund",
+      "lifecycleAction": "refund",
+      "classification": "financial",
+      "previewMode": "none",
+      "officialAction": true,
+      "expectedDecision": "deny_missing_exact_confirmation"
+    },
+    {
+      "caseId": "deny_official_payment_without_confirmation",
+      "actionId": "official_payment",
+      "lifecycleAction": "payment",
+      "classification": "financial",
+      "previewMode": "none",
+      "officialAction": true,
+      "expectedDecision": "deny_missing_exact_confirmation"
+    },
+    {
+      "caseId": "deny_official_certification_without_confirmation",
+      "actionId": "official_certification",
+      "lifecycleAction": "certification",
+      "classification": "consequential",
+      "previewMode": "none",
+      "officialAction": true,
+      "expectedDecision": "deny_missing_exact_confirmation"
+    },
+    {
+      "caseId": "deny_official_upload_without_confirmation",
+      "actionId": "official_upload",
+      "lifecycleAction": "upload",
+      "classification": "consequential",
+      "previewMode": "none",
+      "officialAction": true,
+      "expectedDecision": "deny_missing_exact_confirmation"
+    },
+    {
+      "caseId": "deny_official_inspection_scheduling_without_confirmation",
+      "actionId": "official_inspection_scheduling",
+      "lifecycleAction": "inspection_scheduling",
+      "classification": "consequential",
+      "previewMode": "none",
+      "officialAction": true,
+      "expectedDecision": "deny_missing_exact_confirmation"
+    }
+  ],
+  "confirmedCases": [
+    {
+      "caseId": "allow_official_extension_with_exact_session_confirmation",
+      "actionId": "official_extension",
+      "lifecycleAction": "extension",
+      "classification": "consequential",
+      "previewMode": "none",
+      "officialAction": true,
+      "confirmation": {
+        "sessionId": "mock-devhub-session-2026-05-02T00:00:00Z",
+        "actionId": "official_extension",
+        "phrase": "CONFIRM mock-devhub-session-2026-05-02T00:00:00Z official_extension"
+      },
+      "expectedDecision": "allow_official_mock_action"
+    },
+    {
+      "caseId": "allow_official_reactivation_with_exact_session_confirmation",
+      "actionId": "official_reactivation",
+      "lifecycleAction": "reactivation",
+      "classification": "consequential",
+      "previewMode": "none",
+      "officialAction": true,
+      "confirmation": {
+        "sessionId": "mock-devhub-session-2026-05-02T00:00:00Z",
+        "actionId": "official_reactivation",
+        "phrase": "CONFIRM mock-devhub-session-2026-05-02T00:00:00Z official_reactivation"
+      },
+      "expectedDecision": "allow_official_mock_action"
+    },
+    {
+      "caseId": "allow_official_cancellation_with_exact_session_confirmation",
+      "actionId": "official_cancellation",
+      "lifecycleAction": "cancellation",
+      "classification": "consequential",
+      "previewMode": "none",
+      "officialAction": true,
+      "confirmation": {
+        "sessionId": "mock-devhub-session-2026-05-02T00:00:00Z",
+        "actionId": "official_cancellation",
+        "phrase": "CONFIRM mock-devhub-session-2026-05-02T00:00:00Z official_cancellation"
+      },
+      "expectedDecision": "allow_official_mock_action"
+    },
+    {
+      "caseId": "allow_official_refund_with_exact_session_confirmation",
+      "actionId": "official_refund",
+      "lifecycleAction": "refund",
+      "classification": "financial",
+      "previewMode": "none",
+      "officialAction": true,
+      "confirmation": {
+        "sessionId": "mock-devhub-session-2026-05-02T00:00:00Z",
+        "actionId": "official_refund",
+        "phrase": "CONFIRM mock-devhub-session-2026-05-02T00:00:00Z official_refund"
+      },
+      "expectedDecision": "allow_official_mock_action"
+    },
+    {
+      "caseId": "allow_official_payment_with_exact_session_confirmation",
+      "actionId": "official_payment",
+      "lifecycleAction": "payment",
+      "classification": "financial",
+      "previewMode": "none",
+      "officialAction": true,
+      "confirmation": {
+        "sessionId": "mock-devhub-session-2026-05-02T00:00:00Z",
+        "actionId": "official_payment",
+        "phrase": "CONFIRM mock-devhub-session-2026-05-02T00:00:00Z official_payment"
+      },
+      "expectedDecision": "allow_official_mock_action"
+    },
+    {
+      "caseId": "allow_official_certification_with_exact_session_confirmation",
+      "actionId": "official_certification",
+      "lifecycleAction": "certification",
+      "classification": "consequential",
+      "previewMode": "none",
+      "officialAction": true,
+      "confirmation": {
+        "sessionId": "mock-devhub-session-2026-05-02T00:00:00Z",
+        "actionId": "official_certification",
+        "phrase": "CONFIRM mock-devhub-session-2026-05-02T00:00:00Z official_certification"
+      },
+      "expectedDecision": "allow_official_mock_action"
+    },
+    {
+      "caseId": "allow_official_upload_with_exact_session_confirmation",
+      "actionId": "official_upload",
+      "lifecycleAction": "upload",
+      "classification": "consequential",
+      "previewMode": "none",
+      "officialAction": true,
+      "confirmation": {
+        "sessionId": "mock-devhub-session-2026-05-02T00:00:00Z",
+        "actionId": "official_upload",
+        "phrase": "CONFIRM mock-devhub-session-2026-05-02T00:00:00Z official_upload"
+      },
+      "expectedDecision": "allow_official_mock_action"
+    },
+    {
+      "caseId": "allow_official_inspection_scheduling_with_exact_session_confirmation",
+      "actionId": "official_inspection_scheduling",
+      "lifecycleAction": "inspection_scheduling",
+      "classification": "consequential",
+      "previewMode": "none",
+      "officialAction": true,
+      "confirmation": {
+        "sessionId": "mock-devhub-session-2026-05-02T00:00:00Z",
+        "actionId": "official_inspection_scheduling",
+        "phrase": "CONFIRM mock-devhub-session-2026-05-02T00:00:00Z official_inspection_scheduling"
+      },
+      "expectedDecision": "allow_official_mock_action"
+    }
+  ]
+}

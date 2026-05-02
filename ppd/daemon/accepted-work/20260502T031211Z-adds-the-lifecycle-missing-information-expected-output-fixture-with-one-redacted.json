@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/lifecycle/permit_lifecycle_missing_information_expected_output.json"
+  ],
+  "created_at": "2026-05-02T03:12:11.496851Z",
+  "impact": "Provides deterministic fixture coverage for lifecycle missing-information detection before any implementation, live crawl, DevHub login, or official action automation is added.",
+  "summary": "Adds the lifecycle missing-information expected-output fixture with one redacted record per accepted lifecycle category.",
+  "target_task": "Task checkbox-28: Add a fixture-only lifecycle missing-information expected-output fixture at `ppd/tests/fixtures/lifecycle/permit_lifecycle_missing_information_expected_output.json` with exactly one redacted missing-information record for each accepted lifecycle category, source-backed to the lifecycle process skeleton fixtures, deduplicated by `(categoryId, neededItemId)`, and classified as read-only, draft-preview, consequential-stop, or financial-stop.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 36 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "..........................................................................................................................................................................................................................ss........sss...................................................................................................................................... ---------------------------------------------------------------------- Ran 365 tests in 0.043s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

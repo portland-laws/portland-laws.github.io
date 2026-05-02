@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/expected_outputs/fcc_wireless_application_requirements.json",
+    "ppd/tests/test_fcc_wireless_application_expected_output.py"
+  ],
+  "created_at": "2026-05-02T00:53:36.371289Z",
+  "impact": "This gives PP&D requirement extraction a deterministic expected-output target for FCC wireless applications across eligibility, plan review, uploads, fees, corrections, finalization, and confirmation gates without live crawling or private DevHub artifacts.",
+  "summary": "Add a narrow redacted FCC wireless application expected-output fixture and validation test with exactly seven source-backed category records.",
+  "target_task": "Task checkbox-112: Add a minimal FCC wireless application requirement extraction expected-output fixture with exactly seven category records: eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections/finalization, and explicit-confirmation gates, all source-backed and redacted.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 118 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".............................................................................................................................................................................................................................................................................................................. ---------------------------------------------------------------------- Ran 302 tests in 0.031s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

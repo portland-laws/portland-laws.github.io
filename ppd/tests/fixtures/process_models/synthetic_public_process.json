@@ -1,0 +1,59 @@
+{
+  "processId": "synthetic-public-single-pdf-process",
+  "sourceEvidenceIds": [
+    "ppd-public-devhub-faq",
+    "ppd-public-single-pdf-guidance"
+  ],
+  "stages": [
+    {
+      "stageId": "prepare-public-documents",
+      "label": "Prepare public submittal documents",
+      "sourceEvidenceIds": [
+        "ppd-public-single-pdf-guidance"
+      ]
+    },
+    {
+      "stageId": "start-devhub-request",
+      "label": "Start a DevHub permit request",
+      "sourceEvidenceIds": [
+        "ppd-public-devhub-faq"
+      ]
+    }
+  ],
+  "requiredInputs": [
+    {
+      "inputId": "project-description",
+      "label": "Project description",
+      "sourceEvidenceIds": [
+        "ppd-public-devhub-faq"
+      ]
+    }
+  ],
+  "requiredDocuments": [
+    {
+      "documentId": "application-pdf",
+      "label": "Application PDF",
+      "sourceEvidenceIds": [
+        "ppd-public-single-pdf-guidance"
+      ]
+    },
+    {
+      "documentId": "drawing-plans-single-pdf",
+      "label": "Drawing plans as one searchable PDF",
+      "sourceEvidenceIds": [
+        "ppd-public-single-pdf-guidance"
+      ]
+    }
+  ],
+  "stopGates": [
+    {
+      "gateId": "no-submit-without-user-confirmation",
+      "label": "Stop before submitting a permit request without explicit user confirmation",
+      "sourceEvidenceIds": [
+        "ppd-public-devhub-faq",
+        "ppd-public-single-pdf-guidance"
+      ]
+    }
+  ],
+  "lastReviewed": "2026-05-01"
+}

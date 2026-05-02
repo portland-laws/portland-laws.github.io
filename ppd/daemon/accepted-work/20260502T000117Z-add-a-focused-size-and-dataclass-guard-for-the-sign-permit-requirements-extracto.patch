@@ -1,0 +1,70 @@
+--- a/ppd/tests/test_sign_permit_requirements_size_guard.py
++++ b/ppd/tests/test_sign_permit_requirements_size_guard.py
+@@ -0,0 +1,67 @@
++"""Replacement-size guard for the sign permit requirements extractor."""
++
++from __future__ import annotations
++
++import ast
++import importlib
++import inspect
++import unittest
++from pathlib import Path
++
++
++class SignPermitRequirementsSizeGuardTest(unittest.TestCase):
++    def test_extractor_stays_small_and_dataclass_free(self) -> None:
++        module = importlib.import_module("ppd.extraction.sign_permit_requirements")
++        source_file = inspect.getsourcefile(module)
++        self.assertIsNotNone(source_file, "ppd.extraction.sign_permit_requirements must have a source file")
++
++        module_path = Path(str(source_file)).resolve()
++        expected_dir = (Path(__file__).resolve().parents[1] / "extraction").resolve()
++        self.assertEqual(
++            expected_dir / "sign_permit_requirements.py",
++            module_path,
++            "ppd.extraction.sign_permit_requirements must live under ppd/extraction",
++        )
++
++        source_text = module_path.read_text(encoding="utf-8")
++        physical_line_count = len(source_text.splitlines())
++        self.assertLessEqual(
++            physical_line_count,
++            180,
++            "sign_permit_requirements.py must stay under 180 physical lines; split broad generated code into reviewed fixtures or helpers",
++        )
++
++        tree = ast.parse(source_text, filename=str(module_path))
++        dataclass_markers: list[str] = []
++        for node in ast.walk(tree):
++            if isinstance(node, ast.Import):
++                for alias in node.names:
++                    if alias.name == "dataclasses" or alias.name.startswith("dataclasses."):
++                        dataclass_markers.append(f"import {alias.name}")
++            elif isinstance(node, ast.ImportFrom) and node.module == "dataclasses":
++                imported_names = ", ".join(alias.name for alias in node.names)
++                dataclass_markers.append(f"from dataclasses import {imported_names}")
++            elif isinstance(node, ast.ClassDef):
++                for decorator in node.decorator_list:
++                    if _decorator_name(decorator) == "dataclass":
++                        dataclass_markers.append(f"@dataclass on {node.name}")
++
++        self.assertEqual(
++            [],
++            dataclass_markers,
++            "sign_permit_requirements.py must remain a plain-function extractor with no dataclasses",
++        )
++
++
++def _decorator_name(node: ast.AST) -> str:
++    if isinstance(node, ast.Name):
++        return node.id
++    if isinstance(node, ast.Attribute):
++        return node.attr
++    if isinstance(node, ast.Call):
++        return _decorator_name(node.func)
++    return ""
++
++
++if __name__ == "__main__":
++    unittest.main()

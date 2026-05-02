@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/contracts/public_source_inventory.py",
+    "ppd/tests/test_public_source_inventory_syntax_first.py"
+  ],
+  "created_at": "2026-05-01T20:48:07.457045Z",
+  "impact": "This unblocks the public source inventory validator sequence by proving malformed Python is rejected before broader unittest discovery or fixture validation resumes.",
+  "summary": "Adds a narrow syntax-first public source inventory repair test and a minimal importable contract module.",
+  "target_task": "Task checkbox-64: Add a one-file syntax-first repair test for public source inventory validation that imports only `ppd.contracts.public_source_inventory` and rejects malformed Python before broad unittest discovery.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 66 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................ ---------------------------------------------------------------------- Ran 140 tests in 0.017s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

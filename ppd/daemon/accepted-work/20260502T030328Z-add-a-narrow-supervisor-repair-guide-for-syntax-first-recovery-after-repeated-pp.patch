@@ -1,0 +1,120 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,47 +1,86 @@
+ # PP&D Supervisor Repair Guide
+ 
+-This guide is daemon programming for supervisor repair cycles. It applies when the PP&D daemon has repeated validation rollbacks caused by syntax or compile failures.
++This guide is for supervisor recovery when a PP&D daemon task is blocked by repeated validation failures. Keep repair work narrow and deterministic. Do not implement extractor, crawler, DevHub, or application-domain behavior from this guide.
+ 
+-## Syntax Failure Trigger
++## Syntax Failure Recovery
+ 
+-Enter syntax recovery mode when two or more recent attempts for the same target task fail with any of these diagnostics:
++When a recent daemon result includes `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128`, the next recovery cycle must prefer a smaller file set and an explicit syntactic-validity guardrail.
+ 
+-- `SyntaxError`
+-- `py_compile`
+-- `TS1005`
+-- `TS1109`
+-- `TS1128`
++Required recovery behavior:
+ 
+-For checkbox-27 recovery, the observed invalid fragments include malformed Python such as `if confidence 1:`, `elif confidence 1:`, and `elif not 0 set[str]:`. Treat these as generated pseudo-code fragments, not as schema disagreements.
++1. Edit only the one intended validator or daemon-control file.
++2. Use syntactically simple Python for Python tests.
++3. Avoid clever expressions, inline type syntax in runtime expressions, comprehensions with complex conditions, and broad helper rewrites.
++4. Run or require `py_compile` before unittest discovery.
++5. If `py_compile` fails, stop and repair only syntax before changing validator semantics.
++6. Do not add extractor implementation code to satisfy a validator task.
+ 
+-## Required Supervisor Action
++Simple Python means:
+ 
+-When syntax recovery mode is active:
++- plain `def` functions.
++- plain `if`, `elif`, `else` statements with explicit comparison operators.
++- `isinstance` checks for JSON types.
++- `copy.deepcopy` for fixture mutation.
++- `unittest.TestCase` assertions.
++- no walrus operator.
++- no pattern matching.
++- no runtime expressions such as `0 set[str]`.
++- no incomplete comparisons such as `confidence 1`.
+ 
+-1. Do not ask the worker for a broader implementation rewrite.
+-2. Do not ask the worker to edit extractor implementation code.
+-3. Limit the next worker proposal to the smallest file set that can pass syntax preflight, normally one file.
+-4. Require exact fixture paths and exact committed schema keys in the task text.
+-5. Require a syntax-first self-check before broad validation.
+-6. If the same task fails syntax preflight three times, park that checkbox outside selectable task form and resume the next independent fixture-first or validation-first task.
+-7. Do not count parked syntax retries as active blockers while another `[ ]` or `[~]` task can make progress.
++## Checkbox-27 Recovery Shape
+ 
+-## Worker Prompt Guardrails
++For checkbox-27, the worker must add only one test file under `ppd/tests/` and must not add extractor implementation code.
+ 
+-Append these guardrails to any worker prompt after repeated syntax failures:
++The test file must:
+ 
+-- Return complete file replacements only.
+-- Prefer one changed file for this cycle.
+-- For Python, use only syntactically simple standard-library code.
+-- Use `unittest.TestCase` assertion methods or explicit `raise AssertionError` statements.
+-- Write complete comparisons such as `confidence > 1` or `confidence  1` or `confidence 
+-## Generated Status
++1. Load exactly `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json`.
++2. Assert the committed fixture is valid before any mutation test.
++3. Use one mutation per test method.
++4. Cover only these mutation cases:
++   - missing `categoryId`.
++   - missing `sourceEvidenceIds`.
++   - missing local `evidence[].evidenceId`.
++   - out-of-range `confidence`.
++   - duplicate `(categoryId, action, object, sourceEvidenceIds)` tuples.
++   - malformed stop-gate classification.
++5. Validate local evidence references against the same committed fixture object.
++6. Keep duplicate tuple comparison deterministic by sorting or tuple-normalizing `sourceEvidenceIds`.
++7. Include an explicit self-check test that calls `py_compile.compile(__file__, doraise=True)` before the behavioral assertions are relied on.
+ 
+-Last updated: 2026-05-02T02:55:06.050739Z
++The first validation command for this recovery must be:
+ 
+-- Latest target: `Task checkbox-29: Add a one-file exact-path validator for ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json`
+-- Latest result: `supervisor_repair_planned`
+-- Latest summary: Parked repeated checkbox-27 py_compile failures and kept checkbox-29 as the active validation-first task.
+-- Counts: `{"blocked": 0, "complete": 28, "in_progress": 1, "needed": 6}`
++`python3 -m py_compile ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py`
+ 
++Then run:
+ 
++`python3 -m unittest discover -s ppd/tests -p 'test_*.py'`
++
++## Fixture Path Preflight
++
++Before adding any validator that asserts committed fixture paths exist, the worker must inspect the exact fixture JSON first and verify each referenced path exists in the repository.
++
++If a committed fixture references a missing path, do not write a validator that fails only because of that known bad fixture. Instead, create a narrow follow-up task on `ppd/daemon/task-board.md` to repair the fixture reference or add the missing fixture, whichever is consistent with the already accepted fixture set.
++
++For lifecycle process index work, verify that every referenced skeleton path is present under `ppd/tests/fixtures/lifecycle/` before adding the validator. If `inspection_lifecycle_process_skeleton.json` is referenced but absent, the next task must repair the index or add the missing committed skeleton fixture before a validator requires it.
++
++## Retry Selection
++
++When a task fails three or more times for the same syntactic reason, the daemon should not broaden scope. The next attempt should be a recovery task with:
++
++- one changed file.
++- one fixture path.
++- one validation entry point.
++- no generated implementation code.
++- no live crawling.
++- no authenticated DevHub automation.
++
++When a task fails because the committed fixture is invalid, the daemon should distinguish that from a validator bug. The next task should repair the committed fixture data or add the missing committed fixture first, not keep retrying the validator.
++
++## Stop Conditions
++
++Stop and report blocked status when any of these occur:
++
++- the exact fixture path named by the task does not exist.
++- the task requires private DevHub data, live login, payment, submission, upload, certification, cancellation, official refund, official extension, or inspection scheduling.
++- `py_compile` fails after a syntax-only repair attempt.
++- a validator would require changing extractor behavior, crawler behavior, or authenticated automation to pass.

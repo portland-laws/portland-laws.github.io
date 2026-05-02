@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-02T06:02:04.811807Z",
+  "impact": "This gives the supervisor and daemon a deterministic recovery path for the current blocked syntax-preflight wiring task: one daemon-file replacement, immediate changed-file syntax preflight, rollback with failure kind syntax_preflight, compact diagnostics, and no broad validation after parser failure. It also directs the next autonomous cycle back to fixture-first validation instead of live crawling or authenticated automation.",
+  "summary": "Add a narrow supervisor repair guide for syntax-preflight apply-flow recovery.",
+  "target_task": "Supervisor repair: 2 task(s) are blocked: Task checkbox-53: Task checkbox-48: Add validation for the public-crawl dry-run plan fixture from checkbox-47. The validator must fail closed on missing allowlist, robots, timeout, no-persist, or processor-adapter preflight fields. Blocked pending daemon syntax-preflight apply-flow repair after repeated `planned_crawl_manifest.py` SyntaxError rollbacks.; Task checkbox-56: Task checkbox-51: Resume checkbox-48 with the smallest fixture-first validator after checkbox-49 and checkbox-50 pass. Limit the proposal to one syntax-valid Python test file or one syntax-valid helper plus one test fixture path correction; do not add live crawling or authenticated automation. Blocked until syntax-preflight is wired into the daemon apply path and validated.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 60 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................................................................................................ss..............sss........................................................................................................................................ ---------------------------------------------------------------------- Ran 375 tests in 0.050s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

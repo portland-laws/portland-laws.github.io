@@ -1,0 +1,393 @@
+"""Deterministic validation for PP&D normalized document link graphs.
+
+The link graph is a commit-safe fixture artifact. It connects normalized public
+PP&D documents to linked forms, PDFs, DevHub guides, Portland Maps references,
+and skipped links. It must not contain raw crawl bodies, downloaded documents,
+private DevHub session artifacts, browser traces, screenshots, credentials, or
+other live crawl output.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any, Iterable, Mapping
+from urllib.parse import parse_qsl, urlencode, urldefrag, urlparse, urlunparse
+
+
+ALLOWED_CONTENT_TYPES = {
+    "html",
+    "pdf",
+    "image",
+    "downloadable_document",
+    "external_site",
+    "mailto",
+    "phone",
+    "portal_action",
+    "skipped",
+}
+
+SOURCE_INDEX_CONTENT_TYPES = {
+    "html",
+    "pdf",
+    "image",
+    "downloadable_document",
+    "external_site",
+    "portal_action",
+}
+
+LINK_CONTENT_TYPES = ALLOWED_CONTENT_TYPES
+
+PRIVATE_DEVHUB_MARKERS = (
+    "/account",
+    "/accounts",
+    "/admin",
+    "/apply",
+    "/dashboard",
+    "/login",
+    "/logout",
+    "/my-permits",
+    "/mypermits",
+    "/payment",
+    "/payments",
+    "/permit-cart",
+    "/profile",
+    "/register",
+    "/session",
+    "/signin",
+    "/sign-in",
+    "/submit",
+    "/upload",
+)
+
+PRIVATE_OR_LIVE_ARTIFACT_MARKERS = (
+    "ppd/data/private",
+    "ppd\\data\\private",
+    "ppd/data/raw",
+    "ppd\\data\\raw",
+    "auth_state",
+    "auth-state",
+    "storage_state",
+    "storage-state",
+    "cookies.json",
+    "localstorage.json",
+    "crawl_output",
+    "crawl-output",
+    "crawl-responses",
+    "crawl_responses",
+    "raw_crawl",
+    "raw-crawl",
+    "/responses/",
+    "\\responses\\",
+    "/response-bodies/",
+    "\\response-bodies\\",
+    "/traces/",
+    "\\traces\\",
+    "trace.zip",
+    "traces.zip",
+    "playwright-report",
+    "/screenshots/",
+    "\\screenshots\\",
+    "screenshot.png",
+    "screenshot.jpg",
+    "screenshot.jpeg",
+    "screenshot.webp",
+    "/downloads/",
+    "\\downloads\\",
+    "downloaded_documents",
+    "downloaded-documents",
+)
+
+DOWNLOADED_DOCUMENT_EXTENSIONS = (
+    ".pdf",
+    ".doc",
+    ".docx",
+    ".xls",
+    ".xlsx",
+    ".ppt",
+    ".pptx",
+    ".zip",
+)
+
+RAW_BODY_KEYS = {
+    "body",
+    "content",
+    "html",
+    "rawbody",
+    "rawcontent",
+    "rawhtml",
+    "rawresponsebody",
+    "rawtext",
+    "responsebody",
+    "text",
+}
+
+CREDENTIAL_KEYS = {
+    "apikey",
+    "authorization",
+    "bearer",
+    "clientsecret",
+    "cookie",
+    "cookies",
+    "credential",
+    "credentials",
+    "password",
+    "refreshtoken",
+    "secret",
+    "sessioncookie",
+    "token",
+    "username",
+}
+
+PATH_KEYS = {
+    "documentpath",
+    "downloadpath",
+    "file",
+    "filepath",
+    "localpath",
+    "manifestpath",
+    "outputpath",
+    "path",
+    "rawpath",
+    "screenshotpath",
+    "storage_state_path",
+    "storageStatePath",
+    "tracepath",
+}
+
+
+@dataclass(frozen=True)
+class LinkGraphFinding:
+    path: str
+    reason: str
+
+
+def validate_normalized_link_graph(graph: Mapping[str, Any]) -> list[LinkGraphFinding]:
+    """Return deterministic validation findings for a normalized link graph."""
+
+    findings: list[LinkGraphFinding] = []
+    findings.extend(_validate_no_private_or_live_artifacts(graph))
+
+    source_index = graph.get("sourceIndex", graph.get("source_index", []))
+    documents = graph.get("documents", [])
+
+    if not isinstance(source_index, list):
+        findings.append(LinkGraphFinding("$.sourceIndex", "sourceIndex must be a list"))
+        source_index = []
+    if not isinstance(documents, list):
+        findings.append(LinkGraphFinding("$.documents", "documents must be a list"))
+        documents = []
+
+    source_by_id: dict[str, Mapping[str, Any]] = {}
+    canonical_by_id: dict[str, str] = {}
+    content_type_by_id: dict[str, str] = {}
+
+    for index, entry in enumerate(source_index):
+        path = f"$.sourceIndex[{index}]"
+        if not isinstance(entry, Mapping):
+            findings.append(LinkGraphFinding(path, "source-index entry must be an object"))
+            continue
+
+        source_id = str(entry.get("id", "")).strip()
+        canonical_url = str(entry.get("canonicalUrl", entry.get("canonical_url", ""))).strip()
+        content_type = str(entry.get("contentType", entry.get("content_type", ""))).strip()
+
+        if not source_id:
+            findings.append(LinkGraphFinding(f"{path}.id", "source-index id is required"))
+        elif source_id in source_by_id:
+            findings.append(LinkGraphFinding(f"{path}.id", "source-index id must be unique"))
+        else:
+            source_by_id[source_id] = entry
+
+        if not canonical_url:
+            findings.append(LinkGraphFinding(f"{path}.canonicalUrl", "source-index canonicalUrl is required"))
+        elif _canonicalize_url(canonical_url) != canonical_url:
+            findings.append(LinkGraphFinding(f"{path}.canonicalUrl", "source-index canonicalUrl must already be canonicalized"))
+        else:
+            canonical_by_id[source_id] = canonical_url
+
+        if content_type not in SOURCE_INDEX_CONTENT_TYPES:
+            findings.append(LinkGraphFinding(f"{path}.contentType", "source-index contentType is not recognized"))
+        else:
+            content_type_by_id[source_id] = content_type
+
+    for index, document in enumerate(documents):
+        path = f"$.documents[{index}]"
+        if not isinstance(document, Mapping):
+            findings.append(LinkGraphFinding(path, "document entry must be an object"))
+            continue
+
+        source_index_id = str(document.get("sourceIndexId", document.get("source_index_id", ""))).strip()
+        canonical_url = str(document.get("canonicalUrl", document.get("canonical_url", ""))).strip()
+        content_type = str(document.get("contentType", document.get("content_type", ""))).strip()
+
+        if source_index_id not in source_by_id:
+            findings.append(LinkGraphFinding(f"{path}.sourceIndexId", "document sourceIndexId must reference sourceIndex"))
+        else:
+            indexed_canonical_url = canonical_by_id.get(source_index_id)
+            if indexed_canonical_url and canonical_url != indexed_canonical_url:
+                findings.append(LinkGraphFinding(f"{path}.canonicalUrl", "document canonicalUrl must match referenced source-index canonicalUrl"))
+            indexed_content_type = content_type_by_id.get(source_index_id)
+            if indexed_content_type and content_type != indexed_content_type:
+                findings.append(LinkGraphFinding(f"{path}.contentType", "document contentType must match referenced source-index contentType"))
+
+        if canonical_url and _canonicalize_url(canonical_url) != canonical_url:
+            findings.append(LinkGraphFinding(f"{path}.canonicalUrl", "document canonicalUrl must already be canonicalized"))
+        if content_type not in SOURCE_INDEX_CONTENT_TYPES:
+            findings.append(LinkGraphFinding(f"{path}.contentType", "document contentType is not recognized"))
+
+        links = document.get("links", [])
+        if not isinstance(links, list):
+            findings.append(LinkGraphFinding(f"{path}.links", "document links must be a list"))
+            continue
+
+        for link_index, link in enumerate(links):
+            link_path = f"{path}.links[{link_index}]"
+            if not isinstance(link, Mapping):
+                findings.append(LinkGraphFinding(link_path, "link entry must be an object"))
+                continue
+            findings.extend(_validate_link(link, link_path, source_by_id, canonical_by_id, content_type_by_id))
+
+    return findings
+
+
+def assert_normalized_link_graph(graph: Mapping[str, Any]) -> None:
+    """Raise ValueError when a normalized link graph is not commit-safe."""
+
+    findings = validate_normalized_link_graph(graph)
+    if findings:
+        details = "; ".join(f"{finding.path}: {finding.reason}" for finding in findings)
+        raise ValueError(f"normalized document link graph failed validation: {details}")
+
+
+def _validate_link(
+    link: Mapping[str, Any],
+    path: str,
+    source_by_id: Mapping[str, Mapping[str, Any]],
+    canonical_by_id: Mapping[str, str],
+    content_type_by_id: Mapping[str, str],
+) -> list[LinkGraphFinding]:
+    findings: list[LinkGraphFinding] = []
+    content_type = str(link.get("contentType", link.get("content_type", ""))).strip()
+    target_source_index_id = str(link.get("targetSourceIndexId", link.get("target_source_index_id", ""))).strip()
+    target_canonical_url = str(link.get("targetCanonicalUrl", link.get("target_canonical_url", ""))).strip()
+    skipped_reason = str(link.get("skippedReason", link.get("skipped_reason", ""))).strip()
+
+    if content_type not in LINK_CONTENT_TYPES:
+        findings.append(LinkGraphFinding(f"{path}.contentType", "link contentType is not recognized"))
+
+    if content_type == "skipped" and not skipped_reason:
+        findings.append(LinkGraphFinding(f"{path}.skippedReason", "skipped links require skippedReason"))
+
+    if content_type in {"mailto", "phone", "skipped"}:
+        if target_source_index_id:
+            findings.append(LinkGraphFinding(f"{path}.targetSourceIndexId", "non-document links must not reference sourceIndex"))
+        return findings
+
+    if not target_source_index_id:
+        findings.append(LinkGraphFinding(f"{path}.targetSourceIndexId", "document links require targetSourceIndexId"))
+        return findings
+
+    if target_source_index_id not in source_by_id:
+        findings.append(LinkGraphFinding(f"{path}.targetSourceIndexId", "link targetSourceIndexId must reference sourceIndex"))
+        return findings
+
+    indexed_canonical_url = canonical_by_id.get(target_source_index_id)
+    if indexed_canonical_url and target_canonical_url != indexed_canonical_url:
+        findings.append(LinkGraphFinding(f"{path}.targetCanonicalUrl", "link targetCanonicalUrl must match referenced source-index canonicalUrl"))
+
+    indexed_content_type = content_type_by_id.get(target_source_index_id)
+    if indexed_content_type and content_type != indexed_content_type:
+        findings.append(LinkGraphFinding(f"{path}.contentType", "link contentType must match referenced source-index contentType"))
+
+    if target_canonical_url and _canonicalize_url(target_canonical_url) != target_canonical_url:
+        findings.append(LinkGraphFinding(f"{path}.targetCanonicalUrl", "link targetCanonicalUrl must already be canonicalized"))
+
+    return findings
+
+
+def _validate_no_private_or_live_artifacts(value: Any) -> list[LinkGraphFinding]:
+    findings: list[LinkGraphFinding] = []
+    for path, key, item in _walk_json(value):
+        normalized_key = _normalize_key(key)
+        if normalized_key in CREDENTIAL_KEYS:
+            findings.append(LinkGraphFinding(path, "credential field is not allowed in normalized link graphs"))
+            continue
+        if normalized_key in RAW_BODY_KEYS and _has_payload(item):
+            findings.append(LinkGraphFinding(path, "raw response body field is not allowed in normalized link graphs"))
+            continue
+        if isinstance(item, str):
+            findings.extend(_validate_string(path, normalized_key, item))
+    return findings
+
+
+def _validate_string(path: str, normalized_key: str, value: str) -> list[LinkGraphFinding]:
+    findings: list[LinkGraphFinding] = []
+    lower_value = value.lower()
+
+    if _is_private_devhub_url(value):
+        findings.append(LinkGraphFinding(path, "private DevHub URL is not allowed in normalized link graphs"))
+
+    for marker in PRIVATE_OR_LIVE_ARTIFACT_MARKERS:
+        if marker in lower_value:
+            findings.append(LinkGraphFinding(path, "private or live crawl artifact path is not allowed in normalized link graphs"))
+            break
+
+    if normalized_key in PATH_KEYS and lower_value.endswith(DOWNLOADED_DOCUMENT_EXTENSIONS):
+        findings.append(LinkGraphFinding(path, "downloaded document path is not allowed in normalized link graphs"))
+
+    return findings
+
+
+def _canonicalize_url(url: str) -> str:
+    trimmed = url.strip()
+    if not trimmed:
+        return ""
+    without_fragment, _fragment = urldefrag(trimmed)
+    parsed = urlparse(without_fragment)
+    if parsed.scheme in {"mailto", "tel"}:
+        return without_fragment
+
+    scheme = parsed.scheme.lower()
+    host = (parsed.hostname or "").lower()
+    port = parsed.port
+    netloc = host
+    if port and not ((scheme == "https" and port == 443) or (scheme == "http" and port == 80)):
+        netloc = f"{host}:{port}"
+
+    path = parsed.path or "/"
+    if path != "/" and path.endswith("/"):
+        path = path.rstrip("/")
+
+    query = urlencode(sorted(parse_qsl(parsed.query, keep_blank_values=True)))
+    return urlunparse((scheme, netloc, path, "", query, ""))
+
+
+def _is_private_devhub_url(value: str) -> bool:
+    parsed = urlparse(value.strip())
+    if parsed.netloc.lower() != "devhub.portlandoregon.gov":
+        return False
+    path = parsed.path.lower()
+    return any(marker in path for marker in PRIVATE_DEVHUB_MARKERS)
+
+
+def _has_payload(value: Any) -> bool:
+    if isinstance(value, str):
+        return bool(value.strip())
+    if isinstance(value, (list, tuple, dict)):
+        return bool(value)
+    return value is not None
+
+
+def _normalize_key(key: str) -> str:
+    return "".join(character for character in str(key) if character.isalnum()).lower()
+
+
+def _walk_json(value: Any, path: str = "$", key: str = "") -> Iterable[tuple[str, str, Any]]:
+    yield path, key, value
+    if isinstance(value, Mapping):
+        for child_key, child_value in value.items():
+            child_key_text = str(child_key)
+            yield from _walk_json(child_value, f"{path}.{child_key_text}", child_key_text)
+    elif isinstance(value, list):
+        for index, child_value in enumerate(value):
+            yield from _walk_json(child_value, f"{path}[{index}]", key)

@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/public_source_inventory/coverage_report_fail_closed.json",
+    "ppd/tests/test_public_source_inventory_coverage_report_fail_closed.py"
+  ],
+  "created_at": "2026-05-01T21:43:25.505400Z",
+  "impact": "This advances the PP&D plan by proving the fixture-only source inventory coverage report rejects incomplete provenance and private or unsafe artifacts before any crawl or authenticated automation can proceed.",
+  "summary": "Add a fixture-backed validation-only test for public source inventory coverage report fail-closed behavior.",
+  "target_task": "Task checkbox-73: Add a validation-only test for the public source inventory coverage report proving it fails closed for missing authority labels, missing recrawl cadence, private DevHub paths, raw response bodies, credentials, traces, screenshots, and downloaded documents.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 79 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................................................................................... ---------------------------------------------------------------------- Ran 148 tests in 0.019s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

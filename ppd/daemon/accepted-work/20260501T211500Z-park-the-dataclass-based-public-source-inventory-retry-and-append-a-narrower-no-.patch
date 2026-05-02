@@ -1,0 +1,93 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -69,13 +69,14 @@
+ - [x] Add the source freshness classifier in the smallest possible Python module after the import test and four-record fixture pass, covering stale guidance, changed hashes, removed pages, and recrawl priority.
+ - [x] Add the fixture-only source freshness change report renderer only after the classifier task passes, summarizing changed requirements, new or removed links, affected permit-process fixtures, and citation references.
+ - [x] Add the missing-information output validator as a single no-dataclass Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection using only `ppd/tests/fixtures/missing_information_output/four_requested_items.json`.
+-- [x] Recover the blocked missing-information output validator with one file only: replace `ppd/contracts/missing_information_output_validation.py` as a no-dataclass module that exposes `MODULE_STATUS = "syntax_first_import_ready"` and validates only `ppd/tests/fixtures/missing_information_output/four_requested_items.json` semantics already covered by existing tests.
++- [x] Recover the blocked missing-information output validator with one file only: replace `ppd/contracts/missing_information_output_validation.py` as a no-dataclass module that exposes `MODULE_STATUS = 'syntax_first_import_ready'` and validates only `ppd/tests/fixtures/missing_information_output/four_requested_items.json` semantics already covered by existing tests.
+ - [x] Add a one-file syntax-first repair test for public source inventory validation that imports only `ppd.contracts.public_source_inventory` and rejects malformed Python before broad unittest discovery.
+ - [x] Add a minimal invalid public source inventory fixture with exactly one unsafe field per entry so rejection reasons for raw bodies, credentials, traces, screenshots, downloaded documents, private DevHub paths, and missing provenance are deterministic.
+ - [!] Add the public source inventory validator only after the syntax-first import test and one-unsafe-field fixture pass, covering allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and required provenance fields.
+ - [!] Restore the public source inventory syntax sentinel only: replace `ppd/contracts/public_source_inventory.py` as needed to preserve `MODULE_PURPOSE` and existing import-guard expectations before any validator behavior changes.
+ - [x] Add a fixture-name compatibility repair for public source inventory tests only if `ppd/tests/fixtures/public_source_inventory/invalid_one_unsafe_field_inventory.json` is still missing while the accepted one-unsafe-field fixture exists under another name.
+-- [~] Retry the public source inventory validator as a one-file implementation only after the `MODULE_PURPOSE` sentinel and expected unsafe-field fixture path pass validation.
++- [!] Retry the public source inventory validator as a one-file implementation only after the `MODULE_PURPOSE` sentinel and expected unsafe-field fixture path pass validation.
++- [ ] Retry the public source inventory validator as a no-dataclass one-file implementation only: preserve `MODULE_PURPOSE`, avoid `dataclasses`, keep to plain functions/constants/dicts, and validate the syntax-first import plus unsafe-field fixture before any broader behavior.
+ 
+ ## Deferred Broad Items
+ 
+@@ -84,7 +85,7 @@
+ - Parked source freshness broad task: Add a source freshness fixture that classifies stale PP&D guidance, changed content hashes, removed pages, and recrawl priority without performing a live recrawl.
+ - Parked source freshness renderer task: Add a fixture-only change report renderer for public PP&D source freshness results that summarizes changed requirements, new or removed links, and affected permit-process fixtures with citation references.
+ - Parked missing-information validator broad task: Add validation for missing-information detector output proving every requested user item is source-backed, deduplicated, action-classified, and free of private fixture values. This was recovered by the accepted one-file validator replacement and should not be selected again unless a new regression appears.
+-- Parked public-source-inventory validator broad task: Add validation for public source inventory safety. Retry only through the appended sentinel, fixture-name, and one-file implementation recovery sequence.
++- Parked public-source-inventory validator broad task: Add validation for public source inventory safety. Retry only through the appended sentinel, fixture-name, and no-dataclass one-file implementation recovery sequence.
+ 
+ ## Deferred Repair Notes
+ 
+@@ -94,7 +95,7 @@
+ 
+ The source freshness classifier checkbox was blocked because repeated proposals introduced invalid Python such as `if self.recrawl_cadence_days list[str]:`. That recovery has passed. Do not reopen those broad source-freshness tasks unless a new failing validator points to a concrete regression.
+ 
+-The public-source-inventory validation checkbox is deferred because repeated daemon proposals failed validation, including sentinel drift and fixture-name mismatch. The next recovery must first preserve `MODULE_PURPOSE` in `ppd/contracts/public_source_inventory.py`, then repair the expected fixture path only if needed, then retry validator logic as a one-file implementation. Do not combine these steps.
++The public-source-inventory validation checkbox is deferred because repeated daemon proposals failed validation, including sentinel drift, fixture-name mismatch, and a Python 3.12 `dataclasses.py` import-time failure when the syntax-first test loads the module with `importlib.util.module_from_spec` before insertion into `sys.modules`. The sentinel and fixture-name repairs have passed; the next retry must preserve `MODULE_PURPOSE`, avoid `@dataclass` and the `dataclasses` module entirely, and implement validator behavior with plain constants, dictionaries, tuples, and functions only.
+ 
+ ## Task Selection Notes
+ 
+@@ -104,7 +105,7 @@
+ 
+ 1. Restore the `MODULE_PURPOSE` sentinel in `ppd/contracts/public_source_inventory.py` without broad validator rewrites.
+ 2. If validation next reports a missing public-source-inventory unsafe-field fixture path, add only the fixture-name compatibility repair.
+-3. Retry the public source inventory validator as a one-file implementation after the sentinel and fixture-contract prerequisites pass.
++3. Retry the public source inventory validator as a one-file no-dataclass implementation after the sentinel and fixture-contract prerequisites pass.
+ 4. Do not select the parked broad missing-information validator directly.
+ 
+ Each recovery proposal should keep to one file unless the task explicitly requires a fixture plus its focused test. For public source inventory recovery, keep syntax sentinel repair separate from behavior repair.
+@@ -112,7 +113,7 @@
+ ## Supervisor Recovery Rules
+ 
+ - Treat repeated `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128` failures as a signal to split the task into syntax-first import tests, minimal fixtures, then implementation.
+-- Treat `dataclasses.py` import-time failures under `importlib.util.module_from_spec` as a signal to remove `@dataclass` from the target module or to add the module to `sys.modules` in the test; prefer removing dataclasses for tiny validator modules.
++- Treat `dataclasses.py` import-time failures under `importlib.util.module_from_spec` as a hard no-dataclass constraint for daemon-authored Python validator modules; use plain functions/constants/dicts instead of asking tests to alter import mechanics.
+ - Treat missing sentinel constants such as `MODULE_STATUS` or `MODULE_PURPOSE` as a contract-preservation repair, not as permission to redesign validator behavior.
+ - After three failed attempts against the same task, move the broad task into Deferred Broad Items, append narrower recovery tasks, and select a different independent task if one exists.
+ - Do not let parked broad task counts prevent daemon progress when a fixture-only or validation-first `[ ]` task remains selectable.
+@@ -122,33 +123,11 @@
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T21:08:00.000000Z
++Last updated: 2026-05-01T21:15:00.000000Z
+ 
+-- Latest target: `Task checkbox-67: Add the public source inventory validator only after the syntax-first import test and one-unsafe-field fixture pass, covering allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and required provenance fields.`
++- Latest target: `Task checkbox-70: Retry the public source inventory validator as a one-file implementation only after the MODULE_PURPOSE sentinel and expected unsafe-field fixture path pass validation.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Split public source inventory retry into sentinel preservation, fixture-name compatibility, and one-file validator implementation; clear the recovered missing-information validator from blocked state.
+-- Counts: `{"blocked": 1, "complete": 66, "in_progress": 0, "needed": 3}`
++- Latest summary: Park the dataclass-based retry and append a narrower no-dataclass retry so the worker can resume with the exact import-time failure guardrail.
++- Counts: blocked 3, complete 67, in_progress 0, needed 1
+ 
+ 
+-
+-## Generated Status
+-
+-Last updated: 2026-05-01T21:08:00.000000Z
+-
+-- Latest target: `Task checkbox-67: Add the public source inventory validator only after the syntax-first import test and one-unsafe-field fixture pass, covering allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and required provenance fields.`
+-- Latest result: `supervisor_repair`
+-- Latest summary: Split public source inventory retry into sentinel preservation, fixture-name compatibility, and one-file validator implementation.
+-- Counts: `{"blocked": 1, "complete": 66, "in_progress": 0, "needed": 3}`
+-
+-
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-01T21:09:58.323046Z
+-
+-- Latest target: `Task checkbox-70: Retry the public source inventory validator as a one-file implementation only after the `MODULE_PURPOSE` sentinel and expected unsafe-field fixture path pass validation.`
+-- Latest result: `validation`
+-- Latest summary: Replace the public source inventory sentinel with a one-file validator that preserves MODULE_PURPOSE and validates unsafe inventory fields deterministically.
+-- Counts: `{"blocked": 2, "complete": 67, "in_progress": 0, "needed": 1}`
+-
+-<!-- ppd-daemon-task-board:end -->

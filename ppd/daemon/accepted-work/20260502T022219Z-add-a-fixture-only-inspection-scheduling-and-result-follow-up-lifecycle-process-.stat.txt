@@ -1,0 +1,1 @@
+ppd/tests/fixtures/lifecycle/inspection_scheduling_result_follow_up_lifecycle_process_skeleton.json

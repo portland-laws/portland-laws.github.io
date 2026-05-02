@@ -1,0 +1,3 @@
+ppd/daemon/supervisor_no_eligible_tasks.py
+ppd/tests/fixtures/daemon_supervisor/no_eligible_tasks_stale_retry_without_fixture_first.json
+ppd/tests/test_daemon_supervisor_no_eligible_tasks.py

@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/devhub/urban_forestry_draft_review_guardrails.json",
+    "ppd/tests/test_devhub_urban_forestry_draft_review_guardrails.py"
+  ],
+  "created_at": "2026-05-02T00:39:26.021850Z",
+  "impact": "This advances the PP&D plan by proving Urban Forestry application draft review can generate a safe preview while refusing official upload, certification, submission, payment, cancellation, and inspection scheduling unless the current session provides exact action-specific confirmation.",
+  "summary": "Add deterministic Urban Forestry DevHub draft-review guardrail tests with a redacted fixture.",
+  "target_task": "Task checkbox-110: Add DevHub guardrail tests proving Urban Forestry application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 110 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 292 tests in 0.029s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

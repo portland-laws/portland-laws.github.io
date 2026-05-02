@@ -1,0 +1,98 @@
+{
+  "schemaVersion": 1,
+  "purpose": "validation-only fail-closed coverage report fixture",
+  "cases": [
+    {
+      "id": "missing-authority-label",
+      "coverageReport": {
+        "category": "permit_application_pages",
+        "canonicalUrl": "https://www.portland.gov/ppd/permits",
+        "authorityLabels": [],
+        "recrawlCadence": "weekly",
+        "sourceInventoryIds": ["public-source-permit-applications"]
+      },
+      "expectedFindings": ["missing_authority_labels"]
+    },
+    {
+      "id": "missing-recrawl-cadence",
+      "coverageReport": {
+        "category": "forms_and_handouts",
+        "canonicalUrl": "https://www.portland.gov/ppd/documents",
+        "authorityLabels": ["Portland Permitting & Development"],
+        "sourceInventoryIds": ["public-source-forms-handouts"]
+      },
+      "expectedFindings": ["missing_recrawl_cadence"]
+    },
+    {
+      "id": "private-devhub-path",
+      "coverageReport": {
+        "category": "devhub_private_case_state",
+        "canonicalUrl": "https://devhub.portlandoregon.gov/secure/my-permits/12345",
+        "authorityLabels": ["Development Hub PDX"],
+        "recrawlCadence": "never",
+        "sourceInventoryIds": ["private-devhub-case-state"]
+      },
+      "expectedFindings": ["private_devhub_path"]
+    },
+    {
+      "id": "raw-response-body",
+      "coverageReport": {
+        "category": "fee_pages",
+        "canonicalUrl": "https://www.portland.gov/ppd/fees",
+        "authorityLabels": ["Portland Permitting & Development"],
+        "recrawlCadence": "weekly",
+        "sourceInventoryIds": ["public-source-fees"],
+        "rawResponseBody": "raw live crawl body must not be committed"
+      },
+      "expectedFindings": ["raw_response_body"]
+    },
+    {
+      "id": "credential-material",
+      "coverageReport": {
+        "category": "devhub_guides",
+        "canonicalUrl": "https://www.portland.gov/ppd/devhub",
+        "authorityLabels": ["Development Hub PDX"],
+        "recrawlCadence": "weekly",
+        "sourceInventoryIds": ["public-source-devhub-guides"],
+        "credentialMaterial": "username=fixture-user password=fixture-secret"
+      },
+      "expectedFindings": ["credential_material"]
+    },
+    {
+      "id": "trace-artifact",
+      "coverageReport": {
+        "category": "devhub_guides",
+        "canonicalUrl": "https://www.portland.gov/ppd/devhub-faq",
+        "authorityLabels": ["Development Hub PDX"],
+        "recrawlCadence": "weekly",
+        "sourceInventoryIds": ["public-source-devhub-faq"],
+        "traceArtifact": "ppd/data/private/devhub/session.trace.zip"
+      },
+      "expectedFindings": ["trace_artifact"]
+    },
+    {
+      "id": "screenshot-artifact",
+      "coverageReport": {
+        "category": "devhub_guides",
+        "canonicalUrl": "https://www.portland.gov/ppd/devhub-help",
+        "authorityLabels": ["Development Hub PDX"],
+        "recrawlCadence": "weekly",
+        "sourceInventoryIds": ["public-source-devhub-help"],
+        "screenshotArtifact": "ppd/data/private/devhub/account-screen.png"
+      },
+      "expectedFindings": ["screenshot_artifact"]
+    },
+    {
+      "id": "downloaded-document",
+      "coverageReport": {
+        "category": "downloaded_public_forms",
+        "canonicalUrl": "https://www.portland.gov/ppd/documents/building-permit-application",
+        "authorityLabels": ["Portland Permitting & Development"],
+        "recrawlCadence": "monthly",
+        "sourceInventoryIds": ["public-source-building-permit-form"],
+        "downloadedDocumentPath": "ppd/data/raw/building-permit-application.pdf"
+      },
+      "expectedFindings": ["downloaded_document"]
+    }
+  ]
+}

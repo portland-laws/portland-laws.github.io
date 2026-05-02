@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/contracts/public_source_inventory.py"
+  ],
+  "created_at": "2026-05-01T21:26:49.260283Z",
+  "impact": "This unblocks the PP&D syntax sentinel repair path before any public source inventory validator behavior is retried.",
+  "summary": "Restore public source inventory to the syntax-first sentinel only, preserving MODULE_PURPOSE and validator_status import-guard expectations.",
+  "target_task": "Task checkbox-68: Restore the public source inventory syntax sentinel only: replace `ppd/contracts/public_source_inventory.py` as needed to preserve `MODULE_PURPOSE` and existing import-guard expectations before any validator behavior changes.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 72 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................ ---------------------------------------------------------------------- Ran 140 tests in 0.018s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

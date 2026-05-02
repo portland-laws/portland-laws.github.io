@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/daemon/stale_blocked_solar_extractor_retry_parked.json",
+    "ppd/daemon/supervisor_self_test.py"
+  ],
+  "created_at": "2026-05-01T23:17:19.322876Z",
+  "impact": "This gives the PP&D daemon a deterministic self-test proving a stale blocked solar extractor retry is not reselected once its size guard and malformed-comparison diagnostic have passed, allowing the next independent needed task to proceed.",
+  "summary": "Add supervisor self-test fixture for parked stale solar retry",
+  "target_task": "Task checkbox-84: Add a supervisor self-test fixture proving a stale blocked solar extractor retry is parked after its size guard and malformed-comparison diagnostic have both passed, so task selection can continue with the next independent `[ ]` item.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 86 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".............................................................................................................................................................................................. ---------------------------------------------------------------------- Ran 190 tests in 0.023s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

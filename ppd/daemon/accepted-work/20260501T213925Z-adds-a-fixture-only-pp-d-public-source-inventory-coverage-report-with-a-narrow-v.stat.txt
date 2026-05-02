@@ -1,0 +1,3 @@
+ppd/contracts/public_source_inventory_coverage.py
+ppd/tests/fixtures/public_source_inventory_coverage/coverage_report.json
+ppd/tests/test_public_source_inventory_coverage.py

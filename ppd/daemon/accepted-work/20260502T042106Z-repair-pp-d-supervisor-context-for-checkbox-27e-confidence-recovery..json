@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/daemon/task-board.md",
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-02T04:21:06.616788Z",
+  "impact": "This removes malformed Python comparison examples that were repeatedly copied into worker proposals, resets the recovery sequence to retry the lowest incomplete checkbox-27 prerequisite before later stale tasks, and adds a narrow follow-up task for prompt sanitization so autonomous progress can resume deterministically.",
+  "summary": "Repair PP&D supervisor context for checkbox-27e confidence recovery.",
+  "target_task": "Supervisor repair: 1 task(s) are blocked: Task checkbox-35: Recovery for checkbox-27e: after checkbox-27d passes, add one mutation case for out-of-range `confidence` only. Use only complete Python comparisons such as `if not isinstance(confidence, (int, float)):` and `if confidence  1:`.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 40 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "..........................................................................................................................................................................................................................ss..............sss...................................................................................................................................... ---------------------------------------------------------------------- Ran 371 tests in 0.046s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

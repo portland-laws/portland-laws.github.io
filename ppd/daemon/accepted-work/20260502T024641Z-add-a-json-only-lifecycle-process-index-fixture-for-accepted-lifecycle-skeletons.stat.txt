@@ -1,0 +1,1 @@
+ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json

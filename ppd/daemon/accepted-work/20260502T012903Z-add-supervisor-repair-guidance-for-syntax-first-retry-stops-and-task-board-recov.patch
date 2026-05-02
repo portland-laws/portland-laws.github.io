@@ -1,0 +1,73 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,40 +1,47 @@
+ # PP&D Supervisor Repair Guide
+ 
+-## Purpose
++This guide is for supervisor repair cycles only. It is intentionally narrow and deterministic.
+ 
+-This guide records narrow recovery rules for the PP&D daemon when autonomous work is blocked by validation failures, malformed generated code, or task selection loops.
++## Current Recovery Rule
+ 
+-## Syntax-First Recovery Rule
++When recent daemon failures include `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128`, do not ask the worker for a broad implementation retry. Split recovery into syntax-first and fixture-first work before any broader validation or domain implementation resumes.
+ 
+-When a recent failure mentions Python `SyntaxError`, `py_compile`, or malformed module import behavior, the next daemon task should be smaller than the failed proposal and should validate syntax before any broad behavioral contract runs.
++For the blocked online trade permit import-test task:
+ 
+-For blocked task checkbox-121, the daemon should retry with exactly one test file under `ppd/tests/` that does only this:
++- Park the stale blocked checkbox outside selectable task form if a later size guard, focused validation, or guardrail task already passed.
++- Append a new narrow `[ ]` task instead of reselecting the blocked task directly.
++- The next recovery task should touch one file only unless it is explicitly a fixture plus focused test pair.
++- A syntax-first import test for `ppd.extraction.online_trade_permit_requirements` must import only that module.
++- If the target module does not exist yet, the import test should skip cleanly rather than fail the whole suite for a missing future implementation.
++- If the target module exists and contains malformed Python, the import test must fail before broad online trade permit requirement validation runs.
+ 
+-- Uses `importlib.util.find_spec("ppd.extraction.online_trade_permit_requirements")` to locate the target module.
+-- Skips the test if the target module does not exist yet, because this task is a syntax guard and should not force domain implementation.
+-- Imports only `ppd.extraction.online_trade_permit_requirements` when the module is present.
+-- Fails naturally on `SyntaxError` or other malformed Python in that target module.
+-- Does not import broad online trade permit requirement validators, fixtures, crawler code, DevHub code, or guardrail compiler modules.
+-- Uses a discovery-early filename such as `ppd/tests/test_000_online_trade_permit_requirements_syntax_first.py` so malformed Python is reported before broader online trade permit requirement validation noise.
++## Worker Prompt Guardrails
+ 
+-The test should remain fixture-free and should not create or edit `ppd/extraction/online_trade_permit_requirements.py`. The daemon must not implement the domain extractor while repairing this blocked syntax-first guard task.
++For any retry after a Python syntax failure, the worker prompt must explicitly require:
+ 
+-## Retry Boundaries
++- one-file replacement when repairing syntax or import sentinels;
++- syntactically valid Python checked before returning JSON;
++- no `dataclasses` for small validator or extractor modules unless an existing local pattern requires them;
++- no broad contract rewrites;
++- no live crawl, login, payment, submission, certification, cancellation, inspection scheduling, private DevHub session state, traces, screenshots, raw crawl output, or downloaded documents;
++- fixture-first and validation-first sequencing before implementation retries.
+ 
+-If a guard test fails because the target module is missing, revise the guard to skip missing modules instead of creating the module. A size guard or syntax guard may constrain future implementations, but it must not require the implementation to exist unless the selected task explicitly says to create that implementation.
++## Recommended Next Task Text
+ 
+-If a guard test fails because an assertion expects a diagnostic substring, prefer changing the proposed fixture or assertion wording narrowly. Do not rewrite unrelated guardrail contracts or broad validation fixtures.
++Append this as a selectable task when the board is blocked by the stale online trade permit syntax-first item:
+ 
+-## Validation Order
++`- [ ] Repair the online trade permit syntax-first import test as one test file only: import only ppd.extraction.online_trade_permit_requirements, skip if the module is absent, and fail malformed Python before broad online trade permit requirement validation runs.`
+ 
+-A daemon cycle that repairs syntax-first behavior should expect these validations:
++If that task passes, append the implementation retry only as a separate task:
+ 
+-1. `python3 ppd/daemon/ppd_daemon.py --self-test`
+-2. `python3 -m unittest discover -s ppd/tests -p test_*.py`
+-3. TypeScript typecheck only when TypeScript files under `ppd/` are present
++`- [ ] Retry ppd.extraction.online_trade_permit_requirements as a one-file no-dataclass implementation under 180 physical lines, preserving the seven-record expected-output fixture and passing the existing focused validation only.`
+ 
+-The repair should be accepted only when the narrow syntax-first test passes or skips for a missing target module and the full PP&D test discovery remains green.
++## Stop Conditions
+ 
+-## Compliance Boundaries
++Stop retrying the same task and request supervisor repair when:
+ 
+-Repair work must stay in `ppd/daemon/`, `ppd/tests/`, `ppd/.gitignore`, or PP&D daemon operations docs. Do not create private DevHub session files, authentication state, traces, raw crawl output, downloaded documents, or live portal artifacts. Do not automate CAPTCHA, MFA, account creation, payment, official submission, certification, cancellation, upload, or inspection scheduling during supervisor repair.
++- two consecutive attempts for the same target produce Python syntax failures;
++- a proposal changes more than one file while syntax repair mode is active;
++- the worker edits application or domain artifacts only to mark progress;
++- the worker attempts live DevHub automation or any irreversible action;
++- the board has only blocked stale tasks and no fixture-first `[ ]` task remains selectable.

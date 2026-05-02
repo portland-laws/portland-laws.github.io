@@ -1,0 +1,109 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -83,35 +83,27 @@
+ 
+ Blocked source-freshness tasks are intentionally parked and should not stop unrelated PP&D progress. If an independent `[~]` or `[ ]` task does not depend on source freshness, the daemon may continue it.
+ 
++The current autonomous target is the `[~]` residential missing-information detector fixture. Continue that task before selecting any source-freshness recovery work. The missing-information detector task is fixture-only and independent of the blocked source-freshness classifier and renderer.
++
+ When no independent task is active, prefer fixture-first or syntax-first recovery tasks in this order:
+ 
+-1. Finish the active correction-upload review guardrail task.
+-2. Continue residential missing-information detector fixture work.
++1. Finish the active residential missing-information detector fixture task.
++2. Add validation for missing-information detector output.
+ 3. Run the source-freshness syntax-first import task before any source-freshness fixture, classifier, or renderer work.
+ 4. Run the four-record source-freshness fixture task before the classifier.
+-5. Run the renderer only after the classifier has passed validation.
++5. Run the smallest source-freshness classifier task.
++6. Run the renderer only after the classifier has passed validation.
+ 
+ Do not select the two `[!]` source-freshness tasks directly until their narrow prerequisites have passed.
+ 
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T20:08:00Z
++Last updated: 2026-05-01T20:12:00Z
+ 
+-- Latest target: `Supervisor repair: keep blocked source-freshness tasks decomposed while allowing independent DevHub guardrail progress`
++- Latest target: `Supervisor repair: park blocked source-freshness tasks and continue active residential missing-information detector work`
+ - Latest result: `task-board repaired`
+-- Latest summary: Cleaned duplicate generated status text, preserved completed work, kept source-freshness and renderer tasks blocked, and documented the narrow recovery order.
+-- Counts: `{"blocked": 2, "complete": 54, "in_progress": 1, "needed": 9}`
++- Latest summary: Removed stale duplicate generated status text, preserved completed tasks, kept source-freshness and renderer work blocked, and made the active independent missing-information detector task the next selectable work.
++- Counts: `{"blocked": 2, "complete": 55, "in_progress": 1, "needed": 9}`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-01T20:04:29.292964Z
+-
+-- Latest target: `Task checkbox-57: Add DevHub guardrail tests proving correction-upload review can produce a preview but cannot perform official upload or certification without exact session-specific user confirmation.`
+-- Latest result: `accepted`
+-- Latest summary: Add fixture-backed DevHub correction-upload review guardrail tests and a narrow deterministic evaluator for preview versus official upload/certification gates.
+-- Counts: `{"blocked": 2, "complete": 55, "in_progress": 0, "needed": 9}`
+-
+-<!-- ppd-daemon-task-board:end -->
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -20,20 +20,32 @@
+ Recovery rule:
+ 
+ - Do not retry checkbox-54 as another broad implementation until a syntax-first contract skeleton passes.
+-- Do not retry checkbox-55 until checkbox-54 has passed through the syntax-first contract, four-record fixture, and focused classifier tasks.
++- Do not retry checkbox-55 until checkbox-54 has passed through the syntax-first import test, four-record fixture, and focused classifier tasks.
+ - If another task is active and does not depend on source freshness, allow that task to continue.
+ - Treat the two blocked source-freshness tasks as parked, not as a global daemon stop condition.
+ 
++## Immediate Task Selection
++
++The current board has an independent active task:
++
++- Task checkbox-58: Add a missing-information detector fixture that compares a residential permit user-case fact inventory against the residential permit process requirements and returns only missing facts, files, acknowledgments, and decisions.
++
++Supervisor selection rule:
++
++- Continue checkbox-58 before any source-freshness recovery task.
++- Then select the missing-information detector validation task.
++- Only after independent missing-information work is complete should the supervisor select source-freshness recovery.
++- Never select blocked checkbox-54 or checkbox-55 directly while their prerequisite recovery tasks remain unchecked.
++
+ ## Retry Shape For Checkbox-54
+ 
+ When checkbox-54 is resumed, the supervisor should constrain the daemon to these narrow cycles in order.
+ 
+-Cycle A: syntax-first contract skeleton
+-
+-- Edit only `ppd/contracts/source_freshness.py` and one focused import/compile test if needed.
+-- Define classification constants and small dataclasses or plain functions only after validating that the file compiles.
++Cycle A: syntax-first import test
++
++- Edit only `ppd/contracts/source_freshness.py` and one focused import or compile test if needed.
++- The first acceptable implementation may be a tiny module with constants and one no-op importable function.
+ - Keep type annotations conventional Python, for example `recrawl_cadence_days: int | None`, never annotation fragments inside an `if` condition.
+-- Avoid validators that depend on fixture shape beyond simple dictionary keys.
+ - Require `python3 -m py_compile ppd/contracts/source_freshness.py` before full PP&D validation.
+ 
+ Cycle B: tiny freshness fixture
+@@ -80,7 +92,7 @@
+ - Keep interfaces and object literals small.
+ - Run the TypeScript command before broader tests.
+ 
+-## Current Blocked Task Recovery
++## Current Blocked Public Inventory Recovery
+ 
+ Previously blocked task:
+ 
+@@ -131,8 +143,8 @@
+ 
+ For the current board, preferred autonomous order is:
+ 
+-1. Finish the active correction-upload review guardrail task.
+-2. Continue independent missing-information detector fixture tasks.
++1. Finish the active residential missing-information detector fixture task.
++2. Add missing-information detector output validation.
+ 3. Run source-freshness syntax-first import validation.
+ 4. Add the minimal four-record source-freshness fixture.
+ 5. Add the smallest source-freshness classifier.

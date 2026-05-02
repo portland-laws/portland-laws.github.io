@@ -1,0 +1,44 @@
+{
+  "processId": "synthetic-public-single-pdf-process",
+  "sourceEvidenceIds": [
+    "ppd-public-devhub-single-pdf-guidance",
+    "ppd-public-permit-application-guidance"
+  ],
+  "stages": [
+    {
+      "stageId": "prepare-documents",
+      "label": "Prepare documents",
+      "sourceEvidenceIds": [
+        "ppd-public-devhub-single-pdf-guidance"
+      ]
+    }
+  ],
+  "requiredInputs": [
+    {
+      "inputId": "project-description",
+      "label": "Project description",
+      "sourceEvidenceIds": [
+        "ppd-public-permit-application-guidance"
+      ]
+    }
+  ],
+  "requiredDocuments": [
+    {
+      "documentId": "application-pdf",
+      "label": "Permit application PDF",
+      "sourceEvidenceIds": [
+        "ppd-public-permit-application-guidance"
+      ]
+    }
+  ],
+  "stopGates": [
+    {
+      "gateId": "document-check-before-submission",
+      "label": "All required documents are available before submission",
+      "sourceEvidenceIds": [
+        "ppd-public-devhub-single-pdf-guidance"
+      ]
+    }
+  ],
+  "lastReviewed": "2026-05-01"
+}

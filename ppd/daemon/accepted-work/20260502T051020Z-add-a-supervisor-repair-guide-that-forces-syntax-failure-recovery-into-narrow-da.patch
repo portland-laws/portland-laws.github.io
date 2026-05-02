@@ -1,0 +1,109 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,48 +1,47 @@
+ # PP&D Supervisor Repair Guide
+ 
+-Use this guide when the PP&D daemon has repeated validation rollbacks caused by parser or compile failures.
++This guide is daemon programming context for supervisor repair cycles. It is intentionally operational and fixture-first; it does not implement PP&D domain scraping tasks.
+ 
+-## Syntax Failure Policy
++## Syntax Failure Recovery
+ 
+-Treat any of these diagnostics as syntax failures rather than ordinary domain-validation failures:
++When a recent daemon failure includes `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128`, the supervisor must stop retrying the blocked domain task and repair daemon execution first.
+ 
+-- Python `SyntaxError`
+-- Python `py_compile` failure
+-- TypeScript `TS1005`
+-- TypeScript `TS1109`
+-- TypeScript `TS1128`
++Required recovery behavior:
+ 
+-After two recent syntax failures for the same task, stop retrying the broad domain task. Block it on the task board and repair daemon syntax preflight before another worker attempt at the blocked domain task.
++- Select a daemon-repair task before returning to the domain task.
++- Keep the repair proposal to one daemon file unless a tiny adjacent test is strictly necessary.
++- Reject proposals that rewrite shared PP&D contracts while the active failure is parser-level syntax.
++- Require changed Python files to pass `py_compile` before full validation.
++- Require changed TypeScript files to pass the existing strict `tsc --noEmit` command scoped only to changed `.ts` and `.tsx` files before full validation.
++- On parser failure, rollback immediately and record `failure_kind` as `syntax_preflight`.
++- Persist compact diagnostics only: command, return code, and the first relevant parser message.
+ 
+-## Required Daemon Behavior
++## Prompt Guardrails
+ 
+-The daemon must check syntactic validity before running broad validation:
++For syntax-recovery tasks, the supervisor prompt should include these hard requirements:
+ 
+-- After applying proposed file replacements, compute the changed file list before any full validation command runs.
+-- For changed `.py` files, run `py_compile` only on those changed Python files.
+-- For changed `.ts` and `.tsx` files, run the existing strict TypeScript `tsc --noEmit` command, scoped only to the changed TypeScript files.
+-- If syntax preflight fails, rollback immediately, record failure kind `syntax_preflight`, and persist a compact diagnostic in `ppd/daemon/failed-patches/`.
+-- Do not run the full Python unit suite after a syntax-preflight failure. This prevents one parser error from cascading into hundreds of import errors.
+-- Keep syntax-preflight diagnostics compact: include the command, return code, and the first actionable parser message.
++- Return only JSON file replacements.
++- Do not edit `ppd/contracts/` unless the selected task is specifically a contract task and the syntax-preflight repair has already passed.
++- Do not retry `planned_crawl_manifest.py` validation work until daemon syntax preflight and syntax-failure prompt guidance are accepted.
++- Do not mix Python and TypeScript syntax. Examples that must be rejected include `if value list[str]:` in Python and Python-style type annotations in TypeScript expressions.
++- Prefer one small syntactically complete function over a broad shared-contract rewrite.
+ 
+-## Required Prompt Behavior
++## Resume Criteria
+ 
+-When recent failure context includes syntax or compile markers, the daemon prompt should steer the worker toward a smaller proposal:
++The blocked public-crawl dry-run validator task may be resumed only after all of the following are true:
+ 
+-- Prefer one file.
+-- Use two files only when the second file is a tiny focused test or fixture needed for the same guardrail.
+-- Do not rewrite broad shared contracts unless the selected task explicitly requires that contract.
+-- Do not mix TypeScript syntax into Python or Python syntax into TypeScript.
+-- For Python validators, write plain boolean checks and complete comparisons. Avoid partial annotations or expression fragments such as `if self.timeout_ms list[str]:`.
+-- For fixture paths, derive committed PP&D test fixtures from `Path(__file__).parent / "fixtures" / ...`.
++- The daemon has a changed-file syntax-preflight step.
++- Syntax-preflight failures rollback before full validation.
++- Syntax-preflight failures are recorded as `syntax_preflight`, not generic `validation`.
++- The prompt includes narrower retry guidance for parser failures.
++- The next domain proposal is limited to one syntax-valid Python test file or one syntax-valid helper plus one fixture path correction.
+ 
+-## Recovery Sequence
++## Forbidden Recovery Shortcuts
+ 
+-1. Add daemon syntax-preflight behavior.
+-2. Add or update daemon self-tests so changed Python files require `py_compile` and changed TypeScript files require scoped strict `tsc --noEmit`.
+-3. Resume the blocked public-crawl manifest validation task with the smallest validator-only proposal.
+-4. Keep live crawling and authenticated DevHub automation out of recovery tasks.
++Do not repair parser failures by:
+ 
+-## Current Blocker Guidance
+-
+-The repeated `planned_crawl_manifest.py` failures were parser failures, not failed crawl-policy reasoning. Do not ask the worker to broaden the crawl-manifest contract until syntax preflight is installed. The next worker attempt should either repair daemon preflight or, after that repair validates, add the narrow fail-closed crawl-plan fixture validator.
++- Creating private DevHub session files, traces, screenshots, downloads, or raw crawl output.
++- Running live public crawling or authenticated automation.
++- Marking domain tasks complete without accepted validation.
++- Retrying the same broad contract rewrite after two parser failures.
++- Editing application/domain artifacts solely to move the task board forward.
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -79,16 +79,14 @@
+ - [~] Task checkbox-49: Add a daemon syntax-preflight step that checks only changed Python and TypeScript files before full validation. Python files must use `py_compile`; TypeScript files must use the existing strict `tsc --noEmit` command scoped to changed `.ts`/`.tsx` files. On parser failure, rollback immediately with failure kind `syntax_preflight` and compact diagnostics.
+ - [ ] Task checkbox-50: Add daemon prompt guidance and failure-context diagnostics for syntax-preflight rollbacks. When recent failures include `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128`, the prompt must ask for a one-file or one-test-plus-fixture proposal and forbid broad shared-contract rewrites.
+ - [ ] Task checkbox-51: Resume checkbox-48 with the smallest fixture-first validator after checkbox-49 and checkbox-50 pass. Limit the proposal to one syntax-valid Python test file or one syntax-valid helper plus one test fixture path correction; do not add live crawling or authenticated automation.
+-
+-
++- [ ] Task checkbox-52: Add daemon self-test coverage that proves syntax-preflight runs no commands when no changed Python or TypeScript files are present.
++- [ ] Task checkbox-53: Add one daemon unit-style fixture for syntax-preflight failure classification using a synthetic changed Python filename and compact parser diagnostics only.
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T05:00:00Z
++Last updated: 2026-05-02T05:10:00Z
+ 
+-- Latest target: `Task checkbox-48: Add validation for the public-crawl dry-run plan fixture from checkbox-47. The validator must fail closed on missing allowlist, robots, timeout, no-persist, or processor-adapter preflight fields.`
+-- Latest result: `blocked_for_supervisor_repair`
+-- Latest summary: Repeated Python syntax rollbacks require daemon syntax-preflight and narrower retry guidance before resuming the public-crawl validation task.
+-- Counts: `{"blocked": 1, "complete": 48, "in_progress": 0, "needed": 3}`
+-
+-
++- Latest target: `Task checkbox-49: Add a daemon syntax-preflight step that checks only changed Python and TypeScript files before full validation. Python files must use py_compile; TypeScript files must use the existing strict tsc --noEmit command scoped to changed .ts/.tsx files. On parser failure, rollback immediately with failure kind syntax_preflight and compact diagnostics.`
++- Latest result: `supervisor_repair_guidance_added`
++- Latest summary: Added deterministic supervisor recovery guidance and narrower follow-up daemon checks after repeated parser rollbacks.
++- Counts: `{"blocked": 1, "complete": 48, "in_progress": 1, "needed": 4}`

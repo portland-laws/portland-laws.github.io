@@ -1,0 +1,231 @@
+--- a/ppd/tests/fixtures/devhub/playwright_audit_event_draft_edit.json
++++ b/ppd/tests/fixtures/devhub/playwright_audit_event_draft_edit.json
+@@ -0,0 +1,76 @@
++{
++  "schemaVersion": 1,
++  "fixtureId": "devhub-playwright-audit-draft-edit-001",
++  "capturedAt": "2026-05-01T19:20:00Z",
++  "environment": "mocked-devhub-fixture",
++  "auditEvents": [
++    {
++      "eventId": "audit-draft-project-description-001",
++      "workflowStateId": "mock-trade-permit-plan-review-draft",
++      "action": {
++        "kind": "fill_field",
++        "classification": "draft-edit",
++        "draftOnly": true,
++        "reversible": true,
++        "liveAutomation": false,
++        "blockedConsequentialActions": [
++          "upload",
++          "submit",
++          "certify",
++          "pay",
++          "cancel",
++          "schedule_inspection"
++        ]
++      },
++      "selectorBasis": {
++        "strategy": "semantic-first",
++        "role": "textbox",
++        "accessibleName": "Project description",
++        "labelText": "Project description",
++        "nearbyHeading": "Project information",
++        "urlState": "mock://devhub.local/permit-request/draft/project-information",
++        "fallbackCss": null,
++        "fallbackXPath": null
++      },
++      "sourceRequirement": {
++        "requirementId": "trade-plan-review-project-description-required",
++        "type": "precondition",
++        "sourceTitle": "Trade permit with plan review fixture",
++        "sourceUrl": "https://www.portland.gov/ppd/permits/trade-permits-plan-review",
++        "sourceAnchor": "project-information",
++        "requiresUserSuppliedFact": true,
++        "supportsDraftEditOnly": true
++      },
++      "userConfirmation": {
++        "state": "not_required_for_reversible_draft_edit",
++        "exactActionConfirmed": false,
++        "confirmedAction": null,
++        "confirmationText": null,
++        "reason": "This audit event covers only a reversible draft field edit. It does not authorize upload, submission, certification, payment, cancellation, inspection scheduling, or any official filing action."
++      },
++      "fieldState": {
++        "before": {
++          "fieldId": "project_description",
++          "required": true,
++          "redaction": "redacted-empty",
++          "value": "[REDACTED_EMPTY]",
++          "validationMessage": "[REDACTED_VALIDATION_MESSAGE]"
++        },
++        "after": {
++          "fieldId": "project_description",
++          "required": true,
++          "redaction": "redacted-user-supplied-value",
++          "value": "[REDACTED_USER_SUPPLIED_TEXT]",
++          "validationMessage": "[REDACTED_VALIDATION_MESSAGE]"
++        }
++      },
++      "privacy": {
++        "containsCredentials": false,
++        "containsAuthState": false,
++        "containsTrace": false,
++        "containsScreenshot": false,
++        "containsRawPrivateValue": false
++      }
++    }
++  ]
++}
+--- a/ppd/tests/test_playwright_audit_event_fixture.py
++++ b/ppd/tests/test_playwright_audit_event_fixture.py
+@@ -0,0 +1,149 @@
++"""Validate Playwright audit-event fixtures for draft-only DevHub form edits."""
++
++from __future__ import annotations
++
++import json
++import re
++import unittest
++from pathlib import Path
++from typing import Any
++
++
++FIXTURE_PATH = Path(__file__).parent / "fixtures" / "devhub" / "playwright_audit_event_draft_edit.json"
++REDACTED_VALUE_PATTERN = re.compile(r"^\[REDACTED_[A-Z_]+\]$")
++PRIVATE_VALUE_PATTERNS = (
++    re.compile(r"\b[A-Z][a-z]+\s+[A-Z][a-z]+\b"),
++    re.compile(r"\b\d{1,6}\s+[A-Za-z]+\s+(Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Drive|Dr)\b", re.IGNORECASE),
++    re.compile(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}"),
++    re.compile(r"\b\d{3}[-.) ]+\d{3}[-. ]+\d{4}\b"),
++    re.compile(r"\b(?:password|credential|auth_state|storage_state|cookie|token|secret)\b", re.IGNORECASE),
++)
++
++
++class PlaywrightAuditEventFixtureTest(unittest.TestCase):
++    def test_draft_only_form_edit_audit_event_is_complete_and_redacted(self) -> None:
++        fixture = _load_fixture()
++
++        self.assertEqual(fixture["schemaVersion"], 1)
++        self.assertEqual(fixture["environment"], "mocked-devhub-fixture")
++        self.assertTrue(fixture["capturedAt"].endswith("Z"))
++        events = fixture["auditEvents"]
++        self.assertEqual(len(events), 1)
++
++        event = events[0]
++        self.assertEqual(event["eventId"], "audit-draft-project-description-001")
++        self.assertEqual(event["workflowStateId"], "mock-trade-permit-plan-review-draft")
++        _assert_action_is_draft_only(self, event["action"])
++        _assert_selector_basis(self, event["selectorBasis"])
++        _assert_source_requirement(self, event["sourceRequirement"])
++        _assert_confirmation_state(self, event["userConfirmation"])
++        _assert_redacted_field_state(self, event["fieldState"])
++        _assert_privacy_flags(self, event["privacy"])
++        _assert_no_private_or_unredacted_values(self, event)
++
++
++def _load_fixture() -> dict[str, Any]:
++    with FIXTURE_PATH.open(encoding="utf-8") as fixture_file:
++        data = json.load(fixture_file)
++    if not isinstance(data, dict):
++        raise AssertionError("audit-event fixture must be a JSON object")
++    return data
++
++
++def _assert_action_is_draft_only(test_case: unittest.TestCase, action: dict[str, Any]) -> None:
++    test_case.assertEqual(action["kind"], "fill_field")
++    test_case.assertEqual(action["classification"], "draft-edit")
++    test_case.assertIs(action["draftOnly"], True)
++    test_case.assertIs(action["reversible"], True)
++    test_case.assertIs(action["liveAutomation"], False)
++    test_case.assertEqual(
++        set(action["blockedConsequentialActions"]),
++        {"upload", "submit", "certify", "pay", "cancel", "schedule_inspection"},
++    )
++
++
++def _assert_selector_basis(test_case: unittest.TestCase, selector: dict[str, Any]) -> None:
++    test_case.assertEqual(selector["strategy"], "semantic-first")
++    test_case.assertEqual(selector["role"], "textbox")
++    test_case.assertEqual(selector["accessibleName"], "Project description")
++    test_case.assertEqual(selector["labelText"], "Project description")
++    test_case.assertEqual(selector["nearbyHeading"], "Project information")
++    test_case.assertEqual(selector["urlState"], "mock://devhub.local/permit-request/draft/project-information")
++    test_case.assertIsNone(selector["fallbackCss"])
++    test_case.assertIsNone(selector["fallbackXPath"])
++
++
++def _assert_source_requirement(test_case: unittest.TestCase, requirement: dict[str, Any]) -> None:
++    test_case.assertEqual(requirement["requirementId"], "trade-plan-review-project-description-required")
++    test_case.assertEqual(requirement["type"], "precondition")
++    test_case.assertTrue(requirement["sourceUrl"].startswith("https://www.portland.gov/ppd/"))
++    test_case.assertEqual(requirement["sourceAnchor"], "project-information")
++    test_case.assertIs(requirement["requiresUserSuppliedFact"], True)
++    test_case.assertIs(requirement["supportsDraftEditOnly"], True)
++
++
++def _assert_confirmation_state(test_case: unittest.TestCase, confirmation: dict[str, Any]) -> None:
++    test_case.assertEqual(confirmation["state"], "not_required_for_reversible_draft_edit")
++    test_case.assertIs(confirmation["exactActionConfirmed"], False)
++    test_case.assertIsNone(confirmation["confirmedAction"])
++    test_case.assertIsNone(confirmation["confirmationText"])
++    reason = confirmation["reason"].lower()
++    for term in ("draft", "upload", "submission", "certification", "payment", "cancellation", "inspection scheduling"):
++        test_case.assertIn(term, reason)
++
++
++def _assert_redacted_field_state(test_case: unittest.TestCase, field_state: dict[str, Any]) -> None:
++    before = field_state["before"]
++    after = field_state["after"]
++    test_case.assertEqual(before["fieldId"], "project_description")
++    test_case.assertEqual(after["fieldId"], "project_description")
++    test_case.assertIs(before["required"], True)
++    test_case.assertIs(after["required"], True)
++    test_case.assertEqual(before["redaction"], "redacted-empty")
++    test_case.assertEqual(after["redaction"], "redacted-user-supplied-value")
++    test_case.assertRegex(before["value"], REDACTED_VALUE_PATTERN)
++    test_case.assertRegex(after["value"], REDACTED_VALUE_PATTERN)
++    test_case.assertNotEqual(before["value"], after["value"])
++    test_case.assertRegex(before["validationMessage"], REDACTED_VALUE_PATTERN)
++    test_case.assertRegex(after["validationMessage"], REDACTED_VALUE_PATTERN)
++
++
++def _assert_privacy_flags(test_case: unittest.TestCase, privacy: dict[str, Any]) -> None:
++    test_case.assertEqual(
++        privacy,
++        {
++            "containsCredentials": False,
++            "containsAuthState": False,
++            "containsTrace": False,
++            "containsScreenshot": False,
++            "containsRawPrivateValue": False,
++        },
++    )
++
++
++def _assert_no_private_or_unredacted_values(test_case: unittest.TestCase, event: dict[str, Any]) -> None:
++    checked_values = [
++        event["fieldState"]["before"]["value"],
++        event["fieldState"]["after"]["value"],
++        event["fieldState"]["before"]["validationMessage"],
++        event["fieldState"]["after"]["validationMessage"],
++    ]
++    for value in checked_values:
++        test_case.assertRegex(value, REDACTED_VALUE_PATTERN)
++
++    searchable_public_metadata = {
++        "eventId": event["eventId"],
++        "workflowStateId": event["workflowStateId"],
++        "selectorBasis": event["selectorBasis"],
++        "sourceRequirement": event["sourceRequirement"],
++        "action": event["action"],
++        "userConfirmationState": event["userConfirmation"]["state"],
++        "privacy": event["privacy"],
++    }
++    serialized = json.dumps(searchable_public_metadata, sort_keys=True)
++    for pattern in PRIVATE_VALUE_PATTERNS:
++        test_case.assertIsNone(pattern.search(serialized), f"unexpected private value matched {pattern.pattern}")
++
++
++if __name__ == "__main__":
++    unittest.main()

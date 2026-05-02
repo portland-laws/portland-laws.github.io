@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/permit_processes/urban_forestry_permit_process.json",
+    "ppd/tests/test_urban_forestry_permit_process_fixture.py"
+  ],
+  "created_at": "2026-05-02T00:21:47.563128Z",
+  "impact": "This advances task checkbox-103 by adding a narrow, redacted permit-process fixture with stages, facts, documents, file rules, fee/payment gates, inspection/finalization gates, and citation-backed action gates without live crawl or DevHub automation.",
+  "summary": "Add a fixture-only Urban Forestry permit process skeleton and deterministic validation test using public PP&D/source-inventory style evidence only.",
+  "target_task": "Task checkbox-103: Add a fixture-only permit-process skeleton for an Urban Forestry permit workflow using existing public fixture/source-inventory evidence only, with stages, required facts, required documents, file rules, fee/payment gates, inspection/finalization gates, and citation-backed action gates.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 110 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "........................................................................................................................................................................................................................................................................ ---------------------------------------------------------------------- Ran 264 tests in 0.028s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -116,6 +116,14 @@
+ - [x] Add guardrail compiler fixture tests for the Urban Forestry permit workflow covering missing facts, required document groups, payment stop points, correction-upload stop points, and any inspection/finalization stop points, using only fixture data.
+ - [x] Add a mocked DevHub workflow snapshot fixture for Urban Forestry application draft review that records semantic selectors, required fields, upload controls, validation messages, save-for-later state, and exact confirmation gates using only redacted values.
+ - [x] Add DevHub guardrail tests proving Urban Forestry application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.
++- [ ] Add a fixture-only permit-process skeleton for an FCC wireless application workflow using existing public fixture/source-inventory evidence only, with stages, required facts, required documents, file rules, fee/payment gates, inspection/finalization gates, and citation-backed action gates.
++- [ ] Add a minimal FCC wireless application requirement extraction expected-output fixture with exactly seven category records: eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections/finalization, and explicit-confirmation gates, all source-backed and redacted.
++- [ ] Add a one-file syntax-first import test for `ppd.extraction.fcc_wireless_permit_requirements` that imports only that module and fails malformed Python before broad FCC wireless requirement validation runs.
++- [ ] Add a focused validation test for FCC wireless application requirement extraction that checks only the seven fixture categories, source evidence IDs, confidence bounds, deduplication, and explicit stop-gate classifications.
++- [ ] Add a one-file replacement-size guard test for `ppd.extraction.fcc_wireless_permit_requirements` proposals that rejects broad generated modules and requires the extractor implementation to stay under 180 physical lines with no dataclasses.
++- [ ] Add guardrail compiler fixture tests for the FCC wireless application workflow covering missing facts, required document groups, payment stop points, correction-upload stop points, and any inspection/finalization stop points, using only fixture data.
++- [ ] Add a mocked DevHub workflow snapshot fixture for FCC wireless application draft review that records semantic selectors, required fields, upload controls, validation messages, save-for-later state, and exact confirmation gates using only redacted values.
++- [ ] Add DevHub guardrail tests proving FCC wireless application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.
+ 
+ ## Deferred Broad Items
+ 
+@@ -180,22 +188,21 @@
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T00:16:51.946400Z
+-
+-- Latest target: `Supervisor repair: append next fixture-first PP&D permit-family tranche after no eligible tasks remained.`
++Last updated: 2026-05-02T00:43:00Z
++
++- Latest target: `Supervisor repair: append next fixture-first FCC wireless PP&D permit-family tranche after no eligible tasks remained.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Added eight narrow Urban Forestry permit fixture, validation, syntax-guard, guardrail, and mocked DevHub tasks so the daemon can continue without live or authenticated automation.
+-- Counts: `{"blocked": 0, "complete": 102, "in_progress": 0, "needed": 8}`
+-
+-
+-<!-- ppd-daemon-task-board:start -->
++- Latest summary: Added eight narrow FCC wireless permit fixture, validation, syntax-guard, guardrail, and mocked DevHub tasks so the daemon can continue without live or authenticated automation.
++- Counts: `{"blocked": 0, "complete": 110, "in_progress": 0, "needed": 8}`
++
++
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T00:39:26.023228Z
+-
+-- Latest target: `Task checkbox-110: Add DevHub guardrail tests proving Urban Forestry application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.`
+-- Latest result: `accepted`
+-- Latest summary: Add deterministic Urban Forestry DevHub draft-review guardrail tests with a redacted fixture.
+-- Counts: `{"blocked": 0, "complete": 110, "in_progress": 0, "needed": 0}`
+-
+-<!-- ppd-daemon-task-board:end -->
++Last updated: 2026-05-02T00:43:00Z
++
++- Latest target: `Supervisor repair: append next fixture-first FCC wireless PP&D permit-family tranche after no eligible tasks remained.`
++- Latest result: `supervisor_repair`
++- Latest summary: Added eight narrow FCC wireless permit fixture, validation, syntax-guard, guardrail, and mocked DevHub tasks so the daemon can continue without live or authenticated automation.
++- Counts: `{"blocked": 0, "complete": 110, "in_progress": 0, "needed": 8}`
++
++

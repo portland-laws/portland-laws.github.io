@@ -1,0 +1,265 @@
+--- a/ppd/tests/fixtures/requirement_extraction/sign_permit_requirements.json
++++ b/ppd/tests/fixtures/requirement_extraction/sign_permit_requirements.json
+@@ -0,0 +1,158 @@
++{
++  "schema_version": 1,
++  "permit_type": "sign_permit",
++  "fixture_id": "sign-permit-requirement-extraction-v1",
++  "source_evidence": [
++    {
++      "id": "sign-src-application-type",
++      "source_url": "https://www.portland.gov/ppd/permits/sign-permits",
++      "title": "Sign permits guidance",
++      "anchor": "permit-type-selection"
++    },
++    {
++      "id": "sign-src-project-scope",
++      "source_url": "https://www.portland.gov/ppd/permits/sign-permits",
++      "title": "Sign permits guidance",
++      "anchor": "project-scope"
++    },
++    {
++      "id": "sign-src-site-plan",
++      "source_url": "https://www.portland.gov/ppd/permits/sign-permits",
++      "title": "Sign permit submittal checklist",
++      "anchor": "site-plan-and-drawings"
++    },
++    {
++      "id": "sign-src-structural",
++      "source_url": "https://www.portland.gov/ppd/permits/sign-permits",
++      "title": "Sign permit submittal checklist",
++      "anchor": "structural-details"
++    },
++    {
++      "id": "sign-src-property-owner",
++      "source_url": "https://www.portland.gov/ppd/permits/sign-permits",
++      "title": "Sign permit application instructions",
++      "anchor": "owner-authorization"
++    },
++    {
++      "id": "sign-src-fees",
++      "source_url": "https://www.portland.gov/ppd/permits/fees",
++      "title": "Permit fees",
++      "anchor": "fee-payment"
++    },
++    {
++      "id": "sign-src-devhub-gates",
++      "source_url": "https://www.portland.gov/ppd/devhub",
++      "title": "Development Hub PDX guidance",
++      "anchor": "submit-and-upload"
++    }
++  ],
++  "requirements": [
++    {
++      "requirement_id": "sign-req-001",
++      "category": "permit_type_selection",
++      "type": "precondition",
++      "subject": "applicant",
++      "action": "select",
++      "object": "sign permit request type",
++      "conditions": ["project includes exterior, permanent, temporary, or other regulated sign work"],
++      "evidence_ids": ["sign-src-application-type"],
++      "confidence": 0.91
++    },
++    {
++      "requirement_id": "sign-req-002",
++      "category": "project_scope_description",
++      "type": "obligation",
++      "subject": "applicant",
++      "action": "provide",
++      "object": "sign project scope and sign description",
++      "conditions": ["sign permit application is being prepared"],
++      "evidence_ids": ["sign-src-project-scope"],
++      "confidence": 0.89
++    },
++    {
++      "requirement_id": "sign-req-003",
++      "category": "site_plan_and_location",
++      "type": "obligation",
++      "subject": "applicant",
++      "action": "submit",
++      "object": "site plan showing sign location",
++      "conditions": ["sign permit requires plan review"],
++      "evidence_ids": ["sign-src-site-plan"],
++      "confidence": 0.88
++    },
++    {
++      "requirement_id": "sign-req-004",
++      "category": "sign_drawings_and_dimensions",
++      "type": "obligation",
++      "subject": "applicant",
++      "action": "submit",
++      "object": "sign drawings with dimensions and construction details",
++      "conditions": ["sign permit requires plan review"],
++      "evidence_ids": ["sign-src-site-plan", "sign-src-structural"],
++      "confidence": 0.9
++    },
++    {
++      "requirement_id": "sign-req-005",
++      "category": "structural_or_attachment_details",
++      "type": "obligation",
++      "subject": "applicant",
++      "action": "provide",
++      "object": "structural support or attachment details",
++      "conditions": ["sign is attached to a structure or requires structural review"],
++      "evidence_ids": ["sign-src-structural"],
++      "confidence": 0.84
++    },
++    {
++      "requirement_id": "sign-req-006",
++      "category": "property_owner_authorization",
++      "type": "precondition",
++      "subject": "applicant",
++      "action": "obtain",
++      "object": "property owner authorization",
++      "conditions": ["applicant is not the property owner"],
++      "evidence_ids": ["sign-src-property-owner"],
++      "confidence": 0.82
++    },
++    {
++      "requirement_id": "sign-req-007",
++      "category": "fee_and_submission_gates",
++      "type": "action_gate",
++      "subject": "agent",
++      "action": "stop_before",
++      "object": "official submission, certification, upload, or payment",
++      "conditions": ["user has not provided exact session-specific confirmation"],
++      "evidence_ids": ["sign-src-fees", "sign-src-devhub-gates"],
++      "confidence": 0.93
++    }
++  ],
++  "stop_gates": [
++    {
++      "gate_id": "sign-gate-upload-official-documents",
++      "action": "upload official sign permit documents",
++      "classification": "potentially_consequential",
++      "requires_exact_confirmation": true,
++      "evidence_ids": ["sign-src-devhub-gates"]
++    },
++    {
++      "gate_id": "sign-gate-certify-application",
++      "action": "certify sign permit application",
++      "classification": "potentially_consequential",
++      "requires_exact_confirmation": true,
++      "evidence_ids": ["sign-src-devhub-gates"]
++    },
++    {
++      "gate_id": "sign-gate-submit-request",
++      "action": "submit sign permit request",
++      "classification": "potentially_consequential",
++      "requires_exact_confirmation": true,
++      "evidence_ids": ["sign-src-devhub-gates"]
++    },
++    {
++      "gate_id": "sign-gate-pay-fees",
++      "action": "pay sign permit fees",
++      "classification": "financial",
++      "requires_exact_confirmation": true,
++      "evidence_ids": ["sign-src-fees"]
++    }
++  ]
++}
+--- a/ppd/tests/test_sign_permit_requirement_extraction.py
++++ b/ppd/tests/test_sign_permit_requirement_extraction.py
+@@ -0,0 +1,101 @@
++"""Focused fixture validation for sign permit requirement extraction.
++
++This test intentionally checks only the narrow behavior needed for the sign
++permit extraction fixture: seven categories, source evidence IDs, confidence
++bounds, deduplication, and explicit stop-gate classifications.
++"""
++
++from __future__ import annotations
++
++import json
++import unittest
++from pathlib import Path
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "requirement_extraction"
++    / "sign_permit_requirements.json"
++)
++
++EXPECTED_CATEGORIES = {
++    "permit_type_selection",
++    "project_scope_description",
++    "site_plan_and_location",
++    "sign_drawings_and_dimensions",
++    "structural_or_attachment_details",
++    "property_owner_authorization",
++    "fee_and_submission_gates",
++}
++
++EXPECTED_STOP_GATE_CLASSIFICATIONS = {
++    "sign-gate-upload-official-documents": "potentially_consequential",
++    "sign-gate-certify-application": "potentially_consequential",
++    "sign-gate-submit-request": "potentially_consequential",
++    "sign-gate-pay-fees": "financial",
++}
++
++MIN_CONFIDENCE = 0.7
++MAX_CONFIDENCE = 0.95
++
++
++class SignPermitRequirementExtractionFixtureTest(unittest.TestCase):
++    def setUp(self) -> None:
++        with FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
++            self.fixture = json.load(fixture_file)
++
++    def test_fixture_has_exactly_the_seven_sign_permit_categories(self) -> None:
++        requirements = self.fixture["requirements"]
++        categories = {requirement["category"] for requirement in requirements}
++
++        self.assertEqual(EXPECTED_CATEGORIES, categories)
++        self.assertEqual(7, len(requirements))
++
++    def test_requirement_evidence_ids_are_declared_source_ids(self) -> None:
++        declared_source_ids = {source["id"] for source in self.fixture["source_evidence"]}
++
++        for requirement in self.fixture["requirements"]:
++            evidence_ids = requirement.get("evidence_ids", [])
++            self.assertTrue(evidence_ids, requirement["requirement_id"])
++            self.assertTrue(set(evidence_ids).issubset(declared_source_ids), requirement)
++
++    def test_confidence_values_are_within_focused_bounds(self) -> None:
++        for requirement in self.fixture["requirements"]:
++            confidence = requirement.get("confidence")
++            self.assertIsInstance(confidence, float, requirement["requirement_id"])
++            self.assertGreaterEqual(confidence, MIN_CONFIDENCE, requirement["requirement_id"])
++            self.assertLessEqual(confidence, MAX_CONFIDENCE, requirement["requirement_id"])
++
++    def test_requirements_are_deduplicated_by_extraction_signature(self) -> None:
++        signatures = []
++        for requirement in self.fixture["requirements"]:
++            signatures.append(
++                (
++                    requirement["category"],
++                    requirement["type"],
++                    requirement["subject"],
++                    requirement["action"],
++                    requirement["object"],
++                    tuple(requirement.get("conditions", [])),
++                )
++            )
++
++        self.assertEqual(len(signatures), len(set(signatures)))
++
++    def test_stop_gates_have_explicit_classification_and_confirmation(self) -> None:
++        declared_source_ids = {source["id"] for source in self.fixture["source_evidence"]}
++        stop_gates = self.fixture["stop_gates"]
++        actual_classifications = {
++            gate["gate_id"]: gate["classification"] for gate in stop_gates
++        }
++
++        self.assertEqual(EXPECTED_STOP_GATE_CLASSIFICATIONS, actual_classifications)
++        for gate in stop_gates:
++            self.assertTrue(gate["requires_exact_confirmation"], gate["gate_id"])
++            self.assertTrue(gate.get("evidence_ids"), gate["gate_id"])
++            self.assertTrue(set(gate["evidence_ids"]).issubset(declared_source_ids), gate)
++
++
++if __name__ == "__main__":
++    unittest.main()

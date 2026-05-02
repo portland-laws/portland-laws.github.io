@@ -1,0 +1,29 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -45,22 +45,11 @@
+ - [x] Recovery for checkbox-27e: after checkbox-27d passes, add one mutation case for out-of-range `confidence` only. Use only complete Python comparisons: `if not isinstance(confidence, (int, float)):`, `if confidence > 1:`, and `if confidence 
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T04:32:30.000000Z
++Last updated: 2026-05-02T04:36:00.000000Z
+ 
+-- Latest target: `Task checkbox-35: Recovery for checkbox-27e: after checkbox-27d passes, add one mutation case for out-of-range confidence only.`
++- Latest target: `Task checkbox-36: Add a syntax-first exact-schema validator for permit_lifecycle_missing_information_expected_output.json.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Fixed malformed confidence comparison guidance and reset stale checkbox-27g in-progress state so the next daemon cycle retries checkbox-27e first.
+-- Counts: `{"blocked": 0, "complete": 35, "in_progress": 0, "needed": 5}`
++- Latest summary: Appended the next fixture-first lifecycle missing-information validation and preview tranche after all existing PP&D daemon tasks completed.
++- Counts: `blocked=0 complete=36 in_progress=0 needed=8`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-02T04:34:29.447416Z
+-
+-- Latest target: `Task checkbox-35: Recovery for checkbox-27e: after checkbox-27d passes, add one mutation case for out-of-range `confidence` only. Use only complete Python comparisons: `if not isinstance(confidence, (int, float)):`, `if confidence > 1:`, and `if confidence`
+-- Latest result: `accepted`
+-- Latest summary: Add the checkbox-27e confidence mutation test and replace confidence validation with explicit complete Python comparisons.
+-- Counts: `{"blocked": 0, "complete": 35, "in_progress": 0, "needed": 0}`
+-
+-<!-- ppd-daemon-task-board:end -->

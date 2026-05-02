@@ -1,0 +1,97 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -2,7 +2,7 @@
+ 
+ This is the controlling backlog for the PP&D autonomous daemon. The daemon should work one narrow item at a time and should only accept changes that pass PP&D validation.
+ 
+-Legend: `[ ]` needed, `[~]` in progress, `[x]` complete. Broad failed work is parked in Deferred Repair Notes while narrow recovery tasks remain selectable.
++Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked. Broad failed work is parked in Deferred Repair Notes while narrow recovery tasks remain selectable.
+ 
+ ## Checklist
+ 
+@@ -20,9 +20,12 @@
+ - [x] Add guarded action classification for read-only, draft-edit, consequential, and financial DevHub actions.
+ - [x] Preserve all accepted PP&D daemon work through checkbox-126 from the prior board, including the accepted online trade permit syntax-first import sentinel repair.
+ - [x] Add a fixture-only public source inventory coverage report for PP&D permit extension, permit reactivation, cancellation, refund, and inspection-result guidance categories, using existing public fixture/source-inventory evidence only and no live crawling.
+-- [~] Add a fixture-only cross-cutting permit lifecycle process skeleton for extension, reactivation, cancellation, refund, inspection scheduling, and inspection-result follow-up gates, with required facts, required documents, user decisions, fee/payment gates, and citation-backed action gates from existing fixtures only.
+ - [ ] Add fixture-only authority-label and recrawl-cadence metadata to the existing lifecycle source coverage report for extension, cancellation, refund, and inspection-result evidence only, preserving existing citations and avoiding validator code changes.
+ - [ ] Add a one-file validation-only lifecycle source coverage fail-closed test that first asserts the committed fixture is valid, then mutates one field at a time for missing authority labels, missing recrawl cadence, private DevHub paths, raw response bodies, credentials, traces, screenshots, downloaded documents, and uncited category claims.
++- [ ] Add a minimal extension-only lifecycle process skeleton fixture with required facts, required documents, user decisions, citation-backed action gates, and explicit no-live-automation notes from existing fixtures only.
++- [ ] Add a minimal reactivation-only lifecycle process skeleton fixture with required facts, required documents, user decisions, citation-backed action gates, and explicit no-live-automation notes from existing fixtures only.
++- [ ] Add a minimal cancellation-and-refund lifecycle process skeleton fixture with user decisions, fee/payment gates, citation-backed action gates, and explicit stop gates from existing fixtures only.
++- [ ] Add a minimal inspection-scheduling-and-result-follow-up lifecycle process skeleton fixture with user decisions, citation-backed action gates, and explicit scheduling/submission stop gates from existing fixtures only.
+ - [ ] Add a minimal lifecycle requirement extraction expected-output fixture with exactly eight category records: extension eligibility, reactivation eligibility, cancellation eligibility, refund eligibility, inspection scheduling, inspection-result follow-up, fee/payment checkpoints, and explicit-confirmation gates, all source-backed and redacted.
+ - [ ] Add a one-file syntax-first import test for `ppd.extraction.permit_lifecycle_requirements` that imports only that module, skips if absent, and fails malformed Python before broad lifecycle requirement validation runs.
+ - [ ] Add a focused validation test for permit lifecycle requirement extraction that checks only the eight fixture categories, source evidence IDs, confidence bounds, deduplication, and explicit stop-gate classifications.
+@@ -33,6 +36,7 @@
+ 
+ These items failed as broad tasks and are intentionally not selectable while narrower recovery work remains available. Do not re-add them as selectable checklist tasks until their syntax-first and fixture-first prerequisites pass.
+ 
++- Parked lifecycle skeleton broad task: Add a fixture-only cross-cutting permit lifecycle process skeleton for extension, reactivation, cancellation, refund, inspection scheduling, and inspection-result follow-up gates, with required facts, required documents, user decisions, fee/payment gates, and citation-backed action gates from existing fixtures only. This was too broad while the lifecycle coverage report still lacked authority-label and recrawl-cadence metadata. It is split into extension-only, reactivation-only, cancellation/refund, and inspection scheduling/result follow-up fixture tasks.
+ - Parked checkbox-13: Add a validation-only test for the extension/cancellation/refund/inspection-result source coverage report proving it fails closed for missing authority labels, missing recrawl cadence, private DevHub paths, raw response bodies, credentials, traces, screenshots, downloaded documents, and uncited category claims. This repeated retry assumed authority-label and recrawl-cadence fields were already present in the committed lifecycle coverage fixture. Recovery is split into a fixture metadata task first, then a one-file mutation validator task.
+ - Parked checkbox-121: Add a one-file syntax-first import test for `ppd.extraction.online_trade_permit_requirements` that imports only that module and fails malformed Python before broad online trade permit requirement validation runs. This stale blocked checkbox is superseded by the accepted one-file repair task because later online trade permit focused validation, size guard, guardrail, and mocked DevHub tasks have already passed.
+ - Parked source freshness broad task: Add a source freshness fixture that classifies stale PP&D guidance, changed content hashes, removed pages, and recrawl priority without performing a live recrawl.
+@@ -44,6 +48,8 @@
+ ## Deferred Repair Notes
+ 
+ The lifecycle source coverage fail-closed validator failed repeatedly because it validated fields that the committed report did not yet contain. The daemon should not retry that validator directly. It must first add only the missing public fixture metadata, then add the mutation-based validator as a separate one-file task.
++
++The cross-cutting lifecycle skeleton should not run as a single broad task until the metadata and category-specific skeleton fixtures pass. Category-specific fixture tasks are now selectable and should be completed before any extractor implementation or DevHub behavior is attempted.
+ 
+ The online trade permit syntax-first task was stale-blocked after later online trade permit requirement validation, size guard, guardrail compiler, mocked DevHub snapshot, and DevHub guardrail tasks passed. The one-test-file repair has now passed and should stay complete.
+ 
+@@ -57,15 +63,17 @@
+ 
+ When no independent task is active, prefer recovery tasks in this order:
+ 
+-1. Finish any current `[~]` fixture-only task if it can validate without touching blocked work.
+-2. Restore any missing syntax sentinel without broad validator rewrites.
+-3. Add fixture-name or fixture-schema compatibility only when validation names the missing path or missing field.
+-4. Add malformed-proposal diagnostics before retrying an implementation that has already produced repeated `SyntaxError` failures.
+-5. Retry behavior as a one-file no-dataclass implementation only after syntax-first tests and minimal fixtures pass.
+-6. If validation reports that a sentinel helper returned extra keys or readiness flags, retry only with a sentinel-preserving implementation and expose behavior through separate functions.
+-7. After a later narrower recovery passes, park earlier blocked retries as superseded so they do not count as active blockers.
+-8. Do not select parked broad validation tasks directly.
+-9. For new permit-family or lifecycle work, add the process skeleton and expected-output fixture before adding extractor tests or implementation tasks.
++1. Add missing fixture metadata when validation names a missing path or missing field.
++2. Add one-file mutation validators only after the committed fixture validates cleanly.
++3. Split broad lifecycle fixtures by category before attempting cross-cutting fixtures or extractors.
++4. Restore any missing syntax sentinel without broad validator rewrites.
++5. Add fixture-name or fixture-schema compatibility only when validation names the missing path or missing field.
++6. Add malformed-proposal diagnostics before retrying an implementation that has already produced repeated `SyntaxError` failures.
++7. Retry behavior as a one-file no-dataclass implementation only after syntax-first tests and minimal fixtures pass.
++8. If validation reports that a sentinel helper returned extra keys or readiness flags, retry only with a sentinel-preserving implementation and expose behavior through separate functions.
++9. After a later narrower recovery passes, park earlier blocked retries as superseded so they do not count as active blockers.
++10. Do not select parked broad validation tasks directly.
++11. For new permit-family or lifecycle work, add the process skeleton and expected-output fixture before adding extractor tests or implementation tasks.
+ 
+ ## Supervisor Recovery Rules
+ 
+@@ -81,23 +89,14 @@
+ - Prefer deterministic fixtures and validation-only changes before adding live crawl, authenticated DevHub, browser, or network behavior.
+ - Do not create private DevHub session files, auth state, traces, raw crawl output, screenshots, or downloaded documents in repair cycles.
+ 
+-## Generated Status
+-
+-Last updated: 2026-05-02T01:50:00Z
+-
+-- Latest target: `Supervisor repair: split blocked lifecycle source coverage fail-closed validator into fixture-first recovery tasks.`
+-- Latest result: `supervisor_repair`
+-- Latest summary: Parked repeated checkbox-13 validator retries and added narrow fixture metadata plus one-file mutation validator tasks.
+-- Counts: `{"blocked": 0, "complete": 12, "in_progress": 1, "needed": 6}`
+-
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T01:50:00Z
++Last updated: 2026-05-02T01:55:00Z
+ 
+-- Latest target: `Supervisor repair: split blocked lifecycle source coverage fail-closed validator into fixture-first recovery tasks.`
++- Latest target: `Supervisor repair: park broad lifecycle skeleton and route recovery to fixture metadata first.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Parked repeated checkbox-13 validator retries and added narrow fixture metadata plus one-file mutation validator tasks.
+-- Counts: `{"blocked": 0, "complete": 12, "in_progress": 1, "needed": 6}`
++- Latest summary: Parked the broad in-progress lifecycle skeleton, split it into category fixture tasks, and made lifecycle metadata the next selectable task.
++- Counts: `{"blocked": 0, "complete": 12, "in_progress": 0, "needed": 11}`
+ 
+ 

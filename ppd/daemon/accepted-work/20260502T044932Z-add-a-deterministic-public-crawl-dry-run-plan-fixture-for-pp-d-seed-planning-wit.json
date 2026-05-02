@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/crawler/public_crawl_dry_run_plan.json"
+  ],
+  "created_at": "2026-05-02T04:49:32.836921Z",
+  "impact": "This advances the fixture-first public crawl milestone by documenting seed URLs, allowlist decisions, robots/no-persist preflight expectations, timeout policy, processor-adapter preflight, and skipped URL reason codes before any live crawl implementation.",
+  "summary": "Add a deterministic public-crawl dry-run plan fixture for PP&D seed planning without network access.",
+  "target_task": "Task checkbox-52: Task checkbox-47: Add a public-crawl dry-run plan fixture that lists seed URLs, allowlist decisions, robots/no-persist preflight fields, timeout policy, and skipped-URL reason codes without performing network access.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 53 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................................................................................................ss..............sss........................................................................................................................................ ---------------------------------------------------------------------- Ran 375 tests in 0.050s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

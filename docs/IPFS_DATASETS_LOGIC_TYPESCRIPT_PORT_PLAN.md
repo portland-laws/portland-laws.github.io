@@ -487,7 +487,7 @@ Acceptance criteria:
 
 ### Phase 11: Full TDFOL Parity
 
-- [!] Port every TDFOL inference rule from `logic/TDFOL/tdfol_inference_rules.py`.
+- [x] Port every TDFOL inference rule from `logic/TDFOL/tdfol_inference_rules.py`.
   - [x] Initial first-order rule slice: universal modus ponens, existential instantiation, existential generalization, and universal generalization.
 - [x] Port propositional tableaux expansion rules from `logic/TDFOL/expansion_rules.py`.
 - [!] Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.
@@ -502,10 +502,10 @@ Acceptance criteria:
 - [!] Complete modal tableaux and countermodel generation/visualization parity.
   - [x] Initial modal tableaux proof search for propositional, temporal, deontic modal formulas and K/T/D/S4/S5 accessibility.
   - [x] Initial countermodel model, extractor, and self-contained visual exports.
-  - [!] Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.
+  - [x] Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.
 - [!] Complete TDFOL security validator parity.
 - [x] Add Python parity fixtures for each TDFOL rule category.
-- [!] Add browser performance budgets for proof search.
+- [x] Add browser performance budgets for proof search.
   - [x] Initial in-memory performance engine and strategy profiler.
   - [x] Initial browser performance dashboard data model and renderer.
   - [x] Initial browser performance profiler with repeated timing samples, memory snapshots, bottleneck classification, benchmark suites, and report strings.
@@ -540,7 +540,7 @@ Acceptance criteria:
   - [x] Initial CEC specialized inference rule group with biconditional introduction/elimination, constructive/destructive dilemma, exportation, absorption, tautology simplification, conjunction commutativity, and opt-in addition/disjunction introduction.
   - [x] Expanded CEC extended prover-core rule parity with disjunction commutativity, distribution, association, transposition, material implication round-tripping, Clavius law, and conjunction/disjunction idempotence.
   - [x] Expanded CEC common-knowledge/common-belief rule parity with common knowledge/belief introduction, common knowledge distribution, common-knowledge-to-knowledge, monotonicity, negation, transitivity, fixed-point induction, temporally induced common knowledge, and modal necessitation introduction.
-- [!] Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.
+- [x] Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.
   - [x] Initial CEC fluent/event state manager with fluent types, persistence rules, event transitions, frame-problem persistence, conflict resolution, timelines, statistics, and validation.
   - [x] Initial CEC event calculus with browser-native discrete event occurrences, initiation/termination/release rules, `Happens`, `Initiates`, `Terminates`, `Releases`, `ReleasedAt`, `HoldsAt`, `Clipped`, parsed predicate loading/evaluation, timelines, all-fluent queries, caching, and validation.
   - [x] Initial CEC context manager with discourse state, entity tracking, focus management, pronoun/anaphora resolution, parsed CEC expression ingestion, discourse segmentation, coherence scoring, snapshots, and validation.
@@ -548,7 +548,7 @@ Acceptance criteria:
   - [x] Initial CEC ShadowProver facade with K/T/D/S4/S5 local modal tableaux, forward-prover fallback, problem-object proving, proof cache/statistics, direct-assumption proofs, unsupported-LP diagnostics, and browser-native cognitive rule subset.
   - [x] Initial CEC modal tableaux with K/T/D/S4/S5 world/branch model, contradiction closure, box/diamond expansion, deontic O/P/F mapping, proof steps, and open-branch countermodel support.
   - [x] Initial CEC countermodel extraction and visualization from open tableaux branches with Kripke JSON, DOT, ASCII, compact ASCII, HTML, valuation extraction, and modal property checks.
-- [!] Port CEC proof cache, proof strategies, advanced inference, and error handling.
+- [x] Port CEC proof cache, proof strategies, advanced inference, and error handling.
   - [x] Initial CEC native shared-type layer with Python `types.py`-style formula/proof/conversion/namespace/config dictionaries, protocol guards for formulas/provers/converters/knowledge bases, generic result/cache/stat records, callable aliases, and unified proof statistics with incremental averages.
   - [x] Initial DCEC advanced inference layer with modal K/T/S4/necessitation, temporal induction/frame, deontic D/permission-obligation/distribution, knowledge-obligation interaction, temporal-obligation persistence, and grouped rule registries.
   - [x] Initial CEC native error-handling layer with CEC-specific parse/proof/conversion/validation/namespace/grammar/knowledge-base errors, Python-style context/suggestion formatting, safe-call wrappers, parse/proof handler wrappers, operation error formatting, and DCEC formula-shape validation.
@@ -566,12 +566,12 @@ Acceptance criteria:
   - [x] Initial CEC performance dashboard with proof metrics, time-series metrics, expression classification, aggregate stats, strategy comparison, JSON export, and self-contained HTML.
   - [x] Initial CEC performance profiler with repeated-run profiling, bottleneck detection, browser memory snapshots, benchmark suites, baseline regression accounting, and text/JSON/HTML reports.
   - [x] Initial CEC security validator and error-hardening facade with rate limits, input sanitization, size/depth/operator guards, injection/DoS detection, parse validation, resource checks, proof-result audit, and security reports.
-- [!] Port CEC NL policy compilers and language detection with browser-native NLP.
+- [x] Port CEC NL policy compilers and language detection with browser-native NLP.
 - [x] Add deeper CEC/DCEC parity fixtures against Python parser and prover outputs.
 
 ### Phase 13: Browser-Native ML/NLP Parity
 
-- [!] Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.
+- [x] Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.
 - [!] Port `ml_confidence.py` to local browser inference or an equivalent deterministic TypeScript model.
 - [!] Add local model artifact loading, caching, versioning, and unload controls.
 - [x] Add exact/tolerance parity tests against Python ML/spaCy development fixtures.
@@ -581,21 +581,21 @@ Acceptance criteria:
 
 - [x] Port external prover router and bridge contracts to local browser adapters.
 - [x] Evaluate and integrate local WASM provers for Z3/cvc5/Tau Prolog/Lean/Coq-style workflows where feasible.
-- [!] Port Groth16 verification/proving path using browser-native cryptographic libraries where feasible.
+- [x] Port Groth16 verification/proving path using browser-native cryptographic libraries where feasible.
 - [!] Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.
-- [!] Add strict UI/API language distinguishing simulated, heuristic, proof-checking, and cryptographic outputs.
+- [x] Add strict UI/API language distinguishing simulated, heuristic, proof-checking, and cryptographic outputs.
 
 ### Phase 15: Integration, Security, Observability, And Developer Tools
 
 - [!] Port logic integration bridges to route to TS/WASM cores.
   - [x] Initial browser-native bridge facade for local route inventory, FOL/deontic/TDFOL/CEC conversion routing, TDFOL/CEC proof routing, and explicit unsupported-route results with `server_calls_allowed: false`.
-  - [!] Port deeper domain-specific integration bridges, interactive workflows, and parity fixtures.
+  - [x] Port deeper domain-specific integration bridges, interactive workflows, and parity fixtures.
 - [x] Port security input validation, circuit breaker, rate limiting, and audit-log semantics to browser-local equivalents.
 - [x] Port observability structured logging, Prometheus-style metrics, and OTel-style tracing to browser-local equivalents.
 - [!] Port monitoring/metrics to in-browser telemetry objects and developer panels.
   - [x] Initial top-level `logic/monitoring.py` parity for operation metrics, tracking helpers, health checks, error/warning counters, global monitor, reset, operation summaries, and optional Prometheus text export.
   - [!] Add richer developer-panel integration for live UI inspection.
-- [!] Replace Python API/CLI surfaces with TypeScript developer scripts or browser devtools.
+- [x] Replace Python API/CLI surfaces with TypeScript developer scripts or browser devtools.
   - [x] Initial browser-native public API facade for `logic/api.py` import-surface parity.
   - [!] Add CLI/devtools command adapter parity for `logic/cli.py`.
 - [!] Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.
@@ -701,11 +701,11 @@ That PR gives the project immediate product value without committing to a full t
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-01 18:43:13 UTC
+Last updated: 2026-05-02 06:04:08 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-180: Port Groth16 verification/proving path using browser-native cryptographic libraries where feasible.`
+Current target: `Task checkbox-190: Add richer developer-panel integration for live UI inspection.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -805,7 +805,7 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-92: Evaluate 'z3-solver'/Z3 WASM, cvc5 WASM availability, Tau Prolog, or custom Datalog for limited use cases.` - complete
 - [x] `Task checkbox-93: Evaluate 'snarkjs' only if real browser-side proof verification becomes a product requirement.` - complete
 - [x] `Task checkbox-94: Reject hosted runtime dependencies; use browser-native WASM only when a prover is truly required.` - complete
-- [!] `Task checkbox-95: Port every TDFOL inference rule from 'logic/TDFOL/tdfol_inference_rules.py'.` - blocked
+- [x] `Task checkbox-95: Port every TDFOL inference rule from 'logic/TDFOL/tdfol_inference_rules.py'.` - complete
 - [x] `Task checkbox-96: Initial first-order rule slice: universal modus ponens, existential instantiation, existential generalization, and universal generalization.` - complete
 - [x] `Task checkbox-97: Port propositional tableaux expansion rules from 'logic/TDFOL/expansion_rules.py'.` - complete
 - [!] `Task checkbox-98: Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.` - blocked
@@ -820,10 +820,10 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [!] `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.` - blocked
 - [x] `Task checkbox-108: Initial modal tableaux proof search for propositional, temporal, deontic modal formulas and K/T/D/S4/S5 accessibility.` - complete
 - [x] `Task checkbox-109: Initial countermodel model, extractor, and self-contained visual exports.` - complete
-- [!] `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.` - blocked
+- [x] `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.` - complete
 - [!] `Task checkbox-111: Complete TDFOL security validator parity.` - blocked
 - [x] `Task checkbox-112: Add Python parity fixtures for each TDFOL rule category.` - complete
-- [!] `Task checkbox-113: Add browser performance budgets for proof search.` - blocked
+- [x] `Task checkbox-113: Add browser performance budgets for proof search.` - complete
 - [x] `Task checkbox-114: Initial in-memory performance engine and strategy profiler.` - complete
 - [x] `Task checkbox-115: Initial browser performance dashboard data model and renderer.` - complete
 - [x] `Task checkbox-116: Initial browser performance profiler with repeated timing samples, memory snapshots, bottleneck classification, benchmark suites, and report strings.` - complete
@@ -855,7 +855,7 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-142: Initial CEC specialized inference rule group with biconditional introduction/elimination, constructive/destructive dilemma, exportation, absorption, tautology simplification, conjunction commutativity, and opt-in addition/disjunction introduction.` - complete
 - [x] `Task checkbox-143: Expanded CEC extended prover-core rule parity with disjunction commutativity, distribution, association, transposition, material implication round-tripping, Clavius law, and conjunction/disjunction idempotence.` - complete
 - [x] `Task checkbox-144: Expanded CEC common-knowledge/common-belief rule parity with common knowledge/belief introduction, common knowledge distribution, common-knowledge-to-knowledge, monotonicity, negation, transitivity, fixed-point induction, temporally induced common knowledge, and modal necessitation introduction.` - complete
-- [!] `Task checkbox-145: Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.` - blocked
+- [x] `Task checkbox-145: Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.` - complete
 - [x] `Task checkbox-146: Initial CEC fluent/event state manager with fluent types, persistence rules, event transitions, frame-problem persistence, conflict resolution, timelines, statistics, and validation.` - complete
 - [x] `Task checkbox-147: Initial CEC event calculus with browser-native discrete event occurrences, initiation/termination/release rules, 'Happens', 'Initiates', 'Terminates', 'Releases', 'ReleasedAt', 'HoldsAt', 'Clipped', parsed predicate loading/evaluation, timelines, all-fluent queries, caching, and validation.` - complete
 - [x] `Task checkbox-148: Initial CEC context manager with discourse state, entity tracking, focus management, pronoun/anaphora resolution, parsed CEC expression ingestion, discourse segmentation, coherence scoring, snapshots, and validation.` - complete
@@ -863,7 +863,7 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-150: Initial CEC ShadowProver facade with K/T/D/S4/S5 local modal tableaux, forward-prover fallback, problem-object proving, proof cache/statistics, direct-assumption proofs, unsupported-LP diagnostics, and browser-native cognitive rule subset.` - complete
 - [x] `Task checkbox-151: Initial CEC modal tableaux with K/T/D/S4/S5 world/branch model, contradiction closure, box/diamond expansion, deontic O/P/F mapping, proof steps, and open-branch countermodel support.` - complete
 - [x] `Task checkbox-152: Initial CEC countermodel extraction and visualization from open tableaux branches with Kripke JSON, DOT, ASCII, compact ASCII, HTML, valuation extraction, and modal property checks.` - complete
-- [!] `Task checkbox-153: Port CEC proof cache, proof strategies, advanced inference, and error handling.` - blocked
+- [x] `Task checkbox-153: Port CEC proof cache, proof strategies, advanced inference, and error handling.` - complete
 - [x] `Task checkbox-154: Initial CEC native shared-type layer with Python 'types.py'-style formula/proof/conversion/namespace/config dictionaries, protocol guards for formulas/provers/converters/knowledge bases, generic result/cache/stat records, callable aliases, and unified proof statistics with incremental averages.` - complete
 - [x] `Task checkbox-155: Initial DCEC advanced inference layer with modal K/T/S4/necessitation, temporal induction/frame, deontic D/permission-obligation/distribution, knowledge-obligation interaction, temporal-obligation persistence, and grouped rule registries.` - complete
 - [x] `Task checkbox-156: Initial CEC native error-handling layer with CEC-specific parse/proof/conversion/validation/namespace/grammar/knowledge-base errors, Python-style context/suggestion formatting, safe-call wrappers, parse/proof handler wrappers, operation error formatting, and DCEC formula-shape validation.` - complete
@@ -881,89 +881,94 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-168: Initial CEC performance dashboard with proof metrics, time-series metrics, expression classification, aggregate stats, strategy comparison, JSON export, and self-contained HTML.` - complete
 - [x] `Task checkbox-169: Initial CEC performance profiler with repeated-run profiling, bottleneck detection, browser memory snapshots, benchmark suites, baseline regression accounting, and text/JSON/HTML reports.` - complete
 - [x] `Task checkbox-170: Initial CEC security validator and error-hardening facade with rate limits, input sanitization, size/depth/operator guards, injection/DoS detection, parse validation, resource checks, proof-result audit, and security reports.` - complete
-- [!] `Task checkbox-171: Port CEC NL policy compilers and language detection with browser-native NLP.` - blocked
+- [x] `Task checkbox-171: Port CEC NL policy compilers and language detection with browser-native NLP.` - complete
 - [x] `Task checkbox-172: Add deeper CEC/DCEC parity fixtures against Python parser and prover outputs.` - complete
-- [!] `Task checkbox-173: Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.` - blocked
+- [x] `Task checkbox-173: Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.` - complete
 - [!] `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.` - blocked
 - [!] `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.` - blocked
 - [x] `Task checkbox-176: Add exact/tolerance parity tests against Python ML/spaCy development fixtures.` - complete
 - [!] `Task checkbox-177: Remove 'nlpUnavailable' and 'mlUnavailable' capability flags once browser-native parity is implemented.` - blocked
 - [x] `Task checkbox-178: Port external prover router and bridge contracts to local browser adapters.` - complete
 - [x] `Task checkbox-179: Evaluate and integrate local WASM provers for Z3/cvc5/Tau Prolog/Lean/Coq-style workflows where feasible.` - complete
-- [!] `Task checkbox-180: Port Groth16 verification/proving path using browser-native cryptographic libraries where feasible.` - latest daemon round failed validation or preflight
+- [x] `Task checkbox-180: Port Groth16 verification/proving path using browser-native cryptographic libraries where feasible.` - complete
 - [!] `Task checkbox-181: Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.` - blocked
-- [!] `Task checkbox-182: Add strict UI/API language distinguishing simulated, heuristic, proof-checking, and cryptographic outputs.` - blocked
+- [x] `Task checkbox-182: Add strict UI/API language distinguishing simulated, heuristic, proof-checking, and cryptographic outputs.` - complete
 - [!] `Task checkbox-183: Port logic integration bridges to route to TS/WASM cores.` - blocked
 - [x] `Task checkbox-184: Initial browser-native bridge facade for local route inventory, FOL/deontic/TDFOL/CEC conversion routing, TDFOL/CEC proof routing, and explicit unsupported-route results with 'server_calls_allowed: false'.` - complete
-- [!] `Task checkbox-185: Port deeper domain-specific integration bridges, interactive workflows, and parity fixtures.` - blocked
+- [x] `Task checkbox-185: Port deeper domain-specific integration bridges, interactive workflows, and parity fixtures.` - complete
 - [x] `Task checkbox-186: Port security input validation, circuit breaker, rate limiting, and audit-log semantics to browser-local equivalents.` - complete
 - [x] `Task checkbox-187: Port observability structured logging, Prometheus-style metrics, and OTel-style tracing to browser-local equivalents.` - complete
 - [!] `Task checkbox-188: Port monitoring/metrics to in-browser telemetry objects and developer panels.` - blocked
 - [x] `Task checkbox-189: Initial top-level 'logic/monitoring.py' parity for operation metrics, tracking helpers, health checks, error/warning counters, global monitor, reset, operation summaries, and optional Prometheus text export.` - complete
-- [!] `Task checkbox-190: Add richer developer-panel integration for live UI inspection.` - blocked
-- [!] `Task checkbox-191: Replace Python API/CLI surfaces with TypeScript developer scripts or browser devtools.` - blocked
+- [!] `Task checkbox-190: Add richer developer-panel integration for live UI inspection.` - latest daemon round failed validation or preflight
+- [x] `Task checkbox-191: Replace Python API/CLI surfaces with TypeScript developer scripts or browser devtools.` - complete
 - [x] `Task checkbox-192: Initial browser-native public API facade for 'logic/api.py' import-surface parity.` - complete
 - [!] `Task checkbox-193: Add CLI/devtools command adapter parity for 'logic/cli.py'.` - blocked
 - [!] `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.` - blocked
 
 ### Latest Round
 
-- Target: `Task checkbox-180: Port Groth16 verification/proving path using browser-native cryptographic libraries where feasible.`
+- Target: `Task checkbox-190: Add richer developer-panel integration for live UI inspection.`
 - Result: `needs follow-up`
-- Summary: add injectable browser-native Groth16 backend path
-- Impact: The ZKP backend registry can now use a browser/WASM Groth16 adapter registered from TypeScript without server calls or Python wrapping, and the Jest coverage exercises proving, verification, tamper rejection, and registry availability for that path.
-- Errors: Patch failed git apply --check.
-- Failure kind: `apply_check`
+- Summary: Add browser-native developer panel inspection snapshots for live logic UI state.
+- Impact: The new src/lib/logic/developerPanel.ts module is directly exercised by src/lib/logic/developerPanel.test.ts in the existing Jest validation suite. It gives browser callers a deterministic, bounded inspection adapter with JSON-safe metadata, severity counts, and fail-closed CustomEvent publishing without Node, filesystem, subprocess, RPC, server, or Python fallbacks.
+- Errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
+../../..src/lib/logic/developerPanel.ts(34,11): error TS2314: Generic type 'Record' requires 2 type argument(s).
+../../..src/lib/logic/developerPanel.ts(56,25): error TS2314: Generic type 'Record' requires 2 type argument(s).
+../../..src/lib/logic/developerPanel.ts(132,67): error TS2314: Generic type 'WeakSet<T>' requires 1 type argument(s).
+../../..src/lib/logic/developerPanel.ts(134,5): error TS2322: Type 'unknown' is not assignable to type 'LogicInspectionJson'.
+../../..src/lib/logic/developerPanel.ts(160,54): error TS2314: Generic type 'Record' requires 2 type argument(s).
+- Failure kind: `preflight`
 
 ### Blocked Backlog
 
-- `Task checkbox-95: Port every TDFOL inference rule from 'logic/TDFOL/tdfol_inference_rules.py'.`
-  - Failures since success: `8`
-  - Failure kinds: `{"apply_check": 1, "daemon_exception": 1, "file_repair_validation": 2, "validation": 3, "validation_repair": 1}`
-  - Latest failure kind: `validation_repair`
-  - Latest errors: File edits failed validation and were rolled back.
 - `Task checkbox-98: Complete proof strategies, strategy selector, performance engine, proof cache, dependency graph, proof explainer, and proof tree visualizer parity.`
-  - Failures since success: `14`
-  - Failure kinds: `{"file_repair_validation": 5, "parse": 1, "validation": 8}`
-  - Latest failure kind: `validation`
-  - Latest errors: File edits failed validation and were rolled back.
+  - Failures since success: `15`
+  - Failure kinds: `{"file_repair_validation": 5, "parse": 1, "preflight": 1, "validation": 8}`
+  - Latest failure kind: `preflight`
+  - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/proofTools.ts(89,26): error TS1442: Expected '=' for property initializer. ../../..sr...
 - `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.`
-  - Failures since success: `6`
-  - Failure kinds: `{"file_repair_validation": 1, "validation": 4, "validation_repair": 1}`
-  - Latest failure kind: `validation_repair`
-  - Latest errors: File edits failed validation and were rolled back.
+  - Failures since success: `15`
+  - Failure kinds: `{"file_repair_validation": 1, "preflight": 9, "validation": 4, "validation_repair": 1}`
+  - Latest failure kind: `preflight`
+  - Latest errors: Rejected proposal because fixture/capture/parity work must update a src/lib/logic/*.test.ts file that loads or asserts the generated fixture.; Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/zkpAcceleration.ts(7,22): error TS1005: ';' expected. ../../..src/lib/logic/zkpAccele...
 - `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.`
   - Failures since success: `40`
   - Failure kinds: `{"apply_check": 15, "file_repair_validation": 2, "invalid_no_change": 4, "parse": 16, "validation": 3}`
   - Latest failure kind: `apply_check`
   - Latest errors: Patch failed git apply --check.
-- `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.`
-  - Failures since success: `6`
-  - Failure kinds: `{"validation": 5, "validation_repair": 1}`
-  - Latest failure kind: `validation`
-  - Latest errors: File edits failed validation and were rolled back.
 - `Task checkbox-111: Complete TDFOL security validator parity.`
   - Failures since success: `18`
   - Failure kinds: `{"file_repair_validation": 6, "preflight": 3, "validation": 9}`
   - Latest failure kind: `validation`
   - Latest errors: File edits failed validation and were rolled back.
-- `Task checkbox-113: Add browser performance budgets for proof search.`
-  - Failures since success: `6`
-  - Failure kinds: `{"preflight": 1, "validation": 3, "validation_repair": 2}`
-  - Latest failure kind: `preflight`
-  - Latest errors: Rejected proposal because TypeScript parser preflight found syntax errors before touching the worktree: ../../..src/lib/logic/tdfol/prover.ts(31,59): error TS1005: ')' expected. ../../..src/lib/logic/tdfol/prover.ts(32,3): error TS1128: Dec...; File edits failed validation and were rolled back.
 - `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.`
   - Failures since success: `110`
   - Failure kinds: `{"apply_check": 20, "invalid_no_change": 14, "parse": 73, "preflight": 1, "validation": 2}`
   - Latest failure kind: `invalid_no_change`
-- `Task checkbox-145: Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.`
-  - Failures since success: `6`
-  - Failure kinds: `{"apply_check": 1, "validation_repair": 5}`
-  - Latest failure kind: `apply_check`
-  - Latest errors: Patch failed git apply --check.
-- `Task checkbox-153: Port CEC proof cache, proof strategies, advanced inference, and error handling.`
-  - Failures since success: `6`
-  - Failure kinds: `{"validation": 1, "validation_repair": 5}`
+- `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.`
+  - Failures since success: `15`
+  - Failure kinds: `{"preflight": 7, "validation": 3, "validation_repair": 5}`
+  - Latest failure kind: `preflight`
+  - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/mlConfidence.ts(37,14): error TS1005: ')' expected. ../../..src/lib/logic/mlConfidenc...
+- `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.`
+  - Failures since success: `15`
+  - Failure kinds: `{"file_repair_validation": 1, "preflight": 8, "validation": 1, "validation_repair": 5}`
+  - Latest failure kind: `preflight`
+  - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/modelArtifacts.ts(138,42): error TS1005: ')' expected. ../../..src/lib/logic/modelArt...
+- `Task checkbox-177: Remove 'nlpUnavailable' and 'mlUnavailable' capability flags once browser-native parity is implemented.`
+  - Failures since success: `5`
+  - Failure kinds: `{"validation_repair": 5}`
+  - Latest failure kind: `validation_repair`
+  - Latest errors: File edits failed validation and were rolled back.
+- `Task checkbox-181: Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.`
+  - Failures since success: `15`
+  - Failure kinds: `{"preflight": 10, "validation": 1, "validation_repair": 4}`
+  - Latest failure kind: `preflight`
+  - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/evm.ts(37,33): error TS1005: ')' expected. ../../..src/lib/logic/evm.ts(37,44): error...
+- `Task checkbox-183: Port logic integration bridges to route to TS/WASM cores.`
+  - Failures since success: `15`
+  - Failure kinds: `{"file_repair_validation": 1, "preflight": 7, "validation": 2, "validation_repair": 5}`
   - Latest failure kind: `validation`
   - Latest errors: File edits failed validation and were rolled back.
 

@@ -1,0 +1,2 @@
+ppd/tests/fixtures/permit-processes/solar_permit_workflow.json
+ppd/tests/test_solar_permit_process_fixture.py

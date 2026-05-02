@@ -1,0 +1,84 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -12,7 +12,7 @@
+ - `TS1109`
+ - `TS1128`
+ 
+-For the active checkbox-27 recovery, the observed invalid fragments include malformed Python such as `if confidence 1:`, `elif confidence 1:`, and `elif not 0 set[str]:`. Treat these as generated pseudo-code fragments, not as schema disagreements.
++For checkbox-27 recovery, the observed invalid fragments include malformed Python such as `if confidence 1:`, `elif confidence 1:`, and `elif not 0 set[str]:`. Treat these as generated pseudo-code fragments, not as schema disagreements.
+ 
+ ## Required Supervisor Action
+ 
+@@ -23,7 +23,8 @@
+ 3. Limit the next worker proposal to the smallest file set that can pass syntax preflight, normally one file.
+ 4. Require exact fixture paths and exact committed schema keys in the task text.
+ 5. Require a syntax-first self-check before broad validation.
+-6. If another syntax rollback occurs, split the task again into a narrower fixture-only or validation-only diagnostic before retrying implementation.
++6. If the same task fails syntax preflight three times, park that checkbox outside selectable task form and resume the next independent fixture-first or validation-first task.
++7. Do not count parked syntax retries as active blockers while another `[ ]` or `[~]` task can make progress.
+ 
+ ## Worker Prompt Guardrails
+ 
+@@ -33,55 +34,14 @@
+ - Prefer one changed file for this cycle.
+ - For Python, use only syntactically simple standard-library code.
+ - Use `unittest.TestCase` assertion methods or explicit `raise AssertionError` statements.
+-- Write complete comparisons such as `confidence  1`.
+-- Do not emit fragments such as `if confidence 1:`, `elif not 0 set[str]:`, `assert NAME None`, or `return 0.0 list[str]`.
+-- Do not mix TypeScript syntax into Python or Python control-flow syntax into TypeScript.
+-- Load fixtures by exact path from `Path(__file__).parent / "fixtures" / ...`.
+-- Mutate only in-memory copies of committed fixtures.
+-- Do not alter accepted fixtures unless the selected task explicitly says to repair fixture content.
++- Write complete comparisons such as `confidence > 1` or `confidence  1` or `confidence 
++## Generated Status
+ 
+-## Preflight Expectations
++Last updated: 2026-05-02T02:55:06.050739Z
+ 
+-The daemon or supervisor should reject malformed proposals before a full test run when possible. A syntax-first preflight is sufficient if it checks changed Python files with `py_compile` or an equivalent parser step before running `unittest discover`.
++- Latest target: `Task checkbox-29: Add a one-file exact-path validator for ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json`
++- Latest result: `supervisor_repair_planned`
++- Latest summary: Parked repeated checkbox-27 py_compile failures and kept checkbox-29 as the active validation-first task.
++- Counts: `{"blocked": 0, "complete": 28, "in_progress": 1, "needed": 6}`
+ 
+-For checkbox-27, the expected preflight order is:
+ 
+-1. `python3 -m py_compile ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py`
+-2. `python3 ppd/daemon/ppd_daemon.py --self-test`
+-3. `python3 -m unittest discover -s ppd/tests -p test_*.py`
+-
+-If step 1 fails, do not continue broad validation and do not keep retrying the same broad prompt.
+-
+-## Checkbox-27 Recovery Shape
+-
+-The next successful checkbox-27 proposal should be one validation-only Python test file. It should not add extractor code.
+-
+-The validator should:
+-
+-- Load exactly `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json`.
+-- Read the exact top-level `categoryRecords` list.
+-- First assert the committed fixture is valid.
+-- Use one mutation per test.
+-- Cover missing `categoryId`.
+-- Cover missing `sourceEvidenceIds`.
+-- Cover missing local `evidence[].evidenceId`.
+-- Cover out-of-range `confidence`.
+-- Cover duplicate `(categoryId, action, object, sourceEvidenceIds)` tuples.
+-- Cover malformed stop-gate classification.
+-
+-The valid stop-gate shape is `stopGate: true` plus a string `classification` ending in `_stop_gate`. Do not require a separate `stopGateClassifications` field.
+-
+-## Retry And Task Selection
+-
+-After three failed attempts against the same task, park the broad task in Deferred Broad Items and append a narrower recovery task. Keep completed tasks unchanged. Prefer independent fixture-first or validation-first tasks over another retry of a syntax-failing implementation.
+-
+-For lifecycle work, the preferred sequence is:
+-
+-1. Accepted fixture exists.
+-2. Exact-schema validator passes.
+-3. Mutation validator passes.
+-4. Syntax-first import sentinel exists.
+-5. Size guard exists.
+-6. Only then add implementation code.
+-
+-No repair cycle authorizes live crawling, DevHub login, payment entry, submission, upload, certification, cancellation, official refund, official extension, or inspection scheduling.

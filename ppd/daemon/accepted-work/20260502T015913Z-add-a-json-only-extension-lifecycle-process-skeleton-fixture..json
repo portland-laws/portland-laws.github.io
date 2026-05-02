@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/lifecycle/extension_lifecycle_process_skeleton.json"
+  ],
+  "created_at": "2026-05-02T01:59:13.797777Z",
+  "impact": "Advances checkbox-17 by committing the narrow extension-only process skeleton from the accepted evidence map without adding implementation code, crawling, DevHub login, or official action automation.",
+  "summary": "Add a JSON-only extension lifecycle process skeleton fixture.",
+  "target_task": "Task checkbox-17: Recovery for checkbox-15: add the minimal extension-only lifecycle process skeleton fixture as JSON only, using the accepted extension evidence map, with no Python modules, no TypeScript modules, no dataclasses, no live crawling, no DevHub login, and no official action automation.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 26 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................................................................................................................................................ss............................................................................................................................................. ---------------------------------------------------------------------- Ran 352 tests in 0.034s OK (skipped=2)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

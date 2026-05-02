@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/online_trade_permit_purchase/requirements.json",
+    "ppd/tests/test_online_trade_permit_purchase_extraction.py"
+  ],
+  "created_at": "2026-05-02T01:11:06.807075Z",
+  "impact": "Advances PP&D extraction guardrails by locking the expected seven public-fixture categories, source evidence linkage, confidence range checks, deduplication, and explicit stop-gate classifications without live crawling or DevHub automation.",
+  "summary": "Adds a narrow fixture-backed validation test for online trade permit purchase requirement extraction.",
+  "target_task": "Task checkbox-122: Add a focused validation test for online trade permit purchase requirement extraction that checks only the seven fixture categories, source evidence IDs, confidence bounds, deduplication, and explicit stop-gate classifications.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 126 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................................................................................................................................................................................................................................................................................. ---------------------------------------------------------------------- Ran 338 tests in 0.034s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

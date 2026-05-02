@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/source_freshness/minimal_source_freshness.json"
+  ],
+  "created_at": "2026-05-01T20:32:03.726447Z",
+  "impact": "This gives the source freshness recovery path a narrow, commit-safe fixture covering stale guidance, changed hashes, removed pages, and high-priority recrawl selection without live fetch data or raw response bodies.",
+  "summary": "Adds a deterministic four-record source freshness fixture under PP&D tests.",
+  "target_task": "Task checkbox-61: Add a minimal source freshness fixture with four records only: one stale guidance page, one changed content hash, one removed page, and one high-priority recrawl candidate, with no live fetch data or raw response bodies.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 66 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................................................................... ---------------------------------------------------------------------- Ran 132 tests in 0.013s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

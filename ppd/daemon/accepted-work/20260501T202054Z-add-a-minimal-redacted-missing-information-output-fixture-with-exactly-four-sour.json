@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/missing_information_output/four_requested_items.json"
+  ],
+  "created_at": "2026-05-01T20:20:54.381685Z",
+  "impact": "This advances the missing-information recovery path by adding the deterministic four-item fixture needed before the broader validator implementation resumes.",
+  "summary": "Add a minimal redacted missing-information output fixture with exactly four source-backed requested items.",
+  "target_task": "Task checkbox-61: Add a minimal missing-information output validation fixture with exactly four requested items: one fact, one file, one acknowledgment, and one decision, each source-backed and redacted.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 69 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "................................................................................................................................... ---------------------------------------------------------------------- Ran 131 tests in 0.013s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

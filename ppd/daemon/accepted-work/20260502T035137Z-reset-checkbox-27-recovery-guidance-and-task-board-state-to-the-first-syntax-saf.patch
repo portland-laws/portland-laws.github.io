@@ -1,0 +1,45 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -20,7 +20,7 @@
+ 
+ ## Stale Target Override
+ 
+-The checkbox-27 recovery tasks are ordered prerequisites. A later active target, heartbeat target, generated status target, or in-progress marker is not authoritative when an earlier checkbox-27 prerequisite is blocked or incomplete.
++The checkbox-27 recovery tasks are ordered prerequisites. A later active target, heartbeat target, generated status target, or in-progress marker is not authoritative when an earlier checkbox-27 prerequisite is incomplete.
+ 
+ Before invoking a worker for any checkbox-27 task, the supervisor must scan the task board and choose the lowest incomplete checkbox-27 prerequisite in this order:
+ 
+@@ -52,7 +52,7 @@
+ 
+ ## Python Syntax Guardrails
+ 
+-Before returning a proposal for any Python test repair, ensure the file would pass `py_compile`. If recent failures show the same malformed token sequence repeatedly, do not improvise around that expression; use the exact known-good expression from this guide.
++Before returning a proposal for any Python test repair, ensure the file would pass `py_compile`. If recent failures show the same malformed token sequence repeatedly, do not improvise around that expression; use a simple known-good expression.
+ 
+ Reject and simplify the proposal if it contains malformed fragments such as:
+ 
+@@ -70,14 +70,19 @@
+ - `self.assertIn(value, collection)`
+ - `self.assertRaises(ExceptionType)`
+ - `isinstance(value, str)` for runtime type checks
+-- complete numeric comparisons such as `0 
++- complete numeric comparisons such as `0  1`.
++- [ ] Recovery for checkbox-27f: after checkbox-27e passes, add one mutation case for duplicate `(categoryId, action, object, sourceEvidenceIds)` only.
++- [ ] Recovery for checkbox-27g: after checkbox-27f passes, add one mutation case for `stopGate: true` with a classification that does not end in `_stop_gate` only.
++- [ ] Add a daemon preflight regression test that selects the lowest incomplete checkbox-27 prerequisite when later checkbox-27 tasks are stale, blocked, or marked in progress.
++
++
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T03:46:30.000000Z
++Last updated: 2026-05-02T03:55:00.000000Z
+ 
+-- Latest target: `Task checkbox-27a prerequisite recovery`
++- Latest target: `Task checkbox-31: Recovery for checkbox-27a prerequisite recovery`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Reset the recovery sequence to the lowest incomplete checkbox-27 prerequisite after repeated py_compile failures on later mutation targets. The next worker cycle must use the literal checkbox-27a template from `ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md` and must not add mutation cases.
+-- Counts: `{"blocked": 0, "complete": 30, "in_progress": 1, "needed": 7}`
++- Latest summary: Reset checkbox-27 recovery to the first py_compile-safe prerequisite and removed stale in-progress later mutation work.
++- Counts: `{"blocked": 0, "complete": 30, "in_progress": 0, "needed": 8}`
+ 
+ 

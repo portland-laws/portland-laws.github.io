@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/devhub_workflow_snapshots/permit_fee_review_payment_readiness.json",
+    "ppd/tests/test_devhub_permit_fee_review_payment_readiness_fixture.py"
+  ],
+  "created_at": "2026-05-01T22:54:41.374777Z",
+  "impact": "This advances the PP&D DevHub workflow model with deterministic, commit-safe evidence for fee review, visible balance handling, payment instructions, read-only review status, and required financial stop points without storing private session artifacts or enabling payment automation.",
+  "summary": "Add a redacted mocked DevHub permit-fee review and payment-readiness fixture with focused validation.",
+  "target_task": "Task checkbox-82: Add a mocked DevHub workflow snapshot fixture for permit fee review and payment-readiness that records visible balances, payment instructions, safe read-only status, and financial-action stop points using only redacted values.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 84 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 179 tests in 0.022s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

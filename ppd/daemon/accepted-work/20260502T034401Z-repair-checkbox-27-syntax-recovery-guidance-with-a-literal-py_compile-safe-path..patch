@@ -1,0 +1,144 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -4,7 +4,7 @@
+ 
+ ## Two-Strike Syntax Recovery Rule
+ 
+-When the recent daemon failure context for the selected task includes two validation rollbacks caused by Python `SyntaxError`, Python `py_compile`, or TypeScript `TS1005`, `TS1109`, or `TS1128`, the next proposal must be a syntax-recovery proposal.
++When recent daemon failure context for the selected task includes two validation rollbacks caused by Python `SyntaxError`, Python `py_compile`, or TypeScript `TS1005`, `TS1109`, or `TS1128`, the next proposal must be a syntax-recovery proposal.
+ 
+ A syntax-recovery proposal must:
+ 
+@@ -42,11 +42,11 @@
+ 
+ ## Python Syntax Guardrails
+ 
+-Before returning a proposal for any Python test repair, ensure the file would pass `py_compile`.
++Before returning a proposal for any Python test repair, ensure the file would pass `py_compile`. If recent failures show the same malformed token sequence repeatedly, do not improvise around that expression; use the exact known-good expression from this guide.
+ 
+ Reject and simplify the proposal if it contains malformed fragments such as:
+ 
+-- missing comparison operators after a variable name
++- missing comparison operators after a variable name, including fragments like `if confidence 1:` or `confidence  1`
+ - bare type expressions used as runtime checks
+ - bare identifiers after `assert`
+ - incomplete `if`, `for`, `return`, or `raise` statements
+@@ -60,7 +60,7 @@
+ - `self.assertIn(value, collection)`
+ - `self.assertRaises(ExceptionType)`
+ - `isinstance(value, str)` for runtime type checks
+-- complete numeric comparisons such as `confidence  1`
++- complete numeric comparisons such as `0 <= confidence <= 1`
+ - plain helper functions
+ - constants for exact category ids and fixture path pieces
+ 
+@@ -71,6 +71,109 @@
+ - no metaprogramming
+ - no dynamically generated tests
+ - no broad schema frameworks
++
++## Literal Checkbox-27a Template
++
++When checkbox-27a is the selected or lowest incomplete prerequisite, the worker should return this exact file shape and only adjust whitespace if needed. This template is intentionally ordinary Python so the daemon can recover from repeated `if confidence 1:` syntax failures.
++
++```python
++import json
++import unittest
++from pathlib import Path
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "lifecycle"
++    / "permit_lifecycle_requirement_extraction_expected_output.json"
++)
++
++ACCEPTED_CATEGORY_IDS = {
++    "extension_eligibility",
++    "reactivation_eligibility",
++    "cancellation_eligibility",
++    "refund_eligibility",
++    "inspection_scheduling",
++    "inspection_result_follow_up",
++    "fee_payment_checkpoints",
++    "explicit_confirmation_gates",
++}
++
++
++def _load_category_records():
++    with FIXTURE_PATH.open("r", encoding="utf-8") as handle:
++        payload = json.load(handle)
++    records = payload.get("categoryRecords")
++    if not isinstance(records, list):
++        raise AssertionError("categoryRecords must be a list")
++    return records
++
++
++def _assert_valid_category_records(records):
++    if len(records) != 8:
++        raise AssertionError("categoryRecords must contain exactly eight records")
++    seen = set()
++    for record in records:
++        _assert_valid_category_record(record)
++        key = (
++            record.get("categoryId"),
++            record.get("action"),
++            record.get("object"),
++            tuple(record.get("sourceEvidenceIds", [])),
++        )
++        if key in seen:
++            raise AssertionError("category record identity must be unique")
++        seen.add(key)
++
++
++def _assert_valid_category_record(record):
++    if not isinstance(record, dict):
++        raise AssertionError("category record must be an object")
++    category_id = record.get("categoryId")
++    if category_id not in ACCEPTED_CATEGORY_IDS:
++        raise AssertionError("categoryId must be accepted")
++    source_evidence_ids = record.get("sourceEvidenceIds")
++    if not isinstance(source_evidence_ids, list) or not source_evidence_ids:
++        raise AssertionError("sourceEvidenceIds must be a non-empty list")
++    evidence = record.get("evidence")
++    if not isinstance(evidence, list):
++        raise AssertionError("evidence must be a list")
++    local_evidence_ids = set()
++    for item in evidence:
++        if not isinstance(item, dict):
++            raise AssertionError("evidence entries must be objects")
++        evidence_id = item.get("evidenceId")
++        if not isinstance(evidence_id, str) or not evidence_id:
++            raise AssertionError("evidenceId must be a non-empty string")
++        local_evidence_ids.add(evidence_id)
++    for evidence_id in source_evidence_ids:
++        if evidence_id not in local_evidence_ids:
++            raise AssertionError("sourceEvidenceIds must reference local evidence")
++    confidence = record.get("confidence")
++    if not isinstance(confidence, (int, float)):
++        raise AssertionError("confidence must be numeric")
++    if not 0 <= confidence <= 1:
++        raise AssertionError("confidence must be between 0 and 1")
++    if record.get("stopGate") is True:
++        classification = record.get("classification")
++        if not isinstance(classification, str):
++            raise AssertionError("stop gate classification must be a string")
++        if not classification.endswith("_stop_gate"):
++            raise AssertionError("stop gate classification must end with _stop_gate")
++
++
++class PermitLifecycleRequirementExtractionMutationTests(unittest.TestCase):
++    def test_committed_category_records_fixture_is_valid(self):
++        records = _load_category_records()
++        _assert_valid_category_records(records)
++
++
++if __name__ == "__main__":
++    unittest.main()
++```
++
++Do not paraphrase this template into a broader schema system while checkbox-27a remains incomplete.
+ 
+ ## Checkbox-27a Acceptance Boundary
+ 

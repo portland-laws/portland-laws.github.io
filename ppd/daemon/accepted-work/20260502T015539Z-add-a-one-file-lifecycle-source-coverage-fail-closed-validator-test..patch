@@ -1,0 +1,322 @@
+--- a/ppd/tests/test_permit_lifecycle_source_coverage_report.py
++++ b/ppd/tests/test_permit_lifecycle_source_coverage_report.py
+@@ -0,0 +1,319 @@
++"""Fail-closed checks for the committed PP&D lifecycle source coverage fixture."""
++
++from __future__ import annotations
++
++import copy
++import json
++from pathlib import Path
++from typing import Any
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "source_inventory"
++    / "permit_lifecycle_source_coverage_report.json"
++)
++
++REQUIRED_EVIDENCE_FIELDS = ("authorityLabel", "recrawlCadence")
++
++PRIVATE_DEVHUB_MARKERS = (
++    "/secure/",
++    "/account/",
++    "/accounts/",
++    "/dashboard",
++    "/my-permits",
++    "/my_permits",
++    "/permit/",
++    "/permits/",
++    "/request/",
++    "/requests/",
++    "/session",
++    "/sessions",
++    "storage_state",
++    "storage-state",
++    "auth_state",
++    "auth-state",
++)
++
++RAW_RESPONSE_BODY_KEYS = {
++    "body",
++    "htmlBody",
++    "rawBody",
++    "rawContent",
++    "rawHtml",
++    "rawResponseBody",
++    "rawText",
++    "responseBody",
++}
++
++CREDENTIAL_KEYS = {
++    "apiKey",
++    "api_key",
++    "authorization",
++    "bearer",
++    "clientSecret",
++    "client_secret",
++    "cookie",
++    "cookies",
++    "credential",
++    "credentials",
++    "password",
++    "refreshToken",
++    "refresh_token",
++    "secret",
++    "sessionCookie",
++    "session_cookie",
++    "token",
++    "username",
++}
++
++TRACE_MARKERS = (
++    "trace.zip",
++    "traces.zip",
++    "/traces/",
++    "\\traces\\",
++    "playwright-report",
++)
++
++SCREENSHOT_MARKERS = (
++    "/screenshots/",
++    "\\screenshots\\",
++    "screenshot.png",
++    "screenshot.jpg",
++    "screenshot.jpeg",
++    "screenshot.webp",
++)
++
++DOWNLOADED_DOCUMENT_MARKERS = (
++    "/downloads/",
++    "\\downloads\\",
++    "downloaded_documents",
++    "downloaded-documents",
++    "downloaded_public_documents",
++    "downloaded-public-documents",
++)
++
++LOCAL_DOCUMENT_EXTENSIONS = (
++    ".pdf",
++    ".doc",
++    ".docx",
++    ".xls",
++    ".xlsx",
++    ".ppt",
++    ".pptx",
++    ".zip",
++)
++
++LOCAL_PATH_PREFIXES = (
++    "ppd/data/",
++    "ppd\\data\\",
++    "/tmp/",
++    "tmp/",
++    "./",
++    "../",
++)
++
++
++def test_committed_lifecycle_source_coverage_report_is_valid() -> None:
++    report = _load_report()
++    assert _validate_report(report) == []
++
++
++def test_lifecycle_source_coverage_rejects_missing_authority_label() -> None:
++    _assert_invalid_after_mutation(
++        lambda report: report["evidence"][0].pop("authorityLabel"),
++        "authorityLabel",
++    )
++
++
++def test_lifecycle_source_coverage_rejects_missing_recrawl_cadence() -> None:
++    _assert_invalid_after_mutation(
++        lambda report: report["evidence"][0].pop("recrawlCadence"),
++        "recrawlCadence",
++    )
++
++
++def test_lifecycle_source_coverage_rejects_private_devhub_paths() -> None:
++    _assert_invalid_after_mutation(
++        lambda report: report["evidence"][0].update(
++            {"sourceUrl": "https://devhub.portlandoregon.gov/secure/permits/12345"}
++        ),
++        "private DevHub path",
++    )
++
++
++def test_lifecycle_source_coverage_rejects_raw_response_bodies() -> None:
++    _assert_invalid_after_mutation(
++        lambda report: report["evidence"][0].update(
++            {"rawResponseBody": "raw crawl output"}
++        ),
++        "raw response body",
++    )
++
++
++def test_lifecycle_source_coverage_rejects_credentials() -> None:
++    _assert_invalid_after_mutation(
++        lambda report: report["evidence"][0].update(
++            {"credentials": {"token": "redacted-token-must-not-be-committed"}}
++        ),
++        "credential",
++    )
++
++
++def test_lifecycle_source_coverage_rejects_traces() -> None:
++    _assert_invalid_after_mutation(
++        lambda report: report["evidence"][0].update(
++            {"tracePath": "ppd/data/private/traces/trace.zip"}
++        ),
++        "trace",
++    )
++
++
++def test_lifecycle_source_coverage_rejects_screenshots() -> None:
++    _assert_invalid_after_mutation(
++        lambda report: report["evidence"][0].update(
++            {"screenshotPath": "ppd/data/private/screenshots/screenshot.png"}
++        ),
++        "screenshot",
++    )
++
++
++def test_lifecycle_source_coverage_rejects_downloaded_documents() -> None:
++    _assert_invalid_after_mutation(
++        lambda report: report["evidence"][0].update(
++            {"downloadedDocumentPath": "ppd/data/raw/downloads/lifecycle-form.pdf"}
++        ),
++        "downloaded document",
++    )
++
++
++def test_lifecycle_source_coverage_rejects_uncited_category_evidence_claims() -> None:
++    def mutate(report: dict[str, Any]) -> None:
++        category = report["coverageCategories"][0]
++        category["evidenceIds"] = list(category.get("evidenceIds", [])) + [
++            "uncited_lifecycle_source_claim"
++        ]
++
++    _assert_invalid_after_mutation(mutate, "uncited evidence id")
++
++
++def _load_report() -> dict[str, Any]:
++    with FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
++        report = json.load(fixture_file)
++    assert isinstance(report, dict)
++    return report
++
++
++def _assert_invalid_after_mutation(mutate: Any, expected_error_text: str) -> None:
++    report = copy.deepcopy(_load_report())
++    mutate(report)
++    errors = _validate_report(report)
++    assert errors, "mutated lifecycle source coverage report unexpectedly validated"
++    assert any(expected_error_text in error for error in errors), errors
++
++
++def _validate_report(report: Any) -> list[str]:
++    errors: list[str] = []
++    if not isinstance(report, dict):
++        return ["report must be a JSON object"]
++
++    evidence = report.get("evidence")
++    categories = report.get("coverageCategories")
++    if not isinstance(evidence, list) or not evidence:
++        errors.append("evidence must be a non-empty list")
++        evidence = []
++    if not isinstance(categories, list) or not categories:
++        errors.append("coverageCategories must be a non-empty list")
++        categories = []
++
++    evidence_ids: set[str] = set()
++    for index, item in enumerate(evidence):
++        evidence_path = f"evidence[{index}]"
++        if not isinstance(item, dict):
++            errors.append(f"{evidence_path} must be an object")
++            continue
++        evidence_id = item.get("id")
++        if not isinstance(evidence_id, str) or not evidence_id.strip():
++            errors.append(f"{evidence_path}.id is required")
++        elif evidence_id in evidence_ids:
++            errors.append(f"duplicate evidence id {evidence_id}")
++        else:
++            evidence_ids.add(evidence_id)
++        for field in REQUIRED_EVIDENCE_FIELDS:
++            value = item.get(field)
++            if not isinstance(value, str) or not value.strip():
++                errors.append(f"{evidence_path}.{field} is required")
++
++    for index, category in enumerate(categories):
++        category_path = f"coverageCategories[{index}]"
++        if not isinstance(category, dict):
++            errors.append(f"{category_path} must be an object")
++            continue
++        category_id = category.get("id")
++        if not isinstance(category_id, str) or not category_id.strip():
++            errors.append(f"{category_path}.id is required")
++        cited_ids = category.get("evidenceIds")
++        if not isinstance(cited_ids, list) or not cited_ids:
++            errors.append(f"{category_path}.evidenceIds must be a non-empty list")
++            continue
++        for evidence_id in cited_ids:
++            if not isinstance(evidence_id, str) or not evidence_id.strip():
++                errors.append(f"{category_path}.evidenceIds entries must be non-empty strings")
++            elif evidence_id not in evidence_ids:
++                errors.append(
++                    f"{category_path}.evidenceIds contains uncited evidence id {evidence_id}"
++                )
++
++    errors.extend(_validate_no_private_or_raw_artifacts(report))
++    return errors
++
++
++def _validate_no_private_or_raw_artifacts(value: Any) -> list[str]:
++    errors: list[str] = []
++    for path, key, leaf in _walk_json(value):
++        key_text = str(key or "")
++        normalized_key = key_text.lower()
++        if key_text in RAW_RESPONSE_BODY_KEYS:
++            errors.append(f"{path} contains raw response body field {key_text}")
++        if key_text in CREDENTIAL_KEYS or normalized_key in {item.lower() for item in CREDENTIAL_KEYS}:
++            errors.append(f"{path} contains credential field {key_text}")
++        if isinstance(leaf, str):
++            normalized_value = leaf.replace("\\", "/").lower()
++            if _is_private_devhub_path(normalized_value):
++                errors.append(f"{path} contains private DevHub path")
++            if any(marker.lower() in normalized_value for marker in TRACE_MARKERS):
++                errors.append(f"{path} contains trace artifact")
++            if any(marker.lower() in normalized_value for marker in SCREENSHOT_MARKERS):
++                errors.append(f"{path} contains screenshot artifact")
++            if _is_downloaded_document_path(normalized_value):
++                errors.append(f"{path} contains downloaded document artifact")
++    return errors
++
++
++def _is_private_devhub_path(value: str) -> bool:
++    if "devhub.portlandoregon.gov" not in value:
++        return False
++    return any(marker.lower() in value for marker in PRIVATE_DEVHUB_MARKERS)
++
++
++def _is_downloaded_document_path(value: str) -> bool:
++    if any(marker.lower() in value for marker in DOWNLOADED_DOCUMENT_MARKERS):
++        return True
++    if not any(value.startswith(prefix.lower()) for prefix in LOCAL_PATH_PREFIXES):
++        return False
++    return any(value.endswith(extension) for extension in LOCAL_DOCUMENT_EXTENSIONS)
++
++
++def _walk_json(value: Any, path: str = "$", key: str | None = None) -> list[tuple[str, str | None, Any]]:
++    walked: list[tuple[str, str | None, Any]] = [(path, key, value)]
++    if isinstance(value, dict):
++        for child_key, child_value in value.items():
++            child_key_text = str(child_key)
++            walked.extend(
++                _walk_json(child_value, f"{path}.{child_key_text}", child_key_text)
++            )
++    elif isinstance(value, list):
++        for index, child_value in enumerate(value):
++            walked.extend(_walk_json(child_value, f"{path}[{index}]", key))
++    return walked

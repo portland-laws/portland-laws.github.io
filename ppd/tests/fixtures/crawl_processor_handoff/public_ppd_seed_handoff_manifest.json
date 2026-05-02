@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-01T18:57:00Z",
+  "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors",
+  "notes": "Fixture-only handoff from PP&D public seed discovery to ipfs_datasets_py processors. No raw responses, downloaded documents, traces, screenshots, credentials, or private DevHub session artifacts are included.",
+  "processorJobs": [
+    {
+      "id": "ppd-handoff-job-001",
+      "seedId": "ppd-seed-landing",
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "canonicalUrl": "https://www.portland.gov/ppd",
+      "operation": "capture_url",
+      "processor": {
+        "name": "web_archive_capture",
+        "family": "web_archiving",
+        "module": "ipfs_datasets_py.processors.web_archiving",
+        "version": "read-only-submodule",
+        "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
+      },
+      "arguments": {
+        "url": "https://www.portland.gov/ppd",
+        "captureMode": "metadata_and_archive_reference",
+        "respectRobots": true,
+        "noPersistRawBody": true,
+        "storeRawResponse": false,
+        "maxDepth": 0
+      },
+      "policyDecision": {
+        "decision": "allow",
+        "reasons": [
+          "public_ppd_allowlisted",
+          "robots_allowed",
+          "no_persist_approved"
+        ],
+        "evaluatedAt": "2026-05-01T18:56:45Z",
+        "evaluator": "ppd.crawler.policy"
+      },
+      "outputManifestRef": "processor_archive_manifests/ppd-seed-landing.json",
+      "manifestOnly": true
+    },
+    {
+      "id": "ppd-handoff-job-002",
+      "seedId": "ppd-seed-applications-forms",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/applications-forms",
+      "canonicalUrl": "https://www.portland.gov/ppd/permits/applications-forms",
+      "operation": "legal_archive_url",
+      "processor": {
+        "name": "parallel_web_archiver",
+        "family": "legal_scraper",
+        "module": "ipfs_datasets_py.processors.legal_scrapers.parallel_web_archiver",
+        "version": "read-only-submodule",
+        "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
+      },
+      "arguments": {
+        "url": "https://www.portland.gov/ppd/permits/applications-forms",
+        "jurisdiction": "portland-or-ppd",
+        "captureMode": "metadata_and_archive_reference",
+        "respectRobots": true,
+        "noPersistRawBody": true,
+        "storeRawResponse": false,
+        "maxDepth": 0
+      },
+      "policyDecision": {
+        "decision": "allow",
+        "reasons": [
+          "public_ppd_allowlisted",
+          "robots_allowed",
+          "no_persist_approved"
+        ],
+        "evaluatedAt": "2026-05-01T18:56:45Z",
+        "evaluator": "ppd.crawler.policy"
+      },
+      "outputManifestRef": "processor_archive_manifests/ppd-seed-applications-forms.json",
+      "manifestOnly": true
+    },
+    {
+      "id": "ppd-handoff-job-003",
+      "seedId": "ppd-seed-devhub-public",
+      "sourceUrl": "https://devhub.portlandoregon.gov",
+      "canonicalUrl": "https://devhub.portlandoregon.gov",
+      "operation": "capture_url",
+      "processor": {
+        "name": "url_archive_cache",
+        "family": "legal_scraper",
+        "module": "ipfs_datasets_py.processors.legal_scrapers.url_archive_cache",
+        "version": "read-only-submodule",
+        "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
+      },
+      "arguments": {
+        "url": "https://devhub.portlandoregon.gov",
+        "captureMode": "metadata_and_archive_reference",
+        "respectRobots": true,
+        "noPersistRawBody": true,
+        "storeRawResponse": false,
+        "maxDepth": 0
+      },
+      "policyDecision": {
+        "decision": "allow",
+        "reasons": [
+          "public_ppd_allowlisted",
+          "robots_allowed",
+          "no_persist_approved"
+        ],
+        "evaluatedAt": "2026-05-01T18:56:45Z",
+        "evaluator": "ppd.crawler.policy"
+      },
+      "outputManifestRef": "processor_archive_manifests/ppd-seed-devhub-public.json",
+      "manifestOnly": true
+    }
+  ]
+}

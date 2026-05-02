@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/contracts/source_freshness.py",
+    "ppd/tests/test_source_freshness_syntax.py"
+  ],
+  "created_at": "2026-05-01T20:29:13.365714Z",
+  "impact": "This unblocks source freshness recovery by proving the target contract module parses and imports in isolation before broader freshness fixtures or classifiers are added.",
+  "summary": "Add a syntax-first import guard for ppd.contracts.source_freshness with a minimal syntactically valid module target.",
+  "target_task": "Task checkbox-60: Add a one-file syntax-first repair test for `ppd.contracts.source_freshness` that imports only that module and verifies Python annotations use valid assignment syntax before any broad source freshness work resumes.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 66 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................................................................... ---------------------------------------------------------------------- Ran 132 tests in 0.013s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

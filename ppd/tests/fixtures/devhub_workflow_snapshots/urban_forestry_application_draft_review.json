@@ -1,0 +1,236 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "devhub-urban-forestry-application-draft-review-redacted",
+  "capturedFrom": "mocked-devhub-fixture",
+  "capturedAt": "2026-05-02T00:00:00Z",
+  "workflow": {
+    "id": "urban-forestry-application-draft-review",
+    "permitType": "Urban Forestry permit",
+    "stateId": "draft-review",
+    "urlState": "https://devhub.portlandoregon.gov/mock/urban-forestry/application/draft-review",
+    "privateSession": false,
+    "liveAutomation": false,
+    "rawCrawlOutput": false
+  },
+  "semanticSelectors": [
+    {
+      "selectorId": "review-heading",
+      "role": "heading",
+      "accessibleName": "Review Urban Forestry application draft",
+      "labelText": "Review Urban Forestry application draft",
+      "nearbyHeading": "Urban Forestry application",
+      "urlState": "draft-review",
+      "fallbackCss": null,
+      "fallbackXpath": null
+    },
+    {
+      "selectorId": "save-for-later-button",
+      "role": "button",
+      "accessibleName": "Save for later",
+      "labelText": "Save for later",
+      "nearbyHeading": "Draft actions",
+      "urlState": "draft-review",
+      "fallbackCss": null,
+      "fallbackXpath": null
+    },
+    {
+      "selectorId": "continue-to-certification-button",
+      "role": "button",
+      "accessibleName": "Continue to certification",
+      "labelText": "Continue to certification",
+      "nearbyHeading": "Draft actions",
+      "urlState": "draft-review",
+      "fallbackCss": null,
+      "fallbackXpath": null
+    },
+    {
+      "selectorId": "submit-application-button",
+      "role": "button",
+      "accessibleName": "Submit application",
+      "labelText": "Submit application",
+      "nearbyHeading": "Certification and submission",
+      "urlState": "certification-gate",
+      "fallbackCss": null,
+      "fallbackXpath": null
+    }
+  ],
+  "requiredFields": [
+    {
+      "fieldId": "property-site-address",
+      "role": "textbox",
+      "labelText": "Site address",
+      "accessibleName": "Site address",
+      "nearbyHeading": "Project location",
+      "required": true,
+      "currentValue": "[REDACTED:SITE_ADDRESS]",
+      "validationMessage": "Enter the site address before continuing."
+    },
+    {
+      "fieldId": "property-account-id",
+      "role": "textbox",
+      "labelText": "Property ID or tax account number",
+      "accessibleName": "Property ID or tax account number",
+      "nearbyHeading": "Project location",
+      "required": true,
+      "currentValue": "[REDACTED:PROPERTY_IDENTIFIER]",
+      "validationMessage": "Enter a property identifier before continuing."
+    },
+    {
+      "fieldId": "applicant-contact-name",
+      "role": "textbox",
+      "labelText": "Applicant contact name",
+      "accessibleName": "Applicant contact name",
+      "nearbyHeading": "Applicant information",
+      "required": true,
+      "currentValue": "[REDACTED:APPLICANT_NAME]",
+      "validationMessage": "Enter the applicant contact name."
+    },
+    {
+      "fieldId": "applicant-contact-email",
+      "role": "textbox",
+      "labelText": "Applicant email",
+      "accessibleName": "Applicant email",
+      "nearbyHeading": "Applicant information",
+      "required": true,
+      "currentValue": "[REDACTED:APPLICANT_EMAIL]",
+      "validationMessage": "Enter a valid applicant email address."
+    },
+    {
+      "fieldId": "tree-work-description",
+      "role": "textbox",
+      "labelText": "Describe the proposed tree work",
+      "accessibleName": "Describe the proposed tree work",
+      "nearbyHeading": "Urban Forestry request details",
+      "required": true,
+      "currentValue": "[REDACTED:TREE_WORK_DESCRIPTION]",
+      "validationMessage": "Describe the proposed tree work before continuing."
+    },
+    {
+      "fieldId": "tree-location-description",
+      "role": "textbox",
+      "labelText": "Tree location on the site",
+      "accessibleName": "Tree location on the site",
+      "nearbyHeading": "Urban Forestry request details",
+      "required": true,
+      "currentValue": "[REDACTED:TREE_LOCATION_DESCRIPTION]",
+      "validationMessage": "Enter where the tree or trees are located."
+    }
+  ],
+  "uploadControls": [
+    {
+      "controlId": "site-plan-upload",
+      "role": "button",
+      "accessibleName": "Upload site plan",
+      "labelText": "Site plan",
+      "nearbyHeading": "Required documents",
+      "required": true,
+      "acceptedFileTypes": ["application/pdf"],
+      "fileSizeHint": "Maximum mocked fixture size: 25 MB",
+      "fileNamingRule": "Use a descriptive redacted file name; do not include private applicant values in fixture names.",
+      "currentFileName": "[REDACTED:SITE_PLAN_PDF]",
+      "validationMessages": [
+        "Upload a site plan PDF before continuing.",
+        "The selected file must be a PDF."
+      ],
+      "officialUploadAction": false
+    },
+    {
+      "controlId": "tree-photos-upload",
+      "role": "button",
+      "accessibleName": "Upload tree photos",
+      "labelText": "Tree photos",
+      "nearbyHeading": "Supporting documents",
+      "required": false,
+      "acceptedFileTypes": ["application/pdf", "image/jpeg", "image/png"],
+      "fileSizeHint": "Maximum mocked fixture size: 25 MB per file",
+      "fileNamingRule": "Use redacted descriptive fixture names only.",
+      "currentFileName": "[REDACTED:TREE_PHOTO_FILES]",
+      "validationMessages": [
+        "Optional supporting photos may be added before submission.",
+        "Files must be PDF, JPG, or PNG."
+      ],
+      "officialUploadAction": false
+    }
+  ],
+  "validationMessages": [
+    {
+      "messageId": "missing-required-fields-summary",
+      "role": "alert",
+      "text": "Complete all required fields before continuing to certification.",
+      "trigger": "continue attempted with missing required fields"
+    },
+    {
+      "messageId": "missing-site-plan-upload",
+      "role": "alert",
+      "text": "Upload a site plan PDF before continuing.",
+      "trigger": "required upload missing"
+    },
+    {
+      "messageId": "certification-not-reviewed",
+      "role": "alert",
+      "text": "Review and acknowledge the certification before submitting.",
+      "trigger": "submit attempted without certification acknowledgment"
+    }
+  ],
+  "saveForLaterState": {
+    "available": true,
+    "selectorId": "save-for-later-button",
+    "classification": "reversible_draft_edit",
+    "afterSaveBanner": "Draft saved. You can resume this Urban Forestry application later from your DevHub drafts.",
+    "resumeStateId": "urban-forestry-draft-resume",
+    "savedValues": "redacted-only",
+    "confirmationRequired": false
+  },
+  "navigationEdges": [
+    {
+      "fromState": "draft-review",
+      "toState": "urban-forestry-draft-resume",
+      "action": "save_for_later",
+      "selectorId": "save-for-later-button",
+      "classification": "reversible_draft_edit"
+    },
+    {
+      "fromState": "draft-review",
+      "toState": "certification-gate",
+      "action": "continue_to_certification",
+      "selectorId": "continue-to-certification-button",
+      "classification": "read_only_review"
+    },
+    {
+      "fromState": "certification-gate",
+      "toState": "submitted-application",
+      "action": "submit_application",
+      "selectorId": "submit-application-button",
+      "classification": "potentially_consequential",
+      "requiresExactConfirmationGateId": "urban-forestry-submit-application"
+    }
+  ],
+  "confirmationGates": [
+    {
+      "gateId": "urban-forestry-certification-acknowledgment",
+      "action": "acknowledge_certification",
+      "classification": "potentially_consequential",
+      "exactRequiredUserConfirmation": "I confirm I have reviewed the Urban Forestry application certification for this DevHub session.",
+      "mustStopWithoutExactConfirmation": true,
+      "automationMayProceedWithoutConfirmation": false
+    },
+    {
+      "gateId": "urban-forestry-submit-application",
+      "action": "submit_application",
+      "classification": "potentially_consequential",
+      "exactRequiredUserConfirmation": "I confirm submission of this Urban Forestry application in this DevHub session.",
+      "mustStopWithoutExactConfirmation": true,
+      "automationMayProceedWithoutConfirmation": false
+    }
+  ],
+  "privacy": {
+    "redactedValuesOnly": true,
+    "containsCredentials": false,
+    "containsAuthState": false,
+    "containsTrace": false,
+    "containsScreenshot": false,
+    "containsRawCrawlOutput": false,
+    "containsDownloadedDocuments": false,
+    "containsPrivateDevHubSessionPath": false
+  }
+}

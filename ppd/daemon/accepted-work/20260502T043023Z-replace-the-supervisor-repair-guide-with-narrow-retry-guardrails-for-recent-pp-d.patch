@@ -1,0 +1,96 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,72 +1,34 @@
+ # PP&D Supervisor Repair Guide
+ 
+-This guide is daemon context for recovery after repeated malformed Python or TypeScript proposals. It is not a domain artifact and does not authorize live crawling, DevHub login, payment, submission, upload, certification, cancellation, official extension, official refund, or inspection scheduling.
++This guide is for repairing daemon and supervisor behavior after blocked PP&D daemon cycles. Keep repairs narrow, deterministic, and limited to PP&D daemon operations, PP&D tests, `ppd/.gitignore`, or PP&D daemon documentation.
+ 
+-## Two-Strike Syntax Recovery Rule
++## Current Recovery Focus
+ 
+-When recent daemon failure context for the selected task includes two validation rollbacks caused by Python `SyntaxError`, Python `py_compile`, or TypeScript `TS1005`, `TS1109`, or `TS1128`, the next proposal must be a syntax-recovery proposal.
++Recent blocked work has two repeatable failure modes:
+ 
+-A syntax-recovery proposal must:
++1. Python mutation-test retries generated incomplete comparisons such as `if confidence 1:` instead of complete Python syntax.
++2. A stop-gate mutation retry invalidated the committed baseline fixture instead of validating only a mutated copy.
+ 
+-- edit the smallest possible file set, normally one file
+-- avoid broad contract rewrites and avoid adding implementation modules unless the task explicitly requires them
+-- use only complete file replacements
+-- include no pseudo-code, placeholders, malformed comparisons, or mixed-language fragments
+-- keep Python test files plain `unittest` files with helper functions and direct assertions
+-- keep the changed Python file py_compile-safe before any broader unittest behavior is considered
+-- stop after validating the committed fixture or adding the single requested mutation case
++The supervisor should treat these as retry-programming defects, not as reasons to broaden the PP&D domain task.
+ 
+-If the task asks for a Python test repair, mentally compile the replacement file before returning it. Reject the proposal and simplify it if any line would fail `python3 -m py_compile`.
++## Syntax Guardrail For Python Test Edits
+ 
+-## Malformed Prompt Context Rule
++When a failed or proposed patch touches a Python file, the next worker instruction must include these exact requirements:
+ 
+-If a selected task, generated status block, failure summary, or supervisor note contains a malformed code fragment, repair that supervisor context before launching another worker attempt. Do not ask a worker to infer or repair around an invalid example.
++- Run `python3 -m py_compile` on every touched Python file before running broader validation.
++- Use only complete Python comparisons.
++- For confidence type checks, use `if not isinstance(confidence, (int, float)):`.
++- For upper-bound confidence checks, use `if confidence > 1:`.
++- For lower-bound confidence checks, use `if confidence  1:` and never `if confidence 1:`.
++```
+ 
+-For repeated confidence-bound failures, use only these known-good Python forms in prompts and task text:
++## Validation Order
+ 
+-- `if not isinstance(confidence, (int, float)):`
+-- `if confidence  1:`
+-- `self.assertGreaterEqual(confidence, 0)`
+-- `self.assertLessEqual(confidence, 1)`
++Use this order for retries after syntax failures:
+ 
+-Do not include malformed fragments such as missing operators, doubled spaces in comparisons, pseudo-code guards, or partial assertions in daemon prompts, generated status text, repair guides, task-board tasks, or recent-failure summaries.
++1. `python3 -m py_compile `
++2. `python3 ppd/daemon/ppd_daemon.py --self-test`
++3. `python3 -m unittest discover -s ppd/tests -p 'test_*.py'`
++4. TypeScript validation only if TypeScript files were touched or the standard daemon validation requires it.
+ 
+-## Syntax-First Worker Prompt Rule
+-
+-When the recent failures show the same syntax error shape repeating, the worker prompt should explicitly ask for one syntactically valid replacement file and no other files. The prompt should prefer already-valid helper patterns from the existing test file instead of asking the worker to invent new control flow.
+-
+-For Python mutation-test recovery, the worker should:
+-
+-- load the committed fixture first
+-- assert the committed fixture is valid before mutating it
+-- add exactly one mutation case for the selected checkbox
+-- use `copy.deepcopy` for fixture mutation when needed
+-- use `with self.assertRaises(AssertionError):` for expected validation failure
+-- avoid generated pseudo-code, abbreviated comparisons, and prose-like conditionals
+-
+-## Preflight Failure Classification Rule
+-
+-Treat syntax and compile failures as preflight-quality failures even when they are discovered during the validation command set. After two such failures for the same task, do not broaden scope. The next cycle should reduce file count, reduce edited line count, and remove all nonessential context from the worker request.
+-
+-Known syntax/compile markers include:
+-
+-- `SyntaxError`
+-- `py_compile`
+-- `TS1005`
+-- `TS1109`
+-- `TS1128`
+-- `Failed to import test module` when the import failed because the changed file did not parse
+-
+-## Recovery Ordering Rule
+-
+-When a checkbox recovery sequence has accepted later tasks but an earlier prerequisite remains incomplete or previously blocked, select the lowest incomplete prerequisite first. For the checkbox-27 mutation sequence, checkbox-27e must be retried before checkbox-27g, even if checkbox-27f is already complete.
+-
+-If checkbox-27e is blocked while checkbox-27g is marked in progress, supervisor repair should reset checkbox-27e to needed and checkbox-27g to needed. The next daemon cycle should then select checkbox-27e as the lowest incomplete prerequisite.
+-
+-## Generated Status
+-
+-Last updated: 2026-05-02T04:30:00.000000Z
+-
+-- Latest target: `Task checkbox-35: Recovery for checkbox-27e: add one mutation case for out-of-range confidence only.`
+-- Latest result: `supervisor_repair`
+-- Latest summary: Tightened syntax-recovery guidance, removed malformed confidence comparison examples, and clarified recovery ordering for checkbox-27e before checkbox-27g.
++The supervisor should report the first failing validation stage clearly and avoid sending the worker broader instructions until that stage is clean.

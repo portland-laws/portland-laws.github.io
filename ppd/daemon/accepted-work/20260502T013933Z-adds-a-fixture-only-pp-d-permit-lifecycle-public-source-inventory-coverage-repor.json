@@ -1,0 +1,48 @@
+{
+  "changed_files": [
+    "ppd/extraction/public_source_inventory_coverage.py",
+    "ppd/tests/fixtures/public_source_inventory/permit_lifecycle_coverage_report.json",
+    "ppd/tests/test_public_source_inventory_coverage.py"
+  ],
+  "created_at": "2026-05-02T01:39:33.655782Z",
+  "impact": "Advances the PP&D plan by documenting source-backed public coverage for extension, reactivation, cancellation, refund, and inspection-result guidance without live crawling, private DevHub paths, raw bodies, credentials, traces, screenshots, or downloaded documents.",
+  "summary": "Adds a fixture-only PP&D permit lifecycle public source inventory coverage report and a narrow loader/validator for it.",
+  "target_task": "Task checkbox-12: Add a fixture-only public source inventory coverage report for PP&D permit extension, permit reactivation, cancellation, refund, and inspection-result guidance categories, using existing public fixture/source-inventory evidence only and no live crawling.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 19 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................................................................................................................................................ss............................................................................................................................................. ---------------------------------------------------------------------- Ran 352 tests in 0.034s OK (skipped=2)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

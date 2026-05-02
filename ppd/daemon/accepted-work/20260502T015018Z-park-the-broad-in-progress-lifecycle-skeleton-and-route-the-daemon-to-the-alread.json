@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/task-board.md"
+  ],
+  "created_at": "2026-05-02T01:50:18.841961Z",
+  "impact": "The daemon was selecting a broad lifecycle skeleton while recent failures showed the prerequisite lifecycle coverage fixture metadata was missing. Moving that broad item out of selectable state lets the next cycle resume with the narrow authority-label and recrawl-cadence fixture task, followed by the one-file fail-closed validator, instead of retrying a task whose dependencies are not ready.",
+  "summary": "Park the broad in-progress lifecycle skeleton and route the daemon to the already-split fixture-first recovery tasks.",
+  "target_task": "Supervisor repair: 3 consecutive daemon rounds failed without an accepted patch",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 23 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................................................................................................................................................ss............................................................................................................................................. ---------------------------------------------------------------------- Ran 352 tests in 0.033s OK (skipped=2)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

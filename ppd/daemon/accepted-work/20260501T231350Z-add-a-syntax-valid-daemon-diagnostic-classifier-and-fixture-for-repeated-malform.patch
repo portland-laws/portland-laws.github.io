@@ -1,0 +1,322 @@
+--- a/ppd/daemon/proposal_syntax_diagnostics.py
++++ b/ppd/daemon/proposal_syntax_diagnostics.py
+@@ -1,75 +1,106 @@
++"""Syntax-first diagnostics for repeated malformed Python proposal failures."""
++
+ from __future__ import annotations
+ 
+-import re
+-from typing import Any
++from typing import Any, Mapping, Sequence
+ 
+-MALFORMED_PYTHON_PROPOSAL_SYNTAX = (
+-    ('confidence 1.0', re.compile(r'\bconfidence\s+1\.0\b')),
+-    ('confidence 1', re.compile(r'\bconfidence\s+1\b(?!\.)')),
+-    ('return 0.0 list[str]', re.compile(r'\breturn\s+0\.0\s+list\s*\[\s*str\s*\]')),
++DIAGNOSTIC_KIND = "syntax_first_retry_stop"
++MALFORMED_COMPARISON_SYNTAX = "malformed_python_comparison_syntax"
++RETRY_SCOPE = "same_target_task"
++
++_MALFORMED_SNIPPETS = (
++    "confidence 1",
++    "confidence 1.0",
++    "return 0.0 list[str]",
+ )
+ 
+-SYNTAX_FIRST_RETRY_STOP_KIND = 'syntax_first_retry_stop'
++
++def _as_text(value: Any) -> str:
++    if value is None:
++        return ""
++    return str(value)
+ 
+ 
+-def proposal_text(proposal: dict[str, Any]) -> str:
+-    parts: list[str] = []
+-    for key in ('summary', 'impact', 'raw_response', 'failure_kind'):
+-        value = proposal.get(key)
+-        if value is not None:
+-            parts.append(str(value))
+-    for error in proposal.get('errors', []) or []:
+-        parts.append(str(error))
+-    for result in proposal.get('validation_results', []) or []:
+-        if not isinstance(result, dict):
+-            continue
+-        parts.append(' '.join(str(part) for part in result.get('command', []) or []))
+-        parts.append(str(result.get('stdout', '')))
+-        parts.append(str(result.get('stderr', '')))
+-    return '\n'.join(parts)
++def _entry_task_id(entry: Mapping[str, Any]) -> str:
++    for key in ("task_id", "target_task_id", "selected_task"):
++        value = _as_text(entry.get(key)).strip()
++        if value:
++            return value
++    return ""
+ 
+ 
+-def malformed_python_syntax_markers(text: str) -> list[str]:
+-    markers: list[str] = []
+-    for marker, pattern in MALFORMED_PYTHON_PROPOSAL_SYNTAX:
+-        if pattern.search(text):
+-            markers.append(marker)
+-    return markers
++def _entry_text(entry: Mapping[str, Any]) -> str:
++    parts = []
++    for key in ("summary", "error", "errors", "validation", "stderr", "message", "proposal_excerpt"):
++        text = _as_text(entry.get(key)).strip()
++        if text:
++            parts.append(text)
++    return "\n".join(parts)
+ 
+ 
+-def classify_repeated_malformed_python_syntax(
+-    proposals: list[dict[str, Any]],
+-    *,
+-    target_task: str | None = None,
+-    minimum_repetitions: int = 2,
++def _matched_snippets(text: str) -> tuple[str, ...]:
++    return tuple(snippet for snippet in _MALFORMED_SNIPPETS if snippet in text)
++
++
++def is_malformed_python_comparison_syntax(entry: Mapping[str, Any]) -> bool:
++    """Return True when a failed proposal contains the targeted syntax pattern."""
++    text = _entry_text(entry)
++    if "SyntaxError" not in text:
++        return False
++    return bool(_matched_snippets(text))
++
++
++def classify_repeated_malformed_comparison_syntax(
++    failures: Sequence[Mapping[str, Any]],
++    target_task_id: str,
++    minimum_repetitions: int = 3,
+ ) -> dict[str, Any]:
+-    matching: list[dict[str, Any]] = []
+-    marker_counts: dict[str, int] = {}
+-    task_label = target_task
++    """Classify repeated malformed Python syntax failures for one daemon task.
+ 
+-    for proposal in proposals:
+-        if not isinstance(proposal, dict):
++    The diagnostic is intentionally narrow: it only stops retries when the same
++    target task has repeated Python SyntaxError failures containing the known
++    malformed comparison or annotation-like fragments seen in proposal output.
++    """
++    task_id = target_task_id.strip()
++    matching_entries = []
++    matched_fragments: list[str] = []
++
++    for entry in failures:
++        if _entry_task_id(entry) != task_id:
+             continue
+-        proposal_task = str(proposal.get('target_task') or '')
+-        if task_label is None and proposal_task:
+-            task_label = proposal_task
+-        if task_label and proposal_task and proposal_task != task_label:
++        if not is_malformed_python_comparison_syntax(entry):
+             continue
+-        markers = malformed_python_syntax_markers(proposal_text(proposal))
+-        if not markers:
+-            continue
+-        matching.append({'target_task': proposal_task, 'markers': markers})
+-        for marker in markers:
+-            marker_counts[marker] = marker_counts.get(marker, 0) + 1
++        matching_entries.append(entry)
++        for fragment in _matched_snippets(_entry_text(entry)):
++            if fragment not in matched_fragments:
++                matched_fragments.append(fragment)
+ 
+-    repeated = len(matching) >= max(1, minimum_repetitions)
++    should_stop = len(matching_entries) >= minimum_repetitions
+     return {
+-        'retry_stop': repeated,
+-        'failure_kind': SYNTAX_FIRST_RETRY_STOP_KIND if repeated else '',
+-        'target_task': task_label or '',
+-        'matching_proposal_count': len(matching),
+-        'minimum_repetitions': max(1, minimum_repetitions),
+-        'markers': sorted(marker_counts),
+-        'marker_counts': marker_counts,
+-        'reason': 'Repeated malformed Python comparison or return syntax in proposals for the same target task.' if repeated else '',
++        "kind": DIAGNOSTIC_KIND,
++        "syntax_family": MALFORMED_COMPARISON_SYNTAX,
++        "retry_scope": RETRY_SCOPE,
++        "target_task_id": task_id,
++        "minimum_repetitions": minimum_repetitions,
++        "matched_repetitions": len(matching_entries),
++        "matched_fragments": matched_fragments,
++        "should_stop_retry": should_stop,
++        "recommended_next_step": "return a smaller syntax-valid repair proposal for the same task" if should_stop else "continue normal validation",
+     }
++
++
++def classify_fixture_payload(payload: Mapping[str, Any]) -> dict[str, Any]:
++    """Classify a JSON fixture payload used by PP&D daemon tests."""
++    target_task_id = _as_text(payload.get("target_task_id")).strip()
++    failures = payload.get("failures", ())
++    if not isinstance(failures, Sequence) or isinstance(failures, (str, bytes)):
++        failures = ()
++    mapped_failures = [entry for entry in failures if isinstance(entry, Mapping)]
++    minimum_repetitions = payload.get("minimum_repetitions", 3)
++    if not isinstance(minimum_repetitions, int):
++        minimum_repetitions = 3
++    return classify_repeated_malformed_comparison_syntax(
++        mapped_failures,
++        target_task_id,
++        minimum_repetitions=minimum_repetitions,
++    )
+--- a/ppd/tests/fixtures/daemon/repeated_malformed_comparison_syntax.json
++++ b/ppd/tests/fixtures/daemon/repeated_malformed_comparison_syntax.json
+@@ -0,0 +1,42 @@
++{
++  "target_task_id": "checkbox-80",
++  "minimum_repetitions": 3,
++  "expected": {
++    "kind": "syntax_first_retry_stop",
++    "syntax_family": "malformed_python_comparison_syntax",
++    "retry_scope": "same_target_task",
++    "should_stop_retry": true,
++    "matched_repetitions": 3,
++    "matched_fragments": [
++      "confidence 1",
++      "confidence 1.0",
++      "return 0.0 list[str]"
++    ]
++  },
++  "failures": [
++    {
++      "task_id": "checkbox-80",
++      "kind": "validation",
++      "summary": "Rejected malformed confidence comparison syntax.",
++      "validation": "python3 ppd/daemon/ppd_daemon.py --self-test: SyntaxError: invalid syntax near confidence 1"
++    },
++    {
++      "task_id": "checkbox-80",
++      "kind": "validation",
++      "summary": "Rejected malformed confidence comparison syntax with float literal.",
++      "validation": "python3 ppd/daemon/ppd_daemon.py --self-test: SyntaxError: invalid syntax near confidence 1.0"
++    },
++    {
++      "task_id": "checkbox-80",
++      "kind": "validation",
++      "summary": "Rejected malformed return annotation fragment.",
++      "validation": "python3 ppd/daemon/ppd_daemon.py --self-test: SyntaxError: invalid syntax near return 0.0 list[str]"
++    },
++    {
++      "task_id": "checkbox-79",
++      "kind": "validation",
++      "summary": "Different task should not count toward checkbox-80 retry stop.",
++      "validation": "python3 ppd/daemon/ppd_daemon.py --self-test: SyntaxError: invalid syntax near confidence 1"
++    }
++  ]
++}
+--- a/ppd/tests/test_daemon_proposal_syntax_diagnostics.py
++++ b/ppd/tests/test_daemon_proposal_syntax_diagnostics.py
+@@ -1,3 +1,5 @@
++"""Tests for PP&D daemon proposal syntax diagnostics."""
++
+ from __future__ import annotations
+ 
+ import json
+@@ -5,58 +7,59 @@
+ from pathlib import Path
+ 
+ from ppd.daemon.proposal_syntax_diagnostics import (
+-    SYNTAX_FIRST_RETRY_STOP_KIND,
+-    classify_repeated_malformed_python_syntax,
+-    malformed_python_syntax_markers,
++    DIAGNOSTIC_KIND,
++    MALFORMED_COMPARISON_SYNTAX,
++    RETRY_SCOPE,
++    classify_fixture_payload,
++    classify_repeated_malformed_comparison_syntax,
++    is_malformed_python_comparison_syntax,
+ )
+ 
+ 
+-class ProposalSyntaxDiagnosticsTest(unittest.TestCase):
+-    def setUp(self) -> None:
+-        fixture_path = (
+-            Path(__file__).parent
+-            / 'fixtures'
+-            / 'daemon_diagnostics'
+-            / 'repeated_malformed_python_comparison_syntax.json'
+-        )
+-        self.fixture = json.loads(fixture_path.read_text(encoding='utf-8'))
++class ProposalSyntaxDiagnosticsTests(unittest.TestCase):
++    def fixture_path(self) -> Path:
++        return Path(__file__).parent / "fixtures" / "daemon" / "repeated_malformed_comparison_syntax.json"
+ 
+-    def test_fixture_classifies_repeated_malformed_syntax_as_retry_stop(self) -> None:
+-        result = classify_repeated_malformed_python_syntax(
+-            self.fixture['proposals'],
+-            target_task=self.fixture['targetTask'],
++    def load_fixture(self) -> dict:
++        with self.fixture_path().open("r", encoding="utf-8") as handle:
++            return json.load(handle)
++
++    def test_fixture_classifies_same_task_repetition_as_retry_stop(self) -> None:
++        payload = self.load_fixture()
++        diagnostic = classify_fixture_payload(payload)
++        expected = payload["expected"]
++
++        self.assertEqual(DIAGNOSTIC_KIND, diagnostic["kind"])
++        self.assertEqual(expected["kind"], diagnostic["kind"])
++        self.assertEqual(MALFORMED_COMPARISON_SYNTAX, diagnostic["syntax_family"])
++        self.assertEqual(expected["syntax_family"], diagnostic["syntax_family"])
++        self.assertEqual(RETRY_SCOPE, diagnostic["retry_scope"])
++        self.assertEqual(expected["retry_scope"], diagnostic["retry_scope"])
++        self.assertTrue(diagnostic["should_stop_retry"])
++        self.assertEqual(expected["matched_repetitions"], diagnostic["matched_repetitions"])
++        self.assertEqual(expected["matched_fragments"], diagnostic["matched_fragments"])
++
++    def test_other_tasks_do_not_count_toward_retry_stop(self) -> None:
++        payload = self.load_fixture()
++        diagnostic = classify_repeated_malformed_comparison_syntax(
++            payload["failures"],
++            "checkbox-79",
+             minimum_repetitions=2,
+         )
+ 
+-        self.assertTrue(result['retry_stop'])
+-        self.assertEqual(SYNTAX_FIRST_RETRY_STOP_KIND, result['failure_kind'])
+-        self.assertEqual(self.fixture['targetTask'], result['target_task'])
+-        self.assertEqual(3, result['matching_proposal_count'])
+-        self.assertEqual(sorted(self.fixture['expectedMarkers']), result['markers'])
++        self.assertFalse(diagnostic["should_stop_retry"])
++        self.assertEqual(1, diagnostic["matched_repetitions"])
+ 
+-    def test_marker_detection_distinguishes_confidence_literals(self) -> None:
+-        self.assertEqual(['confidence 1'], malformed_python_syntax_markers('elif confidence 1:'))
+-        self.assertEqual(['confidence 1.0'], malformed_python_syntax_markers('elif confidence 1.0:'))
+-        self.assertEqual(
+-            ['return 0.0 list[str]'],
+-            malformed_python_syntax_markers('def f():\n    return 0.0 list[str]'),
++    def test_requires_syntax_error_marker(self) -> None:
++        self.assertFalse(
++            is_malformed_python_comparison_syntax(
++                {
++                    "task_id": "checkbox-80",
++                    "validation": "Rejected by semantic validator near confidence 1",
++                }
++            )
+         )
+ 
+-    def test_mixed_target_tasks_do_not_trigger_same_task_retry_stop(self) -> None:
+-        proposals = list(self.fixture['proposals'])
+-        proposals[1] = dict(proposals[1], target_task='Task checkbox-999: unrelated')
+-        proposals[2] = dict(proposals[2], target_task='Task checkbox-999: unrelated')
+ 
+-        result = classify_repeated_malformed_python_syntax(
+-            proposals,
+-            target_task=self.fixture['targetTask'],
+-            minimum_repetitions=2,
+-        )
+-
+-        self.assertFalse(result['retry_stop'])
+-        self.assertEqual('', result['failure_kind'])
+-        self.assertEqual(1, result['matching_proposal_count'])
+-
+-
+-if __name__ == '__main__':
++if __name__ == "__main__":
+     unittest.main()

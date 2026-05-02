@@ -1,0 +1,2 @@
+ppd/tests/fixtures/daemon/stale_blocked_solar_extractor_retry_parked.json
+ppd/daemon/supervisor_self_test.py

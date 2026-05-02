@@ -1,0 +1,60 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -22,14 +22,40 @@
+ 
+ If a selected task, generated status block, failure summary, or supervisor note contains a malformed code fragment, repair that supervisor context before launching another worker attempt. Do not ask a worker to infer or repair around an invalid example.
+ 
+-For repeated `confidence` failures, use only these known-good Python forms in prompts and task text:
++For repeated confidence-bound failures, use only these known-good Python forms in prompts and task text:
+ 
+ - `if not isinstance(confidence, (int, float)):`
+-- `if confidence > 1:`
+ - `if confidence  1:`
+-- `if not (0  1:
+-        raise AssertionError("confidence must be between 0 and 1")
+-```
++- `self.assertGreaterEqual(confidence, 0)`
++- `self.assertLessEqual(confidence, 1)`
++
++Do not include malformed fragments such as missing operators, doubled spaces in comparisons, pseudo-code guards, or partial assertions in daemon prompts, generated status text, repair guides, task-board tasks, or recent-failure summaries.
++
++## Syntax-First Worker Prompt Rule
++
++When the recent failures show the same syntax error shape repeating, the worker prompt should explicitly ask for one syntactically valid replacement file and no other files. The prompt should prefer already-valid helper patterns from the existing test file instead of asking the worker to invent new control flow.
++
++For Python mutation-test recovery, the worker should:
++
++- load the committed fixture first
++- assert the committed fixture is valid before mutating it
++- add exactly one mutation case for the selected checkbox
++- use `copy.deepcopy` for fixture mutation when needed
++- use `with self.assertRaises(AssertionError):` for expected validation failure
++- avoid generated pseudo-code, abbreviated comparisons, and prose-like conditionals
++
++## Preflight Failure Classification Rule
++
++Treat syntax and compile failures as preflight-quality failures even when they are discovered during the validation command set. After two such failures for the same task, do not broaden scope. The next cycle should reduce file count, reduce edited line count, and remove all nonessential context from the worker request.
++
++Known syntax/compile markers include:
++
++- `SyntaxError`
++- `py_compile`
++- `TS1005`
++- `TS1109`
++- `TS1128`
++- `Failed to import test module` when the import failed because the changed file did not parse
+ 
+ ## Recovery Ordering Rule
+ 
+@@ -37,8 +63,8 @@
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T04:20:00.000000Z
++Last updated: 2026-05-02T04:24:00.000000Z
+ 
+-- Latest target: `Task checkbox-35: Recovery for checkbox-27e: after checkbox-27d passes, add one mutation case for out-of-range confidence only.`
++- Latest target: `Task checkbox-35: Recovery for checkbox-27e: add one mutation case for out-of-range confidence only.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Removed malformed confidence comparison examples from supervisor context and replaced them with py_compile-safe Python guardrails.
++- Latest summary: Tightened syntax-recovery guidance and removed malformed confidence comparison examples from supervisor context.

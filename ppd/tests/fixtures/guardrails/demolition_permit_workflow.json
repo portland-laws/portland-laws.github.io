@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "demolition_permit_guardrail_workflow",
+  "process": {
+    "id": "demolition_permit",
+    "permitType": "Demolition Permit",
+    "authoritySources": [
+      {
+        "id": "ppd-demolition-guidance",
+        "label": "PP&D demolition permit public guidance fixture",
+        "url": "https://www.portland.gov/ppd/permits/demolition-permits",
+        "capturedAt": "2026-05-01T00:00:00Z"
+      },
+      {
+        "id": "devhub-application-guidance",
+        "label": "DevHub permit request public guidance fixture",
+        "url": "https://www.portland.gov/ppd/devhub/apply-permit",
+        "capturedAt": "2026-05-01T00:00:00Z"
+      }
+    ],
+    "requiredFacts": [
+      {
+        "id": "site_address",
+        "label": "Project site address",
+        "sourceId": "ppd-demolition-guidance"
+      },
+      {
+        "id": "structure_type",
+        "label": "Structure type proposed for demolition",
+        "sourceId": "ppd-demolition-guidance"
+      },
+      {
+        "id": "demolition_scope",
+        "label": "Full or partial demolition scope",
+        "sourceId": "ppd-demolition-guidance"
+      },
+      {
+        "id": "utility_disconnect_status",
+        "label": "Utility disconnect status",
+        "sourceId": "ppd-demolition-guidance"
+      },
+      {
+        "id": "asbestos_acknowledgment",
+        "label": "Asbestos and hazardous material acknowledgment",
+        "sourceId": "ppd-demolition-guidance"
+      }
+    ],
+    "documentGroups": [
+      {
+        "id": "application_documents",
+        "label": "Application documents",
+        "required": true,
+        "acceptedDocumentTypes": [
+          "demolition_permit_application",
+          "site_plan"
+        ],
+        "sourceId": "ppd-demolition-guidance"
+      },
+      {
+        "id": "hazardous_material_documents",
+        "label": "Hazardous material and utility documents",
+        "required": true,
+        "acceptedDocumentTypes": [
+          "asbestos_survey_or_acknowledgment",
+          "utility_disconnect_confirmation"
+        ],
+        "sourceId": "ppd-demolition-guidance"
+      },
+      {
+        "id": "supporting_property_documents",
+        "label": "Supporting property documents",
+        "required": false,
+        "acceptedDocumentTypes": [
+          "photos",
+          "site_access_notes"
+        ],
+        "sourceId": "ppd-demolition-guidance"
+      }
+    ],
+    "actionGates": [
+      {
+        "id": "submit_demolition_request",
+        "action": "submit_application",
+        "classification": "consequential",
+        "requiresExactConfirmation": true,
+        "stopPoint": true,
+        "sourceId": "devhub-application-guidance"
+      },
+      {
+        "id": "pay_demolition_fees",
+        "action": "pay_fees",
+        "classification": "financial",
+        "requiresExactConfirmation": true,
+        "stopPoint": true,
+        "sourceId": "devhub-application-guidance"
+      },
+      {
+        "id": "upload_demolition_corrections",
+        "action": "upload_corrections",
+        "classification": "consequential",
+        "requiresExactConfirmation": true,
+        "stopPoint": true,
+        "sourceId": "devhub-application-guidance"
+      },
+      {
+        "id": "schedule_demolition_inspection",
+        "action": "schedule_inspection",
+        "classification": "consequential",
+        "requiresExactConfirmation": true,
+        "stopPoint": true,
+        "sourceId": "devhub-application-guidance"
+      },
+      {
+        "id": "finalize_demolition_permit",
+        "action": "finalize_or_close_permit",
+        "classification": "consequential",
+        "requiresExactConfirmation": true,
+        "stopPoint": true,
+        "sourceId": "ppd-demolition-guidance"
+      }
+    ]
+  },
+  "userCase": {
+    "id": "redacted_demolition_case",
+    "knownFacts": {
+      "site_address": "REDACTED",
+      "structure_type": "detached_accessory_structure"
+    },
+    "documents": [
+      {
+        "id": "doc-demolition-application-redacted",
+        "documentType": "demolition_permit_application",
+        "groupId": "application_documents",
+        "redacted": true
+      },
+      {
+        "id": "doc-site-plan-redacted",
+        "documentType": "site_plan",
+        "groupId": "application_documents",
+        "redacted": true
+      }
+    ],
+    "confirmations": []
+  },
+  "expectedCompilerOutput": {
+    "missingFacts": [
+      "demolition_scope",
+      "utility_disconnect_status",
+      "asbestos_acknowledgment"
+    ],
+    "satisfiedDocumentGroups": [
+      "application_documents"
+    ],
+    "missingDocumentGroups": [
+      "hazardous_material_documents"
+    ],
+    "stopPoints": [
+      "submit_demolition_request",
+      "pay_demolition_fees",
+      "upload_demolition_corrections",
+      "schedule_demolition_inspection",
+      "finalize_demolition_permit"
+    ]
+  }
+}

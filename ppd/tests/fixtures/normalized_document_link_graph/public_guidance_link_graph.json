@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "ppd-public-guidance-normalized-document-link-graph",
+  "generatedAt": "2026-05-01T19:20:00Z",
+  "description": "Fixture-only normalized link graph connecting public PP&D guidance pages to linked forms, PDFs, DevHub guides, and Portland Maps references. No live crawl output, raw response bodies, downloads, screenshots, traces, credentials, or private DevHub paths are included.",
+  "allowedHosts": [
+    "www.portland.gov",
+    "devhub.portlandoregon.gov",
+    "www.portlandoregon.gov",
+    "www.portlandmaps.com"
+  ],
+  "contentTypeVocabulary": [
+    "html",
+    "pdf",
+    "external_public_reference",
+    "skipped"
+  ],
+  "skippedReasonVocabulary": [
+    "mailto_link",
+    "phone_link",
+    "fragment_only",
+    "non_allowlisted_host",
+    "private_devhub_path",
+    "consequential_portal_action",
+    "downloaded_document_not_committed",
+    "unsupported_scheme"
+  ],
+  "sourceIndexReferences": [
+    {
+      "sourceIndexId": "source-index-ppd-single-pdf-process",
+      "canonicalUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+      "contentHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "crawlStatus": "fixture_only"
+    },
+    {
+      "sourceIndexId": "source-index-ppd-devhub-application-guide",
+      "canonicalUrl": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
+      "contentHash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "crawlStatus": "fixture_only"
+    },
+    {
+      "sourceIndexId": "source-index-ppd-permits-inspections-applications",
+      "canonicalUrl": "https://www.portland.gov/ppd/permits/permits-inspections-applications",
+      "contentHash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "crawlStatus": "fixture_only"
+    },
+    {
+      "sourceIndexId": "source-index-devhub-public-home",
+      "canonicalUrl": "https://devhub.portlandoregon.gov/",
+      "contentHash": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "crawlStatus": "fixture_only"
+    },
+    {
+      "sourceIndexId": "source-index-portland-maps-public-permit-search",
+      "canonicalUrl": "https://www.portlandmaps.com/advanced/?action=permits",
+      "contentHash": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "crawlStatus": "fixture_only"
+    }
+  ],
+  "nodes": [
+    {
+      "id": "doc:ppd:single-pdf-process",
+      "sourceIndexId": "source-index-ppd-single-pdf-process",
+      "canonicalUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+      "title": "Single PDF Process",
+      "documentRole": "public_guidance",
+      "contentType": "html",
+      "authorityLabel": "Portland Permitting & Development public guidance",
+      "normalizedDocumentFixture": "ppd/tests/fixtures/normalized_documents/single_pdf_process.normalized.json"
+    },
+    {
+      "id": "doc:ppd:devhub-application-guide",
+      "sourceIndexId": "source-index-ppd-devhub-application-guide",
+      "canonicalUrl": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
+      "title": "Apply for a permit in Development Hub PDX",
+      "documentRole": "devhub_public_guide",
+      "contentType": "html",
+      "authorityLabel": "Portland Permitting & Development DevHub guidance",
+      "normalizedDocumentFixture": "ppd/tests/fixtures/normalized_documents/devhub_application_guide.normalized.json"
+    },
+    {
+      "id": "doc:ppd:permits-inspections-applications",
+      "sourceIndexId": "source-index-ppd-permits-inspections-applications",
+      "canonicalUrl": "https://www.portland.gov/ppd/permits/permits-inspections-applications",
+      "title": "Permits and Inspections Applications",
+      "documentRole": "forms_index",
+      "contentType": "html",
+      "authorityLabel": "Portland Permitting & Development applications and forms index",
+      "normalizedDocumentFixture": "ppd/tests/fixtures/normalized_documents/permits_inspections_applications.normalized.json"
+    },
+    {
+      "id": "doc:devhub:public-home",
+      "sourceIndexId": "source-index-devhub-public-home",
+      "canonicalUrl": "https://devhub.portlandoregon.gov/",
+      "title": "Development Hub PDX public portal",
+      "documentRole": "devhub_public_portal",
+      "contentType": "html",
+      "authorityLabel": "Development Hub PDX public portal",
+      "normalizedDocumentFixture": null
+    },
+    {
+      "id": "doc:portlandmaps:permit-search",
+      "sourceIndexId": "source-index-portland-maps-public-permit-search",
+      "canonicalUrl": "https://www.portlandmaps.com/advanced/?action=permits",
+      "title": "Portland Maps public permit search reference",
+      "documentRole": "public_property_reference",
+      "contentType": "external_public_reference",
+      "authorityLabel": "Portland Maps public reference",
+      "normalizedDocumentFixture": null
+    },
+    {
+      "id": "doc:ppd:building-permit-application-pdf",
+      "sourceIndexId": null,
+      "canonicalUrl": "https://www.portland.gov/ppd/documents/building-permit-application/download",
+      "title": "Building Permit Application PDF",
+      "documentRole": "application_form_pdf",
+      "contentType": "pdf",
+      "authorityLabel": "Portland Permitting & Development public form",
+      "normalizedDocumentFixture": "ppd/tests/fixtures/pdf_metadata/building_permit_application.metadata.json"
+    },
+    {
+      "id": "doc:ppd:trade-permit-application-pdf",
+      "sourceIndexId": null,
+      "canonicalUrl": "https://www.portland.gov/ppd/documents/trade-permit-application/download",
+      "title": "Trade Permit Application PDF",
+      "documentRole": "application_form_pdf",
+      "contentType": "pdf",
+      "authorityLabel": "Portland Permitting & Development public form",
+      "normalizedDocumentFixture": "ppd/tests/fixtures/pdf_metadata/trade_permit_application.metadata.json"
+    }
+  ],
+  "edges": [
+    {
+      "id": "edge:single-pdf-process:to:devhub-application-guide",
+      "fromNodeId": "doc:ppd:single-pdf-process",
+      "toNodeId": "doc:ppd:devhub-application-guide",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+      "targetUrl": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
+      "canonicalTargetUrl": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
+      "relation": "guidance_links_to_devhub_guide",
+      "linkText": "Apply for a permit in Development Hub PDX",
+      "contentType": "html",
+      "skipped": false,
+      "skippedReason": null,
+      "evidence": {
+        "sectionId": "single-pdf-process-submit",
+        "anchorText": "Apply for a permit in Development Hub PDX"
+      }
+    },
+    {
+      "id": "edge:single-pdf-process:to:forms-index",
+      "fromNodeId": "doc:ppd:single-pdf-process",
+      "toNodeId": "doc:ppd:permits-inspections-applications",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+      "targetUrl": "https://www.portland.gov/ppd/permits/permits-inspections-applications",
+      "canonicalTargetUrl": "https://www.portland.gov/ppd/permits/permits-inspections-applications",
+      "relation": "guidance_links_to_forms_index",
+      "linkText": "Permit applications and forms",
+      "contentType": "html",
+      "skipped": false,
+      "skippedReason": null,
+      "evidence": {
+        "sectionId": "single-pdf-process-documents",
+        "anchorText": "Permit applications and forms"
+      }
+    },
+    {
+      "id": "edge:forms-index:to:building-permit-application-pdf",
+      "fromNodeId": "doc:ppd:permits-inspections-applications",
+      "toNodeId": "doc:ppd:building-permit-application-pdf",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/permits-inspections-applications",
+      "targetUrl": "https://www.portland.gov/ppd/documents/building-permit-application/download",
+      "canonicalTargetUrl": "https://www.portland.gov/ppd/documents/building-permit-application/download",
+      "relation": "forms_index_links_to_pdf_form",
+      "linkText": "Building Permit Application",
+      "contentType": "pdf",
+      "skipped": false,
+      "skippedReason": null,
+      "evidence": {
+        "sectionId": "building-permit-applications",
+        "anchorText": "Building Permit Application"
+      }
+    },
+    {
+      "id": "edge:forms-index:to:trade-permit-application-pdf",
+      "fromNodeId": "doc:ppd:permits-inspections-applications",
+      "toNodeId": "doc:ppd:trade-permit-application-pdf",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/permits-inspections-applications",
+      "targetUrl": "https://www.portland.gov/ppd/documents/trade-permit-application/download",
+      "canonicalTargetUrl": "https://www.portland.gov/ppd/documents/trade-permit-application/download",
+      "relation": "forms_index_links_to_pdf_form",
+      "linkText": "Trade Permit Application",
+      "contentType": "pdf",
+      "skipped": false,
+      "skippedReason": null,
+      "evidence": {
+        "sectionId": "trade-permit-applications",
+        "anchorText": "Trade Permit Application"
+      }
+    },
+    {
+      "id": "edge:devhub-guide:to:devhub-public-home",
+      "fromNodeId": "doc:ppd:devhub-application-guide",
+      "toNodeId": "doc:devhub:public-home",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
+      "targetUrl": "https://devhub.portlandoregon.gov/",
+      "canonicalTargetUrl": "https://devhub.portlandoregon.gov/",
+      "relation": "devhub_guide_links_to_public_portal",
+      "linkText": "Development Hub PDX",
+      "contentType": "html",
+      "skipped": false,
+      "skippedReason": null,
+      "evidence": {
+        "sectionId": "devhub-start-application",
+        "anchorText": "Development Hub PDX"
+      }
+    },
+    {
+      "id": "edge:single-pdf-process:to:portlandmaps-permit-search",
+      "fromNodeId": "doc:ppd:single-pdf-process",
+      "toNodeId": "doc:portlandmaps:permit-search",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+      "targetUrl": "https://www.portlandmaps.com/advanced/?action=permits",
+      "canonicalTargetUrl": "https://www.portlandmaps.com/advanced/?action=permits",
+      "relation": "guidance_links_to_public_property_reference",
+      "linkText": "Search permits on Portland Maps",
+      "contentType": "external_public_reference",
+      "skipped": false,
+      "skippedReason": null,
+      "evidence": {
+        "sectionId": "single-pdf-process-research",
+        "anchorText": "Search permits on Portland Maps"
+      }
+    }
+  ],
+  "skippedLinks": [
+    {
+      "id": "skip:single-pdf-process:fragment-top",
+      "fromNodeId": "doc:ppd:single-pdf-process",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+      "targetUrl": "#main-content",
+      "canonicalTargetUrl": "https://www.portland.gov/ppd/permits/single-pdf-process#main-content",
+      "linkText": "Skip to main content",
+      "contentType": "skipped",
+      "skippedReason": "fragment_only",
+      "policyDecision": "skip",
+      "notes": "In-page navigation does not create a document graph edge."
+    },
+    {
+      "id": "skip:devhub-guide:sign-in-private-path",
+      "fromNodeId": "doc:ppd:devhub-application-guide",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
+      "targetUrl": "https://devhub.portlandoregon.gov/Account/Login",
+      "canonicalTargetUrl": "https://devhub.portlandoregon.gov/Account/Login",
+      "linkText": "Sign in",
+      "contentType": "skipped",
+      "skippedReason": "private_devhub_path",
+      "policyDecision": "skip",
+      "notes": "Authenticated DevHub login path is not part of the public document graph fixture."
+    },
+    {
+      "id": "skip:devhub-guide:submit-application-action",
+      "fromNodeId": "doc:ppd:devhub-application-guide",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
+      "targetUrl": "https://devhub.portlandoregon.gov/Permit/Application/Start",
+      "canonicalTargetUrl": "https://devhub.portlandoregon.gov/Permit/Application/Start",
+      "linkText": "Start application",
+      "contentType": "skipped",
+      "skippedReason": "consequential_portal_action",
+      "policyDecision": "skip",
+      "notes": "Portal action may enter an application workflow and must be handled by guarded automation, not fixture crawling."
+    },
+    {
+      "id": "skip:forms-index:email-contact",
+      "fromNodeId": "doc:ppd:permits-inspections-applications",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/permits-inspections-applications",
+      "targetUrl": "mailto:permits@portlandoregon.gov",
+      "canonicalTargetUrl": null,
+      "linkText": "Email permits staff",
+      "contentType": "skipped",
+      "skippedReason": "mailto_link",
+      "policyDecision": "skip",
+      "notes": "Contact links are preserved as skipped links rather than document nodes."
+    },
+    {
+      "id": "skip:single-pdf-process:phone-contact",
+      "fromNodeId": "doc:ppd:single-pdf-process",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+      "targetUrl": "tel:+15038207300",
+      "canonicalTargetUrl": null,
+      "linkText": "Call PP&D",
+      "contentType": "skipped",
+      "skippedReason": "phone_link",
+      "policyDecision": "skip",
+      "notes": "Telephone links are contact metadata, not document graph nodes."
+    },
+    {
+      "id": "skip:devhub-guide:vendor-video-host",
+      "fromNodeId": "doc:ppd:devhub-application-guide",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
+      "targetUrl": "https://example-video-host.invalid/devhub-guide",
+      "canonicalTargetUrl": "https://example-video-host.invalid/devhub-guide",
+      "linkText": "Video guide",
+      "contentType": "skipped",
+      "skippedReason": "non_allowlisted_host",
+      "policyDecision": "skip",
+      "notes": "Synthetic fixture URL demonstrates non-allowlisted host handling without referencing live third-party content."
+    },
+    {
+      "id": "skip:forms-index:downloaded-copy",
+      "fromNodeId": "doc:ppd:permits-inspections-applications",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/permits-inspections-applications",
+      "targetUrl": "https://www.portland.gov/ppd/documents/building-permit-application/download",
+      "canonicalTargetUrl": "https://www.portland.gov/ppd/documents/building-permit-application/download",
+      "linkText": "Downloaded Building Permit Application copy",
+      "contentType": "skipped",
+      "skippedReason": "downloaded_document_not_committed",
+      "policyDecision": "skip",
+      "notes": "The graph records the public PDF URL as a node but does not commit a downloaded document body."
+    }
+  ],
+  "graphSummary": {
+    "nodeCount": 7,
+    "edgeCount": 6,
+    "skippedLinkCount": 7,
+    "publicGuidanceNodeCount": 1,
+    "linkedPdfNodeCount": 2,
+    "devhubGuideNodeCount": 1,
+    "portlandMapsReferenceNodeCount": 1
+  }
+}

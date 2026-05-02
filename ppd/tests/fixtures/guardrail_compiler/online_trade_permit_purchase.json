@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "fixture_kind": "guardrail_compiler_online_trade_permit_purchase",
+  "source_policy": {
+    "fixture_only": true,
+    "live_crawl": false,
+    "authenticated_devhub": false,
+    "private_values": "redacted"
+  },
+  "process": {
+    "id": "online_trade_permit_purchase_fixture",
+    "permit_type": "online_trade_permit_purchase",
+    "authority_sources": [
+      {
+        "id": "devhub_faq_trade_purchase",
+        "url": "fixture://public-devhub-faq/online-trade-permits",
+        "title": "DevHub fixture FAQ for online trade permit purchase",
+        "captured_at": "2026-05-01T00:00:00Z"
+      },
+      {
+        "id": "trade_license_fixture",
+        "url": "fixture://public-ppd-guidance/trade-license-requirements",
+        "title": "PP&D fixture guidance for trade contractor license requirements",
+        "captured_at": "2026-05-01T00:00:00Z"
+      }
+    ],
+    "required_facts": [
+      {
+        "id": "property_identifier",
+        "label": "Property address or permit-ready property identifier",
+        "category": "project",
+        "citations": ["fixture://public-devhub-faq/online-trade-permits#property"]
+      },
+      {
+        "id": "trade_work_scope",
+        "label": "Trade work scope for the online permit purchase",
+        "category": "project",
+        "citations": ["fixture://public-devhub-faq/online-trade-permits#scope"]
+      },
+      {
+        "id": "fixture_or_equipment_count",
+        "label": "Fixture or equipment count used to calculate permit items",
+        "category": "project",
+        "citations": ["fixture://public-devhub-faq/online-trade-permits#permit-items"]
+      },
+      {
+        "id": "job_valuation",
+        "label": "Estimated job valuation when requested by the purchase workflow",
+        "category": "project",
+        "citations": ["fixture://public-devhub-faq/online-trade-permits#valuation"]
+      },
+      {
+        "id": "contractor_license_number",
+        "label": "Active contractor or trade license number",
+        "category": "license",
+        "citations": ["fixture://public-ppd-guidance/trade-license-requirements#license-number"]
+      },
+      {
+        "id": "contractor_business_name",
+        "label": "Licensed contractor business name",
+        "category": "contractor",
+        "citations": ["fixture://public-ppd-guidance/trade-license-requirements#contractor-name"]
+      },
+      {
+        "id": "license_active_attestation",
+        "label": "Attestation that the license is active for the proposed trade work",
+        "category": "license",
+        "citations": ["fixture://public-ppd-guidance/trade-license-requirements#active-license"]
+      }
+    ],
+    "required_documents": [
+      {
+        "id": "contractor_license_evidence",
+        "label": "Redacted proof or record reference for the active trade license",
+        "category": "license",
+        "citations": ["fixture://public-ppd-guidance/trade-license-requirements#license-evidence"]
+      }
+    ],
+    "required_acknowledgments": [
+      {
+        "id": "online_purchase_terms_reviewed",
+        "label": "Review of online trade permit purchase terms before finalization",
+        "category": "acknowledgment",
+        "citations": ["fixture://public-devhub-faq/online-trade-permits#review-before-purchase"]
+      }
+    ],
+    "required_decisions": [
+      {
+        "id": "owner_or_contractor_purchase_authority",
+        "label": "Decision that the user is authorized to purchase the trade permit",
+        "category": "authority",
+        "citations": ["fixture://public-ppd-guidance/trade-license-requirements#purchase-authority"]
+      }
+    ],
+    "action_gates": [
+      {
+        "id": "enter_payment_details",
+        "action": "enter_payment_details",
+        "classification": "financial",
+        "requires_confirmation": "exact_session_confirmation",
+        "citations": ["fixture://public-devhub-faq/online-trade-permits#payment-entry"]
+      },
+      {
+        "id": "pay_permit_fees",
+        "action": "pay_permit_fees",
+        "classification": "financial",
+        "requires_confirmation": "exact_session_confirmation",
+        "citations": ["fixture://public-devhub-faq/online-trade-permits#pay-fees"]
+      },
+      {
+        "id": "schedule_inspection",
+        "action": "schedule_trade_inspection",
+        "classification": "consequential",
+        "requires_confirmation": "exact_session_confirmation",
+        "citations": ["fixture://public-devhub-faq/inspection-scheduling#online-trade-permits"]
+      },
+      {
+        "id": "cancel_permit_purchase",
+        "action": "cancel_online_trade_permit_purchase",
+        "classification": "consequential",
+        "requires_confirmation": "exact_session_confirmation",
+        "citations": ["fixture://public-devhub-faq/online-trade-permits#cancel"]
+      },
+      {
+        "id": "finalize_purchase",
+        "action": "finalize_online_trade_permit_purchase",
+        "classification": "consequential",
+        "requires_confirmation": "exact_session_confirmation",
+        "citations": ["fixture://public-devhub-faq/online-trade-permits#finalize"]
+      }
+    ]
+  },
+  "user_case": {
+    "id": "redacted_online_trade_purchase_case",
+    "facts": {
+      "applicant_role": "contractor-agent"
+    },
+    "documents": [],
+    "acknowledgments": [],
+    "decisions": [],
+    "confirmations": {},
+    "redaction": {
+      "contains_private_values": false,
+      "private_value_policy": "fixture uses no real names, addresses, license numbers, credentials, payment details, screenshots, traces, or auth state"
+    }
+  }
+}

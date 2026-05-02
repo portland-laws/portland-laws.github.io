@@ -1,0 +1,63 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -42,11 +42,12 @@
+ - [x] Recovery for checkbox-27b: after checkbox-27a passes, add one mutation case for missing `categoryId` only. Do not add the other mutation cases in the same daemon cycle.
+ - [x] Recovery for checkbox-27c: after checkbox-27b passes, add one mutation case for missing `sourceEvidenceIds` only.
+ - [x] Recovery for checkbox-27d: after checkbox-27c passes, add one mutation case for missing local `evidence[].evidenceId` only.
+-- [!] Recovery for checkbox-27e: after checkbox-27d passes, add one mutation case for out-of-range `confidence` only. Use only complete Python comparisons such as `if not isinstance(confidence, (int, float)):` and `if confidence  1:`.
++- [ ] Recovery for checkbox-27e: after checkbox-27d passes, add one mutation case for out-of-range `confidence` only. Use only complete Python comparisons such as `if not isinstance(confidence, (int, float)):` and `if confidence > 1:`.
+ - [x] Recovery for checkbox-27f: after checkbox-27e passes, add one mutation case for duplicate `(categoryId, action, object, sourceEvidenceIds)` only.
+-- [~] Recovery for checkbox-27g: after checkbox-27f passes, add one mutation case for `stopGate: true` with a classification that does not end in `_stop_gate` only.
++- [ ] Recovery for checkbox-27g: after checkbox-27f passes, add one mutation case for `stopGate: true` with a classification that does not end in `_stop_gate` only.
+ - [ ] Add a daemon preflight regression test that selects the lowest incomplete checkbox-27 prerequisite when later checkbox-27 tasks are stale, blocked, or marked in progress.
+ - [ ] Add a daemon prompt regression test that fails if supervisor context for confidence-bound tasks contains malformed comparison fragments such as `confidence  1` or `if confidence 1:`.
++- [ ] Add a daemon prompt sanitization guard that rewrites malformed confidence comparison fragments in selected task text, generated status text, and recent failure summaries before building the next LLM prompt.
+ 
+ 
+ ## Generated Status
+@@ -56,17 +57,6 @@
+ - Latest target: `Task checkbox-35: Recovery for checkbox-27e: after checkbox-27d passes, add one mutation case for out-of-range confidence only.`
+ - Latest result: `supervisor_repair`
+ - Latest summary: Removed malformed confidence comparison examples from task text and supervisor guidance before another worker attempt.
+-- Counts: `{"blocked": 0, "complete": 34, "in_progress": 1, "needed": 4}`
++- Counts: `{"blocked": 0, "complete": 35, "in_progress": 0, "needed": 4}`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-02T04:18:30.469079Z
+-
+-- Latest target: `Task checkbox-36: Recovery for checkbox-27f: after checkbox-27e passes, add one mutation case for duplicate `(categoryId, action, object, sourceEvidenceIds)` only.`
+-- Latest result: `accepted`
+-- Latest summary: Add the checkbox-27f duplicate requirement-key mutation validator.
+-- Counts: `{"blocked": 1, "complete": 35, "in_progress": 0, "needed": 3}`
+-
+-<!-- ppd-daemon-task-board:end -->
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -25,18 +25,15 @@
+ For repeated `confidence` failures, use only these known-good Python forms in prompts and task text:
+ 
+ - `if not isinstance(confidence, (int, float)):`
++- `if confidence > 1:`
+ - `if confidence  1:`
+-- `if not (0  1`
+-
+-Preferred confidence validation helper shape:
+-
+-```python
+-def _assert_valid_confidence(confidence):
+-    if not isinstance(confidence, (int, float)):
+-        raise AssertionError("confidence must be numeric")
+-    if confidence  1:
++- `if not (0  1:
+         raise AssertionError("confidence must be between 0 and 1")
+ ```
++
++## Recovery Ordering Rule
++
++When a checkbox recovery sequence has accepted later tasks but an earlier prerequisite remains incomplete or previously blocked, select the lowest incomplete prerequisite first. For the checkbox-27 mutation sequence, checkbox-27e must be retried before checkbox-27g, even if checkbox-27f is already complete.
+ 
+ ## Generated Status
+ 

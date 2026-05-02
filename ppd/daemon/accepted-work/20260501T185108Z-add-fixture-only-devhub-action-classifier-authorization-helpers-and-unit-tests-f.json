@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/devhub/action_classifier.py",
+    "ppd/tests/test_devhub_action_classifier.py"
+  ],
+  "created_at": "2026-05-01T18:51:08.388469Z",
+  "impact": "This advances the PP&D DevHub guardrail plan by proving consequential and financial workflow actions are classified correctly and remain blocked unless the user supplies the exact explicit confirmation text for that action.",
+  "summary": "Add fixture-only DevHub action-classifier authorization helpers and unit tests for inspection scheduling, correction upload, cancellation, certification, and payment gates.",
+  "target_task": "Task checkbox-40: Add DevHub action-classifier tests for inspection scheduling, correction upload, cancellation, certification, and payment actions, ensuring consequential and financial actions require exact explicit user confirmation.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 47 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................... ---------------------------------------------------------------------- Ran 84 tests in 0.008s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

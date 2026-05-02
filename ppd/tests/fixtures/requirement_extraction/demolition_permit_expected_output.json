@@ -1,0 +1,224 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "demolition-permit-requirement-extraction-expected-output-minimal",
+  "permitType": "residential_demolition_permit",
+  "sourceCheckedAt": "2026-05-01T00:00:00Z",
+  "privacy": {
+    "redacted": true,
+    "containsPrivateDevhubSession": false,
+    "containsRawCrawlOutput": false,
+    "containsDownloadedDocuments": false,
+    "containsCredentials": false,
+    "containsPersonalData": false
+  },
+  "categoryRecords": [
+    {
+      "category": "eligibility",
+      "recordId": "demo-eligibility-001",
+      "requirementType": "precondition",
+      "subject": "applicant",
+      "expectedExtraction": "A demolition permit is required for any structure that required a permit to build, including structures built without the required permit, and a separate demolition permit is required for each structure removed.",
+      "redactedUserFacts": [
+        "property_identifier:",
+        "structure_count:",
+        "structure_permit_history:"
+      ],
+      "evidence": [
+        {
+          "sourceTitle": "Residential demolition permits",
+          "url": "https://www.portland.gov/ppd/residential-permitting/home-projects/residential-demolition-permits",
+          "anchor": "Do I need a residential demolition permit?",
+          "supports": "The page states when a demolition permit is needed and that each structure requires its own permit."
+        }
+      ],
+      "confidence": "high",
+      "formalizationStatus": "fixture_expected_output"
+    },
+    {
+      "category": "plan-review applicability",
+      "recordId": "demo-plan-review-001",
+      "requirementType": "dependency",
+      "subject": "reviewer",
+      "expectedExtraction": "Residential demolition applications can enter demolition waiting-period or review workflows, with typical reviews including Planning and Zoning, Life Safety, Site Development when slope conditions apply, Residential Subsurface Evaluation, Urban Forestry, and Demolition Site Control.",
+      "redactedUserFacts": [
+        "zoning_or_overlay_status:",
+        "site_slope:",
+        "tree_inventory:"
+      ],
+      "evidence": [
+        {
+          "sourceTitle": "Residential demolition permits",
+          "url": "https://www.portland.gov/ppd/residential-permitting/home-projects/residential-demolition-permits",
+          "anchor": "Residential demolition permit plan review process",
+          "supports": "The page identifies demolition review paths and typical review groups for demolition projects."
+        }
+      ],
+      "confidence": "high",
+      "formalizationStatus": "fixture_expected_output"
+    },
+    {
+      "category": "upload requirements",
+      "recordId": "demo-upload-requirements-001",
+      "requirementType": "obligation",
+      "subject": "applicant",
+      "expectedExtraction": "The demolition permit application package must include the demolition packet materials and may require structural plans or tree preservation plans; online submittal is through Development Hub PDX, and most projects use the Single PDF process for electronic plans.",
+      "redactedUserFacts": [
+        "application_packet:",
+        "site_plan:",
+        "supporting_documents:"
+      ],
+      "evidence": [
+        {
+          "sourceTitle": "Residential demolition permits",
+          "url": "https://www.portland.gov/ppd/residential-permitting/home-projects/residential-demolition-permits",
+          "anchor": "Application, forms, and handouts for a residential demolition permit",
+          "supports": "The page lists required demolition packet materials and possible additional plan requirements."
+        },
+        {
+          "sourceTitle": "Residential demolition permits",
+          "url": "https://www.portland.gov/ppd/residential-permitting/home-projects/residential-demolition-permits",
+          "anchor": "How to apply for a demolition permit",
+          "supports": "The page directs applicants to submit online through Development Hub PDX and references the Single PDF process for most projects."
+        },
+        {
+          "sourceTitle": "Quick Guide: Submit a permit application on Development Hub PDX (DevHub)",
+          "url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+          "anchor": "Prepare your permit application requirements",
+          "supports": "The guide requires applicants to prepare permit application materials, plans where applicable, PDF naming standards, and upload-ready files."
+        }
+      ],
+      "confidence": "high",
+      "formalizationStatus": "fixture_expected_output"
+    },
+    {
+      "category": "fee/payment checkpoints",
+      "recordId": "demo-fee-payment-001",
+      "requirementType": "action_gate",
+      "subject": "applicant",
+      "expectedExtraction": "After technical approvals and any demolition delay, PP&D notifies the applicant of final fees and payment instructions; the permit is not issued until all fees are paid.",
+      "redactedUserFacts": [
+        "fee_total:",
+        "payment_method:",
+        "permit_ready_notice:"
+      ],
+      "evidence": [
+        {
+          "sourceTitle": "Residential demolition permits",
+          "url": "https://www.portland.gov/ppd/residential-permitting/home-projects/residential-demolition-permits",
+          "anchor": "Get your approved residential demolition permit",
+          "supports": "The page describes pre-issuance, final fee notification, payment instructions, and the requirement that fees be paid before issuance."
+        },
+        {
+          "sourceTitle": "Development Services Center",
+          "url": "https://www.portland.gov/bds/article/756804",
+          "anchor": "Building permit services are available online, 24 hours a day",
+          "supports": "The page identifies Development Hub PDX as the online system used to apply and pay for permits."
+        }
+      ],
+      "confidence": "high",
+      "formalizationStatus": "fixture_expected_output"
+    },
+    {
+      "category": "corrections",
+      "recordId": "demo-corrections-001",
+      "requirementType": "obligation",
+      "subject": "applicant",
+      "expectedExtraction": "When a checksheet requests clarifications or corrections, the applicant reviews the checksheet in DevHub, prepares corrected PDF materials, provides required document descriptions, acknowledges authority to upload and submit corrections, and waits while submitted corrections are reviewed.",
+      "redactedUserFacts": [
+        "ivr_or_application_number:",
+        "checksheet_items:",
+        "correction_files:"
+      ],
+      "evidence": [
+        {
+          "sourceTitle": "Residential demolition permits",
+          "url": "https://www.portland.gov/ppd/residential-permitting/home-projects/residential-demolition-permits",
+          "anchor": "Residential demolition permit plan review process",
+          "supports": "The page says PP&D may send a checksheet requesting clarifications or corrections during review."
+        },
+        {
+          "sourceTitle": "Help Guide: Uploading Corrections in DevHub",
+          "url": "https://www.portland.gov/ppd/upload-corrections-devhub",
+          "anchor": "Upload Corrections in DevHub",
+          "supports": "The guide describes adding PDF correction documents, descriptions, authorization acknowledgement, and submission."
+        },
+        {
+          "sourceTitle": "Checksheet: Prepare and submit corrections electronically",
+          "url": "https://www.portland.gov/ppd/get-permit/checksheets",
+          "anchor": "Step 4. Complete the Upload Corrections Process through DevHub",
+          "supports": "The checksheet guide describes correction upload steps and the post-submission review cycle."
+        }
+      ],
+      "confidence": "high",
+      "formalizationStatus": "fixture_expected_output"
+    },
+    {
+      "category": "inspections/finalization",
+      "recordId": "demo-inspections-finalization-001",
+      "requirementType": "obligation",
+      "subject": "applicant",
+      "expectedExtraction": "Residential demolition permits require inspection readiness before site disturbance, typically three to four inspections for covered residential demolitions, and final approval is required to complete the permit; replacement construction must wait for demolition final approval.",
+      "redactedUserFacts": [
+        "inspection_card:",
+        "ivr_number:",
+        "final_approval_status:"
+      ],
+      "evidence": [
+        {
+          "sourceTitle": "Residential demolition permits",
+          "url": "https://www.portland.gov/ppd/residential-permitting/home-projects/residential-demolition-permits",
+          "anchor": "Get ready for inspections",
+          "supports": "The page describes inspection-card instructions, required demolition inspections, pre-disturbance approvals, replacement-construction sequencing, and final approval."
+        },
+        {
+          "sourceTitle": "Residential demolition permits",
+          "url": "https://www.portland.gov/ppd/residential-permitting/home-projects/residential-demolition-permits",
+          "anchor": "Residential demolition inspections",
+          "supports": "The page describes scheduling demolition inspections through the automated inspection request line using permit identifiers and inspection codes."
+        }
+      ],
+      "confidence": "high",
+      "formalizationStatus": "fixture_expected_output"
+    },
+    {
+      "category": "explicit-confirmation gates",
+      "recordId": "demo-explicit-confirmation-gates-001",
+      "requirementType": "action_gate",
+      "subject": "agent",
+      "expectedExtraction": "An assisting agent must stop for exact session-specific user confirmation before submitting a demolition application, acknowledging authorization to upload corrections, submitting correction materials, paying fees, or scheduling inspections.",
+      "redactedUserFacts": [
+        "user_confirmation:",
+        "authorized_submitter_status:",
+        "payment_authorization:"
+      ],
+      "evidence": [
+        {
+          "sourceTitle": "Quick Guide: Submit a permit application on Development Hub PDX (DevHub)",
+          "url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+          "anchor": "Select your permit request type",
+          "supports": "The guide includes demolition permits in the DevHub permit request workflow and requires applicants to review permitting information before continuing."
+        },
+        {
+          "sourceTitle": "Help Guide: Uploading Corrections in DevHub",
+          "url": "https://www.portland.gov/ppd/upload-corrections-devhub",
+          "anchor": "Upload Corrections in DevHub",
+          "supports": "The guide requires an authorization acknowledgement before submitting corrections."
+        },
+        {
+          "sourceTitle": "Residential demolition permits",
+          "url": "https://www.portland.gov/ppd/residential-permitting/home-projects/residential-demolition-permits",
+          "anchor": "Get your approved residential demolition permit",
+          "supports": "The page makes payment a permit-issuance checkpoint."
+        },
+        {
+          "sourceTitle": "Residential demolition permits",
+          "url": "https://www.portland.gov/ppd/residential-permitting/home-projects/residential-demolition-permits",
+          "anchor": "Residential demolition inspections",
+          "supports": "The page describes inspection scheduling as an applicant action tied to permit identifiers."
+        }
+      ],
+      "confidence": "medium",
+      "formalizationStatus": "fixture_expected_output"
+    }
+  ]
+}

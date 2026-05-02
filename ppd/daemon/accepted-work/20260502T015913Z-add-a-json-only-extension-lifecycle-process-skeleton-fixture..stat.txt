@@ -1,0 +1,1 @@
+ppd/tests/fixtures/lifecycle/extension_lifecycle_process_skeleton.json

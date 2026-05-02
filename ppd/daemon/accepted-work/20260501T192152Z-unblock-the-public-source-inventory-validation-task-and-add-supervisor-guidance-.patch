@@ -1,0 +1,40 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -54,7 +54,7 @@
+ - [x] Add Playwright guardrail tests proving upload, submit, certify, pay, cancel, schedule inspection, MFA, CAPTCHA, account creation, and password recovery actions are refused unless exact user confirmation is present.
+ - [x] Add a Playwright audit-event fixture that records selector basis, source requirement, user-confirmation state, action classification, and before/after redacted field state for draft-only form edits.
+ - [x] Add a fixture-only public source inventory for PP&D permit application, forms, handout, fee, and DevHub guide page categories with canonical URLs, authority labels, and recrawl cadence hints.
+-- [!] Add validation for the public source inventory that rejects non-allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and missing provenance fields.
++- [ ] Add validation for the public source inventory that rejects non-allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and missing provenance fields.
+ - [x] Add a fixture-only normalized document link graph that connects public PP&D guidance pages to linked forms, PDFs, DevHub guides, and Portland Maps references with skipped-link reason codes.
+ - [~] Add deterministic validation for the normalized document link graph covering canonical URL matching, content-type classification, source-index references, and no private or live crawl artifacts.
+ - [ ] Add a third permit-process fixture for a residential building permit or new single-family residence workflow with stages, required facts, required documents, file rules, fee/payment gates, and citation-backed evidence.
+@@ -66,20 +66,11 @@
+ - [ ] Add DevHub guardrail tests proving correction-upload review can produce a preview but cannot perform official upload or certification without exact session-specific user confirmation.
+ - [ ] Add a missing-information detector fixture that compares a residential permit user-case fact inventory against the residential permit process requirements and returns only missing facts, files, acknowledgments, and decisions.
+ - [ ] Add validation for missing-information detector output proving every requested user item is source-backed, deduplicated, action-classified, and free of private fixture values.
++- [ ] Add a one-file syntax-first repair test for public source inventory validation that imports only `ppd.contracts.public_source_inventory` and rejects malformed Python before broad unittest discovery.
++- [ ] Add a minimal invalid public source inventory fixture with exactly one unsafe field per entry so rejection reasons for raw bodies, credentials, traces, screenshots, downloaded documents, private DevHub paths, and missing provenance are deterministic.
+ 
+ 
+ 
+-## Generated Status
+-
+-Last updated: 2026-05-01T19:07:38.206599Z
+-
+-- Latest target: `Task checkbox-47: Add a Playwright audit-event fixture that records selector basis, source requirement, user-confirmation state, action classification, and before/after redacted field state for draft-only form edits.`
+-- Latest result: `accepted`
+-- Latest summary: Add a deterministic Playwright audit-event fixture and validation test for draft-only DevHub form edits.
+-- Counts: `{"blocked": 0, "complete": 47, "in_progress": 0, "needed": 0}`
+-
+-
+-<!-- ppd-daemon-task-board:start -->
+ ## Generated Status
+ 
+ Last updated: 2026-05-01T19:20:19.072447Z
+@@ -89,4 +80,4 @@
+ - Latest summary: Add a fixture-only normalized document link graph for public PP&D guidance pages and linked resources.
+ - Counts: `{"blocked": 1, "complete": 49, "in_progress": 0, "needed": 10}`
+ 
+-<!-- ppd-daemon-task-board:end -->
++

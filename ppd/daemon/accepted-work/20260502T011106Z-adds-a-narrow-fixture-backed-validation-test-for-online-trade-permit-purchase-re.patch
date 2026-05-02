@@ -1,0 +1,266 @@
+--- a/ppd/tests/fixtures/online_trade_permit_purchase/requirements.json
++++ b/ppd/tests/fixtures/online_trade_permit_purchase/requirements.json
+@@ -0,0 +1,143 @@
++{
++  "fixture_id": "online_trade_permit_purchase_requirements_v1",
++  "source_context": "Fixture-only validation for online trade permit purchase requirement extraction. Public-source facts are summarized from PP&D/DevHub guidance already represented in PP&D planning context; this file contains no live crawl output, private DevHub data, credentials, traces, screenshots, downloads, or raw response bodies.",
++  "confidence_bounds": {
++    "minimum": 0.7,
++    "maximum": 1.0
++  },
++  "expected_categories": [
++    "devhub_account_access",
++    "online_trade_permit_scope",
++    "permit_type_selection",
++    "project_and_property_facts",
++    "contractor_or_owner_responsibility",
++    "purchase_payment_stop_gate",
++    "inspection_scheduling_stop_gate"
++  ],
++  "sources": [
++    {
++      "evidence_id": "ev-devhub-online-permitting-system",
++      "title": "Development Hub PDX public portal guidance",
++      "url": "https://devhub.portlandoregon.gov",
++      "authority_label": "DevHub public portal",
++      "public_fixture_only": true
++    },
++    {
++      "evidence_id": "ev-devhub-account-guidance",
++      "title": "Development Hub sign-in and account guidance",
++      "url": "https://www.portland.gov/ppd/devhub",
++      "authority_label": "PP&D public guidance",
++      "public_fixture_only": true
++    },
++    {
++      "evidence_id": "ev-devhub-faq-service-categories",
++      "title": "Development Hub FAQ service categories",
++      "url": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
++      "authority_label": "PP&D public FAQ",
++      "public_fixture_only": true
++    },
++    {
++      "evidence_id": "ev-devhub-application-guidance-trade-permits",
++      "title": "Development Hub application guidance listing trade permit request types",
++      "url": "https://www.portland.gov/ppd/permits/devhub-apply-permit-request",
++      "authority_label": "PP&D public application guidance",
++      "public_fixture_only": true
++    }
++  ],
++  "requirements": [
++    {
++      "requirement_id": "otp-001-devhub-account-access",
++      "category": "devhub_account_access",
++      "type": "precondition",
++      "subject": "applicant",
++      "action": "use_devhub_account",
++      "object": "online permitting services",
++      "evidence_ids": [
++        "ev-devhub-online-permitting-system",
++        "ev-devhub-account-guidance"
++      ],
++      "confidence": 0.92,
++      "stop_gate_classification": "none"
++    },
++    {
++      "requirement_id": "otp-002-online-trade-permit-scope",
++      "category": "online_trade_permit_scope",
++      "type": "precondition",
++      "subject": "applicant",
++      "action": "confirm_online_trade_permit_scope",
++      "object": "trade permit purchase workflow",
++      "evidence_ids": [
++        "ev-devhub-faq-service-categories",
++        "ev-devhub-application-guidance-trade-permits"
++      ],
++      "confidence": 0.88,
++      "stop_gate_classification": "none"
++    },
++    {
++      "requirement_id": "otp-003-permit-type-selection",
++      "category": "permit_type_selection",
++      "type": "precondition",
++      "subject": "applicant",
++      "action": "select_trade_permit_type",
++      "object": "requested trade permit",
++      "evidence_ids": [
++        "ev-devhub-application-guidance-trade-permits"
++      ],
++      "confidence": 0.86,
++      "stop_gate_classification": "none"
++    },
++    {
++      "requirement_id": "otp-004-project-and-property-facts",
++      "category": "project_and_property_facts",
++      "type": "obligation",
++      "subject": "applicant",
++      "action": "provide_project_and_property_facts",
++      "object": "online trade permit request",
++      "evidence_ids": [
++        "ev-devhub-online-permitting-system",
++        "ev-devhub-application-guidance-trade-permits"
++      ],
++      "confidence": 0.84,
++      "stop_gate_classification": "none"
++    },
++    {
++      "requirement_id": "otp-005-contractor-or-owner-responsibility",
++      "category": "contractor_or_owner_responsibility",
++      "type": "obligation",
++      "subject": "applicant",
++      "action": "identify_responsible_party",
++      "object": "contractor or owner responsibility for the trade permit",
++      "evidence_ids": [
++        "ev-devhub-application-guidance-trade-permits"
++      ],
++      "confidence": 0.78,
++      "stop_gate_classification": "none"
++    },
++    {
++      "requirement_id": "otp-006-purchase-payment-stop-gate",
++      "category": "purchase_payment_stop_gate",
++      "type": "action_gate",
++      "subject": "agent",
++      "action": "stop_before_purchase_or_payment",
++      "object": "online trade permit purchase and fee payment",
++      "evidence_ids": [
++        "ev-devhub-faq-service-categories"
++      ],
++      "confidence": 0.95,
++      "stop_gate_classification": "financial"
++    },
++    {
++      "requirement_id": "otp-007-inspection-scheduling-stop-gate",
++      "category": "inspection_scheduling_stop_gate",
++      "type": "action_gate",
++      "subject": "agent",
++      "action": "stop_before_inspection_scheduling",
++      "object": "inspection scheduling for online trade permits",
++      "evidence_ids": [
++        "ev-devhub-faq-service-categories"
++      ],
++      "confidence": 0.91,
++      "stop_gate_classification": "consequential"
++    }
++  ]
++}
+--- a/ppd/tests/test_online_trade_permit_purchase_extraction.py
++++ b/ppd/tests/test_online_trade_permit_purchase_extraction.py
+@@ -0,0 +1,117 @@
++"""Focused fixture validation for online trade permit purchase extraction.
++
++This test intentionally checks only the selected daemon task surface:
++seven fixture categories, source evidence IDs, confidence bounds,
++deduplication, and explicit stop-gate classifications.
++"""
++
++from __future__ import annotations
++
++import json
++import unittest
++from pathlib import Path
++from typing import Any
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "online_trade_permit_purchase"
++    / "requirements.json"
++)
++
++EXPECTED_CATEGORIES = {
++    "devhub_account_access",
++    "online_trade_permit_scope",
++    "permit_type_selection",
++    "project_and_property_facts",
++    "contractor_or_owner_responsibility",
++    "purchase_payment_stop_gate",
++    "inspection_scheduling_stop_gate",
++}
++
++EXPECTED_STOP_GATES = {
++    "purchase_payment_stop_gate": "financial",
++    "inspection_scheduling_stop_gate": "consequential",
++}
++
++
++class OnlineTradePermitPurchaseExtractionFixtureTest(unittest.TestCase):
++    def setUp(self) -> None:
++        with FIXTURE_PATH.open(encoding="utf-8") as fixture_file:
++            self.fixture: dict[str, Any] = json.load(fixture_file)
++
++    def test_fixture_has_exactly_the_seven_expected_categories(self) -> None:
++        categories = [item.get("category") for item in self.fixture["requirements"]]
++
++        self.assertEqual(EXPECTED_CATEGORIES, set(categories))
++        self.assertEqual(7, len(categories))
++        self.assertEqual(7, len(self.fixture.get("expected_categories", [])))
++        self.assertEqual(EXPECTED_CATEGORIES, set(self.fixture["expected_categories"]))
++
++    def test_every_requirement_uses_declared_source_evidence_ids(self) -> None:
++        declared_evidence_ids = {
++            source["evidence_id"] for source in self.fixture.get("sources", [])
++        }
++        self.assertTrue(declared_evidence_ids)
++
++        for requirement in self.fixture["requirements"]:
++            evidence_ids = requirement.get("evidence_ids", [])
++            self.assertTrue(evidence_ids, requirement["requirement_id"])
++            self.assertTrue(
++                set(evidence_ids).issubset(declared_evidence_ids),
++                requirement["requirement_id"],
++            )
++
++    def test_confidence_values_stay_within_fixture_bounds(self) -> None:
++        bounds = self.fixture["confidence_bounds"]
++        minimum = bounds["minimum"]
++        maximum = bounds["maximum"]
++
++        self.assertGreaterEqual(minimum, 0.0)
++        self.assertLessEqual(maximum, 1.0)
++        self.assertLessEqual(minimum, maximum)
++
++        for requirement in self.fixture["requirements"]:
++            confidence = requirement.get("confidence")
++            self.assertIsInstance(confidence, (int, float), requirement["requirement_id"])
++            self.assertGreaterEqual(confidence, minimum, requirement["requirement_id"])
++            self.assertLessEqual(confidence, maximum, requirement["requirement_id"])
++
++    def test_requirements_are_deduplicated_by_id_and_extraction_signature(self) -> None:
++        seen_ids: set[str] = set()
++        seen_signatures: set[tuple[str, str, str, tuple[str, ...]]] = set()
++
++        for requirement in self.fixture["requirements"]:
++            requirement_id = requirement["requirement_id"]
++            signature = (
++                requirement["category"],
++                requirement["action"],
++                requirement["object"],
++                tuple(sorted(requirement["evidence_ids"])),
++            )
++
++            self.assertNotIn(requirement_id, seen_ids)
++            self.assertNotIn(signature, seen_signatures)
++            seen_ids.add(requirement_id)
++            seen_signatures.add(signature)
++
++    def test_stop_gate_classifications_are_explicit_and_only_on_stop_gate_categories(self) -> None:
++        for requirement in self.fixture["requirements"]:
++            category = requirement["category"]
++            classification = requirement.get("stop_gate_classification")
++            self.assertIn(
++                classification,
++                {"none", "consequential", "financial"},
++                requirement["requirement_id"],
++            )
++
++            if category in EXPECTED_STOP_GATES:
++                self.assertEqual(EXPECTED_STOP_GATES[category], classification)
++                self.assertEqual("action_gate", requirement.get("type"))
++            else:
++                self.assertEqual("none", classification, requirement["requirement_id"])
++
++
++if __name__ == "__main__":
++    unittest.main()

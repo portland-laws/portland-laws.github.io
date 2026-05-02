@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/source_inventory/permit_lifecycle_source_coverage_report.json"
+  ],
+  "created_at": "2026-05-02T01:51:29.683184Z",
+  "impact": "This unblocks the next fail-closed lifecycle coverage validator task by making the committed public fixture carry the metadata that validator is expected to enforce, without changing validator code or adding live crawl behavior.",
+  "summary": "Added fixture-only authorityLabel and recrawlCadence metadata to lifecycle source coverage evidence for extension, cancellation, refund, and inspection-result categories.",
+  "target_task": "Task checkbox-13: Add fixture-only authority-label and recrawl-cadence metadata to the existing lifecycle source coverage report for extension, cancellation, refund, and inspection-result evidence only, preserving existing citations and avoiding validator code changes.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 23 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................................................................................................................................................ss............................................................................................................................................. ---------------------------------------------------------------------- Ran 352 tests in 0.033s OK (skipped=2)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/requirement_extraction/demolition_permit_expected_output.json",
+    "ppd/tests/test_demolition_permit_requirement_expected_output.py"
+  ],
+  "created_at": "2026-05-01T23:40:03.503867Z",
+  "impact": "This advances the PP&D extraction plan by adding deterministic, source-backed expected output for the demolition permit workflow categories the daemon can validate before any live crawl or authenticated DevHub automation.",
+  "summary": "Add a redacted demolition permit requirement extraction expected-output fixture with exactly seven category records and a narrow fixture validation test.",
+  "target_task": "Task checkbox-88: Add a minimal demolition permit requirement extraction expected-output fixture with exactly seven category records: eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections/finalization, and explicit-confirmation gates, all source-backed and redacted.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 94 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "....................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 199 tests in 0.024s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

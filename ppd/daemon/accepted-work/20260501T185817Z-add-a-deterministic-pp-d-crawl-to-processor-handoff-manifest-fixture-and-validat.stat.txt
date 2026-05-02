@@ -1,0 +1,3 @@
+ppd/contracts/crawl_processor_handoff.py
+ppd/tests/fixtures/crawl_processor_handoff/public_ppd_seed_handoff_manifest.json
+ppd/tests/test_crawl_processor_handoff.py

@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md",
+    "ppd/daemon/task-board.md"
+  ],
+  "created_at": "2026-05-02T01:33:53.947537Z",
+  "impact": "The daemon had no needed tasks because checkbox-121 remained blocked after later online trade permit tasks passed. Moving that stale blocker into deferred notes and adding a narrow syntax-first repair task lets the worker resume without reattempting broad requirement validation or domain implementation.",
+  "summary": "Park stale blocked online trade syntax-first task and append a selectable one-file repair task.",
+  "target_task": "Supervisor repair: 1 task(s) are blocked: Task checkbox-121: Add a one-file syntax-first import test for `ppd.extraction.online_trade_permit_requirements` that imports only that module and fails malformed Python before broad online trade permit requirement validation runs.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 126 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................................................................................................................................................ss.................................................................................................................................................. ---------------------------------------------------------------------- Ran 357 tests in 0.035s OK (skipped=2)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

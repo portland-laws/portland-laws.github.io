@@ -1,0 +1,315 @@
+--- a/ppd/tests/fixtures/requirement_extraction/solar_permit_expected_output.json
++++ b/ppd/tests/fixtures/requirement_extraction/solar_permit_expected_output.json
+@@ -0,0 +1,199 @@
++{
++  "schema_version": 1,
++  "fixture_id": "solar-permit-minimal-requirement-expected-output",
++  "permit_process_id": "solar-permit-workflow",
++  "permit_type": "solar permit",
++  "redaction_policy": "public-source-only; user, property, account, payment, and project-specific values are redacted or omitted",
++  "generated_from_fixture_only": true,
++  "records": [
++    {
++      "requirement_id": "solar-eligibility-001",
++      "category": "eligibility",
++      "type": "precondition",
++      "subject": "applicant",
++      "action": "select",
++      "object": "solar permit request type when the project scope is solar work",
++      "conditions": [
++        "Project-specific address, owner, contractor, account, and parcel values are not included in this expected output.",
++        "The permit type selection is limited to public guidance identifying solar permits as a DevHub application request type."
++      ],
++      "deadline_or_temporal_scope": "before creating or submitting the DevHub permit request",
++      "expected_agent_behavior": "Ask for missing non-private project facts separately; do not infer eligibility from private account state in this fixture.",
++      "redaction_status": "redacted",
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
++          "source_title": "Apply for a permit in DevHub",
++          "source_locator": "public guidance list of permit request types",
++          "source_excerpt": "Public DevHub application guidance lists solar permits among permit request types.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        }
++      ],
++      "confidence": "medium",
++      "formalization_status": "fixture_expected_output"
++    },
++    {
++      "requirement_id": "solar-plan-review-001",
++      "category": "plan-review applicability",
++      "type": "dependency",
++      "subject": "applicant",
++      "action": "determine",
++      "object": "whether the solar permit request requires plan review",
++      "conditions": [
++        "The public DevHub FAQ distinguishes permit purchase from permit requests requiring plan review.",
++        "This fixture does not decide a project-specific plan-review outcome without source-backed project facts."
++      ],
++      "deadline_or_temporal_scope": "before preparing the submittal package and upload set",
++      "expected_agent_behavior": "Treat plan-review applicability as a missing decision when project facts are insufficient.",
++      "redaction_status": "redacted",
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/devhub/faq",
++          "source_title": "DevHub FAQ",
++          "source_locator": "public FAQ service categories",
++          "source_excerpt": "The public FAQ describes DevHub services for permit purchase and permit requests requiring plan review.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        }
++      ],
++      "confidence": "medium",
++      "formalization_status": "fixture_expected_output"
++    },
++    {
++      "requirement_id": "solar-upload-001",
++      "category": "upload requirements",
++      "type": "obligation",
++      "subject": "applicant",
++      "action": "upload",
++      "object": "required solar permit application materials and plan documents as separate redacted fixture placeholders",
++      "conditions": [
++        "When the Single PDF Process applies, drawing plans are represented as one searchable PDF and applications, calculations, and supporting documents are represented as separate PDFs.",
++        "No file contents, local paths, screenshots, traces, or downloaded documents are included."
++      ],
++      "deadline_or_temporal_scope": "before request submission or before a correction resubmittal when applicable",
++      "expected_agent_behavior": "Check only fixture metadata and required document names; do not upload files or read private documents.",
++      "redaction_status": "redacted",
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/single-pdf-process",
++          "source_title": "Single PDF Process",
++          "source_locator": "public file preparation guidance",
++          "source_excerpt": "Public guidance says drawing plans are one searchable PDF and applications, calculations, and supporting documents are separate PDFs.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        },
++        {
++          "source_url": "https://www.portland.gov/ppd/devhub/apply-permit-devhub",
++          "source_title": "Apply for a permit in DevHub",
++          "source_locator": "public DevHub application guidance",
++          "source_excerpt": "Public guidance identifies DevHub as the online system for permit applications including solar permits.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        }
++      ],
++      "confidence": "medium",
++      "formalization_status": "fixture_expected_output"
++    },
++    {
++      "requirement_id": "solar-fee-payment-001",
++      "category": "fee/payment checkpoints",
++      "type": "action_gate",
++      "subject": "agent",
++      "action": "stop_before",
++      "object": "fee payment or payment-detail entry",
++      "conditions": [
++        "Public DevHub FAQ identifies fee payment as a DevHub service category.",
++        "Payment and payment-detail entry are financial actions requiring exact user confirmation outside this fixture."
++      ],
++      "deadline_or_temporal_scope": "whenever a DevHub fee or payment checkpoint is reached",
++      "expected_agent_behavior": "Preview the checkpoint and stop; do not pay, enter payment details, or click payment submission controls.",
++      "redaction_status": "redacted",
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/devhub/faq",
++          "source_title": "DevHub FAQ",
++          "source_locator": "public FAQ service categories",
++          "source_excerpt": "The public FAQ lists fee payments among DevHub services.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        }
++      ],
++      "confidence": "high",
++      "formalization_status": "fixture_expected_output"
++    },
++    {
++      "requirement_id": "solar-corrections-001",
++      "category": "corrections",
++      "type": "action_gate",
++      "subject": "agent",
++      "action": "stop_before",
++      "object": "official correction upload or correction certification",
++      "conditions": [
++        "Public DevHub FAQ identifies correction uploads as a DevHub service category.",
++        "Correction uploads are treated as potentially consequential and require exact session-specific confirmation before official upload."
++      ],
++      "deadline_or_temporal_scope": "after PP&D issues correction or checksheet instructions and before official resubmittal",
++      "expected_agent_behavior": "Prepare a redacted correction-upload preview only; do not perform official upload or certification.",
++      "redaction_status": "redacted",
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/devhub/faq",
++          "source_title": "DevHub FAQ",
++          "source_locator": "public FAQ service categories",
++          "source_excerpt": "The public FAQ lists correction uploads among DevHub services.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        }
++      ],
++      "confidence": "high",
++      "formalization_status": "fixture_expected_output"
++    },
++    {
++      "requirement_id": "solar-inspections-001",
++      "category": "inspections",
++      "type": "action_gate",
++      "subject": "agent",
++      "action": "stop_before",
++      "object": "inspection scheduling action",
++      "conditions": [
++        "Public DevHub FAQ identifies inspection scheduling for online trade permits as a DevHub service category.",
++        "This solar fixture preserves the inspection checkpoint as an explicit stop point because scheduling can affect official permit workflow state."
++      ],
++      "deadline_or_temporal_scope": "after permit issuance or when the workflow exposes an inspection scheduling control",
++      "expected_agent_behavior": "Summarize available inspection information and stop before scheduling without exact user confirmation.",
++      "redaction_status": "redacted",
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/devhub/faq",
++          "source_title": "DevHub FAQ",
++          "source_locator": "public FAQ service categories",
++          "source_excerpt": "The public FAQ lists inspection scheduling for online trade permits among DevHub services.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        }
++      ],
++      "confidence": "medium",
++      "formalization_status": "fixture_expected_output"
++    },
++    {
++      "requirement_id": "solar-confirmation-gates-001",
++      "category": "explicit-confirmation gates",
++      "type": "prohibition",
++      "subject": "agent",
++      "action": "perform_consequential_or_financial_action",
++      "object": "submission, certification, official upload, payment, cancellation, or inspection scheduling",
++      "conditions": [
++        "The PP&D automation plan requires exact explicit user confirmation for consequential and financial actions.",
++        "The fixture contains no user authorization, account state, payment data, signature, certification text, or private project values."
++      ],
++      "deadline_or_temporal_scope": "at every irreversible, consequential, or financial checkpoint",
++      "expected_agent_behavior": "Refuse execution and request exact session-specific confirmation for the named action; fixture validation should accept preview-only behavior.",
++      "redaction_status": "redacted",
++      "evidence": [
++        {
++          "source_url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md",
++          "source_title": "Portland PP&D Scraping, Automation, and Logic Guardrails Plan",
++          "source_locator": "Guiding Principles and Guarded Action Executor sections",
++          "source_excerpt": "The plan requires explicit user authorization before submission, upload, payment, certification, cancellation, or inspection scheduling actions.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        }
++      ],
++      "confidence": "high",
++      "formalization_status": "fixture_expected_output"
++    }
++  ]
++}
+--- a/ppd/tests/test_solar_requirement_expected_output.py
++++ b/ppd/tests/test_solar_requirement_expected_output.py
+@@ -0,0 +1,110 @@
++"""Validate the minimal solar permit requirement expected-output fixture."""
++
++from __future__ import annotations
++
++import json
++import re
++import unittest
++from pathlib import Path
++from urllib.parse import urlparse
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "requirement_extraction"
++    / "solar_permit_expected_output.json"
++)
++
++EXPECTED_CATEGORIES = [
++    "eligibility",
++    "plan-review applicability",
++    "upload requirements",
++    "fee/payment checkpoints",
++    "corrections",
++    "inspections",
++    "explicit-confirmation gates",
++]
++
++ALLOWED_SOURCE_HOSTS = {
++    "www.portland.gov",
++    "devhub.portlandoregon.gov",
++    "www.portlandoregon.gov",
++    "www.portlandmaps.com",
++}
++
++PRIVATE_VALUE_PATTERNS = [
++    re.compile(r"\b\d{3}[-. ]?\d{2}[-. ]?\d{4}\b"),
++    re.compile(r"\b\d{16}\b"),
++    re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.IGNORECASE),
++    re.compile(r"\bpassword\b", re.IGNORECASE),
++    re.compile(r"\btoken\b", re.IGNORECASE),
++    re.compile(r"\bauth[_ -]?state\b", re.IGNORECASE),
++    re.compile(r"\bstorage[_ -]?state\b", re.IGNORECASE),
++    re.compile(r"\bcookie\b", re.IGNORECASE),
++    re.compile(r"\btrace\.zip\b", re.IGNORECASE),
++    re.compile(r"\bscreenshot\b", re.IGNORECASE),
++    re.compile(r"ppd/data/private", re.IGNORECASE),
++    re.compile(r"ppd/data/raw", re.IGNORECASE),
++]
++
++
++class SolarRequirementExpectedOutputTest(unittest.TestCase):
++    def setUp(self) -> None:
++        self.fixture = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
++
++    def test_fixture_has_exactly_seven_required_categories(self) -> None:
++        records = self.fixture.get("records")
++        self.assertIsInstance(records, list)
++        self.assertEqual(7, len(records))
++        self.assertEqual(EXPECTED_CATEGORIES, [record.get("category") for record in records])
++        self.assertEqual(len(EXPECTED_CATEGORIES), len({record.get("category") for record in records}))
++
++    def test_records_are_source_backed_and_redacted(self) -> None:
++        serialized = json.dumps(self.fixture, sort_keys=True)
++        for pattern in PRIVATE_VALUE_PATTERNS:
++            self.assertIsNone(pattern.search(serialized), pattern.pattern)
++
++        seen_ids: set[str] = set()
++        for record in self.fixture["records"]:
++            requirement_id = record.get("requirement_id")
++            self.assertIsInstance(requirement_id, str)
++            self.assertTrue(requirement_id.startswith("solar-"))
++            self.assertNotIn(requirement_id, seen_ids)
++            seen_ids.add(requirement_id)
++
++            self.assertIn(record.get("type"), {"obligation", "precondition", "dependency", "action_gate", "prohibition"})
++            self.assertIn(record.get("subject"), {"applicant", "agent"})
++            self.assertTrue(record.get("action"))
++            self.assertTrue(record.get("object"))
++            self.assertIsInstance(record.get("conditions"), list)
++            self.assertGreaterEqual(len(record["conditions"]), 1)
++            self.assertTrue(record.get("deadline_or_temporal_scope"))
++            self.assertEqual("redacted", record.get("redaction_status"))
++            self.assertIn(record.get("confidence"), {"low", "medium", "high"})
++            self.assertEqual("fixture_expected_output", record.get("formalization_status"))
++
++            evidence = record.get("evidence")
++            self.assertIsInstance(evidence, list)
++            self.assertGreaterEqual(len(evidence), 1)
++            for source in evidence:
++                self.assert_source_backed(source)
++
++    def assert_source_backed(self, source: object) -> None:
++        self.assertIsInstance(source, dict)
++        source_url = str(source.get("source_url", ""))
++        self.assertTrue(source_url)
++        if source_url.startswith("docs/"):
++            self.assertEqual("docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md", source_url)
++        else:
++            parsed = urlparse(source_url)
++            self.assertEqual("https", parsed.scheme)
++            self.assertIn(parsed.netloc, ALLOWED_SOURCE_HOSTS)
++        self.assertTrue(source.get("source_title"))
++        self.assertTrue(source.get("source_locator"))
++        self.assertTrue(source.get("source_excerpt"))
++        self.assertTrue(str(source.get("captured_at", "")).endswith("Z"))
++
++
++if __name__ == "__main__":
++    unittest.main()

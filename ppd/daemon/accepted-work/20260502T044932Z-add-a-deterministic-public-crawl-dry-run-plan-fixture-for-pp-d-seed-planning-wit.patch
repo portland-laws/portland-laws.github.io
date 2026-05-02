@@ -1,0 +1,434 @@
+--- a/ppd/tests/fixtures/crawler/public_crawl_dry_run_plan.json
++++ b/ppd/tests/fixtures/crawler/public_crawl_dry_run_plan.json
+@@ -0,0 +1,431 @@
++{
++  "fixture_kind": "ppd_planned_crawl_manifest",
++  "schema_version": 1,
++  "generated_at": "2026-05-02T00:00:00Z",
++  "crawl_plan_id": "ppd-public-crawl-dry-run-001",
++  "description": "Fixture-only PP&D public crawl dry-run plan. It records candidate public seed URLs and policy preflight expectations without performing network access, fetching robots.txt, invoking processors, or storing response bodies.",
++  "dry_run": true,
++  "network_access_performed": false,
++  "stores_raw_response_bodies": false,
++  "allowed_hosts": [
++    "www.portland.gov",
++    "devhub.portlandoregon.gov",
++    "www.portlandoregon.gov",
++    "www.portlandmaps.com"
++  ],
++  "timeout_policy": {
++    "connect_timeout_seconds": 10,
++    "read_timeout_seconds": 30,
++    "overall_fetch_timeout_seconds": 45,
++    "max_redirects": 3,
++    "on_timeout": "skip_with_reason_code",
++    "timeout_reason_code": "timeout_policy_exceeded"
++  },
++  "robots_preflight_policy": {
++    "required_before_live_fetch": true,
++    "network_access_performed_in_fixture": false,
++    "dry_run_decision": "not_fetched_dry_run",
++    "fail_closed_if_missing_in_live_run": true,
++    "required_fields": [
++      "robots_checked",
++      "robots_source_url",
++      "robots_decision",
++      "robots_checked_at",
++      "user_agent"
++    ]
++  },
++  "no_persist_policy": {
++    "persist_raw_response_bodies": false,
++    "persist_downloaded_documents": false,
++    "persist_browser_traces": false,
++    "persist_screenshots": false,
++    "manifest_only": true
++  },
++  "processor_adapter_preflight_policy": {
++    "required_before_processor_handoff": true,
++    "processor_backend": "ipfs_datasets_py/ipfs_datasets_py/processors",
++    "required_fields": [
++      "allowlist_decision",
++      "robots_preflight",
++      "no_persist_preflight",
++      "timeout_policy",
++      "expected_content_type",
++      "processor_handoff"
++    ]
++  },
++  "planned_fetches": [
++    {
++      "id": "seed-ppd-landing",
++      "url": "https://www.portland.gov/ppd",
++      "canonical_url": "https://www.portland.gov/ppd",
++      "method": "GET",
++      "expected_content_type": "text/html",
++      "source_seed_id": "seed-ppd-landing",
++      "decision": "allowed",
++      "policy_decisions": [
++        {
++          "reason": "allowlisted_public_url",
++          "allowed": true,
++          "detail": "Host www.portland.gov is in the PP&D public crawl allowlist."
++        },
++        {
++          "reason": "robots_allowed",
++          "allowed": true,
++          "detail": "Dry-run fixture records that live fetch must verify robots before processor handoff."
++        },
++        {
++          "reason": "no_persist_raw_body",
++          "allowed": true,
++          "detail": "Plan is manifest-only and does not store raw response bodies or downloaded documents."
++        },
++        {
++          "reason": "fixture_only",
++          "allowed": true,
++          "detail": "No network access is performed by this fixture."
++        }
++      ],
++      "allowlist_decision": {
++        "host": "www.portland.gov",
++        "allowed": true,
++        "reason_code": "allowlisted_public_url"
++      },
++      "robots_preflight": {
++        "robots_checked": false,
++        "robots_source_url": "https://www.portland.gov/robots.txt",
++        "robots_decision": "not_fetched_dry_run",
++        "robots_checked_at": null,
++        "user_agent": "ppd-public-crawl-dry-run"
++      },
++      "no_persist_preflight": {
++        "manifest_only": true,
++        "persist_raw_response_bodies": false,
++        "persist_downloaded_documents": false,
++        "persist_browser_traces": false,
++        "persist_screenshots": false
++      },
++      "timeout_policy": {
++        "connect_timeout_seconds": 10,
++        "read_timeout_seconds": 30,
++        "overall_fetch_timeout_seconds": 45,
++        "max_redirects": 3,
++        "on_timeout": "skip_with_reason_code"
++      },
++      "processor_handoff": {
++        "eligible_after_live_preflight": true,
++        "processor_backend": "ipfs_datasets_py/ipfs_datasets_py/processors",
++        "network_invocation_performed": false
++      },
++      "notes": [
++        "Primary PP&D public landing seed."
++      ]
++    },
++    {
++      "id": "seed-ppd-residential-permits",
++      "url": "https://www.portland.gov/ppd/residential-permitting",
++      "canonical_url": "https://www.portland.gov/ppd/residential-permitting",
++      "method": "GET",
++      "expected_content_type": "text/html",
++      "source_seed_id": "seed-ppd-residential-permits",
++      "decision": "allowed",
++      "policy_decisions": [
++        {
++          "reason": "allowlisted_public_url",
++          "allowed": true,
++          "detail": "Host www.portland.gov is in the PP&D public crawl allowlist."
++        },
++        {
++          "reason": "robots_allowed",
++          "allowed": true,
++          "detail": "Dry-run fixture records that live fetch must verify robots before processor handoff."
++        },
++        {
++          "reason": "no_persist_raw_body",
++          "allowed": true,
++          "detail": "Plan is manifest-only and does not store raw response bodies or downloaded documents."
++        },
++        {
++          "reason": "fixture_only",
++          "allowed": true,
++          "detail": "No network access is performed by this fixture."
++        }
++      ],
++      "allowlist_decision": {
++        "host": "www.portland.gov",
++        "allowed": true,
++        "reason_code": "allowlisted_public_url"
++      },
++      "robots_preflight": {
++        "robots_checked": false,
++        "robots_source_url": "https://www.portland.gov/robots.txt",
++        "robots_decision": "not_fetched_dry_run",
++        "robots_checked_at": null,
++        "user_agent": "ppd-public-crawl-dry-run"
++      },
++      "no_persist_preflight": {
++        "manifest_only": true,
++        "persist_raw_response_bodies": false,
++        "persist_downloaded_documents": false,
++        "persist_browser_traces": false,
++        "persist_screenshots": false
++      },
++      "timeout_policy": {
++        "connect_timeout_seconds": 10,
++        "read_timeout_seconds": 30,
++        "overall_fetch_timeout_seconds": 45,
++        "max_redirects": 3,
++        "on_timeout": "skip_with_reason_code"
++      },
++      "processor_handoff": {
++        "eligible_after_live_preflight": true,
++        "processor_backend": "ipfs_datasets_py/ipfs_datasets_py/processors",
++        "network_invocation_performed": false
++      },
++      "notes": [
++        "Public residential permitting guidance seed."
++      ]
++    },
++    {
++      "id": "seed-ppd-applications-forms",
++      "url": "https://www.portland.gov/ppd/applications-forms",
++      "canonical_url": "https://www.portland.gov/ppd/applications-forms",
++      "method": "GET",
++      "expected_content_type": "text/html",
++      "source_seed_id": "seed-ppd-applications-forms",
++      "decision": "allowed",
++      "policy_decisions": [
++        {
++          "reason": "allowlisted_public_url",
++          "allowed": true,
++          "detail": "Host www.portland.gov is in the PP&D public crawl allowlist."
++        },
++        {
++          "reason": "robots_allowed",
++          "allowed": true,
++          "detail": "Dry-run fixture records that live fetch must verify robots before processor handoff."
++        },
++        {
++          "reason": "no_persist_raw_body",
++          "allowed": true,
++          "detail": "Plan is manifest-only and does not store raw response bodies or downloaded documents."
++        },
++        {
++          "reason": "fixture_only",
++          "allowed": true,
++          "detail": "No network access is performed by this fixture."
++        }
++      ],
++      "allowlist_decision": {
++        "host": "www.portland.gov",
++        "allowed": true,
++        "reason_code": "allowlisted_public_url"
++      },
++      "robots_preflight": {
++        "robots_checked": false,
++        "robots_source_url": "https://www.portland.gov/robots.txt",
++        "robots_decision": "not_fetched_dry_run",
++        "robots_checked_at": null,
++        "user_agent": "ppd-public-crawl-dry-run"
++      },
++      "no_persist_preflight": {
++        "manifest_only": true,
++        "persist_raw_response_bodies": false,
++        "persist_downloaded_documents": false,
++        "persist_browser_traces": false,
++        "persist_screenshots": false
++      },
++      "timeout_policy": {
++        "connect_timeout_seconds": 10,
++        "read_timeout_seconds": 30,
++        "overall_fetch_timeout_seconds": 45,
++        "max_redirects": 3,
++        "on_timeout": "skip_with_reason_code"
++      },
++      "processor_handoff": {
++        "eligible_after_live_preflight": true,
++        "processor_backend": "ipfs_datasets_py/ipfs_datasets_py/processors",
++        "network_invocation_performed": false
++      },
++      "notes": [
++        "Public applications, forms, and handouts index seed."
++      ]
++    },
++    {
++      "id": "seed-devhub-public-landing",
++      "url": "https://devhub.portlandoregon.gov/",
++      "canonical_url": "https://devhub.portlandoregon.gov/",
++      "method": "GET",
++      "expected_content_type": "text/html",
++      "source_seed_id": "seed-devhub-public-landing",
++      "decision": "allowed",
++      "policy_decisions": [
++        {
++          "reason": "allowlisted_public_url",
++          "allowed": true,
++          "detail": "Host devhub.portlandoregon.gov is in the PP&D public crawl allowlist for public portal pages only."
++        },
++        {
++          "reason": "robots_allowed",
++          "allowed": true,
++          "detail": "Dry-run fixture records that live fetch must verify robots before processor handoff."
++        },
++        {
++          "reason": "no_persist_raw_body",
++          "allowed": true,
++          "detail": "Plan is manifest-only and does not store raw response bodies, credentials, traces, screenshots, or session state."
++        },
++        {
++          "reason": "fixture_only",
++          "allowed": true,
++          "detail": "No network access is performed by this fixture."
++        }
++      ],
++      "allowlist_decision": {
++        "host": "devhub.portlandoregon.gov",
++        "allowed": true,
++        "reason_code": "allowlisted_public_url"
++      },
++      "robots_preflight": {
++        "robots_checked": false,
++        "robots_source_url": "https://devhub.portlandoregon.gov/robots.txt",
++        "robots_decision": "not_fetched_dry_run",
++        "robots_checked_at": null,
++        "user_agent": "ppd-public-crawl-dry-run"
++      },
++      "no_persist_preflight": {
++        "manifest_only": true,
++        "persist_raw_response_bodies": false,
++        "persist_downloaded_documents": false,
++        "persist_browser_traces": false,
++        "persist_screenshots": false
++      },
++      "timeout_policy": {
++        "connect_timeout_seconds": 10,
++        "read_timeout_seconds": 30,
++        "overall_fetch_timeout_seconds": 45,
++        "max_redirects": 3,
++        "on_timeout": "skip_with_reason_code"
++      },
++      "processor_handoff": {
++        "eligible_after_live_preflight": true,
++        "processor_backend": "ipfs_datasets_py/ipfs_datasets_py/processors",
++        "network_invocation_performed": false
++      },
++      "notes": [
++        "Public DevHub landing seed only; private account paths remain skipped."
++      ]
++    }
++  ],
++  "skipped_url_reason_codes": [
++    "duplicate_url",
++    "disallowed_domain",
++    "unsupported_scheme",
++    "fragment_only",
++    "private_or_authenticated",
++    "non_public_action",
++    "content_type_unsupported",
++    "robots_not_prechecked",
++    "malformed_url",
++    "timeout_policy_exceeded"
++  ],
++  "skipped_urls": [
++    {
++      "id": "skip-devhub-private-account",
++      "source_seed_id": "seed-devhub-public-landing",
++      "raw_href": "/Account/Login",
++      "normalized_url": "https://devhub.portlandoregon.gov/Account/Login",
++      "reason_code": "private_or_authenticated",
++      "decision": "skipped",
++      "allowlist_decision": {
++        "host": "devhub.portlandoregon.gov",
++        "allowed": false,
++        "reason_code": "private_or_authenticated",
++        "detail": "DevHub sign-in and account-scoped paths are outside unattended public crawl scope."
++      },
++      "robots_preflight": {
++        "robots_checked": false,
++        "robots_source_url": "https://devhub.portlandoregon.gov/robots.txt",
++        "robots_decision": "not_checked_skipped_before_fetch",
++        "robots_checked_at": null,
++        "user_agent": "ppd-public-crawl-dry-run"
++      },
++      "no_persist_preflight": {
++        "manifest_only": true,
++        "persist_raw_response_bodies": false,
++        "persist_downloaded_documents": false,
++        "persist_browser_traces": false,
++        "persist_screenshots": false
++      },
++      "processor_handoff": {
++        "eligible_after_live_preflight": false,
++        "processor_backend": "ipfs_datasets_py/ipfs_datasets_py/processors",
++        "network_invocation_performed": false
++      }
++    },
++    {
++      "id": "skip-external-social-host",
++      "source_seed_id": "seed-ppd-landing",
++      "raw_href": "https://example.com/ppd-social-reference",
++      "normalized_url": "https://example.com/ppd-social-reference",
++      "reason_code": "disallowed_domain",
++      "decision": "skipped",
++      "allowlist_decision": {
++        "host": "example.com",
++        "allowed": false,
++        "reason_code": "disallowed_domain",
++        "detail": "Host is not in the PP&D public crawl allowlist."
++      },
++      "robots_preflight": {
++        "robots_checked": false,
++        "robots_source_url": "https://example.com/robots.txt",
++        "robots_decision": "not_checked_skipped_before_fetch",
++        "robots_checked_at": null,
++        "user_agent": "ppd-public-crawl-dry-run"
++      },
++      "no_persist_preflight": {
++        "manifest_only": true,
++        "persist_raw_response_bodies": false,
++        "persist_downloaded_documents": false,
++        "persist_browser_traces": false,
++        "persist_screenshots": false
++      },
++      "processor_handoff": {
++        "eligible_after_live_preflight": false,
++        "processor_backend": "ipfs_datasets_py/ipfs_datasets_py/processors",
++        "network_invocation_performed": false
++      }
++    },
++    {
++      "id": "skip-mailto-contact",
++      "source_seed_id": "seed-ppd-landing",
++      "raw_href": "mailto:example@portlandoregon.gov",
++      "normalized_url": "mailto:example@portlandoregon.gov",
++      "reason_code": "unsupported_scheme",
++      "decision": "skipped",
++      "allowlist_decision": {
++        "host": "",
++        "allowed": false,
++        "reason_code": "unsupported_scheme",
++        "detail": "mailto links are contact references, not crawl fetch candidates."
++      },
++      "robots_preflight": {
++        "robots_checked": false,
++        "robots_source_url": null,
++        "robots_decision": "not_applicable_unsupported_scheme",
++        "robots_checked_at": null,
++        "user_agent": "ppd-public-crawl-dry-run"
++      },
++      "no_persist_preflight": {
++        "manifest_only": true,
++        "persist_raw_response_bodies": false,
++        "persist_downloaded_documents": false,
++        "persist_browser_traces": false,
++        "persist_screenshots": false
++      },
++      "processor_handoff": {
++        "eligible_after_live_preflight": false,
++        "processor_backend": "ipfs_datasets_py/ipfs_datasets_py/processors",
++        "network_invocation_performed": false
++      }
++    }
++  ]
++}

@@ -1,0 +1,85 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -80,8 +80,11 @@
+ - [x] Add a fixture-only public source inventory coverage report that maps existing inventory categories to the original PP&D source landscape and flags missing categories without crawling live sites.
+ - [x] Add a validation-only test for the public source inventory coverage report proving it fails closed for missing authority labels, missing recrawl cadence, private DevHub paths, raw response bodies, credentials, traces, screenshots, and downloaded documents.
+ - [x] Add a fixture-only permit-process skeleton for a solar permit workflow with required facts, required documents, file rules, fee/payment gates, and citation-backed evidence from existing public fixtures only.
+-- [!] Add requirement extraction validation for the solar permit fixture covering eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections, and explicit-confirmation gates.
+ - [~] Add guardrail compiler fixture tests for the solar permit workflow covering missing facts, required document groups, payment stop points, correction-upload stop points, and inspection-scheduling stop points.
++- [ ] Add a one-file syntax-first import test for `ppd.extraction.solar_permit_requirements` that imports only that module and fails malformed Python before broad solar requirement validation resumes.
++- [ ] Add a minimal solar permit requirement extraction expected-output fixture with exactly seven category records: eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections, and explicit-confirmation gates, all source-backed and redacted.
++- [ ] Add the solar permit requirement extractor as a no-dataclass one-file implementation only after the syntax-first import test and seven-record fixture pass; expose plain functions/constants and avoid broad contract rewrites.
++- [ ] Add a focused validation test for solar permit requirement extraction that checks only the seven fixture categories, source evidence IDs, confidence bounds, and explicit stop-gate classifications.
+ - [ ] Add a mocked DevHub workflow snapshot fixture for permit fee review and payment-readiness that records visible balances, payment instructions, safe read-only status, and financial-action stop points using only redacted values.
+ - [ ] Add DevHub guardrail tests proving fee review can summarize payment readiness from mocked fixtures but cannot enter payment details or execute payment without exact session-specific user confirmation.
+ - [ ] Add a validation-only source coverage gap report that compares permit-process fixtures against public source inventory categories and reports which PP&D permit families still lack fixture-backed process models.
+@@ -94,8 +97,10 @@
+ - Parked source freshness renderer task: Add a fixture-only change report renderer for public PP&D source freshness results that summarizes changed requirements, new or removed links, and affected permit-process fixtures with citation references.
+ - Parked missing-information validator broad task: Add validation for missing-information detector output proving every requested user item is source-backed, deduplicated, action-classified, and free of private fixture values. This was recovered by the accepted one-file validator replacement and should not be selected again unless a new regression appears.
+ - Parked public-source-inventory validator broad task: Add validation for public source inventory safety. This was recovered by the accepted sentinel-preserving one-file implementation. Do not select the older broad retry tasks again unless a new failing validator points to a concrete regression.
++- Parked solar requirement extraction broad task: Add requirement extraction validation for the solar permit fixture covering eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections, and explicit-confirmation gates. This repeatedly failed with invalid Python such as `confidence 1`; recover through the new syntax-first import test, seven-record fixture, no-dataclass extractor, and focused validation test before retrying any broader behavior.
+ - Superseded checkbox-70: Retry the public source inventory validator as a one-file implementation only after the `MODULE_PURPOSE` sentinel and expected unsafe-field fixture path pass validation. This was superseded by the accepted sentinel-preserving validator retry.
+ - Superseded checkbox-71: Retry the public source inventory validator as a no-dataclass one-file implementation only. This was superseded by the accepted sentinel-preserving validator retry that preserves `validator_status()` exactly.
++- Superseded checkbox-75: The broad solar requirement extraction validation task is parked because three consecutive attempts produced Python `SyntaxError` failures. Do not select it directly while the narrower solar recovery tasks remain available.
+ 
+ ## Deferred Repair Notes
+ 
+@@ -106,6 +111,8 @@
+ The source freshness classifier checkbox was blocked because repeated proposals introduced invalid Python such as `if self.recrawl_cadence_days list[str]:`. That recovery has passed. Do not reopen those broad source-freshness tasks unless a new failing validator points to a concrete regression.
+ 
+ The public-source-inventory validation sequence produced useful narrow repairs after repeated failures: sentinel restoration, fixture-name compatibility, and a final sentinel-preserving no-dataclass validator. Older blocked retries are now parked because selecting them again would regress into stale failure modes. The accepted validator recovery keeps `validator_status()` as an import sentinel and exposes behavior through separate plain functions/constants/dicts.
++
++The solar permit requirement extraction task is now split because the latest attempts failed before import under `py_compile`. The daemon should first add a one-file import sentinel test, then a small expected-output fixture, then a no-dataclass extractor, and only then the focused validation test. The recovery implementation should not use dataclasses, generated comparison operators, broad schemas, live crawl data, DevHub session files, or private artifacts.
+ 
+ ## Task Selection Notes
+ 
+@@ -121,6 +128,7 @@
+ 4. If validation reports that `validator_status()` returned extra keys or readiness flags, retry only with a sentinel-preserving implementation that leaves `validator_status()` exactly as the syntax-first test expects and exposes validator behavior through separate functions.
+ 5. After a later narrower recovery passes, park earlier blocked retries as superseded so they do not count as active blockers.
+ 6. Do not select the parked broad missing-information validator directly.
++7. For solar requirement extraction, do not select the parked broad checkbox-75 task directly; run the syntax-first import test, seven-record fixture, no-dataclass extractor, and focused validation tasks in order.
+ 
+ Each recovery proposal should keep to one file unless the task explicitly requires a fixture plus its focused test. For public source inventory recovery, keep syntax sentinel repair separate from behavior repair, and keep the sentinel helper stable even after validator functions are added.
+ 
+@@ -138,33 +146,21 @@
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T21:36:00.000000Z
++Last updated: 2026-05-01T21:58:30.000000Z
+ 
+-- Latest target: `Supervisor repair: append next fixture-first PP&D backlog tranche after all daemon tasks completed.`
++- Latest target: `Supervisor repair: park repeated solar requirement extraction SyntaxError task and append narrow recovery tasks.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Append eight narrow fixture-first and validation-first tasks so the worker daemon can continue from public source inventory coverage into solar permit and payment-readiness guardrails.
+-- Counts: blocked 0, complete 71, in_progress 0, needed 8
+-
++- Latest summary: Park checkbox-75 outside selectable checklist form and split recovery into syntax-first import, minimal fixture, no-dataclass extractor, and focused validation tasks.
++- Counts: blocked 0, complete 74, in_progress 1, needed 7
+ 
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T21:36:00.000000Z
++Last updated: 2026-05-01T21:58:30.000000Z
+ 
+-- Latest target: `Supervisor repair: append next fixture-first PP&D backlog tranche after all daemon tasks completed.`
++- Latest target: `Supervisor repair: park repeated solar requirement extraction SyntaxError task and append narrow recovery tasks.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Append eight narrow fixture-first and validation-first tasks so the worker daemon can continue from public source inventory coverage into solar permit and payment-readiness guardrails.
+-- Counts: blocked 0, complete 71, in_progress 0, needed 8
++- Latest summary: Park checkbox-75 outside selectable checklist form and split recovery into syntax-first import, minimal fixture, no-dataclass extractor, and focused validation tasks.
++- Counts: `{"blocked": 0, "complete": 74, "in_progress": 1, "needed": 7}`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-01T21:58:11.017943Z
+-
+-- Latest target: `Task checkbox-75: Add requirement extraction validation for the solar permit fixture covering eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections, and explicit-confirmation gates.`
+-- Latest result: `validation`
+-- Latest summary: Add fixture-backed solar permit requirement extraction validation with a smaller syntax-valid Python module after prior SyntaxError failures.
+-- Counts: `{"blocked": 1, "complete": 74, "in_progress": 0, "needed": 4}`
+-
+-<!-- ppd-daemon-task-board:end -->

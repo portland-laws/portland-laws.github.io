@@ -1,0 +1,321 @@
+--- a/ppd/tests/fixtures/devhub/sign_application_draft_review_guardrails.json
++++ b/ppd/tests/fixtures/devhub/sign_application_draft_review_guardrails.json
+@@ -0,0 +1,152 @@
++{
++  "schema_version": 1,
++  "fixture_id": "devhub-sign-application-draft-review-guardrails",
++  "captured_from": "synthetic_mocked_devhub_fixture",
++  "session": {
++    "session_id": "devhub-session-redacted-2026-05-02T15-40Z",
++    "account_scope": "redacted_user_case",
++    "permit_type": "sign_permit",
++    "state": "draft_review",
++    "private_values_redacted": true
++  },
++  "draft_review": {
++    "workflow_state_id": "sign-application-draft-review",
++    "url_state": "https://devhub.portlandoregon.gov/permits/signs/mock-draft-review",
++    "page_heading": "Review sign application draft",
++    "read_only_preview_allowed": true,
++    "official_action_performed": false,
++    "preview": {
++      "preview_id": "preview-sign-draft-review-redacted",
++      "summary": "Review redacted sign permit draft fields before any official DevHub action.",
++      "planned_changes": [
++        {
++          "field_id": "project_description",
++          "selector_basis": {
++            "role": "textbox",
++            "accessible_name": "Project description",
++            "label_text": "Project description",
++            "nearby_heading": "Sign project details"
++          },
++          "before_redacted": "[redacted-current-description]",
++          "after_redacted": "[redacted-draft-description]",
++          "classification": "draft_edit"
++        },
++        {
++          "field_id": "sign_location_description",
++          "selector_basis": {
++            "role": "textbox",
++            "accessible_name": "Sign location description",
++            "label_text": "Sign location description",
++            "nearby_heading": "Sign project details"
++          },
++          "before_redacted": "[redacted-current-location]",
++          "after_redacted": "[redacted-draft-location]",
++          "classification": "draft_edit"
++        }
++      ],
++      "review_only_actions": [
++        "inspect_visible_fields",
++        "summarize_missing_items",
++        "produce_preview"
++      ]
++    }
++  },
++  "confirmation_policy": {
++    "requires_active_session_match": true,
++    "requires_exact_action_match": true,
++    "requires_exact_phrase_match": true,
++    "requires_preview_before_execution": true,
++    "confirmation_template": "I confirm {action_id} for DevHub session {session_id}"
++  },
++  "blocked_actions": [
++    {
++      "action_id": "official_upload_sign_documents",
++      "label": "Upload sign application documents",
++      "classification": "consequential",
++      "allowed_without_exact_confirmation": false,
++      "required_confirmation_phrase": "I confirm official_upload_sign_documents for DevHub session devhub-session-redacted-2026-05-02T15-40Z"
++    },
++    {
++      "action_id": "certify_sign_application",
++      "label": "Certify sign application statements",
++      "classification": "consequential",
++      "allowed_without_exact_confirmation": false,
++      "required_confirmation_phrase": "I confirm certify_sign_application for DevHub session devhub-session-redacted-2026-05-02T15-40Z"
++    },
++    {
++      "action_id": "submit_sign_application",
++      "label": "Submit sign application",
++      "classification": "consequential",
++      "allowed_without_exact_confirmation": false,
++      "required_confirmation_phrase": "I confirm submit_sign_application for DevHub session devhub-session-redacted-2026-05-02T15-40Z"
++    },
++    {
++      "action_id": "pay_sign_application_fees",
++      "label": "Pay sign application fees",
++      "classification": "financial",
++      "allowed_without_exact_confirmation": false,
++      "required_confirmation_phrase": "I confirm pay_sign_application_fees for DevHub session devhub-session-redacted-2026-05-02T15-40Z"
++    },
++    {
++      "action_id": "cancel_sign_application",
++      "label": "Cancel sign application draft or request",
++      "classification": "consequential",
++      "allowed_without_exact_confirmation": false,
++      "required_confirmation_phrase": "I confirm cancel_sign_application for DevHub session devhub-session-redacted-2026-05-02T15-40Z"
++    },
++    {
++      "action_id": "schedule_sign_inspection",
++      "label": "Schedule sign permit inspection",
++      "classification": "consequential",
++      "allowed_without_exact_confirmation": false,
++      "required_confirmation_phrase": "I confirm schedule_sign_inspection for DevHub session devhub-session-redacted-2026-05-02T15-40Z"
++    }
++  ],
++  "confirmation_examples": [
++    {
++      "example_id": "empty_confirmation",
++      "confirmation_text": "",
++      "session_id": "devhub-session-redacted-2026-05-02T15-40Z",
++      "action_id": "submit_sign_application",
++      "expected_allowed": false
++    },
++    {
++      "example_id": "wrong_session",
++      "confirmation_text": "I confirm submit_sign_application for DevHub session devhub-session-redacted-old",
++      "session_id": "devhub-session-redacted-old",
++      "action_id": "submit_sign_application",
++      "expected_allowed": false
++    },
++    {
++      "example_id": "wrong_action",
++      "confirmation_text": "I confirm certify_sign_application for DevHub session devhub-session-redacted-2026-05-02T15-40Z",
++      "session_id": "devhub-session-redacted-2026-05-02T15-40Z",
++      "action_id": "submit_sign_application",
++      "expected_allowed": false
++    },
++    {
++      "example_id": "exact_submit_confirmation",
++      "confirmation_text": "I confirm submit_sign_application for DevHub session devhub-session-redacted-2026-05-02T15-40Z",
++      "session_id": "devhub-session-redacted-2026-05-02T15-40Z",
++      "action_id": "submit_sign_application",
++      "expected_allowed": true
++    }
++  ],
++  "audit_expectations": {
++    "record_preview_event": true,
++    "record_blocked_action_event": true,
++    "record_selector_basis": true,
++    "record_source_requirement": true,
++    "record_user_confirmation_state": true,
++    "record_before_after_redacted_state": true
++  },
++  "source_requirements": [
++    {
++      "requirement_id": "devhub-sign-application-action-gate",
++      "source_url": "https://www.portland.gov/ppd/devhub",
++      "citation_label": "DevHub public guidance fixture",
++      "requirement_type": "action_gate",
++      "summary": "An assistant may prepare a sign permit draft preview but must pause before upload, certification, submission, payment, cancellation, or inspection scheduling."
++    }
++  ]
++}
+--- a/ppd/tests/test_devhub_sign_application_draft_review_guardrails.py
++++ b/ppd/tests/test_devhub_sign_application_draft_review_guardrails.py
+@@ -0,0 +1,163 @@
++"""Guardrail tests for mocked DevHub sign application draft review.
++
++These tests use a deterministic fixture only. They do not open DevHub, attach to
++a browser, authenticate, upload files, certify statements, submit requests, pay
++fees, cancel permits, or schedule inspections.
++"""
++
++from __future__ import annotations
++
++import json
++import unittest
++from pathlib import Path
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "devhub"
++    / "sign_application_draft_review_guardrails.json"
++)
++
++BLOCKED_ACTION_IDS = {
++    "official_upload_sign_documents",
++    "certify_sign_application",
++    "submit_sign_application",
++    "pay_sign_application_fees",
++    "cancel_sign_application",
++    "schedule_sign_inspection",
++}
++
++CONSEQUENTIAL_OR_FINANCIAL = {"consequential", "financial"}
++PRIVATE_ARTIFACT_FRAGMENTS = (
++    "credential",
++    "password",
++    "secret",
++    "auth_state",
++    "storage_state",
++    "trace.zip",
++    "screenshot",
++    "raw_response_body",
++    "downloaded_document",
++    "mfa_code",
++    "captcha_solution",
++)
++
++
++def load_fixture() -> dict:
++    with FIXTURE_PATH.open(encoding="utf-8") as fixture_file:
++        return json.load(fixture_file)
++
++
++def exact_confirmation_allows(fixture: dict, action_id: str, session_id: str, text: str) -> bool:
++    blocked_actions = {
++        action["action_id"]: action for action in fixture["blocked_actions"]
++    }
++    action = blocked_actions[action_id]
++    expected_phrase = action["required_confirmation_phrase"]
++    active_session_id = fixture["session"]["session_id"]
++    return (
++        session_id == active_session_id
++        and text == expected_phrase
++        and f" {action_id} " in f" {text} "
++        and text.endswith(active_session_id)
++    )
++
++
++class DevHubSignApplicationDraftReviewGuardrailTests(unittest.TestCase):
++    def setUp(self) -> None:
++        self.fixture = load_fixture()
++
++    def test_review_can_produce_preview_without_official_action(self) -> None:
++        draft_review = self.fixture["draft_review"]
++        preview = draft_review["preview"]
++
++        self.assertTrue(draft_review["read_only_preview_allowed"])
++        self.assertFalse(draft_review["official_action_performed"])
++        self.assertEqual(preview["preview_id"], "preview-sign-draft-review-redacted")
++        self.assertIn("produce_preview", preview["review_only_actions"])
++        self.assertGreaterEqual(len(preview["planned_changes"]), 1)
++
++        for change in preview["planned_changes"]:
++            self.assertEqual(change["classification"], "draft_edit")
++            self.assertTrue(change["before_redacted"].startswith("[redacted-"))
++            self.assertTrue(change["after_redacted"].startswith("[redacted-"))
++            selector = change["selector_basis"]
++            self.assertTrue(selector["role"])
++            self.assertTrue(selector["accessible_name"])
++            self.assertTrue(selector["label_text"])
++            self.assertTrue(selector["nearby_heading"])
++
++    def test_official_actions_are_blocked_without_exact_session_confirmation(self) -> None:
++        session_id = self.fixture["session"]["session_id"]
++        action_ids = {action["action_id"] for action in self.fixture["blocked_actions"]}
++        self.assertEqual(action_ids, BLOCKED_ACTION_IDS)
++
++        for action in self.fixture["blocked_actions"]:
++            with self.subTest(action=action["action_id"]):
++                self.assertIn(action["classification"], CONSEQUENTIAL_OR_FINANCIAL)
++                self.assertFalse(action["allowed_without_exact_confirmation"])
++                self.assertIn(action["action_id"], action["required_confirmation_phrase"])
++                self.assertIn(session_id, action["required_confirmation_phrase"])
++                self.assertFalse(
++                    exact_confirmation_allows(
++                        self.fixture,
++                        action["action_id"],
++                        session_id,
++                        "",
++                    )
++                )
++                self.assertFalse(
++                    exact_confirmation_allows(
++                        self.fixture,
++                        action["action_id"],
++                        "devhub-session-redacted-old",
++                        action["required_confirmation_phrase"],
++                    )
++                )
++
++    def test_only_exact_confirmation_for_active_session_allows_matching_action(self) -> None:
++        for example in self.fixture["confirmation_examples"]:
++            with self.subTest(example=example["example_id"]):
++                allowed = exact_confirmation_allows(
++                    self.fixture,
++                    example["action_id"],
++                    example["session_id"],
++                    example["confirmation_text"],
++                )
++                self.assertEqual(allowed, example["expected_allowed"])
++
++    def test_confirmation_policy_is_session_specific_and_preview_first(self) -> None:
++        policy = self.fixture["confirmation_policy"]
++        self.assertTrue(policy["requires_active_session_match"])
++        self.assertTrue(policy["requires_exact_action_match"])
++        self.assertTrue(policy["requires_exact_phrase_match"])
++        self.assertTrue(policy["requires_preview_before_execution"])
++        self.assertEqual(
++            policy["confirmation_template"],
++            "I confirm {action_id} for DevHub session {session_id}",
++        )
++
++    def test_audit_expectations_cover_preview_and_blocked_actions(self) -> None:
++        audit = self.fixture["audit_expectations"]
++        self.assertTrue(audit["record_preview_event"])
++        self.assertTrue(audit["record_blocked_action_event"])
++        self.assertTrue(audit["record_selector_basis"])
++        self.assertTrue(audit["record_source_requirement"])
++        self.assertTrue(audit["record_user_confirmation_state"])
++        self.assertTrue(audit["record_before_after_redacted_state"])
++
++        requirements = self.fixture["source_requirements"]
++        self.assertEqual(len(requirements), 1)
++        self.assertEqual(requirements[0]["requirement_type"], "action_gate")
++        self.assertTrue(requirements[0]["source_url"].startswith("https://www.portland.gov/ppd"))
++
++    def test_fixture_contains_no_private_devhub_artifacts(self) -> None:
++        serialized = json.dumps(self.fixture, sort_keys=True).lower()
++        for fragment in PRIVATE_ARTIFACT_FRAGMENTS:
++            with self.subTest(fragment=fragment):
++                self.assertNotIn(fragment, serialized)
++
++
++if __name__ == "__main__":
++    unittest.main()

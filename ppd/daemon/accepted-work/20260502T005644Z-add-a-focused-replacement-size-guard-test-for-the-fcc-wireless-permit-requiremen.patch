@@ -1,0 +1,86 @@
+--- a/ppd/tests/test_fcc_wireless_permit_requirements_size_guard.py
++++ b/ppd/tests/test_fcc_wireless_permit_requirements_size_guard.py
+@@ -0,0 +1,83 @@
++"""Size guard for the FCC wireless permit requirements extractor.
++
++This test is intentionally narrow: the extractor should be a compact hand-written
++module, not a broad generated contract surface. It only inspects the target file
++when that extractor exists so the guard can land before the extractor itself.
++"""
++
++from __future__ import annotations
++
++import ast
++from pathlib import Path
++import unittest
++
++
++TARGET_RELATIVE_PATH = Path("ppd") / "extraction" / "fcc_wireless_permit_requirements.py"
++MAX_PHYSICAL_LINES = 180
++
++
++class FccWirelessPermitRequirementsSizeGuardTest(unittest.TestCase):
++    def setUp(self) -> None:
++        self.repo_root = Path(__file__).resolve().parents[2]
++        self.target_path = self.repo_root / TARGET_RELATIVE_PATH
++        if not self.target_path.exists():
++            self.skipTest(f"{TARGET_RELATIVE_PATH} has not been added yet")
++
++    def _parse_target(self) -> ast.Module:
++        source = self.target_path.read_text(encoding="utf-8")
++        return ast.parse(source, filename=str(TARGET_RELATIVE_PATH))
++
++    def test_extractor_stays_under_replacement_size_limit(self) -> None:
++        physical_lines = self.target_path.read_text(encoding="utf-8").splitlines()
++
++        self.assertLessEqual(
++            len(physical_lines),
++            MAX_PHYSICAL_LINES,
++            (
++                f"{TARGET_RELATIVE_PATH} must stay under "
++                f"{MAX_PHYSICAL_LINES} physical lines; keep the extractor narrow "
++                "instead of accepting a broad generated module"
++            ),
++        )
++
++    def test_extractor_does_not_use_dataclasses(self) -> None:
++        tree = self._parse_target()
++        violations: list[str] = []
++
++        for node in ast.walk(tree):
++            if isinstance(node, ast.ImportFrom) and node.module == "dataclasses":
++                for alias in node.names:
++                    violations.append(f"dataclasses import {alias.name}")
++            elif isinstance(node, ast.Import):
++                for alias in node.names:
++                    if alias.name == "dataclasses" or alias.name.startswith("dataclasses."):
++                        violations.append(f"dataclasses import {alias.name}")
++            elif isinstance(node, ast.ClassDef):
++                for decorator in node.decorator_list:
++                    decorator_name = _decorator_name(decorator)
++                    if decorator_name in {"dataclass", "dataclasses.dataclass"}:
++                        violations.append(f"@{decorator_name} on class {node.name}")
++
++        self.assertEqual(
++            [],
++            violations,
++            (
++                f"{TARGET_RELATIVE_PATH} must not use dataclasses; keep this "
++                "extractor as a compact plain-function implementation"
++            ),
++        )
++
++
++def _decorator_name(node: ast.AST) -> str:
++    if isinstance(node, ast.Name):
++        return node.id
++    if isinstance(node, ast.Attribute):
++        parent = _decorator_name(node.value)
++        return f"{parent}.{node.attr}" if parent else node.attr
++    if isinstance(node, ast.Call):
++        return _decorator_name(node.func)
++    return ""
++
++
++if __name__ == "__main__":
++    unittest.main()

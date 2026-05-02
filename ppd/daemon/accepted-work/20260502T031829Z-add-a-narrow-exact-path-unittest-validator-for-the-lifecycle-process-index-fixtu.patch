@@ -1,0 +1,134 @@
+--- a/ppd/tests/test_permit_lifecycle_process_index.py
++++ b/ppd/tests/test_permit_lifecycle_process_index.py
+@@ -0,0 +1,131 @@
++import json
++from pathlib import Path
++import unittest
++
++
++INDEX_FIXTURE_NAME = "permit_lifecycle_process_index.json"
++LIFECYCLE_FIXTURE_PREFIX = "ppd/tests/fixtures/lifecycle/"
++
++FORBIDDEN_AUTHORIZATION_SUBJECTS = (
++    "live crawling",
++    "live_crawling",
++    "live crawl",
++    "live_crawl",
++    "login",
++    "payment",
++    "submission",
++    "upload",
++    "certification",
++    "cancellation",
++    "official refund",
++    "official_refund",
++    "official extension",
++    "official_extension",
++    "inspection scheduling",
++    "inspection_scheduling",
++)
++
++AUTHORIZATION_WORDS = (
++    "authorization",
++    "authorized",
++    "authorize",
++    "allows",
++)
++
++
++def _exact_index_fixture_path():
++    return Path(__file__).parent / "fixtures" / "lifecycle" / INDEX_FIXTURE_NAME
++
++
++def _load_exact_index_fixture():
++    fixture_path = _exact_index_fixture_path()
++    with fixture_path.open("r", encoding="utf-8") as fixture_file:
++        return json.load(fixture_file)
++
++
++def _repo_root_from_test_file():
++    return Path(__file__).resolve().parents[2]
++
++
++def _require_mapping(value, label):
++    if not isinstance(value, dict):
++        raise AssertionError(label + " must be an object")
++
++
++def _require_list(value, label):
++    if not isinstance(value, list):
++        raise AssertionError(label + " must be a list")
++
++
++def _require_string(value, label):
++    if not isinstance(value, str):
++        raise AssertionError(label + " must be a string")
++
++
++def _validate_skeleton_path(entry, repo_root):
++    skeleton_path = entry.get("processSkeletonFixturePath")
++    _require_string(skeleton_path, "processSkeletonFixturePath")
++    if not skeleton_path.startswith(LIFECYCLE_FIXTURE_PREFIX):
++        raise AssertionError("skeleton fixture path must stay under lifecycle fixtures")
++    if not skeleton_path.endswith(".json"):
++        raise AssertionError("skeleton fixture path must name a JSON fixture")
++    if not (repo_root / skeleton_path).exists():
++        raise AssertionError("referenced skeleton fixture does not exist: " + skeleton_path)
++
++
++def _validate_no_authorization(entry):
++    serialized_entry = json.dumps(entry, sort_keys=True).lower()
++    for subject in FORBIDDEN_AUTHORIZATION_SUBJECTS:
++        for word in AUTHORIZATION_WORDS:
++            if not not (subject in serialized_entry and word in serialized_entry):
++                raise AssertionError("entry contains forbidden authorization for " + subject)
++
++
++def _validate_index_fixture(data):
++    _require_mapping(data, "index fixture")
++    entries = data.get("entries")
++    _require_list(entries, "entries")
++    category_id_index = data.get("categoryIdIndex")
++    _require_list(category_id_index, "categoryIdIndex")
++
++    repo_root = _repo_root_from_test_file()
++    collected_category_ids = []
++    seen_entry_ids = set()
++
++    for entry in entries:
++        _require_mapping(entry, "entry")
++        entry_id = entry.get("indexEntryId")
++        _require_string(entry_id, "indexEntryId")
++        if not entry_id not in seen_entry_ids:
++            raise AssertionError("duplicate index entry id: " + entry_id)
++        seen_entry_ids.add(entry_id)
++
++        _validate_skeleton_path(entry, repo_root)
++        _validate_no_authorization(entry)
++
++        category_ids = entry.get("lifecycleCategoryIds")
++        _require_list(category_ids, "lifecycleCategoryIds")
++        for category_id in category_ids:
++            _require_string(category_id, "lifecycleCategoryIds item")
++            collected_category_ids.append(category_id)
++
++    if not len(collected_category_ids) == len(set(collected_category_ids)):
++        raise AssertionError("lifecycle category ids must be unique")
++    if not len(category_id_index) == len(set(category_id_index)):
++        raise AssertionError("categoryIdIndex entries must be unique")
++    if not collected_category_ids == category_id_index:
++        raise AssertionError("categoryIdIndex must match entry lifecycle category ids")
++
++
++class PermitLifecycleProcessIndexTest(unittest.TestCase):
++    def test_committed_process_index_fixture_is_valid(self):
++        data = _load_exact_index_fixture()
++        _validate_index_fixture(data)
++        self.assertEqual(data["fixtureKind"], "permit_lifecycle_process_index")
++        self.assertEqual(data["manifestOnly"], True)
++        self.assertIn("entries", data)
++        self.assertIn("categoryIdIndex", data)
++
++
++if __name__ == "__main__":
++    unittest.main()

@@ -1,0 +1,79 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -13,9 +13,43 @@
+ - Prefer editing daemon prompt, preflight, retry, diagnostics, or this guide.
+ - Direct the worker toward a smaller file set on the next attempt.
+ - Limit the next syntax-recovery worker proposal to at most two files unless the selected task is explicitly a task-board-only planning edit.
++- For a selected task that says `one-file implementation`, require exactly one changed implementation file and no fixture or test changes in that same proposal.
+ - Require syntax-valid complete replacements for every proposed Python, TypeScript, JavaScript, and JSON file.
+ - Prefer fixture-first and validation-first tasks over live crawl or authenticated automation.
+ - Keep broad shared contract rewrites out of syntax recovery unless the failed task directly requires that contract.
++
++## Immediate Repair Prompt Patch
++
++When the active task follows a syntax-failure streak, inject a short recovery block into the next worker prompt before the task context:
++
++- Syntax/compile recovery mode is active because recent validation rollbacks failed before behavioral assertions.
++- Return the smallest syntactically valid proposal that satisfies only the selected task.
++- If editing Python, mentally pass `ast.parse` and `python3 -m py_compile` before returning JSON.
++- Avoid dataclasses for recovery modules unless an existing passing file already uses them for the same contract.
++- Do not mix fixture creation, production extractor behavior, validation tests, and broad contract rewrites in one proposal.
++- For solar requirement extraction recovery, edit only `ppd/extraction/solar_permit_requirements.py` when the selected task asks for the no-dataclass extractor.
++- Preserve existing sentinel constants, import-guard behavior, fixture paths, and expected-output records unless the selected task explicitly says to change them.
++
++## Preflight Expectations
++
++Daemon preflight should reject or warn on proposals before write/rollback churn when any of the following are true:
++
++- A Python replacement cannot be parsed or compiled.
++- A JSON replacement cannot be decoded.
++- A TypeScript or JavaScript replacement contains obvious Python control-flow syntax.
++- A proposal touches more than two files after repeated syntax failures for the same task.
++- A `one-file implementation` task changes more than one file.
++- A repair proposal tries to implement the active PP&D domain task instead of repairing daemon or supervisor behavior.
++- A syntax-first import test targets a module path that does not exist and the proposal does not also create a minimal sentinel module for that exact path.
++- A proposed path creates private DevHub state, traces, screenshots, raw crawl output, downloaded documents, or auth/session artifacts.
++
++Minimum daemon-side preflight checks for recovery mode:
++
++- Parse every proposed `.py` replacement before writing it.
++- Decode every proposed `.json` replacement before writing it.
++- Reject `.ts`, `.tsx`, `.js`, and `.mjs` replacements that contain obvious Python tokens such as `def`, `elif`, `except`, or `None`.
++- Count changed code/data files before writing; reject broad proposals during syntax recovery.
++- Include the exact parser message in the failed-patch manifest so the next prompt can quote the failing line.
+ 
+ ## Worker Prompt Guardrails
+ 
+@@ -25,22 +59,10 @@
+ - For Python files, avoid TypeScript syntax and validate mentally against `python3 -m py_compile` before returning.
+ - For TypeScript files, avoid Python control-flow and type syntax.
+ - Keep proposals to the smallest file set that can satisfy the selected task.
+-- If the last failure was syntax-only, first return a minimal syntactically valid implementation rather than expanding behavior.
++- If recent failure context includes syntax-only failures, first return a minimal syntactically valid implementation rather than expanding behavior.
+ - Do not mix fixture creation, production extractor rewrites, and broad contract changes in one proposal unless all are strictly necessary.
+ - If adding a syntax-first import test, confirm the imported module already exists or include only the minimal sentinel module required for the import to succeed.
+ - After two syntax or compile rollbacks for the same task, prefer one of these shapes: one fixture file, one sentinel module, one no-dataclass implementation file, or one focused test plus the minimal fixture it needs.
+-
+-## Preflight Expectations
+-
+-Daemon preflight should reject or warn on proposals before write/rollback churn when any of the following are true:
+-
+-- A Python replacement cannot be parsed or compiled.
+-- A JSON replacement cannot be decoded.
+-- A TypeScript or JavaScript replacement contains obvious Python control-flow syntax.
+-- A proposal touches more than two files after repeated syntax failures for the same task.
+-- A repair proposal tries to implement the active PP&D domain task instead of repairing daemon or supervisor behavior.
+-- A syntax-first import test targets a module path that does not exist and the proposal does not also create a minimal sentinel module for that exact path.
+-- A proposed path creates private DevHub state, traces, screenshots, raw crawl output, downloaded documents, or auth/session artifacts.
+ 
+ ## Retry Policy
+ 
+@@ -76,6 +98,8 @@
+ 3. Add the focused validation test only after the fixture and extractor are present.
+ 4. Do not revive the parked broad solar requirement extraction task while narrower selectable tasks remain.
+ 
++For the active no-dataclass extractor task, the worker should expose only plain module constants and functions. It should not add tests, fixtures, dataclasses, generated schemas, live crawl behavior, DevHub automation, or task-board progress edits in the same proposal.
++
+ ## Scope Limits
+ 
+ Supervisor repair proposals may edit only daemon, supervisor, validation, test, ignore, or operations documentation files allowed by the PP&D daemon policy. They must not mark domain progress by editing application artifacts, live crawl output, or DevHub private state.

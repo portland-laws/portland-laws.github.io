@@ -1,0 +1,97 @@
+{
+  "fixtureId": "urban_forestry_permit_requirements_v1",
+  "permitType": "urban_forestry",
+  "description": "Fixture-only Urban Forestry permit requirement extraction sample for focused validation.",
+  "sources": [
+    {
+      "id": "uf-src-application-guide",
+      "canonicalUrl": "https://www.portland.gov/ppd/apply-permit",
+      "title": "Apply for permits through Development Hub PDX",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "id": "uf-src-devhub-faq",
+      "canonicalUrl": "https://www.portland.gov/ppd/development-hub-pdx-help",
+      "title": "Development Hub PDX help and FAQ",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "id": "uf-src-public-forestry-guidance",
+      "canonicalUrl": "https://www.portland.gov/trees/treepermits",
+      "title": "Tree permits",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    }
+  ],
+  "requirements": [
+    {
+      "requirementId": "uf-req-001",
+      "normalizedKey": "urban_forestry.select_permit_type",
+      "category": "permit_type_selection",
+      "requirementType": "precondition",
+      "summary": "The applicant must identify the request as an Urban Forestry permit workflow before preparing permit-specific inputs.",
+      "sourceEvidenceIds": ["uf-src-application-guide"],
+      "confidence": 0.86,
+      "stopGateClassification": "read_only"
+    },
+    {
+      "requirementId": "uf-req-002",
+      "normalizedKey": "urban_forestry.provide_property_and_tree_location",
+      "category": "property_and_tree_location",
+      "requirementType": "obligation",
+      "summary": "The applicant must provide property and tree-location information sufficient to associate the request with the affected site.",
+      "sourceEvidenceIds": ["uf-src-public-forestry-guidance"],
+      "confidence": 0.82,
+      "stopGateClassification": "draft_edit"
+    },
+    {
+      "requirementId": "uf-req-003",
+      "normalizedKey": "urban_forestry.describe_tree_work",
+      "category": "tree_work_description",
+      "requirementType": "obligation",
+      "summary": "The applicant must describe the proposed tree work so the permit request can be reviewed for scope and applicability.",
+      "sourceEvidenceIds": ["uf-src-public-forestry-guidance"],
+      "confidence": 0.8,
+      "stopGateClassification": "draft_edit"
+    },
+    {
+      "requirementId": "uf-req-004",
+      "normalizedKey": "urban_forestry.attach_site_plan_or_map",
+      "category": "site_plan_or_map",
+      "requirementType": "obligation",
+      "summary": "The applicant may need to provide a site plan, map, or equivalent location exhibit showing the affected tree or trees.",
+      "sourceEvidenceIds": ["uf-src-public-forestry-guidance", "uf-src-application-guide"],
+      "confidence": 0.76,
+      "stopGateClassification": "draft_edit"
+    },
+    {
+      "requirementId": "uf-req-005",
+      "normalizedKey": "urban_forestry.attach_supporting_documents",
+      "category": "supporting_documents",
+      "requirementType": "dependency",
+      "summary": "The applicant must attach supporting documents requested by the permit workflow before the request is ready for review.",
+      "sourceEvidenceIds": ["uf-src-application-guide", "uf-src-devhub-faq"],
+      "confidence": 0.74,
+      "stopGateClassification": "draft_edit"
+    },
+    {
+      "requirementId": "uf-req-006",
+      "normalizedKey": "urban_forestry.stop_before_fee_payment",
+      "category": "fee_payment_checkpoint",
+      "requirementType": "action_gate",
+      "summary": "An agent must stop before paying fees or entering payment details unless the user gives exact payment-specific confirmation in the active session.",
+      "sourceEvidenceIds": ["uf-src-devhub-faq"],
+      "confidence": 0.92,
+      "stopGateClassification": "financial"
+    },
+    {
+      "requirementId": "uf-req-007",
+      "normalizedKey": "urban_forestry.stop_before_official_submission_or_certification",
+      "category": "official_submission_certification",
+      "requirementType": "action_gate",
+      "summary": "An agent must stop before official submission or certification unless the user gives exact session-specific confirmation for that consequential action.",
+      "sourceEvidenceIds": ["uf-src-application-guide", "uf-src-devhub-faq"],
+      "confidence": 0.94,
+      "stopGateClassification": "consequential"
+    }
+  ]
+}

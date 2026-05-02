@@ -1,0 +1,58 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -60,7 +60,7 @@
+ - [x] Add requirement extraction validation for the residential building permit fixture covering eligibility, submittal package requirements, plan-review stages, corrections, inspections, expiration/reactivation, and explicit-confirmation gates.
+ - [x] Add guardrail compiler fixture tests for the residential building permit workflow covering missing facts, required document groups, Single PDF Process compatibility, inspection-scheduling stop points, and payment stop points.
+ - [!] Add a source freshness fixture that classifies stale PP&D guidance, changed content hashes, removed pages, and recrawl priority without performing a live recrawl.
+-- [~] Add a fixture-only change report renderer for public PP&D source freshness results that summarizes changed requirements, new or removed links, and affected permit-process fixtures with citation references.
++- [!] Add a fixture-only change report renderer for public PP&D source freshness results that summarizes changed requirements, new or removed links, and affected permit-process fixtures with citation references.
+ - [ ] Add a DevHub mocked workflow snapshot fixture for correction upload review that records upload controls, accepted file hints, validation messages, draft state, and exact confirmation gates using only redacted values.
+ - [ ] Add DevHub guardrail tests proving correction-upload review can produce a preview but cannot perform official upload or certification without exact session-specific user confirmation.
+ - [ ] Add a missing-information detector fixture that compares a residential permit user-case fact inventory against the residential permit process requirements and returns only missing facts, files, acknowledgments, and decisions.
+@@ -68,29 +68,34 @@
+ - [ ] Add a one-file syntax-first repair test for public source inventory validation that imports only `ppd.contracts.public_source_inventory` and rejects malformed Python before broad unittest discovery.
+ - [ ] Add a minimal invalid public source inventory fixture with exactly one unsafe field per entry so rejection reasons for raw bodies, credentials, traces, screenshots, downloaded documents, private DevHub paths, and missing provenance are deterministic.
+ - [ ] Add the public source inventory validator only after the syntax-first import test and one-unsafe-field fixture pass, covering allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and required provenance fields.
++- [ ] Add a one-file syntax-first repair test for `ppd.contracts.source_freshness` that imports only that module and verifies Python annotations use valid assignment syntax before any broad source freshness work resumes.
++- [ ] Add a minimal source freshness fixture with four records only: one stale guidance page, one changed content hash, one removed page, and one high-priority recrawl candidate, with no live fetch data or raw response bodies.
++- [ ] Add the source freshness classifier in the smallest possible Python module after the import test and four-record fixture pass, covering stale guidance, changed hashes, removed pages, and recrawl priority.
++- [ ] Add the fixture-only source freshness change report renderer only after the classifier task passes, summarizing changed requirements, new or removed links, affected permit-process fixtures, and citation references.
+ 
+ ## Deferred Repair Notes
+ 
+-The former broad public-source-inventory validation checkbox is deferred because repeated daemon proposals failed validation, including Python syntax failures and a mismatched expected rejection reason. It must not be retried as one broad task. Resume autonomous work on the current normalized document link-graph validation task and later return to the public-source-inventory validator through the three narrow queued tasks: syntax-first import test, one-unsafe-field invalid fixture, then validator implementation.
++The former broad public-source-inventory validation checkbox is deferred because repeated daemon proposals failed validation, including Python syntax failures and a mismatched expected rejection reason. It must not be retried as one broad task. Resume autonomous work on independent fixture-first tasks and later return to the public-source-inventory validator through the three narrow queued tasks: syntax-first import test, one-unsafe-field invalid fixture, then validator implementation.
++
++The source freshness classifier checkbox is blocked because repeated proposals introduced invalid Python such as `if self.recrawl_cadence_days list[str]:`. The dependent change-report renderer is also blocked until source freshness has a syntactically valid import test, a minimal four-record fixture, and a small classifier module that pass validation. Do not retry the blocked source freshness or renderer tasks directly; use the appended syntax-first recovery tasks instead.
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T19:31:00Z
++Last updated: 2026-05-01T20:05:00Z
+ 
+-- Latest target: `Supervisor repair: unblock repeated public source inventory validation failures`
++- Latest target: `Supervisor repair: unblock source freshness retry loop`
+ - Latest result: `task-board repaired`
+-- Latest summary: Deferred the broad blocked public source inventory validator task and queued narrow repair tasks so the daemon can continue useful work.
+-- Counts: `{"blocked": 0, "complete": 49, "in_progress": 1, "needed": 11}`
++- Latest summary: Marked the dependent source freshness renderer blocked and appended narrow syntax-first recovery tasks so the daemon can resume useful fixture-first work.
++- Counts: `{"blocked": 2, "complete": 53, "in_progress": 0, "needed": 11}`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T19:57:28.433403Z
++Last updated: 2026-05-01T20:05:00Z
+ 
+-- Latest target: `Task checkbox-54: Add a source freshness fixture that classifies stale PP&D guidance, changed content hashes, removed pages, and recrawl priority without performing a live recrawl.`
+-- Latest result: `validation`
+-- Latest summary: Add a narrow fixture-only source freshness classifier and tests for stale guidance, changed hashes, removed pages, and recrawl priority.
+-- Counts: `{"blocked": 1, "complete": 53, "in_progress": 0, "needed": 8}`
++- Latest target: `Supervisor repair: unblock source freshness retry loop`
++- Latest result: `task-board repaired`
++- Latest summary: Marked the dependent source freshness renderer blocked and appended narrow syntax-first recovery tasks so the daemon can resume useful fixture-first work.
++- Counts: `{"blocked": 2, "complete": 53, "in_progress": 0, "needed": 11}`
+ 
+-<!-- ppd-daemon-task-board:end -->
++

@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/task-board.md"
+  ],
+  "created_at": "2026-05-01T20:40:12.545617Z",
+  "impact": "This removes the blocked checklist item from daemon task selection while preserving completed work and gives the worker a deterministic next recovery step that directly addresses the importlib/dataclass failure without broad rewrites or live automation.",
+  "summary": "Park the repeatedly failing missing-information validator as deferred broad work and append a narrower no-dataclass recovery task that the daemon can select after the existing fixture prerequisites.",
+  "target_task": "Supervisor repair: 1 task(s) are blocked: Task checkbox-59: Add the missing-information output validator in the smallest possible Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 66 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................................................................... ---------------------------------------------------------------------- Ran 132 tests in 0.015s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

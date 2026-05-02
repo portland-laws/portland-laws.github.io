@@ -1,0 +1,427 @@
+--- a/ppd/contracts/public_source_inventory_coverage.py
++++ b/ppd/contracts/public_source_inventory_coverage.py
+@@ -0,0 +1,263 @@
++"""Fixture-only coverage reporting for PP&D public source inventory.
++
++This module compares committed public source inventory categories against the
++original PP&D source landscape from the workspace plan. It is intentionally
++fixture-only: callers pass JSON-like dictionaries and no network access or live
++crawl state is used.
++"""
++
++from __future__ import annotations
++
++from typing import Any, Mapping
++from urllib.parse import urlparse
++
++
++MODULE_PURPOSE = "fixture_only_public_source_inventory_coverage"
++
++ALLOWED_HOSTS = {
++    "www.portland.gov",
++    "devhub.portlandoregon.gov",
++    "www.portlandoregon.gov",
++    "www.portlandmaps.com",
++}
++
++SOURCE_LANDSCAPE = {
++    "ppd_landing_public_guidance": "PP&D landing and public guidance under https://www.portland.gov/ppd",
++    "applications_forms_index": "Public applications and forms, including the Permits and Inspections Applications index",
++    "devhub_public_portal": "DevHub public portal at https://devhub.portlandoregon.gov",
++    "devhub_signin_account_guidance": "DevHub sign-in and account guidance on Portland.gov",
++    "devhub_faq_process_guides": "DevHub FAQ and process guides on Portland.gov",
++    "permit_submission_guidance": "Permit submission guidance pages",
++    "plan_upload_guidance": "Plan upload guidance pages",
++    "correction_upload_guidance": "Correction upload guidance pages",
++    "payment_guidance": "Fee payment guidance pages",
++    "inspection_guidance": "Inspection guidance pages",
++    "extension_cancellation_guidance": "Extension and cancellation guidance pages",
++    "linked_pdf_handout_checklist_documents": "Linked PDFs, image-guided how-tos, handouts, and checklist documents",
++    "portland_maps_references": "Portland Maps public permit, case, and property references",
++}
++
++REQUIRED_REPORT_KEYS = {
++    "schemaVersion",
++    "generatedAt",
++    "sourceLandscapeVersion",
++    "inventoryFixture",
++    "coverageEntries",
++    "missingCategories",
++}
++
++FORBIDDEN_KEYS = {
++    "authorization",
++    "auth",
++    "body",
++    "content",
++    "cookie",
++    "cookies",
++    "credentials",
++    "html",
++    "password",
++    "rawBody",
++    "rawHtml",
++    "rawResponseBody",
++    "responseBody",
++    "screenshotPath",
++    "storageState",
++    "text",
++    "token",
++    "tracePath",
++    "username",
++}
++
++FORBIDDEN_VALUE_MARKERS = (
++    "ppd/data/private",
++    "storage_state",
++    "auth_state",
++    "trace.zip",
++    "playwright-report",
++    "/screenshots/",
++    "\\screenshots\\",
++    "/downloads/",
++    "\\downloads\\",
++    "downloaded_documents",
++    "raw_crawl",
++    "crawl_output",
++)
++
++
++def build_coverage_report(inventory: Mapping[str, Any]) -> dict[str, Any]:
++    """Build a deterministic coverage report from a fixture inventory."""
++
++    categories = inventory.get("categories", [])
++    if not isinstance(categories, list):
++        categories = []
++
++    coverage_entries = []
++    covered_landscape_ids: set[str] = set()
++    for category in categories:
++        if not isinstance(category, Mapping):
++            continue
++        category_id = str(category.get("categoryId", ""))
++        landscape_ids = tuple(str(item) for item in category.get("sourceLandscapeIds", []) if str(item))
++        covered_landscape_ids.update(landscape_ids)
++        coverage_entries.append(
++            {
++                "inventoryCategoryId": category_id,
++                "inventoryCategoryLabel": str(category.get("label", "")),
++                "sourceLandscapeIds": list(landscape_ids),
++                "authorityLabels": list(category.get("authorityLabels", [])),
++                "canonicalUrls": list(category.get("canonicalUrls", [])),
++                "recrawlCadenceHint": str(category.get("recrawlCadenceHint", "")),
++            }
++        )
++
++    missing_categories = []
++    for landscape_id, description in SOURCE_LANDSCAPE.items():
++        if landscape_id not in covered_landscape_ids:
++            missing_categories.append(
++                {
++                    "sourceLandscapeId": landscape_id,
++                    "description": description,
++                    "status": "missing_from_fixture_inventory",
++                }
++            )
++
++    return {
++        "schemaVersion": 1,
++        "generatedAt": str(inventory.get("generatedAt", "")),
++        "sourceLandscapeVersion": "ppd-plan-2026-05-01",
++        "inventoryFixture": str(inventory.get("fixtureId", "")),
++        "coverageEntries": coverage_entries,
++        "missingCategories": missing_categories,
++    }
++
++
++def validate_coverage_report(report: Mapping[str, Any]) -> list[str]:
++    """Return deterministic validation errors for a fixture-only coverage report."""
++
++    errors: list[str] = []
++    _scan_forbidden(report, "$", errors)
++
++    missing_keys = sorted(REQUIRED_REPORT_KEYS.difference(report.keys()))
++    for key in missing_keys:
++        errors.append(f"report missing required key {key}")
++
++    if report.get("schemaVersion") != 1:
++        errors.append("coverage report schemaVersion must be 1")
++    if not str(report.get("generatedAt", "")).endswith("Z"):
++        errors.append("coverage report generatedAt must be an ISO UTC timestamp ending in Z")
++    if report.get("sourceLandscapeVersion") != "ppd-plan-2026-05-01":
++        errors.append("coverage report sourceLandscapeVersion must be ppd-plan-2026-05-01")
++    if not str(report.get("inventoryFixture", "")).strip():
++        errors.append("coverage report inventoryFixture is required")
++
++    coverage_entries = report.get("coverageEntries", [])
++    if not isinstance(coverage_entries, list) or not coverage_entries:
++        errors.append("coverage report requires at least one coverage entry")
++        coverage_entries = []
++
++    covered_landscape_ids: set[str] = set()
++    seen_category_ids: set[str] = set()
++    for index, entry in enumerate(coverage_entries):
++        if not isinstance(entry, Mapping):
++            errors.append(f"coverageEntries[{index}] must be an object")
++            continue
++        category_id = str(entry.get("inventoryCategoryId", ""))
++        if not category_id:
++            errors.append(f"coverageEntries[{index}] inventoryCategoryId is required")
++        elif category_id in seen_category_ids:
++            errors.append(f"duplicate inventoryCategoryId {category_id}")
++        seen_category_ids.add(category_id)
++
++        if not str(entry.get("inventoryCategoryLabel", "")).strip():
++            errors.append(f"coverage entry {category_id or index} inventoryCategoryLabel is required")
++
++        authority_labels = entry.get("authorityLabels", [])
++        if not isinstance(authority_labels, list) or not authority_labels:
++            errors.append(f"coverage entry {category_id or index} requires authorityLabels")
++
++        cadence = str(entry.get("recrawlCadenceHint", ""))
++        if cadence not in {"daily", "weekly", "monthly", "on_source_change"}:
++            errors.append(f"coverage entry {category_id or index} has invalid recrawlCadenceHint {cadence}")
++
++        urls = entry.get("canonicalUrls", [])
++        if not isinstance(urls, list) or not urls:
++            errors.append(f"coverage entry {category_id or index} requires canonicalUrls")
++        else:
++            for url in urls:
++                _validate_public_url(str(url), f"coverage entry {category_id or index}", errors)
++
++        landscape_ids = entry.get("sourceLandscapeIds", [])
++        if not isinstance(landscape_ids, list) or not landscape_ids:
++            errors.append(f"coverage entry {category_id or index} requires sourceLandscapeIds")
++        else:
++            for landscape_id in landscape_ids:
++                landscape_text = str(landscape_id)
++                if landscape_text not in SOURCE_LANDSCAPE:
++                    errors.append(f"coverage entry {category_id or index} references unknown sourceLandscapeId {landscape_text}")
++                covered_landscape_ids.add(landscape_text)
++
++    missing_categories = report.get("missingCategories", [])
++    if not isinstance(missing_categories, list):
++        errors.append("missingCategories must be a list")
++        missing_categories = []
++
++    reported_missing_ids = set()
++    for index, missing in enumerate(missing_categories):
++        if not isinstance(missing, Mapping):
++            errors.append(f"missingCategories[{index}] must be an object")
++            continue
++        landscape_id = str(missing.get("sourceLandscapeId", ""))
++        if landscape_id not in SOURCE_LANDSCAPE:
++            errors.append(f"missingCategories[{index}] references unknown sourceLandscapeId {landscape_id}")
++        if landscape_id in covered_landscape_ids:
++            errors.append(f"missingCategories[{index}] reports covered sourceLandscapeId {landscape_id} as missing")
++        if missing.get("status") != "missing_from_fixture_inventory":
++            errors.append(f"missingCategories[{index}] status must be missing_from_fixture_inventory")
++        if not str(missing.get("description", "")).strip():
++            errors.append(f"missingCategories[{index}] description is required")
++        reported_missing_ids.add(landscape_id)
++
++    expected_missing_ids = set(SOURCE_LANDSCAPE).difference(covered_landscape_ids)
++    if reported_missing_ids != expected_missing_ids:
++        errors.append(
++            "missingCategories must exactly match uncovered source landscape ids: "
++            + ",".join(sorted(expected_missing_ids))
++        )
++
++    return errors
++
++
++def assert_valid_coverage_report(report: Mapping[str, Any]) -> None:
++    errors = validate_coverage_report(report)
++    if errors:
++        raise ValueError("; ".join(errors))
++
++
++def _validate_public_url(url: str, context: str, errors: list[str]) -> None:
++    parsed = urlparse(url)
++    if parsed.scheme != "https":
++        errors.append(f"{context} URL must use https: {url}")
++    if parsed.netloc not in ALLOWED_HOSTS:
++        errors.append(f"{context} URL host is not allowlisted: {url}")
++    lowered_path = parsed.path.lower()
++    if parsed.netloc == "devhub.portlandoregon.gov" and any(
++        marker in lowered_path for marker in ("/login", "/signin", "/account", "/dashboard", "/my-permits", "/cart", "/payment")
++    ):
++        errors.append(f"{context} URL is a private DevHub path: {url}")
++
++
++def _scan_forbidden(value: Any, path: str, errors: list[str]) -> None:
++    if isinstance(value, Mapping):
++        for key, child in value.items():
++            key_text = str(key)
++            if key_text in FORBIDDEN_KEYS:
++                errors.append(f"{path}.{key_text} contains forbidden field {key_text}")
++            _scan_forbidden(child, f"{path}.{key_text}", errors)
++    elif isinstance(value, list):
++        for index, child in enumerate(value):
++            _scan_forbidden(child, f"{path}[{index}]", errors)
++    elif isinstance(value, str):
++        lowered = value.lower()
++        for marker in FORBIDDEN_VALUE_MARKERS:
++            if marker.lower() in lowered:
++                errors.append(f"{path} contains forbidden artifact marker {marker}")
+--- a/ppd/tests/fixtures/public_source_inventory_coverage/coverage_report.json
++++ b/ppd/tests/fixtures/public_source_inventory_coverage/coverage_report.json
+@@ -0,0 +1,80 @@
++{
++  "schemaVersion": 1,
++  "generatedAt": "2026-05-01T00:00:00Z",
++  "sourceLandscapeVersion": "ppd-plan-2026-05-01",
++  "inventoryFixture": "public_source_inventory_fixture_v1",
++  "coverageEntries": [
++    {
++      "inventoryCategoryId": "permit_application_pages",
++      "inventoryCategoryLabel": "Permit application pages",
++      "sourceLandscapeIds": ["applications_forms_index", "permit_submission_guidance"],
++      "authorityLabels": ["Portland Permitting & Development public guidance"],
++      "canonicalUrls": ["https://www.portland.gov/ppd/permits"],
++      "recrawlCadenceHint": "weekly"
++    },
++    {
++      "inventoryCategoryId": "forms_and_applications",
++      "inventoryCategoryLabel": "Forms and applications",
++      "sourceLandscapeIds": ["applications_forms_index"],
++      "authorityLabels": ["Portland Permitting & Development forms index"],
++      "canonicalUrls": ["https://www.portland.gov/ppd/forms"],
++      "recrawlCadenceHint": "weekly"
++    },
++    {
++      "inventoryCategoryId": "handouts_and_checklists",
++      "inventoryCategoryLabel": "Handouts and checklists",
++      "sourceLandscapeIds": ["linked_pdf_handout_checklist_documents", "plan_upload_guidance"],
++      "authorityLabels": ["Portland Permitting & Development handouts and checklists"],
++      "canonicalUrls": ["https://www.portland.gov/ppd/documents"],
++      "recrawlCadenceHint": "monthly"
++    },
++    {
++      "inventoryCategoryId": "fees_and_payment_guidance",
++      "inventoryCategoryLabel": "Fees and payment guidance",
++      "sourceLandscapeIds": ["payment_guidance"],
++      "authorityLabels": ["Portland Permitting & Development fee guidance"],
++      "canonicalUrls": ["https://www.portland.gov/ppd/fees"],
++      "recrawlCadenceHint": "weekly"
++    },
++    {
++      "inventoryCategoryId": "devhub_public_guides",
++      "inventoryCategoryLabel": "DevHub public guides",
++      "sourceLandscapeIds": ["devhub_faq_process_guides", "correction_upload_guidance"],
++      "authorityLabels": ["Portland.gov DevHub public guidance"],
++      "canonicalUrls": ["https://www.portland.gov/ppd/devhub"],
++      "recrawlCadenceHint": "weekly"
++    }
++  ],
++  "missingCategories": [
++    {
++      "sourceLandscapeId": "ppd_landing_public_guidance",
++      "description": "PP&D landing and public guidance under https://www.portland.gov/ppd",
++      "status": "missing_from_fixture_inventory"
++    },
++    {
++      "sourceLandscapeId": "devhub_public_portal",
++      "description": "DevHub public portal at https://devhub.portlandoregon.gov",
++      "status": "missing_from_fixture_inventory"
++    },
++    {
++      "sourceLandscapeId": "devhub_signin_account_guidance",
++      "description": "DevHub sign-in and account guidance on Portland.gov",
++      "status": "missing_from_fixture_inventory"
++    },
++    {
++      "sourceLandscapeId": "inspection_guidance",
++      "description": "Inspection guidance pages",
++      "status": "missing_from_fixture_inventory"
++    },
++    {
++      "sourceLandscapeId": "extension_cancellation_guidance",
++      "description": "Extension and cancellation guidance pages",
++      "status": "missing_from_fixture_inventory"
++    },
++    {
++      "sourceLandscapeId": "portland_maps_references",
++      "description": "Portland Maps public permit, case, and property references",
++      "status": "missing_from_fixture_inventory"
++    }
++  ]
++}
+--- a/ppd/tests/test_public_source_inventory_coverage.py
++++ b/ppd/tests/test_public_source_inventory_coverage.py
+@@ -0,0 +1,75 @@
++import json
++import unittest
++from pathlib import Path
++
++from ppd.contracts.public_source_inventory_coverage import (
++    SOURCE_LANDSCAPE,
++    assert_valid_coverage_report,
++    build_coverage_report,
++    validate_coverage_report,
++)
++
++
++FIXTURE_DIR = Path(__file__).parent / "fixtures" / "public_source_inventory_coverage"
++
++
++class PublicSourceInventoryCoverageTests(unittest.TestCase):
++    def load_report(self):
++        return json.loads((FIXTURE_DIR / "coverage_report.json").read_text(encoding="utf-8"))
++
++    def test_fixture_coverage_report_is_valid_and_flags_missing_categories(self):
++        report = self.load_report()
++        self.assertEqual([], validate_coverage_report(report))
++        missing_ids = {item["sourceLandscapeId"] for item in report["missingCategories"]}
++        self.assertIn("devhub_public_portal", missing_ids)
++        self.assertIn("inspection_guidance", missing_ids)
++        self.assertNotIn("payment_guidance", missing_ids)
++
++    def test_build_report_from_inventory_categories_is_deterministic(self):
++        inventory = {
++            "fixtureId": "inventory-under-test",
++            "generatedAt": "2026-05-01T00:00:00Z",
++            "categories": [
++                {
++                    "categoryId": "fees",
++                    "label": "Fees",
++                    "sourceLandscapeIds": ["payment_guidance"],
++                    "authorityLabels": ["PP&D fee guidance"],
++                    "canonicalUrls": ["https://www.portland.gov/ppd/fees"],
++                    "recrawlCadenceHint": "weekly",
++                }
++            ],
++        }
++        report = build_coverage_report(inventory)
++        self.assertEqual("inventory-under-test", report["inventoryFixture"])
++        self.assertEqual(1, len(report["coverageEntries"]))
++        missing_ids = {item["sourceLandscapeId"] for item in report["missingCategories"]}
++        self.assertEqual(set(SOURCE_LANDSCAPE) - {"payment_guidance"}, missing_ids)
++
++    def test_report_rejects_live_or_private_artifacts(self):
++        report = self.load_report()
++        report["coverageEntries"][0]["tracePath"] = "ppd/data/private/trace.zip"
++        errors = validate_coverage_report(report)
++        self.assertTrue(any("forbidden" in error for error in errors))
++
++    def test_report_rejects_unknown_or_misreported_missing_category(self):
++        report = self.load_report()
++        report["missingCategories"].append(
++            {
++                "sourceLandscapeId": "payment_guidance",
++                "description": "Already covered by fees_and_payment_guidance",
++                "status": "missing_from_fixture_inventory",
++            }
++        )
++        errors = validate_coverage_report(report)
++        self.assertTrue(any("reports covered sourceLandscapeId payment_guidance" in error for error in errors))
++
++    def test_assert_valid_coverage_report_raises_on_invalid_report(self):
++        report = self.load_report()
++        report["coverageEntries"][0]["canonicalUrls"] = ["https://devhub.portlandoregon.gov/account"]
++        with self.assertRaises(ValueError):
++            assert_valid_coverage_report(report)
++
++
++if __name__ == "__main__":
++    unittest.main()

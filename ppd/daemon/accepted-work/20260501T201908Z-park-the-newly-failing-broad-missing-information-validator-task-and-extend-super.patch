@@ -1,0 +1,138 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -64,7 +64,10 @@
+ - [x] Add a DevHub mocked workflow snapshot fixture for correction upload review that records upload controls, accepted file hints, validation messages, draft state, and exact confirmation gates using only redacted values.
+ - [x] Add DevHub guardrail tests proving correction-upload review can produce a preview but cannot perform official upload or certification without exact session-specific user confirmation.
+ - [x] Add a missing-information detector fixture that compares a residential permit user-case fact inventory against the residential permit process requirements and returns only missing facts, files, acknowledgments, and decisions.
+-- [~] Add validation for missing-information detector output proving every requested user item is source-backed, deduplicated, action-classified, and free of private fixture values.
++- [!] Add validation for missing-information detector output proving every requested user item is source-backed, deduplicated, action-classified, and free of private fixture values.
++- [ ] Add a one-file syntax-first repair test for `ppd.contracts.missing_information_output_validation` that imports only that module and fails on invalid Python before broad detector-output validation resumes.
++- [ ] Add a minimal missing-information output validation fixture with exactly four requested items: one fact, one file, one acknowledgment, and one decision, each source-backed and redacted.
++- [ ] Add the missing-information output validator in the smallest possible Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection.
+ - [ ] Add a one-file syntax-first repair test for `ppd.contracts.source_freshness` that imports only that module and verifies Python annotations use valid assignment syntax before any broad source freshness work resumes.
+ - [ ] Add a minimal source freshness fixture with four records only: one stale guidance page, one changed content hash, one removed page, and one high-priority recrawl candidate, with no live fetch data or raw response bodies.
+ - [ ] Add the source freshness classifier in the smallest possible Python module after the import test and four-record fixture pass, covering stale guidance, changed hashes, removed pages, and recrawl priority.
+@@ -75,26 +78,30 @@
+ 
+ ## Deferred Repair Notes
+ 
++The missing-information detector output validator is blocked because repeated proposals introduced invalid Python such as `return text if len(text) None:`. Do not retry that broad validator directly. Resume through the appended syntax-first import test, then the four-item fixture, then the smallest validator implementation.
++
+ The source freshness classifier checkbox is blocked because repeated proposals introduced invalid Python such as `if self.recrawl_cadence_days list[str]:`. The dependent change-report renderer is also blocked until source freshness has a syntactically valid import test, a minimal four-record fixture, and a small classifier module that pass validation. Do not retry the blocked source freshness or renderer tasks directly; use the appended syntax-first recovery tasks instead.
+ 
+ The former broad public-source-inventory validation checkbox is deferred because repeated daemon proposals failed validation, including Python syntax failures and mismatched expected rejection reasons. It must not be retried as one broad task. Resume autonomous work on independent fixture-first tasks and later return to the public-source-inventory validator through the three narrow queued tasks: syntax-first import test, one-unsafe-field invalid fixture, then validator implementation.
+ 
+ ## Task Selection Notes
+ 
+-Blocked source-freshness tasks are parked and should not stop unrelated PP&D progress. A `[!]` task is not selectable while there is any `[~]` or `[ ]` task that is independent of it.
++Blocked source-freshness and missing-information-output tasks are parked and should not stop unrelated PP&D progress. A `[!]` task is not selectable while there is any independent `[ ]` fixture-first or validation-first task.
+ 
+-The current autonomous target is the `[~]` residential missing-information detector validation task. Continue that task before selecting any source-freshness recovery work. It is fixture-only and independent of the blocked source-freshness classifier and renderer.
++The current autonomous target must be the first missing-information recovery task, not the blocked broad validator. Keep recovery proposals to one or two files unless the task explicitly names both a fixture and focused test.
+ 
+ When no independent task is active, prefer recovery tasks in this order:
+ 
+-1. Finish the active residential missing-information detector validation task.
+-2. Run the source-freshness syntax-first import task before any source-freshness fixture, classifier, or renderer work.
+-3. Run the four-record source-freshness fixture task before the classifier.
+-4. Run the smallest source-freshness classifier task.
+-5. Run the renderer only after the classifier has passed validation.
+-6. Return to public-source-inventory recovery tasks only after source freshness is stable or no source-freshness recovery task is selectable.
++1. Run the missing-information output syntax-first import task before any broad missing-information validator work.
++2. Run the four-item missing-information output validation fixture before the validator.
++3. Run the smallest missing-information output validator task.
++4. Run the source-freshness syntax-first import task before any source-freshness fixture, classifier, or renderer work.
++5. Run the four-record source-freshness fixture task before the classifier.
++6. Run the smallest source-freshness classifier task.
++7. Run the renderer only after the classifier has passed validation.
++8. Return to public-source-inventory recovery tasks only after higher-priority recovery work is stable or no higher-priority recovery task is selectable.
+ 
+-Do not select the two `[!]` source-freshness tasks directly until their narrow prerequisites have passed. Each recovery proposal should keep to one or two files unless the task explicitly requires a fixture plus its focused test.
++Do not select the `[!]` source-freshness, renderer, or missing-information validator tasks directly until their narrow prerequisites have passed. Each recovery proposal should keep to one or two files unless the task explicitly requires a fixture plus its focused test.
+ 
+ ## Supervisor Recovery Rules
+ 
+@@ -107,22 +114,22 @@
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T20:08:30.045030Z
+-
+-- Latest target: `Task checkbox-58: Add a missing-information detector fixture that compares a residential permit user-case fact inventory against the residential permit process requirements and returns only missing facts, files, acknowledgments, and decisions.`
+-- Latest result: `accepted`
+-- Latest summary: Adds a deterministic residential permit missing-information detector fixture.
+-- Counts: blocked 2, complete 56, in_progress 0, needed 8
+-
+-
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-01T20:17:14.231010Z
++Last updated: 2026-05-01T20:20:00.000000Z
+ 
+ - Latest target: `Task checkbox-59: Add validation for missing-information detector output proving every requested user item is source-backed, deduplicated, action-classified, and free of private fixture values.`
+ - Latest result: `validation`
+-- Latest summary: Add fixture-backed validation for missing-information detector output quality gates.
+-- Counts: `{"blocked": 2, "complete": 56, "in_progress": 0, "needed": 8}`
++- Latest summary: Broad missing-information output validation failed syntax preflight and is parked behind syntax-first recovery tasks.
++- Counts: blocked 3, complete 56, in_progress 0, needed 10
+ 
+-<!-- ppd-daemon-task-board:end -->
++
++
++## Generated Status
++
++Last updated: 2026-05-01T20:20:00.000000Z
++
++- Latest target: `Task checkbox-59: Add validation for missing-information detector output proving every requested user item is source-backed, deduplicated, action-classified, and free of private fixture values.`
++- Latest result: `validation`
++- Latest summary: Broad missing-information output validation failed syntax preflight and is parked behind syntax-first recovery tasks.
++- Counts: `{"blocked": 3, "complete": 56, "in_progress": 0, "needed": 10}`
++
++
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -17,6 +17,18 @@
+ 4. Keep recovery proposals to one or two files unless a focused test plus fixture is explicitly needed.
+ 5. Resume unrelated fixture-first or validation-first tasks while blocked broad tasks remain parked.
+ 
++## Missing-Information Output Recovery
++
++The missing-information detector output validator must not be selected directly while recent proposals are failing Python syntax preflight.
++
++Use this order instead:
++
++1. Add a one-file syntax-first import test for `ppd.contracts.missing_information_output_validation`.
++2. Add a four-item missing-information output fixture only after the import test passes.
++3. Add the smallest missing-information output validator only after the fixture passes.
++
++The four-item fixture should include exactly one fact request, one file request, one acknowledgment request, and one decision request. Each item must be source-backed, deduplicated, action-classified, and redacted. It must not contain private fixture values, credentials, auth state, traces, screenshots, raw crawl output, downloaded documents, or live DevHub artifacts.
++
+ ## Source Freshness Recovery
+ 
+ The source-freshness classifier and dependent change-report renderer must not be selected directly while the classifier remains blocked by Python syntax failures.
+@@ -30,22 +42,12 @@
+ 
+ The four-record fixture should include exactly one stale guidance page, one changed content hash, one removed page, and one high-priority recrawl candidate. It must not contain live fetch output, raw response bodies, downloaded documents, DevHub auth state, traces, screenshots, or private values.
+ 
+-## Missing-Information Output Recovery
+-
+-If missing-information output validation fails with invalid Python, split it before retrying the broad validator.
+-
+-Use this order:
+-
+-1. Add a syntax-first import test for `ppd.contracts.missing_information_output`.
+-2. Add a minimal fixture with one fact request, one file request, one acknowledgment request, and one decision request.
+-3. Add the validator only after the import test and fixture pass.
+-
+-The validator should prove every requested user item is source-backed, deduplicated, action-classified, and free of private fixture values.
+-
+ ## Task Selection Rule
+ 
+ A `[!]` task is not selectable while any independent `[ ]` fixture-first or validation-first task remains. Dependent tasks stay parked until their recovery prerequisites pass.
+ 
++When both missing-information output recovery and source-freshness recovery are available, prefer the missing-information recovery sequence first because it is the latest active failed target. After it passes, resume source-freshness recovery in syntax-first order.
++
+ ## Safety Boundary
+ 
+ Repair cycles must not create private DevHub session files, auth state, traces, screenshots, raw crawl output, downloaded documents, live crawl artifacts, payments, uploads, submissions, certifications, cancellations, account creation, MFA automation, or CAPTCHA automation.

@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/daemon/supervisor_reconciliation_blocked_recovery.json",
+    "ppd/tests/test_daemon_supervisor_reconciliation.py"
+  ],
+  "created_at": "2026-05-01T21:33:59.405420Z",
+  "impact": "This gives the PP&D daemon deterministic coverage that superseded broad blocked work remains parked outside selectable checkbox form and does not prevent selecting the next independent needed task.",
+  "summary": "Add supervisor reconciliation self-test fixture",
+  "target_task": "Task checkbox-71: Add a supervisor reconciliation fixture and daemon self-test check proving that a blocked task superseded by a later accepted narrower recovery is parked outside selectable checkbox form, while the daemon still selects the next independent `[ ]` task instead of reporting `no_eligible_tasks`.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 71 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................. ---------------------------------------------------------------------- Ran 141 tests in 0.018s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

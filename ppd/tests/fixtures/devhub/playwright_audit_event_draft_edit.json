@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "devhub-playwright-audit-draft-edit-001",
+  "capturedAt": "2026-05-01T19:20:00Z",
+  "environment": "mocked-devhub-fixture",
+  "auditEvents": [
+    {
+      "eventId": "audit-draft-project-description-001",
+      "workflowStateId": "mock-trade-permit-plan-review-draft",
+      "action": {
+        "kind": "fill_field",
+        "classification": "draft-edit",
+        "draftOnly": true,
+        "reversible": true,
+        "liveAutomation": false,
+        "blockedConsequentialActions": [
+          "upload",
+          "submit",
+          "certify",
+          "pay",
+          "cancel",
+          "schedule_inspection"
+        ]
+      },
+      "selectorBasis": {
+        "strategy": "semantic-first",
+        "role": "textbox",
+        "accessibleName": "Project description",
+        "labelText": "Project description",
+        "nearbyHeading": "Project information",
+        "urlState": "mock://devhub.local/permit-request/draft/project-information",
+        "fallbackCss": null,
+        "fallbackXPath": null
+      },
+      "sourceRequirement": {
+        "requirementId": "trade-plan-review-project-description-required",
+        "type": "precondition",
+        "sourceTitle": "Trade permit with plan review fixture",
+        "sourceUrl": "https://www.portland.gov/ppd/permits/trade-permits-plan-review",
+        "sourceAnchor": "project-information",
+        "requiresUserSuppliedFact": true,
+        "supportsDraftEditOnly": true
+      },
+      "userConfirmation": {
+        "state": "not_required_for_reversible_draft_edit",
+        "exactActionConfirmed": false,
+        "confirmedAction": null,
+        "confirmationText": null,
+        "reason": "This audit event covers only a reversible draft field edit. It does not authorize upload, submission, certification, payment, cancellation, inspection scheduling, or any official filing action."
+      },
+      "fieldState": {
+        "before": {
+          "fieldId": "project_description",
+          "required": true,
+          "redaction": "redacted-empty",
+          "value": "[REDACTED_EMPTY]",
+          "validationMessage": "[REDACTED_VALIDATION_MESSAGE]"
+        },
+        "after": {
+          "fieldId": "project_description",
+          "required": true,
+          "redaction": "redacted-user-supplied-value",
+          "value": "[REDACTED_USER_SUPPLIED_TEXT]",
+          "validationMessage": "[REDACTED_VALIDATION_MESSAGE]"
+        }
+      },
+      "privacy": {
+        "containsCredentials": false,
+        "containsAuthState": false,
+        "containsTrace": false,
+        "containsScreenshot": false,
+        "containsRawPrivateValue": false
+      }
+    }
+  ]
+}

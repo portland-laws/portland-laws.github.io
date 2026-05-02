@@ -1,0 +1,269 @@
+"""Fixture-only source freshness change report renderer.
+
+The renderer consumes curated fixture data that represents already-classified
+source freshness changes. It refuses to render unless the fixture explicitly
+records that the source freshness classifier task passed, keeping this layer
+behind the classifier milestone.
+"""
+
+from __future__ import annotations
+
+from typing import Any, Mapping
+from urllib.parse import urlparse
+
+
+PRIVATE_MARKERS = (
+    "ppd/data/private",
+    "ppd\\data\\private",
+    "storage_state",
+    "storage-state",
+    "auth_state",
+    "auth-state",
+    "trace.zip",
+    "playwright-report",
+    "/screenshots/",
+    "\\screenshots\\",
+    "/downloads/",
+    "\\downloads\\",
+    "raw_crawl",
+    "raw-crawl",
+    "crawl_output",
+    "crawl-output",
+)
+
+CREDENTIAL_KEYS = {
+    "authorization",
+    "auth",
+    "bearer",
+    "client_secret",
+    "cookie",
+    "cookies",
+    "credential",
+    "credentials",
+    "password",
+    "refresh_token",
+    "secret",
+    "session_cookie",
+    "token",
+    "username",
+    "api_key",
+    "apikey",
+}
+
+RAW_BODY_KEYS = {
+    "body",
+    "response_body",
+    "responseBody",
+    "raw_body",
+    "rawBody",
+    "html",
+    "raw_html",
+    "rawHtml",
+    "raw_text",
+    "rawText",
+    "content",
+    "raw_content",
+    "rawContent",
+}
+
+
+class SourceFreshnessChangeReportError(ValueError):
+    """Raised when a fixture cannot be rendered into a safe report."""
+
+
+def render_source_freshness_change_report(fixture: Mapping[str, Any]) -> dict[str, Any]:
+    """Render a deterministic source freshness change report from fixture data."""
+
+    _assert_no_private_or_raw_values(fixture)
+    classifier = _mapping(fixture.get("sourceFreshnessClassifier"), "sourceFreshnessClassifier")
+    classifier_status = str(classifier.get("status", ""))
+    if classifier_status != "passed" or classifier.get("taskPassed") is not True:
+        raise SourceFreshnessChangeReportError("source freshness classifier must pass before rendering change report")
+
+    changed_requirements = tuple(_render_changed_requirement(item) for item in _list(fixture.get("changedRequirements"), "changedRequirements"))
+    link_changes = tuple(_render_link_change(item) for item in _list(fixture.get("linkChanges"), "linkChanges"))
+    affected_fixtures = tuple(_render_affected_fixture(item) for item in _list(fixture.get("affectedPermitProcessFixtures"), "affectedPermitProcessFixtures"))
+    citations = tuple(_render_citation(item) for item in _list(fixture.get("citationReferences"), "citationReferences"))
+
+    if not changed_requirements:
+        raise SourceFreshnessChangeReportError("report requires at least one changed requirement")
+    if not link_changes:
+        raise SourceFreshnessChangeReportError("report requires at least one link change")
+    if not affected_fixtures:
+        raise SourceFreshnessChangeReportError("report requires at least one affected permit-process fixture")
+    if not citations:
+        raise SourceFreshnessChangeReportError("report requires at least one citation reference")
+
+    citation_ids = {citation["citationId"] for citation in citations}
+    for requirement in changed_requirements:
+        _assert_subset(requirement["citationIds"], citation_ids, f"changed requirement {requirement['requirementId']}")
+    for link_change in link_changes:
+        _assert_subset(link_change["citationIds"], citation_ids, f"link change {link_change['sourceUrl']}")
+    for affected in affected_fixtures:
+        _assert_subset(affected["changedRequirementIds"], {item["requirementId"] for item in changed_requirements}, f"affected fixture {affected['fixturePath']}")
+
+    generated_at = str(fixture.get("generatedAt", ""))
+    if not generated_at.endswith("Z"):
+        raise SourceFreshnessChangeReportError("generatedAt must be an ISO UTC timestamp ending in Z")
+
+    return {
+        "schemaVersion": 1,
+        "generatedAt": generated_at,
+        "sourceFreshnessClassifier": {
+            "status": classifier_status,
+            "fixturePath": str(classifier.get("fixturePath", "")),
+        },
+        "summary": {
+            "changedRequirementCount": len(changed_requirements),
+            "newLinkCount": sum(1 for item in link_changes if item["changeKind"] == "new_link"),
+            "removedLinkCount": sum(1 for item in link_changes if item["changeKind"] == "removed_link"),
+            "affectedPermitProcessFixtureCount": len(affected_fixtures),
+            "citationReferenceCount": len(citations),
+        },
+        "changedRequirements": list(changed_requirements),
+        "linkChanges": list(link_changes),
+        "affectedPermitProcessFixtures": list(affected_fixtures),
+        "citationReferences": list(citations),
+    }
+
+
+def _render_changed_requirement(item: Any) -> dict[str, Any]:
+    data = _mapping(item, "changedRequirements[]")
+    requirement_id = _required_text(data, "requirementId")
+    source_url = _required_public_url(data, "sourceUrl")
+    change_kind = _required_enum(data, "changeKind", {"changed_requirement", "new_requirement", "removed_requirement"})
+    citation_ids = tuple(_required_text_values(data.get("citationIds"), "citationIds"))
+    before_summary = str(data.get("beforeSummary", ""))
+    after_summary = str(data.get("afterSummary", ""))
+    if change_kind == "changed_requirement" and (not before_summary or not after_summary):
+        raise SourceFreshnessChangeReportError(f"{requirement_id} changed_requirement requires beforeSummary and afterSummary")
+    return {
+        "requirementId": requirement_id,
+        "changeKind": change_kind,
+        "sourceUrl": source_url,
+        "beforeSummary": before_summary,
+        "afterSummary": after_summary,
+        "citationIds": list(citation_ids),
+    }
+
+
+def _render_link_change(item: Any) -> dict[str, Any]:
+    data = _mapping(item, "linkChanges[]")
+    return {
+        "changeKind": _required_enum(data, "changeKind", {"new_link", "removed_link"}),
+        "sourceUrl": _required_public_url(data, "sourceUrl"),
+        "linkedUrl": _required_public_url(data, "linkedUrl"),
+        "linkRole": _required_text(data, "linkRole"),
+        "citationIds": list(_required_text_values(data.get("citationIds"), "citationIds")),
+    }
+
+
+def _render_affected_fixture(item: Any) -> dict[str, Any]:
+    data = _mapping(item, "affectedPermitProcessFixtures[]")
+    fixture_path = _required_text(data, "fixturePath")
+    if not fixture_path.startswith("ppd/tests/fixtures/"):
+        raise SourceFreshnessChangeReportError(f"affected fixture path must be under ppd/tests/fixtures/: {fixture_path}")
+    return {
+        "fixturePath": fixture_path,
+        "permitProcessId": _required_text(data, "permitProcessId"),
+        "changedRequirementIds": list(_required_text_values(data.get("changedRequirementIds"), "changedRequirementIds")),
+        "reason": _required_text(data, "reason"),
+    }
+
+
+def _render_citation(item: Any) -> dict[str, Any]:
+    data = _mapping(item, "citationReferences[]")
+    return {
+        "citationId": _required_text(data, "citationId"),
+        "sourceUrl": _required_public_url(data, "sourceUrl"),
+        "title": _required_text(data, "title"),
+        "retrievedAt": _required_utc(data, "retrievedAt"),
+        "sourceIndexId": _required_text(data, "sourceIndexId"),
+    }
+
+
+def _assert_subset(values: list[str], allowed: set[str], label: str) -> None:
+    missing = sorted(value for value in values if value not in allowed)
+    if missing:
+        raise SourceFreshnessChangeReportError(f"{label} references unknown ids: {missing}")
+
+
+def _required_text(data: Mapping[str, Any], key: str) -> str:
+    value = str(data.get(key, ""))
+    if not value.strip():
+        raise SourceFreshnessChangeReportError(f"{key} is required")
+    return value
+
+
+def _required_text_values(value: Any, key: str) -> tuple[str, ...]:
+    values = _list(value, key)
+    result = tuple(str(item) for item in values if str(item).strip())
+    if len(result) != len(values) or not result:
+        raise SourceFreshnessChangeReportError(f"{key} requires non-empty string values")
+    return result
+
+
+def _required_enum(data: Mapping[str, Any], key: str, allowed: set[str]) -> str:
+    value = _required_text(data, key)
+    if value not in allowed:
+        raise SourceFreshnessChangeReportError(f"{key} must be one of {sorted(allowed)}")
+    return value
+
+
+def _required_utc(data: Mapping[str, Any], key: str) -> str:
+    value = _required_text(data, key)
+    if not value.endswith("Z"):
+        raise SourceFreshnessChangeReportError(f"{key} must be an ISO UTC timestamp ending in Z")
+    return value
+
+
+def _required_public_url(data: Mapping[str, Any], key: str) -> str:
+    value = _required_text(data, key)
+    parsed = urlparse(value)
+    if parsed.scheme != "https" or not parsed.netloc:
+        raise SourceFreshnessChangeReportError(f"{key} must be an HTTPS public URL")
+    if parsed.netloc == "devhub.portlandoregon.gov" and _is_private_devhub_path(parsed.path):
+        raise SourceFreshnessChangeReportError(f"{key} must not reference private DevHub paths")
+    return value
+
+
+def _is_private_devhub_path(path: str) -> bool:
+    lowered = path.lower()
+    return any(marker in lowered for marker in ("account", "dashboard", "my-permits", "login", "signin", "sign-in", "session"))
+
+
+def _mapping(value: Any, label: str) -> Mapping[str, Any]:
+    if not isinstance(value, Mapping):
+        raise SourceFreshnessChangeReportError(f"{label} must be an object")
+    return value
+
+
+def _list(value: Any, label: str) -> list[Any]:
+    if not isinstance(value, list):
+        raise SourceFreshnessChangeReportError(f"{label} must be a list")
+    return value
+
+
+def _assert_no_private_or_raw_values(value: Any) -> None:
+    for path, key, item in _walk(value):
+        normalized_key = str(key).lower().replace("-", "_") if key is not None else ""
+        if normalized_key in CREDENTIAL_KEYS:
+            raise SourceFreshnessChangeReportError(f"credential-like field is not allowed at {path}")
+        if normalized_key in RAW_BODY_KEYS:
+            raise SourceFreshnessChangeReportError(f"raw response body field is not allowed at {path}")
+        if isinstance(item, str):
+            lowered = item.lower()
+            for marker in PRIVATE_MARKERS:
+                if marker in lowered:
+                    raise SourceFreshnessChangeReportError(f"private or raw artifact marker is not allowed at {path}")
+
+
+def _walk(value: Any, path: str = "$", key: str | None = None) -> list[tuple[str, str | None, Any]]:
+    rows = [(path, key, value)]
+    if isinstance(value, Mapping):
+        for child_key, child_value in value.items():
+            rows.extend(_walk(child_value, f"{path}.{child_key}", str(child_key)))
+    elif isinstance(value, list):
+        for index, child_value in enumerate(value):
+            rows.extend(_walk(child_value, f"{path}[{index}]", key))
+    return rows

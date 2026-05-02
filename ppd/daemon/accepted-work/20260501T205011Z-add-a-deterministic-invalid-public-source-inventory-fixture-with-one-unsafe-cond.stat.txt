@@ -1,0 +1,1 @@
+ppd/tests/fixtures/public_source_inventory/minimal_invalid_one_unsafe_field_per_entry.json

@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/lifecycle/reactivation_lifecycle_process_skeleton.json"
+  ],
+  "created_at": "2026-05-02T02:16:33.088400Z",
+  "impact": "This advances the PP&D lifecycle fixture plan by adding deterministic, citation-backed reactivation process data without live crawling, DevHub login, uploads, submissions, payments, or implementation-code changes.",
+  "summary": "Add a minimal reactivation-only lifecycle skeleton fixture backed by the existing lifecycle source inventory evidence.",
+  "target_task": "Task checkbox-19: Add a minimal reactivation-only lifecycle process skeleton fixture with required facts, required documents, user decisions, citation-backed action gates, and explicit no-live-automation notes from existing fixtures only.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 26 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "...................................................................................................................................................................................................................ss............................................................................................................................................. ---------------------------------------------------------------------- Ran 354 tests in 0.034s OK (skipped=2)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

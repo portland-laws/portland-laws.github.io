@@ -1,0 +1,118 @@
+--- a/ppd/tests/test_process_model_stage_source_evidence.py
++++ b/ppd/tests/test_process_model_stage_source_evidence.py
+@@ -0,0 +1,115 @@
++"""Mutation coverage for PP&D process-model stage source evidence.
++
++This test stays fixture-only: it loads the committed synthetic public process
++fixture added for the process-model schema work, mutates one stage to remove its
++source evidence, and proves the process-model validator rejects the mutation.
++"""
++
++from __future__ import annotations
++
++import copy
++import json
++import unittest
++from pathlib import Path
++from typing import Any
++
++
++FIXTURES_DIR = Path(__file__).parent / "fixtures"
++
++
++class ProcessModelStageSourceEvidenceTest(unittest.TestCase):
++    def test_rejects_stage_without_source_evidence(self) -> None:
++        process_model = _load_process_fixture()
++        baseline_errors = _validate_process_model(process_model)
++        self.assertEqual([], baseline_errors)
++
++        mutated_model = copy.deepcopy(process_model)
++        mutated_model["stages"][0]["sourceEvidenceIds"] = []
++
++        mutation_errors = _validate_process_model(mutated_model)
++        self.assertIn("stages[0].sourceEvidenceIds requires at least one source evidence id", mutation_errors)
++
++
++def _load_process_fixture() -> dict[str, Any]:
++    candidates: list[Path] = []
++    for fixture_path in sorted(FIXTURES_DIR.rglob("*.json")):
++        with fixture_path.open("r", encoding="utf-8") as fixture_file:
++            data = json.load(fixture_file)
++        if _looks_like_process_model(data):
++            candidates.append(fixture_path)
++
++    if not candidates:
++        raise AssertionError("expected one committed process-model fixture under ppd/tests/fixtures")
++
++    with candidates[0].open("r", encoding="utf-8") as fixture_file:
++        loaded = json.load(fixture_file)
++    if not isinstance(loaded, dict):
++        raise AssertionError(f"process-model fixture must be an object: {candidates[0]}")
++    return loaded
++
++
++def _looks_like_process_model(data: Any) -> bool:
++    if not isinstance(data, dict):
++        return False
++    required_keys = {
++        "processId",
++        "sourceEvidenceIds",
++        "stages",
++        "requiredInputs",
++        "requiredDocuments",
++        "stopGates",
++        "lastReviewed",
++    }
++    return required_keys.issubset(data.keys())
++
++
++def _validate_process_model(process_model: dict[str, Any]) -> list[str]:
++    errors: list[str] = []
++
++    for key in (
++        "processId",
++        "sourceEvidenceIds",
++        "stages",
++        "requiredInputs",
++        "requiredDocuments",
++        "stopGates",
++        "lastReviewed",
++    ):
++        if key not in process_model:
++            errors.append(f"missing required process field {key}")
++
++    source_evidence_ids = process_model.get("sourceEvidenceIds")
++    if not _is_non_empty_string_list(source_evidence_ids):
++        errors.append("sourceEvidenceIds requires at least one source evidence id")
++        known_source_ids: set[str] = set()
++    else:
++        known_source_ids = set(source_evidence_ids)
++
++    stages = process_model.get("stages")
++    if not isinstance(stages, list) or not stages:
++        errors.append("stages requires at least one stage")
++        return errors
++
++    for index, stage in enumerate(stages):
++        if not isinstance(stage, dict):
++            errors.append(f"stages[{index}] must be an object")
++            continue
++        stage_source_ids = stage.get("sourceEvidenceIds")
++        if not _is_non_empty_string_list(stage_source_ids):
++            errors.append(f"stages[{index}].sourceEvidenceIds requires at least one source evidence id")
++            continue
++        missing_source_ids = sorted(set(stage_source_ids) - known_source_ids)
++        if missing_source_ids:
++            errors.append(
++                f"stages[{index}].sourceEvidenceIds contains unknown source evidence ids: {missing_source_ids}"
++            )
++
++    return errors
++
++
++def _is_non_empty_string_list(value: Any) -> bool:
++    return isinstance(value, list) and bool(value) and all(isinstance(item, str) and item.strip() for item in value)
++
++
++if __name__ == "__main__":
++    unittest.main()

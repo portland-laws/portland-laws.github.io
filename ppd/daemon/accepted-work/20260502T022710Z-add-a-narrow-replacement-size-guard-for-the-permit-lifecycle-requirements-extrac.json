@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/test_permit_lifecycle_requirements_size_guard.py"
+  ],
+  "created_at": "2026-05-02T02:27:10.643127Z",
+  "impact": "This advances the PP&D plan by making future lifecycle extractor proposals fail closed if they are broad generated modules, exceed 180 physical lines, or introduce dataclass-based implementation drift.",
+  "summary": "Add a narrow replacement-size guard for the permit lifecycle requirements extractor.",
+  "target_task": "Task checkbox-25: Add a one-file replacement-size guard test for `ppd.extraction.permit_lifecycle_requirements` proposals that rejects broad generated modules and requires the extractor implementation to stay under 180 physical lines with no dataclasses.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 26 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".....................................................................................................................................................................................................................ss.......sss...................................................................................................................................... ---------------------------------------------------------------------- Ran 359 tests in 0.035s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

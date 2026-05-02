@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/daemon/task-board.md",
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-01T20:59:29.972349Z",
+  "impact": "The daemon currently keeps targeting checkbox-66 while checkbox-63 remains blocked. Moving the already-narrow recovery task directly after the blocked checkbox and returning checkbox-66 to needed state gives the worker a deterministic next task that matches the supervisor diagnosis and avoids another broad retry.",
+  "summary": "Reorder the PP&D task board so the daemon selects the one-file missing-information validator recovery before retrying public source inventory work.",
+  "target_task": "Supervisor repair: 1 task(s) are blocked: Task checkbox-63: Add the missing-information output validator as a single no-dataclass Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection using only `ppd/tests/fixtures/missing_information_output/four_requested_items.json`.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 67 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................ ---------------------------------------------------------------------- Ran 140 tests in 0.018s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

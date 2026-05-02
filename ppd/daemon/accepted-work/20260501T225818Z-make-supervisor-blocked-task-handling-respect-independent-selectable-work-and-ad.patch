@@ -1,0 +1,164 @@
+--- a/ppd/daemon/ppd_supervisor.py
++++ b/ppd/daemon/ppd_supervisor.py
+@@ -50,6 +50,12 @@
+     "ts1128",
+     "declaration or statement expected",
+     "expression expected",
++)
++
++MALFORMED_PYTHON_PROPOSAL_MARKERS = (
++    "confidence 1",
++    "confidence 1.0",
++    "return 0.0 list[str]",
+ )
+ 
+ 
+@@ -174,6 +180,11 @@
+     return any(marker in text for marker in SYNTAX_OR_COMPILE_FAILURE_MARKERS)
+ 
+ 
++def has_malformed_python_proposal_syntax(proposal: dict[str, Any]) -> bool:
++    text = proposal_validation_text(proposal)
++    return any(marker in text for marker in MALFORMED_PYTHON_PROPOSAL_MARKERS)
++
++
+ def recent_syntax_failure_count(
+     rows: list[dict[str, Any]], *, limit: int = 6, completed_task_labels: Optional[set[str]] = None
+ ) -> int:
+@@ -194,6 +205,33 @@
+     return count
+ 
+ 
++def repeated_malformed_syntax_count(
++    rows: list[dict[str, Any]], *, completed_task_labels: Optional[set[str]] = None
++) -> int:
++    completed = completed_task_labels or set()
++    latest_task = ""
++    count = 0
++    for proposal in reversed(rows):
++        target = str(proposal.get("target_task") or "")
++        if target in completed:
++            continue
++        if proposal.get("applied") and proposal.get("validation_passed") and not proposal.get("errors"):
++            break
++        if not latest_task:
++            latest_task = target
++        if target != latest_task:
++            break
++        if not is_syntax_or_compile_failure(proposal):
++            break
++        if has_malformed_python_proposal_syntax(proposal):
++            count += 1
++    return count
++
++
++def should_blocked_tasks_interrupt(blocked_count: int, selectable_count: int, threshold: int) -> bool:
++    return blocked_count >= threshold and selectable_count == 0
++
++
+ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> SupervisorDecision:
+     pid = read_pid(config.resolve(config.pid_file))
+     running = process_running(pid)
+@@ -225,14 +263,14 @@
+     if heartbeat_age > config.stall_seconds:
+         return SupervisorDecision(
+             action="invoke_codex",
+-            reason=f"daemon heartbeat is stale for {int(heartbeat_age)} seconds in state {active_state or '<unknown>'}",
++            reason=f"daemon heartbeat is stale for {int(heartbeat_age)} seconds in state {active_state or ''}",
+             severity="critical",
+             should_invoke_codex=True,
+             should_restart_daemon=True,
+         )
+     if active_state in {"calling_llm", "applying_files"} and active_state_age is not None:
+         if active_state_age > config.active_state_timeout_seconds:
+-            target = status.get("active_target_task") or status.get("target_task") or "<unknown task>"
++            target = status.get("active_target_task") or status.get("target_task") or ""
+             return SupervisorDecision(
+                 action="invoke_codex",
+                 reason=(
+@@ -252,11 +290,26 @@
+             should_invoke_codex=True,
+         )
+ 
++    malformed_count = repeated_malformed_syntax_count(rows, completed_task_labels=completed_task_labels)
++    if malformed_count >= 2:
++        return SupervisorDecision(
++            action="repair_daemon_programming",
++            reason=(
++                f"{malformed_count} recent validation rollbacks for the same target contained malformed Python "
++                "comparison or annotation-like syntax; stop retrying that target until a syntax-first guard passes"
++            ),
++            severity="warning",
++            should_invoke_codex=True,
++            should_restart_daemon=True,
++        )
++
+     blocked = [task for task in tasks if task.status == "blocked"]
+-    if len(blocked) >= config.blocked_task_threshold:
++    selectable = [task for task in tasks if task.status in {"needed", "in-progress"}]
++    if should_blocked_tasks_interrupt(len(blocked), len(selectable), config.blocked_task_threshold):
+         return SupervisorDecision(
+             action="invoke_codex",
+-            reason=f"{len(blocked)} task(s) are blocked: " + "; ".join(task.label for task in blocked[:3]),
++            reason=f"{len(blocked)} task(s) are blocked and no independent selectable task remains: "
++            + "; ".join(task.label for task in blocked[:3]),
+             severity="warning",
+             should_invoke_codex=True,
+         )
+@@ -495,6 +548,7 @@
+         errors.append("active-state age calculation failed")
+     syntax_failure = {
+         "failure_kind": "validation",
++        "target_task": "Task checkbox-80: syntax fixture",
+         "validation_results": [
+             {
+                 "command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
+@@ -503,16 +557,48 @@
+             }
+         ],
+     }
++    malformed_confidence_failure = {
++        "failure_kind": "validation",
++        "target_task": "Task checkbox-80: syntax fixture",
++        "validation_results": [
++            {
++                "command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
++                "returncode": 1,
++                "stderr": "SyntaxError: invalid syntax near confidence 1.0",
++            }
++        ],
++    }
++    malformed_return_failure = {
++        "failure_kind": "validation",
++        "target_task": "Task checkbox-80: syntax fixture",
++        "validation_results": [
++            {
++                "command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
++                "returncode": 1,
++                "stderr": "SyntaxError: invalid syntax near return 0.0 list[str]",
++            }
++        ],
++    }
+     if not is_syntax_or_compile_failure(syntax_failure):
+         errors.append("syntax failure classification failed")
+     if recent_syntax_failure_count([syntax_failure, syntax_failure]) != 2:
+         errors.append("recent syntax failure count failed")
++    if not has_malformed_python_proposal_syntax(malformed_confidence_failure):
++        errors.append("malformed confidence syntax marker classification failed")
++    if not has_malformed_python_proposal_syntax(malformed_return_failure):
++        errors.append("malformed return annotation-like syntax marker classification failed")
++    if repeated_malformed_syntax_count([malformed_confidence_failure, malformed_return_failure]) != 2:
++        errors.append("repeated malformed syntax count failed")
+     non_syntax_failure = {
+         "failure_kind": "validation",
+         "validation_results": [{"command": ["python3", "-m", "unittest"], "returncode": 1, "stderr": "AssertionError"}],
+     }
+     if recent_syntax_failure_count([syntax_failure, non_syntax_failure]) != 0:
+         errors.append("syntax failure streak should stop at newer non-syntax validation failures")
++    if should_blocked_tasks_interrupt(2, 1, 1):
++        errors.append("blocked tasks must not interrupt while independent selectable work remains")
++    if not should_blocked_tasks_interrupt(2, 0, 1):
++        errors.append("blocked tasks should interrupt when no selectable work remains")
+     complete_board = "- [x] Finished\n"
+     if parse_tasks(complete_board)[0].status != "complete":
+         errors.append("task parsing failed for completed board")

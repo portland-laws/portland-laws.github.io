@@ -1,0 +1,223 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -2,7 +2,7 @@
+ 
+ This is the controlling backlog for the PP&D autonomous daemon. The daemon should work one narrow item at a time and should only accept changes that pass PP&D validation.
+ 
+-Legend: `[ ]` needed, `[~]` in progress, `[x]` complete. Broad failed work is parked in Deferred Repair Notes rather than kept as `[!]` checklist items while narrow recovery tasks remain selectable.
++Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked. Broad failed work is parked in Deferred Repair Notes while narrow recovery tasks remain selectable.
+ 
+ ## Checklist
+ 
+@@ -72,10 +72,11 @@
+ - [x] Add a one-file syntax-first repair test for public source inventory validation that imports only `ppd.contracts.public_source_inventory` and rejects malformed Python before broad unittest discovery.
+ - [x] Add a minimal invalid public source inventory fixture with exactly one unsafe field per entry so rejection reasons for raw bodies, credentials, traces, screenshots, downloaded documents, private DevHub paths, and missing provenance are deterministic.
+ - [~] Add the public source inventory validator only after the syntax-first import test and one-unsafe-field fixture pass, covering allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and required provenance fields.
++- [ ] Recover the blocked missing-information output validator with one file only: replace `ppd/contracts/missing_information_output_validation.py` as a no-dataclass module that exposes `MODULE_STATUS = "syntax_first_import_ready"` and validates only `ppd/tests/fixtures/missing_information_output/four_requested_items.json` semantics already covered by existing tests.
+ 
+ ## Deferred Broad Items
+ 
+-These items failed as broad tasks and are intentionally not checkbox entries while narrower recovery work remains available. Do not re-add them as selectable checklist tasks until their syntax-first and fixture-first prerequisites pass.
++These items failed as broad tasks and are intentionally not selectable while narrower recovery work remains available. Do not re-add them as selectable checklist tasks until their syntax-first and fixture-first prerequisites pass.
+ 
+ - Parked source freshness broad task: Add a source freshness fixture that classifies stale PP&D guidance, changed content hashes, removed pages, and recrawl priority without performing a live recrawl.
+ - Parked source freshness renderer task: Add a fixture-only change report renderer for public PP&D source freshness results that summarizes changed requirements, new or removed links, and affected permit-process fixtures with citation references.
+@@ -83,27 +84,25 @@
+ 
+ ## Deferred Repair Notes
+ 
+-The missing-information detector output validator was blocked by repeated invalid Python and then by a runtime import failure caused by `@dataclass` under the syntax-first `importlib.util.module_from_spec` probe, where the module is not inserted into `sys.modules` before execution. Do not retry that broad validator directly and do not use dataclasses, broad type-evaluated annotations, or multi-fixture rewrites for this recovery. Resume through the appended single-module task that uses plain dictionaries, tuples, lists, sets, and simple helper functions only.
++The missing-information output validator was blocked by repeated invalid Python, mismatched action-classification expectations, and over-broad private-value rejection. Do not retry it as a broad task. The next recovery must be a single replacement for `ppd/contracts/missing_information_output_validation.py` only. It must use plain dictionaries, lists, tuples, sets, and helper functions only; no dataclasses, no broad annotations that depend on import-time module registration, and no test rewrites.
+ 
+-The source freshness classifier checkbox was blocked because repeated proposals introduced invalid Python such as `if self.recrawl_cadence_days list[str]:`. The dependent change-report renderer is also blocked until source freshness has a syntactically valid import test, a minimal four-record fixture, and a small classifier module that pass validation. Do not retry the blocked source freshness or renderer tasks directly; use the appended syntax-first recovery tasks instead.
++For the existing four-item fixture, accept the fixture's action classifications as canonical: `read_only` for fact requests, `draft_edit` for file requests, and `consequential_confirmation_required` for acknowledgment or decision gates. Treat `[REDACTED]` as the allowed committed redaction marker, including under `redactionPolicy.redactionToken`; reject private concrete values, credentials, tokens, auth state, traces, screenshots, raw response bodies, and downloaded private documents.
+ 
+-The former broad public-source-inventory validation checkbox is deferred because repeated daemon proposals failed validation, including Python syntax failures and mismatched expected rejection reasons. It must not be retried as one broad task. Resume autonomous work on independent fixture-first tasks and later return to the public-source-inventory validator through the three narrow queued tasks: syntax-first import test, one-unsafe-field invalid fixture, then validator implementation.
++The source freshness classifier checkbox was blocked because repeated proposals introduced invalid Python such as `if self.recrawl_cadence_days list[str]:`. That recovery has passed. Do not reopen those broad source-freshness tasks unless a new failing validator points to a concrete regression.
++
++The former broad public-source-inventory validation checkbox is deferred because repeated daemon proposals failed validation, including Python syntax failures and mismatched expected rejection reasons. The syntax-first import test and one-unsafe-field fixture have passed, so the current in-progress public-source-inventory validator remains a valid autonomous target.
+ 
+ ## Task Selection Notes
+ 
+-Parked source-freshness and missing-information-output broad tasks should not stop unrelated PP&D progress. Broad failed work belongs in Deferred Broad Items, not in checkbox form, while any independent `[ ]` fixture-first or validation-first task remains selectable.
+-
+-The current autonomous target may remain the source-freshness change report renderer while it is in progress. If that target fails or finishes, select the appended no-dataclass missing-information output validator before returning to public-source-inventory recovery.
++Parked broad tasks should not stop unrelated PP&D progress. Broad failed work belongs in Deferred Broad Items, not in selectable checkbox form, while any independent `[ ]` fixture-first or validation-first task remains selectable.
+ 
+ When no independent task is active, prefer recovery tasks in this order:
+ 
+-1. Finish the source-freshness renderer only because the syntax test, four-record fixture, and classifier have passed validation.
+-2. Run the smallest no-dataclass missing-information output validator task against the existing syntax-first import guard and four-item fixture.
+-3. Run the public-source-inventory syntax-first import test before any broad public-source-inventory fixture or validator work.
+-4. Run the one-unsafe-field public-source-inventory fixture before the validator.
+-5. Run the smallest public-source-inventory validator task.
++1. Finish the current public-source-inventory validator if it is still marked `[~]`.
++2. If public-source-inventory blocks, select the appended one-file missing-information output validator recovery task.
++3. Do not select the parked broad missing-information validator directly.
+ 
+-Do not select parked source-freshness, renderer, public-source-inventory, or missing-information validator work directly until their narrow prerequisites have passed. Each recovery proposal should keep to one or two files unless the task explicitly requires a fixture plus its focused test.
++Each recovery proposal should keep to one file unless the task explicitly requires a fixture plus its focused test. For the appended missing-information recovery, tests and fixtures already exist; replace only the contract module.
+ 
+ ## Supervisor Recovery Rules
+ 
+@@ -114,35 +113,14 @@
+ - Prefer deterministic fixtures and validation-only changes before adding live crawl, authenticated DevHub, browser, or network behavior.
+ - Do not create private DevHub session files, auth state, traces, raw crawl output, screenshots, or downloaded documents in repair cycles.
+ 
+-## Generated Status
+-
+-Last updated: 2026-05-01T20:40:00.000000Z
+-
+-- Latest target: `Task checkbox-59: Add the missing-information output validator in the smallest possible Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection.`
+-- Latest result: `supervisor_repair`
+-- Latest summary: Park the blocked broad missing-information validator and append a narrower no-dataclass recovery task.
+-- Counts: `{}`
+-
+-
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T20:34:57.093876Z
++Last updated: 2026-05-01T20:51:30.000000Z
+ 
+-- Latest target: `Task checkbox-62: Add the source freshness classifier in the smallest possible Python module after the import test and four-record fixture pass, covering stale guidance, changed hashes, removed pages, and recrawl priority.`
+-- Latest result: `accepted`
+-- Latest summary: Add a small fixture-friendly PP&D source freshness classifier module with the required contract version constant.
+-- Counts: `{"blocked": 1, "complete": 61, "in_progress": 0, "needed": 4}`
++- Latest target: `Task checkbox-66: Add the public source inventory validator only after the syntax-first import test and one-unsafe-field fixture pass, covering allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and required provenance fields.`
++- Latest result: `supervisor_repair`
++- Latest summary: Append a one-file recovery task for the blocked missing-information output validator.
++- Counts: `{"blocked": 1, "complete": 64, "in_progress": 1, "needed": 1}`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-01T20:50:11.887604Z
+-
+-- Latest target: `Task checkbox-65: Add a minimal invalid public source inventory fixture with exactly one unsafe field per entry so rejection reasons for raw bodies, credentials, traces, screenshots, downloaded documents, private DevHub paths, and missing provenance are deterministic.`
+-- Latest result: `accepted`
+-- Latest summary: Add a deterministic invalid public source inventory fixture with one unsafe condition per entry.
+-- Counts: `{"blocked": 1, "complete": 64, "in_progress": 0, "needed": 1}`
+-
+-<!-- ppd-daemon-task-board:end -->
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,96 +1,32 @@
+ # PP&D Supervisor Repair Guide
+ 
+-## Current Repair Focus
++Use this guide when the supervisor repairs daemon progress without implementing a PP&D domain task directly.
+ 
+-The blocked task is the missing-information output validator recovery:
++## Missing-Information Output Validator Recovery
+ 
+-- Task checkbox-63: Add the missing-information output validator as a single no-dataclass Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection using only `ppd/tests/fixtures/missing_information_output/four_requested_items.json`.
++The broad missing-information output validator is blocked. Do not retry it directly and do not edit its tests or fixture during supervisor repair.
+ 
+-Recent failures were caused by three concrete mismatches:
++The next daemon task must be narrow:
+ 
+-1. Invalid Python was proposed after the syntax-first import guard already existed.
+-2. The module omitted `MODULE_STATUS = "syntax_first_import_ready"`, which the import guard requires.
+-3. The validator rejected the committed valid fixture because it used the wrong action-class expectations and treated `redactionPolicy.redactionToken` as a private value.
++- Replace only `ppd/contracts/missing_information_output_validation.py`.
++- Keep the module importable through `importlib.util.module_from_spec` without inserting it into `sys.modules`.
++- Expose `MODULE_STATUS = "syntax_first_import_ready"`.
++- Do not use `@dataclass`.
++- Do not use complex import-time annotations for the validator data model.
++- Use plain dictionaries, lists, tuples, sets, constants, and small helper functions.
++- Validate only the committed fixture shape represented by `ppd/tests/fixtures/missing_information_output/four_requested_items.json` and the existing focused tests.
+ 
+-The next retry must be a small implementation-only replacement of `ppd/contracts/missing_information_output_validation.py`. Do not edit the four-item fixture or broaden tests during this retry.
++Canonical action classifications from the fixture:
+ 
+-## Required Public API
++- `fact` requests use `read_only`.
++- `file` requests use `draft_edit`.
++- `acknowledgment` requests use `consequential_confirmation_required`.
++- `decision` requests use `consequential_confirmation_required`.
+ 
+-The module must expose exactly the import sentinel and a simple validation function:
++Canonical redaction behavior:
+ 
+-- `MODULE_STATUS = "syntax_first_import_ready"`
+-- `validate_missing_information_output(output)`
++- `[REDACTED]` is an allowed committed redaction marker.
++- `redactionPolicy.redactionToken` may equal `[REDACTED]`.
++- Concrete private values, credentials, auth state, traces, screenshots, raw response bodies, downloaded private documents, and live DevHub session paths must be rejected.
+ 
+-`validate_missing_information_output(output)` must return a list of error dictionaries. A valid output returns `[]`. Each error should use deterministic keys such as `path` and `reason`; it must not echo private values.
+-
+-Do not return a dictionary envelope with `ok`, `errors`, `item_count`, or `actions` for this task. Earlier guidance that suggested that shape was wrong for the committed tests.
+-
+-## Fixture Shape To Support
+-
+-The only required valid fixture for this retry is:
+-
+-- `ppd/tests/fixtures/missing_information_output/four_requested_items.json`
+-
+-The valid fixture uses camelCase keys:
+-
+-- top-level requested items: `requestedItems`
+-- item kind: `kind`
+-- action classification: `actionClassification`
+-- source-backed flag: `sourceBacked`
+-- source evidence: `evidence`
+-- redacted value placeholder: `requestedValue: "[REDACTED]"`
+-
+-The validator may support snake_case aliases, but it must support the camelCase fixture without requiring a fixture edit.
+-
+-## Valid Action Mapping
+-
+-Accept the existing fixture classifications exactly as follows:
+-
+-- `kind: "fact"` requires `actionClassification: "read_only"`
+-- `kind: "file"` requires `actionClassification: "draft_edit"`
+-- `kind: "acknowledgment"` requires `actionClassification: "consequential_confirmation_required"`
+-- `kind: "decision"` requires `actionClassification: "consequential_confirmation_required"`
+-
+-Do not require `safe_request`, `draft_file_request`, `acknowledgment_gate`, or `decision_gate`; those names caused a prior valid-fixture failure.
+-
+-## Validation Rules
+-
+-The implementation should be plain Python functions, constants, loops, dictionaries, lists, sets, and tuples only.
+-
+-Required checks:
+-
+-1. Top-level output must be a dictionary.
+-2. Requested items must be a list under `requestedItems`; optional aliases such as `requested_items`, `missing_information`, or `items` are allowed but not required.
+-3. Each item must be a dictionary with a stable identity from `id`, `key`, `label`, `question`, or `prompt`.
+-4. Duplicate stable identities must be rejected.
+-5. Each item must have `sourceBacked` set to true, or an equivalent truthy source-backed alias if supported.
+-6. Each item must have non-empty source evidence under `evidence`; optional aliases such as `sources`, `source`, `citations`, `citation`, or `source_refs` are allowed.
+-7. Evidence entries must include a public `sourceUrl` or equivalent URL field and should reject private DevHub/account paths.
+-8. Each item must have a supported `kind` and matching `actionClassification` using the mapping above.
+-9. Committed output must not include private user values in requested item fields.
+-
+-## Redaction Token Rule
+-
+-The fixture-level key `redactionPolicy.redactionToken` is allowed when its value is the literal placeholder `[REDACTED]`. Do not reject that key merely because it contains the word `token`.
+-
+-Private-value rejection should focus on real leaked values and secret-bearing fields outside the fixture's redaction policy metadata. Reject obvious private data such as email addresses, phone-like digit runs, SSN-like patterns, payment/card fields, password fields, cookie/session/auth credential fields, or non-redacted applicant/owner/address values. Keep the checks deterministic and do not include the offending private value in the error text.
+-
+-## Syntax Guardrails
+-
+-For this retry:
+-
+-1. Edit only `ppd/contracts/missing_information_output_validation.py`.
+-2. Do not use `@dataclass`, `typing.NamedTuple`, metaclasses, decorators, broad type-evaluated annotations, or complex regular expressions.
+-3. Prefer helper functions with simple names such as `_first_present`, `_is_non_empty`, `_item_identity`, `_source_errors`, and `_private_value_errors`.
+-4. Keep the file short enough to audit in one pass.
+-5. Make the module importable through `importlib.util.module_from_spec` without relying on package import side effects.
+-
+-## Acceptance Gate
+-
+-The daemon should consider the retry acceptable only when these validations pass in order:
+-
+-1. `python3 ppd/daemon/ppd_daemon.py --self-test`
+-2. `python3 -m unittest discover -s ppd/tests -p 'test_*.py'`
+-3. TypeScript typecheck if TypeScript files are present under `ppd/`
+-
+-If the import guard or fixture-valid test fails again, stop retrying the broad validator and add an even narrower one-file repair task that only proves the exact return shape and action-class mapping before resuming implementation.
++If another failure occurs, split further rather than broadening the patch. The next split should be either a constants-only import repair or a pure private-value scanner repair, not a multi-file rewrite.

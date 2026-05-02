@@ -1,0 +1,96 @@
+--- a/ppd/contracts/public_source_inventory.py
++++ b/ppd/contracts/public_source_inventory.py
+@@ -43,6 +43,7 @@
+     "rawbody",
+     "rawcontent",
+     "rawhtml",
++    "rawresponse",
+     "rawresponsebody",
+     "rawtext",
+     "responsebody",
+@@ -105,7 +106,6 @@
+ SHA256_PREFIX = "sha256:"
+ SHA256_HEX_LENGTH = 64
+ 
+-
+ _REASON_MESSAGES = {
+     "raw_response_body": "inventory entries must not include raw response bodies",
+     "credential_field": "inventory entries must not include credentials or auth material",
+@@ -132,9 +132,9 @@
+ def validate_public_source_inventory(inventory):
+     """Return deterministic validation findings for an inventory-like object.
+ 
+-    The fixture for this repair task intentionally includes exactly one unsafe
+-    field per entry. To keep rejection reasons stable, this validator reports the
+-    first safety or provenance failure found for each entry in a fixed order.
++    The public source inventory fixtures intentionally isolate one unsafe field
++    per invalid entry. This validator reports the first safety or provenance
++    failure for each entry in a fixed order so tests can assert stable reasons.
+     """
+     findings = []
+     entries = _inventory_entries(inventory)
+@@ -166,7 +166,7 @@
+ 
+ def _inventory_entries(inventory):
+     if isinstance(inventory, Mapping):
+-        entries = inventory.get("entries", ())
++        entries = inventory.get("entries", inventory.get("sources", inventory.get("records", ())))
+     else:
+         entries = inventory
+     if isinstance(entries, Sequence) and not isinstance(entries, (str, bytes, bytearray)):
+@@ -223,29 +223,43 @@
+ 
+ 
+ def _url_failure(entry):
+-    for field in ("canonicalUrl", "sourceUrl"):
++    for field in ("canonicalUrl", "sourceUrl", "url"):
++        if field not in entry:
++            continue
+         url = str(entry.get(field, ""))
+         parsed = urlparse(url)
+         if parsed.scheme != "https" or parsed.netloc not in ALLOWED_PUBLIC_HOSTS:
+             return "non_allowlisted_host", field
+         if parsed.netloc == "devhub.portlandoregon.gov" and _is_private_devhub_path(parsed.path):
+             return "private_devhub_path", field
++    if not any(field in entry for field in ("canonicalUrl", "sourceUrl", "url")):
++        return "non_allowlisted_host", "canonicalUrl"
+     return None
+ 
+ 
+ def _provenance_failure(entry):
+     provenance = entry.get("provenance")
+-    if not isinstance(provenance, Mapping):
+-        return "missing_provenance", "provenance"
+-    for field in REQUIRED_PROVENANCE_FIELDS:
+-        if not str(provenance.get(field, "")).strip():
+-            return "missing_provenance", f"provenance.{field}"
+-    retrieved_at = str(provenance.get("retrievedAt", ""))
+-    content_hash = str(provenance.get("contentHash", ""))
+-    if not retrieved_at.endswith("Z"):
+-        return "invalid_provenance", "provenance.retrievedAt"
+-    if not _is_sha256_content_hash(content_hash):
+-        return "invalid_provenance", "provenance.contentHash"
++    if isinstance(provenance, Mapping):
++        source_index_id = provenance.get("sourceIndexId", provenance.get("source_index_id", ""))
++        retrieved_at = provenance.get("retrievedAt", provenance.get("retrieved_at", ""))
++        content_hash = provenance.get("contentHash", provenance.get("content_hash", ""))
++        field_prefix = "provenance."
++    else:
++        source_index_id = entry.get("sourceIndexId", entry.get("source_index_id", ""))
++        retrieved_at = entry.get("retrievedAt", entry.get("retrieved_at", ""))
++        content_hash = entry.get("contentHash", entry.get("content_hash", ""))
++        field_prefix = ""
++
++    if not str(source_index_id).strip():
++        return "missing_provenance", field_prefix + "sourceIndexId"
++    if not str(retrieved_at).strip():
++        return "missing_provenance", field_prefix + "retrievedAt"
++    if not str(content_hash).strip():
++        return "missing_provenance", field_prefix + "contentHash"
++    if not str(retrieved_at).endswith("Z"):
++        return "invalid_provenance", field_prefix + "retrievedAt"
++    if not _is_sha256_content_hash(str(content_hash)):
++        return "invalid_provenance", field_prefix + "contentHash"
+     return None
+ 
+ 

@@ -1,0 +1,318 @@
+{
+  "schemaVersion": 1,
+  "fixtureOnly": true,
+  "workflowId": "fcc_wireless_application",
+  "permitType": "FCC wireless application",
+  "description": "Synthetic, redacted fixture for compiling guardrails around an FCC wireless application workflow in DevHub.",
+  "provenance": [
+    {
+      "sourceId": "ppd-devhub-application-guidance",
+      "url": "https://www.portland.gov/ppd/devhub/apply-permits-devhub",
+      "title": "Apply for permits in Development Hub PDX",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "evidenceType": "public_guidance_fixture"
+    },
+    {
+      "sourceId": "ppd-devhub-faq",
+      "url": "https://www.portland.gov/ppd/devhub/devhub-faq",
+      "title": "Development Hub PDX FAQ",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "evidenceType": "public_guidance_fixture"
+    },
+    {
+      "sourceId": "ppd-single-pdf-process",
+      "url": "https://www.portland.gov/ppd/single-pdf-process",
+      "title": "Single PDF Process",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "evidenceType": "public_guidance_fixture"
+    }
+  ],
+  "processModel": {
+    "requiredFacts": [
+      {
+        "id": "fact_devhub_account",
+        "label": "Applicant has a DevHub account",
+        "required": true,
+        "sourceId": "ppd-devhub-application-guidance"
+      },
+      {
+        "id": "fact_project_address",
+        "label": "Project site address or property identifier",
+        "required": true,
+        "sourceId": "ppd-devhub-application-guidance"
+      },
+      {
+        "id": "fact_facility_class",
+        "label": "Wireless facility class or scope",
+        "required": true,
+        "sourceId": "ppd-devhub-application-guidance"
+      },
+      {
+        "id": "fact_owner_authorization_status",
+        "label": "Property owner authorization status",
+        "required": true,
+        "sourceId": "ppd-devhub-application-guidance"
+      },
+      {
+        "id": "fact_proposed_antenna_height",
+        "label": "Proposed antenna or equipment height",
+        "required": true,
+        "sourceId": "ppd-devhub-application-guidance"
+      },
+      {
+        "id": "fact_rf_compliance_prepared",
+        "label": "Radio-frequency compliance documentation is prepared",
+        "required": true,
+        "sourceId": "ppd-devhub-application-guidance"
+      }
+    ],
+    "documentGroups": [
+      {
+        "id": "group_application_packet",
+        "label": "Application packet",
+        "required": true,
+        "documents": [
+          {
+            "id": "doc_fcc_wireless_application_form",
+            "label": "FCC wireless application form",
+            "required": true,
+            "format": "pdf",
+            "sourceId": "ppd-devhub-application-guidance"
+          },
+          {
+            "id": "doc_project_narrative",
+            "label": "Project narrative",
+            "required": true,
+            "format": "pdf",
+            "sourceId": "ppd-devhub-application-guidance"
+          }
+        ]
+      },
+      {
+        "id": "group_wireless_plans",
+        "label": "Wireless plan set",
+        "required": true,
+        "documents": [
+          {
+            "id": "doc_site_plan",
+            "label": "Site plan",
+            "required": true,
+            "format": "pdf",
+            "sourceId": "ppd-single-pdf-process"
+          },
+          {
+            "id": "doc_elevation_drawings",
+            "label": "Elevation drawings",
+            "required": true,
+            "format": "pdf",
+            "sourceId": "ppd-single-pdf-process"
+          }
+        ]
+      },
+      {
+        "id": "group_technical_reports",
+        "label": "Technical reports",
+        "required": true,
+        "documents": [
+          {
+            "id": "doc_structural_calculations",
+            "label": "Structural calculations",
+            "required": true,
+            "format": "pdf",
+            "sourceId": "ppd-devhub-application-guidance"
+          },
+          {
+            "id": "doc_rf_compliance_statement",
+            "label": "Radio-frequency compliance statement",
+            "required": true,
+            "format": "pdf",
+            "sourceId": "ppd-devhub-application-guidance"
+          }
+        ]
+      },
+      {
+        "id": "group_authorization",
+        "label": "Authorization documents",
+        "required": true,
+        "documents": [
+          {
+            "id": "doc_owner_authorization",
+            "label": "Property owner authorization",
+            "required": true,
+            "format": "pdf",
+            "sourceId": "ppd-devhub-application-guidance"
+          }
+        ]
+      }
+    ],
+    "actionGates": [
+      {
+        "id": "gate_pay_intake_fees",
+        "action": "pay_intake_fees",
+        "classification": "financial",
+        "stage": "fee_payment",
+        "stopPoint": true,
+        "requiresExactConfirmation": true,
+        "sourceId": "ppd-devhub-faq"
+      },
+      {
+        "id": "gate_upload_official_corrections",
+        "action": "upload_official_corrections",
+        "classification": "consequential",
+        "stage": "corrections",
+        "stopPoint": true,
+        "requiresExactConfirmation": true,
+        "sourceId": "ppd-devhub-faq"
+      },
+      {
+        "id": "gate_certify_corrections",
+        "action": "certify_corrections",
+        "classification": "consequential",
+        "stage": "corrections",
+        "stopPoint": true,
+        "requiresExactConfirmation": true,
+        "sourceId": "ppd-devhub-faq"
+      },
+      {
+        "id": "gate_schedule_inspection",
+        "action": "schedule_inspection",
+        "classification": "consequential",
+        "stage": "inspection",
+        "stopPoint": true,
+        "requiresExactConfirmation": true,
+        "sourceId": "ppd-devhub-faq"
+      },
+      {
+        "id": "gate_request_finalization",
+        "action": "request_finalization",
+        "classification": "consequential",
+        "stage": "finalization",
+        "stopPoint": true,
+        "requiresExactConfirmation": true,
+        "sourceId": "ppd-devhub-faq"
+      }
+    ]
+  },
+  "userCase": {
+    "redacted": true,
+    "knownFacts": {
+      "fact_devhub_account": true,
+      "fact_project_address": true,
+      "fact_facility_class": null,
+      "fact_owner_authorization_status": null,
+      "fact_proposed_antenna_height": null,
+      "fact_rf_compliance_prepared": null
+    },
+    "documentInventory": {
+      "doc_fcc_wireless_application_form": {
+        "present": true,
+        "redactedFileName": "REDACTED_APPLICATION.pdf",
+        "format": "pdf"
+      },
+      "doc_project_narrative": {
+        "present": false,
+        "redactedFileName": null,
+        "format": null
+      },
+      "doc_site_plan": {
+        "present": true,
+        "redactedFileName": "REDACTED_SITE_PLAN.pdf",
+        "format": "pdf"
+      },
+      "doc_elevation_drawings": {
+        "present": false,
+        "redactedFileName": null,
+        "format": null
+      },
+      "doc_structural_calculations": {
+        "present": false,
+        "redactedFileName": null,
+        "format": null
+      },
+      "doc_rf_compliance_statement": {
+        "present": false,
+        "redactedFileName": null,
+        "format": null
+      },
+      "doc_owner_authorization": {
+        "present": false,
+        "redactedFileName": null,
+        "format": null
+      }
+    },
+    "confirmations": {
+      "pay_intake_fees": false,
+      "upload_official_corrections": false,
+      "certify_corrections": false,
+      "schedule_inspection": false,
+      "request_finalization": false
+    }
+  },
+  "compiledGuardrails": {
+    "missingFacts": [
+      "fact_facility_class",
+      "fact_owner_authorization_status",
+      "fact_proposed_antenna_height",
+      "fact_rf_compliance_prepared"
+    ],
+    "missingDocumentGroups": [
+      {
+        "groupId": "group_application_packet",
+        "missingDocumentIds": [
+          "doc_project_narrative"
+        ]
+      },
+      {
+        "groupId": "group_wireless_plans",
+        "missingDocumentIds": [
+          "doc_elevation_drawings"
+        ]
+      },
+      {
+        "groupId": "group_technical_reports",
+        "missingDocumentIds": [
+          "doc_structural_calculations",
+          "doc_rf_compliance_statement"
+        ]
+      },
+      {
+        "groupId": "group_authorization",
+        "missingDocumentIds": [
+          "doc_owner_authorization"
+        ]
+      }
+    ],
+    "stopPoints": [
+      {
+        "gateId": "gate_pay_intake_fees",
+        "action": "pay_intake_fees",
+        "reason": "Financial action must stop until exact payment confirmation is present."
+      },
+      {
+        "gateId": "gate_upload_official_corrections",
+        "action": "upload_official_corrections",
+        "reason": "Official correction upload is consequential and requires exact session confirmation."
+      },
+      {
+        "gateId": "gate_certify_corrections",
+        "action": "certify_corrections",
+        "reason": "Correction certification is consequential and requires exact session confirmation."
+      },
+      {
+        "gateId": "gate_schedule_inspection",
+        "action": "schedule_inspection",
+        "reason": "Inspection scheduling is consequential and requires exact session confirmation."
+      },
+      {
+        "gateId": "gate_request_finalization",
+        "action": "request_finalization",
+        "reason": "Finalization or closeout request is consequential and requires exact session confirmation."
+      }
+    ],
+    "allowedWithoutConfirmation": [
+      "read_public_guidance",
+      "preview_missing_information",
+      "save_reversible_draft"
+    ]
+  }
+}

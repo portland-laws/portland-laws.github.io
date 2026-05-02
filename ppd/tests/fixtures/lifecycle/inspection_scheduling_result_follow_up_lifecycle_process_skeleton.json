@@ -1,0 +1,223 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "inspection_scheduling_result_follow_up_lifecycle_process_skeleton",
+  "fixtureKind": "permit_lifecycle_process_skeleton",
+  "lifecycleCategories": [
+    "inspection_scheduling",
+    "inspection_result_follow_up"
+  ],
+  "sourceInventoryEvidenceIds": [
+    "permit_lifecycle_source_inventory:devhub_faq_inspection_scheduling_online_trade_permits",
+    "permit_lifecycle_source_inventory:inspection_scheduling_guidance",
+    "permit_lifecycle_source_inventory:inspection_result_guidance"
+  ],
+  "authoritySources": [
+    {
+      "evidenceId": "permit_lifecycle_source_inventory:devhub_faq_inspection_scheduling_online_trade_permits",
+      "authorityLabel": "Public DevHub FAQ",
+      "citationUrl": "https://www.portland.gov/ppd/devhub",
+      "citationNote": "Existing source-inventory fixture evidence identifies inspection scheduling for online trade permits as a public DevHub service category."
+    },
+    {
+      "evidenceId": "permit_lifecycle_source_inventory:inspection_scheduling_guidance",
+      "authorityLabel": "PP&D inspection scheduling guidance",
+      "citationUrl": "https://www.portland.gov/ppd/inspections",
+      "citationNote": "Existing source-inventory fixture evidence covers public inspection scheduling guidance and must be consulted before any scheduling workflow is proposed."
+    },
+    {
+      "evidenceId": "permit_lifecycle_source_inventory:inspection_result_guidance",
+      "authorityLabel": "PP&D inspection result guidance",
+      "citationUrl": "https://www.portland.gov/ppd/inspections",
+      "citationNote": "Existing source-inventory fixture evidence covers public inspection-result follow-up guidance and result-dependent next steps."
+    }
+  ],
+  "processSkeleton": {
+    "processId": "inspection_scheduling_result_follow_up_minimal_lifecycle",
+    "displayName": "Inspection scheduling and result follow-up lifecycle skeleton",
+    "permitFamily": "ppd_permit_lifecycle",
+    "scopeNote": "Minimal fixture-only skeleton for inspection scheduling and inspection-result follow-up decisions. It uses existing source-inventory evidence references only and does not model a live DevHub session.",
+    "requiredFacts": [
+      {
+        "factId": "permit_or_request_identifier",
+        "label": "Permit or request identifier",
+        "neededFor": "Match the inspection request or inspection result to the correct permit record.",
+        "evidenceIds": [
+          "permit_lifecycle_source_inventory:inspection_scheduling_guidance",
+          "permit_lifecycle_source_inventory:inspection_result_guidance"
+        ]
+      },
+      {
+        "factId": "inspection_type_requested_or_resulted",
+        "label": "Inspection type",
+        "neededFor": "Determine whether the user is scheduling an inspection, checking a result, or following up after a result.",
+        "evidenceIds": [
+          "permit_lifecycle_source_inventory:devhub_faq_inspection_scheduling_online_trade_permits",
+          "permit_lifecycle_source_inventory:inspection_scheduling_guidance"
+        ]
+      },
+      {
+        "factId": "project_contact_and_site_access_readiness",
+        "label": "Project contact and site access readiness",
+        "neededFor": "Confirm the user can provide required scheduling/contact/access details before any scheduling action is considered.",
+        "evidenceIds": [
+          "permit_lifecycle_source_inventory:inspection_scheduling_guidance"
+        ]
+      },
+      {
+        "factId": "latest_inspection_result_status",
+        "label": "Latest inspection result status",
+        "neededFor": "Route the user to closeout, correction, rescheduling, or PP&D contact follow-up after an inspection result.",
+        "evidenceIds": [
+          "permit_lifecycle_source_inventory:inspection_result_guidance"
+        ]
+      }
+    ],
+    "requiredDocuments": [
+      {
+        "documentId": "approved_or_relevant_permit_record_reference",
+        "label": "Approved or relevant permit record reference",
+        "neededFor": "Support inspection scheduling or result follow-up against the correct public or account-scoped permit record.",
+        "evidenceIds": [
+          "permit_lifecycle_source_inventory:inspection_scheduling_guidance",
+          "permit_lifecycle_source_inventory:inspection_result_guidance"
+        ],
+        "fixtureOnlyNote": "This fixture does not include a real permit record, private account page, downloaded document, screenshot, or raw response body."
+      },
+      {
+        "documentId": "correction_or_reinspection_materials_if_required",
+        "label": "Correction or reinspection materials if required",
+        "neededFor": "Represent result-dependent follow-up without automating an official correction upload or resubmission.",
+        "evidenceIds": [
+          "permit_lifecycle_source_inventory:inspection_result_guidance"
+        ],
+        "fixtureOnlyNote": "Any official upload, certification, or resubmission is outside this fixture and must stop for exact user confirmation in a real guarded workflow."
+      }
+    ],
+    "userDecisions": [
+      {
+        "decisionId": "choose_schedule_inspection_or_review_result",
+        "prompt": "Is the user trying to schedule an inspection, review an existing inspection result, or follow up after a result?",
+        "allowedOptions": [
+          "schedule_inspection",
+          "review_result",
+          "follow_up_after_result",
+          "unclear_stop_and_ask_user"
+        ],
+        "evidenceIds": [
+          "permit_lifecycle_source_inventory:devhub_faq_inspection_scheduling_online_trade_permits",
+          "permit_lifecycle_source_inventory:inspection_scheduling_guidance",
+          "permit_lifecycle_source_inventory:inspection_result_guidance"
+        ]
+      },
+      {
+        "decisionId": "confirm_online_trade_permit_scheduling_scope",
+        "prompt": "If scheduling through DevHub is proposed, has the user confirmed the permit is within an eligible online inspection scheduling scope?",
+        "allowedOptions": [
+          "confirmed_online_trade_permit_scope",
+          "not_confirmed_stop_before_scheduling",
+          "outside_scope_route_to_public_guidance_or_ppd_contact"
+        ],
+        "evidenceIds": [
+          "permit_lifecycle_source_inventory:devhub_faq_inspection_scheduling_online_trade_permits"
+        ]
+      },
+      {
+        "decisionId": "confirm_result_follow_up_path",
+        "prompt": "After an inspection result, does the user need no action, correction work, rescheduling, or PP&D clarification?",
+        "allowedOptions": [
+          "no_follow_up_needed",
+          "correction_work_needed",
+          "reschedule_or_reinspection_needed",
+          "contact_ppd_or_human_review_needed",
+          "unclear_stop_and_ask_user"
+        ],
+        "evidenceIds": [
+          "permit_lifecycle_source_inventory:inspection_result_guidance"
+        ]
+      }
+    ],
+    "actionGates": [
+      {
+        "gateId": "read_public_inspection_guidance",
+        "classification": "read_only",
+        "action": "Read and summarize public PP&D inspection scheduling or result guidance.",
+        "allowedWithoutExactConfirmation": true,
+        "requiredBefore": [
+          "preview_scheduling_steps",
+          "preview_result_follow_up_steps"
+        ],
+        "citationEvidenceIds": [
+          "permit_lifecycle_source_inventory:inspection_scheduling_guidance",
+          "permit_lifecycle_source_inventory:inspection_result_guidance"
+        ],
+        "stopGate": false
+      },
+      {
+        "gateId": "preview_inspection_scheduling_steps_only",
+        "classification": "draft_preview",
+        "action": "Prepare a non-submitting preview of inspection scheduling facts, missing fields, and user decisions.",
+        "allowedWithoutExactConfirmation": true,
+        "requiredBefore": [
+          "schedule_inspection_or_submit_request"
+        ],
+        "citationEvidenceIds": [
+          "permit_lifecycle_source_inventory:devhub_faq_inspection_scheduling_online_trade_permits",
+          "permit_lifecycle_source_inventory:inspection_scheduling_guidance"
+        ],
+        "stopGate": false
+      },
+      {
+        "gateId": "stop_before_official_inspection_scheduling",
+        "classification": "potentially_consequential",
+        "action": "Schedule an inspection, select an official inspection time, or submit an inspection request in DevHub or another PP&D channel.",
+        "allowedWithoutExactConfirmation": false,
+        "requiresExactSessionUserConfirmation": true,
+        "requiresActionPreview": true,
+        "citationEvidenceIds": [
+          "permit_lifecycle_source_inventory:devhub_faq_inspection_scheduling_online_trade_permits",
+          "permit_lifecycle_source_inventory:inspection_scheduling_guidance"
+        ],
+        "stopGate": true,
+        "stopGateMessage": "Stop before scheduling or submitting an inspection request. The user must confirm the exact permit, inspection type, requested timing, contact/access details, and channel in the current session."
+      },
+      {
+        "gateId": "preview_inspection_result_follow_up_only",
+        "classification": "draft_preview",
+        "action": "Prepare a non-submitting result follow-up checklist from the known inspection result status.",
+        "allowedWithoutExactConfirmation": true,
+        "requiredBefore": [
+          "upload_correction_or_submit_follow_up"
+        ],
+        "citationEvidenceIds": [
+          "permit_lifecycle_source_inventory:inspection_result_guidance"
+        ],
+        "stopGate": false
+      },
+      {
+        "gateId": "stop_before_result_follow_up_submission_or_upload",
+        "classification": "potentially_consequential",
+        "action": "Submit result follow-up, upload correction material, certify completion, request reinspection, or otherwise change an official permit or inspection record.",
+        "allowedWithoutExactConfirmation": false,
+        "requiresExactSessionUserConfirmation": true,
+        "requiresActionPreview": true,
+        "citationEvidenceIds": [
+          "permit_lifecycle_source_inventory:inspection_result_guidance"
+        ],
+        "stopGate": true,
+        "stopGateMessage": "Stop before any official inspection-result follow-up submission, upload, certification, or reinspection request. The user must confirm the exact action and supporting materials in the current session."
+      }
+    ],
+    "explicitStopGates": [
+      "Do not schedule an inspection without exact session-specific user confirmation.",
+      "Do not submit an inspection request without exact session-specific user confirmation.",
+      "Do not upload correction materials or result follow-up documents from this fixture.",
+      "Do not certify, cancel, pay, or perform account-scoped DevHub actions from this fixture.",
+      "Do not automate CAPTCHA, MFA, account creation, payment entry, or any access-control bypass."
+    ],
+    "noLiveAutomationNotes": [
+      "Fixture only: no live crawl, no DevHub login, no browser session, no authenticated page capture, and no official scheduling/submission action.",
+      "All IDs and citations are source-inventory references, not raw response bodies or downloaded documents.",
+      "Private user values, permit numbers, addresses, screenshots, traces, credentials, and storage-state files are intentionally absent."
+    ]
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "fixtureKind": "daemon_repeated_malformed_python_syntax_proposals",
+  "schemaVersion": 1,
+  "targetTask": "Task checkbox-80: Add a daemon diagnostic fixture that classifies repeated malformed comparison syntax in Python proposals, including confidence literals and invalid typed return syntax, as a syntax-first retry stop condition for the same target task.",
+  "expectedFailureKind": "syntax_first_retry_stop",
+  "expectedMarkers": [
+    "confidence 1",
+    "confidence 1.0",
+    "return 0.0 list[str]"
+  ],
+  "proposals": [
+    {
+      "target_task": "Task checkbox-80: Add a daemon diagnostic fixture that classifies repeated malformed comparison syntax in Python proposals, including confidence literals and invalid typed return syntax, as a syntax-first retry stop condition for the same target task.",
+      "failure_kind": "validation",
+      "errors": [
+        "Validation failed; file edits were rolled back."
+      ],
+      "validation_results": [
+        {
+          "command": [
+            "python3",
+            "ppd/daemon/ppd_daemon.py",
+            "--self-test"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "proposal_syntax_diagnostics.py failed py_compile: line 34 if minimum_repetitions = minimum_repetitions SyntaxError: invalid syntax"
+        }
+      ],
+      "raw_response": "elif confidence 1: stop retrying"
+    },
+    {
+      "target_task": "Task checkbox-80: Add a daemon diagnostic fixture that classifies repeated malformed comparison syntax in Python proposals, including confidence literals and invalid typed return syntax, as a syntax-first retry stop condition for the same target task.",
+      "failure_kind": "validation",
+      "errors": [
+        "Validation failed; file edits were rolled back."
+      ],
+      "validation_results": [
+        {
+          "command": [
+            "python3",
+            "-m",
+            "unittest",
+            "discover",
+            "-s",
+            "ppd/tests",
+            "-p",
+            "test_*.py"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "ImportError: SyntaxError: invalid syntax near if confidence 1.0"
+        }
+      ],
+      "raw_response": "if confidence 1.0: return result"
+    },
+    {
+      "target_task": "Task checkbox-80: Add a daemon diagnostic fixture that classifies repeated malformed comparison syntax in Python proposals, including confidence literals and invalid typed return syntax, as a syntax-first retry stop condition for the same target task.",
+      "failure_kind": "validation",
+      "errors": [
+        "Validation failed; file edits were rolled back."
+      ],
+      "validation_results": [
+        {
+          "command": [
+            "python3",
+            "ppd/daemon/ppd_daemon.py",
+            "--self-test"
+          ],
+          "returncode": 1,
+          "stdout": "",
+          "stderr": "solar_permit_requirement_extractor.py failed py_compile: line 259 return 0.0 list[str] SyntaxError: invalid syntax"
+        }
+      ],
+      "raw_response": "def confidence_score(): return 0.0 list[str]"
+    }
+  ]
+}

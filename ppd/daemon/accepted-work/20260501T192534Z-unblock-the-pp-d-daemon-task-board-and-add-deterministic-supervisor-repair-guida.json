@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/daemon/task-board.md",
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-01T19:25:34.682014Z",
+  "impact": "The worker was still targeting a repeatedly failed in-progress public source inventory validation task even after later accepted work. Marking that task blocked, returning the next validation task to a normal needed state, and adding explicit syntax-first repair guidance lets the daemon resume on a narrow eligible task instead of spinning on the same failed target.",
+  "summary": "Unblock the PP&D daemon task board and add deterministic supervisor repair guidance for syntax-failure loops.",
+  "target_task": "Supervisor repair: 3 consecutive daemon rounds failed without an accepted patch",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 62 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "........................................................................................ ---------------------------------------------------------------------- Ran 88 tests in 0.008s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

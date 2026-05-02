@@ -1,0 +1,2 @@
+ppd/tests/fixtures/requirement_extraction/solar_permit_expected_output.json
+ppd/tests/test_solar_requirement_expected_output.py

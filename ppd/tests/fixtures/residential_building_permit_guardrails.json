@@ -1,0 +1,201 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "residential-building-permit-guardrails",
+  "processId": "residential-building-permit",
+  "compiledAt": "2026-05-01T19:55:00Z",
+  "compiler": {
+    "name": "ppd.logic.guardrailCompiler.fixture",
+    "version": "1.0.0"
+  },
+  "authoritySources": [
+    {
+      "id": "residential_building_permit_guide",
+      "title": "Residential Building Permit Guidance",
+      "url": "https://www.portland.gov/ppd/residential-permitting/residential-building-permits",
+      "retrievedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "id": "single_pdf_process_guide",
+      "title": "Single PDF Process Guidance",
+      "url": "https://www.portland.gov/ppd/permits/single-pdf-process",
+      "retrievedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "id": "devhub_payment_and_inspection_guide",
+      "title": "DevHub Payment and Inspection Guidance",
+      "url": "https://www.portland.gov/ppd/devhub",
+      "retrievedAt": "2026-05-01T00:00:00Z"
+    }
+  ],
+  "guardrails": [
+    {
+      "id": "rbp_missing_property_identifier",
+      "kind": "missing_fact",
+      "predicate": "fact_missing(project.property_identifier)",
+      "severity": "block_submission",
+      "message": "Ask for a site address, tax account, or other property identifier before preparing a residential building permit submission.",
+      "requiredFact": "property_identifier",
+      "sourceIds": ["residential_building_permit_guide"]
+    },
+    {
+      "id": "rbp_missing_project_scope",
+      "kind": "missing_fact",
+      "predicate": "fact_missing(project.project_scope)",
+      "severity": "block_submission",
+      "message": "Ask for the residential project scope before selecting permit path, forms, and submittal documents.",
+      "requiredFact": "project_scope",
+      "sourceIds": ["residential_building_permit_guide"]
+    },
+    {
+      "id": "rbp_missing_applicant_contact",
+      "kind": "missing_fact",
+      "predicate": "fact_missing(applicant.contact)",
+      "severity": "block_submission",
+      "message": "Ask for applicant contact information before completing application documents.",
+      "requiredFact": "applicant_contact",
+      "sourceIds": ["residential_building_permit_guide"]
+    },
+    {
+      "id": "rbp_missing_contractor_or_owner_role",
+      "kind": "missing_fact",
+      "predicate": "fact_missing(project.contractor_or_owner_role)",
+      "severity": "block_submission",
+      "message": "Ask whether the applicant is the owner, contractor, or authorized representative before preparing the permit package.",
+      "requiredFact": "contractor_or_owner_role",
+      "sourceIds": ["residential_building_permit_guide"]
+    },
+    {
+      "id": "rbp_require_application_document_group",
+      "kind": "required_document_group",
+      "predicate": "missing_document_group(application_forms)",
+      "severity": "block_submission",
+      "documentGroup": {
+        "id": "application_forms",
+        "label": "Application forms",
+        "minimumDocuments": 1,
+        "acceptedFormats": ["pdf"],
+        "examples": ["building permit application", "residential permit application worksheet"]
+      },
+      "sourceIds": ["residential_building_permit_guide"]
+    },
+    {
+      "id": "rbp_require_drawing_plan_group",
+      "kind": "required_document_group",
+      "predicate": "missing_document_group(drawing_plans)",
+      "severity": "block_submission",
+      "documentGroup": {
+        "id": "drawing_plans",
+        "label": "Drawing plans",
+        "minimumDocuments": 1,
+        "acceptedFormats": ["pdf"],
+        "examples": ["site plan", "floor plans", "elevations", "structural details"]
+      },
+      "sourceIds": ["residential_building_permit_guide", "single_pdf_process_guide"]
+    },
+    {
+      "id": "rbp_require_supporting_document_group",
+      "kind": "required_document_group",
+      "predicate": "missing_document_group(supporting_documents)",
+      "severity": "block_submission",
+      "documentGroup": {
+        "id": "supporting_documents",
+        "label": "Supporting documents",
+        "minimumDocuments": 1,
+        "acceptedFormats": ["pdf"],
+        "examples": ["calculations", "reports", "special inspection forms", "manufacturer documents"]
+      },
+      "sourceIds": ["residential_building_permit_guide", "single_pdf_process_guide"]
+    },
+    {
+      "id": "rbp_single_pdf_drawings_compatible",
+      "kind": "single_pdf_process_compatibility",
+      "predicate": "single_pdf_process_applies(project) -> exactly_one_pdf(document_group.drawing_plans) and searchable_pdf(document_group.drawing_plans[0])",
+      "severity": "block_submission",
+      "compatibilityRules": {
+        "drawingPlansMustBeOneSearchablePdf": true,
+        "applicationsCalculationsAndSupportingDocumentsMustBeSeparatePdfs": true,
+        "rejectMergedApplicationAndPlans": true,
+        "rejectMultipleDrawingPlanPdfsWhenSinglePdfProcessApplies": true
+      },
+      "sourceIds": ["single_pdf_process_guide"]
+    },
+    {
+      "id": "rbp_stop_before_inspection_scheduling",
+      "kind": "action_gate",
+      "predicate": "action(schedule_inspection) -> require_exact_user_confirmation(schedule_inspection)",
+      "severity": "stop_before_action",
+      "action": "schedule_inspection",
+      "classification": "potentially_consequential",
+      "requiresExactUserConfirmation": true,
+      "allowedWithoutConfirmation": false,
+      "stagePreconditions": ["permit_issued", "inspection_type_selected"],
+      "auditEventRequired": true,
+      "sourceIds": ["devhub_payment_and_inspection_guide"]
+    },
+    {
+      "id": "rbp_stop_before_payment",
+      "kind": "action_gate",
+      "predicate": "action(pay_fees) or action(enter_payment_details) -> require_exact_user_confirmation(payment)",
+      "severity": "stop_before_action",
+      "action": "pay_fees",
+      "classification": "financial",
+      "requiresExactUserConfirmation": true,
+      "allowedWithoutConfirmation": false,
+      "stagePreconditions": ["fees_assessed"],
+      "auditEventRequired": true,
+      "sourceIds": ["devhub_payment_and_inspection_guide"]
+    }
+  ],
+  "compiledScenarios": [
+    {
+      "id": "missing_facts_and_documents",
+      "knownFacts": ["applicant_contact"],
+      "uploadedDocumentGroups": [],
+      "expectedBlockingGuardrailIds": [
+        "rbp_missing_property_identifier",
+        "rbp_missing_project_scope",
+        "rbp_missing_contractor_or_owner_role",
+        "rbp_require_application_document_group",
+        "rbp_require_drawing_plan_group",
+        "rbp_require_supporting_document_group"
+      ]
+    },
+    {
+      "id": "single_pdf_process_incompatible_multiple_plan_pdfs",
+      "knownFacts": ["property_identifier", "project_scope", "applicant_contact", "contractor_or_owner_role"],
+      "singlePdfProcessApplies": true,
+      "uploadedDocumentGroups": [
+        {
+          "id": "application_forms",
+          "documents": [{"name": "application.pdf", "format": "pdf", "searchable": true}]
+        },
+        {
+          "id": "drawing_plans",
+          "documents": [
+            {"name": "plans-a.pdf", "format": "pdf", "searchable": true},
+            {"name": "plans-b.pdf", "format": "pdf", "searchable": true}
+          ]
+        },
+        {
+          "id": "supporting_documents",
+          "documents": [{"name": "calculations.pdf", "format": "pdf", "searchable": true}]
+        }
+      ],
+      "expectedBlockingGuardrailIds": ["rbp_single_pdf_drawings_compatible"]
+    },
+    {
+      "id": "payment_requires_confirmation",
+      "knownFacts": ["property_identifier", "project_scope", "applicant_contact", "contractor_or_owner_role"],
+      "attemptedAction": "pay_fees",
+      "userConfirmation": null,
+      "expectedBlockingGuardrailIds": ["rbp_stop_before_payment"]
+    },
+    {
+      "id": "inspection_scheduling_requires_confirmation",
+      "knownFacts": ["property_identifier", "project_scope", "applicant_contact", "contractor_or_owner_role"],
+      "attemptedAction": "schedule_inspection",
+      "userConfirmation": null,
+      "expectedBlockingGuardrailIds": ["rbp_stop_before_inspection_scheduling"]
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "fixturePurpose": "validation_only_permit_process_fixture_index",
+  "process_fixtures": [
+    {
+      "fixture_id": "single-pdf-process",
+      "permit_family": "single-pdf-process",
+      "fixture_path": "ppd/tests/fixtures/processes/single_pdf_process.json"
+    },
+    {
+      "fixture_id": "trade-permit-with-plan-review",
+      "permit_family": "trade-permit-with-plan-review",
+      "fixture_path": "ppd/tests/fixtures/processes/trade_permit_with_plan_review.json"
+    },
+    {
+      "fixture_id": "residential-building-permit",
+      "permit_family": "residential-building-permit",
+      "fixture_path": "ppd/tests/fixtures/processes/residential_building_permit.json"
+    },
+    {
+      "fixture_id": "solar-permit",
+      "permit_family": "solar-permit",
+      "fixture_path": "ppd/tests/fixtures/processes/solar_permit.json"
+    }
+  ]
+}

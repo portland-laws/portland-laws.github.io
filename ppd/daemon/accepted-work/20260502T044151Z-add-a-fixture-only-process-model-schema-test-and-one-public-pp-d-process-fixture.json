@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/test_process_model_schema.py",
+    "ppd/tests/fixtures/process-models/residential-building-permit-process.json"
+  ],
+  "created_at": "2026-05-02T04:41:51.455618Z",
+  "impact": "Creates deterministic validation for the first PP&D process-model record without crawling, DevHub automation, private session data, or downloaded documents.",
+  "summary": "Add a fixture-only process-model schema test and one public PP&D process fixture.",
+  "target_task": "Task checkbox-42: Task checkbox-37: Add a fixture-only process-model schema test for one public PP&D permit process record. Validate required fields only: `processId`, `sourceEvidenceIds`, `stages`, `requiredInputs`, `requiredDocuments`, `stopGates`, and `lastReviewed`. Do not add live crawling or DevHub automation.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 53 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "..........................................................................................................................................................................................................................ss..............sss....................................................................................................................................... ---------------------------------------------------------------------- Ran 372 tests in 0.043s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

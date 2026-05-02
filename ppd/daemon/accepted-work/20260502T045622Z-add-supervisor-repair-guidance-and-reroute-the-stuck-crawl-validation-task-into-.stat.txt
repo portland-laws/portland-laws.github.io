@@ -1,0 +1,2 @@
+ppd/daemon/task-board.md
+ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md

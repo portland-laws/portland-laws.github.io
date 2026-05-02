@@ -1,0 +1,85 @@
+import json
+import unittest
+from pathlib import Path
+
+
+FIXTURE_PATH = (
+    Path(__file__).parent
+    / "fixtures"
+    / "lifecycle"
+    / "permit_lifecycle_requirement_extraction_expected_output.json"
+)
+
+ACCEPTED_CATEGORY_IDS = {
+    "extension_eligibility",
+    "reactivation_eligibility",
+    "cancellation_eligibility",
+    "refund_eligibility",
+    "inspection_scheduling",
+    "inspection_result_follow_up",
+    "fee_payment_checkpoints",
+    "explicit_confirmation_gates",
+}
+
+EXPECTED_EXPLICIT_STOP_GATE_CATEGORY_IDS = {
+    "cancellation_eligibility",
+    "inspection_scheduling",
+    "fee_payment_checkpoints",
+    "explicit_confirmation_gates",
+}
+
+
+class PermitLifecycleRequirementExpectedOutputTest(unittest.TestCase):
+    def test_category_records_are_exactly_the_accepted_lifecycle_records(self):
+        with FIXTURE_PATH.open(encoding="utf-8") as fixture_file:
+            fixture = json.load(fixture_file)
+
+        self.assertNotIn("stopGateClassifications", fixture)
+        self.assertIn("categoryRecords", fixture)
+        category_records = fixture["categoryRecords"]
+        self.assertIsInstance(category_records, list)
+
+        category_ids = {record.get("categoryId") for record in category_records}
+        self.assertEqual(ACCEPTED_CATEGORY_IDS, category_ids)
+        self.assertEqual(len(ACCEPTED_CATEGORY_IDS), len(category_records))
+
+        seen_record_keys = set()
+        explicit_stop_gate_category_ids = set()
+        for record in category_records:
+            category_id = record.get("categoryId")
+            source_evidence_ids = record.get("sourceEvidenceIds")
+            evidence = record.get("evidence")
+            confidence = record.get("confidence")
+            classification = record.get("classification")
+
+            self.assertIsInstance(source_evidence_ids, list, category_id)
+            self.assertIsInstance(evidence, list, category_id)
+            evidence_ids = {evidence_item.get("evidenceId") for evidence_item in evidence}
+            for source_evidence_id in source_evidence_ids:
+                self.assertIn(source_evidence_id, evidence_ids, category_id)
+
+            self.assertIsInstance(confidence, (int, float), category_id)
+            self.assertGreaterEqual(confidence, 0, category_id)
+            self.assertLessEqual(confidence, 1, category_id)
+
+            record_key = (
+                category_id,
+                record.get("action"),
+                record.get("object"),
+                tuple(source_evidence_ids),
+            )
+            self.assertNotIn(record_key, seen_record_keys)
+            seen_record_keys.add(record_key)
+
+            if record.get("stopGate") is True and isinstance(classification, str):
+                if classification.endswith("_stop_gate"):
+                    explicit_stop_gate_category_ids.add(category_id)
+
+        self.assertEqual(
+            EXPECTED_EXPLICIT_STOP_GATE_CATEGORY_IDS,
+            explicit_stop_gate_category_ids,
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()

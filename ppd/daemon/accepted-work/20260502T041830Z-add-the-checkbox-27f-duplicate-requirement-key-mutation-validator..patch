@@ -1,0 +1,53 @@
+--- a/ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py
++++ b/ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py
+@@ -115,6 +115,15 @@
+         test_case.assertIn(source_evidence_id, evidence_ids)
+ 
+ 
++def requirement_key(record):
++    return (
++        record["categoryId"],
++        record["action"],
++        record["object"],
++        tuple(record["sourceEvidenceIds"]),
++    )
++
++
+ def assert_valid_fixture(test_case, fixture):
+     test_case.assertIsInstance(fixture, dict)
+     test_case.assertIn("categoryRecords", fixture)
+@@ -122,11 +131,12 @@
+     test_case.assertIsInstance(category_records, list)
+     test_case.assertTrue(category_records)
+ 
+-    category_ids = set()
++    requirement_keys = set()
+     for record in category_records:
+         assert_valid_category_record(test_case, record)
+-        test_case.assertNotIn(record["categoryId"], category_ids)
+-        category_ids.add(record["categoryId"])
++        key = requirement_key(record)
++        test_case.assertNotIn(key, requirement_keys)
++        requirement_keys.add(key)
+ 
+ 
+ class PermitLifecycleRequirementExtractionMutationSkeletonTest(unittest.TestCase):
+@@ -154,6 +164,18 @@
+         with self.assertRaises(AssertionError):
+             assert_valid_fixture(self, fixture)
+ 
++    def test_duplicate_category_action_object_source_evidence_ids_is_rejected(self):
++        fixture = copy.deepcopy(load_fixture())
++        source_record = fixture["categoryRecords"][0]
++        duplicate_record = fixture["categoryRecords"][1]
++        duplicate_record["categoryId"] = source_record["categoryId"]
++        duplicate_record["action"] = source_record["action"]
++        duplicate_record["object"] = source_record["object"]
++        duplicate_record["sourceEvidenceIds"] = list(source_record["sourceEvidenceIds"])
++
++        with self.assertRaises(AssertionError):
++            assert_valid_fixture(self, fixture)
++
+ 
+ if __name__ == "__main__":
+     unittest.main()

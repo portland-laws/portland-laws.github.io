@@ -1,0 +1,151 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -2,88 +2,92 @@
+ 
+ ## Purpose
+ 
+-This guide gives the PP&D daemon deterministic recovery instructions when a task is blocked by repeated validation failures. Repairs must improve task selection, retry shape, validation, or diagnostics without performing live PP&D or DevHub actions.
++This guide records narrow recovery rules for the PP&D daemon when autonomous cycles become blocked by validation failures that are caused by task ordering, malformed generated code, or overly broad replacement proposals.
+ 
+-## Current Blocked Task
++## Syntax-First Test Recovery
+ 
+-Task checkbox-110 is blocked:
++When a task asks for a syntax-first import test for a Python module, the daemon must first determine whether the target module already exists.
+ 
+-Add DevHub guardrail tests proving Urban Forestry application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.
++If the target module exists:
+ 
+-## Retry Scope For Checkbox-110
++- Add exactly one focused unittest file under `ppd/tests/`.
++- Compile only the target file with `py_compile.compile(..., doraise=True)` before importing it.
++- Import only the requested module, not broad PP&D extraction packages.
++- Keep assertions limited to syntactic validity and isolated importability.
+ 
+-The next retry must stay fixture-only and use a small file set:
++If the target module does not exist:
+ 
+-- `ppd/tests/fixtures/devhub_guardrails/urban_forestry_draft_review_guardrails.json`
+-- `ppd/tests/test_devhub_urban_forestry_draft_review_guardrails.py`
+-- Optional: one tiny helper module under `ppd/devhub/` only if the tests need shared logic.
++- Do not write a failing existence assertion.
++- Do not mark the related implementation complete.
++- Prefer a skip-if-missing sentinel test only when the task is explicitly a guard test for future extractor work.
++- The skip reason must name the missing module and say that the test becomes active once the extractor module is added.
++- Do not create the extractor module as part of the syntax-first test task unless the selected task explicitly asks for implementation.
+ 
+-Do not use live DevHub, Playwright sessions, private auth state, traces, screenshots, raw crawl output, downloaded documents, CAPTCHA, MFA, account creation, official upload, certification, submission, payment, cancellation, or inspection scheduling.
++The intended pattern is:
+ 
+-## Required Validation-First Shape
++```python
++import importlib
++import importlib.util
++import py_compile
++import unittest
+ 
+-Before proposing a broad implementation, the daemon should make the test assertions internally consistent:
++MODULE_NAME = "ppd.extraction.online_trade_permit_requirements"
+ 
+-1. Use one canonical fixture session identifier and one canonical confirmation nonce.
+-2. If a test asserts that the nonce is contained in the session identifier, make the fixture value satisfy that exact relationship.
+-3. Prefer deriving the required confirmation phrase from explicit fixture fields instead of duplicating hand-written strings across the fixture and test.
+-4. Keep preview behavior read-only: preview may return a redacted action summary, required-fields summary, missing-information summary, and blocked-action list.
+-5. Keep all consequential and financial actions blocked unless the supplied confirmation exactly matches the current session, draft, permit type, workflow, and action.
+ 
+-## Private Artifact Marker Guardrail
++class OnlineTradePermitRequirementsSyntaxFirstTest(unittest.TestCase):
++    def test_online_trade_permit_requirements_compiles_and_imports_alone(self):
++        spec = importlib.util.find_spec(MODULE_NAME)
++        if spec is None or spec.origin is None:
++            self.skipTest(f"{MODULE_NAME} is not implemented yet")
+ 
+-Recent failures showed that tests rejected fixture text because the fixture contained forbidden marker names inside a list named like `forbiddenFixtureFields` or `blocked_private_artifact_markers`. That is a false positive.
++        py_compile.compile(spec.origin, doraise=True)
++        module = importlib.import_module(MODULE_NAME)
++        self.assertEqual(module.__name__, MODULE_NAME)
++```
+ 
+-For the next retry, use one of these deterministic approaches:
++This keeps validation green before the extractor exists while still ensuring malformed Python fails immediately once the file is introduced.
+ 
+-- Preferred: do not store forbidden marker names inside the JSON fixture. Keep the marker list inside the Python test only.
+-- Acceptable: if marker names must be documented, store them in the test docstring or comments, not in serialized fixture data.
++## Replacement-Size Guard Recovery
+ 
+-The private-artifact test should recursively inspect fixture keys and string values for actual private artifacts. It should not fail because the test itself names the forbidden marker.
++When a task asks for a replacement-size guard for a Python module, the daemon must also preflight whether the target module exists.
+ 
+-Forbidden private artifacts include credentials, password values, tokens, cookies, storage state paths, trace paths, screenshot paths, payment card numbers, raw response bodies, real names, real addresses, real phone numbers, and real email addresses.
++If the module exists:
+ 
+-## Confirmation Phrase Guardrail
++- Measure the target module's physical line count from the module spec origin.
++- Assert the line count stays below the task's threshold.
++- Assert broad structures prohibited by the task, such as dataclasses, are absent.
++- Keep the guard file one-purpose and independent of fixture validation.
+ 
+-The blocked attempts failed because the test expected one nonce while the fixture used a different session identifier. The retry must define confirmation data once.
++If the module does not exist:
+ 
+-Recommended fixture fields:
++- Use `self.skipTest(...)` rather than a failing existence assertion.
++- Do not synthesize the target module just to satisfy the guard.
++- Let the future implementation task activate the guard naturally.
+ 
+-- `session_id`: a redacted current-session identifier containing the nonce.
+-- `confirmation_nonce`: the exact nonce contained in `session_id`.
+-- `draft_id`: a redacted draft identifier.
+-- `permit_type`: `urban_forestry_application`.
+-- `workflow`: `application_draft_review`.
+-- `guarded_actions`: exactly official upload, certification, submission, payment, cancellation, and inspection scheduling.
++## Blocked Task Selection Rule
+ 
+-The test should build the required phrase from those fields and prove:
++After two validation rollbacks for the same guard task caused by a missing target module, the supervisor should stop selecting that guard task until one of these is true:
+ 
+-- preview requires no confirmation and has no portal side effects.
+-- an empty confirmation is rejected.
+-- a generic confirmation is rejected.
+-- a confirmation with the wrong session is rejected.
+-- a confirmation with the wrong draft is rejected.
+-- a confirmation for the wrong action is rejected.
+-- the exact phrase for the current session, draft, workflow, permit type, and action is accepted only as authorization for that one action.
++- the target module exists in the worktree, or
++- a preceding fixture-first implementation task has been selected and accepted, or
++- the task board is updated to clarify that the guard test must skip when the module is missing.
+ 
+-## Retry Diagnostics
++For the current online trade permit sequence, `ppd.extraction.online_trade_permit_requirements` is not present yet. Syntax-first and size-guard tests for that module must therefore be skip-if-missing sentinels or deferred until an implementation task creates the module.
+ 
+-If validation fails again, capture the first failing assertion and classify it narrowly:
++## Recent Failure Heuristic
+ 
+-- `fixture_consistency` for mismatched nonce, draft, action, workflow, or permit type.
+-- `private_artifact_false_positive` when the fixture only contains marker names used by the test.
+-- `private_artifact_leak` when the fixture contains actual private values or paths.
+-- `overbroad_patch` when the proposal changes live automation or unrelated modules.
+-- `syntax` for Python parse/import failures.
++When recent validation output includes `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, `TS1128`, `FileNotFoundError`, or a missing-module assertion from a syntax guard:
+ 
+-After two failures with the same classification, split checkbox-110 into smaller follow-up tasks on `ppd/daemon/task-board.md` instead of retrying the same broad patch.
++- choose the smallest possible file set;
++- avoid broad contract rewrites;
++- prefer isolated syntax and import sentinels;
++- avoid live crawling, authenticated DevHub automation, browser traces, raw crawl output, and private session files;
++- keep the next daemon proposal deterministic and fixture-first.
+ 
+-## Completion Criteria
++## Validation
+ 
+-Checkbox-110 may be marked complete only when all of these are true:
++Every repair proposal should continue to use the standard PP&D validation entry point:
+ 
+-- The test suite passes.
+-- The fixture is redacted and contains no private DevHub session material.
+-- The preview path is explicitly read-only and produces no official portal action.
+-- Official upload, certification, submission, payment, cancellation, and inspection scheduling are all blocked without exact current-session confirmation.
+-- The exact confirmation phrase is action-specific and cannot authorize a different guarded action.
++```text
++python3 ppd/tests/validate_ppd.py
++```

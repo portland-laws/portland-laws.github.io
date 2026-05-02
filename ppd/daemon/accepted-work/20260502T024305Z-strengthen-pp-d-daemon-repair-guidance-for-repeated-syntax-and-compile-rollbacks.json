@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-02T02:43:05.837099Z",
+  "impact": "This gives the next daemon cycle explicit syntax-first recovery rules for checkbox-27: one changed Python test file, exact fixture path, standard-library-only unittest helpers, no bare asserts, no pseudo-code fragments, and a py_compile preflight before full discovery. It narrows worker proposals after repeated SyntaxError rollbacks without implementing the PP&D domain task.",
+  "summary": "Strengthen PP&D daemon repair guidance for repeated syntax and compile rollbacks.",
+  "target_task": "Supervisor repair: 2 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 35 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "..........................................................................................................................................................................................................................ss........sss...................................................................................................................................... ---------------------------------------------------------------------- Ran 365 tests in 0.043s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

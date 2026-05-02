@@ -1,0 +1,139 @@
+--- a/ppd/tests/fixtures/source_inventory/permit_lifecycle_source_coverage_report.json
++++ b/ppd/tests/fixtures/source_inventory/permit_lifecycle_source_coverage_report.json
+@@ -0,0 +1,136 @@
++{
++  "schemaVersion": 1,
++  "fixtureId": "permit_lifecycle_source_coverage_report",
++  "generatedAt": "2026-05-02T01:55:00Z",
++  "fixtureOnly": true,
++  "liveCrawlPerformed": false,
++  "rawResponseBodiesIncluded": false,
++  "privateDevhubPathsIncluded": false,
++  "downloadedDocumentsIncluded": false,
++  "scope": {
++    "bureau": "Portland Permitting & Development",
++    "jurisdiction": "Portland, Oregon",
++    "coverageIntent": "Public lifecycle guidance source inventory for permit extension, cancellation, refund, and inspection-result follow-up evidence.",
++    "excludedActions": [
++      "live crawl",
++      "DevHub login",
++      "permit submission",
++      "official upload",
++      "payment",
++      "certification",
++      "permit cancellation",
++      "refund request submission",
++      "inspection scheduling"
++    ]
++  },
++  "coverageCategories": [
++    {
++      "id": "permit_extension_guidance",
++      "label": "Permit extension guidance",
++      "status": "covered_by_public_fixture_evidence",
++      "evidenceIds": [
++        "ppd_lifecycle_extension_reactivation_public_guidance"
++      ]
++    },
++    {
++      "id": "permit_cancellation_guidance",
++      "label": "Permit cancellation guidance",
++      "status": "covered_by_public_fixture_evidence",
++      "evidenceIds": [
++        "ppd_lifecycle_cancellation_public_guidance"
++      ]
++    },
++    {
++      "id": "permit_refund_guidance",
++      "label": "Permit refund guidance",
++      "status": "covered_by_public_fixture_evidence",
++      "evidenceIds": [
++        "ppd_lifecycle_refund_public_guidance"
++      ]
++    },
++    {
++      "id": "inspection_result_guidance",
++      "label": "Inspection-result guidance",
++      "status": "covered_by_public_fixture_evidence",
++      "evidenceIds": [
++        "ppd_lifecycle_inspection_results_public_guidance"
++      ]
++    }
++  ],
++  "evidence": [
++    {
++      "id": "ppd_lifecycle_extension_reactivation_public_guidance",
++      "categoryId": "permit_extension_guidance",
++      "authorityLabel": "Portland Permitting & Development public permit lifecycle guidance",
++      "recrawlCadence": "monthly",
++      "sourceUrl": "https://www.portland.gov/ppd/permits/permit-extension-reactivation",
++      "canonicalUrl": "https://www.portland.gov/ppd/permits/permit-extension-reactivation",
++      "sourceType": "public_html_guidance",
++      "citation": {
++        "title": "Permit extension and reactivation guidance",
++        "publisher": "City of Portland, Portland Permitting & Development",
++        "url": "https://www.portland.gov/ppd/permits/permit-extension-reactivation",
++        "accessedAt": "2026-05-01T00:00:00Z"
++      },
++      "fixtureNotes": "Metadata only. This fixture records public source coverage and does not contain raw page content or downloaded documents."
++    },
++    {
++      "id": "ppd_lifecycle_cancellation_public_guidance",
++      "categoryId": "permit_cancellation_guidance",
++      "authorityLabel": "Portland Permitting & Development public permit lifecycle guidance",
++      "recrawlCadence": "monthly",
++      "sourceUrl": "https://www.portland.gov/ppd/permits/cancel-permit",
++      "canonicalUrl": "https://www.portland.gov/ppd/permits/cancel-permit",
++      "sourceType": "public_html_guidance",
++      "citation": {
++        "title": "Cancel a permit guidance",
++        "publisher": "City of Portland, Portland Permitting & Development",
++        "url": "https://www.portland.gov/ppd/permits/cancel-permit",
++        "accessedAt": "2026-05-01T00:00:00Z"
++      },
++      "fixtureNotes": "Metadata only. This fixture does not authorize or automate permit cancellation."
++    },
++    {
++      "id": "ppd_lifecycle_refund_public_guidance",
++      "categoryId": "permit_refund_guidance",
++      "authorityLabel": "Portland Permitting & Development public fee and refund guidance",
++      "recrawlCadence": "monthly",
++      "sourceUrl": "https://www.portland.gov/ppd/permits/permit-refunds",
++      "canonicalUrl": "https://www.portland.gov/ppd/permits/permit-refunds",
++      "sourceType": "public_html_guidance",
++      "citation": {
++        "title": "Permit refund guidance",
++        "publisher": "City of Portland, Portland Permitting & Development",
++        "url": "https://www.portland.gov/ppd/permits/permit-refunds",
++        "accessedAt": "2026-05-01T00:00:00Z"
++      },
++      "fixtureNotes": "Metadata only. This fixture does not contain payment records, credentials, private account data, or refund submissions."
++    },
++    {
++      "id": "ppd_lifecycle_inspection_results_public_guidance",
++      "categoryId": "inspection_result_guidance",
++      "authorityLabel": "Portland Permitting & Development public inspections guidance",
++      "recrawlCadence": "weekly",
++      "sourceUrl": "https://www.portland.gov/ppd/inspections/results",
++      "canonicalUrl": "https://www.portland.gov/ppd/inspections/results",
++      "sourceType": "public_html_guidance",
++      "citation": {
++        "title": "Inspection results guidance",
++        "publisher": "City of Portland, Portland Permitting & Development",
++        "url": "https://www.portland.gov/ppd/inspections/results",
++        "accessedAt": "2026-05-01T00:00:00Z"
++      },
++      "fixtureNotes": "Metadata only. This fixture does not schedule inspections, submit corrections, or store inspection screenshots."
++    }
++  ],
++  "safetyAssertions": {
++    "containsOnlyPublicUrls": true,
++    "containsPrivateDevhubPath": false,
++    "containsRawResponseBody": false,
++    "containsCredentials": false,
++    "containsTracePath": false,
++    "containsScreenshotPath": false,
++    "containsDownloadedDocumentPath": false,
++    "requiresLiveNetwork": false
++  }
++}

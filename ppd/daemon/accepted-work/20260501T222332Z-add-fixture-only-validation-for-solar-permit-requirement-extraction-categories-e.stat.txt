@@ -1,0 +1,2 @@
+ppd/tests/fixtures/solar_permit_requirement_extraction/seven_categories.json
+ppd/tests/test_solar_permit_requirement_extraction.py

@@ -1,0 +1,342 @@
+--- a/ppd/tests/fixtures/residential_building_permit_guardrails.json
++++ b/ppd/tests/fixtures/residential_building_permit_guardrails.json
+@@ -0,0 +1,201 @@
++{
++  "schemaVersion": 1,
++  "fixtureId": "residential-building-permit-guardrails",
++  "processId": "residential-building-permit",
++  "compiledAt": "2026-05-01T19:55:00Z",
++  "compiler": {
++    "name": "ppd.logic.guardrailCompiler.fixture",
++    "version": "1.0.0"
++  },
++  "authoritySources": [
++    {
++      "id": "residential_building_permit_guide",
++      "title": "Residential Building Permit Guidance",
++      "url": "https://www.portland.gov/ppd/residential-permitting/residential-building-permits",
++      "retrievedAt": "2026-05-01T00:00:00Z"
++    },
++    {
++      "id": "single_pdf_process_guide",
++      "title": "Single PDF Process Guidance",
++      "url": "https://www.portland.gov/ppd/permits/single-pdf-process",
++      "retrievedAt": "2026-05-01T00:00:00Z"
++    },
++    {
++      "id": "devhub_payment_and_inspection_guide",
++      "title": "DevHub Payment and Inspection Guidance",
++      "url": "https://www.portland.gov/ppd/devhub",
++      "retrievedAt": "2026-05-01T00:00:00Z"
++    }
++  ],
++  "guardrails": [
++    {
++      "id": "rbp_missing_property_identifier",
++      "kind": "missing_fact",
++      "predicate": "fact_missing(project.property_identifier)",
++      "severity": "block_submission",
++      "message": "Ask for a site address, tax account, or other property identifier before preparing a residential building permit submission.",
++      "requiredFact": "property_identifier",
++      "sourceIds": ["residential_building_permit_guide"]
++    },
++    {
++      "id": "rbp_missing_project_scope",
++      "kind": "missing_fact",
++      "predicate": "fact_missing(project.project_scope)",
++      "severity": "block_submission",
++      "message": "Ask for the residential project scope before selecting permit path, forms, and submittal documents.",
++      "requiredFact": "project_scope",
++      "sourceIds": ["residential_building_permit_guide"]
++    },
++    {
++      "id": "rbp_missing_applicant_contact",
++      "kind": "missing_fact",
++      "predicate": "fact_missing(applicant.contact)",
++      "severity": "block_submission",
++      "message": "Ask for applicant contact information before completing application documents.",
++      "requiredFact": "applicant_contact",
++      "sourceIds": ["residential_building_permit_guide"]
++    },
++    {
++      "id": "rbp_missing_contractor_or_owner_role",
++      "kind": "missing_fact",
++      "predicate": "fact_missing(project.contractor_or_owner_role)",
++      "severity": "block_submission",
++      "message": "Ask whether the applicant is the owner, contractor, or authorized representative before preparing the permit package.",
++      "requiredFact": "contractor_or_owner_role",
++      "sourceIds": ["residential_building_permit_guide"]
++    },
++    {
++      "id": "rbp_require_application_document_group",
++      "kind": "required_document_group",
++      "predicate": "missing_document_group(application_forms)",
++      "severity": "block_submission",
++      "documentGroup": {
++        "id": "application_forms",
++        "label": "Application forms",
++        "minimumDocuments": 1,
++        "acceptedFormats": ["pdf"],
++        "examples": ["building permit application", "residential permit application worksheet"]
++      },
++      "sourceIds": ["residential_building_permit_guide"]
++    },
++    {
++      "id": "rbp_require_drawing_plan_group",
++      "kind": "required_document_group",
++      "predicate": "missing_document_group(drawing_plans)",
++      "severity": "block_submission",
++      "documentGroup": {
++        "id": "drawing_plans",
++        "label": "Drawing plans",
++        "minimumDocuments": 1,
++        "acceptedFormats": ["pdf"],
++        "examples": ["site plan", "floor plans", "elevations", "structural details"]
++      },
++      "sourceIds": ["residential_building_permit_guide", "single_pdf_process_guide"]
++    },
++    {
++      "id": "rbp_require_supporting_document_group",
++      "kind": "required_document_group",
++      "predicate": "missing_document_group(supporting_documents)",
++      "severity": "block_submission",
++      "documentGroup": {
++        "id": "supporting_documents",
++        "label": "Supporting documents",
++        "minimumDocuments": 1,
++        "acceptedFormats": ["pdf"],
++        "examples": ["calculations", "reports", "special inspection forms", "manufacturer documents"]
++      },
++      "sourceIds": ["residential_building_permit_guide", "single_pdf_process_guide"]
++    },
++    {
++      "id": "rbp_single_pdf_drawings_compatible",
++      "kind": "single_pdf_process_compatibility",
++      "predicate": "single_pdf_process_applies(project) -> exactly_one_pdf(document_group.drawing_plans) and searchable_pdf(document_group.drawing_plans[0])",
++      "severity": "block_submission",
++      "compatibilityRules": {
++        "drawingPlansMustBeOneSearchablePdf": true,
++        "applicationsCalculationsAndSupportingDocumentsMustBeSeparatePdfs": true,
++        "rejectMergedApplicationAndPlans": true,
++        "rejectMultipleDrawingPlanPdfsWhenSinglePdfProcessApplies": true
++      },
++      "sourceIds": ["single_pdf_process_guide"]
++    },
++    {
++      "id": "rbp_stop_before_inspection_scheduling",
++      "kind": "action_gate",
++      "predicate": "action(schedule_inspection) -> require_exact_user_confirmation(schedule_inspection)",
++      "severity": "stop_before_action",
++      "action": "schedule_inspection",
++      "classification": "potentially_consequential",
++      "requiresExactUserConfirmation": true,
++      "allowedWithoutConfirmation": false,
++      "stagePreconditions": ["permit_issued", "inspection_type_selected"],
++      "auditEventRequired": true,
++      "sourceIds": ["devhub_payment_and_inspection_guide"]
++    },
++    {
++      "id": "rbp_stop_before_payment",
++      "kind": "action_gate",
++      "predicate": "action(pay_fees) or action(enter_payment_details) -> require_exact_user_confirmation(payment)",
++      "severity": "stop_before_action",
++      "action": "pay_fees",
++      "classification": "financial",
++      "requiresExactUserConfirmation": true,
++      "allowedWithoutConfirmation": false,
++      "stagePreconditions": ["fees_assessed"],
++      "auditEventRequired": true,
++      "sourceIds": ["devhub_payment_and_inspection_guide"]
++    }
++  ],
++  "compiledScenarios": [
++    {
++      "id": "missing_facts_and_documents",
++      "knownFacts": ["applicant_contact"],
++      "uploadedDocumentGroups": [],
++      "expectedBlockingGuardrailIds": [
++        "rbp_missing_property_identifier",
++        "rbp_missing_project_scope",
++        "rbp_missing_contractor_or_owner_role",
++        "rbp_require_application_document_group",
++        "rbp_require_drawing_plan_group",
++        "rbp_require_supporting_document_group"
++      ]
++    },
++    {
++      "id": "single_pdf_process_incompatible_multiple_plan_pdfs",
++      "knownFacts": ["property_identifier", "project_scope", "applicant_contact", "contractor_or_owner_role"],
++      "singlePdfProcessApplies": true,
++      "uploadedDocumentGroups": [
++        {
++          "id": "application_forms",
++          "documents": [{"name": "application.pdf", "format": "pdf", "searchable": true}]
++        },
++        {
++          "id": "drawing_plans",
++          "documents": [
++            {"name": "plans-a.pdf", "format": "pdf", "searchable": true},
++            {"name": "plans-b.pdf", "format": "pdf", "searchable": true}
++          ]
++        },
++        {
++          "id": "supporting_documents",
++          "documents": [{"name": "calculations.pdf", "format": "pdf", "searchable": true}]
++        }
++      ],
++      "expectedBlockingGuardrailIds": ["rbp_single_pdf_drawings_compatible"]
++    },
++    {
++      "id": "payment_requires_confirmation",
++      "knownFacts": ["property_identifier", "project_scope", "applicant_contact", "contractor_or_owner_role"],
++      "attemptedAction": "pay_fees",
++      "userConfirmation": null,
++      "expectedBlockingGuardrailIds": ["rbp_stop_before_payment"]
++    },
++    {
++      "id": "inspection_scheduling_requires_confirmation",
++      "knownFacts": ["property_identifier", "project_scope", "applicant_contact", "contractor_or_owner_role"],
++      "attemptedAction": "schedule_inspection",
++      "userConfirmation": null,
++      "expectedBlockingGuardrailIds": ["rbp_stop_before_inspection_scheduling"]
++    }
++  ]
++}
+--- a/ppd/tests/test_residential_building_guardrail_compiler.py
++++ b/ppd/tests/test_residential_building_guardrail_compiler.py
+@@ -0,0 +1,135 @@
++"""Fixture tests for residential building permit guardrail compiler output."""
++
++from __future__ import annotations
++
++import json
++import unittest
++from pathlib import Path
++from typing import Any
++
++
++FIXTURE_PATH = Path(__file__).parent / "fixtures" / "residential_building_permit_guardrails.json"
++
++
++class ResidentialBuildingGuardrailCompilerFixtureTest(unittest.TestCase):
++    def setUp(self) -> None:
++        with FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
++            self.fixture: dict[str, Any] = json.load(fixture_file)
++        self.guardrails: dict[str, dict[str, Any]] = {
++            guardrail["id"]: guardrail for guardrail in self.fixture["guardrails"]
++        }
++
++    def test_fixture_is_residential_building_permit_compiler_output(self) -> None:
++        self.assertEqual(self.fixture["schemaVersion"], 1)
++        self.assertEqual(self.fixture["processId"], "residential-building-permit")
++        self.assertTrue(self.fixture["compiledAt"].endswith("Z"))
++        self.assertEqual(self.fixture["compiler"]["name"], "ppd.logic.guardrailCompiler.fixture")
++        self.assertGreaterEqual(len(self.fixture["authoritySources"]), 3)
++        self.assertEqual(len(self.guardrails), len(self.fixture["guardrails"]))
++
++    def test_missing_fact_guardrails_are_source_backed_and_block_submission(self) -> None:
++        expected_facts = {
++            "property_identifier",
++            "project_scope",
++            "applicant_contact",
++            "contractor_or_owner_role",
++        }
++        missing_fact_guardrails = [
++            guardrail for guardrail in self.guardrails.values() if guardrail["kind"] == "missing_fact"
++        ]
++        self.assertEqual({guardrail["requiredFact"] for guardrail in missing_fact_guardrails}, expected_facts)
++        for guardrail in missing_fact_guardrails:
++            self.assertEqual(guardrail["severity"], "block_submission")
++            self.assertIn("fact_missing", guardrail["predicate"])
++            self.assertTrue(guardrail["sourceIds"])
++            self.assertTrue(guardrail["message"].startswith("Ask"))
++
++    def test_required_document_groups_cover_application_plans_and_supporting_documents(self) -> None:
++        document_group_guardrails = [
++            guardrail
++            for guardrail in self.guardrails.values()
++            if guardrail["kind"] == "required_document_group"
++        ]
++        groups = {guardrail["documentGroup"]["id"]: guardrail for guardrail in document_group_guardrails}
++        self.assertEqual(set(groups), {"application_forms", "drawing_plans", "supporting_documents"})
++        for group_id, guardrail in groups.items():
++            with self.subTest(group_id=group_id):
++                document_group = guardrail["documentGroup"]
++                self.assertEqual(guardrail["severity"], "block_submission")
++                self.assertEqual(document_group["minimumDocuments"], 1)
++                self.assertEqual(document_group["acceptedFormats"], ["pdf"])
++                self.assertGreaterEqual(len(document_group["examples"]), 1)
++                self.assertTrue(guardrail["sourceIds"])
++
++    def test_single_pdf_process_compatibility_is_explicit(self) -> None:
++        guardrail = self.guardrails["rbp_single_pdf_drawings_compatible"]
++        self.assertEqual(guardrail["kind"], "single_pdf_process_compatibility")
++        self.assertEqual(guardrail["severity"], "block_submission")
++        self.assertIn("single_pdf_process_applies", guardrail["predicate"])
++        self.assertIn("exactly_one_pdf", guardrail["predicate"])
++        rules = guardrail["compatibilityRules"]
++        self.assertTrue(rules["drawingPlansMustBeOneSearchablePdf"])
++        self.assertTrue(rules["applicationsCalculationsAndSupportingDocumentsMustBeSeparatePdfs"])
++        self.assertTrue(rules["rejectMergedApplicationAndPlans"])
++        self.assertTrue(rules["rejectMultipleDrawingPlanPdfsWhenSinglePdfProcessApplies"])
++        self.assertEqual(guardrail["sourceIds"], ["single_pdf_process_guide"])
++
++    def test_inspection_scheduling_is_a_consequential_stop_point(self) -> None:
++        guardrail = self.guardrails["rbp_stop_before_inspection_scheduling"]
++        self.assertEqual(guardrail["kind"], "action_gate")
++        self.assertEqual(guardrail["action"], "schedule_inspection")
++        self.assertEqual(guardrail["classification"], "potentially_consequential")
++        self.assertEqual(guardrail["severity"], "stop_before_action")
++        self.assertTrue(guardrail["requiresExactUserConfirmation"])
++        self.assertFalse(guardrail["allowedWithoutConfirmation"])
++        self.assertTrue(guardrail["auditEventRequired"])
++        self.assertIn("permit_issued", guardrail["stagePreconditions"])
++
++    def test_payment_is_a_financial_stop_point(self) -> None:
++        guardrail = self.guardrails["rbp_stop_before_payment"]
++        self.assertEqual(guardrail["kind"], "action_gate")
++        self.assertEqual(guardrail["action"], "pay_fees")
++        self.assertEqual(guardrail["classification"], "financial")
++        self.assertEqual(guardrail["severity"], "stop_before_action")
++        self.assertTrue(guardrail["requiresExactUserConfirmation"])
++        self.assertFalse(guardrail["allowedWithoutConfirmation"])
++        self.assertTrue(guardrail["auditEventRequired"])
++        self.assertIn("fees_assessed", guardrail["stagePreconditions"])
++
++    def test_compiled_scenarios_reference_existing_guardrails(self) -> None:
++        scenario_ids = {scenario["id"] for scenario in self.fixture["compiledScenarios"]}
++        self.assertEqual(
++            scenario_ids,
++            {
++                "missing_facts_and_documents",
++                "single_pdf_process_incompatible_multiple_plan_pdfs",
++                "payment_requires_confirmation",
++                "inspection_scheduling_requires_confirmation",
++            },
++        )
++        for scenario in self.fixture["compiledScenarios"]:
++            with self.subTest(scenario=scenario["id"]):
++                self.assertTrue(scenario["expectedBlockingGuardrailIds"])
++                for guardrail_id in scenario["expectedBlockingGuardrailIds"]:
++                    self.assertIn(guardrail_id, self.guardrails)
++
++    def test_fixture_contains_no_private_or_live_automation_artifacts(self) -> None:
++        serialized = json.dumps(self.fixture, sort_keys=True).lower()
++        forbidden_fragments = (
++            "password",
++            "token",
++            "cookie",
++            "storage_state",
++            "auth_state",
++            "trace.zip",
++            "screenshot",
++            "ppd/data/private",
++            "ppd/data/raw",
++        )
++        for fragment in forbidden_fragments:
++            with self.subTest(fragment=fragment):
++                self.assertNotIn(fragment, serialized)
++
++
++if __name__ == "__main__":
++    unittest.main()

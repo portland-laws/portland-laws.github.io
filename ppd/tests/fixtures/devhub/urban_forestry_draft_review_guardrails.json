@@ -1,0 +1,111 @@
+{
+  "schema_version": 1,
+  "workflow_id": "urban_forestry_application_draft_review",
+  "permit_type": "urban_forestry",
+  "fixture_kind": "mocked_devhub_guardrail",
+  "source_context": {
+    "authority_label": "Development Hub PDX mocked workflow state",
+    "captured_from_live_site": false,
+    "uses_private_account_data": false,
+    "evidence": [
+      {
+        "source_id": "devhub-public-guidance-urban-forestry-applications",
+        "url": "https://www.portland.gov/ppd/devhub",
+        "description": "Public DevHub guidance identifies Urban Forestry permits as DevHub application workflows."
+      }
+    ]
+  },
+  "draft_review_state": {
+    "state_id": "uf_draft_review_ready_for_preview",
+    "url_state": "https://devhub.portlandoregon.gov/mock/applications/urban-forestry/draft-review",
+    "session_nonce": "UF-SESSION-2026-05-02-001",
+    "redaction_profile": "synthetic_values_only",
+    "application_reference": "UF-DRAFT-REDACTED",
+    "review_summary": {
+      "project_site": "REDACTED_SITE_ADDRESS",
+      "tree_scope": "REDACTED_TREE_WORK_SCOPE",
+      "applicant_contact": "REDACTED_CONTACT",
+      "attachments": [
+        "REDACTED_SITE_PLAN.pdf",
+        "REDACTED_TREE_INVENTORY.pdf"
+      ]
+    },
+    "available_outputs": [
+      {
+        "action_id": "preview_draft_review",
+        "classification": "read_only_preview",
+        "allowed_without_confirmation": true,
+        "result": "preview_only",
+        "exact_confirmation_required": null
+      },
+      {
+        "action_id": "official_upload",
+        "classification": "potentially_consequential",
+        "allowed_without_confirmation": false,
+        "result": "refuse_until_exact_current_session_confirmation",
+        "exact_confirmation_required": "I confirm official_upload for Urban Forestry draft UF-DRAFT-REDACTED in session UF-SESSION-2026-05-02-001"
+      },
+      {
+        "action_id": "certification",
+        "classification": "potentially_consequential",
+        "allowed_without_confirmation": false,
+        "result": "refuse_until_exact_current_session_confirmation",
+        "exact_confirmation_required": "I confirm certification for Urban Forestry draft UF-DRAFT-REDACTED in session UF-SESSION-2026-05-02-001"
+      },
+      {
+        "action_id": "submission",
+        "classification": "potentially_consequential",
+        "allowed_without_confirmation": false,
+        "result": "refuse_until_exact_current_session_confirmation",
+        "exact_confirmation_required": "I confirm submission for Urban Forestry draft UF-DRAFT-REDACTED in session UF-SESSION-2026-05-02-001"
+      },
+      {
+        "action_id": "fee_payment",
+        "classification": "financial",
+        "allowed_without_confirmation": false,
+        "result": "refuse_until_exact_current_session_confirmation",
+        "exact_confirmation_required": "I confirm fee_payment for Urban Forestry draft UF-DRAFT-REDACTED in session UF-SESSION-2026-05-02-001"
+      },
+      {
+        "action_id": "cancellation",
+        "classification": "potentially_consequential",
+        "allowed_without_confirmation": false,
+        "result": "refuse_until_exact_current_session_confirmation",
+        "exact_confirmation_required": "I confirm cancellation for Urban Forestry draft UF-DRAFT-REDACTED in session UF-SESSION-2026-05-02-001"
+      },
+      {
+        "action_id": "inspection_scheduling",
+        "classification": "potentially_consequential",
+        "allowed_without_confirmation": false,
+        "result": "refuse_until_exact_current_session_confirmation",
+        "exact_confirmation_required": "I confirm inspection_scheduling for Urban Forestry draft UF-DRAFT-REDACTED in session UF-SESSION-2026-05-02-001"
+      }
+    ]
+  },
+  "confirmation_examples": [
+    {
+      "action_id": "official_upload",
+      "provided_confirmation": "I confirm official_upload for Urban Forestry draft UF-DRAFT-REDACTED in session UF-SESSION-2026-05-02-001",
+      "current_session_nonce": "UF-SESSION-2026-05-02-001",
+      "should_allow": true
+    },
+    {
+      "action_id": "official_upload",
+      "provided_confirmation": "I confirm official_upload for Urban Forestry draft UF-DRAFT-REDACTED in session OLD-SESSION",
+      "current_session_nonce": "UF-SESSION-2026-05-02-001",
+      "should_allow": false
+    },
+    {
+      "action_id": "certification",
+      "provided_confirmation": "I confirm submission for Urban Forestry draft UF-DRAFT-REDACTED in session UF-SESSION-2026-05-02-001",
+      "current_session_nonce": "UF-SESSION-2026-05-02-001",
+      "should_allow": false
+    },
+    {
+      "action_id": "fee_payment",
+      "provided_confirmation": "I confirm fee_payment for Urban Forestry draft UF-DRAFT-REDACTED in session UF-SESSION-2026-05-02-001",
+      "current_session_nonce": "DIFFERENT-SESSION",
+      "should_allow": false
+    }
+  ]
+}

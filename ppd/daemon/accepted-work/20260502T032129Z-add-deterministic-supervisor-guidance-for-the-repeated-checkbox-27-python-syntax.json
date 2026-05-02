@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md",
+    "ppd/daemon/task-board.md"
+  ],
+  "created_at": "2026-05-02T03:21:29.633045Z",
+  "impact": "This lets the daemon resume autonomous progress without spinning on malformed mutation-validator attempts: the next selected work is still narrow, fixture-only, and py_compile-first, with explicit syntax guardrails and no domain implementation.",
+  "summary": "Add deterministic supervisor guidance for the repeated checkbox-27 Python syntax failures and reset the active recovery task to selectable needed state.",
+  "target_task": "Supervisor repair: 6 consecutive daemon rounds failed without an accepted patch",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 35 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "..........................................................................................................................................................................................................................ss.........sss...................................................................................................................................... ---------------------------------------------------------------------- Ran 366 tests in 0.044s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

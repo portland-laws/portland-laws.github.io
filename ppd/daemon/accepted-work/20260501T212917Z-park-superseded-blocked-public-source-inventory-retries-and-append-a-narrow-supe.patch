@@ -1,0 +1,121 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -75,9 +75,8 @@
+ - [x] Add the public source inventory validator only after the syntax-first import test and one-unsafe-field fixture pass, covering allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and required provenance fields.
+ - [x] Restore the public source inventory syntax sentinel only: replace `ppd/contracts/public_source_inventory.py` as needed to preserve `MODULE_PURPOSE` and existing import-guard expectations before any validator behavior changes.
+ - [x] Add a fixture-name compatibility repair for public source inventory tests only if `ppd/tests/fixtures/public_source_inventory/invalid_one_unsafe_field_inventory.json` is still missing while the accepted one-unsafe-field fixture exists under another name.
+-- [!] Retry the public source inventory validator as a one-file implementation only after the `MODULE_PURPOSE` sentinel and expected unsafe-field fixture path pass validation.
+-- [!] Retry the public source inventory validator as a no-dataclass one-file implementation only: preserve `MODULE_PURPOSE`, avoid `dataclasses`, keep to plain functions/constants/dicts, and validate the syntax-first import plus unsafe-field fixture before any broader behavior.
+ - [x] Retry the public source inventory validator as a sentinel-preserving one-file implementation only: keep `validator_status()` returning exactly `{"module": "ppd.contracts.public_source_inventory", "syntax_first_probe": True, "validator_ready": False}`, preserve `MODULE_PURPOSE`, avoid `dataclasses`, and add validator behavior only through separate plain functions/constants/dicts validated against the one-unsafe-field fixture.
++- [ ] Add a supervisor reconciliation fixture and daemon self-test check proving that a blocked task superseded by a later accepted narrower recovery is parked outside selectable checkbox form, while the daemon still selects the next independent `[ ]` task instead of reporting `no_eligible_tasks`.
+ 
+ ## Deferred Broad Items
+ 
+@@ -86,7 +85,9 @@
+ - Parked source freshness broad task: Add a source freshness fixture that classifies stale PP&D guidance, changed content hashes, removed pages, and recrawl priority without performing a live recrawl.
+ - Parked source freshness renderer task: Add a fixture-only change report renderer for public PP&D source freshness results that summarizes changed requirements, new or removed links, and affected permit-process fixtures with citation references.
+ - Parked missing-information validator broad task: Add validation for missing-information detector output proving every requested user item is source-backed, deduplicated, action-classified, and free of private fixture values. This was recovered by the accepted one-file validator replacement and should not be selected again unless a new regression appears.
+-- Parked public-source-inventory validator broad task: Add validation for public source inventory safety. Retry only through the appended sentinel, fixture-name, no-dataclass, and sentinel-preserving one-file implementation recovery sequence.
++- Parked public-source-inventory validator broad task: Add validation for public source inventory safety. This was recovered by the accepted sentinel-preserving one-file implementation. Do not select the older broad retry tasks again unless a new failing validator points to a concrete regression.
++- Superseded checkbox-70: Retry the public source inventory validator as a one-file implementation only after the `MODULE_PURPOSE` sentinel and expected unsafe-field fixture path pass validation. This was superseded by the accepted sentinel-preserving validator retry.
++- Superseded checkbox-71: Retry the public source inventory validator as a no-dataclass one-file implementation only. This was superseded by the accepted sentinel-preserving validator retry that preserves `validator_status()` exactly.
+ 
+ ## Deferred Repair Notes
+ 
+@@ -96,7 +97,7 @@
+ 
+ The source freshness classifier checkbox was blocked because repeated proposals introduced invalid Python such as `if self.recrawl_cadence_days list[str]:`. That recovery has passed. Do not reopen those broad source-freshness tasks unless a new failing validator points to a concrete regression.
+ 
+-The public-source-inventory validation checkbox is deferred because repeated daemon proposals failed validation, including sentinel drift, fixture-name mismatch, a Python 3.12 `dataclasses.py` import-time failure when the syntax-first test loads the module with `importlib.util.module_from_spec` before insertion into `sys.modules`, and a sentinel-status regression where validator implementation changed `validator_status()` to report `validator_ready: True`. The sentinel and fixture-name repairs have passed; the next retry must preserve `MODULE_PURPOSE`, avoid `@dataclass` and the `dataclasses` module entirely, and must not change the exact `validator_status()` return shape while adding behavior through separate plain functions.
++The public-source-inventory validation sequence produced useful narrow repairs after repeated failures: sentinel restoration, fixture-name compatibility, and a final sentinel-preserving no-dataclass validator. Older blocked retries are now parked because selecting them again would regress into stale failure modes. The accepted validator recovery keeps `validator_status()` as an import sentinel and exposes behavior through separate plain functions/constants/dicts.
+ 
+ ## Task Selection Notes
+ 
+@@ -108,7 +109,8 @@
+ 2. If validation next reports a missing public-source-inventory unsafe-field fixture path, add only the fixture-name compatibility repair.
+ 3. Retry the public source inventory validator as a one-file no-dataclass implementation after the sentinel and fixture-contract prerequisites pass.
+ 4. If validation reports that `validator_status()` returned extra keys or `validator_ready: True`, retry only with a sentinel-preserving implementation that leaves `validator_status()` exactly as the syntax-first test expects and exposes validator behavior through separate functions.
+-5. Do not select the parked broad missing-information validator directly.
++5. After a later narrower recovery passes, park earlier blocked retries as superseded so they do not count as active blockers.
++6. Do not select the parked broad missing-information validator directly.
+ 
+ Each recovery proposal should keep to one file unless the task explicitly requires a fixture plus its focused test. For public source inventory recovery, keep syntax sentinel repair separate from behavior repair, and keep the sentinel helper stable even after validator functions are added.
+ 
+@@ -119,6 +121,7 @@
+ - Treat missing sentinel constants such as `MODULE_STATUS` or `MODULE_PURPOSE` as a contract-preservation repair, not as permission to redesign validator behavior.
+ - Treat a failing assertion on `validator_status()` as a sentinel-contract failure. Do not change `validator_status()` to announce implementation readiness unless the syntax-first test has first been changed by an explicit validation-first task.
+ - After three failed attempts against the same task, move the broad task into Deferred Broad Items, append narrower recovery tasks, and select a different independent task if one exists.
++- When a narrower recovery task passes and directly supersedes older blocked retries, park those older retries outside checkbox form instead of leaving the board with blocked-only progress.
+ - Do not let parked broad task counts prevent daemon progress when a fixture-only or validation-first `[ ]` task remains selectable.
+ - Prefer deterministic fixtures and validation-only changes before adding live crawl, authenticated DevHub, browser, or network behavior.
+ - Do not create private DevHub session files, auth state, traces, raw crawl output, screenshots, or downloaded documents in repair cycles.
+@@ -126,33 +129,11 @@
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T21:20:00.000000Z
++Last updated: 2026-05-01T21:30:00.000000Z
+ 
+-- Latest target: `Task checkbox-71: Retry the public source inventory validator as a no-dataclass one-file implementation only: preserve MODULE_PURPOSE, avoid dataclasses, keep to plain functions/constants/dicts, and validate the syntax-first import plus unsafe-field fixture before any broader behavior.`
++- Latest target: `Supervisor repair: reconcile superseded blocked public-source-inventory retries after accepted sentinel-preserving validator recovery.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Park the validator-ready sentinel regression and append a narrower retry that preserves validator_status exactly while adding behavior through separate plain functions.
+-- Counts: blocked 4, complete 67, in_progress 0, needed 1
++- Latest summary: Park superseded blocked retry checkboxes and append a narrow daemon reconciliation task so autonomous progress can resume.
++- Counts: `{"blocked": 0, "complete": 71, "in_progress": 0, "needed": 1}`
+ 
+ 
+-
+-## Generated Status
+-
+-Last updated: 2026-05-01T21:20:00.000000Z
+-
+-- Latest target: `Task checkbox-72: Retry the public source inventory validator as a sentinel-preserving one-file implementation only: keep validator_status() returning exactly the syntax-first sentinel shape, preserve MODULE_PURPOSE, avoid dataclasses, and add validator behavior only through separate plain functions/constants/dicts validated against the one-unsafe-field fixture.`
+-- Latest result: `supervisor_repair`
+-- Latest summary: Add a narrower selectable recovery task for the exact failing assertion: validator_status must remain an import sentinel and must not be used as the implementation readiness signal.
+-- Counts: `{"blocked": 4, "complete": 67, "in_progress": 0, "needed": 1}`
+-
+-
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-01T21:26:49.260902Z
+-
+-- Latest target: `Task checkbox-68: Restore the public source inventory syntax sentinel only: replace `ppd/contracts/public_source_inventory.py` as needed to preserve `MODULE_PURPOSE` and existing import-guard expectations before any validator behavior changes.`
+-- Latest result: `accepted`
+-- Latest summary: Restore public source inventory to the syntax-first sentinel only, preserving MODULE_PURPOSE and validator_status import-guard expectations.
+-- Counts: `{"blocked": 2, "complete": 70, "in_progress": 0, "needed": 0}`
+-
+-<!-- ppd-daemon-task-board:end -->
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -23,6 +23,7 @@
+ 2. If the expected one-unsafe-field fixture path is missing, select only the fixture compatibility task.
+ 3. If both the sentinel import test and fixture path pass, select a one-file validator retry that preserves the sentinel status helper exactly.
+ 4. If a broad validator task reintroduces syntax errors after a narrower validator has already passed, block the broad task and append a narrower follow-up task instead of reselecting it.
++5. If a later narrower task passes and explicitly supersedes older blocked retries, park those older retries outside selectable checkbox form so they do not leave the daemon with only blocked work.
+ 
+ ## Public Source Inventory Validator Guardrails
+ 
+@@ -46,6 +47,7 @@
+ - `import_guard` for sentinel status or import-probe mismatches.
+ - `fixture_missing` for expected committed fixture paths.
+ - `validator_behavior` for deterministic fixture assertion failures.
++- `superseded_blocked` for an older blocked retry whose narrower follow-up has already passed.
+ - `no_change` only when validation passed but the patch produced no content difference.
+ 
+ A `no_change` result after passing validation should not block later meaningful progress. It means the repository already contained the proposed repair. The next task should advance to the next prerequisite instead of retrying the identical proposal.
+@@ -53,6 +55,13 @@
+ ## Blocked Task Handling
+ 
+ When a task remains blocked after two failed attempts with the same failure kind, the supervisor should append a new narrow recovery task to `ppd/daemon/task-board.md` and prefer that task on the next cycle. The new task must name the exact failing guard and the expected validation command.
++
++When the narrow recovery task passes, the supervisor should reconcile the board before the next autonomous cycle:
++
++- Keep the accepted narrow task marked complete.
++- Move superseded blocked retries into Deferred Broad Items or Deferred Repair Notes as plain bullets, not checkbox tasks.
++- Append a new `[ ]` task only when there is a concrete fixture-first or validation-first next step.
++- Do not reselect an older blocked retry just because no needed tasks remain.
+ 
+ For the current public source inventory sequence, prefer tasks with this shape:
+ 

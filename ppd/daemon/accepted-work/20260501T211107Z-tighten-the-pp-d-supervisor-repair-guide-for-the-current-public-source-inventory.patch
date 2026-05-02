@@ -1,0 +1,60 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -6,13 +6,15 @@
+ 
+ ## Public Source Inventory Recovery
+ 
+-When failures mention `ppd.contracts.public_source_inventory`, `MODULE_PURPOSE`, `py_compile`, `SyntaxError`, or the fixture path `ppd/tests/fixtures/public_source_inventory/invalid_one_unsafe_field_inventory.json`, recover in this order:
++When failures mention `ppd.contracts.public_source_inventory`, `MODULE_PURPOSE`, `py_compile`, `SyntaxError`, `dataclasses.py`, `AttributeError: 'NoneType' object has no attribute '__dict__'`, or the fixture path `ppd/tests/fixtures/public_source_inventory/invalid_one_unsafe_field_inventory.json`, recover in this order:
+ 
+ 1. Restore the syntax sentinel before validator behavior.
+ 2. Preserve the exact sentinel value expected by tests: `MODULE_PURPOSE = "syntax_first_public_source_inventory_validation"`.
+-3. Confirm the compatibility fixture path exists before asking for validator implementation.
+-4. Retry validator behavior as a one-file implementation in `ppd/contracts/public_source_inventory.py` only.
+-5. Do not edit `ppd/contracts/__init__.py` or validator tests during the retry unless a later validation error specifically proves they are the blocker.
++3. Preserve the syntax-first status helper until a test explicitly changes the contract: `validator_status()` must report `validator_ready: False` for the sentinel phase.
++4. Confirm the compatibility fixture path exists before asking for validator implementation.
++5. Retry validator behavior as a one-file implementation in `ppd/contracts/public_source_inventory.py` only.
++6. Do not use `@dataclass` or dataclass-decorated classes in this module. The syntax-first test loads the file with `importlib.util.module_from_spec()` without inserting it into `sys.modules`, which makes dataclasses fail at import time.
++7. Do not edit `ppd/contracts/__init__.py` or validator tests during the retry unless a later validation error specifically proves they are the blocker.
+ 
+ ## Prompt Guardrail
+ 
+@@ -20,15 +22,36 @@
+ 
+ - Keep the edit to one file: `ppd/contracts/public_source_inventory.py`.
+ - Keep `MODULE_PURPOSE = "syntax_first_public_source_inventory_validation"` present at module scope.
++- Do not use `dataclasses`, `@dataclass`, or import-time decorators that depend on `sys.modules` registration.
++- Prefer plain dictionaries, tuples, constants, and small pure functions for validator behavior.
+ - Run or satisfy the syntax-first import expectation before adding behavioral validation.
+ - Reject unsafe public inventory entries using fixture-only data, not live crawling.
+ - Cover only these refusal classes: non-allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and missing provenance fields.
+ - Do not create private DevHub session files, auth state, traces, screenshots, raw crawl output, or downloaded documents.
+ 
++## Dataclass Failure Rule
++
++If validation fails with a stack trace from `/usr/lib/python*/dataclasses.py` while importing `ppd/contracts/public_source_inventory.py`, classify it as a supervisor prompt defect, not a domain-contract defect. The recovery prompt must require a no-dataclass implementation and must not broaden the file set.
++
++The expected repair shape is:
++
++- one file only: `ppd/contracts/public_source_inventory.py`.
++- module-scope sentinel preserved.
++- no class decorators.
++- no package initializer edits.
++- no new fixtures unless the validator reports a missing fixture path.
++
+ ## Blocked Task Handling
+ 
+ If the same task fails twice with the same validation signature, the daemon should not immediately retry a broader patch. It should create or select a repair task that addresses only the first failing assertion or missing fixture. After that repair passes full validation, the daemon may return to the original behavioral task.
+ 
++For the current public source inventory sequence, repeated failures should be interpreted as follows:
++
++- Missing `MODULE_PURPOSE`: restore sentinel only.
++- Wrong `MODULE_PURPOSE`: set it exactly to `syntax_first_public_source_inventory_validation`.
++- Missing unsafe-field fixture path: add only the compatibility fixture path.
++- `dataclasses.py` import failure: retry the validator as a no-dataclass one-file implementation.
++
+ ## Syntax-First Rule
+ 
+-When a recent failure includes `SyntaxError`, `py_compile`, or a missing import sentinel, the next proposal should be a small syntax repair. Do not combine syntax recovery with contract expansion, exported API changes, or new test expectations.
++When a recent failure includes `SyntaxError`, `py_compile`, a missing import sentinel, or an import-time decorator failure, the next proposal should be a small syntax repair. Do not combine syntax recovery with contract expansion, exported API changes, or new test expectations.

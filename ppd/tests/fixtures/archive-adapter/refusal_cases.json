@@ -1,0 +1,215 @@
+{
+  "fixtureKind": "archive_adapter_refusal_cases",
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-01T19:10:00Z",
+  "cases": [
+    {
+      "id": "refuse-non-allowlisted-url",
+      "expectedInvoke": false,
+      "expectedErrorContains": "not PP&D archive allowlisted",
+      "record": {
+        "id": "refuse-non-allowlisted-url",
+        "sourceUrl": "https://example.com/ppd/public-guidance",
+        "canonicalUrl": "https://example.com/ppd/public-guidance",
+        "contentHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "processor": {
+          "name": "web_archive_adapter",
+          "version": "fixture-1",
+          "family": "web_archiving",
+          "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
+        },
+        "policyDecision": {
+          "decision": "refuse",
+          "reasons": ["non_allowlisted_host"],
+          "evaluatedAt": "2026-05-01T19:10:00Z",
+          "evaluator": "ppd.tests.fixture"
+        },
+        "createdAt": "2026-05-01T19:10:00Z",
+        "manifestOnly": true
+      }
+    },
+    {
+      "id": "refuse-private-devhub-path",
+      "expectedInvoke": false,
+      "expectedErrorContains": "private DevHub path",
+      "record": {
+        "id": "refuse-private-devhub-path",
+        "sourceUrl": "https://devhub.portlandoregon.gov/secure/permits/REDACTED",
+        "canonicalUrl": "https://devhub.portlandoregon.gov/secure/permits/REDACTED",
+        "contentHash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "processor": {
+          "name": "web_archive_adapter",
+          "version": "fixture-1",
+          "family": "web_archiving",
+          "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
+        },
+        "policyDecision": {
+          "decision": "refuse",
+          "reasons": ["private_devhub_path"],
+          "evaluatedAt": "2026-05-01T19:10:00Z",
+          "evaluator": "ppd.tests.fixture"
+        },
+        "createdAt": "2026-05-01T19:10:00Z",
+        "manifestOnly": true
+      }
+    },
+    {
+      "id": "refuse-raw-response-body",
+      "expectedInvoke": false,
+      "expectedErrorContains": "raw response body",
+      "record": {
+        "id": "refuse-raw-response-body",
+        "sourceUrl": "https://www.portland.gov/ppd/public-guidance",
+        "canonicalUrl": "https://www.portland.gov/ppd/public-guidance",
+        "contentHash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+        "responseBody": "raw fixture body must not be persisted",
+        "processor": {
+          "name": "web_archive_adapter",
+          "version": "fixture-1",
+          "family": "web_archiving",
+          "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
+        },
+        "policyDecision": {
+          "decision": "refuse",
+          "reasons": ["raw_body_persistence_requested"],
+          "evaluatedAt": "2026-05-01T19:10:00Z",
+          "evaluator": "ppd.tests.fixture"
+        },
+        "createdAt": "2026-05-01T19:10:00Z",
+        "manifestOnly": false
+      }
+    },
+    {
+      "id": "refuse-credentials",
+      "expectedInvoke": false,
+      "expectedErrorContains": "credential field",
+      "record": {
+        "id": "refuse-credentials",
+        "sourceUrl": "https://www.portland.gov/ppd/public-guidance",
+        "canonicalUrl": "https://www.portland.gov/ppd/public-guidance",
+        "contentHash": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+        "headers": {
+          "authorization": "REDACTED_TOKEN_SHOULD_NOT_BE_IN_ARCHIVE_MANIFEST"
+        },
+        "processor": {
+          "name": "web_archive_adapter",
+          "version": "fixture-1",
+          "family": "web_archiving",
+          "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
+        },
+        "policyDecision": {
+          "decision": "refuse",
+          "reasons": ["credential_or_trace_risk"],
+          "evaluatedAt": "2026-05-01T19:10:00Z",
+          "evaluator": "ppd.tests.fixture"
+        },
+        "createdAt": "2026-05-01T19:10:00Z",
+        "manifestOnly": true
+      }
+    },
+    {
+      "id": "refuse-browser-trace",
+      "expectedInvoke": false,
+      "expectedErrorContains": "browser trace path",
+      "record": {
+        "id": "refuse-browser-trace",
+        "sourceUrl": "https://www.portland.gov/ppd/public-guidance",
+        "canonicalUrl": "https://www.portland.gov/ppd/public-guidance",
+        "contentHash": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+        "trace_path": "ppd/devhub/traces/trace.zip",
+        "processor": {
+          "name": "web_archive_adapter",
+          "version": "fixture-1",
+          "family": "web_archiving",
+          "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
+        },
+        "policyDecision": {
+          "decision": "refuse",
+          "reasons": ["credential_or_trace_risk"],
+          "evaluatedAt": "2026-05-01T19:10:00Z",
+          "evaluator": "ppd.tests.fixture"
+        },
+        "createdAt": "2026-05-01T19:10:00Z",
+        "manifestOnly": true
+      }
+    },
+    {
+      "id": "refuse-private-screenshot",
+      "expectedInvoke": false,
+      "expectedErrorContains": "screenshot path",
+      "record": {
+        "id": "refuse-private-screenshot",
+        "sourceUrl": "https://www.portland.gov/ppd/public-guidance",
+        "canonicalUrl": "https://www.portland.gov/ppd/public-guidance",
+        "contentHash": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+        "screenshot_path": "ppd/devhub/screenshots/private-screenshot.png",
+        "processor": {
+          "name": "web_archive_adapter",
+          "version": "fixture-1",
+          "family": "web_archiving",
+          "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
+        },
+        "policyDecision": {
+          "decision": "refuse",
+          "reasons": ["credential_or_trace_risk"],
+          "evaluatedAt": "2026-05-01T19:10:00Z",
+          "evaluator": "ppd.tests.fixture"
+        },
+        "createdAt": "2026-05-01T19:10:00Z",
+        "manifestOnly": true
+      }
+    },
+    {
+      "id": "refuse-downloaded-private-document",
+      "expectedInvoke": false,
+      "expectedErrorContains": "downloaded document",
+      "record": {
+        "id": "refuse-downloaded-private-document",
+        "sourceUrl": "https://www.portland.gov/ppd/public-guidance",
+        "canonicalUrl": "https://www.portland.gov/ppd/public-guidance",
+        "contentHash": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+        "document_path": "ppd/data/private/devhub/downloads/private-plan.pdf",
+        "processor": {
+          "name": "web_archive_adapter",
+          "version": "fixture-1",
+          "family": "web_archiving",
+          "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
+        },
+        "policyDecision": {
+          "decision": "refuse",
+          "reasons": ["credential_or_trace_risk"],
+          "evaluatedAt": "2026-05-01T19:10:00Z",
+          "evaluator": "ppd.tests.fixture"
+        },
+        "createdAt": "2026-05-01T19:10:00Z",
+        "manifestOnly": true
+      }
+    },
+    {
+      "id": "allow-public-ppd-control",
+      "expectedInvoke": true,
+      "expectedErrorContains": "",
+      "record": {
+        "id": "allow-public-ppd-control",
+        "sourceUrl": "https://www.portland.gov/ppd/public-guidance",
+        "canonicalUrl": "https://www.portland.gov/ppd/public-guidance",
+        "contentHash": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+        "processor": {
+          "name": "web_archive_adapter",
+          "version": "fixture-1",
+          "family": "web_archiving",
+          "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
+        },
+        "policyDecision": {
+          "decision": "allow",
+          "reasons": ["public_ppd_allowlisted", "robots_allowed", "no_persist_approved"],
+          "evaluatedAt": "2026-05-01T19:10:00Z",
+          "evaluator": "ppd.tests.fixture"
+        },
+        "createdAt": "2026-05-01T19:10:00Z",
+        "archiveJobId": "fixture-public-ppd-control",
+        "manifestOnly": true
+      }
+    }
+  ]
+}

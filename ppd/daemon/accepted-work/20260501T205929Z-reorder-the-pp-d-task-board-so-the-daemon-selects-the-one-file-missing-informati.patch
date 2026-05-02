@@ -1,0 +1,89 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -69,10 +69,10 @@
+ - [x] Add the source freshness classifier in the smallest possible Python module after the import test and four-record fixture pass, covering stale guidance, changed hashes, removed pages, and recrawl priority.
+ - [x] Add the fixture-only source freshness change report renderer only after the classifier task passes, summarizing changed requirements, new or removed links, affected permit-process fixtures, and citation references.
+ - [!] Add the missing-information output validator as a single no-dataclass Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection using only `ppd/tests/fixtures/missing_information_output/four_requested_items.json`.
++- [ ] Recover the blocked missing-information output validator with one file only: replace `ppd/contracts/missing_information_output_validation.py` as a no-dataclass module that exposes `MODULE_STATUS = "syntax_first_import_ready"` and validates only `ppd/tests/fixtures/missing_information_output/four_requested_items.json` semantics already covered by existing tests.
+ - [x] Add a one-file syntax-first repair test for public source inventory validation that imports only `ppd.contracts.public_source_inventory` and rejects malformed Python before broad unittest discovery.
+ - [x] Add a minimal invalid public source inventory fixture with exactly one unsafe field per entry so rejection reasons for raw bodies, credentials, traces, screenshots, downloaded documents, private DevHub paths, and missing provenance are deterministic.
+-- [~] Add the public source inventory validator only after the syntax-first import test and one-unsafe-field fixture pass, covering allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and required provenance fields.
+-- [ ] Recover the blocked missing-information output validator with one file only: replace `ppd/contracts/missing_information_output_validation.py` as a no-dataclass module that exposes `MODULE_STATUS = "syntax_first_import_ready"` and validates only `ppd/tests/fixtures/missing_information_output/four_requested_items.json` semantics already covered by existing tests.
++- [ ] Add the public source inventory validator only after the syntax-first import test and one-unsafe-field fixture pass, covering allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and required provenance fields.
+ 
+ ## Deferred Broad Items
+ 
+@@ -90,7 +90,7 @@
+ 
+ The source freshness classifier checkbox was blocked because repeated proposals introduced invalid Python such as `if self.recrawl_cadence_days list[str]:`. That recovery has passed. Do not reopen those broad source-freshness tasks unless a new failing validator points to a concrete regression.
+ 
+-The former broad public-source-inventory validation checkbox is deferred because repeated daemon proposals failed validation, including Python syntax failures and mismatched expected rejection reasons. The syntax-first import test and one-unsafe-field fixture have passed, so the current in-progress public-source-inventory validator remains a valid autonomous target.
++The former broad public-source-inventory validation checkbox is deferred because repeated daemon proposals failed validation, including Python syntax failures and mismatched expected rejection reasons. The syntax-first import test and one-unsafe-field fixture have passed, so the public-source-inventory validator remains valid only after the missing-information recovery passes.
+ 
+ ## Task Selection Notes
+ 
+@@ -98,8 +98,8 @@
+ 
+ When no independent task is active, prefer recovery tasks in this order:
+ 
+-1. Finish the current public-source-inventory validator if it is still marked `[~]`.
+-2. If public-source-inventory blocks, select the appended one-file missing-information output validator recovery task.
++1. Select the appended one-file missing-information output validator recovery task.
++2. After that recovery passes, resume the public-source-inventory validator.
+ 3. Do not select the parked broad missing-information validator directly.
+ 
+ Each recovery proposal should keep to one file unless the task explicitly requires a fixture plus its focused test. For the appended missing-information recovery, tests and fixtures already exist; replace only the contract module.
+@@ -116,22 +116,11 @@
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T20:51:30.000000Z
++Last updated: 2026-05-01T21:02:00.000000Z
+ 
+-- Latest target: `Task checkbox-66: Add the public source inventory validator only after the syntax-first import test and one-unsafe-field fixture pass, covering allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and required provenance fields.`
++- Latest target: `Task checkbox-63: Add the missing-information output validator as a single no-dataclass Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection using only ppd/tests/fixtures/missing_information_output/four_requested_items.json.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Append a one-file recovery task for the blocked missing-information output validator.
+-- Counts: `{"blocked": 1, "complete": 64, "in_progress": 1, "needed": 1}`
++- Latest summary: Prioritize the one-file recovery task before retrying public source inventory validation.
++- Counts: `{"blocked": 1, "complete": 64, "in_progress": 0, "needed": 2}`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-01T20:57:49.554420Z
+-
+-- Latest target: `Task checkbox-66: Add the public source inventory validator only after the syntax-first import test and one-unsafe-field fixture pass, covering allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and required provenance fields.`
+-- Latest result: `validation`
+-- Latest summary: Add fixture-only public source inventory validation for committed PP&D inventory records.
+-- Counts: `{"blocked": 1, "complete": 64, "in_progress": 0, "needed": 2}`
+-
+-<!-- ppd-daemon-task-board:end -->
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -8,13 +8,17 @@
+ 
+ - Task checkbox-63: Add the missing-information output validator as a single no-dataclass Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection using only `ppd/tests/fixtures/missing_information_output/four_requested_items.json`.
+ 
+-Do not implement unrelated PP&D domain behavior while repairing this block.
++Selectable recovery task:
++
++- Recover the blocked missing-information output validator with one file only: replace `ppd/contracts/missing_information_output_validation.py` as a no-dataclass module that exposes `MODULE_STATUS = "syntax_first_import_ready"` and validates only the existing four-item fixture semantics.
++
++Do not implement unrelated PP&D domain behavior while repairing this block. Do not continue public source inventory validation until the one-file missing-information recovery passes.
+ 
+ ## Recovery Rules For Checkbox 63
+ 
+ Use the smallest possible file set:
+ 
+-- Prefer editing only `ppd/contracts/missing_information_output_validation.py`.
++- Edit only `ppd/contracts/missing_information_output_validation.py`.
+ - Do not rewrite the import test.
+ - Do not rewrite the four-item fixture.
+ - Do not add live crawl output, private DevHub artifacts, screenshots, traces, credentials, downloaded documents, or raw response bodies.
+@@ -54,4 +58,4 @@
+ 
+ ## Selection Rule
+ 
+-While checkbox-63 is blocked, the daemon should not advance checkbox-66 except for read-only diagnosis. Once checkbox-63 passes, resume the normal narrow task ordering and continue with checkbox-66.+While checkbox-63 is blocked, the daemon should select the appended one-file recovery task immediately after the blocked checkbox. Checkbox-66 should remain `[ ]` and should not become `[~]` until the missing-information recovery passes.

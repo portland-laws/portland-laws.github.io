@@ -1,0 +1,230 @@
+--- a/ppd/tests/fixtures/online_trade_permit_purchase/expected_output.json
++++ b/ppd/tests/fixtures/online_trade_permit_purchase/expected_output.json
+@@ -0,0 +1,227 @@
++{
++  "schema_version": 1,
++  "fixture_id": "online_trade_permit_purchase_expected_output_minimal",
++  "process_id": "online_trade_permit_purchase",
++  "permit_family": "trade_permit",
++  "fixture_scope": "minimal expected output for public-source requirement extraction",
++  "redaction_policy": {
++    "contains_private_values": false,
++    "private_value_token": "[REDACTED]",
++    "notes": "Fixture includes only public guidance summaries and redacted placeholders. It contains no credentials, payment details, account identifiers, permit numbers, addresses, phone numbers, email addresses, screenshots, traces, downloaded documents, or raw crawl bodies."
++  },
++  "source_capture": {
++    "captured_at": "2026-05-01T00:00:00Z",
++    "capture_mode": "fixture_only_public_guidance_summary",
++    "no_live_crawl": true,
++    "no_authenticated_session": true
++  },
++  "records": [
++    {
++      "category_id": "eligibility",
++      "category_label": "eligibility",
++      "requirement_type": "precondition",
++      "subject": "applicant",
++      "requirement": "Applicant must determine that the work is eligible for an online trade permit purchase before using the purchase workflow, including whether the work is an electrical, mechanical, or plumbing trade permit and whether plan review or another review path is required.",
++      "agent_handling": "Ask the user to identify the trade type and stop if the project appears to require plan review, another permit type, or PP&D staff review.",
++      "redacted_fields": [
++        "project_address",
++        "permit_number",
++        "applicant_account"
++      ],
++      "evidence": [
++        {
++          "source_id": "devhub_public_services",
++          "source_url": "https://devhub.portlandoregon.gov/",
++          "source_title": "Development Hub PDX public portal",
++          "source_type": "public_portal",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "support": "Public DevHub portal identifies online permitting services, including permit purchase workflows."
++        },
++        {
++          "source_id": "ppd_devhub_faq",
++          "source_url": "https://www.portland.gov/ppd/devhub-faq",
++          "source_title": "Development Hub PDX FAQ",
++          "source_type": "public_guidance",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "support": "Public FAQ describes DevHub service categories that include online trade permit purchase and related inspection and payment services."
++        }
++      ]
++    },
++    {
++      "category_id": "trade_scope",
++      "category_label": "trade scope",
++      "requirement_type": "required_fact",
++      "subject": "applicant",
++      "requirement": "Applicant must identify the trade scope needed for the online purchase, including trade discipline, work description, property reference, and whether the requested work is limited to the selected trade permit scope.",
++      "agent_handling": "Collect only missing scope facts and keep any address, parcel, or project-specific values redacted in fixtures and logs.",
++      "redacted_fields": [
++        "property_address",
++        "parcel_id",
++        "work_description_private_details"
++      ],
++      "evidence": [
++        {
++          "source_id": "ppd_permit_applications",
++          "source_url": "https://www.portland.gov/ppd/permits",
++          "source_title": "PP&D permits guidance",
++          "source_type": "public_guidance",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "support": "PP&D public permit guidance separates permit workflows by permit type and project scope."
++        }
++      ]
++    },
++    {
++      "category_id": "required_applicant_license_facts",
++      "category_label": "required applicant/license facts",
++      "requirement_type": "required_fact",
++      "subject": "applicant_or_contractor",
++      "requirement": "Applicant must provide required applicant and license facts for the online trade permit purchase, including applicant role, contractor/license information when applicable, and account identity facts needed by DevHub.",
++      "agent_handling": "Ask for missing role and license facts but never store credentials or unredacted license/account values in committed fixtures.",
++      "redacted_fields": [
++        "contractor_license_number",
++        "applicant_name",
++        "devhub_username",
++        "email_address"
++      ],
++      "evidence": [
++        {
++          "source_id": "ppd_devhub_account_guidance",
++          "source_url": "https://www.portland.gov/ppd/devhub",
++          "source_title": "Development Hub PDX account and application guidance",
++          "source_type": "public_guidance",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "support": "Public guidance identifies DevHub as Portland's online permitting system and describes account-based online permitting services."
++        }
++      ]
++    },
++    {
++      "category_id": "fee_payment_checkpoints",
++      "category_label": "fee/payment checkpoints",
++      "requirement_type": "action_gate",
++      "subject": "agent",
++      "requirement": "Fee review, permit purchase charges, payment entry, and payment submission are financial checkpoints and must not be automated without exact user confirmation for that payment action in the active session.",
++      "agent_handling": "Preview fee/payment status only; stop before entering payment details or clicking a pay/submit-payment control unless exact user confirmation is present.",
++      "redacted_fields": [
++        "card_number",
++        "bank_account",
++        "billing_address",
++        "fee_amount_private_case_context"
++      ],
++      "evidence": [
++        {
++          "source_id": "ppd_devhub_faq",
++          "source_url": "https://www.portland.gov/ppd/devhub-faq",
++          "source_title": "Development Hub PDX FAQ",
++          "source_type": "public_guidance",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "support": "Public FAQ lists fee payment as a DevHub service category."
++        },
++        {
++          "source_id": "ppd_plan_guardrails",
++          "source_url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md",
++          "source_title": "PP&D scraping, automation, and logic guardrails plan",
++          "source_type": "local_plan",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "support": "Plan requires financial actions, including fee payment, to stop for explicit user confirmation."
++        }
++      ]
++    },
++    {
++      "category_id": "inspection_scheduling",
++      "category_label": "inspection scheduling",
++      "requirement_type": "action_gate",
++      "subject": "agent",
++      "requirement": "Inspection scheduling for online trade permits is a consequential DevHub action and must be previewed and confirmed before any schedule, reschedule, or cancellation action is executed.",
++      "agent_handling": "Summarize available inspection scheduling requirement status and stop before selecting or confirming an inspection time unless exact user confirmation is present.",
++      "redacted_fields": [
++        "permit_number",
++        "inspection_date",
++        "site_contact",
++        "project_address"
++      ],
++      "evidence": [
++        {
++          "source_id": "ppd_devhub_faq",
++          "source_url": "https://www.portland.gov/ppd/devhub-faq",
++          "source_title": "Development Hub PDX FAQ",
++          "source_type": "public_guidance",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "support": "Public FAQ identifies inspection scheduling for online trade permits as a DevHub service category."
++        },
++        {
++          "source_id": "ppd_plan_guardrails",
++          "source_url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md",
++          "source_title": "PP&D scraping, automation, and logic guardrails plan",
++          "source_type": "local_plan",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "support": "Plan classifies inspection scheduling as a consequential action requiring explicit confirmation."
++        }
++      ]
++    },
++    {
++      "category_id": "cancellation_finalization",
++      "category_label": "cancellation/finalization",
++      "requirement_type": "action_gate",
++      "subject": "agent",
++      "requirement": "Permit cancellation, final purchase completion, certification, or other finalization controls must be treated as consequential actions that require exact user confirmation and an audit event before execution.",
++      "agent_handling": "Allow read-only status review and draft previews, but stop before cancellation, certification, final purchase, or other irreversible finalization controls.",
++      "redacted_fields": [
++        "permit_number",
++        "cancellation_reason_private_details",
++        "certifier_name",
++        "account_identifier"
++      ],
++      "evidence": [
++        {
++          "source_id": "ppd_plan_guardrails",
++          "source_url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md",
++          "source_title": "PP&D scraping, automation, and logic guardrails plan",
++          "source_type": "local_plan",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "support": "Plan requires stop points for certification, submission, cancellation, and finalization-type actions unless explicitly confirmed."
++        }
++      ]
++    },
++    {
++      "category_id": "explicit_confirmation_gates",
++      "category_label": "explicit-confirmation gates",
++      "requirement_type": "agent_operation_requirement",
++      "subject": "agent",
++      "requirement": "The agent must require exact session-specific user confirmation before payment, permit purchase submission, certification, cancellation, inspection scheduling, official upload, or any other consequential DevHub action.",
++      "agent_handling": "Classify actions before execution; proceed only for safe read-only or reversible draft actions, and otherwise require exact confirmation tied to the named action.",
++      "redacted_fields": [
++        "confirmation_user_identity",
++        "session_id",
++        "auth_state",
++        "browser_trace"
++      ],
++      "evidence": [
++        {
++          "source_id": "ppd_plan_guardrails",
++          "source_url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md",
++          "source_title": "PP&D scraping, automation, and logic guardrails plan",
++          "source_type": "local_plan",
++          "captured_at": "2026-05-01T00:00:00Z",
++          "support": "Plan requires explicit authorization, guarded action classification, and audit events before consequential or financial DevHub automation."
++        }
++      ]
++    }
++  ],
++  "expected_record_count": 7,
++  "validation_expectations": {
++    "records_must_equal": 7,
++    "required_category_labels": [
++      "eligibility",
++      "trade scope",
++      "required applicant/license facts",
++      "fee/payment checkpoints",
++      "inspection scheduling",
++      "cancellation/finalization",
++      "explicit-confirmation gates"
++    ],
++    "each_record_requires_evidence": true,
++    "fixture_must_be_redacted": true,
++    "raw_response_bodies_allowed": false,
++    "authenticated_artifacts_allowed": false
++  }
++}

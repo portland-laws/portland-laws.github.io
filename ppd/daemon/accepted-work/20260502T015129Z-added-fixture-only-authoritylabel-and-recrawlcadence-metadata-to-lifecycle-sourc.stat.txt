@@ -1,0 +1,1 @@
+ppd/tests/fixtures/source_inventory/permit_lifecycle_source_coverage_report.json

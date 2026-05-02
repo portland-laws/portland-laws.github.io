@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/test_permit_lifecycle_requirements_syntax.py"
+  ],
+  "created_at": "2026-05-02T02:23:52.269258Z",
+  "impact": "This advances checkbox-23 by adding a narrow test that fails malformed Python in ppd.extraction.permit_lifecycle_requirements immediately, while skipping cleanly until the extractor module exists and avoiding broader lifecycle validation behavior.",
+  "summary": "Add a syntax-first import sentinel for the lifecycle requirements extractor.",
+  "target_task": "Task checkbox-23: Add a one-file syntax-first import test for `ppd.extraction.permit_lifecycle_requirements` that imports only that module, skips if absent, and fails malformed Python before broad lifecycle requirement validation runs.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 26 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".....................................................................................................................................................................................................................ss.......s...................................................................................................................................... ---------------------------------------------------------------------- Ran 357 tests in 0.035s OK (skipped=3)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

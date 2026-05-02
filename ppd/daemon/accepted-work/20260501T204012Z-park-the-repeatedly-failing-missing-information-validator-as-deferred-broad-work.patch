@@ -1,0 +1,84 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -64,11 +64,11 @@
+ - [x] Add a missing-information detector fixture that compares a residential permit user-case fact inventory against the residential permit process requirements and returns only missing facts, files, acknowledgments, and decisions.
+ - [x] Add a one-file syntax-first repair test for `ppd.contracts.missing_information_output_validation` that imports only that module and fails on invalid Python before broad detector-output validation resumes.
+ - [x] Add a minimal missing-information output validation fixture with exactly four requested items: one fact, one file, one acknowledgment, and one decision, each source-backed and redacted.
+-- [!] Add the missing-information output validator in the smallest possible Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection.
+ - [x] Add a one-file syntax-first repair test for `ppd.contracts.source_freshness` that imports only that module and verifies Python annotations use valid assignment syntax before any broad source freshness work resumes.
+ - [x] Add a minimal source freshness fixture with four records only: one stale guidance page, one changed content hash, one removed page, and one high-priority recrawl candidate, with no live fetch data or raw response bodies.
+ - [x] Add the source freshness classifier in the smallest possible Python module after the import test and four-record fixture pass, covering stale guidance, changed hashes, removed pages, and recrawl priority.
+ - [~] Add the fixture-only source freshness change report renderer only after the classifier task passes, summarizing changed requirements, new or removed links, affected permit-process fixtures, and citation references.
++- [ ] Add the missing-information output validator as a single no-dataclass Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection using only `ppd/tests/fixtures/missing_information_output/four_requested_items.json`.
+ - [ ] Add a one-file syntax-first repair test for public source inventory validation that imports only `ppd.contracts.public_source_inventory` and rejects malformed Python before broad unittest discovery.
+ - [ ] Add a minimal invalid public source inventory fixture with exactly one unsafe field per entry so rejection reasons for raw bodies, credentials, traces, screenshots, downloaded documents, private DevHub paths, and missing provenance are deterministic.
+ - [ ] Add the public source inventory validator only after the syntax-first import test and one-unsafe-field fixture pass, covering allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and required provenance fields.
+@@ -83,7 +83,7 @@
+ 
+ ## Deferred Repair Notes
+ 
+-The missing-information detector output validator was blocked because repeated proposals introduced invalid Python such as `return text if len(text) None:`. Do not retry that broad validator directly. Resume through the appended syntax-first import test, then the four-item fixture, then the smallest validator implementation.
++The missing-information detector output validator was blocked by repeated invalid Python and then by a runtime import failure caused by `@dataclass` under the syntax-first `importlib.util.module_from_spec` probe, where the module is not inserted into `sys.modules` before execution. Do not retry that broad validator directly and do not use dataclasses, broad type-evaluated annotations, or multi-fixture rewrites for this recovery. Resume through the appended single-module task that uses plain dictionaries, tuples, lists, sets, and simple helper functions only.
+ 
+ The source freshness classifier checkbox was blocked because repeated proposals introduced invalid Python such as `if self.recrawl_cadence_days list[str]:`. The dependent change-report renderer is also blocked until source freshness has a syntactically valid import test, a minimal four-record fixture, and a small classifier module that pass validation. Do not retry the blocked source freshness or renderer tasks directly; use the appended syntax-first recovery tasks instead.
+ 
+@@ -93,41 +93,38 @@
+ 
+ Parked source-freshness and missing-information-output broad tasks should not stop unrelated PP&D progress. Broad failed work belongs in Deferred Broad Items, not in checkbox form, while any independent `[ ]` fixture-first or validation-first task remains selectable.
+ 
+-The current autonomous target is the missing-information recovery implementation task. Keep recovery proposals to one or two files unless the task explicitly names both a fixture and focused test.
++The current autonomous target may remain the source-freshness change report renderer while it is in progress. If that target fails or finishes, select the appended no-dataclass missing-information output validator before returning to public-source-inventory recovery.
+ 
+ When no independent task is active, prefer recovery tasks in this order:
+ 
+-1. Run the missing-information output syntax-first import task before any broad missing-information validator work.
+-2. Run the four-item missing-information output validation fixture before the validator.
+-3. Run the smallest missing-information output validator task.
+-4. Run the source-freshness syntax-first import task before any source-freshness fixture, classifier, or renderer work.
+-5. Run the four-record source-freshness fixture task before the classifier.
+-6. Run the smallest source-freshness classifier task.
+-7. Run the renderer only after the classifier has passed validation.
+-8. Return to public-source-inventory recovery tasks only after higher-priority recovery work is stable or no higher-priority recovery task is selectable.
++1. Finish the source-freshness renderer only because the syntax test, four-record fixture, and classifier have passed validation.
++2. Run the smallest no-dataclass missing-information output validator task against the existing syntax-first import guard and four-item fixture.
++3. Run the public-source-inventory syntax-first import test before any broad public-source-inventory fixture or validator work.
++4. Run the one-unsafe-field public-source-inventory fixture before the validator.
++5. Run the smallest public-source-inventory validator task.
+ 
+-Do not select parked source-freshness, renderer, or missing-information validator work directly until their narrow prerequisites have passed. Each recovery proposal should keep to one or two files unless the task explicitly requires a fixture plus its focused test.
++Do not select parked source-freshness, renderer, public-source-inventory, or missing-information validator work directly until their narrow prerequisites have passed. Each recovery proposal should keep to one or two files unless the task explicitly requires a fixture plus its focused test.
+ 
+ ## Supervisor Recovery Rules
+ 
+ - Treat repeated `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128` failures as a signal to split the task into syntax-first import tests, minimal fixtures, then implementation.
++- Treat `dataclasses.py` import-time failures under `importlib.util.module_from_spec` as a signal to remove `@dataclass` from the target module or to add the module to `sys.modules` in the test; prefer removing dataclasses for tiny validator modules.
+ - After three failed attempts against the same task, move the broad task into Deferred Broad Items, append narrower recovery tasks, and select a different independent task if one exists.
+ - Do not let parked broad task counts prevent daemon progress when a fixture-only or validation-first `[ ]` task remains selectable.
+ - Prefer deterministic fixtures and validation-only changes before adding live crawl, authenticated DevHub, browser, or network behavior.
+ - Do not create private DevHub session files, auth state, traces, raw crawl output, screenshots, or downloaded documents in repair cycles.
+ 
+-
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T20:21:30.000000Z
++Last updated: 2026-05-01T20:40:00.000000Z
+ 
+-- Latest target: `Task checkbox-62: Add the missing-information output validator in the smallest possible Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection.`
++- Latest target: `Task checkbox-59: Add the missing-information output validator in the smallest possible Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Park broad failed tasks as deferred non-checkbox notes so selectable recovery tasks can proceed.
++- Latest summary: Park the blocked broad missing-information validator and append a narrower no-dataclass recovery task.
+ - Counts: `{}`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
++
+ ## Generated Status
+ 
+ Last updated: 2026-05-01T20:34:57.093876Z
+@@ -137,4 +134,4 @@
+ - Latest summary: Add a small fixture-friendly PP&D source freshness classifier module with the required contract version constant.
+ - Counts: `{"blocked": 1, "complete": 61, "in_progress": 0, "needed": 4}`
+ 
+-<!-- ppd-daemon-task-board:end -->
++

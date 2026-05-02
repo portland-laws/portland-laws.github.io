@@ -1,0 +1,235 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -5,6 +5,8 @@
+ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked. Broad failed work is parked in Deferred Repair Notes while narrow recovery tasks remain selectable.
+ 
+ ## Checklist
++
++Completed tasks from the prior PP&D daemon board are preserved as complete through checkbox-126, including public source discovery fixtures, crawl policy guards, normalized document contracts, permit-process fixtures, requirement extraction fixtures, syntax-first sentinels, size guards, DevHub mocked workflow snapshots, guardrail compiler tests, privacy validation, supervisor diagnostics, and the accepted online trade permit syntax-first repair.
+ 
+ - [x] Create the isolated `ppd/` workspace marker and local ignore rules.
+ - [x] Add the PP&D daemon implementation with autonomous status, progress, accepted-work, and failed-patch evidence.
+@@ -16,158 +18,38 @@
+ - [x] Add process model data contracts for permit processes, workflow stages, required facts, required documents, and action gates.
+ - [x] Add DevHub workflow-state recorder interfaces with no live login or submission behavior.
+ - [x] Add guarded action classification for read-only, draft-edit, consequential, and financial DevHub actions.
+-- [x] Add requirement extraction fixtures for obligations, preconditions, deadlines, exceptions, and source evidence.
+-- [x] Add formal guardrail compiler skeleton for deterministic predicates, deontic rules, temporal rules, and support maps.
+-- [x] Add missing-information detector fixtures for user document-store comparison.
+-- [x] Add PP&D validation command that checks fixtures, schemas, daemon self-test, and private-data ignore coverage.
+-- [x] Add a bounded public crawl dry-run that fetches only a tiny seed set after robots/crawl-policy checks.
+-- [x] Add source diff report artifacts for changed PP&D guidance pages.
+-- [x] Add append-only accepted-work ledger generation for successful PP&D daemon rounds.
+-- [x] Add operations documentation for starting, stopping, and inspecting the PP&D daemon.
+-- [x] Add source-index record fixtures and validation for canonical URL, redirects, content hash, timestamps, and crawl status.
+-- [x] Add fixture-only frontier expansion output with discovered links, content-type classifications, and skipped-URL reason codes.
+-- [x] Add fixture-only HTML-to-normalized-document conversion for headings, ordered steps, tables, links, and modified-date evidence.
+-- [x] Add fixture-only PDF normalized-document conversion metadata for page text, form fields, checkboxes, signatures, and fee-table hints without downloading live PDFs.
+-- [x] Add deterministic source-diff comparator tests that classify added, removed, and changed public guidance requirements from fixtures.
+-- [x] Add a first permit-process fixture for the Single PDF Process with stages, required documents, file rules, and citation-backed evidence.
+-- [x] Add requirement extraction validation for Single PDF Process obligations, preconditions, deadlines, exceptions, confidence, and formalization status.
+-- [x] Add guardrail compiler fixture tests for document completeness, PDF file rules, missing user facts, and explicit-confirmation gates.
+-- [x] Add mocked DevHub workflow snapshot fixtures with redacted field values, semantic selectors, validation messages, upload controls, and navigation edges.
+-- [x] Add DevHub fixture privacy validation that rejects credentials, auth state, traces, screenshots with private values, and unredacted PII.
+-- [x] Add a fixture-backed public crawl dry-run report command that uses injected responses by default and writes no raw crawl output.
+-- [x] Add a live-public-crawl preflight task that only reports eligible tiny seed URLs after allowlist, robots, timeout, and no-persist checks.
+-- [x] Add daemon-side proposal validation that runs `py_compile` on every proposed Python replacement before broader test discovery, with a fixture proving syntax errors are rejected without retrying the same task blindly.
+-- [x] Add a narrow supervisor diagnostic fixture that classifies repeated Python `SyntaxError` failures as a syntactic-validity repair hint and recommends smaller file sets.
+-- [x] Add a fixture-only crawl session manifest schema that records planned public fetch URLs, policy decisions, and no raw response bodies.
+-- [x] Add validation for crawl session manifests that rejects private DevHub session paths, raw crawl output paths, response bodies, credentials, traces, screenshots, and downloaded documents.
+-- [x] Add fixture-only public document provenance validation that ties normalized HTML and PDF records back to canonical URL, retrieval timestamp, checksum, and source-index entry.
+-- [x] Add a second permit-process fixture for a PP&D trade permit with plan review, including required facts, required documents, file rules, stages, and citation-backed action gates.
+-- [x] Add requirement extraction validation for the trade-permit-with-plan-review fixture, covering eligibility preconditions, upload requirements, fee/payment checkpoints, correction paths, and explicit-confirmation gates.
+-- [x] Add guardrail compiler fixture tests for trade-permit-with-plan-review missing facts, required documents, payment stop points, and correction-upload confirmation gates.
+-- [x] Add mocked DevHub recorder transition fixtures for save-for-later, back/continue navigation, upload validation messages, and draft-resume states using only redacted fixture data.
+-- [x] Add DevHub action-classifier tests for inspection scheduling, correction upload, cancellation, certification, and payment actions, ensuring consequential and financial actions require exact explicit user confirmation.
+-- [x] Add a PP&D archive adapter contract that treats `ipfs_datasets_py/ipfs_datasets_py/processors` as the website archival backend and records processor name, version, content hash, source URL, and PP&D policy decision.
+-- [x] Add fixture tests for the PP&D archive adapter proving it refuses non-allowlisted URLs, private DevHub paths, raw response-body persistence, credentials, traces, screenshots, and downloaded private documents before invoking processor archival code.
+-- [x] Add a crawl-to-processor handoff manifest fixture that maps public PP&D seed URLs to `ipfs_datasets_py` web archive / legal scraper processor jobs without forking processor implementation into `ppd/`.
+-- [x] Add Playwright fixture contracts for DevHub form states that include accessible-name selectors, label text, role, nearby heading, URL state, field requirement status, and redacted values.
+-- [x] Add a Playwright form-drafting scaffold that can fill reversible draft fields only in mocked DevHub fixtures and produces an action preview instead of touching live DevHub.
+-- [x] Add Playwright guardrail tests proving upload, submit, certify, pay, cancel, schedule inspection, MFA, CAPTCHA, account creation, and password recovery actions are refused unless exact user confirmation is present.
+-- [x] Add a Playwright audit-event fixture that records selector basis, source requirement, user-confirmation state, action classification, and before/after redacted field state for draft-only form edits.
+-- [x] Add a fixture-only public source inventory for PP&D permit application, forms, handout, fee, and DevHub guide page categories with canonical URLs, authority labels, and recrawl cadence hints.
+-- [x] Add a fixture-only normalized document link graph that connects public PP&D guidance pages to linked forms, PDFs, DevHub guides, and Portland Maps references with skipped-link reason codes.
+-- [x] Add deterministic validation for the normalized document link graph covering canonical URL matching, content-type classification, source-index references, and no private or live crawl artifacts.
+-- [x] Add a third permit-process fixture for a residential building permit or new single-family residence workflow with stages, required facts, required documents, file rules, fee/payment gates, and citation-backed evidence.
+-- [x] Add requirement extraction validation for the residential building permit fixture covering eligibility, submittal package requirements, plan-review stages, corrections, inspections, expiration/reactivation, and explicit-confirmation gates.
+-- [x] Add guardrail compiler fixture tests for the residential building permit workflow covering missing facts, required document groups, Single PDF Process compatibility, inspection-scheduling stop points, and payment stop points.
+-- [x] Add a DevHub mocked workflow snapshot fixture for correction upload review that records upload controls, accepted file hints, validation messages, draft state, and exact confirmation gates using only redacted values.
+-- [x] Add DevHub guardrail tests proving correction-upload review can produce a preview but cannot perform official upload or certification without exact session-specific user confirmation.
+-- [x] Add a missing-information detector fixture that compares a residential permit user-case fact inventory against the residential permit process requirements and returns only missing facts, files, acknowledgments, and decisions.
+-- [x] Add a one-file syntax-first repair test for `ppd.contracts.missing_information_output_validation` that imports only that module and fails on invalid Python before broad detector-output validation resumes.
+-- [x] Add a minimal missing-information output validation fixture with exactly four requested items: one fact, one file, one acknowledgment, and one decision, each source-backed and redacted.
+-- [x] Add a one-file syntax-first repair test for `ppd.contracts.source_freshness` that imports only that module and verifies Python annotations use valid assignment syntax before any broad source freshness work resumes.
+-- [x] Add a minimal source freshness fixture with four records only: one stale guidance page, one changed content hash, one removed page, and one high-priority recrawl candidate, with no live fetch data or raw response bodies.
+-- [x] Add the source freshness classifier in the smallest possible Python module after the import test and four-record fixture pass, covering stale guidance, changed hashes, removed pages, and recrawl priority.
+-- [x] Add the fixture-only source freshness change report renderer only after the classifier task passes, summarizing changed requirements, new or removed links, affected permit-process fixtures, and citation references.
+-- [x] Add the missing-information output validator as a single no-dataclass Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection using only `ppd/tests/fixtures/missing_information_output/four_requested_items.json`.
+-- [x] Recover the blocked missing-information output validator with one file only: replace `ppd/contracts/missing_information_output_validation.py` as a no-dataclass module that exposes `MODULE_STATUS = 'syntax_first_import_ready'` and validates only `ppd/tests/fixtures/missing_information_output/four_requested_items.json` semantics already covered by existing tests.
+-- [x] Add a one-file syntax-first repair test for public source inventory validation that imports only `ppd.contracts.public_source_inventory` and rejects malformed Python before broad unittest discovery.
+-- [x] Add a minimal invalid public source inventory fixture with exactly one unsafe field per entry so rejection reasons for raw bodies, credentials, traces, screenshots, downloaded documents, private DevHub paths, and missing provenance are deterministic.
+-- [x] Add the public source inventory validator only after the syntax-first import test and one-unsafe-field fixture pass, covering allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and required provenance fields.
+-- [x] Restore the public source inventory syntax sentinel only: replace `ppd/contracts/public_source_inventory.py` as needed to preserve `MODULE_PURPOSE` and existing import-guard expectations before any validator behavior changes.
+-- [x] Add a fixture-name compatibility repair for public source inventory tests only if `ppd/tests/fixtures/public_source_inventory/invalid_one_unsafe_field_inventory.json` is still missing while the accepted one-unsafe-field fixture exists under another name.
+-- [x] Retry the public source inventory validator as a sentinel-preserving one-file implementation only: keep `validator_status()` as the syntax-first probe, preserve `MODULE_PURPOSE`, avoid `dataclasses`, and add validator behavior only through separate plain functions/constants/dicts validated against the one-unsafe-field fixture.
+-- [x] Add a supervisor reconciliation fixture and daemon self-test check proving that a blocked task superseded by a later accepted narrower recovery is parked outside selectable checkbox form, while the daemon still selects the next independent `[ ]` task instead of reporting `no_eligible_tasks`.
+-- [x] Add a fixture-only public source inventory coverage report that maps existing inventory categories to the original PP&D source landscape and flags missing categories without crawling live sites.
+-- [x] Add a validation-only test for the public source inventory coverage report proving it fails closed for missing authority labels, missing recrawl cadence, private DevHub paths, raw response bodies, credentials, traces, screenshots, and downloaded documents.
+-- [x] Add a fixture-only permit-process skeleton for a solar permit workflow with required facts, required documents, file rules, fee/payment gates, and citation-backed evidence from existing public fixtures only.
+-- [x] Add guardrail compiler fixture tests for the solar permit workflow covering missing facts, required document groups, payment stop points, correction-upload stop points, and inspection-scheduling stop points.
+-- [x] Add a one-file syntax-first import test for `ppd.extraction.solar_permit_requirements` that imports only that module and fails malformed Python before broad solar requirement validation resumes.
+-- [x] Add a minimal solar permit requirement extraction expected-output fixture with exactly seven category records: eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections, and explicit-confirmation gates, all source-backed and redacted.
+-- [x] Add a focused validation test for solar permit requirement extraction that checks only the seven fixture categories, source evidence IDs, confidence bounds, and explicit stop-gate classifications.
+-- [x] Add a one-file replacement-size guard test for `ppd.extraction.solar_permit_requirements` proposals that rejects broad generated modules and requires the extractor implementation to stay under 180 physical lines.
+-- [x] Add a daemon diagnostic fixture that classifies repeated malformed comparison syntax in Python proposals, including `confidence 1`, `confidence 1.0`, and `return 0.0 list[str]`, as a syntax-first retry stop condition for the same target task.
+-- [x] Add a mocked DevHub workflow snapshot fixture for permit fee review and payment-readiness that records visible balances, payment instructions, safe read-only status, and financial-action stop points using only redacted values.
+-- [x] Add DevHub guardrail tests proving fee review can summarize payment readiness from mocked fixtures but cannot enter payment details or execute payment without exact session-specific user confirmation.
+-- [x] Add a validation-only source coverage gap report that compares permit-process fixtures against public source inventory categories and reports which PP&D permit families still lack fixture-backed process models.
+-- [x] Add a supervisor self-test fixture proving a stale blocked solar extractor retry is parked after its size guard and malformed-comparison diagnostic have both passed, so task selection can continue with the next independent `[ ]` item.
+-- [x] Add a daemon prompt preflight check that refuses to ask for the solar extractor implementation unless the prompt explicitly names the one-file, no-dataclass, syntax-sentinel-preserving, seven-record expected-output constraints.
+-- [x] Add a validation-only regression fixture that reports `no_eligible_tasks` as a supervisor programming error when all remaining work is a parked stale retry and no new fixture-first task has been appended.
+-- [x] Add a fixture-only permit-process skeleton for a demolition permit workflow using existing public fixture/source-inventory evidence only, with stages, required facts, required documents, file rules, fee/payment gates, inspection or finalization gates, and citation-backed action gates.
+-- [x] Add a minimal demolition permit requirement extraction expected-output fixture with exactly seven category records: eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections/finalization, and explicit-confirmation gates, all source-backed and redacted.
+-- [x] Add a one-file syntax-first import test for `ppd.extraction.demolition_permit_requirements` that imports only that module and fails malformed Python before broad demolition requirement validation runs.
+-- [x] Add a focused validation test for demolition permit requirement extraction that checks only the seven fixture categories, source evidence IDs, confidence bounds, deduplication, and explicit stop-gate classifications.
+-- [x] Add a one-file replacement-size guard test for `ppd.extraction.demolition_permit_requirements` proposals that rejects broad generated modules and requires the extractor implementation to stay under 180 physical lines with no dataclasses.
+-- [x] Add guardrail compiler fixture tests for the demolition permit workflow covering missing facts, required document groups, payment stop points, correction-upload stop points, and any inspection/finalization stop points, using only fixture data.
+-- [x] Add a mocked DevHub workflow snapshot fixture for demolition application draft review that records semantic selectors, required fields, upload controls, validation messages, save-for-later state, and exact confirmation gates using only redacted values.
+-- [x] Add DevHub guardrail tests proving demolition application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.
+-- [x] Add a fixture-only permit-process skeleton for a sign permit workflow using existing public fixture/source-inventory evidence only, with stages, required facts, required documents, file rules, fee/payment gates, inspection/finalization gates, and citation-backed action gates.
+-- [x] Add a minimal sign permit requirement extraction expected-output fixture with exactly seven category records: eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections/finalization, and explicit-confirmation gates, all source-backed and redacted.
+-- [x] Add a one-file syntax-first import test for `ppd.extraction.sign_permit_requirements` that imports only that module and fails malformed Python before broad sign requirement validation runs.
+-- [x] Add a focused validation test for sign permit requirement extraction that checks only the seven fixture categories, source evidence IDs, confidence bounds, deduplication, and explicit stop-gate classifications.
+-- [x] Add a one-file replacement-size guard test for `ppd.extraction.sign_permit_requirements` proposals that rejects broad generated modules and requires the extractor implementation to stay under 180 physical lines with no dataclasses.
+-- [x] Add guardrail compiler fixture tests for the sign permit workflow covering missing facts, required document groups, payment stop points, correction-upload stop points, and any inspection/finalization stop points, using only fixture data.
+-- [x] Add a mocked DevHub workflow snapshot fixture for sign application draft review that records semantic selectors, required fields, upload controls, validation messages, save-for-later state, and exact confirmation gates using only redacted values.
+-- [x] Add DevHub guardrail tests proving sign application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.
+-- [x] Add a fixture-only permit-process skeleton for an Urban Forestry permit workflow using existing public fixture/source-inventory evidence only, with stages, required facts, required documents, file rules, fee/payment gates, inspection/finalization gates, and citation-backed action gates.
+-- [x] Add a minimal Urban Forestry permit requirement extraction expected-output fixture with exactly seven category records: eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections/finalization, and explicit-confirmation gates, all source-backed and redacted.
+-- [x] Add a one-file syntax-first import test for `ppd.extraction.urban_forestry_permit_requirements` that imports only that module and fails malformed Python before broad Urban Forestry requirement validation runs.
+-- [x] Add a focused validation test for Urban Forestry permit requirement extraction that checks only the seven fixture categories, source evidence IDs, confidence bounds, deduplication, and explicit stop-gate classifications.
+-- [x] Add a one-file replacement-size guard test for `ppd.extraction.urban_forestry_permit_requirements` proposals that rejects broad generated modules and requires the extractor implementation to stay under 180 physical lines with no dataclasses.
+-- [x] Add guardrail compiler fixture tests for the Urban Forestry permit workflow covering missing facts, required document groups, payment stop points, correction-upload stop points, and any inspection/finalization stop points, using only fixture data.
+-- [x] Add a mocked DevHub workflow snapshot fixture for Urban Forestry application draft review that records semantic selectors, required fields, upload controls, validation messages, save-for-later state, and exact confirmation gates using only redacted values.
+-- [x] Add DevHub guardrail tests proving Urban Forestry application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.
+-- [x] Add a fixture-only permit-process skeleton for an FCC wireless application workflow using existing public fixture/source-inventory evidence only, with stages, required facts, required documents, file rules, fee/payment gates, inspection/finalization gates, and citation-backed action gates.
+-- [x] Add a minimal FCC wireless application requirement extraction expected-output fixture with exactly seven category records: eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections/finalization, and explicit-confirmation gates, all source-backed and redacted.
+-- [x] Add a one-file syntax-first import test for `ppd.extraction.fcc_wireless_permit_requirements` that imports only that module and fails malformed Python before broad FCC wireless requirement validation runs.
+-- [x] Add a focused validation test for FCC wireless application requirement extraction that checks only the seven fixture categories, source evidence IDs, confidence bounds, deduplication, and explicit stop-gate classifications.
+-- [x] Add a one-file replacement-size guard test for `ppd.extraction.fcc_wireless_permit_requirements` proposals that rejects broad generated modules and requires the extractor implementation to stay under 180 physical lines with no dataclasses.
+-- [x] Add guardrail compiler fixture tests for the FCC wireless application workflow covering missing facts, required document groups, payment stop points, correction-upload stop points, and any inspection/finalization stop points, using only fixture data.
+-- [x] Add a mocked DevHub workflow snapshot fixture for FCC wireless application draft review that records semantic selectors, required fields, upload controls, validation messages, save-for-later state, and exact confirmation gates using only redacted values.
+-- [x] Add DevHub guardrail tests proving FCC wireless application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.
+-- [x] Add a fixture-only permit-process skeleton for an online trade permit purchase workflow using existing public fixture/source-inventory evidence only, with eligibility facts, trade scope, required license or contractor facts, fee/payment gates, inspection-scheduling stop points, and citation-backed action gates.
+-- [x] Add a minimal online trade permit purchase requirement extraction expected-output fixture with exactly seven category records: eligibility, trade scope, required applicant/license facts, fee/payment checkpoints, inspection scheduling, cancellation/finalization, and explicit-confirmation gates, all source-backed and redacted.
+-- [x] Add a focused validation test for online trade permit purchase requirement extraction that checks only the seven fixture categories, source evidence IDs, confidence bounds, deduplication, and explicit stop-gate classifications.
+-- [x] Add a one-file replacement-size guard test for `ppd.extraction.online_trade_permit_requirements` proposals that rejects broad generated modules and requires the extractor implementation to stay under 180 physical lines with no dataclasses.
+-- [x] Add guardrail compiler fixture tests for the online trade permit purchase workflow covering missing facts, required license or contractor facts, payment stop points, inspection-scheduling stop points, cancellation/finalization stop points, and citation-backed action gates using only fixture data.
+-- [x] Add a mocked DevHub workflow snapshot fixture for online trade permit purchase review that records semantic selectors, required fields, fee-review state, validation messages, save-for-later state, and exact confirmation gates using only redacted values.
+-- [x] Add DevHub guardrail tests proving online trade permit purchase review can produce a preview but cannot perform official purchase, certification, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.
+-- [x] Repair the online trade permit syntax-first import test as one test file only: import only `ppd.extraction.online_trade_permit_requirements`, skip if the module is absent, and fail malformed Python before broad online trade permit requirement validation runs.
++- [x] Preserve all accepted PP&D daemon work through checkbox-126 from the prior board, including the accepted online trade permit syntax-first import sentinel repair.
++- [ ] Add a fixture-only public source inventory coverage report for PP&D permit extension, permit reactivation, cancellation, refund, and inspection-result guidance categories, using existing public fixture/source-inventory evidence only and no live crawling.
++- [ ] Add a validation-only test for the extension/cancellation/refund/inspection-result source coverage report proving it fails closed for missing authority labels, missing recrawl cadence, private DevHub paths, raw response bodies, credentials, traces, screenshots, downloaded documents, and uncited category claims.
++- [ ] Add a fixture-only cross-cutting permit lifecycle process skeleton for extension, reactivation, cancellation, refund, inspection scheduling, and inspection-result follow-up gates, with required facts, required documents, user decisions, fee/payment gates, and citation-backed action gates from existing fixtures only.
++- [ ] Add a minimal lifecycle requirement extraction expected-output fixture with exactly eight category records: extension eligibility, reactivation eligibility, cancellation eligibility, refund eligibility, inspection scheduling, inspection-result follow-up, fee/payment checkpoints, and explicit-confirmation gates, all source-backed and redacted.
++- [ ] Add a one-file syntax-first import test for `ppd.extraction.permit_lifecycle_requirements` that imports only that module, skips if absent, and fails malformed Python before broad lifecycle requirement validation runs.
++- [ ] Add a focused validation test for permit lifecycle requirement extraction that checks only the eight fixture categories, source evidence IDs, confidence bounds, deduplication, and explicit stop-gate classifications.
++- [ ] Add a one-file replacement-size guard test for `ppd.extraction.permit_lifecycle_requirements` proposals that rejects broad generated modules and requires the extractor implementation to stay under 180 physical lines with no dataclasses.
++- [ ] Add DevHub guardrail tests proving mocked lifecycle actions can produce read-only or draft previews but cannot perform official extension, reactivation, cancellation, refund, payment, certification, upload, or inspection scheduling without exact session-specific user confirmation.
+ 
+ ## Deferred Broad Items
+ 
+ These items failed as broad tasks and are intentionally not selectable while narrower recovery work remains available. Do not re-add them as selectable checklist tasks until their syntax-first and fixture-first prerequisites pass.
+ 
+-- Parked checkbox-121: Add a one-file syntax-first import test for `ppd.extraction.online_trade_permit_requirements` that imports only that module and fails malformed Python before broad online trade permit requirement validation runs. This stale blocked checkbox is superseded by the new one-file repair task because later online trade permit focused validation, size guard, guardrail, and mocked DevHub tasks have already passed.
++- Parked checkbox-121: Add a one-file syntax-first import test for `ppd.extraction.online_trade_permit_requirements` that imports only that module and fails malformed Python before broad online trade permit requirement validation runs. This stale blocked checkbox is superseded by the accepted one-file repair task because later online trade permit focused validation, size guard, guardrail, and mocked DevHub tasks have already passed.
+ - Parked source freshness broad task: Add a source freshness fixture that classifies stale PP&D guidance, changed content hashes, removed pages, and recrawl priority without performing a live recrawl.
+ - Parked source freshness renderer task: Add a fixture-only change report renderer for public PP&D source freshness results that summarizes changed requirements, new or removed links, and affected permit-process fixtures with citation references.
+ - Parked missing-information validator broad task: Add validation for missing-information detector output proving every requested user item is source-backed, deduplicated, action-classified, and free of private fixture values. This was recovered by the accepted one-file validator replacement and should not be selected again unless a new failing validator points to a concrete regression.
+ - Parked public-source-inventory validator broad task: Add validation for public source inventory safety. This was recovered by the accepted sentinel-preserving one-file implementation. Do not select the older broad retry tasks again unless a new failing validator points to a concrete regression.
+-- Parked solar requirement extraction broad task: Add requirement extraction validation for the solar permit fixture covering eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections, and explicit-confirmation gates. This repeatedly failed with invalid Python such as `confidence 1`; recover through the syntax-first import test, seven-record fixture, no-dataclass extractor, and focused validation test before retrying any broader behavior.
+-- Parked checkbox-78: Add the solar permit requirement extractor as a no-dataclass one-file implementation only after the syntax-first import test and seven-record fixture pass; expose plain functions/constants and avoid broad contract rewrites. This task has failed repeatedly with `py_compile` SyntaxError variants including `confidence 1.0` and `return 0.0 list[str]`. Do not keep it in selectable checkbox form; resume only through the new size guard, malformed-comparison diagnostic, and narrowed retry task.
+-- Parked checkbox-81: Retry the solar permit requirement extractor as a no-dataclass one-file implementation only after the replacement-size guard and malformed-comparison diagnostic pass; use plain constants and functions, preserve the syntax sentinel, and compare against the existing seven-record expected-output fixture only. This retry became stale because later independent fixture-backed work passed while the board still reported one blocked task and no needed tasks. Do not select it again until daemon prompt preflight proves the exact one-file constraints are present in the worker prompt.
+-- Superseded checkbox-70: Retry the public source inventory validator as a one-file implementation only after the `MODULE_PURPOSE` sentinel and expected unsafe-field fixture path pass validation. This was superseded by the accepted sentinel-preserving validator retry.
+-- Superseded checkbox-71: Retry the public source inventory validator as a no-dataclass one-file implementation only. This was superseded by the accepted sentinel-preserving validator retry that preserves `validator_status()` exactly.
+-- Superseded checkbox-75: The broad solar requirement extraction validation task is parked because three consecutive attempts produced Python `SyntaxError` failures. Do not select it directly while the narrower solar recovery tasks remain available.
++- Parked solar requirement extraction broad task and stale retries: Do not select directly while syntax-first, size-guard, malformed-comparison diagnostic, and prompt-preflight guardrails remain the recovery path.
+ 
+ ## Deferred Repair Notes
+ 
+-The online trade permit syntax-first task was stale-blocked after later online trade permit requirement validation, size guard, guardrail compiler, mocked DevHub snapshot, and DevHub guardrail tasks passed. The repair path is now a one-test-file task only: import `ppd.extraction.online_trade_permit_requirements`, skip when the future module is absent, and fail malformed Python before broad online trade permit validation can run.
++The online trade permit syntax-first task was stale-blocked after later online trade permit requirement validation, size guard, guardrail compiler, mocked DevHub snapshot, and DevHub guardrail tasks passed. The one-test-file repair has now passed and should stay complete.
+ 
+-The missing-information output validator was blocked by repeated invalid Python, mismatched action-classification expectations, and over-broad private-value rejection. The one-file recovery has passed. Do not retry the broad missing-information validator unless a new failing validator points to a concrete regression.
+-
+-For the existing four-item fixture, accept the fixture's action classifications as canonical: `read_only` for fact requests, `draft_edit` for file requests, and `consequential_confirmation_required` for acknowledgment or decision gates. Treat `[REDACTED]` as the allowed committed redaction marker, including under `redactionPolicy.redactionToken`; reject private concrete values, credentials, tokens, auth state, traces, screenshots, raw response bodies, and downloaded private documents.
+-
+-The source freshness classifier checkbox was blocked because repeated proposals introduced invalid Python such as `if self.recrawl_cadence_days list[str]:`. That recovery has passed. Do not reopen those broad source-freshness tasks unless a new failing validator points to a concrete regression.
+-
+-The public-source-inventory validation sequence produced useful narrow repairs after repeated failures: sentinel restoration, fixture-name compatibility, and a final sentinel-preserving no-dataclass validator. Older blocked retries are now parked because selecting them again would regress into stale failure modes. The accepted validator recovery keeps `validator_status()` as an import sentinel and exposes behavior through separate plain functions/constants/dicts.
+-
+-The solar permit requirement extraction task is split further because extractor attempts failed before import under `py_compile`. The daemon must keep the size guard and malformed-comparison diagnostic in force before any extractor implementation retry. The recovery implementation must not use dataclasses, generated comparison operators, broad schemas, live crawl data, DevHub session files, private artifacts, or more than one implementation file.
++The missing-information output validator, source freshness classifier, public source inventory validator, and solar requirement extraction failures are parked unless a new failing validator points to a concrete regression. Recovery work must remain syntax-first, fixture-first, no-dataclass, and narrow.
+ 
+ ## Task Selection Notes
+ 
+ Parked broad tasks should not stop unrelated PP&D progress. Broad failed work belongs in Deferred Broad Items, not in selectable checkbox form, while any independent `[ ]` fixture-first or validation-first task remains selectable.
+ 
+-The next tranche stays fixture-only and validation-first: public process fixtures before extractors, syntax-first import tests before Python implementation, size guards before generated modules, mocked DevHub snapshots before browser behavior, and guardrail tests before any irreversible action support. No task in this tranche authorizes live crawling, login, payment entry, submission, upload, certification, cancellation, or inspection scheduling.
++The next tranche stays fixture-only and validation-first: public process fixtures before extractors, syntax-first import tests before Python implementation, size guards before generated modules, mocked DevHub snapshots before browser behavior, and guardrail tests before any irreversible action support. No task in this tranche authorizes live crawling, login, payment entry, submission, upload, certification, cancellation, official extension, official refund, or inspection scheduling.
+ 
+ When no independent task is active, prefer recovery tasks in this order:
+ 
+@@ -178,11 +60,7 @@
+ 5. If validation reports that a sentinel helper returned extra keys or readiness flags, retry only with a sentinel-preserving implementation and expose behavior through separate functions.
+ 6. After a later narrower recovery passes, park earlier blocked retries as superseded so they do not count as active blockers.
+ 7. Do not select parked broad validation tasks directly.
+-8. For solar requirement extraction, do not select parked checkbox-78 or parked checkbox-81 directly; first prove prompt preflight includes the exact one-file, no-dataclass, syntax-sentinel, seven-record fixture constraints.
+-9. For new permit-family work, add the process skeleton and expected-output fixture before adding extractor tests or implementation tasks.
+-10. For online trade permit recovery, select only the new one-test-file syntax-first repair task before any extractor implementation retry.
+-
+-Each recovery proposal should keep to one file unless the task explicitly requires a fixture plus its focused test. For public source inventory recovery, keep syntax sentinel repair separate from behavior repair, and keep the sentinel helper stable even after validator functions are added.
++8. For new permit-family or lifecycle work, add the process skeleton and expected-output fixture before adding extractor tests or implementation tasks.
+ 
+ ## Supervisor Recovery Rules
+ 
+@@ -200,33 +78,11 @@
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T01:03:00Z
++Last updated: 2026-05-02T01:36:30Z
+ 
+-- Latest target: `Supervisor repair: append next fixture-first online trade permit PP&D permit-family tranche after no eligible tasks remained.`
++- Latest target: `Supervisor repair: append next fixture-first permit lifecycle tranche after no eligible tasks remained.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Added eight narrow online trade permit purchase fixture, validation, syntax-guard, guardrail, and mocked DevHub tasks so the daemon can continue without live or authenticated automation.
+-- Counts: `{blocked: 0, complete: 118, in_progress: 0, needed: 8}`
++- Latest summary: Added eight narrow fixture-first and validation-first permit lifecycle tasks so the daemon can continue without live crawling or authenticated automation.
++- Counts: `{"blocked": 0, "complete": 126, "in_progress": 0, "needed": 8}`
+ 
+ 
+-
+-## Generated Status
+-
+-Last updated: 2026-05-02T01:31:30Z
+-
+-- Latest target: `Supervisor repair: park stale blocked online trade syntax-first checkbox and append a one-file repair task.`
+-- Latest result: `supervisor_repair`
+-- Latest summary: Parked checkbox-121 outside selectable checkbox form and added a narrow one-test-file import repair task.
+-- Counts: `{"blocked": 0, "complete": 125, "in_progress": 0, "needed": 1}`
+-
+-
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-02T01:34:24.930268Z
+-
+-- Latest target: `Task checkbox-126: Repair the online trade permit syntax-first import test as one test file only: import only `ppd.extraction.online_trade_permit_requirements`, skip if the module is absent, and fail malformed Python before broad online trade permit requirement validation runs.`
+-- Latest result: `accepted`
+-- Latest summary: Add a one-file syntax-first import sentinel for online trade permit requirements.
+-- Counts: `{"blocked": 0, "complete": 126, "in_progress": 0, "needed": 0}`
+-
+-<!-- ppd-daemon-task-board:end -->

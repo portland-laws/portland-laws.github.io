@@ -1,0 +1,58 @@
+{
+  "fixtureKind": "ppd_archive_adapter_manifest",
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-01T18:55:00Z",
+  "records": [
+    {
+      "id": "ppd-archive-single-pdf-process",
+      "sourceUrl": "https://www.portland.gov/ppd/single-pdf-process",
+      "canonicalUrl": "https://www.portland.gov/ppd/single-pdf-process",
+      "contentHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "createdAt": "2026-05-01T18:55:00Z",
+      "archiveJobId": "fixture-web-archive-single-pdf-process",
+      "manifestOnly": true,
+      "processor": {
+        "name": "web_archiving.capture_public_url",
+        "version": "fixture-2026-05-01",
+        "family": "web_archiving",
+        "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
+      },
+      "policyDecision": {
+        "decision": "allow",
+        "reasons": [
+          "public_ppd_allowlisted",
+          "robots_allowed",
+          "no_persist_approved"
+        ],
+        "evaluatedAt": "2026-05-01T18:54:30Z",
+        "evaluator": "ppd.crawler.policy",
+        "notes": "Fixture-only public PP&D URL; no raw response body is persisted."
+      }
+    },
+    {
+      "id": "ppd-archive-trade-plan-review",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/trade-permits-plan-review",
+      "canonicalUrl": "https://www.portland.gov/ppd/permits/trade-permits-plan-review",
+      "contentHash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "createdAt": "2026-05-01T18:55:00Z",
+      "archiveJobId": "fixture-legal-scraper-trade-plan-review",
+      "manifestOnly": true,
+      "processor": {
+        "name": "legal_scrapers.parallel_web_archiver",
+        "version": "fixture-2026-05-01",
+        "family": "legal_scraper",
+        "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
+      },
+      "policyDecision": {
+        "decision": "allow",
+        "reasons": [
+          "public_ppd_allowlisted",
+          "robots_allowed",
+          "no_persist_approved"
+        ],
+        "evaluatedAt": "2026-05-01T18:54:45Z",
+        "evaluator": "ppd.crawler.policy"
+      }
+    }
+  ]
+}

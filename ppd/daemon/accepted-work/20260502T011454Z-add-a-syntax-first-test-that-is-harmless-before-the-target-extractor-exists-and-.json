@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/test_online_trade_permit_requirements_syntax_first.py"
+  ],
+  "created_at": "2026-05-02T01:14:54.414576Z",
+  "impact": "The daemon was blocked because it repeatedly generated an import test that failed on a missing future module instead of only catching malformed Python after that module appears. This replacement lets autonomous work proceed while still adding the intended early py_compile/import guard for future extractor proposals.",
+  "summary": "Add a syntax-first test that is harmless before the target extractor exists and strict once it is introduced.",
+  "target_task": "Supervisor repair: 1 task(s) are blocked: Task checkbox-121: Add a one-file syntax-first import test for `ppd.extraction.online_trade_permit_requirements` that imports only that module and fails malformed Python before broad online trade permit requirement validation runs.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 126 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "................................................................................................................................................................................................ss.................................................................................................................................................. ---------------------------------------------------------------------- Ran 340 tests in 0.034s OK (skipped=2)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

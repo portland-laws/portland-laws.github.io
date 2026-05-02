@@ -1,0 +1,158 @@
+{
+  "schema_version": 1,
+  "permit_type": "sign_permit",
+  "fixture_id": "sign-permit-requirement-extraction-v1",
+  "source_evidence": [
+    {
+      "id": "sign-src-application-type",
+      "source_url": "https://www.portland.gov/ppd/permits/sign-permits",
+      "title": "Sign permits guidance",
+      "anchor": "permit-type-selection"
+    },
+    {
+      "id": "sign-src-project-scope",
+      "source_url": "https://www.portland.gov/ppd/permits/sign-permits",
+      "title": "Sign permits guidance",
+      "anchor": "project-scope"
+    },
+    {
+      "id": "sign-src-site-plan",
+      "source_url": "https://www.portland.gov/ppd/permits/sign-permits",
+      "title": "Sign permit submittal checklist",
+      "anchor": "site-plan-and-drawings"
+    },
+    {
+      "id": "sign-src-structural",
+      "source_url": "https://www.portland.gov/ppd/permits/sign-permits",
+      "title": "Sign permit submittal checklist",
+      "anchor": "structural-details"
+    },
+    {
+      "id": "sign-src-property-owner",
+      "source_url": "https://www.portland.gov/ppd/permits/sign-permits",
+      "title": "Sign permit application instructions",
+      "anchor": "owner-authorization"
+    },
+    {
+      "id": "sign-src-fees",
+      "source_url": "https://www.portland.gov/ppd/permits/fees",
+      "title": "Permit fees",
+      "anchor": "fee-payment"
+    },
+    {
+      "id": "sign-src-devhub-gates",
+      "source_url": "https://www.portland.gov/ppd/devhub",
+      "title": "Development Hub PDX guidance",
+      "anchor": "submit-and-upload"
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "sign-req-001",
+      "category": "permit_type_selection",
+      "type": "precondition",
+      "subject": "applicant",
+      "action": "select",
+      "object": "sign permit request type",
+      "conditions": ["project includes exterior, permanent, temporary, or other regulated sign work"],
+      "evidence_ids": ["sign-src-application-type"],
+      "confidence": 0.91
+    },
+    {
+      "requirement_id": "sign-req-002",
+      "category": "project_scope_description",
+      "type": "obligation",
+      "subject": "applicant",
+      "action": "provide",
+      "object": "sign project scope and sign description",
+      "conditions": ["sign permit application is being prepared"],
+      "evidence_ids": ["sign-src-project-scope"],
+      "confidence": 0.89
+    },
+    {
+      "requirement_id": "sign-req-003",
+      "category": "site_plan_and_location",
+      "type": "obligation",
+      "subject": "applicant",
+      "action": "submit",
+      "object": "site plan showing sign location",
+      "conditions": ["sign permit requires plan review"],
+      "evidence_ids": ["sign-src-site-plan"],
+      "confidence": 0.88
+    },
+    {
+      "requirement_id": "sign-req-004",
+      "category": "sign_drawings_and_dimensions",
+      "type": "obligation",
+      "subject": "applicant",
+      "action": "submit",
+      "object": "sign drawings with dimensions and construction details",
+      "conditions": ["sign permit requires plan review"],
+      "evidence_ids": ["sign-src-site-plan", "sign-src-structural"],
+      "confidence": 0.9
+    },
+    {
+      "requirement_id": "sign-req-005",
+      "category": "structural_or_attachment_details",
+      "type": "obligation",
+      "subject": "applicant",
+      "action": "provide",
+      "object": "structural support or attachment details",
+      "conditions": ["sign is attached to a structure or requires structural review"],
+      "evidence_ids": ["sign-src-structural"],
+      "confidence": 0.84
+    },
+    {
+      "requirement_id": "sign-req-006",
+      "category": "property_owner_authorization",
+      "type": "precondition",
+      "subject": "applicant",
+      "action": "obtain",
+      "object": "property owner authorization",
+      "conditions": ["applicant is not the property owner"],
+      "evidence_ids": ["sign-src-property-owner"],
+      "confidence": 0.82
+    },
+    {
+      "requirement_id": "sign-req-007",
+      "category": "fee_and_submission_gates",
+      "type": "action_gate",
+      "subject": "agent",
+      "action": "stop_before",
+      "object": "official submission, certification, upload, or payment",
+      "conditions": ["user has not provided exact session-specific confirmation"],
+      "evidence_ids": ["sign-src-fees", "sign-src-devhub-gates"],
+      "confidence": 0.93
+    }
+  ],
+  "stop_gates": [
+    {
+      "gate_id": "sign-gate-upload-official-documents",
+      "action": "upload official sign permit documents",
+      "classification": "potentially_consequential",
+      "requires_exact_confirmation": true,
+      "evidence_ids": ["sign-src-devhub-gates"]
+    },
+    {
+      "gate_id": "sign-gate-certify-application",
+      "action": "certify sign permit application",
+      "classification": "potentially_consequential",
+      "requires_exact_confirmation": true,
+      "evidence_ids": ["sign-src-devhub-gates"]
+    },
+    {
+      "gate_id": "sign-gate-submit-request",
+      "action": "submit sign permit request",
+      "classification": "potentially_consequential",
+      "requires_exact_confirmation": true,
+      "evidence_ids": ["sign-src-devhub-gates"]
+    },
+    {
+      "gate_id": "sign-gate-pay-fees",
+      "action": "pay sign permit fees",
+      "classification": "financial",
+      "requires_exact_confirmation": true,
+      "evidence_ids": ["sign-src-fees"]
+    }
+  ]
+}

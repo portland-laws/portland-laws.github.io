@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/test_extension_lifecycle_exact_schema.py"
+  ],
+  "created_at": "2026-05-02T02:10:53.721385Z",
+  "impact": "Adds syntax-first exact-schema coverage for the accepted extension lifecycle skeleton and evidence map while respecting the evidence-map category-reference boundary and avoiding any implementation or automation code.",
+  "summary": "Replace the malformed checkbox-19 validator with one small syntax-valid unittest for the two extension lifecycle fixtures.",
+  "target_task": "Task checkbox-20: Recovery for checkbox-19: replace the malformed exact-schema validator attempt with one small Python unittest file only, loading exactly `ppd/tests/fixtures/lifecycle/extension_lifecycle_process_skeleton.json` and `ppd/tests/fixtures/lifecycle/extension_lifecycle_evidence_map.json`; before any full test run, the daemon must run py_compile on the changed file and reject syntax fragments such as bare identifiers after `assert`, malformed comparisons, generated pseudo-code, or missing assertion operators.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 29 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "..................................................................................................................................................................................................................ss............................................................................................................................................. ---------------------------------------------------------------------- Ran 353 tests in 0.034s OK (skipped=2)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

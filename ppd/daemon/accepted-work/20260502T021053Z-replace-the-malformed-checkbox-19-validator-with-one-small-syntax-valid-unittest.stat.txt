@@ -1,0 +1,1 @@
+ppd/tests/test_extension_lifecycle_exact_schema.py

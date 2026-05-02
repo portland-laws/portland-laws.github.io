@@ -1,0 +1,151 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,88 +1,87 @@
+ # PP&D Supervisor Repair Guide
+ 
+-## Purpose
++This guide is daemon programming for supervisor repair cycles. It applies when the PP&D daemon has repeated validation rollbacks caused by syntax or compile failures.
+ 
+-This guide gives the isolated PP&D daemon deterministic recovery instructions when a narrow task is blocked by repeated validation failures. It is supervisor guidance only; it must not introduce extractor, crawler, DevHub, payment, submission, authentication, or live automation behavior.
++## Syntax Failure Trigger
+ 
+-## Current Repair Focus
++Enter syntax recovery mode when two or more recent attempts for the same target task fail with any of these diagnostics:
+ 
+-Blocked task: checkbox-27, the fixture-only mutation validator for `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json`.
++- `SyntaxError`
++- `py_compile`
++- `TS1005`
++- `TS1109`
++- `TS1128`
+ 
+-Recent failures were Python syntax failures in the proposed one-file test, not fixture-contract failures. The next daemon attempt should therefore be a smaller syntax-first recovery attempt, not a broader contract rewrite.
++For the active checkbox-27 recovery, the observed invalid fragments include malformed Python such as `if confidence 1:`, `elif confidence 1:`, and `elif not 0 set[str]:`. Treat these as generated pseudo-code fragments, not as schema disagreements.
+ 
+-## Retry Rules For checkbox-27
++## Required Supervisor Action
+ 
+-1. Edit only `ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py` for the retry.
+-2. Do not edit `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json` unless a validation failure proves the committed fixture itself no longer satisfies the already accepted checkbox-26 validator.
+-3. Do not add or edit extractor implementation code.
+-4. Keep the file as a plain `unittest` module using only the Python standard library.
+-5. Load exactly `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json`.
+-6. Read only the top-level `categoryRecords` list.
+-7. First assert that the committed fixture is valid.
+-8. Then mutate one field at a time and assert validation fails for each of these cases:
+-   - missing `categoryId`
+-   - missing `sourceEvidenceIds`
+-   - missing local `evidence[].evidenceId`
+-   - out-of-range `confidence`
+-   - duplicate `(categoryId, action, object, sourceEvidenceIds)` tuple
+-   - malformed stop-gate classification
+-9. Treat an explicit stop gate as `stopGate: true` and `classification` ending with `_stop_gate`.
+-10. Do not require a separate `stopGateClassifications` field.
+-11. Do not glob alternate fixture names.
+-12. Do not add live crawl, DevHub, browser, auth, session, screenshot, trace, raw source, or downloaded document behavior.
++When syntax recovery mode is active:
+ 
+-## Syntactic Guardrails
++1. Do not ask the worker for a broader implementation rewrite.
++2. Do not ask the worker to edit extractor implementation code.
++3. Limit the next worker proposal to the smallest file set that can pass syntax preflight, normally one file.
++4. Require exact fixture paths and exact committed schema keys in the task text.
++5. Require a syntax-first self-check before broad validation.
++6. If another syntax rollback occurs, split the task again into a narrower fixture-only or validation-only diagnostic before retrying implementation.
+ 
+-Because recent failures included invalid Python such as `if confidence 1:` and malformed type expressions, the next patch must be intentionally conservative.
++## Worker Prompt Guardrails
+ 
+-Use simple, complete Python conditionals only:
++Append these guardrails to any worker prompt after repeated syntax failures:
+ 
+-- `if not isinstance(value, list):`
+-- `if confidence  1:`
+-- `if key in seen:`
+-- `if not isinstance(classification, str):`
+-- `if not classification.endswith("_stop_gate"):`
++- Return complete file replacements only.
++- Prefer one changed file for this cycle.
++- For Python, use only syntactically simple standard-library code.
++- Use `unittest.TestCase` assertion methods or explicit `raise AssertionError` statements.
++- Write complete comparisons such as `confidence  1`.
++- Do not emit fragments such as `if confidence 1:`, `elif not 0 set[str]:`, `assert NAME None`, or `return 0.0 list[str]`.
++- Do not mix TypeScript syntax into Python or Python control-flow syntax into TypeScript.
++- Load fixtures by exact path from `Path(__file__).parent / "fixtures" / ...`.
++- Mutate only in-memory copies of committed fixtures.
++- Do not alter accepted fixtures unless the selected task explicitly says to repair fixture content.
+ 
+-Avoid clever one-line comprehensions where mutation setup would be clearer as three statements. Avoid inline type syntax in conditional expressions. Avoid generated pseudo-code. Avoid broad helper frameworks.
++## Preflight Expectations
+ 
+-Before running the full PP&D validation suite, the daemon should require this command to pass for the proposed file:
++The daemon or supervisor should reject malformed proposals before a full test run when possible. A syntax-first preflight is sufficient if it checks changed Python files with `py_compile` or an equivalent parser step before running `unittest discover`.
+ 
+-`python3 -m py_compile ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py`
++For checkbox-27, the expected preflight order is:
+ 
+-If `py_compile` fails, classify the attempt as a syntax retry failure and do not run broader contract rewrites.
++1. `python3 -m py_compile ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py`
++2. `python3 ppd/daemon/ppd_daemon.py --self-test`
++3. `python3 -m unittest discover -s ppd/tests -p test_*.py`
+ 
+-## Suggested Minimal Test Shape
++If step 1 fails, do not continue broad validation and do not keep retrying the same broad prompt.
+ 
+-Use this structure for the retry:
++## Checkbox-27 Recovery Shape
+ 
+-- import `copy`, `json`, `unittest`, and `Path`
+-- define `FIXTURE_PATH`
+-- define `_load_fixture()`
+-- define `_records(document)`
+-- define `_validate_category_records(document)`
+-- define one `unittest.TestCase`
+-- define `_mutated_fixture(mutator)` inside the test case or as a small helper
+-- use one test proving the committed fixture is valid
+-- use one test per required mutation case
++The next successful checkbox-27 proposal should be one validation-only Python test file. It should not add extractor code.
+ 
+-The validator should raise `AssertionError` with clear messages. The mutation tests should use `with self.assertRaises(AssertionError):`.
++The validator should:
+ 
+-## Duplicate Tuple Rule
++- Load exactly `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json`.
++- Read the exact top-level `categoryRecords` list.
++- First assert the committed fixture is valid.
++- Use one mutation per test.
++- Cover missing `categoryId`.
++- Cover missing `sourceEvidenceIds`.
++- Cover missing local `evidence[].evidenceId`.
++- Cover out-of-range `confidence`.
++- Cover duplicate `(categoryId, action, object, sourceEvidenceIds)` tuples.
++- Cover malformed stop-gate classification.
+ 
+-The duplicate key must be exactly:
++The valid stop-gate shape is `stopGate: true` plus a string `classification` ending in `_stop_gate`. Do not require a separate `stopGateClassifications` field.
+ 
+-`(categoryId, action, object, tuple(sourceEvidenceIds))`
++## Retry And Task Selection
+ 
+-The validator should preserve `sourceEvidenceIds` order by using `tuple(sourceEvidenceIds)` and should not sort evidence ids.
++After three failed attempts against the same task, park the broad task in Deferred Broad Items and append a narrower recovery task. Keep completed tasks unchanged. Prefer independent fixture-first or validation-first tasks over another retry of a syntax-failing implementation.
+ 
+-## Local Evidence Rule
++For lifecycle work, the preferred sequence is:
+ 
+-For each record, every id in `sourceEvidenceIds` must exist in that same record's local `evidence` list as an `evidenceId`. Do not validate against a global evidence pool.
++1. Accepted fixture exists.
++2. Exact-schema validator passes.
++3. Mutation validator passes.
++4. Syntax-first import sentinel exists.
++5. Size guard exists.
++6. Only then add implementation code.
+ 
+-## Stop-Gate Rule
+-
+-For each record where `stopGate` is true, `classification` must be a string ending in `_stop_gate`. Records without `stopGate: true` do not need stop-gate classification validation.
+-
+-## Failure Handling
+-
+-If the next checkbox-27 retry fails because of assertion behavior, inspect the failing assertion and adjust only the mutation validator. If it fails with another Python `SyntaxError`, reduce the file further and keep only the committed-fixture-valid test plus one mutation test before expanding again.
++No repair cycle authorizes live crawling, DevHub login, payment entry, submission, upload, certification, cancellation, official refund, official extension, or inspection scheduling.

@@ -97,11 +97,27 @@ Accepted daemon rounds are recorded under `ppd/daemon/accepted-work/`. Accepted-
 
 Accepted-work records should not be reused from other daemon systems. The PP&D daemon must keep its accepted-work evidence separate from TypeScript logic daemon ledgers and other repository automation state.
 
+## Syntax Failure Recovery
+
+When recent daemon results include Python `SyntaxError`, `py_compile`, or TypeScript `TS1005`, `TS1109`, or `TS1128` failures, treat the next supervisor repair as a daemon-programming problem before asking the worker to retry the same domain task.
+
+The repair goal should be narrow:
+
+- Improve daemon prompt, preflight, retry classification, or supervisor diagnostics.
+- Do not implement the selected PP&D domain task during the repair round.
+- Prefer one daemon or operations file over a broad rewrite.
+- Keep proposals syntactically small enough to inspect in one pass.
+- Require fixture-first or validation-first follow-up work before any live crawl or authenticated automation.
+
+For the next worker attempt after syntax rollback, the prompt should steer toward the smallest syntactically valid change that advances the task. If the failed proposal touched three or more files, the retry should usually touch fewer files. If the failure was a Python parser error, the worker should avoid clever inline comprehensions, generated code strings, or language-mixed syntax and should favor plain Python functions with explicit conditionals. If the failure was a TypeScript parser error, the worker should avoid broad contract rewrites and first add a minimal typecheckable fixture or test harness.
+
+A syntax rollback should not be treated the same as an assertion failure. Assertion failures can indicate a contract mismatch. Syntax and compile failures indicate the daemon accepted an invalid proposal shape too late, so repair guidance should push validation earlier and keep the next generated patch smaller.
+
 ## Failed Work
 
 Failed patches are recorded under `ppd/daemon/failed-patches/` when validation fails or the daemon cannot safely apply a generated change. Failed records should classify the failure and preserve enough context to diagnose it without storing private or raw crawl artifacts.
 
-A blocked task should be marked explicitly rather than repeatedly retried without new evidence.
+A blocked task should be marked explicitly rather than repeatedly retried without new evidence. If the failed-patch manifest shows parser or compile errors for the same task twice in a row, supervisor repair should happen before another worker attempt on that task.
 
 ## Validation
 
@@ -128,6 +144,7 @@ Before restarting after a stop, failure, or interrupted run:
 3. Check `ppd/daemon/ppd-daemon.log` for validation or patch errors.
 4. Confirm any failed patch under `ppd/daemon/failed-patches/` does not contain private data.
 5. Run `python3 ppd/daemon/ppd_daemon.py --self-test` before starting unattended operation.
+6. If the last two rollbacks were syntax or compile failures, run a supervisor repair cycle before restarting unattended worker attempts.
 
 ## Safety Rules
 

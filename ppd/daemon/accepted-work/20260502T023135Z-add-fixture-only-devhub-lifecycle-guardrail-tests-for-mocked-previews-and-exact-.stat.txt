@@ -1,0 +1,2 @@
+ppd/tests/fixtures/devhub/lifecycle_action_guardrail_cases.json
+ppd/tests/test_devhub_lifecycle_confirmation_guardrails.py

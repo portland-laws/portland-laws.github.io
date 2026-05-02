@@ -1,0 +1,133 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,86 +1,65 @@
+ # PP&D Supervisor Repair Guide
+ 
+-This guide is for supervisor recovery when a PP&D daemon task is blocked by repeated validation failures. Keep repair work narrow and deterministic. Do not implement extractor, crawler, DevHub, or application-domain behavior from this guide.
++## Purpose
+ 
+-## Syntax Failure Recovery
++This guide is for supervisor repair cycles when the isolated PP&D daemon is blocked by repeated validation failures. Repairs should improve daemon task selection, retry behavior, prompt constraints, validation ordering, or diagnostics. Do not implement PP&D domain extractor code from this guide.
+ 
+-When a recent daemon result includes `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128`, the next recovery cycle must prefer a smaller file set and an explicit syntactic-validity guardrail.
++## SyntaxError Recovery Protocol
+ 
+-Required recovery behavior:
++Use this protocol whenever recent daemon failures include Python `SyntaxError`, `py_compile`, or malformed generated Python such as missing comparison operators.
+ 
+-1. Edit only the one intended validator or daemon-control file.
+-2. Use syntactically simple Python for Python tests.
+-3. Avoid clever expressions, inline type syntax in runtime expressions, comprehensions with complex conditions, and broad helper rewrites.
+-4. Run or require `py_compile` before unittest discovery.
+-5. If `py_compile` fails, stop and repair only syntax before changing validator semantics.
+-6. Do not add extractor implementation code to satisfy a validator task.
++1. Keep the next daemon task narrow and file-local.
++2. Prefer one test file or one daemon diagnostic file over broad contract rewrites.
++3. Require a `py_compile` check before `unittest` discovery.
++4. Use syntactically simple Python only:
++   - standard-library imports only.
++   - `unittest` only for tests.
++   - no complex type annotations.
++   - no parameterized metaprogramming.
++   - no generated expressions that combine comparisons and collection constructors.
++   - no walrus operator.
++   - no f-string expressions with complex indexing.
++5. Load fixtures by exact committed path.
++6. Assert the committed fixture is valid before mutation tests.
++7. Mutate one field per test.
++8. Keep helper functions small and explicit.
++9. Do not add extractor implementation code while repairing validator tasks.
+ 
+-Simple Python means:
++## Checkbox-27 Recovery Requirements
+ 
+-- plain `def` functions.
+-- plain `if`, `elif`, `else` statements with explicit comparison operators.
+-- `isinstance` checks for JSON types.
+-- `copy.deepcopy` for fixture mutation.
+-- `unittest.TestCase` assertions.
+-- no walrus operator.
+-- no pattern matching.
+-- no runtime expressions such as `0 set[str]`.
+-- no incomplete comparisons such as `confidence 1`.
++For the blocked checkbox-27 task, the worker should add only a focused validator test for:
+ 
+-## Checkbox-27 Recovery Shape
++`ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json`
+ 
+-For checkbox-27, the worker must add only one test file under `ppd/tests/` and must not add extractor implementation code.
++The validator should prove the committed fixture is valid, then cover exactly these one-mutation cases:
+ 
+-The test file must:
++- missing `categoryId`.
++- missing `sourceEvidenceIds`.
++- missing local `evidence[].evidenceId`.
++- out-of-range `confidence`.
++- duplicate `(categoryId, action, object, sourceEvidenceIds)` tuples.
++- malformed stop-gate classification.
+ 
+-1. Load exactly `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json`.
+-2. Assert the committed fixture is valid before any mutation test.
+-3. Use one mutation per test method.
+-4. Cover only these mutation cases:
+-   - missing `categoryId`.
+-   - missing `sourceEvidenceIds`.
+-   - missing local `evidence[].evidenceId`.
+-   - out-of-range `confidence`.
+-   - duplicate `(categoryId, action, object, sourceEvidenceIds)` tuples.
+-   - malformed stop-gate classification.
+-5. Validate local evidence references against the same committed fixture object.
+-6. Keep duplicate tuple comparison deterministic by sorting or tuple-normalizing `sourceEvidenceIds`.
+-7. Include an explicit self-check test that calls `py_compile.compile(__file__, doraise=True)` before the behavioral assertions are relied on.
++The worker should run validation in this order:
+ 
+-The first validation command for this recovery must be:
++1. `python3 -m py_compile ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py`
++2. `python3 -m unittest ppd.tests.test_permit_lifecycle_requirement_extraction_mutations`
++3. `python3 ppd/daemon/ppd_daemon.py --self-test`
++4. `python3 -m unittest discover -s ppd/tests -p 'test_*.py'`
+ 
+-`python3 -m py_compile ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py`
++If step 1 fails, the daemon should not continue to broader validation. It should capture the compile error, roll back the attempted test file, and retry with a smaller plain-Python file.
+ 
+-Then run:
++## Retry Prompt Addendum
+ 
+-`python3 -m unittest discover -s ppd/tests -p 'test_*.py'`
++When retrying a Python validator after a syntax failure, prepend this instruction to the worker prompt:
+ 
+-## Fixture Path Preflight
+-
+-Before adding any validator that asserts committed fixture paths exist, the worker must inspect the exact fixture JSON first and verify each referenced path exists in the repository.
+-
+-If a committed fixture references a missing path, do not write a validator that fails only because of that known bad fixture. Instead, create a narrow follow-up task on `ppd/daemon/task-board.md` to repair the fixture reference or add the missing fixture, whichever is consistent with the already accepted fixture set.
+-
+-For lifecycle process index work, verify that every referenced skeleton path is present under `ppd/tests/fixtures/lifecycle/` before adding the validator. If `inspection_lifecycle_process_skeleton.json` is referenced but absent, the next task must repair the index or add the missing committed skeleton fixture before a validator requires it.
+-
+-## Retry Selection
+-
+-When a task fails three or more times for the same syntactic reason, the daemon should not broaden scope. The next attempt should be a recovery task with:
+-
+-- one changed file.
+-- one fixture path.
+-- one validation entry point.
+-- no generated implementation code.
+-- no live crawling.
+-- no authenticated DevHub automation.
+-
+-When a task fails because the committed fixture is invalid, the daemon should distinguish that from a validator bug. The next task should repair the committed fixture data or add the missing committed fixture first, not keep retrying the validator.
++"Previous attempts failed at Python parsing. Write plain Python 3 unittest code. Before proposing the file, mentally check every `if`, `elif`, comparison, and collection literal. Do not use type annotations inside executable statements. Do not abbreviate comparisons. The first validation command must be `python3 -m py_compile` on the new test file."
+ 
+ ## Stop Conditions
+ 
+-Stop and report blocked status when any of these occur:
++Stop and ask for supervisor repair instead of retrying the same task when:
+ 
+-- the exact fixture path named by the task does not exist.
+-- the task requires private DevHub data, live login, payment, submission, upload, certification, cancellation, official refund, official extension, or inspection scheduling.
+-- `py_compile` fails after a syntax-only repair attempt.
+-- a validator would require changing extractor behavior, crawler behavior, or authenticated automation to pass.
++- two consecutive attempts fail `py_compile` on the same target file.
++- a retry changes more than one test file for a syntax-only recovery task.
++- a validator task starts adding extractor implementation code.
++- a task attempts live crawling, login, payment, submission, upload, certification, cancellation, official refund, official extension, or inspection scheduling.

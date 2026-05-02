@@ -1,0 +1,138 @@
+--- a/ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py
++++ b/ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py
+@@ -0,0 +1,135 @@
++import json
++import unittest
++from pathlib import Path
++
++
++FIXTURE_PATH = (
++    Path(__file__).resolve().parent
++    / "fixtures"
++    / "lifecycle"
++    / "permit_lifecycle_requirement_extraction_expected_output.json"
++)
++
++
++REQUIRED_RECORD_FIELDS = {
++    "categoryId",
++    "categoryLabel",
++    "requirementType",
++    "subject",
++    "action",
++    "object",
++    "conditions",
++    "deadlineOrTemporalScope",
++    "classification",
++    "stopGate",
++    "sourceEvidenceIds",
++    "evidence",
++    "confidence",
++    "formalizationStatus",
++}
++
++
++REQUIRED_EVIDENCE_FIELDS = {
++    "evidenceId",
++    "sourceUrl",
++    "sourceTitle",
++    "authorityLabel",
++    "recrawlCadence",
++    "supports",
++    "redacted",
++}
++
++
++STRING_RECORD_FIELDS = (
++    "categoryId",
++    "categoryLabel",
++    "requirementType",
++    "subject",
++    "action",
++    "object",
++    "deadlineOrTemporalScope",
++    "classification",
++    "formalizationStatus",
++)
++
++
++STRING_EVIDENCE_FIELDS = (
++    "evidenceId",
++    "sourceUrl",
++    "sourceTitle",
++    "authorityLabel",
++    "recrawlCadence",
++    "supports",
++)
++
++
++def load_fixture():
++    with FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
++        return json.load(fixture_file)
++
++
++def assert_non_empty_string(test_case, value, field_name):
++    test_case.assertIsInstance(value, str, field_name)
++    test_case.assertTrue(value.strip(), field_name)
++
++
++def assert_string_list(test_case, value, field_name):
++    test_case.assertIsInstance(value, list, field_name)
++    test_case.assertTrue(value, field_name)
++    for item in value:
++        assert_non_empty_string(test_case, item, field_name)
++
++
++def assert_valid_evidence(test_case, evidence_item):
++    test_case.assertIsInstance(evidence_item, dict)
++    test_case.assertTrue(REQUIRED_EVIDENCE_FIELDS.issubset(evidence_item.keys()))
++    for field_name in STRING_EVIDENCE_FIELDS:
++        assert_non_empty_string(test_case, evidence_item[field_name], field_name)
++    test_case.assertIsInstance(evidence_item["redacted"], bool)
++
++
++def assert_valid_category_record(test_case, record):
++    test_case.assertIsInstance(record, dict)
++    test_case.assertTrue(REQUIRED_RECORD_FIELDS.issubset(record.keys()))
++
++    for field_name in STRING_RECORD_FIELDS:
++        assert_non_empty_string(test_case, record[field_name], field_name)
++
++    assert_string_list(test_case, record["conditions"], "conditions")
++    assert_string_list(test_case, record["sourceEvidenceIds"], "sourceEvidenceIds")
++
++    test_case.assertIsInstance(record["stopGate"], bool)
++    test_case.assertIsInstance(record["confidence"], (int, float))
++    test_case.assertGreaterEqual(record["confidence"], 0)
++    test_case.assertLessEqual(record["confidence"], 1)
++
++    evidence = record["evidence"]
++    test_case.assertIsInstance(evidence, list)
++    test_case.assertTrue(evidence)
++    for evidence_item in evidence:
++        assert_valid_evidence(test_case, evidence_item)
++
++    evidence_ids = {evidence_item["evidenceId"] for evidence_item in evidence}
++    for source_evidence_id in record["sourceEvidenceIds"]:
++        test_case.assertIn(source_evidence_id, evidence_ids)
++
++
++class PermitLifecycleRequirementExtractionMutationSkeletonTest(unittest.TestCase):
++    def test_committed_category_records_fixture_matches_checkbox_24_schema(self):
++        fixture = load_fixture()
++
++        self.assertIsInstance(fixture, dict)
++        self.assertIn("categoryRecords", fixture)
++        category_records = fixture["categoryRecords"]
++        self.assertIsInstance(category_records, list)
++        self.assertTrue(category_records)
++
++        category_ids = set()
++        for record in category_records:
++            assert_valid_category_record(self, record)
++            self.assertNotIn(record["categoryId"], category_ids)
++            category_ids.add(record["categoryId"])
++
++
++if __name__ == "__main__":
++    unittest.main()

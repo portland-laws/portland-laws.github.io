@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/test_guardrail_stop_gate_mapping.py",
+    "ppd/tests/fixtures/guardrails/stop_gate_action_gate_mapping.json"
+  ],
+  "created_at": "2026-05-02T04:46:35.003702Z",
+  "impact": "This advances the PP&D guardrail plan by proving a stop gate can be represented as an agent-facing action gate with only the narrow fields needed for source-grounded action classification: action class, consequence summary, and evidence IDs.",
+  "summary": "Add a fixture-only Python validation test and committed JSON fixture mapping one public process stop gate to one safe agent action gate.",
+  "target_task": "Task checkbox-49: Task checkbox-44: Add a fixture-only guardrail mapping test that maps one process stop gate to an agent action gate. Validate action class, consequence summary, and source evidence IDs only.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 53 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................................................................................................ss..............sss........................................................................................................................................ ---------------------------------------------------------------------- Ran 375 tests in 0.052s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

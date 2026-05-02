@@ -1,0 +1,146 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -79,34 +79,28 @@
+ 
+ The source freshness classifier checkbox is blocked because repeated proposals introduced invalid Python such as `if self.recrawl_cadence_days list[str]:`. The dependent change-report renderer is also blocked until source freshness has a syntactically valid import test, a minimal four-record fixture, and a small classifier module that pass validation. Do not retry the blocked source freshness or renderer tasks directly; use the appended syntax-first recovery tasks instead.
+ 
+-## Generated Status
++## Task Selection Notes
+ 
+-Last updated: 2026-05-01T20:05:00Z
++Blocked source-freshness tasks are intentionally parked and should not stop unrelated PP&D progress. If an independent `[~]` or `[ ]` task does not depend on source freshness, the daemon may continue it.
+ 
+-- Latest target: `Supervisor repair: unblock source freshness retry loop`
+-- Latest result: `task-board repaired`
+-- Latest summary: Marked the dependent source freshness renderer blocked and appended narrow syntax-first recovery tasks so the daemon can resume useful fixture-first work.
+-- Counts: `{"blocked": 2, "complete": 53, "in_progress": 0, "needed": 11}`
++When no independent task is active, prefer fixture-first or syntax-first recovery tasks in this order:
++
++1. Finish the active correction-upload review guardrail task.
++2. Continue residential missing-information detector fixture work.
++3. Run the source-freshness syntax-first import task before any source-freshness fixture, classifier, or renderer work.
++4. Run the four-record source-freshness fixture task before the classifier.
++5. Run the renderer only after the classifier has passed validation.
++
++Do not select the two `[!]` source-freshness tasks directly until their narrow prerequisites have passed.
+ 
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T20:05:00Z
++Last updated: 2026-05-01T20:08:00Z
+ 
+-- Latest target: `Supervisor repair: unblock source freshness retry loop`
++- Latest target: `Supervisor repair: keep blocked source-freshness tasks decomposed while allowing independent DevHub guardrail progress`
+ - Latest result: `task-board repaired`
+-- Latest summary: Marked the dependent source freshness renderer blocked and appended narrow syntax-first recovery tasks so the daemon can resume useful fixture-first work.
+-- Counts: `{"blocked": 2, "complete": 53, "in_progress": 0, "needed": 11}`
++- Latest summary: Cleaned duplicate generated status text, preserved completed work, kept source-freshness and renderer tasks blocked, and documented the narrow recovery order.
++- Counts: `{"blocked": 2, "complete": 54, "in_progress": 1, "needed": 9}`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-01T20:00:44.062713Z
+-
+-- Latest target: `Task checkbox-56: Add a DevHub mocked workflow snapshot fixture for correction upload review that records upload controls, accepted file hints, validation messages, draft state, and exact confirmation gates using only redacted values.`
+-- Latest result: `accepted`
+-- Latest summary: Add a redacted DevHub correction-upload review snapshot fixture with fixture-local validation.
+-- Counts: `{"blocked": 2, "complete": 54, "in_progress": 0, "needed": 10}`
+-
+-<!-- ppd-daemon-task-board:end -->
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -6,31 +6,32 @@
+ 
+ ## Current Source Freshness Recovery
+ 
+-Active failing task:
++Blocked tasks:
+ 
+ - Task checkbox-54: Add a source freshness fixture that classifies stale PP&D guidance, changed content hashes, removed pages, and recrawl priority without performing a live recrawl.
++- Task checkbox-55: Add a fixture-only change report renderer for public PP&D source freshness results that summarizes changed requirements, new or removed links, and affected permit-process fixtures with citation references.
+ 
+ Observed failures:
+ 
+ - Repeated Python `SyntaxError` failures in `ppd/contracts/source_freshness.py` during daemon self-test `py_compile`.
+ - The invalid generated line shape was equivalent to `if self.recrawl_cadence_days list[str]:`, which indicates mixed or malformed Python type/control-flow syntax.
+-- The same task was retried with a three-file proposal and failed before useful unit-test feedback could be reached.
++- The same broad task was retried with contract, fixture, and test changes and failed before useful unit-test feedback could be reached.
+ 
+ Recovery rule:
+ 
+-- Do not retry checkbox-54 as another broad three-file implementation until a syntax-first contract skeleton passes.
+-- The next daemon prompt for checkbox-54 must require the worker to edit at most two files: `ppd/contracts/source_freshness.py` and optionally one focused test file under `ppd/tests/`.
+-- The first acceptance gate must be `python3 -m py_compile ppd/contracts/source_freshness.py` before broad unittest discovery.
+-- If the proposal includes a fixture, keep it small and fixture-only; do not add live recrawl behavior, HTTP requests, downloaded documents, raw response bodies, private DevHub paths, auth state, traces, or screenshots.
++- Do not retry checkbox-54 as another broad implementation until a syntax-first contract skeleton passes.
++- Do not retry checkbox-55 until checkbox-54 has passed through the syntax-first contract, four-record fixture, and focused classifier tasks.
++- If another task is active and does not depend on source freshness, allow that task to continue.
++- Treat the two blocked source-freshness tasks as parked, not as a global daemon stop condition.
+ 
+ ## Retry Shape For Checkbox-54
+ 
+-When checkbox-54 is retried, the supervisor should constrain the daemon to one of these narrow cycles.
++When checkbox-54 is resumed, the supervisor should constrain the daemon to these narrow cycles in order.
+ 
+ Cycle A: syntax-first contract skeleton
+ 
+ - Edit only `ppd/contracts/source_freshness.py` and one focused import/compile test if needed.
+-- Define small dataclasses or plain functions only after validating that the file compiles.
++- Define classification constants and small dataclasses or plain functions only after validating that the file compiles.
+ - Keep type annotations conventional Python, for example `recrawl_cadence_days: int | None`, never annotation fragments inside an `if` condition.
+ - Avoid validators that depend on fixture shape beyond simple dictionary keys.
+ - Require `python3 -m py_compile ppd/contracts/source_freshness.py` before full PP&D validation.
+@@ -47,6 +48,17 @@
+ - Edit only the source-freshness contract and focused test.
+ - Validate classification names and priority ordering only.
+ - Do not add change-report rendering, live recrawl scheduling, archive processor integration, or broader source-index rewrites in the same cycle.
++
++## Retry Shape For Checkbox-55
++
++The source freshness report renderer is dependent work. It should be selected only after checkbox-54 has a syntactically valid classifier and deterministic fixture.
++
++Renderer cycle:
++
++- Edit only a small report-rendering module under `ppd/` and one focused test under `ppd/tests/`, or a single focused test if the renderer already exists.
++- Render from committed fixtures only.
++- Summarize changed requirements, new or removed links, affected permit-process fixture ids, and citation references.
++- Do not fetch live pages, download documents, invoke DevHub, create auth/session state, or persist raw crawl output.
+ 
+ ## General Syntax-Failure Guardrails
+ 
+@@ -117,9 +129,14 @@
+ 
+ If a task depends on a repeatedly failing contract, insert or select a narrow syntax-first prerequisite task instead of attempting live crawl, authenticated automation, broad extraction, or multi-contract rewrites.
+ 
+-Suggested prerequisite task text:
++For the current board, preferred autonomous order is:
+ 
+-- [ ] Add a syntax-first source freshness contract skeleton that compiles with `py_compile` and exposes deterministic classification constants before adding the full source freshness fixture.
++1. Finish the active correction-upload review guardrail task.
++2. Continue independent missing-information detector fixture tasks.
++3. Run source-freshness syntax-first import validation.
++4. Add the minimal four-record source-freshness fixture.
++5. Add the smallest source-freshness classifier.
++6. Add the source-freshness report renderer.
+ 
+ ## Forbidden Recovery Paths
+ 
+@@ -155,6 +172,15 @@
+ - No committed fixture contains raw response bodies, credentials, trace paths, screenshot paths, downloaded document paths, private DevHub paths, or live crawl artifacts.
+ - The change does not implement live recrawl behavior or authenticated DevHub automation.
+ 
++## Acceptance Criteria For Unblocking Checkbox-55
++
++Checkbox-55 may be considered selectable only when all are true:
++
++- Checkbox-54 has passed validation.
++- The report renderer reads only committed fixtures.
++- The report output includes citation references and affected permit-process fixture ids.
++- The renderer does not perform live crawling, DevHub automation, authenticated actions, downloads, submissions, payments, certifications, official uploads, cancellations, or inspection scheduling.
++
+ ## Acceptance Criteria For Unblocking Checkbox-49
+ 
+ Checkbox-49 may be considered unblocked only when all are true:

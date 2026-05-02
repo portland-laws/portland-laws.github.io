@@ -1,0 +1,274 @@
+--- a/ppd/tests/fixtures/devhub/urban_forestry_draft_review_guardrails.json
++++ b/ppd/tests/fixtures/devhub/urban_forestry_draft_review_guardrails.json
+@@ -0,0 +1,111 @@
++{
++  "schema_version": 1,
++  "workflow_id": "urban_forestry_application_draft_review",
++  "permit_type": "urban_forestry",
++  "fixture_kind": "mocked_devhub_guardrail",
++  "source_context": {
++    "authority_label": "Development Hub PDX mocked workflow state",
++    "captured_from_live_site": false,
++    "uses_private_account_data": false,
++    "evidence": [
++      {
++        "source_id": "devhub-public-guidance-urban-forestry-applications",
++        "url": "https://www.portland.gov/ppd/devhub",
++        "description": "Public DevHub guidance identifies Urban Forestry permits as DevHub application workflows."
++      }
++    ]
++  },
++  "draft_review_state": {
++    "state_id": "uf_draft_review_ready_for_preview",
++    "url_state": "https://devhub.portlandoregon.gov/mock/applications/urban-forestry/draft-review",
++    "session_nonce": "UF-SESSION-2026-05-02-001",
++    "redaction_profile": "synthetic_values_only",
++    "application_reference": "UF-DRAFT-REDACTED",
++    "review_summary": {
++      "project_site": "REDACTED_SITE_ADDRESS",
++      "tree_scope": "REDACTED_TREE_WORK_SCOPE",
++      "applicant_contact": "REDACTED_CONTACT",
++      "attachments": [
++        "REDACTED_SITE_PLAN.pdf",
++        "REDACTED_TREE_INVENTORY.pdf"
++      ]
++    },
++    "available_outputs": [
++      {
++        "action_id": "preview_draft_review",
++        "classification": "read_only_preview",
++        "allowed_without_confirmation": true,
++        "result": "preview_only",
++        "exact_confirmation_required": null
++      },
++      {
++        "action_id": "official_upload",
++        "classification": "potentially_consequential",
++        "allowed_without_confirmation": false,
++        "result": "refuse_until_exact_current_session_confirmation",
++        "exact_confirmation_required": "I confirm official_upload for Urban Forestry draft UF-DRAFT-REDACTED in session UF-SESSION-2026-05-02-001"
++      },
++      {
++        "action_id": "certification",
++        "classification": "potentially_consequential",
++        "allowed_without_confirmation": false,
++        "result": "refuse_until_exact_current_session_confirmation",
++        "exact_confirmation_required": "I confirm certification for Urban Forestry draft UF-DRAFT-REDACTED in session UF-SESSION-2026-05-02-001"
++      },
++      {
++        "action_id": "submission",
++        "classification": "potentially_consequential",
++        "allowed_without_confirmation": false,
++        "result": "refuse_until_exact_current_session_confirmation",
++        "exact_confirmation_required": "I confirm submission for Urban Forestry draft UF-DRAFT-REDACTED in session UF-SESSION-2026-05-02-001"
++      },
++      {
++        "action_id": "fee_payment",
++        "classification": "financial",
++        "allowed_without_confirmation": false,
++        "result": "refuse_until_exact_current_session_confirmation",
++        "exact_confirmation_required": "I confirm fee_payment for Urban Forestry draft UF-DRAFT-REDACTED in session UF-SESSION-2026-05-02-001"
++      },
++      {
++        "action_id": "cancellation",
++        "classification": "potentially_consequential",
++        "allowed_without_confirmation": false,
++        "result": "refuse_until_exact_current_session_confirmation",
++        "exact_confirmation_required": "I confirm cancellation for Urban Forestry draft UF-DRAFT-REDACTED in session UF-SESSION-2026-05-02-001"
++      },
++      {
++        "action_id": "inspection_scheduling",
++        "classification": "potentially_consequential",
++        "allowed_without_confirmation": false,
++        "result": "refuse_until_exact_current_session_confirmation",
++        "exact_confirmation_required": "I confirm inspection_scheduling for Urban Forestry draft UF-DRAFT-REDACTED in session UF-SESSION-2026-05-02-001"
++      }
++    ]
++  },
++  "confirmation_examples": [
++    {
++      "action_id": "official_upload",
++      "provided_confirmation": "I confirm official_upload for Urban Forestry draft UF-DRAFT-REDACTED in session UF-SESSION-2026-05-02-001",
++      "current_session_nonce": "UF-SESSION-2026-05-02-001",
++      "should_allow": true
++    },
++    {
++      "action_id": "official_upload",
++      "provided_confirmation": "I confirm official_upload for Urban Forestry draft UF-DRAFT-REDACTED in session OLD-SESSION",
++      "current_session_nonce": "UF-SESSION-2026-05-02-001",
++      "should_allow": false
++    },
++    {
++      "action_id": "certification",
++      "provided_confirmation": "I confirm submission for Urban Forestry draft UF-DRAFT-REDACTED in session UF-SESSION-2026-05-02-001",
++      "current_session_nonce": "UF-SESSION-2026-05-02-001",
++      "should_allow": false
++    },
++    {
++      "action_id": "fee_payment",
++      "provided_confirmation": "I confirm fee_payment for Urban Forestry draft UF-DRAFT-REDACTED in session UF-SESSION-2026-05-02-001",
++      "current_session_nonce": "DIFFERENT-SESSION",
++      "should_allow": false
++    }
++  ]
++}
+--- a/ppd/tests/test_devhub_urban_forestry_draft_review_guardrails.py
++++ b/ppd/tests/test_devhub_urban_forestry_draft_review_guardrails.py
+@@ -0,0 +1,157 @@
++"""Fixture-backed DevHub guardrail checks for Urban Forestry draft review.
++
++These tests intentionally use a mocked, redacted workflow state. They do not
++open DevHub, authenticate, upload files, certify statements, submit requests,
++pay fees, cancel applications, or schedule inspections.
++"""
++
++from __future__ import annotations
++
++import json
++import unittest
++from pathlib import Path
++from typing import Any, Mapping
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "devhub"
++    / "urban_forestry_draft_review_guardrails.json"
++)
++
++CONSEQUENTIAL_OR_FINANCIAL_ACTIONS = {
++    "official_upload",
++    "certification",
++    "submission",
++    "fee_payment",
++    "cancellation",
++    "inspection_scheduling",
++}
++
++PRIVATE_FIXTURE_MARKERS = {
++    "auth_state",
++    "browser_context_storage",
++    "credential",
++    "password",
++    "paymentcardnumber",
++    "private_devhub_session",
++    "raw_crawl_output",
++    "screenshot",
++    "trace.zip",
++    "user@example.com",
++}
++
++
++def load_fixture() -> dict[str, Any]:
++    with FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
++        data = json.load(fixture_file)
++    if not isinstance(data, dict):
++        raise AssertionError("Urban Forestry draft-review fixture must be a JSON object")
++    return data
++
++
++def action_map(data: Mapping[str, Any]) -> dict[str, Mapping[str, Any]]:
++    state = data["draft_review_state"]
++    actions = state["available_outputs"]
++    return {str(action["action_id"]): action for action in actions}
++
++
++def confirmation_allows_action(
++    action: Mapping[str, Any],
++    provided_confirmation: str | None,
++    current_session_nonce: str,
++) -> bool:
++    if action.get("allowed_without_confirmation") is True:
++        return True
++    expected = action.get("exact_confirmation_required")
++    if not isinstance(expected, str) or not expected:
++        return False
++    if current_session_nonce not in expected:
++        return False
++    return provided_confirmation == expected
++
++
++class UrbanForestryDraftReviewGuardrailTests(unittest.TestCase):
++    def test_draft_review_can_produce_preview_without_confirmation(self) -> None:
++        data = load_fixture()
++        actions = action_map(data)
++
++        preview = actions["preview_draft_review"]
++
++        self.assertEqual(preview["classification"], "read_only_preview")
++        self.assertEqual(preview["result"], "preview_only")
++        self.assertTrue(preview["allowed_without_confirmation"])
++        self.assertTrue(
++            confirmation_allows_action(
++                preview,
++                provided_confirmation=None,
++                current_session_nonce=data["draft_review_state"]["session_nonce"],
++            )
++        )
++
++    def test_official_actions_are_blocked_without_exact_confirmation(self) -> None:
++        data = load_fixture()
++        actions = action_map(data)
++        session_nonce = data["draft_review_state"]["session_nonce"]
++
++        self.assertEqual(CONSEQUENTIAL_OR_FINANCIAL_ACTIONS, set(actions) - {"preview_draft_review"})
++        for action_id in sorted(CONSEQUENTIAL_OR_FINANCIAL_ACTIONS):
++            with self.subTest(action_id=action_id):
++                action = actions[action_id]
++                self.assertFalse(action["allowed_without_confirmation"])
++                self.assertIn(action["classification"], {"potentially_consequential", "financial"})
++                self.assertEqual(action["result"], "refuse_until_exact_current_session_confirmation")
++                self.assertFalse(
++                    confirmation_allows_action(
++                        action,
++                        provided_confirmation=None,
++                        current_session_nonce=session_nonce,
++                    )
++                )
++                self.assertFalse(
++                    confirmation_allows_action(
++                        action,
++                        provided_confirmation="I confirm this action",
++                        current_session_nonce=session_nonce,
++                    )
++                )
++
++    def test_confirmation_must_match_current_session_nonce_and_exact_action_text(self) -> None:
++        data = load_fixture()
++        actions = action_map(data)
++
++        for example in data["confirmation_examples"]:
++            with self.subTest(example=example):
++                action = actions[example["action_id"]]
++                self.assertEqual(
++                    confirmation_allows_action(
++                        action,
++                        provided_confirmation=example["provided_confirmation"],
++                        current_session_nonce=example["current_session_nonce"],
++                    ),
++                    example["should_allow"],
++                )
++
++    def test_fixture_contains_no_private_devhub_artifacts(self) -> None:
++        data = load_fixture()
++        serial = json.dumps(data, sort_keys=True).lower().replace("_", "")
++
++        self.assertFalse(data["source_context"]["captured_from_live_site"])
++        self.assertFalse(data["source_context"]["uses_private_account_data"])
++        self.assertEqual(data["draft_review_state"]["redaction_profile"], "synthetic_values_only")
++        for marker in sorted(PRIVATE_FIXTURE_MARKERS):
++            with self.subTest(marker=marker):
++                self.assertNotIn(marker.lower().replace("_", ""), serial)
++
++    def test_required_urban_forestry_scope_is_explicit(self) -> None:
++        data = load_fixture()
++
++        self.assertEqual(data["workflow_id"], "urban_forestry_application_draft_review")
++        self.assertEqual(data["permit_type"], "urban_forestry")
++        self.assertEqual(data["fixture_kind"], "mocked_devhub_guardrail")
++        self.assertTrue(data["source_context"]["evidence"])
++
++
++if __name__ == "__main__":
++    unittest.main()

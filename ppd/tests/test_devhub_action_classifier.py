@@ -1,0 +1,146 @@
+"""Fixture-only tests for DevHub action classification and confirmation gates."""
+
+from __future__ import annotations
+
+import unittest
+
+from ppd.contracts.processes import ActionGateClassification
+from ppd.devhub.action_classifier import (
+    action_requires_exact_confirmation,
+    classify_workflow_action,
+    decide_action_confirmation,
+    is_exactly_confirmed,
+)
+from ppd.devhub.workflow import DevHubActionKind, DevHubWorkflowAction
+
+
+class DevHubActionClassifierTests(unittest.TestCase):
+    def test_targeted_actions_are_consequential_or_financial(self) -> None:
+        cases = (
+            (
+                DevHubActionKind.SCHEDULE_INSPECTION,
+                "Schedule inspection for permit fixture-001 on 2026-05-05.",
+                ActionGateClassification.POTENTIALLY_CONSEQUENTIAL,
+            ),
+            (
+                DevHubActionKind.OFFICIAL_UPLOAD,
+                "Upload official correction response for permit fixture-001.",
+                ActionGateClassification.POTENTIALLY_CONSEQUENTIAL,
+            ),
+            (
+                DevHubActionKind.CANCEL_REQUEST,
+                "Cancel DevHub request fixture-001.",
+                ActionGateClassification.POTENTIALLY_CONSEQUENTIAL,
+            ),
+            (
+                DevHubActionKind.CERTIFY_ACKNOWLEDGMENT,
+                "Certify the DevHub acknowledgment for request fixture-001.",
+                ActionGateClassification.POTENTIALLY_CONSEQUENTIAL,
+            ),
+            (
+                DevHubActionKind.PAY_FEE,
+                "Pay the listed permit fees for request fixture-001.",
+                ActionGateClassification.FINANCIAL,
+            ),
+            (
+                DevHubActionKind.ENTER_PAYMENT_DETAILS,
+                "Enter payment details for request fixture-001.",
+                ActionGateClassification.FINANCIAL,
+            ),
+        )
+
+        for kind, confirmation_text, expected_classification in cases:
+            with self.subTest(kind=kind.value):
+                action = self._action(kind, confirmation_text)
+                self.assertEqual(classify_workflow_action(action), expected_classification)
+                self.assertTrue(action_requires_exact_confirmation(action))
+
+    def test_consequential_actions_require_exact_explicit_confirmation(self) -> None:
+        action = self._action(
+            DevHubActionKind.SCHEDULE_INSPECTION,
+            "Schedule inspection for permit fixture-001 on 2026-05-05.",
+        )
+
+        rejected_confirmations = (
+            None,
+            "",
+            "Schedule inspection for permit fixture-001.",
+            "schedule inspection for permit fixture-001 on 2026-05-05.",
+            "Schedule inspection for permit fixture-001 on 2026-05-05",
+            "Please schedule inspection for permit fixture-001 on 2026-05-05.",
+        )
+        for user_confirmation in rejected_confirmations:
+            with self.subTest(user_confirmation=user_confirmation):
+                self.assertFalse(is_exactly_confirmed(action, user_confirmation))
+                decision = decide_action_confirmation(action, user_confirmation)
+                self.assertFalse(decision.allowed)
+                self.assertTrue(decision.requires_exact_confirmation)
+
+        accepted = "Schedule inspection for permit fixture-001 on 2026-05-05."
+        self.assertTrue(is_exactly_confirmed(action, accepted))
+        decision = decide_action_confirmation(action, accepted)
+        self.assertTrue(decision.allowed)
+        self.assertEqual(decision.classification, ActionGateClassification.POTENTIALLY_CONSEQUENTIAL)
+
+    def test_financial_actions_require_exact_explicit_confirmation(self) -> None:
+        action = self._action(
+            DevHubActionKind.PAY_FEE,
+            "Pay the listed permit fees for request fixture-001.",
+        )
+
+        self.assertFalse(is_exactly_confirmed(action, "Pay permit fees."))
+        rejected = decide_action_confirmation(action, "Pay permit fees.")
+        self.assertFalse(rejected.allowed)
+        self.assertEqual(rejected.classification, ActionGateClassification.FINANCIAL)
+        self.assertEqual(
+            rejected.reason,
+            "user confirmation did not exactly match the required text",
+        )
+
+        accepted = decide_action_confirmation(
+            action,
+            "Pay the listed permit fees for request fixture-001.",
+        )
+        self.assertTrue(accepted.allowed)
+        self.assertTrue(accepted.requires_exact_confirmation)
+        self.assertEqual(accepted.classification, ActionGateClassification.FINANCIAL)
+
+    def test_missing_confirmation_text_blocks_consequential_actions(self) -> None:
+        action = DevHubWorkflowAction(
+            id="fixture-correction-upload",
+            label="Upload corrections",
+            kind=DevHubActionKind.OFFICIAL_UPLOAD,
+            confirmation_text=None,
+            consequence_summary="Uploads an official correction response to DevHub.",
+        )
+
+        decision = decide_action_confirmation(action, "Upload corrections")
+        self.assertFalse(decision.allowed)
+        self.assertTrue(decision.requires_exact_confirmation)
+        self.assertIsNone(decision.expected_confirmation)
+        self.assertEqual(
+            decision.reason,
+            "consequential or financial action has no configured confirmation text",
+        )
+
+    def test_read_only_and_draft_actions_do_not_need_exact_confirmation(self) -> None:
+        for kind in (DevHubActionKind.READ_STATUS, DevHubActionKind.SAVE_DRAFT):
+            with self.subTest(kind=kind.value):
+                action = DevHubWorkflowAction(id=kind.value, label=kind.value, kind=kind)
+                decision = decide_action_confirmation(action, None)
+                self.assertTrue(decision.allowed)
+                self.assertFalse(decision.requires_exact_confirmation)
+
+    @staticmethod
+    def _action(kind: DevHubActionKind, confirmation_text: str) -> DevHubWorkflowAction:
+        return DevHubWorkflowAction(
+            id=f"fixture-{kind.value}",
+            label=kind.value.replace("_", " ").title(),
+            kind=kind,
+            confirmation_text=confirmation_text,
+            consequence_summary="Fixture-only DevHub action; no browser automation is performed.",
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -1,0 +1,63 @@
+--- a/ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py
++++ b/ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py
+@@ -1,3 +1,4 @@
++import copy
+ import json
+ import unittest
+ from pathlib import Path
+@@ -114,21 +115,44 @@
+         test_case.assertIn(source_evidence_id, evidence_ids)
+ 
+ 
++def assert_valid_fixture(test_case, fixture):
++    test_case.assertIsInstance(fixture, dict)
++    test_case.assertIn("categoryRecords", fixture)
++    category_records = fixture["categoryRecords"]
++    test_case.assertIsInstance(category_records, list)
++    test_case.assertTrue(category_records)
++
++    category_ids = set()
++    for record in category_records:
++        assert_valid_category_record(test_case, record)
++        test_case.assertNotIn(record["categoryId"], category_ids)
++        category_ids.add(record["categoryId"])
++
++
+ class PermitLifecycleRequirementExtractionMutationSkeletonTest(unittest.TestCase):
+     def test_committed_category_records_fixture_matches_checkbox_24_schema(self):
+-        fixture = load_fixture()
++        assert_valid_fixture(self, load_fixture())
+ 
+-        self.assertIsInstance(fixture, dict)
+-        self.assertIn("categoryRecords", fixture)
+-        category_records = fixture["categoryRecords"]
+-        self.assertIsInstance(category_records, list)
+-        self.assertTrue(category_records)
++    def test_missing_category_id_is_rejected(self):
++        fixture = copy.deepcopy(load_fixture())
++        del fixture["categoryRecords"][0]["categoryId"]
+ 
+-        category_ids = set()
+-        for record in category_records:
+-            assert_valid_category_record(self, record)
+-            self.assertNotIn(record["categoryId"], category_ids)
+-            category_ids.add(record["categoryId"])
++        with self.assertRaises(AssertionError):
++            assert_valid_fixture(self, fixture)
++
++    def test_missing_source_evidence_ids_is_rejected(self):
++        fixture = copy.deepcopy(load_fixture())
++        del fixture["categoryRecords"][0]["sourceEvidenceIds"]
++
++        with self.assertRaises(AssertionError):
++            assert_valid_fixture(self, fixture)
++
++    def test_missing_local_evidence_id_is_rejected(self):
++        fixture = copy.deepcopy(load_fixture())
++        del fixture["categoryRecords"][0]["evidence"][0]["evidenceId"]
++
++        with self.assertRaises(AssertionError):
++            assert_valid_fixture(self, fixture)
+ 
+ 
+ if __name__ == "__main__":

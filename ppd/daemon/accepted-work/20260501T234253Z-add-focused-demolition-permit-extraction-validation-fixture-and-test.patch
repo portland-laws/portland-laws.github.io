@@ -1,0 +1,375 @@
+--- a/ppd/tests/fixtures/requirement_extraction/demolition_permit_requirements.json
++++ b/ppd/tests/fixtures/requirement_extraction/demolition_permit_requirements.json
+@@ -0,0 +1,277 @@
++{
++  "fixture_id": "demolition-permit-requirement-extraction-focused",
++  "process_id": "demolition-permit",
++  "process_name": "Demolition Permit",
++  "extracted_at": "2026-05-01T00:00:00Z",
++  "expected_fixture_categories": [
++    "application_form",
++    "site_plan",
++    "asbestos_survey",
++    "utility_disconnect",
++    "sewer_cap",
++    "tree_requirements",
++    "erosion_control"
++  ],
++  "expected_source_evidence_ids": [
++    "DEM-SRC-APPLICATION",
++    "DEM-SRC-SITE-PLAN",
++    "DEM-SRC-ASBESTOS",
++    "DEM-SRC-UTILITIES",
++    "DEM-SRC-SEWER-CAP",
++    "DEM-SRC-TREES",
++    "DEM-SRC-EROSION"
++  ],
++  "confidence_bounds": {
++    "minimum": 0.7,
++    "maximum": 0.95
++  },
++  "expected_stop_gate_classifications": {
++    "demolition-submit-application": "potentially_consequential",
++    "demolition-certify-owner-notice": "potentially_consequential",
++    "demolition-pay-fees": "financial"
++  },
++  "requirements": [
++    {
++      "requirement_id": "demolition-application-form",
++      "fixture_category": "application_form",
++      "type": "obligation",
++      "subject": "applicant",
++      "action": "prepare",
++      "object": "demolition permit application form",
++      "conditions": [
++        "project includes demolition work requiring PP&D review"
++      ],
++      "deadline_or_temporal_scope": null,
++      "evidence": [
++        {
++          "source_id": "DEM-SRC-APPLICATION",
++          "source_url": "https://www.portland.gov/ppd/permits/demolition-permits",
++          "quote": "Submit a completed demolition permit application for demolition permit review.",
++          "anchor_id": "application-requirements"
++        }
++      ],
++      "confidence": 0.92,
++      "formalization_status": "draft",
++      "formalization_notes": "Fixture-only extraction for demolition permit application package validation."
++    },
++    {
++      "requirement_id": "demolition-site-plan",
++      "fixture_category": "site_plan",
++      "type": "obligation",
++      "subject": "applicant",
++      "action": "include",
++      "object": "site plan showing demolition scope",
++      "conditions": [
++        "demolition permit submittal package is prepared"
++      ],
++      "deadline_or_temporal_scope": null,
++      "evidence": [
++        {
++          "source_id": "DEM-SRC-SITE-PLAN",
++          "source_url": "https://www.portland.gov/ppd/permits/demolition-permits",
++          "quote": "Provide plans or site information that identify the structure and demolition work proposed.",
++          "anchor_id": "plan-requirements"
++        }
++      ],
++      "confidence": 0.88,
++      "formalization_status": "draft",
++      "formalization_notes": "Fixture-only extraction for demolition permit application package validation."
++    },
++    {
++      "requirement_id": "demolition-asbestos-survey",
++      "fixture_category": "asbestos_survey",
++      "type": "precondition",
++      "subject": "applicant",
++      "action": "obtain",
++      "object": "asbestos survey or required asbestos documentation",
++      "conditions": [
++        "regulated demolition work may disturb building materials"
++      ],
++      "deadline_or_temporal_scope": null,
++      "evidence": [
++        {
++          "source_id": "DEM-SRC-ASBESTOS",
++          "source_url": "https://www.portland.gov/ppd/permits/demolition-permits",
++          "quote": "Demolition projects may need asbestos documentation before permit issuance or work begins.",
++          "anchor_id": "asbestos"
++        }
++      ],
++      "confidence": 0.82,
++      "formalization_status": "draft",
++      "formalization_notes": "Fixture-only extraction for demolition permit application package validation."
++    },
++    {
++      "requirement_id": "demolition-utility-disconnect",
++      "fixture_category": "utility_disconnect",
++      "type": "precondition",
++      "subject": "applicant",
++      "action": "coordinate",
++      "object": "utility disconnects before demolition",
++      "conditions": [
++        "utilities serve the structure proposed for demolition"
++      ],
++      "deadline_or_temporal_scope": null,
++      "evidence": [
++        {
++          "source_id": "DEM-SRC-UTILITIES",
++          "source_url": "https://www.portland.gov/ppd/permits/demolition-permits",
++          "quote": "Utility services must be addressed before demolition activity proceeds.",
++          "anchor_id": "utilities"
++        }
++      ],
++      "confidence": 0.79,
++      "formalization_status": "draft",
++      "formalization_notes": "Fixture-only extraction for demolition permit application package validation."
++    },
++    {
++      "requirement_id": "demolition-sewer-cap",
++      "fixture_category": "sewer_cap",
++      "type": "obligation",
++      "subject": "applicant",
++      "action": "verify",
++      "object": "sewer cap or sewer decommissioning requirement",
++      "conditions": [
++        "demolition affects a structure with sewer service"
++      ],
++      "deadline_or_temporal_scope": null,
++      "evidence": [
++        {
++          "source_id": "DEM-SRC-SEWER-CAP",
++          "source_url": "https://www.portland.gov/ppd/permits/demolition-permits",
++          "quote": "Sewer service may need to be capped or otherwise resolved as part of demolition work.",
++          "anchor_id": "sewer"
++        }
++      ],
++      "confidence": 0.76,
++      "formalization_status": "draft",
++      "formalization_notes": "Fixture-only extraction for demolition permit application package validation."
++    },
++    {
++      "requirement_id": "demolition-tree-requirements",
++      "fixture_category": "tree_requirements",
++      "type": "dependency",
++      "subject": "applicant",
++      "action": "check",
++      "object": "tree preservation or removal requirements",
++      "conditions": [
++        "demolition scope may affect regulated trees"
++      ],
++      "deadline_or_temporal_scope": null,
++      "evidence": [
++        {
++          "source_id": "DEM-SRC-TREES",
++          "source_url": "https://www.portland.gov/ppd/permits/demolition-permits",
++          "quote": "Tree requirements may apply when demolition work affects trees on or near the site.",
++          "anchor_id": "trees"
++        }
++      ],
++      "confidence": 0.73,
++      "formalization_status": "draft",
++      "formalization_notes": "Fixture-only extraction for demolition permit application package validation."
++    },
++    {
++      "requirement_id": "demolition-erosion-control",
++      "fixture_category": "erosion_control",
++      "type": "obligation",
++      "subject": "applicant",
++      "action": "provide",
++      "object": "erosion control measures for demolition site",
++      "conditions": [
++        "demolition work disturbs soil or exposes the site to runoff"
++      ],
++      "deadline_or_temporal_scope": null,
++      "evidence": [
++        {
++          "source_id": "DEM-SRC-EROSION",
++          "source_url": "https://www.portland.gov/ppd/permits/demolition-permits",
++          "quote": "Erosion control requirements may apply to demolition projects with ground disturbance.",
++          "anchor_id": "erosion-control"
++        }
++      ],
++      "confidence": 0.71,
++      "formalization_status": "draft",
++      "formalization_notes": "Fixture-only extraction for demolition permit application package validation."
++    },
++    {
++      "requirement_id": "demolition-submit-application",
++      "fixture_category": "stop_gate",
++      "type": "action_gate",
++      "subject": "agent",
++      "action": "stop_before",
++      "object": "submitting demolition permit application",
++      "conditions": [
++        "user has not explicitly confirmed the exact demolition permit submission in this session"
++      ],
++      "deadline_or_temporal_scope": null,
++      "evidence": [
++        {
++          "source_id": "DEM-SRC-APPLICATION",
++          "source_url": "https://www.portland.gov/ppd/permits/demolition-permits",
++          "quote": "Submit a completed demolition permit application for demolition permit review.",
++          "anchor_id": "application-requirements"
++        }
++      ],
++      "confidence": 0.95,
++      "formalization_status": "draft",
++      "formalization_notes": "Agent operation stop gate for official demolition permit submission.",
++      "stop_gate": {
++        "classification": "potentially_consequential",
++        "requires_exact_user_confirmation": true
++      }
++    },
++    {
++      "requirement_id": "demolition-certify-owner-notice",
++      "fixture_category": "stop_gate",
++      "type": "action_gate",
++      "subject": "agent",
++      "action": "stop_before",
++      "object": "certifying demolition notice or acknowledgment",
++      "conditions": [
++        "user has not explicitly confirmed the exact certification in this session"
++      ],
++      "deadline_or_temporal_scope": null,
++      "evidence": [
++        {
++          "source_id": "DEM-SRC-APPLICATION",
++          "source_url": "https://www.portland.gov/ppd/permits/demolition-permits",
++          "quote": "Submit a completed demolition permit application for demolition permit review.",
++          "anchor_id": "application-requirements"
++        }
++      ],
++      "confidence": 0.9,
++      "formalization_status": "draft",
++      "formalization_notes": "Agent operation stop gate for demolition permit certification or acknowledgment.",
++      "stop_gate": {
++        "classification": "potentially_consequential",
++        "requires_exact_user_confirmation": true
++      }
++    },
++    {
++      "requirement_id": "demolition-pay-fees",
++      "fixture_category": "stop_gate",
++      "type": "action_gate",
++      "subject": "agent",
++      "action": "stop_before",
++      "object": "paying demolition permit fees",
++      "conditions": [
++        "user has not explicitly confirmed the exact demolition fee payment in this session"
++      ],
++      "deadline_or_temporal_scope": null,
++      "evidence": [
++        {
++          "source_id": "DEM-SRC-APPLICATION",
++          "source_url": "https://www.portland.gov/ppd/permits/demolition-permits",
++          "quote": "Submit a completed demolition permit application for demolition permit review.",
++          "anchor_id": "application-requirements"
++        }
++      ],
++      "confidence": 0.91,
++      "formalization_status": "draft",
++      "formalization_notes": "Agent operation stop gate for demolition permit fee payment.",
++      "stop_gate": {
++        "classification": "financial",
++        "requires_exact_user_confirmation": true
++      }
++    }
++  ]
++}
+--- a/ppd/tests/test_demolition_requirement_extraction.py
++++ b/ppd/tests/test_demolition_requirement_extraction.py
+@@ -0,0 +1,92 @@
++"""Focused validation for demolition permit requirement extraction fixtures."""
++
++from __future__ import annotations
++
++import json
++import unittest
++from pathlib import Path
++from typing import Any
++
++from ppd.contracts.requirements import fixture_from_dict
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "requirement_extraction"
++    / "demolition_permit_requirements.json"
++)
++
++
++class DemolitionRequirementExtractionFocusedTest(unittest.TestCase):
++    def load_fixture(self) -> dict[str, Any]:
++        return json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
++
++    def test_demolition_extraction_has_only_expected_fixture_categories(self) -> None:
++        data = self.load_fixture()
++        parsed = fixture_from_dict(data)
++        expected = set(data["expected_fixture_categories"])
++        categories = {
++            item["fixture_category"]
++            for item in data["requirements"]
++            if item.get("fixture_category") != "stop_gate"
++        }
++
++        self.assertEqual(parsed.process_id, "demolition-permit")
++        self.assertEqual(categories, expected)
++        self.assertEqual(len(categories), 7)
++
++    def test_source_evidence_ids_are_exact_and_deduplicated_for_categories(self) -> None:
++        data = self.load_fixture()
++        expected_source_ids = set(data["expected_source_evidence_ids"])
++        category_requirements = [
++            item for item in data["requirements"] if item.get("fixture_category") != "stop_gate"
++        ]
++        observed_source_ids = {
++            evidence["source_id"]
++            for item in category_requirements
++            for evidence in item["evidence"]
++        }
++        requirement_ids = [item["requirement_id"] for item in data["requirements"]]
++        category_names = [item["fixture_category"] for item in category_requirements]
++
++        self.assertEqual(observed_source_ids, expected_source_ids)
++        self.assertEqual(len(requirement_ids), len(set(requirement_ids)))
++        self.assertEqual(len(category_names), len(set(category_names)))
++
++    def test_confidence_values_stay_inside_fixture_bounds(self) -> None:
++        data = self.load_fixture()
++        bounds = data["confidence_bounds"]
++        minimum = float(bounds["minimum"])
++        maximum = float(bounds["maximum"])
++
++        for requirement in fixture_from_dict(data).requirements:
++            self.assertGreaterEqual(requirement.confidence, minimum, requirement.requirement_id)
++            self.assertLessEqual(requirement.confidence, maximum, requirement.requirement_id)
++
++    def test_stop_gates_have_explicit_classifications(self) -> None:
++        data = self.load_fixture()
++        expected = data["expected_stop_gate_classifications"]
++        observed = {
++            item["requirement_id"]: item.get("stop_gate", {}).get("classification")
++            for item in data["requirements"]
++            if item.get("type") == "action_gate"
++        }
++
++        self.assertEqual(observed, expected)
++        for item in data["requirements"]:
++            if item.get("type") != "action_gate":
++                continue
++            self.assertTrue(
++                item.get("stop_gate", {}).get("requires_exact_user_confirmation"),
++                item["requirement_id"],
++            )
++            self.assertIn(
++                item.get("stop_gate", {}).get("classification"),
++                {"potentially_consequential", "financial"},
++                item["requirement_id"],
++            )
++
++
++if __name__ == "__main__":
++    unittest.main()

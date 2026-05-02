@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/guardrails/sign_permit_workflow_guardrails.json",
+    "ppd/tests/test_sign_permit_guardrail_fixtures.py"
+  ],
+  "created_at": "2026-05-02T00:02:52.043522Z",
+  "impact": "Advances the PP&D guardrail plan by adding deterministic sign permit workflow coverage without live crawl, DevHub automation, private data, uploads, submissions, payments, or authenticated artifacts.",
+  "summary": "Add fixture-only sign permit guardrail tests covering missing facts, document groups, payment, corrections, inspections, and finalization stop points.",
+  "target_task": "Task checkbox-100: Add guardrail compiler fixture tests for the sign permit workflow covering missing facts, required document groups, payment stop points, correction-upload stop points, and any inspection/finalization stop points, using only fixture data.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 102 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "....................................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 247 tests in 0.028s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

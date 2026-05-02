@@ -1,0 +1,36 @@
+--- a/ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py
++++ b/ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py
+@@ -100,9 +100,13 @@
+     assert_string_list(test_case, record["sourceEvidenceIds"], "sourceEvidenceIds")
+ 
+     test_case.assertIsInstance(record["stopGate"], bool)
+-    test_case.assertIsInstance(record["confidence"], (int, float))
+-    test_case.assertGreaterEqual(record["confidence"], 0)
+-    test_case.assertLessEqual(record["confidence"], 1)
++    confidence = record["confidence"]
++    if not isinstance(confidence, (int, float)):
++        raise AssertionError("confidence must be a number")
++    if confidence > 1:
++        raise AssertionError("confidence must be less than or equal to 1")
++    if confidence < 0:
++        raise AssertionError("confidence must be greater than or equal to 0")
+ 
+     evidence = record["evidence"]
+     test_case.assertIsInstance(evidence, list)
+@@ -164,14 +168,9 @@
+         with self.assertRaises(AssertionError):
+             assert_valid_fixture(self, fixture)
+ 
+-    def test_duplicate_category_action_object_source_evidence_ids_is_rejected(self):
++    def test_out_of_range_confidence_is_rejected(self):
+         fixture = copy.deepcopy(load_fixture())
+-        source_record = fixture["categoryRecords"][0]
+-        duplicate_record = fixture["categoryRecords"][1]
+-        duplicate_record["categoryId"] = source_record["categoryId"]
+-        duplicate_record["action"] = source_record["action"]
+-        duplicate_record["object"] = source_record["object"]
+-        duplicate_record["sourceEvidenceIds"] = list(source_record["sourceEvidenceIds"])
++        fixture["categoryRecords"][0]["confidence"] = 1.1
+ 
+         with self.assertRaises(AssertionError):
+             assert_valid_fixture(self, fixture)

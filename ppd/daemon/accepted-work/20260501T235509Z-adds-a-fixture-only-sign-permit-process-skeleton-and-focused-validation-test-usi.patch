@@ -1,0 +1,616 @@
+--- a/ppd/tests/fixtures/permit_processes/sign_permit_process.json
++++ b/ppd/tests/fixtures/permit_processes/sign_permit_process.json
+@@ -0,0 +1,454 @@
++{
++  "schemaVersion": 1,
++  "processId": "ppd_sign_permit_fixture_v1",
++  "permitType": "sign_permit",
++  "fixtureOnly": true,
++  "sourceInventoryOnly": true,
++  "generatedFrom": "existing_public_fixture_source_inventory",
++  "lastReviewed": "2026-05-01T00:00:00Z",
++  "authoritySources": [
++    {
++      "sourceId": "source_inventory_ppd_permit_guidance_signs",
++      "authorityLabel": "PP&D public permit guidance",
++      "canonicalUrl": "https://www.portland.gov/ppd/permits/sign-permits",
++      "category": "permit_guidance",
++      "recrawlCadenceHint": "monthly",
++      "evidenceUse": "Identifies sign permits as a public PP&D permit workflow category."
++    },
++    {
++      "sourceId": "source_inventory_devhub_application_guidance",
++      "authorityLabel": "DevHub public application guidance",
++      "canonicalUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
++      "category": "devhub_guide",
++      "recrawlCadenceHint": "weekly",
++      "evidenceUse": "Lists sign permits among public DevHub permit request types and supports account/request-type stages."
++    },
++    {
++      "sourceId": "source_inventory_single_pdf_process",
++      "authorityLabel": "PP&D Single PDF Process guidance",
++      "canonicalUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
++      "category": "submittal_guidance",
++      "recrawlCadenceHint": "monthly",
++      "evidenceUse": "Supports file rules for one searchable drawing-plan PDF and separate supporting PDFs when the Single PDF Process applies."
++    },
++    {
++      "sourceId": "source_inventory_devhub_faq",
++      "authorityLabel": "DevHub public FAQ",
++      "canonicalUrl": "https://www.portland.gov/ppd/devhub/faq",
++      "category": "devhub_guide",
++      "recrawlCadenceHint": "weekly",
++      "evidenceUse": "Supports fee payment, permit request, upload, correction, and inspection service categories."
++    },
++    {
++      "sourceId": "source_inventory_ppd_permit_applications_forms",
++      "authorityLabel": "PP&D permits and inspections applications index",
++      "canonicalUrl": "https://www.portland.gov/ppd/permits/inspections-applications",
++      "category": "forms_index",
++      "recrawlCadenceHint": "monthly",
++      "evidenceUse": "Supports application-form and supporting-document inventory checks."
++    }
++  ],
++  "requiredFacts": [
++    {
++      "id": "fact_property_identifier",
++      "kind": "property",
++      "label": "Project site address or property identifier",
++      "requiredBeforeStage": "property_lookup",
++      "evidence": ["source_inventory_devhub_application_guidance"]
++    },
++    {
++      "id": "fact_sign_work_scope",
++      "kind": "project_scope",
++      "label": "Description of sign work, sign type, location, dimensions, illumination, and whether work is new, replacement, alteration, or removal",
++      "requiredBeforeStage": "eligibility_screening",
++      "evidence": ["source_inventory_ppd_permit_guidance_signs"]
++    },
++    {
++      "id": "fact_property_owner_or_authorized_applicant",
++      "kind": "party",
++      "label": "Property owner, applicant, and authorized contact information",
++      "requiredBeforeStage": "application_data_entry",
++      "evidence": ["source_inventory_ppd_permit_applications_forms", "source_inventory_devhub_application_guidance"]
++    },
++    {
++      "id": "fact_contractor_or_installer",
++      "kind": "party",
++      "label": "Contractor or installer information when applicable",
++      "requiredBeforeStage": "application_data_entry",
++      "evidence": ["source_inventory_ppd_permit_applications_forms"]
++    },
++    {
++      "id": "fact_zoning_or_site_constraints_reviewed",
++      "kind": "eligibility",
++      "label": "Known zoning, location, frontage, right-of-way, landmark, or site constraints relevant to the proposed sign",
++      "requiredBeforeStage": "document_preparation",
++      "evidence": ["source_inventory_ppd_permit_guidance_signs"]
++    }
++  ],
++  "requiredDocuments": [
++    {
++      "id": "doc_sign_permit_application",
++      "kind": "application_form",
++      "label": "Sign permit application or DevHub sign permit request data",
++      "requiredBeforeStage": "submission",
++      "fileExpectation": "application_or_portal_fields",
++      "evidence": ["source_inventory_ppd_permit_applications_forms", "source_inventory_devhub_application_guidance"]
++    },
++    {
++      "id": "doc_site_or_location_plan",
++      "kind": "plan",
++      "label": "Site, elevation, or location plan showing where the sign will be installed",
++      "requiredBeforeStage": "upload",
++      "fileExpectation": "pdf",
++      "evidence": ["source_inventory_ppd_permit_guidance_signs", "source_inventory_single_pdf_process"]
++    },
++    {
++      "id": "doc_sign_drawings",
++      "kind": "plan",
++      "label": "Sign drawings with dimensions, materials, attachment details, and illumination details when applicable",
++      "requiredBeforeStage": "upload",
++      "fileExpectation": "pdf",
++      "evidence": ["source_inventory_ppd_permit_guidance_signs", "source_inventory_single_pdf_process"]
++    },
++    {
++      "id": "doc_structural_or_engineering_support",
++      "kind": "supporting_document",
++      "label": "Structural, engineering, mounting, or load support documents when required by the proposed sign scope",
++      "requiredBeforeStage": "upload",
++      "conditional": true,
++      "condition": "Required when the sign scope or attachment method needs technical support review.",
++      "fileExpectation": "separate_pdf",
++      "evidence": ["source_inventory_ppd_permit_guidance_signs", "source_inventory_single_pdf_process"]
++    },
++    {
++      "id": "doc_owner_authorization",
++      "kind": "supporting_document",
++      "label": "Owner authorization or agency documentation when the applicant is not the owner",
++      "requiredBeforeStage": "submission",
++      "conditional": true,
++      "condition": "Required when submitted by an authorized representative.",
++      "fileExpectation": "separate_pdf",
++      "evidence": ["source_inventory_ppd_permit_applications_forms"]
++    }
++  ],
++  "fileRules": [
++    {
++      "id": "file_rule_pdf_only_plans",
++      "rule": "Plan and drawing documents must be prepared as PDF files before DevHub upload.",
++      "appliesTo": ["doc_site_or_location_plan", "doc_sign_drawings"],
++      "evidence": ["source_inventory_single_pdf_process", "source_inventory_devhub_application_guidance"]
++    },
++    {
++      "id": "file_rule_single_searchable_plan_pdf_when_applicable",
++      "rule": "When Single PDF Process guidance applies, drawing plans are represented as one searchable PDF while applications, calculations, and supporting documents remain separate PDFs.",
++      "appliesTo": ["doc_site_or_location_plan", "doc_sign_drawings", "doc_structural_or_engineering_support", "doc_owner_authorization"],
++      "evidence": ["source_inventory_single_pdf_process"]
++    },
++    {
++      "id": "file_rule_no_private_fixture_artifacts",
++      "rule": "Committed fixtures contain only metadata, source identifiers, and redacted workflow expectations; they do not contain live crawl output, account files, browser artifacts, private values, downloaded documents, or response bodies.",
++      "appliesTo": ["fixture"],
++      "evidence": ["source_inventory_devhub_faq"]
++    }
++  ],
++  "stages": [
++    {
++      "id": "pre_application_research",
++      "kind": "pre_application_research",
++      "label": "Review sign permit guidance and determine whether the proposed sign scope needs a permit and supporting review.",
++      "requiredFacts": ["fact_sign_work_scope"],
++      "requiredDocuments": [],
++      "actionGates": ["gate_source_review_before_advice"],
++      "evidence": ["source_inventory_ppd_permit_guidance_signs"]
++    },
++    {
++      "id": "account_setup",
++      "kind": "account_setup",
++      "label": "Use DevHub as the public online permitting system and stop before any sign-in step requiring the user to act directly.",
++      "requiredFacts": [],
++      "requiredDocuments": [],
++      "actionGates": ["gate_no_account_or_identity_automation"],
++      "evidence": ["source_inventory_devhub_application_guidance", "source_inventory_devhub_faq"]
++    },
++    {
++      "id": "property_lookup",
++      "kind": "property_lookup",
++      "label": "Identify the project site and collect property context needed for the permit request.",
++      "requiredFacts": ["fact_property_identifier"],
++      "requiredDocuments": [],
++      "actionGates": ["gate_missing_property_fact"],
++      "evidence": ["source_inventory_devhub_application_guidance"]
++    },
++    {
++      "id": "permit_type_selection",
++      "kind": "permit_request_type_selection",
++      "label": "Select the sign permit request type only after the project scope matches the public sign permit workflow evidence.",
++      "requiredFacts": ["fact_sign_work_scope"],
++      "requiredDocuments": [],
++      "actionGates": ["gate_sign_permit_type_confirmation"],
++      "evidence": ["source_inventory_devhub_application_guidance", "source_inventory_ppd_permit_guidance_signs"]
++    },
++    {
++      "id": "eligibility_screening",
++      "kind": "eligibility_screening",
++      "label": "Screen for site, zoning, frontage, landmark, right-of-way, or sign-scope constraints before treating the package as ready.",
++      "requiredFacts": ["fact_sign_work_scope", "fact_zoning_or_site_constraints_reviewed"],
++      "requiredDocuments": [],
++      "actionGates": ["gate_uncertain_scope_routes_to_human"],
++      "evidence": ["source_inventory_ppd_permit_guidance_signs"]
++    },
++    {
++      "id": "document_preparation",
++      "kind": "document_preparation",
++      "label": "Prepare the sign application data, sign drawings, site or elevation plans, and conditional support documents as PDFs where applicable.",
++      "requiredFacts": ["fact_property_owner_or_authorized_applicant", "fact_contractor_or_installer"],
++      "requiredDocuments": ["doc_sign_permit_application", "doc_site_or_location_plan", "doc_sign_drawings", "doc_structural_or_engineering_support", "doc_owner_authorization"],
++      "actionGates": ["gate_document_completeness_before_upload"],
++      "evidence": ["source_inventory_ppd_permit_applications_forms", "source_inventory_single_pdf_process"]
++    },
++    {
++      "id": "application_data_entry",
++      "kind": "application_data_entry",
++      "label": "Draft reversible DevHub application fields only from user-supplied or source-backed facts.",
++      "requiredFacts": ["fact_property_identifier", "fact_sign_work_scope", "fact_property_owner_or_authorized_applicant"],
++      "requiredDocuments": ["doc_sign_permit_application"],
++      "actionGates": ["gate_draft_only_field_entry"],
++      "evidence": ["source_inventory_devhub_application_guidance"]
++    },
++    {
++      "id": "upload",
++      "kind": "upload",
++      "label": "Prepare an upload preview for required PDFs and stop before any official upload without exact confirmation.",
++      "requiredFacts": [],
++      "requiredDocuments": ["doc_site_or_location_plan", "doc_sign_drawings"],
++      "actionGates": ["gate_official_upload_confirmation"],
++      "evidence": ["source_inventory_devhub_application_guidance", "source_inventory_single_pdf_process"]
++    },
++    {
++      "id": "acknowledgment_certification",
++      "kind": "acknowledgment_certification",
++      "label": "Require user review and exact confirmation for any acknowledgment or certification checkpoint.",
++      "requiredFacts": [],
++      "requiredDocuments": [],
++      "actionGates": ["gate_certification_confirmation"],
++      "evidence": ["source_inventory_devhub_application_guidance"]
++    },
++    {
++      "id": "submission",
++      "kind": "submission",
++      "label": "Stop before submitting the sign permit request unless the user gives exact session-specific confirmation.",
++      "requiredFacts": ["fact_property_identifier", "fact_sign_work_scope"],
++      "requiredDocuments": ["doc_sign_permit_application", "doc_site_or_location_plan", "doc_sign_drawings"],
++      "actionGates": ["gate_submission_confirmation"],
++      "evidence": ["source_inventory_devhub_application_guidance"]
++    },
++    {
++      "id": "prescreen_intake",
++      "kind": "prescreen_intake",
++      "label": "Track intake or prescreen status and ask the user for missing information if PP&D requests it.",
++      "requiredFacts": [],
++      "requiredDocuments": [],
++      "actionGates": ["gate_missing_information_response"],
++      "evidence": ["source_inventory_devhub_faq"]
++    },
++    {
++      "id": "fee_payment",
++      "kind": "fee_payment",
++      "label": "Treat fee payment and payment-detail entry as financial actions that require exact explicit user confirmation.",
++      "requiredFacts": [],
++      "requiredDocuments": [],
++      "actionGates": ["gate_payment_confirmation"],
++      "evidence": ["source_inventory_devhub_faq"]
++    },
++    {
++      "id": "plan_review_and_corrections",
++      "kind": "plan_review",
++      "label": "Track review comments and prepare correction upload previews only from user-approved replacement documents.",
++      "requiredFacts": [],
++      "requiredDocuments": [],
++      "actionGates": ["gate_correction_upload_confirmation"],
++      "evidence": ["source_inventory_devhub_faq"]
++    },
++    {
++      "id": "approval_and_issuance",
++      "kind": "approval_issuance",
++      "label": "Track permit issuance status and distinguish issued permit status from final project closeout.",
++      "requiredFacts": [],
++      "requiredDocuments": [],
++      "actionGates": ["gate_status_is_read_only"],
++      "evidence": ["source_inventory_devhub_faq"]
++    },
++    {
++      "id": "inspections",
++      "kind": "inspections",
++      "label": "Treat inspection scheduling as consequential; prepare a preview and stop before scheduling without exact confirmation.",
++      "requiredFacts": ["fact_property_identifier"],
++      "requiredDocuments": [],
++      "actionGates": ["gate_inspection_scheduling_confirmation"],
++      "evidence": ["source_inventory_devhub_faq"]
++    },
++    {
++      "id": "finalization_closeout",
++      "kind": "closeout",
++      "label": "Track final inspection or closeout status and preserve unresolved issues for human review.",
++      "requiredFacts": [],
++      "requiredDocuments": [],
++      "actionGates": ["gate_finalization_status_review"],
++      "evidence": ["source_inventory_devhub_faq"]
++    }
++  ],
++  "feePaymentGates": [
++    {
++      "id": "gate_payment_confirmation",
++      "kind": "financial",
++      "classification": "financial",
++      "action": "pay_fees_or_enter_payment_details",
++      "requiredCondition": "exact_explicit_user_confirmation",
++      "stopRule": "Agent may summarize visible fee status and prepare a payment preview, but must not pay fees or enter payment details.",
++      "evidence": ["source_inventory_devhub_faq"]
++    }
++  ],
++  "inspectionFinalizationGates": [
++    {
++      "id": "gate_inspection_scheduling_confirmation",
++      "kind": "consequential",
++      "classification": "potentially_consequential",
++      "action": "schedule_inspection",
++      "requiredCondition": "exact_explicit_user_confirmation",
++      "stopRule": "Agent may identify likely inspection needs and prepare a scheduling preview, but must not schedule an inspection without exact confirmation.",
++      "evidence": ["source_inventory_devhub_faq"]
++    },
++    {
++      "id": "gate_finalization_status_review",
++      "kind": "read_only",
++      "classification": "safe_read_only",
++      "action": "read_finalization_status",
++      "requiredCondition": "source_backed_status_only",
++      "stopRule": "Agent may report status from fixture-backed evidence and should route unresolved closeout conflicts to a human.",
++      "evidence": ["source_inventory_devhub_faq"]
++    }
++  ],
++  "actionGates": [
++    {
++      "id": "gate_source_review_before_advice",
++      "kind": "action_gate",
++      "classification": "safe_read_only",
++      "action": "provide_sign_permit_guidance",
++      "requiredCondition": "citation_backed_public_source_inventory_reference",
++      "evidence": ["source_inventory_ppd_permit_guidance_signs"]
++    },
++    {
++      "id": "gate_no_account_or_identity_automation",
++      "kind": "action_gate",
++      "classification": "prohibited_without_user_action",
++      "action": "account_or_identity_step",
++      "requiredCondition": "user_performs_identity_step_directly",
++      "evidence": ["source_inventory_devhub_application_guidance"]
++    },
++    {
++      "id": "gate_missing_property_fact",
++      "kind": "action_gate",
++      "classification": "missing_information",
++      "action": "continue_property_lookup",
++      "requiredCondition": "property_identifier_present",
++      "evidence": ["source_inventory_devhub_application_guidance"]
++    },
++    {
++      "id": "gate_sign_permit_type_confirmation",
++      "kind": "action_gate",
++      "classification": "safe_read_only",
++      "action": "select_sign_permit_process_model",
++      "requiredCondition": "sign_scope_matches_public_guidance",
++      "evidence": ["source_inventory_devhub_application_guidance", "source_inventory_ppd_permit_guidance_signs"]
++    },
++    {
++      "id": "gate_uncertain_scope_routes_to_human",
++      "kind": "action_gate",
++      "classification": "escalation",
++      "action": "resolve_uncertain_sign_scope",
++      "requiredCondition": "human_review_when_scope_or_site_constraints_are_unclear",
++      "evidence": ["source_inventory_ppd_permit_guidance_signs"]
++    },
++    {
++      "id": "gate_document_completeness_before_upload",
++      "kind": "action_gate",
++      "classification": "precondition",
++      "action": "prepare_upload_package",
++      "requiredCondition": "required_documents_present_or_missing_items_reported",
++      "evidence": ["source_inventory_ppd_permit_applications_forms", "source_inventory_single_pdf_process"]
++    },
++    {
++      "id": "gate_draft_only_field_entry",
++      "kind": "action_gate",
++      "classification": "reversible_draft_edit",
++      "action": "draft_devhub_fields",
++      "requiredCondition": "user_supplied_or_source_backed_fact",
++      "evidence": ["source_inventory_devhub_application_guidance"]
++    },
++    {
++      "id": "gate_official_upload_confirmation",
++      "kind": "action_gate",
++      "classification": "potentially_consequential",
++      "action": "official_upload",
++      "requiredCondition": "exact_explicit_user_confirmation",
++      "evidence": ["source_inventory_devhub_application_guidance", "source_inventory_single_pdf_process"]
++    },
++    {
++      "id": "gate_certification_confirmation",
++      "kind": "action_gate",
++      "classification": "potentially_consequential",
++      "action": "certify_or_acknowledge",
++      "requiredCondition": "exact_explicit_user_confirmation",
++      "evidence": ["source_inventory_devhub_application_guidance"]
++    },
++    {
++      "id": "gate_submission_confirmation",
++      "kind": "action_gate",
++      "classification": "potentially_consequential",
++      "action": "submit_sign_permit_request",
++      "requiredCondition": "exact_explicit_user_confirmation",
++      "evidence": ["source_inventory_devhub_application_guidance"]
++    },
++    {
++      "id": "gate_missing_information_response",
++      "kind": "action_gate",
++      "classification": "reversible_draft_edit",
++      "action": "prepare_missing_information_response",
++      "requiredCondition": "user_approved_response_materials",
++      "evidence": ["source_inventory_devhub_faq"]
++    },
++    {
++      "id": "gate_correction_upload_confirmation",
++      "kind": "action_gate",
++      "classification": "potentially_consequential",
++      "action": "official_correction_upload",
++      "requiredCondition": "exact_explicit_user_confirmation",
++      "evidence": ["source_inventory_devhub_faq"]
++    },
++    {
++      "id": "gate_status_is_read_only",
++      "kind": "action_gate",
++      "classification": "safe_read_only",
++      "action": "read_permit_status",
++      "requiredCondition": "read_only_status_review",
++      "evidence": ["source_inventory_devhub_faq"]
++    }
++  ],
++  "agentStopPoints": [
++    "account_or_identity_step",
++    "official_upload",
++    "certify_or_acknowledge",
++    "submit_sign_permit_request",
++    "pay_fees_or_enter_payment_details",
++    "official_correction_upload",
++    "schedule_inspection"
++  ],
++  "privateArtifactPolicy": {
++    "fixtureContainsOnlyPublicMetadata": true,
++    "noLiveCrawlData": true,
++    "noPrivateAccountData": true,
++    "noDownloadedDocuments": true,
++    "noBrowserArtifacts": true,
++    "noResponseBodies": true
++  }
++}
+--- a/ppd/tests/test_sign_permit_process_fixture.py
++++ b/ppd/tests/test_sign_permit_process_fixture.py
+@@ -0,0 +1,156 @@
++"""Validate the fixture-only PP&D sign permit workflow skeleton."""
++
++from __future__ import annotations
++
++import json
++from pathlib import Path
++import unittest
++
++
++FIXTURE_PATH = Path(__file__).parent / "fixtures" / "permit_processes" / "sign_permit_process.json"
++
++
++class SignPermitWorkflowFixtureTest(unittest.TestCase):
++    def setUp(self) -> None:
++        with FIXTURE_PATH.open("r", encoding="utf-8") as handle:
++            self.fixture = json.load(handle)
++
++    def test_fixture_is_public_source_inventory_only(self) -> None:
++        self.assertEqual(self.fixture["processId"], "ppd_sign_permit_fixture_v1")
++        self.assertEqual(self.fixture["permitType"], "sign_permit")
++        self.assertTrue(self.fixture["fixtureOnly"])
++        self.assertTrue(self.fixture["sourceInventoryOnly"])
++        self.assertEqual(self.fixture["generatedFrom"], "existing_public_fixture_source_inventory")
++        self.assertGreaterEqual(len(self.fixture["authoritySources"]), 5)
++        for source in self.fixture["authoritySources"]:
++            self.assertTrue(source["sourceId"].startswith("source_inventory_"))
++            self.assertTrue(source["canonicalUrl"].startswith("https://www.portland.gov/ppd"))
++            self.assertIn("authorityLabel", source)
++            self.assertIn("recrawlCadenceHint", source)
++            self.assertIn("evidenceUse", source)
++
++    def test_required_facts_documents_and_file_rules_are_source_backed(self) -> None:
++        source_ids = {source["sourceId"] for source in self.fixture["authoritySources"]}
++        self.assertGreaterEqual(len(self.fixture["requiredFacts"]), 5)
++        self.assertGreaterEqual(len(self.fixture["requiredDocuments"]), 5)
++        self.assertGreaterEqual(len(self.fixture["fileRules"]), 3)
++
++        for section_name in ("requiredFacts", "requiredDocuments", "fileRules"):
++            for item in self.fixture[section_name]:
++                self.assertIn("id", item)
++                self.assertIn("evidence", item)
++                self.assertTrue(item["evidence"])
++                self.assertTrue(set(item["evidence"]).issubset(source_ids))
++
++        document_ids = {document["id"] for document in self.fixture["requiredDocuments"]}
++        self.assertIn("doc_sign_permit_application", document_ids)
++        self.assertIn("doc_site_or_location_plan", document_ids)
++        self.assertIn("doc_sign_drawings", document_ids)
++        self.assertIn("doc_structural_or_engineering_support", document_ids)
++
++    def test_stages_cover_sign_permit_workflow_gates(self) -> None:
++        source_ids = {source["sourceId"] for source in self.fixture["authoritySources"]}
++        stage_ids = [stage["id"] for stage in self.fixture["stages"]]
++        expected_stage_ids = [
++            "pre_application_research",
++            "account_setup",
++            "property_lookup",
++            "permit_type_selection",
++            "eligibility_screening",
++            "document_preparation",
++            "application_data_entry",
++            "upload",
++            "acknowledgment_certification",
++            "submission",
++            "prescreen_intake",
++            "fee_payment",
++            "plan_review_and_corrections",
++            "approval_and_issuance",
++            "inspections",
++            "finalization_closeout",
++        ]
++        self.assertEqual(stage_ids, expected_stage_ids)
++
++        for stage in self.fixture["stages"]:
++            self.assertIn("kind", stage)
++            self.assertIn("label", stage)
++            self.assertIn("actionGates", stage)
++            self.assertIn("evidence", stage)
++            self.assertTrue(stage["evidence"])
++            self.assertTrue(set(stage["evidence"]).issubset(source_ids))
++
++    def test_action_gates_include_financial_consequential_and_read_only_stop_points(self) -> None:
++        source_ids = {source["sourceId"] for source in self.fixture["authoritySources"]}
++        gates = {gate["id"]: gate for gate in self.fixture["actionGates"]}
++        gates.update({gate["id"]: gate for gate in self.fixture["feePaymentGates"]})
++        gates.update({gate["id"]: gate for gate in self.fixture["inspectionFinalizationGates"]})
++
++        required_gate_ids = {
++            "gate_payment_confirmation",
++            "gate_inspection_scheduling_confirmation",
++            "gate_submission_confirmation",
++            "gate_official_upload_confirmation",
++            "gate_certification_confirmation",
++            "gate_correction_upload_confirmation",
++            "gate_finalization_status_review",
++            "gate_status_is_read_only",
++        }
++        self.assertTrue(required_gate_ids.issubset(gates))
++        self.assertEqual(gates["gate_payment_confirmation"]["classification"], "financial")
++        self.assertEqual(gates["gate_inspection_scheduling_confirmation"]["classification"], "potentially_consequential")
++        self.assertEqual(gates["gate_finalization_status_review"]["classification"], "safe_read_only")
++
++        for gate in gates.values():
++            self.assertIn("requiredCondition", gate)
++            self.assertIn("evidence", gate)
++            self.assertTrue(gate["evidence"])
++            self.assertTrue(set(gate["evidence"]).issubset(source_ids))
++
++        stop_points = set(self.fixture["agentStopPoints"])
++        self.assertIn("pay_fees_or_enter_payment_details", stop_points)
++        self.assertIn("official_correction_upload", stop_points)
++        self.assertIn("schedule_inspection", stop_points)
++        self.assertIn("submit_sign_permit_request", stop_points)
++
++    def test_fixture_contains_no_private_or_live_crawl_artifacts(self) -> None:
++        serialized = json.dumps(self.fixture, sort_keys=True).lower()
++        disallowed_markers = [
++            "ppd/data/private",
++            "storage_state",
++            "storage-state",
++            "auth_state",
++            "auth-state",
++            "cookies.json",
++            "localstorage.json",
++            "raw_crawl",
++            "raw-crawl",
++            "crawl_output",
++            "crawl-output",
++            "response body",
++            "response_body",
++            "trace.zip",
++            "playwright-report",
++            "/screenshots/",
++            "screenshot.png",
++            "/downloads/",
++            "downloaded_documents",
++            "password",
++            "secret",
++            "token",
++            "mfa code",
++            "captcha solution",
++        ]
++        for marker in disallowed_markers:
++            self.assertNotIn(marker.lower(), serialized)
++
++        policy = self.fixture["privateArtifactPolicy"]
++        self.assertTrue(policy["fixtureContainsOnlyPublicMetadata"])
++        self.assertTrue(policy["noLiveCrawlData"])
++        self.assertTrue(policy["noPrivateAccountData"])
++        self.assertTrue(policy["noDownloadedDocuments"])
++        self.assertTrue(policy["noBrowserArtifacts"])
++        self.assertTrue(policy["noResponseBodies"])
++
++
++if __name__ == "__main__":
++    unittest.main()

@@ -1,0 +1,97 @@
+"""Size guard for the online trade permit requirements extractor.
+
+The extractor is expected to stay as a compact plain-function module. This
+sentinel catches broad generated replacements before they become accepted PP&D
+work.
+"""
+
+from __future__ import annotations
+
+import ast
+import importlib.util
+from pathlib import Path
+import unittest
+
+
+MODULE_NAME = "ppd.extraction.online_trade_permit_requirements"
+MAX_PHYSICAL_LINES = 180
+
+
+class OnlineTradePermitRequirementsSizeGuardTest(unittest.TestCase):
+    def test_extractor_stays_small_and_has_no_dataclasses(self) -> None:
+        module_path = self._module_path()
+        source = module_path.read_text(encoding="utf-8")
+        physical_lines = source.splitlines()
+
+        self.assertLessEqual(
+            len(physical_lines),
+            MAX_PHYSICAL_LINES,
+            (
+                f"{MODULE_NAME} must stay at or below "
+                f"{MAX_PHYSICAL_LINES} physical lines; broad generated "
+                "extractor modules should be split or rejected"
+            ),
+        )
+
+        tree = ast.parse(source, filename=str(module_path))
+        dataclass_uses = list(_find_dataclass_uses(tree))
+        self.assertEqual(
+            [],
+            dataclass_uses,
+            f"{MODULE_NAME} must use compact plain data structures, not dataclasses",
+        )
+
+    def _module_path(self) -> Path:
+        spec = importlib.util.find_spec(MODULE_NAME)
+        if spec is None or spec.origin is None:
+            self.skipTest(f"{MODULE_NAME} is not present in this proposal")
+
+        path = Path(spec.origin)
+        self.assertEqual("online_trade_permit_requirements.py", path.name)
+        self.assertTrue(path.is_file(), f"expected a real source file at {path}")
+        return path
+
+
+def _find_dataclass_uses(tree: ast.AST) -> list[str]:
+    findings: list[str] = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                if alias.name == "dataclasses" or alias.name.startswith("dataclasses."):
+                    findings.append(f"import dataclasses at line {node.lineno}")
+        elif isinstance(node, ast.ImportFrom) and node.module == "dataclasses":
+            names = ", ".join(alias.name for alias in node.names)
+            findings.append(f"from dataclasses import {names} at line {node.lineno}")
+        elif isinstance(node, ast.ClassDef):
+            for decorator in node.decorator_list:
+                if _is_dataclass_reference(decorator):
+                    findings.append(f"@dataclass on {node.name} at line {decorator.lineno}")
+        elif isinstance(node, ast.Call) and _is_make_dataclass_call(node.func):
+            findings.append(f"make_dataclass call at line {node.lineno}")
+    return findings
+
+
+def _is_dataclass_reference(node: ast.AST) -> bool:
+    if isinstance(node, ast.Name):
+        return node.id == "dataclass"
+    if isinstance(node, ast.Attribute):
+        return node.attr == "dataclass" and _is_dataclasses_name(node.value)
+    if isinstance(node, ast.Call):
+        return _is_dataclass_reference(node.func)
+    return False
+
+
+def _is_make_dataclass_call(node: ast.AST) -> bool:
+    if isinstance(node, ast.Name):
+        return node.id == "make_dataclass"
+    if isinstance(node, ast.Attribute):
+        return node.attr == "make_dataclass" and _is_dataclasses_name(node.value)
+    return False
+
+
+def _is_dataclasses_name(node: ast.AST) -> bool:
+    return isinstance(node, ast.Name) and node.id == "dataclasses"
+
+
+if __name__ == "__main__":
+    unittest.main()

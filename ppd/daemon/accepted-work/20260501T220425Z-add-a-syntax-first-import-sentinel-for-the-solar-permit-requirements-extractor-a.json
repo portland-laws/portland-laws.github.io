@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/extraction/solar_permit_requirements.py",
+    "ppd/tests/test_solar_permit_requirements_syntax_first_import.py"
+  ],
+  "created_at": "2026-05-01T22:04:25.500362Z",
+  "impact": "This gives the PP&D daemon an early, isolated failure point for malformed Python in `ppd.extraction.solar_permit_requirements` before broader solar permit requirement validation runs.",
+  "summary": "Add a syntax-first import sentinel for the solar permit requirements extractor and a narrow test that compiles and imports only that module.",
+  "target_task": "Task checkbox-76: Add a one-file syntax-first import test for `ppd.extraction.solar_permit_requirements` that imports only that module and fails malformed Python before broad solar requirement validation resumes.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 82 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "................................................................................................................................................................ ---------------------------------------------------------------------- Ran 160 tests in 0.020s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

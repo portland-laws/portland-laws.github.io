@@ -1,0 +1,84 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -65,49 +65,46 @@
+ - [x] Add DevHub guardrail tests proving correction-upload review can produce a preview but cannot perform official upload or certification without exact session-specific user confirmation.
+ - [x] Add a missing-information detector fixture that compares a residential permit user-case fact inventory against the residential permit process requirements and returns only missing facts, files, acknowledgments, and decisions.
+ - [~] Add validation for missing-information detector output proving every requested user item is source-backed, deduplicated, action-classified, and free of private fixture values.
+-- [ ] Add a one-file syntax-first repair test for public source inventory validation that imports only `ppd.contracts.public_source_inventory` and rejects malformed Python before broad unittest discovery.
+-- [ ] Add a minimal invalid public source inventory fixture with exactly one unsafe field per entry so rejection reasons for raw bodies, credentials, traces, screenshots, downloaded documents, private DevHub paths, and missing provenance are deterministic.
+-- [ ] Add the public source inventory validator only after the syntax-first import test and one-unsafe-field fixture pass, covering allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and required provenance fields.
+ - [ ] Add a one-file syntax-first repair test for `ppd.contracts.source_freshness` that imports only that module and verifies Python annotations use valid assignment syntax before any broad source freshness work resumes.
+ - [ ] Add a minimal source freshness fixture with four records only: one stale guidance page, one changed content hash, one removed page, and one high-priority recrawl candidate, with no live fetch data or raw response bodies.
+ - [ ] Add the source freshness classifier in the smallest possible Python module after the import test and four-record fixture pass, covering stale guidance, changed hashes, removed pages, and recrawl priority.
+ - [ ] Add the fixture-only source freshness change report renderer only after the classifier task passes, summarizing changed requirements, new or removed links, affected permit-process fixtures, and citation references.
++- [ ] Add a one-file syntax-first repair test for public source inventory validation that imports only `ppd.contracts.public_source_inventory` and rejects malformed Python before broad unittest discovery.
++- [ ] Add a minimal invalid public source inventory fixture with exactly one unsafe field per entry so rejection reasons for raw bodies, credentials, traces, screenshots, downloaded documents, private DevHub paths, and missing provenance are deterministic.
++- [ ] Add the public source inventory validator only after the syntax-first import test and one-unsafe-field fixture pass, covering allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and required provenance fields.
+ 
+ ## Deferred Repair Notes
+ 
+-The former broad public-source-inventory validation checkbox is deferred because repeated daemon proposals failed validation, including Python syntax failures and a mismatched expected rejection reason. It must not be retried as one broad task. Resume autonomous work on independent fixture-first tasks and later return to the public-source-inventory validator through the three narrow queued tasks: syntax-first import test, one-unsafe-field invalid fixture, then validator implementation.
++The source freshness classifier checkbox is blocked because repeated proposals introduced invalid Python such as `if self.recrawl_cadence_days list[str]:`. The dependent change-report renderer is also blocked until source freshness has a syntactically valid import test, a minimal four-record fixture, and a small classifier module that pass validation. Do not retry the blocked source freshness or renderer tasks directly; use the appended syntax-first recovery tasks instead.
+ 
+-The source freshness classifier checkbox is blocked because repeated proposals introduced invalid Python such as `if self.recrawl_cadence_days list[str]:`. The dependent change-report renderer is also blocked until source freshness has a syntactically valid import test, a minimal four-record fixture, and a small classifier module that pass validation. Do not retry the blocked source freshness or renderer tasks directly; use the appended syntax-first recovery tasks instead.
++The former broad public-source-inventory validation checkbox is deferred because repeated daemon proposals failed validation, including Python syntax failures and mismatched expected rejection reasons. It must not be retried as one broad task. Resume autonomous work on independent fixture-first tasks and later return to the public-source-inventory validator through the three narrow queued tasks: syntax-first import test, one-unsafe-field invalid fixture, then validator implementation.
+ 
+ ## Task Selection Notes
+ 
+-Blocked source-freshness tasks are intentionally parked and should not stop unrelated PP&D progress. If an independent `[~]` or `[ ]` task does not depend on source freshness, the daemon may continue it.
++Blocked source-freshness tasks are parked and should not stop unrelated PP&D progress. A `[!]` task is not selectable while there is any `[~]` or `[ ]` task that is independent of it.
+ 
+-The current autonomous target is the `[~]` residential missing-information detector fixture. Continue that task before selecting any source-freshness recovery work. The missing-information detector task is fixture-only and independent of the blocked source-freshness classifier and renderer.
++The current autonomous target is the `[~]` residential missing-information detector validation task. Continue that task before selecting any source-freshness recovery work. It is fixture-only and independent of the blocked source-freshness classifier and renderer.
+ 
+-When no independent task is active, prefer fixture-first or syntax-first recovery tasks in this order:
++When no independent task is active, prefer recovery tasks in this order:
+ 
+-1. Finish the active residential missing-information detector fixture task.
+-2. Add validation for missing-information detector output.
+-3. Run the source-freshness syntax-first import task before any source-freshness fixture, classifier, or renderer work.
+-4. Run the four-record source-freshness fixture task before the classifier.
+-5. Run the smallest source-freshness classifier task.
+-6. Run the renderer only after the classifier has passed validation.
++1. Finish the active residential missing-information detector validation task.
++2. Run the source-freshness syntax-first import task before any source-freshness fixture, classifier, or renderer work.
++3. Run the four-record source-freshness fixture task before the classifier.
++4. Run the smallest source-freshness classifier task.
++5. Run the renderer only after the classifier has passed validation.
++6. Return to public-source-inventory recovery tasks only after source freshness is stable or no source-freshness recovery task is selectable.
+ 
+-Do not select the two `[!]` source-freshness tasks directly until their narrow prerequisites have passed.
++Do not select the two `[!]` source-freshness tasks directly until their narrow prerequisites have passed. Each recovery proposal should keep to one or two files unless the task explicitly requires a fixture plus its focused test.
++
++## Supervisor Recovery Rules
++
++- Treat repeated `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128` failures as a signal to split the task into syntax-first import tests, minimal fixtures, then implementation.
++- After three failed attempts against the same task, mark the broad task `[!]`, append narrower recovery tasks, and select a different independent task if one exists.
++- Do not let blocked task counts prevent daemon progress when a fixture-only or validation-first `[ ]` task remains selectable.
++- Prefer deterministic fixtures and validation-only changes before adding live crawl, authenticated DevHub, browser, or network behavior.
++- Do not create private DevHub session files, auth state, traces, raw crawl output, screenshots, or downloaded documents in repair cycles.
+ 
+ 
+-## Generated Status
+-
+-Last updated: 2026-05-01T20:12:00Z
+-
+-- Latest target: `Supervisor repair: park blocked source-freshness tasks and continue active residential missing-information detector work`
+-- Latest result: `task-board repaired`
+-- Latest summary: Removed stale duplicate generated status text, preserved completed tasks, kept source-freshness and renderer work blocked, and made the active independent missing-information detector task the next selectable work.
+-- Counts: `{"blocked": 2, "complete": 55, "in_progress": 1, "needed": 9}`
+-
+-
+-<!-- ppd-daemon-task-board:start -->
+ ## Generated Status
+ 
+ Last updated: 2026-05-01T20:08:30.045030Z
+@@ -115,6 +112,6 @@
+ - Latest target: `Task checkbox-58: Add a missing-information detector fixture that compares a residential permit user-case fact inventory against the residential permit process requirements and returns only missing facts, files, acknowledgments, and decisions.`
+ - Latest result: `accepted`
+ - Latest summary: Adds a deterministic residential permit missing-information detector fixture.
+-- Counts: `{"blocked": 2, "complete": 56, "in_progress": 0, "needed": 8}`
++- Counts: blocked 2, complete 56, in_progress 0, needed 8
+ 
+-<!-- ppd-daemon-task-board:end -->
++

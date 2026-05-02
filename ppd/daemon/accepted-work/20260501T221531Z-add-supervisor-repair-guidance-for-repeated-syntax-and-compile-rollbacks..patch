@@ -1,0 +1,146 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,105 +1,59 @@
+ # PP&D Supervisor Repair Guide
+ 
+-This guide is for supervisor-triggered repair cycles only. It is not a PP&D domain backlog and must not be used to implement permit, crawler, extraction, DevHub, or guardrail features directly.
++This guide is supervisor programming for the isolated PP&D daemon. It is used when recent daemon cycles roll back because validation failed before semantic tests could run.
+ 
+-## Syntax and Compile Failure Recovery
++## Syntax And Compile Rollback Rule
+ 
+-When two recent daemon validation rollbacks include Python `SyntaxError`, `py_compile` failures, or TypeScript parser errors such as `TS1005`, `TS1109`, or `TS1128`, the supervisor repair response must narrow the next worker attempt before any more domain work is requested.
++If two or more recent failures for the same task include any of these markers, classify the task as a syntax-first recovery instead of retrying the broad task:
+ 
+-Required recovery behavior:
++- `SyntaxError`
++- `py_compile`
++- `TS1005`
++- `TS1109`
++- `TS1128`
+ 
+-- Treat repeated syntax or compile failures as daemon-programming drift, not as a domain-task failure.
+-- Do not implement the selected PP&D domain task in the supervisor repair proposal.
+-- Prefer editing daemon prompt, preflight, retry, diagnostics, or this guide.
+-- Direct the worker toward a smaller file set on the next attempt.
+-- Limit the next syntax-recovery worker proposal to at most two files unless the selected task is explicitly a task-board-only planning edit.
+-- For a selected task that says `one-file implementation`, require exactly one changed implementation file and no fixture or test changes in that same proposal.
+-- Require syntax-valid complete replacements for every proposed Python, TypeScript, JavaScript, and JSON file.
+-- Prefer fixture-first and validation-first tasks over live crawl or authenticated automation.
+-- Keep broad shared contract rewrites out of syntax recovery unless the failed task directly requires that contract.
++The next worker prompt must ask for a smaller proposal that proves syntactic validity before broader behavior is attempted.
+ 
+-## Immediate Repair Prompt Patch
++## Required Recovery Shape
+ 
+-When the active task follows a syntax-failure streak, inject a short recovery block into the next worker prompt before the task context:
++For Python syntax or `py_compile` failures:
+ 
+-- Syntax/compile recovery mode is active because recent validation rollbacks failed before behavioral assertions.
+-- Return the smallest syntactically valid proposal that satisfies only the selected task.
+-- If editing Python, mentally pass `ast.parse` and `python3 -m py_compile` before returning JSON.
+-- Avoid dataclasses for recovery modules unless an existing passing file already uses them for the same contract.
+-- Do not mix fixture creation, production extractor behavior, validation tests, and broad contract rewrites in one proposal.
+-- For solar requirement extraction recovery, edit only `ppd/extraction/solar_permit_requirements.py` when the selected task asks for the no-dataclass extractor.
+-- Preserve existing sentinel constants, import-guard behavior, fixture paths, and expected-output records unless the selected task explicitly says to change them.
++1. Prefer one Python file only.
++2. Use plain functions, constants, dictionaries, and lists.
++3. Do not use dataclasses unless an existing passing test already imports the target module through normal package import mechanics.
++4. Require explicit comparison operators. For example, write `confidence  1.0`; never emit malformed fragments such as `confidence 1`.
++5. Keep validation focused on `py_compile` or a one-module import before broad unittest discovery.
+ 
+-## Preflight Expectations
++For TypeScript compile failures:
+ 
+-Daemon preflight should reject or warn on proposals before write/rollback churn when any of the following are true:
++1. Prefer one TypeScript file only.
++2. Keep the proposal syntactically complete before adding fixture breadth.
++3. Avoid broad contract rewrites after `TS1005`, `TS1109`, or `TS1128`; first repair the minimal module or test that fails parsing.
+ 
+-- A Python replacement cannot be parsed or compiled.
+-- A JSON replacement cannot be decoded.
+-- A TypeScript or JavaScript replacement contains obvious Python control-flow syntax.
+-- A proposal touches more than two files after repeated syntax failures for the same task.
+-- A `one-file implementation` task changes more than one file.
+-- A repair proposal tries to implement the active PP&D domain task instead of repairing daemon or supervisor behavior.
+-- A syntax-first import test targets a module path that does not exist and the proposal does not also create a minimal sentinel module for that exact path.
+-- A proposed path creates private DevHub state, traces, screenshots, raw crawl output, downloaded documents, or auth/session artifacts.
++## Worker Prompt Addendum
+ 
+-Minimum daemon-side preflight checks for recovery mode:
++When syntax-first recovery is active, append this instruction to the worker prompt:
+ 
+-- Parse every proposed `.py` replacement before writing it.
+-- Decode every proposed `.json` replacement before writing it.
+-- Reject `.ts`, `.tsx`, `.js`, and `.mjs` replacements that contain obvious Python tokens such as `def`, `elif`, `except`, or `None`.
+-- Count changed code/data files before writing; reject broad proposals during syntax recovery.
+-- Include the exact parser message in the failed-patch manifest so the next prompt can quote the failing line.
++Return the smallest syntactically complete proposal that can pass the narrow validation for this task. Do not broaden schemas, contracts, fixtures, or behavior in the same cycle. Before returning JSON, check every Python replacement as if `python3 -m py_compile` were run on it and every TypeScript replacement as if `tsc --noEmit` parsed it. If a value needs a bounds check, use an explicit operator such as ``, or `>=`.
+ 
+-## Worker Prompt Guardrails
++## Task Board Handling
+ 
+-A repair cycle responding to syntax failures should preserve or add instructions equivalent to these guardrails in the worker prompt:
++After three failed attempts against one broad task, the supervisor should park that broad task in Deferred Broad Items and append narrow selectable tasks in this order:
+ 
+-- Return only complete file replacements in JSON.
+-- For Python files, avoid TypeScript syntax and validate mentally against `python3 -m py_compile` before returning.
+-- For TypeScript files, avoid Python control-flow and type syntax.
+-- Keep proposals to the smallest file set that can satisfy the selected task.
+-- If recent failure context includes syntax-only failures, first return a minimal syntactically valid implementation rather than expanding behavior.
+-- Do not mix fixture creation, production extractor rewrites, and broad contract changes in one proposal unless all are strictly necessary.
+-- If adding a syntax-first import test, confirm the imported module already exists or include only the minimal sentinel module required for the import to succeed.
+-- After two syntax or compile rollbacks for the same task, prefer one of these shapes: one fixture file, one sentinel module, one no-dataclass implementation file, or one focused test plus the minimal fixture it needs.
++1. Add or restore a syntax-first import or compile sentinel.
++2. Add the minimal fixture expected by that sentinel or focused test.
++3. Add the smallest no-dataclass implementation that satisfies the fixture.
++4. Add a focused validation test only after the implementation imports cleanly.
+ 
+-## Retry Policy
++Do not mark application or domain artifacts as progress just to escape the loop. Repair only daemon prompt, preflight, retry, recovery, diagnostics, or PP&D fixture-first validation programming.
+ 
+-After a syntax-failure streak:
++## Current Solar Requirement Recovery
+ 
+-- The next worker proposal should be limited to the directly needed implementation and fixture/test files.
+-- If the selected task already failed twice with syntax errors, the daemon should include the exact compiler message in the next prompt and ask for a smaller proposal.
+-- If the same task fails again with syntax errors, the supervisor should repair prompt, preflight, retry rules, or diagnostics before allowing another worker attempt.
+-- If a syntax-first import test fails because the module is missing, the next attempt should create only the sentinel module or park the test until that prerequisite exists.
+-- Non-syntax assertion failures should be handled separately; they do not require this syntax recovery path unless they follow a syntax-failure streak.
++The solar permit requirement extractor has repeatedly failed with malformed Python such as `confidence 1` and `confidence 1.0`. Until a syntax-valid extractor passes, the supervisor should keep worker proposals narrow:
+ 
+-## Missing Module Recovery
+-
+-When a syntax-first import test fails with `ModuleNotFoundError`, treat it as task-ordering drift rather than a useful syntax guard failure.
+-
+-Required recovery behavior:
+-
+-- Do not retry a test-only import guard while the target module is absent.
+-- Park the impossible import-test retry outside selectable checkbox form if the task board allows it.
+-- Add or select a narrower prerequisite task that creates only a minimal sentinel module, for example a Python file exposing `MODULE_STATUS = "syntax_first_import_ready"` and no behavior.
+-- After the sentinel module exists, retry the import guard as a separate one-file validation task.
+-- If the selected task explicitly requires the import guard and no task-board edit is available, allow only a two-file proposal containing the minimal sentinel module and the import test; do not add extractor behavior, fixtures, or broad validation in that same proposal.
+-- A `ModuleNotFoundError` from an import guard should not count as evidence that the domain extractor behavior is wrong.
+-
+-## Solar Requirement Recovery
+-
+-The solar permit requirement extraction sequence has already produced repeated malformed Python such as `confidence 1`. Until the seven-record fixture, no-dataclass extractor, and focused validation pass in order, worker proposals must stay narrow.
+-
+-Required sequence:
+-
+-1. Add or finish the seven-record expected-output fixture only.
+-2. Add the extractor as a no-dataclass one-file implementation only.
+-3. Add the focused validation test only after the fixture and extractor are present.
+-4. Do not revive the parked broad solar requirement extraction task while narrower selectable tasks remain.
+-
+-For the active no-dataclass extractor task, the worker should expose only plain module constants and functions. It should not add tests, fixtures, dataclasses, generated schemas, live crawl behavior, DevHub automation, or task-board progress edits in the same proposal.
+-
+-## Scope Limits
+-
+-Supervisor repair proposals may edit only daemon, supervisor, validation, test, ignore, or operations documentation files allowed by the PP&D daemon policy. They must not mark domain progress by editing application artifacts, live crawl output, or DevHub private state.
++- one file for `ppd/extraction/solar_permit_requirements.py` when implementing behavior;
++- no dataclasses;
++- no shared contract rewrites;
++- no live crawl or authenticated DevHub automation;
++- no payment, submission, certification, upload, cancellation, MFA, CAPTCHA, or inspection scheduling automation;
++- validation-first work before broader requirement extraction behavior.

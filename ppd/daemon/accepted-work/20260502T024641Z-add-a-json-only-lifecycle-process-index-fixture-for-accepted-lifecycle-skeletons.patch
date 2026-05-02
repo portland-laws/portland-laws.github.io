@@ -1,0 +1,89 @@
+--- a/ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json
++++ b/ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json
+@@ -0,0 +1,86 @@
++{
++  "schemaVersion": 1,
++  "fixtureKind": "permit_lifecycle_process_index",
++  "generatedFrom": "accepted_lifecycle_process_skeleton_fixtures_only",
++  "manifestOnly": true,
++  "entries": [
++    {
++      "indexEntryId": "lifecycle_process_index_extension",
++      "processSkeletonFixturePath": "ppd/tests/fixtures/lifecycle/extension_lifecycle_process_skeleton.json",
++      "lifecycleCategoryIds": [
++        "extension_eligibility"
++      ],
++      "automationBoundary": "fixture_only_no_live_crawl_no_login_no_official_action",
++      "artifactPolicy": {
++        "containsRawSourceBodies": false,
++        "containsDownloadedDocuments": false,
++        "containsPrivateDevHubPaths": false,
++        "containsScreenshots": false,
++        "containsTraces": false,
++        "containsLiveCrawlOutput": false
++      }
++    },
++    {
++      "indexEntryId": "lifecycle_process_index_reactivation",
++      "processSkeletonFixturePath": "ppd/tests/fixtures/lifecycle/reactivation_lifecycle_process_skeleton.json",
++      "lifecycleCategoryIds": [
++        "reactivation_eligibility"
++      ],
++      "automationBoundary": "fixture_only_no_live_crawl_no_login_no_official_action",
++      "artifactPolicy": {
++        "containsRawSourceBodies": false,
++        "containsDownloadedDocuments": false,
++        "containsPrivateDevHubPaths": false,
++        "containsScreenshots": false,
++        "containsTraces": false,
++        "containsLiveCrawlOutput": false
++      }
++    },
++    {
++      "indexEntryId": "lifecycle_process_index_cancellation_refund",
++      "processSkeletonFixturePath": "ppd/tests/fixtures/lifecycle/cancellation_refund_lifecycle_process_skeleton.json",
++      "lifecycleCategoryIds": [
++        "cancellation_eligibility",
++        "refund_eligibility",
++        "fee_payment_checkpoints",
++        "explicit_confirmation_gates"
++      ],
++      "automationBoundary": "fixture_only_no_live_crawl_no_login_no_payment_no_cancellation_no_official_refund_no_official_action",
++      "artifactPolicy": {
++        "containsRawSourceBodies": false,
++        "containsDownloadedDocuments": false,
++        "containsPrivateDevHubPaths": false,
++        "containsScreenshots": false,
++        "containsTraces": false,
++        "containsLiveCrawlOutput": false
++      }
++    },
++    {
++      "indexEntryId": "lifecycle_process_index_inspection",
++      "processSkeletonFixturePath": "ppd/tests/fixtures/lifecycle/inspection_lifecycle_process_skeleton.json",
++      "lifecycleCategoryIds": [
++        "inspection_scheduling",
++        "inspection_result_follow_up"
++      ],
++      "automationBoundary": "fixture_only_no_live_crawl_no_login_no_upload_no_submission_no_certification_no_inspection_scheduling_no_official_action",
++      "artifactPolicy": {
++        "containsRawSourceBodies": false,
++        "containsDownloadedDocuments": false,
++        "containsPrivateDevHubPaths": false,
++        "containsScreenshots": false,
++        "containsTraces": false,
++        "containsLiveCrawlOutput": false
++      }
++    }
++  ],
++  "categoryIdIndex": [
++    "extension_eligibility",
++    "reactivation_eligibility",
++    "cancellation_eligibility",
++    "refund_eligibility",
++    "fee_payment_checkpoints",
++    "explicit_confirmation_gates",
++    "inspection_scheduling",
++    "inspection_result_follow_up"
++  ]
++}

@@ -1,0 +1,284 @@
+--- a/ppd/contracts/public_source_inventory.py
++++ b/ppd/contracts/public_source_inventory.py
+@@ -1,13 +1,123 @@
+-"""Syntax-first import target for PP&D public source inventory validation.
+-
+-The full public source inventory validator is intentionally deferred until the
+-syntax-first repair test and unsafe-field fixture task pass. Keep this module
+-small and import-safe so daemon validation can reject malformed Python before
+-running broader inventory tests.
++"""Syntax-first import target and validator for PP&D public source inventory.
++
++This module keeps the syntax-first sentinel stable while exposing small,
++plain-function validation helpers for fixture-only public source inventory
++checks. Inventory records are manifest-style metadata only; they must not carry
++raw response bodies, credentials, browser traces, screenshots, downloaded
++documents, private DevHub account paths, or entries without provenance.
+ """
++
++from __future__ import annotations
++
++from collections.abc import Mapping, Sequence
++from urllib.parse import urlparse
++
+ 
+ MODULE_PURPOSE = "syntax_first_public_source_inventory_validation"
+ PUBLIC_SOURCE_INVENTORY_VALIDATOR_READY = False
++
++ALLOWED_PUBLIC_HOSTS = {
++    "www.portland.gov": "Portland.gov public PP&D guidance",
++    "devhub.portlandoregon.gov": "DevHub public portal and guide pages",
++    "www.portlandoregon.gov": "PortlandOregon.gov account guidance",
++    "www.portlandmaps.com": "Portland Maps public permit and case references",
++}
++
++PRIVATE_DEVHUB_PATH_PREFIXES = (
++    "/secure",
++    "/account",
++    "/accounts",
++    "/my",
++    "/mypermits",
++    "/my-permits",
++    "/permitrequest",
++    "/permit-request",
++    "/dashboard",
++    "/user",
++    "/users",
++)
++
++RAW_RESPONSE_BODY_KEYS = {
++    "body",
++    "html",
++    "rawbody",
++    "rawcontent",
++    "rawhtml",
++    "rawresponsebody",
++    "rawtext",
++    "responsebody",
++    "text",
++}
++
++CREDENTIAL_KEYS = {
++    "apikey",
++    "api_key",
++    "auth",
++    "authorization",
++    "bearer",
++    "clientsecret",
++    "client_secret",
++    "cookie",
++    "cookies",
++    "credential",
++    "credentials",
++    "password",
++    "refreshtoken",
++    "refresh_token",
++    "secret",
++    "sessioncookie",
++    "session_cookie",
++    "token",
++    "username",
++}
++
++TRACE_KEYS = {
++    "trace",
++    "tracefile",
++    "tracepath",
++    "tracezip",
++    "playwrighttrace",
++}
++
++SCREENSHOT_KEYS = {
++    "screenshot",
++    "screenshotfile",
++    "screenshotpath",
++    "screenshots",
++}
++
++DOWNLOADED_DOCUMENT_KEYS = {
++    "download",
++    "downloadpath",
++    "downloadeddocument",
++    "downloadeddocumentpath",
++    "downloadeddocuments",
++    "documentdownloadpath",
++    "localdocumentpath",
++}
++
++REQUIRED_PROVENANCE_FIELDS = (
++    "sourceIndexId",
++    "retrievedAt",
++    "contentHash",
++)
++
++SHA256_PREFIX = "sha256:"
++SHA256_HEX_LENGTH = 64
++
++
++_REASON_MESSAGES = {
++    "raw_response_body": "inventory entries must not include raw response bodies",
++    "credential_field": "inventory entries must not include credentials or auth material",
++    "trace_path": "inventory entries must not include browser trace paths or artifacts",
++    "screenshot_path": "inventory entries must not include screenshot paths or artifacts",
++    "downloaded_document_path": "inventory entries must not include downloaded document paths",
++    "private_devhub_path": "inventory entries must not point at private DevHub account paths",
++    "non_allowlisted_host": "inventory entries must use an approved public PP&D host",
++    "missing_provenance": "inventory entries require sourceIndexId, retrievedAt, and contentHash provenance",
++    "invalid_provenance": "inventory provenance must include ISO UTC retrieval time and sha256 content hash",
++    "invalid_entry": "inventory entries must be JSON objects",
++}
+ 
+ 
+ def validator_status():
+@@ -17,3 +127,151 @@
+         "syntax_first_probe": True,
+         "validator_ready": PUBLIC_SOURCE_INVENTORY_VALIDATOR_READY,
+     }
++
++
++def validate_public_source_inventory(inventory):
++    """Return deterministic validation findings for an inventory-like object.
++
++    The fixture for this repair task intentionally includes exactly one unsafe
++    field per entry. To keep rejection reasons stable, this validator reports the
++    first safety or provenance failure found for each entry in a fixed order.
++    """
++    findings = []
++    entries = _inventory_entries(inventory)
++    for index, entry in enumerate(entries):
++        finding = _validate_inventory_entry(entry, index)
++        if finding is not None:
++            findings.append(finding)
++    return findings
++
++
++def assert_public_source_inventory(inventory):
++    """Raise ValueError when public source inventory validation fails."""
++    findings = validate_public_source_inventory(inventory)
++    if findings:
++        messages = []
++        for finding in findings:
++            entry_id = finding.get("entry_id", "")
++            reason = finding.get("reason", "invalid_entry")
++            field = finding.get("field", "")
++            messages.append(f"{entry_id}: {reason} at {field}")
++        raise ValueError("; ".join(messages))
++    return True
++
++
++def public_source_inventory_is_valid(inventory):
++    """Return True when the inventory has no safety or provenance findings."""
++    return not validate_public_source_inventory(inventory)
++
++
++def _inventory_entries(inventory):
++    if isinstance(inventory, Mapping):
++        entries = inventory.get("entries", ())
++    else:
++        entries = inventory
++    if isinstance(entries, Sequence) and not isinstance(entries, (str, bytes, bytearray)):
++        return list(entries)
++    return ()
++
++
++def _validate_inventory_entry(entry, index):
++    if not isinstance(entry, Mapping):
++        return _finding(index, index, "invalid_entry", "")
++
++    entry_id = str(entry.get("id", f"entry-{index}"))
++
++    unsafe = _first_unsafe_field(entry)
++    if unsafe is not None:
++        reason, field = unsafe
++        return _finding(entry_id, index, reason, field)
++
++    url_failure = _url_failure(entry)
++    if url_failure is not None:
++        reason, field = url_failure
++        return _finding(entry_id, index, reason, field)
++
++    provenance_failure = _provenance_failure(entry)
++    if provenance_failure is not None:
++        reason, field = provenance_failure
++        return _finding(entry_id, index, reason, field)
++
++    return None
++
++
++def _first_unsafe_field(entry):
++    for key in entry:
++        normalized = _normalize_key(key)
++        if normalized in RAW_RESPONSE_BODY_KEYS:
++            return "raw_response_body", str(key)
++    for key in entry:
++        normalized = _normalize_key(key)
++        if normalized in CREDENTIAL_KEYS:
++            return "credential_field", str(key)
++    for key in entry:
++        normalized = _normalize_key(key)
++        if normalized in TRACE_KEYS:
++            return "trace_path", str(key)
++    for key in entry:
++        normalized = _normalize_key(key)
++        if normalized in SCREENSHOT_KEYS:
++            return "screenshot_path", str(key)
++    for key in entry:
++        normalized = _normalize_key(key)
++        if normalized in DOWNLOADED_DOCUMENT_KEYS:
++            return "downloaded_document_path", str(key)
++    return None
++
++
++def _url_failure(entry):
++    for field in ("canonicalUrl", "sourceUrl"):
++        url = str(entry.get(field, ""))
++        parsed = urlparse(url)
++        if parsed.scheme != "https" or parsed.netloc not in ALLOWED_PUBLIC_HOSTS:
++            return "non_allowlisted_host", field
++        if parsed.netloc == "devhub.portlandoregon.gov" and _is_private_devhub_path(parsed.path):
++            return "private_devhub_path", field
++    return None
++
++
++def _provenance_failure(entry):
++    provenance = entry.get("provenance")
++    if not isinstance(provenance, Mapping):
++        return "missing_provenance", "provenance"
++    for field in REQUIRED_PROVENANCE_FIELDS:
++        if not str(provenance.get(field, "")).strip():
++            return "missing_provenance", f"provenance.{field}"
++    retrieved_at = str(provenance.get("retrievedAt", ""))
++    content_hash = str(provenance.get("contentHash", ""))
++    if not retrieved_at.endswith("Z"):
++        return "invalid_provenance", "provenance.retrievedAt"
++    if not _is_sha256_content_hash(content_hash):
++        return "invalid_provenance", "provenance.contentHash"
++    return None
++
++
++def _is_private_devhub_path(path):
++    normalized_path = "/" + str(path or "").strip().lstrip("/").lower()
++    return any(normalized_path.startswith(prefix) for prefix in PRIVATE_DEVHUB_PATH_PREFIXES)
++
++
++def _is_sha256_content_hash(value):
++    if not value.startswith(SHA256_PREFIX):
++        return False
++    digest = value[len(SHA256_PREFIX) :]
++    if len(digest) != SHA256_HEX_LENGTH:
++        return False
++    return all(character in "0123456789abcdefABCDEF" for character in digest)
++
++
++def _normalize_key(key):
++    return "".join(character for character in str(key) if character.isalnum()).lower()
++
++
++def _finding(entry_id, index, reason, field):
++    return {
++        "entry_id": str(entry_id),
++        "entry_index": index,
++        "reason": reason,
++        "field": field,
++        "message": _REASON_MESSAGES.get(reason, _REASON_MESSAGES["invalid_entry"]),
++    }

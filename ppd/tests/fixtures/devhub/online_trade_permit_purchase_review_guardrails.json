@@ -1,0 +1,101 @@
+{
+  "workflow": {
+    "fixtureId": "devhub-online-trade-permit-purchase-review-guardrails",
+    "sessionId": "session-2026-05-02-online-trade-review",
+    "requiredConfirmationPhrase": "CONFIRM session-2026-05-02-online-trade-review online trade permit purchase review exact action",
+    "permitType": "online_trade_permit",
+    "sourceUrl": "https://www.portland.gov/ppd/devhub",
+    "reviewSteps": [
+      {
+        "id": "review-permit-type",
+        "label": "Review online trade permit type",
+        "sourceRequirement": "devhub-online-trade-permit-purchase-review",
+        "redactedValue": "[REDACTED_PERMIT_TYPE]"
+      },
+      {
+        "id": "review-fees",
+        "label": "Review calculated fees before payment",
+        "sourceRequirement": "devhub-fee-payment-checkpoint",
+        "redactedValue": "[REDACTED_FEE_SUMMARY]"
+      },
+      {
+        "id": "review-inspection-path",
+        "label": "Review inspection scheduling availability after permit issuance",
+        "sourceRequirement": "devhub-inspection-scheduling-checkpoint",
+        "redactedValue": "[REDACTED_INSPECTION_OPTIONS]"
+      }
+    ]
+  },
+  "attempts": [
+    {
+      "attemptId": "preview-only",
+      "actionId": "preview_online_trade_permit_purchase_review",
+      "expectedStatus": "preview_ready"
+    },
+    {
+      "attemptId": "purchase-no-confirmation",
+      "actionId": "official_online_trade_permit_purchase",
+      "expectedStatus": "refused_missing_exact_session_confirmation"
+    },
+    {
+      "attemptId": "certify-no-confirmation",
+      "actionId": "certify_online_trade_permit_purchase",
+      "expectedStatus": "refused_missing_exact_session_confirmation"
+    },
+    {
+      "attemptId": "payment-no-confirmation",
+      "actionId": "pay_online_trade_permit_fees",
+      "expectedStatus": "refused_missing_exact_session_confirmation"
+    },
+    {
+      "attemptId": "cancel-no-confirmation",
+      "actionId": "cancel_online_trade_permit_purchase",
+      "expectedStatus": "refused_missing_exact_session_confirmation"
+    },
+    {
+      "attemptId": "inspection-no-confirmation",
+      "actionId": "schedule_online_trade_permit_inspection",
+      "expectedStatus": "refused_missing_exact_session_confirmation"
+    },
+    {
+      "attemptId": "generic-confirmation",
+      "actionId": "official_online_trade_permit_purchase",
+      "confirmation": {
+        "sessionId": "session-2026-05-02-online-trade-review",
+        "actionId": "official_online_trade_permit_purchase",
+        "phrase": "confirm"
+      },
+      "expectedStatus": "refused_missing_exact_session_confirmation"
+    },
+    {
+      "attemptId": "wrong-session",
+      "actionId": "official_online_trade_permit_purchase",
+      "confirmation": {
+        "sessionId": "session-other",
+        "actionId": "official_online_trade_permit_purchase",
+        "phrase": "CONFIRM session-2026-05-02-online-trade-review online trade permit purchase review exact action"
+      },
+      "expectedStatus": "refused_missing_exact_session_confirmation"
+    },
+    {
+      "attemptId": "wrong-action",
+      "actionId": "official_online_trade_permit_purchase",
+      "confirmation": {
+        "sessionId": "session-2026-05-02-online-trade-review",
+        "actionId": "pay_online_trade_permit_fees",
+        "phrase": "CONFIRM session-2026-05-02-online-trade-review online trade permit purchase review exact action"
+      },
+      "expectedStatus": "refused_missing_exact_session_confirmation"
+    },
+    {
+      "attemptId": "exact-purchase-confirmation",
+      "actionId": "official_online_trade_permit_purchase",
+      "confirmation": {
+        "sessionId": "session-2026-05-02-online-trade-review",
+        "actionId": "official_online_trade_permit_purchase",
+        "phrase": "CONFIRM session-2026-05-02-online-trade-review online trade permit purchase review exact action"
+      },
+      "expectedStatus": "exact_session_confirmation_present"
+    }
+  ]
+}

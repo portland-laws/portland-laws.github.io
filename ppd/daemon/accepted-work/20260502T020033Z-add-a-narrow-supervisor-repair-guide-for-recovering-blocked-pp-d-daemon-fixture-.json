@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-02T02:00:33.388748Z",
+  "impact": "This gives the supervisor and worker deterministic recovery rules for checkbox-15/18 style failures: prefer one-file fixture validators, inspect accepted JSON fixtures before adding tests, avoid process-model implementation code, and enforce syntactic validity before broader validation. That should let the daemon resume meaningful autonomous progress instead of retrying oversized or mismatched lifecycle extraction work.",
+  "summary": "Add a narrow supervisor repair guide for recovering blocked PP&D daemon fixture-validation tasks without broad rewrites or live automation.",
+  "target_task": "Supervisor repair: 1 task(s) are blocked: Task checkbox-15: Add a minimal extension-only lifecycle process skeleton fixture with required facts, required documents, user decisions, citation-backed action gates, and explicit no-live-automation notes from existing fixtures only.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 26 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................................................................................................................................................ss............................................................................................................................................. ---------------------------------------------------------------------- Ran 352 tests in 0.034s OK (skipped=2)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

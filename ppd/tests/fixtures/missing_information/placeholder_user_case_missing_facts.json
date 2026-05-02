@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "placeholder-user-case-missing-facts-v1",
+  "processId": "synthetic-single-pdf-building-permit-process-v1",
+  "lastReviewed": "2026-05-01",
+  "privacyClassification": "public_test_fixture_redacted",
+  "userCase": {
+    "caseId": "placeholder-case-001",
+    "knownFacts": [
+      {
+        "factId": "placeholder-project-scope",
+        "requiredInputId": "project_scope",
+        "label": "Project scope",
+        "valueKind": "placeholder_text",
+        "value": "Placeholder residential alteration scope for fixture validation only.",
+        "isPlaceholder": true,
+        "source": "synthetic_user_supplied_placeholder"
+      }
+    ]
+  },
+  "missingUserFacts": [
+    {
+      "requestId": "missing-property-identifier",
+      "requiredInputId": "property_identifier",
+      "label": "Property identifier",
+      "requestKind": "reversible_request_field",
+      "reason": "Required by the referenced public process fixture and not present in the placeholder user case facts.",
+      "sourceEvidenceIds": [
+        "ppd-devhub-application-guidance-public",
+        "ppd-single-pdf-process-public-guidance"
+      ]
+    }
+  ],
+  "excludedArtifacts": [
+    "pii",
+    "account_state",
+    "screenshots",
+    "browser_traces",
+    "uploads",
+    "raw_crawl_output"
+  ]
+}

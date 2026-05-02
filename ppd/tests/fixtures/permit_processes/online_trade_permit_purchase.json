@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "processId": "online_trade_permit_purchase_fixture_v1",
+  "permitType": "Online trade permit purchase",
+  "fixtureOnly": true,
+  "sourceMode": "existing_public_fixture_and_source_inventory_evidence_only",
+  "lastReviewed": "2026-05-02",
+  "authoritySources": [
+    {
+      "sourceId": "devhub_faq_service_categories",
+      "title": "Development Hub PDX FAQ service categories",
+      "canonicalUrl": "https://www.portland.gov/ppd/devhub/faq",
+      "authorityLabel": "PP&D public DevHub guidance",
+      "evidenceSummary": "Public DevHub FAQ identifies permit purchase, fee payment, and inspection scheduling for online trade permits as DevHub service categories.",
+      "fixtureEvidenceOnly": true
+    },
+    {
+      "sourceId": "devhub_application_guidance_trade_permits",
+      "title": "Development Hub PDX application guidance",
+      "canonicalUrl": "https://www.portland.gov/ppd/devhub",
+      "authorityLabel": "PP&D public DevHub guidance",
+      "evidenceSummary": "Public DevHub guidance identifies trade permits and trade permits with plan review among permit request types.",
+      "fixtureEvidenceOnly": true
+    },
+    {
+      "sourceId": "ppd_public_source_inventory",
+      "title": "PP&D fixture-only public source inventory",
+      "canonicalUrl": "https://www.portland.gov/ppd",
+      "authorityLabel": "PP&D source inventory fixture",
+      "evidenceSummary": "Existing fixture inventory categorizes PP&D permit application, forms, handout, fee, and DevHub guide pages as public sources for deterministic PP&D workflow modeling.",
+      "fixtureEvidenceOnly": true
+    }
+  ],
+  "eligibilityFacts": [
+    {
+      "factId": "project_property_identifier",
+      "label": "Property identifier or site address",
+      "required": true,
+      "reason": "The workflow must be tied to a Portland property before an online trade permit purchase can be evaluated or drafted.",
+      "citationIds": ["devhub_application_guidance_trade_permits", "ppd_public_source_inventory"]
+    },
+    {
+      "factId": "trade_permit_kind",
+      "label": "Trade permit kind",
+      "required": true,
+      "allowedValues": ["electrical", "mechanical", "plumbing"],
+      "reason": "The purchase workflow is scoped to online trade permit categories, not building permits or trade permits that require plan review.",
+      "citationIds": ["devhub_faq_service_categories", "devhub_application_guidance_trade_permits"]
+    },
+    {
+      "factId": "no_plan_review_required",
+      "label": "Project does not require plan review",
+      "required": true,
+      "reason": "The skeleton models online trade permit purchase only; trade permits with plan review must route to the separate plan-review workflow fixture.",
+      "citationIds": ["devhub_application_guidance_trade_permits"]
+    },
+    {
+      "factId": "applicant_role",
+      "label": "Applicant role",
+      "required": true,
+      "allowedValues": ["property_owner", "licensed_contractor", "authorized_agent"],
+      "reason": "The agent must know whether owner, contractor, or authorized agent facts and attestations are needed before drafting a purchase workflow.",
+      "citationIds": ["ppd_public_source_inventory"]
+    }
+  ],
+  "tradeScope": {
+    "included": [
+      "Online purchase path for eligible electrical, mechanical, or plumbing trade permits",
+      "Fixture-only eligibility screening before DevHub drafting",
+      "Fee review and payment stop point",
+      "Post-issuance inspection scheduling stop point"
+    ],
+    "excluded": [
+      "Trade permits with plan review",
+      "Building permit applications",
+      "Official submission, certification, payment, cancellation, upload, or inspection scheduling without exact session-specific confirmation",
+      "CAPTCHA, MFA, account creation, password recovery, or payment entry automation"
+    ],
+    "citationIds": ["devhub_faq_service_categories", "devhub_application_guidance_trade_permits"]
+  },
+  "requiredLicenseOrContractorFacts": [
+    {
+      "factId": "contractor_business_name_or_owner_attestation",
+      "label": "Contractor business name or owner-attestation path",
+      "requiredWhen": "applicant_role is licensed_contractor or property_owner",
+      "actionIfMissing": "ask_user",
+      "citationIds": ["ppd_public_source_inventory"]
+    },
+    {
+      "factId": "contractor_license_identifier",
+      "label": "Contractor license identifier when a contractor is used",
+      "requiredWhen": "applicant_role is licensed_contractor or authorized_agent_for_contractor",
+      "actionIfMissing": "ask_user",
+      "citationIds": ["ppd_public_source_inventory"]
+    },
+    {
+      "factId": "authorization_to_act",
+      "label": "Authorization to act for owner or contractor",
+      "requiredWhen": "applicant_role is authorized_agent",
+      "actionIfMissing": "ask_user",
+      "citationIds": ["ppd_public_source_inventory"]
+    }
+  ],
+  "stages": [
+    {
+      "stageId": "confirm_public_guidance_sources",
+      "kind": "pre_application_research",
+      "summary": "Use only committed public fixture/source-inventory evidence before modeling the workflow.",
+      "citationIds": ["ppd_public_source_inventory"]
+    },
+    {
+      "stageId": "screen_online_trade_purchase_eligibility",
+      "kind": "eligibility_screening",
+      "summary": "Confirm property, trade kind, applicant role, contractor/license facts, and that plan review is not required.",
+      "citationIds": ["devhub_application_guidance_trade_permits"]
+    },
+    {
+      "stageId": "draft_devhub_purchase_inputs",
+      "kind": "application_data_entry",
+      "summary": "Prepare reversible draft inputs only in mocked or user-approved DevHub contexts; do not purchase, certify, or submit.",
+      "citationIds": ["devhub_faq_service_categories"]
+    },
+    {
+      "stageId": "review_fees_before_payment",
+      "kind": "fee_payment_gate",
+      "summary": "Stop before fee payment or payment-detail entry and require exact user confirmation for the financial action.",
+      "citationIds": ["devhub_faq_service_categories"]
+    },
+    {
+      "stageId": "post_issuance_inspection_stop",
+      "kind": "inspection_scheduling_gate",
+      "summary": "Stop before scheduling an inspection for an online trade permit and require exact user confirmation.",
+      "citationIds": ["devhub_faq_service_categories"]
+    }
+  ],
+  "feePaymentGates": [
+    {
+      "gateId": "fee_amount_review_required",
+      "classification": "financial",
+      "action": "review_fee_amount",
+      "agentMayProceed": true,
+      "requiresExactUserConfirmation": false,
+      "citationIds": ["devhub_faq_service_categories"]
+    },
+    {
+      "gateId": "payment_entry_stop",
+      "classification": "financial",
+      "action": "enter_payment_details_or_pay_fee",
+      "agentMayProceed": false,
+      "requiresExactUserConfirmation": true,
+      "stopMessage": "Stop before payment entry or fee payment; require exact session-specific user confirmation.",
+      "citationIds": ["devhub_faq_service_categories"]
+    }
+  ],
+  "inspectionSchedulingStopPoints": [
+    {
+      "stopId": "inspection_schedule_preview_only",
+      "classification": "potentially_consequential",
+      "action": "schedule_online_trade_permit_inspection",
+      "agentMayProceed": false,
+      "requiresExactUserConfirmation": true,
+      "stopMessage": "The agent may summarize inspection scheduling requirements but must stop before scheduling.",
+      "citationIds": ["devhub_faq_service_categories"]
+    }
+  ],
+  "citationBackedActionGates": [
+    {
+      "gateId": "select_trade_permit_type_gate",
+      "classification": "reversible_draft_edit",
+      "action": "select_trade_permit_type",
+      "preconditions": ["trade_permit_kind", "no_plan_review_required"],
+      "citationIds": ["devhub_application_guidance_trade_permits"]
+    },
+    {
+      "gateId": "certification_stop_gate",
+      "classification": "potentially_consequential",
+      "action": "certify_or_attest_purchase_request",
+      "agentMayProceed": false,
+      "requiresExactUserConfirmation": true,
+      "citationIds": ["ppd_public_source_inventory"]
+    },
+    {
+      "gateId": "purchase_submission_stop_gate",
+      "classification": "potentially_consequential",
+      "action": "submit_or_purchase_online_trade_permit",
+      "agentMayProceed": false,
+      "requiresExactUserConfirmation": true,
+      "citationIds": ["devhub_faq_service_categories"]
+    },
+    {
+      "gateId": "payment_stop_gate",
+      "classification": "financial",
+      "action": "pay_online_trade_permit_fee",
+      "agentMayProceed": false,
+      "requiresExactUserConfirmation": true,
+      "citationIds": ["devhub_faq_service_categories"]
+    },
+    {
+      "gateId": "inspection_scheduling_stop_gate",
+      "classification": "potentially_consequential",
+      "action": "schedule_inspection",
+      "agentMayProceed": false,
+      "requiresExactUserConfirmation": true,
+      "citationIds": ["devhub_faq_service_categories"]
+    }
+  ],
+  "privateDataPolicy": {
+    "containsPrivateDevhubSession": false,
+    "containsCredentials": false,
+    "containsRawResponseBodies": false,
+    "containsDownloadedDocuments": false,
+    "containsScreenshotsOrTraces": false,
+    "liveCrawlRequired": false
+  }
+}

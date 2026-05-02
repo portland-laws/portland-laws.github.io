@@ -1,0 +1,119 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -2,37 +2,88 @@
+ 
+ ## Current Repair Focus
+ 
+-The blocked task is the missing-information output validator retry:
++The blocked task is the missing-information output validator recovery:
+ 
+-- Task checkbox-59: Add the missing-information output validator in the smallest possible Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection.
++- Task checkbox-63: Add the missing-information output validator as a single no-dataclass Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection using only `ppd/tests/fixtures/missing_information_output/four_requested_items.json`.
+ 
+-Recent failures were caused by Python syntax errors and by using `@dataclass` in a module loaded directly with `importlib.util.spec_from_file_location` without registration in `sys.modules`. The next retry must be smaller and must satisfy the syntax-first import guard before adding or changing broader tests.
++Recent failures were caused by three concrete mismatches:
+ 
+-## Retry Constraints
++1. Invalid Python was proposed after the syntax-first import guard already existed.
++2. The module omitted `MODULE_STATUS = "syntax_first_import_ready"`, which the import guard requires.
++3. The validator rejected the committed valid fixture because it used the wrong action-class expectations and treated `redactionPolicy.redactionToken` as a private value.
+ 
+-For the next daemon cycle on this task:
++The next retry must be a small implementation-only replacement of `ppd/contracts/missing_information_output_validation.py`. Do not edit the four-item fixture or broaden tests during this retry.
+ 
+-1. Edit only `ppd/contracts/missing_information_output_validation.py` unless an existing test already requires a different exact fixture path.
+-2. Do not use `@dataclass`, `typing.NamedTuple`, metaclasses, decorators with import-time side effects, or regexes that require complex escaping.
+-3. Preserve `MODULE_STATUS = "syntax_first_import_ready"` exactly so `ppd/tests/test_missing_information_output_validation_import.py` continues to pass.
+-4. Keep the module dependency-free except for Python standard library imports.
+-5. Run syntactic validation before semantic validation: `py_compile.compile(...)` must pass for the module before any unittest import path is exercised.
+-6. Reuse the already committed four-item missing-information output fixture. Do not create additional near-duplicate fixtures during the repair retry.
+-7. Implement the smallest public API likely to be needed by tests: `validate_missing_information_output(output)` returning a deterministic dictionary with `ok`, `errors`, `item_count`, and `actions` keys.
+-8. Fail closed when requested items are not a list, an item lacks source backing, a duplicate item appears, action classification is missing or unsupported, or a private value appears in public output fields.
+-9. Treat allowed action classes as exactly `fact`, `file`, `acknowledgment`, and `decision` unless an existing committed test explicitly names a different field value.
+-10. Avoid live crawling, authenticated DevHub automation, private session files, traces, raw crawl output, account data, or downloaded documents.
++## Required Public API
+ 
+-## Minimal Validator Shape
++The module must expose exactly the import sentinel and a simple validation function:
+ 
+-The module should be plain functions and constants. Prefer simple loops over clever schema machinery. Use conservative field aliases so fixture naming differences do not cause unnecessary retries:
++- `MODULE_STATUS = "syntax_first_import_ready"`
++- `validate_missing_information_output(output)`
+ 
+-- requested items may be under `requested_items`, `missing_information`, or `items`.
+-- action classification may be under `action`, `action_class`, `category`, or `kind`.
+-- source backing may be under `sources`, `source`, `citations`, `citation`, or `source_refs`.
+-- stable item identity may use `id`, `key`, `label`, `question`, or `prompt`.
++`validate_missing_information_output(output)` must return a list of error dictionaries. A valid output returns `[]`. Each error should use deterministic keys such as `path` and `reason`; it must not echo private values.
+ 
+-Private-value rejection should look only for obvious private data in string values: email addresses, phone-like digit runs, SSN-like patterns, and common secret-bearing field names such as password, token, secret, credential, auth, session, cookie, card, payment, ssn, birth, dob, address, applicant_name, owner_name, and parcel. Keep these checks deterministic and avoid storing or echoing private values in errors.
++Do not return a dictionary envelope with `ok`, `errors`, `item_count`, or `actions` for this task. Earlier guidance that suggested that shape was wrong for the committed tests.
++
++## Fixture Shape To Support
++
++The only required valid fixture for this retry is:
++
++- `ppd/tests/fixtures/missing_information_output/four_requested_items.json`
++
++The valid fixture uses camelCase keys:
++
++- top-level requested items: `requestedItems`
++- item kind: `kind`
++- action classification: `actionClassification`
++- source-backed flag: `sourceBacked`
++- source evidence: `evidence`
++- redacted value placeholder: `requestedValue: "[REDACTED]"`
++
++The validator may support snake_case aliases, but it must support the camelCase fixture without requiring a fixture edit.
++
++## Valid Action Mapping
++
++Accept the existing fixture classifications exactly as follows:
++
++- `kind: "fact"` requires `actionClassification: "read_only"`
++- `kind: "file"` requires `actionClassification: "draft_edit"`
++- `kind: "acknowledgment"` requires `actionClassification: "consequential_confirmation_required"`
++- `kind: "decision"` requires `actionClassification: "consequential_confirmation_required"`
++
++Do not require `safe_request`, `draft_file_request`, `acknowledgment_gate`, or `decision_gate`; those names caused a prior valid-fixture failure.
++
++## Validation Rules
++
++The implementation should be plain Python functions, constants, loops, dictionaries, lists, sets, and tuples only.
++
++Required checks:
++
++1. Top-level output must be a dictionary.
++2. Requested items must be a list under `requestedItems`; optional aliases such as `requested_items`, `missing_information`, or `items` are allowed but not required.
++3. Each item must be a dictionary with a stable identity from `id`, `key`, `label`, `question`, or `prompt`.
++4. Duplicate stable identities must be rejected.
++5. Each item must have `sourceBacked` set to true, or an equivalent truthy source-backed alias if supported.
++6. Each item must have non-empty source evidence under `evidence`; optional aliases such as `sources`, `source`, `citations`, `citation`, or `source_refs` are allowed.
++7. Evidence entries must include a public `sourceUrl` or equivalent URL field and should reject private DevHub/account paths.
++8. Each item must have a supported `kind` and matching `actionClassification` using the mapping above.
++9. Committed output must not include private user values in requested item fields.
++
++## Redaction Token Rule
++
++The fixture-level key `redactionPolicy.redactionToken` is allowed when its value is the literal placeholder `[REDACTED]`. Do not reject that key merely because it contains the word `token`.
++
++Private-value rejection should focus on real leaked values and secret-bearing fields outside the fixture's redaction policy metadata. Reject obvious private data such as email addresses, phone-like digit runs, SSN-like patterns, payment/card fields, password fields, cookie/session/auth credential fields, or non-redacted applicant/owner/address values. Keep the checks deterministic and do not include the offending private value in the error text.
++
++## Syntax Guardrails
++
++For this retry:
++
++1. Edit only `ppd/contracts/missing_information_output_validation.py`.
++2. Do not use `@dataclass`, `typing.NamedTuple`, metaclasses, decorators, broad type-evaluated annotations, or complex regular expressions.
++3. Prefer helper functions with simple names such as `_first_present`, `_is_non_empty`, `_item_identity`, `_source_errors`, and `_private_value_errors`.
++4. Keep the file short enough to audit in one pass.
++5. Make the module importable through `importlib.util.module_from_spec` without relying on package import side effects.
+ 
+ ## Acceptance Gate
+ 
+@@ -42,4 +93,4 @@
+ 2. `python3 -m unittest discover -s ppd/tests -p 'test_*.py'`
+ 3. TypeScript typecheck if TypeScript files are present under `ppd/`
+ 
+-If the import guard fails again, stop retrying broad implementations and add a narrower one-file repair task before resuming checkbox-59.
++If the import guard or fixture-valid test fails again, stop retrying the broad validator and add an even narrower one-file repair task that only proves the exact return shape and action-class mapping before resuming implementation.

@@ -1,0 +1,356 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "residential-permit-missing-information-detector",
+  "processId": "residential-building-permit",
+  "detectorMode": "fixture_only_deterministic",
+  "description": "Compares a redacted residential building permit user-case inventory against fixture process requirements and returns only missing facts, files, acknowledgments, and decisions.",
+  "sourceFixtureReferences": [
+    "ppd/tests/fixtures/processes/residential_building_permit_process.json",
+    "ppd/tests/fixtures/requirements/residential_building_permit_requirements.json"
+  ],
+  "matchingRules": {
+    "requiredFacts": "A fact is satisfied only when the user inventory has a matching fact id with present true and a non-private valueStatus of provided or selected.",
+    "requiredFiles": "A file is satisfied only when the inventory has a matching documentType with present true, redacted true, and fileFormat satisfying the process file rule.",
+    "requiredAcknowledgments": "An acknowledgment is satisfied only when the inventory has a matching acknowledgment id with reviewed true.",
+    "requiredDecisions": "A decision is satisfied only when the inventory has a matching decision id with selected true. Consequential or financial actions remain stop points and are requested as decisions only when needed for planning, not execution."
+  },
+  "processRequirements": {
+    "requiredFacts": [
+      {
+        "id": "property_identifier",
+        "label": "Property identifier or permit address",
+        "kind": "property",
+        "sourceRequirementId": "residential-fact-property-identifier",
+        "evidence": [
+          {
+            "sourceId": "residential-building-permit-guidance",
+            "citation": "Residential permit guidance requires identifying the project property before preparing or submitting the application."
+          }
+        ]
+      },
+      {
+        "id": "project_scope",
+        "label": "Residential project scope",
+        "kind": "project_description",
+        "sourceRequirementId": "residential-fact-project-scope",
+        "evidence": [
+          {
+            "sourceId": "residential-building-permit-guidance",
+            "citation": "Application materials must describe the work proposed for review."
+          }
+        ]
+      },
+      {
+        "id": "owner_or_applicant_contact",
+        "label": "Owner or applicant contact information",
+        "kind": "contact",
+        "sourceRequirementId": "residential-fact-owner-applicant-contact",
+        "evidence": [
+          {
+            "sourceId": "residential-building-permit-application",
+            "citation": "Residential permit application information includes owner or applicant contact details."
+          }
+        ]
+      },
+      {
+        "id": "contractor_license_status",
+        "label": "Contractor license status or owner-as-contractor decision",
+        "kind": "license_or_owner_decision",
+        "sourceRequirementId": "residential-fact-contractor-license-status",
+        "evidence": [
+          {
+            "sourceId": "residential-building-permit-application",
+            "citation": "The application path needs contractor licensing information or an owner-as-contractor determination when applicable."
+          }
+        ]
+      },
+      {
+        "id": "valuation",
+        "label": "Project valuation",
+        "kind": "fee_basis",
+        "sourceRequirementId": "residential-fact-valuation",
+        "evidence": [
+          {
+            "sourceId": "residential-building-permit-fee-guidance",
+            "citation": "Residential permit intake and fee review can depend on declared project valuation."
+          }
+        ]
+      }
+    ],
+    "requiredFiles": [
+      {
+        "id": "residential_building_permit_application_pdf",
+        "documentType": "application_pdf",
+        "label": "Residential building permit application PDF",
+        "fileRules": [
+          "pdf",
+          "separate_supporting_document"
+        ],
+        "sourceRequirementId": "residential-doc-application-pdf",
+        "evidence": [
+          {
+            "sourceId": "residential-building-permit-application",
+            "citation": "Residential building permit submittals include an application document."
+          }
+        ]
+      },
+      {
+        "id": "single_drawing_plan_pdf",
+        "documentType": "single_drawing_plan_pdf",
+        "label": "Single searchable drawing plan PDF",
+        "fileRules": [
+          "pdf",
+          "searchable",
+          "single_pdf_process_drawings"
+        ],
+        "sourceRequirementId": "residential-doc-single-drawing-plan-pdf",
+        "evidence": [
+          {
+            "sourceId": "single-pdf-process-guidance",
+            "citation": "Single PDF Process guidance says drawing plans are one searchable PDF and supporting documents are separate PDFs."
+          }
+        ]
+      },
+      {
+        "id": "structural_calculations_pdf",
+        "documentType": "structural_calculations_pdf",
+        "label": "Structural calculations PDF when required by project scope",
+        "fileRules": [
+          "pdf",
+          "separate_supporting_document"
+        ],
+        "condition": "required_when_structural_work_is_declared",
+        "sourceRequirementId": "residential-doc-structural-calculations-pdf",
+        "evidence": [
+          {
+            "sourceId": "residential-building-permit-submittal-checklist",
+            "citation": "Residential plan-review submittals may require calculations or supporting documents based on proposed structural work."
+          }
+        ]
+      }
+    ],
+    "requiredAcknowledgments": [
+      {
+        "id": "single_pdf_process_rules_reviewed",
+        "label": "Review Single PDF Process file preparation rules",
+        "sourceRequirementId": "residential-ack-single-pdf-process-rules",
+        "evidence": [
+          {
+            "sourceId": "single-pdf-process-guidance",
+            "citation": "Single PDF Process rules distinguish drawing plans from application, calculation, and supporting document PDFs."
+          }
+        ]
+      },
+      {
+        "id": "submission_is_consequential_acknowledgment",
+        "label": "Acknowledge that official submission requires exact user confirmation",
+        "actionClassification": "consequential",
+        "sourceRequirementId": "residential-gate-submit-confirmation",
+        "evidence": [
+          {
+            "sourceId": "devhub-action-gate-fixture",
+            "citation": "Submission is a consequential action gate and must not be performed without exact session-specific confirmation."
+          }
+        ]
+      }
+    ],
+    "requiredDecisions": [
+      {
+        "id": "single_pdf_process_applies",
+        "label": "Use Single PDF Process for this residential plan-review submittal",
+        "sourceRequirementId": "residential-decision-single-pdf-process",
+        "evidence": [
+          {
+            "sourceId": "single-pdf-process-guidance",
+            "citation": "Some PP&D projects use the Single PDF Process for plan-review submittals."
+          }
+        ]
+      },
+      {
+        "id": "submit_now_or_save_draft",
+        "label": "Save a draft or stop before official submission",
+        "actionClassification": "consequential",
+        "sourceRequirementId": "residential-decision-submit-or-save",
+        "evidence": [
+          {
+            "sourceId": "devhub-action-gate-fixture",
+            "citation": "Draft edits are reversible, while official submission remains a consequential action gate."
+          }
+        ]
+      }
+    ]
+  },
+  "userCaseInventory": {
+    "caseId": "redacted-residential-case-001",
+    "privacy": {
+      "redacted": true,
+      "containsPrivateValues": false,
+      "notes": "Fixture uses status markers only and does not include names, addresses, account identifiers, credentials, uploaded documents, screenshots, traces, or raw crawl output."
+    },
+    "facts": [
+      {
+        "id": "property_identifier",
+        "present": true,
+        "valueStatus": "provided",
+        "valuePreview": "REDACTED_PROPERTY_IDENTIFIER"
+      },
+      {
+        "id": "project_scope",
+        "present": true,
+        "valueStatus": "provided",
+        "valuePreview": "REDACTED_PROJECT_SCOPE"
+      },
+      {
+        "id": "owner_or_applicant_contact",
+        "present": false,
+        "valueStatus": "missing"
+      },
+      {
+        "id": "contractor_license_status",
+        "present": false,
+        "valueStatus": "missing"
+      },
+      {
+        "id": "valuation",
+        "present": true,
+        "valueStatus": "provided",
+        "valuePreview": "REDACTED_VALUATION_RANGE"
+      }
+    ],
+    "files": [
+      {
+        "id": "uploaded-application-placeholder",
+        "documentType": "application_pdf",
+        "present": true,
+        "fileFormat": "pdf",
+        "redacted": true,
+        "valuePreview": "REDACTED_APPLICATION_PDF"
+      },
+      {
+        "id": "uploaded-drawing-placeholder",
+        "documentType": "single_drawing_plan_pdf",
+        "present": true,
+        "fileFormat": "pdf",
+        "searchable": true,
+        "redacted": true,
+        "valuePreview": "REDACTED_SINGLE_DRAWING_PLAN_PDF"
+      }
+    ],
+    "acknowledgments": [
+      {
+        "id": "single_pdf_process_rules_reviewed",
+        "reviewed": true
+      },
+      {
+        "id": "submission_is_consequential_acknowledgment",
+        "reviewed": false
+      }
+    ],
+    "decisions": [
+      {
+        "id": "single_pdf_process_applies",
+        "selected": true,
+        "selectionStatus": "selected"
+      },
+      {
+        "id": "submit_now_or_save_draft",
+        "selected": false,
+        "selectionStatus": "missing"
+      }
+    ]
+  },
+  "expectedMissingInformationOutput": {
+    "caseId": "redacted-residential-case-001",
+    "processId": "residential-building-permit",
+    "missingFacts": [
+      {
+        "id": "owner_or_applicant_contact",
+        "label": "Owner or applicant contact information",
+        "kind": "contact",
+        "sourceRequirementId": "residential-fact-owner-applicant-contact",
+        "evidence": [
+          {
+            "sourceId": "residential-building-permit-application",
+            "citation": "Residential permit application information includes owner or applicant contact details."
+          }
+        ]
+      },
+      {
+        "id": "contractor_license_status",
+        "label": "Contractor license status or owner-as-contractor decision",
+        "kind": "license_or_owner_decision",
+        "sourceRequirementId": "residential-fact-contractor-license-status",
+        "evidence": [
+          {
+            "sourceId": "residential-building-permit-application",
+            "citation": "The application path needs contractor licensing information or an owner-as-contractor determination when applicable."
+          }
+        ]
+      }
+    ],
+    "missingFiles": [
+      {
+        "id": "structural_calculations_pdf",
+        "documentType": "structural_calculations_pdf",
+        "label": "Structural calculations PDF when required by project scope",
+        "fileRules": [
+          "pdf",
+          "separate_supporting_document"
+        ],
+        "condition": "required_when_structural_work_is_declared",
+        "sourceRequirementId": "residential-doc-structural-calculations-pdf",
+        "evidence": [
+          {
+            "sourceId": "residential-building-permit-submittal-checklist",
+            "citation": "Residential plan-review submittals may require calculations or supporting documents based on proposed structural work."
+          }
+        ]
+      }
+    ],
+    "missingAcknowledgments": [
+      {
+        "id": "submission_is_consequential_acknowledgment",
+        "label": "Acknowledge that official submission requires exact user confirmation",
+        "actionClassification": "consequential",
+        "sourceRequirementId": "residential-gate-submit-confirmation",
+        "evidence": [
+          {
+            "sourceId": "devhub-action-gate-fixture",
+            "citation": "Submission is a consequential action gate and must not be performed without exact session-specific confirmation."
+          }
+        ]
+      }
+    ],
+    "missingDecisions": [
+      {
+        "id": "submit_now_or_save_draft",
+        "label": "Save a draft or stop before official submission",
+        "actionClassification": "consequential",
+        "sourceRequirementId": "residential-decision-submit-or-save",
+        "evidence": [
+          {
+            "sourceId": "devhub-action-gate-fixture",
+            "citation": "Draft edits are reversible, while official submission remains a consequential action gate."
+          }
+        ]
+      }
+    ],
+    "excludedSatisfiedItems": [
+      "property_identifier",
+      "project_scope",
+      "valuation",
+      "residential_building_permit_application_pdf",
+      "single_drawing_plan_pdf",
+      "single_pdf_process_rules_reviewed",
+      "single_pdf_process_applies"
+    ],
+    "privacyAssertions": {
+      "containsPrivateFixtureValues": false,
+      "containsCredentials": false,
+      "containsAuthState": false,
+      "containsTraceOrScreenshotPaths": false,
+      "containsDownloadedDocumentPaths": false,
+      "containsRawCrawlOutput": false
+    }
+  }
+}

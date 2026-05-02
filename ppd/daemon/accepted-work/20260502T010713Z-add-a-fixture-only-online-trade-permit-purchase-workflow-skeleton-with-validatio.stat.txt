@@ -1,0 +1,2 @@
+ppd/tests/fixtures/permit_processes/online_trade_permit_purchase.json
+ppd/tests/test_online_trade_permit_purchase_fixture.py

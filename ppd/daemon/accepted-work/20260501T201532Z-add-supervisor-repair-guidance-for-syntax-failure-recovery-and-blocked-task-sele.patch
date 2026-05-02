@@ -1,0 +1,237 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,204 +1,51 @@
+ # PP&D Supervisor Repair Guide
+ 
+-## Purpose
++This guide is for repair cycles when the isolated PP&D daemon stops making useful autonomous progress.
+ 
+-This guide gives the isolated PP&D supervisor deterministic recovery rules when a daemon task becomes blocked by repeated validation failures. It is intentionally narrow and only covers daemon retry, diagnostics, task selection, and syntactic-validity recovery behavior.
++## Syntax Failure Recovery
+ 
+-## Current Source Freshness Recovery
++When a recent failed patch includes `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128`, treat the target task as too broad for the next daemon cycle.
+ 
+-Blocked tasks:
++Required supervisor action:
+ 
+-- Task checkbox-54: Add a source freshness fixture that classifies stale PP&D guidance, changed content hashes, removed pages, and recrawl priority without performing a live recrawl.
+-- Task checkbox-55: Add a fixture-only change report renderer for public PP&D source freshness results that summarizes changed requirements, new or removed links, and affected permit-process fixtures with citation references.
++1. Do not retry the same broad task immediately.
++2. Mark the broad task `[!]` if it has failed repeatedly or is already blocking dependent work.
++3. Append narrow recovery tasks in this order:
++   - a syntax-first import or compile test for the affected module only.
++   - a minimal fixture task with the smallest representative fixture set.
++   - the smallest implementation task that satisfies that fixture.
++4. Keep recovery proposals to one or two files unless a focused test plus fixture is explicitly needed.
++5. Resume unrelated fixture-first or validation-first tasks while blocked broad tasks remain parked.
+ 
+-Observed failures:
++## Source Freshness Recovery
+ 
+-- Repeated Python `SyntaxError` failures in `ppd/contracts/source_freshness.py` during daemon self-test `py_compile`.
+-- The invalid generated line shape was equivalent to `if self.recrawl_cadence_days list[str]:`, which indicates mixed or malformed Python type/control-flow syntax.
+-- The same broad task was retried with contract, fixture, and test changes and failed before useful unit-test feedback could be reached.
++The source-freshness classifier and dependent change-report renderer must not be selected directly while the classifier remains blocked by Python syntax failures.
+ 
+-Recovery rule:
++Use this order instead:
+ 
+-- Do not retry checkbox-54 as another broad implementation until a syntax-first contract skeleton passes.
+-- Do not retry checkbox-55 until checkbox-54 has passed through the syntax-first import test, four-record fixture, and focused classifier tasks.
+-- If another task is active and does not depend on source freshness, allow that task to continue.
+-- Treat the two blocked source-freshness tasks as parked, not as a global daemon stop condition.
++1. Add a one-file syntax-first import test for `ppd.contracts.source_freshness`.
++2. Add a four-record source freshness fixture only after the import test passes.
++3. Add the smallest source freshness classifier only after the fixture passes.
++4. Add the change-report renderer only after the classifier passes validation.
+ 
+-## Immediate Task Selection
++The four-record fixture should include exactly one stale guidance page, one changed content hash, one removed page, and one high-priority recrawl candidate. It must not contain live fetch output, raw response bodies, downloaded documents, DevHub auth state, traces, screenshots, or private values.
+ 
+-The current board has an independent active task:
++## Missing-Information Output Recovery
+ 
+-- Task checkbox-58: Add a missing-information detector fixture that compares a residential permit user-case fact inventory against the residential permit process requirements and returns only missing facts, files, acknowledgments, and decisions.
++If missing-information output validation fails with invalid Python, split it before retrying the broad validator.
+ 
+-Supervisor selection rule:
++Use this order:
+ 
+-- Continue checkbox-58 before any source-freshness recovery task.
+-- Then select the missing-information detector validation task.
+-- Only after independent missing-information work is complete should the supervisor select source-freshness recovery.
+-- Never select blocked checkbox-54 or checkbox-55 directly while their prerequisite recovery tasks remain unchecked.
++1. Add a syntax-first import test for `ppd.contracts.missing_information_output`.
++2. Add a minimal fixture with one fact request, one file request, one acknowledgment request, and one decision request.
++3. Add the validator only after the import test and fixture pass.
+ 
+-## Retry Shape For Checkbox-54
+-
+-When checkbox-54 is resumed, the supervisor should constrain the daemon to these narrow cycles in order.
+-
+-Cycle A: syntax-first import test
+-
+-- Edit only `ppd/contracts/source_freshness.py` and one focused import or compile test if needed.
+-- The first acceptable implementation may be a tiny module with constants and one no-op importable function.
+-- Keep type annotations conventional Python, for example `recrawl_cadence_days: int | None`, never annotation fragments inside an `if` condition.
+-- Require `python3 -m py_compile ppd/contracts/source_freshness.py` before full PP&D validation.
+-
+-Cycle B: tiny freshness fixture
+-
+-- Edit only `ppd/tests/fixtures/source_freshness/source_freshness_fixture.json` or a similarly named source-freshness fixture path plus the focused test that loads it.
+-- Include exactly one stale page, one changed-hash page, one removed page, and one recrawl-priority example.
+-- Use deterministic timestamps and hashes.
+-- Do not include response bodies, downloaded document paths, traces, screenshots, credentials, private DevHub paths, live crawl output, or session files.
+-
+-Cycle C: focused classifier assertions
+-
+-- Edit only the source-freshness contract and focused test.
+-- Validate classification names and priority ordering only.
+-- Do not add change-report rendering, live recrawl scheduling, archive processor integration, or broader source-index rewrites in the same cycle.
+-
+-## Retry Shape For Checkbox-55
+-
+-The source freshness report renderer is dependent work. It should be selected only after checkbox-54 has a syntactically valid classifier and deterministic fixture.
+-
+-Renderer cycle:
+-
+-- Edit only a small report-rendering module under `ppd/` and one focused test under `ppd/tests/`, or a single focused test if the renderer already exists.
+-- Render from committed fixtures only.
+-- Summarize changed requirements, new or removed links, affected permit-process fixture ids, and citation references.
+-- Do not fetch live pages, download documents, invoke DevHub, create auth/session state, or persist raw crawl output.
+-
+-## General Syntax-Failure Guardrails
+-
+-For any retry after a Python `SyntaxError` or `py_compile` failure:
+-
+-- Prefer one Python file plus one test file at most.
+-- Ask the worker for the smallest syntactically valid repair that can pass `py_compile` before adding fixture breadth.
+-- Avoid long generated helper functions.
+-- Avoid nested f-strings, inline regex construction, complex comprehensions, and multiline string literals in generated code.
+-- Keep rejection reasons and classification names as module-level string constants.
+-- Keep dataclass field annotations on field lines, not inside conditionals or expressions.
+-- Use simple explicit conditionals over clever one-liners.
+-- Run py_compile before full PP&D validation and treat any compile failure as a syntax-preflight failure, not as a normal unit-test failure.
+-
+-For any retry after TypeScript `TS1005`, `TS1109`, or `TS1128`:
+-
+-- Prefer one TypeScript file at most.
+-- Avoid broad type contract rewrites.
+-- Keep interfaces and object literals small.
+-- Run the TypeScript command before broader tests.
+-
+-## Current Blocked Public Inventory Recovery
+-
+-Previously blocked task:
+-
+-- Task checkbox-49: Add validation for the public source inventory that rejects non-allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and missing provenance fields.
+-
+-Observed failures:
+-
+-- Python `SyntaxError` from generated contract code.
+-- A later validation failure where the expected raw response body rejection reason was not emitted.
+-
+-Recovery rule:
+-
+-- Do not keep retrying checkbox-49 as a broad contract rewrite.
+-- Leave checkbox-49 decomposed into narrow queued tasks.
+-- Allow the daemon to continue with later fixture-first and validation-first tasks that do not depend on checkbox-49 internals.
+-
+-## Retry Shape For Checkbox-49
+-
+-When checkbox-49 is retried, the supervisor should constrain the daemon to one of these narrow cycles.
+-
+-Cycle A: minimal contract skeleton
+-
+-- Edit only `ppd/contracts/public_source_inventory.py` and one focused test file.
+-- Add or repair only the public validation entry point, finding data structure, host allowlist check, provenance-required-field check, and unsafe-field key detection.
+-- Do not add live crawling, HTTP requests, downloaded documents, browser traces, screenshots, auth state, credentials, or raw response fixtures.
+-- Require `python3 -m py_compile ppd/contracts/public_source_inventory.py` before unit tests.
+-
+-Cycle B: raw-body rejection fixture
+-
+-- Edit only the invalid inventory fixture and the matching assertion.
+-- Ensure at least one invalid record contains a literal raw response body field such as `raw_response_body` or `response_body`.
+-- Ensure the validator reports the exact reason `raw response body field is not allowed in public source inventories`.
+-- Do not introduce multiline raw HTML bodies; use a short sentinel string such as `REDACTED_RAW_BODY_SENTINEL` so the fixture remains non-sensitive and deterministic.
+-
+-Cycle C: provenance completeness
+-
+-- Edit only the valid and invalid inventory fixtures plus the focused validation test.
+-- Check required provenance fields only: source URL, canonical URL, captured or verified timestamp, authority label, and fixture provenance note.
+-- Do not expand the validator into crawler policy, robots handling, archive adapters, or document extraction.
++The validator should prove every requested user item is source-backed, deduplicated, action-classified, and free of private fixture values.
+ 
+ ## Task Selection Rule
+ 
+-If a task is blocked and the active task does not depend on the blocked task, the daemon may continue with the active task.
++A `[!]` task is not selectable while any independent `[ ]` fixture-first or validation-first task remains. Dependent tasks stay parked until their recovery prerequisites pass.
+ 
+-If a task receives two recent syntax or compile rollbacks, the supervisor should repair prompt or retry shape before allowing another worker attempt on the same broad task.
++## Safety Boundary
+ 
+-If a task depends on a repeatedly failing contract, insert or select a narrow syntax-first prerequisite task instead of attempting live crawl, authenticated automation, broad extraction, or multi-contract rewrites.
+-
+-For the current board, preferred autonomous order is:
+-
+-1. Finish the active residential missing-information detector fixture task.
+-2. Add missing-information detector output validation.
+-3. Run source-freshness syntax-first import validation.
+-4. Add the minimal four-record source-freshness fixture.
+-5. Add the smallest source-freshness classifier.
+-6. Add the source-freshness report renderer.
+-
+-## Forbidden Recovery Paths
+-
+-The supervisor must not ask the daemon to recover a blocked or failing task by creating or committing any of the following:
+-
+-- Private DevHub session files.
+-- Auth state.
+-- Credentials.
+-- Browser traces.
+-- Screenshots.
+-- Raw crawl output.
+-- Downloaded public or private documents.
+-- Live DevHub automation.
+-- CAPTCHA, MFA, account creation, payment, submission, certification, cancellation, official upload, or inspection scheduling automation.
+-
+-## Acceptance Criteria For Syntax-Failure Recovery
+-
+-A task with repeated syntax failures may be retried only when all are true:
+-
+-- The next proposal is constrained to the smallest file set needed for syntax-valid repair.
+-- Every changed Python file compiles with `py_compile` before broad tests.
+-- Every changed TypeScript file is checked by the PP&D TypeScript command before dependent tests.
+-- The proposal does not broaden scope into unrelated contracts, live crawling, DevHub automation, or report rendering.
+-- The proposal keeps fixtures deterministic, redacted, committed under `ppd/tests/fixtures/`, and free of private or live artifacts.
+-
+-## Acceptance Criteria For Unblocking Checkbox-54
+-
+-Checkbox-54 may be considered unblocked only when all are true:
+-
+-- `ppd/contracts/source_freshness.py` compiles with py_compile.
+-- The focused source-freshness tests pass without live network access.
+-- Fixture examples cover stale guidance, changed content hashes, removed pages, and recrawl priority.
+-- No committed fixture contains raw response bodies, credentials, trace paths, screenshot paths, downloaded document paths, private DevHub paths, or live crawl artifacts.
+-- The change does not implement live recrawl behavior or authenticated DevHub automation.
+-
+-## Acceptance Criteria For Unblocking Checkbox-55
+-
+-Checkbox-55 may be considered selectable only when all are true:
+-
+-- Checkbox-54 has passed validation.
+-- The report renderer reads only committed fixtures.
+-- The report output includes citation references and affected permit-process fixture ids.
+-- The renderer does not perform live crawling, DevHub automation, authenticated actions, downloads, submissions, payments, certifications, official uploads, cancellations, or inspection scheduling.
+-
+-## Acceptance Criteria For Unblocking Checkbox-49
+-
+-Checkbox-49 may be considered unblocked only when all are true:
+-
+-- The validator module compiles with py_compile.
+-- Unit tests cover one valid inventory and one invalid inventory.
+-- Invalid inventory findings include all required reason categories.
+-- The raw response body rejection reason is emitted by an actual fixture field, not only by test-side expectation.
+-- No committed fixture contains raw response bodies, credentials, trace paths, screenshot paths, downloaded document paths, private DevHub paths, or live crawl artifacts except short redacted sentinel strings used only to prove rejection.
++Repair cycles must not create private DevHub session files, auth state, traces, screenshots, raw crawl output, downloaded documents, live crawl artifacts, payments, uploads, submissions, certifications, cancellations, account creation, MFA automation, or CAPTCHA automation.

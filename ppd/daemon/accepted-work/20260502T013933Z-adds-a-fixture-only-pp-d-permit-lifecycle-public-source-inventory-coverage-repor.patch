@@ -1,0 +1,594 @@
+--- a/ppd/extraction/public_source_inventory_coverage.py
++++ b/ppd/extraction/public_source_inventory_coverage.py
+@@ -0,0 +1,220 @@
++"""Fixture-only PP&D public source inventory coverage helpers.
++
++This module validates curated source inventory coverage reports. It is limited to
++public fixture metadata and must not crawl, authenticate, download documents, or
++persist raw response bodies.
++"""
++
++from __future__ import annotations
++
++import json
++from pathlib import Path
++from typing import Any, Mapping
++from urllib.parse import urlparse
++
++
++REQUIRED_GUIDANCE_CATEGORIES = (
++    "permit_extension",
++    "permit_reactivation",
++    "permit_cancellation",
++    "permit_refund",
++    "inspection_results",
++)
++
++FORBIDDEN_TEXT_MARKERS = (
++    "ppd/data/private",
++    "devhub/session",
++    "devhub/sessions",
++    "storage_state",
++    "auth_state",
++    "cookies.json",
++    "localstorage.json",
++    "trace.zip",
++    "playwright-report",
++    "/screenshots/",
++    "screenshot.png",
++    "screenshot.jpg",
++    "screenshot.jpeg",
++    "screenshot.webp",
++    "/downloads/",
++    "downloaded_documents",
++    "raw_body",
++    "rawbody",
++    "response_body",
++    "responsebody",
++    "raw_html",
++    "rawhtml",
++    "credential",
++    "credentials",
++    "password",
++    "bearer",
++    "authorization",
++    "session_cookie",
++)
++
++ALLOWED_PUBLIC_HOSTS = {
++    "www.portland.gov",
++    "devhub.portlandoregon.gov",
++    "www.portlandoregon.gov",
++    "www.portlandmaps.com",
++}
++
++PRIVATE_DEVHUB_PATH_PARTS = (
++    "/dashboard",
++    "/my-permits",
++    "/mypermits",
++    "/account",
++    "/login",
++    "/signin",
++    "/sign-in",
++    "/checkout",
++    "/payment",
++    "/cart",
++)
++
++
++class CoverageReportError(ValueError):
++    """Raised when a fixture-only coverage report violates PP&D constraints."""
++
++
++def load_coverage_report(path: str | Path) -> dict[str, Any]:
++    """Load and validate a fixture-only source inventory coverage report."""
++
++    report_path = Path(path)
++    with report_path.open("r", encoding="utf-8") as handle:
++        report = json.load(handle)
++    validate_coverage_report(report)
++    return report
++
++
++def validate_coverage_report(report: Mapping[str, Any]) -> None:
++    """Fail closed if the coverage report is incomplete or unsafe."""
++
++    errors: list[str] = []
++    if report.get("schemaVersion") != 1:
++        errors.append("schemaVersion must be 1")
++    if report.get("sourceMode") != "fixture_only_public_source_inventory":
++        errors.append("sourceMode must be fixture_only_public_source_inventory")
++    if report.get("liveCrawlingUsed") is not False:
++        errors.append("liveCrawlingUsed must be false")
++    if report.get("authenticatedAutomationUsed") is not False:
++        errors.append("authenticatedAutomationUsed must be false")
++    if not str(report.get("generatedAt", "")).endswith("Z"):
++        errors.append("generatedAt must be an ISO UTC timestamp ending in Z")
++
++    _collect_forbidden_text(report, "$", errors)
++
++    categories = report.get("categories")
++    if not isinstance(categories, list):
++        errors.append("categories must be a list")
++        categories = []
++
++    seen_categories: set[str] = set()
++    for index, category in enumerate(categories):
++        if not isinstance(category, Mapping):
++            errors.append(f"categories[{index}] must be an object")
++            continue
++        _validate_category(category, index, seen_categories, errors)
++
++    missing = sorted(set(REQUIRED_GUIDANCE_CATEGORIES) - seen_categories)
++    if missing:
++        errors.append("missing required guidance categories: " + ", ".join(missing))
++
++    if errors:
++        raise CoverageReportError("; ".join(errors))
++
++
++def category_claims(report: Mapping[str, Any]) -> dict[str, list[str]]:
++    """Return category IDs mapped to their public coverage claims."""
++
++    validate_coverage_report(report)
++    claims: dict[str, list[str]] = {}
++    for category in report.get("categories", []):
++        category_id = str(category.get("categoryId", ""))
++        claims[category_id] = [str(claim) for claim in category.get("coverageClaims", [])]
++    return claims
++
++
++def _validate_category(
++    category: Mapping[str, Any],
++    index: int,
++    seen_categories: set[str],
++    errors: list[str],
++) -> None:
++    category_id = str(category.get("categoryId", ""))
++    prefix = f"categories[{index}]"
++    if category_id not in REQUIRED_GUIDANCE_CATEGORIES:
++        errors.append(f"{prefix}.categoryId is not a required guidance category")
++    if category_id in seen_categories:
++        errors.append(f"duplicate categoryId {category_id}")
++    seen_categories.add(category_id)
++
++    authority_label = str(category.get("authorityLabel", "")).strip()
++    if not authority_label:
++        errors.append(f"{prefix}.authorityLabel is required")
++
++    recrawl_cadence = str(category.get("recommendedRecrawlCadence", "")).strip()
++    if recrawl_cadence not in {"weekly", "monthly", "quarterly"}:
++        errors.append(f"{prefix}.recommendedRecrawlCadence must be weekly, monthly, or quarterly")
++
++    claims = category.get("coverageClaims")
++    if not isinstance(claims, list) or not claims or not all(str(claim).strip() for claim in claims):
++        errors.append(f"{prefix}.coverageClaims must be a non-empty list of strings")
++
++    evidence = category.get("publicSourceEvidence")
++    if not isinstance(evidence, list) or not evidence:
++        errors.append(f"{prefix}.publicSourceEvidence must be a non-empty list")
++        return
++
++    for evidence_index, item in enumerate(evidence):
++        if not isinstance(item, Mapping):
++            errors.append(f"{prefix}.publicSourceEvidence[{evidence_index}] must be an object")
++            continue
++        _validate_evidence(item, f"{prefix}.publicSourceEvidence[{evidence_index}]", errors)
++
++
++def _validate_evidence(item: Mapping[str, Any], prefix: str, errors: list[str]) -> None:
++    evidence_id = str(item.get("evidenceId", "")).strip()
++    if not evidence_id:
++        errors.append(f"{prefix}.evidenceId is required")
++    fixture_ref = str(item.get("fixtureRef", "")).strip()
++    if not fixture_ref.startswith("ppd/tests/fixtures/"):
++        errors.append(f"{prefix}.fixtureRef must point under ppd/tests/fixtures")
++
++    source_url = str(item.get("sourceUrl", "")).strip()
++    parsed = urlparse(source_url)
++    if parsed.scheme != "https" or parsed.netloc not in ALLOWED_PUBLIC_HOSTS:
++        errors.append(f"{prefix}.sourceUrl must be an allowed public HTTPS PP&D source")
++    if parsed.netloc == "devhub.portlandoregon.gov" and any(part in parsed.path.lower() for part in PRIVATE_DEVHUB_PATH_PARTS):
++        errors.append(f"{prefix}.sourceUrl must not be a private DevHub workflow path")
++
++    citation = str(item.get("citation", "")).strip()
++    if not citation:
++        errors.append(f"{prefix}.citation is required")
++
++    captured_at = str(item.get("fixtureCapturedAt", "")).strip()
++    if not captured_at.endswith("Z"):
++        errors.append(f"{prefix}.fixtureCapturedAt must end in Z")
++
++    evidence_type = str(item.get("evidenceType", "")).strip()
++    if evidence_type not in {"source_inventory_record", "normalized_public_guidance_fixture"}:
++        errors.append(f"{prefix}.evidenceType is not supported")
++
++
++def _collect_forbidden_text(value: Any, path: str, errors: list[str]) -> None:
++    if isinstance(value, Mapping):
++        for key, child in value.items():
++            key_text = str(key)
++            lower_key = key_text.lower()
++            if lower_key in {"body", "html", "text", "content", "rawbody", "raw_body", "responsebody", "response_body"}:
++                if child not in (None, "", [], {}):
++                    errors.append(f"{path}.{key_text} must not contain raw response body content")
++            _collect_forbidden_text(child, f"{path}.{key_text}", errors)
++    elif isinstance(value, list):
++        for index, child in enumerate(value):
++            _collect_forbidden_text(child, f"{path}[{index}]", errors)
++    elif isinstance(value, str):
++        lower_value = value.lower()
++        for marker in FORBIDDEN_TEXT_MARKERS:
++            if marker in lower_value:
++                errors.append(f"{path} contains forbidden private/raw artifact marker {marker}")
+--- a/ppd/tests/fixtures/public_source_inventory/permit_lifecycle_coverage_report.json
++++ b/ppd/tests/fixtures/public_source_inventory/permit_lifecycle_coverage_report.json
+@@ -0,0 +1,233 @@
++{
++  "schemaVersion": 1,
++  "reportId": "ppd-permit-lifecycle-public-source-coverage-2026-05-02",
++  "generatedAt": "2026-05-02T00:00:00Z",
++  "sourceMode": "fixture_only_public_source_inventory",
++  "liveCrawlingUsed": false,
++  "authenticatedAutomationUsed": false,
++  "scope": {
++    "bureau": "Portland Permitting & Development",
++    "coverageGoal": "Inventory committed public fixture and source-inventory evidence for permit extension, permit reactivation, cancellation, refund, and inspection-result guidance categories.",
++    "excludedArtifacts": [
++      "private DevHub session state",
++      "raw response bodies",
++      "browser traces",
++      "screenshots",
++      "downloaded documents",
++      "credentials",
++      "live crawl output"
++    ]
++  },
++  "categories": [
++    {
++      "categoryId": "permit_extension",
++      "displayName": "Permit extension guidance",
++      "authorityLabel": "PP&D public permit lifecycle guidance",
++      "recommendedRecrawlCadence": "monthly",
++      "coverageStatus": "public_fixture_evidence_available",
++      "coverageClaims": [
++        "Public PP&D guidance includes permit lifecycle language that should be modeled before any authenticated DevHub action is attempted.",
++        "Extension-related agent behavior must remain advisory until supported by a source-backed process model and exact user confirmation for any official request."
++      ],
++      "publicSourceEvidence": [
++        {
++          "evidenceId": "source-inventory-permit-lifecycle-guidance",
++          "evidenceType": "source_inventory_record",
++          "fixtureRef": "ppd/tests/fixtures/source_inventory/public_ppd_source_inventory.json",
++          "sourceUrl": "https://www.portland.gov/ppd",
++          "citation": "PP&D public guidance source inventory record for Portland.gov PP&D pages.",
++          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
++        },
++        {
++          "evidenceId": "normalized-guidance-devhub-processes",
++          "evidenceType": "normalized_public_guidance_fixture",
++          "fixtureRef": "ppd/tests/fixtures/extraction/devhub_public_guidance_normalized.json",
++          "sourceUrl": "https://www.portland.gov/ppd/devhub",
++          "citation": "Normalized public DevHub guidance fixture covering public process help before authenticated workflow use.",
++          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
++        }
++      ],
++      "agentUse": {
++        "allowed": [
++          "summarize public extension guidance coverage",
++          "identify missing source-backed facts for later lifecycle modeling"
++        ],
++        "stopBefore": [
++          "official extension request",
++          "certification",
++          "payment",
++          "submission"
++        ]
++      }
++    },
++    {
++      "categoryId": "permit_reactivation",
++      "displayName": "Permit reactivation guidance",
++      "authorityLabel": "PP&D public permit lifecycle guidance",
++      "recommendedRecrawlCadence": "monthly",
++      "coverageStatus": "public_fixture_evidence_available",
++      "coverageClaims": [
++        "Public lifecycle guidance should be inventoried for reactivation eligibility and prerequisites before adding extraction or DevHub drafting behavior.",
++        "Reactivation actions are consequential and must not be automated from this coverage report alone."
++      ],
++      "publicSourceEvidence": [
++        {
++          "evidenceId": "source-inventory-permit-lifecycle-guidance",
++          "evidenceType": "source_inventory_record",
++          "fixtureRef": "ppd/tests/fixtures/source_inventory/public_ppd_source_inventory.json",
++          "sourceUrl": "https://www.portland.gov/ppd",
++          "citation": "PP&D public guidance source inventory record for Portland.gov PP&D pages.",
++          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
++        },
++        {
++          "evidenceId": "normalized-guidance-devhub-processes",
++          "evidenceType": "normalized_public_guidance_fixture",
++          "fixtureRef": "ppd/tests/fixtures/extraction/devhub_public_guidance_normalized.json",
++          "sourceUrl": "https://www.portland.gov/ppd/devhub",
++          "citation": "Normalized public DevHub guidance fixture covering public process help before authenticated workflow use.",
++          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
++        }
++      ],
++      "agentUse": {
++        "allowed": [
++          "summarize public reactivation guidance coverage",
++          "flag reactivation as requiring later citation-backed eligibility extraction"
++        ],
++        "stopBefore": [
++          "official reactivation request",
++          "certification",
++          "payment",
++          "submission"
++        ]
++      }
++    },
++    {
++      "categoryId": "permit_cancellation",
++      "displayName": "Permit cancellation guidance",
++      "authorityLabel": "PP&D public permit lifecycle guidance",
++      "recommendedRecrawlCadence": "monthly",
++      "coverageStatus": "public_fixture_evidence_available",
++      "coverageClaims": [
++        "Cancellation is a consequential permit lifecycle category that needs public source inventory coverage before any guardrail or workflow implementation.",
++        "This report can support later validation that cancellation guidance is cited and separated from private DevHub account actions."
++      ],
++      "publicSourceEvidence": [
++        {
++          "evidenceId": "source-inventory-permit-lifecycle-guidance",
++          "evidenceType": "source_inventory_record",
++          "fixtureRef": "ppd/tests/fixtures/source_inventory/public_ppd_source_inventory.json",
++          "sourceUrl": "https://www.portland.gov/ppd",
++          "citation": "PP&D public guidance source inventory record for Portland.gov PP&D pages.",
++          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
++        },
++        {
++          "evidenceId": "normalized-guidance-devhub-processes",
++          "evidenceType": "normalized_public_guidance_fixture",
++          "fixtureRef": "ppd/tests/fixtures/extraction/devhub_public_guidance_normalized.json",
++          "sourceUrl": "https://www.portland.gov/ppd/devhub",
++          "citation": "Normalized public DevHub guidance fixture covering public process help before authenticated workflow use.",
++          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
++        }
++      ],
++      "agentUse": {
++        "allowed": [
++          "summarize public cancellation guidance coverage",
++          "classify cancellation as a later exact-confirmation stop gate"
++        ],
++        "stopBefore": [
++          "official cancellation",
++          "certification",
++          "refund request",
++          "submission"
++        ]
++      }
++    },
++    {
++      "categoryId": "permit_refund",
++      "displayName": "Permit refund guidance",
++      "authorityLabel": "PP&D public permit fee and refund guidance",
++      "recommendedRecrawlCadence": "monthly",
++      "coverageStatus": "public_fixture_evidence_available",
++      "coverageClaims": [
++        "Refund guidance belongs in the public source inventory because it affects fee and payment checkpoints.",
++        "Refund requests can have financial consequences and require later source-backed eligibility and exact user confirmation gates."
++      ],
++      "publicSourceEvidence": [
++        {
++          "evidenceId": "source-inventory-fee-payment-guidance",
++          "evidenceType": "source_inventory_record",
++          "fixtureRef": "ppd/tests/fixtures/source_inventory/public_ppd_source_inventory.json",
++          "sourceUrl": "https://www.portland.gov/ppd",
++          "citation": "PP&D public source inventory record for fee, payment, and lifecycle guidance pages.",
++          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
++        },
++        {
++          "evidenceId": "normalized-guidance-devhub-processes",
++          "evidenceType": "normalized_public_guidance_fixture",
++          "fixtureRef": "ppd/tests/fixtures/extraction/devhub_public_guidance_normalized.json",
++          "sourceUrl": "https://www.portland.gov/ppd/devhub",
++          "citation": "Normalized public DevHub guidance fixture covering fee payment guidance before authenticated workflow use.",
++          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
++        }
++      ],
++      "agentUse": {
++        "allowed": [
++          "summarize public refund guidance coverage",
++          "flag refund handling as financial or consequential for later guardrails"
++        ],
++        "stopBefore": [
++          "official refund request",
++          "payment action",
++          "certification",
++          "submission"
++        ]
++      }
++    },
++    {
++      "categoryId": "inspection_results",
++      "displayName": "Inspection-result guidance",
++      "authorityLabel": "PP&D public inspection and DevHub guidance",
++      "recommendedRecrawlCadence": "weekly",
++      "coverageStatus": "public_fixture_evidence_available",
++      "coverageClaims": [
++        "Inspection-result guidance must be tracked separately from inspection scheduling because results can trigger follow-up obligations or corrections.",
++        "This report only inventories public evidence and does not inspect private permit records or schedule inspections."
++      ],
++      "publicSourceEvidence": [
++        {
++          "evidenceId": "source-inventory-inspection-guidance",
++          "evidenceType": "source_inventory_record",
++          "fixtureRef": "ppd/tests/fixtures/source_inventory/public_ppd_source_inventory.json",
++          "sourceUrl": "https://www.portland.gov/ppd",
++          "citation": "PP&D public source inventory record for inspection-related guidance pages.",
++          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
++        },
++        {
++          "evidenceId": "normalized-guidance-devhub-inspections",
++          "evidenceType": "normalized_public_guidance_fixture",
++          "fixtureRef": "ppd/tests/fixtures/extraction/devhub_public_guidance_normalized.json",
++          "sourceUrl": "https://www.portland.gov/ppd/devhub",
++          "citation": "Normalized public DevHub guidance fixture covering inspection-related public help before authenticated workflow use.",
++          "fixtureCapturedAt": "2026-05-01T00:00:00Z"
++        }
++      ],
++      "agentUse": {
++        "allowed": [
++          "summarize public inspection-result guidance coverage",
++          "identify likely follow-up categories for later source-backed lifecycle requirements"
++        ],
++        "stopBefore": [
++          "inspection scheduling",
++          "official correction upload",
++          "certification",
++          "submission"
++        ]
++      }
++    }
++  ],
++  "limitations": [
++    "This report is a coverage inventory, not a requirement extractor output.",
++    "Coverage claims are limited to committed public fixture and source-inventory metadata.",
++    "No category in this report authorizes live crawling, authenticated DevHub automation, payment, cancellation, upload, certification, official request submission, or inspection scheduling."
++  ]
++}
+--- a/ppd/tests/test_public_source_inventory_coverage.py
++++ b/ppd/tests/test_public_source_inventory_coverage.py
+@@ -1,75 +1,68 @@
+-import json
+-import unittest
+ from pathlib import Path
+ 
+-from ppd.contracts.public_source_inventory_coverage import (
+-    SOURCE_LANDSCAPE,
+-    assert_valid_coverage_report,
+-    build_coverage_report,
++import pytest
++
++from ppd.extraction.public_source_inventory_coverage import (
++    REQUIRED_GUIDANCE_CATEGORIES,
++    CoverageReportError,
++    category_claims,
++    load_coverage_report,
+     validate_coverage_report,
+ )
+ 
+ 
+-FIXTURE_DIR = Path(__file__).parent / "fixtures" / "public_source_inventory_coverage"
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "public_source_inventory"
++    / "permit_lifecycle_coverage_report.json"
++)
+ 
+ 
+-class PublicSourceInventoryCoverageTests(unittest.TestCase):
+-    def load_report(self):
+-        return json.loads((FIXTURE_DIR / "coverage_report.json").read_text(encoding="utf-8"))
++def test_permit_lifecycle_coverage_report_has_required_categories() -> None:
++    report = load_coverage_report(FIXTURE_PATH)
++    claims = category_claims(report)
+ 
+-    def test_fixture_coverage_report_is_valid_and_flags_missing_categories(self):
+-        report = self.load_report()
+-        self.assertEqual([], validate_coverage_report(report))
+-        missing_ids = {item["sourceLandscapeId"] for item in report["missingCategories"]}
+-        self.assertIn("devhub_public_portal", missing_ids)
+-        self.assertIn("inspection_guidance", missing_ids)
+-        self.assertNotIn("payment_guidance", missing_ids)
+-
+-    def test_build_report_from_inventory_categories_is_deterministic(self):
+-        inventory = {
+-            "fixtureId": "inventory-under-test",
+-            "generatedAt": "2026-05-01T00:00:00Z",
+-            "categories": [
+-                {
+-                    "categoryId": "fees",
+-                    "label": "Fees",
+-                    "sourceLandscapeIds": ["payment_guidance"],
+-                    "authorityLabels": ["PP&D fee guidance"],
+-                    "canonicalUrls": ["https://www.portland.gov/ppd/fees"],
+-                    "recrawlCadenceHint": "weekly",
+-                }
+-            ],
+-        }
+-        report = build_coverage_report(inventory)
+-        self.assertEqual("inventory-under-test", report["inventoryFixture"])
+-        self.assertEqual(1, len(report["coverageEntries"]))
+-        missing_ids = {item["sourceLandscapeId"] for item in report["missingCategories"]}
+-        self.assertEqual(set(SOURCE_LANDSCAPE) - {"payment_guidance"}, missing_ids)
+-
+-    def test_report_rejects_live_or_private_artifacts(self):
+-        report = self.load_report()
+-        report["coverageEntries"][0]["tracePath"] = "ppd/data/private/trace.zip"
+-        errors = validate_coverage_report(report)
+-        self.assertTrue(any("forbidden" in error for error in errors))
+-
+-    def test_report_rejects_unknown_or_misreported_missing_category(self):
+-        report = self.load_report()
+-        report["missingCategories"].append(
+-            {
+-                "sourceLandscapeId": "payment_guidance",
+-                "description": "Already covered by fees_and_payment_guidance",
+-                "status": "missing_from_fixture_inventory",
+-            }
+-        )
+-        errors = validate_coverage_report(report)
+-        self.assertTrue(any("reports covered sourceLandscapeId payment_guidance" in error for error in errors))
+-
+-    def test_assert_valid_coverage_report_raises_on_invalid_report(self):
+-        report = self.load_report()
+-        report["coverageEntries"][0]["canonicalUrls"] = ["https://devhub.portlandoregon.gov/account"]
+-        with self.assertRaises(ValueError):
+-            assert_valid_coverage_report(report)
++    assert set(claims) == set(REQUIRED_GUIDANCE_CATEGORIES)
++    for category_id in REQUIRED_GUIDANCE_CATEGORIES:
++        assert claims[category_id]
+ 
+ 
+-if __name__ == "__main__":
+-    unittest.main()
++def test_permit_lifecycle_coverage_report_is_fixture_only() -> None:
++    report = load_coverage_report(FIXTURE_PATH)
++
++    assert report["sourceMode"] == "fixture_only_public_source_inventory"
++    assert report["liveCrawlingUsed"] is False
++    assert report["authenticatedAutomationUsed"] is False
++
++    for category in report["categories"]:
++        assert category["authorityLabel"]
++        assert category["recommendedRecrawlCadence"] in {"weekly", "monthly", "quarterly"}
++        for evidence in category["publicSourceEvidence"]:
++            assert evidence["fixtureRef"].startswith("ppd/tests/fixtures/")
++            assert evidence["sourceUrl"].startswith("https://")
++            assert evidence["citation"]
++
++
++def test_coverage_report_rejects_private_devhub_paths() -> None:
++    report = load_coverage_report(FIXTURE_PATH)
++    bad_report = dict(report)
++    bad_categories = [dict(category) for category in report["categories"]]
++    bad_evidence = dict(bad_categories[0]["publicSourceEvidence"][0])
++    bad_evidence["sourceUrl"] = "https://devhub.portlandoregon.gov/dashboard/my-permits"
++    bad_categories[0] = dict(bad_categories[0], publicSourceEvidence=[bad_evidence])
++    bad_report["categories"] = bad_categories
++
++    with pytest.raises(CoverageReportError):
++        validate_coverage_report(bad_report)
++
++
++def test_coverage_report_rejects_raw_response_body_fields() -> None:
++    report = load_coverage_report(FIXTURE_PATH)
++    bad_report = dict(report)
++    bad_categories = [dict(category) for category in report["categories"]]
++    bad_categories[0] = dict(bad_categories[0], rawBody="not allowed")
++    bad_report["categories"] = bad_categories
++
++    with pytest.raises(CoverageReportError):
++        validate_coverage_report(bad_report)

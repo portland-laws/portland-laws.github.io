@@ -1,0 +1,18 @@
+{
+  "fixture_id": "no_eligible_tasks_stale_retry_without_fixture_first",
+  "description": "Regression fixture: reporting no_eligible_tasks is a supervisor programming error when all remaining work is a parked stale retry and no new fixture-first task has been appended.",
+  "reported_result": "no_eligible_tasks",
+  "remaining_work": [
+    {
+      "task_id": "checkbox-parked-stale-retry-example",
+      "checkbox_state": "[ ]",
+      "retry_state": "parked_stale_retry",
+      "selectable": false,
+      "parking_reason": "stale_retry_requires_narrow_fixture_first_recovery"
+    }
+  ],
+  "appended_tasks": [],
+  "expected_classification": "supervisor_programming_error",
+  "expected_error": "no_eligible_tasks_after_parked_stale_retry_without_fixture_first_task",
+  "expected_required_repair": "append_new_fixture_first_task_before_reporting_no_eligible_tasks"
+}

@@ -1,0 +1,123 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -1,55 +1,74 @@
+ # PP&D Daemon Task Board
+ 
+-This is the controlling backlog for the PP&D autonomous daemon. The daemon should work one narrow item at a time and should only accept changes that pass PP&D validation.
++This board is the controlling backlog for the isolated PP&D daemon. The daemon should run one unchecked task per cycle, keep changes narrow, and validate before accepting work.
+ 
+-Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked.
++## Operating Rules
+ 
+-## Checklist
++- Work only under `ppd/` unless a task explicitly names an allowed operations document.
++- Do not create private DevHub session files, auth state, traces, raw crawl output, downloaded documents, or live crawl artifacts.
++- Do not automate CAPTCHA, MFA, account creation, payment, official submission, certification, cancellation, upload, or inspection scheduling.
++- Prefer fixture-first and validation-first work before live public crawling or authenticated automation.
++- Keep every task small enough for one daemon cycle.
++- When adding Python tests or helpers, keep comparisons syntactically complete and run py_compile through the daemon self-test before broader tests.
++- Preserve source provenance in every public guidance, requirement, process, and guardrail fixture.
+ 
+-Completed tasks from the prior PP&D daemon board are preserved as complete through checkbox-126, including public source discovery fixtures, crawl policy guards, normalized document contracts, permit-process fixtures, requirement extraction fixtures, syntax-first sentinels, size guards, DevHub mocked workflow snapshots, guardrail compiler tests, privacy validation, supervisor diagnostics, and the accepted online trade permit syntax-first repair.
++## Completed Work
+ 
+-- [x] Create the isolated `ppd/` workspace marker and local ignore rules.
+-- [x] Add the PP&D daemon implementation with autonomous status, progress, accepted-work, and failed-patch evidence.
+-- [x] Add public PP&D seed manifest and crawler allowlist for Portland.gov, DevHub, PortlandOregon.gov, and Portland Maps references.
+-- [x] Add robots and crawl-policy preflight helpers for PP&D public source discovery.
+-- [x] Add HTML extraction fixtures from public PP&D guidance pages.
+-- [x] Add PDF extraction fixture definitions for public PP&D applications and checklists.
+-- [x] Add normalized document TypeScript/Python data contracts under `ppd/`.
+-- [x] Add process model data contracts for permit processes, workflow stages, required facts, required documents, and action gates.
+-- [x] Add DevHub workflow-state recorder interfaces with no live login or submission behavior.
+-- [x] Add guarded action classification for read-only, draft-edit, consequential, and financial DevHub actions.
+-- [x] Preserve all accepted PP&D daemon work through checkbox-126 from the prior board, including the accepted online trade permit syntax-first import sentinel repair.
+-- [x] Add a fixture-only public source inventory coverage report for PP&D permit extension, permit reactivation, cancellation, refund, and inspection-result guidance categories, using existing public fixture/source-inventory evidence only and no live crawling.
+-- [x] Add fixture-only authority-label and recrawl-cadence metadata to the existing lifecycle source coverage report for extension, cancellation, refund, and inspection-result evidence only, preserving existing citations and avoiding validator code changes.
+-- [x] Add a one-file validation-only lifecycle source coverage fail-closed test against `ppd/tests/fixtures/source_inventory/permit_lifecycle_source_coverage_report.json`: first assert the committed fixture is valid, then mutate one field at a time for missing `evidence[].authorityLabel`, missing `evidence[].recrawlCadence`, private DevHub paths, raw response bodies, credentials, traces, screenshots, downloaded documents, and uncited `coverageCategories[].evidenceIds` claims.
+-- [x] Recovery for checkbox-15: add a JSON-only extension lifecycle evidence map fixture at `ppd/tests/fixtures/lifecycle/extension_lifecycle_evidence_map.json` with exactly one extension category, source inventory evidence IDs only, required citation fields, and no process-model implementation code.
+-- [x] Recovery for checkbox-15: add the minimal extension-only lifecycle process skeleton fixture as JSON only, using the accepted extension evidence map, with no Python modules, no TypeScript modules, no dataclasses, no live crawling, no DevHub login, and no official action automation.
+-- [x] Recovery for checkbox-19: replace the malformed exact-schema validator attempt with one small Python unittest file only, loading exactly `ppd/tests/fixtures/lifecycle/extension_lifecycle_process_skeleton.json` and `ppd/tests/fixtures/lifecycle/extension_lifecycle_evidence_map.json`; before any full test run, the daemon must run py_compile on the changed file and reject malformed comparisons, generated pseudo-code, or missing assertion operators.
+-- [x] Recovery for checkbox-19: after the syntax-first exact-schema validator passes, add only one mutation-focused validator extension that removes one skeleton field at a time for required facts, required documents, user decisions, authority-source evidence IDs, action-gate citations, and no-live-automation notes, without requiring the evidence map to expose top-level evidence IDs.
+-- [x] Add a minimal reactivation-only lifecycle process skeleton fixture with required facts, required documents, user decisions, citation-backed action gates, and explicit no-live-automation notes from existing fixtures only.
+-- [x] Add a minimal cancellation-and-refund lifecycle process skeleton fixture with user decisions, fee/payment gates, citation-backed action gates, and explicit stop gates from existing fixtures only.
+-- [x] Add a minimal inspection-scheduling-and-result-follow-up lifecycle process skeleton fixture with user decisions, citation-backed action gates, and explicit scheduling/submission stop gates from existing fixtures only.
+-- [x] Add a minimal lifecycle requirement extraction expected-output fixture with exactly eight category records: extension eligibility, reactivation eligibility, cancellation eligibility, refund eligibility, inspection scheduling, inspection-result follow up, fee/payment checkpoints, and explicit-confirmation gates, all source-backed and redacted.
+-- [x] Add a one-file syntax-first import test for `ppd.extraction.permit_lifecycle_requirements` that imports only that module, skips if absent, and fails malformed Python before broad lifecycle requirement validation runs.
+-- [x] Add a one-file replacement-size guard test for `ppd.extraction.permit_lifecycle_requirements` proposals that rejects broad generated modules and requires the extractor implementation to stay under 180 physical lines with no dataclasses.
+-- [x] Add DevHub guardrail tests proving mocked lifecycle actions can produce read-only or draft previews but cannot perform official extension, reactivation, cancellation, refund, payment, certification, upload, or inspection scheduling without exact session-specific user confirmation.
+-- [x] Recovery for checkbox-24: add one small validation test for `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json` that loads the exact top-level `categoryRecords` list, requires exactly the eight accepted category ids, requires every `sourceEvidenceIds[]` entry to appear in that same record's `evidence[].evidenceId`, bounds `confidence` between 0 and 1, deduplicates by `(categoryId, action, object, tuple(sourceEvidenceIds))`, and treats `stopGate: true` plus a `classification` value ending in `_stop_gate` as the explicit stop-gate classification. Do not require a separate `stopGateClassifications` field, do not glob alternate fixture names, and do not add extractor implementation code.
+-- [x] Add a JSON-only cross-cutting lifecycle process index fixture at `ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json` that references only the accepted extension, reactivation, cancellation/refund, and inspection lifecycle skeleton fixture paths, records their lifecycle category ids, and includes no raw source bodies, downloaded documents, private DevHub paths, screenshots, traces, or live crawl output.
+-- [x] Add a fixture-only lifecycle missing-information expected-output fixture at `ppd/tests/fixtures/lifecycle/permit_lifecycle_missing_information_expected_output.json` with exactly one redacted missing-information record for each accepted lifecycle category, source-backed to the lifecycle process skeleton fixtures, deduplicated by `(categoryId, neededItemId)`, and classified as read-only, draft-preview, consequential-stop, or financial-stop.
+-- [x] Recovery for checkbox-29: first repair only `ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json` so every skeleton fixture path names an already committed lifecycle skeleton fixture. In particular, do not leave a reference to nonexistent `ppd/tests/fixtures/lifecycle/inspection_lifecycle_process_skeleton.json`; use the committed inspection lifecycle skeleton path exactly as it exists on disk. Do not add validator code in this recovery task.
+-- [x] Recovery for checkbox-30: add the smallest possible exact-path validator for `ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json` in one Python unittest file. The file must first load only that exact fixture path, assert the committed fixture is valid, and use only plain helper functions, `if not ...: raise AssertionError(...)`, `self.assertEqual`, `self.assertIn`, and `self.assertRaises`. Check that referenced skeleton fixtures exist, category ids are unique, skeleton paths start with `ppd/tests/fixtures/lifecycle/` and end with `.json`, and serialized entries do not contain live crawling, login, payment, submission, upload, certification, cancellation, official refund, official extension, or inspection scheduling authorization. Before broader validation, run py_compile on the changed file and reject malformed comparisons or generated pseudo-code. Do not add mutation tests in this task.
+-- [x] Recovery for checkbox-27a: add only a py_compile-safe skeleton for `ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py` that loads `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json` and asserts the committed top-level `categoryRecords` fixture is valid using the accepted checkbox-24 schema. Do not add mutation cases in this task. Follow `ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md` exactly for this recovery and keep the proposal to one Python test file.
+-- [x] Recovery for checkbox-27b: after checkbox-27a passes, add one mutation case for missing `categoryId` only. Do not add the other mutation cases in the same daemon cycle.
+-- [x] Recovery for checkbox-27c: after checkbox-27b passes, add one mutation case for missing `sourceEvidenceIds` only.
+-- [x] Recovery for checkbox-27d: after checkbox-27c passes, add one mutation case for missing local `evidence[].evidenceId` only.
+-- [x] Recovery for checkbox-27e: after checkbox-27d passes, add one mutation case for out-of-range `confidence` only. Use only complete Python comparisons: `if not isinstance(confidence, (int, float)):`, `if confidence > 1:`, and `if confidence 
+-## Generated Status
++The previous PP&D daemon tranche is complete. Preserve these completed entries as historical markers; do not reopen them unless a supervisor repair task explicitly asks for a recovery.
+ 
+-Last updated: 2026-05-02T04:36:00.000000Z
++- [x] Task checkbox-01: Bootstrap the PP&D daemon task board and operations boundary.
++- [x] Task checkbox-02: Add PP&D-local ignore rules for private DevHub and generated crawl artifacts.
++- [x] Task checkbox-03: Add the initial PP&D validation entrypoint.
++- [x] Task checkbox-04: Add fixture-only public seed validation.
++- [x] Task checkbox-05: Add public source allowlist validation.
++- [x] Task checkbox-06: Add robots and no-persist policy fixture validation.
++- [x] Task checkbox-07: Add skipped-URL reason fixture validation.
++- [x] Task checkbox-08: Add processor archive adapter manifest fixture validation.
++- [x] Task checkbox-09: Add normalized public HTML fixture validation.
++- [x] Task checkbox-10: Add linked public document metadata fixture validation.
++- [x] Task checkbox-11: Add public PDF metadata fixture validation.
++- [x] Task checkbox-12: Add source index fixture validation.
++- [x] Task checkbox-13: Add extraction provenance fixture validation.
++- [x] Task checkbox-14: Add public guidance section hierarchy fixture validation.
++- [x] Task checkbox-15: Add public guidance table/list extraction fixture validation.
++- [x] Task checkbox-16: Add public form metadata fixture validation.
++- [x] Task checkbox-17: Add DevHub public guidance fixture validation without authentication.
++- [x] Task checkbox-18: Add mocked DevHub recorder fixture validation.
++- [x] Task checkbox-19: Add DevHub action classification fixture validation.
++- [x] Task checkbox-20: Add guarded form-drafting scaffold fixture validation.
++- [x] Task checkbox-21: Add missing-information detector fixture validation.
++- [x] Task checkbox-22: Add formal requirement predicate fixture validation.
++- [x] Task checkbox-23: Add guardrail compiler fixture validation.
++- [x] Task checkbox-24: Add permit lifecycle requirement category schema fixture validation.
++- [x] Task checkbox-25: Add permit lifecycle source-evidence fixture validation.
++- [x] Task checkbox-26: Add permit lifecycle normalized requirement fixture validation.
++- [x] Task checkbox-27a: Add mutation coverage for missing lifecycle requirement category identifiers.
++- [x] Task checkbox-27b: Add mutation coverage for empty lifecycle requirement actions.
++- [x] Task checkbox-27c: Add mutation coverage for empty lifecycle requirement objects.
++- [x] Task checkbox-27d: Add mutation coverage for missing lifecycle requirement source evidence.
++- [x] Task checkbox-27e: Add mutation coverage for out-of-range lifecycle requirement confidence values.
++- [x] Task checkbox-27f: Add mutation coverage for duplicate lifecycle requirement keys.
++- [x] Task checkbox-28: Add deterministic daemon self-test coverage for PP&D task parsing.
++- [x] Task checkbox-29: Add accepted-work ledger validation.
++- [x] Task checkbox-30: Add failed-patch manifest validation.
++- [x] Task checkbox-31: Add daemon status/progress validation for no private artifacts.
++- [x] Task checkbox-32: Add fixture-only validation for public permit lifecycle category records.
++- [x] Task checkbox-33: Add lifecycle requirement extraction diagnostics for narrow recovery tasks.
++- [x] Task checkbox-34: Add recovery guardrails for syntactic validity after failed mutation patches.
++- [x] Task checkbox-35: Recovery for checkbox-27e with syntax-valid confidence comparisons.
++- [x] Task checkbox-36: Recovery for checkbox-27f duplicate requirement-key mutation validation.
+ 
+-- Latest target: `Task checkbox-36: Add a syntax-first exact-schema validator for permit_lifecycle_missing_information_expected_output.json.`
+-- Latest result: `supervisor_repair`
+-- Latest summary: Appended the next fixture-first lifecycle missing-information validation and preview tranche after all existing PP&D daemon tasks completed.
+-- Counts: `blocked=0 complete=36 in_progress=0 needed=8`
++## Next Ordered Tranche
+ 
+-
++- [ ] Task checkbox-37: Add a fixture-only process-model schema test for one public PP&D permit process record. Validate required fields only: `processId`, `sourceEvidenceIds`, `stages`, `requiredInputs`, `requiredDocuments`, `stopGates`, and `lastReviewed`. Do not add live crawling or DevHub automation.
++- [ ] Task checkbox-38: Add the smallest committed synthetic public-process fixture that passes checkbox-37. Use redacted/public-only values and at least two source evidence IDs already represented by existing fixture style.
++- [ ] Task checkbox-39: Add one mutation test proving process-model validation rejects a stage without source evidence. Keep the edit limited to the new process-model test file or its adjacent fixture.
++- [ ] Task checkbox-40: Add one mutation test proving process-model validation rejects a required document without a cited source evidence ID. Keep this separate from stage validation.
++- [ ] Task checkbox-41: Add a fixture-only missing-information schema test that derives missing user facts from the committed process fixture. Validate only reversible request fields, not browser actions.
++- [ ] Task checkbox-42: Add the smallest committed missing-information fixture for checkbox-41 using placeholder user case facts and public-only citations. Do not store PII, account state, screenshots, traces, or uploads.
++- [ ] Task checkbox-43: Add one mutation test proving missing-information validation rejects a requested user fact that has no linked process requirement.
++- [ ] Task checkbox-44: Add a fixture-only guardrail mapping test that maps one process stop gate to an agent action gate. Validate action class, consequence summary, and source evidence IDs only.
++- [ ] Task checkbox-45: Add the smallest committed guardrail mapping fixture for checkbox-44. Use only safe read-only or reversible draft-edit examples; do not include submission, payment, certification, cancellation, upload, or inspection scheduling automation.
++- [ ] Task checkbox-46: Add one mutation test proving guardrail mapping validation rejects consequential or financial actions unless an explicit confirmation field is present and false by default in fixtures.
++- [ ] Task checkbox-47: Add a public-crawl dry-run plan fixture that lists seed URLs, allowlist decisions, robots/no-persist preflight fields, timeout policy, and skipped-URL reason codes without performing network access.
++- [ ] Task checkbox-48: Add validation for the public-crawl dry-run plan fixture from checkbox-47. The validator must fail closed on missing allowlist, robots, timeout, no-persist, or processor-adapter preflight fields.

@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-01T19:18:40.148963Z",
+  "impact": "The daemon includes PP&D daemon docs in its prompt context, so this gives the next worker deterministic guardrails for recovering from the blocked inventory-validation task without broad rewrites or another malformed Python proposal. It specifically directs fixture-first validation, Python syntax preflight, and exact unsafe-field coverage before live or authenticated work.",
+  "summary": "Add a supervisor repair guide that gives the PP&D daemon explicit small-file, syntax-first recovery rules after repeated public source inventory validation failures.",
+  "target_task": "Supervisor repair: 1 task(s) are blocked: Task checkbox-49: Add validation for the public source inventory that rejects non-allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and missing provenance fields.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 60 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "........................................................................................ ---------------------------------------------------------------------- Ran 88 tests in 0.009s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

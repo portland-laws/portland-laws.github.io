@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/task-board.md"
+  ],
+  "created_at": "2026-05-02T05:28:57.751897Z",
+  "impact": "The daemon was selecting the fixture validator retry while syntax-preflight was only added as a helper, not proven in the apply path. Blocking the retry and inserting a narrow apply-flow wiring task forces the next autonomous cycle to repair supervision first, reducing repeated SyntaxError and broad-validation rollbacks.",
+  "summary": "Reorder the PP&D daemon backlog so syntax-preflight integration is repaired before retrying checkbox-48.",
+  "target_task": "Supervisor repair: 1 task(s) are blocked: Task checkbox-53: Task checkbox-48: Add validation for the public-crawl dry-run plan fixture from checkbox-47. The validator must fail closed on missing allowlist, robots, timeout, no-persist, or processor-adapter preflight fields. Blocked pending daemon syntax-preflight repair after repeated `planned_crawl_manifest.py` SyntaxError rollbacks.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 60 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................................................................................................ss..............sss........................................................................................................................................ ---------------------------------------------------------------------- Ran 375 tests in 0.049s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

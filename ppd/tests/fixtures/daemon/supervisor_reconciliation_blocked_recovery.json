@@ -1,0 +1,8 @@
+{
+  "boardMarkdown": "# Fixture PP&D Daemon Task Board\n\nLegend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked. Broad failed work is parked in Deferred Repair Notes while narrow recovery tasks remain selectable.\n\n## Checklist\n\n- [x] Create the isolated PP&D workspace marker and local ignore rules.\n- [x] Recover the public source inventory validator with a sentinel-preserving one-file implementation\n- [ ] Add next independent PP&D source inventory fixture validation\n\n## Deferred Broad Items\n\nThese items failed as broad tasks and are intentionally not selectable while narrower recovery work remains available.\n\n- Parked public source inventory broad task: Add the broad public source inventory validator in one pass. Superseded by accepted narrower recovery: Recover the public source inventory validator with a sentinel-preserving one-file implementation.\n",
+  "expectedSelectedTitle": "Add next independent PP&D source inventory fixture validation",
+  "purpose": "Prove a superseded broad blocked task is preserved only in deferred notes while the daemon still selects the next independent needed task.",
+  "schemaVersion": 1,
+  "acceptedRecoveryTitle": "Recover the public source inventory validator with a sentinel-preserving one-file implementation",
+  "supersededBlockedTaskTitle": "Add the broad public source inventory validator in one pass"
+}

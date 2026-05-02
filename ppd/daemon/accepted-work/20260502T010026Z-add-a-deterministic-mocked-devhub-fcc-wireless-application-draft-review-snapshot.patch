@@ -1,0 +1,436 @@
+--- a/ppd/tests/fixtures/devhub/fcc_wireless_application_draft_review_snapshot.json
++++ b/ppd/tests/fixtures/devhub/fcc_wireless_application_draft_review_snapshot.json
+@@ -0,0 +1,272 @@
++{
++  "schemaVersion": 1,
++  "fixtureId": "devhub-fcc-wireless-application-draft-review-snapshot",
++  "workflow": "fcc_wireless_application",
++  "stateId": "draft_review",
++  "capturedAt": "2026-05-01T00:00:00Z",
++  "captureMode": "mocked_fixture_only",
++  "redactionPolicy": "all user, project, account, parcel, contact, and file values are synthetic redacted placeholders",
++  "urlState": {
++    "kind": "mocked_authenticated_state",
++    "stableState": "devhub:fcc-wireless-application:draft-review",
++    "routeTemplate": "/mock/devhub/fcc-wireless-application/draft-review",
++    "containsPrivateSessionPath": false
++  },
++  "sourceEvidence": [
++    {
++      "id": "public-devhub-application-guidance",
++      "label": "Portland public DevHub application guidance lists FCC wireless applications as a permit request type.",
++      "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
++      "capturedAt": "2026-05-01T00:00:00Z"
++    }
++  ],
++  "snapshot": {
++    "pageTitle": "Review FCC Wireless Application Draft",
++    "nearbyHeading": "FCC Wireless Application",
++    "draftStatus": {
++      "state": "saved_for_later_available",
++      "lastSavedDisplay": "[REDACTED_TIMESTAMP]",
++      "draftReference": "[REDACTED_DRAFT_REFERENCE]",
++      "resumeState": "devhub:fcc-wireless-application:draft-review"
++    },
++    "semanticSelectors": [
++      {
++        "id": "review-heading",
++        "role": "heading",
++        "accessibleName": "FCC Wireless Application",
++        "labelText": "FCC Wireless Application",
++        "nearbyHeading": "Review Application",
++        "state": "devhub:fcc-wireless-application:draft-review",
++        "fallbackCss": null,
++        "fallbackXPath": null
++      },
++      {
++        "id": "save-for-later-button",
++        "role": "button",
++        "accessibleName": "Save for Later",
++        "labelText": "Save for Later",
++        "nearbyHeading": "Review Application",
++        "state": "devhub:fcc-wireless-application:draft-review",
++        "fallbackCss": null,
++        "fallbackXPath": null
++      },
++      {
++        "id": "continue-to-certification-button",
++        "role": "button",
++        "accessibleName": "Continue to Certification",
++        "labelText": "Continue to Certification",
++        "nearbyHeading": "Review Application",
++        "state": "devhub:fcc-wireless-application:draft-review",
++        "fallbackCss": null,
++        "fallbackXPath": null
++      }
++    ],
++    "requiredFields": [
++      {
++        "id": "project-site-address",
++        "label": "Project site address",
++        "role": "textbox",
++        "required": true,
++        "value": "[REDACTED_PROJECT_SITE_ADDRESS]",
++        "selectorBasis": {
++          "accessibleName": "Project site address",
++          "labelText": "Project site address",
++          "nearbyHeading": "Project Location",
++          "state": "devhub:fcc-wireless-application:draft-review"
++        },
++        "validationMessages": []
++      },
++      {
++        "id": "property-id",
++        "label": "Property ID or tax account number",
++        "role": "textbox",
++        "required": true,
++        "value": "[REDACTED_PROPERTY_IDENTIFIER]",
++        "selectorBasis": {
++          "accessibleName": "Property ID or tax account number",
++          "labelText": "Property ID or tax account number",
++          "nearbyHeading": "Project Location",
++          "state": "devhub:fcc-wireless-application:draft-review"
++        },
++        "validationMessages": []
++      },
++      {
++        "id": "applicant-contact",
++        "label": "Applicant contact",
++        "role": "combobox",
++        "required": true,
++        "value": "[REDACTED_CONTACT_SELECTION]",
++        "selectorBasis": {
++          "accessibleName": "Applicant contact",
++          "labelText": "Applicant contact",
++          "nearbyHeading": "Contacts",
++          "state": "devhub:fcc-wireless-application:draft-review"
++        },
++        "validationMessages": []
++      },
++      {
++        "id": "wireless-facility-type",
++        "label": "Wireless facility type",
++        "role": "combobox",
++        "required": true,
++        "value": "[REDACTED_FACILITY_TYPE]",
++        "selectorBasis": {
++          "accessibleName": "Wireless facility type",
++          "labelText": "Wireless facility type",
++          "nearbyHeading": "Wireless Facility Details",
++          "state": "devhub:fcc-wireless-application:draft-review"
++        },
++        "validationMessages": []
++      },
++      {
++        "id": "project-description",
++        "label": "Project description",
++        "role": "textbox",
++        "required": true,
++        "value": "[REDACTED_PROJECT_DESCRIPTION]",
++        "selectorBasis": {
++          "accessibleName": "Project description",
++          "labelText": "Project description",
++          "nearbyHeading": "Wireless Facility Details",
++          "state": "devhub:fcc-wireless-application:draft-review"
++        },
++        "validationMessages": []
++      }
++    ],
++    "uploadControls": [
++      {
++        "id": "application-packet-upload",
++        "label": "FCC wireless application packet",
++        "role": "button",
++        "required": true,
++        "acceptedFileTypes": ["application/pdf"],
++        "fileSizeHint": "[REDACTED_FILE_SIZE_HINT]",
++        "fileNamingHint": "[REDACTED_FILE_NAMING_HINT]",
++        "currentFiles": ["[REDACTED_UPLOADED_APPLICATION_PACKET_FILENAME]"],
++        "selectorBasis": {
++          "accessibleName": "Upload FCC wireless application packet",
++          "labelText": "FCC wireless application packet",
++          "nearbyHeading": "Documents",
++          "state": "devhub:fcc-wireless-application:draft-review"
++        },
++        "validationMessages": []
++      },
++      {
++        "id": "site-plan-upload",
++        "label": "Site plan or drawings",
++        "role": "button",
++        "required": true,
++        "acceptedFileTypes": ["application/pdf"],
++        "fileSizeHint": "[REDACTED_FILE_SIZE_HINT]",
++        "fileNamingHint": "[REDACTED_FILE_NAMING_HINT]",
++        "currentFiles": [],
++        "selectorBasis": {
++          "accessibleName": "Upload site plan or drawings",
++          "labelText": "Site plan or drawings",
++          "nearbyHeading": "Documents",
++          "state": "devhub:fcc-wireless-application:draft-review"
++        },
++        "validationMessages": [
++          {
++            "id": "site-plan-required",
++            "severity": "error",
++            "text": "A site plan or drawing PDF is required before certification."
++          }
++        ]
++      },
++      {
++        "id": "supporting-documents-upload",
++        "label": "Supporting documents",
++        "role": "button",
++        "required": false,
++        "acceptedFileTypes": ["application/pdf"],
++        "fileSizeHint": "[REDACTED_FILE_SIZE_HINT]",
++        "fileNamingHint": "[REDACTED_FILE_NAMING_HINT]",
++        "currentFiles": ["[REDACTED_SUPPORTING_DOCUMENT_FILENAME]"],
++        "selectorBasis": {
++          "accessibleName": "Upload supporting documents",
++          "labelText": "Supporting documents",
++          "nearbyHeading": "Documents",
++          "state": "devhub:fcc-wireless-application:draft-review"
++        },
++        "validationMessages": []
++      }
++    ],
++    "validationMessages": [
++      {
++        "id": "missing-required-upload",
++        "severity": "error",
++        "fieldOrControlId": "site-plan-upload",
++        "text": "A site plan or drawing PDF is required before certification."
++      },
++      {
++        "id": "review-before-certification",
++        "severity": "warning",
++        "fieldOrControlId": "continue-to-certification-button",
++        "text": "Review all application information and uploaded documents before continuing to certification."
++      }
++    ],
++    "navigationEdges": [
++      {
++        "id": "back-to-documents",
++        "fromState": "devhub:fcc-wireless-application:draft-review",
++        "toState": "devhub:fcc-wireless-application:documents",
++        "actionLabel": "Back",
++        "classification": "safe_read_only",
++        "requiresExactConfirmation": false
++      },
++      {
++        "id": "save-for-later",
++        "fromState": "devhub:fcc-wireless-application:draft-review",
++        "toState": "devhub:fcc-wireless-application:draft-saved",
++        "actionLabel": "Save for Later",
++        "classification": "reversible_draft_edit",
++        "requiresExactConfirmation": false
++      },
++      {
++        "id": "continue-to-certification",
++        "fromState": "devhub:fcc-wireless-application:draft-review",
++        "toState": "devhub:fcc-wireless-application:certification",
++        "actionLabel": "Continue to Certification",
++        "classification": "potentially_consequential",
++        "requiresExactConfirmation": true,
++        "exactConfirmationPhrase": "I confirm this FCC wireless application draft is ready to continue to certification in this DevHub session."
++      }
++    ],
++    "confirmationGates": [
++      {
++        "id": "certification-review-gate",
++        "action": "continue_to_certification",
++        "classification": "potentially_consequential",
++        "gateText": "Continuing to certification prepares the FCC wireless application draft for applicant certification review.",
++        "requiredExactConfirmation": "I confirm this FCC wireless application draft is ready to continue to certification in this DevHub session.",
++        "mayExecuteWithoutConfirmation": false
++      },
++      {
++        "id": "submit-application-gate",
++        "action": "submit_application",
++        "classification": "potentially_consequential",
++        "gateText": "Submitting an FCC wireless application is an official DevHub action and is not performed by this fixture.",
++        "requiredExactConfirmation": "I authorize submission of this FCC wireless application in this DevHub session.",
++        "mayExecuteWithoutConfirmation": false
++      },
++      {
++        "id": "fee-payment-gate",
++        "action": "pay_fees",
++        "classification": "financial",
++        "gateText": "Fee payment is a financial action and is not performed by this fixture.",
++        "requiredExactConfirmation": "I authorize payment of the displayed FCC wireless application fees in this DevHub session.",
++        "mayExecuteWithoutConfirmation": false
++      }
++    ]
++  },
++  "privacyAssertions": {
++    "containsCredentials": false,
++    "containsAuthState": false,
++    "containsTrace": false,
++    "containsScreenshot": false,
++    "containsRawCrawlOutput": false,
++    "containsDownloadedDocument": false,
++    "containsUnredactedPrivateValues": false
++  }
++}
+--- a/ppd/tests/test_devhub_fcc_wireless_draft_review_snapshot.py
++++ b/ppd/tests/test_devhub_fcc_wireless_draft_review_snapshot.py
+@@ -0,0 +1,158 @@
++"""Validate the mocked DevHub FCC wireless draft-review snapshot fixture."""
++
++from __future__ import annotations
++
++import json
++import re
++import unittest
++from pathlib import Path
++from typing import Any
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "devhub"
++    / "fcc_wireless_application_draft_review_snapshot.json"
++)
++
++FORBIDDEN_KEYS = {
++    "authorization",
++    "authState",
++    "auth_state",
++    "body",
++    "content",
++    "cookie",
++    "cookies",
++    "html",
++    "password",
++    "rawBody",
++    "raw_body",
++    "rawHtml",
++    "raw_html",
++    "screenshot",
++    "storageState",
++    "storage_state",
++    "token",
++    "trace",
++    "username",
++}
++
++FORBIDDEN_TEXT_PATTERNS = (
++    re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.IGNORECASE),
++    re.compile(r"\b\d{3}[-. ]\d{3}[-. ]\d{4}\b"),
++    re.compile(r"\b\d{1,6}\s+(?:SW|SE|NE|NW|N)\s+[A-Za-z0-9 .]+\b"),
++    re.compile(r"ppd/data/private", re.IGNORECASE),
++    re.compile(r"storage[_-]?state", re.IGNORECASE),
++    re.compile(r"trace\.zip", re.IGNORECASE),
++    re.compile(r"screenshots?[/\\]", re.IGNORECASE),
++    re.compile(r"downloads?[/\\]", re.IGNORECASE),
++)
++
++
++class DevhubFccWirelessDraftReviewSnapshotTest(unittest.TestCase):
++    def setUp(self) -> None:
++        self.fixture = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
++        self.snapshot = self.fixture["snapshot"]
++
++    def test_fixture_is_mocked_and_redacted(self) -> None:
++        self.assertEqual(self.fixture["captureMode"], "mocked_fixture_only")
++        self.assertFalse(self.fixture["urlState"]["containsPrivateSessionPath"])
++        for key, value in self.fixture["privacyAssertions"].items():
++            self.assertFalse(value, key)
++        self.assertEqual([], list(_privacy_findings(self.fixture)))
++
++    def test_records_semantic_selectors_for_review_state(self) -> None:
++        selectors = self.snapshot["semanticSelectors"]
++        self.assertGreaterEqual(len(selectors), 3)
++        for selector in selectors:
++            self.assertIn(selector["role"], {"button", "heading", "textbox", "combobox"})
++            self.assertTrue(selector["accessibleName"])
++            self.assertTrue(selector["labelText"])
++            self.assertTrue(selector["nearbyHeading"])
++            self.assertEqual(selector["state"], "devhub:fcc-wireless-application:draft-review")
++            self.assertIsNone(selector["fallbackCss"])
++            self.assertIsNone(selector["fallbackXPath"])
++
++    def test_required_fields_are_present_and_redacted(self) -> None:
++        fields = self.snapshot["requiredFields"]
++        field_ids = {field["id"] for field in fields}
++        self.assertEqual(
++            {
++                "project-site-address",
++                "property-id",
++                "applicant-contact",
++                "wireless-facility-type",
++                "project-description",
++            },
++            field_ids,
++        )
++        for field in fields:
++            self.assertTrue(field["required"])
++            self.assertRegex(field["value"], r"^\[REDACTED_[A-Z0-9_]+\]$")
++            self.assert_selector_basis(field["selectorBasis"])
++
++    def test_upload_controls_and_validation_messages_are_explicit(self) -> None:
++        uploads = self.snapshot["uploadControls"]
++        upload_ids = {upload["id"] for upload in uploads}
++        self.assertEqual(
++            {"application-packet-upload", "site-plan-upload", "supporting-documents-upload"},
++            upload_ids,
++        )
++        required_uploads = {upload["id"] for upload in uploads if upload["required"]}
++        self.assertEqual({"application-packet-upload", "site-plan-upload"}, required_uploads)
++        for upload in uploads:
++            self.assertEqual(upload["acceptedFileTypes"], ["application/pdf"])
++            self.assertRegex(upload["fileSizeHint"], r"^\[REDACTED_[A-Z0-9_]+\]$")
++            self.assertRegex(upload["fileNamingHint"], r"^\[REDACTED_[A-Z0-9_]+\]$")
++            self.assert_selector_basis(upload["selectorBasis"])
++        messages = self.snapshot["validationMessages"]
++        self.assertTrue(any(message["severity"] == "error" for message in messages))
++        self.assertTrue(any(message["fieldOrControlId"] == "site-plan-upload" for message in messages))
++
++    def test_save_for_later_state_and_navigation_edges_are_recorded(self) -> None:
++        draft_status = self.snapshot["draftStatus"]
++        self.assertEqual(draft_status["state"], "saved_for_later_available")
++        self.assertEqual(draft_status["resumeState"], "devhub:fcc-wireless-application:draft-review")
++        edge_by_id = {edge["id"]: edge for edge in self.snapshot["navigationEdges"]}
++        self.assertEqual(edge_by_id["save-for-later"]["classification"], "reversible_draft_edit")
++        self.assertFalse(edge_by_id["save-for-later"]["requiresExactConfirmation"])
++        self.assertEqual(edge_by_id["continue-to-certification"]["classification"], "potentially_consequential")
++        self.assertTrue(edge_by_id["continue-to-certification"]["requiresExactConfirmation"])
++
++    def test_exact_confirmation_gates_block_consequential_and_financial_actions(self) -> None:
++        gates = {gate["action"]: gate for gate in self.snapshot["confirmationGates"]}
++        self.assertEqual({"continue_to_certification", "submit_application", "pay_fees"}, set(gates))
++        for action in ("continue_to_certification", "submit_application", "pay_fees"):
++            gate = gates[action]
++            self.assertFalse(gate["mayExecuteWithoutConfirmation"])
++            self.assertIn("this DevHub session", gate["requiredExactConfirmation"])
++            self.assertGreaterEqual(len(gate["requiredExactConfirmation"].split()), 8)
++        self.assertEqual(gates["pay_fees"]["classification"], "financial")
++
++    def assert_selector_basis(self, selector_basis: dict[str, Any]) -> None:
++        self.assertTrue(selector_basis["accessibleName"])
++        self.assertTrue(selector_basis["labelText"])
++        self.assertTrue(selector_basis["nearbyHeading"])
++        self.assertEqual(selector_basis["state"], "devhub:fcc-wireless-application:draft-review")
++
++
++def _privacy_findings(value: Any, path: str = "$", key: str | None = None) -> list[str]:
++    findings: list[str] = []
++    if key in FORBIDDEN_KEYS:
++        findings.append(f"{path}: forbidden key {key}")
++    if isinstance(value, dict):
++        for child_key, child_value in value.items():
++            findings.extend(_privacy_findings(child_value, f"{path}.{child_key}", str(child_key)))
++    elif isinstance(value, list):
++        for index, child_value in enumerate(value):
++            findings.extend(_privacy_findings(child_value, f"{path}[{index}]", key))
++    elif isinstance(value, str):
++        for pattern in FORBIDDEN_TEXT_PATTERNS:
++            if pattern.search(value):
++                findings.append(f"{path}: forbidden private value pattern {pattern.pattern}")
++    return findings
++
++
++if __name__ == "__main__":
++    unittest.main()

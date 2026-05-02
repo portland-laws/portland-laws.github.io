@@ -92,3 +92,102 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260501T183728Z-add-browser-local-prover-adapter-router-contracts.json`, `ipfs_datasets_py/.daemon/accepted-work/20260501T183728Z-add-browser-local-prover-adapter-router-contracts.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260501T183728Z-add-browser-local-prover-adapter-router-contracts.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-01 20:34:46 UTC
+
+- Target: `Task checkbox-173: Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.`
+- Summary: Add browser-native FOL NLP token classification metadata.
+- Impact: The new src/lib/logic/fol/browserNativeNlp.ts adapter is deterministic TypeScript-only browser runtime code with explicit no-server/no-Python metadata, and src/lib/logic/fol/converter.test.ts exercises it through the existing Jest logic-port validation suite.
+- Changed files: `src/lib/logic/fol/browserNativeNlp.ts`, `src/lib/logic/fol/converter.test.ts`, `src/lib/logic/fol/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260501T203446Z-add-browser-native-fol-nlp-token-classification-metadata..json`, `ipfs_datasets_py/.daemon/accepted-work/20260501T203446Z-add-browser-native-fol-nlp-token-classification-metadata..patch`, `ipfs_datasets_py/.daemon/accepted-work/20260501T203446Z-add-browser-native-fol-nlp-token-classification-metadata..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
+## 2026-05-01 22:02:12 UTC
+
+- Target: `Task checkbox-171: Port CEC NL policy compilers and language detection with browser-native NLP.`
+- Summary: Add browser-native CEC/DCEC policy language detection and fail-closed policy compilation.
+- Impact: The DCEC NL converter now exposes deterministic browser-native language detection and policy compilation metadata directly from src/lib/logic/cec/nlConverter.ts. The focused Jest additions in src/lib/logic/cec/nlConverter.test.ts validate English policy compilation, multilingual scoring, and fail-closed non-English behavior through the existing logic-port test harness.
+- Changed files: `src/lib/logic/cec/nlConverter.test.ts`, `src/lib/logic/cec/nlConverter.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260501T220212Z-add-browser-native-cec-dcec-policy-language-detection-and-fail-closed-policy-com.json`, `ipfs_datasets_py/.daemon/accepted-work/20260501T220212Z-add-browser-native-cec-dcec-policy-language-detection-and-fail-closed-policy-com.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260501T220212Z-add-browser-native-cec-dcec-policy-language-detection-and-fail-closed-policy-com.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
+## 2026-05-02 00:37:59 UTC
+
+- Target: `Task checkbox-180: Port Groth16 verification/proving path using browser-native cryptographic libraries where feasible.`
+- Summary: Add a browser-native Groth16 adapter contract with fail-closed validation and tests
+- Impact: The new src/lib/logic/groth16.ts file gives the TypeScript logic port a browser-safe Groth16 proving and verification entry point that validates Groth16-shaped inputs, delegates only to an injected browser/WASM-compatible backend when available, and fails closed without Node, Python, filesystem, subprocess, RPC, or server fallbacks. The focused Jest tests in src/lib/logic/groth16.test.ts exercise unsupported-backend behavior, malformed proof rejection, backend delegation for verification, and proving input validation so the port validation suite directly covers the new contract.
+- Changed files: `src/lib/logic/groth16.test.ts`, `src/lib/logic/groth16.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T003759Z-add-a-browser-native-groth16-adapter-contract-with-fail-closed-validation-and-te.json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T003759Z-add-a-browser-native-groth16-adapter-contract-with-fail-closed-validation-and-te.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T003759Z-add-a-browser-native-groth16-adapter-contract-with-fail-closed-validation-and-te.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
+## 2026-05-02 00:44:01 UTC
+
+- Target: `Task checkbox-182: Add strict UI/API language distinguishing simulated, heuristic, proof-checking, and cryptographic outputs.`
+- Summary: Add strict browser-native logic output language classification
+- Impact: Adds a deterministic TypeScript contract under src/lib/logic/ that UI and API callers can use to label outputs as simulated, heuristic, proof-checking, or cryptographic without implying stronger guarantees. The focused Jest coverage validates strict labels, metadata normalization, and fail-closed rejection of ambiguous or unsupported language for the TypeScript logic-port validation suite.
+- Changed files: `src/lib/logic/outputClassification.test.ts`, `src/lib/logic/outputClassification.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T004401Z-add-strict-browser-native-logic-output-language-classification.json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T004401Z-add-strict-browser-native-logic-output-language-classification.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T004401Z-add-strict-browser-native-logic-output-language-classification.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
+## 2026-05-02 00:58:26 UTC
+
+- Target: `Task checkbox-191: Replace Python API/CLI surfaces with TypeScript developer scripts or browser devtools.`
+- Summary: Add a browser-native replacement contract for Python API/CLI logic surfaces.
+- Impact: The new src/lib/logic/pythonSurfaceReplacements.ts module gives the TypeScript port validation suite a deterministic, browser-safe way to map legacy ipfs_datasets_py API/CLI entrypoints to TypeScript developer scripts or browser devtools contracts while explicitly rejecting server, subprocess, RPC, filesystem, and Python runtime fallbacks. The focused Jest test validates the fail-closed behavior and ensures no replacement advertises a Python or server runtime.
+- Changed files: `src/lib/logic/pythonSurfaceReplacements.test.ts`, `src/lib/logic/pythonSurfaceReplacements.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T005826Z-add-a-browser-native-replacement-contract-for-python-api-cli-logic-surfaces..json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T005826Z-add-a-browser-native-replacement-contract-for-python-api-cli-logic-surfaces..patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T005826Z-add-a-browser-native-replacement-contract-for-python-api-cli-logic-surfaces..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
+## 2026-05-02 01:24:09 UTC
+
+- Target: `Task checkbox-113: Add browser performance budgets for proof search.`
+- Summary: Add browser-native proof search performance budgets
+- Impact: Adds a deterministic src/lib/logic proof-search budget module and focused Jest coverage. Browser proof-search code can use the exported budget creation, validation, start, and advance helpers to fail closed on excessive steps or elapsed time without Node, Python, filesystem, RPC, subprocess, or server fallbacks; the test file is directly picked up by the existing TypeScript logic validation suite.
+- Changed files: `src/lib/logic/proofSearchBudgets.test.ts`, `src/lib/logic/proofSearchBudgets.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T012409Z-add-browser-native-proof-search-performance-budgets.json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T012409Z-add-browser-native-proof-search-performance-budgets.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T012409Z-add-browser-native-proof-search-performance-budgets.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
+## 2026-05-02 03:24:45 UTC
+
+- Target: `Task checkbox-153: Port CEC proof cache, proof strategies, advanced inference, and error handling.`
+- Summary: Add browser-native DCEC proof cache and proof strategies.
+- Impact: The TypeScript CEC logic port gains deterministic proof APIs under src/lib/logic/cec/nlConverter.ts that validation can call directly in browser-native runtime: cached proof results, direct and advanced inference, deontic consistency checks, temporal lift, and fail-closed contradiction errors without server, Python, filesystem, subprocess, RPC, or Node-only fallbacks. The existing Jest test file asserts the new proof contracts through the logic port validation suite.
+- Changed files: `src/lib/logic/cec/nlConverter.test.ts`, `src/lib/logic/cec/nlConverter.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T032445Z-add-browser-native-dcec-proof-cache-and-proof-strategies..json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T032445Z-add-browser-native-dcec-proof-cache-and-proof-strategies..patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T032445Z-add-browser-native-dcec-proof-cache-and-proof-strategies..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
+## 2026-05-02 03:51:51 UTC
+
+- Target: `Task checkbox-185: Port deeper domain-specific integration bridges, interactive workflows, and parity fixtures.`
+- Summary: Add browser-native domain integration bridge contract and workflow parity tests
+- Impact: The new src/lib/logic/domainIntegrationBridge.ts module gives the TypeScript logic port a deterministic browser/WASM-safe integration bridge descriptor for domain-specific workflows and parity fixtures. The matching Jest test imports the runtime source directly and validates accepted browser-native metadata, interactive workflow checks, parity fixture metadata, and fail-closed rejection of Python/server-style adapters, so the logic-port validation suite exercises the new contract.
+- Changed files: `src/lib/logic/domainIntegrationBridge.test.ts`, `src/lib/logic/domainIntegrationBridge.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T035151Z-add-browser-native-domain-integration-bridge-contract-and-workflow-parity-tests.json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T035151Z-add-browser-native-domain-integration-bridge-contract-and-workflow-parity-tests.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T035151Z-add-browser-native-domain-integration-bridge-contract-and-workflow-parity-tests.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
+## 2026-05-02 04:31:20 UTC
+
+- Target: `Task checkbox-145: Port event calculus, fluents, context manager, ambiguity resolver, shadow prover, and modal tableaux.`
+- Summary: Add a browser-native modal tableaux core for checkbox-145 parity work
+- Impact: The new src/lib/logic/modalTableaux.ts module gives the TypeScript port a deterministic, browser-native modal K satisfiability checker with explicit depth and branch bounds. The focused Jest test file imports that runtime source directly and validates satisfiable, contradictory, nested modal, and fail-closed bounded cases without Python, Node-only APIs, subprocesses, RPC, filesystem, or server fallbacks.
+- Changed files: `src/lib/logic/modalTableaux.test.ts`, `src/lib/logic/modalTableaux.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T043120Z-add-a-browser-native-modal-tableaux-core-for-checkbox-145-parity-work.json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T043120Z-add-a-browser-native-modal-tableaux-core-for-checkbox-145-parity-work.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T043120Z-add-a-browser-native-modal-tableaux-core-for-checkbox-145-parity-work.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
+## 2026-05-02 04:48:56 UTC
+
+- Target: `Task checkbox-95: Port every TDFOL inference rule from `logic/TDFOL/tdfol_inference_rules.py`.`
+- Summary: add browser-native TDFOL inference rule registry and focused parity tests
+- Impact: The new src/lib/logic/tdfol/tdfolInferenceRules.ts file gives the TypeScript logic port a deterministic, browser-native catalog and validator for the TDFOL inference rules from the Python module, without filesystem, subprocess, RPC, Python, or server fallbacks. The Jest test file imports that runtime source directly and asserts the exported rule coverage, aliases, fail-closed validation, and representative arity contracts used by the TypeScript port validation suite.
+- Changed files: `src/lib/logic/tdfol/tdfolInferenceRules.test.ts`, `src/lib/logic/tdfol/tdfolInferenceRules.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T044856Z-add-browser-native-tdfol-inference-rule-registry-and-focused-parity-tests.json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T044856Z-add-browser-native-tdfol-inference-rule-registry-and-focused-parity-tests.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T044856Z-add-browser-native-tdfol-inference-rule-registry-and-focused-parity-tests.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
+## 2026-05-02 05:07:59 UTC
+
+- Target: `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.`
+- Summary: Add browser-native expansion rule parity helper with diagnostics, strategy ordering, and interactive render state coverage.
+- Impact: Adds a deterministic TypeScript-only expansion rule module under src/lib/logic/fol and focused Jest tests that validate alpha, beta, gamma, delta, contradiction diagnostics, strategy metadata, and interactive renderer output for the logic port validation suite.
+- Changed files: `src/lib/logic/fol/expansionRules.test.ts`, `src/lib/logic/fol/expansionRules.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T050759Z-add-browser-native-expansion-rule-parity-helper-with-diagnostics-strategy-orderi.json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T050759Z-add-browser-native-expansion-rule-parity-helper-with-diagnostics-strategy-orderi.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T050759Z-add-browser-native-expansion-rule-parity-helper-with-diagnostics-strategy-orderi.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

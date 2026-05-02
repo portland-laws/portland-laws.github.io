@@ -1,0 +1,2 @@
+ppd/tests/fixtures/expected_outputs/fcc_wireless_application_requirements.json
+ppd/tests/test_fcc_wireless_application_expected_output.py

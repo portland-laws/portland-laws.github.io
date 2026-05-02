@@ -1,0 +1,34 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -54,7 +54,6 @@
+ - [x] Add Playwright guardrail tests proving upload, submit, certify, pay, cancel, schedule inspection, MFA, CAPTCHA, account creation, and password recovery actions are refused unless exact user confirmation is present.
+ - [x] Add a Playwright audit-event fixture that records selector basis, source requirement, user-confirmation state, action classification, and before/after redacted field state for draft-only form edits.
+ - [x] Add a fixture-only public source inventory for PP&D permit application, forms, handout, fee, and DevHub guide page categories with canonical URLs, authority labels, and recrawl cadence hints.
+-- [!] Add validation for the public source inventory that rejects non-allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and missing provenance fields.
+ - [x] Add a fixture-only normalized document link graph that connects public PP&D guidance pages to linked forms, PDFs, DevHub guides, and Portland Maps references with skipped-link reason codes.
+ - [~] Add deterministic validation for the normalized document link graph covering canonical URL matching, content-type classification, source-index references, and no private or live crawl artifacts.
+ - [ ] Add a third permit-process fixture for a residential building permit or new single-family residence workflow with stages, required facts, required documents, file rules, fee/payment gates, and citation-backed evidence.
+@@ -68,17 +67,17 @@
+ - [ ] Add validation for missing-information detector output proving every requested user item is source-backed, deduplicated, action-classified, and free of private fixture values.
+ - [ ] Add a one-file syntax-first repair test for public source inventory validation that imports only `ppd.contracts.public_source_inventory` and rejects malformed Python before broad unittest discovery.
+ - [ ] Add a minimal invalid public source inventory fixture with exactly one unsafe field per entry so rejection reasons for raw bodies, credentials, traces, screenshots, downloaded documents, private DevHub paths, and missing provenance are deterministic.
++- [ ] Add the public source inventory validator only after the syntax-first import test and one-unsafe-field fixture pass, covering allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and required provenance fields.
+ 
+-## Supervisor Notes
++## Deferred Repair Notes
+ 
+-- Task checkbox-49 is blocked because repeated daemon proposals for that task failed validation, including Python syntax failures and a mismatched expected rejection reason. Resume autonomous work on the next needed fixture or validation task instead of retrying that broad contract task without a narrower repair.
+-- Any future repair for checkbox-49 should be split into a one-file syntax-first import test, then a minimal invalid fixture with one unsafe field per entry, then the actual inventory validator implementation.
++The former broad public-source-inventory validation checkbox is deferred because repeated daemon proposals failed validation, including Python syntax failures and a mismatched expected rejection reason. It must not be retried as one broad task. Resume autonomous work on the current normalized document link-graph validation task and later return to the public-source-inventory validator through the three narrow queued tasks: syntax-first import test, one-unsafe-field invalid fixture, then validator implementation.
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T19:27:00Z
++Last updated: 2026-05-01T19:31:00Z
+ 
+ - Latest target: `Supervisor repair: unblock repeated public source inventory validation failures`
+ - Latest result: `task-board repaired`
+-- Latest summary: Mark the repeated public source inventory validation task blocked and return the next link-graph validation task to the normal needed queue.
+-- Counts: `{"blocked": 2, "complete": 49, "in_progress": 0, "needed": 11}`
++- Latest summary: Deferred the broad blocked public source inventory validator task and queued narrow repair tasks so the daemon can continue useful work.
++- Counts: `{"blocked": 0, "complete": 49, "in_progress": 1, "needed": 11}`

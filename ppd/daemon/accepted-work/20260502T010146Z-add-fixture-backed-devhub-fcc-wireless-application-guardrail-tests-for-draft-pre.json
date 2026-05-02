@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/devhub/fcc_wireless_application_draft_review_guardrails.json",
+    "ppd/tests/test_devhub_fcc_wireless_application_draft_review_guardrails.py"
+  ],
+  "created_at": "2026-05-02T01:01:46.800833Z",
+  "impact": "Advances the PP&D guardrail plan by proving FCC wireless draft review remains preview-only by default and blocks upload, certification, submission, payment, cancellation, and inspection scheduling unless the current session provides the exact confirmation phrase for that exact action.",
+  "summary": "Add fixture-backed DevHub FCC wireless application guardrail tests for draft preview versus official actions requiring exact session-specific confirmation.",
+  "target_task": "Task checkbox-118: Add DevHub guardrail tests proving FCC wireless application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 118 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "........................................................................................................................................................................................................................................................................................................................................ ---------------------------------------------------------------------- Ran 328 tests in 0.033s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

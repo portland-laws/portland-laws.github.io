@@ -1,0 +1,124 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -11,6 +11,10 @@
+ - Keep every task small enough for one daemon cycle.
+ - When adding Python tests or helpers, keep comparisons syntactically complete and run py_compile through the daemon self-test before broader tests.
+ - Preserve source provenance in every public guidance, requirement, process, and guardrail fixture.
++- After any rollback containing `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128`, do not retry a broad contract rewrite. First repair daemon supervision so changed Python or TypeScript files are syntax-checked before full validation.
++- Syntax-recovery proposals should normally replace one file only. Use two files only when the second file is a tiny focused test or fixture for the same syntactic guardrail.
++- Python proposals must not contain TypeScript-style annotations in expressions, such as `if value list[str]:`. TypeScript proposals must not contain Python control-flow or type syntax.
++- When a domain task has failed twice for parser or compile reasons, block that task and append narrower daemon-repair tasks before resuming the domain task.
+ 
+ ## Completed Work
+ 
+@@ -71,17 +75,20 @@
+ - [x] Task checkbox-45: Add the smallest committed guardrail mapping fixture for checkbox-44. Use only safe read-only or reversible draft-edit examples; do not include submission, payment, certification, cancellation, upload, or inspection scheduling automation.
+ - [x] Task checkbox-46: Add one mutation test proving guardrail mapping validation rejects consequential or financial actions unless an explicit confirmation field is present and false by default in fixtures.
+ - [x] Task checkbox-47: Add a public-crawl dry-run plan fixture that lists seed URLs, allowlist decisions, robots/no-persist preflight fields, timeout policy, and skipped-URL reason codes without performing network access.
+-- [~] Task checkbox-48: Add validation for the public-crawl dry-run plan fixture from checkbox-47. The validator must fail closed on missing allowlist, robots, timeout, no-persist, or processor-adapter preflight fields.
++- [!] Task checkbox-48: Add validation for the public-crawl dry-run plan fixture from checkbox-47. The validator must fail closed on missing allowlist, robots, timeout, no-persist, or processor-adapter preflight fields. Blocked pending daemon syntax-preflight repair after repeated `planned_crawl_manifest.py` SyntaxError rollbacks.
++- [ ] Task checkbox-49: Add a daemon syntax-preflight step that checks only changed Python and TypeScript files before full validation. Python files must use `py_compile`; TypeScript files must use the existing strict `tsc --noEmit` command scoped to changed `.ts`/`.tsx` files. On parser failure, rollback immediately with failure kind `syntax_preflight` and compact diagnostics.
++- [ ] Task checkbox-50: Add daemon prompt guidance and failure-context diagnostics for syntax-preflight rollbacks. When recent failures include `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128`, the prompt must ask for a one-file or one-test-plus-fixture proposal and forbid broad shared-contract rewrites.
++- [ ] Task checkbox-51: Resume checkbox-48 with the smallest fixture-first validator after checkbox-49 and checkbox-50 pass. Limit the proposal to one syntax-valid Python test file or one syntax-valid helper plus one test fixture path correction; do not add live crawling or authenticated automation.
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
++
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T04:53:42.938170Z
++Last updated: 2026-05-02T05:00:00Z
+ 
+-- Latest target: `Task checkbox-53: Task checkbox-48: Add validation for the public-crawl dry-run plan fixture from checkbox-47. The validator must fail closed on missing allowlist, robots, timeout, no-persist, or processor-adapter preflight fields.`
+-- Latest result: `validation`
+-- Latest summary: Add fail-closed planned public-crawl dry-run manifest validation for required preflight policy fields.
+-- Counts: `{"blocked": 0, "complete": 52, "in_progress": 0, "needed": 1}`
++- Latest target: `Task checkbox-48: Add validation for the public-crawl dry-run plan fixture from checkbox-47. The validator must fail closed on missing allowlist, robots, timeout, no-persist, or processor-adapter preflight fields.`
++- Latest result: `blocked_for_supervisor_repair`
++- Latest summary: Repeated Python syntax rollbacks require daemon syntax-preflight and narrower retry guidance before resuming the public-crawl validation task.
++- Counts: `{"blocked": 1, "complete": 48, "in_progress": 0, "needed": 3}`
+ 
+-<!-- ppd-daemon-task-board:end -->
++
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,51 +1,42 @@
+ # PP&D Supervisor Repair Guide
+ 
+-This guide is for repairing daemon and supervisor behavior after blocked PP&D daemon cycles. Keep repairs narrow, deterministic, and limited to PP&D daemon operations, PP&D tests, `ppd/.gitignore`, or PP&D daemon documentation.
++Use this guide when the PP&D daemon has repeated validation rollbacks caused by parser or compile failures.
+ 
+-## Current Recovery Focus
++## Syntax Failure Policy
+ 
+-Recent blocked work has two repeatable failure modes:
++Treat any of these diagnostics as syntax failures rather than ordinary domain-validation failures:
+ 
+-1. Python mutation-test retries generated incomplete comparisons such as `if confidence 1:` instead of complete Python syntax.
+-2. A stop-gate mutation retry invalidated the committed baseline fixture instead of validating only a mutated copy.
++- Python `SyntaxError`
++- Python `py_compile` failure
++- TypeScript `TS1005`
++- TypeScript `TS1109`
++- TypeScript `TS1128`
+ 
+-The supervisor should treat these as retry-programming defects, not as reasons to broaden the PP&D domain task.
++After two recent syntax failures for the same task, stop retrying the broad domain task. Block it on the task board and append narrow daemon-repair tasks that improve syntax preflight, retry prompts, or diagnostics.
+ 
+-## Syntax Guardrail For Python Test Edits
++## Required Daemon Behavior
+ 
+-When a failed or proposed patch touches a Python file, the next worker instruction must include these exact requirements:
++The daemon should check syntactic validity before running broad validation:
+ 
+-- Run `python3 -m py_compile` on every touched Python file before running broader validation.
+-- Use only complete Python comparisons.
+-- For confidence type checks, use exactly `if not isinstance(confidence, (int, float)):`.
+-- For upper-bound confidence checks, use exactly `if confidence > 1:`.
+-- For lower-bound confidence checks, use exactly `if confidence `, or generated pseudo-code.
++- For changed `.py` files, run `py_compile` on the changed files before the full test suite.
++- For changed `.ts` and `.tsx` files, run strict TypeScript parsing/typecheck on the changed files before the full validation suite.
++- If syntax preflight fails, rollback immediately, record failure kind `syntax_preflight`, and persist a compact diagnostic in failed-patches.
++- Do not allow a syntax-preflight failure to cascade into hundreds of import errors from the full Python test suite.
+ 
+-If recent failure summaries contain malformed comparison fragments, the supervisor must quote the corrected comparison forms above and must not repeat the malformed fragments as implementation guidance.
++## Required Prompt Behavior
+ 
+-## Checkbox-27 Recovery Ordering
++When recent failure context includes syntax or compile markers, the daemon prompt should steer the worker toward a smaller proposal:
+ 
+-The checkbox-27 recovery sequence is prerequisite ordered. The daemon must select the lowest incomplete or blocked checkbox-27 item before selecting later checkbox-27 work.
++- Prefer one file.
++- Use two files only when the second file is a tiny focused test or fixture needed for the same guardrail.
++- Do not rewrite broad shared contracts unless the selected task explicitly requires that contract.
++- Do not mix TypeScript syntax into Python or Python syntax into TypeScript.
++- For Python validators, write plain boolean checks and complete comparisons. Avoid partial annotations or expression fragments such as `if self.timeout_ms list[str]:`.
++- For fixture paths, derive committed PP&D test fixtures from `Path(__file__).parent / "fixtures" / ...`.
+ 
+-Current recovery order:
++## Recovery Sequence
+ 
+-1. checkbox-27a: committed fixture schema skeleton.
+-2. checkbox-27b: missing `categoryId` mutation.
+-3. checkbox-27c: missing `sourceEvidenceIds` mutation.
+-4. checkbox-27d: missing local `evidence[].evidenceId` mutation.
+-5. checkbox-27e: out-of-range `confidence` mutation.
+-6. checkbox-27f: duplicate requirement-key mutation.
+-7. checkbox-27g: stop-gate classification suffix mutation.
+-
+-If checkbox-27e is incomplete or blocked, checkbox-27g must not be selected even if checkbox-27f is already marked complete from a previous accepted run.
+-
+-## Validation Order
+-
+-Use this order for retries after syntax failures:
+-
+-1. `python3 -m py_compile `
+-2. `python3 ppd/daemon/ppd_daemon.py --self-test`
+-3. `python3 -m unittest discover -s ppd/tests -p 'test_*.py'`
+-4. TypeScript validation only if TypeScript files were touched or the standard daemon validation requires it.
+-
+-The supervisor should report the first failing validation stage clearly and avoid sending the worker broader instructions until that stage is clean.
++1. Add daemon syntax-preflight behavior.
++2. Add or update prompt diagnostics so parser failures request smaller proposals.
++3. Resume the blocked domain task with a narrow validator or fixture-only test.
++4. Keep live crawling and authenticated DevHub automation out of recovery tasks.

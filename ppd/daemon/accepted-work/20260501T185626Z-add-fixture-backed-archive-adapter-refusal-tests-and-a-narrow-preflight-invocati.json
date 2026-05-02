@@ -1,0 +1,48 @@
+{
+  "changed_files": [
+    "ppd/crawler/archive_adapter_preflight.py",
+    "ppd/tests/fixtures/archive-adapter/refusal_cases.json",
+    "ppd/tests/test_archive_adapter_refusals.py"
+  ],
+  "created_at": "2026-05-01T18:56:26.902793Z",
+  "impact": "This advances the PP&D plan by proving the PP&D-local archive adapter fails closed for non-public or private artifacts before handing anything to the ipfs_datasets_py processor backend.",
+  "summary": "Add fixture-backed archive adapter refusal tests and a narrow preflight invocation boundary that blocks unsafe records before processor archival code can run.",
+  "target_task": "Task checkbox-42: Add fixture tests for the PP&D archive adapter proving it refuses non-allowlisted URLs, private DevHub paths, raw response-body persistence, credentials, traces, screenshots, and downloaded private documents before invoking processor archival code.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 47 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "....................................................................................... ---------------------------------------------------------------------- Ran 87 tests in 0.008s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

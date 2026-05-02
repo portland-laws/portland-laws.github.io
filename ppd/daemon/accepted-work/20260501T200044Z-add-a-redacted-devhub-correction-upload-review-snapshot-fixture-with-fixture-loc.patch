@@ -1,0 +1,420 @@
+--- a/ppd/tests/fixtures/devhub/correction_upload_review_snapshot.json
++++ b/ppd/tests/fixtures/devhub/correction_upload_review_snapshot.json
+@@ -0,0 +1,242 @@
++{
++  "schemaVersion": 1,
++  "snapshotId": "devhub-correction-upload-review-redacted-v1",
++  "capturedAt": "2026-05-01T20:20:00Z",
++  "fixtureOnly": true,
++  "source": {
++    "system": "DevHub PDX",
++    "workflow": "correction_upload_review",
++    "pageState": "review_corrections_before_official_upload",
++    "urlState": "https://devhub.portlandoregon.gov/mock/permits/[REDACTED_PERMIT_ID]/corrections/review",
++    "captureMethod": "mocked_fixture",
++    "liveAutomationPerformed": false
++  },
++  "privacy": {
++    "redactionPolicy": "all account, applicant, property, permit, file, and reviewer values are placeholders",
++    "containsCredentials": false,
++    "containsAuthState": false,
++    "containsTrace": false,
++    "containsScreenshot": false,
++    "containsRawCrawlOutput": false,
++    "containsDownloadedDocument": false,
++    "containsPrivateDevhubSessionPath": false
++  },
++  "workflowState": {
++    "stateId": "correction_upload_review",
++    "nearbyHeading": "Upload corrections",
++    "visibleStatus": "Draft correction package saved for review",
++    "availableActions": [
++      {
++        "actionId": "save_for_later",
++        "label": "Save for later",
++        "classification": "reversible_draft_edit",
++        "enabled": true,
++        "confirmationRequired": false
++      },
++      {
++        "actionId": "preview_correction_package",
++        "label": "Preview correction package",
++        "classification": "safe_read_only",
++        "enabled": true,
++        "confirmationRequired": false
++      },
++      {
++        "actionId": "official_upload_corrections",
++        "label": "Upload corrections",
++        "classification": "potentially_consequential",
++        "enabled": false,
++        "confirmationRequired": true,
++        "blockedUntilGateId": "gate-official-upload"
++      },
++      {
++        "actionId": "certify_correction_upload",
++        "label": "Certify and continue",
++        "classification": "potentially_consequential",
++        "enabled": false,
++        "confirmationRequired": true,
++        "blockedUntilGateId": "gate-certification"
++      }
++    ],
++    "navigationEdges": [
++      {
++        "edgeId": "back_to_correction_tasks",
++        "label": "Back",
++        "targetState": "correction_task_list",
++        "classification": "safe_read_only"
++      },
++      {
++        "edgeId": "save_and_return_later",
++        "label": "Save for later",
++        "targetState": "draft_saved",
++        "classification": "reversible_draft_edit"
++      },
++      {
++        "edgeId": "preview_only",
++        "label": "Preview correction package",
++        "targetState": "correction_upload_preview",
++        "classification": "safe_read_only"
++      }
++    ]
++  },
++  "draftState": {
++    "draftId": "[REDACTED_DRAFT_ID]",
++    "permitReference": "[REDACTED_PERMIT_ID]",
++    "projectAddress": "[REDACTED_PROJECT_ADDRESS]",
++    "applicantDisplayName": "[REDACTED_APPLICANT_NAME]",
++    "lastSavedAt": "2026-05-01T20:15:00Z",
++    "dirtyFields": [],
++    "uploadedDraftFiles": [
++      {
++        "slotId": "corrected_plan_set",
++        "displayName": "[REDACTED_FILE_NAME].pdf",
++        "status": "draft_attached_not_uploaded",
++        "checksum": "sha256:[REDACTED_FILE_HASH]"
++      }
++    ],
++    "officialUploadPerformed": false,
++    "certificationPerformed": false,
++    "submissionPerformed": false
++  },
++  "uploadControls": [
++    {
++      "controlId": "corrected_plan_set_upload",
++      "label": "Corrected plan set",
++      "role": "button",
++      "accessibleName": "Choose file for corrected plan set",
++      "nearbyHeading": "Upload corrected documents",
++      "required": true,
++      "selectorBasis": {
++        "role": "button",
++        "accessibleName": "Choose file for corrected plan set",
++        "labelText": "Corrected plan set",
++        "nearbyHeading": "Upload corrected documents"
++      },
++      "acceptedFileHints": {
++        "mimeTypes": ["application/pdf"],
++        "extensions": [".pdf"],
++        "maxFiles": 1,
++        "maxSizeHint": "[REDACTED_SIZE_LIMIT]",
++        "namingHint": "Use a clear correction document name without private values in logs or fixtures."
++      },
++      "currentValue": "[REDACTED_FILE_NAME].pdf",
++      "currentStatus": "draft_attached_not_uploaded"
++    },
++    {
++      "controlId": "response_letter_upload",
++      "label": "Response letter or checksheet response",
++      "role": "button",
++      "accessibleName": "Choose file for response letter or checksheet response",
++      "nearbyHeading": "Upload corrected documents",
++      "required": true,
++      "selectorBasis": {
++        "role": "button",
++        "accessibleName": "Choose file for response letter or checksheet response",
++        "labelText": "Response letter or checksheet response",
++        "nearbyHeading": "Upload corrected documents"
++      },
++      "acceptedFileHints": {
++        "mimeTypes": ["application/pdf"],
++        "extensions": [".pdf"],
++        "maxFiles": 1,
++        "maxSizeHint": "[REDACTED_SIZE_LIMIT]",
++        "namingHint": "Keep applicant, property, and permit identifiers redacted in committed fixtures."
++      },
++      "currentValue": "[REDACTED_RESPONSE_FILE_NAME].pdf",
++      "currentStatus": "draft_attached_not_uploaded"
++    },
++    {
++      "controlId": "supporting_documents_upload",
++      "label": "Supporting correction documents",
++      "role": "button",
++      "accessibleName": "Choose files for supporting correction documents",
++      "nearbyHeading": "Upload corrected documents",
++      "required": false,
++      "selectorBasis": {
++        "role": "button",
++        "accessibleName": "Choose files for supporting correction documents",
++        "labelText": "Supporting correction documents",
++        "nearbyHeading": "Upload corrected documents"
++      },
++      "acceptedFileHints": {
++        "mimeTypes": ["application/pdf"],
++        "extensions": [".pdf"],
++        "maxFiles": "[REDACTED_MAX_FILE_COUNT]",
++        "maxSizeHint": "[REDACTED_SIZE_LIMIT]",
++        "namingHint": "Supplemental files must remain redacted in tests."
++      },
++      "currentValue": "[REDACTED_OPTIONAL_FILE_LIST]",
++      "currentStatus": "not_attached"
++    }
++  ],
++  "validationMessages": [
++    {
++      "messageId": "missing_required_response_letter",
++      "controlId": "response_letter_upload",
++      "severity": "error",
++      "text": "A response letter or checksheet response PDF is required before corrections can be uploaded.",
++      "visibleWhen": "required response letter slot has no draft attachment"
++    },
++    {
++      "messageId": "pdf_required",
++      "controlId": "corrected_plan_set_upload",
++      "severity": "error",
++      "text": "Only PDF files are accepted for correction uploads.",
++      "visibleWhen": "selected file extension is not .pdf"
++    },
++    {
++      "messageId": "draft_not_official",
++      "controlId": "official_upload_corrections",
++      "severity": "info",
++      "text": "Files are saved in draft until the official upload confirmation is completed.",
++      "visibleWhen": "draft attachments exist and official upload has not been confirmed"
++    },
++    {
++      "messageId": "review_before_upload",
++      "controlId": "preview_correction_package",
++      "severity": "warning",
++      "text": "Review the correction package before confirming the official upload.",
++      "visibleWhen": "all required draft files are attached"
++    }
++  ],
++  "confirmationGates": [
++    {
++      "gateId": "gate-preview-only",
++      "actionId": "preview_correction_package",
++      "classification": "safe_read_only",
++      "required": false,
++      "exactConfirmationRequired": false,
++      "allowedWithoutConfirmation": true,
++      "effect": "show redacted preview of draft correction package"
++    },
++    {
++      "gateId": "gate-official-upload",
++      "actionId": "official_upload_corrections",
++      "classification": "potentially_consequential",
++      "required": true,
++      "exactConfirmationRequired": true,
++      "sessionSpecific": true,
++      "exactConfirmationPhrase": "UPLOAD CORRECTIONS FOR [REDACTED_PERMIT_ID]",
++      "blockedWithoutExactConfirmation": true,
++      "effect": "perform official correction upload for the redacted permit record"
++    },
++    {
++      "gateId": "gate-certification",
++      "actionId": "certify_correction_upload",
++      "classification": "potentially_consequential",
++      "required": true,
++      "exactConfirmationRequired": true,
++      "sessionSpecific": true,
++      "exactConfirmationPhrase": "CERTIFY CORRECTION UPLOAD FOR [REDACTED_PERMIT_ID]",
++      "blockedWithoutExactConfirmation": true,
++      "effect": "certify the correction package after user review"
++    }
++  ],
++  "auditExpectations": {
++    "previewAllowed": true,
++    "officialUploadAllowed": false,
++    "certificationAllowed": false,
++    "mustRecordSelectorBasis": true,
++    "mustRecordConfirmationState": true,
++    "mustRecordBeforeAfterRedactedState": true
++  }
++}
+--- a/ppd/tests/test_devhub_correction_upload_review_snapshot.py
++++ b/ppd/tests/test_devhub_correction_upload_review_snapshot.py
+@@ -0,0 +1,172 @@
++"""Validate the mocked DevHub correction upload review snapshot fixture."""
++
++from __future__ import annotations
++
++import json
++import re
++import unittest
++from pathlib import Path
++from typing import Any
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "devhub"
++    / "correction_upload_review_snapshot.json"
++)
++
++REDACTED_TOKEN_PATTERN = re.compile(r"\[REDACTED_[A-Z0-9_]+\]")
++PRIVATE_VALUE_PATTERNS = (
++    re.compile(r"\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b", re.IGNORECASE),
++    re.compile(r"\b\d{3}-\d{2}-\d{4}\b"),
++    re.compile(r"\b\d{3}[-. ]\d{3}[-. ]\d{4}\b"),
++    re.compile(r"\b\d{1,6}\s+[A-Za-z0-9.'-]+\s+(Street|St|Avenue|Ave|Road|Rd|Boulevard|Blvd|Drive|Dr|Lane|Ln)\b"),
++)
++FORBIDDEN_KEYS = {
++    "authorization",
++    "authState",
++    "auth_state",
++    "cookie",
++    "cookies",
++    "password",
++    "sessionCookie",
++    "session_cookie",
++    "storageState",
++    "storage_state",
++    "token",
++    "tracePath",
++    "trace_path",
++    "screenshotPath",
++    "screenshot_path",
++    "downloadPath",
++    "download_path",
++    "rawBody",
++    "raw_body",
++}
++FORBIDDEN_PATH_MARKERS = (
++    "ppd/data/private",
++    "ppd\\data\\private",
++    "storage_state",
++    "storage-state",
++    "auth_state",
++    "auth-state",
++    "trace.zip",
++    "playwright-report",
++    "/screenshots/",
++    "\\screenshots\\",
++    "/downloads/",
++    "\\downloads\\",
++)
++
++
++class DevhubCorrectionUploadReviewSnapshotTest(unittest.TestCase):
++    def setUp(self) -> None:
++        self.snapshot = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
++
++    def test_snapshot_records_review_state_without_live_automation(self) -> None:
++        self.assertEqual(self.snapshot["schemaVersion"], 1)
++        self.assertTrue(self.snapshot["fixtureOnly"])
++        self.assertEqual(self.snapshot["source"]["workflow"], "correction_upload_review")
++        self.assertEqual(self.snapshot["workflowState"]["stateId"], "correction_upload_review")
++        self.assertFalse(self.snapshot["source"]["liveAutomationPerformed"])
++        self.assertFalse(self.snapshot["draftState"]["officialUploadPerformed"])
++        self.assertFalse(self.snapshot["draftState"]["certificationPerformed"])
++        self.assertFalse(self.snapshot["draftState"]["submissionPerformed"])
++
++    def test_upload_controls_include_accepted_file_hints_and_semantic_selectors(self) -> None:
++        controls = self.snapshot["uploadControls"]
++        self.assertGreaterEqual(len(controls), 3)
++        required_controls = [control for control in controls if control["required"]]
++        self.assertGreaterEqual(len(required_controls), 2)
++
++        for control in controls:
++            self.assertIn("controlId", control)
++            self.assertIn("label", control)
++            self.assertIn("accessibleName", control)
++            self.assertIn("nearbyHeading", control)
++            self.assertIn("selectorBasis", control)
++            self.assertEqual(control["selectorBasis"]["role"], "button")
++            self.assertIn(".pdf", control["acceptedFileHints"]["extensions"])
++            self.assertIn("application/pdf", control["acceptedFileHints"]["mimeTypes"])
++            self.assertNotEqual(control["acceptedFileHints"]["maxSizeHint"], "")
++
++    def test_validation_messages_cover_required_files_pdf_type_draft_and_review(self) -> None:
++        messages = self.snapshot["validationMessages"]
++        message_ids = {message["messageId"] for message in messages}
++        self.assertIn("missing_required_response_letter", message_ids)
++        self.assertIn("pdf_required", message_ids)
++        self.assertIn("draft_not_official", message_ids)
++        self.assertIn("review_before_upload", message_ids)
++
++        severities = {message["severity"] for message in messages}
++        self.assertIn("error", severities)
++        self.assertIn("warning", severities)
++        self.assertIn("info", severities)
++
++    def test_exact_confirmation_gates_block_official_upload_and_certification(self) -> None:
++        gates = {gate["gateId"]: gate for gate in self.snapshot["confirmationGates"]}
++        official_upload = gates["gate-official-upload"]
++        certification = gates["gate-certification"]
++        preview = gates["gate-preview-only"]
++
++        self.assertFalse(preview["exactConfirmationRequired"])
++        self.assertTrue(preview["allowedWithoutConfirmation"])
++
++        for gate in (official_upload, certification):
++            self.assertEqual(gate["classification"], "potentially_consequential")
++            self.assertTrue(gate["required"])
++            self.assertTrue(gate["exactConfirmationRequired"])
++            self.assertTrue(gate["sessionSpecific"])
++            self.assertTrue(gate["blockedWithoutExactConfirmation"])
++            self.assertRegex(gate["exactConfirmationPhrase"], REDACTED_TOKEN_PATTERN)
++
++        actions = {action["actionId"]: action for action in self.snapshot["workflowState"]["availableActions"]}
++        self.assertFalse(actions["official_upload_corrections"]["enabled"])
++        self.assertFalse(actions["certify_correction_upload"]["enabled"])
++        self.assertEqual(actions["official_upload_corrections"]["blockedUntilGateId"], "gate-official-upload")
++        self.assertEqual(actions["certify_correction_upload"]["blockedUntilGateId"], "gate-certification")
++
++    def test_fixture_contains_only_redacted_private_values_and_no_private_artifacts(self) -> None:
++        privacy = self.snapshot["privacy"]
++        self.assertFalse(privacy["containsCredentials"])
++        self.assertFalse(privacy["containsAuthState"])
++        self.assertFalse(privacy["containsTrace"])
++        self.assertFalse(privacy["containsScreenshot"])
++        self.assertFalse(privacy["containsRawCrawlOutput"])
++        self.assertFalse(privacy["containsDownloadedDocument"])
++        self.assertFalse(privacy["containsPrivateDevhubSessionPath"])
++
++        findings = list(_walk_forbidden_values(self.snapshot))
++        self.assertEqual(findings, [])
++
++
++def _walk_forbidden_values(value: Any, path: str = "$", key: str = "") -> list[str]:
++    findings: list[str] = []
++    if key in FORBIDDEN_KEYS:
++        findings.append(f"{path}: forbidden key {key}")
++
++    if isinstance(value, dict):
++        for child_key, child_value in value.items():
++            findings.extend(_walk_forbidden_values(child_value, f"{path}.{child_key}", str(child_key)))
++        return findings
++
++    if isinstance(value, list):
++        for index, child_value in enumerate(value):
++            findings.extend(_walk_forbidden_values(child_value, f"{path}[{index}]", key))
++        return findings
++
++    if isinstance(value, str):
++        lowered = value.lower()
++        for marker in FORBIDDEN_PATH_MARKERS:
++            if marker.lower() in lowered:
++                findings.append(f"{path}: forbidden artifact marker {marker}")
++        unredacted = REDACTED_TOKEN_PATTERN.sub("", value)
++        for pattern in PRIVATE_VALUE_PATTERNS:
++            if pattern.search(unredacted):
++                findings.append(f"{path}: possible unredacted private value")
++    return findings
++
++
++if __name__ == "__main__":
++    unittest.main()

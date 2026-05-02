@@ -1,0 +1,85 @@
+--- a/ppd/tests/test_extension_lifecycle_exact_schema.py
++++ b/ppd/tests/test_extension_lifecycle_exact_schema.py
+@@ -1,4 +1,4 @@
+-"""Exact-schema tests for extension lifecycle fixture recovery.
++"""Exact-schema and mutation tests for extension lifecycle fixture recovery.
+ 
+ This test intentionally loads only the two accepted lifecycle fixtures. The
+ extension evidence map carries source-inventory category references; committed
+@@ -7,10 +7,11 @@
+ 
+ from __future__ import annotations
+ 
++from copy import deepcopy
+ import json
+ import unittest
+ from pathlib import Path
+-from typing import Any
++from typing import Any, Callable
+ 
+ 
+ FIXTURE_DIR = Path(__file__).parent / "fixtures" / "lifecycle"
+@@ -46,7 +47,6 @@
+     "recrawlCadence",
+     "capturedAt",
+ }
+-
+ FACT_KEYS = {"id", "label", "requiredFor", "evidenceIds"}
+ DOCUMENT_KEYS = {"id", "label", "requiredFor", "evidenceIds", "notes"}
+ DECISION_KEYS = {"id", "prompt", "requiredBefore", "evidenceIds"}
+@@ -106,10 +106,11 @@
+         self.assertIsInstance(data, dict)
+         return data
+ 
+-    def test_extension_lifecycle_fixtures_have_exact_schema(self) -> None:
+-        skeleton = self.load_json(SKELETON_PATH)
+-        evidence_map = self.load_json(EVIDENCE_MAP_PATH)
+-
++    def validate_extension_lifecycle_fixtures(
++        self,
++        skeleton: dict[str, Any],
++        evidence_map: dict[str, Any],
++    ) -> None:
+         self.assertEqual(set(skeleton), SKELETON_KEYS)
+         self.assertEqual(skeleton["schemaVersion"], 1)
+         self.assertEqual(skeleton["fixtureType"], "ppd_lifecycle_extension_process_skeleton")
+@@ -121,6 +122,7 @@
+         self.assertEqual(set(evidence_map), EVIDENCE_MAP_KEYS)
+         self.assertEqual(evidence_map["schemaVersion"], 1)
+         self.assertEqual(evidence_map["fixtureType"], "ppd_lifecycle_extension_evidence_map")
++        self.assertNotIn("evidenceIds", evidence_map)
+         self.assertEqual(len(evidence_map["categories"]), 1)
+ 
+         category = evidence_map["categories"][0]
+@@ -179,6 +181,31 @@
+         self.assertIn("typescript_modules", excluded)
+         self.assertIn("official_action_automation", excluded)
+ 
++    def test_extension_lifecycle_fixtures_have_exact_schema(self) -> None:
++        skeleton = self.load_json(SKELETON_PATH)
++        evidence_map = self.load_json(EVIDENCE_MAP_PATH)
++        self.validate_extension_lifecycle_fixtures(skeleton, evidence_map)
++
++    def test_extension_lifecycle_validator_rejects_single_missing_skeleton_fields(self) -> None:
++        skeleton = self.load_json(SKELETON_PATH)
++        evidence_map = self.load_json(EVIDENCE_MAP_PATH)
++
++        mutations: dict[str, Callable[[dict[str, Any]], None]] = {
++            "required fact citation evidence": lambda data: data["requiredFacts"][0].pop("evidenceIds"),
++            "required document note": lambda data: data["requiredDocuments"][0].pop("notes"),
++            "user decision citation evidence": lambda data: data["userDecisions"][0].pop("evidenceIds"),
++            "authority source evidence id": lambda data: data["authoritySources"][0].pop("evidenceId"),
++            "action gate citation evidence": lambda data: data["actionGates"][0].pop("evidenceIds"),
++            "no-live-automation note": lambda data: data["noLiveAutomationNotes"].pop("notes"),
++        }
++
++        for name, mutate in mutations.items():
++            with self.subTest(name=name):
++                mutated = deepcopy(skeleton)
++                mutate(mutated)
++                with self.assertRaises(AssertionError):
++                    self.validate_extension_lifecycle_fixtures(mutated, evidence_map)
++
+ 
+ if __name__ == "__main__":
+     unittest.main()

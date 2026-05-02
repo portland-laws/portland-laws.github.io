@@ -1,0 +1,277 @@
+--- a/ppd/devhub/demolition_draft_review_guardrails.py
++++ b/ppd/devhub/demolition_draft_review_guardrails.py
+@@ -0,0 +1,120 @@
++"""Fixture-only guardrails for DevHub demolition draft review actions.
++
++This module models the narrow action gate needed by tests: a demolition
++application draft review may produce a preview without user confirmation, but
++DevHub actions with official consequences require an exact confirmation phrase
++that is scoped to both the current session and the exact action.
++"""
++
++from __future__ import annotations
++
++from typing import Any, Mapping
++
++PREVIEW_ACTION = "preview_draft_review"
++GUARDED_ACTIONS = frozenset(
++    {
++        "official_upload",
++        "certify_application",
++        "submit_application",
++        "pay_fees",
++        "cancel_application",
++        "schedule_inspection",
++    }
++)
++
++
++def required_confirmation_phrase(session_id: str, action_id: str) -> str:
++    """Return the exact confirmation phrase for a session-scoped action."""
++
++    return f"CONFIRM {session_id} {action_id}"
++
++
++def review_action(action: Mapping[str, Any], session_id: str) -> dict[str, Any]:
++    """Classify whether a fixture action may proceed.
++
++    The result is intentionally serializable so tests and later guardrail
++    compilers can compare outcomes without needing browser state.
++    """
++
++    action_id = str(action.get("actionId", ""))
++    confirmation = str(action.get("userConfirmation", ""))
++
++    if action_id == PREVIEW_ACTION:
++        return {
++            "actionId": action_id,
++            "allowed": True,
++            "decision": "preview_allowed",
++            "requiresConfirmation": False,
++            "requiredConfirmation": "",
++        }
++
++    if action_id not in GUARDED_ACTIONS:
++        return {
++            "actionId": action_id,
++            "allowed": False,
++            "decision": "unknown_action_refused",
++            "requiresConfirmation": True,
++            "requiredConfirmation": "",
++        }
++
++    required = required_confirmation_phrase(session_id, action_id)
++    if confirmation == required:
++        return {
++            "actionId": action_id,
++            "allowed": True,
++            "decision": "exact_session_confirmation_present",
++            "requiresConfirmation": True,
++            "requiredConfirmation": required,
++        }
++
++    return {
++        "actionId": action_id,
++        "allowed": False,
++        "decision": "exact_session_confirmation_missing",
++        "requiresConfirmation": True,
++        "requiredConfirmation": required,
++    }
++
++
++def validate_demolition_draft_review_fixture(fixture: Mapping[str, Any]) -> list[str]:
++    """Validate a demolition draft-review guardrail fixture."""
++
++    errors: list[str] = []
++    session_id = str(fixture.get("sessionId", ""))
++    permit_type = str(fixture.get("permitType", ""))
++    actions = fixture.get("actions", [])
++
++    if not session_id.startswith("fixture-session-"):
++        errors.append("sessionId must be a redacted fixture session identifier")
++    if permit_type != "demolition_application":
++        errors.append("permitType must be demolition_application")
++    if not isinstance(actions, list) or not actions:
++        errors.append("actions must be a non-empty list")
++        return errors
++
++    seen_preview = False
++    seen_guarded = set()
++    for index, action in enumerate(actions):
++        if not isinstance(action, Mapping):
++            errors.append(f"actions[{index}] must be an object")
++            continue
++        action_id = str(action.get("actionId", ""))
++        result = review_action(action, session_id)
++        if action_id == PREVIEW_ACTION:
++            seen_preview = True
++            if not result["allowed"]:
++                errors.append("preview_draft_review must be allowed without confirmation")
++        elif action_id in GUARDED_ACTIONS:
++            seen_guarded.add(action_id)
++            if result["allowed"]:
++                errors.append(f"{action_id} fixture case must demonstrate refusal without exact confirmation")
++        else:
++            errors.append(f"unknown actionId {action_id}")
++
++    missing_guarded = sorted(GUARDED_ACTIONS.difference(seen_guarded))
++    if not seen_preview:
++        errors.append("fixture must include preview_draft_review")
++    if missing_guarded:
++        errors.append(f"fixture missing guarded actions: {', '.join(missing_guarded)}")
++
++    return errors
+--- a/ppd/tests/fixtures/devhub/demolition_draft_review_guardrails.json
++++ b/ppd/tests/fixtures/devhub/demolition_draft_review_guardrails.json
+@@ -0,0 +1,58 @@
++{
++  "schemaVersion": 1,
++  "sessionId": "fixture-session-demolition-2026-05-01",
++  "permitType": "demolition_application",
++  "workflowState": "draft_review",
++  "redactionStatus": "fixture_only_no_private_values",
++  "actions": [
++    {
++      "actionId": "preview_draft_review",
++      "label": "Preview demolition application draft review",
++      "classification": "read_only_preview",
++      "userConfirmation": "",
++      "expectedAllowed": true
++    },
++    {
++      "actionId": "official_upload",
++      "label": "Upload demolition application package to DevHub",
++      "classification": "consequential",
++      "userConfirmation": "CONFIRM fixture-session-other official_upload",
++      "expectedAllowed": false
++    },
++    {
++      "actionId": "certify_application",
++      "label": "Certify demolition application statements",
++      "classification": "consequential",
++      "userConfirmation": "CONFIRM fixture-session-demolition-2026-05-01 certify",
++      "expectedAllowed": false
++    },
++    {
++      "actionId": "submit_application",
++      "label": "Submit demolition application",
++      "classification": "consequential",
++      "userConfirmation": "submit it",
++      "expectedAllowed": false
++    },
++    {
++      "actionId": "pay_fees",
++      "label": "Pay demolition permit fees",
++      "classification": "financial",
++      "userConfirmation": "CONFIRM fixture-session-demolition-2026-05-01 submit_application",
++      "expectedAllowed": false
++    },
++    {
++      "actionId": "cancel_application",
++      "label": "Cancel demolition application request",
++      "classification": "consequential",
++      "userConfirmation": "",
++      "expectedAllowed": false
++    },
++    {
++      "actionId": "schedule_inspection",
++      "label": "Schedule demolition inspection",
++      "classification": "consequential",
++      "userConfirmation": "CONFIRM fixture-session-demolition-2026-05-01 schedule inspections",
++      "expectedAllowed": false
++    }
++  ]
++}
+--- a/ppd/tests/test_devhub_demolition_draft_review_guardrails.py
++++ b/ppd/tests/test_devhub_demolition_draft_review_guardrails.py
+@@ -0,0 +1,90 @@
++"""Tests for demolition application draft-review DevHub action gates."""
++
++from __future__ import annotations
++
++import json
++import unittest
++from pathlib import Path
++
++from ppd.devhub.demolition_draft_review_guardrails import (
++    GUARDED_ACTIONS,
++    PREVIEW_ACTION,
++    required_confirmation_phrase,
++    review_action,
++    validate_demolition_draft_review_fixture,
++)
++
++
++FIXTURE_PATH = Path(__file__).parent / "fixtures" / "devhub" / "demolition_draft_review_guardrails.json"
++
++
++class DevHubDemolitionDraftReviewGuardrailTests(unittest.TestCase):
++    def setUp(self) -> None:
++        self.fixture = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
++        self.session_id = self.fixture["sessionId"]
++
++    def test_fixture_is_valid_and_complete(self) -> None:
++        self.assertEqual([], validate_demolition_draft_review_fixture(self.fixture))
++
++    def test_draft_review_preview_is_allowed_without_confirmation(self) -> None:
++        preview_action = next(
++            action for action in self.fixture["actions"] if action["actionId"] == PREVIEW_ACTION
++        )
++
++        result = review_action(preview_action, self.session_id)
++
++        self.assertTrue(result["allowed"])
++        self.assertEqual("preview_allowed", result["decision"])
++        self.assertFalse(result["requiresConfirmation"])
++
++    def test_guarded_actions_are_refused_without_exact_session_confirmation(self) -> None:
++        guarded_actions = [
++            action for action in self.fixture["actions"] if action["actionId"] in GUARDED_ACTIONS
++        ]
++        self.assertEqual(GUARDED_ACTIONS, {action["actionId"] for action in guarded_actions})
++
++        for action in guarded_actions:
++            with self.subTest(action_id=action["actionId"]):
++                result = review_action(action, self.session_id)
++                self.assertFalse(result["allowed"])
++                self.assertEqual("exact_session_confirmation_missing", result["decision"])
++                self.assertEqual(
++                    required_confirmation_phrase(self.session_id, action["actionId"]),
++                    result["requiredConfirmation"],
++                )
++
++    def test_exact_confirmation_is_session_and_action_specific(self) -> None:
++        action = {"actionId": "official_upload"}
++
++        missing = review_action(action, self.session_id)
++        wrong_session = review_action(
++            {
++                "actionId": "official_upload",
++                "userConfirmation": required_confirmation_phrase("fixture-session-other", "official_upload"),
++            },
++            self.session_id,
++        )
++        wrong_action = review_action(
++            {
++                "actionId": "official_upload",
++                "userConfirmation": required_confirmation_phrase(self.session_id, "submit_application"),
++            },
++            self.session_id,
++        )
++        exact = review_action(
++            {
++                "actionId": "official_upload",
++                "userConfirmation": required_confirmation_phrase(self.session_id, "official_upload"),
++            },
++            self.session_id,
++        )
++
++        self.assertFalse(missing["allowed"])
++        self.assertFalse(wrong_session["allowed"])
++        self.assertFalse(wrong_action["allowed"])
++        self.assertTrue(exact["allowed"])
++        self.assertEqual("exact_session_confirmation_present", exact["decision"])
++
++
++if __name__ == "__main__":
++    unittest.main()

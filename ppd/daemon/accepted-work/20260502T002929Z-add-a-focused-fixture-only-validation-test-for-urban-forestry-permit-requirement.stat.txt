@@ -1,0 +1,2 @@
+ppd/tests/test_urban_forestry_requirement_extraction.py
+ppd/tests/fixtures/requirement_extraction/urban_forestry_permit_requirements.json

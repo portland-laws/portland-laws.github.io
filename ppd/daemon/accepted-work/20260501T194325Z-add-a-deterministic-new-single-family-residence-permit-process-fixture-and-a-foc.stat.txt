@@ -1,0 +1,2 @@
+ppd/tests/fixtures/permit_processes/residential_new_single_family_residence.json
+ppd/tests/test_residential_new_single_family_residence_fixture.py

@@ -1,0 +1,107 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -2,55 +2,71 @@
+ 
+ ## Purpose
+ 
+-This guide records narrow recovery rules for PP&D daemon failures that should be repaired through supervision, task selection, validation ordering, or diagnostics rather than by implementing PP&D domain artifacts directly.
++This guide records narrow recovery rules for PP&D daemon failures that block autonomous progress. It is daemon programming guidance only; it must not be used to implement PP&D domain artifacts directly.
+ 
+-## Syntax-First Import Test Recovery
++## Syntax-first Python import tests
+ 
+-When a daemon task asks for a syntax-first import test for a module and recent validation fails because the target module is missing, the daemon must not keep retrying the same test as a hard failure.
++When a task asks for a one-file syntax-first import test for a Python module, the daemon must keep the test focused on syntax and isolated import behavior.
+ 
+-Use this rule for failures like:
++Required behavior:
+ 
+-- `FileNotFoundError` while reading `ppd/extraction/online_trade_permit_requirements.py`
+-- `AssertionError: ... must exist`
+-- import-test tasks that run before the implementation module has been scaffolded
++- The test may import only the requested target module.
++- The test must compile the target file before executing the module import.
++- The test must surface `SyntaxError` directly when the target file exists and is malformed.
++- The test must avoid broad package discovery, fixture validation, live crawl, DevHub login, payment, submission, upload, cancellation, certification, or inspection scheduling.
+ 
+-Required recovery behavior:
++If the requested target module does not exist yet:
+ 
+-1. Treat the task as blocked by ordering, not by malformed Python.
+-2. Do not implement the domain extractor as a supervisor repair.
+-3. Convert any future syntax-first test proposal for a not-yet-created optional module into a skip-on-missing test.
+-4. Add or select a separate narrow scaffold task before enforcing hard import or size checks for that module.
+-5. Keep the syntax-first guard focused on `py_compile` and isolated import once the module exists.
++- Do not fail validation only because the future module path is absent.
++- Prefer `self.skipTest("target module is not present yet")` after checking path existence.
++- Keep the skip message explicit enough that the daemon can distinguish an absent prerequisite from a syntax failure.
++- Do not create the missing domain module just to satisfy a syntax-first test task unless the selected task explicitly asks for that implementation.
+ 
+-A valid syntax-first test for an optional future module should:
++Recommended unittest shape:
+ 
+-- resolve the repository root deterministically from the test file,
+-- check whether the target file exists,
+-- call `self.skipTest(...)` when the module is not present yet,
+-- run `py_compile.compile(..., doraise=True)` before import,
+-- import only the target module by file path with `importlib.util.spec_from_file_location`, and
+-- avoid importing broad PP&D extraction packages or live crawler/authenticated DevHub code.
++```python
++import importlib.util
++import py_compile
++import unittest
++from pathlib import Path
+ 
+-## Blocked Task checkbox-121
+ 
+-Task checkbox-121 is blocked because the requested module `ppd.extraction.online_trade_permit_requirements` is not present yet. The next daemon cycle should not retry a hard existence assertion for that file.
++class TargetSyntaxFirstTest(unittest.TestCase):
++    def test_target_compiles_and_imports_alone(self):
++        repo_root = Path(__file__).resolve().parents[2]
++        module_path = repo_root / "ppd" / "extraction" / "target_module.py"
++        if not module_path.exists():
++            self.skipTest("target module is not present yet")
+ 
+-Acceptable next work:
++        py_compile.compile(str(module_path), doraise=True)
++        spec = importlib.util.spec_from_file_location("_ppd_target_syntax_first", module_path)
++        self.assertIsNotNone(spec)
++        self.assertIsNotNone(spec.loader)
++        module = importlib.util.module_from_spec(spec)
++        spec.loader.exec_module(module)
++```
+ 
+-- add a skip-on-missing syntax-first test for `ppd.extraction.online_trade_permit_requirements`, or
+-- add a separate one-cycle scaffold task for the module with no broad extraction contract, then add the syntax-first import guard after the scaffold passes validation.
++## Retry classification
+ 
+-Unacceptable supervisor repair:
++For recent failures involving `SyntaxError`, `py_compile`, TypeScript `TS1005`, `TS1109`, or `TS1128`, the daemon should prefer smaller file sets and explicit syntactic-validity guardrails over broad contract rewrites.
+ 
+-- creating a full online trade permit requirements extractor,
+-- adding broad requirement validation to unblock a syntax guard,
+-- writing live crawl output, authenticated DevHub artifacts, private session files, traces, or downloaded documents,
+-- automating CAPTCHA, MFA, account creation, payment, submission, certification, cancellation, official upload, or inspection scheduling.
++If validation fails with `FileNotFoundError`, `missing module`, or an assertion that a future target module must exist, classify the attempt as a task-shape failure rather than a domain validation failure. The next proposal should replace the test with skip-aware absent-target handling or select a prerequisite task that creates the target module.
+ 
+-## Recent Fixture Privacy Failure Pattern
++## Blocked checkbox-121 recovery
+ 
+-When validating mocked DevHub workflow fixtures, privacy scanners may flag prohibited words inside the names of prohibited artifacts or prohibited actions. Fixture authors should express negative permissions with neutral key names and boolean values rather than embedding banned artifact names in field names.
++The blocked task is:
+ 
+-For example, prefer `agentMayHandlePaymentInstrument: false` over a key containing `paymentDetails`.
++`Task checkbox-121: Add a one-file syntax-first import test for ppd.extraction.online_trade_permit_requirements that imports only that module and fails malformed Python before broad online trade permit requirement validation runs.`
+ 
+-The scanner itself should remain strict for actual fixture payloads, selectors, values, and workflow state.+Observed blocker:
++
++- Proposed tests failed because `ppd/extraction/online_trade_permit_requirements.py` did not exist.
++- The intended guard is malformed-Python detection before broader requirement validation, not forcing early creation of the extractor.
++
++Repair instruction for the next worker cycle:
++
++- Retry checkbox-121 with a single test file under `ppd/tests/`.
++- The test must skip when `ppd/extraction/online_trade_permit_requirements.py` is absent.
++- The test must use `py_compile.compile(..., doraise=True)` before isolated import when the file exists.
++- The test must not import broad online trade permit requirement validation modules.
++- The test must not add or modify PP&D domain extraction implementation files.

@@ -1,0 +1,49 @@
+{
+  "fixtureKind": "daemon_repeated_syntax_failures",
+  "targetTask": "Task checkbox-78: Add the solar permit requirement extractor as a no-dataclass one-file implementation only after the syntax-first import test and seven-record fixture pass; expose plain functions/constants and avoid broad contract rewrites.",
+  "minimumRepetitions": 2,
+  "proposals": [
+    {
+      "failure_kind": "validation",
+      "summary": "Add a narrow no-dataclass solar permit requirement extractor module.",
+      "validation_results": [
+        {
+          "command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
+          "returncode": 1,
+          "stderr": "ppd/extraction/solar_permit_requirements.py failed py_compile: line 415 if confidence 1.0: SyntaxError: invalid syntax",
+          "stdout": ""
+        }
+      ]
+    },
+    {
+      "failure_kind": "validation",
+      "summary": "Add a syntax-valid no-dataclass solar permit requirement extractor as a single narrow module.",
+      "validation_results": [
+        {
+          "command": ["python3", "-m", "unittest", "discover", "-s", "ppd/tests", "-p", "test_*.py"],
+          "returncode": 1,
+          "stderr": "File ppd/extraction/solar_permit_requirements.py, line 347 return 0.0 list[str]: SyntaxError: invalid syntax",
+          "stdout": ""
+        }
+      ]
+    },
+    {
+      "failure_kind": "validation",
+      "summary": "Retry the extractor after focused fixtures.",
+      "validation_results": [
+        {
+          "command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
+          "returncode": 1,
+          "stderr": "ppd/extraction/solar_permit_requirements.py failed py_compile: line 191 elif confidence 1: SyntaxError: invalid syntax",
+          "stdout": ""
+        }
+      ]
+    }
+  ],
+  "expected": {
+    "diagnostic": "repeated_syntax_failure",
+    "stop_condition": true,
+    "syntax_failure_count": 3,
+    "malformed_fragments": ["confidence 1", "confidence 1.0", "return 0.0 list[str]"]
+  }
+}

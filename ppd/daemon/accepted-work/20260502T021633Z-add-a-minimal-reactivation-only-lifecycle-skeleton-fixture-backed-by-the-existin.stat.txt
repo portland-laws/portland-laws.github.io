@@ -1,0 +1,1 @@
+ppd/tests/fixtures/lifecycle/reactivation_lifecycle_process_skeleton.json

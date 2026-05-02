@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/test_solar_permit_guardrail_fixtures.py",
+    "ppd/tests/fixtures/guardrails/solar_permit_workflow_guardrails.json"
+  ],
+  "created_at": "2026-05-01T22:01:43.572139Z",
+  "impact": "This advances the PP&D guardrail plan by adding fixture-only validation for the solar permit workflow without live DevHub automation, uploads, payments, or private artifacts.",
+  "summary": "Add deterministic solar permit guardrail fixture tests and fixture data for missing facts, document groups, and guarded stop points.",
+  "target_task": "Task checkbox-75: Add guardrail compiler fixture tests for the solar permit workflow covering missing facts, required document groups, payment stop points, correction-upload stop points, and inspection-scheduling stop points.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 82 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".............................................................................................................................................................. ---------------------------------------------------------------------- Ran 158 tests in 0.020s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

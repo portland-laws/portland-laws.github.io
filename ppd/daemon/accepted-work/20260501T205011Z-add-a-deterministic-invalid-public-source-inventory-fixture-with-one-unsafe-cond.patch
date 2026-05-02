@@ -1,0 +1,112 @@
+--- a/ppd/tests/fixtures/public_source_inventory/minimal_invalid_one_unsafe_field_per_entry.json
++++ b/ppd/tests/fixtures/public_source_inventory/minimal_invalid_one_unsafe_field_per_entry.json
+@@ -0,0 +1,109 @@
++{
++  "schemaVersion": 1,
++  "fixtureId": "minimal-invalid-one-unsafe-field-per-entry",
++  "description": "Each inventory entry is otherwise valid and contains exactly one unsafe or missing field so rejection reasons are deterministic.",
++  "generatedAt": "2026-05-01T00:00:00Z",
++  "entries": [
++    {
++      "id": "invalid-raw-body",
++      "category": "permit_application",
++      "canonicalUrl": "https://www.portland.gov/ppd/permits",
++      "authorityLabel": "Portland Permitting & Development public permit guidance",
++      "recrawlCadence": "weekly",
++      "contentType": "text/html",
++      "provenance": {
++        "sourceIndexId": "source-ppd-permits",
++        "retrievedAt": "2026-05-01T00:00:00Z",
++        "contentHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
++      },
++      "responseBody": "raw public response body must not be committed",
++      "expectedRejectionReason": "raw_response_body"
++    },
++    {
++      "id": "invalid-credentials",
++      "category": "devhub_guide",
++      "canonicalUrl": "https://www.portland.gov/ppd/devhub",
++      "authorityLabel": "Portland Permitting & Development DevHub guide",
++      "recrawlCadence": "weekly",
++      "contentType": "text/html",
++      "provenance": {
++        "sourceIndexId": "source-ppd-devhub-guide",
++        "retrievedAt": "2026-05-01T00:00:00Z",
++        "contentHash": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
++      },
++      "credentials": {
++        "username": "redacted@example.invalid"
++      },
++      "expectedRejectionReason": "credentials"
++    },
++    {
++      "id": "invalid-trace-path",
++      "category": "devhub_guide",
++      "canonicalUrl": "https://devhub.portlandoregon.gov/",
++      "authorityLabel": "Development Hub PDX public landing page",
++      "recrawlCadence": "weekly",
++      "contentType": "text/html",
++      "provenance": {
++        "sourceIndexId": "source-devhub-public-landing",
++        "retrievedAt": "2026-05-01T00:00:00Z",
++        "contentHash": "sha256:3333333333333333333333333333333333333333333333333333333333333333"
++      },
++      "tracePath": "ppd/data/private/devhub/traces/session-trace.zip",
++      "expectedRejectionReason": "trace_artifact"
++    },
++    {
++      "id": "invalid-screenshot-path",
++      "category": "forms_handout",
++      "canonicalUrl": "https://www.portland.gov/ppd/forms",
++      "authorityLabel": "Portland Permitting & Development forms and handouts index",
++      "recrawlCadence": "weekly",
++      "contentType": "text/html",
++      "provenance": {
++        "sourceIndexId": "source-ppd-forms",
++        "retrievedAt": "2026-05-01T00:00:00Z",
++        "contentHash": "sha256:4444444444444444444444444444444444444444444444444444444444444444"
++      },
++      "screenshotPath": "ppd/data/private/devhub/screenshots/account-page.png",
++      "expectedRejectionReason": "screenshot_artifact"
++    },
++    {
++      "id": "invalid-downloaded-document-path",
++      "category": "forms_handout",
++      "canonicalUrl": "https://www.portland.gov/ppd/applications-and-forms",
++      "authorityLabel": "Portland Permitting & Development applications and forms",
++      "recrawlCadence": "monthly",
++      "contentType": "application/pdf",
++      "provenance": {
++        "sourceIndexId": "source-ppd-applications-forms",
++        "retrievedAt": "2026-05-01T00:00:00Z",
++        "contentHash": "sha256:5555555555555555555555555555555555555555555555555555555555555555"
++      },
++      "downloadedDocumentPath": "ppd/data/raw/downloaded_documents/permit-application.pdf",
++      "expectedRejectionReason": "downloaded_document_artifact"
++    },
++    {
++      "id": "invalid-private-devhub-path",
++      "category": "devhub_guide",
++      "canonicalUrl": "https://www.portland.gov/ppd/devhub-faq",
++      "authorityLabel": "Portland Permitting & Development DevHub FAQ",
++      "recrawlCadence": "weekly",
++      "contentType": "text/html",
++      "provenance": {
++        "sourceIndexId": "source-ppd-devhub-faq",
++        "retrievedAt": "2026-05-01T00:00:00Z",
++        "contentHash": "sha256:6666666666666666666666666666666666666666666666666666666666666666"
++      },
++      "privateDevhubPath": "ppd/data/private/devhub/session/storage_state.json",
++      "expectedRejectionReason": "private_devhub_path"
++    },
++    {
++      "id": "invalid-missing-provenance",
++      "category": "fee_guidance",
++      "canonicalUrl": "https://www.portland.gov/ppd/fees",
++      "authorityLabel": "Portland Permitting & Development fee guidance",
++      "recrawlCadence": "weekly",
++      "contentType": "text/html",
++      "expectedRejectionReason": "missing_provenance"
++    }
++  ]
++}

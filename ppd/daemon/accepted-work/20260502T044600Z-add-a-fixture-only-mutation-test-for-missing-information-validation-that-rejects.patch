@@ -1,0 +1,114 @@
+--- a/ppd/tests/test_missing_information_mutations.py
++++ b/ppd/tests/test_missing_information_mutations.py
+@@ -0,0 +1,111 @@
++"""Mutation coverage for PP&D missing-information fixtures.
++
++These tests stay fixture-only: they do not crawl public sources, open DevHub,
++authenticate, upload files, or inspect private session state.
++"""
++
++from __future__ import annotations
++
++import copy
++import json
++from pathlib import Path
++from typing import Any, Mapping
++
++
++FIXTURES_DIR = Path(__file__).parent / "fixtures"
++
++
++def test_missing_information_rejects_requested_fact_without_linked_process_requirement() -> None:
++    process_fixture = _load_first_fixture_with_keys({"processId", "requiredInputs"})
++    missing_information_fixture = _load_first_fixture_with_keys(
++        {"processId"},
++        any_key={"requestedUserFacts", "missingUserFacts", "missingFacts"},
++    )
++
++    errors = _validate_missing_information_fixture(missing_information_fixture, process_fixture)
++    assert errors == []
++
++    mutated = copy.deepcopy(missing_information_fixture)
++    requested_facts = _requested_user_facts(mutated)
++    assert requested_facts, "missing-information fixture must include at least one requested user fact"
++    requested_facts[0]["processRequirementId"] = "ppd-mutant:unlinked-process-requirement"
++
++    mutation_errors = _validate_missing_information_fixture(mutated, process_fixture)
++    assert any("linked process requirement" in error for error in mutation_errors)
++
++
++def _load_first_fixture_with_keys(required_keys: set[str], any_key: set[str] | None = None) -> Mapping[str, Any]:
++    for path in sorted(FIXTURES_DIR.rglob("*.json")):
++        data = json.loads(path.read_text(encoding="utf-8"))
++        if not isinstance(data, Mapping):
++            continue
++        if not required_keys.issubset(data.keys()):
++            continue
++        if any_key is not None and not any(key in data for key in any_key):
++            continue
++        return data
++    key_list = ", ".join(sorted(required_keys))
++    raise AssertionError(f"no PP&D fixture found under {FIXTURES_DIR} with keys: {key_list}")
++
++
++def _validate_missing_information_fixture(
++    missing_information: Mapping[str, Any],
++    process: Mapping[str, Any],
++) -> list[str]:
++    errors: list[str] = []
++
++    process_id = str(process.get("processId", ""))
++    missing_process_id = str(missing_information.get("processId", ""))
++    if missing_process_id != process_id:
++        errors.append("missing-information fixture processId must match the process fixture")
++
++    linked_requirement_ids = _process_requirement_ids(process)
++    if not linked_requirement_ids:
++        errors.append("process fixture must expose at least one requirement id for missing-information linkage")
++
++    requested_facts = _requested_user_facts(missing_information)
++    if not requested_facts:
++        errors.append("missing-information fixture must request at least one user fact")
++        return errors
++
++    for index, fact in enumerate(requested_facts):
++        fact_id = str(fact.get("factId", fact.get("id", f"requestedUserFacts[{index}]")))
++        linked_id = str(
++            fact.get(
++                "processRequirementId",
++                fact.get("linkedProcessRequirementId", fact.get("requiredInputId", "")),
++            )
++        )
++        if not linked_id:
++            errors.append(f"requested user fact {fact_id} must include a linked process requirement id")
++        elif linked_id not in linked_requirement_ids:
++            errors.append(
++                f"requested user fact {fact_id} references linked process requirement {linked_id}, "
++                "but that id is not present in the process fixture"
++            )
++
++    return errors
++
++
++def _requested_user_facts(fixture: Mapping[str, Any]) -> list[dict[str, Any]]:
++    for key in ("requestedUserFacts", "missingUserFacts", "missingFacts"):
++        value = fixture.get(key)
++        if isinstance(value, list):
++            return [item for item in value if isinstance(item, dict)]
++    return []
++
++
++def _process_requirement_ids(process: Mapping[str, Any]) -> set[str]:
++    ids: set[str] = set()
++    for collection_key in ("requiredInputs", "requiredFacts", "requiredDocuments", "stopGates"):
++        collection = process.get(collection_key, [])
++        if not isinstance(collection, list):
++            continue
++        for item in collection:
++            if not isinstance(item, Mapping):
++                continue
++            for id_key in ("requirementId", "inputId", "factId", "documentId", "gateId", "id"):
++                value = item.get(id_key)
++                if isinstance(value, str) and value.strip():
++                    ids.add(value)
++    return ids

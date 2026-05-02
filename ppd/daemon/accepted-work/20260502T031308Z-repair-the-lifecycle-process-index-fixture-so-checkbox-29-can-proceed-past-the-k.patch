@@ -1,0 +1,11 @@
+--- a/ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json
++++ b/ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json
+@@ -57,7 +57,7 @@
+     },
+     {
+       "indexEntryId": "lifecycle_process_index_inspection",
+-      "processSkeletonFixturePath": "ppd/tests/fixtures/lifecycle/inspection_lifecycle_process_skeleton.json",
++      "processSkeletonFixturePath": "ppd/tests/fixtures/lifecycle/inspection_scheduling_result_follow_up_lifecycle_process_skeleton.json",
+       "lifecycleCategoryIds": [
+         "inspection_scheduling",
+         "inspection_result_follow_up"

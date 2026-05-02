@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/public_source_inventory/invalid_one_unsafe_field_inventory.json"
+  ],
+  "created_at": "2026-05-01T21:07:48.860199Z",
+  "impact": "Restores deterministic public source inventory test discovery by providing the expected fixture filename without changing validator behavior or broader PP&D contracts.",
+  "summary": "Add the expected public source inventory one-unsafe-field compatibility fixture path.",
+  "target_task": "Task checkbox-69: Add a fixture-name compatibility repair for public source inventory tests only if `ppd/tests/fixtures/public_source_inventory/invalid_one_unsafe_field_inventory.json` is still missing while the accepted one-unsafe-field fixture exists under another name.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 70 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................ ---------------------------------------------------------------------- Ran 140 tests in 0.019s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

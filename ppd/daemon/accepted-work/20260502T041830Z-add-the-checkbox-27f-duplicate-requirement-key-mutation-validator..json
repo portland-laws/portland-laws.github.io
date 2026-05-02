@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py"
+  ],
+  "created_at": "2026-05-02T04:18:30.468464Z",
+  "impact": "This advances the PP&D lifecycle requirement validation sequence by proving the fixture validator rejects duplicate `(categoryId, action, object, sourceEvidenceIds)` records while staying fixture-only and deterministic.",
+  "summary": "Add the checkbox-27f duplicate requirement-key mutation validator.",
+  "target_task": "Task checkbox-36: Recovery for checkbox-27f: after checkbox-27e passes, add one mutation case for duplicate `(categoryId, action, object, sourceEvidenceIds)` only.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 39 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "..........................................................................................................................................................................................................................ss..............sss...................................................................................................................................... ---------------------------------------------------------------------- Ran 371 tests in 0.044s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

@@ -1,0 +1,394 @@
+--- a/ppd/devhub/online_trade_permit_purchase_review_guardrails.py
++++ b/ppd/devhub/online_trade_permit_purchase_review_guardrails.py
+@@ -0,0 +1,174 @@
++"""Guardrails for DevHub online trade permit purchase review actions.
++
++This module is fixture-only policy logic. It does not open DevHub, authenticate,
++submit, certify, pay, cancel, schedule inspections, or persist browser/session
++artifacts.
++"""
++
++from __future__ import annotations
++
++from typing import Any, Mapping
++
++PREVIEW_ACTION = "preview_online_trade_permit_purchase_review"
++GUARDED_ACTIONS = {
++    "official_online_trade_permit_purchase": "consequential",
++    "certify_online_trade_permit_purchase": "consequential",
++    "pay_online_trade_permit_fees": "financial",
++    "cancel_online_trade_permit_purchase": "consequential",
++    "schedule_online_trade_permit_inspection": "consequential",
++}
++REFUSED_STATUS = "refused_missing_exact_session_confirmation"
++PREVIEW_STATUS = "preview_ready"
++CONFIRMED_STATUS = "exact_session_confirmation_present"
++
++
++def build_purchase_review_preview(workflow: Mapping[str, Any]) -> dict[str, Any]:
++    """Return a redacted, non-official preview for a mocked purchase review."""
++
++    permit = _string(workflow.get("permitType"))
++    session_id = _string(workflow.get("sessionId"))
++    review_steps = workflow.get("reviewSteps", [])
++    if not isinstance(review_steps, list):
++        review_steps = []
++
++    return {
++        "status": PREVIEW_STATUS,
++        "actionId": PREVIEW_ACTION,
++        "sessionId": session_id,
++        "permitType": permit,
++        "officialActionPerformed": False,
++        "paymentAttempted": False,
++        "certificationAttempted": False,
++        "cancellationAttempted": False,
++        "inspectionSchedulingAttempted": False,
++        "reviewSteps": [_redacted_step(step) for step in review_steps if isinstance(step, Mapping)],
++    }
++
++
++def evaluate_purchase_review_action(
++    workflow: Mapping[str, Any],
++    action_id: str,
++    confirmation: Mapping[str, Any] | None = None,
++) -> dict[str, Any]:
++    """Classify whether a requested purchase-review action may proceed.
++
++    Preview is read-only and always returns a non-official preview. Official
++    purchase, certification, payment, cancellation, and inspection scheduling are
++    refused unless the confirmation matches the current fixture session, the
++    exact action id, and the exact session-specific confirmation phrase.
++    """
++
++    if action_id == PREVIEW_ACTION:
++        return build_purchase_review_preview(workflow)
++
++    if action_id not in GUARDED_ACTIONS:
++        return {
++            "status": "refused_unknown_action",
++            "actionId": action_id,
++            "allowed": False,
++            "officialActionPerformed": False,
++            "reason": "action is not part of the online trade permit purchase review fixture",
++        }
++
++    confirmation = confirmation or {}
++    expected_session_id = _string(workflow.get("sessionId"))
++    expected_phrase = _string(workflow.get("requiredConfirmationPhrase"))
++    confirmation_session_id = _string(confirmation.get("sessionId"))
++    confirmation_action_id = _string(confirmation.get("actionId"))
++    confirmation_phrase = _string(confirmation.get("phrase"))
++
++    classification = GUARDED_ACTIONS[action_id]
++    matches = (
++        confirmation_session_id == expected_session_id
++        and confirmation_action_id == action_id
++        and confirmation_phrase == expected_phrase
++        and expected_session_id != ""
++        and expected_phrase != ""
++    )
++
++    if not matches:
++        return {
++            "status": REFUSED_STATUS,
++            "actionId": action_id,
++            "classification": classification,
++            "allowed": False,
++            "officialActionPerformed": False,
++            "paymentAttempted": False,
++            "requiredSessionId": expected_session_id,
++            "requiredConfirmationPhrase": expected_phrase,
++            "receivedSessionId": confirmation_session_id,
++            "receivedActionId": confirmation_action_id,
++            "receivedPhrase": confirmation_phrase,
++            "reason": "exact current-session confirmation for this specific action is required",
++        }
++
++    return {
++        "status": CONFIRMED_STATUS,
++        "actionId": action_id,
++        "classification": classification,
++        "allowed": True,
++        "officialActionPerformed": False,
++        "paymentAttempted": False,
++        "sessionId": expected_session_id,
++        "confirmationRecorded": True,
++        "nextStep": "hand off to guarded executor checkpoint; this fixture performs no live DevHub action",
++    }
++
++
++def validate_purchase_review_fixture(data: Mapping[str, Any]) -> list[str]:
++    """Validate the deterministic fixture used by guardrail tests."""
++
++    errors: list[str] = []
++    workflow = data.get("workflow")
++    attempts = data.get("attempts")
++    if not isinstance(workflow, Mapping):
++        return ["fixture workflow must be an object"]
++    if not isinstance(attempts, list) or not attempts:
++        errors.append("fixture attempts must be a non-empty list")
++        attempts = []
++
++    if _string(workflow.get("sessionId")) == "":
++        errors.append("workflow sessionId is required")
++    if _string(workflow.get("requiredConfirmationPhrase")) == "":
++        errors.append("workflow requiredConfirmationPhrase is required")
++    if _string(workflow.get("permitType")) != "online_trade_permit":
++        errors.append("workflow permitType must be online_trade_permit")
++
++    private_markers = ("password", "token", "secret", "cookie", "trace", "screenshot", "authState")
++    serialized = repr(data).lower()
++    for marker in private_markers:
++        if marker.lower() in serialized:
++            errors.append(f"fixture must not contain private DevHub artifact marker: {marker}")
++
++    for index, attempt in enumerate(attempts):
++        if not isinstance(attempt, Mapping):
++            errors.append(f"attempt {index} must be an object")
++            continue
++        action_id = _string(attempt.get("actionId"))
++        expected_status = _string(attempt.get("expectedStatus"))
++        decision = evaluate_purchase_review_action(
++            workflow,
++            action_id,
++            attempt.get("confirmation") if isinstance(attempt.get("confirmation"), Mapping) else None,
++        )
++        if decision.get("status") != expected_status:
++            errors.append(
++                f"attempt {index} expected {expected_status or ''} "
++                f"but evaluated {decision.get('status')}"
++            )
++    return errors
++
++
++def _redacted_step(step: Mapping[str, Any]) -> dict[str, Any]:
++    return {
++        "id": _string(step.get("id")),
++        "label": _string(step.get("label")),
++        "sourceRequirement": _string(step.get("sourceRequirement")),
++        "redactedValue": _string(step.get("redactedValue", "[REDACTED]")),
++    }
++
++
++def _string(value: Any) -> str:
++    if value is None:
++        return ""
++    return str(value)
+--- a/ppd/tests/fixtures/devhub/online_trade_permit_purchase_review_guardrails.json
++++ b/ppd/tests/fixtures/devhub/online_trade_permit_purchase_review_guardrails.json
+@@ -0,0 +1,101 @@
++{
++  "workflow": {
++    "fixtureId": "devhub-online-trade-permit-purchase-review-guardrails",
++    "sessionId": "session-2026-05-02-online-trade-review",
++    "requiredConfirmationPhrase": "CONFIRM session-2026-05-02-online-trade-review online trade permit purchase review exact action",
++    "permitType": "online_trade_permit",
++    "sourceUrl": "https://www.portland.gov/ppd/devhub",
++    "reviewSteps": [
++      {
++        "id": "review-permit-type",
++        "label": "Review online trade permit type",
++        "sourceRequirement": "devhub-online-trade-permit-purchase-review",
++        "redactedValue": "[REDACTED_PERMIT_TYPE]"
++      },
++      {
++        "id": "review-fees",
++        "label": "Review calculated fees before payment",
++        "sourceRequirement": "devhub-fee-payment-checkpoint",
++        "redactedValue": "[REDACTED_FEE_SUMMARY]"
++      },
++      {
++        "id": "review-inspection-path",
++        "label": "Review inspection scheduling availability after permit issuance",
++        "sourceRequirement": "devhub-inspection-scheduling-checkpoint",
++        "redactedValue": "[REDACTED_INSPECTION_OPTIONS]"
++      }
++    ]
++  },
++  "attempts": [
++    {
++      "attemptId": "preview-only",
++      "actionId": "preview_online_trade_permit_purchase_review",
++      "expectedStatus": "preview_ready"
++    },
++    {
++      "attemptId": "purchase-no-confirmation",
++      "actionId": "official_online_trade_permit_purchase",
++      "expectedStatus": "refused_missing_exact_session_confirmation"
++    },
++    {
++      "attemptId": "certify-no-confirmation",
++      "actionId": "certify_online_trade_permit_purchase",
++      "expectedStatus": "refused_missing_exact_session_confirmation"
++    },
++    {
++      "attemptId": "payment-no-confirmation",
++      "actionId": "pay_online_trade_permit_fees",
++      "expectedStatus": "refused_missing_exact_session_confirmation"
++    },
++    {
++      "attemptId": "cancel-no-confirmation",
++      "actionId": "cancel_online_trade_permit_purchase",
++      "expectedStatus": "refused_missing_exact_session_confirmation"
++    },
++    {
++      "attemptId": "inspection-no-confirmation",
++      "actionId": "schedule_online_trade_permit_inspection",
++      "expectedStatus": "refused_missing_exact_session_confirmation"
++    },
++    {
++      "attemptId": "generic-confirmation",
++      "actionId": "official_online_trade_permit_purchase",
++      "confirmation": {
++        "sessionId": "session-2026-05-02-online-trade-review",
++        "actionId": "official_online_trade_permit_purchase",
++        "phrase": "confirm"
++      },
++      "expectedStatus": "refused_missing_exact_session_confirmation"
++    },
++    {
++      "attemptId": "wrong-session",
++      "actionId": "official_online_trade_permit_purchase",
++      "confirmation": {
++        "sessionId": "session-other",
++        "actionId": "official_online_trade_permit_purchase",
++        "phrase": "CONFIRM session-2026-05-02-online-trade-review online trade permit purchase review exact action"
++      },
++      "expectedStatus": "refused_missing_exact_session_confirmation"
++    },
++    {
++      "attemptId": "wrong-action",
++      "actionId": "official_online_trade_permit_purchase",
++      "confirmation": {
++        "sessionId": "session-2026-05-02-online-trade-review",
++        "actionId": "pay_online_trade_permit_fees",
++        "phrase": "CONFIRM session-2026-05-02-online-trade-review online trade permit purchase review exact action"
++      },
++      "expectedStatus": "refused_missing_exact_session_confirmation"
++    },
++    {
++      "attemptId": "exact-purchase-confirmation",
++      "actionId": "official_online_trade_permit_purchase",
++      "confirmation": {
++        "sessionId": "session-2026-05-02-online-trade-review",
++        "actionId": "official_online_trade_permit_purchase",
++        "phrase": "CONFIRM session-2026-05-02-online-trade-review online trade permit purchase review exact action"
++      },
++      "expectedStatus": "exact_session_confirmation_present"
++    }
++  ]
++}
+--- a/ppd/tests/test_devhub_online_trade_permit_purchase_review_guardrails.py
++++ b/ppd/tests/test_devhub_online_trade_permit_purchase_review_guardrails.py
+@@ -0,0 +1,110 @@
++from __future__ import annotations
++
++import json
++import unittest
++from pathlib import Path
++
++from ppd.devhub.online_trade_permit_purchase_review_guardrails import (
++    CONFIRMED_STATUS,
++    GUARDED_ACTIONS,
++    PREVIEW_ACTION,
++    PREVIEW_STATUS,
++    REFUSED_STATUS,
++    build_purchase_review_preview,
++    evaluate_purchase_review_action,
++    validate_purchase_review_fixture,
++)
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "devhub"
++    / "online_trade_permit_purchase_review_guardrails.json"
++)
++
++
++class DevhubOnlineTradePermitPurchaseReviewGuardrailTests(unittest.TestCase):
++    def setUp(self) -> None:
++        with FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
++            self.fixture = json.load(fixture_file)
++        self.workflow = self.fixture["workflow"]
++
++    def test_fixture_is_valid_and_contains_no_private_devhub_artifacts(self) -> None:
++        self.assertEqual([], validate_purchase_review_fixture(self.fixture))
++
++    def test_purchase_review_can_produce_redacted_preview_without_official_action(self) -> None:
++        preview = build_purchase_review_preview(self.workflow)
++
++        self.assertEqual(PREVIEW_STATUS, preview["status"])
++        self.assertEqual(PREVIEW_ACTION, preview["actionId"])
++        self.assertFalse(preview["officialActionPerformed"])
++        self.assertFalse(preview["paymentAttempted"])
++        self.assertFalse(preview["certificationAttempted"])
++        self.assertFalse(preview["cancellationAttempted"])
++        self.assertFalse(preview["inspectionSchedulingAttempted"])
++        self.assertGreaterEqual(len(preview["reviewSteps"]), 3)
++        for step in preview["reviewSteps"]:
++            self.assertTrue(step["redactedValue"].startswith("[REDACTED"))
++
++    def test_guarded_actions_are_refused_without_confirmation(self) -> None:
++        for action_id in GUARDED_ACTIONS:
++            with self.subTest(action_id=action_id):
++                decision = evaluate_purchase_review_action(self.workflow, action_id)
++                self.assertEqual(REFUSED_STATUS, decision["status"])
++                self.assertFalse(decision["allowed"])
++                self.assertFalse(decision["officialActionPerformed"])
++                self.assertFalse(decision["paymentAttempted"])
++                self.assertIn("exact current-session confirmation", decision["reason"])
++
++    def test_generic_wrong_session_and_wrong_action_confirmations_are_refused(self) -> None:
++        refused_attempt_ids = {
++            "generic-confirmation",
++            "wrong-session",
++            "wrong-action",
++        }
++        for attempt in self.fixture["attempts"]:
++            if attempt["attemptId"] not in refused_attempt_ids:
++                continue
++            with self.subTest(attempt_id=attempt["attemptId"]):
++                decision = evaluate_purchase_review_action(
++                    self.workflow,
++                    attempt["actionId"],
++                    attempt.get("confirmation"),
++                )
++                self.assertEqual(REFUSED_STATUS, decision["status"])
++                self.assertFalse(decision["allowed"])
++                self.assertEqual(attempt["expectedStatus"], decision["status"])
++
++    def test_exact_session_specific_purchase_confirmation_reaches_checkpoint_only(self) -> None:
++        attempt = next(
++            item
++            for item in self.fixture["attempts"]
++            if item["attemptId"] == "exact-purchase-confirmation"
++        )
++        decision = evaluate_purchase_review_action(
++            self.workflow,
++            attempt["actionId"],
++            attempt["confirmation"],
++        )
++
++        self.assertEqual(CONFIRMED_STATUS, decision["status"])
++        self.assertTrue(decision["allowed"])
++        self.assertTrue(decision["confirmationRecorded"])
++        self.assertFalse(decision["officialActionPerformed"])
++        self.assertFalse(decision["paymentAttempted"])
++        self.assertIn("fixture performs no live DevHub action", decision["nextStep"])
++
++    def test_fixture_attempt_expectations_match_evaluator(self) -> None:
++        for attempt in self.fixture["attempts"]:
++            with self.subTest(attempt_id=attempt["attemptId"]):
++                decision = evaluate_purchase_review_action(
++                    self.workflow,
++                    attempt["actionId"],
++                    attempt.get("confirmation"),
++                )
++                self.assertEqual(attempt["expectedStatus"], decision["status"])
++
++
++if __name__ == "__main__":
++    unittest.main()

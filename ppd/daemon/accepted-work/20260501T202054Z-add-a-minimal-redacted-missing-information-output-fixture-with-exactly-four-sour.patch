@@ -1,0 +1,89 @@
+--- a/ppd/tests/fixtures/missing_information_output/four_requested_items.json
++++ b/ppd/tests/fixtures/missing_information_output/four_requested_items.json
+@@ -0,0 +1,86 @@
++{
++  "schemaVersion": 1,
++  "fixtureId": "missing-information-output-four-requested-items",
++  "processId": "residential-building-permit-fixture",
++  "userCaseId": "redacted-residential-case",
++  "generatedAt": "2026-05-01T00:00:00Z",
++  "redactionPolicy": {
++    "fixtureValuesAreRedacted": true,
++    "privateFixtureValuesAllowed": false,
++    "redactionToken": "[REDACTED]"
++  },
++  "requestedItems": [
++    {
++      "id": "missing-fact-property-identifier",
++      "kind": "fact",
++      "label": "Property identifier",
++      "prompt": "Provide the property address or permit-ready property identifier for the project.",
++      "requestedValue": "[REDACTED]",
++      "actionClassification": "read_only",
++      "sourceBacked": true,
++      "evidence": [
++        {
++          "requirementId": "residential-required-fact-property-identifier",
++          "sourceUrl": "https://www.portland.gov/ppd/residential-permitting",
++          "sourceTitle": "Residential Permitting",
++          "retrievedAt": "2026-05-01T00:00:00Z",
++          "summary": "Residential permit intake requires project property information before application review."
++        }
++      ]
++    },
++    {
++      "id": "missing-file-construction-plans-pdf",
++      "kind": "file",
++      "label": "Construction plans PDF",
++      "prompt": "Upload the project construction plans as a searchable PDF prepared for PP&D review.",
++      "requestedValue": "[REDACTED]",
++      "actionClassification": "draft_edit",
++      "sourceBacked": true,
++      "evidence": [
++        {
++          "requirementId": "residential-required-document-construction-plans",
++          "sourceUrl": "https://www.portland.gov/ppd/development-services/apply-permit-or-request-plan-review",
++          "sourceTitle": "Apply for a permit or request plan review",
++          "retrievedAt": "2026-05-01T00:00:00Z",
++          "summary": "Plan-review workflows require drawing plans and supporting submittal documents before submission."
++        }
++      ]
++    },
++    {
++      "id": "missing-acknowledgment-single-pdf-process",
++      "kind": "acknowledgment",
++      "label": "Single PDF Process acknowledgment",
++      "prompt": "Confirm you reviewed the Single PDF Process requirement for drawing plans and separate supporting PDFs.",
++      "requestedValue": "[REDACTED]",
++      "actionClassification": "consequential_confirmation_required",
++      "sourceBacked": true,
++      "evidence": [
++        {
++          "requirementId": "single-pdf-process-acknowledgment",
++          "sourceUrl": "https://www.portland.gov/ppd/development-services/single-pdf-process",
++          "sourceTitle": "Single PDF Process",
++          "retrievedAt": "2026-05-01T00:00:00Z",
++          "summary": "Public guidance describes the Single PDF Process file organization for plans and supporting documents."
++        }
++      ]
++    },
++    {
++      "id": "missing-decision-ready-to-submit",
++      "kind": "decision",
++      "label": "Submission readiness decision",
++      "prompt": "Decide whether the application package is ready for DevHub submission after review of missing facts, files, and acknowledgments.",
++      "requestedValue": "[REDACTED]",
++      "actionClassification": "consequential_confirmation_required",
++      "sourceBacked": true,
++      "evidence": [
++        {
++          "requirementId": "devhub-submit-explicit-confirmation-gate",
++          "sourceUrl": "https://www.portland.gov/ppd/devhub",
++          "sourceTitle": "DevHub PDX",
++          "retrievedAt": "2026-05-01T00:00:00Z",
++          "summary": "DevHub is the online permitting system, so official submission must remain gated by explicit user confirmation."
++        }
++      ]
++    }
++  ]
++}

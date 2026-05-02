@@ -1,0 +1,298 @@
+{
+  "schemaVersion": 1,
+  "fixtureType": "ppd_lifecycle_cancellation_refund_process_skeleton",
+  "fixtureOnly": true,
+  "processId": "permit_cancellation_refund_lifecycle_skeleton",
+  "lifecycleActions": [
+    "cancellation",
+    "refund"
+  ],
+  "sourceInventoryFixture": "ppd/tests/fixtures/source_inventory/permit_lifecycle_source_coverage_report.json",
+  "sourceInventoryCategoryIds": [
+    "permit_cancellation_guidance",
+    "permit_refund_guidance"
+  ],
+  "sourceInventoryEvidenceIds": [
+    "ppd_lifecycle_cancellation_public_guidance",
+    "ppd_lifecycle_refund_public_guidance"
+  ],
+  "authoritySources": [
+    {
+      "evidenceId": "ppd_lifecycle_cancellation_public_guidance",
+      "categoryId": "permit_cancellation_guidance",
+      "title": "Cancel a permit guidance",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/cancel-permit",
+      "canonicalUrl": "https://www.portland.gov/ppd/permits/cancel-permit",
+      "authorityLabel": "Portland Permitting & Development public permit lifecycle guidance",
+      "recrawlCadence": "monthly",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "evidenceId": "ppd_lifecycle_refund_public_guidance",
+      "categoryId": "permit_refund_guidance",
+      "title": "Permit refund guidance",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/permit-refunds",
+      "canonicalUrl": "https://www.portland.gov/ppd/permits/permit-refunds",
+      "authorityLabel": "Portland Permitting & Development public fee and refund guidance",
+      "recrawlCadence": "monthly",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    }
+  ],
+  "requiredFacts": [
+    {
+      "id": "permit_identifier",
+      "label": "Permit or request identifier",
+      "requiredFor": "cancellation_or_refund_request_preparation",
+      "evidenceIds": [
+        "ppd_lifecycle_cancellation_public_guidance",
+        "ppd_lifecycle_refund_public_guidance"
+      ]
+    },
+    {
+      "id": "permit_status",
+      "label": "Current permit status or lifecycle state",
+      "requiredFor": "cancellation_and_refund_eligibility_review",
+      "evidenceIds": [
+        "ppd_lifecycle_cancellation_public_guidance",
+        "ppd_lifecycle_refund_public_guidance"
+      ]
+    },
+    {
+      "id": "cancellation_reason",
+      "label": "Reason the permit holder wants to cancel the permit or request",
+      "requiredFor": "cancellation_request_preparation",
+      "evidenceIds": [
+        "ppd_lifecycle_cancellation_public_guidance"
+      ]
+    },
+    {
+      "id": "refund_basis",
+      "label": "Reason the permit holder believes a refund should be evaluated",
+      "requiredFor": "refund_request_preparation",
+      "evidenceIds": [
+        "ppd_lifecycle_refund_public_guidance"
+      ]
+    },
+    {
+      "id": "payer_or_authorized_contact",
+      "label": "Applicant, payer, owner, contractor, or authorized contact identity",
+      "requiredFor": "authorization_and_payment_record_check",
+      "evidenceIds": [
+        "ppd_lifecycle_cancellation_public_guidance",
+        "ppd_lifecycle_refund_public_guidance"
+      ]
+    }
+  ],
+  "requiredDocuments": [
+    {
+      "id": "cancellation_request_materials",
+      "label": "Public-guidance-backed cancellation request materials, if required for the permit type",
+      "requiredFor": "cancellation_request_preparation",
+      "evidenceIds": [
+        "ppd_lifecycle_cancellation_public_guidance"
+      ],
+      "notes": "This fixture records the document placeholder only. It does not download, upload, submit, or cancel documents."
+    },
+    {
+      "id": "refund_request_materials",
+      "label": "Public-guidance-backed refund request materials, if required for the permit type",
+      "requiredFor": "refund_request_preparation",
+      "evidenceIds": [
+        "ppd_lifecycle_refund_public_guidance"
+      ],
+      "notes": "This fixture records the document placeholder only. It does not include payment records, private account values, refund submissions, or downloaded documents."
+    }
+  ],
+  "userDecisions": [
+    {
+      "id": "confirm_cancellation_goal",
+      "prompt": "Confirm that the user wants to evaluate or prepare a permit cancellation request.",
+      "requiredBefore": "draft_cancellation_request",
+      "evidenceIds": [
+        "ppd_lifecycle_cancellation_public_guidance"
+      ]
+    },
+    {
+      "id": "confirm_refund_goal",
+      "prompt": "Confirm that the user wants to evaluate or prepare a permit refund request.",
+      "requiredBefore": "draft_refund_request",
+      "evidenceIds": [
+        "ppd_lifecycle_refund_public_guidance"
+      ]
+    },
+    {
+      "id": "confirm_official_cancellation_action",
+      "prompt": "Confirm the exact official cancellation action in the active user session before any cancellation, upload, certification, payment, or submission step.",
+      "requiredBefore": "official_cancellation_action",
+      "evidenceIds": [
+        "ppd_lifecycle_cancellation_public_guidance"
+      ]
+    },
+    {
+      "id": "confirm_official_refund_action",
+      "prompt": "Confirm the exact official refund action in the active user session before any refund request, upload, certification, payment, or submission step.",
+      "requiredBefore": "official_refund_action",
+      "evidenceIds": [
+        "ppd_lifecycle_refund_public_guidance"
+      ]
+    }
+  ],
+  "feePaymentGates": [
+    {
+      "id": "refund_payment_record_review_gate",
+      "classification": "safe_read_only",
+      "action": "review_user_supplied_public_or_redacted_payment_status_for_refund_eligibility",
+      "allowedInFixture": true,
+      "requiresExactUserConfirmation": false,
+      "stopBeforeAction": false,
+      "financialAction": false,
+      "evidenceIds": [
+        "ppd_lifecycle_refund_public_guidance"
+      ]
+    },
+    {
+      "id": "refund_submission_financial_gate",
+      "classification": "financial",
+      "action": "submit_refund_request_or_enter_payment_related_details",
+      "allowedInFixture": false,
+      "requiresExactUserConfirmation": true,
+      "stopBeforeAction": true,
+      "financialAction": true,
+      "evidenceIds": [
+        "ppd_lifecycle_refund_public_guidance"
+      ]
+    },
+    {
+      "id": "cancellation_fee_or_payment_gate",
+      "classification": "financial",
+      "action": "pay_cancel_refund_or_permit_related_fee_or_enter_payment_details",
+      "allowedInFixture": false,
+      "requiresExactUserConfirmation": true,
+      "stopBeforeAction": true,
+      "financialAction": true,
+      "evidenceIds": [
+        "ppd_lifecycle_cancellation_public_guidance",
+        "ppd_lifecycle_refund_public_guidance"
+      ]
+    }
+  ],
+  "actionGates": [
+    {
+      "id": "cancellation_guidance_lookup_gate",
+      "classification": "safe_read_only",
+      "action": "review_public_cancellation_guidance",
+      "allowedInFixture": true,
+      "requiresExactUserConfirmation": false,
+      "stopBeforeAction": false,
+      "evidenceIds": [
+        "ppd_lifecycle_cancellation_public_guidance"
+      ]
+    },
+    {
+      "id": "refund_guidance_lookup_gate",
+      "classification": "safe_read_only",
+      "action": "review_public_refund_guidance",
+      "allowedInFixture": true,
+      "requiresExactUserConfirmation": false,
+      "stopBeforeAction": false,
+      "evidenceIds": [
+        "ppd_lifecycle_refund_public_guidance"
+      ]
+    },
+    {
+      "id": "cancellation_draft_preparation_gate",
+      "classification": "reversible_draft_edit",
+      "action": "prepare_cancellation_request_draft_or_checklist",
+      "allowedInFixture": true,
+      "requiresExactUserConfirmation": true,
+      "stopBeforeAction": false,
+      "evidenceIds": [
+        "ppd_lifecycle_cancellation_public_guidance"
+      ]
+    },
+    {
+      "id": "refund_draft_preparation_gate",
+      "classification": "reversible_draft_edit",
+      "action": "prepare_refund_request_draft_or_checklist",
+      "allowedInFixture": true,
+      "requiresExactUserConfirmation": true,
+      "stopBeforeAction": false,
+      "evidenceIds": [
+        "ppd_lifecycle_refund_public_guidance"
+      ]
+    },
+    {
+      "id": "official_cancellation_submission_gate",
+      "classification": "potentially_consequential",
+      "action": "submit_or_send_official_cancellation_request",
+      "allowedInFixture": false,
+      "requiresExactUserConfirmation": true,
+      "stopBeforeAction": true,
+      "evidenceIds": [
+        "ppd_lifecycle_cancellation_public_guidance"
+      ]
+    },
+    {
+      "id": "official_refund_submission_gate",
+      "classification": "financial",
+      "action": "submit_or_send_official_refund_request",
+      "allowedInFixture": false,
+      "requiresExactUserConfirmation": true,
+      "stopBeforeAction": true,
+      "evidenceIds": [
+        "ppd_lifecycle_refund_public_guidance"
+      ]
+    }
+  ],
+  "explicitStopGates": [
+    {
+      "id": "stop_before_official_cancellation",
+      "blockedAction": "official_permit_cancellation",
+      "reason": "Permit cancellation is potentially consequential and requires exact session-specific user confirmation before any official action.",
+      "evidenceIds": [
+        "ppd_lifecycle_cancellation_public_guidance"
+      ]
+    },
+    {
+      "id": "stop_before_official_refund_request",
+      "blockedAction": "official_refund_request_submission",
+      "reason": "Refund request submission is financial or payment-related and requires exact session-specific user confirmation before any official action.",
+      "evidenceIds": [
+        "ppd_lifecycle_refund_public_guidance"
+      ]
+    },
+    {
+      "id": "stop_before_payment_details_or_fee_payment",
+      "blockedAction": "payment_or_payment_detail_entry",
+      "reason": "Payment and payment-detail actions are financial actions and are outside fixture automation.",
+      "evidenceIds": [
+        "ppd_lifecycle_refund_public_guidance"
+      ]
+    }
+  ],
+  "noLiveAutomationNotes": {
+    "liveCrawling": false,
+    "devhubLogin": false,
+    "officialCancellationAction": false,
+    "officialRefundAction": false,
+    "paymentAction": false,
+    "submissionAction": false,
+    "uploadAction": false,
+    "certificationAction": false,
+    "captchaOrMfaAutomation": false,
+    "notes": "This committed fixture is deterministic JSON evidence and process skeleton data only. It does not authorize live crawling, authenticated DevHub activity, official cancellation requests, refund requests, uploads, payments, submissions, certifications, CAPTCHA handling, or MFA automation."
+  },
+  "excludedArtifacts": [
+    "python_modules",
+    "typescript_modules",
+    "dataclasses",
+    "process_model_implementation_code",
+    "live_crawl_output",
+    "private_devhub_session_state",
+    "browser_traces",
+    "screenshots",
+    "downloaded_documents",
+    "credentials",
+    "official_action_automation"
+  ]
+}

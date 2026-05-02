@@ -1,0 +1,79 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -33,6 +33,8 @@
+ 7. checkbox-27g
+ 
+ If checkbox-27a, checkbox-27b, or checkbox-27c is marked `[!]`, `[~]`, or `[ ]`, the next daemon target must be that lowest incomplete task, even if runtime status says checkbox-27d or later is active.
++
++For this recovery, `[!]` means the task is incomplete but eligible for a narrowed syntax-recovery retry. Do not skip a blocked checkbox-27 prerequisite unless it is marked `[x]`.
+ 
+ ## Current Recovery Priority
+ 
+@@ -70,13 +72,13 @@
+ - `self.assertIn(value, collection)`
+ - `self.assertRaises(ExceptionType)`
+ - `isinstance(value, str)` for runtime type checks
+-- complete numeric comparisons such as `0  1` or `confidence = 1.1`; it must never say `confidence  1`.
++- complete numeric comparisons such as `0  1`; never emit `confidence  1` or `if confidence 1:`
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T04:00:00.000000Z
++Last updated: 2026-05-02T04:05:00.000000Z
+ 
+ - Latest target: `Task checkbox-31: Recovery for checkbox-27a prerequisite recovery`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Reset stale checkbox-27 task selection and corrected malformed Python comparison guardrails.
++- Latest summary: Reasserted stale-target override and corrected Python comparison guardrails for the checkbox-27 recovery sequence.
+ - Counts: `{"blocked": 0, "complete": 30, "in_progress": 0, "needed": 8}`
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -38,34 +38,32 @@
+ - [x] Add a fixture-only lifecycle missing-information expected-output fixture at `ppd/tests/fixtures/lifecycle/permit_lifecycle_missing_information_expected_output.json` with exactly one redacted missing-information record for each accepted lifecycle category, source-backed to the lifecycle process skeleton fixtures, deduplicated by `(categoryId, neededItemId)`, and classified as read-only, draft-preview, consequential-stop, or financial-stop.
+ - [x] Recovery for checkbox-29: first repair only `ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json` so every skeleton fixture path names an already committed lifecycle skeleton fixture. In particular, do not leave a reference to nonexistent `ppd/tests/fixtures/lifecycle/inspection_lifecycle_process_skeleton.json`; use the committed inspection lifecycle skeleton path exactly as it exists on disk. Do not add validator code in this recovery task.
+ - [x] Recovery for checkbox-30: add the smallest possible exact-path validator for `ppd/tests/fixtures/lifecycle/permit_lifecycle_process_index.json` in one Python unittest file. The file must first load only that exact fixture path, assert the committed fixture is valid, and use only plain helper functions, `if not ...: raise AssertionError(...)`, `self.assertEqual`, `self.assertIn`, and `self.assertRaises`. Check that referenced skeleton fixtures exist, category ids are unique, skeleton paths start with `ppd/tests/fixtures/lifecycle/` and end with `.json`, and serialized entries do not contain live crawling, login, payment, submission, upload, certification, cancellation, official refund, official extension, or inspection scheduling authorization. Before broader validation, run py_compile on the changed file and reject malformed comparisons or generated pseudo-code. Do not add mutation tests in this task.
+-- [!] Recovery for checkbox-27a: add only a py_compile-safe skeleton for `ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py` that loads `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json` and asserts the committed top-level `categoryRecords` fixture is valid using the accepted checkbox-24 schema. Do not add mutation cases in this task. Follow `ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md` exactly for this recovery and keep the proposal to one Python test file.
+-- [!] Recovery for checkbox-27b: after checkbox-27a passes, add one mutation case for missing `categoryId` only. Do not add the other mutation cases in the same daemon cycle.
+-- [~] Recovery for checkbox-27c: after checkbox-27b passes, add one mutation case for missing `sourceEvidenceIds` only.
++- [ ] Recovery for checkbox-27a: add only a py_compile-safe skeleton for `ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py` that loads `ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json` and asserts the committed top-level `categoryRecords` fixture is valid using the accepted checkbox-24 schema. Do not add mutation cases in this task. Follow `ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md` exactly for this recovery and keep the proposal to one Python test file.
++- [ ] Recovery for checkbox-27b: after checkbox-27a passes, add one mutation case for missing `categoryId` only. Do not add the other mutation cases in the same daemon cycle.
++- [ ] Recovery for checkbox-27c: after checkbox-27b passes, add one mutation case for missing `sourceEvidenceIds` only.
+ - [ ] Recovery for checkbox-27d: after checkbox-27c passes, add one mutation case for missing local `evidence[].evidenceId` only.
+ - [ ] Recovery for checkbox-27e: after checkbox-27d passes, add one mutation case for out-of-range `confidence` only, using complete comparisons such as `confidence > 1`.
+ - [ ] Recovery for checkbox-27f: after checkbox-27e passes, add one mutation case for duplicate `(categoryId, action, object, sourceEvidenceIds)` only.
+ - [ ] Recovery for checkbox-27g: after checkbox-27f passes, add one mutation case for `stopGate: true` with a classification that does not end in `_stop_gate` only.
+ - [ ] Add a daemon preflight regression test that selects the lowest incomplete checkbox-27 prerequisite when later checkbox-27 tasks are stale, blocked, or marked in progress.
+ 
++## Generated Status
++
++Last updated: 2026-05-02T04:05:00.000000Z
++
++- Latest target: `Task checkbox-31: Recovery for checkbox-27a prerequisite recovery`
++- Latest result: `supervisor_repair`
++- Latest summary: Reset checkbox-27 recovery to the first unchecked prerequisite and removed stale in-progress markings before any worker retry.
++- Counts: `{"blocked": 0, "complete": 30, "in_progress": 0, "needed": 8}`
++
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T04:00:00.000000Z
++Last updated: 2026-05-02T04:05:00.000000Z
+ 
+ - Latest target: `Task checkbox-31: Recovery for checkbox-27a prerequisite recovery`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Reset checkbox-27 recovery to the first unchecked prerequisite and corrected malformed confidence-comparison wording before any worker retry.
++- Latest summary: Stale later checkbox-27 targets must yield to checkbox-27a until the py_compile-safe fixture skeleton is accepted.
+ - Counts: `{"blocked": 0, "complete": 30, "in_progress": 0, "needed": 8}`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-02T03:57:43.415747Z
+-
+-- Latest target: `Task checkbox-32: Recovery for checkbox-27b: after checkbox-27a passes, add one mutation case for missing `categoryId` only. Do not add the other mutation cases in the same daemon cycle.`
+-- Latest result: `validation`
+-- Latest summary: Add the narrow checkbox-27b lifecycle requirement mutation test for missing categoryId only.
+-- Counts: `{"blocked": 2, "complete": 30, "in_progress": 0, "needed": 6}`
+-
+-<!-- ppd-daemon-task-board:end -->

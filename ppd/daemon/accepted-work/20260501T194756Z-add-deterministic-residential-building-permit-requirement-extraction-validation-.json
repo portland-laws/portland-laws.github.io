@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/requirements/residential_building_permit_requirements.json",
+    "ppd/tests/test_residential_building_permit_requirement_extraction.py"
+  ],
+  "created_at": "2026-05-01T19:47:56.798098Z",
+  "impact": "This advances the PP&D requirement-extraction plan by validating that the residential building permit fixture captures eligibility, submittal packages, review/correction/inspection lifecycle requirements, expiration/reactivation rules, and explicit confirmation gates without live crawling or DevHub automation.",
+  "summary": "Add deterministic residential building permit requirement extraction validation with a source-backed fixture and focused unittest coverage.",
+  "target_task": "Task checkbox-52: Add requirement extraction validation for the residential building permit fixture covering eligibility, submittal package requirements, plan-review stages, corrections, inspections, expiration/reactivation, and explicit-confirmation gates.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 62 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "................................................................................................................ ---------------------------------------------------------------------- Ran 112 tests in 0.011s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

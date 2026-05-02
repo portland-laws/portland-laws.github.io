@@ -1,0 +1,2 @@
+ppd/tests/fixtures/requirement_extraction/fcc_wireless_application_requirements.json
+ppd/tests/test_fcc_wireless_requirement_extraction.py

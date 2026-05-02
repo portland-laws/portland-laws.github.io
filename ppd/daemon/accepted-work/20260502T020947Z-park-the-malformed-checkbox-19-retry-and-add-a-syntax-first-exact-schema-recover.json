@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/daemon/task-board.md",
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-02T02:09:47.075427Z",
+  "impact": "The worker was blocked by a Python SyntaxError in a generated test. This repair keeps progress autonomous by turning the next retry into a smaller validation-only task with explicit py_compile guardrails, exact fixture paths, and schema-shape constraints, while parking stale broad retries so they do not prevent selection of independent fixture-first tasks.",
+  "summary": "Park the malformed checkbox-19 retry and add a syntax-first, exact-schema recovery path for the daemon.",
+  "target_task": "Supervisor repair: 2 task(s) are blocked: Task checkbox-15: Add a minimal extension-only lifecycle process skeleton fixture with required facts, required documents, user decisions, citation-backed action gates, and explicit no-live-automation notes from existing fixtures only.; Task checkbox-18: Recovery for checkbox-15: add one narrow validation test for the extension-only lifecycle skeleton fixture that checks required facts, required documents, user decisions, citation-backed action gates, and explicit no-live-automation notes without broad lifecycle extraction behavior.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 29 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................................................................................................................................................ss............................................................................................................................................. ---------------------------------------------------------------------- Ran 352 tests in 0.035s OK (skipped=2)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

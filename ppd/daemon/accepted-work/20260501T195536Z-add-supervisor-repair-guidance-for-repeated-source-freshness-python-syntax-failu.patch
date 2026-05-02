@@ -1,0 +1,163 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -2,23 +2,87 @@
+ 
+ ## Purpose
+ 
+-This guide gives the isolated PP&D supervisor deterministic recovery rules when a daemon task becomes blocked by repeated validation failures. It is intentionally narrow and only covers daemon retry, diagnostics, and task selection behavior.
++This guide gives the isolated PP&D supervisor deterministic recovery rules when a daemon task becomes blocked by repeated validation failures. It is intentionally narrow and only covers daemon retry, diagnostics, task selection, and syntactic-validity recovery behavior.
++
++## Current Source Freshness Recovery
++
++Active failing task:
++
++- Task checkbox-54: Add a source freshness fixture that classifies stale PP&D guidance, changed content hashes, removed pages, and recrawl priority without performing a live recrawl.
++
++Observed failures:
++
++- Repeated Python `SyntaxError` failures in `ppd/contracts/source_freshness.py` during daemon self-test `py_compile`.
++- The invalid generated line shape was equivalent to `if self.recrawl_cadence_days list[str]:`, which indicates mixed or malformed Python type/control-flow syntax.
++- The same task was retried with a three-file proposal and failed before useful unit-test feedback could be reached.
++
++Recovery rule:
++
++- Do not retry checkbox-54 as another broad three-file implementation until a syntax-first contract skeleton passes.
++- The next daemon prompt for checkbox-54 must require the worker to edit at most two files: `ppd/contracts/source_freshness.py` and optionally one focused test file under `ppd/tests/`.
++- The first acceptance gate must be `python3 -m py_compile ppd/contracts/source_freshness.py` before broad unittest discovery.
++- If the proposal includes a fixture, keep it small and fixture-only; do not add live recrawl behavior, HTTP requests, downloaded documents, raw response bodies, private DevHub paths, auth state, traces, or screenshots.
++
++## Retry Shape For Checkbox-54
++
++When checkbox-54 is retried, the supervisor should constrain the daemon to one of these narrow cycles.
++
++Cycle A: syntax-first contract skeleton
++
++- Edit only `ppd/contracts/source_freshness.py` and one focused import/compile test if needed.
++- Define small dataclasses or plain functions only after validating that the file compiles.
++- Keep type annotations conventional Python, for example `recrawl_cadence_days: int | None`, never annotation fragments inside an `if` condition.
++- Avoid validators that depend on fixture shape beyond simple dictionary keys.
++- Require `python3 -m py_compile ppd/contracts/source_freshness.py` before full PP&D validation.
++
++Cycle B: tiny freshness fixture
++
++- Edit only `ppd/tests/fixtures/source_freshness/source_freshness_fixture.json` or a similarly named source-freshness fixture path plus the focused test that loads it.
++- Include exactly one stale page, one changed-hash page, one removed page, and one recrawl-priority example.
++- Use deterministic timestamps and hashes.
++- Do not include response bodies, downloaded document paths, traces, screenshots, credentials, private DevHub paths, live crawl output, or session files.
++
++Cycle C: focused classifier assertions
++
++- Edit only the source-freshness contract and focused test.
++- Validate classification names and priority ordering only.
++- Do not add change-report rendering, live recrawl scheduling, archive processor integration, or broader source-index rewrites in the same cycle.
++
++## General Syntax-Failure Guardrails
++
++For any retry after a Python `SyntaxError` or `py_compile` failure:
++
++- Prefer one Python file plus one test file at most.
++- Ask the worker for the smallest syntactically valid repair that can pass `py_compile` before adding fixture breadth.
++- Avoid long generated helper functions.
++- Avoid nested f-strings, inline regex construction, complex comprehensions, and multiline string literals in generated code.
++- Keep rejection reasons and classification names as module-level string constants.
++- Keep dataclass field annotations on field lines, not inside conditionals or expressions.
++- Use simple explicit conditionals over clever one-liners.
++- Run py_compile before full PP&D validation and treat any compile failure as a syntax-preflight failure, not as a normal unit-test failure.
++
++For any retry after TypeScript `TS1005`, `TS1109`, or `TS1128`:
++
++- Prefer one TypeScript file at most.
++- Avoid broad type contract rewrites.
++- Keep interfaces and object literals small.
++- Run the TypeScript command before broader tests.
+ 
+ ## Current Blocked Task Recovery
+ 
+-Blocked task:
++Previously blocked task:
+ 
+ - Task checkbox-49: Add validation for the public source inventory that rejects non-allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and missing provenance fields.
+ 
+ Observed failures:
+ 
+-- Python SyntaxError from generated contract code.
++- Python `SyntaxError` from generated contract code.
+ - A later validation failure where the expected raw response body rejection reason was not emitted.
+ 
+ Recovery rule:
+ 
+ - Do not keep retrying checkbox-49 as a broad contract rewrite.
+-- Leave checkbox-49 blocked until the daemon can run a narrow syntax-first repair cycle.
++- Leave checkbox-49 decomposed into narrow queued tasks.
+ - Allow the daemon to continue with later fixture-first and validation-first tasks that do not depend on checkbox-49 internals.
+ 
+ ## Retry Shape For Checkbox-49
+@@ -45,35 +109,21 @@
+ - Check required provenance fields only: source URL, canonical URL, captured or verified timestamp, authority label, and fixture provenance note.
+ - Do not expand the validator into crawler policy, robots handling, archive adapters, or document extraction.
+ 
+-## Syntax Guardrails
+-
+-For any retry after a Python SyntaxError:
+-
+-- Prefer one Python file plus one test file at most.
+-- Avoid long generated helper functions.
+-- Avoid nested f-strings, inline regex construction, or multiline string literals in generated code.
+-- Keep rejection reasons as module-level string constants.
+-- Run py_compile before the full PP&D validation command.
+-
+-For any retry after TypeScript TS1005, TS1109, or TS1128:
+-
+-- Prefer one TypeScript file at most.
+-- Avoid broad type contract rewrites.
+-- Run the TypeScript command before broader tests.
+-
+ ## Task Selection Rule
+ 
+-If a task is blocked and the active task does not depend on the blocked task, the daemon may continue with the active task. For the current state, checkbox-51 may continue because it validates the normalized document link graph and should not require the unfinished public source inventory validator.
++If a task is blocked and the active task does not depend on the blocked task, the daemon may continue with the active task.
+ 
+-If a task depends on checkbox-49, insert a narrow prerequisite task instead of attempting live crawl or authenticated automation.
++If a task receives two recent syntax or compile rollbacks, the supervisor should repair prompt or retry shape before allowing another worker attempt on the same broad task.
++
++If a task depends on a repeatedly failing contract, insert or select a narrow syntax-first prerequisite task instead of attempting live crawl, authenticated automation, broad extraction, or multi-contract rewrites.
+ 
+ Suggested prerequisite task text:
+ 
+-- [ ] Add a syntax-first public source inventory validator skeleton that emits deterministic finding reasons for allowlist, private DevHub path, unsafe artifact field, raw body field, credential field, and missing provenance checks using only committed fixtures.
++- [ ] Add a syntax-first source freshness contract skeleton that compiles with `py_compile` and exposes deterministic classification constants before adding the full source freshness fixture.
+ 
+ ## Forbidden Recovery Paths
+ 
+-The supervisor must not ask the daemon to recover checkbox-49 by creating or committing any of the following:
++The supervisor must not ask the daemon to recover a blocked or failing task by creating or committing any of the following:
+ 
+ - Private DevHub session files.
+ - Auth state.
+@@ -85,6 +135,26 @@
+ - Live DevHub automation.
+ - CAPTCHA, MFA, account creation, payment, submission, certification, cancellation, official upload, or inspection scheduling automation.
+ 
++## Acceptance Criteria For Syntax-Failure Recovery
++
++A task with repeated syntax failures may be retried only when all are true:
++
++- The next proposal is constrained to the smallest file set needed for syntax-valid repair.
++- Every changed Python file compiles with `py_compile` before broad tests.
++- Every changed TypeScript file is checked by the PP&D TypeScript command before dependent tests.
++- The proposal does not broaden scope into unrelated contracts, live crawling, DevHub automation, or report rendering.
++- The proposal keeps fixtures deterministic, redacted, committed under `ppd/tests/fixtures/`, and free of private or live artifacts.
++
++## Acceptance Criteria For Unblocking Checkbox-54
++
++Checkbox-54 may be considered unblocked only when all are true:
++
++- `ppd/contracts/source_freshness.py` compiles with py_compile.
++- The focused source-freshness tests pass without live network access.
++- Fixture examples cover stale guidance, changed content hashes, removed pages, and recrawl priority.
++- No committed fixture contains raw response bodies, credentials, trace paths, screenshot paths, downloaded document paths, private DevHub paths, or live crawl artifacts.
++- The change does not implement live recrawl behavior or authenticated DevHub automation.
++
+ ## Acceptance Criteria For Unblocking Checkbox-49
+ 
+ Checkbox-49 may be considered unblocked only when all are true:

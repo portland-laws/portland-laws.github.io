@@ -1,0 +1,82 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -92,6 +92,14 @@
+ - [x] Add a supervisor self-test fixture proving a stale blocked solar extractor retry is parked after its size guard and malformed-comparison diagnostic have both passed, so task selection can continue with the next independent `[ ]` item.
+ - [x] Add a daemon prompt preflight check that refuses to ask for the solar extractor implementation unless the prompt explicitly names the one-file, no-dataclass, syntax-sentinel-preserving, seven-record expected-output constraints.
+ - [x] Add a validation-only regression fixture that reports `no_eligible_tasks` as a supervisor programming error when all remaining work is a parked stale retry and no new fixture-first task has been appended.
++- [ ] Add a fixture-only permit-process skeleton for a demolition permit workflow using existing public fixture/source-inventory evidence only, with stages, required facts, required documents, file rules, fee/payment gates, inspection or finalization gates, and citation-backed action gates.
++- [ ] Add a minimal demolition permit requirement extraction expected-output fixture with exactly seven category records: eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections/finalization, and explicit-confirmation gates, all source-backed and redacted.
++- [ ] Add a one-file syntax-first import test for `ppd.extraction.demolition_permit_requirements` that imports only that module and fails malformed Python before broad demolition requirement validation runs.
++- [ ] Add a focused validation test for demolition permit requirement extraction that checks only the seven fixture categories, source evidence IDs, confidence bounds, deduplication, and explicit stop-gate classifications.
++- [ ] Add a one-file replacement-size guard test for `ppd.extraction.demolition_permit_requirements` proposals that rejects broad generated modules and requires the extractor implementation to stay under 180 physical lines with no dataclasses.
++- [ ] Add guardrail compiler fixture tests for the demolition permit workflow covering missing facts, required document groups, payment stop points, correction-upload stop points, and any inspection/finalization stop points, using only fixture data.
++- [ ] Add a mocked DevHub workflow snapshot fixture for demolition application draft review that records semantic selectors, required fields, upload controls, validation messages, save-for-later state, and exact confirmation gates using only redacted values.
++- [ ] Add DevHub guardrail tests proving demolition application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.
+ 
+ ## Deferred Broad Items
+ 
+@@ -99,7 +107,7 @@
+ 
+ - Parked source freshness broad task: Add a source freshness fixture that classifies stale PP&D guidance, changed content hashes, removed pages, and recrawl priority without performing a live recrawl.
+ - Parked source freshness renderer task: Add a fixture-only change report renderer for public PP&D source freshness results that summarizes changed requirements, new or removed links, and affected permit-process fixtures with citation references.
+-- Parked missing-information validator broad task: Add validation for missing-information detector output proving every requested user item is source-backed, deduplicated, action-classified, and free of private fixture values. This was recovered by the accepted one-file validator replacement and should not be selected again unless a new regression appears.
++- Parked missing-information validator broad task: Add validation for missing-information detector output proving every requested user item is source-backed, deduplicated, action-classified, and free of private fixture values. This was recovered by the accepted one-file validator replacement and should not be selected again unless a new failing validator points to a concrete regression.
+ - Parked public-source-inventory validator broad task: Add validation for public source inventory safety. This was recovered by the accepted sentinel-preserving one-file implementation. Do not select the older broad retry tasks again unless a new failing validator points to a concrete regression.
+ - Parked solar requirement extraction broad task: Add requirement extraction validation for the solar permit fixture covering eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections, and explicit-confirmation gates. This repeatedly failed with invalid Python such as `confidence 1`; recover through the syntax-first import test, seven-record fixture, no-dataclass extractor, and focused validation test before retrying any broader behavior.
+ - Parked checkbox-78: Add the solar permit requirement extractor as a no-dataclass one-file implementation only after the syntax-first import test and seven-record fixture pass; expose plain functions/constants and avoid broad contract rewrites. This task has failed repeatedly with `py_compile` SyntaxError variants including `confidence 1.0` and `return 0.0 list[str]`. Do not keep it in selectable checkbox form; resume only through the new size guard, malformed-comparison diagnostic, and narrowed retry task.
+@@ -124,7 +132,7 @@
+ 
+ Parked broad tasks should not stop unrelated PP&D progress. Broad failed work belongs in Deferred Broad Items, not in selectable checkbox form, while any independent `[ ]` fixture-first or validation-first task remains selectable.
+ 
+-The next tranche should stay fixture-only and validation-first: supervisor/task-selection recovery before implementation retry, prompt preflight before generated code, coverage reporting before new process extraction, and mocked payment-readiness fixtures before any payment-related guardrail behavior. No task in this tranche authorizes live crawling, login, payment entry, submission, upload, certification, cancellation, or inspection scheduling.
++The next tranche should stay fixture-only and validation-first: public process fixtures before extractors, syntax-first import tests before Python implementation, size guards before generated modules, mocked DevHub snapshots before browser behavior, and guardrail tests before any irreversible action support. No task in this tranche authorizes live crawling, login, payment entry, submission, upload, certification, cancellation, or inspection scheduling.
+ 
+ When no independent task is active, prefer recovery tasks in this order:
+ 
+@@ -136,6 +144,7 @@
+ 6. After a later narrower recovery passes, park earlier blocked retries as superseded so they do not count as active blockers.
+ 7. Do not select parked broad validation tasks directly.
+ 8. For solar requirement extraction, do not select parked checkbox-78 or parked checkbox-81 directly; first prove prompt preflight includes the exact one-file, no-dataclass, syntax-sentinel, seven-record fixture constraints.
++9. For new permit-family work, add the process skeleton and expected-output fixture before adding extractor tests or implementation tasks.
+ 
+ Each recovery proposal should keep to one file unless the task explicitly requires a fixture plus its focused test. For public source inventory recovery, keep syntax sentinel repair separate from behavior repair, and keep the sentinel helper stable even after validator functions are added.
+ 
+@@ -152,34 +161,14 @@
+ - Prefer deterministic fixtures and validation-only changes before adding live crawl, authenticated DevHub, browser, or network behavior.
+ - Do not create private DevHub session files, auth state, traces, raw crawl output, screenshots, or downloaded documents in repair cycles.
+ 
+-## Generated Status
+-
+-Last updated: 2026-05-01T23:18:00Z
+-
+-- Latest target: `Supervisor repair: park stale blocked checkbox-81 solar extractor retry and append daemon recovery tasks.`
+-- Latest result: `supervisor_repair`
+-- Latest summary: Parked checkbox-81 outside selectable checklist form and appended validation-first daemon recovery tasks so the worker can resume meaningful progress.
+-- Counts: `{"blocked": 0, "complete": 83, "in_progress": 0, "needed": 3}`
+-
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T23:18:00Z
++Last updated: 2026-05-01T23:32:30Z
+ 
+-- Latest target: `Supervisor repair: park stale blocked checkbox-81 solar extractor retry and append daemon recovery tasks.`
++- Latest target: `Supervisor repair: append next fixture-first PP&D permit-family tranche after no eligible tasks remained.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Parked checkbox-81 outside selectable checklist form and appended validation-first daemon recovery tasks so the worker can resume meaningful progress.
+-- Counts: `{"blocked": 0, "complete": 83, "in_progress": 0, "needed": 3}`
++- Latest summary: Added eight narrow demolition-permit fixture, validation, syntax-guard, guardrail, and mocked DevHub tasks so the daemon can continue without live or authenticated automation.
++- Counts: `{"blocked": 0, "complete": 86, "in_progress": 0, "needed": 8}`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-01T23:25:05.255299Z
+-
+-- Latest target: `Task checkbox-86: Add a validation-only regression fixture that reports `no_eligible_tasks` as a supervisor programming error when all remaining work is a parked stale retry and no new fixture-first task has been appended.`
+-- Latest result: `accepted`
+-- Latest summary: Add validation-only regression coverage for stale parked retry exhaustion being a supervisor error, not normal no_eligible_tasks.
+-- Counts: `{"blocked": 0, "complete": 86, "in_progress": 0, "needed": 0}`
+-
+-<!-- ppd-daemon-task-board:end -->

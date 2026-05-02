@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/extraction/demolition_permit_requirements.py",
+    "ppd/tests/test_demolition_permit_requirements_syntax_first.py"
+  ],
+  "created_at": "2026-05-01T23:40:55.242213Z",
+  "impact": "This lets PP&D validation fail immediately on malformed Python in ppd.extraction.demolition_permit_requirements before any broader demolition requirement validation is introduced or resumed.",
+  "summary": "Add a narrow syntax-first import sentinel for demolition permit requirements extraction.",
+  "target_task": "Task checkbox-89: Add a one-file syntax-first import test for `ppd.extraction.demolition_permit_requirements` that imports only that module and fails malformed Python before broad demolition requirement validation runs.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 94 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "......................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 201 tests in 0.024s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

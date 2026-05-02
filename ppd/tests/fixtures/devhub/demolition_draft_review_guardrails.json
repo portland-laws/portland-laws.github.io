@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "sessionId": "fixture-session-demolition-2026-05-01",
+  "permitType": "demolition_application",
+  "workflowState": "draft_review",
+  "redactionStatus": "fixture_only_no_private_values",
+  "actions": [
+    {
+      "actionId": "preview_draft_review",
+      "label": "Preview demolition application draft review",
+      "classification": "read_only_preview",
+      "userConfirmation": "",
+      "expectedAllowed": true
+    },
+    {
+      "actionId": "official_upload",
+      "label": "Upload demolition application package to DevHub",
+      "classification": "consequential",
+      "userConfirmation": "CONFIRM fixture-session-other official_upload",
+      "expectedAllowed": false
+    },
+    {
+      "actionId": "certify_application",
+      "label": "Certify demolition application statements",
+      "classification": "consequential",
+      "userConfirmation": "CONFIRM fixture-session-demolition-2026-05-01 certify",
+      "expectedAllowed": false
+    },
+    {
+      "actionId": "submit_application",
+      "label": "Submit demolition application",
+      "classification": "consequential",
+      "userConfirmation": "submit it",
+      "expectedAllowed": false
+    },
+    {
+      "actionId": "pay_fees",
+      "label": "Pay demolition permit fees",
+      "classification": "financial",
+      "userConfirmation": "CONFIRM fixture-session-demolition-2026-05-01 submit_application",
+      "expectedAllowed": false
+    },
+    {
+      "actionId": "cancel_application",
+      "label": "Cancel demolition application request",
+      "classification": "consequential",
+      "userConfirmation": "",
+      "expectedAllowed": false
+    },
+    {
+      "actionId": "schedule_inspection",
+      "label": "Schedule demolition inspection",
+      "classification": "consequential",
+      "userConfirmation": "CONFIRM fixture-session-demolition-2026-05-01 schedule inspections",
+      "expectedAllowed": false
+    }
+  ]
+}

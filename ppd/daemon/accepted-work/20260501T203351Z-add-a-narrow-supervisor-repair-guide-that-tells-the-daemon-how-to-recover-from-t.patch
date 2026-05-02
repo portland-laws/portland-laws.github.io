@@ -1,0 +1,89 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,53 +1,50 @@
+ # PP&D Supervisor Repair Guide
+ 
+-This guide is for repair cycles when the isolated PP&D daemon stops making useful autonomous progress.
++## Purpose
+ 
+-## Syntax Failure Recovery
++This guide records narrow recovery rules for PP&D daemon cycles after validation or syntax failures. It is operational guidance for task selection, retry shaping, and supervisor diagnostics only. It must not implement PP&D domain contracts directly.
+ 
+-When a recent failed patch includes `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128`, treat the target task as too broad for the next daemon cycle.
++## Current Recovery Focus
+ 
+-Required supervisor action:
++The daemon has two nearby failure modes:
+ 
+-1. Do not retry the same broad task immediately.
+-2. Mark the broad task `[!]` if it has failed repeatedly or is already blocking dependent work.
+-3. Append narrow recovery tasks in this order:
+-   - a syntax-first import or compile test for the affected module only.
+-   - a minimal fixture task with the smallest representative fixture set.
+-   - the smallest implementation task that satisfies that fixture.
+-4. Keep recovery proposals to one or two files unless a focused test plus fixture is explicitly needed.
+-5. Resume unrelated fixture-first or validation-first tasks while blocked broad tasks remain parked.
++- `ppd.contracts.missing_information_output_validation` failed when a syntax-probe import loaded the module through `importlib.util.spec_from_file_location` without first registering it in `sys.modules`. Python `dataclass` processing can fail in that mode. Recovery work should avoid `@dataclass` in syntax-probed contract modules unless the test loader is explicitly changed first.
++- `ppd.contracts.source_freshness` failed after a retry removed `SOURCE_FRESHNESS_CONTRACT_VERSION`, which the syntax-first probe already expects. Recovery work must preserve probe-required public constants and minimal import contracts before adding classifier behavior.
+ 
+-## Missing-Information Output Recovery
++## Retry Rules After Syntax Or Import Failures
+ 
+-The missing-information detector output validator must not be selected directly while recent proposals are failing Python syntax preflight.
++When recent daemon results include `SyntaxError`, `py_compile`, or import-probe errors:
+ 
+-Use this order instead:
++1. Select the smallest repair task that restores syntactic validity and importability.
++2. Edit the fewest possible files.
++3. Prefer one contract module plus, only when needed, one focused test file.
++4. Run `py_compile` or the existing syntax-first import test before broad fixture tests.
++5. Do not add broad contract rewrites, new fixture directories, or unrelated tests in the same retry.
++6. Do not use `@dataclass` in modules that are imported by syntax probes using `spec.loader.exec_module(module)` unless the probe inserts the module into `sys.modules` before execution.
++7. Preserve existing public constants that syntax tests assert, especially `*_CONTRACT_VERSION` constants.
++8. Preserve completed task-board entries and append only narrow new tasks when planning is needed.
+ 
+-1. Add a one-file syntax-first import test for `ppd.contracts.missing_information_output_validation`.
+-2. Add a four-item missing-information output fixture only after the import test passes.
+-3. Add the smallest missing-information output validator only after the fixture passes.
++## Missing-Information Validator Recovery Shape
+ 
+-The four-item fixture should include exactly one fact request, one file request, one acknowledgment request, and one decision request. Each item must be source-backed, deduplicated, action-classified, and redacted. It must not contain private fixture values, credentials, auth state, traces, screenshots, raw crawl output, downloaded documents, or live DevHub artifacts.
++For the blocked missing-information output validator task, the next worker attempt should be shaped as follows:
+ 
+-## Source Freshness Recovery
++- Keep `ppd/contracts/missing_information_output_validation.py` as a small plain-Python module.
++- Avoid dataclasses, complex annotations, generated regex strings, and broad helper hierarchies.
++- Export a version constant and one validation function with deterministic return data.
++- Validate only the already committed four-item redacted fixture first.
++- Prove four behaviors only: each requested item is source-backed, duplicates are rejected, action classes are allowed, and private-looking values are rejected.
++- Do not add live crawl, DevHub, browser, auth, raw response, or private-value artifacts.
+ 
+-The source-freshness classifier and dependent change-report renderer must not be selected directly while the classifier remains blocked by Python syntax failures.
++## Source-Freshness Recovery Shape
+ 
+-Use this order instead:
++For the active source-freshness classifier task, the next worker attempt should be shaped as follows:
+ 
+-1. Add a one-file syntax-first import test for `ppd.contracts.source_freshness`.
+-2. Add a four-record source freshness fixture only after the import test passes.
+-3. Add the smallest source freshness classifier only after the fixture passes.
+-4. Add the change-report renderer only after the classifier passes validation.
++- Keep `SOURCE_FRESHNESS_CONTRACT_VERSION = 1` in `ppd/contracts/source_freshness.py`.
++- Keep the module importable under the existing syntax probe before adding classifier logic.
++- Use plain dictionaries and simple functions rather than dataclasses.
++- Cover only the committed four-record fixture: stale guidance, changed hash, removed page, and high-priority recrawl candidate.
++- Do not perform live network fetches or persist raw response bodies.
+ 
+-The four-record fixture should include exactly one stale guidance page, one changed content hash, one removed page, and one high-priority recrawl candidate. It must not contain live fetch output, raw response bodies, downloaded documents, DevHub auth state, traces, screenshots, or private values.
++## Supervisor Diagnostic Rule
+ 
+-## Task Selection Rule
+-
+-A `[!]` task is not selectable while any independent `[ ]` fixture-first or validation-first task remains. Dependent tasks stay parked until their recovery prerequisites pass.
+-
+-When both missing-information output recovery and source-freshness recovery are available, prefer the missing-information recovery sequence first because it is the latest active failed target. After it passes, resume source-freshness recovery in syntax-first order.
+-
+-## Safety Boundary
+-
+-Repair cycles must not create private DevHub session files, auth state, traces, screenshots, raw crawl output, downloaded documents, live crawl artifacts, payments, uploads, submissions, certifications, cancellations, account creation, MFA automation, or CAPTCHA automation.
++If the same task fails validation twice with the same root cause, the supervisor should block that task and insert a recovery task immediately before it. The recovery task should name the exact failed public symbol, syntax guard, or import mode that must be preserved before the original task can resume.

@@ -1,0 +1,318 @@
+--- a/ppd/tests/fixtures/expected_outputs/fcc_wireless_application_requirements.json
++++ b/ppd/tests/fixtures/expected_outputs/fcc_wireless_application_requirements.json
+@@ -0,0 +1,164 @@
++{
++  "fixture_id": "fcc-wireless-application-requirements-expected-output-v1",
++  "permit_type": "fcc_wireless_application",
++  "source_scope": "public_ppd_and_devhub_guidance",
++  "redaction_policy": "No applicant, property, account, contact, project, credential, browser, payment-card, or portal-state values are present.",
++  "records": [
++    {
++      "category": "eligibility",
++      "requirement_id": "fcc-wireless-eligibility-001",
++      "type": "precondition",
++      "subject": "applicant",
++      "action": "select",
++      "object": "FCC wireless application request type",
++      "requirement_text": "Use the FCC wireless application path only when the proposed work is a wireless facility application handled through PP&D or DevHub guidance for that request type.",
++      "redacted_values": ["applicant_name", "site_address", "account_identifier", "project_description"],
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/apply-permit-or-request-online-devhub",
++          "source_title": "Apply for a permit or request online through Development Hub PDX",
++          "source_detail": "Public DevHub application guidance lists FCC wireless applications among request types available through the online permitting flow.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        }
++      ]
++    },
++    {
++      "category": "plan-review applicability",
++      "requirement_id": "fcc-wireless-plan-review-001",
++      "type": "dependency",
++      "subject": "applicant",
++      "action": "prepare",
++      "object": "plan-review submittal package when required by PP&D review",
++      "requirement_text": "Treat the FCC wireless application as a request that may require PP&D review before issuance; the applicant should preserve a plan-review checkpoint until PP&D guidance or staff review confirms the exact review path.",
++      "redacted_values": ["parcel_number", "site_address", "scope_narrative"],
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/apply-permit-or-request-online-devhub",
++          "source_title": "Apply for a permit or request online through Development Hub PDX",
++          "source_detail": "The public application guidance separates online request types and includes request flows that require review before permit issuance.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        },
++        {
++          "source_url": "https://www.portland.gov/ppd/development-hub-pdx-devhub-help",
++          "source_title": "Development Hub PDX help",
++          "source_detail": "Public DevHub help describes permit requests requiring plan review as a supported service category.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        }
++      ]
++    },
++    {
++      "category": "upload requirements",
++      "requirement_id": "fcc-wireless-uploads-001",
++      "type": "obligation",
++      "subject": "applicant",
++      "action": "upload",
++      "object": "application materials and supporting documents requested for review",
++      "requirement_text": "Upload the application materials and supporting documents requested for the FCC wireless application; keep drawings, application forms, calculations, and supporting documents separated when the public guidance calls for separate PDF groups.",
++      "redacted_values": ["uploaded_file_name", "drawing_sheet_title", "engineer_name", "owner_signature"],
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/apply-permit-or-request-online-devhub",
++          "source_title": "Apply for a permit or request online through Development Hub PDX",
++          "source_detail": "Public DevHub application guidance identifies online request submission and document upload as part of supported application workflows.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        },
++        {
++          "source_url": "https://www.portland.gov/ppd/single-pdf-process",
++          "source_title": "Single PDF Process",
++          "source_detail": "Public PP&D guidance says drawing plans may be one searchable PDF while applications, calculations, and supporting documents are separate PDFs when the Single PDF Process applies.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        }
++      ]
++    },
++    {
++      "category": "fee/payment checkpoints",
++      "requirement_id": "fcc-wireless-fees-001",
++      "type": "action_gate",
++      "subject": "agent",
++      "action": "stop_before_payment",
++      "object": "fee payment or payment-detail entry",
++      "requirement_text": "Fees may be presented after intake, review, or another PP&D checkpoint; an automated assistant may summarize the payment checkpoint but must not enter payment details or pay fees without exact user approval for that payment action.",
++      "redacted_values": ["invoice_number", "payment_amount", "card_number", "billing_contact"],
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/development-hub-pdx-devhub-help",
++          "source_title": "Development Hub PDX help",
++          "source_detail": "Public DevHub FAQ lists fee payments as a supported service category.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        },
++        {
++          "source_url": "https://www.portland.gov/ppd/apply-permit-or-request-online-devhub",
++          "source_title": "Apply for a permit or request online through Development Hub PDX",
++          "source_detail": "Public DevHub application guidance routes online permit and request workflows through DevHub, where payment checkpoints can appear for applicable services.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        }
++      ]
++    },
++    {
++      "category": "corrections",
++      "requirement_id": "fcc-wireless-corrections-001",
++      "type": "obligation",
++      "subject": "applicant",
++      "action": "respond_to_corrections",
++      "object": "PP&D correction requests and revised documents",
++      "requirement_text": "When PP&D issues corrections or checksheets for the FCC wireless application, the applicant must provide revised materials through the correction upload path identified by DevHub or PP&D guidance.",
++      "redacted_values": ["checksheets_text", "reviewer_name", "revised_file_name", "comment_response"],
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/development-hub-pdx-devhub-help",
++          "source_title": "Development Hub PDX help",
++          "source_detail": "Public DevHub FAQ lists correction uploads as a supported service category.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        }
++      ]
++    },
++    {
++      "category": "inspections/finalization",
++      "requirement_id": "fcc-wireless-finalization-001",
++      "type": "dependency",
++      "subject": "applicant",
++      "action": "complete",
++      "object": "applicable final review, issuance, and inspection or closeout steps",
++      "requirement_text": "After review approval, follow PP&D or DevHub closeout instructions for permit issuance, finalization, and any applicable inspection scheduling or completion steps before treating the request as complete.",
++      "redacted_values": ["permit_number", "inspection_result", "contact_phone", "site_contact"],
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/development-hub-pdx-devhub-help",
++          "source_title": "Development Hub PDX help",
++          "source_detail": "Public DevHub FAQ lists inspection scheduling for online trade permits and permit workflow support as service categories; finalization remains a PP&D process checkpoint for applicable permits.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        },
++        {
++          "source_url": "https://www.portland.gov/ppd/apply-permit-or-request-online-devhub",
++          "source_title": "Apply for a permit or request online through Development Hub PDX",
++          "source_detail": "Public DevHub application guidance identifies DevHub as the online system for permit and request workflows, including post-submittal status handling.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        }
++      ]
++    },
++    {
++      "category": "explicit-confirmation gates",
++      "requirement_id": "fcc-wireless-confirmation-001",
++      "type": "action_gate",
++      "subject": "agent",
++      "action": "pause_before_consequential_action",
++      "object": "official submit, certify, correction upload, inspection scheduling, cancellation, or payment action",
++      "requirement_text": "An automated assistant may prepare a preview for an FCC wireless application, but must pause before official submission, certification, correction upload, inspection scheduling, cancellation, or payment until the user gives exact approval for that action.",
++      "redacted_values": ["user_confirmation_phrase", "application_identifier", "payment_reference", "official_upload_file"],
++      "evidence": [
++        {
++          "source_url": "https://www.portland.gov/ppd/development-hub-pdx-devhub-help",
++          "source_title": "Development Hub PDX help",
++          "source_detail": "Public DevHub help identifies uploads, fee payments, and other permit workflow actions as portal services with practical consequences for the applicant.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        },
++        {
++          "source_url": "https://www.portland.gov/ppd/apply-permit-or-request-online-devhub",
++          "source_title": "Apply for a permit or request online through Development Hub PDX",
++          "source_detail": "Public DevHub application guidance places FCC wireless applications in the online request workflow, so consequential workflow actions require user-controlled confirmation gates.",
++          "captured_at": "2026-05-01T00:00:00Z"
++        }
++      ]
++    }
++  ]
++}
+--- a/ppd/tests/test_fcc_wireless_application_expected_output.py
++++ b/ppd/tests/test_fcc_wireless_application_expected_output.py
+@@ -0,0 +1,148 @@
++"""Validate the FCC wireless application expected-output fixture."""
++
++from __future__ import annotations
++
++import json
++import re
++import unittest
++from pathlib import Path
++from urllib.parse import urlparse
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "expected_outputs"
++    / "fcc_wireless_application_requirements.json"
++)
++
++EXPECTED_CATEGORIES = [
++    "eligibility",
++    "plan-review applicability",
++    "upload requirements",
++    "fee/payment checkpoints",
++    "corrections",
++    "inspections/finalization",
++    "explicit-confirmation gates",
++]
++
++ALLOWED_HOSTS = {
++    "www.portland.gov",
++    "devhub.portlandoregon.gov",
++    "www.portlandoregon.gov",
++    "www.portlandmaps.com",
++}
++
++FORBIDDEN_KEYS = {
++    "body",
++    "raw_body",
++    "rawBody",
++    "response_body",
++    "responseBody",
++    "html",
++    "screenshot",
++    "trace",
++    "cookie",
++    "password",
++    "token",
++    "secret",
++}
++
++FORBIDDEN_VALUE_PATTERNS = [
++    re.compile(pattern, re.IGNORECASE)
++    for pattern in (
++        r"BEGIN PRIVATE KEY",
++        r"sk-[a-z0-9]",
++        r"password\s*[:=]",
++        r"cookie\s*[:=]",
++        r"bearer\s+[a-z0-9._-]+",
++        r"\b\d{3}-\d{2}-\d{4}\b",
++        r"\b(?:\d[ -]*?){13,19}\b",
++        r"[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}",
++    )
++]
++
++
++class FccWirelessApplicationExpectedOutputTest(unittest.TestCase):
++    maxDiff = None
++
++    def load_fixture(self):
++        with FIXTURE_PATH.open("r", encoding="utf-8") as handle:
++            return json.load(handle)
++
++    def test_fixture_has_exactly_seven_ordered_categories(self):
++        fixture = self.load_fixture()
++        records = fixture["records"]
++
++        self.assertEqual(7, len(records))
++        self.assertEqual(EXPECTED_CATEGORIES, [record["category"] for record in records])
++        self.assertEqual(len(EXPECTED_CATEGORIES), len({record["category"] for record in records}))
++
++    def test_records_are_source_backed(self):
++        fixture = self.load_fixture()
++
++        for record in fixture["records"]:
++            with self.subTest(category=record["category"]):
++                self.assertTrue(record["requirement_id"].startswith("fcc-wireless-"))
++                self.assertIn(record["type"], {"action_gate", "dependency", "obligation", "precondition"})
++                self.assertTrue(record["requirement_text"].strip())
++                self.assertGreaterEqual(len(record.get("evidence", [])), 1)
++                for evidence in record["evidence"]:
++                    parsed = urlparse(evidence["source_url"])
++                    self.assertEqual("https", parsed.scheme)
++                    self.assertIn(parsed.netloc, ALLOWED_HOSTS)
++                    self.assertTrue(evidence["source_title"].strip())
++                    self.assertTrue(evidence["source_detail"].strip())
++                    self.assertRegex(evidence["captured_at"], r"^2026-05-01T00:00:00Z$")
++
++    def test_fixture_is_redacted_and_commit_safe(self):
++        fixture = self.load_fixture()
++        self.assertEqual(
++            "No applicant, property, account, contact, project, credential, browser, payment-card, or portal-state values are present.",
++            fixture["redaction_policy"],
++        )
++
++        self.assert_no_forbidden_keys_or_values(fixture)
++        for record in fixture["records"]:
++            with self.subTest(category=record["category"]):
++                self.assertGreaterEqual(len(record.get("redacted_values", [])), 1)
++                for value in record["redacted_values"]:
++                    self.assertRegex(value, r"^[a-z0-9_]+$")
++
++    def test_explicit_confirmation_gate_stops_consequential_actions(self):
++        fixture = self.load_fixture()
++        gate = fixture["records"][-1]
++
++        self.assertEqual("explicit-confirmation gates", gate["category"])
++        self.assertEqual("action_gate", gate["type"])
++        self.assertEqual("agent", gate["subject"])
++        for required_phrase in (
++            "official submission",
++            "certification",
++            "correction upload",
++            "inspection scheduling",
++            "cancellation",
++            "payment",
++            "exact approval",
++        ):
++            self.assertIn(required_phrase, gate["requirement_text"])
++
++    def assert_no_forbidden_keys_or_values(self, value, path="fixture"):
++        if isinstance(value, dict):
++            for key, item in value.items():
++                self.assertNotIn(key, FORBIDDEN_KEYS, f"forbidden key at {path}.{key}")
++                self.assert_no_forbidden_keys_or_values(item, f"{path}.{key}")
++            return
++
++        if isinstance(value, list):
++            for index, item in enumerate(value):
++                self.assert_no_forbidden_keys_or_values(item, f"{path}[{index}]")
++            return
++
++        if isinstance(value, str):
++            for pattern in FORBIDDEN_VALUE_PATTERNS:
++                self.assertIsNone(pattern.search(value), f"forbidden private-looking value at {path}")
++
++
++if __name__ == "__main__":
++    unittest.main()

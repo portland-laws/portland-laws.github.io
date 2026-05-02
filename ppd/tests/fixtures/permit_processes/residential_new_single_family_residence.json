@@ -1,0 +1,895 @@
+{
+  "process": {
+    "id": "residential_new_single_family_residence",
+    "name": "Residential New Single-Family Residence Permit Workflow",
+    "permitTypes": [
+      "building_permit",
+      "new_single_family_residence"
+    ],
+    "sourceIds": [
+      "ppd-new-single-family-residence-guidance",
+      "ppd-devhub-apply-guidance",
+      "ppd-single-pdf-process-guidance",
+      "ppd-devhub-faq"
+    ],
+    "stages": [
+      {
+        "id": "research-property-and-scope",
+        "name": "Research property and project scope",
+        "kind": "pre_application_research",
+        "sequence": 10,
+        "description": "Confirm the site, proposed residential work, applicable property constraints, and whether the project is a new single-family residence before preparing an application package.",
+        "entryConditions": [],
+        "exitConditions": [
+          "property_identified",
+          "residential_project_scope_identified"
+        ],
+        "nextStageIds": [
+          "prepare-submittal-package"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-new-single-family-residence-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/permits/new-single-family-residence-permits",
+            "anchorId": "overview",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Public PP&D residential permit guidance identifies new single-family residence permits as a residential building permit workflow."
+          }
+        ]
+      },
+      {
+        "id": "prepare-submittal-package",
+        "name": "Prepare application, plans, calculations, and supporting documents",
+        "kind": "document_preparation",
+        "sequence": 20,
+        "description": "Prepare the application materials, searchable drawing plan PDF, structural or energy calculations when applicable, and supporting documents required for plan review.",
+        "entryConditions": [
+          "property_identified",
+          "residential_project_scope_identified"
+        ],
+        "exitConditions": [
+          "application_information_ready",
+          "drawing_plan_pdf_ready",
+          "supporting_documents_ready"
+        ],
+        "nextStageIds": [
+          "create-or-use-devhub-account"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-single-pdf-process-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/single-pdf-process",
+            "anchorId": "single-pdf-process-submittals",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Public guidance says projects using the Single PDF Process submit drawing plans as one searchable PDF and applications, calculations, and supporting documents as separate PDFs."
+          }
+        ]
+      },
+      {
+        "id": "create-or-use-devhub-account",
+        "name": "Create or use DevHub account",
+        "kind": "account_setup",
+        "sequence": 30,
+        "description": "Use DevHub with PortlandOregon.gov credentials for online permitting services; automation fixtures only record public workflow requirements and do not create accounts or authenticate.",
+        "entryConditions": [
+          "application_information_ready"
+        ],
+        "exitConditions": [
+          "devhub_account_available_or_user_handles_account_setup"
+        ],
+        "nextStageIds": [
+          "select-permit-request-type"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-faq",
+            "sourceUrl": "https://www.portland.gov/ppd/devhub-pdx-help",
+            "anchorId": "devhub-account",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Public DevHub guidance identifies DevHub as Portland's online permitting system and says PortlandOregon.gov credentials are used for authenticated services."
+          }
+        ]
+      },
+      {
+        "id": "select-permit-request-type",
+        "name": "Select building permit request type",
+        "kind": "permit_type_selection",
+        "sequence": 40,
+        "description": "Choose the building permit request path for a new single-family residence or detached accessory dwelling unit when that is the matching project type.",
+        "entryConditions": [
+          "devhub_account_available_or_user_handles_account_setup"
+        ],
+        "exitConditions": [
+          "new_single_family_residence_request_type_selected"
+        ],
+        "nextStageIds": [
+          "enter-application-data"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-apply-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/apply-devhub-permit",
+            "anchorId": "permit-request-types",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Public application guidance lists building permits and new single-family residence or detached ADU permits among DevHub request types."
+          }
+        ]
+      },
+      {
+        "id": "enter-application-data",
+        "name": "Enter application data",
+        "kind": "application_data_entry",
+        "sequence": 50,
+        "description": "Enter applicant, owner, contractor, property, valuation, occupancy, and project-description information needed for review.",
+        "entryConditions": [
+          "new_single_family_residence_request_type_selected"
+        ],
+        "exitConditions": [
+          "required_application_fields_complete"
+        ],
+        "nextStageIds": [
+          "upload-submittal-documents"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-apply-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/apply-devhub-permit",
+            "anchorId": "apply-online",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Public DevHub application guidance describes permit requests requiring plan review through the online permitting workflow."
+          }
+        ]
+      },
+      {
+        "id": "upload-submittal-documents",
+        "name": "Upload submittal documents",
+        "kind": "upload",
+        "sequence": 60,
+        "description": "Upload the drawing plan PDF and separate application, calculation, and supporting-document PDFs in the required document groups.",
+        "entryConditions": [
+          "required_application_fields_complete",
+          "drawing_plan_pdf_ready",
+          "supporting_documents_ready"
+        ],
+        "exitConditions": [
+          "required_document_groups_uploaded"
+        ],
+        "nextStageIds": [
+          "review-acknowledgments-and-submit"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-single-pdf-process-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/single-pdf-process",
+            "anchorId": "file-standards",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Single PDF Process guidance separates drawing plans from application, calculation, and supporting PDFs."
+          }
+        ]
+      },
+      {
+        "id": "review-acknowledgments-and-submit",
+        "name": "Review acknowledgments and submit request",
+        "kind": "submission",
+        "sequence": 70,
+        "description": "The applicant reviews acknowledgments or certifications and submits the official permit request only after explicit confirmation.",
+        "entryConditions": [
+          "required_document_groups_uploaded"
+        ],
+        "exitConditions": [
+          "official_request_submitted"
+        ],
+        "nextStageIds": [
+          "prescreen-and-intake"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-apply-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/apply-devhub-permit",
+            "anchorId": "submit-request",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Public DevHub guidance treats online application submission as part of the permit request workflow."
+          }
+        ]
+      },
+      {
+        "id": "prescreen-and-intake",
+        "name": "Prescreen and intake",
+        "kind": "prescreen_intake",
+        "sequence": 80,
+        "description": "PP&D reviews the submitted package for intake completeness before routing to plan review or requesting corrections.",
+        "entryConditions": [
+          "official_request_submitted"
+        ],
+        "exitConditions": [
+          "intake_accepted_or_corrections_requested"
+        ],
+        "nextStageIds": [
+          "pay-required-fees",
+          "respond-to-corrections"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-faq",
+            "sourceUrl": "https://www.portland.gov/ppd/devhub-pdx-help",
+            "anchorId": "permit-requests-requiring-plan-review",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Public DevHub FAQ identifies permit requests requiring plan review and fee payment services."
+          }
+        ]
+      },
+      {
+        "id": "pay-required-fees",
+        "name": "Pay required fees",
+        "kind": "fee_payment",
+        "sequence": 90,
+        "description": "Pay intake, review, issuance, or other required fees only after the user has explicitly authorized the payment action for the session.",
+        "entryConditions": [
+          "fee_notice_available"
+        ],
+        "exitConditions": [
+          "required_fees_paid_or_user_handles_payment"
+        ],
+        "nextStageIds": [
+          "plan-review"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-faq",
+            "sourceUrl": "https://www.portland.gov/ppd/devhub-pdx-help",
+            "anchorId": "fee-payments",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Public DevHub FAQ lists fee payments as an online permitting service category."
+          }
+        ]
+      },
+      {
+        "id": "plan-review",
+        "name": "Plan review",
+        "kind": "plan_review",
+        "sequence": 100,
+        "description": "PP&D plan reviewers evaluate the residential building permit submittal; unresolved review comments may produce checksheets or correction requests.",
+        "entryConditions": [
+          "intake_accepted_or_corrections_requested",
+          "required_fees_paid_or_user_handles_payment"
+        ],
+        "exitConditions": [
+          "approved_or_corrections_requested"
+        ],
+        "nextStageIds": [
+          "respond-to-corrections",
+          "approval-and-issuance"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-faq",
+            "sourceUrl": "https://www.portland.gov/ppd/devhub-pdx-help",
+            "anchorId": "correction-uploads",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Public DevHub FAQ lists correction uploads as part of online permit services."
+          }
+        ]
+      },
+      {
+        "id": "respond-to-corrections",
+        "name": "Respond to corrections",
+        "kind": "corrections",
+        "sequence": 110,
+        "description": "Prepare correction responses and revised PDFs, then upload official correction materials only with explicit user confirmation.",
+        "entryConditions": [
+          "corrections_requested"
+        ],
+        "exitConditions": [
+          "correction_response_uploaded_or_user_handles_upload"
+        ],
+        "nextStageIds": [
+          "plan-review"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-faq",
+            "sourceUrl": "https://www.portland.gov/ppd/devhub-pdx-help",
+            "anchorId": "correction-uploads",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Public DevHub FAQ identifies correction upload services for online permit workflows."
+          }
+        ]
+      },
+      {
+        "id": "approval-and-issuance",
+        "name": "Approval and issuance",
+        "kind": "approval_issuance",
+        "sequence": 120,
+        "description": "After required reviews and fees are resolved, the permit may be approved and issued for work to proceed under permit conditions.",
+        "entryConditions": [
+          "approved_or_corrections_requested"
+        ],
+        "exitConditions": [
+          "permit_issued"
+        ],
+        "nextStageIds": [
+          "inspections"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-new-single-family-residence-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/permits/new-single-family-residence-permits",
+            "anchorId": "permit-review-and-issuance",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Residential building permit guidance describes PP&D review before permit issuance."
+          }
+        ]
+      },
+      {
+        "id": "inspections",
+        "name": "Inspections",
+        "kind": "inspections",
+        "sequence": 130,
+        "description": "Schedule and complete required inspections after issuance; automation must stop before scheduling unless the user gives exact confirmation.",
+        "entryConditions": [
+          "permit_issued"
+        ],
+        "exitConditions": [
+          "required_inspections_complete"
+        ],
+        "nextStageIds": [
+          "closeout-or-expiration"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-faq",
+            "sourceUrl": "https://www.portland.gov/ppd/devhub-pdx-help",
+            "anchorId": "inspection-scheduling",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Public DevHub FAQ lists inspection scheduling for online trade permits; this residential fixture treats scheduling as consequential and user-confirmed when available."
+          }
+        ]
+      },
+      {
+        "id": "closeout-or-expiration",
+        "name": "Closeout, expiration, extension, or reactivation",
+        "kind": "expiration_extension_reactivation",
+        "sequence": 140,
+        "description": "Track final approval, closeout status, and any expiration, extension, or reactivation path that may apply to the issued residential permit.",
+        "entryConditions": [
+          "permit_issued"
+        ],
+        "exitConditions": [
+          "permit_closed_or_followup_path_identified"
+        ],
+        "nextStageIds": [],
+        "evidence": [
+          {
+            "sourceId": "ppd-new-single-family-residence-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/permits/new-single-family-residence-permits",
+            "anchorId": "permit-status",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Permit lifecycle tracking belongs to the residential permit workflow after issuance and inspections."
+          }
+        ]
+      }
+    ],
+    "requiredFacts": [
+      {
+        "id": "property-address-or-r-number",
+        "label": "Property address or property identifier",
+        "kind": "property",
+        "required": true,
+        "description": "The permit request needs the property location or identifier for the proposed residence.",
+        "appliesWhen": [
+          "all_new_single_family_residence_requests"
+        ],
+        "sourceStageIds": [
+          "research-property-and-scope",
+          "enter-application-data"
+        ],
+        "validationHint": "Ask for the site address or public property identifier; do not store private owner contact values in committed fixtures.",
+        "containsPrivateOrUserSpecificData": true,
+        "evidence": [
+          {
+            "sourceId": "ppd-new-single-family-residence-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/permits/new-single-family-residence-permits",
+            "anchorId": "property-information",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Residential permit guidance is property-specific and requires site identification."
+          }
+        ]
+      },
+      {
+        "id": "project-description-and-scope",
+        "label": "Project description and scope",
+        "kind": "project_scope",
+        "required": true,
+        "description": "Describe the proposed new residence, detached ADU relationship when applicable, and major construction scope.",
+        "appliesWhen": [
+          "all_new_single_family_residence_requests"
+        ],
+        "sourceStageIds": [
+          "research-property-and-scope",
+          "enter-application-data"
+        ],
+        "validationHint": "Ask for a concise scope summary sufficient to route the request and document checklist.",
+        "containsPrivateOrUserSpecificData": true,
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-apply-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/apply-devhub-permit",
+            "anchorId": "permit-request-types",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "DevHub application guidance routes request types based on project type."
+          }
+        ]
+      },
+      {
+        "id": "applicant-contact",
+        "label": "Applicant contact information",
+        "kind": "applicant",
+        "required": true,
+        "description": "Applicant identity and contact details are required in the live application, but committed fixtures must keep values redacted or absent.",
+        "appliesWhen": [
+          "all_online_permit_requests"
+        ],
+        "sourceStageIds": [
+          "enter-application-data"
+        ],
+        "validationHint": "Ask the user for the value during a real case; do not include the value in fixture JSON.",
+        "containsPrivateOrUserSpecificData": true,
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-apply-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/apply-devhub-permit",
+            "anchorId": "apply-online",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Online application data entry requires applicant information in the authenticated workflow."
+          }
+        ]
+      },
+      {
+        "id": "owner-information",
+        "label": "Owner information",
+        "kind": "owner",
+        "required": true,
+        "description": "Owner information is needed for the permit record and authorization context.",
+        "appliesWhen": [
+          "all_new_single_family_residence_requests"
+        ],
+        "sourceStageIds": [
+          "enter-application-data"
+        ],
+        "validationHint": "Collect from the user only in the case workspace, not in committed fixtures.",
+        "containsPrivateOrUserSpecificData": true,
+        "evidence": [
+          {
+            "sourceId": "ppd-new-single-family-residence-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/permits/new-single-family-residence-permits",
+            "anchorId": "application-information",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Residential building permit applications require project-party information."
+          }
+        ]
+      },
+      {
+        "id": "contractor-license-if-contractor",
+        "label": "Contractor license information when a contractor performs the work",
+        "kind": "license",
+        "required": false,
+        "description": "Contractor license details are conditional when the application identifies a contractor rather than owner-performed work.",
+        "appliesWhen": [
+          "contractor_named_on_application"
+        ],
+        "sourceStageIds": [
+          "enter-application-data"
+        ],
+        "validationHint": "Ask whether a contractor is involved and collect license details only when applicable.",
+        "containsPrivateOrUserSpecificData": true,
+        "evidence": [
+          {
+            "sourceId": "ppd-new-single-family-residence-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/permits/new-single-family-residence-permits",
+            "anchorId": "contractor-information",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Residential permit application data can include contractor and license details."
+          }
+        ]
+      },
+      {
+        "id": "estimated-project-valuation",
+        "label": "Estimated project valuation",
+        "kind": "valuation",
+        "required": true,
+        "description": "Estimated valuation supports fee assessment and review routing for the building permit request.",
+        "appliesWhen": [
+          "all_new_single_family_residence_requests"
+        ],
+        "sourceStageIds": [
+          "enter-application-data",
+          "pay-required-fees"
+        ],
+        "validationHint": "Ask for the project valuation or cost basis before fee-related steps.",
+        "containsPrivateOrUserSpecificData": true,
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-faq",
+            "sourceUrl": "https://www.portland.gov/ppd/devhub-pdx-help",
+            "anchorId": "fee-payments",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Fee payment is part of the DevHub service set; valuation is a typical fee input for building permits."
+          }
+        ]
+      }
+    ],
+    "requiredDocuments": [
+      {
+        "id": "building-permit-application-pdf",
+        "name": "Building permit application PDF",
+        "kind": "application_form",
+        "required": true,
+        "description": "Application information must be provided through the online workflow and supporting application PDF where required by the selected permit path.",
+        "appliesWhen": [
+          "all_new_single_family_residence_requests"
+        ],
+        "acceptedFileTypes": [
+          "application/pdf"
+        ],
+        "sourceStageIds": [
+          "prepare-submittal-package",
+          "upload-submittal-documents"
+        ],
+        "singlePdfProcessRole": "separate_application_or_form_pdf",
+        "requiresSignature": true,
+        "evidence": [
+          {
+            "sourceId": "ppd-single-pdf-process-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/single-pdf-process",
+            "anchorId": "applications-separate-pdfs",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Single PDF Process guidance keeps applications separate from the drawing plan PDF."
+          }
+        ]
+      },
+      {
+        "id": "single-drawing-plan-pdf",
+        "name": "Single searchable drawing plan PDF",
+        "kind": "drawing_plan",
+        "required": true,
+        "description": "Drawing sheets for the residence are grouped into one searchable PDF when the Single PDF Process applies.",
+        "appliesWhen": [
+          "single_pdf_process_applies"
+        ],
+        "acceptedFileTypes": [
+          "application/pdf"
+        ],
+        "sourceStageIds": [
+          "prepare-submittal-package",
+          "upload-submittal-documents"
+        ],
+        "singlePdfProcessRole": "one_searchable_drawing_plan_pdf",
+        "requiresSignature": false,
+        "evidence": [
+          {
+            "sourceId": "ppd-single-pdf-process-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/single-pdf-process",
+            "anchorId": "drawing-plans-one-searchable-pdf",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Public guidance says drawing plans are one searchable PDF in the Single PDF Process."
+          }
+        ]
+      },
+      {
+        "id": "structural-calculations-pdf",
+        "name": "Structural calculations PDF when applicable",
+        "kind": "calculation",
+        "required": false,
+        "description": "Structural calculations are submitted as a separate PDF when the project design requires them.",
+        "appliesWhen": [
+          "structural_calculations_required_by_design_or_review"
+        ],
+        "acceptedFileTypes": [
+          "application/pdf"
+        ],
+        "sourceStageIds": [
+          "prepare-submittal-package",
+          "upload-submittal-documents",
+          "plan-review"
+        ],
+        "singlePdfProcessRole": "separate_calculation_pdf",
+        "requiresSignature": false,
+        "evidence": [
+          {
+            "sourceId": "ppd-single-pdf-process-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/single-pdf-process",
+            "anchorId": "calculations-separate-pdfs",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Single PDF Process guidance treats calculations as separate PDFs from the drawing plan file."
+          }
+        ]
+      },
+      {
+        "id": "energy-or-code-compliance-documents",
+        "name": "Energy or code compliance supporting documents",
+        "kind": "report",
+        "required": false,
+        "description": "Energy, code compliance, site, or technical reports are included as separate supporting PDFs when applicable to the new residence.",
+        "appliesWhen": [
+          "supporting_report_required_by_project_scope_or_review"
+        ],
+        "acceptedFileTypes": [
+          "application/pdf"
+        ],
+        "sourceStageIds": [
+          "prepare-submittal-package",
+          "upload-submittal-documents"
+        ],
+        "singlePdfProcessRole": "separate_supporting_document_pdf",
+        "requiresSignature": false,
+        "evidence": [
+          {
+            "sourceId": "ppd-single-pdf-process-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/single-pdf-process",
+            "anchorId": "supporting-documents-separate-pdfs",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Single PDF Process guidance separates supporting documents from the drawing plan PDF."
+          }
+        ]
+      },
+      {
+        "id": "correction-response-pdf",
+        "name": "Correction response and revised plan PDFs",
+        "kind": "correction_response",
+        "required": false,
+        "description": "When reviewers issue corrections, upload response materials and revised PDFs through the correction path after user confirmation.",
+        "appliesWhen": [
+          "corrections_requested"
+        ],
+        "acceptedFileTypes": [
+          "application/pdf"
+        ],
+        "sourceStageIds": [
+          "respond-to-corrections"
+        ],
+        "singlePdfProcessRole": "separate_correction_response_pdf",
+        "requiresSignature": false,
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-faq",
+            "sourceUrl": "https://www.portland.gov/ppd/devhub-pdx-help",
+            "anchorId": "correction-uploads",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Public DevHub FAQ identifies correction uploads as an online service category."
+          }
+        ]
+      }
+    ],
+    "fileRules": [
+      {
+        "id": "plans-one-searchable-pdf",
+        "description": "Drawing plans are submitted as one searchable PDF when the Single PDF Process applies.",
+        "appliesToDocumentIds": [
+          "single-drawing-plan-pdf"
+        ],
+        "allowedMimeTypes": [
+          "application/pdf"
+        ],
+        "mustBeSearchable": true,
+        "mustBeSeparateFromDocumentIds": [
+          "building-permit-application-pdf",
+          "structural-calculations-pdf",
+          "energy-or-code-compliance-documents"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-single-pdf-process-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/single-pdf-process",
+            "anchorId": "drawing-plans-one-searchable-pdf",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Single PDF Process guidance requires drawing plans as one searchable PDF."
+          }
+        ]
+      },
+      {
+        "id": "applications-calculations-supporting-documents-separate-pdfs",
+        "description": "Applications, calculations, and supporting documents are separate PDFs rather than bundled into the drawing plan file.",
+        "appliesToDocumentIds": [
+          "building-permit-application-pdf",
+          "structural-calculations-pdf",
+          "energy-or-code-compliance-documents",
+          "correction-response-pdf"
+        ],
+        "allowedMimeTypes": [
+          "application/pdf"
+        ],
+        "mustBeSearchable": false,
+        "mustBeSeparateFromDocumentIds": [
+          "single-drawing-plan-pdf"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-single-pdf-process-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/single-pdf-process",
+            "anchorId": "applications-calculations-supporting-documents",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Single PDF Process guidance lists applications, calculations, and supporting documents as separate PDFs."
+          }
+        ]
+      }
+    ],
+    "feePaymentGates": [
+      {
+        "id": "fee-notice-before-payment",
+        "stageId": "pay-required-fees",
+        "description": "Do not attempt payment until a fee notice or payment step is available for the permit request.",
+        "blocksUntil": [
+          "fee_notice_available",
+          "user_reviews_fee_amount"
+        ],
+        "classification": "financial",
+        "requiredConfirmation": "I confirm I want to pay the listed fees for this residential permit request in this DevHub session.",
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-faq",
+            "sourceUrl": "https://www.portland.gov/ppd/devhub-pdx-help",
+            "anchorId": "fee-payments",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Public DevHub FAQ lists fee payments as an online service category."
+          }
+        ]
+      },
+      {
+        "id": "issuance-fees-before-permit-issued",
+        "stageId": "approval-and-issuance",
+        "description": "Issuance or remaining fees are a financial stop point before relying on the permit as issued.",
+        "blocksUntil": [
+          "all_required_issuance_fees_resolved"
+        ],
+        "classification": "financial",
+        "requiredConfirmation": "I confirm I want to pay the listed issuance or remaining fees for this residential permit request in this DevHub session.",
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-faq",
+            "sourceUrl": "https://www.portland.gov/ppd/devhub-pdx-help",
+            "anchorId": "fee-payments",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Fee payment is a public DevHub service and is treated as financial."
+          }
+        ]
+      }
+    ],
+    "actionGates": [
+      {
+        "id": "draft-field-entry-preview",
+        "name": "Preview reversible draft field entries",
+        "kind": "draft_edit",
+        "classification": "reversible_draft_edit",
+        "description": "Draft field entry may be previewed with source-backed user facts before any live workflow changes.",
+        "requiredConfirmation": null,
+        "blocksUntil": [
+          "source_backed_user_fact_available"
+        ],
+        "prohibitedWithoutConfirmation": false,
+        "sourceStageIds": [
+          "enter-application-data"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-apply-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/apply-devhub-permit",
+            "anchorId": "apply-online",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Application data entry is part of the online request workflow; this fixture permits only reversible draft previews."
+          }
+        ]
+      },
+      {
+        "id": "official-document-upload-confirmation",
+        "name": "Official document upload confirmation",
+        "kind": "official_upload",
+        "classification": "potentially_consequential",
+        "description": "Uploading official application or correction documents must stop for exact user confirmation.",
+        "requiredConfirmation": "I confirm I want to upload these residential permit documents in this DevHub session.",
+        "blocksUntil": [
+          "required_document_groups_uploaded_or_user_handles_upload"
+        ],
+        "prohibitedWithoutConfirmation": true,
+        "sourceStageIds": [
+          "upload-submittal-documents",
+          "respond-to-corrections"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-faq",
+            "sourceUrl": "https://www.portland.gov/ppd/devhub-pdx-help",
+            "anchorId": "correction-uploads",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Correction uploads and permit-request document uploads are official workflow actions and are treated as consequential."
+          }
+        ]
+      },
+      {
+        "id": "submit-application-confirmation",
+        "name": "Submit permit application confirmation",
+        "kind": "submission",
+        "classification": "potentially_consequential",
+        "description": "Submitting the permit request is an official action and requires exact user confirmation.",
+        "requiredConfirmation": "I confirm I want to submit this residential permit application in this DevHub session.",
+        "blocksUntil": [
+          "required_application_fields_complete",
+          "required_document_groups_uploaded",
+          "acknowledgments_reviewed"
+        ],
+        "prohibitedWithoutConfirmation": true,
+        "sourceStageIds": [
+          "review-acknowledgments-and-submit"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-apply-guidance",
+            "sourceUrl": "https://www.portland.gov/ppd/apply-devhub-permit",
+            "anchorId": "submit-request",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Online permit application submission is part of the DevHub permit request workflow."
+          }
+        ]
+      },
+      {
+        "id": "payment-confirmation",
+        "name": "Payment confirmation",
+        "kind": "payment",
+        "classification": "financial",
+        "description": "Fee payment is financial and must never be automated without exact session-specific confirmation.",
+        "requiredConfirmation": "I confirm I want to pay the listed fees for this residential permit request in this DevHub session.",
+        "blocksUntil": [
+          "fee_notice_available",
+          "user_reviews_fee_amount"
+        ],
+        "prohibitedWithoutConfirmation": true,
+        "sourceStageIds": [
+          "pay-required-fees",
+          "approval-and-issuance"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-faq",
+            "sourceUrl": "https://www.portland.gov/ppd/devhub-pdx-help",
+            "anchorId": "fee-payments",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Public DevHub FAQ lists fee payments; the fixture classifies payment as financial."
+          }
+        ]
+      },
+      {
+        "id": "inspection-scheduling-confirmation",
+        "name": "Inspection scheduling confirmation",
+        "kind": "inspection_scheduling",
+        "classification": "potentially_consequential",
+        "description": "Inspection scheduling changes the permit workflow and must stop for exact user confirmation.",
+        "requiredConfirmation": "I confirm I want to schedule the selected inspection for this residential permit in this DevHub session.",
+        "blocksUntil": [
+          "permit_issued",
+          "inspection_type_selected"
+        ],
+        "prohibitedWithoutConfirmation": true,
+        "sourceStageIds": [
+          "inspections"
+        ],
+        "evidence": [
+          {
+            "sourceId": "ppd-devhub-faq",
+            "sourceUrl": "https://www.portland.gov/ppd/devhub-pdx-help",
+            "anchorId": "inspection-scheduling",
+            "capturedAt": "2026-05-01T00:00:00Z",
+            "note": "Public DevHub FAQ lists inspection scheduling; this fixture treats scheduling as consequential."
+          }
+        ]
+      }
+    ],
+    "formalRequirementIds": [
+      "residential_nsfr_has_property_identifier",
+      "residential_nsfr_has_application_data",
+      "residential_nsfr_has_single_drawing_plan_pdf",
+      "residential_nsfr_supporting_documents_separate_pdfs",
+      "residential_nsfr_payment_requires_exact_confirmation",
+      "residential_nsfr_submission_requires_exact_confirmation",
+      "residential_nsfr_inspection_scheduling_requires_exact_confirmation"
+    ]
+  }
+}

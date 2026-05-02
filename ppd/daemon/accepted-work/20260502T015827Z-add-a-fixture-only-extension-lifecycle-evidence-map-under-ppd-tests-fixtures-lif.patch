@@ -1,0 +1,47 @@
+--- a/ppd/tests/fixtures/lifecycle/extension_lifecycle_evidence_map.json
++++ b/ppd/tests/fixtures/lifecycle/extension_lifecycle_evidence_map.json
+@@ -0,0 +1,44 @@
++{
++  "schemaVersion": 1,
++  "fixtureType": "ppd_lifecycle_extension_evidence_map",
++  "sourceInventoryFixture": "ppd/tests/fixtures/source_inventory/permit_lifecycle_source_coverage_report.json",
++  "generatedFrom": "accepted_fixture_only_source_inventory",
++  "categories": [
++    {
++      "categoryId": "permit_extension_guidance",
++      "lifecycleAction": "extension",
++      "description": "Evidence map for permit extension lifecycle guidance. This fixture maps extension-only lifecycle work to committed public source inventory evidence and does not define a process model.",
++      "sourceInventoryEvidenceIds": [
++        "permit_extension_guidance"
++      ],
++      "requiredCitationFields": [
++        "id",
++        "title",
++        "sourceUrl",
++        "canonicalUrl",
++        "authorityLabel",
++        "recrawlCadence",
++        "capturedAt"
++      ],
++      "excludedArtifacts": [
++        "process_model_implementation_code",
++        "python_modules",
++        "typescript_modules",
++        "live_crawl_output",
++        "private_devhub_session_state",
++        "browser_traces",
++        "screenshots",
++        "downloaded_documents",
++        "credentials"
++      ],
++      "automationBoundary": {
++        "liveCrawling": false,
++        "devhubLogin": false,
++        "officialExtensionAction": false,
++        "paymentAction": false,
++        "submissionAction": false,
++        "uploadAction": false
++      }
++    }
++  ]
++}

@@ -1,0 +1,244 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "permit_lifecycle_missing_information_expected_output_minimal_v1",
+  "fixtureKind": "lifecycle_missing_information_expected_output",
+  "generatedFrom": "accepted_lifecycle_process_skeleton_fixtures_only",
+  "fixtureOnly": true,
+  "redactionPolicy": {
+    "containsPrivateDevHubData": false,
+    "containsCredentials": false,
+    "containsRawResponseBodies": false,
+    "containsScreenshotsOrTraces": false,
+    "containsDownloadedDocuments": false,
+    "placeholderValue": "[REDACTED]",
+    "redactedFields": [
+      "applicant_name",
+      "property_address",
+      "permit_number",
+      "devhub_account_identifier",
+      "payment_method",
+      "inspection_contact",
+      "site_access_details"
+    ]
+  },
+  "acceptedCategoryIds": [
+    "extension_eligibility",
+    "reactivation_eligibility",
+    "cancellation_eligibility",
+    "refund_eligibility",
+    "inspection_scheduling",
+    "inspection_result_follow_up",
+    "fee_payment_checkpoints",
+    "explicit_confirmation_gates"
+  ],
+  "deduplicationKey": [
+    "categoryId",
+    "neededItemId"
+  ],
+  "allowedClassifications": [
+    "read-only",
+    "draft-preview",
+    "consequential-stop",
+    "financial-stop"
+  ],
+  "missingInformationRecords": [
+    {
+      "categoryId": "extension_eligibility",
+      "categoryLabel": "Extension eligibility",
+      "neededItemId": "extension_permit_status",
+      "neededItemType": "redacted_user_fact",
+      "promptTarget": "current permit status or lifecycle state for extension eligibility review",
+      "redactedValue": "[REDACTED]",
+      "classification": "read-only",
+      "stopBeforeOfficialAction": false,
+      "sourceBackedBy": [
+        {
+          "processSkeletonFixturePath": "ppd/tests/fixtures/lifecycle/extension_lifecycle_process_skeleton.json",
+          "skeletonFieldPath": "requiredFacts[].id=permit_status",
+          "evidenceIds": [
+            "ppd_lifecycle_extension_reactivation_public_guidance"
+          ],
+          "supportingGateIds": [
+            "extension_guidance_lookup_gate"
+          ]
+        }
+      ]
+    },
+    {
+      "categoryId": "reactivation_eligibility",
+      "categoryLabel": "Reactivation eligibility",
+      "neededItemId": "reactivation_reason",
+      "neededItemType": "redacted_user_fact",
+      "promptTarget": "reason the permit holder is requesting reactivation",
+      "redactedValue": "[REDACTED]",
+      "classification": "draft-preview",
+      "stopBeforeOfficialAction": false,
+      "sourceBackedBy": [
+        {
+          "processSkeletonFixturePath": "ppd/tests/fixtures/lifecycle/reactivation_lifecycle_process_skeleton.json",
+          "skeletonFieldPath": "requiredFacts[].id=reactivation_reason",
+          "evidenceIds": [
+            "ppd_lifecycle_extension_reactivation_public_guidance"
+          ],
+          "supportingGateIds": [
+            "reactivation_draft_preparation_gate"
+          ]
+        }
+      ]
+    },
+    {
+      "categoryId": "cancellation_eligibility",
+      "categoryLabel": "Cancellation eligibility",
+      "neededItemId": "cancellation_exact_user_confirmation",
+      "neededItemType": "redacted_user_decision",
+      "promptTarget": "exact session-specific confirmation before official permit cancellation",
+      "redactedValue": "[REDACTED]",
+      "classification": "consequential-stop",
+      "stopBeforeOfficialAction": true,
+      "sourceBackedBy": [
+        {
+          "processSkeletonFixturePath": "ppd/tests/fixtures/lifecycle/cancellation_refund_lifecycle_process_skeleton.json",
+          "skeletonFieldPath": "userDecisions[].id=confirm_official_cancellation_action",
+          "evidenceIds": [
+            "ppd_lifecycle_cancellation_public_guidance"
+          ],
+          "supportingGateIds": [
+            "official_cancellation_submission_gate",
+            "stop_before_official_cancellation"
+          ]
+        }
+      ]
+    },
+    {
+      "categoryId": "refund_eligibility",
+      "categoryLabel": "Refund eligibility",
+      "neededItemId": "refund_basis",
+      "neededItemType": "redacted_user_fact",
+      "promptTarget": "reason the permit holder believes a refund should be evaluated",
+      "redactedValue": "[REDACTED]",
+      "classification": "financial-stop",
+      "stopBeforeOfficialAction": true,
+      "sourceBackedBy": [
+        {
+          "processSkeletonFixturePath": "ppd/tests/fixtures/lifecycle/cancellation_refund_lifecycle_process_skeleton.json",
+          "skeletonFieldPath": "requiredFacts[].id=refund_basis",
+          "evidenceIds": [
+            "ppd_lifecycle_refund_public_guidance"
+          ],
+          "supportingGateIds": [
+            "refund_submission_financial_gate",
+            "official_refund_submission_gate"
+          ]
+        }
+      ]
+    },
+    {
+      "categoryId": "inspection_scheduling",
+      "categoryLabel": "Inspection scheduling",
+      "neededItemId": "inspection_type_requested_or_resulted",
+      "neededItemType": "redacted_user_fact",
+      "promptTarget": "inspection type requested before any scheduling preview or official scheduling action",
+      "redactedValue": "[REDACTED]",
+      "classification": "consequential-stop",
+      "stopBeforeOfficialAction": true,
+      "sourceBackedBy": [
+        {
+          "processSkeletonFixturePath": "ppd/tests/fixtures/lifecycle/inspection_scheduling_result_follow_up_lifecycle_process_skeleton.json",
+          "skeletonFieldPath": "processSkeleton.requiredFacts[].factId=inspection_type_requested_or_resulted",
+          "evidenceIds": [
+            "permit_lifecycle_source_inventory:devhub_faq_inspection_scheduling_online_trade_permits",
+            "permit_lifecycle_source_inventory:inspection_scheduling_guidance"
+          ],
+          "supportingGateIds": [
+            "preview_inspection_scheduling_steps_only",
+            "stop_before_official_inspection_scheduling"
+          ]
+        }
+      ]
+    },
+    {
+      "categoryId": "inspection_result_follow_up",
+      "categoryLabel": "Inspection-result follow-up",
+      "neededItemId": "latest_inspection_result_status",
+      "neededItemType": "redacted_user_fact",
+      "promptTarget": "latest inspection result status for closeout, correction, rescheduling, or PP&D follow-up routing",
+      "redactedValue": "[REDACTED]",
+      "classification": "draft-preview",
+      "stopBeforeOfficialAction": false,
+      "sourceBackedBy": [
+        {
+          "processSkeletonFixturePath": "ppd/tests/fixtures/lifecycle/inspection_scheduling_result_follow_up_lifecycle_process_skeleton.json",
+          "skeletonFieldPath": "processSkeleton.requiredFacts[].factId=latest_inspection_result_status",
+          "evidenceIds": [
+            "permit_lifecycle_source_inventory:inspection_result_guidance"
+          ],
+          "supportingGateIds": [
+            "preview_inspection_result_follow_up_only"
+          ]
+        }
+      ]
+    },
+    {
+      "categoryId": "fee_payment_checkpoints",
+      "categoryLabel": "Fee/payment checkpoints",
+      "neededItemId": "payment_or_fee_status",
+      "neededItemType": "redacted_user_fact",
+      "promptTarget": "fee or payment status needed before any financial checkpoint can be evaluated",
+      "redactedValue": "[REDACTED]",
+      "classification": "financial-stop",
+      "stopBeforeOfficialAction": true,
+      "sourceBackedBy": [
+        {
+          "processSkeletonFixturePath": "ppd/tests/fixtures/lifecycle/cancellation_refund_lifecycle_process_skeleton.json",
+          "skeletonFieldPath": "feePaymentGates[].id=cancellation_fee_or_payment_gate",
+          "evidenceIds": [
+            "ppd_lifecycle_cancellation_public_guidance",
+            "ppd_lifecycle_refund_public_guidance"
+          ],
+          "supportingGateIds": [
+            "cancellation_fee_or_payment_gate",
+            "stop_before_payment_details_or_fee_payment"
+          ]
+        }
+      ]
+    },
+    {
+      "categoryId": "explicit_confirmation_gates",
+      "categoryLabel": "Explicit-confirmation gates",
+      "neededItemId": "exact_action_confirmation",
+      "neededItemType": "redacted_user_decision",
+      "promptTarget": "exact current-session confirmation naming the official lifecycle action before execution",
+      "redactedValue": "[REDACTED]",
+      "classification": "consequential-stop",
+      "stopBeforeOfficialAction": true,
+      "sourceBackedBy": [
+        {
+          "processSkeletonFixturePath": "ppd/tests/fixtures/lifecycle/cancellation_refund_lifecycle_process_skeleton.json",
+          "skeletonFieldPath": "explicitStopGates[].id=stop_before_official_cancellation",
+          "evidenceIds": [
+            "ppd_lifecycle_cancellation_public_guidance",
+            "ppd_lifecycle_refund_public_guidance"
+          ],
+          "supportingGateIds": [
+            "stop_before_official_cancellation",
+            "stop_before_official_refund_request"
+          ]
+        }
+      ]
+    }
+  ],
+  "fixtureBoundaries": {
+    "liveCrawling": false,
+    "devhubLogin": false,
+    "officialExtensionAction": false,
+    "officialReactivationAction": false,
+    "officialCancellationAction": false,
+    "officialRefundAction": false,
+    "inspectionSchedulingAction": false,
+    "paymentAction": false,
+    "submissionAction": false,
+    "uploadAction": false,
+    "certificationAction": false,
+    "captchaOrMfaAutomation": false
+  }
+}

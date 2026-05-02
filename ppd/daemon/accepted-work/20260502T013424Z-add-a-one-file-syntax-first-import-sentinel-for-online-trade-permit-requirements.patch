@@ -1,0 +1,73 @@
+--- a/ppd/tests/test_online_trade_permit_requirements_syntax_first.py
++++ b/ppd/tests/test_online_trade_permit_requirements_syntax_first.py
+@@ -1,39 +1,47 @@
++"""Syntax-first sentinel for online trade permit requirement extraction.
++
++This test intentionally checks only ppd/extraction/online_trade_permit_requirements.py.
++It compiles the target source before importing it so malformed Python fails before
++broader online trade permit validation can run.
++"""
++
++from __future__ import annotations
++
+ import importlib.util
+ import py_compile
+-import sys
+ import unittest
+ from pathlib import Path
+ 
+ 
+-REPO_ROOT = Path(__file__).resolve().parents[2]
+-TARGET_PATH = REPO_ROOT / "ppd" / "extraction" / "online_trade_permit_requirements.py"
+-MODULE_NAME = "ppd.extraction.online_trade_permit_requirements"
++TARGET_MODULE_NAME = "ppd.extraction.online_trade_permit_requirements"
++TARGET_MODULE_PATH = (
++    Path(__file__).resolve().parent.parent
++    / "extraction"
++    / "online_trade_permit_requirements.py"
++)
+ 
+ 
+ class OnlineTradePermitRequirementsSyntaxFirstTest(unittest.TestCase):
+-    def test_online_trade_permit_requirements_compiles_and_imports_alone(self):
+-        if not TARGET_PATH.exists():
+-            self.skipTest(
+-                "ppd.extraction.online_trade_permit_requirements is not implemented yet; "
+-                "syntax-first guard becomes active when that one module is added"
+-            )
++    def test_online_trade_permit_requirements_imports_after_py_compile(self) -> None:
++        if not TARGET_MODULE_PATH.exists():
++            self.skipTest(f"{TARGET_MODULE_NAME} is not present yet")
+ 
+-        py_compile.compile(str(TARGET_PATH), doraise=True)
++        try:
++            py_compile.compile(str(TARGET_MODULE_PATH), doraise=True)
++        except py_compile.PyCompileError as exc:
++            self.fail(f"{TARGET_MODULE_NAME} contains malformed Python: {exc.msg}")
+ 
+-        spec = importlib.util.spec_from_file_location(MODULE_NAME, TARGET_PATH)
+-        self.assertIsNotNone(spec)
+-        self.assertIsNotNone(spec.loader)
++        spec = importlib.util.spec_from_file_location(
++            TARGET_MODULE_NAME,
++            TARGET_MODULE_PATH,
++        )
++        self.assertIsNotNone(spec, f"could not create import spec for {TARGET_MODULE_NAME}")
++        self.assertIsNotNone(spec.loader, f"missing loader for {TARGET_MODULE_NAME}")
+ 
+         module = importlib.util.module_from_spec(spec)
+-        previous_module = sys.modules.get(MODULE_NAME)
+-        sys.modules[MODULE_NAME] = module
+-        try:
+-            spec.loader.exec_module(module)
+-        finally:
+-            if previous_module is None:
+-                sys.modules.pop(MODULE_NAME, None)
+-            else:
+-                sys.modules[MODULE_NAME] = previous_module
++        spec.loader.exec_module(module)
++
++        self.assertEqual(module.__name__, TARGET_MODULE_NAME)
+ 
+ 
+ if __name__ == "__main__":

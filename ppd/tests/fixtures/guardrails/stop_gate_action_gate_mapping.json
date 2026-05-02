@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "guardrail-stop-gate-to-action-gate-single-pdf-process",
+  "mappings": [
+    {
+      "processStopGate": {
+        "stopGateId": "stop-gate-single-pdf-process-file-format-review",
+        "processId": "synthetic-public-ppd-building-permit-process",
+        "sourceEvidenceIds": [
+          "ppd-public-devhub-single-pdf-process",
+          "ppd-public-devhub-permit-request-plan-review"
+        ]
+      },
+      "agentActionGate": {
+        "actionGateId": "action-gate-review-single-pdf-readiness",
+        "mappedFromStopGateId": "stop-gate-single-pdf-process-file-format-review",
+        "actionClass": "safe_read_only",
+        "consequenceSummary": "The agent may inspect the public-only checklist state and explain that drawing plans should be prepared as one searchable PDF before the user proceeds to a permit request that requires plan review.",
+        "sourceEvidenceIds": [
+          "ppd-public-devhub-single-pdf-process",
+          "ppd-public-devhub-permit-request-plan-review"
+        ]
+      }
+    }
+  ]
+}

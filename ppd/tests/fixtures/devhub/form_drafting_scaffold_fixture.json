@@ -1,0 +1,70 @@
+{
+  "fixtureId": "mock-devhub-form-draft-001",
+  "fixtureSource": "mocked_devhub_fixture",
+  "environment": "mocked",
+  "workflowStateId": "trade-permit-plan-review-draft",
+  "urlState": "https://devhub.portlandoregon.gov/mock/permits/trade-plan-review/draft",
+  "fields": [
+    {
+      "fieldId": "project_description",
+      "kind": "textarea",
+      "required": true,
+      "reversible": true,
+      "currentValue": "[REDACTED]",
+      "sourceRequirementId": "trade-plan-review-required-fact-project-description",
+      "selectorBasis": {
+        "accessibleName": "Project description",
+        "labelText": "Project description",
+        "role": "textbox",
+        "nearbyHeading": "Project information",
+        "urlState": "https://devhub.portlandoregon.gov/mock/permits/trade-plan-review/draft"
+      }
+    },
+    {
+      "fieldId": "work_category",
+      "kind": "select",
+      "required": true,
+      "reversible": true,
+      "currentValue": "[REDACTED]",
+      "allowedValues": ["Electrical", "Mechanical", "Plumbing"],
+      "sourceRequirementId": "trade-plan-review-required-fact-work-category",
+      "selectorBasis": {
+        "accessibleName": "Work category",
+        "labelText": "Work category",
+        "role": "combobox",
+        "nearbyHeading": "Permit type",
+        "urlState": "https://devhub.portlandoregon.gov/mock/permits/trade-plan-review/draft"
+      }
+    },
+    {
+      "fieldId": "owner_acknowledges_draft_notice",
+      "kind": "checkbox",
+      "required": false,
+      "reversible": true,
+      "currentValue": "[REDACTED]",
+      "sourceRequirementId": "devhub-save-draft-review-notice",
+      "selectorBasis": {
+        "accessibleName": "I understand this is a draft only",
+        "labelText": "I understand this is a draft only",
+        "role": "checkbox",
+        "nearbyHeading": "Draft review",
+        "urlState": "https://devhub.portlandoregon.gov/mock/permits/trade-plan-review/draft"
+      }
+    },
+    {
+      "fieldId": "plan_upload",
+      "kind": "upload",
+      "required": true,
+      "reversible": false,
+      "currentValue": "[REDACTED]",
+      "sourceRequirementId": "trade-plan-review-required-document-plan-set",
+      "selectorBasis": {
+        "accessibleName": "Upload plan set",
+        "labelText": "Upload plan set",
+        "role": "button",
+        "nearbyHeading": "Documents",
+        "urlState": "https://devhub.portlandoregon.gov/mock/permits/trade-plan-review/draft"
+      }
+    }
+  ]
+}

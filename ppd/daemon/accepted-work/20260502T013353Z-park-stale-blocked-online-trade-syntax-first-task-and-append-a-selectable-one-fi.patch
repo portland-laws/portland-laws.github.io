@@ -1,0 +1,86 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -8,9 +8,9 @@
+ 
+ For the blocked online trade permit import-test task:
+ 
+-- Park the stale blocked checkbox outside selectable task form if a later size guard, focused validation, or guardrail task already passed.
++- Park stale blocked checkbox-121 outside selectable task form when later online trade permit focused validation, size guard, guardrail, or mocked DevHub tasks have already passed.
+ - Append a new narrow `[ ]` task instead of reselecting the blocked task directly.
+-- The next recovery task should touch one file only unless it is explicitly a fixture plus focused test pair.
++- The next recovery task must touch one test file only.
+ - A syntax-first import test for `ppd.extraction.online_trade_permit_requirements` must import only that module.
+ - If the target module does not exist yet, the import test should skip cleanly rather than fail the whole suite for a missing future implementation.
+ - If the target module exists and contains malformed Python, the import test must fail before broad online trade permit requirement validation runs.
+@@ -28,7 +28,7 @@
+ 
+ ## Recommended Next Task Text
+ 
+-Append this as a selectable task when the board is blocked by the stale online trade permit syntax-first item:
++Use this selectable task when the board is blocked by stale online trade permit checkbox-121:
+ 
+ `- [ ] Repair the online trade permit syntax-first import test as one test file only: import only ppd.extraction.online_trade_permit_requirements, skip if the module is absent, and fail malformed Python before broad online trade permit requirement validation runs.`
+ 
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -126,17 +126,18 @@
+ - [x] Add DevHub guardrail tests proving FCC wireless application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.
+ - [x] Add a fixture-only permit-process skeleton for an online trade permit purchase workflow using existing public fixture/source-inventory evidence only, with eligibility facts, trade scope, required license or contractor facts, fee/payment gates, inspection-scheduling stop points, and citation-backed action gates.
+ - [x] Add a minimal online trade permit purchase requirement extraction expected-output fixture with exactly seven category records: eligibility, trade scope, required applicant/license facts, fee/payment checkpoints, inspection scheduling, cancellation/finalization, and explicit-confirmation gates, all source-backed and redacted.
+-- [!] Add a one-file syntax-first import test for `ppd.extraction.online_trade_permit_requirements` that imports only that module and fails malformed Python before broad online trade permit requirement validation runs.
+ - [x] Add a focused validation test for online trade permit purchase requirement extraction that checks only the seven fixture categories, source evidence IDs, confidence bounds, deduplication, and explicit stop-gate classifications.
+ - [x] Add a one-file replacement-size guard test for `ppd.extraction.online_trade_permit_requirements` proposals that rejects broad generated modules and requires the extractor implementation to stay under 180 physical lines with no dataclasses.
+ - [x] Add guardrail compiler fixture tests for the online trade permit purchase workflow covering missing facts, required license or contractor facts, payment stop points, inspection-scheduling stop points, cancellation/finalization stop points, and citation-backed action gates using only fixture data.
+ - [x] Add a mocked DevHub workflow snapshot fixture for online trade permit purchase review that records semantic selectors, required fields, fee-review state, validation messages, save-for-later state, and exact confirmation gates using only redacted values.
+ - [x] Add DevHub guardrail tests proving online trade permit purchase review can produce a preview but cannot perform official purchase, certification, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.
++- [ ] Repair the online trade permit syntax-first import test as one test file only: import only `ppd.extraction.online_trade_permit_requirements`, skip if the module is absent, and fail malformed Python before broad online trade permit requirement validation runs.
+ 
+ ## Deferred Broad Items
+ 
+ These items failed as broad tasks and are intentionally not selectable while narrower recovery work remains available. Do not re-add them as selectable checklist tasks until their syntax-first and fixture-first prerequisites pass.
+ 
++- Parked checkbox-121: Add a one-file syntax-first import test for `ppd.extraction.online_trade_permit_requirements` that imports only that module and fails malformed Python before broad online trade permit requirement validation runs. This stale blocked checkbox is superseded by the new one-file repair task because later online trade permit focused validation, size guard, guardrail, and mocked DevHub tasks have already passed.
+ - Parked source freshness broad task: Add a source freshness fixture that classifies stale PP&D guidance, changed content hashes, removed pages, and recrawl priority without performing a live recrawl.
+ - Parked source freshness renderer task: Add a fixture-only change report renderer for public PP&D source freshness results that summarizes changed requirements, new or removed links, and affected permit-process fixtures with citation references.
+ - Parked missing-information validator broad task: Add validation for missing-information detector output proving every requested user item is source-backed, deduplicated, action-classified, and free of private fixture values. This was recovered by the accepted one-file validator replacement and should not be selected again unless a new failing validator points to a concrete regression.
+@@ -150,6 +151,8 @@
+ 
+ ## Deferred Repair Notes
+ 
++The online trade permit syntax-first task was stale-blocked after later online trade permit requirement validation, size guard, guardrail compiler, mocked DevHub snapshot, and DevHub guardrail tasks passed. The repair path is now a one-test-file task only: import `ppd.extraction.online_trade_permit_requirements`, skip when the future module is absent, and fail malformed Python before broad online trade permit validation can run.
++
+ The missing-information output validator was blocked by repeated invalid Python, mismatched action-classification expectations, and over-broad private-value rejection. The one-file recovery has passed. Do not retry the broad missing-information validator unless a new failing validator points to a concrete regression.
+ 
+ For the existing four-item fixture, accept the fixture's action classifications as canonical: `read_only` for fact requests, `draft_edit` for file requests, and `consequential_confirmation_required` for acknowledgment or decision gates. Treat `[REDACTED]` as the allowed committed redaction marker, including under `redactionPolicy.redactionToken`; reject private concrete values, credentials, tokens, auth state, traces, screenshots, raw response bodies, and downloaded private documents.
+@@ -177,6 +180,7 @@
+ 7. Do not select parked broad validation tasks directly.
+ 8. For solar requirement extraction, do not select parked checkbox-78 or parked checkbox-81 directly; first prove prompt preflight includes the exact one-file, no-dataclass, syntax-sentinel, seven-record fixture constraints.
+ 9. For new permit-family work, add the process skeleton and expected-output fixture before adding extractor tests or implementation tasks.
++10. For online trade permit recovery, select only the new one-test-file syntax-first repair task before any extractor implementation retry.
+ 
+ Each recovery proposal should keep to one file unless the task explicitly requires a fixture plus its focused test. For public source inventory recovery, keep syntax sentinel repair separate from behavior repair, and keep the sentinel helper stable even after validator functions are added.
+ 
+@@ -204,14 +208,14 @@
+ - Counts: `{blocked: 0, complete: 118, in_progress: 0, needed: 8}`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
++
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T01:30:37.147504Z
+-
+-- Latest target: `Task checkbox-126: Add DevHub guardrail tests proving online trade permit purchase review can produce a preview but cannot perform official purchase, certification, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.`
+-- Latest result: `accepted`
+-- Latest summary: Add fixture-backed DevHub guardrail coverage for online trade permit purchase review preview and exact session-specific confirmation gates.
+-- Counts: `{"blocked": 1, "complete": 125, "in_progress": 0, "needed": 0}`
+-
+-<!-- ppd-daemon-task-board:end -->
++Last updated: 2026-05-02T01:31:30Z
++
++- Latest target: `Supervisor repair: park stale blocked online trade syntax-first checkbox and append a one-file repair task.`
++- Latest result: `supervisor_repair`
++- Latest summary: Parked checkbox-121 outside selectable checkbox form and added a narrow one-test-file import repair task.
++- Counts: `{"blocked": 0, "complete": 125, "in_progress": 0, "needed": 1}`
++
++

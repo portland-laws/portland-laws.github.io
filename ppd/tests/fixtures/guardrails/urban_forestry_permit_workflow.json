@@ -1,0 +1,170 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "urban_forestry_permit_guardrails",
+  "permitProcess": {
+    "id": "urban_forestry_permit",
+    "permitType": "Urban Forestry permit",
+    "authoritySources": [
+      {
+        "id": "src_urban_forestry_devhub_guidance",
+        "title": "DevHub permit request guidance for Urban Forestry permits",
+        "url": "https://www.portland.gov/ppd/devhub/apply-permit",
+        "retrievedAt": "2026-05-01T00:00:00Z"
+      },
+      {
+        "id": "src_urban_forestry_tree_permit_guidance",
+        "title": "Urban Forestry tree permit guidance",
+        "url": "https://www.portland.gov/trees/treepermits",
+        "retrievedAt": "2026-05-01T00:00:00Z"
+      },
+      {
+        "id": "src_devhub_fee_payment_guidance",
+        "title": "DevHub fee payment guidance",
+        "url": "https://www.portland.gov/ppd/devhub/fees-payments",
+        "retrievedAt": "2026-05-01T00:00:00Z"
+      }
+    ],
+    "requiredFacts": [
+      {
+        "id": "fact_property_address",
+        "label": "Project property address",
+        "predicate": "has_property_address",
+        "sourceId": "src_urban_forestry_tree_permit_guidance"
+      },
+      {
+        "id": "fact_tree_location",
+        "label": "Tree location on site or in right-of-way",
+        "predicate": "has_tree_location",
+        "sourceId": "src_urban_forestry_tree_permit_guidance"
+      },
+      {
+        "id": "fact_tree_species",
+        "label": "Tree species or unknown-species notation",
+        "predicate": "has_tree_species",
+        "sourceId": "src_urban_forestry_tree_permit_guidance"
+      },
+      {
+        "id": "fact_tree_diameter",
+        "label": "Tree diameter measurement",
+        "predicate": "has_tree_diameter",
+        "sourceId": "src_urban_forestry_tree_permit_guidance"
+      },
+      {
+        "id": "fact_work_reason",
+        "label": "Reason for pruning, removal, or planting request",
+        "predicate": "has_work_reason",
+        "sourceId": "src_urban_forestry_tree_permit_guidance"
+      }
+    ],
+    "requiredDocumentGroups": [
+      {
+        "id": "doc_group_site_context",
+        "label": "Site context documents",
+        "requirement": "at_least_one",
+        "documentIds": ["doc_site_plan", "doc_tree_location_photos"],
+        "sourceId": "src_urban_forestry_tree_permit_guidance"
+      },
+      {
+        "id": "doc_group_arborist_or_condition",
+        "label": "Tree condition support",
+        "requirement": "at_least_one",
+        "documentIds": ["doc_arborist_report", "doc_condition_photos"],
+        "sourceId": "src_urban_forestry_tree_permit_guidance"
+      },
+      {
+        "id": "doc_group_replanting",
+        "label": "Replanting or mitigation plan",
+        "requirement": "required_when_removal_requested",
+        "documentIds": ["doc_replanting_plan", "doc_mitigation_statement"],
+        "sourceId": "src_urban_forestry_tree_permit_guidance"
+      }
+    ],
+    "actionGates": [
+      {
+        "id": "gate_submit_application",
+        "action": "submit_application",
+        "classification": "consequential",
+        "stopPoint": true,
+        "requiresExactConfirmation": true,
+        "sourceId": "src_urban_forestry_devhub_guidance"
+      },
+      {
+        "id": "gate_pay_fees",
+        "action": "pay_fees",
+        "classification": "financial",
+        "stopPoint": true,
+        "requiresExactConfirmation": true,
+        "sourceId": "src_devhub_fee_payment_guidance"
+      },
+      {
+        "id": "gate_upload_corrections",
+        "action": "official_correction_upload",
+        "classification": "consequential",
+        "stopPoint": true,
+        "requiresExactConfirmation": true,
+        "sourceId": "src_urban_forestry_devhub_guidance"
+      },
+      {
+        "id": "gate_schedule_inspection",
+        "action": "schedule_inspection",
+        "classification": "consequential",
+        "stopPoint": true,
+        "requiresExactConfirmation": true,
+        "sourceId": "src_urban_forestry_tree_permit_guidance"
+      },
+      {
+        "id": "gate_finalize_permit",
+        "action": "finalize_or_close_permit",
+        "classification": "consequential",
+        "stopPoint": true,
+        "requiresExactConfirmation": true,
+        "sourceId": "src_urban_forestry_tree_permit_guidance"
+      }
+    ]
+  },
+  "userCase": {
+    "id": "redacted_urban_forestry_case",
+    "knownFacts": {
+      "has_property_address": true,
+      "has_tree_location": true,
+      "has_tree_species": false,
+      "has_tree_diameter": false,
+      "has_work_reason": false
+    },
+    "availableDocuments": [
+      "doc_tree_location_photos",
+      "doc_condition_photos"
+    ],
+    "requestedActions": [
+      "draft_application",
+      "pay_fees",
+      "official_correction_upload",
+      "schedule_inspection",
+      "finalize_or_close_permit"
+    ],
+    "exactConfirmations": []
+  },
+  "expectedCompilerOutput": {
+    "missingFacts": [
+      "fact_tree_species",
+      "fact_tree_diameter",
+      "fact_work_reason"
+    ],
+    "missingDocumentGroups": [
+      "doc_group_replanting"
+    ],
+    "satisfiedDocumentGroups": [
+      "doc_group_site_context",
+      "doc_group_arborist_or_condition"
+    ],
+    "stopPoints": [
+      "gate_pay_fees",
+      "gate_upload_corrections",
+      "gate_schedule_inspection",
+      "gate_finalize_permit"
+    ],
+    "allowedActions": [
+      "draft_application"
+    ]
+  }
+}

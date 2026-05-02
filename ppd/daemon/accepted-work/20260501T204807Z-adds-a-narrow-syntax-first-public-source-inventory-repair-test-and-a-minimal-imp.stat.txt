@@ -1,0 +1,2 @@
+ppd/contracts/public_source_inventory.py
+ppd/tests/test_public_source_inventory_syntax_first.py

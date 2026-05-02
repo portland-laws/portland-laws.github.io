@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/contracts/source_freshness.py"
+  ],
+  "created_at": "2026-05-01T20:34:57.092686Z",
+  "impact": "This unblocks the source freshness recovery path by giving the syntax-first import test a valid module and providing deterministic classification for stale guidance, changed hashes, removed pages, and high-priority recrawl candidates without live crawling or raw response data.",
+  "summary": "Add a small fixture-friendly PP&D source freshness classifier module with the required contract version constant.",
+  "target_task": "Task checkbox-62: Add the source freshness classifier in the smallest possible Python module after the import test and four-record fixture pass, covering stale guidance, changed hashes, removed pages, and recrawl priority.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 66 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................................................................... ---------------------------------------------------------------------- Ran 132 tests in 0.016s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

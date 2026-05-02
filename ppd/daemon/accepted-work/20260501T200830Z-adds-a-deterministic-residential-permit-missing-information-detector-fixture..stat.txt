@@ -1,0 +1,1 @@
+ppd/tests/fixtures/missing_information/residential_permit_missing_information_detector.json

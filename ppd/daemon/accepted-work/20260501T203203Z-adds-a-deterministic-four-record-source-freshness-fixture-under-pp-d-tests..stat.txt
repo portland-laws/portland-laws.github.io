@@ -1,0 +1,1 @@
+ppd/tests/fixtures/source_freshness/minimal_source_freshness.json

@@ -1,0 +1,356 @@
+{
+  "schemaVersion": 1,
+  "snapshotId": "devhub-online-trade-permit-purchase-review-redacted-v1",
+  "workflow": "online_trade_permit_purchase_review",
+  "capturedFrom": "mocked_devhub_fixture_only",
+  "redactionPolicy": "all applicant, property, contractor, permit, contact, payment, and project values are redacted placeholders",
+  "stateUrlTemplate": "https://devhub.portlandoregon.gov/trade-permits/purchase/review",
+  "recordedAt": "2026-05-02T00:00:00Z",
+  "sourceLimits": {
+    "liveDevHubUsed": false,
+    "browserTraceIncluded": false,
+    "screenshotIncluded": false,
+    "rawResponseIncluded": false,
+    "downloadIncluded": false,
+    "paymentDataIncluded": false
+  },
+  "screenStates": [
+    {
+      "stateId": "review_required_fields_missing",
+      "title": "Review online trade permit purchase",
+      "urlState": "/trade-permits/purchase/review",
+      "nearbyHeading": "Review permit details",
+      "semanticSelectors": [
+        {
+          "selectorId": "project-address-summary",
+          "role": "region",
+          "accessibleName": "Project address summary",
+          "labelText": "Project address",
+          "nearbyHeading": "Project location",
+          "fallbackCss": null
+        },
+        {
+          "selectorId": "contractor-license-field",
+          "role": "textbox",
+          "accessibleName": "Contractor license number",
+          "labelText": "Contractor license number",
+          "nearbyHeading": "Licensed contractor",
+          "fallbackCss": null
+        },
+        {
+          "selectorId": "work-description-field",
+          "role": "textbox",
+          "accessibleName": "Description of work",
+          "labelText": "Description of work",
+          "nearbyHeading": "Work details",
+          "fallbackCss": null
+        },
+        {
+          "selectorId": "fee-review-region",
+          "role": "region",
+          "accessibleName": "Review fees",
+          "labelText": "Fees due",
+          "nearbyHeading": "Review fees",
+          "fallbackCss": null
+        },
+        {
+          "selectorId": "save-for-later-button",
+          "role": "button",
+          "accessibleName": "Save for later",
+          "labelText": "Save for later",
+          "nearbyHeading": "Review and purchase",
+          "fallbackCss": null
+        },
+        {
+          "selectorId": "purchase-button-disabled",
+          "role": "button",
+          "accessibleName": "Purchase permit",
+          "labelText": "Purchase permit",
+          "nearbyHeading": "Review and purchase",
+          "fallbackCss": null
+        }
+      ],
+      "requiredFields": [
+        {
+          "fieldId": "project-address",
+          "label": "Project address",
+          "role": "combobox",
+          "accessibleName": "Project address",
+          "nearbyHeading": "Project location",
+          "required": true,
+          "valueState": "redacted_placeholder",
+          "redactedValue": "REDACTED_PROJECT_ADDRESS",
+          "status": "complete"
+        },
+        {
+          "fieldId": "trade-permit-type",
+          "label": "Trade permit type",
+          "role": "combobox",
+          "accessibleName": "Trade permit type",
+          "nearbyHeading": "Permit type",
+          "required": true,
+          "valueState": "redacted_placeholder",
+          "redactedValue": "REDACTED_TRADE_PERMIT_TYPE",
+          "status": "complete"
+        },
+        {
+          "fieldId": "contractor-license-number",
+          "label": "Contractor license number",
+          "role": "textbox",
+          "accessibleName": "Contractor license number",
+          "nearbyHeading": "Licensed contractor",
+          "required": true,
+          "valueState": "empty",
+          "redactedValue": "REDACTED_EMPTY_VALUE",
+          "status": "missing"
+        },
+        {
+          "fieldId": "work-description",
+          "label": "Description of work",
+          "role": "textbox",
+          "accessibleName": "Description of work",
+          "nearbyHeading": "Work details",
+          "required": true,
+          "valueState": "empty",
+          "redactedValue": "REDACTED_EMPTY_VALUE",
+          "status": "missing"
+        },
+        {
+          "fieldId": "applicant-attestation-review",
+          "label": "I reviewed the permit information and understand purchase is final after confirmation",
+          "role": "checkbox",
+          "accessibleName": "Review permit purchase attestation",
+          "nearbyHeading": "Review and purchase",
+          "required": true,
+          "valueState": "unchecked",
+          "redactedValue": "REDACTED_UNCHECKED_VALUE",
+          "status": "missing"
+        }
+      ],
+      "feeReviewState": {
+        "status": "blocked_until_required_fields_complete",
+        "currency": "USD",
+        "amountsRedacted": true,
+        "rows": [
+          {
+            "feeCode": "REDACTED_FEE_CODE_1",
+            "label": "Trade permit base fee",
+            "amountState": "redacted",
+            "redactedAmount": "REDACTED_AMOUNT"
+          },
+          {
+            "feeCode": "REDACTED_FEE_CODE_2",
+            "label": "Technology surcharge",
+            "amountState": "redacted",
+            "redactedAmount": "REDACTED_AMOUNT"
+          }
+        ],
+        "totalState": "not_confirmable",
+        "redactedTotal": "REDACTED_TOTAL"
+      },
+      "validationMessages": [
+        {
+          "messageId": "missing-contractor-license",
+          "severity": "error",
+          "targetFieldId": "contractor-license-number",
+          "text": "Contractor license number is required before purchase review can continue."
+        },
+        {
+          "messageId": "missing-work-description",
+          "severity": "error",
+          "targetFieldId": "work-description",
+          "text": "Description of work is required before purchase review can continue."
+        },
+        {
+          "messageId": "attestation-required",
+          "severity": "error",
+          "targetFieldId": "applicant-attestation-review",
+          "text": "Review acknowledgment must be selected before permit purchase confirmation."
+        }
+      ],
+      "saveForLaterState": {
+        "available": true,
+        "buttonSelectorId": "save-for-later-button",
+        "resultState": "draft_saved_with_redacted_reference",
+        "redactedDraftReference": "REDACTED_DRAFT_REFERENCE",
+        "message": "Draft can be saved for later without purchasing the permit."
+      },
+      "confirmationGates": [
+        {
+          "gateId": "purchase-disabled-until-required-fields-complete",
+          "action": "purchase_online_trade_permit",
+          "classification": "financial",
+          "requiredExactConfirmation": "I confirm I want to purchase this online trade permit after reviewing the redacted fee total.",
+          "currentState": "blocked",
+          "blockingReasons": [
+            "required_field_missing",
+            "attestation_unchecked",
+            "fee_total_not_confirmable"
+          ]
+        }
+      ],
+      "navigationEdges": [
+        {
+          "edgeId": "review-back-to-details",
+          "fromStateId": "review_required_fields_missing",
+          "toStateId": "trade_details_draft",
+          "role": "button",
+          "accessibleName": "Back",
+          "classification": "safe_read_only"
+        },
+        {
+          "edgeId": "review-save-for-later",
+          "fromStateId": "review_required_fields_missing",
+          "toStateId": "draft_saved",
+          "role": "button",
+          "accessibleName": "Save for later",
+          "classification": "reversible_draft_edit"
+        }
+      ]
+    },
+    {
+      "stateId": "review_ready_for_exact_confirmation",
+      "title": "Confirm online trade permit purchase",
+      "urlState": "/trade-permits/purchase/review/confirm",
+      "nearbyHeading": "Confirm purchase",
+      "semanticSelectors": [
+        {
+          "selectorId": "final-fee-total-region",
+          "role": "region",
+          "accessibleName": "Final fee total",
+          "labelText": "Total due",
+          "nearbyHeading": "Confirm purchase",
+          "fallbackCss": null
+        },
+        {
+          "selectorId": "confirm-purchase-button",
+          "role": "button",
+          "accessibleName": "Confirm purchase",
+          "labelText": "Confirm purchase",
+          "nearbyHeading": "Confirm purchase",
+          "fallbackCss": null
+        }
+      ],
+      "requiredFields": [
+        {
+          "fieldId": "project-address",
+          "label": "Project address",
+          "role": "combobox",
+          "accessibleName": "Project address",
+          "nearbyHeading": "Project location",
+          "required": true,
+          "valueState": "redacted_placeholder",
+          "redactedValue": "REDACTED_PROJECT_ADDRESS",
+          "status": "complete"
+        },
+        {
+          "fieldId": "contractor-license-number",
+          "label": "Contractor license number",
+          "role": "textbox",
+          "accessibleName": "Contractor license number",
+          "nearbyHeading": "Licensed contractor",
+          "required": true,
+          "valueState": "redacted_placeholder",
+          "redactedValue": "REDACTED_CONTRACTOR_LICENSE",
+          "status": "complete"
+        },
+        {
+          "fieldId": "applicant-attestation-review",
+          "label": "I reviewed the permit information and understand purchase is final after confirmation",
+          "role": "checkbox",
+          "accessibleName": "Review permit purchase attestation",
+          "nearbyHeading": "Review and purchase",
+          "required": true,
+          "valueState": "checked",
+          "redactedValue": "REDACTED_CHECKED_VALUE",
+          "status": "complete"
+        }
+      ],
+      "feeReviewState": {
+        "status": "ready_for_user_confirmation",
+        "currency": "USD",
+        "amountsRedacted": true,
+        "rows": [
+          {
+            "feeCode": "REDACTED_FEE_CODE_1",
+            "label": "Trade permit base fee",
+            "amountState": "redacted",
+            "redactedAmount": "REDACTED_AMOUNT"
+          },
+          {
+            "feeCode": "REDACTED_FEE_CODE_2",
+            "label": "Technology surcharge",
+            "amountState": "redacted",
+            "redactedAmount": "REDACTED_AMOUNT"
+          }
+        ],
+        "totalState": "redacted_user_review_required",
+        "redactedTotal": "REDACTED_TOTAL"
+      },
+      "validationMessages": [
+        {
+          "messageId": "financial-action-warning",
+          "severity": "warning",
+          "targetFieldId": "confirm-purchase-button",
+          "text": "Confirm purchase is a financial action and must not be automated without exact user confirmation."
+        }
+      ],
+      "saveForLaterState": {
+        "available": true,
+        "buttonSelectorId": "save-for-later-button",
+        "resultState": "draft_saved_before_purchase",
+        "redactedDraftReference": "REDACTED_DRAFT_REFERENCE",
+        "message": "Saving remains available before final purchase confirmation."
+      },
+      "confirmationGates": [
+        {
+          "gateId": "exact-confirmation-required-for-purchase",
+          "action": "purchase_online_trade_permit",
+          "classification": "financial",
+          "requiredExactConfirmation": "I confirm I want to purchase this online trade permit after reviewing the redacted fee total.",
+          "currentState": "requires_exact_user_confirmation",
+          "blockingReasons": [
+            "financial_action",
+            "exact_confirmation_not_recorded"
+          ]
+        },
+        {
+          "gateId": "payment-details-entry-refused",
+          "action": "enter_payment_details",
+          "classification": "financial",
+          "requiredExactConfirmation": "I confirm I want to enter payment details myself in the browser.",
+          "currentState": "refused_for_automation",
+          "blockingReasons": [
+            "payment_details_must_not_be_automated"
+          ]
+        }
+      ],
+      "navigationEdges": [
+        {
+          "edgeId": "confirm-back-to-review",
+          "fromStateId": "review_ready_for_exact_confirmation",
+          "toStateId": "review_required_fields_missing",
+          "role": "button",
+          "accessibleName": "Back",
+          "classification": "safe_read_only"
+        },
+        {
+          "edgeId": "confirm-save-for-later",
+          "fromStateId": "review_ready_for_exact_confirmation",
+          "toStateId": "draft_saved",
+          "role": "button",
+          "accessibleName": "Save for later",
+          "classification": "reversible_draft_edit"
+        },
+        {
+          "edgeId": "confirm-purchase-stop-gate",
+          "fromStateId": "review_ready_for_exact_confirmation",
+          "toStateId": "purchase_not_performed_by_fixture",
+          "role": "button",
+          "accessibleName": "Confirm purchase",
+          "classification": "financial"
+        }
+      ]
+    }
+  ]
+}

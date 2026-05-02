@@ -1,0 +1,115 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,29 +1,96 @@
+ # PP&D Supervisor Repair Guide
+ 
+-This guide exists so supervisor repairs stay narrow when the worker daemon has failed several rounds without an accepted patch.
++## Purpose
+ 
+-## Current Recovery Rule
++This guide gives the isolated PP&D supervisor deterministic recovery rules when a daemon task becomes blocked by repeated validation failures. It is intentionally narrow and only covers daemon retry, diagnostics, and task selection behavior.
+ 
+-When recent failed manifests include Python `SyntaxError`, `py_compile`, or TypeScript `TS1005`/`TS1109`/`TS1128`, do not ask the worker to retry a broad contract rewrite. Move to a smaller recovery path:
++## Current Blocked Task Recovery
+ 
+-1. Prefer a one-file syntactic guard first, such as importing or compiling only the failing module.
+-2. Add or repair the smallest fixture that proves one rejection reason at a time.
+-3. Only after syntax and deterministic fixture shape are stable, implement the broader validator behavior.
++Blocked task:
+ 
+-## Task Selection Guidance
++- Task checkbox-49: Add validation for the public source inventory that rejects non-allowlisted hosts, private DevHub paths, raw response bodies, downloaded documents, credentials, traces, screenshots, and missing provenance fields.
+ 
+-The daemon should not keep selecting an in-progress task after repeated validation rollbacks when later work has already been accepted. Mark that task `[!]` and let the worker proceed to the next `[ ]` task. Leave the blocked task in the board with enough context for a later narrow repair.
++Observed failures:
+ 
+-## Public Source Inventory Recovery
++- Python SyntaxError from generated contract code.
++- A later validation failure where the expected raw response body rejection reason was not emitted.
+ 
+-The public source inventory validation task should be resumed only as a split repair:
++Recovery rule:
+ 
+-- First cycle: add a syntax-first test that imports only `ppd.contracts.public_source_inventory` or compiles the proposed validator module before unittest discovery.
+-- Second cycle: add a minimal invalid inventory fixture where each entry contains exactly one unsafe condition, so expected rejection reasons are deterministic.
+-- Third cycle: add the validator implementation and focused tests.
++- Do not keep retrying checkbox-49 as a broad contract rewrite.
++- Leave checkbox-49 blocked until the daemon can run a narrow syntax-first repair cycle.
++- Allow the daemon to continue with later fixture-first and validation-first tasks that do not depend on checkbox-49 internals.
+ 
+-Do not combine those three steps in one daemon proposal. The recent failures show that broad multi-file attempts have produced syntax errors and assertion mismatches.
++## Retry Shape For Checkbox-49
+ 
+-## Forbidden Recovery Shortcuts
++When checkbox-49 is retried, the supervisor should constrain the daemon to one of these narrow cycles.
+ 
+-Do not create private DevHub session files, auth state, traces, screenshots, raw crawl output, downloaded documents, credentials, or live crawler output as part of supervisor repair. Do not mark PP&D domain tasks complete unless validation has accepted the implementation artifacts for that task.
++Cycle A: minimal contract skeleton
++
++- Edit only `ppd/contracts/public_source_inventory.py` and one focused test file.
++- Add or repair only the public validation entry point, finding data structure, host allowlist check, provenance-required-field check, and unsafe-field key detection.
++- Do not add live crawling, HTTP requests, downloaded documents, browser traces, screenshots, auth state, credentials, or raw response fixtures.
++- Require `python3 -m py_compile ppd/contracts/public_source_inventory.py` before unit tests.
++
++Cycle B: raw-body rejection fixture
++
++- Edit only the invalid inventory fixture and the matching assertion.
++- Ensure at least one invalid record contains a literal raw response body field such as `raw_response_body` or `response_body`.
++- Ensure the validator reports the exact reason `raw response body field is not allowed in public source inventories`.
++- Do not introduce multiline raw HTML bodies; use a short sentinel string such as `REDACTED_RAW_BODY_SENTINEL` so the fixture remains non-sensitive and deterministic.
++
++Cycle C: provenance completeness
++
++- Edit only the valid and invalid inventory fixtures plus the focused validation test.
++- Check required provenance fields only: source URL, canonical URL, captured or verified timestamp, authority label, and fixture provenance note.
++- Do not expand the validator into crawler policy, robots handling, archive adapters, or document extraction.
++
++## Syntax Guardrails
++
++For any retry after a Python SyntaxError:
++
++- Prefer one Python file plus one test file at most.
++- Avoid long generated helper functions.
++- Avoid nested f-strings, inline regex construction, or multiline string literals in generated code.
++- Keep rejection reasons as module-level string constants.
++- Run py_compile before the full PP&D validation command.
++
++For any retry after TypeScript TS1005, TS1109, or TS1128:
++
++- Prefer one TypeScript file at most.
++- Avoid broad type contract rewrites.
++- Run the TypeScript command before broader tests.
++
++## Task Selection Rule
++
++If a task is blocked and the active task does not depend on the blocked task, the daemon may continue with the active task. For the current state, checkbox-51 may continue because it validates the normalized document link graph and should not require the unfinished public source inventory validator.
++
++If a task depends on checkbox-49, insert a narrow prerequisite task instead of attempting live crawl or authenticated automation.
++
++Suggested prerequisite task text:
++
++- [ ] Add a syntax-first public source inventory validator skeleton that emits deterministic finding reasons for allowlist, private DevHub path, unsafe artifact field, raw body field, credential field, and missing provenance checks using only committed fixtures.
++
++## Forbidden Recovery Paths
++
++The supervisor must not ask the daemon to recover checkbox-49 by creating or committing any of the following:
++
++- Private DevHub session files.
++- Auth state.
++- Credentials.
++- Browser traces.
++- Screenshots.
++- Raw crawl output.
++- Downloaded public or private documents.
++- Live DevHub automation.
++- CAPTCHA, MFA, account creation, payment, submission, certification, cancellation, official upload, or inspection scheduling automation.
++
++## Acceptance Criteria For Unblocking Checkbox-49
++
++Checkbox-49 may be considered unblocked only when all are true:
++
++- The validator module compiles with py_compile.
++- Unit tests cover one valid inventory and one invalid inventory.
++- Invalid inventory findings include all required reason categories.
++- The raw response body rejection reason is emitted by an actual fixture field, not only by test-side expectation.
++- No committed fixture contains raw response bodies, credentials, trace paths, screenshot paths, downloaded document paths, private DevHub paths, or live crawl artifacts except short redacted sentinel strings used only to prove rejection.

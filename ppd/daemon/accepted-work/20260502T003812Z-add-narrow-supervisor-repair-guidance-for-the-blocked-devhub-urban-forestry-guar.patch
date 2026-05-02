@@ -1,0 +1,143 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,79 +1,89 @@
+ # PP&D Supervisor Repair Guide
+ 
+-This guide is for supervisor repair cycles when the PP&D daemon repeatedly rolls back worker proposals during validation.
++## Purpose
+ 
+-## Syntax Or Compile Failure Rule
++This guide gives the PP&D daemon deterministic recovery instructions when a task is blocked by repeated validation failures. Repairs must improve task selection, retry shape, validation, or diagnostics without performing live PP&D or DevHub actions.
+ 
+-If recent validation output includes any of these markers, treat the failure as daemon-programming risk rather than ordinary task failure:
++## Current Blocked Task
+ 
+-- `SyntaxError`
+-- `py_compile`
+-- `invalid syntax`
+-- `TS1005`
+-- `TS1109`
+-- `TS1128`
+-- `Declaration or statement expected`
+-- `Expression expected`
++Task checkbox-110 is blocked:
+ 
+-Do not ask the worker to retry a broad implementation immediately. First narrow the next worker prompt or task-board work so syntax validity is proven before behavior expands.
++Add DevHub guardrail tests proving Urban Forestry application draft review can produce a preview but cannot perform official upload, certification, submission, payment, cancellation, or inspection scheduling without exact session-specific user confirmation.
+ 
+-## Malformed Comparison Stop Rule
++## Retry Scope For Checkbox-110
+ 
+-If a failed Python proposal contains malformed comparison-like fragments such as:
++The next retry must stay fixture-only and use a small file set:
+ 
+-- `confidence 1`
+-- `confidence 1.0`
+-- `elif confidence 1.0:`
+-- `return 0.0 list[str]`
++- `ppd/tests/fixtures/devhub_guardrails/urban_forestry_draft_review_guardrails.json`
++- `ppd/tests/test_devhub_urban_forestry_draft_review_guardrails.py`
++- Optional: one tiny helper module under `ppd/devhub/` only if the tests need shared logic.
+ 
+-stop retrying the same implementation task directly. These fragments mean the next worker cycle must be syntax-first and smaller, not a broader contract rewrite.
++Do not use live DevHub, Playwright sessions, private auth state, traces, screenshots, raw crawl output, downloaded documents, CAPTCHA, MFA, account creation, official upload, certification, submission, payment, cancellation, or inspection scheduling.
+ 
+-The next retry should usually replace only one implementation file, and it must keep comparisons and annotations separate. Valid Python shapes include:
++## Required Validation-First Shape
+ 
+-- `if confidence >= 1.0:`
+-- `return 0.0`
+-- `def score_items(items: list[str]) -> float:`
++Before proposing a broad implementation, the daemon should make the test assertions internally consistent:
+ 
+-Never put type annotations after a runtime expression, and never omit the comparison operator between a variable and a number.
++1. Use one canonical fixture session identifier and one canonical confirmation nonce.
++2. If a test asserts that the nonce is contained in the session identifier, make the fixture value satisfy that exact relationship.
++3. Prefer deriving the required confirmation phrase from explicit fixture fields instead of duplicating hand-written strings across the fixture and test.
++4. Keep preview behavior read-only: preview may return a redacted action summary, required-fields summary, missing-information summary, and blocked-action list.
++5. Keep all consequential and financial actions blocked unless the supplied confirmation exactly matches the current session, draft, permit type, workflow, and action.
+ 
+-## Required Recovery Shape
++## Private Artifact Marker Guardrail
+ 
+-For repeated syntax or compile failures, recover in this order:
++Recent failures showed that tests rejected fixture text because the fixture contained forbidden marker names inside a list named like `forbiddenFixtureFields` or `blocked_private_artifact_markers`. That is a false positive.
+ 
+-1. Add or preserve a syntax-first import or compile test for the exact target module.
+-2. Add the smallest committed fixture needed by later behavior tests.
+-3. Add a one-file implementation with plain functions, constants, and dictionaries.
+-4. Add focused behavior validation only after the implementation imports cleanly.
++For the next retry, use one of these deterministic approaches:
+ 
+-Each recovery proposal should usually replace one file. Use two files only when the selected task explicitly requires a fixture plus its narrow validation test.
++- Preferred: do not store forbidden marker names inside the JSON fixture. Keep the marker list inside the Python test only.
++- Acceptable: if marker names must be documented, store them in the test docstring or comments, not in serialized fixture data.
+ 
+-## Python Guardrails
++The private-artifact test should recursively inspect fixture keys and string values for actual private artifacts. It should not fail because the test itself names the forbidden marker.
+ 
+-For daemon-authored Python validator or extractor modules:
++Forbidden private artifacts include credentials, password values, tokens, cookies, storage state paths, trace paths, screenshot paths, payment card numbers, raw response bodies, real names, real addresses, real phone numbers, and real email addresses.
+ 
+-- Prefer plain functions, constants, tuples, lists, and dictionaries.
+-- Avoid dataclasses when prior imports used `importlib.util.module_from_spec` or failed inside `dataclasses.py`.
+-- Do not use generated comparison helpers.
+-- Do not mix type annotations into expressions or control flow.
+-- Write comparisons explicitly, for example `confidence >= 1.0`.
+-- Keep module import side effects at zero.
+-- Run syntax-first validation before broad unittest discovery.
++## Confirmation Phrase Guardrail
+ 
+-## TypeScript Guardrails
++The blocked attempts failed because the test expected one nonce while the fixture used a different session identifier. The retry must define confirmation data once.
+ 
+-For daemon-authored TypeScript modules:
++Recommended fixture fields:
+ 
+-- Keep proposals small enough for parser errors to be obvious.
+-- Avoid broad contract rewrites after TS parser failures.
+-- Preserve existing exported names unless a task explicitly asks for a contract change.
+-- Prefer fixture-only tests before introducing live crawler or browser behavior.
++- `session_id`: a redacted current-session identifier containing the nonce.
++- `confirmation_nonce`: the exact nonce contained in `session_id`.
++- `draft_id`: a redacted draft identifier.
++- `permit_type`: `urban_forestry_application`.
++- `workflow`: `application_draft_review`.
++- `guarded_actions`: exactly official upload, certification, submission, payment, cancellation, and inspection scheduling.
+ 
+-## Task Selection Guidance
++The test should build the required phrase from those fields and prove:
+ 
+-After three failed attempts against the same broad task, park the broad task in deferred notes and append narrower recovery tasks. Keep completed tasks intact. Do not leave the daemon repeatedly selecting the same broad task when independent fixture-first or validation-first work remains.
++- preview requires no confirmation and has no portal side effects.
++- an empty confirmation is rejected.
++- a generic confirmation is rejected.
++- a confirmation with the wrong session is rejected.
++- a confirmation with the wrong draft is rejected.
++- a confirmation for the wrong action is rejected.
++- the exact phrase for the current session, draft, workflow, permit type, and action is accepted only as authorization for that one action.
+ 
+-For solar permit requirement extraction specifically, do not retry broad extraction validation after syntax failures. Use the existing order: syntax-first import sentinel, seven-record expected-output fixture, malformed-comparison daemon diagnostic, no-dataclass one-file extractor, then focused seven-category validation.
++## Retry Diagnostics
+ 
+-## Safety Boundaries
++If validation fails again, capture the first failing assertion and classify it narrowly:
+ 
+-Supervisor repair cycles must not create private DevHub session files, auth state, traces, screenshots, raw crawl output, downloaded documents, or authenticated automation artifacts. They must not automate CAPTCHA, MFA, account creation, payment, submission, certification, cancellation, official upload, or inspection scheduling.
++- `fixture_consistency` for mismatched nonce, draft, action, workflow, or permit type.
++- `private_artifact_false_positive` when the fixture only contains marker names used by the test.
++- `private_artifact_leak` when the fixture contains actual private values or paths.
++- `overbroad_patch` when the proposal changes live automation or unrelated modules.
++- `syntax` for Python parse/import failures.
++
++After two failures with the same classification, split checkbox-110 into smaller follow-up tasks on `ppd/daemon/task-board.md` instead of retrying the same broad patch.
++
++## Completion Criteria
++
++Checkbox-110 may be marked complete only when all of these are true:
++
++- The test suite passes.
++- The fixture is redacted and contains no private DevHub session material.
++- The preview path is explicitly read-only and produces no official portal action.
++- Official upload, certification, submission, payment, cancellation, and inspection scheduling are all blocked without exact current-session confirmation.
++- The exact confirmation phrase is action-specific and cannot authorize a different guarded action.

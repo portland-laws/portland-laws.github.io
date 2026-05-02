@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "reviewState": {
+    "sessionId": "devhub-session-2026-05-01T20-08-00Z-redacted",
+    "permitReference": "permit-[REDACTED]",
+    "workflowState": "correction_upload_review",
+    "draftState": "ready_for_review",
+    "acceptedFileHints": [
+      "PDF files only",
+      "One correction response packet per reviewer checksheet",
+      "File names visible to PP&D after official upload"
+    ],
+    "validationMessages": [
+      "Review all selected files before upload",
+      "Certification is required before corrections are sent to PP&D"
+    ],
+    "uploadControlLabel": "Upload correction documents",
+    "certificationLabel": "I certify that these correction documents are ready for official review",
+    "exactUploadConfirmation": "I confirm official correction upload for DevHub session devhub-session-2026-05-01T20-08-00Z-redacted",
+    "exactCertificationConfirmation": "I confirm certify correction upload for DevHub session devhub-session-2026-05-01T20-08-00Z-redacted",
+    "redactedValuesOnly": true
+  },
+  "confirmations": {
+    "officialUpload": "I confirm official correction upload for DevHub session devhub-session-2026-05-01T20-08-00Z-redacted",
+    "certification": "I confirm certify correction upload for DevHub session devhub-session-2026-05-01T20-08-00Z-redacted",
+    "wrongSessionUpload": "I confirm official correction upload for DevHub session devhub-session-OTHER",
+    "wrongSessionCertification": "I confirm certify correction upload for DevHub session devhub-session-OTHER"
+  }
+}

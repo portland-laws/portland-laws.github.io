@@ -1,0 +1,82 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,50 +1,45 @@
+ # PP&D Supervisor Repair Guide
+ 
+-## Purpose
++## Current Repair Focus
+ 
+-This guide records narrow recovery rules for PP&D daemon cycles after validation or syntax failures. It is operational guidance for task selection, retry shaping, and supervisor diagnostics only. It must not implement PP&D domain contracts directly.
++The blocked task is the missing-information output validator retry:
+ 
+-## Current Recovery Focus
++- Task checkbox-59: Add the missing-information output validator in the smallest possible Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection.
+ 
+-The daemon has two nearby failure modes:
++Recent failures were caused by Python syntax errors and by using `@dataclass` in a module loaded directly with `importlib.util.spec_from_file_location` without registration in `sys.modules`. The next retry must be smaller and must satisfy the syntax-first import guard before adding or changing broader tests.
+ 
+-- `ppd.contracts.missing_information_output_validation` failed when a syntax-probe import loaded the module through `importlib.util.spec_from_file_location` without first registering it in `sys.modules`. Python `dataclass` processing can fail in that mode. Recovery work should avoid `@dataclass` in syntax-probed contract modules unless the test loader is explicitly changed first.
+-- `ppd.contracts.source_freshness` failed after a retry removed `SOURCE_FRESHNESS_CONTRACT_VERSION`, which the syntax-first probe already expects. Recovery work must preserve probe-required public constants and minimal import contracts before adding classifier behavior.
++## Retry Constraints
+ 
+-## Retry Rules After Syntax Or Import Failures
++For the next daemon cycle on this task:
+ 
+-When recent daemon results include `SyntaxError`, `py_compile`, or import-probe errors:
++1. Edit only `ppd/contracts/missing_information_output_validation.py` unless an existing test already requires a different exact fixture path.
++2. Do not use `@dataclass`, `typing.NamedTuple`, metaclasses, decorators with import-time side effects, or regexes that require complex escaping.
++3. Preserve `MODULE_STATUS = "syntax_first_import_ready"` exactly so `ppd/tests/test_missing_information_output_validation_import.py` continues to pass.
++4. Keep the module dependency-free except for Python standard library imports.
++5. Run syntactic validation before semantic validation: `py_compile.compile(...)` must pass for the module before any unittest import path is exercised.
++6. Reuse the already committed four-item missing-information output fixture. Do not create additional near-duplicate fixtures during the repair retry.
++7. Implement the smallest public API likely to be needed by tests: `validate_missing_information_output(output)` returning a deterministic dictionary with `ok`, `errors`, `item_count`, and `actions` keys.
++8. Fail closed when requested items are not a list, an item lacks source backing, a duplicate item appears, action classification is missing or unsupported, or a private value appears in public output fields.
++9. Treat allowed action classes as exactly `fact`, `file`, `acknowledgment`, and `decision` unless an existing committed test explicitly names a different field value.
++10. Avoid live crawling, authenticated DevHub automation, private session files, traces, raw crawl output, account data, or downloaded documents.
+ 
+-1. Select the smallest repair task that restores syntactic validity and importability.
+-2. Edit the fewest possible files.
+-3. Prefer one contract module plus, only when needed, one focused test file.
+-4. Run `py_compile` or the existing syntax-first import test before broad fixture tests.
+-5. Do not add broad contract rewrites, new fixture directories, or unrelated tests in the same retry.
+-6. Do not use `@dataclass` in modules that are imported by syntax probes using `spec.loader.exec_module(module)` unless the probe inserts the module into `sys.modules` before execution.
+-7. Preserve existing public constants that syntax tests assert, especially `*_CONTRACT_VERSION` constants.
+-8. Preserve completed task-board entries and append only narrow new tasks when planning is needed.
++## Minimal Validator Shape
+ 
+-## Missing-Information Validator Recovery Shape
++The module should be plain functions and constants. Prefer simple loops over clever schema machinery. Use conservative field aliases so fixture naming differences do not cause unnecessary retries:
+ 
+-For the blocked missing-information output validator task, the next worker attempt should be shaped as follows:
++- requested items may be under `requested_items`, `missing_information`, or `items`.
++- action classification may be under `action`, `action_class`, `category`, or `kind`.
++- source backing may be under `sources`, `source`, `citations`, `citation`, or `source_refs`.
++- stable item identity may use `id`, `key`, `label`, `question`, or `prompt`.
+ 
+-- Keep `ppd/contracts/missing_information_output_validation.py` as a small plain-Python module.
+-- Avoid dataclasses, complex annotations, generated regex strings, and broad helper hierarchies.
+-- Export a version constant and one validation function with deterministic return data.
+-- Validate only the already committed four-item redacted fixture first.
+-- Prove four behaviors only: each requested item is source-backed, duplicates are rejected, action classes are allowed, and private-looking values are rejected.
+-- Do not add live crawl, DevHub, browser, auth, raw response, or private-value artifacts.
++Private-value rejection should look only for obvious private data in string values: email addresses, phone-like digit runs, SSN-like patterns, and common secret-bearing field names such as password, token, secret, credential, auth, session, cookie, card, payment, ssn, birth, dob, address, applicant_name, owner_name, and parcel. Keep these checks deterministic and avoid storing or echoing private values in errors.
+ 
+-## Source-Freshness Recovery Shape
++## Acceptance Gate
+ 
+-For the active source-freshness classifier task, the next worker attempt should be shaped as follows:
++The daemon should consider the retry acceptable only when these validations pass in order:
+ 
+-- Keep `SOURCE_FRESHNESS_CONTRACT_VERSION = 1` in `ppd/contracts/source_freshness.py`.
+-- Keep the module importable under the existing syntax probe before adding classifier logic.
+-- Use plain dictionaries and simple functions rather than dataclasses.
+-- Cover only the committed four-record fixture: stale guidance, changed hash, removed page, and high-priority recrawl candidate.
+-- Do not perform live network fetches or persist raw response bodies.
++1. `python3 ppd/daemon/ppd_daemon.py --self-test`
++2. `python3 -m unittest discover -s ppd/tests -p 'test_*.py'`
++3. TypeScript typecheck if TypeScript files are present under `ppd/`
+ 
+-## Supervisor Diagnostic Rule
+-
+-If the same task fails validation twice with the same root cause, the supervisor should block that task and insert a recovery task immediately before it. The recovery task should name the exact failed public symbol, syntax guard, or import mode that must be preserved before the original task can resume.
++If the import guard fails again, stop retrying broad implementations and add a narrower one-file repair task before resuming checkbox-59.

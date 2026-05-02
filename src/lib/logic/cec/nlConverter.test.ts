@@ -1,9 +1,13 @@
 import {
   DcecNaturalLanguageConverter,
   DcecPatternMatcher,
+  DcecProofCache,
+  compileDcecPolicyText,
   createEnhancedDcecNlConverter,
+  detectDcecPolicyLanguage,
   linearizeDcecWithGrammar,
   parseDcecWithGrammar,
+  proveDcecFormula,
 } from './nlConverter';
 import { DcecNamespace } from './dcecNamespace';
 
@@ -35,10 +39,18 @@ describe('DCEC natural language converter parity helpers', () => {
   it('converts temporal and connective patterns recursively', () => {
     const converter = new DcecNaturalLanguageConverter();
 
-    expect(converter.convertToDcec('always tenant must pay').dcec_formula?.toString()).toBe('□(O(pay(tenant:Agent)))');
-    expect(converter.convertToDcec('eventually tenant may enter').dcec_formula?.toString()).toBe('◊(P(enter(tenant:Agent)))');
-    expect(converter.convertToDcec('if tenant must pay then tenant may enter').dcec_formula?.toString()).toBe('(O(pay(tenant:Agent)) → P(enter(tenant:Agent)))');
-    expect(converter.convertToDcec('not tenant may enter').dcec_formula?.toString()).toBe('¬(P(enter(tenant:Agent)))');
+    expect(converter.convertToDcec('always tenant must pay').dcec_formula?.toString()).toBe(
+      '□(O(pay(tenant:Agent)))',
+    );
+    expect(converter.convertToDcec('eventually tenant may enter').dcec_formula?.toString()).toBe(
+      '◊(P(enter(tenant:Agent)))',
+    );
+    expect(
+      converter.convertToDcec('if tenant must pay then tenant may enter').dcec_formula?.toString(),
+    ).toBe('(O(pay(tenant:Agent)) → P(enter(tenant:Agent)))');
+    expect(converter.convertToDcec('not tenant may enter').dcec_formula?.toString()).toBe(
+      '¬(P(enter(tenant:Agent)))',
+    );
   });
 
   it('falls back to simple atomic predicates and reuses namespace symbols', () => {
@@ -61,8 +73,14 @@ describe('DCEC natural language converter parity helpers', () => {
     const formula = converter.convertToDcec('tenant knows that tenant must pay').dcec_formula!;
 
     expect(converter.convertFromDcec(formula)).toBe('tenant:Agent knows that must pay');
-    expect(converter.convertFromDcec(converter.convertToDcec('not tenant may enter').dcec_formula!)).toBe('not may enter');
-    expect(converter.convertFromDcec(converter.convertToDcec('if tenant must pay then tenant may enter').dcec_formula!)).toBe('if must pay then may enter');
+    expect(
+      converter.convertFromDcec(converter.convertToDcec('not tenant may enter').dcec_formula!),
+    ).toBe('not may enter');
+    expect(
+      converter.convertFromDcec(
+        converter.convertToDcec('if tenant must pay then tenant may enter').dcec_formula!,
+      ),
+    ).toBe('if must pay then may enter');
   });
 
   it('records conversion history and statistics', () => {
@@ -88,6 +106,89 @@ describe('DCEC natural language converter parity helpers', () => {
 
     expect(converter.useGrammar).toBe(false);
     expect(parseDcecWithGrammar('tenant must pay')).toBeUndefined();
-    expect(linearizeDcecWithGrammar(converter.convertToDcec('tenant must pay').dcec_formula!)).toBeUndefined();
+    expect(
+      linearizeDcecWithGrammar(converter.convertToDcec('tenant must pay').dcec_formula!),
+    ).toBeUndefined();
+  });
+
+  it('detects policy language with browser-native keyword profiles', () => {
+    const english = detectDcecPolicyLanguage('The tenant shall maintain alarms.');
+    const spanish = detectDcecPolicyLanguage('El inquilino debe pagar la renta.');
+
+    expect(english.browser_native).toBe(true);
+    expect(english.method).toBe('browser_native_keyword_profile');
+    expect(english.language).toBe('en');
+    expect(english.scores.en).toBeGreaterThan(english.scores.es);
+    expect(spanish.language).toBe('es');
+    expect(spanish.scores.es).toBeGreaterThan(spanish.scores.en);
+  });
+
+  it('compiles English policy text to DCEC metadata without server fallbacks', () => {
+    const result = compileDcecPolicyText('The tenant shall maintain smoke alarms.');
+
+    expect(result.success).toBe(true);
+    expect(result.browser_native).toBe(true);
+    expect(result.parse_method).toBe('browser_native_policy_compiler');
+    expect(result.language_detection.language).toBe('en');
+    expect(result.normalized_policy_text).toBe('the tenant shall maintain smoke alarms');
+    expect(result.policy_formula_text).toBe('O(maintain_smoke_alarms(tenant:Agent))');
+  });
+
+  it('fails closed for non-English policy text instead of calling external NLP', () => {
+    const converter = new DcecNaturalLanguageConverter();
+    const result = converter.compilePolicyText('El inquilino debe pagar la renta.');
+
+    expect(result.success).toBe(false);
+    expect(result.browser_native).toBe(true);
+    expect(result.language_detection.language).toBe('es');
+    expect(result.fail_closed_reason).toBe('unsupported_policy_language');
+    expect(result.dcec_formula).toBeUndefined();
+  });
+
+  it('proves DCEC goals with a deterministic browser-native proof cache', () => {
+    const converter = new DcecNaturalLanguageConverter();
+    const goal = converter.convertToDcec('tenant may enter').dcec_formula!;
+    const implication = converter.convertToDcec(
+      'if tenant must pay then tenant may enter',
+    ).dcec_formula!;
+    const antecedent = converter.convertToDcec('tenant must pay').dcec_formula!;
+    const cache = new DcecProofCache();
+
+    const first = proveDcecFormula({
+      goal,
+      assumptions: [implication, antecedent],
+      strategy: 'advanced_inference',
+      cache,
+    });
+    const second = proveDcecFormula({
+      goal,
+      assumptions: [antecedent, implication],
+      strategy: 'advanced_inference',
+      cache,
+    });
+
+    expect(first.proved).toBe(true);
+    expect(first.cache_hit).toBe(false);
+    expect(first.proof_steps).toContain('Applied modus ponens.');
+    expect(second.proved).toBe(true);
+    expect(second.cache_hit).toBe(true);
+    expect(cache.size).toBe(1);
+  });
+
+  it('fails closed for DCEC proof contradictions and supports temporal lift', () => {
+    const converter = new DcecNaturalLanguageConverter();
+    const obligation = converter.convertToDcec('tenant must pay').dcec_formula!;
+    const prohibition = converter.convertToDcec('tenant must not pay').dcec_formula!;
+    const temporal = converter.convertToDcec('always tenant may enter').dcec_formula!;
+    const permitted = converter.convertToDcec('tenant may enter').dcec_formula!;
+
+    const invalid = converter.proveFormula(obligation, [prohibition], 'deontic_consistency');
+    const lifted = converter.proveFormula(permitted, [temporal], 'temporal_lift');
+
+    expect(invalid.status).toBe('invalid');
+    expect(invalid.proved).toBe(false);
+    expect(invalid.error_message).toContain('Contradictory obligation and prohibition');
+    expect(lifted.status).toBe('proved');
+    expect(lifted.proof_steps[0]).toBe('Eliminated always premise for P(enter(tenant:Agent)).');
   });
 });

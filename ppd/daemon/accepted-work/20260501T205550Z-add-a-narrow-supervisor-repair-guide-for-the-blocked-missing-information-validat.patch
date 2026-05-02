@@ -1,0 +1,81 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -1,32 +1,57 @@
+ # PP&D Supervisor Repair Guide
+ 
+-Use this guide when the supervisor repairs daemon progress without implementing a PP&D domain task directly.
++## Current Repair Priority
+ 
+-## Missing-Information Output Validator Recovery
++The daemon must resolve the blocked missing-information output validator task before taking more public source inventory work.
+ 
+-The broad missing-information output validator is blocked. Do not retry it directly and do not edit its tests or fixture during supervisor repair.
++Blocked task:
+ 
+-The next daemon task must be narrow:
++- Task checkbox-63: Add the missing-information output validator as a single no-dataclass Python module after the import test and four-item fixture pass, proving source backing, deduplication, action classification, and private-value rejection using only `ppd/tests/fixtures/missing_information_output/four_requested_items.json`.
+ 
+-- Replace only `ppd/contracts/missing_information_output_validation.py`.
+-- Keep the module importable through `importlib.util.module_from_spec` without inserting it into `sys.modules`.
+-- Expose `MODULE_STATUS = "syntax_first_import_ready"`.
+-- Do not use `@dataclass`.
+-- Do not use complex import-time annotations for the validator data model.
+-- Use plain dictionaries, lists, tuples, sets, constants, and small helper functions.
+-- Validate only the committed fixture shape represented by `ppd/tests/fixtures/missing_information_output/four_requested_items.json` and the existing focused tests.
++Do not implement unrelated PP&D domain behavior while repairing this block.
+ 
+-Canonical action classifications from the fixture:
++## Recovery Rules For Checkbox 63
+ 
+-- `fact` requests use `read_only`.
+-- `file` requests use `draft_edit`.
+-- `acknowledgment` requests use `consequential_confirmation_required`.
+-- `decision` requests use `consequential_confirmation_required`.
++Use the smallest possible file set:
+ 
+-Canonical redaction behavior:
++- Prefer editing only `ppd/contracts/missing_information_output_validation.py`.
++- Do not rewrite the import test.
++- Do not rewrite the four-item fixture.
++- Do not add live crawl output, private DevHub artifacts, screenshots, traces, credentials, downloaded documents, or raw response bodies.
+ 
+-- `[REDACTED]` is an allowed committed redaction marker.
+-- `redactionPolicy.redactionToken` may equal `[REDACTED]`.
+-- Concrete private values, credentials, auth state, traces, screenshots, raw response bodies, downloaded private documents, and live DevHub session paths must be rejected.
++The contract module must be syntactically valid before broader validation:
+ 
+-If another failure occurs, split further rather than broadening the patch. The next split should be either a constants-only import repair or a pure private-value scanner repair, not a multi-file rewrite.
++- Run through a mental `py_compile` check before emitting code.
++- Keep the module as plain Python with no dataclasses.
++- Preserve the import-test sentinel: `MODULE_STATUS = "syntax_first_import_ready"`.
++- Export `validate_missing_information_output(output)`.
++- Return a list of error dictionaries instead of raising for invalid fixture content.
++
++## Fixture-First Interpretation
++
++Before changing validator behavior, inspect the existing fixture shape in:
++
++- `ppd/tests/fixtures/missing_information_output/four_requested_items.json`
++
++The valid fixture is authoritative for expected field names. Do not require alternate action-classification field names unless they already exist in the fixture or tests.
++
++Recent failures show two concrete repair hints:
++
++- The fixture's four requested items were rejected for action classification even though the fixture is intended to pass. The validator should read the fixture's actual classification field and expected values rather than assuming a different key.
++- `redactionPolicy.redactionToken` appeared in the valid fixture and must not be treated as a committed private user value by itself. Reject private values inside requested output items, evidence payloads, raw values, credentials, traces, screenshots, private DevHub paths, and similar unsafe data fields, but do not reject the fixture's redaction-policy metadata when it contains only a redaction marker/token policy.
++
++## Validation Order
++
++For the next daemon attempt, validate in this order:
++
++1. Syntax/import guard for `ppd/contracts/missing_information_output_validation.py`.
++2. Existing missing-information output fixture tests using only `four_requested_items.json`.
++3. Full PP&D unittest discovery.
++4. Existing daemon self-test.
++5. Existing TypeScript check if PP&D TypeScript files are present.
++
++If validation fails again, capture the first failing assertion and repair only the contract module unless the failure proves the fixture or test is malformed.
++
++## Selection Rule
++
++While checkbox-63 is blocked, the daemon should not advance checkbox-66 except for read-only diagnosis. Once checkbox-63 passes, resume the normal narrow task ordering and continue with checkbox-66.

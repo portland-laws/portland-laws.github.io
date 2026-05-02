@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/guardrails/fcc_wireless_application_workflow.json",
+    "ppd/tests/test_guardrail_fcc_wireless_workflow.py"
+  ],
+  "created_at": "2026-05-02T00:58:33.965359Z",
+  "impact": "Advances the PP&D guardrail plan by adding deterministic, source-backed FCC wireless workflow coverage without live DevHub automation, uploads, payments, submissions, or crawls.",
+  "summary": "Add fixture-only FCC wireless application guardrail compiler tests for missing facts, document groups, and stop points.",
+  "target_task": "Task checkbox-116: Add guardrail compiler fixture tests for the FCC wireless application workflow covering missing facts, required document groups, payment stop points, correction-upload stop points, and any inspection/finalization stop points, using only fixture data.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 118 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................................................................................................................................................................................................. ---------------------------------------------------------------------- Ran 317 tests in 0.033s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

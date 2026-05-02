@@ -1,0 +1,242 @@
+{
+  "schemaVersion": 1,
+  "snapshotId": "devhub-correction-upload-review-redacted-v1",
+  "capturedAt": "2026-05-01T20:20:00Z",
+  "fixtureOnly": true,
+  "source": {
+    "system": "DevHub PDX",
+    "workflow": "correction_upload_review",
+    "pageState": "review_corrections_before_official_upload",
+    "urlState": "https://devhub.portlandoregon.gov/mock/permits/[REDACTED_PERMIT_ID]/corrections/review",
+    "captureMethod": "mocked_fixture",
+    "liveAutomationPerformed": false
+  },
+  "privacy": {
+    "redactionPolicy": "all account, applicant, property, permit, file, and reviewer values are placeholders",
+    "containsCredentials": false,
+    "containsAuthState": false,
+    "containsTrace": false,
+    "containsScreenshot": false,
+    "containsRawCrawlOutput": false,
+    "containsDownloadedDocument": false,
+    "containsPrivateDevhubSessionPath": false
+  },
+  "workflowState": {
+    "stateId": "correction_upload_review",
+    "nearbyHeading": "Upload corrections",
+    "visibleStatus": "Draft correction package saved for review",
+    "availableActions": [
+      {
+        "actionId": "save_for_later",
+        "label": "Save for later",
+        "classification": "reversible_draft_edit",
+        "enabled": true,
+        "confirmationRequired": false
+      },
+      {
+        "actionId": "preview_correction_package",
+        "label": "Preview correction package",
+        "classification": "safe_read_only",
+        "enabled": true,
+        "confirmationRequired": false
+      },
+      {
+        "actionId": "official_upload_corrections",
+        "label": "Upload corrections",
+        "classification": "potentially_consequential",
+        "enabled": false,
+        "confirmationRequired": true,
+        "blockedUntilGateId": "gate-official-upload"
+      },
+      {
+        "actionId": "certify_correction_upload",
+        "label": "Certify and continue",
+        "classification": "potentially_consequential",
+        "enabled": false,
+        "confirmationRequired": true,
+        "blockedUntilGateId": "gate-certification"
+      }
+    ],
+    "navigationEdges": [
+      {
+        "edgeId": "back_to_correction_tasks",
+        "label": "Back",
+        "targetState": "correction_task_list",
+        "classification": "safe_read_only"
+      },
+      {
+        "edgeId": "save_and_return_later",
+        "label": "Save for later",
+        "targetState": "draft_saved",
+        "classification": "reversible_draft_edit"
+      },
+      {
+        "edgeId": "preview_only",
+        "label": "Preview correction package",
+        "targetState": "correction_upload_preview",
+        "classification": "safe_read_only"
+      }
+    ]
+  },
+  "draftState": {
+    "draftId": "[REDACTED_DRAFT_ID]",
+    "permitReference": "[REDACTED_PERMIT_ID]",
+    "projectAddress": "[REDACTED_PROJECT_ADDRESS]",
+    "applicantDisplayName": "[REDACTED_APPLICANT_NAME]",
+    "lastSavedAt": "2026-05-01T20:15:00Z",
+    "dirtyFields": [],
+    "uploadedDraftFiles": [
+      {
+        "slotId": "corrected_plan_set",
+        "displayName": "[REDACTED_FILE_NAME].pdf",
+        "status": "draft_attached_not_uploaded",
+        "checksum": "sha256:[REDACTED_FILE_HASH]"
+      }
+    ],
+    "officialUploadPerformed": false,
+    "certificationPerformed": false,
+    "submissionPerformed": false
+  },
+  "uploadControls": [
+    {
+      "controlId": "corrected_plan_set_upload",
+      "label": "Corrected plan set",
+      "role": "button",
+      "accessibleName": "Choose file for corrected plan set",
+      "nearbyHeading": "Upload corrected documents",
+      "required": true,
+      "selectorBasis": {
+        "role": "button",
+        "accessibleName": "Choose file for corrected plan set",
+        "labelText": "Corrected plan set",
+        "nearbyHeading": "Upload corrected documents"
+      },
+      "acceptedFileHints": {
+        "mimeTypes": ["application/pdf"],
+        "extensions": [".pdf"],
+        "maxFiles": 1,
+        "maxSizeHint": "[REDACTED_SIZE_LIMIT]",
+        "namingHint": "Use a clear correction document name without private values in logs or fixtures."
+      },
+      "currentValue": "[REDACTED_FILE_NAME].pdf",
+      "currentStatus": "draft_attached_not_uploaded"
+    },
+    {
+      "controlId": "response_letter_upload",
+      "label": "Response letter or checksheet response",
+      "role": "button",
+      "accessibleName": "Choose file for response letter or checksheet response",
+      "nearbyHeading": "Upload corrected documents",
+      "required": true,
+      "selectorBasis": {
+        "role": "button",
+        "accessibleName": "Choose file for response letter or checksheet response",
+        "labelText": "Response letter or checksheet response",
+        "nearbyHeading": "Upload corrected documents"
+      },
+      "acceptedFileHints": {
+        "mimeTypes": ["application/pdf"],
+        "extensions": [".pdf"],
+        "maxFiles": 1,
+        "maxSizeHint": "[REDACTED_SIZE_LIMIT]",
+        "namingHint": "Keep applicant, property, and permit identifiers redacted in committed fixtures."
+      },
+      "currentValue": "[REDACTED_RESPONSE_FILE_NAME].pdf",
+      "currentStatus": "draft_attached_not_uploaded"
+    },
+    {
+      "controlId": "supporting_documents_upload",
+      "label": "Supporting correction documents",
+      "role": "button",
+      "accessibleName": "Choose files for supporting correction documents",
+      "nearbyHeading": "Upload corrected documents",
+      "required": false,
+      "selectorBasis": {
+        "role": "button",
+        "accessibleName": "Choose files for supporting correction documents",
+        "labelText": "Supporting correction documents",
+        "nearbyHeading": "Upload corrected documents"
+      },
+      "acceptedFileHints": {
+        "mimeTypes": ["application/pdf"],
+        "extensions": [".pdf"],
+        "maxFiles": "[REDACTED_MAX_FILE_COUNT]",
+        "maxSizeHint": "[REDACTED_SIZE_LIMIT]",
+        "namingHint": "Supplemental files must remain redacted in tests."
+      },
+      "currentValue": "[REDACTED_OPTIONAL_FILE_LIST]",
+      "currentStatus": "not_attached"
+    }
+  ],
+  "validationMessages": [
+    {
+      "messageId": "missing_required_response_letter",
+      "controlId": "response_letter_upload",
+      "severity": "error",
+      "text": "A response letter or checksheet response PDF is required before corrections can be uploaded.",
+      "visibleWhen": "required response letter slot has no draft attachment"
+    },
+    {
+      "messageId": "pdf_required",
+      "controlId": "corrected_plan_set_upload",
+      "severity": "error",
+      "text": "Only PDF files are accepted for correction uploads.",
+      "visibleWhen": "selected file extension is not .pdf"
+    },
+    {
+      "messageId": "draft_not_official",
+      "controlId": "official_upload_corrections",
+      "severity": "info",
+      "text": "Files are saved in draft until the official upload confirmation is completed.",
+      "visibleWhen": "draft attachments exist and official upload has not been confirmed"
+    },
+    {
+      "messageId": "review_before_upload",
+      "controlId": "preview_correction_package",
+      "severity": "warning",
+      "text": "Review the correction package before confirming the official upload.",
+      "visibleWhen": "all required draft files are attached"
+    }
+  ],
+  "confirmationGates": [
+    {
+      "gateId": "gate-preview-only",
+      "actionId": "preview_correction_package",
+      "classification": "safe_read_only",
+      "required": false,
+      "exactConfirmationRequired": false,
+      "allowedWithoutConfirmation": true,
+      "effect": "show redacted preview of draft correction package"
+    },
+    {
+      "gateId": "gate-official-upload",
+      "actionId": "official_upload_corrections",
+      "classification": "potentially_consequential",
+      "required": true,
+      "exactConfirmationRequired": true,
+      "sessionSpecific": true,
+      "exactConfirmationPhrase": "UPLOAD CORRECTIONS FOR [REDACTED_PERMIT_ID]",
+      "blockedWithoutExactConfirmation": true,
+      "effect": "perform official correction upload for the redacted permit record"
+    },
+    {
+      "gateId": "gate-certification",
+      "actionId": "certify_correction_upload",
+      "classification": "potentially_consequential",
+      "required": true,
+      "exactConfirmationRequired": true,
+      "sessionSpecific": true,
+      "exactConfirmationPhrase": "CERTIFY CORRECTION UPLOAD FOR [REDACTED_PERMIT_ID]",
+      "blockedWithoutExactConfirmation": true,
+      "effect": "certify the correction package after user review"
+    }
+  ],
+  "auditExpectations": {
+    "previewAllowed": true,
+    "officialUploadAllowed": false,
+    "certificationAllowed": false,
+    "mustRecordSelectorBasis": true,
+    "mustRecordConfirmationState": true,
+    "mustRecordBeforeAfterRedactedState": true
+  }
+}

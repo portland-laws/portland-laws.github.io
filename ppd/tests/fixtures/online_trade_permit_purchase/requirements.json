@@ -1,0 +1,143 @@
+{
+  "fixture_id": "online_trade_permit_purchase_requirements_v1",
+  "source_context": "Fixture-only validation for online trade permit purchase requirement extraction. Public-source facts are summarized from PP&D/DevHub guidance already represented in PP&D planning context; this file contains no live crawl output, private DevHub data, credentials, traces, screenshots, downloads, or raw response bodies.",
+  "confidence_bounds": {
+    "minimum": 0.7,
+    "maximum": 1.0
+  },
+  "expected_categories": [
+    "devhub_account_access",
+    "online_trade_permit_scope",
+    "permit_type_selection",
+    "project_and_property_facts",
+    "contractor_or_owner_responsibility",
+    "purchase_payment_stop_gate",
+    "inspection_scheduling_stop_gate"
+  ],
+  "sources": [
+    {
+      "evidence_id": "ev-devhub-online-permitting-system",
+      "title": "Development Hub PDX public portal guidance",
+      "url": "https://devhub.portlandoregon.gov",
+      "authority_label": "DevHub public portal",
+      "public_fixture_only": true
+    },
+    {
+      "evidence_id": "ev-devhub-account-guidance",
+      "title": "Development Hub sign-in and account guidance",
+      "url": "https://www.portland.gov/ppd/devhub",
+      "authority_label": "PP&D public guidance",
+      "public_fixture_only": true
+    },
+    {
+      "evidence_id": "ev-devhub-faq-service-categories",
+      "title": "Development Hub FAQ service categories",
+      "url": "https://www.portland.gov/ppd/development-hub-pdx/devhub-faq",
+      "authority_label": "PP&D public FAQ",
+      "public_fixture_only": true
+    },
+    {
+      "evidence_id": "ev-devhub-application-guidance-trade-permits",
+      "title": "Development Hub application guidance listing trade permit request types",
+      "url": "https://www.portland.gov/ppd/permits/devhub-apply-permit-request",
+      "authority_label": "PP&D public application guidance",
+      "public_fixture_only": true
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "otp-001-devhub-account-access",
+      "category": "devhub_account_access",
+      "type": "precondition",
+      "subject": "applicant",
+      "action": "use_devhub_account",
+      "object": "online permitting services",
+      "evidence_ids": [
+        "ev-devhub-online-permitting-system",
+        "ev-devhub-account-guidance"
+      ],
+      "confidence": 0.92,
+      "stop_gate_classification": "none"
+    },
+    {
+      "requirement_id": "otp-002-online-trade-permit-scope",
+      "category": "online_trade_permit_scope",
+      "type": "precondition",
+      "subject": "applicant",
+      "action": "confirm_online_trade_permit_scope",
+      "object": "trade permit purchase workflow",
+      "evidence_ids": [
+        "ev-devhub-faq-service-categories",
+        "ev-devhub-application-guidance-trade-permits"
+      ],
+      "confidence": 0.88,
+      "stop_gate_classification": "none"
+    },
+    {
+      "requirement_id": "otp-003-permit-type-selection",
+      "category": "permit_type_selection",
+      "type": "precondition",
+      "subject": "applicant",
+      "action": "select_trade_permit_type",
+      "object": "requested trade permit",
+      "evidence_ids": [
+        "ev-devhub-application-guidance-trade-permits"
+      ],
+      "confidence": 0.86,
+      "stop_gate_classification": "none"
+    },
+    {
+      "requirement_id": "otp-004-project-and-property-facts",
+      "category": "project_and_property_facts",
+      "type": "obligation",
+      "subject": "applicant",
+      "action": "provide_project_and_property_facts",
+      "object": "online trade permit request",
+      "evidence_ids": [
+        "ev-devhub-online-permitting-system",
+        "ev-devhub-application-guidance-trade-permits"
+      ],
+      "confidence": 0.84,
+      "stop_gate_classification": "none"
+    },
+    {
+      "requirement_id": "otp-005-contractor-or-owner-responsibility",
+      "category": "contractor_or_owner_responsibility",
+      "type": "obligation",
+      "subject": "applicant",
+      "action": "identify_responsible_party",
+      "object": "contractor or owner responsibility for the trade permit",
+      "evidence_ids": [
+        "ev-devhub-application-guidance-trade-permits"
+      ],
+      "confidence": 0.78,
+      "stop_gate_classification": "none"
+    },
+    {
+      "requirement_id": "otp-006-purchase-payment-stop-gate",
+      "category": "purchase_payment_stop_gate",
+      "type": "action_gate",
+      "subject": "agent",
+      "action": "stop_before_purchase_or_payment",
+      "object": "online trade permit purchase and fee payment",
+      "evidence_ids": [
+        "ev-devhub-faq-service-categories"
+      ],
+      "confidence": 0.95,
+      "stop_gate_classification": "financial"
+    },
+    {
+      "requirement_id": "otp-007-inspection-scheduling-stop-gate",
+      "category": "inspection_scheduling_stop_gate",
+      "type": "action_gate",
+      "subject": "agent",
+      "action": "stop_before_inspection_scheduling",
+      "object": "inspection scheduling for online trade permits",
+      "evidence_ids": [
+        "ev-devhub-faq-service-categories"
+      ],
+      "confidence": 0.91,
+      "stop_gate_classification": "consequential"
+    }
+  ]
+}

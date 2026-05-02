@@ -1,0 +1,30 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -52,6 +52,8 @@
+ - no generated pseudo-code
+ - no task-board edits in the same worker proposal
+ 
++Do not attempt checkbox-27b, checkbox-27c, checkbox-27d, checkbox-27e, checkbox-27f, or checkbox-27g until the immediately previous checkbox-27 prerequisite has passed validation and is marked `[x]` on the task board.
++
+ ## Python Syntax Guardrails
+ 
+ Before returning a proposal for any Python test repair, ensure the file would pass `py_compile`. If recent failures show the same malformed token sequence repeatedly, do not improvise around that expression; use a simple known-good expression.
+@@ -72,7 +74,17 @@
+ - `self.assertIn(value, collection)`
+ - `self.assertRaises(ExceptionType)`
+ - `isinstance(value, str)` for runtime type checks
+-- complete numeric comparisons such as `0  1`; never emit `confidence  1` or `if confidence 1:`
++- complete numeric comparisons such as `0 <= confidence <= 1`; never emit `confidence  1` or `if confidence 1:`
++
++## Repeated Same-File Syntax Failure Rule
++
++If three or more recent failures name `ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py` and all fail during `py_compile` or unittest import, the next worker prompt must be reduced to checkbox-27a only.
++
++The worker must replace exactly one file: `ppd/tests/test_permit_lifecycle_requirement_extraction_mutations.py`.
++
++The worker must not include mutation tests, parametrized generators, dynamic code, dataclasses, extraction implementation, broad schema rewrites, task-board edits, or guide edits in that proposal.
++
++The supervisor must reject any proposal for that file before validation if the proposed content contains the exact invalid fragments `confidence  1`, `confidence 1`, or `if confidence 1:`.
+ 
+ ## Generated Status
+ 

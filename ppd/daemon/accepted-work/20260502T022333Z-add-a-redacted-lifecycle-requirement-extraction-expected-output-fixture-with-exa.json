@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/lifecycle/permit_lifecycle_requirement_extraction_expected_output.json"
+  ],
+  "created_at": "2026-05-02T02:23:33.747417Z",
+  "impact": "This advances checkbox-22 by providing deterministic expected output for later lifecycle requirement extraction validation without live crawling, authenticated DevHub automation, or private artifacts.",
+  "summary": "Add a redacted lifecycle requirement extraction expected-output fixture with exactly eight source-backed category records.",
+  "target_task": "Task checkbox-22: Add a minimal lifecycle requirement extraction expected-output fixture with exactly eight category records: extension eligibility, reactivation eligibility, cancellation eligibility, refund eligibility, inspection scheduling, inspection-result follow-up, fee/payment checkpoints, and explicit-confirmation gates, all source-backed and redacted.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 26 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".....................................................................................................................................................................................................................ss............................................................................................................................................. ---------------------------------------------------------------------- Ran 356 tests in 0.035s OK (skipped=2)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

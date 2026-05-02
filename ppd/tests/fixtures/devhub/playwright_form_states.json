@@ -1,0 +1,102 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "devhub_playwright_form_state",
+  "capturedFrom": "mocked_redacted_fixture",
+  "generatedAt": "2026-05-01T19:10:00Z",
+  "formStateId": "devhub-trade-plan-review-project-info",
+  "formHeading": "Project information",
+  "urlState": {
+    "stableUrl": "https://devhub.portlandoregon.gov/permit-requests/trade-plan-review/project-information",
+    "stateName": "trade_plan_review_project_information",
+    "path": "/permit-requests/trade-plan-review/project-information",
+    "queryState": "[REDACTED]"
+  },
+  "fields": [
+    {
+      "id": "project-description",
+      "selectorBasis": {
+        "accessibleName": "Project description",
+        "labelText": "Project description",
+        "role": "textbox",
+        "nearbyHeading": "Project information",
+        "urlState": {
+          "stableUrl": "https://devhub.portlandoregon.gov/permit-requests/trade-plan-review/project-information",
+          "stateName": "trade_plan_review_project_information",
+          "path": "/permit-requests/trade-plan-review/project-information",
+          "queryState": "[REDACTED]"
+        },
+        "playwrightLocator": "page.getByRole('textbox', { name: 'Project description' })"
+      },
+      "requirementStatus": "required",
+      "redactedValue": {
+        "status": "redacted",
+        "value": "[REDACTED]"
+      },
+      "validationMessage": "Enter a project description before continuing."
+    },
+    {
+      "id": "property-address",
+      "selectorBasis": {
+        "accessibleName": "Property address",
+        "labelText": "Property address",
+        "role": "textbox",
+        "nearbyHeading": "Site information",
+        "urlState": {
+          "stableUrl": "https://devhub.portlandoregon.gov/permit-requests/trade-plan-review/project-information",
+          "stateName": "trade_plan_review_project_information",
+          "path": "/permit-requests/trade-plan-review/project-information",
+          "queryState": "[REDACTED]"
+        },
+        "playwrightLocator": "page.getByRole('textbox', { name: 'Property address' })"
+      },
+      "requirementStatus": "required",
+      "redactedValue": {
+        "status": "redacted",
+        "value": "[REDACTED]"
+      },
+      "validationMessage": "Select a validated property address."
+    },
+    {
+      "id": "permit-category",
+      "selectorBasis": {
+        "accessibleName": "Permit category",
+        "labelText": "Permit category",
+        "role": "combobox",
+        "nearbyHeading": "Permit request type",
+        "urlState": {
+          "stableUrl": "https://devhub.portlandoregon.gov/permit-requests/trade-plan-review/project-information",
+          "stateName": "trade_plan_review_project_information",
+          "path": "/permit-requests/trade-plan-review/project-information",
+          "queryState": "[REDACTED]"
+        },
+        "playwrightLocator": "page.getByRole('combobox', { name: 'Permit category' })"
+      },
+      "requirementStatus": "required",
+      "redactedValue": {
+        "status": "selected_redacted",
+        "value": "[SELECTED_OPTION_REDACTED]"
+      }
+    },
+    {
+      "id": "owner-is-applicant",
+      "selectorBasis": {
+        "accessibleName": "Owner is applicant",
+        "labelText": "Owner is applicant",
+        "role": "checkbox",
+        "nearbyHeading": "Applicant information",
+        "urlState": {
+          "stableUrl": "https://devhub.portlandoregon.gov/permit-requests/trade-plan-review/project-information",
+          "stateName": "trade_plan_review_project_information",
+          "path": "/permit-requests/trade-plan-review/project-information",
+          "queryState": "[REDACTED]"
+        },
+        "playwrightLocator": "page.getByRole('checkbox', { name: 'Owner is applicant' })"
+      },
+      "requirementStatus": "conditionally_required",
+      "redactedValue": {
+        "status": "checked_redacted",
+        "value": "[CHECKED_REDACTED]"
+      }
+    }
+  ]
+}

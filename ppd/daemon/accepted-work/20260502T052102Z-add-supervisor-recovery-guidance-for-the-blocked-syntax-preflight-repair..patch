@@ -1,0 +1,21 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -15,6 +15,18 @@
+ - Require changed TypeScript files to pass the existing strict `tsc --noEmit` command scoped only to changed `.ts` and `.tsx` files before full validation.
+ - On parser failure, rollback immediately and record `failure_kind` as `syntax_preflight`.
+ - Persist compact diagnostics only: command, return code, and the first relevant parser message.
++
++## Syntax-Preflight Implementation Constraints
++
++The daemon syntax-preflight repair must be narrow and deterministic:
++
++- Change `ppd/daemon/ppd_daemon.py` only, unless a focused daemon test is explicitly required by the active task.
++- Add a helper that derives changed Python files from `proposal.changed_files` and checks each with `python3 -m py_compile `.
++- Add a helper that derives changed TypeScript files from `proposal.changed_files` and checks them with the existing strict `npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node ` command.
++- Run syntax-preflight after file replacement and before full validation.
++- If syntax-preflight fails, restore all backed-up files immediately, set `failure_kind` to `syntax_preflight`, persist the failed patch, and skip full validation for that proposal.
++- If no changed `.py`, `.ts`, or `.tsx` files exist, syntax-preflight must run no commands and full validation may proceed normally.
++- Do not implement or retry `ppd/contracts/planned_crawl_manifest.py` while repairing syntax-preflight.
+ 
+ ## Prompt Guardrails
+ 

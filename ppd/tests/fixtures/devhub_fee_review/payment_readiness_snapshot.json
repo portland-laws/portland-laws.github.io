@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "devhub-fee-review-payment-readiness-redacted",
+  "sessionId": "devhub-session-2026-05-01-fee-review-001",
+  "accountSignedIn": true,
+  "permitReference": "",
+  "projectAddress": "",
+  "workflowState": "fees_due_review",
+  "currency": "USD",
+  "payButtonVisible": true,
+  "paymentDetailFieldsVisible": false,
+  "feeLineItems": [
+    {
+      "id": "fee-intake-review",
+      "label": "Intake review fee",
+      "amount": "295.50",
+      "status": "due",
+      "canPayNow": true,
+      "evidenceId": "devhub-fee-banner"
+    },
+    {
+      "id": "fee-final-permit",
+      "label": "Permit issuance fee",
+      "amount": "125.00",
+      "status": "not_yet_due",
+      "canPayNow": false,
+      "evidenceId": "devhub-fee-table"
+    }
+  ],
+  "sourceEvidence": [
+    {
+      "id": "devhub-fee-banner",
+      "kind": "mocked_devhub_snapshot",
+      "text": "Fee payment is available for review after intake.",
+      "redacted": true
+    },
+    {
+      "id": "devhub-fee-table",
+      "kind": "mocked_devhub_snapshot",
+      "text": "Additional fees may be due at later workflow stages.",
+      "redacted": true
+    }
+  ],
+  "confirmation": {
+    "exactText": "I confirm session devhub-session-2026-05-01-fee-review-001: review payment readiness only; do not enter payment details or execute payment.",
+    "requiredForActions": [
+      "enter_payment_details",
+      "execute_payment"
+    ]
+  }
+}

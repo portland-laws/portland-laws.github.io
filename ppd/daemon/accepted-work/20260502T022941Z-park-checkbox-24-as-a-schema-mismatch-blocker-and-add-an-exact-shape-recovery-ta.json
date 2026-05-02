@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/task-board.md"
+  ],
+  "created_at": "2026-05-02T02:29:41.796236Z",
+  "impact": "This lets the daemon stop retrying the same failing validator assumptions. The next autonomous cycle has a narrow validation-first task that names the exact fixture path, top-level key, stop-gate fields, and evidence rules needed to pass deterministically.",
+  "summary": "Park checkbox-24 as a schema-mismatch blocker and add an exact-shape recovery task for the committed lifecycle expected-output fixture.",
+  "target_task": "Supervisor repair: 1 task(s) are blocked: Task checkbox-24: Add a focused validation test for permit lifecycle requirement extraction that checks only the eight fixture categories, source evidence IDs, confidence bounds, deduplication, and explicit stop-gate classifications.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 26 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".....................................................................................................................................................................................................................ss.......sss...................................................................................................................................... ---------------------------------------------------------------------- Ran 359 tests in 0.036s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

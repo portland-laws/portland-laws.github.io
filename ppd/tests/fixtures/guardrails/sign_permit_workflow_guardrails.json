@@ -1,0 +1,231 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "sign_permit_workflow_guardrails",
+  "permitProcessId": "sign_permit_workflow_fixture",
+  "permitType": "sign_permit",
+  "sourceMode": "fixture_only",
+  "redactionStatus": "redacted_public_fixture",
+  "authoritySources": [
+    {
+      "id": "src-sign-devhub-guidance",
+      "label": "Public DevHub sign permit application guidance fixture",
+      "canonicalUrl": "https://www.portland.gov/ppd/devhub/apply-sign-permit-fixture",
+      "retrievedAt": "2026-05-01T00:00:00Z",
+      "contentHash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "id": "src-sign-submittal-checklist",
+      "label": "Public PP&D sign permit submittal checklist fixture",
+      "canonicalUrl": "https://www.portland.gov/ppd/forms/sign-permit-checklist-fixture",
+      "retrievedAt": "2026-05-01T00:00:00Z",
+      "contentHash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  ],
+  "knownUserCase": {
+    "caseId": "redacted-sign-case-fixture",
+    "facts": {
+      "project_address": "REDACTED",
+      "sign_location_description": "north building wall",
+      "sign_type": "wall_sign"
+    },
+    "documents": {
+      "application_form": [
+        {
+          "name": "REDACTED_application.pdf",
+          "mimeType": "application/pdf",
+          "redacted": true
+        }
+      ],
+      "site_plan": [
+        {
+          "name": "REDACTED_site_plan.pdf",
+          "mimeType": "application/pdf",
+          "redacted": true
+        }
+      ]
+    },
+    "acknowledgments": [],
+    "decisions": []
+  },
+  "requiredFacts": [
+    {
+      "id": "fact-project-address",
+      "label": "Project address",
+      "predicate": "has_project_address",
+      "sourceId": "src-sign-devhub-guidance"
+    },
+    {
+      "id": "fact-property-owner",
+      "label": "Property owner name or authorized representative",
+      "predicate": "has_property_owner_or_authorized_representative",
+      "sourceId": "src-sign-submittal-checklist"
+    },
+    {
+      "id": "fact-sign-type",
+      "label": "Sign type",
+      "predicate": "has_sign_type",
+      "sourceId": "src-sign-devhub-guidance"
+    },
+    {
+      "id": "fact-sign-dimensions",
+      "label": "Sign dimensions and area",
+      "predicate": "has_sign_dimensions_and_area",
+      "sourceId": "src-sign-submittal-checklist"
+    },
+    {
+      "id": "fact-installation-method",
+      "label": "Installation or attachment method",
+      "predicate": "has_installation_method",
+      "sourceId": "src-sign-submittal-checklist"
+    }
+  ],
+  "requiredDocumentGroups": [
+    {
+      "id": "doc-group-application",
+      "label": "Application materials",
+      "requiredAnyOf": [
+        "application_form"
+      ],
+      "sourceId": "src-sign-devhub-guidance"
+    },
+    {
+      "id": "doc-group-plans",
+      "label": "Sign plans and location materials",
+      "requiredAllOf": [
+        "site_plan",
+        "sign_elevation_or_drawings"
+      ],
+      "sourceId": "src-sign-submittal-checklist"
+    },
+    {
+      "id": "doc-group-supporting",
+      "label": "Supporting calculations or authorization when applicable",
+      "requiredAnyOf": [
+        "structural_calculations",
+        "engineer_statement",
+        "owner_authorization"
+      ],
+      "condition": "required when fixture facts indicate engineered support or non-owner applicant",
+      "sourceId": "src-sign-submittal-checklist"
+    }
+  ],
+  "compiledGuardrails": [
+    {
+      "id": "guard-missing-facts-before-submit",
+      "kind": "missing_fact",
+      "stage": "application_data_entry",
+      "predicate": "all_required_sign_facts_present",
+      "statusForKnownCase": "blocked",
+      "missingItemsForKnownCase": [
+        "fact-property-owner",
+        "fact-sign-dimensions",
+        "fact-installation-method"
+      ],
+      "agentInstruction": "Ask only for missing sign permit facts before preparing submission guidance.",
+      "sourceIds": [
+        "src-sign-devhub-guidance",
+        "src-sign-submittal-checklist"
+      ]
+    },
+    {
+      "id": "guard-required-document-groups-before-upload",
+      "kind": "required_document_group",
+      "stage": "document_preparation",
+      "predicate": "required_sign_document_groups_complete",
+      "statusForKnownCase": "blocked",
+      "missingItemsForKnownCase": [
+        "sign_elevation_or_drawings",
+        "structural_calculations_or_engineer_statement_or_owner_authorization"
+      ],
+      "agentInstruction": "Report incomplete sign permit document groups and do not claim the package is upload-ready.",
+      "sourceIds": [
+        "src-sign-submittal-checklist"
+      ]
+    },
+    {
+      "id": "guard-payment-stop-point",
+      "kind": "action_gate",
+      "stage": "fee_payment",
+      "predicate": "explicit_user_confirmation_pay_sign_permit_fees",
+      "classification": "financial",
+      "statusForKnownCase": "stop_required",
+      "prohibitedActions": [
+        "pay_fees",
+        "enter_payment_details",
+        "authorize_payment"
+      ],
+      "requiredConfirmation": "Exact session-specific user confirmation is required before any payment action.",
+      "agentInstruction": "Stop at sign permit fee payment and provide a preview only.",
+      "sourceIds": [
+        "src-sign-devhub-guidance"
+      ]
+    },
+    {
+      "id": "guard-correction-upload-stop-point",
+      "kind": "action_gate",
+      "stage": "corrections",
+      "predicate": "explicit_user_confirmation_upload_sign_corrections",
+      "classification": "potentially_consequential",
+      "statusForKnownCase": "stop_required",
+      "prohibitedActions": [
+        "official_correction_upload",
+        "certify_correction_response",
+        "submit_correction_response"
+      ],
+      "requiredConfirmation": "Exact session-specific user confirmation is required before official correction upload or certification.",
+      "agentInstruction": "A correction response preview is allowed; official upload and certification are stopped.",
+      "sourceIds": [
+        "src-sign-devhub-guidance"
+      ]
+    },
+    {
+      "id": "guard-inspection-stop-point",
+      "kind": "action_gate",
+      "stage": "inspections",
+      "predicate": "explicit_user_confirmation_schedule_sign_inspection",
+      "classification": "potentially_consequential",
+      "statusForKnownCase": "stop_required",
+      "prohibitedActions": [
+        "schedule_inspection",
+        "reschedule_inspection",
+        "cancel_inspection"
+      ],
+      "requiredConfirmation": "Exact session-specific user confirmation is required before scheduling, rescheduling, or canceling inspections.",
+      "agentInstruction": "Stop before inspection scheduling actions and summarize the proposed inspection request.",
+      "sourceIds": [
+        "src-sign-devhub-guidance"
+      ]
+    },
+    {
+      "id": "guard-finalization-stop-point",
+      "kind": "action_gate",
+      "stage": "finalization",
+      "predicate": "explicit_user_confirmation_finalize_sign_permit_workflow",
+      "classification": "potentially_consequential",
+      "statusForKnownCase": "stop_required",
+      "prohibitedActions": [
+        "submit_application",
+        "certify_application",
+        "accept_issuance_terms",
+        "finalize_permit_request"
+      ],
+      "requiredConfirmation": "Exact session-specific user confirmation is required before submission, certification, issuance acceptance, or finalization.",
+      "agentInstruction": "Prepare a final review summary only; do not finalize the sign permit workflow from fixture data.",
+      "sourceIds": [
+        "src-sign-devhub-guidance",
+        "src-sign-submittal-checklist"
+      ]
+    }
+  ],
+  "forbiddenAutomation": [
+    "captcha",
+    "mfa",
+    "account_creation",
+    "payment",
+    "submission",
+    "certification",
+    "official_upload",
+    "inspection_scheduling",
+    "finalization"
+  ]
+}

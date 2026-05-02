@@ -1,0 +1,78 @@
+--- a/ppd/tests/test_guardrail_stop_gate_mapping.py
++++ b/ppd/tests/test_guardrail_stop_gate_mapping.py
+@@ -0,0 +1,46 @@
++"""Fixture-only validation for process stop gate to agent action gate mappings."""
++
++from __future__ import annotations
++
++import json
++import unittest
++from pathlib import Path
++from typing import Any
++
++
++FIXTURE_PATH = Path(__file__).parent / "fixtures" / "guardrails" / "stop_gate_action_gate_mapping.json"
++ALLOWED_ACTION_CLASSES = {"safe_read_only", "reversible_draft_edit"}
++
++
++class GuardrailStopGateMappingFixtureTest(unittest.TestCase):
++    def test_maps_one_process_stop_gate_to_agent_action_gate(self) -> None:
++        fixture = _load_fixture()
++        mapping = fixture["mappings"][0]
++
++        process_stop_gate = mapping["processStopGate"]
++        agent_action_gate = mapping["agentActionGate"]
++
++        self.assertEqual(
++            process_stop_gate["stopGateId"],
++            agent_action_gate["mappedFromStopGateId"],
++        )
++        self.assertIn(agent_action_gate["actionClass"], ALLOWED_ACTION_CLASSES)
++        self.assertTrue(agent_action_gate["consequenceSummary"].strip())
++        self.assertEqual(
++            process_stop_gate["sourceEvidenceIds"],
++            agent_action_gate["sourceEvidenceIds"],
++        )
++        self.assertTrue(agent_action_gate["sourceEvidenceIds"])
++        self.assertTrue(all(str(evidence_id).strip() for evidence_id in agent_action_gate["sourceEvidenceIds"]))
++
++
++def _load_fixture() -> dict[str, Any]:
++    with FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
++        fixture = json.load(fixture_file)
++    if not isinstance(fixture, dict):
++        raise AssertionError("guardrail mapping fixture must be a JSON object")
++    return fixture
++
++
++if __name__ == "__main__":
++    unittest.main()
+--- a/ppd/tests/fixtures/guardrails/stop_gate_action_gate_mapping.json
++++ b/ppd/tests/fixtures/guardrails/stop_gate_action_gate_mapping.json
+@@ -0,0 +1,26 @@
++{
++  "schemaVersion": 1,
++  "fixtureId": "guardrail-stop-gate-to-action-gate-single-pdf-process",
++  "mappings": [
++    {
++      "processStopGate": {
++        "stopGateId": "stop-gate-single-pdf-process-file-format-review",
++        "processId": "synthetic-public-ppd-building-permit-process",
++        "sourceEvidenceIds": [
++          "ppd-public-devhub-single-pdf-process",
++          "ppd-public-devhub-permit-request-plan-review"
++        ]
++      },
++      "agentActionGate": {
++        "actionGateId": "action-gate-review-single-pdf-readiness",
++        "mappedFromStopGateId": "stop-gate-single-pdf-process-file-format-review",
++        "actionClass": "safe_read_only",
++        "consequenceSummary": "The agent may inspect the public-only checklist state and explain that drawing plans should be prepared as one searchable PDF before the user proceeds to a permit request that requires plan review.",
++        "sourceEvidenceIds": [
++          "ppd-public-devhub-single-pdf-process",
++          "ppd-public-devhub-permit-request-plan-review"
++        ]
++      }
++    }
++  ]
++}

@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/test_sign_permit_requirements_size_guard.py"
+  ],
+  "created_at": "2026-05-02T00:01:17.385825Z",
+  "impact": "Prevents broad generated replacements for ppd.extraction.sign_permit_requirements by requiring the implementation to remain small, local to ppd/extraction, and dataclass-free.",
+  "summary": "Add a focused size and dataclass guard for the sign permit requirements extractor.",
+  "target_task": "Task checkbox-99: Add a one-file replacement-size guard test for `ppd.extraction.sign_permit_requirements` proposals that rejects broad generated modules and requires the extractor implementation to stay under 180 physical lines with no dataclasses.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 102 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "................................................................................................................................................................................................................................................ ---------------------------------------------------------------------- Ran 240 tests in 0.026s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

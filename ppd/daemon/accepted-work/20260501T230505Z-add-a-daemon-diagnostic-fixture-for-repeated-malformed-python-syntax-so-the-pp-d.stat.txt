@@ -1,0 +1,2 @@
+ppd/daemon/malformed_python_diagnostics.py
+ppd/tests/test_daemon_malformed_python_diagnostics.py

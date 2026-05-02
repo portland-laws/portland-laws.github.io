@@ -1,0 +1,88 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -86,10 +86,12 @@
+ - [x] Add a focused validation test for solar permit requirement extraction that checks only the seven fixture categories, source evidence IDs, confidence bounds, and explicit stop-gate classifications.
+ - [x] Add a one-file replacement-size guard test for `ppd.extraction.solar_permit_requirements` proposals that rejects broad generated modules and requires the extractor implementation to stay under 180 physical lines.
+ - [x] Add a daemon diagnostic fixture that classifies repeated malformed comparison syntax in Python proposals, including `confidence 1`, `confidence 1.0`, and `return 0.0 list[str]`, as a syntax-first retry stop condition for the same target task.
+-- [!] Retry the solar permit requirement extractor as a no-dataclass one-file implementation only after the replacement-size guard and malformed-comparison diagnostic pass; use plain constants and functions, preserve the syntax sentinel, and compare against the existing seven-record expected-output fixture only.
+ - [x] Add a mocked DevHub workflow snapshot fixture for permit fee review and payment-readiness that records visible balances, payment instructions, safe read-only status, and financial-action stop points using only redacted values.
+ - [x] Add DevHub guardrail tests proving fee review can summarize payment readiness from mocked fixtures but cannot enter payment details or execute payment without exact session-specific user confirmation.
+ - [x] Add a validation-only source coverage gap report that compares permit-process fixtures against public source inventory categories and reports which PP&D permit families still lack fixture-backed process models.
++- [ ] Add a supervisor self-test fixture proving a stale blocked solar extractor retry is parked after its size guard and malformed-comparison diagnostic have both passed, so task selection can continue with the next independent `[ ]` item.
++- [ ] Add a daemon prompt preflight check that refuses to ask for the solar extractor implementation unless the prompt explicitly names the one-file, no-dataclass, syntax-sentinel-preserving, seven-record expected-output constraints.
++- [ ] Add a validation-only regression fixture that reports `no_eligible_tasks` as a supervisor programming error when all remaining work is a parked stale retry and no new fixture-first task has been appended.
+ 
+ ## Deferred Broad Items
+ 
+@@ -101,6 +103,7 @@
+ - Parked public-source-inventory validator broad task: Add validation for public source inventory safety. This was recovered by the accepted sentinel-preserving one-file implementation. Do not select the older broad retry tasks again unless a new failing validator points to a concrete regression.
+ - Parked solar requirement extraction broad task: Add requirement extraction validation for the solar permit fixture covering eligibility, plan-review applicability, upload requirements, fee/payment checkpoints, corrections, inspections, and explicit-confirmation gates. This repeatedly failed with invalid Python such as `confidence 1`; recover through the syntax-first import test, seven-record fixture, no-dataclass extractor, and focused validation test before retrying any broader behavior.
+ - Parked checkbox-78: Add the solar permit requirement extractor as a no-dataclass one-file implementation only after the syntax-first import test and seven-record fixture pass; expose plain functions/constants and avoid broad contract rewrites. This task has failed repeatedly with `py_compile` SyntaxError variants including `confidence 1.0` and `return 0.0 list[str]`. Do not keep it in selectable checkbox form; resume only through the new size guard, malformed-comparison diagnostic, and narrowed retry task.
++- Parked checkbox-81: Retry the solar permit requirement extractor as a no-dataclass one-file implementation only after the replacement-size guard and malformed-comparison diagnostic pass; use plain constants and functions, preserve the syntax sentinel, and compare against the existing seven-record expected-output fixture only. This retry became stale because later independent fixture-backed work passed while the board still reported one blocked task and no needed tasks. Do not select it again until daemon prompt preflight proves the exact one-file constraints are present in the worker prompt.
+ - Superseded checkbox-70: Retry the public source inventory validator as a one-file implementation only after the `MODULE_PURPOSE` sentinel and expected unsafe-field fixture path pass validation. This was superseded by the accepted sentinel-preserving validator retry.
+ - Superseded checkbox-71: Retry the public source inventory validator as a no-dataclass one-file implementation only. This was superseded by the accepted sentinel-preserving validator retry that preserves `validator_status()` exactly.
+ - Superseded checkbox-75: The broad solar requirement extraction validation task is parked because three consecutive attempts produced Python `SyntaxError` failures. Do not select it directly while the narrower solar recovery tasks remain available.
+@@ -115,13 +118,13 @@
+ 
+ The public-source-inventory validation sequence produced useful narrow repairs after repeated failures: sentinel restoration, fixture-name compatibility, and a final sentinel-preserving no-dataclass validator. Older blocked retries are now parked because selecting them again would regress into stale failure modes. The accepted validator recovery keeps `validator_status()` as an import sentinel and exposes behavior through separate plain functions/constants/dicts.
+ 
+-The solar permit requirement extraction task is split further because the latest extractor attempts still failed before import under `py_compile`. The daemon should add a size guard and malformed-comparison diagnostic before any extractor implementation retry. The recovery implementation must not use dataclasses, generated comparison operators, broad schemas, live crawl data, DevHub session files, private artifacts, or more than one implementation file.
++The solar permit requirement extraction task is split further because extractor attempts failed before import under `py_compile`. The daemon must keep the size guard and malformed-comparison diagnostic in force before any extractor implementation retry. The recovery implementation must not use dataclasses, generated comparison operators, broad schemas, live crawl data, DevHub session files, private artifacts, or more than one implementation file.
+ 
+ ## Task Selection Notes
+ 
+ Parked broad tasks should not stop unrelated PP&D progress. Broad failed work belongs in Deferred Broad Items, not in selectable checkbox form, while any independent `[ ]` fixture-first or validation-first task remains selectable.
+ 
+-The next tranche should stay fixture-only and validation-first: coverage reporting before new process extraction, solar process fixtures before solar requirement extraction, requirement validation before guardrail compilation, and mocked payment-readiness fixtures before any payment-related guardrail behavior. No task in this tranche authorizes live crawling, login, payment entry, submission, upload, certification, cancellation, or inspection scheduling.
++The next tranche should stay fixture-only and validation-first: supervisor/task-selection recovery before implementation retry, prompt preflight before generated code, coverage reporting before new process extraction, and mocked payment-readiness fixtures before any payment-related guardrail behavior. No task in this tranche authorizes live crawling, login, payment entry, submission, upload, certification, cancellation, or inspection scheduling.
+ 
+ When no independent task is active, prefer recovery tasks in this order:
+ 
+@@ -132,7 +135,7 @@
+ 5. If validation reports that a sentinel helper returned extra keys or readiness flags, retry only with a sentinel-preserving implementation and expose behavior through separate functions.
+ 6. After a later narrower recovery passes, park earlier blocked retries as superseded so they do not count as active blockers.
+ 7. Do not select parked broad validation tasks directly.
+-8. For solar requirement extraction, do not select parked checkbox-78 directly; run the size guard, malformed-comparison diagnostic, narrowed extractor retry, and focused validation tasks in order.
++8. For solar requirement extraction, do not select parked checkbox-78 or parked checkbox-81 directly; first prove prompt preflight includes the exact one-file, no-dataclass, syntax-sentinel, seven-record fixture constraints.
+ 
+ Each recovery proposal should keep to one file unless the task explicitly requires a fixture plus its focused test. For public source inventory recovery, keep syntax sentinel repair separate from behavior repair, and keep the sentinel helper stable even after validator functions are added.
+ 
+@@ -149,25 +152,23 @@
+ - Prefer deterministic fixtures and validation-only changes before adding live crawl, authenticated DevHub, browser, or network behavior.
+ - Do not create private DevHub session files, auth state, traces, raw crawl output, screenshots, or downloaded documents in repair cycles.
+ 
++## Generated Status
++
++Last updated: 2026-05-01T23:18:00Z
++
++- Latest target: `Supervisor repair: park stale blocked checkbox-81 solar extractor retry and append daemon recovery tasks.`
++- Latest result: `supervisor_repair`
++- Latest summary: Parked checkbox-81 outside selectable checklist form and appended validation-first daemon recovery tasks so the worker can resume meaningful progress.
++- Counts: `{"blocked": 0, "complete": 83, "in_progress": 0, "needed": 3}`
++
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-01T22:20:38.351578Z
++Last updated: 2026-05-01T23:18:00Z
+ 
+-- Latest target: `Supervisor repair: park repeated checkbox-78 solar extractor SyntaxError task and append narrower syntax guard recovery tasks.`
++- Latest target: `Supervisor repair: park stale blocked checkbox-81 solar extractor retry and append daemon recovery tasks.`
+ - Latest result: `supervisor_repair`
+-- Latest summary: Parked checkbox-78 outside selectable checklist form after repeated py_compile failures and appended validation-first guard tasks before retrying the extractor.
+-- Counts: `{"blocked": 0, "complete": 77, "in_progress": 1, "needed": 6}`
++- Latest summary: Parked checkbox-81 outside selectable checklist form and appended validation-first daemon recovery tasks so the worker can resume meaningful progress.
++- Counts: `{"blocked": 0, "complete": 83, "in_progress": 0, "needed": 3}`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-01T23:13:50.777038Z
+-
+-- Latest target: `Task checkbox-80: Add a daemon diagnostic fixture that classifies repeated malformed comparison syntax in Python proposals, including `confidence 1`, `confidence 1.0`, and `return 0.0 list[str]`, as a syntax-first retry stop condition for the same target task.`
+-- Latest result: `accepted`
+-- Latest summary: Add a syntax-valid daemon diagnostic classifier and fixture for repeated malformed Python comparison syntax failures.
+-- Counts: `{"blocked": 1, "complete": 83, "in_progress": 0, "needed": 0}`
+-
+-<!-- ppd-daemon-task-board:end -->

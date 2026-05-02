@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/permit-processes/solar_permit_workflow.json",
+    "ppd/tests/test_solar_permit_process_fixture.py"
+  ],
+  "created_at": "2026-05-01T21:47:24.180281Z",
+  "impact": "Adds the next PP&D permit-process fixture using only existing public fixture source IDs, covering solar workflow facts, documents, file rules, fee/payment gates, corrections, inspections, and confirmation stop points without live crawl or DevHub automation.",
+  "summary": "Add fixture-only solar permit process skeleton with validation",
+  "target_task": "Task checkbox-74: Add a fixture-only permit-process skeleton for a solar permit workflow with required facts, required documents, file rules, fee/payment gates, and citation-backed evidence from existing public fixtures only.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 79 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "........................................................................................................................................................ ---------------------------------------------------------------------- Ran 152 tests in 0.020s OK",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

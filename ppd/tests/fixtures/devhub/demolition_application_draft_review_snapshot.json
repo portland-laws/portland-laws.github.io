@@ -1,0 +1,292 @@
+{
+  "schemaVersion": 1,
+  "snapshotId": "devhub-demolition-application-draft-review-redacted-v1",
+  "workflow": "demolition_application_draft_review",
+  "capturedMode": "mocked_fixture_only",
+  "capturedAt": "2026-05-01T00:00:00Z",
+  "sourceSystem": "DevHub PDX mocked form state",
+  "privacy": {
+    "redactionPolicy": "all user, property, account, project, document, and contact values are redacted",
+    "containsCredentials": false,
+    "containsAuthState": false,
+    "containsTrace": false,
+    "containsScreenshot": false,
+    "containsRawCrawlOutput": false,
+    "containsDownloadedDocuments": false
+  },
+  "state": {
+    "stateId": "draft-review",
+    "pageTitle": "Review demolition permit application draft",
+    "urlState": "https://devhub.portlandoregon.gov/mock/permits/demolition/draft/review",
+    "nearbyHeading": "Review your application",
+    "draftStatus": "saved_for_later_available",
+    "saveForLater": {
+      "available": true,
+      "button": {
+        "role": "button",
+        "accessibleName": "Save for later",
+        "labelText": "Save for later",
+        "nearbyHeading": "Review your application",
+        "semanticSelector": "getByRole('button', { name: 'Save for later' })"
+      },
+      "resultingState": "draft_saved_not_submitted",
+      "confirmationMessage": "Your draft has been saved. You can return to finish it later.",
+      "storedValues": "redacted"
+    }
+  },
+  "semanticSelectors": [
+    {
+      "id": "application_summary_panel",
+      "role": "region",
+      "accessibleName": "Application summary",
+      "labelText": "Application summary",
+      "nearbyHeading": "Review your application",
+      "urlState": "draft-review",
+      "fallbackCss": null
+    },
+    {
+      "id": "required_fields_panel",
+      "role": "region",
+      "accessibleName": "Required fields",
+      "labelText": "Required fields",
+      "nearbyHeading": "Application summary",
+      "urlState": "draft-review",
+      "fallbackCss": null
+    },
+    {
+      "id": "documents_upload_panel",
+      "role": "region",
+      "accessibleName": "Documents",
+      "labelText": "Documents",
+      "nearbyHeading": "Upload documents",
+      "urlState": "draft-review",
+      "fallbackCss": null
+    },
+    {
+      "id": "certification_checkbox",
+      "role": "checkbox",
+      "accessibleName": "I certify the demolition application information is accurate",
+      "labelText": "I certify the demolition application information is accurate",
+      "nearbyHeading": "Applicant certification",
+      "urlState": "draft-review",
+      "fallbackCss": null
+    },
+    {
+      "id": "submit_application_button",
+      "role": "button",
+      "accessibleName": "Submit application",
+      "labelText": "Submit application",
+      "nearbyHeading": "Ready to submit",
+      "urlState": "draft-review",
+      "fallbackCss": null
+    }
+  ],
+  "requiredFields": [
+    {
+      "fieldId": "project_address",
+      "labelText": "Project address",
+      "role": "textbox",
+      "nearbyHeading": "Project location",
+      "required": true,
+      "valueState": "redacted_present",
+      "redactedValue": "[REDACTED_PROJECT_ADDRESS]",
+      "semanticSelector": "getByLabel('Project address')",
+      "validationMessages": []
+    },
+    {
+      "fieldId": "property_owner",
+      "labelText": "Property owner",
+      "role": "textbox",
+      "nearbyHeading": "Property owner",
+      "required": true,
+      "valueState": "redacted_present",
+      "redactedValue": "[REDACTED_PROPERTY_OWNER]",
+      "semanticSelector": "getByLabel('Property owner')",
+      "validationMessages": []
+    },
+    {
+      "fieldId": "applicant_contact",
+      "labelText": "Applicant contact",
+      "role": "textbox",
+      "nearbyHeading": "Applicant information",
+      "required": true,
+      "valueState": "redacted_missing",
+      "redactedValue": "[REDACTED_EMPTY]",
+      "semanticSelector": "getByLabel('Applicant contact')",
+      "validationMessages": ["Applicant contact is required before submission."]
+    },
+    {
+      "fieldId": "demolition_scope",
+      "labelText": "Description of demolition work",
+      "role": "textbox",
+      "nearbyHeading": "Project details",
+      "required": true,
+      "valueState": "redacted_present",
+      "redactedValue": "[REDACTED_DEMOLITION_SCOPE]",
+      "semanticSelector": "getByLabel('Description of demolition work')",
+      "validationMessages": []
+    },
+    {
+      "fieldId": "structure_type",
+      "labelText": "Structure type",
+      "role": "combobox",
+      "nearbyHeading": "Project details",
+      "required": true,
+      "valueState": "redacted_present",
+      "redactedValue": "[REDACTED_STRUCTURE_TYPE]",
+      "semanticSelector": "getByRole('combobox', { name: 'Structure type' })",
+      "options": ["Residential structure", "Commercial structure", "Accessory structure", "Other"],
+      "validationMessages": []
+    },
+    {
+      "fieldId": "contractor_license",
+      "labelText": "Contractor license number",
+      "role": "textbox",
+      "nearbyHeading": "Contractor information",
+      "required": true,
+      "valueState": "redacted_missing",
+      "redactedValue": "[REDACTED_EMPTY]",
+      "semanticSelector": "getByLabel('Contractor license number')",
+      "validationMessages": ["Contractor license number is required or an owner-as-applicant exception must be selected."]
+    }
+  ],
+  "uploadControls": [
+    {
+      "controlId": "demolition_application_pdf",
+      "role": "button",
+      "accessibleName": "Upload demolition application PDF",
+      "labelText": "Demolition application PDF",
+      "nearbyHeading": "Upload documents",
+      "required": true,
+      "acceptedFileTypes": ["application/pdf"],
+      "fileSizeHint": "Maximum file size is shown in DevHub at upload time.",
+      "fileNameRule": "Use a descriptive document name; fixture values remain redacted.",
+      "currentFileState": "missing",
+      "redactedFileName": "[REDACTED_FILE_NAME]",
+      "semanticSelector": "getByRole('button', { name: 'Upload demolition application PDF' })",
+      "validationMessages": ["Demolition application PDF is required before submission."]
+    },
+    {
+      "controlId": "site_plan_pdf",
+      "role": "button",
+      "accessibleName": "Upload site plan PDF",
+      "labelText": "Site plan PDF",
+      "nearbyHeading": "Upload documents",
+      "required": true,
+      "acceptedFileTypes": ["application/pdf"],
+      "fileSizeHint": "Maximum file size is shown in DevHub at upload time.",
+      "fileNameRule": "Plans should be uploaded as searchable PDF when required by the public process guidance.",
+      "currentFileState": "redacted_present",
+      "redactedFileName": "[REDACTED_SITE_PLAN_FILE]",
+      "semanticSelector": "getByRole('button', { name: 'Upload site plan PDF' })",
+      "validationMessages": []
+    },
+    {
+      "controlId": "supporting_documents_pdf",
+      "role": "button",
+      "accessibleName": "Upload supporting documents PDF",
+      "labelText": "Supporting documents PDF",
+      "nearbyHeading": "Upload documents",
+      "required": false,
+      "acceptedFileTypes": ["application/pdf"],
+      "fileSizeHint": "Maximum file size is shown in DevHub at upload time.",
+      "fileNameRule": "Separate supporting documents from drawing plans when the workflow asks for separate PDFs.",
+      "currentFileState": "not_uploaded",
+      "redactedFileName": "[REDACTED_OPTIONAL_FILE]",
+      "semanticSelector": "getByRole('button', { name: 'Upload supporting documents PDF' })",
+      "validationMessages": []
+    }
+  ],
+  "validationMessages": [
+    {
+      "messageId": "missing_applicant_contact",
+      "severity": "error",
+      "text": "Applicant contact is required before submission.",
+      "blocksSubmission": true,
+      "fieldId": "applicant_contact"
+    },
+    {
+      "messageId": "missing_contractor_license_or_exception",
+      "severity": "error",
+      "text": "Contractor license number is required or an owner-as-applicant exception must be selected.",
+      "blocksSubmission": true,
+      "fieldId": "contractor_license"
+    },
+    {
+      "messageId": "missing_demolition_application_pdf",
+      "severity": "error",
+      "text": "Demolition application PDF is required before submission.",
+      "blocksSubmission": true,
+      "fieldId": "demolition_application_pdf"
+    },
+    {
+      "messageId": "certification_required",
+      "severity": "error",
+      "text": "You must review and certify the application before submitting.",
+      "blocksSubmission": true,
+      "fieldId": "certification_checkbox"
+    }
+  ],
+  "navigationEdges": [
+    {
+      "edgeId": "review_back_to_documents",
+      "fromState": "draft-review",
+      "toState": "documents-upload",
+      "actionLabel": "Back",
+      "classification": "safe_read_only",
+      "semanticSelector": "getByRole('button', { name: 'Back' })",
+      "confirmationRequired": false
+    },
+    {
+      "edgeId": "review_save_for_later",
+      "fromState": "draft-review",
+      "toState": "draft-saved",
+      "actionLabel": "Save for later",
+      "classification": "reversible_draft_edit",
+      "semanticSelector": "getByRole('button', { name: 'Save for later' })",
+      "confirmationRequired": false
+    },
+    {
+      "edgeId": "review_submit_application",
+      "fromState": "draft-review",
+      "toState": "submitted-application",
+      "actionLabel": "Submit application",
+      "classification": "potentially_consequential",
+      "semanticSelector": "getByRole('button', { name: 'Submit application' })",
+      "confirmationRequired": true,
+      "blockedUntilValidationClears": true
+    }
+  ],
+  "confirmationGates": [
+    {
+      "gateId": "certify_demolition_application",
+      "action": "certify_demolition_application",
+      "classification": "potentially_consequential",
+      "visibleControl": "I certify the demolition application information is accurate",
+      "exactRequiredUserConfirmation": "I confirm I want to certify this redacted demolition application draft in this DevHub session.",
+      "agentMayProceedWithoutExactConfirmation": false,
+      "semanticSelector": "getByRole('checkbox', { name: 'I certify the demolition application information is accurate' })",
+      "auditRequirement": "record selector basis, redacted before/after state, and session-specific confirmation"
+    },
+    {
+      "gateId": "official_upload_demolition_application_pdf",
+      "action": "official_upload_demolition_application_pdf",
+      "classification": "potentially_consequential",
+      "visibleControl": "Upload demolition application PDF",
+      "exactRequiredUserConfirmation": "I confirm I want to upload the selected redacted demolition application PDF to this DevHub draft in this session.",
+      "agentMayProceedWithoutExactConfirmation": false,
+      "semanticSelector": "getByRole('button', { name: 'Upload demolition application PDF' })",
+      "auditRequirement": "record file inventory using redacted filename only and do not store document contents"
+    },
+    {
+      "gateId": "submit_demolition_application",
+      "action": "submit_demolition_application",
+      "classification": "potentially_consequential",
+      "visibleControl": "Submit application",
+      "exactRequiredUserConfirmation": "I confirm I want to submit this redacted demolition application to Portland Permitting and Development in this DevHub session.",
+      "agentMayProceedWithoutExactConfirmation": false,
+      "semanticSelector": "getByRole('button', { name: 'Submit application' })",
+      "auditRequirement": "record action preview, blocking validation status, and exact user confirmation before submit"
+    }
+  ]
+}

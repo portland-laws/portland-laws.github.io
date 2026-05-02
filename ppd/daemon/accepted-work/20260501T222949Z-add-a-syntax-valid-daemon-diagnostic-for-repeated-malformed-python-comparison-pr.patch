@@ -1,0 +1,225 @@
+--- a/ppd/daemon/proposal_syntax_diagnostics.py
++++ b/ppd/daemon/proposal_syntax_diagnostics.py
+@@ -0,0 +1,94 @@
++"""Diagnostics for repeated syntax-invalid daemon proposals.
++
++The daemon records failed proposal manifests after validation rollback. This module
++keeps the retry guidance deterministic when several attempts against the same
++target task fail before Python can compile.
++"""
++
++from __future__ import annotations
++
++from typing import Any
++
++SYNTAX_FAILURE_MARKERS = (
++    "SyntaxError",
++    "py_compile",
++    "TS1005",
++    "TS1109",
++    "TS1128",
++)
++
++MALFORMED_PYTHON_FRAGMENTS = (
++    "confidence 1",
++    "confidence 1.0",
++    "return 0.0 list[str]",
++)
++
++RECOMMENDED_RETRY_GUIDANCE = (
++    "Stop retrying the same target task as a broad implementation. Add or run a "
++    "syntax-first guard, reduce the proposal to the smallest file set, and return "
++    "only code that compiles before broad validation resumes."
++)
++
++
++def _string_values(value: Any) -> list[str]:
++    if isinstance(value, str):
++        return [value]
++    if isinstance(value, dict):
++        values: list[str] = []
++        for nested in value.values():
++            values.extend(_string_values(nested))
++        return values
++    if isinstance(value, list):
++        values = []
++        for nested in value:
++            values.extend(_string_values(nested))
++        return values
++    return []
++
++
++def proposal_failure_text(proposal: dict[str, Any]) -> str:
++    """Return compact searchable text for one daemon proposal result."""
++
++    return "\n".join(_string_values(proposal))
++
++
++def is_syntax_failure(proposal: dict[str, Any]) -> bool:
++    """Return True when validation output points to parser/compiler failure."""
++
++    text = proposal_failure_text(proposal)
++    return any(marker in text for marker in SYNTAX_FAILURE_MARKERS)
++
++
++def malformed_fragments(proposal: dict[str, Any]) -> list[str]:
++    """Return known malformed generated-code fragments present in a proposal."""
++
++    text = proposal_failure_text(proposal)
++    return [fragment for fragment in MALFORMED_PYTHON_FRAGMENTS if fragment in text]
++
++
++def classify_repeated_syntax_failures(
++    proposals: list[dict[str, Any]],
++    minimum_repetitions: int = 2,
++) -> dict[str, Any]:
++    """Classify whether recent failures should stop same-task broad retries.
++
++    The input is intentionally plain JSON-shaped data so tests can exercise the
++    same records the daemon persists in progress/result logs.
++    """
++
++    syntax_failures = [proposal for proposal in proposals if is_syntax_failure(proposal)]
++    fragments: list[str] = []
++    for proposal in syntax_failures:
++        for fragment in malformed_fragments(proposal):
++            if fragment not in fragments:
++                fragments.append(fragment)
++
++    stop_condition = len(syntax_failures) >= minimum_repetitions and bool(fragments)
++    return {
++        "diagnostic": "repeated_syntax_failure" if stop_condition else "no_repeated_syntax_failure",
++        "stop_condition": stop_condition,
++        "syntax_failure_count": len(syntax_failures),
++        "malformed_fragments": fragments,
++        "recommended_file_set": "one implementation file plus one focused test or fixture at most",
++        "retry_guidance": RECOMMENDED_RETRY_GUIDANCE if stop_condition else "No syntax-first retry stop is required.",
++    }
+--- a/ppd/tests/fixtures/daemon_diagnostics/repeated_malformed_comparison_python_proposals.json
++++ b/ppd/tests/fixtures/daemon_diagnostics/repeated_malformed_comparison_python_proposals.json
+@@ -0,0 +1,49 @@
++{
++  "fixtureKind": "daemon_repeated_syntax_failures",
++  "targetTask": "Task checkbox-78: Add the solar permit requirement extractor as a no-dataclass one-file implementation only after the syntax-first import test and seven-record fixture pass; expose plain functions/constants and avoid broad contract rewrites.",
++  "minimumRepetitions": 2,
++  "proposals": [
++    {
++      "failure_kind": "validation",
++      "summary": "Add a narrow no-dataclass solar permit requirement extractor module.",
++      "validation_results": [
++        {
++          "command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
++          "returncode": 1,
++          "stderr": "ppd/extraction/solar_permit_requirements.py failed py_compile: line 415 if confidence 1.0: SyntaxError: invalid syntax",
++          "stdout": ""
++        }
++      ]
++    },
++    {
++      "failure_kind": "validation",
++      "summary": "Add a syntax-valid no-dataclass solar permit requirement extractor as a single narrow module.",
++      "validation_results": [
++        {
++          "command": ["python3", "-m", "unittest", "discover", "-s", "ppd/tests", "-p", "test_*.py"],
++          "returncode": 1,
++          "stderr": "File ppd/extraction/solar_permit_requirements.py, line 347 return 0.0 list[str]: SyntaxError: invalid syntax",
++          "stdout": ""
++        }
++      ]
++    },
++    {
++      "failure_kind": "validation",
++      "summary": "Retry the extractor after focused fixtures.",
++      "validation_results": [
++        {
++          "command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
++          "returncode": 1,
++          "stderr": "ppd/extraction/solar_permit_requirements.py failed py_compile: line 191 elif confidence 1: SyntaxError: invalid syntax",
++          "stdout": ""
++        }
++      ]
++    }
++  ],
++  "expected": {
++    "diagnostic": "repeated_syntax_failure",
++    "stop_condition": true,
++    "syntax_failure_count": 3,
++    "malformed_fragments": ["confidence 1", "confidence 1.0", "return 0.0 list[str]"]
++  }
++}
+--- a/ppd/tests/test_daemon_proposal_syntax_diagnostics.py
++++ b/ppd/tests/test_daemon_proposal_syntax_diagnostics.py
+@@ -0,0 +1,73 @@
++from __future__ import annotations
++
++import json
++from pathlib import Path
++import unittest
++
++from ppd.daemon.proposal_syntax_diagnostics import (
++    classify_repeated_syntax_failures,
++    malformed_fragments,
++)
++
++
++FIXTURE_PATH = (
++    Path(__file__).parent
++    / "fixtures"
++    / "daemon_diagnostics"
++    / "repeated_malformed_comparison_python_proposals.json"
++)
++
++
++class DaemonProposalSyntaxDiagnosticsTest(unittest.TestCase):
++    def load_fixture(self) -> dict:
++        return json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
++
++    def test_repeated_malformed_comparison_syntax_stops_same_task_retry(self) -> None:
++        fixture = self.load_fixture()
++        result = classify_repeated_syntax_failures(
++            fixture["proposals"],
++            minimum_repetitions=fixture["minimumRepetitions"],
++        )
++
++        self.assertEqual(fixture["expected"]["diagnostic"], result["diagnostic"])
++        self.assertIs(result["stop_condition"], True)
++        self.assertEqual(fixture["expected"]["syntax_failure_count"], result["syntax_failure_count"])
++        self.assertEqual(
++            fixture["expected"]["malformed_fragments"],
++            result["malformed_fragments"],
++        )
++        self.assertIn("syntax-first guard", result["retry_guidance"])
++        self.assertIn("smallest file set", result["retry_guidance"])
++
++    def test_non_syntax_failure_does_not_trigger_stop_condition(self) -> None:
++        result = classify_repeated_syntax_failures(
++            [
++                {
++                    "failure_kind": "validation",
++                    "validation_results": [
++                        {
++                            "returncode": 1,
++                            "stderr": "AssertionError: expected seven categories",
++                        }
++                    ],
++                }
++            ],
++            minimum_repetitions=1,
++        )
++
++        self.assertEqual("no_repeated_syntax_failure", result["diagnostic"])
++        self.assertIs(result["stop_condition"], False)
++        self.assertEqual([], result["malformed_fragments"])
++
++    def test_fragment_detection_keeps_known_examples_explicit(self) -> None:
++        fragments = malformed_fragments(
++            {
++                "stderr": "SyntaxError near confidence 1.0 and return 0.0 list[str]"
++            }
++        )
++
++        self.assertEqual(["confidence 1", "confidence 1.0", "return 0.0 list[str]"], fragments)
++
++
++if __name__ == "__main__":
++    unittest.main()
