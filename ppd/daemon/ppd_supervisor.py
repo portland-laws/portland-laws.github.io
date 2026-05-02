@@ -61,6 +61,7 @@ MALFORMED_PYTHON_PROPOSAL_MARKERS = (
 )
 
 TASK_TITLE_RE = re.compile(r"Task checkbox-\d+:\s*")
+CHECKBOX_ID_RE = re.compile(r"checkbox-(\d+)")
 
 
 @dataclass(frozen=True)
@@ -242,6 +243,142 @@ def is_private_session_preflight_false_positive(proposal: dict[str, Any]) -> boo
     return any("session" in path.lower() and not is_private_write_path(path) for path in files)
 
 
+def is_empty_task_board_truncation_proposal(proposal: dict[str, Any]) -> bool:
+    """Detect a worker no-op caused by truncated task-board context."""
+
+    if proposal.get("applied"):
+        return False
+    if proposal.get("files") or proposal.get("changed_files") or proposal.get("errors"):
+        return False
+    target = str(proposal.get("target_task") or "").lower()
+    if "checkbox-133" not in target or "task-board-only supersession note" not in target:
+        return False
+    text = " ".join(
+        str(proposal.get(field) or "")
+        for field in ("summary", "impact", "failure_kind")
+    ).lower()
+    return "task-board.md" in text and "truncated" in text
+
+
+def is_checkbox_133_no_file_stall(proposal: dict[str, Any]) -> bool:
+    if proposal.get("applied"):
+        return False
+    if proposal.get("files") or proposal.get("changed_files"):
+        return False
+    target = str(proposal.get("target_task") or "").lower()
+    if "checkbox-133" not in target or "task-board-only supersession note" not in target:
+        return False
+    if is_empty_task_board_truncation_proposal(proposal):
+        return True
+    return str(proposal.get("failure_kind") or "") in {"parse", "llm", "no_change", ""}
+
+
+def has_recent_checkbox_133_no_file_stall(rows: list[dict[str, Any]], latest: dict[str, Any]) -> bool:
+    candidates = [latest] if latest else []
+    candidates.extend(reversed(rows[-4:]))
+    return any(is_checkbox_133_no_file_stall(candidate) for candidate in candidates)
+
+
+def has_checkbox_108_supersession_prerequisites(rows: list[dict[str, Any]]) -> bool:
+    """Return True when accepted work covers the checkbox-133 prerequisites."""
+
+    accepted_text = "\n".join(
+        " ".join(
+            str(row.get(field) or "")
+            for field in ("target_task", "summary", "impact")
+        ).lower()
+        for row in rows
+        if row.get("applied") and row.get("validation_passed") and not row.get("errors")
+    )
+    required_markers = (
+        "checkbox-130",
+        "checkbox-131",
+        "checkbox-109",
+        "queued",
+        "accepted",
+        "skipped",
+        "deferred",
+        "allowlist",
+        "robots/no-persist",
+        "content-type",
+        "timeout",
+        "processor-handoff",
+    )
+    return all(marker in accepted_text for marker in required_markers)
+
+
+def builtin_supersession_repair_task_board(markdown: str, rows: list[dict[str, Any]]) -> tuple[str, tuple[str, ...]]:
+    """Append checkbox-108 supersession note and complete the board-only repair task."""
+
+    if "## Checkbox-108 Supersession Note" in markdown:
+        return markdown, ()
+    if not has_checkbox_108_supersession_prerequisites(rows):
+        return markdown, ()
+
+    changed_labels: list[str] = []
+    repaired_lines: list[str] = []
+    for line in markdown.splitlines(keepends=True):
+        stripped = line.rstrip("\n")
+        if stripped.startswith("- [!] Task checkbox-108:") or stripped.startswith("- [~] Task checkbox-108:"):
+            line = line.replace("- [!]", "- [x]", 1).replace("- [~]", "- [x]", 1)
+            changed_labels.append("checkbox-108")
+        elif stripped.startswith("- [!] Task checkbox-132:") or stripped.startswith("- [~] Task checkbox-132:") or stripped.startswith("- [ ] Task checkbox-132:"):
+            line = line.replace("- [!]", "- [x]", 1).replace("- [~]", "- [x]", 1).replace("- [ ]", "- [x]", 1)
+            changed_labels.append("checkbox-132")
+        elif stripped.startswith("- [~] Task checkbox-133:") or stripped.startswith("- [ ] Task checkbox-133:"):
+            line = line.replace("- [~]", "- [x]", 1).replace("- [ ]", "- [x]", 1)
+            changed_labels.append("checkbox-133")
+        repaired_lines.append(line)
+
+    if not {"checkbox-108", "checkbox-133"}.issubset(set(changed_labels)):
+        return markdown, ()
+
+    note = (
+        "\n"
+        "## Checkbox-108 Supersession Note\n\n"
+        "- Checkbox-108 is superseded on the task board only. Accepted checkbox-109, checkbox-130, "
+        "checkbox-131, and checkbox-132 evidence covers queued, accepted, skipped, deferred, allowlist, "
+        "robots/no-persist, content-type, timeout, and processor-handoff behavior. No crawler contracts, "
+        "crawler code, public fixtures, crawl output, live automation, or authenticated DevHub artifacts were added for this supersession.\n"
+    )
+    return "".join(repaired_lines).rstrip() + note, tuple(changed_labels)
+
+
+def next_checkbox_number(markdown: str) -> int:
+    values = [int(match.group(1)) for match in CHECKBOX_ID_RE.finditer(markdown)]
+    return (max(values) + 1) if values else 1
+
+
+def builtin_replenish_goal_tasks(markdown: str) -> tuple[str, tuple[str, ...]]:
+    """Append a deterministic fixture-first tranche when agentic planning fails."""
+
+    tasks = parse_tasks(markdown)
+    if not tasks or any(task.status in {"needed", "in-progress"} for task in tasks):
+        return markdown, ()
+    if "## Built-In Goal Replenishment Tranche" in markdown:
+        return markdown, ()
+
+    start = next_checkbox_number(markdown)
+    templates = [
+        "Add a fixture-only processor archive integration manifest that maps PP&D public source URLs, canonical document IDs, content-hash placeholders, and processor handoff IDs without crawling, downloading documents, or storing raw bodies.",
+        "Add validation for the processor archive integration manifest proving every archived public source has citation-backed provenance, no private DevHub data, no raw crawl output, and a deterministic handoff ID for formal-logic extraction.",
+        "Add a mocked Playwright draft-fill plan fixture for one PP&D form that ranks selectors by evidence confidence, maps missing user facts to questions, and limits automation to reversible draft-only field previews.",
+        "Add validation for the Playwright draft-fill plan fixture proving low-confidence selectors, uploads, submissions, payments, certifications, cancellations, MFA, CAPTCHA, and inspection scheduling remain refused by default.",
+        "Add a fixture-only formal-logic guardrail bundle that translates one archived PP&D requirement set into obligations, prerequisites, stop gates, reversible actions, and exact-confirmation requirements.",
+        "Add validation for formal-logic guardrail bundles proving missing citations, stale evidence, private values, and consequential or financial actions fail closed before any LLM agent may plan autonomous completion.",
+    ]
+    labels = tuple(f"checkbox-{start + offset}" for offset in range(len(templates)))
+    lines = ["", "## Built-In Goal Replenishment Tranche", ""]
+    for offset, text in enumerate(templates):
+        lines.append(f"- [ ] Task checkbox-{start + offset}: {text}")
+    note = (
+        "\n"
+        "## Built-In Supervisor Planning Notes\n\n"
+        "- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.\n"
+    )
+    return markdown.rstrip() + "\n" + "\n".join(lines) + note, labels
+
+
 def should_blocked_tasks_interrupt(blocked_count: int, selectable_count: int, threshold: int) -> bool:
     return blocked_count >= threshold and selectable_count == 0
 
@@ -327,6 +464,17 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
             reason="daemon has no eligible tasks; review completed work against the PP&D plan and add the next backlog tranche",
             severity="info",
             should_invoke_codex=True,
+        )
+
+    if has_recent_checkbox_133_no_file_stall(rows, latest) and has_checkbox_108_supersession_prerequisites(rows):
+        return SupervisorDecision(
+            action="reconcile_supersession_task_board",
+            reason=(
+                "checkbox-133 returned repeated no-file task-board proposals even though accepted "
+                "checkbox-109/130/131/132 evidence is sufficient; apply deterministic task-board-only supersession repair"
+            ),
+            severity="warning",
+            should_restart_daemon=True,
         )
 
     if is_private_session_preflight_false_positive(latest):
@@ -565,6 +713,7 @@ def should_apply_builtin_repair(decision: SupervisorDecision, proposal: Proposal
         "invoke_codex",
         "repair_daemon_programming",
         "plan_next_tasks",
+        "reconcile_supersession_task_board",
     }
 
 
@@ -618,9 +767,15 @@ def invoke_builtin_repair(
     board_path = config.resolve(config.task_board)
     board = read_text(board_path) if board_path.exists() else ""
     repaired_board, parked_titles = builtin_repair_task_board(board, rows)
+    repaired_board, superseded_labels = builtin_supersession_repair_task_board(repaired_board, rows)
+    replenished_labels: tuple[str, ...] = ()
+    if decision.action == "plan_next_tasks":
+        repaired_board, replenished_labels = builtin_replenish_goal_tasks(repaired_board)
     payload = build_builtin_repair_status_payload(decision, failed_proposal)
     payload["taskBoardRepair"] = {
         "parkedRepeatedSyntaxLoopTasks": list(parked_titles),
+        "supersededTaskBoardOnlyLabels": list(superseded_labels),
+        "replenishedGoalTaskLabels": list(replenished_labels),
         "taskBoardUpdated": repaired_board != board,
     }
     files = [
@@ -696,7 +851,17 @@ def write_supervisor_status(config: SupervisorConfig, decision: SupervisorDecisi
 def run_once(config: SupervisorConfig) -> SupervisorDecision:
     decision = diagnose(config)
     proposal: Optional[Proposal] = None
-    if decision.should_restart_daemon and config.apply and config.restart_daemon and not decision.should_invoke_codex:
+    if decision.action == "reconcile_supersession_task_board" and config.apply:
+        if config.restart_daemon:
+            run_control(config, "stop")
+        proposal = invoke_builtin_repair(
+            config,
+            decision,
+            Proposal(summary="Worker returned empty task-board truncation proposal.", failure_kind="no_change"),
+        )
+        if config.restart_daemon:
+            run_control(config, "start")
+    elif decision.should_restart_daemon and config.apply and config.restart_daemon and not decision.should_invoke_codex:
         result = run_control(config, "start")
         proposal = Proposal(
             summary="Supervisor restarted daemon.",
@@ -790,6 +955,85 @@ def self_test(repo_root: Path) -> int:
     }
     if is_private_session_preflight_false_positive(true_private_preflight):
         errors.append("true private/session preflight rejection must not be classified as a false positive")
+    empty_board_truncation = {
+        "applied": False,
+        "target_task": "Task checkbox-133: Append a task-board-only supersession note",
+        "summary": "Unable to safely replace ppd/daemon/task-board.md because the available task-board content is truncated.",
+        "impact": "The task-board content was truncated.",
+        "files": [],
+        "changed_files": [],
+        "errors": [],
+    }
+    if not is_empty_task_board_truncation_proposal(empty_board_truncation):
+        errors.append("empty task-board truncation proposal classification failed")
+    parse_board_stall = {
+        "applied": False,
+        "target_task": "Task checkbox-133: Append a task-board-only supersession note",
+        "failure_kind": "parse",
+        "files": [],
+        "changed_files": [],
+    }
+    if not is_checkbox_133_no_file_stall(parse_board_stall):
+        errors.append("checkbox-133 parse/no-file stall classification failed")
+    if not has_recent_checkbox_133_no_file_stall([], parse_board_stall):
+        errors.append("recent checkbox-133 no-file stall detection failed")
+    accepted_supersession_rows = [
+        {
+            "applied": True,
+            "validation_passed": True,
+            "target_task": "Task checkbox-109: processor handoff evidence",
+            "summary": "Accepted checkbox-109 evidence names queued accepted skipped deferred allowlist robots/no-persist content-type timeout processor-handoff coverage.",
+            "impact": "",
+        },
+        {
+            "applied": True,
+            "validation_passed": True,
+            "target_task": "Task checkbox-130: supersession decision fixture",
+            "summary": "checkbox-130 validates queued accepted skipped deferred allowlist robots/no-persist content-type timeout processor-handoff.",
+            "impact": "",
+        },
+        {
+            "applied": True,
+            "validation_passed": True,
+            "target_task": "Task checkbox-131: supersession decision validation",
+            "summary": "checkbox-131 keeps missing evidence parked and complete evidence recommends task-board supersession.",
+            "impact": "",
+        },
+        {
+            "applied": True,
+            "validation_passed": True,
+            "target_task": "Supervisor repair for checkbox-132",
+            "summary": "checkbox-132 task selection validation keeps parked blocked domain tasks out of selection.",
+            "impact": "",
+        },
+    ]
+    if not has_checkbox_108_supersession_prerequisites(accepted_supersession_rows):
+        errors.append("checkbox-108 supersession prerequisite detection failed")
+    supersession_board = (
+        "- [!] Task checkbox-108: Add frontier checkpoint.\n"
+        "- [!] Task checkbox-132: Add daemon task-selection validation.\n"
+        "- [~] Task checkbox-133: Append a task-board-only supersession note.\n"
+    )
+    supersession_repaired, supersession_labels = builtin_supersession_repair_task_board(
+        supersession_board,
+        accepted_supersession_rows,
+    )
+    if "- [x] Task checkbox-108: Add frontier checkpoint." not in supersession_repaired:
+        errors.append("supersession board repair did not complete checkbox-108")
+    if "- [x] Task checkbox-133: Append a task-board-only supersession note." not in supersession_repaired:
+        errors.append("supersession board repair did not complete checkbox-133")
+    if "## Checkbox-108 Supersession Note" not in supersession_repaired:
+        errors.append("supersession board repair did not append evidence note")
+    if not {"checkbox-108", "checkbox-133"}.issubset(set(supersession_labels)):
+        errors.append("supersession board repair did not report changed labels")
+    complete_goal_board = "- [x] Task checkbox-1: Done.\n- [x] Task checkbox-2: Done too.\n"
+    replenished_board, replenished_labels = builtin_replenish_goal_tasks(complete_goal_board)
+    if "## Built-In Goal Replenishment Tranche" not in replenished_board:
+        errors.append("built-in goal replenishment tranche was not appended")
+    if replenished_labels != ("checkbox-3", "checkbox-4", "checkbox-5", "checkbox-6", "checkbox-7", "checkbox-8"):
+        errors.append(f"unexpected replenished labels: {replenished_labels}")
+    if builtin_replenish_goal_tasks(replenished_board)[1]:
+        errors.append("built-in goal replenishment should be idempotent")
     invalid_repair = Proposal(summary="bad repair", errors=["Validation failed"], failure_kind="validation")
     repair_decision = SupervisorDecision(
         action="repair_daemon_programming",

@@ -138,7 +138,7 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 - [x] Task checkbox-105: Add validation for the public source freshness manifest proving stale or missing timestamps, uncited source URLs, absent hash/cache placeholders, raw response bodies, and private DevHub artifacts are rejected before any live crawl is planned.
 - [x] Task checkbox-106: Add a fixture-only requirement-to-process dependency graph for one public PP&D permit process that links source evidence, extracted obligations, required documents, user facts, stop gates, and reversible draft-only planning nodes. Keep all values redacted and citation-backed.
 - [x] Task checkbox-107: Add validation for requirement-to-process dependency graph fixtures proving every edge has a known source node, every consequential or financial node is blocked by default, and missing citations or private values fail closed.
-- [!] Task checkbox-108: Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output.
+- [x] Task checkbox-108: Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output.
 - [x] Task checkbox-109: Add validation for public crawl frontier checkpoint fixtures proving external domains, live authenticated URLs, missing skip reasons, raw crawl bodies, and processor handoffs without provenance are rejected.
 - [x] Task checkbox-110: Add a fixture-only agent missing-information response plan that turns unresolved PP&D facts, required document placeholders, stale evidence flags, and default stop gates into user-facing questions without suggesting submission, upload, payment, certification, cancellation, or inspection scheduling.
 - [x] Task checkbox-111: Add validation for missing-information response plan fixtures proving questions are source-linked, narrow, redacted, non-consequential by default, and blocked when evidence is stale, conflicting, uncited, or tied to private DevHub state.
@@ -169,8 +169,8 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 
 - [x] Task checkbox-130: Add a daemon-local supersession decision fixture proving checkbox-108 can be marked superseded only when committed checkbox-109 validation evidence names queued, accepted, skipped, deferred, allowlist, robots/no-persist, content-type, timeout, and processor-handoff coverage. Do not edit crawler contracts, crawler code, public fixtures, or crawl output.
 - [x] Task checkbox-131: Add validation for the checkbox-130 supersession decision fixture proving missing evidence keeps checkbox-108 parked and complete evidence produces a task-board-only supersession recommendation.
-- [~] Task checkbox-132: Add daemon task-selection validation proving a parked blocked domain task with accepted supersession evidence is not reselected before a task-board supersession note is appended.
-- [ ] Task checkbox-133: Append a task-board-only supersession note for checkbox-108 only after checkbox-130 through checkbox-132 pass, preserving completed tasks and citing the accepted checkbox-109 evidence instead of implementing new domain artifacts.
+- [x] Task checkbox-132: Add daemon task-selection validation proving a parked blocked domain task with accepted supersession evidence is not reselected before a task-board supersession note is appended.
+- [x] Task checkbox-133: Append a task-board-only supersession note for checkbox-108 only after checkbox-130 through checkbox-132 pass, preserving completed tasks and citing the accepted checkbox-109 evidence instead of implementing new domain artifacts.
 
 ## Built-In Supervisor Repair Notes
 
@@ -190,11 +190,26 @@ Last updated: 2026-05-02T21:20:00.000000Z
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-02T21:37:04.722398Z
+Last updated: 2026-05-02T21:42:25.792145Z
 
-- Latest target: `Task checkbox-132: Task checkbox-132: Add daemon task-selection validation proving a parked blocked domain task with accepted supersession evidence is not reselected before a task-board supersession note is appended.`
-- Latest result: `validation`
-- Latest summary: Add a deterministic daemon task-selection validation helper and unit coverage for parked blocked domain tasks with accepted supersession evidence.
-- Counts: `{"blocked": 1, "complete": 130, "in_progress": 0, "needed": 2}`
+- Latest target: `Task checkbox-133: Task checkbox-133: Append a task-board-only supersession note for checkbox-108 only after checkbox-130 through checkbox-132 pass, preserving completed tasks and citing the accepted checkbox-109 evidence instead of implementing new domain artifacts.`
+- Latest result: `parse`
+- Latest summary: 
+- Counts: `{"blocked": 2, "complete": 130, "in_progress": 0, "needed": 1}`
 
 <!-- ppd-daemon-task-board:end -->
+## Checkbox-108 Supersession Note
+
+- Checkbox-108 is superseded on the task board only. Accepted checkbox-109, checkbox-130, checkbox-131, and checkbox-132 evidence covers queued, accepted, skipped, deferred, allowlist, robots/no-persist, content-type, timeout, and processor-handoff behavior. No crawler contracts, crawler code, public fixtures, crawl output, live automation, or authenticated DevHub artifacts were added for this supersession.
+
+## Built-In Goal Replenishment Tranche
+
+- [~] Task checkbox-134: Add a fixture-only processor archive integration manifest that maps PP&D public source URLs, canonical document IDs, content-hash placeholders, and processor handoff IDs without crawling, downloading documents, or storing raw bodies.
+- [ ] Task checkbox-135: Add validation for the processor archive integration manifest proving every archived public source has citation-backed provenance, no private DevHub data, no raw crawl output, and a deterministic handoff ID for formal-logic extraction.
+- [ ] Task checkbox-136: Add a mocked Playwright draft-fill plan fixture for one PP&D form that ranks selectors by evidence confidence, maps missing user facts to questions, and limits automation to reversible draft-only field previews.
+- [ ] Task checkbox-137: Add validation for the Playwright draft-fill plan fixture proving low-confidence selectors, uploads, submissions, payments, certifications, cancellations, MFA, CAPTCHA, and inspection scheduling remain refused by default.
+- [ ] Task checkbox-138: Add a fixture-only formal-logic guardrail bundle that translates one archived PP&D requirement set into obligations, prerequisites, stop gates, reversible actions, and exact-confirmation requirements.
+- [ ] Task checkbox-139: Add validation for formal-logic guardrail bundles proving missing citations, stale evidence, private values, and consequential or financial actions fail closed before any LLM agent may plan autonomous completion.
+## Built-In Supervisor Planning Notes
+
+- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.

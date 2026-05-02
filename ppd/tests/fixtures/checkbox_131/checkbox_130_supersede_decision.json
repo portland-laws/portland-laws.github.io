@@ -27,7 +27,7 @@
       "taskBoardOnlyRecommendations": [],
       "artifactKinds": [],
       "evidencePaths": [
-        "ppd/tests/fixtures/checkbox_131/checkbox_130_supersession_decision.json"
+        "ppd/tests/fixtures/checkbox_131/checkbox_130_supersede_decision.json"
       ]
     },
     {
@@ -63,7 +63,7 @@
       "evidencePaths": [
         "ppd/daemon/accepted-work/checkbox-130.json",
         "ppd/daemon/task-board.md",
-        "ppd/tests/fixtures/checkbox_131/checkbox_130_supersession_decision.json"
+        "ppd/tests/fixtures/checkbox_131/checkbox_130_supersede_decision.json"
       ]
     }
   ]

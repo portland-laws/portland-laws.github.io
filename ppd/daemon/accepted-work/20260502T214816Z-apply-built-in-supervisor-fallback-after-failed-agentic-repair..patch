@@ -1,0 +1,79 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,16 +1,54 @@
+ {
+-  "createdAt": "2026-05-02T21:45:20.278458Z",
++  "createdAt": "2026-05-02T21:48:15.277098Z",
+   "decision": {
+-    "action": "reconcile_supersession_task_board",
+-    "reason": "checkbox-133 returned repeated no-file task-board proposals even though accepted checkbox-109/130/131/132 evidence is sufficient; apply deterministic task-board-only supersession repair",
+-    "severity": "warning"
++    "action": "plan_next_tasks",
++    "reason": "all PP&D daemon tasks are complete; review the original PP&D goal and add the next task-board tranche",
++    "severity": "info"
+   },
+   "failedAgenticRepair": {
+     "changedFiles": [],
+-    "errors": [],
+-    "failureKind": "no_change",
+-    "summary": "Worker returned empty task-board truncation proposal.",
+-    "validationResults": []
++    "errors": [
++      "LLM response did not contain a JSON object."
++    ],
++    "failureKind": "parse",
++    "summary": "",
++    "validationResults": [
++      {
++        "command": [
++          "python3",
++          "ppd/daemon/ppd_daemon.py",
++          "--self-test"
++        ],
++        "returncode": 0,
++        "stderr": "",
++        "stdout": "{ \"ok\": true, \"task_count\": 133 }"
++      },
++      {
++        "command": [
++          "python3",
++          "-m",
++          "unittest",
++          "discover",
++          "-s",
++          "ppd/tests",
++          "-p",
++          "test_*.py"
++        ],
++        "returncode": 0,
++        "stderr": "................................................................................................................................................................................................................................................................................................................................ss..............sss....................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 570 tests in 0.099s OK (skipped=5)",
++        "stdout": ""
++      },
++      {
++        "command": [
++          "bash",
++          "-lc",
++          "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
++        ],
++        "returncode": 0,
++        "stderr": "",
++        "stdout": ""
++      }
++    ]
+   },
+   "fallbackActions": [
+     "preserve failed repair diagnostics without accepting the invalid patch",
+@@ -30,11 +68,7 @@
+   "schemaVersion": 1,
+   "taskBoardRepair": {
+     "parkedRepeatedSyntaxLoopTasks": [],
+-    "supersededTaskBoardOnlyLabels": [
+-      "checkbox-108",
+-      "checkbox-132",
+-      "checkbox-133"
+-    ],
+-    "taskBoardUpdated": true
++    "supersededTaskBoardOnlyLabels": [],
++    "taskBoardUpdated": false
+   }
+ }

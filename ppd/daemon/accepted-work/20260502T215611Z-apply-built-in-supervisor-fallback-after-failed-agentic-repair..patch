@@ -1,0 +1,9 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,5 +1,5 @@
+ {
+-  "createdAt": "2026-05-02T21:54:07.758736Z",
++  "createdAt": "2026-05-02T21:56:10.111329Z",
+   "decision": {
+     "action": "reconcile_supersession_task_board",
+     "reason": "checkbox-133 returned repeated no-file task-board proposals even though accepted checkbox-109/130/131/132 evidence is sufficient; apply deterministic task-board-only supersession repair",

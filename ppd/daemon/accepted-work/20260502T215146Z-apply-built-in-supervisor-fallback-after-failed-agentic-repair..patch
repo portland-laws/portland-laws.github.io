@@ -1,0 +1,44 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,5 +1,5 @@
+ {
+-  "createdAt": "2026-05-02T21:48:15.277098Z",
++  "createdAt": "2026-05-02T21:51:45.350957Z",
+   "decision": {
+     "action": "plan_next_tasks",
+     "reason": "all PP&D daemon tasks are complete; review the original PP&D goal and add the next task-board tranche",
+@@ -68,7 +68,15 @@
+   "schemaVersion": 1,
+   "taskBoardRepair": {
+     "parkedRepeatedSyntaxLoopTasks": [],
++    "replenishedGoalTaskLabels": [
++      "checkbox-134",
++      "checkbox-135",
++      "checkbox-136",
++      "checkbox-137",
++      "checkbox-138",
++      "checkbox-139"
++    ],
+     "supersededTaskBoardOnlyLabels": [],
+-    "taskBoardUpdated": false
++    "taskBoardUpdated": true
+   }
+ }
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -201,3 +201,15 @@
+ ## Checkbox-108 Supersession Note
+ 
+ - Checkbox-108 is superseded on the task board only. Accepted checkbox-109, checkbox-130, checkbox-131, and checkbox-132 evidence covers queued, accepted, skipped, deferred, allowlist, robots/no-persist, content-type, timeout, and processor-handoff behavior. No crawler contracts, crawler code, public fixtures, crawl output, live automation, or authenticated DevHub artifacts were added for this supersession.
++
++## Built-In Goal Replenishment Tranche
++
++- [ ] Task checkbox-134: Add a fixture-only processor archive integration manifest that maps PP&D public source URLs, canonical document IDs, content-hash placeholders, and processor handoff IDs without crawling, downloading documents, or storing raw bodies.
++- [ ] Task checkbox-135: Add validation for the processor archive integration manifest proving every archived public source has citation-backed provenance, no private DevHub data, no raw crawl output, and a deterministic handoff ID for formal-logic extraction.
++- [ ] Task checkbox-136: Add a mocked Playwright draft-fill plan fixture for one PP&D form that ranks selectors by evidence confidence, maps missing user facts to questions, and limits automation to reversible draft-only field previews.
++- [ ] Task checkbox-137: Add validation for the Playwright draft-fill plan fixture proving low-confidence selectors, uploads, submissions, payments, certifications, cancellations, MFA, CAPTCHA, and inspection scheduling remain refused by default.
++- [ ] Task checkbox-138: Add a fixture-only formal-logic guardrail bundle that translates one archived PP&D requirement set into obligations, prerequisites, stop gates, reversible actions, and exact-confirmation requirements.
++- [ ] Task checkbox-139: Add validation for formal-logic guardrail bundles proving missing citations, stale evidence, private values, and consequential or financial actions fail closed before any LLM agent may plan autonomous completion.
++## Built-In Supervisor Planning Notes
++
++- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.

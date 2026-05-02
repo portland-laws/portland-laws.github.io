@@ -710,7 +710,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/CEC/eng_dcec_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [!] Port remaining Python logic module `logic/CEC/native/advanced_inference.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/CEC/native/ambiguity_resolver.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/cec_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/cec_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/cec_zkp_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/context_manager.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/dcec_cleaning.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-02 21:34:50 UTC
+Last updated: 2026-05-02 21:39:12 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-200: Port remaining Python logic module 'logic/CEC/native/cec_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-201: Port remaining Python logic module 'logic/CEC/native/cec_zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1432,50 +1432,54 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 - Target: `Task checkbox-200: Port remaining Python logic module 'logic/CEC/native/cec_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `needs follow-up`
-- Summary: Add browser-native CEC native proof cache snapshot parity
-- Impact: The CEC proof cache now exposes deterministic snapshot export, validation, and fail-closed import/hydration used directly by the existing Jest logic validation suite. The implementation stays browser-native TypeScript with no Python, server, filesystem, subprocess, RPC, or Node-only runtime dependency.
+- Summary: Add a small browser-native CEC proof cache contract and validation coverage
+- Impact: The CEC proof cache source now exposes deterministic native cache entry metadata, snapshot export, and fail-closed snapshot validation without Python, server calls, filesystem access, subprocesses, RPC, or Node-only runtime dependencies. The focused Jest test exercises the snapshot contract directly through src/lib/logic/cec/proofCache.test.ts so it is used by the TypeScript logic-port validation suite.
 - Errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/cec/proofCache.ts(17,17): error TS2314: Generic type 'Record' requires 2 type argument(s).
-../../..src/lib/logic/cec/proofCache.ts(194,63): error TS2314: Generic type 'Record' requires 2 type argument(s).
-../../..src/lib/logic/cec/proofCache.ts(210,17): error TS2314: Generic type 'Record' requires 2 type argument(s).
-../../..src/lib/logic/cec/proofCache.ts(250,45): error TS2314: Generic type 'Record' requires 2 type argument(s).
-../../..src/lib/logic/cec/proofCache.ts(262,27): error TS2314: Generic type 'Record' requires 2 type argument(s).
+../../..src/lib/logic/cec/proofCache.ts(157,62): error TS1005: ';' expected.
+../../..src/lib/logic/cec/proofCache.ts(157,77): error TS1005: ';' expected.
+../../..src/lib/logic/cec/proofCache.ts(161,33): error TS1005: ')' expected.
+../../..src/lib/logic/cec/proofCache.ts(161,42): error TS1005: ';' expected.
+../../..src/lib/logic/cec/proofCache.ts(161,43): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/cec/proofCache.ts(199,32): error TS1005: ';' expected.
+../../..src/lib/logic/cec/proofCache.ts(208,1): error TS1068: Unexpected token. A constructor, method, accessor, or property was expected.
+../../..src/lib/logic/cec/proofCache.ts(234,33): error TS1005: ';' expected.
+../../..src/lib/logic/cec/proofCache.ts(234,34): error TS1109: Expression expected.
 
 Replacement diagnostic context:
-src/lib/logic/cec/proofCache.ts:17:17 TS2314: Generic type 'Record' requires 2 type argument(s).
-  15:   axioms: string[];
-  16:   proverName: string;
-> 17:   proverConfig: Record;
-  18:   result: ProofResult;
-  19:   cid: string;
+src/lib/logic/cec/proofCache.ts:157:62 TS1005: ';' expected.
+  155: 
+  156:   private isExpired(entry: InternalEntry): boolean {
+> 157:     return entry.expiresAt !== undefined && entry.expiresAt  this.maxEntries) {
+  158:       let oldestKey: string | undefined;
+  159:       let oldestAccess = Number.POSITIVE_INFINITY;
 
-src/lib/logic/cec/proofCache.ts:194:63 TS2314: Generic type 'Record' requires 2 type argument(s).
-  192: }
-  193: 
-> 194: function normalizeCecProverConfig(options: CecProverOptions): Record {
-  195:   return {
-  196:     maxSteps: options.maxSteps,
+src/lib/logic/cec/proofCache.ts:161:33 TS1005: ')' expected.
+  159:       let oldestAccess = Number.POSITIVE_INFINITY;
+  160:       for (const [key, entry] of this.entries) {
+> 161:         if (entry.lastAccessed  rule.name).sort();
+  162:   return {
+  163:     maxSteps: options.maxSteps ?? null,
 
-src/lib/logic/cec/proofCache.ts:210:17 TS2314: Generic type 'Record' requires 2 type argument(s).
-  208:   axioms: string[],
-  209:   proverName: string,
-> 210:   proverConfig: Record,
-  211: ): string {
-  212:   return stableJsonStringify({ axioms, proverConfig, proverName, theorem });
+src/lib/logic/cec/proofCache.ts:199:32 TS1005: ';' expected.
+  197:   let depth = 0;
+  198:   let start = -1;
+> 199:   for (let index = 0; index = 0) {
+  200:         parts.push(value.slice(start, index + 1));
+  201:         start = -1;
 
-src/lib/logic/cec/proofCache.ts:250:45 TS2314: Generic type 'Record' requires 2 type argument(s).
-  248: }
-  249: 
-> 250: function isRecord(value: unknown): value is Record {
-  251:   return typeof value === 'object' && value !== null && !Array.isArray(value);
-  252: }
+src/lib/logic/cec/proofCache.ts:208:1 TS1068: Unexpected token. A constructor, method, accessor, or property was expected.
+  206: }
+  207: 
+> 208: function cloneEntry(entry: CecNativeProofCacheEntry): CecNativeProofCacheEntry {
+  209:   return {
+  210:     ...entry,
 
-src/lib/logic/cec/proofCache.ts:262:27 TS2314: Generic type 'Record' requires 2 type argument(s).
-  260:   }
-  261: 
-> 262:   const object = value as Record;
-  263:   return `{${Object.keys(object)
-  264:     .sort()
+src/lib/logic/cec/proofCache.ts:234:33 TS1005: ';' expected.
+  232: function stableHash(value: string): string {
+  233:   let hash = 2166136261;
+> 234:   for (let index = 0; index >> 0).toString(16).padStart(8, '0');
+  235: }
+  236: 
 - Failure kind: `preflight`
 
 ### Blocked Backlog

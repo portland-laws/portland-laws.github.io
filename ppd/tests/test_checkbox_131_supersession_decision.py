@@ -17,7 +17,7 @@ FIXTURE_PATH = (
     Path(__file__).parent
     / "fixtures"
     / "checkbox_131"
-    / "checkbox_130_supersession_decision.json"
+    / "checkbox_130_supersede_decision.json"
 )
 
 PRIVATE_OR_LIVE_MARKERS = (
