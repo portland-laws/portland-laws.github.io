@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/daemon/supervisor_fixture_reconciliation.py",
+    "ppd/tests/test_supervisor_fixture_reconciliation.py"
+  ],
+  "created_at": "2026-05-02T20:48:55.498089Z",
+  "impact": "This gives the PP&D daemon a deterministic, fixture-only way to recognize when a blocked task's expected fixture shape is already covered by later accepted validation work, so supervisor guidance can recommend superseding the blocked task or resuming it with one file only.",
+  "summary": "Add a narrow supervisor reconciliation diagnostic for blocked fixture-shape tasks satisfied by accepted validation work.",
+  "target_task": "Task checkbox-120: Task checkbox-115: Add a narrow supervisor diagnostic that reports when an already accepted validation task appears to satisfy the blocked task's fixture shape, so the daemon can recommend either superseding the blocked task or resuming it with one file only.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 121 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................................................................................................................................................................................................................................................ss..............sss................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 551 tests in 0.094s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

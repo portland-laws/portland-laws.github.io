@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/task-board.md"
+  ],
+  "created_at": "2026-05-02T20:44:31.329979Z",
+  "impact": "The daemon currently has one blocked task and no selectable independent work. This replacement preserves completed tasks, keeps checkbox-108 blocked, and adds fixture-first/validation-first daemon repair tasks focused on task selection, syntax-preflight diagnostics, and retry guidance so autonomous progress can resume deterministically before any renewed domain attempt.",
+  "summary": "Append a narrow supervisor recovery tranche to unblock the PP&D daemon without implementing the stalled crawl frontier domain task.",
+  "target_task": "Supervisor repair: 1 task(s) are blocked and no independent selectable task remains: Task checkbox-113: Task checkbox-108: Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 121 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "...............................................................................................................................................................................................................................................................................................................ss..............sss................................................................................................................................................................................................................................ ---------------------------------------------------------------------- Ran 546 tests in 0.094s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/daemon/checkbox_121_resume_constraints.json",
+    "ppd/tests/test_checkbox_121_resume_constraints.py"
+  ],
+  "created_at": "2026-05-02T20:51:32.173364Z",
+  "impact": "This gives the PP&D daemon a deterministic validation artifact proving checkbox-108 may only resume after checkbox-112 through checkbox-115 pass, and that any resumed attempt stays limited to the allowed syntax-valid file shapes.",
+  "summary": "Add a narrow fixture and unittest that encode checkbox-121's resume constraints for checkbox-108.",
+  "target_task": "Task checkbox-121: Task checkbox-116: Resume checkbox-108 only after checkbox-112 through checkbox-115 pass, and limit the resumed attempt to one syntactically valid Python file or one small JSON fixture plus one syntactically valid Python unittest file.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 121 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "....................................................................................................................................................................................................................................................................................................................ss..............sss................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 554 tests in 0.095s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

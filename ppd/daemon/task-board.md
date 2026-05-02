@@ -141,28 +141,48 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 - [x] Task checkbox-110: Add a fixture-only agent missing-information response plan that turns unresolved PP&D facts, required document placeholders, stale evidence flags, and default stop gates into user-facing questions without suggesting submission, upload, payment, certification, cancellation, or inspection scheduling.
 - [x] Task checkbox-111: Add validation for missing-information response plan fixtures proving questions are source-linked, narrow, redacted, non-consequential by default, and blocked when evidence is stale, conflicting, uncited, or tied to private DevHub state.
 
+## Supervisor Syntax-Recovery Tranche
+
+- [x] Task checkbox-112: Add daemon task-selection validation proving blocked syntax-preflight tasks are not reselected while unchecked supervisor recovery tasks remain available.
+- [x] Task checkbox-113: Add a daemon syntax-preflight regression test for the malformed Python fragments observed in public_frontier_checkpoint attempts, including `timeout_ms list[str]`, `timeout_ms self.budget_ms`, and `page_number None`, without editing crawl contracts or fixtures.
+- [x] Task checkbox-114: Add daemon prompt guidance that, after repeated parser failures on a PP&D domain task, requires the next worker to reuse existing committed contracts before proposing a new similarly named module.
+- [x] Task checkbox-115: Add a narrow supervisor diagnostic that reports when an already accepted validation task appears to satisfy the blocked task's fixture shape, so the daemon can recommend either superseding the blocked task or resuming it with one file only.
+- [x] Task checkbox-116: Resume checkbox-108 only after checkbox-112 through checkbox-115 pass, and limit the resumed attempt to one syntactically valid Python file or one small JSON fixture plus one syntactically valid Python unittest file.
 
 ## Generated Status
 
-Last updated: 2026-05-02T19:43:25.481251Z
+Last updated: 2026-05-02T20:44:00.000000Z
 
-- Latest target: No eligible PP&D tasks remain before this replenishment.
-- Latest result: supervisor_replanned
-- Latest summary: Appended the next fixture-first tranche for public source freshness, requirement dependency graphs, crawl frontier checkpoints, and missing-information response planning.
-- Counts: complete 103, needed 8
+- Latest target: `Task checkbox-113: Task checkbox-108: Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output.`
+- Latest result: `supervisor_replanned`
+- Latest summary: Appended a syntax-recovery tranche so the daemon has selectable supervisor repair work before retrying the blocked public crawl frontier checkpoint task.
+- Counts: `{"blocked": 1, "complete": 115, "in_progress": 0, "needed": 5}`
+
+
+## Generated Status
+
+Last updated: 2026-05-02T20:44:00.000000Z
+
+- Latest target: `Task checkbox-113: Task checkbox-108: Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output.`
+- Latest result: `supervisor_replanned`
+- Latest summary: Added fixture-first supervisor recovery tasks for task selection, syntax-preflight regression coverage, prompt retry guidance, and blocked-task diagnostics.
+- Counts: `{"blocked": 1, "complete": 115, "in_progress": 0, "needed": 5}`
+
+
+
+## Built-In Supervisor Repair Notes
+
+- Parked repeated syntax-preflight loop for `Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output.` so the daemon can continue with independent selectable work. The task should be resumed only after narrow syntax-valid supervisor recovery work has been accepted.
 
 
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-02T20:33:57.971093Z
+Last updated: 2026-05-02T20:51:32.174107Z
 
-- Latest target: `Task checkbox-116: Task checkbox-111: Add validation for missing-information response plan fixtures proving questions are source-linked, narrow, redacted, non-consequential by default, and blocked when evidence is stale, conflicting, uncited, or tied to private DevHub state.`
+- Latest target: `Task checkbox-121: Task checkbox-116: Resume checkbox-108 only after checkbox-112 through checkbox-115 pass, and limit the resumed attempt to one syntactically valid Python file or one small JSON fixture plus one syntactically valid Python unittest file.`
 - Latest result: `accepted`
-- Latest summary: Add fixture-only validation for missing-information response plans, including source linkage, narrow redacted questions, safe defaults, and blocked evidence failure modes.
-- Counts: `{"blocked": 1, "complete": 115, "in_progress": 0, "needed": 0}`
+- Latest summary: Add a narrow fixture and unittest that encode checkbox-121's resume constraints for checkbox-108.
+- Counts: `{"blocked": 1, "complete": 120, "in_progress": 0, "needed": 0}`
 
 <!-- ppd-daemon-task-board:end -->
-## Built-In Supervisor Repair Notes
-
-- Parked repeated syntax-preflight loop for `Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output.` so the daemon can continue with independent selectable work. The task should be resumed only after a narrow syntax-valid fixture/test repair is available.

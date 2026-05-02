@@ -1,0 +1,54 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -4,14 +4,16 @@
+ 
+ ## Current Failure Pattern
+ 
+-The recent failed rounds are Python syntax preflight failures in `ppd/tests/test_public_pdf_extraction_fixtures.py`. The worker keeps emitting TypeScript-style fragments inside Python expressions. Treat these exact patterns as banned strings in generated Python:
++The recent failed rounds are parser preflight failures on PP&D domain work, especially proposed public frontier checkpoint files and public PDF extraction tests. Workers have repeatedly emitted TypeScript-style fragments inside Python expressions. Treat these exact patterns as banned strings in generated Python:
+ 
++- `timeout_ms list[str]`
++- `timeout_ms self.budget_ms`
+ - `page_number None`
+ - `page_number list[str]`
+ - `page_count list[str]`
+ - `if self.page_count list[str]`
+ 
+-Equivalent malformed expressions are also banned, including any conditional that places a type fragment where a comparison or function call belongs.
++Equivalent malformed expressions are also banned, including any conditional that places a type fragment where a comparison, membership check, boolean expression, or function call belongs.
+ 
+ ## Retry Scope
+ 
+@@ -19,8 +21,15 @@
+ 
+ - One syntax-valid Python unittest file
+ - One small JSON fixture plus one syntax-valid Python unittest file
++- One daemon prompt, diagnostic, preflight, or task-selection file under `ppd/daemon/`
+ 
+ Do not broaden the retry into contract rewrites, crawler changes, DevHub automation, or application/domain artifacts. If a fixture and a test are both needed, keep both files short and deterministic.
++
++## Existing-Contract Reuse Rule
++
++After repeated parser failures on a PP&D domain task, the next worker must first reuse existing committed contracts before proposing a new similarly named module. For the public frontier checkpoint loop, inspect and build on committed artifacts such as `ppd/contracts/frontier_checkpoint.py` and its accepted fixture/test coverage before creating any new `public_frontier_checkpoint` contract.
++
++The daemon prompt should require the worker to state, in the proposal summary or impact, which existing committed contract, fixture, or validation helper is being reused. If no existing artifact can satisfy the task, the worker may add a new file only after keeping the proposal to one syntactically valid source file or one tiny fixture plus one syntactically valid unittest file. The worker must not add a parallel module with a near-duplicate name while an accepted contract already covers the same fixture shape.
+ 
+ ## Python Guardrails
+ 
+@@ -39,12 +48,14 @@
+ 1. `python3 -m py_compile `
+ 2. `python3 ppd/tests/validate_ppd.py`
+ 
+-If syntax preflight fails, reject the patch immediately and preserve the failure kind as `syntax_preflight`. Do not run broader validation after a syntax failure.
++For any retry that touches TypeScript files, the daemon should run strict TypeScript parsing before the full PP&D validation suite. If syntax preflight fails, reject the patch immediately and preserve the failure kind as `syntax_preflight`. Do not run broader validation after a syntax failure.
+ 
+ ## Separation From Domain Work
+ 
+-Supervisor repair is not a shortcut to complete checkbox-106 or any other selected PP&D domain task. A repair patch may improve prompts, guides, retry logic, task selection, diagnostics, or validation sequencing. It must not implement the stalled PP&D domain task directly, must not add live public crawl artifacts, must not download documents, and must not create, modify, or reference private DevHub artifacts beyond naming the prohibited category.
++Supervisor repair is not a shortcut to complete checkbox-106, checkbox-108, or any other selected PP&D domain task. A repair patch may improve prompts, guides, retry logic, task selection, diagnostics, or validation sequencing. It must not implement the stalled PP&D domain task directly, must not add live public crawl artifacts, must not download documents, and must not create, modify, or reference private DevHub artifacts beyond naming the prohibited category.
+ 
+ ## Recovery Behavior
+ 
+ After repeated syntax failures on the same task, the daemon should prefer the smallest valid step that can be accepted. If the active task needs both a fixture and assertions, split the work so the first accepted cycle creates or validates only the minimal syntactically valid scaffold. The next cycle can add richer assertions after the syntax loop has been broken.
++
++If an accepted validation task already appears to cover the blocked task's fixture shape, the supervisor should recommend either superseding the blocked task in the task board or resuming it with one file only. The resumed worker should reference the accepted contract instead of creating another similarly named implementation.

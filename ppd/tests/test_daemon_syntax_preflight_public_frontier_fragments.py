@@ -1,0 +1,65 @@
+"""Regression tests for public frontier syntax-preflight failures.
+
+These cases mirror malformed Python fragments observed in failed
+public_frontier_checkpoint attempts. The daemon should reject them during the
+changed-file syntax preflight before broader validation runs.
+"""
+
+from __future__ import annotations
+
+import tempfile
+import unittest
+from pathlib import Path
+
+from ppd.daemon.syntax_preflight import run_apply_flow_syntax_preflight
+
+
+class DaemonSyntaxPreflightPublicFrontierFragmentsTest(unittest.TestCase):
+    def test_malformed_public_frontier_fragments_fail_syntax_preflight(self) -> None:
+        cases = {
+            "timeout_ms_list_type_fragment": "def check(value):\n    if timeout_ms list[str]:\n        return value\n    return None\n",
+            "timeout_ms_missing_operator": "def check(value):\n    if timeout_ms self.budget_ms:\n        return value\n    return None\n",
+            "page_number_none_missing_operator": "def check(value):\n    if page_number None:\n        return value\n    return None\n",
+        }
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir)
+            target_dir = repo_root / "ppd" / "daemon"
+            target_dir.mkdir(parents=True)
+            for name, source in cases.items():
+                with self.subTest(name=name):
+                    relative_path = f"ppd/daemon/{name}.py"
+                    (repo_root / relative_path).write_text(source, encoding="utf-8")
+                    result = run_apply_flow_syntax_preflight(repo_root, [relative_path])
+                    self.assertFalse(result.ok)
+                    self.assertEqual(result.failure_kind, "syntax_preflight")
+                    self.assertTrue(result.validation_results)
+                    self.assertTrue(any(not item.ok for item in result.validation_results))
+                    self.assertTrue(result.errors)
+
+    def test_valid_public_frontier_comparisons_pass_syntax_preflight(self) -> None:
+        source = """
+def check(timeout_ms, page_number, budget_ms):
+    if timeout_ms is None or not isinstance(timeout_ms, int):
+        return None
+    if timeout_ms > budget_ms:
+        return budget_ms
+    if page_number is None:
+        return 1
+    return page_number
+""".lstrip()
+        with tempfile.TemporaryDirectory() as temp_dir:
+            repo_root = Path(temp_dir)
+            relative_path = "ppd/daemon/valid_public_frontier_checkpoint.py"
+            target = repo_root / relative_path
+            target.parent.mkdir(parents=True)
+            target.write_text(source, encoding="utf-8")
+            result = run_apply_flow_syntax_preflight(repo_root, [relative_path])
+            self.assertTrue(result.ok)
+            self.assertEqual(result.failure_kind, "")
+            self.assertEqual(result.errors, ())
+            self.assertTrue(result.validation_results)
+            self.assertTrue(all(item.ok for item in result.validation_results))
+
+
+if __name__ == "__main__":
+    unittest.main()

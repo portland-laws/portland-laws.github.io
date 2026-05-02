@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/repeated_parser_failure_guidance.py"
+  ],
+  "created_at": "2026-05-02T20:48:01.541163Z",
+  "impact": "This gives the daemon a deterministic prompt snippet requiring the next worker to inspect and reuse committed PP&D contracts before proposing any similarly named new module after repeated parser or compile failures, reducing duplicate contract churn and syntax-recovery loops.",
+  "summary": "Add focused PP&D daemon prompt guidance for repeated parser failures on domain tasks.",
+  "target_task": "Task checkbox-119: Task checkbox-114: Add daemon prompt guidance that, after repeated parser failures on a PP&D domain task, requires the next worker to reuse existing committed contracts before proposing a new similarly named module.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 121 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................................................................................................................................................................................................................................................ss..............sss................................................................................................................................................................................................................................ ---------------------------------------------------------------------- Ran 548 tests in 0.131s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

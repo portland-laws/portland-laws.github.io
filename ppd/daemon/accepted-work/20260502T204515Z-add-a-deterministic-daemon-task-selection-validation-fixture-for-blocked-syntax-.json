@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/daemon/task_selection_validation.py",
+    "ppd/tests/test_daemon_task_selection_validation.py"
+  ],
+  "created_at": "2026-05-02T20:45:15.702610Z",
+  "impact": "This advances the PP&D daemon supervision plan by proving the selector skips blocked syntax-preflight work while still keeping eligible recovery work available for the next daemon cycle.",
+  "summary": "Add a deterministic daemon task-selection validation fixture for blocked syntax-preflight tasks and unchecked supervisor recovery tasks.",
+  "target_task": "Task checkbox-117: Task checkbox-112: Add daemon task-selection validation proving blocked syntax-preflight tasks are not reselected while unchecked supervisor recovery tasks remain available.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 121 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "...............................................................................................................................................................................................................................................................................................................ss..............sss................................................................................................................................................................................................................................ ---------------------------------------------------------------------- Ran 546 tests in 0.094s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

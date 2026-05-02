@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "current_task": "checkbox-121",
+  "resume_task": "checkbox-108",
+  "prerequisites": [
+    {
+      "task": "checkbox-112",
+      "required_result": "pass"
+    },
+    {
+      "task": "checkbox-113",
+      "required_result": "pass"
+    },
+    {
+      "task": "checkbox-114",
+      "required_result": "pass"
+    },
+    {
+      "task": "checkbox-115",
+      "required_result": "pass"
+    }
+  ],
+  "resume_gate": {
+    "mode": "all_prerequisites_must_pass",
+    "block_if_any_prerequisite_missing": true,
+    "block_if_any_prerequisite_not_passed": true
+  },
+  "attempt_limits": {
+    "allowed_file_shapes": [
+      "one_python_file",
+      "one_small_json_fixture_plus_one_python_unittest_file"
+    ],
+    "max_python_files": 1,
+    "max_json_fixture_files": 1,
+    "max_total_files": 2,
+    "python_files_must_be_syntactically_valid": true,
+    "python_unittest_required_when_json_fixture_is_present": true,
+    "typescript_files_allowed": false
+  },
+  "allowed_path_prefixes": [
+    "ppd/"
+  ],
+  "forbidden_path_prefixes": [
+    "src/lib/logic/",
+    "public/corpus/portland-or/current/",
+    "ipfs_datasets_py/.daemon/"
+  ],
+  "forbidden_actions": [
+    "captcha",
+    "mfa",
+    "account_creation",
+    "payment",
+    "official_submission",
+    "certification",
+    "cancellation",
+    "upload"
+  ]
+}

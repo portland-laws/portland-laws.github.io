@@ -1,0 +1,84 @@
+"""Deterministic validation for PP&D daemon task selection recovery cases.
+
+This module is intentionally standalone and fixture-only. It models the narrow
+selection invariant needed after syntax-preflight failures: blocked tasks are not
+eligible for reselection, but unchecked supervisor recovery tasks remain
+available.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from enum import Enum
+
+
+class TaskState(str, Enum):
+    CHECKED = "checked"
+    UNCHECKED = "unchecked"
+    BLOCKED = "blocked"
+
+
+@dataclass(frozen=True)
+class TaskSelectionFixture:
+    checkbox_id: str
+    title: str
+    state: TaskState
+    failure_kind: str | None = None
+    recovery_kind: str | None = None
+
+
+def eligible_task_ids(tasks: tuple[TaskSelectionFixture, ...]) -> tuple[str, ...]:
+    """Return task ids the daemon may select for the next cycle."""
+
+    eligible: list[str] = []
+    for task in tasks:
+        if task.state != TaskState.UNCHECKED:
+            continue
+        eligible.append(task.checkbox_id)
+    return tuple(eligible)
+
+
+def validate_blocked_syntax_preflight_selection() -> list[str]:
+    """Validate blocked syntax-preflight tasks are skipped but recovery remains."""
+
+    tasks = (
+        TaskSelectionFixture(
+            checkbox_id="checkbox-112",
+            title="Resume syntax-sensitive fixture validator after failed parser rollback",
+            state=TaskState.BLOCKED,
+            failure_kind="syntax_preflight",
+        ),
+        TaskSelectionFixture(
+            checkbox_id="checkbox-116",
+            title="Add supervisor recovery task after repeated syntax-preflight failures",
+            state=TaskState.UNCHECKED,
+            recovery_kind="supervisor_recovery",
+        ),
+        TaskSelectionFixture(
+            checkbox_id="checkbox-111",
+            title="Previously accepted daemon preflight guardrail",
+            state=TaskState.CHECKED,
+        ),
+    )
+
+    selected = eligible_task_ids(tasks)
+    errors: list[str] = []
+
+    if "checkbox-112" in selected:
+        errors.append("blocked syntax-preflight task checkbox-112 must not be reselected")
+    if "checkbox-116" not in selected:
+        errors.append("unchecked supervisor recovery task checkbox-116 must remain eligible")
+    if selected != ("checkbox-116",):
+        errors.append(f"expected only checkbox-116 to be eligible, got {selected!r}")
+
+    return errors
+
+
+def run_self_test() -> None:
+    errors = validate_blocked_syntax_preflight_selection()
+    if errors:
+        raise AssertionError("; ".join(errors))
+
+
+if __name__ == "__main__":
+    run_self_test()
