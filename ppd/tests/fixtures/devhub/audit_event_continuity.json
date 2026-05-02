@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "playwright-audit-event-reversible-draft-edit-001",
+  "captureMode": "synthetic_fixture_only",
+  "noLiveBrowserSession": true,
+  "usesAuthenticationState": false,
+  "usesBrowserTrace": false,
+  "usesScreenshots": false,
+  "sourceRequirement": {
+    "requirementId": "required-fact-project-description",
+    "sourceEvidenceIds": [
+      "mock-devhub-draft-form-project-description",
+      "devhub-public-guidance-save-draft"
+    ]
+  },
+  "auditEvent": {
+    "eventId": "audit-preview-project-description-fill",
+    "actionClassification": "reversible_draft_edit",
+    "actionType": "fill_field_preview",
+    "executesBrowserAction": false,
+    "previewOnly": true,
+    "userConfirmation": {
+      "exactExplicitConfirmationPresent": false,
+      "requiredForDraftPreview": false
+    },
+    "selectorBasis": {
+      "strategy": "accessible_role_name",
+      "role": "textbox",
+      "accessibleName": "Project description",
+      "labelText": "Project description",
+      "nearbyHeading": "Project information",
+      "stableLocator": "page.getByRole('textbox', { name: 'Project description', exact: true })"
+    },
+    "fieldState": {
+      "fieldId": "project-description",
+      "before": {
+        "redactionState": "redacted",
+        "value": "[REDACTED_EMPTY]"
+      },
+      "after": {
+        "redactionState": "redacted",
+        "value": "[REDACTED_PROJECT_DESCRIPTION]"
+      }
+    },
+    "blockedActionTypes": [
+      "upload",
+      "submit",
+      "certify",
+      "pay",
+      "cancel",
+      "schedule_inspection",
+      "mfa",
+      "captcha",
+      "account_creation",
+      "password_recovery"
+    ],
+    "sourceEvidenceIds": [
+      "mock-devhub-draft-form-project-description",
+      "devhub-public-guidance-save-draft"
+    ]
+  }
+}

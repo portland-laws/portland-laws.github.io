@@ -110,8 +110,8 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 
 ## Next Goal-Aligned Tranche
 
-- [~] Task checkbox-76: Add a Playwright audit-event continuity fixture that records selector basis, source requirement, action classification, user-confirmation state, and redacted before/after field state for a reversible draft edit only.
-- [ ] Task checkbox-77: Add validation proving Playwright audit-event fixtures reject private auth state, cookies, traces, screenshots, raw browser storage, uploads, submissions, payments, certifications, cancellations, MFA, CAPTCHA, and inspection scheduling actions.
+- [x] Task checkbox-76: Add a Playwright audit-event continuity fixture that records selector basis, source requirement, action classification, user-confirmation state, and redacted before/after field state for a reversible draft edit only.
+- [~] Task checkbox-77: Add validation proving Playwright audit-event fixtures reject private auth state, cookies, traces, screenshots, raw browser storage, uploads, submissions, payments, certifications, cancellations, MFA, CAPTCHA, and inspection scheduling actions.
 - [ ] Task checkbox-78: Add a fixture-only DevHub recorder-state transition map that links accessible selector contracts, draft-action previews, and audit events without launching Playwright or touching live DevHub.
 - [ ] Task checkbox-79: Add an agent planning fixture that combines missing information, guardrail stop gates, Playwright draft previews, and source evidence into one reversible draft-only plan.
 - [ ] Task checkbox-80: Add a PP&D processor-archive provenance fixture that links public crawl dry-run URLs to processor handoff manifests, source-index records, and normalized document provenance without invoking network or processor code.
