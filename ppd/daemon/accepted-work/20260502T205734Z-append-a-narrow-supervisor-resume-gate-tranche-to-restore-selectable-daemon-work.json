@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/task-board.md"
+  ],
+  "created_at": "2026-05-02T20:57:34.552688Z",
+  "impact": "The daemon was blocked with no unchecked tasks. This gives it deterministic repair and validation tasks that improve task selection, retry scope, and supersession diagnostics before any further public crawl frontier retry.",
+  "summary": "Append a narrow supervisor resume-gate tranche to restore selectable daemon work while checkbox-108 remains parked.",
+  "target_task": "Supervisor repair: 1 task(s) are blocked and no independent selectable task remains: Task checkbox-113: Task checkbox-108: Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 126 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "....................................................................................................................................................................................................................................................................................................................ss..............sss....................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 558 tests in 0.095s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

@@ -254,3 +254,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T202804Z-add-browser-native-dcec-wrapper-scaffold-with-deterministic-validation-and-tests.json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T202804Z-add-browser-native-dcec-wrapper-scaffold-with-deterministic-validation-and-tests.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T202804Z-add-browser-native-dcec-wrapper-scaffold-with-deterministic-validation-and-tests.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-02 20:57:45 UTC
+
+- Target: `Task checkbox-199: Port remaining Python logic module `logic/CEC/native/ambiguity_resolver.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Add browser-native CEC ambiguity resolver scaffold with deterministic scoring and validation
+- Impact: The replacement src/lib/logic/cec/ambiguityResolver.ts gives the TypeScript logic port a browser-native ambiguity resolver contract, deterministic parse ranking, validation, expression-to-tree conversion, and fail-closed semantic/statistical adapters. The focused Jest test file validates the contract through npm run validate:logic-port without Python, server, filesystem, subprocess, RPC, or Node-only runtime dependencies.
+- Changed files: `src/lib/logic/cec/ambiguityResolver.test.ts`, `src/lib/logic/cec/ambiguityResolver.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T205745Z-add-browser-native-cec-ambiguity-resolver-scaffold-with-deterministic-scoring-an.json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T205745Z-add-browser-native-cec-ambiguity-resolver-scaffold-with-deterministic-scoring-an.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T205745Z-add-browser-native-cec-ambiguity-resolver-scaffold-with-deterministic-scoring-an.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

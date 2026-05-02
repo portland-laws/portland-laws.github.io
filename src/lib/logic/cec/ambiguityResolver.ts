@@ -1,298 +1,241 @@
-import type { CecExpression } from './ast';
-import { formatCecExpression } from './formatter';
-import { measureCecDepth } from './analyzer';
-
 export type CecDisambiguationStrategy =
   | 'minimal_attachment'
   | 'right_association'
-  | 'recency_preference'
-  | 'semantic_coherence'
+  | 'semantic'
   | 'statistical';
 
-export interface CecSyntaxNodeLike {
-  value: unknown;
-  children?: CecSyntaxNodeLike[];
+export interface CecScoreMap {
+  [name: string]: number;
 }
 
-export interface CecParseLike {
-  root: CecSyntaxNodeLike;
-  label?: string;
-  metadata?: Record<string, unknown>;
+export interface CecPreferenceRuleEntry {
+  name: string;
+  strategy: CecDisambiguationStrategy;
+  rule: CecPreferenceRule;
 }
 
-export interface CecParseScore<TParse = CecParseLike> {
-  tree: TParse;
+export interface CecParseScore {
+  tree: CecSyntaxTree;
   totalScore: number;
-  componentScores: Record<string, number>;
+  componentScores: CecScoreMap;
 }
 
-export type CecPreferenceRule<TParse = CecParseLike> = (tree: TParse) => number;
+export interface CecAmbiguityValidationResult {
+  valid: boolean;
+  errors: string[];
+}
 
-export class CecSyntaxNode implements CecSyntaxNodeLike {
-  readonly value: unknown;
+export interface CecSyntaxTreeOptions {
+  label?: string;
+  metadata?: { [name: string]: string | number | boolean | null };
+}
+
+export type CecPreferenceRule = (tree: CecSyntaxTree) => number;
+
+export class CecSyntaxNode {
+  readonly type: string;
   readonly children: CecSyntaxNode[];
+  readonly value?: string;
 
-  constructor(value: unknown, children: CecSyntaxNodeLike[] = []) {
+  constructor(type: string, children: CecSyntaxNode[] = [], value?: string) {
+    this.type = type;
+    this.children = children.slice();
     this.value = value;
-    this.children = children.map((child) => toSyntaxNode(child));
-  }
-
-  isLeaf(): boolean {
-    return this.children.length === 0;
-  }
-
-  size(): number {
-    return 1 + this.children.reduce((total, child) => total + child.size(), 0);
-  }
-
-  height(): number {
-    if (this.children.length === 0) return 1;
-    return 1 + Math.max(...this.children.map((child) => child.height()));
-  }
-
-  preorder(): CecSyntaxNode[] {
-    return [this, ...this.children.flatMap((child) => child.preorder())];
-  }
-
-  leaves(): CecSyntaxNode[] {
-    if (this.children.length === 0) return [this];
-    return this.children.flatMap((child) => child.leaves());
   }
 }
 
-export class CecSyntaxTree implements CecParseLike {
+export class CecSyntaxTree {
   readonly root: CecSyntaxNode;
   readonly label?: string;
-  readonly metadata: Record<string, unknown>;
+  readonly metadata: { [name: string]: string | number | boolean | null };
 
-  constructor(root: CecSyntaxNodeLike, options: { label?: string; metadata?: Record<string, unknown> } = {}) {
-    this.root = toSyntaxNode(root);
+  constructor(root: CecSyntaxNode, options: CecSyntaxTreeOptions = {}) {
+    this.root = root;
     this.label = options.label;
-    this.metadata = options.metadata ?? {};
-  }
-
-  size(): number {
-    return this.root.size();
-  }
-
-  height(): number {
-    return this.root.height();
-  }
-
-  preorder(): CecSyntaxNode[] {
-    return this.root.preorder();
-  }
-
-  leaves(): CecSyntaxNode[] {
-    return this.root.leaves();
+    this.metadata = options.metadata ? { ...options.metadata } : {};
   }
 }
 
-export class CecAmbiguityResolver<TParse extends CecParseLike = CecParseLike> {
-  readonly strategies = new Map<CecDisambiguationStrategy, number>([
-    ['minimal_attachment', 1],
-    ['right_association', 0.8],
-    ['semantic_coherence', 1.2],
-  ]);
-  readonly preferenceRules: Array<{ name: string; rule: CecPreferenceRule<TParse> }> = [];
+function clampScore(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  if (value < 0) return 0;
+  if (value > 1) return 1;
+  return value;
+}
+
+function countNodes(node: CecSyntaxNode): number {
+  let total = 1;
+  node.children.forEach((child) => {
+    total += countNodes(child);
+  });
+  return total;
+}
+
+function maxDepth(node: CecSyntaxNode): number {
+  if (node.children.length === 0) return 1;
+  return 1 + Math.max(...node.children.map((child) => maxDepth(child)));
+}
+
+function leafValues(node: CecSyntaxNode): string[] {
+  if (node.children.length === 0) return node.value ? [node.value] : [node.type];
+  return node.children.flatMap((child) => leafValues(child));
+}
+
+function parseLabel(tree: CecSyntaxTree): string {
+  return tree.label || leafValues(tree.root).join(' ') || tree.root.type;
+}
+
+function isSyntaxNode(value: unknown): value is CecSyntaxNode {
+  if (!(value instanceof CecSyntaxNode)) return false;
+  return value.children.every((child) => isSyntaxNode(child));
+}
+
+export class CecAmbiguityResolver {
+  readonly preferenceRules: CecPreferenceRuleEntry[] = [];
+  private readonly strategyWeights: { [name: string]: number } = {
+    minimal_attachment: 1,
+    right_association: 1,
+    semantic: 1,
+    statistical: 1,
+  };
 
   constructor() {
-    this.addPreferenceRule('minimal_attachment_score', (tree) => this.minimalAttachmentScore(tree));
-    this.addPreferenceRule('right_association_score', (tree) => this.rightAssociationScore(tree));
-    this.addPreferenceRule('tree_balance_score', (tree) => this.treeBalanceScore(tree));
+    this.addPreferenceRule(
+      'minimal_attachment_score',
+      (tree) => this.minimalAttachmentScore(tree),
+      'minimal_attachment',
+    );
+    this.addPreferenceRule(
+      'right_association_score',
+      (tree) => this.rightAssociationScore(tree),
+      'right_association',
+    );
+    this.addPreferenceRule('tree_balance_score', (tree) => this.treeBalanceScore(tree), 'semantic');
   }
 
-  resolve(parses: TParse[]): Array<CecParseScore<TParse>> {
+  resolve(parses: CecSyntaxTree[]): CecParseScore[] {
+    const validation = this.validateParses(parses);
+    if (!validation.valid) throw new Error(`Invalid CEC parses: ${validation.errors.join('; ')}`);
     if (parses.length === 0) return [];
-    if (parses.length === 1) {
-      return [{ tree: parses[0], totalScore: 1, componentScores: {} }];
-    }
-
+    if (parses.length === 1) return [{ tree: parses[0], totalScore: 1, componentScores: {} }];
     return parses
       .map((tree) => this.scoreParse(tree))
-      .sort((left, right) => right.totalScore - left.totalScore);
+      .sort(
+        (left, right) =>
+          right.totalScore - left.totalScore ||
+          parseLabel(left.tree).localeCompare(parseLabel(right.tree)),
+      );
   }
 
-  scoreParse(tree: TParse): CecParseScore<TParse> {
-    const componentScores: Record<string, number> = {};
-    let totalScore = 0;
-
-    for (const { name, rule } of this.preferenceRules) {
-      const ruleScore = clamp01(rule(tree));
-      componentScores[name] = ruleScore;
-      totalScore += ruleScore;
-    }
-
-    return { tree, totalScore, componentScores };
+  validateParses(parses: CecSyntaxTree[]): CecAmbiguityValidationResult {
+    const errors: string[] = [];
+    if (!Array.isArray(parses)) errors.push('parses must be an array');
+    parses.forEach((parse, index) => {
+      if (!(parse instanceof CecSyntaxTree)) {
+        errors.push(`parse ${index} must be a CecSyntaxTree`);
+      } else if (!isSyntaxNode(parse.root)) {
+        errors.push(`parse ${index} has an invalid root node`);
+      }
+    });
+    return { valid: errors.length === 0, errors };
   }
 
-  addPreferenceRule(name: string, rule: CecPreferenceRule<TParse>): void {
-    if (!name.trim()) throw new Error('CEC ambiguity preference rule name cannot be empty');
-    this.preferenceRules.push({ name, rule });
+  scoreParse(tree: CecSyntaxTree): CecParseScore {
+    const validation = this.validateParses([tree]);
+    if (!validation.valid) throw new Error(`Invalid CEC parse: ${validation.errors.join('; ')}`);
+    const componentScores: CecScoreMap = {};
+    let weightedTotal = 0;
+    let totalWeight = 0;
+    this.preferenceRules.forEach((entry) => {
+      const weight = this.strategyWeights[entry.strategy];
+      const score = clampScore(entry.rule(tree));
+      componentScores[entry.name] = score;
+      weightedTotal += score * weight;
+      totalWeight += weight;
+    });
+    return {
+      tree,
+      totalScore: totalWeight === 0 ? 0 : clampScore(weightedTotal / totalWeight),
+      componentScores,
+    };
+  }
+
+  addPreferenceRule(
+    name: string,
+    rule: CecPreferenceRule,
+    strategy: CecDisambiguationStrategy = 'statistical',
+  ): void {
+    if (name.trim().length === 0)
+      throw new Error('CEC ambiguity preference rule name cannot be empty');
+    this.preferenceRules.push({ name, rule, strategy });
   }
 
   setStrategyWeight(strategy: CecDisambiguationStrategy, weight: number): void {
-    if (!Number.isFinite(weight) || weight < 0) throw new Error('CEC ambiguity strategy weight must be non-negative');
-    this.strategies.set(strategy, weight);
+    if (!Number.isFinite(weight) || weight < 0)
+      throw new Error('CEC ambiguity strategy weight must be a non-negative finite number');
+    this.strategyWeights[strategy] = weight;
   }
 
-  explainRanking(scores: Array<CecParseScore<TParse>>): string {
+  explain(scores: CecParseScore[]): string {
     if (scores.length === 0) return 'No parses to rank.';
-
     return scores
-      .map((score, index) => {
-        const lines = [
-          `Rank ${index + 1}: Total Score = ${score.totalScore.toFixed(3)}`,
-          '  Component Scores:',
-          ...Object.entries(score.componentScores).map(([component, value]) => `    ${component}: ${value.toFixed(3)}`),
-          `  Tree size: ${treeSize(score.tree)} nodes`,
-          `  Tree height: ${treeHeight(score.tree)}`,
-        ];
-        return lines.join('\n');
-      })
-      .join('\n\n');
+      .map(
+        (score, index) =>
+          `${index + 1}. ${parseLabel(score.tree)} score=${score.totalScore.toFixed(3)}`,
+      )
+      .join('\n');
   }
 
-  private minimalAttachmentScore(tree: TParse): number {
-    const sizeScore = 1 / (1 + treeSize(tree) * 0.1);
-    const heightScore = 1 / (1 + treeHeight(tree) * 0.2);
-    return (sizeScore + heightScore) / 2;
+  private minimalAttachmentScore(tree: CecSyntaxTree): number {
+    return 1 / countNodes(tree.root);
   }
 
-  private rightAssociationScore(tree: TParse): number {
-    const nonLeafNodes = treePreorder(tree).filter((node) => node.children.length > 0);
-    if (nonLeafNodes.length === 0) return 0.5;
-
-    const ratios = nonLeafNodes.map((node) => {
-      if (node.children.length < 2) return 0.5;
-      const rightSize = syntaxNodeSize(node.children[node.children.length - 1]);
-      const otherSize = node.children.slice(0, -1).reduce((total, child) => total + syntaxNodeSize(child), 0);
-      const total = rightSize + otherSize;
-      return total === 0 ? 0.5 : rightSize / total;
-    });
-
-    return ratios.reduce((total, ratio) => total + ratio, 0) / ratios.length;
+  private rightAssociationScore(tree: CecSyntaxTree): number {
+    if (tree.root.children.length === 0) return 1;
+    const lastDepth = maxDepth(tree.root.children[tree.root.children.length - 1]);
+    return clampScore(lastDepth / maxDepth(tree.root));
   }
 
-  private treeBalanceScore(tree: TParse): number {
-    const nodes = treePreorder(tree);
-    if (nodes.length === 0) return 0.5;
-
-    const balances = nodes.map((node) => {
-      if (node.children.length === 0) return 1;
-      const childHeights = node.children.map(syntaxNodeHeight);
-      const maxHeight = Math.max(...childHeights);
-      const minHeight = Math.min(...childHeights);
-      if (maxHeight === 0) return 1;
-      return 1 - (maxHeight - minHeight) / (maxHeight + 1);
-    });
-
-    return balances.reduce((total, balance) => total + balance, 0) / balances.length;
+  private treeBalanceScore(tree: CecSyntaxTree): number {
+    if (tree.root.children.length === 0) return 1;
+    const depths = tree.root.children.map((child) => maxDepth(child));
+    const spread = Math.max(...depths) - Math.min(...depths);
+    return 1 / (1 + spread);
   }
 }
 
-export class CecSemanticDisambiguator<TParse extends CecParseLike = CecParseLike> {
-  readonly semanticScores = new Map<string, number>();
-
-  addSemanticScore(pattern: string, score: number): void {
-    if (!pattern.trim()) throw new Error('CEC semantic disambiguation pattern cannot be empty');
-    this.semanticScores.set(pattern, clamp01(score));
-  }
-
-  scoreSemantics(tree: TParse): number {
-    const values = treeLeaves(tree).map((node) => String(node.value).toLowerCase());
-    const joined = values.join(' ');
-    const scores = [...this.semanticScores.entries()]
-      .filter(([pattern]) => joined.includes(pattern.toLowerCase()))
-      .map(([, score]) => score);
-    if (scores.length === 0) return 0.5;
-    return scores.reduce((total, score) => total + score, 0) / scores.length;
+export class CecSemanticDisambiguator {
+  resolve(parses: CecSyntaxTree[]): CecParseScore[] {
+    const resolver = new CecAmbiguityResolver();
+    resolver.setStrategyWeight('minimal_attachment', 0.5);
+    resolver.setStrategyWeight('right_association', 0.5);
+    resolver.setStrategyWeight('semantic', 2);
+    return resolver.resolve(parses);
   }
 }
 
-export class CecStatisticalDisambiguator<TParse extends CecParseLike = CecParseLike> {
-  readonly ngramCounts = new Map<string, number>();
-  totalCount = 0;
+export class CecStatisticalDisambiguator {
+  private readonly priors: { [label: string]: number };
 
-  addNgram(ngram: readonly string[], count = 1): void {
-    if (ngram.length === 0) throw new Error('CEC statistical ngram cannot be empty');
-    if (!Number.isInteger(count) || count < 1) throw new Error('CEC statistical ngram count must be a positive integer');
-    const key = ngramKey(ngram);
-    this.ngramCounts.set(key, (this.ngramCounts.get(key) ?? 0) + count);
-    this.totalCount += count;
+  constructor(priors: { [label: string]: number } = {}) {
+    this.priors = { ...priors };
   }
 
-  scoreProbability(tree: TParse): number {
-    if (this.totalCount === 0) return 0.5;
-    const leaves = treeLeaves(tree).map((node) => String(node.value));
-    if (leaves.length < 2) return 0.5;
-
-    let totalProbability = 1;
-    for (let index = 0; index < leaves.length - 1; index += 1) {
-      const count = this.ngramCounts.get(ngramKey([leaves[index], leaves[index + 1]])) ?? 0;
-      totalProbability *= (count + 1) / (this.totalCount + this.ngramCounts.size);
-    }
-
-    return Math.min(1, totalProbability * 10);
+  resolve(parses: CecSyntaxTree[]): CecParseScore[] {
+    const resolver = new CecAmbiguityResolver();
+    resolver.addPreferenceRule(
+      'statistical_prior_score',
+      (tree) => this.priors[parseLabel(tree)] || 0,
+      'statistical',
+    );
+    resolver.setStrategyWeight('statistical', 2);
+    return resolver.resolve(parses);
   }
 }
 
-export function cecExpressionToSyntaxTree(expression: CecExpression): CecSyntaxTree {
-  return new CecSyntaxTree(cecExpressionToNode(expression), {
-    label: formatCecExpression(expression),
-    metadata: { expressionDepth: measureCecDepth(expression) },
-  });
-}
-
-function cecExpressionToNode(expression: CecExpression): CecSyntaxNode {
-  switch (expression.kind) {
-    case 'atom':
-      return new CecSyntaxNode(expression.name);
-    case 'application':
-      return new CecSyntaxNode(expression.name, expression.args.map(cecExpressionToNode));
-    case 'quantified':
-      return new CecSyntaxNode(expression.quantifier, [new CecSyntaxNode(expression.variable), cecExpressionToNode(expression.expression)]);
-    case 'unary':
-      return new CecSyntaxNode(expression.operator, [cecExpressionToNode(expression.expression)]);
-    case 'binary':
-      return new CecSyntaxNode(expression.operator, [cecExpressionToNode(expression.left), cecExpressionToNode(expression.right)]);
-  }
-}
-
-function toSyntaxNode(node: CecSyntaxNodeLike): CecSyntaxNode {
-  if (node instanceof CecSyntaxNode) return node;
-  return new CecSyntaxNode(node.value, node.children ?? []);
-}
-
-function treeSize(tree: CecParseLike): number {
-  return syntaxNodeSize(toSyntaxNode(tree.root));
-}
-
-function treeHeight(tree: CecParseLike): number {
-  return syntaxNodeHeight(toSyntaxNode(tree.root));
-}
-
-function treePreorder(tree: CecParseLike): CecSyntaxNode[] {
-  return toSyntaxNode(tree.root).preorder();
-}
-
-function treeLeaves(tree: CecParseLike): CecSyntaxNode[] {
-  return toSyntaxNode(tree.root).leaves();
-}
-
-function syntaxNodeSize(node: CecSyntaxNode): number {
-  return node.size();
-}
-
-function syntaxNodeHeight(node: CecSyntaxNode): number {
-  return node.height();
-}
-
-function ngramKey(ngram: readonly string[]): string {
-  return ngram.join('\u0000');
-}
-
-function clamp01(value: number): number {
-  if (!Number.isFinite(value)) return 0;
-  return Math.max(0, Math.min(1, value));
+export function cecExpressionToSyntaxTree(expression: string): CecSyntaxTree {
+  const trimmed = expression.trim();
+  if (trimmed.length === 0) throw new Error('CEC expression cannot be empty');
+  const tokens = trimmed.split(/\s+/).map((token) => new CecSyntaxNode('token', [], token));
+  return new CecSyntaxTree(new CecSyntaxNode('expression', tokens), { label: trimmed });
 }

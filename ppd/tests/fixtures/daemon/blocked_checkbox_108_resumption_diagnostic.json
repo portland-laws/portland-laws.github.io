@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "diagnosticId": "blocked-checkbox-108-resumption-diagnostic",
+  "createdForTask": "checkbox-122",
+  "blockedTask": {
+    "id": "checkbox-108",
+    "area": "public_crawl_frontier",
+    "status": "blocked",
+    "resumePolicy": "single_syntax_valid_replacement_file_only",
+    "allowedReplacementCount": 1,
+    "requiresCompleteFileReplacement": true,
+    "mustNotEdit": [
+      "ppd/contracts/",
+      "ppd/crawler/",
+      "public/corpus/portland-or/current/",
+      "src/lib/logic/",
+      "ipfs_datasets_py/.daemon/"
+    ],
+    "reason": "The blocked public crawl frontier task should not be retried with broad contract or crawler rewrites. A retry is resumable only as one complete, syntax-valid replacement file that is directly tied to the missing fixture shape."
+  },
+  "supersession": {
+    "supersedingTask": "checkbox-109",
+    "allowedWhen": "checkbox-109 validation already covers the same committed fixture shape",
+    "effect": "supersede_blocked_task_without_reselecting_checkbox_108",
+    "requiredEvidence": [
+      "same_fixture_shape_validated",
+      "no_live_crawl_required",
+      "no_public_fixture_rewrite_required",
+      "no_contract_or_crawler_code_change_required"
+    ]
+  },
+  "syntaxGuardrail": {
+    "pythonFilesMustCompile": true,
+    "typescriptFilesMustCompile": true,
+    "forbiddenMixedSyntaxExamples": [
+      "if value list[str]",
+      "Python control flow in TypeScript files",
+      "TypeScript annotations in Python expressions"
+    ]
+  },
+  "fixtureBoundary": {
+    "fixtureRoot": "ppd/tests/fixtures",
+    "isPublicFixture": false,
+    "containsRawCrawlOutput": false,
+    "containsPrivateDevhubState": false,
+    "containsAuthState": false,
+    "containsTraceOrScreenshot": false,
+    "containsDownloadedDocument": false
+  },
+  "expectedDaemonDecision": {
+    "whenCheckbox109CoversFixtureShape": "treat_checkbox_108_as_superseded",
+    "whenCheckbox109DoesNotCoverFixtureShape": "retry_checkbox_108_only_with_one_syntax_valid_replacement_file",
+    "never": [
+      "rewrite_shared_crawl_contracts",
+      "edit_crawler_code_for_this_diagnostic",
+      "edit_public_corpus_fixtures",
+      "run_live_public_crawl",
+      "create_private_devhub_session_files"
+    ]
+  }
+}

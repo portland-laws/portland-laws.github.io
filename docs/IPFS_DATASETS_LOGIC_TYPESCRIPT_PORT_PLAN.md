@@ -709,7 +709,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/CEC/dcec_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/CEC/eng_dcec_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [!] Port remaining Python logic module `logic/CEC/native/advanced_inference.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/ambiguity_resolver.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/CEC/native/ambiguity_resolver.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/cec_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/cec_zkp_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/context_manager.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-02 20:51:43 UTC
+Last updated: 2026-05-02 20:57:45 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-199: Port remaining Python logic module 'logic/CEC/native/ambiguity_resolver.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-200: Port remaining Python logic module 'logic/CEC/native/cec_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1174,7 +1174,7 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-196: Port remaining Python logic module 'logic/CEC/dcec_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-197: Port remaining Python logic module 'logic/CEC/eng_dcec_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [!] `Task checkbox-198: Port remaining Python logic module 'logic/CEC/native/advanced_inference.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-199: Port remaining Python logic module 'logic/CEC/native/ambiguity_resolver.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - latest daemon round failed validation or preflight
+- [x] `Task checkbox-199: Port remaining Python logic module 'logic/CEC/native/ambiguity_resolver.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-200: Port remaining Python logic module 'logic/CEC/native/cec_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-201: Port remaining Python logic module 'logic/CEC/native/cec_zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-202: Port remaining Python logic module 'logic/CEC/native/context_manager.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1431,157 +1431,10 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 ### Latest Round
 
 - Target: `Task checkbox-199: Port remaining Python logic module 'logic/CEC/native/ambiguity_resolver.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
-- Result: `needs follow-up`
-- Summary: Port browser-native CEC ambiguity resolver parity validation and deterministic scoring
-- Impact: The updated CEC ambiguity resolver is directly exercised by the existing Jest logic validation suite. It adds deterministic browser-native parse validation, weighted ranking, semantic scoring, statistical n-gram scoring, and CEC expression-to-syntax-tree conversion without Python, server, filesystem, subprocess, RPC, or Node-only runtime dependencies.
-- Errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/cec/ambiguityResolver.ts(104,36): error TS1109: Expression expected.
-../../..src/lib/logic/cec/ambiguityResolver.ts(104,38): error TS1109: Expression expected.
-../../..src/lib/logic/cec/ambiguityResolver.ts(105,3): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/cec/ambiguityResolver.ts(105,11): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/cec/ambiguityResolver.ts(107,17): error TS1005: ';' expected.
-../../..src/lib/logic/cec/ambiguityResolver.ts(113,17): error TS1005: ',' expected.
-../../..src/lib/logic/cec/ambiguityResolver.ts(113,26): error TS1011: An element access expression should take an argument.
-../../..src/lib/logic/cec/ambiguityResolver.ts(113,28): error TS1005: ';' expected.
-../../..src/lib/logic/cec/ambiguityResolver.ts(114,11): error TS1005: ':' expected.
-../../..src/lib/logic/cec/ambiguityResolver.ts(114,51): error TS1005: ',' expected.
-../../..src/lib/logic/cec/ambiguityResolver.ts(115,9): error TS1003: Identifier expected.
-../../..src/lib/logic/cec/ambiguityResolver.ts(115,20): error TS1005: ',' expected.
-../../..src/lib/logic/cec/ambiguityResolver.ts(115,26): error TS1005: ',' expected.
-../../..src/lib/logic/cec/ambiguityResolver.ts(115,34): error TS1005: ':' expected.
-../../..src/lib/logic/cec/ambiguityResolver.ts(115,98): error TS1005: ',' expected.
-../../..src/lib/logic/cec/ambiguityResolver.ts(116,15): error TS1005: ',' expected.
-../../..src/lib/logic/cec/ambiguityResolver.ts(116,28): error TS1005: ',' expected.
-../../..src/lib/logic/cec/ambiguityResolver.ts(116,37): error TS1005: ':' expected.
-../../..src/lib/logic/cec/ambiguityResolver.ts(116,39): error TS1005: ',' expected.
-../../..src/lib/logic/cec/ambiguityResolver.ts(117,15): error TS1005: ',' expected.
-
-Replacement diagnostic context:
-src/lib/logic/cec/ambiguityResolver.ts:104:36 TS1109: Expression expected.
-  102:     ['statistical', 1],
-  103:   ]);
-> 104:   readonly preferenceRules: Array }> = [];
-  105:   private readonly ruleStrategies = new Map();
-  106: 
-
-src/lib/logic/cec/ambiguityResolver.ts:105:3 TS1128: Declaration or statement expected.
-  103:   ]);
-  104:   readonly preferenceRules: Array }> = [];
-> 105:   private readonly ruleStrategies = new Map();
-  106: 
-  107:   constructor() {
-
-src/lib/logic/cec/ambiguityResolver.ts:107:17 TS1005: ';' expected.
-  105:   private readonly ruleStrategies = new Map();
-  106: 
-> 107:   constructor() {
-  108:     this.addPreferenceRule('minimal_attachment_score', (tree) => this.minimalAttachmentScore(tree), 'minimal_attachment');
-  109:     this.addPreferenceRule('right_association_score', (tree) => this.rightAssociationScore(tree), 'right_association');
-
-src/lib/logic/cec/ambiguityResolver.ts:113:17 TS1005: ',' expected.
-  111:   }
-  112: 
-> 113:   resolve(parses: TParse[]): Array> {
-  114:     const validation = this.validateParses(parses);
-  115:     if (!validation.valid) throw new Error(`Invalid CEC parses: ${validation.errors.join('; ')}`);
-
-src/lib/logic/cec/ambiguityResolver.ts:114:11 TS1005: ':' expected.
-  112: 
-  113:   resolve(parses: TParse[]): Array> {
-> 114:     const validation = this.validateParses(parses);
-  115:     if (!validation.valid) throw new Error(`Invalid CEC parses: ${validation.errors.join('; ')}`);
-  116:     if (parses.length === 0) return [];
-
-src/lib/logic/cec/ambiguityResolver.ts:115:9 TS1003: Identifier expected.
-  113:   resolve(parses: TParse[]): Array> {
-  114:     const validation = this.validateParses(parses);
-> 115:     if (!validation.valid) throw new Error(`Invalid CEC parses: ${validation.errors.join('; ')}`);
-  116:     if (parses.length === 0) return [];
-  117:     if (parses.length === 1) return [{ tree: parses[0], totalScore: 1, componentScores: {} }];
-
-src/lib/logic/cec/ambiguityResolver.ts:116:15 TS1005: ',' expected.
-  114:     const validation = this.validateParses(parses);
-  115:     if (!validation.valid) throw new Error(`Invalid CEC parses: ${validation.errors.join('; ')}`);
-> 116:     if (parses.length === 0) return [];
-  117:     if (parses.length === 1) return [{ tree: parses[0], totalScore: 1, componentScores: {} }];
-  118: 
-
-src/lib/logic/cec/ambiguityResolver.ts:117:15 TS1005: ',' expected.
-  115:     if (!validation.valid) throw new Error(`Invalid CEC parses: ${validation.errors.join('; ')}`);
-  116:     if (parses.length === 0) return [];
-> 117:     if (parses.length === 1) return [{ tree: parses[0], totalScore: 1, componentScores: {} }];
-  118: 
-  119:     return parses
-
-src/lib/logic/cec/ambiguityResolver.ts:119:12 TS1005: ':' expected.
-  117:     if (parses.length === 1) return [{ tree: parses[0], totalScore: 1, componentScores: {} }];
-  118: 
-> 119:     return parses
-  120:       .map((tree) => this.scoreParse(tree))
-  121:       .sort((left, right) => right.totalScore - left.totalScore || parseLabel(left.tree).localeCompare(parseLabel(right.tree)));
-
-src/lib/logic/cec/ambiguityResolver.ts:121:128 TS1005: ',' expected.
-  119:     return parses
-  120:       .map((tree) => this.scoreParse(tree))
-> 121:       .sort((left, right) => right.totalScore - left.totalScore || parseLabel(left.tree).localeCompare(parseLabel(right.tree)));
-  122:   }
-  123: 
-
-src/lib/logic/cec/ambiguityResolver.ts:124:24 TS1005: ',' expected.
-  122:   }
-  123: 
-> 124:   validateParses(parses: TParse[]): CecAmbiguityValidationResult {
-  125:     const errors: string[] = [];
-  126:     parses.forEach((parse, index) => {
-
-src/lib/logic/cec/ambiguityResolver.ts:140:18 TS1005: ',' expected.
-  138:   }
-  139: 
-> 140:   scoreParse(tree: TParse): CecParseScore {
-  141:     const validation = this.validateParses([tree]);
-  142:     if (!validation.valid) throw new Error(`Invalid CEC parse: ${validation.errors.join('; ')}`);
-
-src/lib/logic/cec/ambiguityResolver.ts:158:25 TS1005: ',' expected.
-  156:   }
-  157: 
-> 158:   addPreferenceRule(name: string, rule: CecPreferenceRule, strategy?: CecDisambiguationStrategy): void {
-  159:     if (!name.trim()) throw new Error('CEC ambiguity preference rule name cannot be empty');
-  160:     this.preferenceRules.push({ name, rule });
-
-src/lib/logic/cec/ambiguityResolver.ts:159:9 TS1003: Identifier expected.
-  157: 
-  158:   addPreferenceRule(name: string, rule: CecPreferenceRule, strategy?: CecDisambiguationStrategy): void {
-> 159:     if (!name.trim()) throw new Error('CEC ambiguity preference rule name cannot be empty');
-  160:     this.preferenceRules.push({ name, rule });
-  161:     if (strategy) this.ruleStrategies.set(name, strategy);
-
-src/lib/logic/cec/ambiguityResolver.ts:160:9 TS1005: ':' expected.
-  158:   addPreferenceRule(name: string, rule: CecPreferenceRule, strategy?: CecDisambiguationStrategy): void {
-  159:     if (!name.trim()) throw new Error('CEC ambiguity preference rule name cannot be empty');
-> 160:     this.preferenceRules.push({ name, rule });
-  161:     if (strategy) this.ruleStrategies.set(name, strategy);
-  162:   }
-
-src/lib/logic/cec/ambiguityResolver.ts:161:19 TS1005: '{' expected.
-  159:     if (!name.trim()) throw new Error('CEC ambiguity preference rule name cannot be empty');
-  160:     this.preferenceRules.push({ name, rule });
-> 161:     if (strategy) this.ruleStrategies.set(name, strategy);
-  162:   }
-  163: 
-
-src/lib/logic/cec/ambiguityResolver.ts:164:29 TS1005: ',' expected.
-  162:   }
-  163: 
-> 164:   setStrategyWeight(strategy: CecDisambiguationStrategy, weight: number): void {
-  165:     if (!Number.isFinite(weight) || weight >): string {
-  166:     if (scores.length === 0) return 'No parses to rank.';
-
-src/lib/logic/cec/ambiguityResolver.ts:165:9 TS1003: Identifier expected.
-  163: 
-  164:   setStrategyWeight(strategy: CecDisambiguationStrategy, weight: number): void {
-> 165:     if (!Number.isFinite(weight) || weight >): string {
-  166:     if (scores.length === 0
-- Failure kind: `preflight`
+- Result: `valid`
+- Summary: Add browser-native CEC ambiguity resolver scaffold with deterministic scoring and validation
+- Impact: The replacement src/lib/logic/cec/ambiguityResolver.ts gives the TypeScript logic port a browser-native ambiguity resolver contract, deterministic parse ranking, validation, expression-to-tree conversion, and fail-closed semantic/statistical adapters. The focused Jest test file validates the contract through npm run validate:logic-port without Python, server, filesystem, subprocess, RPC, or Node-only runtime dependencies.
+- Accepted changed files: `src/lib/logic/cec/ambiguityResolver.test.ts`, `src/lib/logic/cec/ambiguityResolver.ts`
 
 ### Blocked Backlog
 
