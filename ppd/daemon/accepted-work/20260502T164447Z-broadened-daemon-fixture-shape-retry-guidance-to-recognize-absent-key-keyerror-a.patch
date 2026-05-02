@@ -1,0 +1,476 @@
+--- a/ppd/daemon/fixture_failure_guidance.py
++++ b/ppd/daemon/fixture_failure_guidance.py
+@@ -1,10 +1,10 @@
+-"""Failure-context guidance for JSON fixture shape mismatches.
++'''Failure-context guidance for JSON fixture shape mismatches.
+ 
+ This module is intentionally daemon-local. It does not validate PP&D domain
+ semantics; it only recognizes validator failures that are likely caused by a
+-validator expecting fields absent from a committed JSON fixture and emits a
+-compact retry instruction for the next worker.
+-"""
++validator expecting fields or fixture keys absent from a committed JSON fixture
++and emits a compact retry instruction for the next worker.
++'''
+ 
+ from __future__ import annotations
+ 
+@@ -21,29 +21,45 @@
+     from fixture_shape import JsonFixtureShape, describe_json_fixture
+ 
+ 
+-_JSON_FIXTURE_PATTERN = re.compile(r"ppd/tests/fixtures/[A-Za-z0-9_./-]+\.json")
++_JSON_FIXTURE_PATTERN = re.compile(r'ppd/tests/fixtures/[A-Za-z0-9_./-]+\.json')
+ _MISSING_FIELD_PATTERNS = (
+-    "missing required field",
+-    "missing required fields",
+-    "required field",
+-    "required fields",
+-    "absent field",
+-    "absent fields",
+-    "missing seed url",
+-    "missing seed urls",
+-    "missing preflight",
+-    "missing allowlist",
+-    "missing robots",
+-    "missing timeout",
+-    "missing no-persist",
+-    "missing processor-adapter",
+-    "missing processor adapter",
++    'missing required field',
++    'missing required fields',
++    'required field',
++    'required fields',
++    'absent field',
++    'absent fields',
++    'missing seed url',
++    'missing seed urls',
++    'missing preflight',
++    'missing allowlist',
++    'missing robots',
++    'missing timeout',
++    'missing no-persist',
++    'missing processor-adapter',
++    'missing processor adapter',
++    'missing key',
++    'missing keys',
++    'absent key',
++    'absent keys',
++    'fixture key',
++)
++_SINGLE_QUOTED_IDENTIFIER_PATTERN = re.compile(r"'([A-Za-z_][A-Za-z0-9_]*)'")
++_ABSENT_KEY_LINE_MARKERS = (
++    'keyerror',
++    'fixture key',
++    'missing key',
++    'missing keys',
++    'absent key',
++    'absent keys',
++    'required field',
++    'required fields',
+ )
+ 
+ 
+ @dataclass(frozen=True)
+ class FixtureFailureGuidance:
+-    """Prompt guidance for a fixture-shape retry."""
++    '''Prompt guidance for a fixture-shape retry.'''
+ 
+     fixture_path: Optional[str]
+     fixture_shape: Optional[str]
+@@ -53,39 +69,45 @@
+ def build_fixture_failure_guidance(
+     failure_text: str,
+     *,
+-    repo_root: PurePosixPath | Path | str = PurePosixPath("."),
++    repo_root: PurePosixPath | Path | str = PurePosixPath('.'),
+ ) -> Optional[FixtureFailureGuidance]:
+-    """Return retry guidance when a validator failure mentions absent JSON fields."""
++    '''Return retry guidance when a validator failure mentions absent JSON fields.'''
+ 
+     if not failure_text or not _mentions_missing_fixture_fields(failure_text):
+         return None
+ 
+     fixture_path = _first_json_fixture_path(failure_text)
+     fixture_shape = None
++    absent_keys = _extract_absent_fixture_keys(failure_text)
+     if fixture_path is not None:
+         try:
+             shape = describe_json_fixture(Path(repo_root), fixture_path)
+             fixture_shape = _format_fixture_shape(shape)
+         except Exception as exc:  # pragma: no cover - defensive daemon guidance path
+-            fixture_shape = f"fixture shape diagnostic unavailable for {fixture_path}: {exc}"
++            fixture_shape = f'fixture shape diagnostic unavailable for {fixture_path}: {exc}'
+ 
+     guidance_lines = [
+-        "Fixture-shape retry guidance:",
+-        "Inspect the committed JSON fixture shape before writing or changing a validator.",
+-        "Use the daemon fixture-shape diagnostic to compare expected fields with the fields actually present in the committed fixture.",
+-        "Constrain the retry to the existing fixture structure unless the selected task explicitly permits fixture replacement.",
+-        "Do not add broad shared contracts, live crawl code, authenticated automation, or new processor-adapter implementations for this retry.",
++        'Fixture-shape retry guidance:',
++        'Inspect the committed JSON fixture shape before writing or changing a validator.',
++        'Use the daemon fixture-shape diagnostic to compare expected fields with the fields actually present in the committed fixture.',
++        'Constrain the retry to the existing fixture structure unless the selected task explicitly permits fixture replacement.',
++        'Do not add broad shared contracts, live crawl code, authenticated automation, or new processor-adapter implementations for this retry.',
+     ]
++    if absent_keys:
++        guidance_lines.append(f"Absent fixture keys reported by the failure: {', '.join(absent_keys)}")
++        guidance_lines.append(
++            'Treat KeyError or assertion failures for those absent keys as fixture-shape diagnostics: inspect the committed fixture shape before retrying.'
++        )
+     if fixture_path is not None:
+-        guidance_lines.append(f"Committed fixture to inspect: {fixture_path}")
++        guidance_lines.append(f'Committed fixture to inspect: {fixture_path}')
+     if fixture_shape:
+-        guidance_lines.append("Committed fixture shape:")
++        guidance_lines.append('Committed fixture shape:')
+         guidance_lines.append(fixture_shape)
+ 
+     return FixtureFailureGuidance(
+         fixture_path=fixture_path,
+         fixture_shape=fixture_shape,
+-        guidance="\n".join(guidance_lines),
++        guidance='\n'.join(guidance_lines),
+     )
+ 
+ 
+@@ -93,9 +115,9 @@
+     prompt_parts: Iterable[str],
+     failure_text: str,
+     *,
+-    repo_root: PurePosixPath | Path | str = PurePosixPath("."),
++    repo_root: PurePosixPath | Path | str = PurePosixPath('.'),
+ ) -> list[str]:
+-    """Append fixture-shape guidance to prompt parts when the failure warrants it."""
++    '''Append fixture-shape guidance to prompt parts when the failure warrants it.'''
+ 
+     parts = list(prompt_parts)
+     guidance = build_fixture_failure_guidance(failure_text, repo_root=repo_root)
+@@ -106,9 +128,22 @@
+ 
+ def _mentions_missing_fixture_fields(text: str) -> bool:
+     normalized = text.lower()
+-    if ".json" not in normalized and "fixture" not in normalized:
++    if '.json' not in normalized and 'fixture' not in normalized:
+         return False
+-    return any(pattern in normalized for pattern in _MISSING_FIELD_PATTERNS)
++    return any(pattern in normalized for pattern in _MISSING_FIELD_PATTERNS) or bool(
++        _extract_absent_fixture_keys(text)
++    )
++
++
++def _extract_absent_fixture_keys(text: str) -> tuple[str, ...]:
++    keys: list[str] = []
++    for line in text.splitlines():
++        normalized = line.lower()
++        if not any(marker in normalized for marker in _ABSENT_KEY_LINE_MARKERS):
++            continue
++        for match in _SINGLE_QUOTED_IDENTIFIER_PATTERN.finditer(line):
++            keys.append(match.group(1))
++    return tuple(dict.fromkeys(keys))
+ 
+ 
+ def _first_json_fixture_path(text: str) -> Optional[str]:
+@@ -126,67 +161,122 @@
+         f"top_level_keys: {', '.join(data['top_level_keys']) if data['top_level_keys'] else '(none)'}",
+         f"list_fields: {', '.join(data['list_fields']) if data['list_fields'] else '(none)'}",
+     ]
+-    first_object_keys = data["first_object_keys"]
++    first_object_keys = data['first_object_keys']
+     if first_object_keys:
+         for field, keys in sorted(first_object_keys.items()):
+-            label = field if field else ""
+-            lines.append(f"first_object_keys[{label}]: {', '.join(keys) if keys else '(none)'}")
++            lines.append(f"first_object_keys[{field}]: {', '.join(keys) if keys else '(none)'}")
+     else:
+-        lines.append("first_object_keys: (none)")
+-    return "\n".join(lines)
++        lines.append('first_object_keys: (none)')
++    return '\n'.join(lines)
+ 
+ 
+ def self_test() -> int:
+     errors: list[str] = []
+     with tempfile.TemporaryDirectory() as tmpdir:
+         repo_root = Path(tmpdir)
+-        fixture_path = "ppd/tests/fixtures/crawler/public_crawl_dry_run_plan.json"
+-        fixture = repo_root / fixture_path
+-        fixture.parent.mkdir(parents=True)
+-        fixture.write_text(
++
++        crawl_fixture_path = 'ppd/tests/fixtures/crawler/public_crawl_dry_run_plan.json'
++        crawl_fixture = repo_root / crawl_fixture_path
++        crawl_fixture.parent.mkdir(parents=True)
++        crawl_fixture.write_text(
+             json.dumps(
+                 {
+-                    "schemaVersion": 1,
+-                    "plannedSeeds": [
++                    'schemaVersion': 1,
++                    'plannedSeeds': [
+                         {
+-                            "id": "seed-ppd-landing",
+-                            "url": "https://www.portland.gov/ppd",
+-                            "preflight": {"robots": "respect", "timeoutSeconds": 20},
++                            'id': 'seed-ppd-landing',
++                            'url': 'https://www.portland.gov/ppd',
++                            'preflight': {'robots': 'respect', 'timeoutSeconds': 20},
+                         }
+                     ],
+-                    "skippedUrls": [{"url": "mailto:test@example.invalid", "reasonCode": "unsupported-scheme"}],
++                    'skippedUrls': [
++                        {'url': 'mailto:test@example.invalid', 'reasonCode': 'unsupported-scheme'}
++                    ],
+                 },
+                 sort_keys=True,
+             ),
+-            encoding="utf-8",
+-        )
+-        failure_text = (
+-            "AssertionError: missing required field; expected one of: seedUrls, seeds\n"
+-            f"fixture path: {fixture_path}\n"
+-            "missing preflight policy fields"
+-        )
+-        guidance = build_fixture_failure_guidance(failure_text, repo_root=repo_root)
++            encoding='utf-8',
++        )
++        missing_field_text = (
++            'AssertionError: missing required field; expected one of: seedUrls, seeds\n'
++            f'fixture path: {crawl_fixture_path}\n'
++            'missing preflight policy fields'
++        )
++        guidance = build_fixture_failure_guidance(missing_field_text, repo_root=repo_root)
+         if guidance is None:
+-            errors.append("missing-field fixture failure did not produce guidance")
++            errors.append('missing-field fixture failure did not produce guidance')
+         else:
+             required_fragments = (
+-                "Inspect the committed JSON fixture shape",
+-                "Do not add broad shared contracts",
+-                fixture_path,
+-                "top_level_keys: plannedSeeds, schemaVersion, skippedUrls",
+-                "list_fields: plannedSeeds, skippedUrls",
+-                "first_object_keys[plannedSeeds]: id, preflight, url",
++                'Inspect the committed JSON fixture shape',
++                'Do not add broad shared contracts',
++                crawl_fixture_path,
++                'top_level_keys: plannedSeeds, schemaVersion, skippedUrls',
++                'list_fields: plannedSeeds, skippedUrls',
++                'first_object_keys[plannedSeeds]: id, preflight, url',
+             )
+             for fragment in required_fragments:
+                 if fragment not in guidance.guidance:
+-                    errors.append(f"guidance missing fragment: {fragment}")
++                    errors.append(f'guidance missing fragment: {fragment}')
++
++        devhub_fixture_path = 'ppd/tests/fixtures/devhub/draft_action_preview.json'
++        devhub_fixture = repo_root / devhub_fixture_path
++        devhub_fixture.parent.mkdir(parents=True, exist_ok=True)
++        devhub_fixture.write_text(
++            json.dumps(
++                {
++                    'schemaVersion': 1,
++                    'previewMode': {
++                        'dryRun': True,
++                        'enabled': True,
++                        'executesBrowserActions': False,
++                    },
++                    'previewActions': [
++                        {
++                            'previewId': 'fill-project-description',
++                            'actionClass': 'reversible_draft_fill',
++                        }
++                    ],
++                },
++                sort_keys=True,
++            ),
++            encoding='utf-8',
++        )
++
++        keyerror_text = (
++            "KeyError: 'draftActionPreviews'\n"
++            f'while validating fixture {devhub_fixture_path}\n'
++            'Synthetic DevHub preview validator expected a missing fixture key'
++        )
++        keyerror_guidance = build_fixture_failure_guidance(keyerror_text, repo_root=repo_root)
++        if keyerror_guidance is None:
++            errors.append('KeyError fixture failure did not produce guidance')
++        else:
++            required_fragments = (
++                'Absent fixture keys reported by the failure: draftActionPreviews',
++                'Treat KeyError or assertion failures for those absent keys',
++                devhub_fixture_path,
++                'top_level_keys: previewActions, previewMode, schemaVersion',
++                'list_fields: previewActions',
++                'first_object_keys[previewActions]: actionClass, previewId',
++            )
++            for fragment in required_fragments:
++                if fragment not in keyerror_guidance.guidance:
++                    errors.append(f'KeyError guidance missing fragment: {fragment}')
++
++        assertion_text = (
++            "AssertionError: fixture key 'draftActionPreviews' is absent from the committed JSON fixture\n"
++            f'while validating fixture {devhub_fixture_path}'
++        )
++        assertion_guidance = build_fixture_failure_guidance(assertion_text, repo_root=repo_root)
++        if assertion_guidance is None:
++            errors.append('assertion fixture-key failure did not produce guidance')
+ 
+     if errors:
+-        print(json.dumps({"ok": False, "errors": errors}, indent=2), flush=True)
++        print(json.dumps({'ok': False, 'errors': errors}, indent=2), flush=True)
+         return 1
+-    print(json.dumps({"ok": True}, indent=2), flush=True)
++    print(json.dumps({'ok': True}, indent=2), flush=True)
+     return 0
+ 
+ 
+-if __name__ == "__main__":
++if __name__ == '__main__':
+     raise SystemExit(self_test())
+--- a/ppd/tests/test_fixture_failure_guidance.py
++++ b/ppd/tests/test_fixture_failure_guidance.py
+@@ -13,32 +13,32 @@
+     def test_missing_field_failure_includes_committed_fixture_shape(self):
+         with tempfile.TemporaryDirectory() as tmpdir:
+             repo_root = Path(tmpdir)
+-            fixture_path = "ppd/tests/fixtures/crawler/public_crawl_dry_run_plan.json"
++            fixture_path = 'ppd/tests/fixtures/crawler/public_crawl_dry_run_plan.json'
+             fixture = repo_root / fixture_path
+             fixture.parent.mkdir(parents=True)
+             fixture.write_text(
+                 json.dumps(
+                     {
+-                        "schemaVersion": 1,
+-                        "plannedSeeds": [
++                        'schemaVersion': 1,
++                        'plannedSeeds': [
+                             {
+-                                "id": "seed-ppd-landing",
+-                                "url": "https://www.portland.gov/ppd",
+-                                "preflight": {"robots": "respect", "timeoutSeconds": 20},
++                                'id': 'seed-ppd-landing',
++                                'url': 'https://www.portland.gov/ppd',
++                                'preflight': {'robots': 'respect', 'timeoutSeconds': 20},
+                             }
+                         ],
+-                        "skippedUrls": [
+-                            {"url": "mailto:test@example.invalid", "reasonCode": "unsupported-scheme"}
++                        'skippedUrls': [
++                            {'url': 'mailto:test@example.invalid', 'reasonCode': 'unsupported-scheme'}
+                         ],
+                     },
+                     sort_keys=True,
+                 ),
+-                encoding="utf-8",
++                encoding='utf-8',
+             )
+             failure_text = (
+-                "AssertionError: missing required field; expected one of: seedUrls, seeds\n"
+-                f"while validating fixture {fixture_path}\n"
+-                "missing preflight policy fields"
++                'AssertionError: missing required field; expected one of: seedUrls, seeds\n'
++                f'while validating fixture {fixture_path}\n'
++                'missing preflight policy fields'
+             )
+ 
+             guidance = build_fixture_failure_guidance(failure_text, repo_root=repo_root)
+@@ -46,20 +46,85 @@
+         self.assertIsNotNone(guidance)
+         assert guidance is not None
+         self.assertEqual(fixture_path, guidance.fixture_path)
+-        self.assertIn("Inspect the committed JSON fixture shape", guidance.guidance)
+-        self.assertIn("Use the daemon fixture-shape diagnostic", guidance.guidance)
+-        self.assertIn("Do not add broad shared contracts", guidance.guidance)
+-        self.assertIn("Do not add broad shared contracts", guidance.guidance)
+-        self.assertIn("live crawl code", guidance.guidance)
+-        self.assertIn("authenticated automation", guidance.guidance)
+-        self.assertIn("top_level_keys: plannedSeeds, schemaVersion, skippedUrls", guidance.guidance)
+-        self.assertIn("list_fields: plannedSeeds, skippedUrls", guidance.guidance)
+-        self.assertIn("first_object_keys[plannedSeeds]: id, preflight, url", guidance.guidance)
++        self.assertIn('Inspect the committed JSON fixture shape', guidance.guidance)
++        self.assertIn('Use the daemon fixture-shape diagnostic', guidance.guidance)
++        self.assertIn('Do not add broad shared contracts', guidance.guidance)
++        self.assertIn('live crawl code', guidance.guidance)
++        self.assertIn('authenticated automation', guidance.guidance)
++        self.assertIn('top_level_keys: plannedSeeds, schemaVersion, skippedUrls', guidance.guidance)
++        self.assertIn('list_fields: plannedSeeds, skippedUrls', guidance.guidance)
++        self.assertIn('first_object_keys[plannedSeeds]: id, preflight, url', guidance.guidance)
++
++    def test_keyerror_for_absent_fixture_key_includes_committed_fixture_shape(self):
++        with tempfile.TemporaryDirectory() as tmpdir:
++            repo_root = Path(tmpdir)
++            fixture_path = self._write_devhub_preview_fixture(repo_root)
++            failure_text = (
++                "KeyError: 'draftActionPreviews'\n"
++                f'while validating fixture {fixture_path}\n'
++                'Synthetic DevHub preview validator expected a missing fixture key'
++            )
++
++            guidance = build_fixture_failure_guidance(failure_text, repo_root=repo_root)
++
++        self.assertIsNotNone(guidance)
++        assert guidance is not None
++        self.assertEqual(fixture_path, guidance.fixture_path)
++        self.assertIn('Inspect the committed JSON fixture shape', guidance.guidance)
++        self.assertIn('Absent fixture keys reported by the failure: draftActionPreviews', guidance.guidance)
++        self.assertIn('Treat KeyError or assertion failures for those absent keys', guidance.guidance)
++        self.assertIn('Committed fixture to inspect: ppd/tests/fixtures/devhub/draft_action_preview.json', guidance.guidance)
++        self.assertIn('top_level_keys: previewActions, previewMode, schemaVersion', guidance.guidance)
++        self.assertIn('list_fields: previewActions', guidance.guidance)
++        self.assertIn('first_object_keys[previewActions]: actionClass, previewId', guidance.guidance)
++
++    def test_assertion_for_absent_fixture_key_includes_committed_fixture_shape(self):
++        with tempfile.TemporaryDirectory() as tmpdir:
++            repo_root = Path(tmpdir)
++            fixture_path = self._write_devhub_preview_fixture(repo_root)
++            failure_text = (
++                "AssertionError: fixture key 'draftActionPreviews' is absent from the committed JSON fixture\n"
++                f'while validating fixture {fixture_path}'
++            )
++
++            prompt_parts = append_fixture_failure_guidance(['base'], failure_text, repo_root=repo_root)
++
++        self.assertEqual('base', prompt_parts[0])
++        self.assertEqual(2, len(prompt_parts))
++        self.assertIn('Inspect the committed JSON fixture shape', prompt_parts[1])
++        self.assertIn('Absent fixture keys reported by the failure: draftActionPreviews', prompt_parts[1])
++        self.assertIn('top_level_keys: previewActions, previewMode, schemaVersion', prompt_parts[1])
+ 
+     def test_non_fixture_failure_does_not_add_guidance(self):
+-        self.assertIsNone(build_fixture_failure_guidance("RuntimeError: network unavailable"))
+-        self.assertEqual(["base"], append_fixture_failure_guidance(["base"], "RuntimeError: network unavailable"))
++        self.assertIsNone(build_fixture_failure_guidance('RuntimeError: network unavailable'))
++        self.assertEqual(['base'], append_fixture_failure_guidance(['base'], 'RuntimeError: network unavailable'))
++
++    def _write_devhub_preview_fixture(self, repo_root: Path) -> str:
++        fixture_path = 'ppd/tests/fixtures/devhub/draft_action_preview.json'
++        fixture = repo_root / fixture_path
++        fixture.parent.mkdir(parents=True)
++        fixture.write_text(
++            json.dumps(
++                {
++                    'schemaVersion': 1,
++                    'previewMode': {
++                        'dryRun': True,
++                        'enabled': True,
++                        'executesBrowserActions': False,
++                    },
++                    'previewActions': [
++                        {
++                            'previewId': 'fill-project-description',
++                            'actionClass': 'reversible_draft_fill',
++                        }
++                    ],
++                },
++                sort_keys=True,
++            ),
++            encoding='utf-8',
++        )
++        return fixture_path
+ 
+ 
+-if __name__ == "__main__":
++if __name__ == '__main__':
+     unittest.main()

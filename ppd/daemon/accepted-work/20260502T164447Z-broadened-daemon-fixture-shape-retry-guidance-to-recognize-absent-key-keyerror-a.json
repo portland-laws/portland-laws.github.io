@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/daemon/fixture_failure_guidance.py",
+    "ppd/tests/test_fixture_failure_guidance.py"
+  ],
+  "created_at": "2026-05-02T16:44:47.271567Z",
+  "impact": "This narrows the blocked draft-action preview retry path by proving the daemon points workers back to the committed fixture shape when validators assume a missing key like draftActionPreviews, without changing DevHub fixtures or adding domain validation.",
+  "summary": "Broadened daemon fixture-shape retry guidance to recognize absent-key KeyError/assertion failures and added synthetic DevHub preview guidance tests.",
+  "target_task": "Task checkbox-73: Task checkbox-68: Add a daemon fixture-shape retry self-test for DevHub draft-action preview validation failures. Use only `ppd/daemon/` or `ppd/tests/`, keep it synthetic, and prove KeyError or assertion failures for absent fixture keys such as `draftActionPreviews` produce guidance to inspect the committed fixture shape before retrying. Do not edit DevHub fixtures or implement the domain validator in this task.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 74 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "................................................................................................................................................................................................................................................ss..............sss............................................................................................................................................. ---------------------------------------------------------------------- Ran 400 tests in 0.081s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

@@ -498,7 +498,7 @@ Acceptance criteria:
   - [x] Initial local CEC delegate replacement that translates TDFOL to browser-native CEC expressions and returns explicit unknown results instead of calling Python or a server.
   - [x] Initial indexed-KB and cache-aware optimization facade.
   - [x] Deeper CEC delegate parity for native CEC inference rule groups and proof traces.
-  - [ ] Browser-native ZKP acceleration and parallel proof search parity.
+  - [!] Browser-native ZKP acceleration and parallel proof search parity.
 - [ ] Complete modal tableaux and countermodel generation/visualization parity.
   - [x] Initial modal tableaux proof search for propositional, temporal, deontic modal formulas and K/T/D/S4/S5 accessibility.
   - [x] Initial countermodel model, extractor, and self-contained visual exports.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-02 16:24:11 UTC
+Last updated: 2026-05-02 16:39:31 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.`
+Current target: `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1081,8 +1081,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-103: Initial local CEC delegate replacement that translates TDFOL to browser-native CEC expressions and returns explicit unknown results instead of calling Python or a server.` - complete
 - [x] `Task checkbox-104: Initial indexed-KB and cache-aware optimization facade.` - complete
 - [x] `Task checkbox-105: Deeper CEC delegate parity for native CEC inference rule groups and proof traces.` - complete
-- [!] `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.` - latest daemon round failed validation or preflight
-- [ ] `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.` - needed
+- [!] `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.` - blocked
+- [!] `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.` - latest daemon round failed validation or preflight
 - [x] `Task checkbox-108: Initial modal tableaux proof search for propositional, temporal, deontic modal formulas and K/T/D/S4/S5 accessibility.` - complete
 - [x] `Task checkbox-109: Initial countermodel model, extractor, and self-contained visual exports.` - complete
 - [x] `Task checkbox-110: Full expansion-rule parity, richer branch diagnostics, strategy integration, and richer interactive renderer parity.` - complete
@@ -1430,7 +1430,7 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.`
+- Target: `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.`
 - Result: `needs follow-up`
 - Summary: Daemon failed before producing a valid patch.
 - Errors: llm_router could not generate with model='gpt-5.5' provider='auto'. Configure the provider credentials or pass --provider. Original error: copilot CLI binary not found on PATH (required for session/tracing flags). Install the GitHub Copilot CLI, or unset session args to use the command-template mode.
@@ -1438,7 +1438,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Blocked Backlog
 
-- No blocked tasks in the current daemon backlog.
+- `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.`
+  - Failures since success: `5`
+  - Failure kinds: `{"daemon_exception": 3, "parse": 2}`
+  - Latest failure kind: `daemon_exception`
+  - Latest errors: llm_router could not generate with model='gpt-5.5' provider='auto'. Configure the provider credentials or pass --provider. Original error: copilot CLI binary not found on PATH (required for session/tracing flags). Install the GitHub Copilot...
 
 ### Required Daemon Behavior
 
