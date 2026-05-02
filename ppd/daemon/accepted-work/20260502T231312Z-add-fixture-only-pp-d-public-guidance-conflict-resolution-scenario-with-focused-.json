@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/conflict_resolution/public_guidance_conflict_single_pdf_process.json",
+    "ppd/tests/test_public_guidance_conflict_resolution.py"
+  ],
+  "created_at": "2026-05-02T23:13:12.226594Z",
+  "impact": "Advances the PP&D plan by proving conflicting public guidance for the same permit requirement is preserved with both provenance chains, routed to human review, and blocked from draft automation until resolved.",
+  "summary": "Add fixture-only PP&D public guidance conflict-resolution scenario with focused validation.",
+  "target_task": "Task checkbox-152: Task checkbox-152: Add a fixture-only public guidance conflict-resolution scenario plus focused validation that compares two cited PP&D guidance sources for the same permit requirement, preserves both provenance chains, marks the requirement review-needed, and prevents draft automation from relying on either source until a human resolves the conflict.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 155 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "................................................................................................................................................................................................................................................................................................................................................................ss..............sss..................................................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 632 tests in 0.109s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

@@ -1,0 +1,185 @@
+{
+  "schema_version": 1,
+  "export_id": "audit-export-checkbox-148-human-review",
+  "generated_at": "2026-05-02T00:00:00Z",
+  "generated_by": "ppd.fixture.audit_export",
+  "fixture_only": true,
+  "review_purpose": "downstream_human_review",
+  "case_ref": {
+    "case_id": "redacted-case-148",
+    "permit_type": "residential_building_plan_review",
+    "devhub_workflow_state": "draft_review_only",
+    "contains_user_supplied_values": false
+  },
+  "source_evidence": [
+    {
+      "evidence_id": "src-devhub-faq-plan-review",
+      "source_url": "https://www.portland.gov/ppd/devhub/faqs",
+      "source_title": "Development Hub PDX FAQ",
+      "captured_at": "2026-05-01T00:00:00Z",
+      "anchor": "permit-requests-requiring-plan-review",
+      "supports": [
+        "req-devhub-plan-review-request",
+        "gate-stop-before-submit"
+      ],
+      "public_source": true
+    },
+    {
+      "evidence_id": "src-single-pdf-guidance",
+      "source_url": "https://www.portland.gov/ppd/permits/single-pdf-process",
+      "source_title": "Single PDF Process guidance",
+      "captured_at": "2026-05-01T00:00:00Z",
+      "anchor": "separate-application-and-supporting-documents",
+      "supports": [
+        "req-single-drawing-plan-pdf",
+        "draft-preview-plan-file-summary"
+      ],
+      "public_source": true
+    }
+  ],
+  "user_question_decisions": [
+    {
+      "decision_id": "ask-project-address",
+      "question_key": "project_address",
+      "decision": "ask_user",
+      "reason": "Required project fact is not present in the redacted case facts.",
+      "linked_requirement_id": "req-devhub-plan-review-request",
+      "source_evidence_ids": [
+        "src-devhub-faq-plan-review"
+      ],
+      "asked_value_preview": "[REDACTED_USER_FACT]"
+    },
+    {
+      "decision_id": "defer-contractor-license",
+      "question_key": "contractor_license_identifier",
+      "decision": "defer_to_human_review",
+      "reason": "Fixture has no source-backed user fact or current license verification evidence.",
+      "linked_requirement_id": "req-devhub-plan-review-request",
+      "source_evidence_ids": [
+        "src-devhub-faq-plan-review"
+      ],
+      "asked_value_preview": "[REDACTED_USER_FACT]"
+    }
+  ],
+  "redacted_draft_previews": [
+    {
+      "preview_id": "draft-preview-project-description",
+      "action_classification": "reversible_draft_edit",
+      "field_label": "Project description",
+      "selector_basis": {
+        "role": "textbox",
+        "accessible_name": "Project description",
+        "nearby_heading": "Project information"
+      },
+      "before_value": "[REDACTED_EMPTY]",
+      "after_value": "[REDACTED_DRAFT_VALUE]",
+      "source_evidence_ids": [
+        "src-devhub-faq-plan-review"
+      ],
+      "requires_exact_user_confirmation": false,
+      "executed": false
+    },
+    {
+      "preview_id": "draft-preview-plan-file-summary",
+      "action_classification": "reversible_draft_edit",
+      "field_label": "Plan document description",
+      "selector_basis": {
+        "role": "textbox",
+        "accessible_name": "Plan document description",
+        "nearby_heading": "Documents"
+      },
+      "before_value": "[REDACTED_EMPTY]",
+      "after_value": "[REDACTED_DRAFT_VALUE]",
+      "source_evidence_ids": [
+        "src-single-pdf-guidance"
+      ],
+      "requires_exact_user_confirmation": false,
+      "executed": false
+    }
+  ],
+  "guardrail_outcomes": [
+    {
+      "guardrail_id": "gate-stop-before-submit",
+      "classification": "potentially_consequential",
+      "outcome": "blocked",
+      "reason": "No exact user confirmation is present for official submission.",
+      "source_evidence_ids": [
+        "src-devhub-faq-plan-review"
+      ],
+      "human_review_required": true
+    },
+    {
+      "guardrail_id": "gate-stop-before-payment",
+      "classification": "financial",
+      "outcome": "blocked",
+      "reason": "Financial action requires separate high-friction confirmation and is outside this fixture-only scenario.",
+      "source_evidence_ids": [
+        "src-devhub-faq-plan-review"
+      ],
+      "human_review_required": true
+    },
+    {
+      "guardrail_id": "gate-redacted-preview-only",
+      "classification": "reversible_draft_edit",
+      "outcome": "allowed_as_preview_only",
+      "reason": "Draft preview contains only redacted before and after values and was not executed.",
+      "source_evidence_ids": [
+        "src-devhub-faq-plan-review",
+        "src-single-pdf-guidance"
+      ],
+      "human_review_required": false
+    }
+  ],
+  "refused_official_actions": [
+    {
+      "action_id": "refuse-official-submit-application",
+      "official_action": "submit_application",
+      "classification": "potentially_consequential",
+      "refusal_reason": "Exact user confirmation is absent in this fixture-only audit export.",
+      "source_evidence_ids": [
+        "src-devhub-faq-plan-review"
+      ],
+      "executed": false
+    },
+    {
+      "action_id": "refuse-official-pay-fees",
+      "official_action": "pay_fees",
+      "classification": "financial",
+      "refusal_reason": "Payment actions are not permitted in fixture validation and require separate user approval.",
+      "source_evidence_ids": [
+        "src-devhub-faq-plan-review"
+      ],
+      "executed": false
+    },
+    {
+      "action_id": "refuse-official-certify-statement",
+      "official_action": "certify_statement",
+      "classification": "potentially_consequential",
+      "refusal_reason": "Certification must be completed by an explicitly approving user, not by a fixture-only agent plan.",
+      "source_evidence_ids": [
+        "src-devhub-faq-plan-review"
+      ],
+      "executed": false
+    },
+    {
+      "action_id": "refuse-official-cancel-request",
+      "official_action": "cancel_request",
+      "classification": "potentially_consequential",
+      "refusal_reason": "Cancellation is an official account action and is blocked for downstream human review.",
+      "source_evidence_ids": [
+        "src-devhub-faq-plan-review"
+      ],
+      "executed": false
+    }
+  ],
+  "human_review_packet": {
+    "review_status": "needs_human_review",
+    "reviewer_notes": [
+      "Confirm missing user facts before any draft edit is executed.",
+      "Confirm official DevHub actions separately from this redacted fixture export."
+    ],
+    "contains_browser_artifacts": false,
+    "contains_official_action_execution": false,
+    "contains_unredacted_user_values": false
+  }
+}

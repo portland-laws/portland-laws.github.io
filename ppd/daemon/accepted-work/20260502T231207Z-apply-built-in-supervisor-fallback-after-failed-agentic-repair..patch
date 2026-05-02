@@ -1,0 +1,84 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,16 +1,56 @@
+ {
+-  "createdAt": "2026-05-02T23:08:20.979031Z",
++  "createdAt": "2026-05-02T23:12:06.552112Z",
+   "decision": {
+-    "action": "plan_next_tasks",
+-    "reason": "all PP&D daemon tasks are complete; review the original PP&D goal and add the next task-board tranche",
+-    "severity": "info"
++    "action": "invoke_codex",
++    "reason": "8 consecutive daemon rounds failed without an accepted patch",
++    "severity": "warning"
+   },
+   "failedAgenticRepair": {
+-    "changedFiles": [],
+-    "errors": [],
+-    "failureKind": "no_eligible_tasks",
+-    "summary": "All currently planned PP&D tasks are complete.",
+-    "validationResults": []
++    "changedFiles": [
++      "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
++    ],
++    "errors": [
++      "Validation failed; file edits were rolled back."
++    ],
++    "failureKind": "validation",
++    "summary": "Add a narrow supervisor repair guide for repeated parse and syntax-failure loops, with deterministic retry guardrails before returning to PP&D domain work.",
++    "validationResults": [
++      {
++        "command": [
++          "python3",
++          "ppd/daemon/ppd_daemon.py",
++          "--self-test"
++        ],
++        "returncode": 0,
++        "stderr": "",
++        "stdout": "{ \"ok\": true, \"task_count\": 155 }"
++      },
++      {
++        "command": [
++          "python3",
++          "-m",
++          "unittest",
++          "discover",
++          "-s",
++          "ppd/tests",
++          "-p",
++          "test_*.py"
++        ],
++        "returncode": 1,
++        "stderr": "................................................................................................................................................................................................................................................................................................................................................................ss..............sss................................................................................................................................................................................................................F................................................... ====================================================================== FAIL: test_guide_keeps_repair_separate_from_domain_implementation (test_supervisor_repair_guide.SupervisorRepairGuideTest.test_guide_keeps_repair_separate_from_domain_implementation) --------------...",
++        "stdout": ""
++      },
++      {
++        "command": [
++          "bash",
++          "-lc",
++          "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
++        ],
++        "returncode": 0,
++        "stderr": "",
++        "stdout": ""
++      }
++    ]
+   },
+   "fallbackActions": [
+     "preserve failed repair diagnostics without accepting the invalid patch",
+@@ -30,13 +70,8 @@
+   "schemaVersion": 1,
+   "taskBoardRepair": {
+     "parkedRepeatedSyntaxLoopTasks": [],
+-    "replenishedGoalTaskLabels": [
+-      "checkbox-152",
+-      "checkbox-153",
+-      "checkbox-154",
+-      "checkbox-155"
+-    ],
++    "replenishedGoalTaskLabels": [],
+     "supersededTaskBoardOnlyLabels": [],
+-    "taskBoardUpdated": true
++    "taskBoardUpdated": false
+   }
+ }

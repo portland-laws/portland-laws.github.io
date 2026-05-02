@@ -1,0 +1,48 @@
+{
+  "changed_files": [
+    "ppd/daemon/replenishment_rotation.py",
+    "ppd/tests/fixtures/daemon/supervisor_replenishment_rotation.json",
+    "ppd/tests/test_supervisor_replenishment_rotation.py"
+  ],
+  "created_at": "2026-05-02T23:04:25.055312Z",
+  "impact": "This gives the PP&D daemon a narrow fixture-first check that third and later completed replenishment tranches rotate to new broad titles instead of repeating earlier broad tranche themes.",
+  "summary": "Add deterministic supervisor replenishment rotation coverage for completed tranche titles.",
+  "target_task": "Task checkbox-150: Task checkbox-150: Add supervisor replenishment rotation coverage proving third and later completed tranches do not duplicate the previous broad tranche titles.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 151 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".............................................................................................................................................................................................................................................................................................................................................................ss..............sss.................................................................................................................................................................................................................................................................. ---------------------------------------------------------------------- Ran 626 tests in 0.102s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

@@ -1,0 +1,95 @@
+{
+  "schemaVersion": 1,
+  "scenarioId": "stale-answer-reconciliation-single-pdf-process",
+  "capturedAt": "2026-05-01T18:00:00Z",
+  "description": "Synthetic fixture proving user document-store facts fail closed when newer PP&D evidence conflicts on citation, timestamp, or requirement ID.",
+  "userFacts": [
+    {
+      "factId": "user_fact_plan_package_multi_pdf",
+      "requirementId": "REQ-SFR-PLAN-PACKAGE-2025",
+      "value": "drawing plans may be uploaded as multiple discipline PDFs",
+      "assertedAt": "2026-03-15T12:00:00Z",
+      "citation": {
+        "sourceId": "ppd-guidance-single-pdf-2025-03",
+        "url": "https://www.portland.gov/ppd/permits/single-pdf-process",
+        "anchor": "#plans",
+        "capturedAt": "2026-03-15T12:00:00Z"
+      }
+    },
+    {
+      "factId": "user_fact_application_documents_combined",
+      "requirementId": "REQ-SFR-APPLICATION-DOCS-2025",
+      "value": "application and calculations can be merged into the drawing plan PDF",
+      "assertedAt": "2026-03-15T12:05:00Z",
+      "citation": {
+        "sourceId": "ppd-guidance-single-pdf-2025-03",
+        "url": "https://www.portland.gov/ppd/permits/single-pdf-process",
+        "anchor": "#supporting-documents",
+        "capturedAt": "2026-03-15T12:00:00Z"
+      }
+    },
+    {
+      "factId": "user_fact_expired_checklist_id",
+      "requirementId": "REQ-SFR-CHECKLIST-LEGACY",
+      "value": "legacy checklist satisfies submittal completeness review",
+      "assertedAt": "2026-03-15T12:10:00Z",
+      "citation": {
+        "sourceId": "ppd-sfr-checklist-legacy",
+        "url": "https://www.portland.gov/ppd/forms/sfr-submittal-checklist",
+        "anchor": "page=1",
+        "capturedAt": "2026-03-15T12:00:00Z"
+      }
+    }
+  ],
+  "ppdEvidence": [
+    {
+      "evidenceId": "ppd_evidence_single_pdf_newer",
+      "requirementId": "REQ-SFR-PLAN-PACKAGE-2026",
+      "supersedesRequirementIds": ["REQ-SFR-PLAN-PACKAGE-2025"],
+      "value": "drawing plans must be one searchable PDF when the Single PDF Process applies",
+      "observedAt": "2026-05-01T10:00:00Z",
+      "citation": {
+        "sourceId": "ppd-guidance-single-pdf-2026-05",
+        "url": "https://www.portland.gov/ppd/permits/single-pdf-process",
+        "anchor": "#plans",
+        "capturedAt": "2026-05-01T10:00:00Z"
+      }
+    },
+    {
+      "evidenceId": "ppd_evidence_supporting_docs_newer",
+      "requirementId": "REQ-SFR-APPLICATION-DOCS-2026",
+      "supersedesRequirementIds": ["REQ-SFR-APPLICATION-DOCS-2025"],
+      "value": "applications, calculations, and supporting documents must be uploaded as separate PDFs from drawing plans",
+      "observedAt": "2026-05-01T10:05:00Z",
+      "citation": {
+        "sourceId": "ppd-guidance-single-pdf-2026-05",
+        "url": "https://www.portland.gov/ppd/permits/single-pdf-process",
+        "anchor": "#supporting-documents",
+        "capturedAt": "2026-05-01T10:00:00Z"
+      }
+    },
+    {
+      "evidenceId": "ppd_evidence_checklist_replaced",
+      "requirementId": "REQ-SFR-CHECKLIST-2026",
+      "supersedesRequirementIds": ["REQ-SFR-CHECKLIST-LEGACY"],
+      "value": "current submittal completeness review uses the May 2026 single-family residence checklist",
+      "observedAt": "2026-05-01T10:10:00Z",
+      "citation": {
+        "sourceId": "ppd-sfr-checklist-2026-05",
+        "url": "https://www.portland.gov/ppd/forms/sfr-submittal-checklist",
+        "anchor": "page=1",
+        "capturedAt": "2026-05-01T10:10:00Z"
+      }
+    }
+  ],
+  "expectedDecision": {
+    "status": "fail_closed",
+    "staleFactIds": [
+      "user_fact_plan_package_multi_pdf",
+      "user_fact_application_documents_combined",
+      "user_fact_expired_checklist_id"
+    ],
+    "requiredAgentAction": "ask_user_to_confirm_current_ppd_requirements_before_using_stale_document_store_facts",
+    "conflictReasons": ["newer_evidence", "citation_conflict", "requirement_id_conflict"]
+  }
+}

@@ -1,0 +1,320 @@
+--- a/ppd/tests/fixtures/audit_export/human_review_audit_export.json
++++ b/ppd/tests/fixtures/audit_export/human_review_audit_export.json
+@@ -0,0 +1,185 @@
++{
++  "schema_version": 1,
++  "export_id": "audit-export-checkbox-148-human-review",
++  "generated_at": "2026-05-02T00:00:00Z",
++  "generated_by": "ppd.fixture.audit_export",
++  "fixture_only": true,
++  "review_purpose": "downstream_human_review",
++  "case_ref": {
++    "case_id": "redacted-case-148",
++    "permit_type": "residential_building_plan_review",
++    "devhub_workflow_state": "draft_review_only",
++    "contains_user_supplied_values": false
++  },
++  "source_evidence": [
++    {
++      "evidence_id": "src-devhub-faq-plan-review",
++      "source_url": "https://www.portland.gov/ppd/devhub/faqs",
++      "source_title": "Development Hub PDX FAQ",
++      "captured_at": "2026-05-01T00:00:00Z",
++      "anchor": "permit-requests-requiring-plan-review",
++      "supports": [
++        "req-devhub-plan-review-request",
++        "gate-stop-before-submit"
++      ],
++      "public_source": true
++    },
++    {
++      "evidence_id": "src-single-pdf-guidance",
++      "source_url": "https://www.portland.gov/ppd/permits/single-pdf-process",
++      "source_title": "Single PDF Process guidance",
++      "captured_at": "2026-05-01T00:00:00Z",
++      "anchor": "separate-application-and-supporting-documents",
++      "supports": [
++        "req-single-drawing-plan-pdf",
++        "draft-preview-plan-file-summary"
++      ],
++      "public_source": true
++    }
++  ],
++  "user_question_decisions": [
++    {
++      "decision_id": "ask-project-address",
++      "question_key": "project_address",
++      "decision": "ask_user",
++      "reason": "Required project fact is not present in the redacted case facts.",
++      "linked_requirement_id": "req-devhub-plan-review-request",
++      "source_evidence_ids": [
++        "src-devhub-faq-plan-review"
++      ],
++      "asked_value_preview": "[REDACTED_USER_FACT]"
++    },
++    {
++      "decision_id": "defer-contractor-license",
++      "question_key": "contractor_license_identifier",
++      "decision": "defer_to_human_review",
++      "reason": "Fixture has no source-backed user fact or current license verification evidence.",
++      "linked_requirement_id": "req-devhub-plan-review-request",
++      "source_evidence_ids": [
++        "src-devhub-faq-plan-review"
++      ],
++      "asked_value_preview": "[REDACTED_USER_FACT]"
++    }
++  ],
++  "redacted_draft_previews": [
++    {
++      "preview_id": "draft-preview-project-description",
++      "action_classification": "reversible_draft_edit",
++      "field_label": "Project description",
++      "selector_basis": {
++        "role": "textbox",
++        "accessible_name": "Project description",
++        "nearby_heading": "Project information"
++      },
++      "before_value": "[REDACTED_EMPTY]",
++      "after_value": "[REDACTED_DRAFT_VALUE]",
++      "source_evidence_ids": [
++        "src-devhub-faq-plan-review"
++      ],
++      "requires_exact_user_confirmation": false,
++      "executed": false
++    },
++    {
++      "preview_id": "draft-preview-plan-file-summary",
++      "action_classification": "reversible_draft_edit",
++      "field_label": "Plan document description",
++      "selector_basis": {
++        "role": "textbox",
++        "accessible_name": "Plan document description",
++        "nearby_heading": "Documents"
++      },
++      "before_value": "[REDACTED_EMPTY]",
++      "after_value": "[REDACTED_DRAFT_VALUE]",
++      "source_evidence_ids": [
++        "src-single-pdf-guidance"
++      ],
++      "requires_exact_user_confirmation": false,
++      "executed": false
++    }
++  ],
++  "guardrail_outcomes": [
++    {
++      "guardrail_id": "gate-stop-before-submit",
++      "classification": "potentially_consequential",
++      "outcome": "blocked",
++      "reason": "No exact user confirmation is present for official submission.",
++      "source_evidence_ids": [
++        "src-devhub-faq-plan-review"
++      ],
++      "human_review_required": true
++    },
++    {
++      "guardrail_id": "gate-stop-before-payment",
++      "classification": "financial",
++      "outcome": "blocked",
++      "reason": "Financial action requires separate high-friction confirmation and is outside this fixture-only scenario.",
++      "source_evidence_ids": [
++        "src-devhub-faq-plan-review"
++      ],
++      "human_review_required": true
++    },
++    {
++      "guardrail_id": "gate-redacted-preview-only",
++      "classification": "reversible_draft_edit",
++      "outcome": "allowed_as_preview_only",
++      "reason": "Draft preview contains only redacted before and after values and was not executed.",
++      "source_evidence_ids": [
++        "src-devhub-faq-plan-review",
++        "src-single-pdf-guidance"
++      ],
++      "human_review_required": false
++    }
++  ],
++  "refused_official_actions": [
++    {
++      "action_id": "refuse-official-submit-application",
++      "official_action": "submit_application",
++      "classification": "potentially_consequential",
++      "refusal_reason": "Exact user confirmation is absent in this fixture-only audit export.",
++      "source_evidence_ids": [
++        "src-devhub-faq-plan-review"
++      ],
++      "executed": false
++    },
++    {
++      "action_id": "refuse-official-pay-fees",
++      "official_action": "pay_fees",
++      "classification": "financial",
++      "refusal_reason": "Payment actions are not permitted in fixture validation and require separate user approval.",
++      "source_evidence_ids": [
++        "src-devhub-faq-plan-review"
++      ],
++      "executed": false
++    },
++    {
++      "action_id": "refuse-official-certify-statement",
++      "official_action": "certify_statement",
++      "classification": "potentially_consequential",
++      "refusal_reason": "Certification must be completed by an explicitly approving user, not by a fixture-only agent plan.",
++      "source_evidence_ids": [
++        "src-devhub-faq-plan-review"
++      ],
++      "executed": false
++    },
++    {
++      "action_id": "refuse-official-cancel-request",
++      "official_action": "cancel_request",
++      "classification": "potentially_consequential",
++      "refusal_reason": "Cancellation is an official account action and is blocked for downstream human review.",
++      "source_evidence_ids": [
++        "src-devhub-faq-plan-review"
++      ],
++      "executed": false
++    }
++  ],
++  "human_review_packet": {
++    "review_status": "needs_human_review",
++    "reviewer_notes": [
++      "Confirm missing user facts before any draft edit is executed.",
++      "Confirm official DevHub actions separately from this redacted fixture export."
++    ],
++    "contains_browser_artifacts": false,
++    "contains_official_action_execution": false,
++    "contains_unredacted_user_values": false
++  }
++}
+--- a/ppd/tests/test_audit_export_fixture.py
++++ b/ppd/tests/test_audit_export_fixture.py
+@@ -0,0 +1,129 @@
++"""Validate fixture-only PP&D audit exports for downstream human review."""
++
++from __future__ import annotations
++
++import json
++import unittest
++from pathlib import Path
++from typing import Any
++
++
++FIXTURE_PATH = Path(__file__).parent / "fixtures" / "audit_export" / "human_review_audit_export.json"
++REDACTED_TOKENS = {
++    "[REDACTED_EMPTY]",
++    "[REDACTED_DRAFT_VALUE]",
++    "[REDACTED_USER_FACT]",
++}
++PRIVATE_ARTIFACT_MARKERS = (
++    "auth_state",
++    "storage_state",
++    "cookie",
++    "credential",
++    "password",
++    "playwright-report",
++    "trace.zip",
++    "traces.zip",
++    "screenshot.png",
++    "screenshot.jpg",
++    "localstorage",
++    "ppd/data/private",
++    "ppd/data/raw",
++)
++REFUSED_OFFICIAL_ACTIONS = {
++    "submit_application",
++    "pay_fees",
++    "certify_statement",
++    "cancel_request",
++}
++
++
++class AuditExportFixtureTest(unittest.TestCase):
++    maxDiff = None
++
++    def setUp(self) -> None:
++        with FIXTURE_PATH.open(encoding="utf-8") as fixture_file:
++            self.fixture: dict[str, Any] = json.load(fixture_file)
++
++    def test_fixture_is_exported_for_human_review_only(self) -> None:
++        self.assertEqual(1, self.fixture.get("schema_version"))
++        self.assertTrue(self.fixture.get("fixture_only"))
++        self.assertEqual("downstream_human_review", self.fixture.get("review_purpose"))
++        review_packet = self.fixture.get("human_review_packet", {})
++        self.assertEqual("needs_human_review", review_packet.get("review_status"))
++        self.assertFalse(review_packet.get("contains_browser_artifacts"))
++        self.assertFalse(review_packet.get("contains_official_action_execution"))
++        self.assertFalse(review_packet.get("contains_unredacted_user_values"))
++
++    def test_source_evidence_is_public_and_referenced(self) -> None:
++        evidence = self.fixture.get("source_evidence", [])
++        self.assertGreaterEqual(len(evidence), 2)
++        evidence_ids = {item.get("evidence_id") for item in evidence}
++        for item in evidence:
++            self.assertTrue(item.get("public_source"), item)
++            self.assertTrue(str(item.get("source_url", "")).startswith("https://www.portland.gov/ppd"), item)
++            self.assertTrue(str(item.get("captured_at", "")).endswith("Z"), item)
++            self.assertGreater(len(item.get("supports", [])), 0, item)
++        for section_name in (
++            "user_question_decisions",
++            "redacted_draft_previews",
++            "guardrail_outcomes",
++            "refused_official_actions",
++        ):
++            for record in self.fixture.get(section_name, []):
++                referenced_ids = set(record.get("source_evidence_ids", []))
++                self.assertGreater(len(referenced_ids), 0, record)
++                self.assertTrue(referenced_ids.issubset(evidence_ids), record)
++
++    def test_user_question_decisions_are_source_linked(self) -> None:
++        decisions = self.fixture.get("user_question_decisions", [])
++        self.assertGreaterEqual(len(decisions), 2)
++        allowed_decisions = {"ask_user", "defer_to_human_review"}
++        for decision in decisions:
++            self.assertIn(decision.get("decision"), allowed_decisions)
++            self.assertTrue(decision.get("linked_requirement_id"), decision)
++            self.assertIn(decision.get("asked_value_preview"), REDACTED_TOKENS)
++
++    def test_draft_previews_are_redacted_and_not_executed(self) -> None:
++        previews = self.fixture.get("redacted_draft_previews", [])
++        self.assertGreaterEqual(len(previews), 2)
++        for preview in previews:
++            self.assertEqual("reversible_draft_edit", preview.get("action_classification"))
++            self.assertIn(preview.get("before_value"), REDACTED_TOKENS)
++            self.assertIn(preview.get("after_value"), REDACTED_TOKENS)
++            self.assertFalse(preview.get("requires_exact_user_confirmation"))
++            self.assertFalse(preview.get("executed"))
++            selector_basis = preview.get("selector_basis", {})
++            self.assertTrue(selector_basis.get("role"), preview)
++            self.assertTrue(selector_basis.get("accessible_name"), preview)
++            self.assertTrue(selector_basis.get("nearby_heading"), preview)
++
++    def test_guardrails_record_blocked_and_preview_only_outcomes(self) -> None:
++        outcomes = self.fixture.get("guardrail_outcomes", [])
++        self.assertGreaterEqual(len(outcomes), 3)
++        outcome_by_id = {outcome.get("guardrail_id"): outcome for outcome in outcomes}
++        self.assertEqual("blocked", outcome_by_id["gate-stop-before-submit"].get("outcome"))
++        self.assertEqual("blocked", outcome_by_id["gate-stop-before-payment"].get("outcome"))
++        self.assertEqual(
++            "allowed_as_preview_only",
++            outcome_by_id["gate-redacted-preview-only"].get("outcome"),
++        )
++        self.assertTrue(outcome_by_id["gate-stop-before-submit"].get("human_review_required"))
++        self.assertTrue(outcome_by_id["gate-stop-before-payment"].get("human_review_required"))
++
++    def test_official_actions_are_refused_and_not_executed(self) -> None:
++        refused = self.fixture.get("refused_official_actions", [])
++        refused_actions = {action.get("official_action") for action in refused}
++        self.assertEqual(REFUSED_OFFICIAL_ACTIONS, refused_actions)
++        for action in refused:
++            self.assertIn(action.get("classification"), {"potentially_consequential", "financial"})
++            self.assertTrue(action.get("refusal_reason"), action)
++            self.assertFalse(action.get("executed"), action)
++
++    def test_fixture_contains_no_private_artifact_markers(self) -> None:
++        serialized = json.dumps(self.fixture, sort_keys=True).lower()
++        for marker in PRIVATE_ARTIFACT_MARKERS:
++            self.assertNotIn(marker, serialized)
++
++
++if __name__ == "__main__":
++    unittest.main()

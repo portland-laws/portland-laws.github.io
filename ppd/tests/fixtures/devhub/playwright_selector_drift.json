@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "devhub-playwright-selector-drift-001",
+  "fixtureKind": "playwright_selector_drift",
+  "createdAt": "2026-05-02T00:00:00Z",
+  "pageState": {
+    "stateId": "mock-devhub-building-permit-draft",
+    "urlPattern": "https://devhub.portlandoregon.gov/mock/drafts/building-permit",
+    "authenticated": false,
+    "fixtureOnly": true
+  },
+  "baselineSelector": {
+    "selectorId": "selector-project-description-textbox",
+    "role": "textbox",
+    "accessibleName": "Project description",
+    "labelText": "Project description",
+    "nearbyHeading": "Project information",
+    "sourceEvidenceId": "ppd-public-process-source-001",
+    "confidenceThreshold": 0.85
+  },
+  "observedSelectorCandidate": {
+    "role": "textbox",
+    "accessibleName": "Describe the work",
+    "labelText": "Describe the work",
+    "nearbyHeading": "Project information",
+    "matchConfidence": 0.42,
+    "driftSignals": [
+      "accessible_name_changed",
+      "label_text_changed"
+    ]
+  },
+  "draftPreviewAction": {
+    "actionId": "preview-fill-project-description",
+    "classification": "reversible_draft_edit",
+    "operation": "fill",
+    "fieldId": "project_description",
+    "selectorId": "selector-project-description-textbox",
+    "beforeValue": "",
+    "afterValue": "",
+    "sourceRequirementId": "required-fact-project-description",
+    "exactUserConfirmation": false
+  },
+  "automationDecision": {
+    "continueDraftPreview": false,
+    "refuseSelector": true,
+    "requiresHumanReview": true,
+    "reasonCodes": [
+      "accessible_name_drift",
+      "low_selector_confidence",
+      "human_review_required_before_draft_preview"
+    ]
+  },
+  "forbiddenArtifactsAbsent": {
+    "authState": true,
+    "cookies": true,
+    "trace": true,
+    "screenshot": true,
+    "rawBrowserStorage": true,
+    "liveDevhubUrl": true
+  }
+}

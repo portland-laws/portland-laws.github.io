@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "permit_process_comparison_scenario",
+  "scenarioId": "scenario-ppd-permit-process-comparison-v1",
+  "generatedAt": "2026-05-02T00:00:00Z",
+  "processes": [
+    {
+      "processId": "process-residential-building-permit",
+      "processType": "residential_building_permit",
+      "sourceEvidenceIds": [
+        "src-ppd-residential-building-guidance"
+      ],
+      "legalObligations": [
+        {
+          "obligationId": "obl-residential-site-address",
+          "kind": "provide_required_user_fact",
+          "factKey": "project.site_address",
+          "citationRequired": true
+        }
+      ],
+      "operationalUiHints": [
+        {
+          "hintId": "ui-residential-project-info-heading",
+          "role": "heading",
+          "text": "Project information",
+          "citationRequired": true
+        }
+      ],
+      "documentPlaceholders": [
+        {
+          "placeholderId": "doc-residential-site-plan",
+          "documentKey": "documents.site_plan",
+          "requiredBeforeOfficialSubmission": true,
+          "redactedPlaceholder": "[REDACTED_DOCUMENT_PLACEHOLDER]"
+        }
+      ],
+      "feeNotices": [
+        {
+          "feeNoticeId": "fee-residential-review",
+          "noticeOnly": true,
+          "exactConfirmationRequiredBeforePayment": true
+        }
+      ],
+      "exactConfirmationGates": [
+        "submit_application",
+        "pay_fee",
+        "upload_official_document"
+      ]
+    },
+    {
+      "processId": "process-trade-permit-with-plan-review",
+      "processType": "trade_permit_with_plan_review",
+      "sourceEvidenceIds": [
+        "src-ppd-trade-permit-guidance"
+      ],
+      "legalObligations": [
+        {
+          "obligationId": "obl-trade-license-info",
+          "kind": "provide_required_user_fact",
+          "factKey": "contractor.license_identifier",
+          "citationRequired": true
+        }
+      ],
+      "operationalUiHints": [
+        {
+          "hintId": "ui-trade-contractor-heading",
+          "role": "heading",
+          "text": "Contractor information",
+          "citationRequired": true
+        }
+      ],
+      "documentPlaceholders": [
+        {
+          "placeholderId": "doc-trade-plan-review",
+          "documentKey": "documents.trade_plan_review",
+          "requiredBeforeOfficialSubmission": true,
+          "redactedPlaceholder": "[REDACTED_DOCUMENT_PLACEHOLDER]"
+        }
+      ],
+      "feeNotices": [
+        {
+          "feeNoticeId": "fee-trade-review",
+          "noticeOnly": true,
+          "exactConfirmationRequiredBeforePayment": true
+        }
+      ],
+      "exactConfirmationGates": [
+        "submit_application",
+        "pay_fee",
+        "certify_statement"
+      ]
+    }
+  ],
+  "sourceEvidence": [
+    {
+      "sourceEvidenceId": "src-ppd-residential-building-guidance",
+      "sourceUrl": "https://www.portland.gov/ppd/residential-permits",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "citation": {
+        "locator": "fixture-residential-building-requirements",
+        "paraphrase": "Residential building permit guidance identifies project location, site-plan placeholders, and review/payment boundaries."
+      }
+    },
+    {
+      "sourceEvidenceId": "src-ppd-trade-permit-guidance",
+      "sourceUrl": "https://www.portland.gov/ppd/trade-permits",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "citation": {
+        "locator": "fixture-trade-permit-requirements",
+        "paraphrase": "Trade permit guidance identifies contractor facts, plan-review placeholders, and certification/payment boundaries."
+      }
+    }
+  ],
+  "comparison": {
+    "sharedExactConfirmationGates": [
+      "submit_application",
+      "pay_fee"
+    ],
+    "separateRequirementKeys": [
+      "project.site_address",
+      "contractor.license_identifier"
+    ],
+    "separateDocumentPlaceholders": [
+      "documents.site_plan",
+      "documents.trade_plan_review"
+    ],
+    "agentPlanningOutcome": "keep_process_requirements_separate_and_fail_closed_before_official_actions"
+  },
+  "forbiddenAutomation": [
+    "upload_official_document",
+    "submit_application",
+    "certify_statement",
+    "pay_fee",
+    "cancel_request",
+    "schedule_inspection"
+  ]
+}

@@ -38,6 +38,17 @@ from ppd.daemon.ppd_daemon import (  # noqa: E402
     utc_now,
 )
 
+FORBIDDEN_ABSENCE_MARKERS = (
+    "cookie",
+    "cookies",
+    "screenshot",
+    "screenshots",
+    "auth-state",
+    "storage-state",
+    "trace.zip",
+    ".har",
+)
+
 SYNTAX_OR_COMPILE_FAILURE_MARKERS = (
     "syntaxerror",
     "failed py_compile",
@@ -176,6 +187,39 @@ def proposal_validation_text(proposal: dict[str, Any]) -> str:
         parts.append(str(result.get("stdout", "")))
         parts.append(str(result.get("stderr", "")))
     return "\n".join(parts).lower()
+
+
+def is_forbidden_absence_marker_validation_failure(proposal: dict[str, Any]) -> bool:
+    """Detect fixtures/tests that self-trigger forbidden artifact marker checks."""
+
+    if str(proposal.get("failure_kind") or "") != "validation":
+        return False
+    text = proposal_validation_text(proposal)
+    if "unexpectedly found" not in text and "assertnotin" not in text:
+        return False
+    return any(marker in text for marker in FORBIDDEN_ABSENCE_MARKERS)
+
+
+def recent_forbidden_absence_marker_failure_count(
+    rows: list[dict[str, Any]], *, completed_task_labels: Optional[set[str]] = None
+) -> int:
+    completed = completed_task_labels or set()
+    count = 0
+    latest_task = ""
+    for proposal in reversed(rows):
+        target = str(proposal.get("target_task") or "")
+        if target in completed:
+            continue
+        if proposal.get("applied") and proposal.get("validation_passed") and not proposal.get("errors"):
+            break
+        if not latest_task:
+            latest_task = target
+        if target != latest_task:
+            break
+        if not is_forbidden_absence_marker_validation_failure(proposal):
+            break
+        count += 1
+    return count
 
 
 def is_syntax_or_compile_failure(proposal: dict[str, Any]) -> bool:
@@ -404,6 +448,12 @@ def builtin_replenish_goal_tasks(markdown: str, rows: Optional[list[dict[str, An
                 "Add supervisor replenishment rotation coverage proving third and later completed tranches do not duplicate the previous broad tranche titles.",
                 "Add a fixture-only Playwright selector drift scenario plus focused validation that detects changed accessible names, refuses low-confidence selectors, and asks for human review before draft-preview automation continues.",
             ],
+            [
+                "Add supervisor validation-failure classification coverage proving forbidden-marker self-triggering fixture fields are detected and converted into neutral absence-field repair guidance.",
+                "Add daemon prompt-repair coverage proving validation failures from forbidden marker substrings produce a JSON-only retry instruction with neutral artifact field names.",
+                "Add supervisor stale-status reconciliation coverage proving a no-eligible or calling_llm status with a completed board triggers deterministic replanning instead of observe or restart churn.",
+                "Add daemon LLM result-persistence coverage proving parse, timeout, validation-interrupted, and vanished-child failures are recorded before the worker exits or restarts.",
+            ],
         ]
         templates = broad_tranches[min(max(0, existing_tranche_count - 1), len(broad_tranches) - 1)]
         policy = "broad_integrated_after_green_streak"
@@ -597,6 +647,23 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
             should_restart_daemon=True,
         )
 
+    forbidden_marker_count = recent_forbidden_absence_marker_failure_count(
+        rows,
+        completed_task_labels=completed_task_labels,
+    )
+    if forbidden_marker_count >= 1:
+        return SupervisorDecision(
+            action="repair_daemon_programming",
+            reason=(
+                f"{forbidden_marker_count} recent validation rollback(s) self-triggered forbidden artifact marker checks; "
+                "patch daemon failure guidance so absence fields avoid banned words like cookie, screenshot, auth-state, "
+                "storage-state, trace.zip, and .har"
+            ),
+            severity="warning",
+            should_invoke_codex=True,
+            should_restart_daemon=True,
+        )
+
     blocked = [task for task in tasks if task.status == "blocked"]
     selectable = [task for task in tasks if task.status in {"needed", "in-progress"}]
     if should_blocked_tasks_interrupt(len(blocked), len(selectable), config.blocked_task_threshold):
@@ -664,7 +731,7 @@ def build_supervisor_prompt(config: SupervisorConfig, decision: SupervisorDecisi
     if decision.action == "plan_next_tasks":
         goal = "Review completed work against the original PP&D goal and update `ppd/daemon/task-board.md` with the next narrow, ordered tranche of unfinished tasks. Do not implement those tasks in this proposal; create the backlog so the worker daemon can continue."
     elif decision.action == "repair_daemon_programming":
-        goal = "Patch the PP&D daemon or supervisor programming so repeated syntax/compile validation failures are detected earlier and the worker is prompted toward smaller, syntactically valid proposals."
+        goal = "Patch the PP&D daemon or supervisor programming so repeated validation failures are detected earlier and the worker is prompted toward smaller, syntactically valid, policy-compliant proposals."
     else:
         goal = "Improve the PP&D daemon or supervisor programming so the worker can resume meaningful autonomous progress."
 
@@ -1007,6 +1074,21 @@ def self_test(repo_root: Path) -> int:
         errors.append("malformed return annotation-like syntax marker classification failed")
     if repeated_malformed_syntax_count([malformed_confidence_failure, malformed_return_failure]) != 2:
         errors.append("repeated malformed syntax count failed")
+    forbidden_marker_failure = {
+        "failure_kind": "validation",
+        "target_task": "Task checkbox-148: audit export fixture",
+        "validation_results": [
+            {
+                "command": ["python3", "-m", "unittest"],
+                "returncode": 1,
+                "stderr": "AssertionError: 'cookie' unexpectedly found in containsCookies",
+            }
+        ],
+    }
+    if not is_forbidden_absence_marker_validation_failure(forbidden_marker_failure):
+        errors.append("forbidden marker validation failure classification failed")
+    if recent_forbidden_absence_marker_failure_count([forbidden_marker_failure]) != 1:
+        errors.append("forbidden marker validation failure count failed")
     false_positive_preflight = {
         "failure_kind": "preflight",
         "errors": [

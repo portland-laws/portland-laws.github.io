@@ -1,0 +1,220 @@
+--- a/ppd/daemon/replenishment_rotation.py
++++ b/ppd/daemon/replenishment_rotation.py
+@@ -0,0 +1,104 @@
++"""Supervisor replenishment tranche rotation checks.
++
++The PP&D supervisor can append broad batches of new fixture-first tasks when a
++board is complete. The first two completed replenishment tranches may share a
++broad title while the direction settles, but the third and later completed
++tranches must rotate away from titles already used by earlier completed
++tranches.
++"""
++
++from __future__ import annotations
++
++from dataclasses import dataclass
++from typing import Any, Iterable, Mapping
++
++
++@dataclass(frozen=True)
++class ReplenishmentTranche:
++    """A committed supervisor replenishment tranche summary."""
++
++    tranche_id: str
++    broad_title: str
++    completed: bool
++
++
++@dataclass(frozen=True)
++class ReplenishmentRotationFinding:
++    """A rotation validation finding for a completed replenishment tranche."""
++
++    tranche_id: str
++    broad_title: str
++    reason: str
++    previous_tranche_id: str | None = None
++
++
++def replenishment_tranche_from_dict(data: Mapping[str, Any]) -> ReplenishmentTranche:
++    """Build a replenishment tranche record from a JSON-like mapping."""
++
++    return ReplenishmentTranche(
++        tranche_id=str(data.get("trancheId", data.get("tranche_id", ""))),
++        broad_title=str(data.get("broadTitle", data.get("broad_title", ""))),
++        completed=bool(data.get("completed", False)),
++    )
++
++
++def validate_completed_tranche_rotation(
++    tranches: Iterable[ReplenishmentTranche],
++    *,
++    unrestricted_completed_prefix: int = 2,
++) -> list[ReplenishmentRotationFinding]:
++    """Return findings for late completed tranches that repeat prior titles.
++
++    Completed tranches are evaluated in the order supplied. The first two
++    completed tranches are allowed to reuse a broad title. Beginning with the
++    third completed tranche, each normalized broad title must be new among all
++    previous completed tranches.
++    """
++
++    findings: list[ReplenishmentRotationFinding] = []
++    previous_titles: dict[str, str] = {}
++    completed_count = 0
++
++    for tranche in tranches:
++        if not tranche.completed:
++            continue
++
++        completed_count += 1
++        normalized_title = _normalize_title(tranche.broad_title)
++        if not tranche.tranche_id.strip():
++            findings.append(
++                ReplenishmentRotationFinding(
++                    tranche_id=tranche.tranche_id,
++                    broad_title=tranche.broad_title,
++                    reason="completed replenishment tranche requires a tranche_id",
++                )
++            )
++        if not normalized_title:
++            findings.append(
++                ReplenishmentRotationFinding(
++                    tranche_id=tranche.tranche_id,
++                    broad_title=tranche.broad_title,
++                    reason="completed replenishment tranche requires a broad_title",
++                )
++            )
++            continue
++
++        previous_tranche_id = previous_titles.get(normalized_title)
++        if completed_count > unrestricted_completed_prefix and previous_tranche_id is not None:
++            findings.append(
++                ReplenishmentRotationFinding(
++                    tranche_id=tranche.tranche_id,
++                    broad_title=tranche.broad_title,
++                    previous_tranche_id=previous_tranche_id,
++                    reason="third and later completed replenishment tranches must not duplicate previous broad titles",
++                )
++            )
++            continue
++
++        previous_titles.setdefault(normalized_title, tranche.tranche_id)
++
++    return findings
++
++
++def _normalize_title(title: str) -> str:
++    return " ".join(title.casefold().split())
+--- a/ppd/tests/fixtures/daemon/supervisor_replenishment_rotation.json
++++ b/ppd/tests/fixtures/daemon/supervisor_replenishment_rotation.json
+@@ -0,0 +1,64 @@
++{
++  "schemaVersion": 1,
++  "validCompletedRotation": [
++    {
++      "trancheId": "replenishment-001",
++      "broadTitle": "DevHub recorder fixture coverage",
++      "completed": true
++    },
++    {
++      "trancheId": "replenishment-002",
++      "broadTitle": "DevHub recorder fixture coverage",
++      "completed": true
++    },
++    {
++      "trancheId": "replenishment-003",
++      "broadTitle": "Process extraction fixture coverage",
++      "completed": true
++    },
++    {
++      "trancheId": "replenishment-004",
++      "broadTitle": "Guardrail compiler fixture coverage",
++      "completed": true
++    }
++  ],
++  "duplicateThirdCompletedRotation": [
++    {
++      "trancheId": "replenishment-001",
++      "broadTitle": "DevHub recorder fixture coverage",
++      "completed": true
++    },
++    {
++      "trancheId": "replenishment-002",
++      "broadTitle": "Process extraction fixture coverage",
++      "completed": true
++    },
++    {
++      "trancheId": "replenishment-003",
++      "broadTitle": "devhub recorder fixture coverage",
++      "completed": true
++    }
++  ],
++  "pendingDuplicateDoesNotCount": [
++    {
++      "trancheId": "replenishment-001",
++      "broadTitle": "DevHub recorder fixture coverage",
++      "completed": true
++    },
++    {
++      "trancheId": "replenishment-002",
++      "broadTitle": "Process extraction fixture coverage",
++      "completed": true
++    },
++    {
++      "trancheId": "replenishment-003",
++      "broadTitle": "DevHub recorder fixture coverage",
++      "completed": false
++    },
++    {
++      "trancheId": "replenishment-004",
++      "broadTitle": "Guardrail compiler fixture coverage",
++      "completed": true
++    }
++  ]
++}
+--- a/ppd/tests/test_supervisor_replenishment_rotation.py
++++ b/ppd/tests/test_supervisor_replenishment_rotation.py
+@@ -0,0 +1,43 @@
++"""Fixture-only tests for supervisor replenishment broad-title rotation."""
++
++from __future__ import annotations
++
++import json
++from pathlib import Path
++
++from ppd.daemon.replenishment_rotation import (
++    replenishment_tranche_from_dict,
++    validate_completed_tranche_rotation,
++)
++
++
++FIXTURE_PATH = Path(__file__).parent / "fixtures" / "daemon" / "supervisor_replenishment_rotation.json"
++
++
++def _load_fixture(name: str):
++    data = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
++    return tuple(replenishment_tranche_from_dict(item) for item in data[name])
++
++
++def test_third_and_later_completed_tranches_rotate_broad_titles() -> None:
++    findings = validate_completed_tranche_rotation(_load_fixture("validCompletedRotation"))
++    assert findings == []
++
++
++def test_duplicate_third_completed_tranche_title_is_rejected() -> None:
++    findings = validate_completed_tranche_rotation(_load_fixture("duplicateThirdCompletedRotation"))
++    assert len(findings) == 1
++    assert findings[0].tranche_id == "replenishment-003"
++    assert findings[0].previous_tranche_id == "replenishment-001"
++    assert "third and later" in findings[0].reason
++
++
++def test_pending_duplicate_title_does_not_count_as_completed_rotation() -> None:
++    findings = validate_completed_tranche_rotation(_load_fixture("pendingDuplicateDoesNotCount"))
++    assert findings == []
++
++
++if __name__ == "__main__":
++    test_third_and_later_completed_tranches_rotate_broad_titles()
++    test_duplicate_third_completed_tranche_title_is_rejected()
++    test_pending_duplicate_title_does_not_count_as_completed_rotation()

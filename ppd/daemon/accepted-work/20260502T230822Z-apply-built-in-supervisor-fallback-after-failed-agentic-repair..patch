@@ -1,0 +1,41 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,5 +1,5 @@
+ {
+-  "createdAt": "2026-05-02T22:50:45.646782Z",
++  "createdAt": "2026-05-02T23:08:20.979031Z",
+   "decision": {
+     "action": "plan_next_tasks",
+     "reason": "all PP&D daemon tasks are complete; review the original PP&D goal and add the next task-board tranche",
+@@ -31,10 +31,10 @@
+   "taskBoardRepair": {
+     "parkedRepeatedSyntaxLoopTasks": [],
+     "replenishedGoalTaskLabels": [
+-      "checkbox-148",
+-      "checkbox-149",
+-      "checkbox-150",
+-      "checkbox-151"
++      "checkbox-152",
++      "checkbox-153",
++      "checkbox-154",
++      "checkbox-155"
+     ],
+     "supersededTaskBoardOnlyLabels": [],
+     "taskBoardUpdated": true
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -246,3 +246,14 @@
+ 
+ - The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
+ - Slice policy: `broad_integrated_after_green_streak`. Small slices are used after parse, syntax, validation, or task-board repair failures; broader integrated slices are used after a green accepted streak.
++
++## Built-In Goal Replenishment Tranche 5
++
++- [ ] Task checkbox-152: Add a fixture-only audit export scenario plus focused validation that records source evidence, user-question decisions, redacted draft previews, guardrail outcomes, and refused official actions for downstream human review.
++- [ ] Task checkbox-153: Add a fixture-only stale-answer reconciliation scenario plus focused validation that compares user document-store facts against newer PP&D evidence and fails closed when citations, timestamps, or requirement IDs conflict.
++- [ ] Task checkbox-154: Add supervisor replenishment rotation coverage proving third and later completed tranches do not duplicate the previous broad tranche titles.
++- [ ] Task checkbox-155: Add a fixture-only Playwright selector drift scenario plus focused validation that detects changed accessible names, refuses low-confidence selectors, and asks for human review before draft-preview automation continues.
++## Built-In Supervisor Planning Notes
++
++- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
++- Slice policy: `broad_integrated_after_green_streak`. Small slices are used after parse, syntax, validation, or task-board repair failures; broader integrated slices are used after a green accepted streak.

@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "agent_autonomous_assistance_work_order",
+  "workOrderId": "work-order-ppd-autonomous-assistance-v1",
+  "generatedAt": "2026-05-02T00:00:00Z",
+  "executionBoundary": {
+    "fixtureOnly": true,
+    "usesUserDocumentStoreFacts": true,
+    "networkAccess": false,
+    "liveDevhubAccess": false,
+    "officialDevhubActionsAllowed": false,
+    "storesOnlyRedactedValues": true
+  },
+  "userDocumentStoreFacts": [
+    {
+      "factId": "uds-project-description",
+      "factKey": "project.description",
+      "availability": "available_redacted",
+      "redactedValue": "[REDACTED_USER_DOCUMENT_STORE_PROJECT_DESCRIPTION]",
+      "sourceDocumentRef": "user-doc-store://redacted/project-summary",
+      "sourceEvidenceIds": [
+        "src-ppd-public-permit-guidance"
+      ]
+    },
+    {
+      "factId": "uds-owner-name",
+      "factKey": "owner.name",
+      "availability": "available_redacted",
+      "redactedValue": "[REDACTED_USER_DOCUMENT_STORE_OWNER_NAME]",
+      "sourceDocumentRef": "user-doc-store://redacted/owner-record",
+      "sourceEvidenceIds": [
+        "src-ppd-public-permit-guidance"
+      ]
+    }
+  ],
+  "missingPpdFacts": [
+    {
+      "gapId": "gap-project-site-address",
+      "factKey": "project.site_address",
+      "questionText": "What is the project site address?",
+      "sourceEvidenceIds": [
+        "src-ppd-public-permit-guidance"
+      ],
+      "blocksAutonomousCompletion": true
+    },
+    {
+      "gapId": "gap-site-plan-ready",
+      "factKey": "documents.site_plan_ready",
+      "questionText": "Is the site plan document ready for human review?",
+      "sourceEvidenceIds": [
+        "src-ppd-public-checklist"
+      ],
+      "blocksAutonomousCompletion": true
+    }
+  ],
+  "formalStopGates": [
+    {
+      "gateId": "gate-missing-ppd-facts",
+      "formalRule": "PROHIBITED(agent, complete_autonomously, if(missing(project.site_address) or missing(documents.site_plan_ready)))",
+      "defaultOutcome": "ask_user",
+      "blocksAutonomousCompletion": true
+    },
+    {
+      "gateId": "gate-official-devhub-actions",
+      "formalRule": "PROHIBITED(agent, perform(official_devhub_action), unless(exact_user_confirmation(action_id)))",
+      "defaultOutcome": "refuse",
+      "blocksActions": [
+        "upload_official_document",
+        "submit_application",
+        "certify_statement",
+        "pay_fee",
+        "cancel_request",
+        "schedule_inspection"
+      ],
+      "exactConfirmationPresent": false
+    }
+  ],
+  "orderedSteps": [
+    {
+      "stepId": "step-1-load-redacted-user-facts",
+      "order": 1,
+      "stepType": "read_user_document_store_facts",
+      "inputs": [
+        "uds-project-description",
+        "uds-owner-name"
+      ],
+      "allowedAutonomous": true,
+      "output": "redacted_fact_inventory"
+    },
+    {
+      "stepId": "step-2-ask-missing-ppd-facts",
+      "order": 2,
+      "stepType": "ask_user_questions",
+      "inputs": [
+        "gap-project-site-address",
+        "gap-site-plan-ready"
+      ],
+      "allowedAutonomous": true,
+      "output": "source_linked_questions"
+    },
+    {
+      "stepId": "step-3-preview-draft-fields",
+      "order": 3,
+      "stepType": "preview_reversible_draft_fields",
+      "inputs": [
+        "uds-project-description",
+        "uds-owner-name",
+        "gap-project-site-address"
+      ],
+      "allowedAutonomous": false,
+      "requiresResolvedGapIds": [
+        "gap-project-site-address"
+      ],
+      "output": "draft_preview_plan"
+    },
+    {
+      "stepId": "step-4-stop-before-official-actions",
+      "order": 4,
+      "stepType": "stop_before_official_devhub_actions",
+      "inputs": [
+        "gate-official-devhub-actions"
+      ],
+      "allowedAutonomous": false,
+      "output": "exact_confirmation_required"
+    }
+  ],
+  "draftOnlyPlaywrightPreviews": [
+    {
+      "previewId": "preview-project-description",
+      "linkedStepId": "step-3-preview-draft-fields",
+      "linkedFactId": "uds-project-description",
+      "actionClass": "reversible_draft_edit",
+      "mode": "preview_only",
+      "selector": {
+        "basis": "label_text",
+        "role": "textbox",
+        "accessibleName": "Project description",
+        "confidence": 0.92
+      },
+      "afterValue": "[REDACTED_USER_DOCUMENT_STORE_PROJECT_DESCRIPTION]",
+      "executesInFixture": false
+    },
+    {
+      "previewId": "preview-project-site-address",
+      "linkedStepId": "step-3-preview-draft-fields",
+      "linkedFactId": "gap-project-site-address",
+      "actionClass": "reversible_draft_edit",
+      "mode": "preview_only",
+      "selector": {
+        "basis": "role_and_accessible_name",
+        "role": "textbox",
+        "accessibleName": "Project site address",
+        "confidence": 0.94
+      },
+      "afterValue": "[REDACTED_USER_SUPPLIED_PROJECT_LOCATION]",
+      "executesInFixture": false
+    }
+  ],
+  "plannerOutcome": {
+    "nextAction": "ask_missing_ppd_questions_before_preview",
+    "autonomousCompletionAllowed": false,
+    "officialActionsAllowed": false,
+    "safeWorkOrderReady": true
+  }
+}

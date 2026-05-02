@@ -1,0 +1,31 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,8 +1,8 @@
+ {
+-  "createdAt": "2026-05-02T23:12:06.552112Z",
++  "createdAt": "2026-05-02T23:14:58.041928Z",
+   "decision": {
+     "action": "invoke_codex",
+-    "reason": "8 consecutive daemon rounds failed without an accepted patch",
++    "reason": "3 consecutive daemon rounds failed without an accepted patch",
+     "severity": "warning"
+   },
+   "failedAgenticRepair": {
+@@ -13,7 +13,7 @@
+       "Validation failed; file edits were rolled back."
+     ],
+     "failureKind": "validation",
+-    "summary": "Add a narrow supervisor repair guide for repeated parse and syntax-failure loops, with deterministic retry guardrails before returning to PP&D domain work.",
++    "summary": "Add supervisor repair guidance for repeated non-JSON LLM daemon failures.",
+     "validationResults": [
+       {
+         "command": [
+@@ -37,7 +37,7 @@
+           "test_*.py"
+         ],
+         "returncode": 1,
+-        "stderr": "................................................................................................................................................................................................................................................................................................................................................................ss..............sss................................................................................................................................................................................................................F................................................... ====================================================================== FAIL: test_guide_keeps_repair_separate_from_domain_implementation (test_supervisor_repair_guide.SupervisorRepairGuideTest.test_guide_keeps_repair_separate_from_domain_implementation) --------------...",
++        "stderr": "................................................................................................................................................................................................................................................................................................................................................................ss..............sss.................................................................................................................................................................................................................FFF................................................. ====================================================================== FAIL: test_guide_keeps_repair_separate_from_domain_implementation (test_supervisor_repair_guide.SupervisorRepairGuideTest.test_guide_keeps_repair_separate_from_domain_implementation) -------------...",
+         "stdout": ""
+       },
+       {

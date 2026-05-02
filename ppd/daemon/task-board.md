@@ -9,7 +9,6 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 - Do not automate CAPTCHA, MFA, account creation, payment, official submission, certification, cancellation, upload, or inspection scheduling.
 - Prefer fixture-first and validation-first work before live public crawling or authenticated automation.
 - Keep every task small enough for one daemon cycle.
-- When adding Python tests or helpers, keep comparisons syntactically complete and run py_compile through the daemon self-test before broader tests.
 - Preserve source provenance in every public guidance, requirement, process, and guardrail fixture.
 - After any rollback containing SyntaxError, py_compile, TS1005, TS1109, or TS1128, do not retry a broad contract rewrite. First repair daemon supervision so changed Python or TypeScript files are syntax-checked before full validation.
 - Syntax-recovery proposals should normally replace one file only. Use two files only when the second file is a tiny focused test or fixture for the same syntactic guardrail.
@@ -18,8 +17,6 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 - If a syntax-preflight helper exists, the daemon apply path must call it before full validation and must classify parser failures as syntax_preflight.
 - When a fixture-validator task fails because expected fields are absent, do not immediately rewrite the fixture or add a broader contract. First add a daemon diagnostic or prompt guardrail that reports the committed fixture shape and constrains the next retry to the fields actually present unless the task explicitly permits fixture replacement.
 - After four consecutive daemon rounds without an accepted patch while the daemon is in calling_llm, pause the active domain task and append a narrow daemon prompt/preflight repair before retrying the domain task.
-- For the parked checkbox-108 public crawl frontier checkpoint, the next worker instruction must start by inspecting committed frontier-related tests, fixtures, and accepted validation evidence. If checkbox-109 or later accepted work already proves the frontier checkpoint contract, mark checkbox-108 superseded with file-level evidence instead of adding domain artifacts. If evidence is missing, retry with exactly one syntactically valid Python test file or exactly one small JSON fixture file that can pass syntax preflight before full validation.
-- A resumed checkbox-108 attempt must not add crawler code, crawl contracts, public corpus fixtures, raw crawl output, network automation, or broad schema rewrites until supervisor syntax-recovery tasks prove the one-file retry path.
 
 ## Completed Work
 
@@ -131,107 +128,71 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 - [x] Task checkbox-101: Add validation for public PDF extraction fixtures proving page anchors, source URLs, checksums or placeholder hash fields, redacted values, and skipped raw-byte/OCR-output reasons are present, while raw bodies and private DevHub artifacts are rejected.
 - [x] Task checkbox-102: Add a fixture-only redacted user-case-state contract that links a mocked project fact inventory, missing-information questions, uploaded-file placeholders, draft status, and source evidence without storing private documents, account identifiers, cookies, traces, screenshots, payments, or live DevHub state.
 - [x] Task checkbox-103: Add validation for user-case-state fixtures proving missing facts, file placeholders, draft/submitted status, payment status, messages, and outstanding tasks remain redacted, source-linked, and blocked from consequential or financial action planning by default.
-
-## Replenished Goal-Aligned Tranche
-
 - [x] Task checkbox-104: Add a fixture-only public source freshness manifest that records last-seen timestamps, source URLs, canonical URLs, content-hash or HTTP-cache placeholders, and review-needed flags for one PP&D guidance page and one linked form or checklist. Do not crawl the network, download documents, store raw bodies, or touch private DevHub data.
 - [x] Task checkbox-105: Add validation for the public source freshness manifest proving stale or missing timestamps, uncited source URLs, absent hash/cache placeholders, raw response bodies, and private DevHub artifacts are rejected before any live crawl is planned.
 - [x] Task checkbox-106: Add a fixture-only requirement-to-process dependency graph for one public PP&D permit process that links source evidence, extracted obligations, required documents, user facts, stop gates, and reversible draft-only planning nodes. Keep all values redacted and citation-backed.
 - [x] Task checkbox-107: Add validation for requirement-to-process dependency graph fixtures proving every edge has a known source node, every consequential or financial node is blocked by default, and missing citations or private values fail closed.
-- [x] Task checkbox-108: Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output.
+- [x] Task checkbox-108: Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Superseded by accepted checkbox-109, checkbox-130, checkbox-131, and checkbox-132 evidence; no crawler contracts, crawler code, public fixtures, crawl output, live automation, or authenticated DevHub artifacts were added for this supersession.
 - [x] Task checkbox-109: Add validation for public crawl frontier checkpoint fixtures proving external domains, live authenticated URLs, missing skip reasons, raw crawl bodies, and processor handoffs without provenance are rejected.
 - [x] Task checkbox-110: Add a fixture-only agent missing-information response plan that turns unresolved PP&D facts, required document placeholders, stale evidence flags, and default stop gates into user-facing questions without suggesting submission, upload, payment, certification, cancellation, or inspection scheduling.
 - [x] Task checkbox-111: Add validation for missing-information response plan fixtures proving questions are source-linked, narrow, redacted, non-consequential by default, and blocked when evidence is stale, conflicting, uncited, or tied to private DevHub state.
-
-## Supervisor Syntax-Recovery Tranche
-
 - [x] Task checkbox-112: Add daemon task-selection validation proving blocked syntax-preflight tasks are not reselected while unchecked supervisor recovery tasks remain available.
-- [x] Task checkbox-113: Add a daemon syntax-preflight regression test for the malformed Python fragments observed in public_frontier_checkpoint attempts, including `timeout_ms list[str]`, `timeout_ms self.budget_ms`, and `page_number None`, without editing crawl contracts or fixtures.
+- [x] Task checkbox-113: Add a daemon syntax-preflight regression test for malformed Python fragments observed in public_frontier_checkpoint attempts.
 - [x] Task checkbox-114: Add daemon prompt guidance that, after repeated parser failures on a PP&D domain task, requires the next worker to reuse existing committed contracts before proposing a new similarly named module.
-- [x] Task checkbox-115: Add a narrow supervisor diagnostic that reports when an already accepted validation task appears to satisfy the blocked task's fixture shape, so the daemon can recommend either superseding the blocked task or resuming it with one file only.
-- [x] Task checkbox-116: Resume checkbox-108 only after checkbox-112 through checkbox-115 pass, and limit the resumed attempt to one syntactically valid Python file or one small JSON fixture plus one syntactically valid Python unittest file.
-
-## Supervisor Resume-Gate Replenishment Tranche
-
-- [x] Task checkbox-122: Add a daemon diagnostic fixture proving the blocked checkbox-108 public crawl frontier task is resumable only as one syntax-valid replacement file, or can be superseded when checkbox-109 validation already covers the fixture shape. Do not edit crawl contracts, crawler code, or public fixtures.
-- [x] Task checkbox-123: Add validation for the checkbox-122 diagnostic proving it reports the blocked task ID, the accepted successor validation task ID, the allowed one-file retry shape, and the prohibited broad rewrite shape without implementing the public crawl frontier checkpoint.
-- [x] Task checkbox-124: Add daemon prompt guidance that converts the checkbox-108 blocked state into a deterministic next instruction: inspect committed frontier-related tests first, then either mark the task superseded with evidence or retry with exactly one syntactically valid Python test or one small JSON fixture. Do not create new crawl output.
-- [x] Task checkbox-125: Add task-board replenishment validation proving a board with one blocked domain task and no selectable tasks gets this narrow supervisor tranche appended while preserving all completed tasks and leaving the blocked task parked.
-- [x] Task checkbox-126: Resume checkbox-108 only after checkbox-122 through checkbox-125 pass, and limit the resumed worker proposal to one file that is syntax-preflightable before full validation; if checkbox-109 already proves the checkpoint fixture contract, mark checkbox-108 superseded in the task board instead of adding domain artifacts.
-
-## Supervisor Syntax-Validity Guardrail Tranche
-
-- [x] Task checkbox-127: Add daemon validation that a syntax-recovery worker proposal touching a blocked domain task is rejected when it changes more than one source file or omits syntax-preflight evidence for every changed Python or TypeScript file.
+- [x] Task checkbox-115: Add a narrow supervisor diagnostic that reports when an already accepted validation task appears to satisfy the blocked task's fixture shape.
+- [x] Task checkbox-116: Resume checkbox-108 only after checkbox-112 through checkbox-115 pass, and limit the resumed attempt to one syntax-valid file.
+- [x] Task checkbox-122: Add a daemon diagnostic fixture proving the blocked checkbox-108 public crawl frontier task is resumable only as one syntax-valid replacement file, or can be superseded when checkbox-109 validation already covers the fixture shape.
+- [x] Task checkbox-123: Add validation for the checkbox-122 diagnostic proving it reports the blocked task ID, accepted successor validation task ID, allowed one-file retry shape, and prohibited broad rewrite shape.
+- [x] Task checkbox-124: Add daemon prompt guidance that converts the checkbox-108 blocked state into a deterministic next instruction.
+- [x] Task checkbox-125: Add task-board replenishment validation proving a board with one blocked domain task and no selectable tasks gets this narrow supervisor tranche appended while preserving all completed tasks.
+- [x] Task checkbox-126: Resume checkbox-108 only after checkbox-122 through checkbox-125 pass, and limit the resumed worker proposal to one syntax-preflightable file or supersession.
+- [x] Task checkbox-127: Add daemon validation that a syntax-recovery worker proposal touching a blocked domain task is rejected when it changes more than one source file or omits syntax-preflight evidence.
 - [x] Task checkbox-128: Add a tiny fixture proving repeated Python SyntaxError, py_compile, TS1005, TS1109, or TS1128 failures convert the next daemon prompt into a one-file repair instruction rather than a broad domain contract rewrite.
 - [x] Task checkbox-129: Add validation for the checkbox-128 fixture proving the prompt names the failed syntax kind, lists the allowed one-file retry shape, and explicitly defers live crawl, authenticated automation, and crawler contract implementation.
-
-## Supervisor Supersession-Recovery Tranche
-
-- [x] Task checkbox-130: Add a daemon-local supersession decision fixture proving checkbox-108 can be marked superseded only when committed checkbox-109 validation evidence names queued, accepted, skipped, deferred, allowlist, robots/no-persist, content-type, timeout, and processor-handoff coverage. Do not edit crawler contracts, crawler code, public fixtures, or crawl output.
+- [x] Task checkbox-130: Add a daemon-local supersession decision fixture proving checkbox-108 can be marked superseded only when committed checkbox-109 validation evidence names queued, accepted, skipped, deferred, allowlist, robots/no-persist, content-type, timeout, and processor-handoff coverage.
 - [x] Task checkbox-131: Add validation for the checkbox-130 supersession decision fixture proving missing evidence keeps checkbox-108 parked and complete evidence produces a task-board-only supersession recommendation.
 - [x] Task checkbox-132: Add daemon task-selection validation proving a parked blocked domain task with accepted supersession evidence is not reselected before a task-board supersession note is appended.
-- [x] Task checkbox-133: Append a task-board-only supersession note for checkbox-108 only after checkbox-130 through checkbox-132 pass, preserving completed tasks and citing the accepted checkbox-109 evidence instead of implementing new domain artifacts.
-
-## Built-In Supervisor Repair Notes
-
-- Parked repeated syntax-preflight loop for `Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output.` so the daemon can continue with independent selectable work. The task should be resumed only after narrow syntax-valid supervisor recovery work has been accepted.
-- For checkbox-108, inspect committed frontier validation evidence first. If accepted validation already covers the public crawl frontier checkpoint shape, supersede checkbox-108 with evidence. Otherwise, allow only one syntax-preflightable Python test file or one small JSON fixture file in the resumed worker proposal.
-
-## Generated Status
-
-Last updated: 2026-05-02T21:20:00.000000Z
-
-- Latest target: `Supervisor repair: append supersession-recovery tasks for parked checkbox-108 after no selectable task remained.`
-- Latest result: `supervisor_plan_next_tasks`
-- Latest summary: Added a narrow fixture-first supervisor tranche so the daemon can validate checkbox-108 supersession evidence before any domain retry.
-- Counts: blocked=1 complete=128 in_progress=0 needed=4
-
-
-<!-- ppd-daemon-task-board:start -->
-## Generated Status
-
-Last updated: 2026-05-02T22:41:03.541008Z
-
-- Latest target: `Task checkbox-145: Task checkbox-145: Add a fixture-only agent work-order scenario plus focused validation that composes user document-store facts, missing PP&D facts, formal stop gates, and draft-only Playwright previews into an ordered autonomous-assistance plan without official DevHub actions.`
-- Latest result: `parse`
-- Latest summary: 
-- Counts: `{"blocked": 0, "complete": 144, "in_progress": 0, "needed": 3}`
-
-<!-- ppd-daemon-task-board:end -->
-## Checkbox-108 Supersession Note
-
-- Checkbox-108 is superseded on the task board only. Accepted checkbox-109, checkbox-130, checkbox-131, and checkbox-132 evidence covers queued, accepted, skipped, deferred, allowlist, robots/no-persist, content-type, timeout, and processor-handoff behavior. No crawler contracts, crawler code, public fixtures, crawl output, live automation, or authenticated DevHub artifacts were added for this supersession.
-
-## Built-In Goal Replenishment Tranche
-
+- [x] Task checkbox-133: Append a task-board-only supersession note for checkbox-108 after checkbox-130 through checkbox-132 pass, preserving completed tasks and citing accepted checkbox-109 evidence instead of implementing new domain artifacts.
 - [x] Task checkbox-134: Add a fixture-only processor archive integration manifest that maps PP&D public source URLs, canonical document IDs, content-hash placeholders, and processor handoff IDs without crawling, downloading documents, or storing raw bodies.
 - [x] Task checkbox-135: Add validation for the processor archive integration manifest proving every archived public source has citation-backed provenance, no private DevHub data, no raw crawl output, and a deterministic handoff ID for formal-logic extraction.
 - [x] Task checkbox-136: Add a mocked Playwright draft-fill plan fixture for one PP&D form that ranks selectors by evidence confidence, maps missing user facts to questions, and limits automation to reversible draft-only field previews.
 - [x] Task checkbox-137: Add validation for the Playwright draft-fill plan fixture proving low-confidence selectors, uploads, submissions, payments, certifications, cancellations, MFA, CAPTCHA, and inspection scheduling remain refused by default.
 - [x] Task checkbox-138: Add a fixture-only formal-logic guardrail bundle that translates one archived PP&D requirement set into obligations, prerequisites, stop gates, reversible actions, and exact-confirmation requirements.
 - [x] Task checkbox-139: Add validation for formal-logic guardrail bundles proving missing citations, stale evidence, private values, and consequential or financial actions fail closed before any LLM agent may plan autonomous completion.
-## Built-In Supervisor Planning Notes
-
-- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
-
-## Built-In Goal Replenishment Tranche 2
-
 - [x] Task checkbox-140: Add an end-to-end fixture-only handoff scenario plus focused validation linking processor archival evidence, extracted requirement nodes, formal-logic guardrails, and draft-only Playwright planning without live crawling, authenticated automation, raw browser state, or official DevHub actions.
 - [x] Task checkbox-141: Add a fixture-only user gap-resolution scenario plus focused validation that turns missing PP&D facts, stale evidence flags, and document placeholders into source-linked user questions and refuses autonomous completion while gaps remain.
 - [x] Task checkbox-142: Add supervisor adaptive-slice regression coverage proving completed board-level recovery tranches enable broader non-duplicate goal slices even when accepted daemon ledger rows lag behind manual validated recovery work.
 - [x] Task checkbox-143: Add an offline Playwright draft transcript fixture plus focused validation proving future agents can plan accessible-selector fills from redacted state while preserving exact-confirmation gates for upload, submit, payment, certification, cancellation, MFA, CAPTCHA, and inspection scheduling.
-## Built-In Supervisor Planning Notes
-
-- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
-- Slice policy: `broad_integrated_after_green_streak`. Small slices are used after parse, syntax, validation, or task-board repair failures; broader integrated slices are used after a green accepted streak or a fully completed board-level recovery tranche.
-
-## Built-In Goal Replenishment Tranche 3
-
 - [x] Task checkbox-144: Add a fixture-only source-change impact scenario plus focused validation that routes updated PP&D public evidence through archival provenance, affected requirement IDs, stale guardrail invalidation, and human-review flags before agents reuse old answers.
-- [~] Task checkbox-145: Add a fixture-only agent work-order scenario plus focused validation that composes user document-store facts, missing PP&D facts, formal stop gates, and draft-only Playwright previews into an ordered autonomous-assistance plan without official DevHub actions.
-- [ ] Task checkbox-146: Add daemon parse-failure recovery coverage proving repeated non-JSON LLM responses for a completed or manually satisfied task are parked or superseded instead of being retried indefinitely.
-- [ ] Task checkbox-147: Add a fixture-only permit-process comparison scenario plus focused validation that contrasts two PP&D process types and preserves separate legal obligations, operational UI hints, document placeholders, fee notices, and exact-confirmation gates.
+- [x] Task checkbox-145: Add a fixture-only agent work-order scenario plus focused validation that composes user document-store facts, missing PP&D facts, formal stop gates, and draft-only Playwright previews into an ordered autonomous-assistance plan without official DevHub actions.
+- [x] Task checkbox-146: Add daemon parse-failure recovery coverage proving repeated non-JSON LLM responses for a completed or manually satisfied task are parked or superseded instead of being retried indefinitely.
+- [x] Task checkbox-147: Add a fixture-only permit-process comparison scenario plus focused validation that contrasts two PP&D process types and preserves separate legal obligations, operational UI hints, document placeholders, fee notices, and exact-confirmation gates.
+- [x] Task checkbox-148: Add a fixture-only audit export scenario plus focused validation that records source evidence, user-question decisions, redacted draft previews, guardrail outcomes, and refused official actions for downstream human review.
+- [x] Task checkbox-149: Add a fixture-only stale-answer reconciliation scenario plus focused validation that compares user document-store facts against newer PP&D evidence and fails closed when citations, timestamps, or requirement IDs conflict.
+- [x] Task checkbox-150: Add supervisor replenishment rotation coverage proving third and later completed tranches do not duplicate the previous broad tranche titles.
+- [x] Task checkbox-151: Add a fixture-only Playwright selector drift scenario plus focused validation that detects changed accessible names, refuses low-confidence selectors, and asks for human review before draft-preview automation continues.
+
+## Built-In Goal Replenishment Tranche 5
+
+- [x] Task checkbox-152: Add a fixture-only public guidance conflict-resolution scenario plus focused validation that compares two cited PP&D guidance sources for the same permit requirement, preserves both provenance chains, marks the requirement review-needed, and prevents draft automation from relying on either source until a human resolves the conflict.
+- [~] Task checkbox-153: Add a fixture-only DevHub upload-readiness checklist scenario plus focused validation that maps required document placeholders to public single-PDF-process evidence, redacted user file inventory metadata, and explicit stop gates while refusing official upload, submission, certification, payment, cancellation, CAPTCHA, MFA, account creation, and inspection scheduling by default.
+- [ ] Task checkbox-154: Add a fixture-only fee-notice and payment-gate scenario plus focused validation that separates public fee guidance, estimated fee notices, financial-action classification, exact payment-specific confirmation requirements, and audit events without storing payment data or planning payment automation.
+- [ ] Task checkbox-155: Add a fixture-only process-state transition scenario plus focused validation that models public guidance states, mocked DevHub read-only draft states, reversible draft previews, blocked consequential transitions, stale-evidence invalidation, and source-linked user questions without launching Playwright or touching live accounts.
+
 ## Built-In Supervisor Planning Notes
 
-- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
-- Slice policy: `broad_integrated_after_green_streak`. Small slices are used after parse, syntax, validation, or task-board repair failures; broader integrated slices are used after a green accepted streak.
+- The completed board was replenished after checkbox-151 so the worker daemon can continue with narrow fixture-first PP&D work aligned to public evidence reconciliation, DevHub upload readiness, fee/payment gates, and process-state modeling.
+- These tasks intentionally remain fixture-only and validation-first. They must not create private DevHub session files, auth state, traces, raw crawl output, downloaded documents, live crawl artifacts, or official DevHub actions.
+
+
+<!-- ppd-daemon-task-board:start -->
+## Generated Status
+
+Last updated: 2026-05-02T23:13:12.228016Z
+
+- Latest target: `Task checkbox-152: Task checkbox-152: Add a fixture-only public guidance conflict-resolution scenario plus focused validation that compares two cited PP&D guidance sources for the same permit requirement, preserves both provenance chains, marks the requirement review-needed, and prevents draft automation from relying on either source until a human resolves the conflict.`
+- Latest result: `accepted`
+- Latest summary: Add fixture-only PP&D public guidance conflict-resolution scenario with focused validation.
+- Counts: `{"blocked": 0, "complete": 152, "in_progress": 0, "needed": 3}`
+
+<!-- ppd-daemon-task-board:end -->

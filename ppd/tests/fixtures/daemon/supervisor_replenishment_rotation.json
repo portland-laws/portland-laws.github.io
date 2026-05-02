@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "validCompletedRotation": [
+    {
+      "trancheId": "replenishment-001",
+      "broadTitle": "DevHub recorder fixture coverage",
+      "completed": true
+    },
+    {
+      "trancheId": "replenishment-002",
+      "broadTitle": "DevHub recorder fixture coverage",
+      "completed": true
+    },
+    {
+      "trancheId": "replenishment-003",
+      "broadTitle": "Process extraction fixture coverage",
+      "completed": true
+    },
+    {
+      "trancheId": "replenishment-004",
+      "broadTitle": "Guardrail compiler fixture coverage",
+      "completed": true
+    }
+  ],
+  "duplicateThirdCompletedRotation": [
+    {
+      "trancheId": "replenishment-001",
+      "broadTitle": "DevHub recorder fixture coverage",
+      "completed": true
+    },
+    {
+      "trancheId": "replenishment-002",
+      "broadTitle": "Process extraction fixture coverage",
+      "completed": true
+    },
+    {
+      "trancheId": "replenishment-003",
+      "broadTitle": "devhub recorder fixture coverage",
+      "completed": true
+    }
+  ],
+  "pendingDuplicateDoesNotCount": [
+    {
+      "trancheId": "replenishment-001",
+      "broadTitle": "DevHub recorder fixture coverage",
+      "completed": true
+    },
+    {
+      "trancheId": "replenishment-002",
+      "broadTitle": "Process extraction fixture coverage",
+      "completed": true
+    },
+    {
+      "trancheId": "replenishment-003",
+      "broadTitle": "DevHub recorder fixture coverage",
+      "completed": false
+    },
+    {
+      "trancheId": "replenishment-004",
+      "broadTitle": "Guardrail compiler fixture coverage",
+      "completed": true
+    }
+  ]
+}

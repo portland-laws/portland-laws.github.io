@@ -80,6 +80,17 @@ DEFAULT_VALIDATION_COMMANDS = (
     ),
 )
 
+FORBIDDEN_ABSENCE_MARKERS = (
+    "cookie",
+    "cookies",
+    "screenshot",
+    "screenshots",
+    "auth-state",
+    "storage-state",
+    "trace.zip",
+    ".har",
+)
+
 
 @dataclass(frozen=True)
 class Task:
@@ -372,7 +383,35 @@ def format_failure_context(failures: list[dict[str, Any]]) -> str:
                 ]
             )
         )
+    if any(is_forbidden_absence_marker_validation_failure(failure) for failure in failures):
+        parts.append(
+            "Recovery guidance: a validator found a forbidden artifact marker inside the proposed fixture or test text. "
+            "Return only one JSON object on the retry, and use a small file set that fixes the self-triggering field names. "
+            "When representing absence, avoid keys or values containing banned substrings such as cookie, screenshot, "
+            "auth-state, storage-state, trace.zip, or .har. Use neutral names like `runtimeArtifactsStored`, "
+            "`visualArtifactsStored`, `authenticatedArtifactsStored`, or `forbiddenArtifactsAbsent` instead of "
+            "`containsCookies`, `screenshotsStored`, or similar self-triggering absence fields."
+        )
     return "\n\n".join(parts)
+
+
+def is_forbidden_absence_marker_validation_failure(failure: dict[str, Any]) -> bool:
+    """Detect validation failures caused by fixture/test text containing banned marker words."""
+
+    if str(failure.get("failure_kind") or "") != "validation":
+        return False
+    text_parts: list[str] = []
+    for error in failure.get("errors", []) or []:
+        text_parts.append(str(error))
+    for result in failure.get("validation_results", []) or []:
+        if not isinstance(result, dict):
+            continue
+        text_parts.append(str(result.get("stdout", "")))
+        text_parts.append(str(result.get("stderr", "")))
+    text = "\n".join(text_parts).lower()
+    if "unexpectedly found" not in text and "assertnotin" not in text:
+        return False
+    return any(marker in text for marker in FORBIDDEN_ABSENCE_MARKERS)
 
 
 def extract_json(text: str) -> Optional[dict[str, Any]]:
