@@ -1,0 +1,98 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,57 +1,18 @@
+ {
+-  "createdAt": "2026-05-02T20:16:01.128774Z",
++  "createdAt": "2026-05-02T20:17:55.310597Z",
+   "decision": {
+     "action": "repair_daemon_programming",
+-    "reason": "3 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
++    "reason": "real repeated syntax-preflight loop on current daemon target",
+     "severity": "warning"
+   },
+   "failedAgenticRepair": {
+-    "changedFiles": [
+-      "ppd/daemon/syntax_preflight.py",
+-      "ppd/tests/test_syntax_preflight_recurrent_parse_failures.py"
+-    ],
++    "changedFiles": [],
+     "errors": [
+-      "Validation failed; file edits were rolled back."
++      "agentic repair failed validation; exercising deterministic fallback"
+     ],
+     "failureKind": "validation",
+-    "summary": "Tighten PP&D syntax preflight with targeted cross-language Python diagnostics and small-retry guidance.",
+-    "validationResults": [
+-      {
+-        "command": [
+-          "python3",
+-          "ppd/daemon/ppd_daemon.py",
+-          "--self-test"
+-        ],
+-        "returncode": 0,
+-        "stderr": "",
+-        "stdout": "{ \"ok\": true, \"task_count\": 116 }"
+-      },
+-      {
+-        "command": [
+-          "python3",
+-          "-m",
+-          "unittest",
+-          "discover",
+-          "-s",
+-          "ppd/tests",
+-          "-p",
+-          "test_*.py"
+-        ],
+-        "returncode": 1,
+-        "stderr": ".........................................................................................................................................................................................................................................................................................................ss..............sss.........................................................................................................................................................................................F......................................... ====================================================================== FAIL: test_flags_typescript_fragment_inside_python_control_flow (test_syntax_preflight_recurrent_parse_failures.SyntaxPreflightRecurrentParseFailuresTest.test_flags_typescript_fragment_inside_python_control_flow) ---------------------------------------------------------------------- T...",
+-        "stdout": ""
+-      },
+-      {
+-        "command": [
+-          "bash",
+-          "-lc",
+-          "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+-        ],
+-        "returncode": 0,
+-        "stderr": "",
+-        "stdout": ""
+-      }
+-    ]
++    "summary": "Synthetic failed agentic repair for exercising built-in task-board parking.",
++    "validationResults": []
+   },
+   "fallbackActions": [
+     "preserve failed repair diagnostics without accepting the invalid patch",
+@@ -68,5 +29,11 @@
+     "no browser traces or screenshots",
+     "no consequential DevHub actions"
+   ],
+-  "schemaVersion": 1
++  "schemaVersion": 1,
++  "taskBoardRepair": {
++    "parkedRepeatedSyntaxLoopTasks": [
++      "Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output."
++    ],
++    "taskBoardUpdated": true
++  }
+ }
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -136,7 +136,7 @@
+ - [x] Task checkbox-105: Add validation for the public source freshness manifest proving stale or missing timestamps, uncited source URLs, absent hash/cache placeholders, raw response bodies, and private DevHub artifacts are rejected before any live crawl is planned.
+ - [x] Task checkbox-106: Add a fixture-only requirement-to-process dependency graph for one public PP&D permit process that links source evidence, extracted obligations, required documents, user facts, stop gates, and reversible draft-only planning nodes. Keep all values redacted and citation-backed.
+ - [x] Task checkbox-107: Add validation for requirement-to-process dependency graph fixtures proving every edge has a known source node, every consequential or financial node is blocked by default, and missing citations or private values fail closed.
+-- [~] Task checkbox-108: Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output.
++- [!] Task checkbox-108: Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output.
+ - [ ] Task checkbox-109: Add validation for public crawl frontier checkpoint fixtures proving external domains, live authenticated URLs, missing skip reasons, raw crawl bodies, and processor handoffs without provenance are rejected.
+ - [ ] Task checkbox-110: Add a fixture-only agent missing-information response plan that turns unresolved PP&D facts, required document placeholders, stale evidence flags, and default stop gates into user-facing questions without suggesting submission, upload, payment, certification, cancellation, or inspection scheduling.
+ - [ ] Task checkbox-111: Add validation for missing-information response plan fixtures proving questions are source-linked, narrow, redacted, non-consequential by default, and blocked when evidence is stale, conflicting, uncited, or tied to private DevHub state.
+@@ -163,3 +163,7 @@
+ - Counts: `{"blocked": 0, "complete": 112, "in_progress": 0, "needed": 4}`
+ 
+ <!-- ppd-daemon-task-board:end -->
++## Built-In Supervisor Repair Notes
++
++- Parked repeated syntax-preflight loop for `Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output.` so the daemon can continue with independent selectable work. The task should be resumed only after a narrow syntax-valid fixture/test repair is available.
++

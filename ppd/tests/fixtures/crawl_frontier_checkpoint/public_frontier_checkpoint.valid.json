@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "checkpoint_id": "public-frontier-checkpoint-fixture-001",
+  "generated_at": "2026-05-01T12:00:00Z",
+  "frontier": [
+    {
+      "id": "frontier-public-ppd-home",
+      "url": "https://www.portland.gov/ppd",
+      "status": "planned",
+      "depth": 0
+    },
+    {
+      "id": "frontier-external-example",
+      "url": "https://example.com/vendor-form",
+      "status": "skipped",
+      "skip_reason": "external_domain_not_allowlisted"
+    },
+    {
+      "id": "frontier-devhub-public",
+      "url": "https://devhub.portlandoregon.gov/",
+      "status": "processor_handoff",
+      "processor_handoff": {
+        "processor_family": "web_archiving",
+        "manifest_only": true,
+        "provenance": {
+          "source_url": "https://devhub.portlandoregon.gov/",
+          "canonical_url": "https://devhub.portlandoregon.gov/",
+          "captured_at": "2026-05-01T12:00:00Z",
+          "content_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "policy_decision": "allow_public_manifest_only",
+          "processor_name": "ipfs_datasets_py.web_archiving"
+        }
+      }
+    }
+  ]
+}

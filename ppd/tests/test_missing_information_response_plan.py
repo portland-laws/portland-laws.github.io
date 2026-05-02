@@ -1,0 +1,230 @@
+"""Validate PP&D missing-information response plan fixtures.
+
+The fixture is intentionally synthetic and public-only. It proves that a
+missing-information plan can ask narrow clarification questions only when each
+question is source-linked, redacted, and non-consequential by default, and that
+unsafe evidence conditions are represented as blocked plans.
+"""
+
+from __future__ import annotations
+
+import copy
+import json
+import unittest
+from pathlib import Path
+from typing import Any
+
+
+FIXTURE_PATH = Path(__file__).parent / "fixtures" / "missing_information_response_plans" / "source_linked_redacted_blocked.json"
+SAFE_DEFAULT_ACTIONS = {"read_only_clarification", "ask_user_for_missing_fact"}
+BLOCKED_REASONS = {
+    "stale_evidence",
+    "conflicting_evidence",
+    "uncited_question",
+    "private_devhub_state",
+}
+PRIVATE_MARKERS = (
+    "cookie",
+    "sessionstorage",
+    "localstorage",
+    "storage_state",
+    "auth_state",
+    "token",
+    "password",
+    "trace.zip",
+    "screenshot",
+    "devhub private",
+    "private devhub",
+)
+CONSEQUENTIAL_ACTION_WORDS = (
+    "submit",
+    "certify",
+    "pay",
+    "payment",
+    "cancel",
+    "upload",
+    "schedule inspection",
+    "mfa",
+    "captcha",
+    "account creation",
+    "password recovery",
+)
+
+
+def _load_fixture() -> dict[str, Any]:
+    with FIXTURE_PATH.open(encoding="utf-8") as fixture_file:
+        data = json.load(fixture_file)
+    if not isinstance(data, dict):
+        raise AssertionError("fixture root must be an object")
+    return data
+
+
+def _walk_strings(value: Any) -> list[str]:
+    strings: list[str] = []
+    if isinstance(value, str):
+        strings.append(value)
+    elif isinstance(value, dict):
+        for item in value.values():
+            strings.extend(_walk_strings(item))
+    elif isinstance(value, list):
+        for item in value:
+            strings.extend(_walk_strings(item))
+    return strings
+
+
+def _evidence_by_id(data: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    evidence = data.get("sourceEvidence", [])
+    if not isinstance(evidence, list):
+        return {}
+    result: dict[str, dict[str, Any]] = {}
+    for item in evidence:
+        if isinstance(item, dict) and isinstance(item.get("id"), str):
+            result[item["id"]] = item
+    return result
+
+
+def _validate_safe_plan(data: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    plan = data.get("responsePlan", {})
+    evidence = _evidence_by_id(data)
+    requirements = set(data.get("knownRequirementIds", []))
+
+    if not isinstance(plan, dict):
+        return ["response plan must be an object"]
+    if plan.get("status") != "ready_to_ask":
+        errors.append("safe response plan must be ready_to_ask")
+    if plan.get("defaultActionClassification") not in SAFE_DEFAULT_ACTIONS:
+        errors.append("safe response plan must be non-consequential by default")
+    if plan.get("exactUserConfirmation") is not False:
+        errors.append("safe response plan exact user confirmation must default to false")
+
+    questions = plan.get("questions", [])
+    if not isinstance(questions, list) or not questions:
+        errors.append("safe response plan must include at least one question")
+        questions = []
+
+    for question in questions:
+        if not isinstance(question, dict):
+            errors.append("each question must be an object")
+            continue
+        prompt = str(question.get("prompt", ""))
+        if not prompt.endswith("?"):
+            errors.append(f"question {question.get('id', '')} must be phrased as a question")
+        if len(prompt) > 160:
+            errors.append(f"question {question.get('id', '')} must be narrow enough for a short answer")
+        requested_facts = question.get("requestedFactIds", [])
+        if not isinstance(requested_facts, list) or len(requested_facts) != 1:
+            errors.append(f"question {question.get('id', '')} must ask for exactly one missing fact")
+        if question.get("linkedRequirementId") not in requirements:
+            errors.append(f"question {question.get('id', '')} must link to a known requirement")
+        source_ids = question.get("sourceEvidenceIds", [])
+        if not isinstance(source_ids, list) or not source_ids:
+            errors.append(f"question {question.get('id', '')} must be source-linked")
+            source_ids = []
+        for source_id in source_ids:
+            source = evidence.get(source_id)
+            if source is None:
+                errors.append(f"question {question.get('id', '')} cites unknown evidence {source_id}")
+                continue
+            if source.get("public") is not True:
+                errors.append(f"question {question.get('id', '')} must cite public evidence only")
+            if source.get("status") != "fresh":
+                errors.append(f"question {question.get('id', '')} must cite fresh evidence")
+            if not str(source.get("url", "")).startswith(("https://www.portland.gov/", "https://devhub.portlandoregon.gov/")):
+                errors.append(f"question {question.get('id', '')} must cite PP&D or public DevHub guidance")
+        redaction = question.get("redaction", {})
+        if not isinstance(redaction, dict):
+            errors.append(f"question {question.get('id', '')} must include redaction metadata")
+            redaction = {}
+        if redaction.get("containsPrivateDevHubState") is not False:
+            errors.append(f"question {question.get('id', '')} must not contain private DevHub state")
+        if redaction.get("privateValues") != ["[REDACTED_PROJECT_VALUE]"]:
+            errors.append(f"question {question.get('id', '')} must use redacted placeholder values only")
+        if question.get("actionClassification") not in SAFE_DEFAULT_ACTIONS:
+            errors.append(f"question {question.get('id', '')} must be non-consequential")
+
+    fixture_text = "\n".join(_walk_strings(plan)).lower()
+    for marker in PRIVATE_MARKERS:
+        if marker in fixture_text:
+            errors.append(f"safe response plan contains private marker {marker}")
+    for action_word in CONSEQUENTIAL_ACTION_WORDS:
+        if action_word in fixture_text:
+            errors.append(f"safe response plan contains consequential action word {action_word}")
+    return errors
+
+
+def _validate_blocked_plans(data: dict[str, Any]) -> list[str]:
+    errors: list[str] = []
+    blocked_plans = data.get("blockedResponsePlans", [])
+    if not isinstance(blocked_plans, list):
+        return ["blockedResponsePlans must be a list"]
+    seen_reasons: set[str] = set()
+    for blocked in blocked_plans:
+        if not isinstance(blocked, dict):
+            errors.append("each blocked plan must be an object")
+            continue
+        plan_id = str(blocked.get("planId", ""))
+        reason = blocked.get("blockedReason")
+        seen_reasons.add(str(reason))
+        if blocked.get("status") != "blocked":
+            errors.append(f"blocked plan {plan_id} must have blocked status")
+        if reason not in BLOCKED_REASONS:
+            errors.append(f"blocked plan {plan_id} has unexpected blocked reason {reason}")
+        if blocked.get("mayAskUser") is not False:
+            errors.append(f"blocked plan {plan_id} must not ask the user")
+        if blocked.get("defaultActionClassification") not in SAFE_DEFAULT_ACTIONS:
+            errors.append(f"blocked plan {plan_id} must keep a non-consequential default")
+        if reason == "stale_evidence" and not blocked.get("staleEvidenceIds"):
+            errors.append(f"blocked plan {plan_id} must identify stale evidence")
+        if reason == "conflicting_evidence" and not blocked.get("conflictSet"):
+            errors.append(f"blocked plan {plan_id} must identify conflicting evidence")
+        if reason == "uncited_question" and blocked.get("sourceEvidenceIds"):
+            errors.append(f"blocked plan {plan_id} must not pretend an uncited question is cited")
+        if reason == "private_devhub_state" and blocked.get("privateDevHubStateReferenced") is not True:
+            errors.append(f"blocked plan {plan_id} must identify private DevHub state use")
+    missing_reasons = BLOCKED_REASONS - seen_reasons
+    if missing_reasons:
+        errors.append(f"blocked plans missing reasons: {sorted(missing_reasons)}")
+    return errors
+
+
+def validate_fixture(data: dict[str, Any]) -> list[str]:
+    return _validate_safe_plan(data) + _validate_blocked_plans(data)
+
+
+class MissingInformationResponsePlanFixtureTest(unittest.TestCase):
+    def test_fixture_is_source_linked_narrow_redacted_and_safe_by_default(self) -> None:
+        data = _load_fixture()
+        self.assertEqual([], validate_fixture(data))
+
+    def test_safe_plan_rejects_uncited_question_mutation(self) -> None:
+        data = _load_fixture()
+        data["responsePlan"]["questions"][0]["sourceEvidenceIds"] = []
+        self.assertIn("question ask-property-identifier must be source-linked", validate_fixture(data))
+
+    def test_safe_plan_rejects_broad_question_mutation(self) -> None:
+        data = _load_fixture()
+        data["responsePlan"]["questions"][0]["requestedFactIds"].append("project_scope")
+        self.assertIn("question ask-property-identifier must ask for exactly one missing fact", validate_fixture(data))
+
+    def test_safe_plan_rejects_unredacted_value_mutation(self) -> None:
+        data = _load_fixture()
+        data["responsePlan"]["questions"][0]["redaction"]["privateValues"] = ["123 Example St"]
+        self.assertIn("question ask-property-identifier must use redacted placeholder values only", validate_fixture(data))
+
+    def test_safe_plan_rejects_consequential_default_mutation(self) -> None:
+        data = _load_fixture()
+        data["responsePlan"]["defaultActionClassification"] = "submit_application"
+        self.assertIn("safe response plan must be non-consequential by default", validate_fixture(data))
+
+    def test_blocked_plans_must_remain_blocked(self) -> None:
+        fixture = _load_fixture()
+        for index, blocked in enumerate(fixture["blockedResponsePlans"]):
+            data = copy.deepcopy(fixture)
+            data["blockedResponsePlans"][index]["status"] = "ready_to_ask"
+            expected = f"blocked plan {blocked['planId']} must have blocked status"
+            self.assertIn(expected, validate_fixture(data))
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -136,10 +136,10 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 - [x] Task checkbox-105: Add validation for the public source freshness manifest proving stale or missing timestamps, uncited source URLs, absent hash/cache placeholders, raw response bodies, and private DevHub artifacts are rejected before any live crawl is planned.
 - [x] Task checkbox-106: Add a fixture-only requirement-to-process dependency graph for one public PP&D permit process that links source evidence, extracted obligations, required documents, user facts, stop gates, and reversible draft-only planning nodes. Keep all values redacted and citation-backed.
 - [x] Task checkbox-107: Add validation for requirement-to-process dependency graph fixtures proving every edge has a known source node, every consequential or financial node is blocked by default, and missing citations or private values fail closed.
-- [~] Task checkbox-108: Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output.
-- [ ] Task checkbox-109: Add validation for public crawl frontier checkpoint fixtures proving external domains, live authenticated URLs, missing skip reasons, raw crawl bodies, and processor handoffs without provenance are rejected.
-- [ ] Task checkbox-110: Add a fixture-only agent missing-information response plan that turns unresolved PP&D facts, required document placeholders, stale evidence flags, and default stop gates into user-facing questions without suggesting submission, upload, payment, certification, cancellation, or inspection scheduling.
-- [ ] Task checkbox-111: Add validation for missing-information response plan fixtures proving questions are source-linked, narrow, redacted, non-consequential by default, and blocked when evidence is stale, conflicting, uncited, or tied to private DevHub state.
+- [!] Task checkbox-108: Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output.
+- [x] Task checkbox-109: Add validation for public crawl frontier checkpoint fixtures proving external domains, live authenticated URLs, missing skip reasons, raw crawl bodies, and processor handoffs without provenance are rejected.
+- [x] Task checkbox-110: Add a fixture-only agent missing-information response plan that turns unresolved PP&D facts, required document placeholders, stale evidence flags, and default stop gates into user-facing questions without suggesting submission, upload, payment, certification, cancellation, or inspection scheduling.
+- [x] Task checkbox-111: Add validation for missing-information response plan fixtures proving questions are source-linked, narrow, redacted, non-consequential by default, and blocked when evidence is stale, conflicting, uncited, or tied to private DevHub state.
 
 
 ## Generated Status
@@ -155,11 +155,14 @@ Last updated: 2026-05-02T19:43:25.481251Z
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-02T20:13:27.316951Z
+Last updated: 2026-05-02T20:33:57.971093Z
 
-- Latest target: `Task checkbox-113: Task checkbox-108: Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output.`
-- Latest result: `syntax_preflight`
-- Latest summary: Add a syntax-valid fixture-only public crawl frontier checkpoint contract, fixture, and validation test.
-- Counts: `{"blocked": 0, "complete": 112, "in_progress": 0, "needed": 4}`
+- Latest target: `Task checkbox-116: Task checkbox-111: Add validation for missing-information response plan fixtures proving questions are source-linked, narrow, redacted, non-consequential by default, and blocked when evidence is stale, conflicting, uncited, or tied to private DevHub state.`
+- Latest result: `accepted`
+- Latest summary: Add fixture-only validation for missing-information response plans, including source linkage, narrow redacted questions, safe defaults, and blocked evidence failure modes.
+- Counts: `{"blocked": 1, "complete": 115, "in_progress": 0, "needed": 0}`
 
 <!-- ppd-daemon-task-board:end -->
+## Built-In Supervisor Repair Notes
+
+- Parked repeated syntax-preflight loop for `Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output.` so the daemon can continue with independent selectable work. The task should be resumed only after a narrow syntax-valid fixture/test repair is available.

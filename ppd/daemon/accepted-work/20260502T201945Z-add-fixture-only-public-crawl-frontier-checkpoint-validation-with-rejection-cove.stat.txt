@@ -1,0 +1,4 @@
+ppd/contracts/frontier_checkpoint.py
+ppd/tests/fixtures/crawl_frontier_checkpoint/public_frontier_checkpoint.valid.json
+ppd/tests/fixtures/crawl_frontier_checkpoint/public_frontier_checkpoint.rejection_cases.json
+ppd/tests/test_frontier_checkpoint_validation.py

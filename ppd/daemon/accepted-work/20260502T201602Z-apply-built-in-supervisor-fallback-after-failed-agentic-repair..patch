@@ -1,0 +1,40 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,17 +1,20 @@
+ {
+-  "createdAt": "2026-05-02T20:09:25.789248Z",
++  "createdAt": "2026-05-02T20:16:01.128774Z",
+   "decision": {
+     "action": "repair_daemon_programming",
+-    "reason": "2 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
++    "reason": "3 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
+     "severity": "warning"
+   },
+   "failedAgenticRepair": {
+-    "changedFiles": [],
++    "changedFiles": [
++      "ppd/daemon/syntax_preflight.py",
++      "ppd/tests/test_syntax_preflight_recurrent_parse_failures.py"
++    ],
+     "errors": [
+-      "LLM response did not contain a JSON object."
++      "Validation failed; file edits were rolled back."
+     ],
+-    "failureKind": "parse",
+-    "summary": "",
++    "failureKind": "validation",
++    "summary": "Tighten PP&D syntax preflight with targeted cross-language Python diagnostics and small-retry guidance.",
+     "validationResults": [
+       {
+         "command": [
+@@ -34,8 +37,8 @@
+           "-p",
+           "test_*.py"
+         ],
+-        "returncode": 0,
+-        "stderr": ".........................................................................................................................................................................................................................................................................................................ss..............sss................................................................................................................................................................................................................................ ---------------------------------------------------------------------- Ran 540 tests in 0.095s OK (skipped=5)",
++        "returncode": 1,
++        "stderr": ".........................................................................................................................................................................................................................................................................................................ss..............sss.........................................................................................................................................................................................F......................................... ====================================================================== FAIL: test_flags_typescript_fragment_inside_python_control_flow (test_syntax_preflight_recurrent_parse_failures.SyntaxPreflightRecurrentParseFailuresTest.test_flags_typescript_fragment_inside_python_control_flow) ---------------------------------------------------------------------- T...",
+         "stdout": ""
+       },
+       {

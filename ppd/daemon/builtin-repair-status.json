@@ -1,17 +1,19 @@
 {
-  "createdAt": "2026-05-02T20:09:25.789248Z",
+  "createdAt": "2026-05-02T20:32:07.782563Z",
   "decision": {
     "action": "repair_daemon_programming",
-    "reason": "2 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
+    "reason": "3 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
     "severity": "warning"
   },
   "failedAgenticRepair": {
-    "changedFiles": [],
-    "errors": [
-      "LLM response did not contain a JSON object."
+    "changedFiles": [
+      "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
     ],
-    "failureKind": "parse",
-    "summary": "",
+    "errors": [
+      "Validation failed; file edits were rolled back."
+    ],
+    "failureKind": "validation",
+    "summary": "Add a supervisor repair guide that detects recurrent syntax preflight failures and forces the daemon toward smaller, syntax-first worker proposals.",
     "validationResults": [
       {
         "command": [
@@ -34,8 +36,8 @@
           "-p",
           "test_*.py"
         ],
-        "returncode": 0,
-        "stderr": ".........................................................................................................................................................................................................................................................................................................ss..............sss................................................................................................................................................................................................................................ ---------------------------------------------------------------------- Ran 540 tests in 0.095s OK (skipped=5)",
+        "returncode": 1,
+        "stderr": ".........................................................................................................................................................................................................................................................................................................ss..............sss......................................................................................................................................................................................FFF....................................... ====================================================================== FAIL: test_guide_keeps_repair_separate_from_domain_implementation (test_supervisor_repair_guide.SupervisorRepairGuideTest.test_guide_keeps_repair_separate_from_domain_implementation) ---------------------------------------------------------------------- Traceback (most recent call last):...",
         "stdout": ""
       },
       {
@@ -65,5 +67,9 @@
     "no browser traces or screenshots",
     "no consequential DevHub actions"
   ],
-  "schemaVersion": 1
+  "schemaVersion": 1,
+  "taskBoardRepair": {
+    "parkedRepeatedSyntaxLoopTasks": [],
+    "taskBoardUpdated": false
+  }
 }

@@ -1,0 +1,26 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,5 +1,5 @@
+ {
+-  "createdAt": "2026-05-02T20:29:31.950774Z",
++  "createdAt": "2026-05-02T20:32:07.782563Z",
+   "decision": {
+     "action": "repair_daemon_programming",
+     "reason": "3 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
+@@ -7,14 +7,13 @@
+   },
+   "failedAgenticRepair": {
+     "changedFiles": [
+-      "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md",
+-      "ppd/daemon/syntax_preflight.py"
++      "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+     ],
+     "errors": [
+       "Validation failed; file edits were rolled back."
+     ],
+     "failureKind": "validation",
+-    "summary": "Tighten PP&D syntax-preflight recovery guidance for repeated parser rollbacks.",
++    "summary": "Add a supervisor repair guide that detects recurrent syntax preflight failures and forces the daemon toward smaller, syntax-first worker proposals.",
+     "validationResults": [
+       {
+         "command": [

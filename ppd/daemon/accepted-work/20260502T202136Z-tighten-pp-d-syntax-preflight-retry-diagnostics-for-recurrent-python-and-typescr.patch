@@ -1,0 +1,96 @@
+--- a/ppd/daemon/syntax_preflight.py
++++ b/ppd/daemon/syntax_preflight.py
+@@ -46,6 +46,17 @@
+ RETURN_ANNOTATION_FRAGMENT_RE = re.compile(
+     r"\breturn\s+[^#\n]+\s+(list|dict|tuple|set)\s*\[[^\]]+\]"
+ )
++BARE_TYPE_FRAGMENT_RE = re.compile(
++    r"\b(if|elif|while|assert|return)\b[^:#\n]*\s+[A-Z_a-z][A-Za-z0-9_\.]*\s+(list|dict|tuple|set)\s*\["
++)
++TYPESCRIPT_PARSE_ERROR_RE = re.compile(r"\bTS(1005|1109|1128)\b")
++
++
++SYNTAX_REPAIR_GUIDANCE = (
++    "Next worker attempt should be smaller: replace only the syntactically failing file plus its narrow fixture/test if needed; "
++    "run py_compile for each changed Python file or strict tsc for each changed TypeScript file mentally before returning JSON; "
++    "do not add new contracts, fixtures, and broad tests in the same proposal until the parser-clean core file is valid."
++)
+ 
+ 
+ def changed_syntax_paths(changed_files: Iterable[str]) -> tuple[tuple[str, ...], tuple[str, ...]]:
+@@ -85,7 +96,8 @@
+     unittest or TypeScript validation for that cycle.
+     """
+ 
+-    results = tuple(run_changed_syntax_preflight(repo_root, changed_files, timeout=timeout))
++    changed = tuple(changed_files)
++    results = tuple(run_changed_syntax_preflight(repo_root, changed, timeout=timeout))
+     if not results or all(result.ok for result in results):
+         return ApplyFlowSyntaxPreflight(
+             ok=True,
+@@ -94,13 +106,14 @@
+             validation_results=results,
+         )
+     diagnostics = compact_syntax_diagnostics(results)
+-    message = "Syntax preflight failed; file edits were rolled back."
++    message_parts = ["Syntax preflight failed; file edits were rolled back."]
+     if diagnostics:
+-        message = f"{message} {diagnostics}"
++        message_parts.append(diagnostics)
++    message_parts.append(_syntax_retry_guidance(results, changed))
+     return ApplyFlowSyntaxPreflight(
+         ok=False,
+         failure_kind="syntax_preflight",
+-        errors=(message,),
++        errors=(" ".join(part for part in message_parts if part),),
+         validation_results=results,
+     )
+ 
+@@ -119,6 +132,38 @@
+             detail = detail[:limit].rstrip() + "..."
+         messages.append(f"{command}: {detail or 'no diagnostics'}")
+     return "; ".join(messages)
++
++
++def _syntax_retry_guidance(results: Iterable[SyntaxPreflightResult], changed_files: tuple[str, ...]) -> str:
++    """Return deterministic retry guidance for parser-only failures."""
++
++    failed_results = [result for result in results if not result.ok]
++    if not failed_results:
++        return ""
++    failed_paths = _failed_paths(failed_results)
++    guidance = SYNTAX_REPAIR_GUIDANCE
++    if len(changed_files) > 2 or len(failed_paths) > 1:
++        names = ", ".join(failed_paths) if failed_paths else "the parser-failing file"
++        return f"{guidance} Focus the next proposal on {names}."
++    detail = " ".join((result.stdout + " " + result.stderr) for result in failed_results)
++    if TYPESCRIPT_PARSE_ERROR_RE.search(detail):
++        return f"{guidance} TypeScript parser errors TS1005, TS1109, and TS1128 usually mean a malformed token, expression, or unmatched block; repair that file before changing fixtures."
++    return guidance
++
++
++def _failed_paths(results: Iterable[SyntaxPreflightResult]) -> tuple[str, ...]:
++    paths: list[str] = []
++    for result in results:
++        if result.ok:
++            continue
++        if len(result.command) >= 4 and result.command[:3] == ("python3", "-m", "py_compile"):
++            paths.append(result.command[3])
++            continue
++        command_text = " ".join(result.command)
++        for token in command_text.split():
++            if token.startswith("ppd/") and token.endswith((".ts", ".tsx")):
++                paths.append(token.strip("'\""))
++    return tuple(dict.fromkeys(paths))
+ 
+ 
+ def _run_python_preflight(repo_root: Path, python_files: tuple[str, ...]) -> list[SyntaxPreflightResult]:
+@@ -171,6 +216,8 @@
+         return True
+     if RETURN_ANNOTATION_FRAGMENT_RE.search(stripped):
+         return True
++    if BARE_TYPE_FRAGMENT_RE.search(stripped):
++        return True
+     if " or " in stripped or " and " in stripped:
+         return bool(PYTHON_TYPE_EXPR_RE.search(stripped))
+     return False

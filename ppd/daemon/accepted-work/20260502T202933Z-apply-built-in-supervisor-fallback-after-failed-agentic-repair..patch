@@ -1,0 +1,36 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,5 +1,5 @@
+ {
+-  "createdAt": "2026-05-02T20:25:37.552861Z",
++  "createdAt": "2026-05-02T20:29:31.950774Z",
+   "decision": {
+     "action": "repair_daemon_programming",
+     "reason": "3 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
+@@ -7,14 +7,14 @@
+   },
+   "failedAgenticRepair": {
+     "changedFiles": [
+-      "ppd/daemon/syntax_preflight.py",
+-      "ppd/tests/test_syntax_preflight_recurrent_parse_failures.py"
++      "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md",
++      "ppd/daemon/syntax_preflight.py"
+     ],
+     "errors": [
+       "Validation failed; file edits were rolled back."
+     ],
+     "failureKind": "validation",
+-    "summary": "Tighten PP&D syntax preflight retry guidance for repeated parser failures and add regression coverage for the recurrent malformed Python patterns.",
++    "summary": "Tighten PP&D syntax-preflight recovery guidance for repeated parser rollbacks.",
+     "validationResults": [
+       {
+         "command": [
+@@ -38,7 +38,7 @@
+           "test_*.py"
+         ],
+         "returncode": 1,
+-        "stderr": ".........................................................................................................................................................................................................................................................................................................ss..............sss.........................................................................................................................................................................................FE....................................... ====================================================================== ERROR: test_repeated_parser_failure_guidance_limits_broad_file_sets (test_syntax_preflight_recurrent_parse_failures.SyntaxPreflightRecurrentParseFailureTests.test_repeated_parser_failure_guidance_limits_broad_file_sets) ------------------------------------------------------------------...",
++        "stderr": ".........................................................................................................................................................................................................................................................................................................ss..............sss......................................................................................................................................................................................FFF....................................... ====================================================================== FAIL: test_guide_keeps_repair_separate_from_domain_implementation (test_supervisor_repair_guide.SupervisorRepairGuideTest.test_guide_keeps_repair_separate_from_domain_implementation) ---------------------------------------------------------------------- Traceback (most recent call last):...",
+         "stdout": ""
+       },
+       {

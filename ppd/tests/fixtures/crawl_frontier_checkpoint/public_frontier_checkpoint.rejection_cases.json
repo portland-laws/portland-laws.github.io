@@ -1,0 +1,92 @@
+{
+  "schema_version": 1,
+  "checkpoint_id": "public-frontier-checkpoint-rejections-001",
+  "generated_at": "2026-05-01T12:05:00Z",
+  "cases": [
+    {
+      "case_id": "external-domain-rejected",
+      "expected_reason_contains": "allowlisted",
+      "fixture": {
+        "schema_version": 1,
+        "checkpoint_id": "external-domain-rejected",
+        "generated_at": "2026-05-01T12:05:00Z",
+        "frontier": [
+          {
+            "id": "bad-external",
+            "url": "https://example.com/permit-guide",
+            "status": "planned"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "live-authenticated-devhub-url-rejected",
+      "expected_reason_contains": "authenticated DevHub",
+      "fixture": {
+        "schema_version": 1,
+        "checkpoint_id": "live-authenticated-devhub-url-rejected",
+        "generated_at": "2026-05-01T12:05:00Z",
+        "frontier": [
+          {
+            "id": "bad-auth-url",
+            "url": "https://devhub.portlandoregon.gov/account/permits",
+            "status": "planned"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "missing-skip-reason-rejected",
+      "expected_reason_contains": "skip_reason",
+      "fixture": {
+        "schema_version": 1,
+        "checkpoint_id": "missing-skip-reason-rejected",
+        "generated_at": "2026-05-01T12:05:00Z",
+        "frontier": [
+          {
+            "id": "bad-missing-skip-reason",
+            "url": "https://www.portland.gov/ppd/unsupported-file",
+            "status": "skipped"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "raw-crawl-body-rejected",
+      "expected_reason_contains": "raw crawl bodies",
+      "fixture": {
+        "schema_version": 1,
+        "checkpoint_id": "raw-crawl-body-rejected",
+        "generated_at": "2026-05-01T12:05:00Z",
+        "frontier": [
+          {
+            "id": "bad-raw-body",
+            "url": "https://www.portland.gov/ppd",
+            "status": "planned",
+            "raw_body": "raw crawl output must not be committed"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": "processor-handoff-without-provenance-rejected",
+      "expected_reason_contains": "provenance",
+      "fixture": {
+        "schema_version": 1,
+        "checkpoint_id": "processor-handoff-without-provenance-rejected",
+        "generated_at": "2026-05-01T12:05:00Z",
+        "frontier": [
+          {
+            "id": "bad-handoff",
+            "url": "https://www.portland.gov/ppd",
+            "status": "processor_handoff",
+            "processor_handoff": {
+              "processor_family": "web_archiving",
+              "manifest_only": true
+            }
+          }
+        ]
+      }
+    }
+  ]
+}

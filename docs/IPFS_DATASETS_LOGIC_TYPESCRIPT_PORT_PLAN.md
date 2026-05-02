@@ -598,7 +598,7 @@ Acceptance criteria:
 - [x] Replace Python API/CLI surfaces with TypeScript developer scripts or browser devtools.
   - [x] Initial browser-native public API facade for `logic/api.py` import-surface parity.
   - [!] Add CLI/devtools command adapter parity for `logic/cli.py`.
-- [ ] Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.
+- [!] Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.
 
 ## Full-Port Completion Definition
 
@@ -706,7 +706,7 @@ Last replenished: 2026-05-02 06:31:29 UTC
 These tasks were added automatically after the daemon found no eligible unchecked port-plan items. They are derived from the current Python logic inventory, TypeScript/WASM implementation state, accepted-work evidence, and the original browser-native parity goal.
 
 - [x] Port remaining Python logic module `logic/CEC/cec_framework.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/dcec_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/CEC/dcec_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/CEC/eng_dcec_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/advanced_inference.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/ambiguity_resolver.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-02 19:50:34 UTC
+Last updated: 2026-05-02 20:33:47 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.`
+Current target: `Task checkbox-198: Port remaining Python logic module 'logic/CEC/native/advanced_inference.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1169,11 +1169,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-191: Replace Python API/CLI surfaces with TypeScript developer scripts or browser devtools.` - complete
 - [x] `Task checkbox-192: Initial browser-native public API facade for 'logic/api.py' import-surface parity.` - complete
 - [!] `Task checkbox-193: Add CLI/devtools command adapter parity for 'logic/cli.py'.` - blocked
-- [!] `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.` - latest daemon round failed validation or preflight
+- [!] `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.` - blocked
 - [x] `Task checkbox-195: Port remaining Python logic module 'logic/CEC/cec_framework.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [ ] `Task checkbox-196: Port remaining Python logic module 'logic/CEC/dcec_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-196: Port remaining Python logic module 'logic/CEC/dcec_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-197: Port remaining Python logic module 'logic/CEC/eng_dcec_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [ ] `Task checkbox-198: Port remaining Python logic module 'logic/CEC/native/advanced_inference.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [!] `Task checkbox-198: Port remaining Python logic module 'logic/CEC/native/advanced_inference.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - latest daemon round failed validation or preflight
 - [ ] `Task checkbox-199: Port remaining Python logic module 'logic/CEC/native/ambiguity_resolver.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-200: Port remaining Python logic module 'logic/CEC/native/cec_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-201: Port remaining Python logic module 'logic/CEC/native/cec_zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,17 +1430,44 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.`
+- Target: `Task checkbox-198: Port remaining Python logic module 'logic/CEC/native/advanced_inference.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `needs follow-up`
-- Summary: Add browser-native proof cache storage and IPFS/IPLD semantics
-- Impact: src/lib/logic/proofCache.ts now records deterministic IPLD metadata for cached proofs, persists entries through an optional browser storage contract, and exposes browser-native IPFS client import/export helpers that fail closed when required client methods are unavailable. src/lib/logic/proofCache.test.ts validates the new behavior through the existing Jest logic-port test harness.
+- Summary: Add browser-native advanced inference parity contract and bounded deterministic inference driver
+- Impact: The CEC advanced inference module now exposes a browser-native contract for the Python advanced_inference surface plus a deterministic bounded consequence driver that validation suites can exercise without Python, server, filesystem, subprocess, RPC, or Node-only fallbacks. Focused Jest coverage validates the contract metadata and bounded inference behavior.
 - Errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/proofCache.ts(80,37): error TS1109: Expression expected.
-../../..src/lib/logic/proofCache.ts(251,35): error TS1005: ')' expected.
-../../..src/lib/logic/proofCache.ts(261,7): error TS1005: 'try' expected.
-../../..src/lib/logic/proofCache.ts(266,3): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/proofCache.ts(348,33): error TS1005: ';' expected.
-../../..src/lib/logic/proofCache.ts(348,34): error TS1109: Expression expected.
+../../..src/lib/logic/cec/advancedInference.ts(321,46): error TS1005: ';' expected.
+../../..src/lib/logic/cec/advancedInference.ts(325,5): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/cec/advancedInference.ts(329,3): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/cec/advancedInference.ts(332,1): error TS1128: Declaration or statement expected.
+
+Replacement diagnostic context:
+src/lib/logic/cec/advancedInference.ts:321:46 TS1005: ';' expected.
+  319:   const appliedRules: string[] = [];
+  320: 
+> 321:   for (let round = 0; round = maxConsequences) {
+  322:           return buildInferenceResult(formulas.length, consequences, consequenceStrings, appliedRules, round + 1, false);
+  323:         }
+
+src/lib/logic/cec/advancedInference.ts:325:5 TS1128: Declaration or statement expected.
+  323:         }
+  324:       }
+> 325:     }
+  326:     if (!changed) {
+  327:       return buildInferenceResult(formulas.length, consequences, consequenceStrings, appliedRules, round + 1, true);
+
+src/lib/logic/cec/advancedInference.ts:329:3 TS1128: Declaration or statement expected.
+  327:       return buildInferenceResult(formulas.length, consequences, consequenceStrings, appliedRules, round + 1, true);
+  328:     }
+> 329:   }
+  330: 
+  331:   return buildInferenceResult(formulas.length, consequences, consequenceStrings, appliedRules, maxRounds, false);
+
+src/lib/logic/cec/advancedInference.ts:332:1 TS1128: Declaration or statement expected.
+  330: 
+  331:   return buildInferenceResult(formulas.length, consequences, consequenceStrings, appliedRules, maxRounds, false);
+> 332: }
+  333: 
+  334: export function validateDcecAdvancedInferencePortContract(
 - Failure kind: `preflight`
 
 ### Blocked Backlog
@@ -1490,6 +1517,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
   - Failure kinds: `{"typescript_quality": 3}`
   - Latest failure kind: `typescript_quality`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/cliCommandAdapter.ts(125,61): error TS1005: ';' expected. ../../..src/lib/logic/cliCo...
+- `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.`
+  - Failures since success: `3`
+  - Failure kinds: `{"typescript_quality": 3}`
+  - Latest failure kind: `typescript_quality`
+  - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/proofCache.ts(50,17): error TS1005: ';' expected. ../../..src/lib/logic/proofCache.ts...
 
 ### Required Daemon Behavior
 

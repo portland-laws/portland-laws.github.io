@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import subprocess
 import sys
 import time
@@ -57,6 +58,8 @@ MALFORMED_PYTHON_PROPOSAL_MARKERS = (
     "confidence 1.0",
     "return 0.0 list[str]",
 )
+
+TASK_TITLE_RE = re.compile(r"Task checkbox-\d+:\s*")
 
 
 @dataclass(frozen=True)
@@ -230,6 +233,62 @@ def repeated_malformed_syntax_count(
 
 def should_blocked_tasks_interrupt(blocked_count: int, selectable_count: int, threshold: int) -> bool:
     return blocked_count >= threshold and selectable_count == 0
+
+
+def title_from_task_label(label: str) -> str:
+    """Return the innermost checkbox task title from a daemon target label."""
+
+    text = str(label or "").strip()
+    while True:
+        replaced = TASK_TITLE_RE.sub("", text, count=1).strip()
+        if replaced == text:
+            return text
+        text = replaced
+
+
+def builtin_repair_task_board(markdown: str, rows: list[dict[str, Any]]) -> tuple[str, tuple[str, ...]]:
+    """Park a repeated syntax-loop task so the daemon can advance autonomously."""
+
+    syntax_failures = []
+    for row in reversed(rows):
+        if row.get("applied") and row.get("validation_passed") and not row.get("errors"):
+            break
+        if not is_syntax_or_compile_failure(row):
+            break
+        syntax_failures.append(row)
+    if len(syntax_failures) < 2:
+        return markdown, ()
+
+    target_title = title_from_task_label(str(syntax_failures[0].get("target_task") or ""))
+    if not target_title:
+        return markdown, ()
+
+    changed = False
+    repaired_lines: list[str] = []
+    for line in markdown.splitlines(keepends=True):
+        match = None
+        stripped = line.rstrip("\n")
+        if target_title in stripped:
+            match = stripped
+        if match and "- [~]" in stripped:
+            line = line.replace("- [~]", "- [!]", 1)
+            changed = True
+        elif match and "- [ ]" in stripped:
+            line = line.replace("- [ ]", "- [!]", 1)
+            changed = True
+        repaired_lines.append(line)
+
+    if not changed:
+        return markdown, ()
+
+    note = (
+        "\n"
+        "## Built-In Supervisor Repair Notes\n\n"
+        f"- Parked repeated syntax-preflight loop for `{target_title}` so the daemon can continue with independent selectable work. "
+        "The task should be resumed only after a narrow syntax-valid fixture/test repair is available.\n"
+    )
+    repaired = "".join(repaired_lines).rstrip() + note
+    return repaired + "\n", (target_title,)
 
 
 def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> SupervisorDecision:
@@ -532,20 +591,31 @@ def invoke_builtin_repair(
 ) -> Proposal:
     """Apply deterministic supervisor fallback when Codex self-heal fails."""
 
+    rows = read_result_log(config.resolve(config.result_log))
+    board_path = config.resolve(config.task_board)
+    board = read_text(board_path) if board_path.exists() else ""
+    repaired_board, parked_titles = builtin_repair_task_board(board, rows)
     payload = build_builtin_repair_status_payload(decision, failed_proposal)
+    payload["taskBoardRepair"] = {
+        "parkedRepeatedSyntaxLoopTasks": list(parked_titles),
+        "taskBoardUpdated": repaired_board != board,
+    }
+    files = [
+        {
+            "path": "ppd/daemon/builtin-repair-status.json",
+            "content": json.dumps(payload, indent=2, sort_keys=True) + "\n",
+        }
+    ]
+    if repaired_board != board:
+        files.append({"path": "ppd/daemon/task-board.md", "content": repaired_board})
     proposal = Proposal(
         summary="Apply built-in supervisor fallback after failed agentic repair.",
         impact=(
             "The supervisor now records the failed self-heal diagnostics, validates the daemon "
-            "without accepting the invalid patch, and can restart the worker on the explicit "
-            "llm_router path instead of waiting for manual intervention."
+            "without accepting the invalid patch, parks repeated syntax-loop tasks when needed, "
+            "and can restart the worker on the explicit llm_router path instead of waiting for manual intervention."
         ),
-        files=[
-            {
-                "path": "ppd/daemon/builtin-repair-status.json",
-                "content": json.dumps(payload, indent=2, sort_keys=True) + "\n",
-            }
-        ],
+        files=files,
     )
     proposal.target_task = f"Built-in supervisor fallback: {decision.reason}"
     proposal.dry_run = not config.apply
@@ -699,6 +769,27 @@ def self_test(repo_root: Path) -> int:
         errors.append("built-in repair payload must preserve llm_router backend")
     if "failedAgenticRepair" not in payload:
         errors.append("built-in repair payload missing failed repair diagnostics")
+    nested_title = title_from_task_label("Task checkbox-113: Task checkbox-108: Add frontier checkpoint.")
+    if nested_title != "Add frontier checkpoint.":
+        errors.append(f"nested task title parsing failed: {nested_title}")
+    loop_board = "- [~] Task checkbox-108: Add frontier checkpoint.\n- [ ] Task checkbox-109: Next task.\n"
+    loop_rows = [
+        {
+            "target_task": "Task checkbox-113: Task checkbox-108: Add frontier checkpoint.",
+            "failure_kind": "syntax_preflight",
+            "validation_results": [{"stderr": "SyntaxError: invalid syntax"}],
+        },
+        {
+            "target_task": "Task checkbox-113: Task checkbox-108: Add frontier checkpoint.",
+            "failure_kind": "syntax_preflight",
+            "validation_results": [{"stderr": "SyntaxError: invalid syntax"}],
+        },
+    ]
+    repaired_board, parked = builtin_repair_task_board(loop_board, loop_rows)
+    if "- [!] Task checkbox-108: Add frontier checkpoint." not in repaired_board:
+        errors.append("built-in board repair did not park repeated syntax-loop task")
+    if parked != ("Add frontier checkpoint.",):
+        errors.append("built-in board repair did not report parked task title")
     non_syntax_failure = {
         "failure_kind": "validation",
         "validation_results": [{"command": ["python3", "-m", "unittest"], "returncode": 1, "stderr": "AssertionError"}],

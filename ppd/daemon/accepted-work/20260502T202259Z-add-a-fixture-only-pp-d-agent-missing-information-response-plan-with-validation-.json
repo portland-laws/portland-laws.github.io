@@ -1,0 +1,48 @@
+{
+  "changed_files": [
+    "ppd/logic/missing_information_response_plan.py",
+    "ppd/tests/fixtures/agent_missing_information_response_plan.json",
+    "ppd/tests/test_agent_missing_information_response_plan.py"
+  ],
+  "created_at": "2026-05-02T20:22:59.448393Z",
+  "impact": "This advances the PP&D agent loop by converting incomplete process state into safe user-facing questions while proving fixtures do not suggest submission, upload, payment, certification, cancellation, or inspection scheduling.",
+  "summary": "Add a fixture-only PP&D agent missing-information response plan with validation for unresolved facts, document placeholders, stale evidence, and stop gates.",
+  "target_task": "Task checkbox-115: Task checkbox-110: Add a fixture-only agent missing-information response plan that turns unresolved PP&D facts, required document placeholders, stale evidence flags, and default stop gates into user-facing questions without suggesting submission, upload, payment, certification, cancellation, or inspection scheduling.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 116 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".........................................................................................................................................................................................................................................................................................................ss..............sss................................................................................................................................................................................................................................ ---------------------------------------------------------------------- Ran 540 tests in 0.095s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

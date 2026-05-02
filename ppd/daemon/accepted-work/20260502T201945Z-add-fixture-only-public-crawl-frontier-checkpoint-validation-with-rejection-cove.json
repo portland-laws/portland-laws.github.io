@@ -1,0 +1,49 @@
+{
+  "changed_files": [
+    "ppd/contracts/frontier_checkpoint.py",
+    "ppd/tests/fixtures/crawl_frontier_checkpoint/public_frontier_checkpoint.valid.json",
+    "ppd/tests/fixtures/crawl_frontier_checkpoint/public_frontier_checkpoint.rejection_cases.json",
+    "ppd/tests/test_frontier_checkpoint_validation.py"
+  ],
+  "created_at": "2026-05-02T20:19:45.525774Z",
+  "impact": "This advances the PP&D fixture-first crawl plan by proving checkpoint data fails closed before any live crawl, authenticated DevHub access, raw body persistence, or processor invocation without provenance.",
+  "summary": "Add fixture-only public crawl frontier checkpoint validation with rejection coverage for unsafe crawl and handoff records.",
+  "target_task": "Task checkbox-114: Task checkbox-109: Add validation for public crawl frontier checkpoint fixtures proving external domains, live authenticated URLs, missing skip reasons, raw crawl bodies, and processor handoffs without provenance are rejected.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 116 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".........................................................................................................................................................................................................................................................................................................ss..............sss................................................................................................................................................................................................................................ ---------------------------------------------------------------------- Ran 540 tests in 0.094s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

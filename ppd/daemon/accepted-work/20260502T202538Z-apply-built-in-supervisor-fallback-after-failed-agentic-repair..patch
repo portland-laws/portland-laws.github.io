@@ -1,0 +1,78 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,18 +1,57 @@
+ {
+-  "createdAt": "2026-05-02T20:17:55.310597Z",
++  "createdAt": "2026-05-02T20:25:37.552861Z",
+   "decision": {
+     "action": "repair_daemon_programming",
+-    "reason": "real repeated syntax-preflight loop on current daemon target",
++    "reason": "3 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
+     "severity": "warning"
+   },
+   "failedAgenticRepair": {
+-    "changedFiles": [],
++    "changedFiles": [
++      "ppd/daemon/syntax_preflight.py",
++      "ppd/tests/test_syntax_preflight_recurrent_parse_failures.py"
++    ],
+     "errors": [
+-      "agentic repair failed validation; exercising deterministic fallback"
++      "Validation failed; file edits were rolled back."
+     ],
+     "failureKind": "validation",
+-    "summary": "Synthetic failed agentic repair for exercising built-in task-board parking.",
+-    "validationResults": []
++    "summary": "Tighten PP&D syntax preflight retry guidance for repeated parser failures and add regression coverage for the recurrent malformed Python patterns.",
++    "validationResults": [
++      {
++        "command": [
++          "python3",
++          "ppd/daemon/ppd_daemon.py",
++          "--self-test"
++        ],
++        "returncode": 0,
++        "stderr": "",
++        "stdout": "{ \"ok\": true, \"task_count\": 116 }"
++      },
++      {
++        "command": [
++          "python3",
++          "-m",
++          "unittest",
++          "discover",
++          "-s",
++          "ppd/tests",
++          "-p",
++          "test_*.py"
++        ],
++        "returncode": 1,
++        "stderr": ".........................................................................................................................................................................................................................................................................................................ss..............sss.........................................................................................................................................................................................FE....................................... ====================================================================== ERROR: test_repeated_parser_failure_guidance_limits_broad_file_sets (test_syntax_preflight_recurrent_parse_failures.SyntaxPreflightRecurrentParseFailureTests.test_repeated_parser_failure_guidance_limits_broad_file_sets) ------------------------------------------------------------------...",
++        "stdout": ""
++      },
++      {
++        "command": [
++          "bash",
++          "-lc",
++          "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
++        ],
++        "returncode": 0,
++        "stderr": "",
++        "stdout": ""
++      }
++    ]
+   },
+   "fallbackActions": [
+     "preserve failed repair diagnostics without accepting the invalid patch",
+@@ -31,9 +70,7 @@
+   ],
+   "schemaVersion": 1,
+   "taskBoardRepair": {
+-    "parkedRepeatedSyntaxLoopTasks": [
+-      "Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Do not perform network access or write crawl output."
+-    ],
+-    "taskBoardUpdated": true
++    "parkedRepeatedSyntaxLoopTasks": [],
++    "taskBoardUpdated": false
+   }
+ }

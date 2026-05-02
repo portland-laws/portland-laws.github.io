@@ -1,0 +1,72 @@
+{
+  "schemaVersion": 1,
+  "planId": "fixture-agent-missing-information-response-plan",
+  "mode": "fixture_only",
+  "publicEvidence": [
+    {
+      "id": "evidence_devhub_public_guidance",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub",
+      "title": "DevHub public guidance fixture",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "id": "evidence_single_pdf_process",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+      "title": "Single PDF process public guidance fixture",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    }
+  ],
+  "unresolvedFacts": [
+    {
+      "id": "property_identifier",
+      "label": "property identifier",
+      "evidenceIds": ["evidence_devhub_public_guidance"]
+    },
+    {
+      "id": "project_scope",
+      "label": "project scope",
+      "evidenceIds": ["evidence_devhub_public_guidance"]
+    }
+  ],
+  "requiredDocumentPlaceholders": [
+    {
+      "id": "single_drawing_plan_pdf",
+      "label": "single drawing plan PDF",
+      "evidenceIds": ["evidence_single_pdf_process"]
+    },
+    {
+      "id": "supporting_documents_pdf",
+      "label": "supporting documents PDF",
+      "evidenceIds": ["evidence_single_pdf_process"]
+    }
+  ],
+  "staleEvidenceFlags": [
+    {
+      "id": "devhub_faq_age_check",
+      "label": "DevHub FAQ",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "evidenceIds": ["evidence_devhub_public_guidance"]
+    }
+  ],
+  "defaultStopGates": [
+    {
+      "id": "official_action_pause",
+      "label": "official action",
+      "defaultState": "pause",
+      "evidenceIds": ["evidence_devhub_public_guidance"]
+    }
+  ],
+  "prohibitedAgentSuggestions": [
+    "submit",
+    "submission",
+    "upload",
+    "pay",
+    "payment",
+    "certify",
+    "certification",
+    "cancel",
+    "cancellation",
+    "schedule inspection",
+    "inspection scheduling"
+  ]
+}

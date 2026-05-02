@@ -1,0 +1,141 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "missing-information-response-plan-source-linked-redacted-blocked",
+  "evaluationDate": "2026-05-02",
+  "knownRequirementIds": [
+    "req-property-identifier-before-devhub-draft"
+  ],
+  "sourceEvidence": [
+    {
+      "id": "src-ppd-devhub-apply-guidance-2026-05-01",
+      "url": "https://www.portland.gov/ppd/permits/apply-online-devhub",
+      "title": "Apply online using Development Hub PDX",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "status": "fresh",
+      "public": true,
+      "anchor": "#before-you-apply",
+      "quote": "Applicants use public PP&D guidance to prepare project and property information before using DevHub.",
+      "supportsRequirementIds": [
+        "req-property-identifier-before-devhub-draft"
+      ]
+    },
+    {
+      "id": "src-ppd-devhub-stale-guidance-2025-01-01",
+      "url": "https://www.portland.gov/ppd/permits/apply-online-devhub",
+      "title": "Apply online using Development Hub PDX",
+      "capturedAt": "2025-01-01T00:00:00Z",
+      "status": "stale",
+      "public": true,
+      "anchor": "#outdated-fixture-anchor",
+      "quote": "This stale fixture record is intentionally blocked and must not produce a user question.",
+      "supportsRequirementIds": [
+        "req-property-identifier-before-devhub-draft"
+      ]
+    },
+    {
+      "id": "src-ppd-devhub-conflict-a-2026-05-01",
+      "url": "https://www.portland.gov/ppd/devhub/faq",
+      "title": "Development Hub PDX FAQ",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "status": "fresh",
+      "public": true,
+      "anchor": "#synthetic-conflict-a",
+      "quote": "Synthetic fixture statement A conflicts with another public fixture statement.",
+      "supportsRequirementIds": [
+        "req-property-identifier-before-devhub-draft"
+      ]
+    },
+    {
+      "id": "src-ppd-devhub-conflict-b-2026-05-01",
+      "url": "https://www.portland.gov/ppd/devhub/faq",
+      "title": "Development Hub PDX FAQ",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "status": "fresh",
+      "public": true,
+      "anchor": "#synthetic-conflict-b",
+      "quote": "Synthetic fixture statement B conflicts with statement A and must block the plan.",
+      "supportsRequirementIds": [
+        "req-property-identifier-before-devhub-draft"
+      ]
+    }
+  ],
+  "responsePlan": {
+    "planId": "response-plan-property-identifier",
+    "status": "ready_to_ask",
+    "defaultActionClassification": "read_only_clarification",
+    "exactUserConfirmation": false,
+    "questions": [
+      {
+        "id": "ask-property-identifier",
+        "prompt": "What is the PP&D public property identifier for this project?",
+        "requestedFactIds": [
+          "property_identifier"
+        ],
+        "linkedRequirementId": "req-property-identifier-before-devhub-draft",
+        "sourceEvidenceIds": [
+          "src-ppd-devhub-apply-guidance-2026-05-01"
+        ],
+        "actionClassification": "ask_user_for_missing_fact",
+        "redaction": {
+          "containsPrivateDevHubState": false,
+          "privateValues": [
+            "[REDACTED_PROJECT_VALUE]"
+          ]
+        }
+      }
+    ]
+  },
+  "blockedResponsePlans": [
+    {
+      "planId": "blocked-stale-evidence",
+      "status": "blocked",
+      "blockedReason": "stale_evidence",
+      "mayAskUser": false,
+      "defaultActionClassification": "read_only_clarification",
+      "linkedRequirementId": "req-property-identifier-before-devhub-draft",
+      "staleEvidenceIds": [
+        "src-ppd-devhub-stale-guidance-2025-01-01"
+      ],
+      "stopMessage": "Do not ask a missing-information question until fresh public evidence is available."
+    },
+    {
+      "planId": "blocked-conflicting-evidence",
+      "status": "blocked",
+      "blockedReason": "conflicting_evidence",
+      "mayAskUser": false,
+      "defaultActionClassification": "read_only_clarification",
+      "linkedRequirementId": "req-property-identifier-before-devhub-draft",
+      "conflictSet": [
+        "src-ppd-devhub-conflict-a-2026-05-01",
+        "src-ppd-devhub-conflict-b-2026-05-01"
+      ],
+      "stopMessage": "Do not ask a missing-information question when public evidence conflicts."
+    },
+    {
+      "planId": "blocked-uncited-question",
+      "status": "blocked",
+      "blockedReason": "uncited_question",
+      "mayAskUser": false,
+      "defaultActionClassification": "read_only_clarification",
+      "linkedRequirementId": "req-property-identifier-before-devhub-draft",
+      "sourceEvidenceIds": [],
+      "stopMessage": "Do not ask a missing-information question without a cited public source."
+    },
+    {
+      "planId": "blocked-private-devhub-state",
+      "status": "blocked",
+      "blockedReason": "private_devhub_state",
+      "mayAskUser": false,
+      "defaultActionClassification": "read_only_clarification",
+      "linkedRequirementId": "req-property-identifier-before-devhub-draft",
+      "privateDevHubStateReferenced": true,
+      "redaction": {
+        "containsPrivateDevHubState": true,
+        "privateValues": [
+          "[REDACTED_PROJECT_VALUE]"
+        ]
+      },
+      "stopMessage": "Do not derive missing-information questions from private DevHub account state in committed fixtures."
+    }
+  ]
+}
