@@ -1,0 +1,105 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "devhub-draft-page-form-state-synthetic-redacted-v1",
+  "source": {
+    "kind": "synthetic_redacted_fixture",
+    "capturedFromLiveSession": false,
+    "browserLaunched": false,
+    "containsPrivateAuthState": false,
+    "containsScreenshot": false,
+    "containsTrace": false
+  },
+  "pageState": {
+    "stateId": "draft-building-permit-request",
+    "urlPattern": "https://devhub.portlandoregon.gov/**/draft/**",
+    "title": "Permit request draft",
+    "heading": "Building permit request",
+    "workflowStatus": "draft"
+  },
+  "fields": [
+    {
+      "fieldId": "project_description",
+      "label": "Project description",
+      "role": "textbox",
+      "required": true,
+      "selector": {
+        "strategy": "accessible_role_name",
+        "role": "textbox",
+        "name": "Project description",
+        "labelText": "Project description"
+      },
+      "value": {
+        "redacted": true,
+        "placeholder": "[REDACTED:project_description]"
+      }
+    },
+    {
+      "fieldId": "property_address",
+      "label": "Property address",
+      "role": "textbox",
+      "required": true,
+      "selector": {
+        "strategy": "label_text",
+        "role": "textbox",
+        "name": "Property address",
+        "labelText": "Property address"
+      },
+      "value": {
+        "redacted": true,
+        "placeholder": "[REDACTED:property_address]"
+      }
+    },
+    {
+      "fieldId": "permit_request_type",
+      "label": "Permit request type",
+      "role": "combobox",
+      "required": true,
+      "selector": {
+        "strategy": "accessible_role_name",
+        "role": "combobox",
+        "name": "Permit request type",
+        "labelText": "Permit request type"
+      },
+      "value": {
+        "redacted": true,
+        "placeholder": "[REDACTED:permit_request_type]"
+      },
+      "options": [
+        "Building permit",
+        "Trade permit with plan review",
+        "Demolition permit"
+      ]
+    },
+    {
+      "fieldId": "owner_acknowledges_contact",
+      "label": "I am the owner or authorized contact",
+      "role": "checkbox",
+      "required": false,
+      "selector": {
+        "strategy": "accessible_role_name",
+        "role": "checkbox",
+        "name": "I am the owner or authorized contact",
+        "labelText": "I am the owner or authorized contact"
+      },
+      "value": {
+        "redacted": true,
+        "placeholder": "[REDACTED:boolean_draft_value]"
+      }
+    }
+  ],
+  "availableActions": [
+    {
+      "actionId": "save_draft",
+      "label": "Save draft",
+      "role": "button",
+      "classification": "reversible_draft_edit"
+    },
+    {
+      "actionId": "return_to_summary",
+      "label": "Back to summary",
+      "role": "link",
+      "classification": "safe_read_only"
+    }
+  ],
+  "forbiddenRuntimeArtifacts": []
+}

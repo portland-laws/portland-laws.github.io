@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/repeated_no_patch_guardrail.py"
+  ],
+  "created_at": "2026-05-02T06:53:31.166854Z",
+  "impact": "This gives the PP&D daemon a narrow recovery path after four failed or empty proposal rounds: the next LLM prompt is constrained to one fixture-first daemon-local file set, complete JSON file replacements, and explicit bans on live DevHub sessions and broad contract rewrites. The helper is intentionally small after repeated SyntaxError failures and can be compiled or run directly before integration.",
+  "summary": "Add a daemon-local repeated no-accepted-patch guardrail helper with built-in syntactic self-test coverage.",
+  "target_task": "Supervisor repair: 4 consecutive daemon rounds failed without an accepted patch",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 74 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".........................................................................................................................................................................................................................................ss..............sss............................................................................................................................................. ---------------------------------------------------------------------- Ran 393 tests in 0.080s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

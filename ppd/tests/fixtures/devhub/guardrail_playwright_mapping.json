@@ -1,0 +1,62 @@
+{
+  "schemaVersion": 1,
+  "mappingId": "guardrail-playwright-map-001",
+  "processId": "synthetic-building-permit-process",
+  "sourceEvidence": [
+    {
+      "id": "src-devhub-building-permit-request",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub",
+      "title": "Development Hub PDX guidance",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    },
+    {
+      "id": "src-single-pdf-process",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+      "title": "Single PDF Process guidance",
+      "capturedAt": "2026-05-01T00:00:00Z"
+    }
+  ],
+  "missingInformationFacts": [
+    {
+      "id": "missing-fact-project-description",
+      "requiredFactId": "required-fact-project-description",
+      "label": "Project description",
+      "status": "missing",
+      "sourceEvidenceIds": [
+        "src-devhub-building-permit-request"
+      ]
+    }
+  ],
+  "playwrightFieldMappings": [
+    {
+      "id": "field-map-project-description",
+      "missingInformationFactId": "missing-fact-project-description",
+      "actionClass": "reversible_draft_edit",
+      "selectorBasis": {
+        "role": "textbox",
+        "accessibleName": "Project description",
+        "nearbyHeading": "Building permit request"
+      },
+      "beforeValue": "[REDACTED_EMPTY]",
+      "afterValue": "[REDACTED_USER_PROVIDED]",
+      "sourceEvidenceIds": [
+        "src-devhub-building-permit-request"
+      ]
+    }
+  ],
+  "explicitStopGates": [
+    {
+      "id": "stop-before-submit-application",
+      "linkedMissingInformationFactId": "missing-fact-project-description",
+      "blockedAction": "submit_application",
+      "classification": "potentially_consequential",
+      "requiresExplicitUserConfirmation": true,
+      "defaultConfirmed": false,
+      "reason": "Stop before official submission after draft field entry.",
+      "sourceEvidenceIds": [
+        "src-devhub-building-permit-request",
+        "src-single-pdf-process"
+      ]
+    }
+  ]
+}

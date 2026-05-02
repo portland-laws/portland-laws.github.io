@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/task-board.md"
+  ],
+  "created_at": "2026-05-02T06:35:45.488709Z",
+  "impact": "The daemon was stuck calling the LLM on checkbox-62 without accepting patches. This board change gives the next cycle a deterministic supervisor repair first, then resumes the original fixture-only DevHub task with a smaller file set and explicit no-live-session guardrails.",
+  "summary": "Replan the active DevHub fixture task behind a narrow daemon prompt/preflight repair for repeated no-accepted-patch LLM rounds.",
+  "target_task": "Supervisor repair: 4 consecutive daemon rounds failed without an accepted patch",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 72 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "..................................................................................................................................................................................................................................ss..............sss............................................................................................................................................. ---------------------------------------------------------------------- Ran 386 tests in 0.080s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/test_devhub_draft_form_state_contract.py",
+    "ppd/tests/fixtures/devhub/draft_form_state_contract.json"
+  ],
+  "created_at": "2026-05-02T06:36:48.189503Z",
+  "impact": "Advances the PP&D DevHub automation plan by validating draft page form-state fixtures without opening a browser, authenticating, or storing private session artifacts.",
+  "summary": "Add fixture-only DevHub draft form-state contract coverage with accessible Playwright selector metadata and redacted values.",
+  "target_task": "Task checkbox-67: Task checkbox-62: Add a fixture-only Playwright form-state contract test for DevHub draft pages using accessible selectors, labels, roles, required flags, redacted values, and no live browser session. Superseded for retry by checkbox-67 after repeated no-accepted-patch daemon rounds.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 72 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "...................................................................................................................................................................................................................................ss..............sss............................................................................................................................................. ---------------------------------------------------------------------- Ran 387 tests in 0.078s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

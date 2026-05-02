@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/devhub/guardrail_playwright_mapping.json",
+    "ppd/tests/test_guardrail_playwright_mapping.py"
+  ],
+  "created_at": "2026-05-02T06:44:12.372833Z",
+  "impact": "This advances the PP&D guardrail plan by proving missing-information output can be mapped to safe Playwright draft previews while preserving source provenance, redacted values, and fail-closed stop gates before consequential DevHub actions.",
+  "summary": "Add a fixture-only guardrail-to-Playwright mapping and focused validation test for one missing-information fact, one reversible draft field, and one explicit stop gate.",
+  "target_task": "Task checkbox-69: Task checkbox-64: Add a guardrail-to-Playwright mapping fixture that links one missing-information fact to one reversible form field and one explicit stop gate, with source evidence IDs and redacted before/after values only.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 74 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".........................................................................................................................................................................................................................................ss..............sss............................................................................................................................................. ---------------------------------------------------------------------- Ran 393 tests in 0.078s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

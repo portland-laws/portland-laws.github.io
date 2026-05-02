@@ -1,0 +1,57 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -17,6 +17,7 @@
+ - When a domain task has failed twice for parser or compile reasons, block that task and append narrower daemon-repair tasks before resuming the domain task.
+ - If a syntax-preflight helper exists, the daemon apply path must call it before full validation and must classify parser failures as `syntax_preflight`.
+ - When a fixture-validator task fails because expected fields are absent, do not immediately rewrite the fixture or add a broader contract. First add a daemon diagnostic or prompt guardrail that reports the committed fixture shape and constrains the next retry to the fields actually present unless the task explicitly permits fixture replacement.
++- After four consecutive daemon rounds without an accepted patch while the daemon is in `calling_llm`, pause the active domain task and append a narrow daemon prompt/preflight repair before retrying the domain task.
+ 
+ ## Completed Work
+ 
+@@ -94,30 +95,30 @@
+ 
+ - [x] Task checkbox-60: Add a fixture-only crawl-plan to processor-handoff validation test that proves each planned public fetch can map to the existing `ipfs_datasets_py/ipfs_datasets_py/processors` backend metadata without invoking network or processor code.
+ - [x] Task checkbox-61: Add a small PP&D source-provenance continuity test that links the public crawl dry-run plan, source index records, normalized document fixtures, and requirement fixtures by canonical URL or source evidence ID.
+-- [~] Task checkbox-62: Add a fixture-only Playwright form-state contract test for DevHub draft pages using accessible selectors, labels, roles, required flags, redacted values, and no live browser session.
++- [ ] Task checkbox-62: Add a fixture-only Playwright form-state contract test for DevHub draft pages using accessible selectors, labels, roles, required flags, redacted values, and no live browser session. Superseded for retry by checkbox-67 after repeated no-accepted-patch daemon rounds.
+ - [ ] Task checkbox-63: Add a Playwright draft-action preview fixture test proving reversible draft fills are represented as previews and do not include upload, submit, certify, payment, cancellation, MFA, CAPTCHA, or inspection scheduling actions.
+ - [ ] Task checkbox-64: Add a guardrail-to-Playwright mapping fixture that links one missing-information fact to one reversible form field and one explicit stop gate, with source evidence IDs and redacted before/after values only.
+ - [ ] Task checkbox-65: Add a daemon stale-blocked-task reconciliation test proving superseded blocked tasks are not reselected when a later accepted task explicitly satisfies the same recovery goal.
++- [ ] Task checkbox-66: Add a daemon prompt/preflight guardrail for repeated no-accepted-patch LLM rounds. Keep this to `ppd/daemon/` only and add a synthetic self-test proving that after four consecutive failed or empty proposal rounds, the next prompt asks for one narrow fixture-first file set, requires complete JSON file replacements, and forbids live DevHub sessions or broad contract rewrites. Do not implement the DevHub form-state domain test in this task.
++- [ ] Task checkbox-67: Resume checkbox-62 only after checkbox-66 passes. Use one syntax-valid Python unittest file, or one small redacted fixture plus one unittest file, that validates the committed or synthetic DevHub draft-page form-state fixture shape with accessible selectors, labels, roles, required flags, redacted values, and no browser launch. Do not add Playwright runtime automation, private auth state, screenshots, traces, uploads, submissions, payments, MFA, CAPTCHA, cancellation, certification, or inspection scheduling.
++
++## Generated Status
++
++Last updated: 2026-05-02T06:34:30Z
++
++- Latest target: `Supervisor repair after four no-accepted-patch daemon rounds while targeting checkbox-62.`
++- Latest result: `supervisor_repair_replanned`
++- Latest summary: Requeued the DevHub form-state task behind a narrow daemon prompt/preflight repair for repeated empty or failed LLM proposal rounds.
++- Counts: complete 66, in_progress 0, needed 5, blocked 0
+ 
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-02T06:20:00Z
++Last updated: 2026-05-02T06:34:30Z
+ 
+-- Latest target: `Task checkbox-55: Resume checkbox-48 only after checkbox-52 through checkbox-54 pass. Use a single syntax-valid Python test file that validates the committed ppd/tests/fixtures/crawler/public_crawl_dry_run_plan.json fixture in place; do not introduce ppd/contracts/planned_crawl_manifest.py, live crawling, authenticated automation, or broad shared-contract rewrites.`
++- Latest target: `Supervisor repair after four no-accepted-patch daemon rounds while targeting checkbox-62.`
+ - Latest result: `supervisor_repair_replanned`
+-- Latest summary: Blocked the validator retry because it did not match the committed fixture shape, then added narrow daemon-repair tasks for fixture-shape diagnostics before resuming checkbox-48.
+-- Counts: `{"blocked": 3, "complete": 54, "in_progress": 0, "needed": 4}`
++- Latest summary: Requeued the DevHub form-state task behind a narrow daemon prompt/preflight repair for repeated empty or failed LLM proposal rounds.
++- Counts: complete 66, in_progress 0, needed 5, blocked 0
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-02T06:33:53.939357Z
+-
+-- Latest target: `Task checkbox-66: Task checkbox-61: Add a small PP&D source-provenance continuity test that links the public crawl dry-run plan, source index records, normalized document fixtures, and requirement fixtures by canonical URL or source evidence ID.`
+-- Latest result: `accepted`
+-- Latest summary: Add a narrow fixture-only source provenance continuity test for PP&D public source layers.
+-- Counts: `{"blocked": 0, "complete": 66, "in_progress": 0, "needed": 4}`
+-
+-<!-- ppd-daemon-task-board:end -->

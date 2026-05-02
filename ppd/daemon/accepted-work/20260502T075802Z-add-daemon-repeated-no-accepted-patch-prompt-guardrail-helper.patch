@@ -1,0 +1,236 @@
+--- a/ppd/daemon/repeated_no_patch_guardrail.py
++++ b/ppd/daemon/repeated_no_patch_guardrail.py
+@@ -1,102 +1,157 @@
+-"""Recovery prompt guardrail for repeated PP&D daemon proposal failures.
+-
+-This module is intentionally small and dependency-free because it runs in the
+-supervisor path after repeated no-accepted-patch LLM rounds. Keep changes here
+-syntactically simple and covered by the companion self-test.
+-"""
++"""Prompt guardrail for repeated PP&D daemon rounds without accepted work."""
+ 
+ from __future__ import annotations
+ 
+-from typing import Iterable, Mapping, Optional, Sequence
+-
+-TRIGGER_THRESHOLD = 4
+-RECOVERABLE_FAILURE_KINDS = {
+-    "empty_proposal",
+-    "no_patch",
+-    "patch_rejected",
+-    "schema_error",
+-    "syntax_preflight",
+-    "validation_failed",
+-}
++from typing import Any, Iterable
+ 
+ 
+-def _as_bool(value: object) -> bool:
+-    return value is True
++NO_ACCEPTED_PATCH_THRESHOLD = 4
+ 
+ 
+-def _as_text(value: object) -> str:
+-    if value is None:
+-        return ""
+-    return str(value)
++FORBIDDEN_RETRY_ACTIONS = (
++    "live DevHub sessions",
++    "browser state",
++    "screenshots",
++    "traces",
++    "uploads",
++    "submissions",
++    "payments",
++    "MFA",
++    "CAPTCHA",
++    "cancellation",
++    "certification",
++    "inspection scheduling",
++    "broad contract rewrites",
++)
+ 
+ 
+-def is_unaccepted_proposal_round(round_result: Mapping[str, object]) -> bool:
+-    """Return True when a daemon result did not produce an accepted patch."""
+-
+-    if _as_bool(round_result.get("applied")) or _as_bool(round_result.get("accepted")):
+-        return False
+-
+-    failure_kind = _as_text(round_result.get("failure_kind") or round_result.get("reason"))
+-    changed_files = round_result.get("changed_files") or round_result.get("files") or []
+-
+-    if failure_kind in RECOVERABLE_FAILURE_KINDS:
+-        return True
+-    if changed_files == [] or changed_files == ():
+-        return True
+-    return bool(round_result.get("errors"))
++REQUIRED_RETRY_PHRASES = (
++    "one narrow fixture-first file set",
++    "complete JSON file replacements",
++    "live DevHub sessions",
++    "broad contract rewrites",
++    "Do not implement the DevHub form-state domain test",
++)
+ 
+ 
+-def consecutive_unaccepted_rounds(recent_results: Iterable[Mapping[str, object]]) -> int:
+-    """Count trailing rounds that failed to produce an accepted patch."""
++def proposal_was_accepted(proposal: dict[str, Any]) -> bool:
++    return bool(proposal.get("applied")) and bool(proposal.get("validation_passed")) and not proposal.get("errors")
+ 
++
++def proposal_had_no_accepted_patch(proposal: dict[str, Any]) -> bool:
++    if proposal_was_accepted(proposal):
++        return False
++    changed_files = proposal.get("changed_files")
++    files = proposal.get("files")
++    if proposal.get("failure_kind") in {
++        "llm",
++        "parse",
++        "empty_proposal",
++        "no_change",
++        "syntax_preflight",
++        "validation",
++        "preflight",
++    }:
++        return True
++    if isinstance(changed_files, list) and not changed_files:
++        return True
++    if isinstance(files, list) and not files:
++        return True
++    return False
++
++
++def count_consecutive_no_accepted_rounds(proposals: Iterable[dict[str, Any]]) -> int:
+     count = 0
+-    for round_result in reversed(list(recent_results)):
+-        if not is_unaccepted_proposal_round(round_result):
++    for proposal in proposals:
++        if proposal_was_accepted(proposal):
++            break
++        if not proposal_had_no_accepted_patch(proposal):
+             break
+         count += 1
+     return count
+ 
+ 
+-def should_apply_guardrail(
+-    recent_results: Iterable[Mapping[str, object]],
+-    threshold: int = TRIGGER_THRESHOLD,
++def should_apply_repeated_no_patch_guardrail(
++    count: int,
++    threshold: int = NO_ACCEPTED_PATCH_THRESHOLD,
+ ) -> bool:
+-    """Return True when the next prompt should switch to recovery mode."""
+-
+-    return consecutive_unaccepted_rounds(recent_results) >= threshold
++    return count >= threshold
+ 
+ 
+-def build_recovery_prompt(
+-    target_task: str,
+-    recent_results: Sequence[Mapping[str, object]],
+-    threshold: int = TRIGGER_THRESHOLD,
+-    allowed_paths: Optional[Sequence[str]] = None,
++def build_repeated_no_patch_prompt_guidance(
++    count: int,
++    threshold: int = NO_ACCEPTED_PATCH_THRESHOLD,
+ ) -> str:
+-    """Build a narrow repair prompt after repeated failed proposal rounds.
++    if not should_apply_repeated_no_patch_guardrail(count, threshold=threshold):
++        return "No repeated no-accepted-patch guardrail is active."
++    forbidden = ", ".join(FORBIDDEN_RETRY_ACTIONS)
++    return (
++        f"Guardrail active: {count} consecutive LLM rounds ended without an accepted patch. "
++        "The next proposal must use one narrow fixture-first file set under ppd/daemon/ only, "
++        "must provide complete JSON file replacements in the files array, and must not open or rely on "
++        f"{forbidden}. "
++        "Do not implement the DevHub form-state domain test in this retry; repair the daemon prompt or "
++        "preflight guardrail only."
++    )
+ 
+-    Returns an empty string until the threshold is reached so callers can append
+-    the guardrail only when the failure loop is active.
+-    """
+ 
+-    if not should_apply_guardrail(recent_results, threshold):
+-        return ""
++def synthetic_repeated_no_patch_self_test() -> list[str]:
++    errors: list[str] = []
++    failed_round = {
++        "applied": False,
++        "validation_passed": False,
++        "failure_kind": "syntax_preflight",
++        "files": ["ppd/daemon/repeated_no_patch_guardrail.py"],
++        "changed_files": [],
++        "errors": ["py_compile failed"],
++    }
++    empty_round = {
++        "applied": False,
++        "validation_passed": False,
++        "failure_kind": "empty_proposal",
++        "files": [],
++        "changed_files": [],
++        "errors": ["LLM returned no files"],
++    }
++    accepted_round = {
++        "applied": True,
++        "validation_passed": True,
++        "failure_kind": "",
++        "files": ["ppd/daemon/ppd_daemon.py"],
++        "changed_files": ["ppd/daemon/ppd_daemon.py"],
++        "errors": [],
++    }
++    stopped_count = count_consecutive_no_accepted_rounds(
++        [failed_round, empty_round, accepted_round, failed_round]
++    )
++    if stopped_count != 2:
++        errors.append(
++            f"repeated no-patch counter did not stop at accepted proposal: {stopped_count}"
++        )
++    active_count = count_consecutive_no_accepted_rounds(
++        [failed_round, empty_round, failed_round, empty_round]
++    )
++    if active_count != 4:
++        errors.append(f"expected four consecutive failed or empty rounds, got {active_count}")
++    guidance = build_repeated_no_patch_prompt_guidance(active_count)
++    for phrase in REQUIRED_RETRY_PHRASES:
++        if phrase not in guidance:
++            errors.append(f"repeated no-patch guidance missing phrase: {phrase}")
++    inactive = build_repeated_no_patch_prompt_guidance(3)
++    if "Guardrail active" in inactive:
++        errors.append("repeated no-patch guidance activated before four failed or empty rounds")
++    return errors
+ 
+-    paths = tuple(allowed_paths or ("ppd/daemon/", "ppd/tests/"))
+-    path_text = ", ".join(paths)
+-    failed_count = consecutive_unaccepted_rounds(recent_results)
+ 
+-    return "\n".join(
+-        [
+-            "SUPERVISOR RECOVERY GUARDRAIL: repeated no-accepted-patch rounds detected.",
+-            f"Consecutive failed or empty proposal rounds: {failed_count}.",
+-            f"Target task: {target_task}",
+-            "Return exactly one JSON object with complete file replacements in the files array.",
+-            "Choose one narrow fixture-first file set before attempting any live automation.",
+-            f"Edit only these paths for this recovery cycle: {path_text}.",
+-            "Keep the patch small enough that every changed Python file can pass py_compile.",
+-            "Do not create private DevHub session files, auth state, traces, raw crawl output, or downloaded documents.",
+-            "Do not run or propose live DevHub sessions, login, MFA, CAPTCHA handling, uploads, submissions, payments, cancellations, certifications, or inspection scheduling.",
+-            "Do not perform broad contract rewrites or implement the selected PP&D domain task during this recovery cycle.",
+-            "Prefer a synthetic self-test that proves the recovery prompt requirements before resuming domain work.",
+-        ]
+-    )
++def main() -> int:
++    errors = synthetic_repeated_no_patch_self_test()
++    if errors:
++        for error in errors:
++            print(error)
++        return 1
++    print("repeated no-accepted-patch guardrail self-test passed")
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())

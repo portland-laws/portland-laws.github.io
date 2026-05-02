@@ -17,10 +17,9 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 - When a domain task has failed twice for parser or compile reasons, block that task and append narrower daemon-repair tasks before resuming the domain task.
 - If a syntax-preflight helper exists, the daemon apply path must call it before full validation and must classify parser failures as `syntax_preflight`.
 - When a fixture-validator task fails because expected fields are absent, do not immediately rewrite the fixture or add a broader contract. First add a daemon diagnostic or prompt guardrail that reports the committed fixture shape and constrains the next retry to the fields actually present unless the task explicitly permits fixture replacement.
+- After four consecutive daemon rounds without an accepted patch while the daemon is in `calling_llm`, pause the active domain task and append a narrow daemon prompt/preflight repair before retrying the domain task.
 
 ## Completed Work
-
-The previous PP&D daemon tranche is complete. Preserve these completed entries as historical markers; do not reopen them unless a supervisor repair task explicitly asks for a recovery.
 
 - [x] Task checkbox-01: Bootstrap the PP&D daemon task board and operations boundary.
 - [x] Task checkbox-02: Add PP&D-local ignore rules for private DevHub and generated crawl artifacts.
@@ -63,61 +62,60 @@ The previous PP&D daemon tranche is complete. Preserve these completed entries a
 - [x] Task checkbox-34: Add recovery guardrails for syntactic validity after failed mutation patches.
 - [x] Task checkbox-35: Recovery for checkbox-27e with syntax-valid confidence comparisons.
 - [x] Task checkbox-36: Recovery for checkbox-27f duplicate requirement-key mutation validation.
-
-## Next Ordered Tranche
-
-- [x] Task checkbox-37: Add a fixture-only process-model schema test for one public PP&D permit process record. Validate required fields only: `processId`, `sourceEvidenceIds`, `stages`, `requiredInputs`, `requiredDocuments`, `stopGates`, and `lastReviewed`. Do not add live crawling or DevHub automation.
-- [x] Task checkbox-38: Add the smallest committed synthetic public-process fixture that passes checkbox-37. Use redacted/public-only values and at least two source evidence IDs already represented by existing fixture style.
-- [x] Task checkbox-39: Add one mutation test proving process-model validation rejects a stage without source evidence. Keep the edit limited to the new process-model test file or its adjacent fixture.
-- [x] Task checkbox-40: Add one mutation test proving process-model validation rejects a required document without a cited source evidence ID. Keep this separate from stage validation.
-- [x] Task checkbox-41: Add a fixture-only missing-information schema test that derives missing user facts from the committed process fixture. Validate only reversible request fields, not browser actions.
-- [x] Task checkbox-42: Add the smallest committed missing-information fixture for checkbox-41 using placeholder user case facts and public-only citations. Do not store PII, account state, screenshots, traces, or uploads.
+- [x] Task checkbox-37: Add a fixture-only process-model schema test for one public PP&D permit process record.
+- [x] Task checkbox-38: Add the smallest committed synthetic public-process fixture that passes checkbox-37.
+- [x] Task checkbox-39: Add one mutation test proving process-model validation rejects a stage without source evidence.
+- [x] Task checkbox-40: Add one mutation test proving process-model validation rejects a required document without a cited source evidence ID.
+- [x] Task checkbox-41: Add a fixture-only missing-information schema test that derives missing user facts from the committed process fixture.
+- [x] Task checkbox-42: Add the smallest committed missing-information fixture for checkbox-41 using placeholder user case facts and public-only citations.
 - [x] Task checkbox-43: Add one mutation test proving missing-information validation rejects a requested user fact that has no linked process requirement.
-- [x] Task checkbox-44: Add a fixture-only guardrail mapping test that maps one process stop gate to an agent action gate. Validate action class, consequence summary, and source evidence IDs only.
-- [x] Task checkbox-45: Add the smallest committed guardrail mapping fixture for checkbox-44. Use only safe read-only or reversible draft-edit examples; do not include submission, payment, certification, cancellation, upload, or inspection scheduling automation.
+- [x] Task checkbox-44: Add a fixture-only guardrail mapping test that maps one process stop gate to an agent action gate.
+- [x] Task checkbox-45: Add the smallest committed guardrail mapping fixture for checkbox-44.
 - [x] Task checkbox-46: Add one mutation test proving guardrail mapping validation rejects consequential or financial actions unless an explicit confirmation field is present and false by default in fixtures.
 - [x] Task checkbox-47: Add a public-crawl dry-run plan fixture that lists seed URLs, allowlist decisions, robots/no-persist preflight fields, timeout policy, and skipped-URL reason codes without performing network access.
-- [x] Task checkbox-48: Add validation for the public-crawl dry-run plan fixture from checkbox-47. The validator must fail closed on missing allowlist, robots, timeout, no-persist, or processor-adapter preflight fields. Superseded and satisfied by checkbox-59 after fixture-shape diagnostics corrected the validator assumptions.
-- [x] Task checkbox-49: Add a daemon syntax-preflight step that checks only changed Python and TypeScript files before full validation. Python files must use `py_compile`; TypeScript files must use the existing strict `tsc --noEmit` command scoped to changed `.ts`/`.tsx` files. On parser failure, rollback immediately with failure kind `syntax_preflight` and compact diagnostics.
-- [x] Task checkbox-50: Add daemon prompt guidance and failure-context diagnostics for syntax-preflight rollbacks. When recent failures include `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128`, the prompt must ask for a one-file or one-test-plus-fixture proposal and forbid broad shared-contract rewrites.
-- [x] Task checkbox-51: Resume checkbox-48 with the smallest fixture-first validator after checkbox-49 and checkbox-50 pass. Limit the proposal to one syntax-valid Python test file or one syntax-valid helper plus one test fixture path correction; do not add live crawling or authenticated automation. Superseded and satisfied by checkbox-59.
-- [x] Task checkbox-52: Wire the existing `ppd/daemon/syntax_preflight.py` helper into `ppd/daemon/ppd_daemon.py` apply flow. After file replacements are written and before full validation, run changed-file syntax preflight; on parser failure, roll back immediately with failure kind `syntax_preflight`, compact diagnostics, and no broad unittest run. Keep this to one daemon file if possible.
+- [x] Task checkbox-48: Add validation for the public-crawl dry-run plan fixture from checkbox-47. Superseded and satisfied by checkbox-59 after fixture-shape diagnostics corrected the validator assumptions.
+- [x] Task checkbox-49: Add a daemon syntax-preflight step that checks only changed Python and TypeScript files before full validation.
+- [x] Task checkbox-50: Add daemon prompt guidance and failure-context diagnostics for syntax-preflight rollbacks.
+- [x] Task checkbox-51: Resume checkbox-48 with the smallest fixture-first validator after checkbox-49 and checkbox-50 pass. Superseded and satisfied by checkbox-59.
+- [x] Task checkbox-52: Wire the existing `ppd/daemon/syntax_preflight.py` helper into `ppd/daemon/ppd_daemon.py` apply flow.
 - [x] Task checkbox-53: Add daemon self-test coverage that proves syntax-preflight runs no commands when no changed Python or TypeScript files are present.
 - [x] Task checkbox-54: Add one daemon unit-style fixture for syntax-preflight failure classification using a synthetic changed Python filename and compact parser diagnostics only.
-- [x] Task checkbox-55: Resume checkbox-48 only after checkbox-52 through checkbox-54 pass. Use a single syntax-valid Python test file that validates the committed `ppd/tests/fixtures/crawler/public_crawl_dry_run_plan.json` fixture in place; do not introduce `ppd/contracts/planned_crawl_manifest.py`, live crawling, authenticated automation, or broad shared-contract rewrites. Superseded and satisfied by checkbox-59.
-- [x] Task checkbox-56: Add a narrow daemon fixture-shape diagnostic helper under `ppd/daemon/` for JSON fixtures. It must accept a repository-relative fixture path, report top-level keys, obvious list fields, and first object keys only, and include self-test coverage using an in-memory or temporary synthetic JSON object. Do not validate PP&D domain semantics in this helper.
-- [x] Task checkbox-57: Wire the fixture-shape diagnostic into daemon failure-context guidance for validation failures that mention missing required fields in JSON fixtures. The prompt must instruct the next worker to inspect the committed fixture shape before writing a validator and must forbid adding broad contracts or live crawl code for the retry.
-- [x] Task checkbox-58: Add daemon self-test coverage proving the fixture-shape guidance appears after a failed validator reports absent fields such as missing seed URLs or missing preflight policy fields. Keep the test synthetic and under `ppd/daemon/` or `ppd/tests/`; do not edit crawler fixtures.
-- [x] Task checkbox-59: Resume checkbox-48 only after checkbox-56 through checkbox-58 pass. Use one syntax-valid Python test file that validates the existing public-crawl dry-run fixture according to its actual committed structure, or use one test file plus one minimal fixture path correction if the fixture path is wrong. Do not add `ppd/contracts/planned_crawl_manifest.py`, live crawling, authenticated automation, or broad shared-contract rewrites.
+- [x] Task checkbox-55: Resume checkbox-48 only after checkbox-52 through checkbox-54 pass. Superseded and satisfied by checkbox-59.
+- [x] Task checkbox-56: Add a narrow daemon fixture-shape diagnostic helper under `ppd/daemon/` for JSON fixtures.
+- [x] Task checkbox-57: Wire the fixture-shape diagnostic into daemon failure-context guidance for validation failures that mention missing required fields in JSON fixtures.
+- [x] Task checkbox-58: Add daemon self-test coverage proving the fixture-shape guidance appears after a failed validator reports absent fields.
+- [x] Task checkbox-59: Resume checkbox-48 only after checkbox-56 through checkbox-58 pass.
+- [x] Task checkbox-60: Add a fixture-only crawl-plan to processor-handoff validation test.
+- [x] Task checkbox-61: Add a small PP&D source-provenance continuity test.
+- [x] Task checkbox-62: Add a fixture-only Playwright form-state contract test for DevHub draft pages using accessible selectors, labels, roles, required flags, redacted values, and no live browser session.
 
 ## Next Goal-Aligned Tranche
 
-- [x] Task checkbox-60: Add a fixture-only crawl-plan to processor-handoff validation test that proves each planned public fetch can map to the existing `ipfs_datasets_py/ipfs_datasets_py/processors` backend metadata without invoking network or processor code.
-- [~] Task checkbox-61: Add a small PP&D source-provenance continuity test that links the public crawl dry-run plan, source index records, normalized document fixtures, and requirement fixtures by canonical URL or source evidence ID.
-- [ ] Task checkbox-62: Add a fixture-only Playwright form-state contract test for DevHub draft pages using accessible selectors, labels, roles, required flags, redacted values, and no live browser session.
-- [ ] Task checkbox-63: Add a Playwright draft-action preview fixture test proving reversible draft fills are represented as previews and do not include upload, submit, certify, payment, cancellation, MFA, CAPTCHA, or inspection scheduling actions.
-- [ ] Task checkbox-64: Add a guardrail-to-Playwright mapping fixture that links one missing-information fact to one reversible form field and one explicit stop gate, with source evidence IDs and redacted before/after values only.
-- [ ] Task checkbox-65: Add a daemon stale-blocked-task reconciliation test proving superseded blocked tasks are not reselected when a later accepted task explicitly satisfies the same recovery goal.
-
+- [!] Task checkbox-63: Add a Playwright draft-action preview fixture test proving reversible draft fills are represented as previews and do not include upload, submit, certify, payment, cancellation, MFA, CAPTCHA, or inspection scheduling actions. Blocked pending a narrow fixture-shape retry plan after validation showed the committed fixture does not expose `draftActionPreviews`.
+- [x] Task checkbox-64: Add a guardrail-to-Playwright mapping fixture that links one missing-information fact to one reversible form field and one explicit stop gate, with source evidence IDs and redacted before/after values only.
+- [x] Task checkbox-65: Add a daemon stale-blocked-task reconciliation test proving superseded blocked tasks are not reselected when a later accepted task explicitly satisfies the same recovery goal.
+- [x] Task checkbox-66: Add a daemon prompt/preflight guardrail for repeated no-accepted-patch LLM rounds. Keep this to `ppd/daemon/` only and add a synthetic self-test proving that after four consecutive failed or empty proposal rounds, the next prompt asks for one narrow fixture-first file set, requires complete JSON file replacements, and forbids live DevHub sessions or broad contract rewrites. Do not implement the DevHub form-state domain test in this task.
+- [x] Task checkbox-67: Resume checkbox-62 only after checkbox-66 passes. Use one syntax-valid Python unittest file, or one small redacted fixture plus one unittest file, that validates the committed or synthetic DevHub draft-page form-state fixture shape with accessible selectors, labels, roles, required flags, redacted values, and no browser launch. Do not add Playwright runtime automation, private auth state, screenshots, traces, uploads, submissions, payments, MFA, CAPTCHA, cancellation, certification, or inspection scheduling.
+- [~] Task checkbox-68: Add a daemon fixture-shape retry self-test for DevHub draft-action preview validation failures. Use only `ppd/daemon/` or `ppd/tests/`, keep it synthetic, and prove KeyError or assertion failures for absent fixture keys such as `draftActionPreviews` produce guidance to inspect the committed fixture shape before retrying. Do not edit DevHub fixtures or implement the domain validator in this task.
+- [ ] Task checkbox-69: Resume checkbox-63 only after checkbox-68 passes. Use at most one redacted fixture plus one syntax-valid Python unittest file, inspect the committed `ppd/tests/fixtures/devhub/draft_action_preview.json` shape first, and either align the test to existing keys or replace the fixture with the smallest preview-only shape. Do not add Playwright runtime automation, private auth state, screenshots, traces, uploads, submissions, payments, MFA, CAPTCHA, cancellation, certification, or inspection scheduling.
 
 ## Generated Status
 
-Last updated: 2026-05-02T06:20:00Z
+Last updated: 2026-05-02T06:45:00Z
 
-- Latest target: `Task checkbox-55: Resume checkbox-48 only after checkbox-52 through checkbox-54 pass. Use a single syntax-valid Python test file that validates the committed ppd/tests/fixtures/crawler/public_crawl_dry_run_plan.json fixture in place; do not introduce ppd/contracts/planned_crawl_manifest.py, live crawling, authenticated automation, or broad shared-contract rewrites.`
+- Latest target: `Supervisor repair after repeated validation failure while targeting checkbox-63.`
 - Latest result: `supervisor_repair_replanned`
-- Latest summary: Blocked the validator retry because it did not match the committed fixture shape, then added narrow daemon-repair tasks for fixture-shape diagnostics before resuming checkbox-48.
-- Counts: `{"blocked": 3, "complete": 54, "in_progress": 0, "needed": 4}`
+- Latest summary: Blocked the draft-action preview domain retry behind a narrow daemon fixture-shape guidance self-test, then queued a constrained fixture-first retry.
 
 
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-02T06:30:29.074296Z
+Last updated: 2026-05-02T12:03:35.984762Z
 
-- Latest target: `Task checkbox-65: Task checkbox-60: Add a fixture-only crawl-plan to processor-handoff validation test that proves each planned public fetch can map to the existing `ipfs_datasets_py/ipfs_datasets_py/processors` backend metadata without invoking network or processor code.`
-- Latest result: `accepted`
-- Latest summary: Add fixture-only processor handoff crawl-plan validation for planned PP&D public fetches.
-- Counts: `{"blocked": 0, "complete": 65, "in_progress": 0, "needed": 5}`
+- Latest target: `Task checkbox-73: Task checkbox-68: Add a daemon fixture-shape retry self-test for DevHub draft-action preview validation failures. Use only `ppd/daemon/` or `ppd/tests/`, keep it synthetic, and prove KeyError or assertion failures for absent fixture keys such as `draftActionPreviews` produce guidance to inspect the committed fixture shape before retrying. Do not edit DevHub fixtures or implement the domain validator in this task.`
+- Latest result: `llm`
+- Latest summary: LLM proposal failed.
+- Counts: `{"blocked": 1, "complete": 71, "in_progress": 0, "needed": 2}`
 
 <!-- ppd-daemon-task-board:end -->

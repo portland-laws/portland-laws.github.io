@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "devhub-draft-action-preview-redacted-001",
+  "capturedFrom": "synthetic-playwright-fixture",
+  "lastReviewed": "2026-05-02",
+  "sourceEvidenceIds": [
+    "devhub-public-guidance-application-draft",
+    "ppd-guardrail-reversible-draft-edit"
+  ],
+  "pageState": {
+    "stateId": "draft-building-permit-details-redacted",
+    "urlPattern": "https://devhub.portlandoregon.gov/*/draft/*",
+    "authenticatedSessionRequired": false,
+    "usesSyntheticHtmlOnly": true,
+    "liveBrowserSession": false
+  },
+  "previewMode": {
+    "enabled": true,
+    "dryRun": true,
+    "requiresUserReviewBeforeExecution": true,
+    "executesBrowserActions": false
+  },
+  "forbiddenActionTerms": [
+    "upload",
+    "submit",
+    "certify",
+    "certification",
+    "payment",
+    "pay",
+    "cancel",
+    "cancellation",
+    "mfa",
+    "captcha",
+    "inspection",
+    "scheduleInspection",
+    "schedule-inspection"
+  ],
+  "draftActionPreviews": [
+    {
+      "previewId": "preview-project-description-fill",
+      "actionClass": "reversible_draft_fill",
+      "playwrightAction": "fill",
+      "previewOnly": true,
+      "executionStatus": "not_executed",
+      "selectorBasis": {
+        "role": "textbox",
+        "accessibleName": "Project description",
+        "label": "Project description",
+        "required": true
+      },
+      "field": {
+        "fieldId": "projectDescription",
+        "label": "Project description",
+        "required": true,
+        "beforeValue": "[redacted-empty]",
+        "previewValue": "[redacted-project-description]"
+      },
+      "sourceEvidenceIds": [
+        "devhub-public-guidance-application-draft"
+      ],
+      "stopBefore": [
+        "official_submission",
+        "certification",
+        "payment",
+        "upload",
+        "inspection_scheduling"
+      ]
+    },
+    {
+      "previewId": "preview-work-type-select",
+      "actionClass": "reversible_draft_fill",
+      "playwrightAction": "selectOption",
+      "previewOnly": true,
+      "executionStatus": "not_executed",
+      "selectorBasis": {
+        "role": "combobox",
+        "accessibleName": "Type of work",
+        "label": "Type of work",
+        "required": true
+      },
+      "field": {
+        "fieldId": "workType",
+        "label": "Type of work",
+        "required": true,
+        "beforeValue": "[redacted-unselected]",
+        "previewValue": "[redacted-option]"
+      },
+      "sourceEvidenceIds": [
+        "devhub-public-guidance-application-draft"
+      ],
+      "stopBefore": [
+        "official_submission",
+        "certification",
+        "payment",
+        "upload",
+        "inspection_scheduling"
+      ]
+    }
+  ]
+}

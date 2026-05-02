@@ -9,6 +9,7 @@ export * from './countermodels';
 export * from './dcecCleaning';
 export * from './dcecCore';
 export * from './dcecEnglishGrammar';
+export * from './dcecEnglishWrapper';
 export * from './dcecIntegration';
 export * from './dcecNamespace';
 export * from './dcecParsing';

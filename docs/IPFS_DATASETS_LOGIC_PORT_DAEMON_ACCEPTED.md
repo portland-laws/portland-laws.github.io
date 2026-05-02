@@ -200,3 +200,21 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T061309Z-add-cec-proof-explainer-dependency-graph-metadata-parity..json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T061309Z-add-cec-proof-explainer-dependency-graph-metadata-parity..patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T061309Z-add-cec-proof-explainer-dependency-graph-metadata-parity..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-02 06:33:56 UTC
+
+- Target: `Task checkbox-195: Port remaining Python logic module `logic/CEC/cec_framework.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Add browser-native CEC framework registry and validation parity scaffold
+- Impact: The new cecFramework.ts source provides deterministic TypeScript equivalents for cec_framework.py framework metadata, declarations, Python-style spec loading, serialization, and fail-closed arity/sort validation. The focused Jest test imports the runtime source directly and exercises default CEC declarations, snake_case dictionary import/export, duplicate rejection, and malformed expression validation without Python, server, filesystem, subprocess, RPC, or Node-only runtime dependencies.
+- Changed files: `src/lib/logic/cec/cecFramework.test.ts`, `src/lib/logic/cec/cecFramework.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T063356Z-add-browser-native-cec-framework-registry-and-validation-parity-scaffold.json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T063356Z-add-browser-native-cec-framework-registry-and-validation-parity-scaffold.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T063356Z-add-browser-native-cec-framework-registry-and-validation-parity-scaffold.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
+## 2026-05-02 07:06:38 UTC
+
+- Target: `Task checkbox-197: Port remaining Python logic module `logic/CEC/eng_dcec_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Add browser-native eng_dcec_wrapper parity facade for English-to-DCEC conversion
+- Impact: Adds a deterministic TypeScript wrapper under src/lib/logic/cec/ that directly exposes parse, validation, semantic conversion, and capability metadata for the Python logic/CEC/eng_dcec_wrapper.py surface. The focused Jest tests exercise the new wrapper through the existing DCEC English grammar validation path and assert that it has no Python, server, filesystem, subprocess, RPC, or Node-only runtime dependency.
+- Changed files: `src/lib/logic/cec/dcecEnglishGrammar.test.ts`, `src/lib/logic/cec/dcecEnglishWrapper.ts`, `src/lib/logic/cec/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T070638Z-add-browser-native-eng_dcec_wrapper-parity-facade-for-english-to-dcec-conversion.json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T070638Z-add-browser-native-eng_dcec_wrapper-parity-facade-for-english-to-dcec-conversion.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T070638Z-add-browser-native-eng_dcec_wrapper-parity-facade-for-english-to-dcec-conversion.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

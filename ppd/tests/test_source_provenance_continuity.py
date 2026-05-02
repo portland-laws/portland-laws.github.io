@@ -1,0 +1,178 @@
+"""Fixture-only provenance continuity checks for public PP&D sources.
+
+This test deliberately validates relationships across committed fixtures instead
+of introducing a shared contract rewrite. It proves at least one public source
+can be followed from the crawl dry-run plan into source index records,
+normalized document fixtures, and extracted requirement fixtures by canonical
+URL or source evidence ID.
+"""
+
+from __future__ import annotations
+
+import json
+import unittest
+from pathlib import Path
+from typing import Any, Iterable
+
+
+FIXTURES_DIR = Path(__file__).parent / "fixtures"
+PUBLIC_CRAWL_PLAN = FIXTURES_DIR / "crawler" / "public_crawl_dry_run_plan.json"
+
+URL_KEYS = {
+    "url",
+    "source_url",
+    "sourceUrl",
+    "canonical_url",
+    "canonicalUrl",
+    "plannedUrl",
+    "planned_url",
+    "href",
+}
+CANONICAL_URL_KEYS = {"canonical_url", "canonicalUrl"}
+EVIDENCE_KEYS = {
+    "evidence_id",
+    "evidenceId",
+    "source_evidence_id",
+    "sourceEvidenceId",
+    "sourceEvidenceID",
+    "sourceEvidenceIds",
+    "source_evidence_ids",
+    "evidenceIds",
+    "evidence_ids",
+    "id",
+}
+
+
+def _load_json(path: Path) -> Any:
+    with path.open("r", encoding="utf-8") as handle:
+        return json.load(handle)
+
+
+def _json_fixture_paths() -> list[Path]:
+    return sorted(path for path in FIXTURES_DIR.rglob("*.json") if path.is_file())
+
+
+def _walk(value: Any) -> Iterable[Any]:
+    yield value
+    if isinstance(value, dict):
+        for child in value.values():
+            yield from _walk(child)
+    elif isinstance(value, list):
+        for child in value:
+            yield from _walk(child)
+
+
+def _string_values_for_keys(value: Any, keys: set[str]) -> set[str]:
+    found: set[str] = set()
+    for node in _walk(value):
+        if not isinstance(node, dict):
+            continue
+        for key, child in node.items():
+            if key not in keys:
+                continue
+            if isinstance(child, str) and child.strip():
+                found.add(child.strip())
+            elif isinstance(child, list):
+                found.update(item.strip() for item in child if isinstance(item, str) and item.strip())
+    return found
+
+
+def _looks_public_ppd_url(value: str) -> bool:
+    return value.startswith("https://www.portland.gov/ppd") or value.startswith(
+        "https://devhub.portlandoregon.gov"
+    )
+
+
+def _is_source_index_fixture(path: Path, data: Any) -> bool:
+    name = path.name.lower()
+    if "source" in name and "index" in name:
+        return True
+    keys = _string_values_for_keys(data, {"pageType", "page_type", "crawlStatus", "crawl_status"})
+    return bool(keys) and bool(_string_values_for_keys(data, CANONICAL_URL_KEYS))
+
+
+def _is_normalized_document_fixture(path: Path, data: Any) -> bool:
+    path_text = "/".join(path.relative_to(FIXTURES_DIR).parts).lower()
+    if "normalized" in path_text:
+        return True
+    keys = _string_values_for_keys(data, {"documentRole", "document_role", "contentType", "content_type"})
+    has_document_text = bool(_string_values_for_keys(data, {"title", "markdown", "bodyText", "body_text"}))
+    return bool(keys) and has_document_text
+
+
+def _is_requirement_fixture(path: Path, data: Any) -> bool:
+    path_text = "/".join(path.relative_to(FIXTURES_DIR).parts).lower()
+    if "requirement" in path_text:
+        return True
+    return bool(
+        _string_values_for_keys(
+            data,
+            {"requirementId", "requirement_id", "formalizationStatus", "formalization_status"},
+        )
+    )
+
+
+class SourceProvenanceContinuityTest(unittest.TestCase):
+    def test_public_source_provenance_continues_across_fixture_layers(self) -> None:
+        crawl_plan = _load_json(PUBLIC_CRAWL_PLAN)
+        planned_public_urls = {
+            value
+            for value in _string_values_for_keys(crawl_plan, URL_KEYS)
+            if _looks_public_ppd_url(value)
+        }
+        self.assertTrue(planned_public_urls, "crawl dry-run plan must name public PP&D URLs")
+
+        source_index_urls: set[str] = set()
+        source_index_evidence_ids: set[str] = set()
+        normalized_urls: set[str] = set()
+        normalized_evidence_ids: set[str] = set()
+        requirement_urls: set[str] = set()
+        requirement_evidence_ids: set[str] = set()
+
+        for path in _json_fixture_paths():
+            data = _load_json(path)
+            urls = {value for value in _string_values_for_keys(data, URL_KEYS) if _looks_public_ppd_url(value)}
+            evidence_ids = _string_values_for_keys(data, EVIDENCE_KEYS)
+
+            if _is_source_index_fixture(path, data):
+                source_index_urls.update(urls)
+                source_index_evidence_ids.update(evidence_ids)
+            if _is_normalized_document_fixture(path, data):
+                normalized_urls.update(urls)
+                normalized_evidence_ids.update(evidence_ids)
+            if _is_requirement_fixture(path, data):
+                requirement_urls.update(urls)
+                requirement_evidence_ids.update(evidence_ids)
+
+        planned_to_source_index_urls = planned_public_urls & source_index_urls
+        self.assertTrue(
+            planned_to_source_index_urls,
+            "at least one public crawl dry-run URL must appear in source index fixtures",
+        )
+
+        source_index_to_normalized = (source_index_urls & normalized_urls) or (
+            source_index_evidence_ids & normalized_evidence_ids
+        )
+        self.assertTrue(
+            source_index_to_normalized,
+            "source index fixtures must link to normalized document fixtures by URL or evidence ID",
+        )
+
+        normalized_to_requirements = (normalized_urls & requirement_urls) or (
+            normalized_evidence_ids & requirement_evidence_ids
+        )
+        self.assertTrue(
+            normalized_to_requirements,
+            "normalized document fixtures must link to requirement fixtures by URL or evidence ID",
+        )
+
+        full_url_continuity = planned_public_urls & source_index_urls & normalized_urls & requirement_urls
+        full_evidence_continuity = normalized_evidence_ids & requirement_evidence_ids
+        self.assertTrue(
+            full_url_continuity or full_evidence_continuity,
+            "at least one public PP&D source must carry through to requirements by canonical URL or source evidence ID",
+        )
+
+
+if __name__ == "__main__":
+    unittest.main()

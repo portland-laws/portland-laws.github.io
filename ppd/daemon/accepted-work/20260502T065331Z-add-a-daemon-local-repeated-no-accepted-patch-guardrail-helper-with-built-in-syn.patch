@@ -1,0 +1,194 @@
+--- a/ppd/daemon/repeated_no_patch_guardrail.py
++++ b/ppd/daemon/repeated_no_patch_guardrail.py
+@@ -0,0 +1,191 @@
++#!/usr/bin/env python3
++"""Prompt guardrail for repeated PP&D daemon rounds without an accepted patch.
++
++This module is intentionally small and dependency-free. It can be imported by the
++PP&D daemon preflight path or executed directly with ``--self-test``.
++"""
++
++from __future__ import annotations
++
++import argparse
++import json
++import sys
++import unittest
++from dataclasses import dataclass
++from typing import Any, Dict, Iterable, List, Mapping, Sequence
++
++DEFAULT_THRESHOLD = 4
++NON_ACCEPTED_KINDS = {
++    "empty_proposal",
++    "failed",
++    "json_parse_error",
++    "no_patch",
++    "rejected",
++    "syntax_preflight",
++    "validation",
++}
++
++
++@dataclass(frozen=True)
++class RepeatedNoAcceptedPatchDecision:
++    """Decision returned by the repeated-round guardrail."""
++
++    triggered: bool
++    consecutive_rounds: int
++    prompt: str
++    validation_commands: List[List[str]]
++
++
++def _as_bool(value: Any) -> bool:
++    return bool(value) is True
++
++
++def round_was_accepted(result: Mapping[str, Any]) -> bool:
++    """Return True only for a daemon result that actually accepted a patch."""
++    if not _as_bool(result.get("applied")):
++        return False
++    if result.get("validation_passed") is False:
++        return False
++    errors = result.get("errors") or []
++    return not errors
++
++
++def round_was_non_accepted(result: Mapping[str, Any]) -> bool:
++    """Return True for failed, empty, rejected, or validation-blocked rounds."""
++    if round_was_accepted(result):
++        return False
++    failure_kind = str(result.get("failure_kind") or result.get("reason") or "").strip()
++    if failure_kind in NON_ACCEPTED_KINDS:
++        return True
++    if result.get("applied") is False:
++        return True
++    if result.get("errors"):
++        return True
++    files = result.get("files") or result.get("changed_files") or []
++    return len(files) == 0
++
++
++def count_trailing_non_accepted(results: Sequence[Mapping[str, Any]]) -> int:
++    """Count consecutive non-accepted daemon rounds from the newest result back."""
++    count = 0
++    for result in reversed(list(results)):
++        if round_was_non_accepted(result):
++            count += 1
++            continue
++        break
++    return count
++
++
++def build_recovery_prompt(active_task: str, consecutive_rounds: int) -> str:
++    """Build the constrained next prompt used after repeated non-accepted rounds."""
++    return "\n".join(
++        [
++            "Supervisor recovery guardrail: repeated PP&D daemon rounds ended without an accepted patch.",
++            "Next task: repair daemon supervision only; do not implement the selected PP&D domain task.",
++            f"Consecutive non-accepted rounds: {consecutive_rounds}.",
++            f"Blocked target task: {active_task}",
++            "Return exactly one JSON object with complete file replacements in files[].",
++            "Use one narrow fixture-first file set under ppd/daemon/ only.",
++            "Prefer syntactically simple Python with an executable self-test or py_compile-safe module.",
++            "Before proposing edits, ensure every Python file in the proposal can pass python3 -m py_compile.",
++            "Do not create live DevHub sessions, private auth state, traces, raw crawl output, or downloaded documents.",
++            "Do not automate CAPTCHA, MFA, account creation, payment, submission, certification, cancellation, uploads, or inspection scheduling.",
++            "Do not broaden crawler, DevHub, extraction, or logic contracts in this recovery round.",
++            "Do not edit application or domain artifacts just to mark progress.",
++        ]
++    )
++
++
++def decide_repeated_no_patch_guardrail(
++    recent_results: Sequence[Mapping[str, Any]],
++    active_task: str,
++    threshold: int = DEFAULT_THRESHOLD,
++) -> RepeatedNoAcceptedPatchDecision:
++    """Return a recovery decision when trailing failures meet the threshold."""
++    consecutive_rounds = count_trailing_non_accepted(recent_results)
++    triggered = consecutive_rounds >= threshold
++    prompt = ""
++    if triggered:
++        prompt = build_recovery_prompt(active_task, consecutive_rounds)
++    return RepeatedNoAcceptedPatchDecision(
++        triggered=triggered,
++        consecutive_rounds=consecutive_rounds,
++        prompt=prompt,
++        validation_commands=[["python3", "-m", "py_compile", "ppd/daemon/repeated_no_patch_guardrail.py"]],
++    )
++
++
++def decision_to_json(decision: RepeatedNoAcceptedPatchDecision) -> str:
++    """Serialize a decision for daemon diagnostics."""
++    return json.dumps(
++        {
++            "triggered": decision.triggered,
++            "consecutive_rounds": decision.consecutive_rounds,
++            "prompt": decision.prompt,
++            "validation_commands": decision.validation_commands,
++        },
++        indent=2,
++        sort_keys=True,
++    )
++
++
++class RepeatedNoAcceptedPatchGuardrailTest(unittest.TestCase):
++    def test_triggers_after_four_failed_or_empty_rounds(self) -> None:
++        recent_results: List[Dict[str, Any]] = [
++            {"applied": True, "validation_passed": True, "errors": [], "files": ["ppd/tests/example.py"]},
++            {"applied": False, "failure_kind": "validation", "files": ["ppd/tests/a.py"]},
++            {"applied": False, "failure_kind": "syntax_preflight", "files": ["ppd/daemon/b.py"]},
++            {"applied": False, "failure_kind": "empty_proposal", "files": []},
++            {"applied": False, "failure_kind": "no_patch", "files": []},
++        ]
++        decision = decide_repeated_no_patch_guardrail(recent_results, "Task checkbox-71")
++        self.assertTrue(decision.triggered)
++        self.assertEqual(decision.consecutive_rounds, 4)
++        self.assertIn("one narrow fixture-first file set", decision.prompt)
++        self.assertIn("complete file replacements", decision.prompt)
++        self.assertIn("Do not create live DevHub sessions", decision.prompt)
++        self.assertIn("Do not broaden crawler, DevHub, extraction, or logic contracts", decision.prompt)
++
++    def test_does_not_trigger_before_threshold(self) -> None:
++        recent_results: List[Dict[str, Any]] = [
++            {"applied": True, "validation_passed": True, "errors": [], "files": ["ppd/tests/example.py"]},
++            {"applied": False, "failure_kind": "validation", "files": ["ppd/tests/a.py"]},
++            {"applied": False, "failure_kind": "syntax_preflight", "files": ["ppd/daemon/b.py"]},
++            {"applied": False, "failure_kind": "empty_proposal", "files": []},
++        ]
++        decision = decide_repeated_no_patch_guardrail(recent_results, "Task checkbox-71")
++        self.assertFalse(decision.triggered)
++        self.assertEqual(decision.prompt, "")
++
++    def test_accepted_round_resets_trailing_count(self) -> None:
++        recent_results: List[Dict[str, Any]] = [
++            {"applied": False, "failure_kind": "validation", "files": ["ppd/tests/a.py"]},
++            {"applied": True, "validation_passed": True, "errors": [], "files": ["ppd/tests/example.py"]},
++            {"applied": False, "failure_kind": "syntax_preflight", "files": ["ppd/daemon/b.py"]},
++        ]
++        decision = decide_repeated_no_patch_guardrail(recent_results, "Task checkbox-71")
++        self.assertFalse(decision.triggered)
++        self.assertEqual(decision.consecutive_rounds, 1)
++
++
++def _run_self_test() -> int:
++    suite = unittest.defaultTestLoader.loadTestsFromTestCase(RepeatedNoAcceptedPatchGuardrailTest)
++    result = unittest.TextTestRunner(stream=sys.stderr, verbosity=0).run(suite)
++    if not result.wasSuccessful():
++        return 1
++    print(json.dumps({"ok": True, "test_count": result.testsRun}, sort_keys=True))
++    return 0
++
++
++def main(argv: Iterable[str] | None = None) -> int:
++    parser = argparse.ArgumentParser(description="PP&D repeated no-accepted-patch guardrail")
++    parser.add_argument("--self-test", action="store_true", help="run synthetic guardrail tests")
++    args = parser.parse_args(list(argv) if argv is not None else None)
++    if args.self_test:
++        return _run_self_test()
++    parser.print_help()
++    return 0
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())

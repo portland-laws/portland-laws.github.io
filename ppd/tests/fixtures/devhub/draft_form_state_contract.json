@@ -1,0 +1,132 @@
+{
+  "fixtureSchema": "ppd.devhub.draft_form_state_contract.v1",
+  "fixtureId": "devhub-draft-building-permit-form-state-redacted",
+  "captureMode": "synthetic_fixture_only",
+  "noLiveBrowserSession": true,
+  "usesAuthenticationState": false,
+  "usesBrowserTrace": false,
+  "usesScreenshots": false,
+  "sourceEvidenceIds": [
+    "devhub-public-guidance-permit-request",
+    "devhub-public-guidance-save-draft"
+  ],
+  "pages": [
+    {
+      "pageId": "devhub-draft-project-info",
+      "stateKind": "devhub_draft_page",
+      "url": "https://devhub.portlandoregon.gov/",
+      "heading": "Project Information",
+      "valuePolicy": "redacted_values_only",
+      "availableActions": [
+        "read_form_state",
+        "preview_reversible_draft_fill",
+        "save_draft"
+      ],
+      "fields": [
+        {
+          "fieldId": "project-description",
+          "label": "Project description",
+          "role": "textbox",
+          "required": true,
+          "requiredSignal": {
+            "kind": "required_flag",
+            "basis": "aria-required"
+          },
+          "selectorStrategy": "accessible",
+          "selector": {
+            "accessible": {
+              "role": "textbox",
+              "name": "Project description",
+              "exact": true
+            }
+          },
+          "redactedValue": "",
+          "notes": "Synthetic draft text value; not captured from a live user session."
+        },
+        {
+          "fieldId": "work-type",
+          "label": "Type of work",
+          "role": "combobox",
+          "required": true,
+          "requiredSignal": {
+            "kind": "required_flag",
+            "basis": "visible_label"
+          },
+          "selectorStrategy": "accessible",
+          "selector": {
+            "accessible": {
+              "role": "combobox",
+              "name": "Type of work",
+              "exact": true
+            }
+          },
+          "redactedValue": "",
+          "optionsPolicy": "labels_only_no_account_values"
+        },
+        {
+          "fieldId": "estimated-project-value",
+          "label": "Estimated project value",
+          "role": "spinbutton",
+          "required": false,
+          "selectorStrategy": "accessible",
+          "selector": {
+            "accessible": {
+              "role": "spinbutton",
+              "name": "Estimated project value",
+              "exact": true
+            }
+          },
+          "redactedValue": ""
+        }
+      ]
+    },
+    {
+      "pageId": "devhub-draft-contact-info",
+      "stateKind": "devhub_draft_page",
+      "url": "https://devhub.portlandoregon.gov/",
+      "heading": "Applicant Contact",
+      "valuePolicy": "redacted_values_only",
+      "availableActions": [
+        "read_form_state",
+        "preview_reversible_draft_fill",
+        "save_draft"
+      ],
+      "fields": [
+        {
+          "fieldId": "applicant-email",
+          "label": "Applicant email",
+          "role": "textbox",
+          "required": true,
+          "requiredSignal": {
+            "kind": "required_flag",
+            "basis": "html_required"
+          },
+          "selectorStrategy": "accessible",
+          "selector": {
+            "accessible": {
+              "role": "textbox",
+              "name": "Applicant email",
+              "exact": true
+            }
+          },
+          "redactedValue": ""
+        },
+        {
+          "fieldId": "owner-is-applicant",
+          "label": "Property owner is the applicant",
+          "role": "checkbox",
+          "required": false,
+          "selectorStrategy": "accessible",
+          "selector": {
+            "accessible": {
+              "role": "checkbox",
+              "name": "Property owner is the applicant",
+              "exact": true
+            }
+          },
+          "redactedValue": ""
+        }
+      ]
+    }
+  ]
+}
