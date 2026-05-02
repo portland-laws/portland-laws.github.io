@@ -509,7 +509,7 @@ Acceptance criteria:
   - [x] Initial in-memory performance engine and strategy profiler.
   - [x] Initial browser performance dashboard data model and renderer.
   - [x] Initial browser performance profiler with repeated timing samples, memory snapshots, bottleneck classification, benchmark suites, and report strings.
-  - [ ] Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.
+  - [x] Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.
 
 ### Phase 12: Full CEC/DCEC Parity
 
@@ -572,7 +572,7 @@ Acceptance criteria:
 ### Phase 13: Browser-Native ML/NLP Parity
 
 - [x] Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.
-- [ ] Port `ml_confidence.py` to local browser inference or an equivalent deterministic TypeScript model.
+- [!] Port `ml_confidence.py` to local browser inference or an equivalent deterministic TypeScript model.
 - [ ] Add local model artifact loading, caching, versioning, and unload controls.
 - [x] Add exact/tolerance parity tests against Python ML/spaCy development fixtures.
 - [ ] Remove `nlpUnavailable` and `mlUnavailable` capability flags once browser-native parity is implemented.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-02 17:41:27 UTC
+Last updated: 2026-05-02 18:14:25 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.`
+Current target: `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1092,7 +1092,7 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-114: Initial in-memory performance engine and strategy profiler.` - complete
 - [x] `Task checkbox-115: Initial browser performance dashboard data model and renderer.` - complete
 - [x] `Task checkbox-116: Initial browser performance profiler with repeated timing samples, memory snapshots, bottleneck classification, benchmark suites, and report strings.` - complete
-- [!] `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.` - latest daemon round failed validation or preflight
+- [x] `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.` - complete
 - [x] `Task checkbox-118: Port CEC syntax tree, grammar loader, grammar engine, problem parser, and DCEC parsers.` - complete
 - [x] `Task checkbox-119: Initial browser-native CEC/DCEC s-expression AST, parser, formatter, validator, and Portland DCEC unit coverage.` - complete
 - [x] `Task checkbox-120: Initial CEC/DCEC expression analyzer for predicates, atoms, section refs, quantifiers, deontic operators, temporal operators, and expression complexity.` - complete
@@ -1149,7 +1149,7 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-171: Port CEC NL policy compilers and language detection with browser-native NLP.` - complete
 - [x] `Task checkbox-172: Add deeper CEC/DCEC parity fixtures against Python parser and prover outputs.` - complete
 - [x] `Task checkbox-173: Replace spaCy extraction with browser-native NLP: Transformers.js token classification, dependency-light NLP, ONNX/WebGPU, or WASM NLP.` - complete
-- [ ] `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.` - needed
+- [!] `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.` - latest daemon round failed validation or preflight
 - [ ] `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.` - needed
 - [x] `Task checkbox-176: Add exact/tolerance parity tests against Python ML/spaCy development fixtures.` - complete
 - [ ] `Task checkbox-177: Remove 'nlpUnavailable' and 'mlUnavailable' capability flags once browser-native parity is implemented.` - needed
@@ -1430,11 +1430,13 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.`
+- Target: `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.`
 - Result: `needs follow-up`
-- Summary: No summary
-- Errors: LLM response did not contain JSON or a fenced diff patch.
-- Failure kind: `parse`
+- Summary: Add deterministic browser-native ML confidence model
+- Impact: src/lib/logic/mlConfidence.ts now provides a local deterministic confidence scorer with validation, feature extraction, labels, metadata, and compatibility aliases for logic-port callers. src/lib/logic/mlConfidence.test.ts exercises the browser-native contract through the existing Jest harness and is directly used by npm run validate:logic-port.
+- Errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
+../../..src/lib/logic/mlConfidence.ts(13,14): error TS2314: Generic type 'Record' requires 2 type argument(s).
+- Failure kind: `preflight`
 
 ### Blocked Backlog
 
@@ -1453,6 +1455,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
   - Failure kinds: `{"daemon_exception": 3}`
   - Latest failure kind: `daemon_exception`
   - Latest errors: llm_router could not generate with model='gpt-5.5' provider='auto'. Configure the provider credentials or pass --provider. Original error: copilot CLI binary not found on PATH (required for session/tracing flags). Install the GitHub Copilot...
+- `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.`
+  - Failures since success: `3`
+  - Failure kinds: `{"typescript_quality": 3}`
+  - Latest failure kind: `typescript_quality`
+  - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/mlConfidence.ts(13,14): error TS2314: Generic type 'Record' requires 2 type argument(...
 
 ### Required Daemon Behavior
 

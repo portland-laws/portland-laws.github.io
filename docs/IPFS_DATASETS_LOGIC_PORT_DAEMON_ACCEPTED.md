@@ -218,3 +218,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T070638Z-add-browser-native-eng_dcec_wrapper-parity-facade-for-english-to-dcec-conversion.json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T070638Z-add-browser-native-eng_dcec_wrapper-parity-facade-for-english-to-dcec-conversion.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T070638Z-add-browser-native-eng_dcec_wrapper-parity-facade-for-english-to-dcec-conversion.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-02 18:01:11 UTC
+
+- Target: `Task checkbox-117: Full profiler/dashboard parity with browser performance timelines, flamegraph-style views, and richer bottleneck reports.`
+- Summary: Add browser-native CEC profiler timeline, flamegraph, and bottleneck report helpers.
+- Impact: Adds deterministic TypeScript profiler report generation under src/lib/logic/cec/ and extends the existing Jest profiler tests to validate browser performance timeline metadata, flamegraph-style aggregation, and richer bottleneck reporting without Node, Python, filesystem, subprocess, RPC, or server fallbacks.
+- Changed files: `src/lib/logic/cec/performanceProfiler.test.ts`, `src/lib/logic/cec/profilerTimeline.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T180111Z-add-browser-native-cec-profiler-timeline-flamegraph-and-bottleneck-report-helper.json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T180111Z-add-browser-native-cec-profiler-timeline-flamegraph-and-bottleneck-report-helper.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T180111Z-add-browser-native-cec-profiler-timeline-flamegraph-and-bottleneck-report-helper.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

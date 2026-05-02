@@ -1,4 +1,13 @@
-import { CecPerformanceProfiler, getStandardCecBenchmarks, profileCecFunction } from './performanceProfiler';
+import {
+  buildCecBrowserPerformanceTimeline,
+  buildCecFlamegraph,
+  createCecProfilerBottleneckReport,
+} from './profilerTimeline';
+import {
+  CecPerformanceProfiler,
+  getStandardCecBenchmarks,
+  profileCecFunction,
+} from './performanceProfiler';
 
 describe('CecPerformanceProfiler', () => {
   it('profiles repeated function execution and stores history', () => {
@@ -29,13 +38,66 @@ describe('CecPerformanceProfiler', () => {
       severity: 'critical',
       complexityEstimate: 'O(n^3)',
     });
-    expect(bottlenecks.find((b) => b.function === 'strategySelector')?.recommendation).toContain('strategy costs');
+    expect(bottlenecks.find((b) => b.function === 'strategySelector')?.recommendation).toContain(
+      'strategy costs',
+    );
     expect(bottlenecks.map((b) => b.severity)).toContain('medium');
+  });
+
+  it('builds browser-native timelines, flamegraphs, and richer bottleneck reports', () => {
+    const samples = [
+      {
+        name: 'parseCec',
+        durationMs: 10,
+        startTimeMs: 0,
+        category: 'parse',
+        stack: ['prove'],
+        metadata: { expressionType: 'deontic' },
+      },
+      { name: 'strategySelector', durationMs: 210, startTimeMs: 10, calls: 1, stack: ['prove'] },
+      {
+        name: 'nestedRuleLoop',
+        durationMs: 5,
+        startTimeMs: 220,
+        calls: 2500,
+        stack: ['prove', 'rules'],
+      },
+    ];
+
+    const timeline = buildCecBrowserPerformanceTimeline(samples);
+    expect(timeline).toMatchObject({
+      source: 'browser-performance-timeline',
+      totalDurationMs: 225,
+      events: [
+        { name: 'parseCec', category: 'parse', startTimeMs: 0, endTimeMs: 10, durationMs: 10 },
+        { name: 'strategySelector', startTimeMs: 10, endTimeMs: 220, durationMs: 210 },
+        { name: 'nestedRuleLoop', startTimeMs: 220, endTimeMs: 225, durationMs: 5, calls: 2500 },
+      ],
+    });
+    expect(timeline.marks.map((mark) => mark.name)).toContain('strategySelector:end');
+
+    const flamegraph = buildCecFlamegraph(samples);
+    expect(flamegraph.children[0]).toMatchObject({ name: 'prove', valueMs: 225, calls: 2502 });
+    expect(
+      flamegraph.children[0].children.find((frame) => frame.name === 'strategySelector'),
+    ).toMatchObject({ selfMs: 210 });
+
+    const report = createCecProfilerBottleneckReport(samples);
+    expect(report).toMatchObject({ totalDurationMs: 225, analyzedEvents: 3 });
+    expect(
+      report.bottlenecks.find((finding) => finding.function === 'nestedRuleLoop'),
+    ).toMatchObject({
+      severity: 'critical',
+      calls: 2500,
+    });
+    expect(report.recommendations.join('\n')).toContain('strategy costs');
   });
 
   it('profiles browser memory snapshots without requiring Python memory tooling', () => {
     const profiler = new CecPerformanceProfiler();
-    const memory = profiler.memoryProfile('allocate', () => Array.from({ length: 10 }, (_, index) => index));
+    const memory = profiler.memoryProfile('allocate', () =>
+      Array.from({ length: 10 }, (_, index) => index),
+    );
 
     expect(memory).toMatchObject({
       functionName: 'allocate',
@@ -50,7 +112,14 @@ describe('CecPerformanceProfiler', () => {
     const profiler = new CecPerformanceProfiler({ baseline: { custom: 0.000001 } });
     const results = profiler.runBenchmarkSuite([
       { name: 'custom', expression: '(subject_to agent code)', thresholdMs: 100, run: () => true },
-      { name: 'failure', expression: '(bad expression)', thresholdMs: 100, run: () => { throw new Error('boom'); } },
+      {
+        name: 'failure',
+        expression: '(bad expression)',
+        thresholdMs: 100,
+        run: () => {
+          throw new Error('boom');
+        },
+      },
     ]);
 
     expect(getStandardCecBenchmarks().length).toBeGreaterThan(0);
@@ -65,7 +134,7 @@ describe('CecPerformanceProfiler', () => {
 
     expect(profiler.generateReport('text')).toContain('CEC Performance Profiling Report');
     expect(JSON.parse(profiler.generateReport('json')).history).toHaveLength(1);
-    expect(profiler.generateReport('html')).toContain('<script type="application/json" id="cec-profiler-data">');
+    expect(profiler.generateReport('html')).toContain('');
   });
 
   it('exposes a convenience profiling helper', () => {

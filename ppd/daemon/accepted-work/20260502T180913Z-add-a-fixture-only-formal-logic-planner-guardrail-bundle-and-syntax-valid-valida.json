@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/formal_logic/planner_guardrail_bundle.json",
+    "ppd/tests/test_formal_logic_planner_guardrail_bundle.py"
+  ],
+  "created_at": "2026-05-02T18:09:13.117942Z",
+  "impact": "This advances the PP&D plan by tying extracted requirements, missing-information detection, formal stop gates, and guarded Playwright drafting into one deterministic agent-planning fixture without live DevHub access or private artifacts.",
+  "summary": "Add a fixture-only formal-logic planner guardrail bundle and syntax-valid validator for one PP&D requirement, missing user fact, stop gate, and reversible draft-only Playwright preview action.",
+  "target_task": "Task checkbox-87: Task checkbox-82: Add a formal-logic planner integration fixture that maps one extracted PP&D requirement, one missing user fact, one stop gate, and one reversible draft-only Playwright action into a single agent guardrail bundle.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 92 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "..........................................................................................................................................................................................................................................................................ss..............sss......................................................................................................................................................................... ---------------------------------------------------------------------- Ran 454 tests in 0.086s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

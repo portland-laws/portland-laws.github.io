@@ -1,0 +1,150 @@
+{
+  "schemaVersion": 1,
+  "planId": "agent-plan-single-pdf-process-draft-only-fixture",
+  "planType": "reversible_draft_only_agent_plan",
+  "fixtureOnly": true,
+  "draftOnly": true,
+  "browserLaunched": false,
+  "liveDevHubSession": false,
+  "createdAt": "2026-05-02T00:00:00Z",
+  "processRef": {
+    "processId": "single-pdf-process-synthetic-public-fixture",
+    "permitType": "building_permit_plan_review",
+    "sourceEvidenceIds": [
+      "ev-devhub-application-guidance",
+      "ev-single-pdf-process-guidance"
+    ]
+  },
+  "sourceEvidence": [
+    {
+      "sourceEvidenceId": "ev-devhub-application-guidance",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/apply-permit",
+      "sourceTitle": "Apply for a permit in Development Hub PDX",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "publicOnly": true,
+      "supports": [
+        "req-devhub-account",
+        "req-project-description"
+      ]
+    },
+    {
+      "sourceEvidenceId": "ev-single-pdf-process-guidance",
+      "sourceUrl": "https://www.portland.gov/ppd/permits/single-pdf-process",
+      "sourceTitle": "Single PDF Process guidance",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "publicOnly": true,
+      "supports": [
+        "req-single-plan-pdf",
+        "gate-stop-before-official-upload"
+      ]
+    },
+    {
+      "sourceEvidenceId": "ev-devhub-faq-payment-submit",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/help",
+      "sourceTitle": "Development Hub PDX help and FAQ",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "publicOnly": true,
+      "supports": [
+        "gate-stop-before-submit",
+        "gate-stop-before-payment"
+      ]
+    }
+  ],
+  "missingInformation": [
+    {
+      "missingFactId": "fact-project-description",
+      "requirementId": "req-project-description",
+      "prompt": "Provide a short project description for the draft permit request.",
+      "currentValue": "UNKNOWN",
+      "neededForDraftPreview": true,
+      "sourceEvidenceIds": [
+        "ev-devhub-application-guidance"
+      ]
+    },
+    {
+      "missingFactId": "fact-single-plan-pdf-ready",
+      "requirementId": "req-single-plan-pdf",
+      "prompt": "Confirm whether drawing plans are prepared as one searchable PDF before any official upload is considered.",
+      "currentValue": "UNKNOWN",
+      "neededForDraftPreview": false,
+      "sourceEvidenceIds": [
+        "ev-single-pdf-process-guidance"
+      ]
+    }
+  ],
+  "playwrightDraftPreviews": [
+    {
+      "previewId": "preview-project-description-fill",
+      "actionType": "fill_field",
+      "actionClass": "reversible_draft_edit",
+      "previewOnly": true,
+      "browserLaunched": false,
+      "selectorBasis": {
+        "role": "textbox",
+        "accessibleName": "Project description",
+        "labelText": "Project description",
+        "nearbyHeading": "Project information",
+        "stableSelectorBasis": "role+accessibleName+labelText"
+      },
+      "fieldRef": {
+        "fieldId": "devhub-project-description",
+        "missingFactId": "fact-project-description",
+        "requirementId": "req-project-description"
+      },
+      "beforeValue": "REDACTED_EMPTY",
+      "afterValue": "REDACTED_USER_SUPPLIED_PREVIEW",
+      "sourceEvidenceIds": [
+        "ev-devhub-application-guidance"
+      ]
+    }
+  ],
+  "guardrailStopGates": [
+    {
+      "gateId": "gate-stop-before-official-upload",
+      "requirementId": "req-single-plan-pdf",
+      "stopBeforeAction": "official_upload",
+      "actionClass": "consequential",
+      "explicitConfirmationRequired": true,
+      "exactConfirmationPresent": false,
+      "confirmationDefault": false,
+      "reason": "Official uploads are not part of this reversible draft-only plan.",
+      "sourceEvidenceIds": [
+        "ev-single-pdf-process-guidance"
+      ]
+    },
+    {
+      "gateId": "gate-stop-before-submit",
+      "requirementId": "req-devhub-account",
+      "stopBeforeAction": "submit_application",
+      "actionClass": "consequential",
+      "explicitConfirmationRequired": true,
+      "exactConfirmationPresent": false,
+      "confirmationDefault": false,
+      "reason": "Submission is consequential and requires exact user confirmation in the active session.",
+      "sourceEvidenceIds": [
+        "ev-devhub-faq-payment-submit"
+      ]
+    },
+    {
+      "gateId": "gate-stop-before-payment",
+      "requirementId": "req-devhub-account",
+      "stopBeforeAction": "pay_fee",
+      "actionClass": "financial",
+      "explicitConfirmationRequired": true,
+      "exactConfirmationPresent": false,
+      "confirmationDefault": false,
+      "reason": "Payment is financial and excluded from fixture-only draft planning.",
+      "sourceEvidenceIds": [
+        "ev-devhub-faq-payment-submit"
+      ]
+    }
+  ],
+  "auditPreview": {
+    "recordsOnlyPlannedActions": true,
+    "recordsExecutedActions": false,
+    "containsScreenshots": false,
+    "containsTraces": false,
+    "containsAuthState": false,
+    "containsPrivateValues": false
+  }
+}

@@ -1,0 +1,2 @@
+ppd/tests/fixtures/devhub/audit_event_sensitive_rejection_cases.json
+ppd/tests/test_playwright_audit_event_sensitive_rejections.py

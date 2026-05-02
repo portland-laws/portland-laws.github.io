@@ -1,0 +1,213 @@
+--- a/ppd/tests/fixtures/missing_information/questionnaire_resolution.json
++++ b/ppd/tests/fixtures/missing_information/questionnaire_resolution.json
+@@ -0,0 +1,116 @@
++{
++  "schemaVersion": 1,
++  "fixtureId": "missing-information-questionnaire-resolution-single-pdf-process",
++  "processId": "synthetic-single-pdf-process-public-fixture",
++  "caseStateId": "redacted-user-case-placeholder",
++  "generatedAt": "2026-05-01T00:00:00Z",
++  "redactionPolicy": {
++    "privateUserValues": "placeholder_only",
++    "placeholder": "[REDACTED]",
++    "publicEvidence": "preserved"
++  },
++  "sourceEvidence": [
++    {
++      "evidenceId": "src-devhub-application-guidance",
++      "sourceType": "public_guidance",
++      "title": "Development Hub PDX application guidance",
++      "url": "https://www.portland.gov/ppd/development-hub-pdx/apply-permit",
++      "capturedAt": "2026-05-01T00:00:00Z",
++      "redaction": "public_source_only"
++    },
++    {
++      "evidenceId": "src-single-pdf-process-guidance",
++      "sourceType": "public_guidance",
++      "title": "Single PDF Process guidance",
++      "url": "https://www.portland.gov/ppd/permits/single-pdf-process",
++      "capturedAt": "2026-05-01T00:00:00Z",
++      "redaction": "public_source_only"
++    }
++  ],
++  "unresolvedUserFacts": [
++    {
++      "factId": "fact-project-address",
++      "requirementId": "req-property-identifier",
++      "label": "Project address or property identifier",
++      "status": "unresolved",
++      "privateValue": "[REDACTED]",
++      "evidenceIds": ["src-devhub-application-guidance"]
++    },
++    {
++      "factId": "fact-single-pdf-applies",
++      "requirementId": "req-single-pdf-process-applicability",
++      "label": "Whether the project must use the Single PDF Process",
++      "status": "unresolved",
++      "privateValue": "[REDACTED]",
++      "evidenceIds": ["src-single-pdf-process-guidance"]
++    }
++  ],
++  "questionnaire": {
++    "questionnaireId": "questionnaire-minimal-unresolved-facts",
++    "mode": "minimal_missing_only",
++    "questions": [
++      {
++        "questionId": "q-project-address",
++        "factId": "fact-project-address",
++        "prompt": "What is the project address or property identifier for this permit request?",
++        "answerType": "short_text",
++        "required": true,
++        "answer": "[REDACTED]",
++        "answerState": "unresolved_redacted_placeholder",
++        "evidenceIds": ["src-devhub-application-guidance"],
++        "allowedActions": ["ask_user", "save_answer_in_user_case_state_after_user_response"]
++      },
++      {
++        "questionId": "q-single-pdf-applies",
++        "factId": "fact-single-pdf-applies",
++        "prompt": "Does PP&D guidance for this project indicate that the Single PDF Process applies?",
++        "answerType": "yes_no_unknown",
++        "required": true,
++        "answer": "[REDACTED]",
++        "answerState": "unresolved_redacted_placeholder",
++        "evidenceIds": ["src-single-pdf-process-guidance"],
++        "allowedActions": ["ask_user", "save_answer_in_user_case_state_after_user_response"]
++      }
++    ]
++  },
++  "actionClassificationGuardrails": {
++    "plannedActions": [
++      {
++        "actionId": "action-render-questionnaire",
++        "classification": "read_only",
++        "description": "Render the minimal questionnaire from unresolved fact metadata.",
++        "explicitUserConfirmation": false
++      }
++    ],
++    "refusedWithoutExactConfirmation": [
++      "upload_document",
++      "submit_application",
++      "certify_statement",
++      "pay_fee",
++      "cancel_request",
++      "schedule_inspection",
++      "complete_mfa",
++      "solve_captcha",
++      "create_account",
++      "recover_password"
++    ],
++    "stopGates": [
++      {
++        "gateId": "gate-submit-application",
++        "action": "submit_application",
++        "classification": "consequential",
++        "explicitConfirmationRequired": true,
++        "explicitUserConfirmation": false,
++        "evidenceIds": ["src-devhub-application-guidance"]
++      },
++      {
++        "gateId": "gate-pay-fee",
++        "action": "pay_fee",
++        "classification": "financial",
++        "explicitConfirmationRequired": true,
++        "explicitUserConfirmation": false,
++        "evidenceIds": ["src-devhub-application-guidance"]
++      }
++    ]
++  }
++}
+--- a/ppd/tests/test_missing_information_questionnaire_resolution.py
++++ b/ppd/tests/test_missing_information_questionnaire_resolution.py
+@@ -0,0 +1,91 @@
++import json
++import unittest
++from pathlib import Path
++
++
++FIXTURE_PATH = Path(__file__).parent / "fixtures" / "missing_information" / "questionnaire_resolution.json"
++REDACTED_PLACEHOLDER = "[REDACTED]"
++REFUSED_ACTIONS = {
++    "upload_document",
++    "submit_application",
++    "certify_statement",
++    "pay_fee",
++    "cancel_request",
++    "schedule_inspection",
++    "complete_mfa",
++    "solve_captcha",
++    "create_account",
++    "recover_password",
++}
++
++
++class MissingInformationQuestionnaireResolutionTest(unittest.TestCase):
++    @classmethod
++    def setUpClass(cls):
++        cls.fixture = json.loads(FIXTURE_PATH.read_text(encoding="utf-8"))
++
++    def test_questionnaire_covers_only_unresolved_user_facts(self):
++        unresolved_fact_ids = {
++            fact["factId"]
++            for fact in self.fixture["unresolvedUserFacts"]
++            if fact["status"] == "unresolved"
++        }
++        question_fact_ids = {
++            question["factId"]
++            for question in self.fixture["questionnaire"]["questions"]
++        }
++
++        self.assertEqual(unresolved_fact_ids, question_fact_ids)
++        self.assertEqual(
++            "minimal_missing_only",
++            self.fixture["questionnaire"]["mode"],
++        )
++
++    def test_questionnaire_preserves_source_evidence(self):
++        evidence_by_id = {
++            evidence["evidenceId"]: evidence
++            for evidence in self.fixture["sourceEvidence"]
++        }
++        self.assertTrue(evidence_by_id)
++
++        for question in self.fixture["questionnaire"]["questions"]:
++            self.assertTrue(question["evidenceIds"])
++            for evidence_id in question["evidenceIds"]:
++                evidence = evidence_by_id[evidence_id]
++                self.assertTrue(evidence["url"].startswith("https://www.portland.gov/ppd/"))
++                self.assertEqual("public_source_only", evidence["redaction"])
++                self.assertTrue(evidence["capturedAt"].endswith("Z"))
++
++    def test_private_answers_are_redacted_placeholders_only(self):
++        self.assertEqual(
++            REDACTED_PLACEHOLDER,
++            self.fixture["redactionPolicy"]["placeholder"],
++        )
++        for fact in self.fixture["unresolvedUserFacts"]:
++            self.assertEqual(REDACTED_PLACEHOLDER, fact["privateValue"])
++        for question in self.fixture["questionnaire"]["questions"]:
++            self.assertEqual(REDACTED_PLACEHOLDER, question["answer"])
++            self.assertEqual("unresolved_redacted_placeholder", question["answerState"])
++
++    def test_action_classification_guardrails_stop_consequential_work(self):
++        guardrails = self.fixture["actionClassificationGuardrails"]
++        planned_action_ids = {action["actionId"] for action in guardrails["plannedActions"]}
++        planned_descriptions = " ".join(
++            action["description"].lower()
++            for action in guardrails["plannedActions"]
++        )
++
++        self.assertEqual({"action-render-questionnaire"}, planned_action_ids)
++        for refused_action in REFUSED_ACTIONS:
++            self.assertIn(refused_action, guardrails["refusedWithoutExactConfirmation"])
++            self.assertNotIn(refused_action.replace("_", " "), planned_descriptions)
++
++        for gate in guardrails["stopGates"]:
++            self.assertIn(gate["classification"], {"consequential", "financial"})
++            self.assertTrue(gate["explicitConfirmationRequired"])
++            self.assertFalse(gate["explicitUserConfirmation"])
++            self.assertTrue(gate["evidenceIds"])
++
++
++if __name__ == "__main__":
++    unittest.main()

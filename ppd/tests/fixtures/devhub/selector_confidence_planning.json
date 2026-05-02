@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "devhub-selector-confidence-planning-synthetic-v1",
+  "planningMode": "mocked_playwright_fixture_only",
+  "browserLaunchRequested": false,
+  "liveBrowserSessionLaunched": false,
+  "pageState": {
+    "stateId": "mock-devhub-building-permit-draft-contact",
+    "url": "https://devhub.portlandoregon.gov/mock/permit-draft/contact",
+    "nearbyHeading": "Applicant contact",
+    "processId": "single-family-residence-building-permit-synthetic",
+    "requirementIds": [
+      "req-applicant-contact-email"
+    ],
+    "sourceEvidenceIds": [
+      "evidence-devhub-public-guidance-application-types"
+    ]
+  },
+  "selectorPolicy": {
+    "minimumConfidence": 0.75,
+    "accessibleEvidenceRequired": true,
+    "refuseBeforeBrowserSession": true,
+    "disallowedSelectorBasis": [
+      "css_only",
+      "xpath_only",
+      "placeholder_only",
+      "unlabeled_input_index"
+    ]
+  },
+  "selectorPlans": [
+    {
+      "fieldId": "applicant-email",
+      "intendedAction": "reversible_draft_edit",
+      "redactedPlannedValue": "",
+      "rankedCandidates": [
+        {
+          "rank": 1,
+          "selector": "getByRole('textbox', { name: 'Applicant email address' })",
+          "selectorBasis": "role_and_accessible_name",
+          "role": "textbox",
+          "accessibleName": "Applicant email address",
+          "labelText": "Applicant email address",
+          "nearbyHeading": "Applicant contact",
+          "required": true,
+          "evidence": [
+            "role=textbox",
+            "accessibleName=Applicant email address",
+            "labelText=Applicant email address",
+            "nearbyHeading=Applicant contact",
+            "required=true"
+          ],
+          "confidence": 0.96,
+          "decision": "allow_preview"
+        },
+        {
+          "rank": 2,
+          "selector": "getByLabel('Applicant email address')",
+          "selectorBasis": "label_text",
+          "role": "textbox",
+          "accessibleName": "Applicant email address",
+          "labelText": "Applicant email address",
+          "nearbyHeading": "Applicant contact",
+          "required": true,
+          "evidence": [
+            "labelText=Applicant email address",
+            "nearbyHeading=Applicant contact",
+            "required=true"
+          ],
+          "confidence": 0.89,
+          "decision": "allow_preview"
+        },
+        {
+          "rank": 3,
+          "selector": "input[name='email']",
+          "selectorBasis": "css_only",
+          "role": "textbox",
+          "accessibleName": "",
+          "labelText": "",
+          "nearbyHeading": "Applicant contact",
+          "required": true,
+          "evidence": [
+            "css=input[name='email']"
+          ],
+          "confidence": 0.42,
+          "decision": "refuse_low_confidence",
+          "refusalReason": "Selector lacks accessible name and label evidence."
+        }
+      ],
+      "selectedCandidateRank": 1,
+      "refusals": [
+        {
+          "candidateRank": 3,
+          "decision": "refuse_low_confidence",
+          "confidence": 0.42,
+          "refusedBeforeBrowserSession": true,
+          "reason": "confidence below minimum and selector basis is css_only"
+        }
+      ]
+    }
+  ],
+  "prohibitedActions": [
+    "upload",
+    "submit",
+    "certify",
+    "payment",
+    "cancel",
+    "schedule_inspection",
+    "mfa",
+    "captcha",
+    "account_creation",
+    "password_recovery"
+  ]
+}

@@ -1,0 +1,3 @@
+ppd/contracts/processor_archive_manifest.py
+ppd/tests/fixtures/processor-archive/processor_archive_handoff_manifest.json
+ppd/tests/test_processor_archive_manifest.py

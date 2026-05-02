@@ -174,7 +174,7 @@ def proposal_validation_text(proposal: dict[str, Any]) -> str:
 
 
 def is_syntax_or_compile_failure(proposal: dict[str, Any]) -> bool:
-    if str(proposal.get("failure_kind") or "") != "validation":
+    if str(proposal.get("failure_kind") or "") not in {"validation", "syntax_preflight"}:
         return False
     text = proposal_validation_text(proposal)
     return any(marker in text for marker in SYNTAX_OR_COMPILE_FAILURE_MARKERS)
@@ -581,6 +581,10 @@ def self_test(repo_root: Path) -> int:
     }
     if not is_syntax_or_compile_failure(syntax_failure):
         errors.append("syntax failure classification failed")
+    syntax_preflight_failure = dict(syntax_failure)
+    syntax_preflight_failure["failure_kind"] = "syntax_preflight"
+    if not is_syntax_or_compile_failure(syntax_preflight_failure):
+        errors.append("syntax_preflight failure classification failed")
     if recent_syntax_failure_count([syntax_failure, syntax_failure]) != 2:
         errors.append("recent syntax failure count failed")
     if not has_malformed_python_proposal_syntax(malformed_confidence_failure):

@@ -1,0 +1,163 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "ppd-processor-archive-provenance-chain-001",
+  "generatedAt": "2026-05-01T00:00:00Z",
+  "networkAccess": false,
+  "processorInvocation": false,
+  "manifestOnly": true,
+  "publicCrawlDryRun": {
+    "crawlPlanId": "public-crawl-dry-run-ppd-core-001",
+    "entries": [
+      {
+        "dryRunUrlId": "dry-url-ppd-home",
+        "url": "https://www.portland.gov/ppd",
+        "canonicalUrl": "https://www.portland.gov/ppd",
+        "decision": "allow",
+        "allowlistDecisionId": "allow-portland-gov-ppd",
+        "robotsDecisionId": "robots-portland-gov-ppd-allow",
+        "noPersistDecisionId": "no-persist-public-guidance-only",
+        "timeoutPolicyId": "timeout-public-fixture-10s"
+      },
+      {
+        "dryRunUrlId": "dry-url-devhub-faq",
+        "url": "https://www.portland.gov/ppd/devhub-faq",
+        "canonicalUrl": "https://www.portland.gov/ppd/devhub-faq",
+        "decision": "allow",
+        "allowlistDecisionId": "allow-portland-gov-ppd",
+        "robotsDecisionId": "robots-portland-gov-devhub-faq-allow",
+        "noPersistDecisionId": "no-persist-public-guidance-only",
+        "timeoutPolicyId": "timeout-public-fixture-10s"
+      }
+    ]
+  },
+  "processorHandoffManifests": [
+    {
+      "archiveManifestId": "archive-manifest-ppd-home",
+      "dryRunUrlId": "dry-url-ppd-home",
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "canonicalUrl": "https://www.portland.gov/ppd",
+      "contentHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "processor": {
+        "name": "ipfs_datasets_py.web_archiving.fixture_handoff",
+        "version": "fixture-1",
+        "family": "web_archiving",
+        "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
+      },
+      "policyDecision": {
+        "decision": "allow",
+        "reasons": [
+          "public_ppd_allowlisted",
+          "robots_allowed",
+          "no_persist_approved"
+        ],
+        "evaluatedAt": "2026-05-01T00:00:00Z"
+      },
+      "manifestOnly": true,
+      "processorInvoked": false
+    },
+    {
+      "archiveManifestId": "archive-manifest-devhub-faq",
+      "dryRunUrlId": "dry-url-devhub-faq",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub-faq",
+      "canonicalUrl": "https://www.portland.gov/ppd/devhub-faq",
+      "contentHash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "processor": {
+        "name": "ipfs_datasets_py.web_archiving.fixture_handoff",
+        "version": "fixture-1",
+        "family": "web_archiving",
+        "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors"
+      },
+      "policyDecision": {
+        "decision": "allow",
+        "reasons": [
+          "public_ppd_allowlisted",
+          "robots_allowed",
+          "no_persist_approved"
+        ],
+        "evaluatedAt": "2026-05-01T00:00:00Z"
+      },
+      "manifestOnly": true,
+      "processorInvoked": false
+    }
+  ],
+  "sourceIndexRecords": [
+    {
+      "sourceIndexId": "source-index-ppd-home",
+      "archiveManifestId": "archive-manifest-ppd-home",
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "canonicalUrl": "https://www.portland.gov/ppd",
+      "title": "Portland Permitting & Development",
+      "bureau": "Portland Permitting & Development",
+      "pageType": "public_guidance",
+      "crawlStatus": "dry_run_planned",
+      "lastSeenAt": "2026-05-01T00:00:00Z",
+      "contentHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111"
+    },
+    {
+      "sourceIndexId": "source-index-devhub-faq",
+      "archiveManifestId": "archive-manifest-devhub-faq",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub-faq",
+      "canonicalUrl": "https://www.portland.gov/ppd/devhub-faq",
+      "title": "DevHub FAQ",
+      "bureau": "Portland Permitting & Development",
+      "pageType": "devhub_public_guidance",
+      "crawlStatus": "dry_run_planned",
+      "lastSeenAt": "2026-05-01T00:00:00Z",
+      "contentHash": "sha256:2222222222222222222222222222222222222222222222222222222222222222"
+    }
+  ],
+  "normalizedDocuments": [
+    {
+      "normalizedDocumentId": "normalized-doc-ppd-home",
+      "sourceIndexId": "source-index-ppd-home",
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "canonicalUrl": "https://www.portland.gov/ppd",
+      "documentRole": "public_guidance",
+      "contentType": "text/html",
+      "title": "Portland Permitting & Development",
+      "sections": [
+        {
+          "sectionId": "section-ppd-home-overview",
+          "heading": "Public guidance entry point",
+          "sourceEvidenceId": "evidence-ppd-home-overview"
+        }
+      ],
+      "provenance": {
+        "archiveManifestId": "archive-manifest-ppd-home",
+        "dryRunUrlId": "dry-url-ppd-home",
+        "contentHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "sourceEvidenceIds": [
+          "evidence-ppd-home-overview"
+        ],
+        "normalizer": "fixture-only-html-normalizer",
+        "normalizerInvoked": false
+      }
+    },
+    {
+      "normalizedDocumentId": "normalized-doc-devhub-faq",
+      "sourceIndexId": "source-index-devhub-faq",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub-faq",
+      "canonicalUrl": "https://www.portland.gov/ppd/devhub-faq",
+      "documentRole": "devhub_public_guidance",
+      "contentType": "text/html",
+      "title": "DevHub FAQ",
+      "sections": [
+        {
+          "sectionId": "section-devhub-faq-services",
+          "heading": "DevHub public service categories",
+          "sourceEvidenceId": "evidence-devhub-faq-services"
+        }
+      ],
+      "provenance": {
+        "archiveManifestId": "archive-manifest-devhub-faq",
+        "dryRunUrlId": "dry-url-devhub-faq",
+        "contentHash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+        "sourceEvidenceIds": [
+          "evidence-devhub-faq-services"
+        ],
+        "normalizer": "fixture-only-html-normalizer",
+        "normalizerInvoked": false
+      }
+    }
+  ]
+}

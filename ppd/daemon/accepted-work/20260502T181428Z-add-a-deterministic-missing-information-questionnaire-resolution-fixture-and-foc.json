@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/missing_information/questionnaire_resolution.json",
+    "ppd/tests/test_missing_information_questionnaire_resolution.py"
+  ],
+  "created_at": "2026-05-02T18:14:28.703390Z",
+  "impact": "This advances the PP&D missing-information resolver by proving unresolved, source-backed user facts can become a minimal redacted questionnaire while preserving evidence links and refusing consequential DevHub actions without explicit confirmation.",
+  "summary": "Add a deterministic missing-information questionnaire resolution fixture and focused validation test.",
+  "target_task": "Task checkbox-90: Task checkbox-85: Add a missing-information resolution fixture that converts unresolved PP&D user facts into a minimal questionnaire while preserving source evidence, redaction, and action-classification guardrails.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 92 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................................................................................................................................................................................................................ss..............sss.............................................................................................................................................................................. ---------------------------------------------------------------------- Ran 466 tests in 0.088s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

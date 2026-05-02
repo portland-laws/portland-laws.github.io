@@ -1,0 +1,90 @@
+{
+  "fixtureKind": "playwright_audit_event_sensitive_rejection_cases",
+  "schemaVersion": 1,
+  "generatedAt": "2026-05-02T00:00:00Z",
+  "allowedAuditEvent": {
+    "id": "audit-read-only-devhub-draft-status",
+    "recordedAt": "2026-05-02T00:00:00Z",
+    "workflow": "mocked_devhub_permit_draft",
+    "eventType": "inspect_form_state",
+    "classification": "read_only",
+    "selectorBasis": {
+      "role": "button",
+      "accessibleName": "Continue",
+      "labelText": "Continue",
+      "nearbyHeading": "Permit details",
+      "stableUrl": "https://devhub.portlandoregon.gov/mock/permit-draft"
+    },
+    "sourceEvidenceIds": [
+      "public-devhub-guidance-faq"
+    ],
+    "userConfirmation": {
+      "explicit": false,
+      "confirmationText": null
+    },
+    "redaction": {
+      "valuesRedacted": true,
+      "privateStatePersisted": false,
+      "rawBrowserStoragePersisted": false
+    },
+    "attachments": [],
+    "metadata": {
+      "browserRuntime": "playwright-fixture-only",
+      "storagePolicy": "not_recorded"
+    }
+  },
+  "rejectionCases": [
+    {
+      "category": "private_auth_state",
+      "expectedReason": "private auth state"
+    },
+    {
+      "category": "cookies",
+      "expectedReason": "cookies"
+    },
+    {
+      "category": "traces",
+      "expectedReason": "traces"
+    },
+    {
+      "category": "screenshots",
+      "expectedReason": "screenshots"
+    },
+    {
+      "category": "raw_browser_storage",
+      "expectedReason": "raw browser storage"
+    },
+    {
+      "category": "uploads",
+      "expectedReason": "uploads"
+    },
+    {
+      "category": "submissions",
+      "expectedReason": "submissions"
+    },
+    {
+      "category": "payments",
+      "expectedReason": "payments"
+    },
+    {
+      "category": "certifications",
+      "expectedReason": "certifications"
+    },
+    {
+      "category": "cancellations",
+      "expectedReason": "cancellations"
+    },
+    {
+      "category": "mfa",
+      "expectedReason": "MFA"
+    },
+    {
+      "category": "captcha",
+      "expectedReason": "CAPTCHA"
+    },
+    {
+      "category": "inspection_scheduling",
+      "expectedReason": "inspection scheduling"
+    }
+  ]
+}

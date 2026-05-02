@@ -1,0 +1,2 @@
+ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+ppd/tests/test_supervisor_repair_guide.py

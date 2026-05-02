@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "processor_archive_handoff_manifest",
+  "generatedAt": "2026-05-01T18:20:00Z",
+  "records": [
+    {
+      "id": "processor-archive-ppd-home-20260501",
+      "archiveRecordId": "ipfs-processor-web-archive-ppd-home-fixture",
+      "sourceIndexRecordId": "ppd-home",
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "canonicalUrl": "https://www.portland.gov/ppd",
+      "contentHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "processorProvenance": {
+        "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors",
+        "name": "web_archiving.archive_utils",
+        "family": "web_archiving",
+        "version": "fixture-2026-05-01",
+        "sourceModule": "ipfs_datasets_py.ipfs_datasets_py.processors.web_archiving.archive_utils",
+        "captureTimestamp": "2026-05-01T18:10:00Z",
+        "manifestOnly": true
+      },
+      "normalizedDocument": {
+        "id": "normalized-ppd-home-html",
+        "contentHash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "documentIdPolicy": "ppd-normalized-document-id-v1"
+      },
+      "forbiddenArtifacts": {
+        "rawCrawlOutputPath": null,
+        "privateDevhubArtifactPath": null,
+        "downloadedDocumentPath": null,
+        "tracePath": null,
+        "screenshotPath": null,
+        "authStatePath": null,
+        "responseBodyIncluded": false
+      }
+    },
+    {
+      "id": "processor-archive-devhub-faq-20260501",
+      "archiveRecordId": "ipfs-processor-web-archive-devhub-faq-fixture",
+      "sourceIndexRecordId": "devhub-faq-not-modified",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub-faq",
+      "canonicalUrl": "https://www.portland.gov/ppd/devhub-faq",
+      "contentHash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "processorProvenance": {
+        "backendPath": "ipfs_datasets_py/ipfs_datasets_py/processors",
+        "name": "website_graphrag_processor",
+        "family": "website_graphrag",
+        "version": "fixture-2026-05-01",
+        "sourceModule": "ipfs_datasets_py.ipfs_datasets_py.processors.website_graphrag_processor",
+        "captureTimestamp": "2026-05-01T18:11:00Z",
+        "manifestOnly": true
+      },
+      "normalizedDocument": {
+        "id": "normalized-devhub-faq-html",
+        "contentHash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "documentIdPolicy": "ppd-normalized-document-id-v1"
+      },
+      "forbiddenArtifacts": {
+        "rawCrawlOutputPath": null,
+        "privateDevhubArtifactPath": null,
+        "downloadedDocumentPath": null,
+        "tracePath": null,
+        "screenshotPath": null,
+        "authStatePath": null,
+        "responseBodyIncluded": false
+      }
+    }
+  ]
+}

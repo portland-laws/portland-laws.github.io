@@ -1,0 +1,48 @@
+{
+  "changed_files": [
+    "ppd/contracts/processor_archive_manifest.py",
+    "ppd/tests/fixtures/processor-archive/processor_archive_handoff_manifest.json",
+    "ppd/tests/test_processor_archive_manifest.py"
+  ],
+  "created_at": "2026-05-02T18:11:34.379401Z",
+  "impact": "Proves PP&D can validate an offline processor archive handoff that ties ipfs_datasets_py processor provenance to committed source-index records and stable normalized document IDs without raw crawl output, network access, or private DevHub artifacts.",
+  "summary": "Add fixture-only processor archive handoff manifest validation",
+  "target_task": "Task checkbox-88: Task checkbox-83: Add processor archive manifest validation that proves the PP&D handoff can reference ipfs_datasets_py processor provenance, source index records, and normalized document IDs without network, raw crawl output, or private DevHub artifacts.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 92 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "..........................................................................................................................................................................................................................................................................ss..............sss.............................................................................................................................................................................. ---------------------------------------------------------------------- Ran 459 tests in 0.084s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

@@ -111,11 +111,20 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 ## Next Goal-Aligned Tranche
 
 - [x] Task checkbox-76: Add a Playwright audit-event continuity fixture that records selector basis, source requirement, action classification, user-confirmation state, and redacted before/after field state for a reversible draft edit only.
-- [~] Task checkbox-77: Add validation proving Playwright audit-event fixtures reject private auth state, cookies, traces, screenshots, raw browser storage, uploads, submissions, payments, certifications, cancellations, MFA, CAPTCHA, and inspection scheduling actions.
-- [ ] Task checkbox-78: Add a fixture-only DevHub recorder-state transition map that links accessible selector contracts, draft-action previews, and audit events without launching Playwright or touching live DevHub.
-- [ ] Task checkbox-79: Add an agent planning fixture that combines missing information, guardrail stop gates, Playwright draft previews, and source evidence into one reversible draft-only plan.
-- [ ] Task checkbox-80: Add a PP&D processor-archive provenance fixture that links public crawl dry-run URLs to processor handoff manifests, source-index records, and normalized document provenance without invoking network or processor code.
-- [ ] Task checkbox-81: Add daemon replenishment validation proving a completed board can be extended with a new goal-aligned tranche while preserving accepted-work history and avoiding stale supervisor repair counts.
+- [x] Task checkbox-77: Add validation proving Playwright audit-event fixtures reject private auth state, cookies, traces, screenshots, raw browser storage, uploads, submissions, payments, certifications, cancellations, MFA, CAPTCHA, and inspection scheduling actions.
+- [x] Task checkbox-78: Add a fixture-only DevHub recorder-state transition map that links accessible selector contracts, draft-action previews, and audit events without launching Playwright or touching live DevHub.
+- [x] Task checkbox-79: Add an agent planning fixture that combines missing information, guardrail stop gates, Playwright draft previews, and source evidence into one reversible draft-only plan.
+- [x] Task checkbox-80: Add a PP&D processor-archive provenance fixture that links public crawl dry-run URLs to processor handoff manifests, source-index records, and normalized document provenance without invoking network or processor code.
+- [x] Task checkbox-81: Add daemon replenishment validation proving a completed board can be extended with a new goal-aligned tranche while preserving accepted-work history and avoiding stale supervisor repair counts.
+
+## Replenished Goal-Aligned Tranche
+
+- [x] Task checkbox-82: Add a formal-logic planner integration fixture that maps one extracted PP&D requirement, one missing user fact, one stop gate, and one reversible draft-only Playwright action into a single agent guardrail bundle.
+- [x] Task checkbox-83: Add processor archive manifest validation that proves the PP&D handoff can reference ipfs_datasets_py processor provenance, source index records, and normalized document IDs without network, raw crawl output, or private DevHub artifacts.
+- [x] Task checkbox-84: Add a mocked Playwright form-fill planning fixture that ranks accessible selectors by evidence confidence and refuses low-confidence selectors before any live browser session is launched.
+- [x] Task checkbox-85: Add a missing-information resolution fixture that converts unresolved PP&D user facts into a minimal questionnaire while preserving source evidence, redaction, and action-classification guardrails.
+- [~] Task checkbox-86: Add supervisor no-available-task fallback validation proving the supervisor can append a deterministic fixture-first tranche if Codex planning fails or times out.
+- [ ] Task checkbox-87: Add an autonomous draft-session audit ledger fixture that links source evidence, guardrails, selector confidence, user-confirmation state, and reversible form mutations without storing screenshots, traces, cookies, auth state, or raw browser storage.
 
 ## Generated Status
 
@@ -129,11 +138,11 @@ Last updated: 2026-05-02T06:45:00Z
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-02T17:49:19.465653Z
+Last updated: 2026-05-02T18:14:28.704101Z
 
-- Latest target: `Task checkbox-81: Task checkbox-76: Add a Playwright audit-event continuity fixture that records selector basis, source requirement, action classification, user-confirmation state, and redacted before/after field state for a reversible draft edit only.`
-- Latest result: `validation`
-- Latest summary: Add a deterministic Playwright audit-event continuity fixture and validation test for a reversible DevHub draft edit.
-- Counts: `{"blocked": 0, "complete": 80, "in_progress": 0, "needed": 6}`
+- Latest target: `Task checkbox-90: Task checkbox-85: Add a missing-information resolution fixture that converts unresolved PP&D user facts into a minimal questionnaire while preserving source evidence, redaction, and action-classification guardrails.`
+- Latest result: `accepted`
+- Latest summary: Add a deterministic missing-information questionnaire resolution fixture and focused validation test.
+- Counts: `{"blocked": 0, "complete": 90, "in_progress": 0, "needed": 2}`
 
 <!-- ppd-daemon-task-board:end -->

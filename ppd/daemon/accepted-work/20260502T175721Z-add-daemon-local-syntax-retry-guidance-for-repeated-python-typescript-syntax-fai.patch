@@ -1,0 +1,153 @@
+--- a/ppd/daemon/syntax_retry_guidance.py
++++ b/ppd/daemon/syntax_retry_guidance.py
+@@ -0,0 +1,97 @@
++"""Supervisor guidance for retrying after daemon syntax preflight failures.
++
++The PP&D daemon asks the model for complete JSON file replacements. When a
++proposal fails before validation because a Python or TypeScript file cannot be
++parsed, the next prompt should become smaller and explicitly syntax-first.
++"""
++
++from __future__ import annotations
++
++from dataclasses import dataclass
++from typing import Iterable
++
++
++SYNTAX_ERROR_MARKERS = (
++    "SyntaxError",
++    "py_compile",
++    "TS1005",
++    "TS1109",
++    "TS1128",
++    "unterminated string literal",
++    "invalid syntax",
++)
++
++FORBIDDEN_RETRY_SCOPES = (
++    "live DevHub",
++    "Playwright session",
++    "authenticated automation",
++    "broad contract rewrite",
++    "domain implementation",
++)
++
++
++@dataclass(frozen=True)
++class SyntaxRetryGuidance:
++    """A narrow retry instruction produced after syntax preflight failures."""
++
++    should_narrow: bool
++    reason: str
++    max_files: int
++    required_preflight: tuple[str, ...]
++    prompt_bullets: tuple[str, ...]
++
++
++def has_syntax_failure(errors: Iterable[str]) -> bool:
++    """Return True when daemon errors show parser or compiler syntax failure."""
++
++    combined = "\n".join(str(error) for error in errors)
++    return any(marker in combined for marker in SYNTAX_ERROR_MARKERS)
++
++
++def build_syntax_retry_guidance(errors: Iterable[str]) -> SyntaxRetryGuidance:
++    """Build deterministic prompt guidance for the next daemon LLM round."""
++
++    syntax_failure = has_syntax_failure(errors)
++    if not syntax_failure:
++        return SyntaxRetryGuidance(
++            should_narrow=False,
++            reason="no syntax preflight marker detected",
++            max_files=4,
++            required_preflight=(),
++            prompt_bullets=(),
++        )
++
++    return SyntaxRetryGuidance(
++        should_narrow=True,
++        reason="syntax preflight failed before validation",
++        max_files=2,
++        required_preflight=(
++            "python3 -m py_compile ",
++            "JSON parse check for each changed fixture file",
++        ),
++        prompt_bullets=(
++            "Return exactly one JSON object with complete file replacements only.",
++            "Limit the retry to one or two files that directly repair the syntax failure.",
++            "Prefer quoted sentinel values such as '[REDACTED:empty-before]' over multiline string literals in assertions.",
++            "Do not rewrite broad fixture contracts, daemon contracts, or unrelated validators during a syntax retry.",
++            "Do not launch Playwright, touch live DevHub, use private sessions, upload, submit, pay, certify, cancel, schedule inspections, automate MFA, or automate CAPTCHA.",
++        ),
++    )
++
++
++def render_syntax_retry_prompt(errors: Iterable[str]) -> str:
++    """Render concise supervisor text for the next syntax-first retry."""
++
++    guidance = build_syntax_retry_guidance(errors)
++    if not guidance.should_narrow:
++        return "No syntax-first retry guidance is needed."
++
++    lines = [
++        "Syntax preflight failed before validation; make the next daemon round syntax-first.",
++        f"Maximum replacement files: {guidance.max_files}.",
++        "Required preflight:",
++    ]
++    lines.extend(f"- {item}" for item in guidance.required_preflight)
++    lines.append("Retry guardrails:")
++    lines.extend(f"- {item}" for item in guidance.prompt_bullets)
++    return "\n".join(lines)
+--- a/ppd/tests/test_daemon_syntax_retry_guidance.py
++++ b/ppd/tests/test_daemon_syntax_retry_guidance.py
+@@ -0,0 +1,50 @@
++from __future__ import annotations
++
++import unittest
++
++from ppd.daemon.syntax_retry_guidance import (
++    build_syntax_retry_guidance,
++    has_syntax_failure,
++    render_syntax_retry_prompt,
++)
++
++
++class SyntaxRetryGuidanceTest(unittest.TestCase):
++    def test_detects_python_syntax_preflight_failure(self) -> None:
++        errors = [
++            "Syntax preflight failed; python3 -m py_compile ppd/tests/example.py: SyntaxError: unterminated string literal",
++        ]
++
++        self.assertTrue(has_syntax_failure(errors))
++        guidance = build_syntax_retry_guidance(errors)
++
++        self.assertTrue(guidance.should_narrow)
++        self.assertEqual(guidance.max_files, 2)
++        self.assertIn("python3 -m py_compile ", guidance.required_preflight)
++
++    def test_detects_typescript_parse_failures(self) -> None:
++        for marker in ("TS1005", "TS1109", "TS1128"):
++            with self.subTest(marker=marker):
++                self.assertTrue(has_syntax_failure([f"TypeScript failed with {marker}"]))
++
++    def test_non_syntax_validation_does_not_force_syntax_retry(self) -> None:
++        guidance = build_syntax_retry_guidance(["Validation failed; file edits were rolled back."])
++
++        self.assertFalse(guidance.should_narrow)
++        self.assertEqual(guidance.required_preflight, ())
++        self.assertEqual(guidance.prompt_bullets, ())
++
++    def test_rendered_prompt_blocks_broad_or_live_retry_scope(self) -> None:
++        prompt = render_syntax_retry_prompt(["py_compile failed with invalid syntax"])
++
++        self.assertIn("Maximum replacement files: 2", prompt)
++        self.assertIn("complete file replacements", prompt)
++        self.assertIn("Do not rewrite broad fixture contracts", prompt)
++        self.assertIn("Do not launch Playwright", prompt)
++        self.assertIn("touch live DevHub", prompt)
++        self.assertIn("automate MFA", prompt)
++        self.assertIn("automate CAPTCHA", prompt)
++
++
++if __name__ == "__main__":
++    unittest.main()

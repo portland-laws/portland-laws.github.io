@@ -1,0 +1,61 @@
+{
+  "schemaVersion": 1,
+  "fixtureId": "devhub-recorder-state-transition-map-001",
+  "captureMode": "synthetic_fixture_only",
+  "noLiveBrowserSession": true,
+  "usesAuthenticationState": false,
+  "usesBrowserTrace": false,
+  "usesScreenshots": false,
+  "linkedFixtureIds": {
+    "accessibleSelectorContract": "trade-plan-review-project-info-accessible-selectors",
+    "draftActionPreview": "devhubDraftActionPreview",
+    "auditEvent": "playwright-audit-event-reversible-draft-edit-001"
+  },
+  "transitions": [
+    {
+      "transitionId": "read-project-description-selector",
+      "fromState": "mocked_devhub_draft_page",
+      "toState": "selector_ready",
+      "eventKind": "read_accessible_selector_contract",
+      "executesBrowserAction": false,
+      "selectorBasis": {
+        "strategy": "accessible_role_name",
+        "role": "textbox",
+        "accessibleName": "Project description",
+        "labelText": "Project description",
+        "nearbyHeading": "Project information",
+        "redactedValue": "[REDACTED]"
+      },
+      "sourceEvidenceIds": [
+        "mock-devhub-draft-form-project-description"
+      ]
+    },
+    {
+      "transitionId": "preview-project-description-draft-fill",
+      "fromState": "selector_ready",
+      "toState": "draft_preview_ready",
+      "eventKind": "preview_reversible_draft_fill",
+      "executesBrowserAction": false,
+      "draftActionPreviewId": "preview-project-description-fill",
+      "auditEventId": "audit-preview-project-description-fill",
+      "beforeValue": "[REDACTED_EMPTY]",
+      "afterValue": "[REDACTED_PROJECT_DESCRIPTION]",
+      "sourceEvidenceIds": [
+        "mock-devhub-draft-form-project-description",
+        "devhub-public-guidance-save-draft"
+      ]
+    }
+  ],
+  "refusedActionTypes": [
+    "upload",
+    "submit",
+    "certify",
+    "pay",
+    "cancel",
+    "schedule_inspection",
+    "mfa",
+    "captcha",
+    "account_creation",
+    "password_recovery"
+  ]
+}
