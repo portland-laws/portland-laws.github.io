@@ -1,0 +1,3 @@
+ppd/daemon/checkbox_122_diagnostic_validation.py
+ppd/tests/test_checkbox_122_diagnostic_validation.py
+ppd/tests/fixtures/daemon/checkbox_122_diagnostic.json

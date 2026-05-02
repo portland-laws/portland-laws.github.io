@@ -966,7 +966,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-02 20:57:45 UTC
+Last updated: 2026-05-02 21:02:00 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
@@ -1174,8 +1174,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-196: Port remaining Python logic module 'logic/CEC/dcec_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-197: Port remaining Python logic module 'logic/CEC/eng_dcec_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [!] `Task checkbox-198: Port remaining Python logic module 'logic/CEC/native/advanced_inference.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [x] `Task checkbox-199: Port remaining Python logic module 'logic/CEC/native/ambiguity_resolver.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-200: Port remaining Python logic module 'logic/CEC/native/cec_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-199: Port remaining Python logic module 'logic/CEC/native/ambiguity_resolver.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [!] `Task checkbox-200: Port remaining Python logic module 'logic/CEC/native/cec_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - latest daemon round failed validation or preflight
 - [ ] `Task checkbox-201: Port remaining Python logic module 'logic/CEC/native/cec_zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-202: Port remaining Python logic module 'logic/CEC/native/context_manager.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-203: Port remaining Python logic module 'logic/CEC/native/dcec_cleaning.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,40 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-199: Port remaining Python logic module 'logic/CEC/native/ambiguity_resolver.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
-- Result: `valid`
-- Summary: Add browser-native CEC ambiguity resolver scaffold with deterministic scoring and validation
-- Impact: The replacement src/lib/logic/cec/ambiguityResolver.ts gives the TypeScript logic port a browser-native ambiguity resolver contract, deterministic parse ranking, validation, expression-to-tree conversion, and fail-closed semantic/statistical adapters. The focused Jest test file validates the contract through npm run validate:logic-port without Python, server, filesystem, subprocess, RPC, or Node-only runtime dependencies.
-- Accepted changed files: `src/lib/logic/cec/ambiguityResolver.test.ts`, `src/lib/logic/cec/ambiguityResolver.ts`
+- Target: `Task checkbox-200: Port remaining Python logic module 'logic/CEC/native/cec_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Result: `needs follow-up`
+- Summary: Add browser-native CEC native proof cache snapshot and validation parity
+- Impact: The CEC proof cache now keeps deterministic browser-native proof-cache entries with metadata, validates snapshot payloads, exports cache snapshots, and restores valid entries without Python, server, filesystem, subprocess, RPC, or Node-only dependencies. The focused Jest tests exercise the new source contract through src/lib/logic/cec/proofCache.test.ts, so it is directly covered by the TypeScript logic port validation suite.
+- Errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
+../../..src/lib/logic/cec/proofCache.ts(278,33): error TS1005: ';' expected.
+../../..src/lib/logic/cec/proofCache.ts(278,34): error TS1109: Expression expected.
+../../..src/lib/logic/cec/proofCache.ts(286,15): error TS1005: ']' expected.
+../../..src/lib/logic/cec/proofCache.ts(286,57): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/cec/proofCache.ts(289,11): error TS1005: ';' expected.
+../../..src/lib/logic/cec/proofCache.ts(289,12): error TS1434: Unexpected keyword or identifier.
+
+Replacement diagnostic context:
+src/lib/logic/cec/proofCache.ts:278:33 TS1005: ';' expected.
+  276: function stableHash(value: string): string {
+  277:   let hash = 2166136261;
+> 278:   for (let index = 0; index >> 0).toString(16).padStart(8, '0')}`;
+  279: }
+  280: 
+
+src/lib/logic/cec/proofCache.ts:286:15 TS1005: ']' expected.
+  284:   }
+  285:   if (Array.isArray(value)) {
+> 286:     return `[${value.map(stableJsonStringify).join(',')}]`;
+  287:   }
+  288:   const object = value as Record;
+
+src/lib/logic/cec/proofCache.ts:289:11 TS1005: ';' expected.
+  287:   }
+  288:   const object = value as Record;
+> 289:   return `{${Object.keys(object).sort().map(key => `${JSON.stringify(key)}:${stableJsonStringify(object[key])}`).join(',')}}`;
+  290: }
+  291: 
+- Failure kind: `preflight`
 
 ### Blocked Backlog
 

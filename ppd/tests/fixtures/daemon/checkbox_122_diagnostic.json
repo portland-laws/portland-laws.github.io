@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "diagnosticTaskId": "checkbox-122",
+  "blockedTaskId": "checkbox-121",
+  "acceptedSuccessorValidationTaskId": "checkbox-123",
+  "allowedRetryShape": {
+    "kind": "one_file_retry",
+    "maximumFiles": 1,
+    "allowedScope": [
+      "ppd/daemon/"
+    ],
+    "reason": "The next retry may repair only the narrow diagnostic or prompt guardrail surface."
+  },
+  "prohibitedRetryShape": {
+    "kind": "broad_rewrite",
+    "prohibitedPaths": [
+      "ppd/crawler/",
+      "ppd/contracts/",
+      "ppd/data/raw/",
+      "public/corpus/portland-or/current/",
+      "src/lib/logic/",
+      "ipfs_datasets_py/.daemon/"
+    ],
+    "reason": "The diagnostic must not implement or rewrite the public crawl frontier checkpoint."
+  },
+  "deferredImplementation": "public_crawl_frontier_checkpoint",
+  "implementsPublicCrawlFrontierCheckpoint": false,
+  "validationClaims": [
+    "reports_blocked_task_id",
+    "reports_accepted_successor_validation_task_id",
+    "reports_allowed_one_file_retry_shape",
+    "reports_prohibited_broad_rewrite_shape",
+    "does_not_implement_public_crawl_frontier_checkpoint"
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "changed_files": [
+    "ppd/daemon/checkbox_122_diagnostic_validation.py",
+    "ppd/tests/test_checkbox_122_diagnostic_validation.py",
+    "ppd/tests/fixtures/daemon/checkbox_122_diagnostic.json"
+  ],
+  "created_at": "2026-05-02T20:59:22.104306Z",
+  "impact": "This advances the PP&D daemon guardrails by proving the diagnostic captures the blocked task, successor validation task, allowed one-file retry, prohibited broad rewrite, and explicitly defers the public crawl frontier checkpoint implementation.",
+  "summary": "Add fixture-backed validation for the checkbox-122 diagnostic shape.",
+  "target_task": "Task checkbox-123: Task checkbox-123: Add validation for the checkbox-122 diagnostic proving it reports the blocked task ID, the accepted successor validation task ID, the allowed one-file retry shape, and the prohibited broad rewrite shape without implementing the public crawl frontier checkpoint.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 126 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".......................................................................................................................................................................................................................................................................................................................ss..............sss....................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 561 tests in 0.099s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}
