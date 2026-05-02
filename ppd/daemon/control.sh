@@ -27,7 +27,7 @@ start() {
     return 0
   fi
 
-  setsid -f bash -c "cd '$ROOT' && PYTHONPATH=ipfs_datasets_py IPFS_DATASETS_PY_CODEX_SANDBOX=read-only exec python3 ppd/daemon/ppd_daemon.py --apply --watch --iterations 0 --interval 0 --llm-timeout 300 --provider codex_cli --revisit-blocked > '$OUT_FILE' 2>&1"
+  setsid -f bash -c "cd '$ROOT' && PYTHONPATH=ipfs_datasets_py IPFS_DATASETS_PY_CODEX_SANDBOX=read-only exec python3 ppd/daemon/ppd_daemon.py --apply --watch --iterations 0 --interval 0 --llm-timeout 300 --revisit-blocked > '$OUT_FILE' 2>&1"
   sleep 1
   local pid
   pid="$(pgrep -f "python3 ppd/daemon/ppd_daemon.py --apply --watch" | tail -n 1 || true)"
@@ -75,7 +75,7 @@ supervisor_start() {
     fi
   fi
 
-  setsid -f bash -c "cd '$ROOT' && PYTHONPATH=ipfs_datasets_py IPFS_DATASETS_PY_CODEX_SANDBOX=read-only exec python3 ppd/daemon/ppd_supervisor.py --watch --interval 120 --apply --self-heal --restart-daemon --llm-timeout 300 --provider codex_cli > '$SUPERVISOR_OUT_FILE' 2>&1"
+  setsid -f bash -c "cd '$ROOT' && PYTHONPATH=ipfs_datasets_py IPFS_DATASETS_PY_CODEX_SANDBOX=read-only exec python3 ppd/daemon/ppd_supervisor.py --watch --interval 120 --apply --self-heal --restart-daemon --llm-timeout 300 > '$SUPERVISOR_OUT_FILE' 2>&1"
   sleep 1
   local pid
   pid="$(pgrep -f "python3 ppd/daemon/ppd_supervisor.py --watch" | tail -n 1 || true)"
@@ -119,7 +119,7 @@ case "${1:-status}" in
   restart) stop; start ;;
   status) status ;;
   logs) tail -f "$OUT_FILE" ;;
-  doctor) python3 "$ROOT/ppd/daemon/ppd_supervisor.py" --once --apply --self-heal --restart-daemon --llm-timeout 300 --provider codex_cli ;;
+  doctor) python3 "$ROOT/ppd/daemon/ppd_supervisor.py" --once --apply --self-heal --restart-daemon --llm-timeout 300 ;;
   supervisor-start) supervisor_start ;;
   supervisor-stop) supervisor_stop ;;
   supervisor-restart) supervisor_stop; supervisor_start ;;

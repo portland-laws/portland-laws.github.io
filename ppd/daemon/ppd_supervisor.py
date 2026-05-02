@@ -78,7 +78,7 @@ class SupervisorConfig:
     max_prompt_chars: int = 50000
     llm_timeout_seconds: int = 300
     model_name: str = "gpt-5.5"
-    provider: Optional[str] = "codex_cli"
+    provider: Optional[str] = None
     apply: bool = False
     self_heal: bool = False
     restart_daemon: bool = False
@@ -626,7 +626,7 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     parser.add_argument("--restart-daemon", action="store_true", help="Start/restart the worker daemon when appropriate")
     parser.add_argument("--llm-timeout", type=int, default=300, help="Seconds to allow for one Codex repair proposal")
     parser.add_argument("--model", default="gpt-5.5", help="llm_router model")
-    parser.add_argument("--provider", default="codex_cli", help="llm_router provider")
+    parser.add_argument("--provider", default=None, help="llm_router provider (default: auto-select with fallback)")
     parser.add_argument("--self-test", action="store_true", help="Run supervisor self-test and exit")
     return parser.parse_args(argv)
 
