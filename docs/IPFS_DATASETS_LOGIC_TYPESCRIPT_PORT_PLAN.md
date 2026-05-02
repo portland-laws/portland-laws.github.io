@@ -701,11 +701,11 @@ That PR gives the project immediate product value without committing to a full t
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-02 06:04:08 UTC
+Last updated: 2026-05-02 06:07:48 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-190: Add richer developer-panel integration for live UI inspection.`
+Current target: `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -900,24 +900,26 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-187: Port observability structured logging, Prometheus-style metrics, and OTel-style tracing to browser-local equivalents.` - complete
 - [!] `Task checkbox-188: Port monitoring/metrics to in-browser telemetry objects and developer panels.` - blocked
 - [x] `Task checkbox-189: Initial top-level 'logic/monitoring.py' parity for operation metrics, tracking helpers, health checks, error/warning counters, global monitor, reset, operation summaries, and optional Prometheus text export.` - complete
-- [!] `Task checkbox-190: Add richer developer-panel integration for live UI inspection.` - latest daemon round failed validation or preflight
+- [!] `Task checkbox-190: Add richer developer-panel integration for live UI inspection.` - blocked
 - [x] `Task checkbox-191: Replace Python API/CLI surfaces with TypeScript developer scripts or browser devtools.` - complete
 - [x] `Task checkbox-192: Initial browser-native public API facade for 'logic/api.py' import-surface parity.` - complete
 - [!] `Task checkbox-193: Add CLI/devtools command adapter parity for 'logic/cli.py'.` - blocked
-- [!] `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.` - blocked
+- [!] `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.` - latest daemon round failed validation or preflight
 
 ### Latest Round
 
-- Target: `Task checkbox-190: Add richer developer-panel integration for live UI inspection.`
+- Target: `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.`
 - Result: `needs follow-up`
-- Summary: Add browser-native developer panel inspection snapshots for live logic UI state.
-- Impact: The new src/lib/logic/developerPanel.ts module is directly exercised by src/lib/logic/developerPanel.test.ts in the existing Jest validation suite. It gives browser callers a deterministic, bounded inspection adapter with JSON-safe metadata, severity counts, and fail-closed CustomEvent publishing without Node, filesystem, subprocess, RPC, server, or Python fallbacks.
+- Summary: Add browser-native IPLD proof cache contract with fail-closed verification
+- Impact: Adds a deterministic TypeScript IPLD proof cache under src/lib/logic/ and focused Jest coverage. The logic-port validation suite can exercise cache persistence, expiry, browser IPFS block hydration, and fail-closed verification without server, filesystem, subprocess, RPC, Python, or Node-only fallbacks.
 - Errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/developerPanel.ts(34,11): error TS2314: Generic type 'Record' requires 2 type argument(s).
-../../..src/lib/logic/developerPanel.ts(56,25): error TS2314: Generic type 'Record' requires 2 type argument(s).
-../../..src/lib/logic/developerPanel.ts(132,67): error TS2314: Generic type 'WeakSet<T>' requires 1 type argument(s).
-../../..src/lib/logic/developerPanel.ts(134,5): error TS2322: Type 'unknown' is not assignable to type 'LogicInspectionJson'.
-../../..src/lib/logic/developerPanel.ts(160,54): error TS2314: Generic type 'Record' requires 2 type argument(s).
+../../..src/lib/logic/ipldProofCache.ts(98,80): error TS1005: ')' expected.
+../../..src/lib/logic/ipldProofCache.ts(109,3): error TS1434: Unexpected keyword or identifier.
+../../..src/lib/logic/ipldProofCache.ts(109,28): error TS1005: ',' expected.
+../../..src/lib/logic/ipldProofCache.ts(109,42): error TS1005: ',' expected.
+../../..src/lib/logic/ipldProofCache.ts(109,51): error TS1005: ';' expected.
+../../..src/lib/logic/ipldProofCache.ts(109,53): error TS1434: Unexpected keyword or identifier.
+../../..src/lib/logic/ipldProofCache.ts(127,3): error TS1128: Declaration or statement expected.
 - Failure kind: `preflight`
 
 ### Blocked Backlog

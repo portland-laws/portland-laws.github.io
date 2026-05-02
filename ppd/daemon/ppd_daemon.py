@@ -35,6 +35,7 @@ from ppd.daemon.accepted_work_ledger import (
     append_accepted_work_ledger as append_accepted_work_jsonl,
     build_accepted_work_ledger_entry,
 )
+from ppd.daemon.syntax_preflight import run_apply_flow_syntax_preflight
 
 
 CHECKBOX_RE = re.compile(r"^(?P<prefix>\s*-\s+\[)(?P<mark>[ xX~!])(?P<suffix>\]\s+)(?P<title>.+)$")
@@ -503,8 +504,36 @@ def apply_files_with_validation(proposal: Proposal, config: Config) -> Proposal:
         persist_failed_work(proposal, config, patch="", reason="no_change")
         return proposal
 
-    proposal.validation_results = run_validation(config)
     patch_text = "".join(patch_parts)
+    syntax_preflight = run_apply_flow_syntax_preflight(
+        config.repo_root,
+        changed,
+        timeout=config.command_timeout_seconds,
+    )
+    proposal.validation_results = [
+        CommandResult(
+            command=result.command,
+            returncode=result.returncode,
+            stdout=result.stdout,
+            stderr=result.stderr,
+        )
+        for result in syntax_preflight.validation_results
+    ]
+    if not syntax_preflight.ok:
+        for path, before in backups.items():
+            if before is None:
+                try:
+                    path.unlink()
+                except FileNotFoundError:
+                    pass
+            else:
+                path.write_text(before, encoding="utf-8")
+        proposal.errors.extend(syntax_preflight.errors)
+        proposal.failure_kind = syntax_preflight.failure_kind
+        persist_failed_work(proposal, config, patch=patch_text, reason="syntax_preflight")
+        return proposal
+
+    proposal.validation_results = run_validation(config)
     if not all(result.ok for result in proposal.validation_results):
         for path, before in backups.items():
             if before is None:
