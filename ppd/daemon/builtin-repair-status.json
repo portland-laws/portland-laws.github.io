@@ -1,5 +1,5 @@
 {
-  "createdAt": "2026-05-02T22:32:25.537430Z",
+  "createdAt": "2026-05-02T22:40:39.010991Z",
   "decision": {
     "action": "reconcile_supersession_task_board",
     "reason": "checkbox-133 returned repeated no-file task-board proposals even though accepted checkbox-109/130/131/132 evidence is sufficient; apply deterministic task-board-only supersession repair",

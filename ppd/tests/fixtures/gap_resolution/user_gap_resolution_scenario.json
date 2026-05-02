@@ -1,0 +1,151 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "user_gap_resolution_scenario",
+  "scenarioId": "scenario-ppd-user-gap-resolution-v1",
+  "generatedAt": "2026-05-02T00:00:00Z",
+  "planningBoundary": {
+    "fixtureOnly": true,
+    "networkAccess": false,
+    "liveDevhubAccess": false,
+    "storesPrivateValues": false,
+    "autonomousCompletionAllowed": false,
+    "draftPreviewAllowedAfterUserAnswers": true
+  },
+  "sourceEvidence": [
+    {
+      "sourceEvidenceId": "src-ppd-public-permit-guidance",
+      "sourceUrl": "https://www.portland.gov/ppd/permits",
+      "canonicalDocumentId": "doc-ppd-building-permit-public-guidance",
+      "capturedAt": "2026-05-01T00:00:00Z",
+      "stale": false,
+      "citation": {
+        "locator": "fixture-public-guidance-building-permit-inputs",
+        "paraphrase": "Public permit guidance requires project and applicant facts before a draft can be prepared."
+      }
+    },
+    {
+      "sourceEvidenceId": "src-ppd-public-checklist",
+      "sourceUrl": "https://www.portland.gov/ppd/building-permit-forms",
+      "canonicalDocumentId": "doc-ppd-public-checklist-placeholder",
+      "capturedAt": "2026-04-01T00:00:00Z",
+      "stale": true,
+      "citation": {
+        "locator": "fixture-public-checklist-document-placeholders",
+        "paraphrase": "Public checklist guidance can identify supporting document placeholders, but stale evidence requires review before autonomous planning."
+      }
+    }
+  ],
+  "userCaseFacts": [
+    {
+      "factId": "fact-project-site-address",
+      "factKey": "project.site_address",
+      "known": false,
+      "redactedValue": "[REDACTED_UNKNOWN]",
+      "sourceEvidenceIds": [
+        "src-ppd-public-permit-guidance"
+      ],
+      "blocksAutonomousCompletion": true
+    },
+    {
+      "factId": "fact-applicant-contact-email",
+      "factKey": "applicant.contact_email",
+      "known": false,
+      "redactedValue": "[REDACTED_UNKNOWN]",
+      "sourceEvidenceIds": [
+        "src-ppd-public-permit-guidance"
+      ],
+      "blocksAutonomousCompletion": true
+    }
+  ],
+  "documentPlaceholders": [
+    {
+      "placeholderId": "doc-placeholder-site-plan",
+      "documentKey": "documents.site_plan",
+      "present": false,
+      "redactedPlaceholder": "[REDACTED_DOCUMENT_PLACEHOLDER]",
+      "sourceEvidenceIds": [
+        "src-ppd-public-checklist"
+      ],
+      "evidenceStale": true,
+      "blocksAutonomousCompletion": true
+    }
+  ],
+  "questions": [
+    {
+      "questionId": "q-project-site-address",
+      "questionText": "What is the project site address?",
+      "answerType": "short_text",
+      "linkedGapIds": [
+        "fact-project-site-address"
+      ],
+      "sourceEvidenceIds": [
+        "src-ppd-public-permit-guidance"
+      ],
+      "allowedUseAfterAnswer": "preview_reversible_draft_fill_only"
+    },
+    {
+      "questionId": "q-applicant-contact-email",
+      "questionText": "What email address should be used for applicant contact?",
+      "answerType": "email",
+      "linkedGapIds": [
+        "fact-applicant-contact-email"
+      ],
+      "sourceEvidenceIds": [
+        "src-ppd-public-permit-guidance"
+      ],
+      "allowedUseAfterAnswer": "preview_reversible_draft_fill_only"
+    },
+    {
+      "questionId": "q-site-plan-document-review",
+      "questionText": "Do you have a site plan document ready for human review?",
+      "answerType": "yes_no",
+      "linkedGapIds": [
+        "doc-placeholder-site-plan"
+      ],
+      "sourceEvidenceIds": [
+        "src-ppd-public-checklist"
+      ],
+      "requiresHumanReviewBecauseEvidenceStale": true,
+      "allowedUseAfterAnswer": "record_placeholder_status_only"
+    }
+  ],
+  "stopGates": [
+    {
+      "gateId": "gate-missing-required-facts",
+      "defaultOutcome": "ask_user",
+      "blocksAutonomousCompletion": true,
+      "blockedWhen": [
+        "missing(project.site_address)",
+        "missing(applicant.contact_email)"
+      ]
+    },
+    {
+      "gateId": "gate-stale-document-evidence",
+      "defaultOutcome": "human_review",
+      "blocksAutonomousCompletion": true,
+      "blockedWhen": [
+        "stale_evidence(src-ppd-public-checklist)"
+      ]
+    },
+    {
+      "gateId": "gate-official-actions",
+      "defaultOutcome": "refuse",
+      "blocksAutonomousCompletion": true,
+      "blockedActions": [
+        "upload_official_document",
+        "submit_application",
+        "certify_statement",
+        "pay_fee",
+        "cancel_request",
+        "schedule_inspection"
+      ]
+    }
+  ],
+  "plannerOutcome": {
+    "autonomousCompletionAllowed": false,
+    "nextAgentAction": "ask_source_linked_questions",
+    "afterUserAnswers": "preview_reversible_draft_fields_only",
+    "requiresHumanReview": true,
+    "reason": "Required user facts are missing and one document placeholder is backed by stale public evidence."
+  }
+}

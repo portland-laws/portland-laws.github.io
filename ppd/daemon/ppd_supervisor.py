@@ -385,12 +385,27 @@ def builtin_replenish_goal_tasks(markdown: str, rows: Optional[list[dict[str, An
         heading = f"## Built-In Goal Replenishment Tranche {existing_tranche_count + 1}"
     broader = should_use_broader_goal_slices(rows or []) or existing_tranche_count > 0
     if broader:
-        templates = [
-            "Add an end-to-end fixture-only handoff scenario plus focused validation linking processor archival evidence, extracted requirement nodes, formal-logic guardrails, and draft-only Playwright planning without live crawling, authenticated automation, raw browser state, or official DevHub actions.",
-            "Add a fixture-only user gap-resolution scenario plus focused validation that turns missing PP&D facts, stale evidence flags, and document placeholders into source-linked user questions and refuses autonomous completion while gaps remain.",
-            "Add supervisor adaptive-slice regression coverage proving completed board-level recovery tranches enable broader non-duplicate goal slices even when accepted daemon ledger rows lag behind manual validated recovery work.",
-            "Add an offline Playwright draft transcript fixture plus focused validation proving future agents can plan accessible-selector fills from redacted state while preserving exact-confirmation gates for upload, submit, payment, certification, cancellation, MFA, CAPTCHA, and inspection scheduling.",
+        broad_tranches = [
+            [
+                "Add an end-to-end fixture-only handoff scenario plus focused validation linking processor archival evidence, extracted requirement nodes, formal-logic guardrails, and draft-only Playwright planning without live crawling, authenticated automation, raw browser state, or official DevHub actions.",
+                "Add a fixture-only user gap-resolution scenario plus focused validation that turns missing PP&D facts, stale evidence flags, and document placeholders into source-linked user questions and refuses autonomous completion while gaps remain.",
+                "Add supervisor adaptive-slice regression coverage proving completed board-level recovery tranches enable broader non-duplicate goal slices even when accepted daemon ledger rows lag behind manual validated recovery work.",
+                "Add an offline Playwright draft transcript fixture plus focused validation proving future agents can plan accessible-selector fills from redacted state while preserving exact-confirmation gates for upload, submit, payment, certification, cancellation, MFA, CAPTCHA, and inspection scheduling.",
+            ],
+            [
+                "Add a fixture-only source-change impact scenario plus focused validation that routes updated PP&D public evidence through archival provenance, affected requirement IDs, stale guardrail invalidation, and human-review flags before agents reuse old answers.",
+                "Add a fixture-only agent work-order scenario plus focused validation that composes user document-store facts, missing PP&D facts, formal stop gates, and draft-only Playwright previews into an ordered autonomous-assistance plan without official DevHub actions.",
+                "Add daemon parse-failure recovery coverage proving repeated non-JSON LLM responses for a completed or manually satisfied task are parked or superseded instead of being retried indefinitely.",
+                "Add a fixture-only permit-process comparison scenario plus focused validation that contrasts two PP&D process types and preserves separate legal obligations, operational UI hints, document placeholders, fee notices, and exact-confirmation gates.",
+            ],
+            [
+                "Add a fixture-only audit export scenario plus focused validation that records source evidence, user-question decisions, redacted draft previews, guardrail outcomes, and refused official actions for downstream human review.",
+                "Add a fixture-only stale-answer reconciliation scenario plus focused validation that compares user document-store facts against newer PP&D evidence and fails closed when citations, timestamps, or requirement IDs conflict.",
+                "Add supervisor replenishment rotation coverage proving third and later completed tranches do not duplicate the previous broad tranche titles.",
+                "Add a fixture-only Playwright selector drift scenario plus focused validation that detects changed accessible names, refuses low-confidence selectors, and asks for human review before draft-preview automation continues.",
+            ],
         ]
+        templates = broad_tranches[min(max(0, existing_tranche_count - 1), len(broad_tranches) - 1)]
         policy = "broad_integrated_after_green_streak"
     else:
         templates = [
@@ -502,7 +517,11 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
             should_invoke_codex=True,
         )
 
-    if has_recent_checkbox_133_no_file_stall(rows, latest) and has_checkbox_108_supersession_prerequisites(rows):
+    if (
+        "## Checkbox-108 Supersession Note" not in board
+        and has_recent_checkbox_133_no_file_stall(rows, latest)
+        and has_checkbox_108_supersession_prerequisites(rows)
+    ):
         return SupervisorDecision(
             action="reconcile_supersession_task_board",
             reason=(

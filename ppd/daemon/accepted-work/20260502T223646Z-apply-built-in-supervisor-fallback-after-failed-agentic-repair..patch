@@ -1,0 +1,95 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,5 +1,5 @@
+ {
+-  "createdAt": "2026-05-02T22:36:34.219230Z",
++  "createdAt": "2026-05-02T22:36:45.588278Z",
+   "decision": {
+     "action": "plan_next_tasks",
+     "reason": "all PP&D daemon tasks are complete; review the original PP&D goal and add the next task-board tranche",
+@@ -7,48 +7,10 @@
+   },
+   "failedAgenticRepair": {
+     "changedFiles": [],
+-    "errors": [
+-      "LLM response did not contain a JSON object."
+-    ],
+-    "failureKind": "parse",
+-    "summary": "",
+-    "validationResults": [
+-      {
+-        "command": [
+-          "python3",
+-          "ppd/daemon/ppd_daemon.py",
+-          "--self-test"
+-        ],
+-        "returncode": 0,
+-        "stderr": "",
+-        "stdout": "{ \"ok\": true, \"task_count\": 143 }"
+-      },
+-      {
+-        "command": [
+-          "python3",
+-          "-m",
+-          "unittest",
+-          "discover",
+-          "-s",
+-          "ppd/tests",
+-          "-p",
+-          "test_*.py"
+-        ],
+-        "returncode": 0,
+-        "stderr": ".............................................................................................................................................................................................................................................................................................................................................ss..............sss..................................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 597 tests in 0.100s OK (skipped=5)",
+-        "stdout": ""
+-      },
+-      {
+-        "command": [
+-          "bash",
+-          "-lc",
+-          "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+-        ],
+-        "returncode": 0,
+-        "stderr": "",
+-        "stdout": ""
+-      }
+-    ]
++    "errors": [],
++    "failureKind": "no_eligible_tasks",
++    "summary": "All currently planned PP&D tasks are complete.",
++    "validationResults": []
+   },
+   "fallbackActions": [
+     "preserve failed repair diagnostics without accepting the invalid patch",
+@@ -68,8 +30,13 @@
+   "schemaVersion": 1,
+   "taskBoardRepair": {
+     "parkedRepeatedSyntaxLoopTasks": [],
+-    "replenishedGoalTaskLabels": [],
++    "replenishedGoalTaskLabels": [
++      "checkbox-144",
++      "checkbox-145",
++      "checkbox-146",
++      "checkbox-147"
++    ],
+     "supersededTaskBoardOnlyLabels": [],
+-    "taskBoardUpdated": false
++    "taskBoardUpdated": true
+   }
+ }
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -224,3 +224,14 @@
+ 
+ - The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
+ - Slice policy: `broad_integrated_after_green_streak`. Small slices are used after parse, syntax, validation, or task-board repair failures; broader integrated slices are used after a green accepted streak or a fully completed board-level recovery tranche.
++
++## Built-In Goal Replenishment Tranche 3
++
++- [ ] Task checkbox-144: Add an end-to-end fixture-only handoff scenario plus focused validation linking processor archival evidence, extracted requirement nodes, formal-logic guardrails, and draft-only Playwright planning without live crawling, authenticated automation, raw browser state, or official DevHub actions.
++- [ ] Task checkbox-145: Add a fixture-only user gap-resolution scenario plus focused validation that turns missing PP&D facts, stale evidence flags, and document placeholders into source-linked user questions and refuses autonomous completion while gaps remain.
++- [ ] Task checkbox-146: Add supervisor adaptive-slice regression coverage proving completed board-level recovery tranches enable broader non-duplicate goal slices even when accepted daemon ledger rows lag behind manual validated recovery work.
++- [ ] Task checkbox-147: Add an offline Playwright draft transcript fixture plus focused validation proving future agents can plan accessible-selector fills from redacted state while preserving exact-confirmation gates for upload, submit, payment, certification, cancellation, MFA, CAPTCHA, and inspection scheduling.
++## Built-In Supervisor Planning Notes
++
++- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
++- Slice policy: `broad_integrated_after_green_streak`. Small slices are used after parse, syntax, validation, or task-board repair failures; broader integrated slices are used after a green accepted streak.

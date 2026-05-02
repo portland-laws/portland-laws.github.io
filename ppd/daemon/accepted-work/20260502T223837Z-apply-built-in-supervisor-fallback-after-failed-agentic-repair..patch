@@ -1,0 +1,40 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,15 +1,15 @@
+ {
+-  "createdAt": "2026-05-02T22:36:45.588278Z",
++  "createdAt": "2026-05-02T22:38:36.532929Z",
+   "decision": {
+-    "action": "plan_next_tasks",
+-    "reason": "all PP&D daemon tasks are complete; review the original PP&D goal and add the next task-board tranche",
+-    "severity": "info"
++    "action": "reconcile_supersession_task_board",
++    "reason": "checkbox-133 returned repeated no-file task-board proposals even though accepted checkbox-109/130/131/132 evidence is sufficient; apply deterministic task-board-only supersession repair",
++    "severity": "warning"
+   },
+   "failedAgenticRepair": {
+     "changedFiles": [],
+     "errors": [],
+-    "failureKind": "no_eligible_tasks",
+-    "summary": "All currently planned PP&D tasks are complete.",
++    "failureKind": "no_change",
++    "summary": "Worker returned empty task-board truncation proposal.",
+     "validationResults": []
+   },
+   "fallbackActions": [
+@@ -30,13 +30,8 @@
+   "schemaVersion": 1,
+   "taskBoardRepair": {
+     "parkedRepeatedSyntaxLoopTasks": [],
+-    "replenishedGoalTaskLabels": [
+-      "checkbox-144",
+-      "checkbox-145",
+-      "checkbox-146",
+-      "checkbox-147"
+-    ],
++    "replenishedGoalTaskLabels": [],
+     "supersededTaskBoardOnlyLabels": [],
+-    "taskBoardUpdated": true
++    "taskBoardUpdated": false
+   }
+ }

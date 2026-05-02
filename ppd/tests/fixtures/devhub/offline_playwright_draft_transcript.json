@@ -1,0 +1,152 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "offline_playwright_draft_transcript",
+  "transcriptId": "offline-devhub-draft-transcript-v1",
+  "generatedAt": "2026-05-02T00:00:00Z",
+  "executionBoundary": {
+    "offlineFixture": true,
+    "browserLaunched": false,
+    "networkAccess": false,
+    "authenticatedDevhubAccess": false,
+    "rawBrowserStateStored": false,
+    "visualArtifactsStored": false,
+    "tracesStored": false
+  },
+  "pageSnapshot": {
+    "snapshotId": "mock-devhub-building-permit-draft-page",
+    "source": "redacted_fixture_state",
+    "urlTemplate": "https://devhub.portland.gov/mock/redacted-draft",
+    "fields": [
+      {
+        "fieldId": "field-project-site-address",
+        "role": "textbox",
+        "accessibleName": "Project site address",
+        "labelText": "Project site address",
+        "nearbyHeading": "Project information",
+        "required": true,
+        "currentValue": "[REDACTED_EMPTY]"
+      },
+      {
+        "fieldId": "field-applicant-email",
+        "role": "textbox",
+        "accessibleName": "Applicant email",
+        "labelText": "Applicant email",
+        "nearbyHeading": "Applicant information",
+        "required": true,
+        "currentValue": "[REDACTED_EMPTY]"
+      }
+    ]
+  },
+  "plannedTranscript": [
+    {
+      "stepId": "step-preview-project-address",
+      "action": "preview_fill",
+      "actionClass": "reversible_draft_edit",
+      "selector": {
+        "basis": "role_and_accessible_name",
+        "role": "textbox",
+        "accessibleName": "Project site address",
+        "confidence": 0.94
+      },
+      "linkedFieldId": "field-project-site-address",
+      "linkedRequirementId": "req-project-site-address",
+      "beforeValue": "[REDACTED_EMPTY]",
+      "afterValue": "[REDACTED_USER_SUPPLIED_PROJECT_LOCATION]",
+      "executesInFixture": false
+    },
+    {
+      "stepId": "step-preview-applicant-email",
+      "action": "preview_fill",
+      "actionClass": "reversible_draft_edit",
+      "selector": {
+        "basis": "label_text",
+        "role": "textbox",
+        "accessibleName": "Applicant email",
+        "confidence": 0.92
+      },
+      "linkedFieldId": "field-applicant-email",
+      "linkedRequirementId": "req-applicant-contact-email",
+      "beforeValue": "[REDACTED_EMPTY]",
+      "afterValue": "[REDACTED_USER_SUPPLIED_CONTACT_EMAIL]",
+      "executesInFixture": false
+    }
+  ],
+  "exactConfirmationGates": [
+    {
+      "gateId": "gate-upload-official-document",
+      "blockedAction": "upload_official_document",
+      "actionClass": "consequential",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "defaultDecision": "refuse"
+    },
+    {
+      "gateId": "gate-submit-application",
+      "blockedAction": "submit_application",
+      "actionClass": "consequential",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "defaultDecision": "refuse"
+    },
+    {
+      "gateId": "gate-pay-fee",
+      "blockedAction": "pay_fee",
+      "actionClass": "financial",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "defaultDecision": "refuse"
+    },
+    {
+      "gateId": "gate-certify-statement",
+      "blockedAction": "certify_statement",
+      "actionClass": "consequential",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "defaultDecision": "refuse"
+    },
+    {
+      "gateId": "gate-cancel-request",
+      "blockedAction": "cancel_request",
+      "actionClass": "consequential",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "defaultDecision": "refuse"
+    },
+    {
+      "gateId": "gate-schedule-inspection",
+      "blockedAction": "schedule_inspection",
+      "actionClass": "consequential",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "defaultDecision": "refuse"
+    },
+    {
+      "gateId": "gate-mfa",
+      "blockedAction": "mfa",
+      "actionClass": "authentication_challenge",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "defaultDecision": "refuse"
+    },
+    {
+      "gateId": "gate-captcha",
+      "blockedAction": "captcha",
+      "actionClass": "authentication_challenge",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "defaultDecision": "refuse"
+    }
+  ],
+  "auditSummary": {
+    "allowedActionClasses": [
+      "reversible_draft_edit"
+    ],
+    "refusedActionClasses": [
+      "consequential",
+      "financial",
+      "authentication_challenge"
+    ],
+    "storesOnlyRedactedValues": true,
+    "canReplayAgainstLiveDevhub": false
+  }
+}

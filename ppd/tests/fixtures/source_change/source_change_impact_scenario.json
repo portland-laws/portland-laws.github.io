@@ -1,0 +1,71 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "source_change_impact_scenario",
+  "scenarioId": "scenario-ppd-source-change-impact-v1",
+  "generatedAt": "2026-05-02T00:00:00Z",
+  "archiveProvenance": {
+    "previousArchiveManifestId": "ppd-processor-archive-integration-2026-05-01",
+    "currentArchiveManifestId": "ppd-processor-archive-integration-2026-05-02",
+    "processorPackage": "ipfs_datasets_py.processor",
+    "networkAccess": false,
+    "rawBodiesIncluded": false
+  },
+  "changedEvidence": [
+    {
+      "sourceEvidenceId": "src-ppd-public-checklist",
+      "sourceUrl": "https://www.portland.gov/ppd/building-permit-forms",
+      "previousCapturedAt": "2026-04-01T00:00:00Z",
+      "currentCapturedAt": "2026-05-01T00:00:00Z",
+      "previousHashPlaceholder": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "currentHashPlaceholder": "sha256:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+      "changeClass": "requirement_text_changed",
+      "citation": {
+        "locator": "fixture-public-checklist-document-placeholders",
+        "paraphrase": "A public checklist placeholder changed, so related document requirements must be reviewed before agents reuse prior answers."
+      }
+    }
+  ],
+  "affectedRequirements": [
+    {
+      "requirementId": "req-site-plan-document-placeholder",
+      "requirementType": "document_placeholder",
+      "sourceEvidenceIds": [
+        "src-ppd-public-checklist"
+      ],
+      "previousStatus": "usable",
+      "currentStatus": "stale_pending_review",
+      "invalidatesGuardrailIds": [
+        "guardrail-document-placeholder-completeness"
+      ],
+      "blocksReuseOfUserAnswerIds": [
+        "answer-site-plan-ready"
+      ]
+    }
+  ],
+  "guardrailInvalidations": [
+    {
+      "guardrailId": "guardrail-document-placeholder-completeness",
+      "invalidatedByEvidenceId": "src-ppd-public-checklist",
+      "defaultOutcome": "fail_closed",
+      "agentImpact": "Do not reuse old document-readiness answers or preview document-related draft fields until the changed public evidence is reviewed.",
+      "requiresHumanReview": true
+    }
+  ],
+  "humanReviewQueue": [
+    {
+      "reviewId": "review-site-plan-document-placeholder-change",
+      "sourceEvidenceId": "src-ppd-public-checklist",
+      "requirementIds": [
+        "req-site-plan-document-placeholder"
+      ],
+      "priority": "required_before_autonomous_assistance",
+      "reason": "Public evidence changed after the prior answer was collected."
+    }
+  ],
+  "plannerOutcome": {
+    "reuseOldAnswersAllowed": false,
+    "autonomousCompletionAllowed": false,
+    "nextAgentAction": "request_human_review_of_changed_public_evidence",
+    "safeDraftPreviewAllowed": false
+  }
+}

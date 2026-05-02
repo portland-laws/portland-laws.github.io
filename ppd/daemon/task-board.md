@@ -190,12 +190,12 @@ Last updated: 2026-05-02T21:20:00.000000Z
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-02T22:28:44.519436Z
+Last updated: 2026-05-02T22:41:03.541008Z
 
-- Latest target: `Task checkbox-140: Task checkbox-140: Add an end-to-end fixture-only handoff scenario plus focused validation linking processor archival evidence, extracted requirement nodes, formal-logic guardrails, and draft-only Playwright planning without live crawling, authenticated automation, raw browser state, or official DevHub actions.`
+- Latest target: `Task checkbox-145: Task checkbox-145: Add a fixture-only agent work-order scenario plus focused validation that composes user document-store facts, missing PP&D facts, formal stop gates, and draft-only Playwright previews into an ordered autonomous-assistance plan without official DevHub actions.`
 - Latest result: `parse`
 - Latest summary: 
-- Counts: `{"blocked": 0, "complete": 139, "in_progress": 0, "needed": 4}`
+- Counts: `{"blocked": 0, "complete": 144, "in_progress": 0, "needed": 3}`
 
 <!-- ppd-daemon-task-board:end -->
 ## Checkbox-108 Supersession Note
@@ -217,10 +217,21 @@ Last updated: 2026-05-02T22:28:44.519436Z
 ## Built-In Goal Replenishment Tranche 2
 
 - [x] Task checkbox-140: Add an end-to-end fixture-only handoff scenario plus focused validation linking processor archival evidence, extracted requirement nodes, formal-logic guardrails, and draft-only Playwright planning without live crawling, authenticated automation, raw browser state, or official DevHub actions.
-- [~] Task checkbox-141: Add a fixture-only user gap-resolution scenario plus focused validation that turns missing PP&D facts, stale evidence flags, and document placeholders into source-linked user questions and refuses autonomous completion while gaps remain.
-- [ ] Task checkbox-142: Add supervisor adaptive-slice regression coverage proving completed board-level recovery tranches enable broader non-duplicate goal slices even when accepted daemon ledger rows lag behind manual validated recovery work.
-- [ ] Task checkbox-143: Add an offline Playwright draft transcript fixture plus focused validation proving future agents can plan accessible-selector fills from redacted state while preserving exact-confirmation gates for upload, submit, payment, certification, cancellation, MFA, CAPTCHA, and inspection scheduling.
+- [x] Task checkbox-141: Add a fixture-only user gap-resolution scenario plus focused validation that turns missing PP&D facts, stale evidence flags, and document placeholders into source-linked user questions and refuses autonomous completion while gaps remain.
+- [x] Task checkbox-142: Add supervisor adaptive-slice regression coverage proving completed board-level recovery tranches enable broader non-duplicate goal slices even when accepted daemon ledger rows lag behind manual validated recovery work.
+- [x] Task checkbox-143: Add an offline Playwright draft transcript fixture plus focused validation proving future agents can plan accessible-selector fills from redacted state while preserving exact-confirmation gates for upload, submit, payment, certification, cancellation, MFA, CAPTCHA, and inspection scheduling.
 ## Built-In Supervisor Planning Notes
 
 - The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
 - Slice policy: `broad_integrated_after_green_streak`. Small slices are used after parse, syntax, validation, or task-board repair failures; broader integrated slices are used after a green accepted streak or a fully completed board-level recovery tranche.
+
+## Built-In Goal Replenishment Tranche 3
+
+- [x] Task checkbox-144: Add a fixture-only source-change impact scenario plus focused validation that routes updated PP&D public evidence through archival provenance, affected requirement IDs, stale guardrail invalidation, and human-review flags before agents reuse old answers.
+- [~] Task checkbox-145: Add a fixture-only agent work-order scenario plus focused validation that composes user document-store facts, missing PP&D facts, formal stop gates, and draft-only Playwright previews into an ordered autonomous-assistance plan without official DevHub actions.
+- [ ] Task checkbox-146: Add daemon parse-failure recovery coverage proving repeated non-JSON LLM responses for a completed or manually satisfied task are parked or superseded instead of being retried indefinitely.
+- [ ] Task checkbox-147: Add a fixture-only permit-process comparison scenario plus focused validation that contrasts two PP&D process types and preserves separate legal obligations, operational UI hints, document placeholders, fee notices, and exact-confirmation gates.
+## Built-In Supervisor Planning Notes
+
+- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
+- Slice policy: `broad_integrated_after_green_streak`. Small slices are used after parse, syntax, validation, or task-board repair failures; broader integrated slices are used after a green accepted streak.
