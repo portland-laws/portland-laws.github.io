@@ -24,9 +24,10 @@ describe('DCEC cleaning utilities', () => {
     expect(removeDcecSemicolonComments('no comment')).toBe('no comment');
   });
 
-  it('checks and locates matching parentheses', () => {
+  it('checks and locates ordered matching parentheses', () => {
     expect(checkDcecParens('(and a b)')).toBe(true);
     expect(checkDcecParens('(and a b')).toBe(false);
+    expect(checkDcecParens(')and a b(')).toBe(false);
     expect(getMatchingDcecCloseParen('(a (b c) d)', 0)).toBe(10);
     expect(getMatchingDcecCloseParen('(a (b c) d)', 3)).toBe(7);
     expect(getMatchingDcecCloseParen('(a (b c)', 0)).toBeUndefined();
@@ -38,19 +39,25 @@ describe('DCEC cleaning utilities', () => {
     expect(consolidateDcecParens('(and (a) (b))')).toBe('(and a b)');
   });
 
-  it('tucks F-expression function calls into S-expression-style notation', () => {
+  it('tucks nested F-expression function calls into S-expression-style notation', () => {
     expect(tuckDcecFunctions('B(a,b)')).toBe('(B,a,b)');
     expect(tuckDcecFunctions('Event(e1)')).toBe('(Event,e1)');
     expect(tuckDcecFunctions('not(P)')).toBe('(not,(P))');
+    expect(tuckDcecFunctions('Happens(Attack(e),t1)')).toBe('(Happens,(Attack,e),t1)');
   });
 
-  it('functorizes symbolic operators with Python-compatible replacements', () => {
+  it('functorizes symbolic operators with longest-match replacements', () => {
     expect(functorizeDcecSymbols('a -> b')).toBe('a  implies  b');
     expect(functorizeDcecSymbols('x + y')).toBe('x  add  y');
     expect(functorizeDcecSymbols('~p')).toBe(' not p');
+    expect(functorizeDcecSymbols('a >= b')).toBe('a  greaterOrEqual  b');
+    expect(functorizeDcecSymbols('a <-> b')).toBe('a  ifAndOnlyIf  b');
   });
 
-  it('runs the standard cleaning pipeline', () => {
+  it('runs the standard cleaning pipeline without Python or server fallbacks', () => {
     expect(cleanDcecExpression('  ((and a b)) # comment')).toBe('(and,a,b)');
+    expect(cleanDcecExpression('Happens(Attack(e),t1) ; ignored')).toBe('(Happens,(Attack,e),t1)');
+    expect(cleanDcecExpression('(a -> b)')).toBe('(a,implies,b)');
+    expect(cleanDcecExpression(')and a b(')).toBe('');
   });
 });

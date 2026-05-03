@@ -1,3 +1,25 @@
+const SYMBOL_REPLACEMENTS: Record<string, string> = {
+  '<->': 'ifAndOnlyIf',
+  '->': 'implies',
+  '>=': 'greaterOrEqual',
+  '<=': 'lessOrEqual',
+  '===': 'tautology',
+  '==': 'equals',
+  '=': 'equals',
+  '>': 'greater',
+  '<': 'less',
+  '^': 'exponent',
+  '*': '*',
+  '/': 'divide',
+  '+': 'add',
+  '-': '-',
+  '&': '&',
+  '|': '|',
+  '~': 'not',
+};
+
+const DCEC_SYMBOLS = Object.keys(SYMBOL_REPLACEMENTS).sort((left, right) => right.length - left.length);
+
 export function stripDcecWhitespace(expression: string): string {
   let text = expression.trim();
   text = text.replaceAll('[', ' [').replaceAll(']', '] ');
@@ -6,7 +28,9 @@ export function stripDcecWhitespace(expression: string): string {
   while (true) {
     const previousLength = text.length;
     text = text.replaceAll('  ', ' ').replaceAll('( ', '(').replaceAll(' )', ')');
-    if (previousLength === text.length) break;
+    if (previousLength === text.length) {
+      break;
+    }
   }
 
   return text.replaceAll(')(', ') (').replaceAll(' ', ',');
@@ -23,29 +47,40 @@ export function removeDcecSemicolonComments(expression: string): string {
 }
 
 export function checkDcecParens(expression: string): boolean {
-  return countChar(expression, '(') === countChar(expression, ')');
+  let depth = 0;
+  for (let index = 0; index < expression.length; index += 1) {
+    const char = expression[index];
+    if (char === '(') {
+      depth += 1;
+    } else if (char === ')') {
+      depth -= 1;
+      if (depth < 0) {
+        return false;
+      }
+    }
+  }
+  return depth === 0;
 }
 
 export function getMatchingDcecCloseParen(input: string, openParenIndex = 0): number | undefined {
-  let parenCounter = 1;
-  let currentIndex = openParenIndex;
-  if (currentIndex === -1 || input[currentIndex] !== '(') return undefined;
+  if (openParenIndex < 0 || openParenIndex >= input.length || input[openParenIndex] !== '(') {
+    return undefined;
+  }
 
-  while (parenCounter > 0) {
-    const closeIndex = input.indexOf(')', currentIndex + 1);
-    const openIndex = input.indexOf('(', currentIndex + 1);
-
-    if ((openIndex < closeIndex || closeIndex === -1) && openIndex !== -1) {
-      currentIndex = openIndex;
-      parenCounter += 1;
-    } else if ((closeIndex < openIndex || openIndex === -1) && closeIndex !== -1) {
-      currentIndex = closeIndex;
-      parenCounter -= 1;
-    } else {
-      return undefined;
+  let depth = 0;
+  for (let index = openParenIndex; index < input.length; index += 1) {
+    const char = input[index];
+    if (char === '(') {
+      depth += 1;
+    } else if (char === ')') {
+      depth -= 1;
+      if (depth === 0) {
+        return index;
+      }
     }
   }
-  return currentIndex;
+
+  return undefined;
 }
 
 export function consolidateDcecParens(expression: string): string {
@@ -55,7 +90,10 @@ export function consolidateDcecParens(expression: string): string {
 
   while (firstParen < text.length) {
     firstParen = text.indexOf('((', firstParen);
-    if (firstParen === -1) break;
+    if (firstParen === -1) {
+      break;
+    }
+
     const secondOpen = firstParen + 1;
     const firstClose = getMatchingDcecCloseParen(text, firstParen);
     const secondClose = getMatchingDcecCloseParen(text, secondOpen);
@@ -66,7 +104,7 @@ export function consolidateDcecParens(expression: string): string {
     firstParen += 1;
   }
 
-  let result = [...text].filter((_, index) => !deleteIndexes.has(index)).join('');
+  let result = Array.from(text).filter((_, index) => !deleteIndexes.has(index)).join('');
   if (result.includes(' ')) {
     const innerAtomPattern = /(?<![A-Za-z0-9_])\(([A-Za-z_][A-Za-z0-9_]*)\)(?![A-Za-z0-9_])/g;
     let previous: string | undefined;
@@ -75,87 +113,112 @@ export function consolidateDcecParens(expression: string): string {
       result = result.replace(innerAtomPattern, '$1');
     }
   }
+
   return result;
 }
 
 export function tuckDcecFunctions(expression: string): string {
-  let firstParen = 0;
-  let newIndex = 0;
-  let temp = '';
-  let source = expression;
+  let result = '';
+  let index = 0;
 
-  while (firstParen < source.length) {
-    firstParen = source.indexOf('(', firstParen);
-    if (firstParen === -1) break;
-
-    const previous = source[firstParen - 1];
-    if (previous !== undefined && ![',', ' ', '(', ')'].includes(previous)) {
-      let funcStart = firstParen - 1;
-      while (funcStart >= 0) {
-        if (source[funcStart] === ',' || source[funcStart] === '(') {
-          funcStart += 1;
-          break;
-        }
-        funcStart -= 1;
+  while (index < expression.length) {
+    const char = expression[index];
+    if (isIdentifierStart(char)) {
+      const nameStart = index;
+      index += 1;
+      while (index < expression.length && isIdentifierPart(expression[index])) {
+        index += 1;
       }
-      if (funcStart === -1) funcStart = 0;
 
-      const funcName = source.slice(funcStart, firstParen);
-      if (funcName === 'not' || funcName === 'negate') {
-        const adder = `${source.slice(newIndex, funcStart)}(${funcName},(`;
-        const closeParen = getMatchingDcecCloseParen(source, funcStart + funcName.length);
+      const name = expression.slice(nameStart, index);
+      if (index < expression.length && expression[index] === '(') {
+        const closeParen = getMatchingDcecCloseParen(expression, index);
         if (closeParen !== undefined) {
-          source = `${source.slice(0, funcStart)}${source.slice(funcStart, closeParen)}))${source.slice(closeParen + 1)}`;
+          const args = tuckFunctionArguments(expression.slice(index + 1, closeParen));
+          if (name === 'not' || name === 'negate') {
+            result += `(${name},(${args}))`;
+          } else {
+            result += `(${name},${args})`;
+          }
+          index = closeParen + 1;
+          continue;
         }
-        temp += adder;
-        newIndex += adder.length - 2;
-      } else {
-        const adder = `${source.slice(newIndex, funcStart)}(${funcName},`;
-        temp += adder;
-        newIndex += adder.length - 1;
       }
+
+      result += name;
+      continue;
     }
-    firstParen += 1;
+
+    result += char;
+    index += 1;
   }
 
-  return `${temp}${source.slice(newIndex)}`
-    .replaceAll('``', '`')
-    .replaceAll(',,', ',')
-    .replaceAll('`', ' ');
+  return result.replaceAll('``', '`').replaceAll(',,', ',').replaceAll('`', ' ');
 }
 
 export function functorizeDcecSymbols(expression: string): string {
-  const symbols = ['^', '*', '/', '+', '<->', '->', '-', '&', '|', '~', '>=', '==', '<=', '===', '=', '>', '<'];
-  const symbolMap: Record<string, string> = {
-    '^': 'exponent',
-    '*': '*',
-    '/': 'divide',
-    '+': 'add',
-    '-': '-',
-    '&': '&',
-    '|': '|',
-    '~': 'not',
-    '->': 'implies',
-    '<->': 'ifAndOnlyIf',
-    '>': 'greater',
-    '<': 'less',
-    '>=': 'greaterOrEqual',
-    '<=': 'lessOrEqual',
-    '=': 'equals',
-    '==': 'equals',
-    '===': 'tautology',
-  };
-  let result = expression;
-  for (const symbol of symbols) {
-    result = result.replaceAll(symbol, ` ${symbolMap[symbol]} `);
+  let result = '';
+  let index = 0;
+
+  while (index < expression.length) {
+    const symbol = DCEC_SYMBOLS.find((candidate) => expression.startsWith(candidate, index));
+    if (symbol !== undefined) {
+      result += ` ${SYMBOL_REPLACEMENTS[symbol]} `;
+      index += symbol.length;
+    } else {
+      result += expression[index];
+      index += 1;
+    }
   }
+
   return result.replaceAll('( ', '(');
 }
 
 export function cleanDcecExpression(expression: string): string {
-  return consolidateDcecParens(stripDcecWhitespace(stripDcecComments(expression)));
+  const uncommented = removeDcecSemicolonComments(stripDcecComments(expression)).trim();
+  if (uncommented.length === 0 || !checkDcecParens(uncommented)) {
+    return '';
+  }
+
+  const functorized = functorizeDcecSymbols(uncommented);
+  const tucked = tuckDcecFunctions(functorized);
+  return consolidateDcecParens(stripDcecWhitespace(tucked));
 }
 
-function countChar(value: string, char: string): number {
-  return [...value].filter((candidate) => candidate === char).length;
+function tuckFunctionArguments(input: string): string {
+  const tucked = tuckDcecFunctions(input);
+  const parts = splitTopLevelArguments(tucked);
+  return parts.length === 0 ? tucked.trim() : parts.join(',');
+}
+
+function splitTopLevelArguments(input: string): Array<string> {
+  const parts: Array<string> = [];
+  let depth = 0;
+  let start = 0;
+
+  for (let index = 0; index < input.length; index += 1) {
+    const char = input[index];
+    if (char === '(') {
+      depth += 1;
+    } else if (char === ')') {
+      depth -= 1;
+    } else if (char === ',' && depth === 0) {
+      parts.push(input.slice(start, index).trim());
+      start = index + 1;
+    }
+  }
+
+  const finalPart = input.slice(start).trim();
+  if (finalPart.length > 0) {
+    parts.push(finalPart);
+  }
+  return parts;
+}
+
+function isIdentifierStart(value: string | undefined): boolean {
+  return value !== undefined && /[A-Za-z_]/.test(value);
+}
+
+function isIdentifierPart(value: string | undefined): boolean {
+  return value !== undefined && /[A-Za-z0-9_]/.test(value);
 }
