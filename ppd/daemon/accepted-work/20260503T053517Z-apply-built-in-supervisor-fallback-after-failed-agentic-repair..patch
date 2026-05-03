@@ -1,0 +1,82 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,16 +1,57 @@
+ {
+-  "createdAt": "2026-05-03T05:14:43.977914Z",
++  "createdAt": "2026-05-03T05:35:16.232963Z",
+   "decision": {
+-    "action": "reconcile_repeated_llm_loop_and_restart",
+-    "reason": "62 recent durable LLM parse/runtime diagnostics were recorded for the same task before the daemon exited; park the looping task and restart on the next independent task without invoking the LLM repair path",
++    "action": "repair_daemon_programming",
++    "reason": "3 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
+     "severity": "warning"
+   },
+   "failedAgenticRepair": {
+-    "changedFiles": [],
+-    "errors": [],
+-    "failureKind": "llm",
+-    "summary": "Repeated LLM parse/runtime diagnostic loop detected.",
+-    "validationResults": []
++    "changedFiles": [
++      "ppd/daemon/syntax_preflight.py",
++      "ppd/tests/test_syntax_preflight.py"
++    ],
++    "errors": [
++      "Validation failed; file edits were rolled back."
++    ],
++    "failureKind": "validation",
++    "summary": "Tighten PP&D syntax preflight diagnostics for repeated parser rollback loops.",
++    "validationResults": [
++      {
++        "command": [
++          "python3",
++          "ppd/daemon/ppd_daemon.py",
++          "--self-test"
++        ],
++        "returncode": 0,
++        "stderr": "",
++        "stdout": "{ \"ok\": true, \"task_count\": 9 }"
++      },
++      {
++        "command": [
++          "python3",
++          "-m",
++          "unittest",
++          "discover",
++          "-s",
++          "ppd/tests",
++          "-p",
++          "test_*.py"
++        ],
++        "returncode": 1,
++        "stderr": ".....................................................................................................................................................................................................................................................................................................................................................................................................ss..............sss..................................................................................................................................................................................................................................................E........................................... ====================================================================== ERROR: test_detects_type_fragment_condition_with_focused_file_guidance (test_syntax_preflight.SyntaxPreflightTest.test_detects_type_fr...",
++        "stdout": ""
++      },
++      {
++        "command": [
++          "bash",
++          "-lc",
++          "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
++        ],
++        "returncode": 0,
++        "stderr": "",
++        "stdout": ""
++      }
++    ]
+   },
+   "fallbackActions": [
+     "preserve failed repair diagnostics without accepting the invalid patch",
+@@ -29,11 +70,9 @@
+   ],
+   "schemaVersion": 1,
+   "taskBoardRepair": {
+-    "parkedRepeatedSyntaxLoopTasks": [
+-      "Add a fixture-only public source lineage rollup plus focused validation that summarizes PP&D seed URLs, processor handoff manifests, normalized document IDs, source freshness records, and skipped-action reasons without live crawling or raw response bodies."
+-    ],
++    "parkedRepeatedSyntaxLoopTasks": [],
+     "replenishedGoalTaskLabels": [],
+     "supersededTaskBoardOnlyLabels": [],
+-    "taskBoardUpdated": true
++    "taskBoardUpdated": false
+   }
+ }

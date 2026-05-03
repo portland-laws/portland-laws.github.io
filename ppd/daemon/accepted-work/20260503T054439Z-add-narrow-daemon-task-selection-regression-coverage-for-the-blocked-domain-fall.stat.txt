@@ -1,0 +1,2 @@
+ppd/tests/fixtures/daemon/blocked_domain_task_selection.json
+ppd/tests/test_daemon_blocked_domain_task_selection.py

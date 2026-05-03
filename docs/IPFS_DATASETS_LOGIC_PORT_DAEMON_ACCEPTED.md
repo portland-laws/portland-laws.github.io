@@ -272,3 +272,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260503T052631Z-repair-dcec_core-compatibility-adapter-typing-for-isolatedmodules.json`, `ipfs_datasets_py/.daemon/accepted-work/20260503T052631Z-repair-dcec_core-compatibility-adapter-typing-for-isolatedmodules.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260503T052631Z-repair-dcec_core-compatibility-adapter-typing-for-isolatedmodules.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-03 05:31:46 UTC
+
+- Target: `Task checkbox-205: Port remaining Python logic module `logic/CEC/native/dcec_english_grammar.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Add browser-native native DCEC English grammar parity contract
+- Impact: The DCEC English grammar module now directly exposes deterministic metadata, capabilities, validation, parse results, lexicon names, and rule names for logic/CEC/native/dcec_english_grammar.py. The existing Jest DCEC English grammar test file exercises the exported native facade, so the TypeScript port validation suite uses the new browser-native source behavior without Python, server, filesystem, subprocess, RPC, or Node-only runtime dependencies.
+- Changed files: `src/lib/logic/cec/dcecEnglishGrammar.test.ts`, `src/lib/logic/cec/dcecEnglishGrammar.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260503T053146Z-add-browser-native-native-dcec-english-grammar-parity-contract.json`, `ipfs_datasets_py/.daemon/accepted-work/20260503T053146Z-add-browser-native-native-dcec-english-grammar-parity-contract.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260503T053146Z-add-browser-native-native-dcec-english-grammar-parity-contract.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

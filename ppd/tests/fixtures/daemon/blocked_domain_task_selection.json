@@ -1,0 +1,40 @@
+{
+  "scenario": "all_domain_tasks_blocked_prefers_daemon_repair",
+  "blocked_domain_task_ids": ["checkbox-176", "checkbox-178"],
+  "tasks": [
+    {
+      "id": "checkbox-176",
+      "status": "blocked",
+      "category": "domain",
+      "title": "Add a fixture-only public source lineage rollup"
+    },
+    {
+      "id": "checkbox-178",
+      "status": "blocked",
+      "category": "domain",
+      "title": "Add a fixture-only DevHub draft-readiness decision matrix"
+    },
+    {
+      "id": "checkbox-180",
+      "status": "needed",
+      "category": "daemon_repair",
+      "title": "Add daemon task-selection regression coverage proving blocked domain work is not revisited"
+    },
+    {
+      "id": "checkbox-181",
+      "status": "needed",
+      "category": "daemon_repair",
+      "title": "Add daemon prompt-scoping coverage for syntax_preflight history"
+    }
+  ],
+  "expected": {
+    "forbidden_selection_ids": ["checkbox-176", "checkbox-178"],
+    "allowed_selection_categories": ["daemon_repair"],
+    "selected_task_id": "checkbox-180",
+    "fallback_appended_when_no_repair_exists": {
+      "category": "daemon_repair",
+      "status": "needed",
+      "title_contains": "daemon"
+    }
+  }
+}

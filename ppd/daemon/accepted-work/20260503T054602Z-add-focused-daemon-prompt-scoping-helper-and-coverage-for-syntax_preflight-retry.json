@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/daemon/prompt_scoping.py",
+    "ppd/tests/test_daemon_prompt_scoping.py"
+  ],
+  "created_at": "2026-05-03T05:46:02.923532Z",
+  "impact": "This advances checkbox-181 by making syntax-preflight retry guidance deterministic and JSON-only, while constraining the next proposal to exactly one parser-bearing PP&D file or one daemon repair file before blocked domain work is retried.",
+  "summary": "Add focused daemon prompt-scoping helper and coverage for syntax_preflight retry prompts.",
+  "target_task": "Task checkbox-181: Add daemon prompt-scoping coverage proving syntax_preflight history for a PP&D domain task produces a JSON-only retry instruction limited to one parser-bearing file or one daemon repair file.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 13 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "...........................................................................................................................................................................................................................................................................................................................................................................................................ss..............sss............................................................................................................................................................................................................................................................................................ ---------------------------------------------------------------------- Ran 698 tests in 0.115s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

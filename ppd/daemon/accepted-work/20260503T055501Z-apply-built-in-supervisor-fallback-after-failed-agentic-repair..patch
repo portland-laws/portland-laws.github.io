@@ -1,0 +1,67 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,54 +1,29 @@
+ {
+-  "createdAt": "2026-05-03T05:35:16.232963Z",
++  "createdAt": "2026-05-03T05:55:00.478300Z",
+   "decision": {
+-    "action": "repair_daemon_programming",
+-    "reason": "3 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
++    "action": "invoke_codex",
++    "reason": "3 task(s) are blocked and no independent selectable task remains: Task checkbox-6: Task checkbox-176: Add a fixture-only public source lineage rollup plus focused validation that summarizes PP&D seed URLs, processor handoff manifests, normalized document IDs, source freshness records, and skipped-action reasons without live crawling or raw response bodies.; Task checkbox-8: Task checkbox-178: Add a fixture-only DevHub draft-readiness decision matrix plus focused validation that combines missing facts, redacted file placeholders, selector confidence, upload-readiness gates, fee notices, and exact-confirmation defaults while refusing official actions.; Task checkbox-12: Task checkbox-182: Add daemon diagnostics coverage proving repeated non-JSON LLM responses for a blocked task are persisted with target task, failure kind, compact raw-response summary, and a next-action hint before the worker exits.",
+     "severity": "warning"
+   },
+   "failedAgenticRepair": {
+     "changedFiles": [
+-      "ppd/daemon/syntax_preflight.py",
+-      "ppd/tests/test_syntax_preflight.py"
++      "ppd/daemon/llm_response_diagnostics.py"
+     ],
+     "errors": [
+-      "Validation failed; file edits were rolled back."
++      "Syntax preflight failed; file edits were rolled back. python3 -m py_compile ppd/daemon/llm_response_diagnostics.py: File \"/home/barberb/portland-laws.github.io/ppd/daemon/llm_response_diagnostics.py\", line 121 if re.search(r\" None: ^ SyntaxError: unterminated string literal (detected at line 121) Next worker attempt should be smaller: replace only the syntactically failing file plus its narrow fixture/test if needed; run py_compile for each changed Python file or strict tsc for each changed TypeScript file mentally before returning JSON; do not add new contracts, fixtures, and broad tests in the same proposal until the parser-clean core file is valid."
+     ],
+-    "failureKind": "validation",
+-    "summary": "Tighten PP&D syntax preflight diagnostics for repeated parser rollback loops.",
++    "failureKind": "syntax_preflight",
++    "summary": "Add parser-clean PP&D LLM response diagnostics coverage for blocked-task parse loops.",
+     "validationResults": [
+       {
+         "command": [
+           "python3",
+-          "ppd/daemon/ppd_daemon.py",
+-          "--self-test"
+-        ],
+-        "returncode": 0,
+-        "stderr": "",
+-        "stdout": "{ \"ok\": true, \"task_count\": 9 }"
+-      },
+-      {
+-        "command": [
+-          "python3",
+           "-m",
+-          "unittest",
+-          "discover",
+-          "-s",
+-          "ppd/tests",
+-          "-p",
+-          "test_*.py"
++          "py_compile",
++          "ppd/daemon/llm_response_diagnostics.py"
+         ],
+         "returncode": 1,
+-        "stderr": ".....................................................................................................................................................................................................................................................................................................................................................................................................ss..............sss..................................................................................................................................................................................................................................................E........................................... ====================================================================== ERROR: test_detects_type_fragment_condition_with_focused_file_guidance (test_syntax_preflight.SyntaxPreflightTest.test_detects_type_fr...",
+-        "stdout": ""
+-      },
+-      {
+-        "command": [
+-          "bash",
+-          "-lc",
+-          "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+-        ],
+-        "returncode": 0,
+-        "stderr": "",
++        "stderr": "File \"/home/barberb/portland-laws.github.io/ppd/daemon/llm_response_diagnostics.py\", line 121 if re.search(r\" None: ^ SyntaxError: unterminated string literal (detected at line 121)",
+         "stdout": ""
+       }
+     ]

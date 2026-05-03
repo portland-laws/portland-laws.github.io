@@ -1,0 +1,52 @@
+{
+  "seed_urls": [
+    "https://www.portland.gov/ppd/residential-permits",
+    "https://www.portland.gov/ppd/forms/building-permit-application.pdf"
+  ],
+  "processor_handoff_manifests": [
+    {
+      "manifest_id": "fixture-public-guidance-001",
+      "processor": "ppd-public-guidance-normalizer",
+      "documents": [
+        {
+          "document_id": "residential-permits",
+          "source_url": "https://www.portland.gov/ppd/residential-permits"
+        },
+        {
+          "document_id": "building-permit-application",
+          "source_url": "https://www.portland.gov/ppd/forms/building-permit-application.pdf"
+        }
+      ]
+    }
+  ],
+  "source_freshness_records": [
+    {
+      "document_id": "residential-permits",
+      "source_url": "https://www.portland.gov/ppd/residential-permits",
+      "freshness_checked_at": "2026-05-03T00:00:00Z",
+      "last_seen_at": "2026-05-03T00:00:00Z",
+      "status": "fixture-current"
+    },
+    {
+      "document_id": "building-permit-application",
+      "source_url": "https://www.portland.gov/ppd/forms/building-permit-application.pdf",
+      "freshness_checked_at": "2026-05-03T00:00:00Z",
+      "last_seen_at": "2026-05-03T00:00:00Z",
+      "status": "fixture-current"
+    }
+  ],
+  "skipped_actions": [
+    {
+      "action": "live_crawl",
+      "reason": "fixture_only_validation"
+    },
+    {
+      "action": "raw_response_capture",
+      "reason": "raw_bodies_out_of_scope"
+    },
+    {
+      "action": "authenticated_devhub_session",
+      "reason": "public_lineage_only"
+    }
+  ]
+}

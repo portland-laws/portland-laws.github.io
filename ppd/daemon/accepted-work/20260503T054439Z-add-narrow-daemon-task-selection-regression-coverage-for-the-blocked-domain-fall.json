@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/daemon/blocked_domain_task_selection.json",
+    "ppd/tests/test_daemon_blocked_domain_task_selection.py"
+  ],
+  "created_at": "2026-05-03T05:44:39.262472Z",
+  "impact": "This advances the PP&D daemon repair tranche by committing deterministic coverage that models the supervisor case where checkbox-176 and checkbox-178 are blocked and verifies the next selectable work is daemon repair, not parked domain work.",
+  "summary": "Add narrow daemon task-selection regression coverage for the blocked-domain fallback path.",
+  "target_task": "Task checkbox-180: Add daemon task-selection regression coverage proving that when every domain task is blocked, the supervisor appends or selects a narrow daemon-repair task instead of revisiting blocked checkbox-176 or checkbox-178 work.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 13 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "...........................................................................................................................................................................................................................................................................................................................................................................................................ss..............sss............................................................................................................................................................................................................................................................................................ ---------------------------------------------------------------------- Ran 698 tests in 0.114s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

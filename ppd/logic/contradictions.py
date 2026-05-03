@@ -1,0 +1,241 @@
+"""Fixture-first validation for PP&D formal-logic contradictions.
+
+This module validates contradiction packets produced from curated fixtures. It
+intentionally does not call live crawlers, DevHub, theorem provers, or shared
+TypeScript ledgers.
+"""
+
+from __future__ import annotations
+
+from dataclasses import dataclass
+from typing import Any, Mapping
+
+
+BLOCKED_STATUS = "blocked"
+HUMAN_REVIEW_STATUS = "human_review_required"
+PLANNING_CONTINUATION = "blocked_until_human_review"
+
+
+@dataclass(frozen=True)
+class ContradictionFinding:
+    path: str
+    message: str
+
+
+@dataclass(frozen=True)
+class ContradictionValidationResult:
+    valid: bool
+    findings: tuple[ContradictionFinding, ...]
+    blocked_predicates: tuple[str, ...]
+    human_review_required: bool
+
+
+def validate_contradiction_packet(packet: Mapping[str, Any]) -> ContradictionValidationResult:
+    """Validate a PP&D contradiction packet fixture.
+
+    The packet is valid only when incompatible rules are explicitly paired,
+    both provenance chains are preserved, every affected predicate is blocked,
+    and the planning gate requires human review.
+    """
+
+    findings: list[ContradictionFinding] = []
+    rules = _indexed_mapping(packet.get("rules"), "id", "$.rules", findings)
+    predicates = _indexed_mapping(packet.get("predicates"), "id", "$.predicates", findings)
+    contradictions = packet.get("contradictions")
+
+    if packet.get("planning_status") != HUMAN_REVIEW_STATUS:
+        findings.append(
+            ContradictionFinding(
+                "$.planning_status",
+                f"planning_status must be {HUMAN_REVIEW_STATUS}",
+            )
+        )
+
+    if not isinstance(contradictions, list) or not contradictions:
+        findings.append(ContradictionFinding("$.contradictions", "at least one contradiction is required"))
+        contradictions = []
+
+    blocked_predicates: set[str] = set()
+    for index, contradiction in enumerate(contradictions):
+        path = f"$.contradictions[{index}]"
+        if not isinstance(contradiction, Mapping):
+            findings.append(ContradictionFinding(path, "contradiction must be an object"))
+            continue
+        blocked_predicates.update(
+            _validate_contradiction(path, contradiction, rules, predicates, findings)
+        )
+
+    return ContradictionValidationResult(
+        valid=not findings,
+        findings=tuple(findings),
+        blocked_predicates=tuple(sorted(blocked_predicates)),
+        human_review_required=packet.get("planning_status") == HUMAN_REVIEW_STATUS,
+    )
+
+
+def assert_valid_contradiction_packet(packet: Mapping[str, Any]) -> None:
+    """Raise ValueError when a contradiction packet is not valid."""
+
+    result = validate_contradiction_packet(packet)
+    if result.valid:
+        return
+    details = "; ".join(f"{finding.path}: {finding.message}" for finding in result.findings)
+    raise ValueError(f"formal logic contradiction packet failed validation: {details}")
+
+
+def _validate_contradiction(
+    path: str,
+    contradiction: Mapping[str, Any],
+    rules: Mapping[str, Mapping[str, Any]],
+    predicates: Mapping[str, Mapping[str, Any]],
+    findings: list[ContradictionFinding],
+) -> set[str]:
+    blocked_predicates: set[str] = set()
+
+    if contradiction.get("planning_gate") != PLANNING_CONTINUATION:
+        findings.append(
+            ContradictionFinding(
+                f"{path}.planning_gate",
+                f"planning_gate must be {PLANNING_CONTINUATION}",
+            )
+        )
+
+    left_rule_id = _required_text(contradiction, "left_rule_id", f"{path}.left_rule_id", findings)
+    right_rule_id = _required_text(contradiction, "right_rule_id", f"{path}.right_rule_id", findings)
+    if not left_rule_id or not right_rule_id:
+        return blocked_predicates
+
+    left_rule = rules.get(left_rule_id)
+    right_rule = rules.get(right_rule_id)
+    if left_rule is None:
+        findings.append(ContradictionFinding(f"{path}.left_rule_id", f"unknown rule id {left_rule_id}"))
+    if right_rule is None:
+        findings.append(ContradictionFinding(f"{path}.right_rule_id", f"unknown rule id {right_rule_id}"))
+    if left_rule is None or right_rule is None:
+        return blocked_predicates
+
+    if not _rules_are_incompatible(left_rule, right_rule):
+        findings.append(
+            ContradictionFinding(
+                path,
+                "left and right rules must target the same predicate with incompatible polarity or prerequisite state",
+            )
+        )
+
+    affected = contradiction.get("affected_predicates")
+    if not isinstance(affected, list) or not affected:
+        findings.append(ContradictionFinding(f"{path}.affected_predicates", "affected predicates are required"))
+        affected = []
+
+    expected_predicate = str(left_rule.get("predicate", ""))
+    for predicate_id in affected:
+        if not isinstance(predicate_id, str) or not predicate_id.strip():
+            findings.append(ContradictionFinding(f"{path}.affected_predicates", "predicate ids must be non-empty strings"))
+            continue
+        predicate = predicates.get(predicate_id)
+        if predicate is None:
+            findings.append(ContradictionFinding(f"{path}.affected_predicates", f"unknown predicate id {predicate_id}"))
+            continue
+        if predicate.get("status") != BLOCKED_STATUS:
+            findings.append(ContradictionFinding(f"$.predicates.{predicate_id}.status", "affected predicate must be blocked"))
+        blocked_by = predicate.get("blocked_by")
+        if contradiction.get("id") not in blocked_by if isinstance(blocked_by, list) else True:
+            findings.append(
+                ContradictionFinding(
+                    f"$.predicates.{predicate_id}.blocked_by",
+                    "affected predicate must reference the contradiction that blocked it",
+                )
+            )
+        if predicate_id == expected_predicate:
+            blocked_predicates.add(predicate_id)
+
+    _validate_provenance_chain(path, contradiction, "left", left_rule, findings)
+    _validate_provenance_chain(path, contradiction, "right", right_rule, findings)
+    return blocked_predicates
+
+
+def _rules_are_incompatible(left_rule: Mapping[str, Any], right_rule: Mapping[str, Any]) -> bool:
+    if left_rule.get("predicate") != right_rule.get("predicate"):
+        return False
+    if left_rule.get("modality") != right_rule.get("modality"):
+        return False
+    left_polarity = left_rule.get("polarity")
+    right_polarity = right_rule.get("polarity")
+    if {left_polarity, right_polarity} == {"required", "prohibited"}:
+        return True
+    if left_rule.get("prerequisite_state") and right_rule.get("prerequisite_state"):
+        return left_rule.get("prerequisite_state") != right_rule.get("prerequisite_state")
+    return False
+
+
+def _validate_provenance_chain(
+    path: str,
+    contradiction: Mapping[str, Any],
+    side: str,
+    rule: Mapping[str, Any],
+    findings: list[ContradictionFinding],
+) -> None:
+    chains = contradiction.get("provenance_chains")
+    if not isinstance(chains, Mapping):
+        findings.append(ContradictionFinding(f"{path}.provenance_chains", "provenance chains are required"))
+        return
+    chain = chains.get(side)
+    if not isinstance(chain, list) or not chain:
+        findings.append(ContradictionFinding(f"{path}.provenance_chains.{side}", "both provenance chains must be non-empty"))
+        return
+
+    expected = rule.get("provenance_chain")
+    if chain != expected:
+        findings.append(
+            ContradictionFinding(
+                f"{path}.provenance_chains.{side}",
+                "contradiction must preserve the full provenance chain from its rule",
+            )
+        )
+    for index, hop in enumerate(chain):
+        hop_path = f"{path}.provenance_chains.{side}[{index}]"
+        if not isinstance(hop, Mapping):
+            findings.append(ContradictionFinding(hop_path, "provenance hop must be an object"))
+            continue
+        _required_text(hop, "source_url", f"{hop_path}.source_url", findings)
+        _required_text(hop, "document_id", f"{hop_path}.document_id", findings)
+        _required_text(hop, "requirement_id", f"{hop_path}.requirement_id", findings)
+        _required_text(hop, "evidence_quote", f"{hop_path}.evidence_quote", findings)
+
+
+def _indexed_mapping(
+    value: Any,
+    id_key: str,
+    path: str,
+    findings: list[ContradictionFinding],
+) -> dict[str, Mapping[str, Any]]:
+    if not isinstance(value, list):
+        findings.append(ContradictionFinding(path, "must be a list"))
+        return {}
+    indexed: dict[str, Mapping[str, Any]] = {}
+    for index, item in enumerate(value):
+        item_path = f"{path}[{index}]"
+        if not isinstance(item, Mapping):
+            findings.append(ContradictionFinding(item_path, "item must be an object"))
+            continue
+        item_id = item.get(id_key)
+        if not isinstance(item_id, str) or not item_id.strip():
+            findings.append(ContradictionFinding(f"{item_path}.{id_key}", "id is required"))
+            continue
+        if item_id in indexed:
+            findings.append(ContradictionFinding(f"{item_path}.{id_key}", f"duplicate id {item_id}"))
+        indexed[item_id] = item
+    return indexed
+
+
+def _required_text(
+    value: Mapping[str, Any],
+    key: str,
+    path: str,
+    findings: list[ContradictionFinding],
+) -> str:
+    text = value.get(key)
+    if not isinstance(text, str) or not text.strip():
+        findings.append(ContradictionFinding(path, "non-empty string is required"))
+        return ""
+    return text

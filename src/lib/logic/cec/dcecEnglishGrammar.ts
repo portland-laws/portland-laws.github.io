@@ -32,11 +32,63 @@ export interface DcecEnglishSemanticRecord {
   [key: string]: unknown;
 }
 
+export interface DcecNativeEnglishGrammarCapabilities {
+  readonly browserNative: true;
+  readonly pythonRuntime: false;
+  readonly serverRuntime: false;
+  readonly filesystem: false;
+  readonly subprocess: false;
+  readonly rpc: false;
+  readonly wasmCompatible: true;
+  readonly wasmRequired: false;
+  readonly implementation: 'deterministic-typescript';
+  readonly pythonModule: 'logic/CEC/native/dcec_english_grammar.py';
+}
+
+export interface DcecNativeEnglishGrammarOptions {
+  readonly maxInputLength?: number;
+}
+
+export interface DcecNativeEnglishGrammarParseResult {
+  readonly ok: boolean;
+  readonly input: string;
+  readonly normalizedInput: string;
+  readonly formula?: DcecFormula;
+  readonly dcec?: string;
+  readonly semantic?: DcecEnglishSemanticRecord;
+  readonly ruleNames: readonly string[];
+  readonly lexicalWords: readonly string[];
+  readonly errors: readonly string[];
+  readonly metadata: {
+    readonly sourcePythonModule: 'logic/CEC/native/dcec_english_grammar.py';
+    readonly runtime: 'browser-native-typescript';
+    readonly implementation: 'deterministic-dcec-english-grammar';
+  };
+}
+
 type DcecEnglishSemanticValue = DcecEnglishSemanticRecord | string | number | boolean | undefined;
 
 const COMMON_AGENTS = ['jack', 'robot', 'alice', 'bob', 'system'];
 const COMMON_ACTIONS = ['laugh', 'sleep', 'run', 'eat', 'walk', 'talk', 'work'];
 const COMMON_FLUENTS = ['happy', 'sad', 'hungry', 'tired', 'sick', 'angry'];
+const DEFAULT_NATIVE_MAX_INPUT_LENGTH = 4096;
+const NATIVE_GRAMMAR_METADATA = {
+  sourcePythonModule: 'logic/CEC/native/dcec_english_grammar.py',
+  runtime: 'browser-native-typescript',
+  implementation: 'deterministic-dcec-english-grammar',
+} as const;
+const NATIVE_GRAMMAR_CAPABILITIES: DcecNativeEnglishGrammarCapabilities = {
+  browserNative: true,
+  pythonRuntime: false,
+  serverRuntime: false,
+  filesystem: false,
+  subprocess: false,
+  rpc: false,
+  wasmCompatible: true,
+  wasmRequired: false,
+  implementation: 'deterministic-typescript',
+  pythonModule: 'logic/CEC/native/dcec_english_grammar.py',
+};
 
 export class DcecEnglishGrammar {
   readonly engine = new CecGrammarEngine();
@@ -91,7 +143,11 @@ export class DcecEnglishGrammar {
         : this.actionSemanticToFormula(semanticValue);
       if (!formula) return undefined;
       const agentName = nameFromSemantic(semanticValue.agent);
-      return new DcecDeonticFormula(operator, formula, agentName ? this.agentTerm(agentName) : undefined);
+      return new DcecDeonticFormula(
+        operator,
+        formula,
+        agentName ? this.agentTerm(agentName) : undefined,
+      );
     }
 
     if (semanticValue.type === 'cognitive') {
@@ -188,6 +244,58 @@ export class DcecEnglishGrammar {
     return this.engine.rules.map((rule) => rule.name);
   }
 
+  getNativeParityCapabilities(): DcecNativeEnglishGrammarCapabilities {
+    return NATIVE_GRAMMAR_CAPABILITIES;
+  }
+
+  parseNativeEnglishGrammar(
+    text: string,
+    options: DcecNativeEnglishGrammarOptions = {},
+  ): DcecNativeEnglishGrammarParseResult {
+    const normalizedInput =
+      typeof text === 'string' ? text.trim().toLowerCase().replace(/\s+/g, ' ') : '';
+    const maxInputLength = options.maxInputLength ?? DEFAULT_NATIVE_MAX_INPUT_LENGTH;
+    const baseResult = {
+      input: text,
+      normalizedInput,
+      ruleNames: this.getRuleNames(),
+      lexicalWords: this.getLexicalWords(),
+      metadata: NATIVE_GRAMMAR_METADATA,
+    };
+
+    if (typeof text !== 'string') {
+      return { ...baseResult, ok: false, errors: ['Input must be a string'] };
+    }
+    if (normalizedInput.length === 0) {
+      return { ...baseResult, ok: false, errors: ['Input must not be empty'] };
+    }
+    if (normalizedInput.length > maxInputLength) {
+      return {
+        ...baseResult,
+        ok: false,
+        errors: [`Input exceeds maximum length of ${maxInputLength} characters`],
+      };
+    }
+
+    const formula = this.parseToDcec(normalizedInput);
+    if (!formula) {
+      return {
+        ...baseResult,
+        ok: false,
+        errors: ['Unable to parse English input with native DCEC grammar'],
+      };
+    }
+
+    return {
+      ...baseResult,
+      ok: true,
+      formula,
+      dcec: formula.toString(),
+      semantic: this.formulaToSemantic(formula),
+      errors: [],
+    };
+  }
+
   private setupLexicon(): void {
     this.addWords(['and'], 'Conj', { type: 'and', connective: DcecLogicalConnective.AND });
     this.addWords(['or'], 'Conj', { type: 'or', connective: DcecLogicalConnective.OR });
@@ -195,7 +303,10 @@ export class DcecEnglishGrammar {
     this.addWords(['then'], 'Conj', { type: 'then' });
     this.addWords(['not'], 'Adv', { type: 'not', connective: DcecLogicalConnective.NOT });
 
-    this.addWords(['must', 'obligated', 'should', 'required'], 'V', { type: 'deontic', operator: 'obligated' });
+    this.addWords(['must', 'obligated', 'should', 'required'], 'V', {
+      type: 'deontic',
+      operator: 'obligated',
+    });
     this.addWords(['forbidden', 'prohibited'], 'V', { type: 'deontic', operator: 'forbidden' });
     this.addWords(['may', 'permitted', 'allowed'], 'V', { type: 'deontic', operator: 'permitted' });
 
@@ -205,7 +316,10 @@ export class DcecEnglishGrammar {
     this.addWords(['desires', 'desire'], 'V', { type: 'cognitive', operator: 'desires' });
 
     this.addWords(['always', 'necessarily'], 'Adv', { type: 'temporal', operator: 'always' });
-    this.addWords(['eventually', 'finally', 'someday'], 'Adv', { type: 'temporal', operator: 'eventually' });
+    this.addWords(['eventually', 'finally', 'someday'], 'Adv', {
+      type: 'temporal',
+      operator: 'eventually',
+    });
     this.addWords(['next'], 'Adv', { type: 'temporal', operator: 'next' });
     this.addWords(['until'], 'Prep', { type: 'temporal', operator: 'until' });
 
@@ -214,53 +328,94 @@ export class DcecEnglishGrammar {
     this.addWords(['is', 'are', 'was', 'were', 'be', 'been', 'being'], 'V', { type: 'auxiliary' });
     this.addWords(['to', 'the', 'a', 'an'], 'Det', { type: 'determiner' });
 
-    for (const agent of COMMON_AGENTS) this.addWords([agent], 'Agent', { type: 'agent', name: agent });
-    for (const action of COMMON_ACTIONS) this.addWords([action], 'ActionType', { type: 'action', name: action });
-    for (const fluent of COMMON_FLUENTS) this.addWords([fluent], 'Fluent', { type: 'fluent', name: fluent });
+    for (const agent of COMMON_AGENTS)
+      this.addWords([agent], 'Agent', { type: 'agent', name: agent });
+    for (const action of COMMON_ACTIONS)
+      this.addWords([action], 'ActionType', { type: 'action', name: action });
+    for (const fluent of COMMON_FLUENTS)
+      this.addWords([fluent], 'Fluent', { type: 'fluent', name: fluent });
   }
 
   private setupRules(): void {
-    this.engine.addRule(this.binaryRule('agent_action_rule', 'Boolean', 'Agent', 'ActionType', ([agent, action]) => ({
-      type: 'atomic',
-      predicate: nameFromSemantic(action),
-      arguments: [agent],
-    })));
-    this.engine.addRule(this.binaryRule('agent_fluent_rule', 'Boolean', 'Agent', 'Fluent', ([agent, fluent]) => ({
-      type: 'atomic',
-      predicate: nameFromSemantic(fluent),
-      arguments: [agent],
-    })));
-    this.engine.addRule(this.binaryRule('modal_agent_rule', 'VP', 'Agent', 'V', ([agent, modal]) => ({
-      type: 'modal_agent',
-      agent,
-      modal,
-    })));
-    this.engine.addRule(this.binaryRule('obligated_rule', 'Boolean', 'VP', 'ActionType', ([head, action]) => modalActionSemantics(head, action)));
-    this.engine.addRule(this.binaryRule('believes_rule', 'Boolean', 'VP', 'Boolean', ([head, proposition]) => modalPropositionSemantics(head, proposition)));
-    this.engine.addRule(this.binaryRule('always_rule', 'Boolean', 'Adv', 'Boolean', ([operator, proposition]) => adverbSemantics(operator, proposition)));
-    this.engine.addRule(this.binaryRule('not_rule', 'Boolean', 'Adv', 'Boolean', ([operator, proposition]) => {
-      if (isSemanticRecord(operator) && operator.type === 'not') {
-        return { type: 'connective', operator: DcecLogicalConnective.NOT, formula: proposition };
-      }
-      return adverbSemantics(operator, proposition);
-    }));
-    this.engine.addRule(this.binaryRule('connective_left_rule', 'Cl', 'Boolean', 'Conj', ([left, connective]) => ({
-      type: 'connective_head',
-      left,
-      connective,
-    })));
-    this.engine.addRule(this.binaryRule('and_rule', 'Boolean', 'Cl', 'Boolean', ([head, right]) => connectiveSemantics(head, right)));
-    this.engine.addRule(this.binaryRule('or_rule', 'Boolean', 'Cl', 'Boolean', ([head, right]) => connectiveSemantics(head, right)));
-    this.engine.addRule(this.binaryRule('implies_rule', 'Boolean', 'Cl', 'Boolean', ([head, right]) => connectiveSemantics(head, right)));
+    this.engine.addRule(
+      this.binaryRule('agent_action_rule', 'Boolean', 'Agent', 'ActionType', ([agent, action]) => ({
+        type: 'atomic',
+        predicate: nameFromSemantic(action),
+        arguments: [agent],
+      })),
+    );
+    this.engine.addRule(
+      this.binaryRule('agent_fluent_rule', 'Boolean', 'Agent', 'Fluent', ([agent, fluent]) => ({
+        type: 'atomic',
+        predicate: nameFromSemantic(fluent),
+        arguments: [agent],
+      })),
+    );
+    this.engine.addRule(
+      this.binaryRule('modal_agent_rule', 'VP', 'Agent', 'V', ([agent, modal]) => ({
+        type: 'modal_agent',
+        agent,
+        modal,
+      })),
+    );
+    this.engine.addRule(
+      this.binaryRule('obligated_rule', 'Boolean', 'VP', 'ActionType', ([head, action]) =>
+        modalActionSemantics(head, action),
+      ),
+    );
+    this.engine.addRule(
+      this.binaryRule('believes_rule', 'Boolean', 'VP', 'Boolean', ([head, proposition]) =>
+        modalPropositionSemantics(head, proposition),
+      ),
+    );
+    this.engine.addRule(
+      this.binaryRule('always_rule', 'Boolean', 'Adv', 'Boolean', ([operator, proposition]) =>
+        adverbSemantics(operator, proposition),
+      ),
+    );
+    this.engine.addRule(
+      this.binaryRule('not_rule', 'Boolean', 'Adv', 'Boolean', ([operator, proposition]) => {
+        if (isSemanticRecord(operator) && operator.type === 'not') {
+          return { type: 'connective', operator: DcecLogicalConnective.NOT, formula: proposition };
+        }
+        return adverbSemantics(operator, proposition);
+      }),
+    );
+    this.engine.addRule(
+      this.binaryRule('connective_left_rule', 'Cl', 'Boolean', 'Conj', ([left, connective]) => ({
+        type: 'connective_head',
+        left,
+        connective,
+      })),
+    );
+    this.engine.addRule(
+      this.binaryRule('and_rule', 'Boolean', 'Cl', 'Boolean', ([head, right]) =>
+        connectiveSemantics(head, right),
+      ),
+    );
+    this.engine.addRule(
+      this.binaryRule('or_rule', 'Boolean', 'Cl', 'Boolean', ([head, right]) =>
+        connectiveSemantics(head, right),
+      ),
+    );
+    this.engine.addRule(
+      this.binaryRule('implies_rule', 'Boolean', 'Cl', 'Boolean', ([head, right]) =>
+        connectiveSemantics(head, right),
+      ),
+    );
   }
 
   private patternParseToDcec(text: string): DcecFormula | undefined {
     const normalized = text.trim().toLowerCase().replace(/\s+/g, ' ');
-    const connective = normalized.match(/^if (.+) then (.+)$/) ?? normalized.match(/^(.+) (and|or) (.+)$/);
+    const connective =
+      normalized.match(/^if (.+) then (.+)$/) ?? normalized.match(/^(.+) (and|or) (.+)$/);
     if (connective) {
-      const op = connective[2] === 'and' ? DcecLogicalConnective.AND
-        : connective[2] === 'or' ? DcecLogicalConnective.OR
-          : DcecLogicalConnective.IMPLIES;
+      const op =
+        connective[2] === 'and'
+          ? DcecLogicalConnective.AND
+          : connective[2] === 'or'
+            ? DcecLogicalConnective.OR
+            : DcecLogicalConnective.IMPLIES;
       const left = this.parseToDcec(connective[1]);
       const right = this.parseToDcec(connective[3] ?? connective[2]);
       return left && right ? new DcecConnectiveFormula(op, [left, right]) : undefined;
@@ -273,24 +428,36 @@ export class DcecEnglishGrammar {
       return inner && op ? new DcecTemporalFormula(op, inner) : undefined;
     }
 
-    const cognitive = normalized.match(/^(\w+) (believes|knows|intends|desires)(?: that| to)? (.+)$/);
+    const cognitive = normalized.match(
+      /^(\w+) (believes|knows|intends|desires)(?: that| to)? (.+)$/,
+    );
     if (cognitive) {
       const inner = this.parseToDcec(cognitive[3]) ?? this.atomic(cognitive[3], cognitive[1]);
       const op = normalizeCognitive(cognitive[2]);
       return op ? new DcecCognitiveFormula(op, this.agentTerm(cognitive[1]), inner) : undefined;
     }
 
-    const deontic = normalized.match(/^(\w+) (must|should|may|forbidden|prohibited|permitted|allowed)(?: to)? (.+)$/);
+    const deontic = normalized.match(
+      /^(\w+) (must|should|may|forbidden|prohibited|permitted|allowed)(?: to)? (.+)$/,
+    );
     if (deontic) {
       const op = normalizeDeontic(deontic[2]);
-      return op ? new DcecDeonticFormula(op, this.atomic(deontic[3], deontic[1]), this.agentTerm(deontic[1])) : undefined;
+      return op
+        ? new DcecDeonticFormula(
+            op,
+            this.atomic(deontic[3], deontic[1]),
+            this.agentTerm(deontic[1]),
+          )
+        : undefined;
     }
 
     const action = normalized.match(/^(\w+) (.+)$/);
     return action ? this.atomic(action[2], action[1]) : undefined;
   }
 
-  private actionSemanticToFormula(semanticValue: DcecEnglishSemanticRecord): DcecFormula | undefined {
+  private actionSemanticToFormula(
+    semanticValue: DcecEnglishSemanticRecord,
+  ): DcecFormula | undefined {
     const actionName = nameFromSemantic(semanticValue.action);
     const agentName = nameFromSemantic(semanticValue.agent);
     if (!actionName || !agentName) return undefined;
@@ -299,7 +466,9 @@ export class DcecEnglishGrammar {
 
   private atomic(predicateName: string, agentName: string): DcecAtomicFormula {
     const normalizedPredicate = predicateName.trim().replace(/\s+/g, '_');
-    return new DcecAtomicFormula(this.predicate(normalizedPredicate, 1), [this.agentTerm(agentName)]);
+    return new DcecAtomicFormula(this.predicate(normalizedPredicate, 1), [
+      this.agentTerm(agentName),
+    ]);
   }
 
   private predicate(name: string, arity: number): DcecPredicateSymbol {
@@ -314,13 +483,19 @@ export class DcecEnglishGrammar {
     return new DcecVariableTerm(variable);
   }
 
-  private addWords(words: string[], category: CecGrammarCategory, semantics: DcecEnglishSemanticRecord): void {
+  private addWords(
+    words: string[],
+    category: CecGrammarCategory,
+    semantics: DcecEnglishSemanticRecord,
+  ): void {
     for (const word of words) {
-      this.engine.addLexicalEntry(new CecLexicalEntry({
-        word,
-        category,
-        semantics: { ...semantics, word },
-      }));
+      this.engine.addLexicalEntry(
+        new CecLexicalEntry({
+          word,
+          category,
+          semantics: { ...semantics, word },
+        }),
+      );
     }
   }
 
@@ -336,7 +511,8 @@ export class DcecEnglishGrammar {
       category,
       constituents: [left, right],
       semanticFn,
-      linearizeFn: (semanticValue) => this.linearizeBoolean(semanticValue as DcecEnglishSemanticValue),
+      linearizeFn: (semanticValue) =>
+        this.linearizeBoolean(semanticValue as DcecEnglishSemanticValue),
     });
   }
 
@@ -353,7 +529,7 @@ export class DcecEnglishGrammar {
 
   private linearizeDeontic(semanticValue: DcecEnglishSemanticRecord): string {
     if (isSemanticRecord(semanticValue.formula)) {
-      const prefix: Record<string, string> = {
+      const prefix: Record<string, unknown> = {
         [DcecDeonticOperator.OBLIGATION]: 'It is obligatory that',
         [DcecDeonticOperator.PERMISSION]: 'It is permitted that',
         [DcecDeonticOperator.PROHIBITION]: 'It is forbidden that',
@@ -373,6 +549,17 @@ export class DcecEnglishGrammar {
 
 export function createDcecEnglishGrammar(namespace?: DcecNamespace): DcecEnglishGrammar {
   return new DcecEnglishGrammar(namespace);
+}
+
+export function getDcecNativeEnglishGrammarCapabilities(): DcecNativeEnglishGrammarCapabilities {
+  return NATIVE_GRAMMAR_CAPABILITIES;
+}
+
+export function parseDcecNativeEnglishGrammar(
+  text: string,
+  options?: DcecNativeEnglishGrammarOptions,
+): DcecNativeEnglishGrammarParseResult {
+  return createDcecEnglishGrammar().parseNativeEnglishGrammar(text, options);
 }
 
 function modalActionSemantics(head: unknown, action: unknown): DcecEnglishSemanticRecord {
@@ -421,27 +608,41 @@ function connectiveSemantics(head: unknown, right: unknown): DcecEnglishSemantic
 
 function normalizeConnective(value: unknown): DcecLogicalConnectiveValue | undefined {
   const raw = String(value);
-  if (raw === DcecLogicalConnective.AND || raw.toLowerCase() === 'and') return DcecLogicalConnective.AND;
-  if (raw === DcecLogicalConnective.OR || raw.toLowerCase() === 'or') return DcecLogicalConnective.OR;
-  if (raw === DcecLogicalConnective.NOT || raw.toLowerCase() === 'not') return DcecLogicalConnective.NOT;
-  if (raw === DcecLogicalConnective.IMPLIES || raw.toLowerCase() === 'implies') return DcecLogicalConnective.IMPLIES;
+  if (raw === DcecLogicalConnective.AND || raw.toLowerCase() === 'and')
+    return DcecLogicalConnective.AND;
+  if (raw === DcecLogicalConnective.OR || raw.toLowerCase() === 'or')
+    return DcecLogicalConnective.OR;
+  if (raw === DcecLogicalConnective.NOT || raw.toLowerCase() === 'not')
+    return DcecLogicalConnective.NOT;
+  if (raw === DcecLogicalConnective.IMPLIES || raw.toLowerCase() === 'implies')
+    return DcecLogicalConnective.IMPLIES;
   return undefined;
 }
 
 function normalizeDeontic(value: unknown): DcecDeonticOperatorValue | undefined {
   const raw = String(value).toLowerCase();
-  if (value === DcecDeonticOperator.OBLIGATION || ['obligated', 'must', 'should', 'required'].includes(raw)) return DcecDeonticOperator.OBLIGATION;
-  if (value === DcecDeonticOperator.PERMISSION || ['permitted', 'may', 'allowed'].includes(raw)) return DcecDeonticOperator.PERMISSION;
-  if (value === DcecDeonticOperator.PROHIBITION || ['forbidden', 'prohibited'].includes(raw)) return DcecDeonticOperator.PROHIBITION;
+  if (
+    value === DcecDeonticOperator.OBLIGATION ||
+    ['obligated', 'must', 'should', 'required'].includes(raw)
+  )
+    return DcecDeonticOperator.OBLIGATION;
+  if (value === DcecDeonticOperator.PERMISSION || ['permitted', 'may', 'allowed'].includes(raw))
+    return DcecDeonticOperator.PERMISSION;
+  if (value === DcecDeonticOperator.PROHIBITION || ['forbidden', 'prohibited'].includes(raw))
+    return DcecDeonticOperator.PROHIBITION;
   return undefined;
 }
 
 function normalizeCognitive(value: unknown): DcecCognitiveOperatorValue | undefined {
   const raw = String(value).toLowerCase();
-  if (value === DcecCognitiveOperator.BELIEF || ['believes', 'belief'].includes(raw)) return DcecCognitiveOperator.BELIEF;
-  if (value === DcecCognitiveOperator.KNOWLEDGE || ['knows', 'knowledge'].includes(raw)) return DcecCognitiveOperator.KNOWLEDGE;
-  if (value === DcecCognitiveOperator.INTENTION || ['intends', 'intention'].includes(raw)) return DcecCognitiveOperator.INTENTION;
-  if (value === DcecCognitiveOperator.DESIRE || ['desires', 'desire'].includes(raw)) return DcecCognitiveOperator.DESIRE;
+  if (value === DcecCognitiveOperator.BELIEF || ['believes', 'belief'].includes(raw))
+    return DcecCognitiveOperator.BELIEF;
+  if (value === DcecCognitiveOperator.KNOWLEDGE || ['knows', 'knowledge'].includes(raw))
+    return DcecCognitiveOperator.KNOWLEDGE;
+  if (value === DcecCognitiveOperator.INTENTION || ['intends', 'intention'].includes(raw))
+    return DcecCognitiveOperator.INTENTION;
+  if (value === DcecCognitiveOperator.DESIRE || ['desires', 'desire'].includes(raw))
+    return DcecCognitiveOperator.DESIRE;
   return undefined;
 }
 

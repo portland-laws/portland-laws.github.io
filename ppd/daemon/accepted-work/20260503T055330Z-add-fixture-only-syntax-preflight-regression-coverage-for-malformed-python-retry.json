@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/daemon/syntax_preflight_malformed_python_fragments.json",
+    "ppd/tests/test_daemon_syntax_preflight_fragments.py"
+  ],
+  "created_at": "2026-05-03T05:53:30.242018Z",
+  "impact": "This advances the PP&D daemon repair plan by documenting and testing the parser failures that caused draft-readiness retry rollbacks, without touching DevHub implementation code or live artifacts.",
+  "summary": "Add fixture-only syntax-preflight regression coverage for malformed Python retry fragments, including `if confidence None`.",
+  "target_task": "Task checkbox-183: Add syntax-preflight unit coverage for malformed Python fragments seen in draft-readiness retries, including `if confidence None`, while preserving fixture-only validation and avoiding DevHub implementation changes.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 13 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".............................................................................................................................................................................................................................................................................................................................................................................................................ss..............sss............................................................................................................................................................................................................................................................................................ ---------------------------------------------------------------------- Ran 700 tests in 0.114s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

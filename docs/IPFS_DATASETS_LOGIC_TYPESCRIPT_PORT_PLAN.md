@@ -715,7 +715,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [!] Port remaining Python logic module `logic/CEC/native/context_manager.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [!] Port remaining Python logic module `logic/CEC/native/dcec_cleaning.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/CEC/native/dcec_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/dcec_english_grammar.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/CEC/native/dcec_english_grammar.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/dcec_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/dcec_namespace.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/dcec_parsing.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-03 05:26:31 UTC
+Last updated: 2026-05-03 05:56:37 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-205: Port remaining Python logic module 'logic/CEC/native/dcec_english_grammar.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-206: Port remaining Python logic module 'logic/CEC/native/dcec_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1179,9 +1179,9 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [!] `Task checkbox-201: Port remaining Python logic module 'logic/CEC/native/cec_zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
 - [!] `Task checkbox-202: Port remaining Python logic module 'logic/CEC/native/context_manager.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
 - [!] `Task checkbox-203: Port remaining Python logic module 'logic/CEC/native/dcec_cleaning.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [x] `Task checkbox-204: Port remaining Python logic module 'logic/CEC/native/dcec_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-205: Port remaining Python logic module 'logic/CEC/native/dcec_english_grammar.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
-- [ ] `Task checkbox-206: Port remaining Python logic module 'logic/CEC/native/dcec_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-204: Port remaining Python logic module 'logic/CEC/native/dcec_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-205: Port remaining Python logic module 'logic/CEC/native/dcec_english_grammar.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [!] `Task checkbox-206: Port remaining Python logic module 'logic/CEC/native/dcec_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - latest daemon round failed validation or preflight
 - [ ] `Task checkbox-207: Port remaining Python logic module 'logic/CEC/native/dcec_namespace.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-208: Port remaining Python logic module 'logic/CEC/native/dcec_parsing.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-209: Port remaining Python logic module 'logic/CEC/native/dcec_prototypes.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,97 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-204: Port remaining Python logic module 'logic/CEC/native/dcec_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
-- Result: `valid`
-- Summary: Repair dcec_core compatibility adapter typing for isolatedModules
-- Impact: The corrected dcecNativeCore.ts re-exports type-only symbols with export type and narrows adapter constructor arguments to DCEC terms/formulas, so the browser-native TypeScript DCEC compatibility surface and focused Jest coverage compile under the port validation suite.
-- Accepted changed files: `src/lib/logic/cec/dcecCore.test.ts`, `src/lib/logic/cec/dcecNativeCore.ts`
+- Target: `Task checkbox-206: Port remaining Python logic module 'logic/CEC/native/dcec_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Result: `needs follow-up`
+- Summary: Add browser-native DCEC native integration adapter contract
+- Impact: Adds a TypeScript-only DCEC native integration adapter under src/lib/logic/cec that uses the existing parser, formula conversion, and validator pipeline while explicitly reporting no Python, server, subprocess, RPC, or WASM fallback. Focused Jest coverage validates successful adapter execution and fail-closed behavior for forbidden Python/WASM runtime requests and malformed DCEC input.
+- Errors: Preflight repair still produced rejected TypeScript replacements:
+Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
+../../..src/lib/logic/cec/dcecIntegration.ts(297,30): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecIntegration.ts(356,30): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecIntegration.ts(357,6): error TS1003: Identifier expected.
+../../..src/lib/logic/cec/dcecIntegration.ts(357,66): error TS1138: Parameter declaration expected.
+../../..src/lib/logic/cec/dcecIntegration.ts(357,68): error TS1138: Parameter declaration expected.
+../../..src/lib/logic/cec/dcecIntegration.ts(357,71): error TS1005: ')' expected.
+../../..src/lib/logic/cec/dcecIntegration.ts(363,4): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecIntegration.ts(431,2): error TS1128: Declaration or statement expected.
+
+Replacement diagnostic context:
+src/lib/logic/cec/dcecIntegration.ts:297:30 TS1005: ';' expected.
+  295:   let depth = 0;
+  296:   let start = 0;
+> 297:   for (let index = 0; index  part.length > 0);
+  298: }
+  299: 
+
+src/lib/logic/cec/dcecIntegration.ts:356:30 TS1005: ';' expected.
+  354:   if (!trimmed.startsWith('(') || !trimmed.endsWith(')')) return false;
+  355:   let depth = 0;
+> 356:   for (let index = 0; index  {
+  357:   it('parses infix logical expressions into DCEC formula objects', () => {
+  358:     const token = parseDcecExpressionToToken('a implies b');
+
+src/lib/logic/cec/dcecIntegration.ts:357:6 TS1003: Identifier expected.
+  355:   let depth = 0;
+  356:   for (let index = 0; index  {
+> 357:   it('parses infix logical expressions into DCEC formula objects', () => {
+  358:     const token = parseDcecExpressionToToken('a implies b');
+  359:     const formula = token && tokenToDcecFormula(token);
+
+src/lib/logic/cec/dcecIntegration.ts:363:4 TS1005: ';' expected.
+  361:     expect(token?.createSExpression()).toBe('(implies a b)');
+  362:     expect(String(formula)).toBe('(a() → b())');
+> 363:   });
+  364: 
+  365:   it('parses function-style deontic, cognitive, and temporal expressions', () => {
+
+src/lib/logic/cec/dcecIntegration.ts:431:2 TS1128: Declaration or statement expected.
+  429:     expect(malformedResult.diagnostics.some((diagnostic) => diagnostic.includes('Unbalanced parentheses'))).toBe(true);
+  430:   });
+> 431: });; Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
+../../..src/lib/logic/cec/dcecIntegration.ts(294,30): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecIntegration.ts(353,30): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecIntegration.ts(354,6): error TS1003: Identifier expected.
+../../..src/lib/logic/cec/dcecIntegration.ts(354,66): error TS1138: Parameter declaration expected.
+../../..src/lib/logic/cec/dcecIntegration.ts(354,68): error TS1138: Parameter declaration expected.
+../../..src/lib/logic/cec/dcecIntegration.ts(354,71): error TS1005: ')' expected.
+../../..src/lib/logic/cec/dcecIntegration.ts(360,4): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecIntegration.ts(428,2): error TS1128: Declaration or statement expected.
+
+Replacement diagnostic context:
+src/lib/logic/cec/dcecIntegration.ts:294:30 TS1005: ';' expected.
+  292:   let depth = 0;
+  293:   let start = 0;
+> 294:   for (let index = 0; index  part.length > 0);
+  295: }
+  296: 
+
+src/lib/logic/cec/dcecIntegration.ts:353:30 TS1005: ';' expected.
+  351:   if (!trimmed.startsWith('(') || !trimmed.endsWith(')')) return false;
+  352:   let depth = 0;
+> 353:   for (let index = 0; index  {
+  354:   it('parses infix logical expressions into DCEC formula objects', () => {
+  355:     const token = parseDcecExpressionToToken('a implies b');
+
+src/lib/logic/cec/dcecIntegration.ts:354:6 TS1003: Identifier expected.
+  352:   let depth = 0;
+  353:   for (let index = 0; index  {
+> 354:   it('parses infix logical expressions into DCEC formula objects', () => {
+  355:     const token = parseDcecExpressionToToken('a implies b');
+  356:     const formula = token && tokenToDcecFormula(token);
+
+src/lib/logic/cec/dcecIntegration.ts:360:4 TS1005: ';' expected.
+  358:     expect(token?.createSExpression()).toBe('(implies a b)');
+  359:     expect(String(formula)).toBe('(a() → b())');
+> 360:   });
+  361: 
+  362:   it('parses function-style deontic, cognitive, and temporal expressions', () => {
+
+src/lib/logic/cec/dcecIntegration.ts:428:2 TS1128: Declaration or statement expected.
+  426:     expect(malformedResult.diagnostics.some((diagnostic) => diagnostic.includes('Unbalanced parentheses'))).toBe(true);
+  427:   });
+> 428: });
+- Failure kind: `typescript_quality`
 
 ### Blocked Backlog
 

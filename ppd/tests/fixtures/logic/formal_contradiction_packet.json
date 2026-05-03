@@ -1,0 +1,115 @@
+{
+  "packet_id": "ppd-formal-contradiction-fixture-001",
+  "schema_version": 1,
+  "generated_at": "2026-05-03T00:00:00Z",
+  "fixture_only": true,
+  "planning_status": "human_review_required",
+  "planning_message": "Contradictory PP&D guidance blocks agent planning until a human reviews both source chains.",
+  "predicates": [
+    {
+      "id": "plans_are_single_searchable_pdf(project)",
+      "status": "blocked",
+      "blocked_by": [
+        "contradiction-single-pdf-vs-separate-plans"
+      ],
+      "agent_effect": "do_not_plan_upload_sequence"
+    }
+  ],
+  "rules": [
+    {
+      "id": "rule-single-pdf-required",
+      "modality": "obligation",
+      "subject": "applicant",
+      "predicate": "plans_are_single_searchable_pdf(project)",
+      "polarity": "required",
+      "conditions": [
+        "single_pdf_process_applies(project)"
+      ],
+      "provenance_chain": [
+        {
+          "source_url": "https://www.portland.gov/ppd/permits/single-pdf-process",
+          "document_id": "normalized-public-guidance-single-pdf-process",
+          "requirement_id": "req-single-drawing-plan-pdf",
+          "evidence_quote": "Drawing plans are submitted as one searchable PDF."
+        },
+        {
+          "source_url": "https://www.portland.gov/ppd/forms",
+          "document_id": "normalized-public-forms-index",
+          "requirement_id": "req-application-documents-separate",
+          "evidence_quote": "Applications and supporting documents are separate PDFs."
+        }
+      ]
+    },
+    {
+      "id": "rule-plans-separate-required",
+      "modality": "obligation",
+      "subject": "applicant",
+      "predicate": "plans_are_single_searchable_pdf(project)",
+      "polarity": "prohibited",
+      "conditions": [
+        "legacy_upload_guidance_applies(project)"
+      ],
+      "provenance_chain": [
+        {
+          "source_url": "https://www.portland.gov/ppd/devhub/how-to-upload-plans",
+          "document_id": "normalized-devhub-upload-guidance",
+          "requirement_id": "req-upload-plan-sheets-separately",
+          "evidence_quote": "Upload each plan sheet as a separate plan file."
+        },
+        {
+          "source_url": "https://www.portland.gov/ppd/devhub/faq",
+          "document_id": "normalized-devhub-faq",
+          "requirement_id": "req-follow-current-upload-instructions",
+          "evidence_quote": "Follow current upload instructions shown for your permit request."
+        }
+      ]
+    }
+  ],
+  "contradictions": [
+    {
+      "id": "contradiction-single-pdf-vs-separate-plans",
+      "type": "incompatible_obligations",
+      "left_rule_id": "rule-single-pdf-required",
+      "right_rule_id": "rule-plans-separate-required",
+      "affected_predicates": [
+        "plans_are_single_searchable_pdf(project)"
+      ],
+      "provenance_chains": {
+        "left": [
+          {
+            "source_url": "https://www.portland.gov/ppd/permits/single-pdf-process",
+            "document_id": "normalized-public-guidance-single-pdf-process",
+            "requirement_id": "req-single-drawing-plan-pdf",
+            "evidence_quote": "Drawing plans are submitted as one searchable PDF."
+          },
+          {
+            "source_url": "https://www.portland.gov/ppd/forms",
+            "document_id": "normalized-public-forms-index",
+            "requirement_id": "req-application-documents-separate",
+            "evidence_quote": "Applications and supporting documents are separate PDFs."
+          }
+        ],
+        "right": [
+          {
+            "source_url": "https://www.portland.gov/ppd/devhub/how-to-upload-plans",
+            "document_id": "normalized-devhub-upload-guidance",
+            "requirement_id": "req-upload-plan-sheets-separately",
+            "evidence_quote": "Upload each plan sheet as a separate plan file."
+          },
+          {
+            "source_url": "https://www.portland.gov/ppd/devhub/faq",
+            "document_id": "normalized-devhub-faq",
+            "requirement_id": "req-follow-current-upload-instructions",
+            "evidence_quote": "Follow current upload instructions shown for your permit request."
+          }
+        ]
+      },
+      "planning_gate": "blocked_until_human_review",
+      "review_request": {
+        "required": true,
+        "reviewer": "human_ppd_operator",
+        "question": "Which upload format applies to this permit type and source vintage?"
+      }
+    }
+  ]
+}

@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "syntax_preflight_malformed_python_fragments",
+  "generatedAt": "2026-05-03T00:00:00Z",
+  "source": "fixture-only daemon regression coverage for draft-readiness retry syntax failures",
+  "fragments": [
+    {
+      "id": "draft_readiness_if_confidence_none",
+      "language": "python",
+      "fragment": "def retry_guard(confidence):\n    if confidence None:\n        return False\n    return True\n",
+      "expectedFailureKind": "syntax_preflight",
+      "expectedMessageContains": "invalid syntax",
+      "notes": "Malformed conditional observed in draft-readiness retry context."
+    },
+    {
+      "id": "draft_readiness_typescript_expression_annotation",
+      "language": "python",
+      "fragment": "def retry_guard(value):\n    if value list[str]:\n        return True\n    return False\n",
+      "expectedFailureKind": "syntax_preflight",
+      "expectedMessageContains": "invalid syntax",
+      "notes": "Python proposal must reject TypeScript-style expression annotations before full validation."
+    },
+    {
+      "id": "draft_readiness_missing_colon",
+      "language": "python",
+      "fragment": "def retry_guard(confidence):\n    if confidence is None\n        return False\n    return True\n",
+      "expectedFailureKind": "syntax_preflight",
+      "expectedMessageContains": "expected ':'",
+      "notes": "Malformed conditional should be caught by parser preflight."
+    }
+  ]
+}

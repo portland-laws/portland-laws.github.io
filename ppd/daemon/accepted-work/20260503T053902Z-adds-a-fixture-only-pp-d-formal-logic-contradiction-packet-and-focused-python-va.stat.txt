@@ -1,0 +1,3 @@
+ppd/logic/contradictions.py
+ppd/tests/fixtures/logic/formal_contradiction_packet.json
+ppd/tests/test_formal_logic_contradictions.py

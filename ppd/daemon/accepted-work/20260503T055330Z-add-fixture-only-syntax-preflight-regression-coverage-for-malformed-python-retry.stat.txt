@@ -1,0 +1,2 @@
+ppd/tests/fixtures/daemon/syntax_preflight_malformed_python_fragments.json
+ppd/tests/test_daemon_syntax_preflight_fragments.py

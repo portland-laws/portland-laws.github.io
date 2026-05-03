@@ -1,0 +1,97 @@
+--- a/ppd/daemon/syntax_preflight.py
++++ b/ppd/daemon/syntax_preflight.py
+@@ -2,7 +2,9 @@
+ 
+ The daemon runs this before full validation so parser failures are caught and
+ rolled back with compact diagnostics. It intentionally scopes checks to changed
+-Python and TypeScript files only.
++Python and TypeScript files only, and its diagnostics push retries toward a
++single parser-clean file after SyntaxError, py_compile, or TS1005/TS1109/TS1128
++failures.
+ """
+ 
+ from __future__ import annotations
+@@ -40,6 +42,9 @@
+ 
+ PYTHON_CONTROL_FLOW_RE = re.compile(r"^(if|elif|while|assert|return)\b")
+ PYTHON_TYPE_EXPR_RE = re.compile(r"\b(list|dict|tuple|set)\s*\[[^\]]+\]")
++MISSING_DIRECT_COMPARISON_RE = re.compile(
++    r"\b(if|elif|while|assert)\s+[A-Za-z_][A-Za-z0-9_\.]*\s+(None|True|False)\s*:"
++)
+ MISSING_COMPARISON_OPERATOR_RE = re.compile(
+     r"\b(or|and)\s+[A-Za-z_][A-Za-z0-9_\.]*\s+(None|True|False|list\s*\[|dict\s*\[|tuple\s*\[|set\s*\[)"
+ )
+@@ -50,12 +55,16 @@
+     r"\b(if|elif|while|assert|return)\b[^:#\n]*\s+[A-Z_a-z][A-Za-z0-9_\.]*\s+(list|dict|tuple|set)\s*\["
+ )
+ TYPESCRIPT_PARSE_ERROR_RE = re.compile(r"\bTS(1005|1109|1128)\b")
++PYTHON_PARSE_ERROR_RE = re.compile(r"\b(SyntaxError|py_compile|unterminated string literal|invalid syntax)\b", re.IGNORECASE)
+ 
+ 
+ SYNTAX_REPAIR_GUIDANCE = (
+     "Next worker attempt should be smaller: replace only the syntactically failing file plus its narrow fixture/test if needed; "
+     "run py_compile for each changed Python file or strict tsc for each changed TypeScript file mentally before returning JSON; "
+     "do not add new contracts, fixtures, and broad tests in the same proposal until the parser-clean core file is valid."
++)
++ONE_FILE_RETRY_GUIDANCE = (
++    " Because this is a parser failure, the next proposal should be JSON-only and should prefer exactly one changed parser-bearing file."
+ )
+ 
+ 
+@@ -99,12 +108,8 @@
+     changed = tuple(changed_files)
+     results = tuple(run_changed_syntax_preflight(repo_root, changed, timeout=timeout))
+     if not results or all(result.ok for result in results):
+-        return ApplyFlowSyntaxPreflight(
+-            ok=True,
+-            failure_kind="",
+-            errors=(),
+-            validation_results=results,
+-        )
++        return ApplyFlowSyntaxPreflight(ok=True, failure_kind="", errors=(), validation_results=results)
++
+     diagnostics = compact_syntax_diagnostics(results)
+     message_parts = ["Syntax preflight failed; file edits were rolled back."]
+     if diagnostics:
+@@ -140,14 +145,19 @@
+     failed_results = [result for result in results if not result.ok]
+     if not failed_results:
+         return ""
++
+     failed_paths = _failed_paths(failed_results)
++    detail = " ".join((result.stdout + " " + result.stderr) for result in failed_results)
+     guidance = SYNTAX_REPAIR_GUIDANCE
++    if PYTHON_PARSE_ERROR_RE.search(detail) or TYPESCRIPT_PARSE_ERROR_RE.search(detail):
++        guidance += ONE_FILE_RETRY_GUIDANCE
+     if len(changed_files) > 2 or len(failed_paths) > 1:
+         names = ", ".join(failed_paths) if failed_paths else "the parser-failing file"
+         return f"{guidance} Focus the next proposal on {names}."
+-    detail = " ".join((result.stdout + " " + result.stderr) for result in failed_results)
+     if TYPESCRIPT_PARSE_ERROR_RE.search(detail):
+         return f"{guidance} TypeScript parser errors TS1005, TS1109, and TS1128 usually mean a malformed token, expression, or unmatched block; repair that file before changing fixtures."
++    if PYTHON_PARSE_ERROR_RE.search(detail):
++        return f"{guidance} Python parser errors must be resolved with py_compile-clean code before adding fixtures, contracts, or broad tests."
+     return guidance
+ 
+ 
+@@ -161,8 +171,9 @@
+             continue
+         command_text = " ".join(result.command)
+         for token in command_text.split():
+-            if token.startswith("ppd/") and token.endswith((".ts", ".tsx")):
+-                paths.append(token.strip("'\""))
++            cleaned = token.strip("'\"")
++            if cleaned.startswith("ppd/") and cleaned.endswith((".ts", ".tsx")):
++                paths.append(cleaned)
+     return tuple(dict.fromkeys(paths))
+ 
+ 
+@@ -212,6 +223,8 @@
+ def _looks_like_cross_language_python(stripped: str) -> bool:
+     if not PYTHON_CONTROL_FLOW_RE.match(stripped):
+         return False
++    if MISSING_DIRECT_COMPARISON_RE.search(stripped):
++        return True
+     if MISSING_COMPARISON_OPERATOR_RE.search(stripped):
+         return True
+     if RETURN_ANNOTATION_FRAGMENT_RE.search(stripped):

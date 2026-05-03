@@ -1,5 +1,9 @@
 import { DcecConnectiveFormula, DcecDeonticFormula } from './dcecCore';
-import { createDcecEnglishGrammar } from './dcecEnglishGrammar';
+import {
+  createDcecEnglishGrammar,
+  getDcecNativeEnglishGrammarCapabilities,
+  parseDcecNativeEnglishGrammar,
+} from './dcecEnglishGrammar';
 import { createEngDcecWrapper, parseEnglishToDcec } from './dcecEnglishWrapper';
 import { DcecDeonticOperator, DcecLogicalConnective } from './dcecTypes';
 
@@ -170,5 +174,46 @@ describe('DCEC English grammar parity facade', () => {
     expect(result.english).toBe(
       'if It is obligatory that tenant pay then It is permitted that landlord enter',
     );
+  });
+
+  it('ports native dcec_english_grammar.py as a fail-closed browser-native contract', () => {
+    const capabilities = getDcecNativeEnglishGrammarCapabilities();
+    const parsed = parseDcecNativeEnglishGrammar('Tenant must pay rent');
+    const rejected = parseDcecNativeEnglishGrammar('tenant must pay rent', { maxInputLength: 10 });
+
+    expect(capabilities).toEqual({
+      browserNative: true,
+      pythonRuntime: false,
+      serverRuntime: false,
+      filesystem: false,
+      subprocess: false,
+      rpc: false,
+      wasmCompatible: true,
+      wasmRequired: false,
+      implementation: 'deterministic-typescript',
+      pythonModule: 'logic/CEC/native/dcec_english_grammar.py',
+    });
+    expect(parsed).toMatchObject({
+      ok: true,
+      normalizedInput: 'tenant must pay rent',
+      dcec: 'O[tenant:Agent](pay_rent(tenant:Agent))',
+      metadata: {
+        sourcePythonModule: 'logic/CEC/native/dcec_english_grammar.py',
+        runtime: 'browser-native-typescript',
+        implementation: 'deterministic-dcec-english-grammar',
+      },
+    });
+    expect(parsed.ruleNames).toEqual(expect.arrayContaining(['obligated_rule', 'implies_rule']));
+    expect(parsed.lexicalWords).toEqual(expect.arrayContaining(['must', 'always']));
+    expect(parsed.semantic).toMatchObject({
+      type: 'deontic',
+      operator: DcecDeonticOperator.OBLIGATION,
+      agent: { name: 'tenant' },
+    });
+    expect(rejected).toMatchObject({
+      ok: false,
+      errors: ['Input exceeds maximum length of 10 characters'],
+      metadata: { sourcePythonModule: 'logic/CEC/native/dcec_english_grammar.py' },
+    });
   });
 });
