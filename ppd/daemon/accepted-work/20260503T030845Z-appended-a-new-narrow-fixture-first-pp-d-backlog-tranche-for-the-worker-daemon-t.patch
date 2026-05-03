@@ -1,0 +1,256 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -20,240 +20,21 @@
+ 
+ ## Completed Work
+ 
+-- [x] Task checkbox-01: Bootstrap the PP&D daemon task board and operations boundary.
+-- [x] Task checkbox-02: Add PP&D-local ignore rules for private DevHub and generated crawl artifacts.
+-- [x] Task checkbox-03: Add the initial PP&D validation entrypoint.
+-- [x] Task checkbox-04: Add fixture-only public seed validation.
+-- [x] Task checkbox-05: Add public source allowlist validation.
+-- [x] Task checkbox-06: Add robots and no-persist policy fixture validation.
+-- [x] Task checkbox-07: Add skipped-URL reason fixture validation.
+-- [x] Task checkbox-08: Add processor archive adapter manifest fixture validation.
+-- [x] Task checkbox-09: Add normalized public HTML fixture validation.
+-- [x] Task checkbox-10: Add linked public document metadata fixture validation.
+-- [x] Task checkbox-11: Add public PDF metadata fixture validation.
+-- [x] Task checkbox-12: Add source index fixture validation.
+-- [x] Task checkbox-13: Add extraction provenance fixture validation.
+-- [x] Task checkbox-14: Add public guidance section hierarchy fixture validation.
+-- [x] Task checkbox-15: Add public guidance table/list extraction fixture validation.
+-- [x] Task checkbox-16: Add public form metadata fixture validation.
+-- [x] Task checkbox-17: Add DevHub public guidance fixture validation without authentication.
+-- [x] Task checkbox-18: Add mocked DevHub recorder fixture validation.
+-- [x] Task checkbox-19: Add DevHub action classification fixture validation.
+-- [x] Task checkbox-20: Add guarded form-drafting scaffold fixture validation.
+-- [x] Task checkbox-21: Add missing-information detector fixture validation.
+-- [x] Task checkbox-22: Add formal requirement predicate fixture validation.
+-- [x] Task checkbox-23: Add guardrail compiler fixture validation.
+-- [x] Task checkbox-24: Add permit lifecycle requirement category schema fixture validation.
+-- [x] Task checkbox-25: Add permit lifecycle source-evidence fixture validation.
+-- [x] Task checkbox-26: Add permit lifecycle normalized requirement fixture validation.
+-- [x] Task checkbox-27a: Add mutation coverage for missing lifecycle requirement category identifiers.
+-- [x] Task checkbox-27b: Add mutation coverage for empty lifecycle requirement actions.
+-- [x] Task checkbox-27c: Add mutation coverage for empty lifecycle requirement objects.
+-- [x] Task checkbox-27d: Add mutation coverage for missing lifecycle requirement source evidence.
+-- [x] Task checkbox-27e: Add mutation coverage for out-of-range lifecycle requirement confidence values.
+-- [x] Task checkbox-27f: Add mutation coverage for duplicate lifecycle requirement keys.
+-- [x] Task checkbox-28: Add deterministic daemon self-test coverage for PP&D task parsing.
+-- [x] Task checkbox-29: Add accepted-work ledger validation.
+-- [x] Task checkbox-30: Add failed-patch manifest validation.
+-- [x] Task checkbox-31: Add daemon status/progress validation for no private artifacts.
+-- [x] Task checkbox-32: Add fixture-only validation for public permit lifecycle category records.
+-- [x] Task checkbox-33: Add lifecycle requirement extraction diagnostics for narrow recovery tasks.
+-- [x] Task checkbox-34: Add recovery guardrails for syntactic validity after failed mutation patches.
+-- [x] Task checkbox-35: Recovery for checkbox-27e with syntax-valid confidence comparisons.
+-- [x] Task checkbox-36: Recovery for checkbox-27f duplicate requirement-key mutation validation.
+-- [x] Task checkbox-37: Add a fixture-only process-model schema test for one public PP&D permit process record.
+-- [x] Task checkbox-38: Add the smallest committed synthetic public-process fixture that passes checkbox-37.
+-- [x] Task checkbox-39: Add one mutation test proving process-model validation rejects a stage without source evidence.
+-- [x] Task checkbox-40: Add one mutation test proving process-model validation rejects a required document without a cited source evidence ID.
+-- [x] Task checkbox-41: Add a fixture-only missing-information schema test that derives missing user facts from the committed process fixture.
+-- [x] Task checkbox-42: Add the smallest committed missing-information fixture for checkbox-41 using placeholder user case facts and public-only citations.
+-- [x] Task checkbox-43: Add one mutation test proving missing-information validation rejects a requested user fact that has no linked process requirement.
+-- [x] Task checkbox-44: Add a fixture-only guardrail mapping test that maps one process stop gate to an agent action gate.
+-- [x] Task checkbox-45: Add the smallest committed guardrail mapping fixture for checkbox-44.
+-- [x] Task checkbox-46: Add one mutation test proving guardrail mapping validation rejects consequential or financial actions unless an explicit confirmation field is present and false by default in fixtures.
+-- [x] Task checkbox-47: Add a public-crawl dry-run plan fixture that lists seed URLs, allowlist decisions, robots/no-persist preflight fields, timeout policy, and skipped-URL reason codes without performing network access.
+-- [x] Task checkbox-48: Add validation for the public-crawl dry-run plan fixture from checkbox-47. Superseded and satisfied by checkbox-59 after fixture-shape diagnostics corrected the validator assumptions.
+-- [x] Task checkbox-49: Add a daemon syntax-preflight step that checks only changed Python and TypeScript files before full validation.
+-- [x] Task checkbox-50: Add daemon prompt guidance and failure-context diagnostics for syntax-preflight rollbacks.
+-- [x] Task checkbox-51: Resume checkbox-48 with the smallest fixture-first validator after checkbox-49 and checkbox-50 pass. Superseded and satisfied by checkbox-59.
+-- [x] Task checkbox-52: Wire the existing ppd/daemon/syntax_preflight.py helper into ppd/daemon/ppd_daemon.py apply flow.
+-- [x] Task checkbox-53: Add daemon self-test coverage that proves syntax-preflight runs no commands when no changed Python or TypeScript files are present.
+-- [x] Task checkbox-54: Add one daemon unit-style fixture for syntax-preflight failure classification using a synthetic changed Python filename and compact parser diagnostics only.
+-- [x] Task checkbox-55: Resume checkbox-48 only after checkbox-52 through checkbox-54 pass. Superseded and satisfied by checkbox-59.
+-- [x] Task checkbox-56: Add a narrow daemon fixture-shape diagnostic helper under ppd/daemon/ for JSON fixtures.
+-- [x] Task checkbox-57: Wire the fixture-shape diagnostic into daemon failure-context guidance for validation failures that mention missing required fields in JSON fixtures.
+-- [x] Task checkbox-58: Add daemon self-test coverage proving the fixture-shape guidance appears after a failed validator reports absent fields.
+-- [x] Task checkbox-59: Resume checkbox-48 only after checkbox-56 through checkbox-58 pass.
+-- [x] Task checkbox-60: Add a fixture-only crawl-plan to processor-handoff validation test.
+-- [x] Task checkbox-61: Add a small PP&D source-provenance continuity test.
+-- [x] Task checkbox-62: Add a fixture-only Playwright form-state contract test for DevHub draft pages using accessible selectors, labels, roles, required flags, redacted values, and no live browser session.
+-- [x] Task checkbox-63: Add a Playwright draft-action preview fixture test proving reversible draft fills are represented as previews and do not include upload, submit, certify, payment, cancellation, MFA, CAPTCHA, or inspection scheduling actions.
+-- [x] Task checkbox-64: Add a guardrail-to-Playwright mapping fixture that links one missing-information fact to one reversible form field and one explicit stop gate, with source evidence IDs and redacted before/after values only.
+-- [x] Task checkbox-65: Add daemon stale-blocked-task reconciliation test proving superseded blocked tasks are not reselected when a later accepted task explicitly satisfies the same recovery goal.
+-- [x] Task checkbox-66: Add a daemon prompt/preflight guardrail for repeated no-accepted-patch LLM rounds.
+-- [x] Task checkbox-67: Resume checkbox-62 only after checkbox-66 passes.
+-- [x] Task checkbox-68: Add a daemon fixture-shape retry self-test for DevHub draft-action preview validation failures.
+-- [x] Task checkbox-69: Resume checkbox-63 only after checkbox-68 passes.
+-- [x] Task checkbox-70: Add a fixture-only Playwright accessible-selector contract for one mocked DevHub permit form page.
+-- [x] Task checkbox-71: Add a Playwright action-classification fixture that maps mocked form interactions to read-only, reversible draft-edit, consequential, and financial classes, with exact-confirmation defaults set to false.
+-- [x] Task checkbox-72: Add a guardrail test proving upload, submit, certify, pay, cancel, schedule inspection, MFA, CAPTCHA, account creation, and password recovery actions are refused in Playwright planning fixtures unless exact explicit user confirmation is present.
+-- [x] Task checkbox-73: Add a missing-information to form-field mapping fixture that links one required PP&D user fact to one mocked DevHub field, one source evidence ID, and one reversible draft-preview action.
+-- [x] Task checkbox-74: Add a source-evidence continuity test that confirms every Playwright planning fixture references an existing process, requirement, or public source evidence fixture and uses redacted values only.
+-- [x] Task checkbox-75: Add daemon no-eligible-task replanning guidance that treats complete == task_count with expanded goals as a prompt to append the next fixture-first tranche instead of invoking repeated repair on stale progress.
+-- [x] Task checkbox-76: Add a Playwright audit-event continuity fixture that records selector basis, source requirement, action classification, user-confirmation state, and redacted before/after field state for a reversible draft edit only.
+-- [x] Task checkbox-77: Add validation proving Playwright audit-event fixtures reject private auth state, cookies, traces, screenshots, raw browser storage, uploads, submissions, payments, certifications, cancellations, MFA, CAPTCHA, and inspection scheduling actions.
+-- [x] Task checkbox-78: Add a fixture-only DevHub recorder-state transition map that links accessible selector contracts, draft-action previews, and audit events without launching Playwright or touching live DevHub.
+-- [x] Task checkbox-79: Add an agent planning fixture that combines missing information, guardrail stop gates, Playwright draft previews, and source evidence into one reversible draft-only plan.
+-- [x] Task checkbox-80: Add a PP&D processor-archive provenance fixture that links public crawl dry-run URLs to processor handoff manifests, source-index records, and normalized document provenance without invoking network or processor code.
+-- [x] Task checkbox-81: Add daemon replenishment validation proving a completed board can be extended with a new goal-aligned tranche while preserving accepted-work history and avoiding stale supervisor repair counts.
+-- [x] Task checkbox-82: Add a formal-logic planner integration fixture that maps one extracted PP&D requirement, one missing user fact, one stop gate, and one reversible draft-only Playwright action into a single agent guardrail bundle.
+-- [x] Task checkbox-83: Add processor archive manifest validation that proves the PP&D handoff can reference ipfs_datasets_py processor provenance, source index records, and normalized document IDs without network, raw crawl output, or private DevHub artifacts.
+-- [x] Task checkbox-84: Add a mocked Playwright form-fill planning fixture that ranks accessible selectors by evidence confidence and refuses low-confidence selectors before any live browser session is launched.
+-- [x] Task checkbox-85: Add a missing-information resolution fixture that converts unresolved PP&D user facts into a minimal questionnaire while preserving source evidence, redaction, and action-classification guardrails.
+-- [x] Task checkbox-86: Add supervisor no-available-task fallback validation proving the supervisor can append a deterministic fixture-first tranche if Codex planning fails or times out.
+-- [x] Task checkbox-87: Add an autonomous draft-session audit ledger fixture that links source evidence, guardrails, selector confidence, user-confirmation state, and reversible form mutations without storing screenshots, traces, cookies, auth state, or raw browser storage.
+-- [x] Task checkbox-88: Add a fixture-only public PP&D change-monitoring plan that lists one high-change guidance page, one low-change PDF or form artifact, recrawl cadence, hash/header fields, and change-report categories without network access, raw crawl output, or downloaded documents.
+-- [x] Task checkbox-89: Add validation for the change-monitoring plan fixture proving each watched source has canonical URL provenance, content-hash or HTTP-cache metadata placeholders, a recrawl cadence, and skipped-action reasons for live crawl and private DevHub data.
+-- [x] Task checkbox-90: Add a fixture-only public form-field extraction contract for one PP&D application or checklist sample that records required labels, enumerated options, signature or acknowledgment markers, source page anchors, and redacted placeholder values only.
+-- [x] Task checkbox-91: Add validation that form-field extraction fixtures reject uncited required fields, raw PDF bodies, downloaded document bytes, private user values, and any instruction to submit, certify, upload, pay, cancel, or schedule inspections.
+-- [x] Task checkbox-92: Add a fixture-only source-diff report that compares two synthetic versions of one public PP&D requirement and classifies added, removed, and changed obligations with citations and confidence values.
+-- [x] Task checkbox-93: Add validation for source-diff fixtures proving changed requirements preserve prior and current source evidence, stable requirement IDs, review-needed flags, and fail-closed agent impact summaries.
+-- [x] Task checkbox-94: Add a mocked DevHub workflow-resume fixture that models read-only draft discovery and missing-field detection from redacted state only, with no browser launch, auth state, cookies, traces, screenshots, uploads, submissions, payments, MFA, CAPTCHA, cancellation, certification, or inspection scheduling.
+-- [x] Task checkbox-95: Add validation for mocked workflow-resume fixtures proving the allowed actions are limited to safe read-only inspection and reversible draft previews, while consequential and financial actions require exact confirmation and remain refused by default.
+-- [x] Task checkbox-96: Add a fixture-only exact-confirmation checkpoint contract for mocked DevHub consequential and financial actions, with redacted action previews, source-backed consequence summaries, durable audit-event references, and default refusal before confirmation.
+-- [x] Task checkbox-97: Add validation for exact-confirmation checkpoint fixtures proving vague confirmations, stale source evidence, private values, missing audit-event IDs, and mismatched action strings are rejected before any consequential or financial DevHub action can be planned.
+-- [x] Task checkbox-98: Add a fixture-only public PP&D requirement-boundary sample that separates legal or procedural obligations from operational DevHub UI behavior for one permit process, preserving source evidence IDs, requirement type, confidence, and review-needed flags.
+-- [x] Task checkbox-99: Add validation for requirement-boundary fixtures proving legal obligations, operational UI hints, user facts, document requirements, fee notices, and deadlines are classified separately and fail closed when citations or review-needed flags are missing.
+-- [x] Task checkbox-100: Add a fixture-only public PDF extraction contract for one PP&D checklist or form sample that records document metadata, page-number anchors, required document labels, signature or acknowledgment markers, and extracted text snippets only; do not download documents or store raw PDF bytes.
+-- [x] Task checkbox-101: Add validation for public PDF extraction fixtures proving page anchors, source URLs, checksums or placeholder hash fields, redacted values, and skipped raw-byte/OCR-output reasons are present, while raw bodies and private DevHub artifacts are rejected.
+-- [x] Task checkbox-102: Add a fixture-only redacted user-case-state contract that links a mocked project fact inventory, missing-information questions, uploaded-file placeholders, draft status, and source evidence without storing private documents, account identifiers, cookies, traces, screenshots, payments, or live DevHub state.
+-- [x] Task checkbox-103: Add validation for user-case-state fixtures proving missing facts, file placeholders, draft/submitted status, payment status, messages, and outstanding tasks remain redacted, source-linked, and blocked from consequential or financial action planning by default.
+-- [x] Task checkbox-104: Add a fixture-only public source freshness manifest that records last-seen timestamps, source URLs, canonical URLs, content-hash or HTTP-cache placeholders, and review-needed flags for one PP&D guidance page and one linked form or checklist. Do not crawl the network, download documents, store raw bodies, or touch private DevHub data.
+-- [x] Task checkbox-105: Add validation for the public source freshness manifest proving stale or missing timestamps, uncited source URLs, absent hash/cache placeholders, raw response bodies, and private DevHub artifacts are rejected before any live crawl is planned.
+-- [x] Task checkbox-106: Add a fixture-only requirement-to-process dependency graph for one public PP&D permit process that links source evidence, extracted obligations, required documents, user facts, stop gates, and reversible draft-only planning nodes. Keep all values redacted and citation-backed.
+-- [x] Task checkbox-107: Add validation for requirement-to-process dependency graph fixtures proving every edge has a known source node, every consequential or financial node is blocked by default, and missing citations or private values fail closed.
+-- [x] Task checkbox-108: Add a fixture-only public crawl frontier checkpoint that models queued, accepted, skipped, and deferred URLs with allowlist, robots/no-persist, content-type, timeout, and processor-handoff decisions. Superseded by accepted checkbox-109, checkbox-130, checkbox-131, and checkbox-132 evidence; no crawler contracts, crawler code, public fixtures, crawl output, live automation, or authenticated DevHub artifacts were added for this supersession.
+-- [x] Task checkbox-109: Add validation for public crawl frontier checkpoint fixtures proving external domains, live authenticated URLs, missing skip reasons, raw crawl bodies, and processor handoffs without provenance are rejected.
+-- [x] Task checkbox-110: Add a fixture-only agent missing-information response plan that turns unresolved PP&D facts, required document placeholders, stale evidence flags, and default stop gates into user-facing questions without suggesting submission, upload, payment, certification, cancellation, or inspection scheduling.
+-- [x] Task checkbox-111: Add validation for missing-information response plan fixtures proving questions are source-linked, narrow, redacted, non-consequential by default, and blocked when evidence is stale, conflicting, uncited, or tied to private DevHub state.
+-- [x] Task checkbox-112: Add daemon task-selection validation proving blocked syntax-preflight tasks are not reselected while unchecked supervisor recovery tasks remain available.
+-- [x] Task checkbox-113: Add a daemon syntax-preflight regression test for malformed Python fragments observed in public_frontier_checkpoint attempts.
+-- [x] Task checkbox-114: Add daemon prompt guidance that, after repeated parser failures on a PP&D domain task, requires the next worker to reuse existing committed contracts before proposing a new similarly named module.
+-- [x] Task checkbox-115: Add a narrow supervisor diagnostic that reports when an already accepted validation task appears to satisfy the blocked task's fixture shape.
+-- [x] Task checkbox-116: Resume checkbox-108 only after checkbox-112 through checkbox-115 pass, and limit the resumed attempt to one syntax-valid file.
+-- [x] Task checkbox-122: Add a daemon diagnostic fixture proving the blocked checkbox-108 public crawl frontier task is resumable only as one syntax-valid replacement file, or can be superseded when checkbox-109 validation already covers the fixture shape.
+-- [x] Task checkbox-123: Add validation for the checkbox-122 diagnostic proving it reports the blocked task ID, accepted successor validation task ID, allowed one-file retry shape, and prohibited broad rewrite shape.
+-- [x] Task checkbox-124: Add daemon prompt guidance that converts the checkbox-108 blocked state into a deterministic next instruction.
+-- [x] Task checkbox-125: Add task-board replenishment validation proving a board with one blocked domain task and no selectable tasks gets this narrow supervisor tranche appended while preserving all completed tasks.
+-- [x] Task checkbox-126: Resume checkbox-108 only after checkbox-122 through checkbox-125 pass, and limit the resumed worker proposal to one syntax-preflightable file or supersession.
+-- [x] Task checkbox-127: Add daemon validation that a syntax-recovery worker proposal touching a blocked domain task is rejected when it changes more than one source file or omits syntax-preflight evidence.
+-- [x] Task checkbox-128: Add a tiny fixture proving repeated Python SyntaxError, py_compile, TS1005, TS1109, or TS1128 failures convert the next daemon prompt into a one-file repair instruction rather than a broad domain contract rewrite.
+-- [x] Task checkbox-129: Add validation for the checkbox-128 fixture proving the prompt names the failed syntax kind, lists the allowed one-file retry shape, and explicitly defers live crawl, authenticated automation, and crawler contract implementation.
+-- [x] Task checkbox-130: Add a daemon-local supersession decision fixture proving checkbox-108 can be marked superseded only when committed checkbox-109 validation evidence names queued, accepted, skipped, deferred, allowlist, robots/no-persist, content-type, timeout, and processor-handoff coverage.
+-- [x] Task checkbox-131: Add validation for the checkbox-130 supersession decision fixture proving missing evidence keeps checkbox-108 parked and complete evidence produces a task-board-only supersession recommendation.
+-- [x] Task checkbox-132: Add daemon task-selection validation proving a parked blocked domain task with accepted supersession evidence is not reselected before a task-board supersession note is appended.
+-- [x] Task checkbox-133: Append a task-board-only supersession note for checkbox-108 after checkbox-130 through checkbox-132 pass, preserving completed tasks and citing accepted checkbox-109 evidence instead of implementing new domain artifacts.
+-- [x] Task checkbox-134: Add a fixture-only processor archive integration manifest that maps PP&D public source URLs, canonical document IDs, content-hash placeholders, and processor handoff IDs without crawling, downloading documents, or storing raw bodies.
+-- [x] Task checkbox-135: Add validation for the processor archive integration manifest proving every archived public source has citation-backed provenance, no private DevHub data, no raw crawl output, and a deterministic handoff ID for formal-logic extraction.
+-- [x] Task checkbox-136: Add a mocked Playwright draft-fill plan fixture for one PP&D form that ranks selectors by evidence confidence, maps missing user facts to questions, and limits automation to reversible draft-only field previews.
+-- [x] Task checkbox-137: Add validation for the Playwright draft-fill plan fixture proving low-confidence selectors, uploads, submissions, payments, certifications, cancellations, MFA, CAPTCHA, and inspection scheduling remain refused by default.
+-- [x] Task checkbox-138: Add a fixture-only formal-logic guardrail bundle that translates one archived PP&D requirement set into obligations, prerequisites, stop gates, reversible actions, and exact-confirmation requirements.
+-- [x] Task checkbox-139: Add validation for formal-logic guardrail bundles proving missing citations, stale evidence, private values, and consequential or financial actions fail closed before any LLM agent may plan autonomous completion.
+-- [x] Task checkbox-140: Add an end-to-end fixture-only handoff scenario plus focused validation linking processor archival evidence, extracted requirement nodes, formal-logic guardrails, and draft-only Playwright planning without live crawling, authenticated automation, raw browser state, or official DevHub actions.
+-- [x] Task checkbox-141: Add a fixture-only user gap-resolution scenario plus focused validation that turns missing PP&D facts, stale evidence flags, and document placeholders into source-linked user questions and refuses autonomous completion while gaps remain.
+-- [x] Task checkbox-142: Add supervisor adaptive-slice regression coverage proving completed board-level recovery tranches enable broader non-duplicate goal slices even when accepted daemon ledger rows lag behind manual validated recovery work.
+-- [x] Task checkbox-143: Add an offline Playwright draft transcript fixture plus focused validation proving future agents can plan accessible-selector fills from redacted state while preserving exact-confirmation gates for upload, submit, payment, certification, cancellation, MFA, CAPTCHA, and inspection scheduling.
+-- [x] Task checkbox-144: Add a fixture-only source-change impact scenario plus focused validation that routes updated PP&D public evidence through archival provenance, affected requirement IDs, stale guardrail invalidation, and human-review flags before agents reuse old answers.
+-- [x] Task checkbox-145: Add a fixture-only agent work-order scenario plus focused validation that composes user document-store facts, missing PP&D facts, formal stop gates, and draft-only Playwright previews into an ordered autonomous-assistance plan without official DevHub actions.
+-- [x] Task checkbox-146: Add daemon parse-failure recovery coverage proving repeated non-JSON LLM responses for a completed or manually satisfied task are parked or superseded instead of being retried indefinitely.
+-- [x] Task checkbox-147: Add a fixture-only permit-process comparison scenario plus focused validation that contrasts two PP&D process types and preserves separate legal obligations, operational UI hints, document placeholders, fee notices, and exact-confirmation gates.
+-- [x] Task checkbox-148: Add a fixture-only audit export scenario plus focused validation that records source evidence, user-question decisions, redacted draft previews, guardrail outcomes, and refused official actions for downstream human review.
+-- [x] Task checkbox-149: Add a fixture-only stale-answer reconciliation scenario plus focused validation that compares user document-store facts against newer PP&D evidence and fails closed when citations, timestamps, or requirement IDs conflict.
+-- [x] Task checkbox-150: Add supervisor replenishment rotation coverage proving third and later completed tranches do not duplicate the previous broad tranche titles.
+-- [x] Task checkbox-151: Add a fixture-only Playwright selector drift scenario plus focused validation that detects changed accessible names, refuses low-confidence selectors, and asks for human review before draft-preview automation continues.
++- [x] Task checkbox-01 through checkbox-171: Completed PP&D bootstrap, validation, fixture, provenance, DevHub draft-planning, formal-logic guardrail, supervisor recovery, and replenishment tasks preserved from the existing board.
++- [x] Task checkbox-172: Add supervisor validation-failure classification coverage proving forbidden-marker self-triggering fixture fields are detected and converted into neutral absence-field repair guidance.
++- [x] Task checkbox-173: Add daemon prompt-repair coverage proving validation failures from forbidden marker substrings produce a JSON-only retry instruction with neutral artifact field names.
++- [x] Task checkbox-174: Add supervisor stale-status reconciliation coverage proving a no-eligible or calling_llm status with a completed board triggers deterministic replanning instead of observe or restart churn.
++- [x] Task checkbox-175: Add daemon LLM result-persistence coverage proving parse, timeout, validation-interrupted, and vanished-child failures are recorded before the worker exits or restarts.
+ 
+-## Built-In Goal Replenishment Tranche 5
++## Built-In Goal Replenishment Tranche 11
+ 
+-- [x] Task checkbox-152: Add a fixture-only public guidance conflict-resolution scenario plus focused validation that compares two cited PP&D guidance sources for the same permit requirement, preserves both provenance chains, marks the requirement review-needed, and prevents draft automation from relying on either source until a human resolves the conflict.
+-- [x] Task checkbox-153: Add a fixture-only DevHub upload-readiness checklist scenario plus focused validation that maps required document placeholders to public single-PDF-process evidence, redacted user file inventory metadata, and explicit stop gates while refusing official upload, submission, certification, payment, cancellation, CAPTCHA, MFA, account creation, and inspection scheduling by default.
+-- [x] Task checkbox-154: Add a fixture-only fee-notice and payment-gate scenario plus focused validation that separates public fee guidance, estimated fee notices, financial-action classification, exact payment-specific confirmation requirements, and audit events without storing payment data or planning payment automation.
+-- [x] Task checkbox-155: Add a fixture-only process-state transition scenario plus focused validation that models public guidance states, mocked DevHub read-only draft states, reversible draft previews, blocked consequential transitions, stale-evidence invalidation, and source-linked user questions without launching Playwright or touching live accounts.
++- [ ] Task checkbox-176: Add a fixture-only public source lineage rollup plus focused validation that summarizes PP&D seed URLs, processor handoff manifests, normalized document IDs, source freshness records, and skipped-action reasons without live crawling or raw response bodies.
++- [ ] Task checkbox-177: Add validation for source lineage rollups proving every lineage edge is citation-backed, uses stable public identifiers, excludes private DevHub artifacts, and marks stale or conflicting evidence review-needed before downstream guardrails reuse it.
++- [ ] Task checkbox-178: Add a fixture-only DevHub draft-readiness decision matrix plus focused validation that combines missing facts, redacted file placeholders, selector confidence, upload-readiness gates, fee notices, and exact-confirmation defaults while refusing official actions.
++- [ ] Task checkbox-179: Add a fixture-only formal-logic contradiction packet plus focused validation that detects incompatible PP&D obligations or prerequisites, preserves both provenance chains, marks affected predicates blocked, and asks for human review before agent planning continues.
+ 
+ ## Built-In Supervisor Planning Notes
+ 
+-- The completed board was replenished after checkbox-151 so the worker daemon can continue with narrow fixture-first PP&D work aligned to public evidence reconciliation, DevHub upload readiness, fee/payment gates, and process-state modeling.
+-- These tasks intentionally remain fixture-only and validation-first. They must not create private DevHub session files, auth state, traces, raw crawl output, downloaded documents, live crawl artifacts, or official DevHub actions.
+-
+-
+-<!-- ppd-daemon-task-board:start -->
+-## Generated Status
+-
+-Last updated: 2026-05-02T23:49:46.310865Z
+-
+-- Latest target: `Task checkbox-156: Task checkbox-156: Add supervisor deterministic-replenishment sanitization coverage proving agentic planner output with duplicate tranche headings or previously completed broad titles is rewritten to the next numbered non-duplicate tranche before the daemon starts.`
+-- Latest result: `parse`
+-- Latest summary: 
+-- Counts: `{"blocked": 0, "complete": 155, "in_progress": 0, "needed": 4}`
+-
+-<!-- ppd-daemon-task-board:end -->
+-
+-## Built-In Goal Replenishment Tranche 6
+-
+-- [x] Task checkbox-156: Add supervisor deterministic-replenishment sanitization coverage proving agentic planner output with duplicate tranche headings or previously completed broad titles is rewritten to the next numbered non-duplicate tranche before the daemon starts.
+-- [x] Task checkbox-157: Add daemon LLM result-durability coverage proving parse failures, validation interruption, child timeout, and vanished-child states write progress and result-log diagnostics before restart.
+-- [x] Task checkbox-158: Add a fixture-only cross-permit guardrail reuse scenario plus focused validation that reuses common stop gates across two PP&D permit types while preserving process-specific citations and exact-confirmation requirements.
+-- [x] Task checkbox-159: Add a fixture-only human-review packet scenario plus focused validation bundling conflicting evidence, stale answers, upload readiness, fee notices, and blocked DevHub transitions into one redacted review handoff.
+-## Built-In Supervisor Planning Notes
+-
+-- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
+-- Slice policy: `broad_integrated_after_green_streak`. The prior agentic replenishment repeated an old heading and title set; this tranche was normalized to the next numbered non-duplicate supervisor/domain hardening tranche before worker restart.
+-
+-## Built-In Goal Replenishment Tranche 7
+-
+-- [x] Task checkbox-160: Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.
+-- [x] Task checkbox-161: Add daemon stale-worker recovery coverage proving a dead child recorded as calling_llm or applying_files is converted into a selectable pending task with a durable diagnostic before restart.
+-- [x] Task checkbox-162: Add a fixture-only processor archival-suite readiness scenario plus focused validation that routes PP&D public URLs through ipfs_datasets_py processor handoff metadata, content-hash placeholders, and source-linked extraction batches without live crawling.
+-- [x] Task checkbox-163: Add a fixture-only Playwright autonomous-form planning scenario plus focused validation that future agents may fill reversible draft fields from redacted user facts while refusing upload, submit, payment, certification, cancellation, MFA, CAPTCHA, and inspection scheduling without exact confirmation.
+-## Built-In Supervisor Planning Notes
+-
+-- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
+-- Slice policy: `broad_integrated_after_green_streak`. Small slices are used after parse, syntax, validation, or task-board repair failures; broader integrated slices are used after a green accepted streak.
+-## Built-In Supervisor Repair Notes
+-
+-- Reset dead-worker in-progress task `Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.` to pending after the daemon process exited mid-cycle. The supervisor will restart the worker and let the task be selected again with a fresh timeout window.
+-## Built-In Supervisor Repair Notes
+-
+-- Parked repeated LLM parse/runtime loop for `Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
+-
+-## Built-In Goal Replenishment Tranche 8
+-
+-- [x] Task checkbox-164: Add daemon compact-prompt retry coverage proving repeated durable parse or LLM diagnostics produce a smaller task-focused JSON prompt instead of resending the broad PP&D workspace context.
+-- [x] Task checkbox-165: Add daemon JSON-output recovery coverage proving compact retry mode includes strict one-object schema guidance, minimal fixture/test scope, and no extra prose allowance for llm_router backends.
+-- [x] Task checkbox-166: Add supervisor replenishment coverage proving completed recovery tranches rotate into fresh PP&D archival, formal-logic, and Playwright planning tasks instead of reusing already satisfied supervisor hardening titles.
+-- [x] Task checkbox-167: Add a fixture-only evidence-to-guardrail trace matrix plus focused validation linking processor handoff IDs, extracted requirement nodes, user document-store facts, missing facts, and exact-confirmation stop gates.
+-## Built-In Supervisor Planning Notes
+-
+-- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
+-- Slice policy: `broad_integrated_after_green_streak`. Small slices are used after parse, syntax, validation, or task-board repair failures; broader integrated slices are used after a green accepted streak.
+-
+-## Built-In Goal Replenishment Tranche 9
+-
+-- [x] Task checkbox-168: Add daemon llm_router prompt-budget enforcement coverage proving compact retry prompts stay under a strict character cap before the child process is invoked.
+-- [x] Task checkbox-169: Add supervisor repair-prompt compaction coverage proving repeated daemon parse diagnostics produce a bounded self-heal prompt with recent diagnostics, task board summary, and no accepted-work dump.
+-- [x] Task checkbox-170: Add a fixture-only formal-logic export bundle plus focused validation mapping PP&D requirement nodes into obligations, prerequisites, stop gates, and exact-confirmation predicates for downstream agents.
+-- [x] Task checkbox-171: Add a fixture-only autonomous-assistance dry-run transcript plus focused validation showing known user document-store facts, missing fact questions, reversible draft actions, and refused official actions in order.
+-## Built-In Supervisor Planning Notes
+-
+-- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
+-- Slice policy: `broad_integrated_after_green_streak`. Small slices are used after parse, syntax, validation, or task-board repair failures; broader integrated slices are used after a green accepted streak.
+-
+-## Built-In Goal Replenishment Tranche 10
+-
+-- [~] Task checkbox-172: Add daemon generated-replenishment continuation coverage for tranche 10 proving fallback task titles include the tranche number and do not repeat completed supervisor hardening titles.
+-- [ ] Task checkbox-173: Add a fixture-only PP&D requirement-risk register scenario for tranche 10 plus focused validation linking source evidence, requirement IDs, risk categories, and fail-closed guardrail responses.
+-- [ ] Task checkbox-174: Add a fixture-only agent handoff readiness report for tranche 10 plus focused validation summarizing known user facts, missing facts, source freshness, and exact-confirmation blockers.
+-- [ ] Task checkbox-175: Add a fixture-only formal-logic regression pack for tranche 10 plus focused validation checking obligation predicates, prerequisite predicates, reversible action predicates, and refused official-action predicates.
+-## Built-In Supervisor Planning Notes
+-
+-- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
+-- Slice policy: `broad_integrated_after_green_streak`. Small slices are used after parse, syntax, validation, or task-board repair failures; broader integrated slices are used after a green accepted streak.
++- The supervisor reviewed the completed PP&D backlog against the original crawl, extraction, DevHub drafting, and formal-logic guardrail goals and appended the next fixture-first tranche without implementing domain artifacts.
++- This tranche keeps the next daemon cycles ordered: public lineage fixture first, validation second, draft-readiness planning third, and formal-logic contradiction handling fourth.
++- No live crawl, authenticated DevHub session, raw document download, payment, upload, certification, submission, cancellation, CAPTCHA, MFA, account creation, or inspection scheduling work is authorized by these tasks.

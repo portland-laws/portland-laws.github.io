@@ -89,6 +89,20 @@ FOLLOWUP_REPLENISHMENT_TITLES = (
     "Add a fixture-only Playwright autonomous-form planning scenario plus focused validation that future agents may fill reversible draft fields from redacted user facts while refusing upload, submit, payment, certification, cancellation, MFA, CAPTCHA, and inspection scheduling without exact confirmation.",
 )
 
+SECOND_FOLLOWUP_REPLENISHMENT_TITLES = (
+    "Add daemon compact-prompt retry coverage proving repeated durable parse or LLM diagnostics produce a smaller task-focused JSON prompt instead of resending the broad PP&D workspace context.",
+    "Add daemon JSON-output recovery coverage proving compact retry mode includes strict one-object schema guidance, minimal fixture/test scope, and no extra prose allowance for llm_router backends.",
+    "Add supervisor replenishment coverage proving completed recovery tranches rotate into fresh PP&D archival, formal-logic, and Playwright planning tasks instead of reusing already satisfied supervisor hardening titles.",
+    "Add a fixture-only evidence-to-guardrail trace matrix plus focused validation linking processor handoff IDs, extracted requirement nodes, user document-store facts, missing facts, and exact-confirmation stop gates.",
+)
+
+THIRD_FOLLOWUP_REPLENISHMENT_TITLES = (
+    "Add daemon llm_router prompt-budget enforcement coverage proving compact retry prompts stay under a strict character cap before the child process is invoked.",
+    "Add supervisor repair-prompt compaction coverage proving repeated daemon parse diagnostics produce a bounded self-heal prompt with recent diagnostics, task board summary, and no accepted-work dump.",
+    "Add a fixture-only formal-logic export bundle plus focused validation mapping PP&D requirement nodes into obligations, prerequisites, stop gates, and exact-confirmation predicates for downstream agents.",
+    "Add a fixture-only autonomous-assistance dry-run transcript plus focused validation showing known user document-store facts, missing fact questions, reversible draft actions, and refused official actions in order.",
+)
+
 
 @dataclass(frozen=True)
 class SupervisorConfig:
@@ -107,6 +121,7 @@ class SupervisorConfig:
     repeated_failure_threshold: int = 3
     active_state_timeout_seconds: int = 420
     max_prompt_chars: int = 50000
+    max_repair_prompt_chars: int = 9000
     llm_timeout_seconds: int = 300
     model_name: str = "gpt-5.5"
     provider: Optional[str] = None
@@ -254,6 +269,25 @@ def recent_parse_or_llm_failure_target(
         target = proposal_target
         count += 1
     return target if count >= minimum else ""
+
+
+def should_compact_supervisor_repair_prompt(decision: SupervisorDecision) -> bool:
+    if decision.action != "repair_daemon_programming":
+        return False
+    reason = decision.reason.casefold()
+    return "durable llm parse/runtime diagnostics" in reason or "before the daemon exited" in reason
+
+
+def task_board_summary(markdown: str) -> str:
+    tasks = parse_tasks(markdown)
+    counts = {
+        "needed": sum(1 for task in tasks if task.status == "needed"),
+        "in_progress": sum(1 for task in tasks if task.status == "in-progress"),
+        "complete": sum(1 for task in tasks if task.status == "complete"),
+        "blocked": sum(1 for task in tasks if task.status == "blocked"),
+    }
+    selectable = [task.label for task in tasks if task.status in {"needed", "in-progress"}][-6:]
+    return json.dumps({"counts": counts, "recentSelectable": selectable}, indent=2, sort_keys=True)
 
 
 def proposal_validation_text(proposal: dict[str, Any]) -> str:
@@ -606,6 +640,17 @@ def choose_non_duplicate_replenishment_templates(
     return list(fallback)
 
 
+def generated_nonduplicate_replenishment_templates(markdown: str, tranche_number: int) -> list[str]:
+    """Build deterministic continuation tasks that remain unique after static rotations."""
+
+    return [
+        f"Add daemon generated-replenishment continuation coverage for tranche {tranche_number} proving fallback task titles include the tranche number and do not repeat completed supervisor hardening titles.",
+        f"Add a fixture-only PP&D requirement-risk register scenario for tranche {tranche_number} plus focused validation linking source evidence, requirement IDs, risk categories, and fail-closed guardrail responses.",
+        f"Add a fixture-only agent handoff readiness report for tranche {tranche_number} plus focused validation summarizing known user facts, missing facts, source freshness, and exact-confirmation blockers.",
+        f"Add a fixture-only formal-logic regression pack for tranche {tranche_number} plus focused validation checking obligation predicates, prerequisite predicates, reversible action predicates, and refused official-action predicates.",
+    ]
+
+
 def builtin_replenish_goal_tasks(markdown: str, rows: Optional[list[dict[str, Any]]] = None) -> tuple[str, tuple[str, ...]]:
     """Append a deterministic fixture-first tranche when agentic planning fails.
 
@@ -654,8 +699,18 @@ def builtin_replenish_goal_tasks(markdown: str, rows: Optional[list[dict[str, An
         ]
         max_tranche_number = max((number or 0 for number in existing_tranche_numbers), default=0)
         if max_tranche_number >= len(broad_tranches) + 2:
+            next_tranche_number = max_tranche_number + 1
+            generated_templates = generated_nonduplicate_replenishment_templates(markdown, next_tranche_number)
             templates = choose_non_duplicate_replenishment_templates(
-                markdown, [list(FOLLOWUP_REPLENISHMENT_TITLES), *broad_tranches], FOLLOWUP_REPLENISHMENT_TITLES
+                markdown,
+                [
+                    list(FOLLOWUP_REPLENISHMENT_TITLES),
+                    list(SECOND_FOLLOWUP_REPLENISHMENT_TITLES),
+                    list(THIRD_FOLLOWUP_REPLENISHMENT_TITLES),
+                    generated_templates,
+                    *broad_tranches,
+                ],
+                tuple(generated_templates),
             )
         else:
             templates = choose_non_duplicate_replenishment_templates(
@@ -992,22 +1047,32 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
 
 
 def build_supervisor_prompt(config: SupervisorConfig, decision: SupervisorDecision) -> str:
-    files = {
-        "ppd/daemon/control.sh": read_text(config.resolve(Path("ppd/daemon/control.sh")), limit=8000),
-        "ppd/daemon/ppd_daemon.py": read_text(config.resolve(Path("ppd/daemon/ppd_daemon.py")), limit=22000),
-        "ppd/daemon/ppd_supervisor.py": read_text(config.resolve(Path("ppd/daemon/ppd_supervisor.py")), limit=16000),
-        "ppd/daemon/task-board.md": read_text(config.resolve(Path("ppd/daemon/task-board.md")), limit=8000),
-        "ppd/daemon/OPERATIONS.md": read_text(config.resolve(Path("ppd/daemon/OPERATIONS.md")), limit=8000)
-        if config.resolve(Path("ppd/daemon/OPERATIONS.md")).exists()
-        else "",
-    }
-    plan = read_text(config.resolve(config.plan_doc), limit=18000) if config.resolve(config.plan_doc).exists() else ""
+    compact_repair_prompt = should_compact_supervisor_repair_prompt(decision)
+    board_text = read_text(config.resolve(config.task_board), limit=8000) if config.resolve(config.task_board).exists() else ""
+    if compact_repair_prompt:
+        files = {
+            "ppd/daemon/task-board-summary.json": task_board_summary(board_text),
+            "ppd/daemon/ppd_daemon.py excerpt": read_text(config.resolve(Path("ppd/daemon/ppd_daemon.py")), limit=3500),
+            "ppd/daemon/ppd_supervisor.py excerpt": read_text(config.resolve(Path("ppd/daemon/ppd_supervisor.py")), limit=3500),
+        }
+        plan = read_text(config.resolve(config.plan_doc), limit=1200) if config.resolve(config.plan_doc).exists() else ""
+    else:
+        files = {
+            "ppd/daemon/control.sh": read_text(config.resolve(Path("ppd/daemon/control.sh")), limit=8000),
+            "ppd/daemon/ppd_daemon.py": read_text(config.resolve(Path("ppd/daemon/ppd_daemon.py")), limit=22000),
+            "ppd/daemon/ppd_supervisor.py": read_text(config.resolve(Path("ppd/daemon/ppd_supervisor.py")), limit=16000),
+            "ppd/daemon/task-board.md": board_text,
+            "ppd/daemon/OPERATIONS.md": read_text(config.resolve(Path("ppd/daemon/OPERATIONS.md")), limit=8000)
+            if config.resolve(Path("ppd/daemon/OPERATIONS.md")).exists()
+            else "",
+        }
+        plan = read_text(config.resolve(config.plan_doc), limit=18000) if config.resolve(config.plan_doc).exists() else ""
     status = load_json(config.resolve(config.status_file))
     progress = load_json(config.resolve(config.progress_file))
-    recent_results = read_supervisor_result_rows(config.resolve(config.result_log))[-8:]
+    recent_results = read_supervisor_result_rows(config.resolve(config.result_log))[-5 if compact_repair_prompt else -8:]
     failed_manifests: list[str] = []
     failed_dir = config.resolve(Path("ppd/daemon/failed-patches"))
-    if failed_dir.exists():
+    if failed_dir.exists() and not compact_repair_prompt:
         for path in sorted(failed_dir.glob("*.json"))[-5:]:
             failed_manifests.append(f"--- {path.relative_to(config.repo_root).as_posix()} ---\n{read_text(path, limit=2500)}")
 
@@ -1025,6 +1090,7 @@ Supervisor diagnosis:
 - action: {decision.action}
 - severity: {decision.severity}
 - reason: {decision.reason}
+- prompt mode: {"compact repair prompt" if compact_repair_prompt else "full repair prompt"}
 
 Goal:
 {goal}
@@ -1070,8 +1136,9 @@ Recent failed manifests:
 Current source files:
 {chr(10).join(f"--- {name} ---\\n{content}" for name, content in files.items())}
 """
-    if len(prompt) > config.max_prompt_chars:
-        prompt = prompt[: config.max_prompt_chars] + "\n\n[truncated]\n"
+    prompt_limit = min(config.max_prompt_chars, config.max_repair_prompt_chars) if compact_repair_prompt else config.max_prompt_chars
+    if len(prompt) > prompt_limit:
+        prompt = prompt[:prompt_limit] + "\n\n[truncated]\n"
     return prompt
 
 

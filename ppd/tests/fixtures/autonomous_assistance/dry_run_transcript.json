@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "autonomous_assistance_dry_run_transcript",
+  "transcriptId": "transcript-ppd-autonomous-assistance-dry-run-v1",
+  "generatedAt": "2026-05-03T00:00:00Z",
+  "boundary": {
+    "fixtureOnly": true,
+    "liveDevhubAccess": false,
+    "playwrightLaunched": false,
+    "officialActionAllowed": false,
+    "privateArtifactStored": false
+  },
+  "orderedSteps": [
+    {
+      "stepOrder": 1,
+      "stepId": "known-fact-project-address",
+      "stepType": "known_user_fact",
+      "fieldKey": "project.address",
+      "redactedValue": "[REDACTED_PROJECT_ADDRESS]",
+      "source": "user_document_store"
+    },
+    {
+      "stepOrder": 2,
+      "stepId": "ask-missing-site-plan",
+      "stepType": "missing_fact_question",
+      "fieldKey": "documents.site_plan",
+      "question": "Which redacted site plan document should be reviewed before draft package preparation?",
+      "defaultOutcome": "ask_user"
+    },
+    {
+      "stepOrder": 3,
+      "stepId": "draft-fill-project-address",
+      "stepType": "reversible_draft_action",
+      "actionId": "draft_fill_project_address",
+      "requiresExactConfirmation": false,
+      "allowedAutonomous": true
+    },
+    {
+      "stepOrder": 4,
+      "stepId": "refuse-upload",
+      "stepType": "refused_official_action",
+      "actionId": "upload_official_document",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "defaultOutcome": "refuse"
+    },
+    {
+      "stepOrder": 5,
+      "stepId": "refuse-submit",
+      "stepType": "refused_official_action",
+      "actionId": "submit_application",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "defaultOutcome": "refuse"
+    },
+    {
+      "stepOrder": 6,
+      "stepId": "refuse-payment",
+      "stepType": "refused_official_action",
+      "actionId": "pay_fee",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "defaultOutcome": "refuse"
+    }
+  ],
+  "sourceEvidence": [
+    {
+      "sourceEvidenceId": "src-devhub-apply-guide",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/how-apply-permit-devhub",
+      "citation": {
+        "locator": "fixture-dry-run-transcript-devhub",
+        "paraphrase": "Public DevHub guidance supports draft planning but does not permit official actions without exact confirmation."
+      }
+    }
+  ],
+  "guardrailOutcome": {
+    "knownFactsMaySeedDraftPreview": true,
+    "missingFactsBlockCompletion": true,
+    "officialActionsRefused": true,
+    "humanReviewRequiredBeforeOfficialAction": true
+  }
+}

@@ -102,6 +102,81 @@ class SupervisorReplenishmentSanitizationTest(unittest.TestCase):
         self.assertIn("processor archival-suite readiness scenario", replenished)
         self.assertNotIn("- [ ] Task checkbox-160: Add a fixture-only source-change impact scenario", replenished)
 
+    def test_late_replenishment_rotates_to_second_followup_before_old_recovery_titles(self) -> None:
+        board = "\n".join(
+            [
+                "## Built-In Goal Replenishment Tranche 7",
+                "- [x] Task checkbox-160: Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.",
+                "- [x] Task checkbox-161: Add daemon stale-worker recovery coverage proving a dead child recorded as calling_llm or applying_files is converted into a selectable pending task with a durable diagnostic before restart.",
+                "- [x] Task checkbox-162: Add a fixture-only processor archival-suite readiness scenario plus focused validation that routes PP&D public URLs through ipfs_datasets_py processor handoff metadata, content-hash placeholders, and source-linked extraction batches without live crawling.",
+                "- [x] Task checkbox-163: Add a fixture-only Playwright autonomous-form planning scenario plus focused validation that future agents may fill reversible draft fields from redacted user facts while refusing upload, submit, payment, certification, cancellation, MFA, CAPTCHA, and inspection scheduling without exact confirmation.",
+            ]
+        )
+
+        replenished, labels = builtin_replenish_goal_tasks(board, rows=[])
+
+        self.assertEqual(("checkbox-164", "checkbox-165", "checkbox-166", "checkbox-167"), labels)
+        self.assertIn("## Built-In Goal Replenishment Tranche 8", replenished)
+        self.assertIn("compact-prompt retry coverage", replenished)
+        self.assertIn("evidence-to-guardrail trace matrix", replenished)
+        self.assertNotIn("forbidden-marker self-triggering fixture fields", replenished)
+
+    def test_replenishment_after_second_followup_rotates_to_third_followup(self) -> None:
+        board = "\n".join(
+            [
+                "## Built-In Goal Replenishment Tranche 7",
+                "- [x] Task checkbox-160: Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.",
+                "- [x] Task checkbox-161: Add daemon stale-worker recovery coverage proving a dead child recorded as calling_llm or applying_files is converted into a selectable pending task with a durable diagnostic before restart.",
+                "- [x] Task checkbox-162: Add a fixture-only processor archival-suite readiness scenario plus focused validation that routes PP&D public URLs through ipfs_datasets_py processor handoff metadata, content-hash placeholders, and source-linked extraction batches without live crawling.",
+                "- [x] Task checkbox-163: Add a fixture-only Playwright autonomous-form planning scenario plus focused validation that future agents may fill reversible draft fields from redacted user facts while refusing upload, submit, payment, certification, cancellation, MFA, CAPTCHA, and inspection scheduling without exact confirmation.",
+                "",
+                "## Built-In Goal Replenishment Tranche 8",
+                "- [x] Task checkbox-164: Add daemon compact-prompt retry coverage proving repeated durable parse or LLM diagnostics produce a smaller task-focused JSON prompt instead of resending the broad PP&D workspace context.",
+                "- [x] Task checkbox-165: Add daemon JSON-output recovery coverage proving compact retry mode includes strict one-object schema guidance, minimal fixture/test scope, and no extra prose allowance for llm_router backends.",
+                "- [x] Task checkbox-166: Add supervisor replenishment coverage proving completed recovery tranches rotate into fresh PP&D archival, formal-logic, and Playwright planning tasks instead of reusing already satisfied supervisor hardening titles.",
+                "- [x] Task checkbox-167: Add a fixture-only evidence-to-guardrail trace matrix plus focused validation linking processor handoff IDs, extracted requirement nodes, user document-store facts, missing facts, and exact-confirmation stop gates.",
+            ]
+        )
+
+        replenished, labels = builtin_replenish_goal_tasks(board, rows=[])
+
+        self.assertEqual(("checkbox-168", "checkbox-169", "checkbox-170", "checkbox-171"), labels)
+        self.assertIn("## Built-In Goal Replenishment Tranche 9", replenished)
+        self.assertIn("prompt-budget enforcement coverage", replenished)
+        self.assertIn("autonomous-assistance dry-run transcript", replenished)
+        self.assertNotIn("forbidden-marker self-triggering fixture fields", replenished)
+
+    def test_replenishment_after_static_followups_generates_unique_titles(self) -> None:
+        board = "\n".join(
+            [
+                "## Built-In Goal Replenishment Tranche 7",
+                "- [x] Task checkbox-160: Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.",
+                "- [x] Task checkbox-161: Add daemon stale-worker recovery coverage proving a dead child recorded as calling_llm or applying_files is converted into a selectable pending task with a durable diagnostic before restart.",
+                "- [x] Task checkbox-162: Add a fixture-only processor archival-suite readiness scenario plus focused validation that routes PP&D public URLs through ipfs_datasets_py processor handoff metadata, content-hash placeholders, and source-linked extraction batches without live crawling.",
+                "- [x] Task checkbox-163: Add a fixture-only Playwright autonomous-form planning scenario plus focused validation that future agents may fill reversible draft fields from redacted user facts while refusing upload, submit, payment, certification, cancellation, MFA, CAPTCHA, and inspection scheduling without exact confirmation.",
+                "",
+                "## Built-In Goal Replenishment Tranche 8",
+                "- [x] Task checkbox-164: Add daemon compact-prompt retry coverage proving repeated durable parse or LLM diagnostics produce a smaller task-focused JSON prompt instead of resending the broad PP&D workspace context.",
+                "- [x] Task checkbox-165: Add daemon JSON-output recovery coverage proving compact retry mode includes strict one-object schema guidance, minimal fixture/test scope, and no extra prose allowance for llm_router backends.",
+                "- [x] Task checkbox-166: Add supervisor replenishment coverage proving completed recovery tranches rotate into fresh PP&D archival, formal-logic, and Playwright planning tasks instead of reusing already satisfied supervisor hardening titles.",
+                "- [x] Task checkbox-167: Add a fixture-only evidence-to-guardrail trace matrix plus focused validation linking processor handoff IDs, extracted requirement nodes, user document-store facts, missing facts, and exact-confirmation stop gates.",
+                "",
+                "## Built-In Goal Replenishment Tranche 9",
+                "- [x] Task checkbox-168: Add daemon llm_router prompt-budget enforcement coverage proving compact retry prompts stay under a strict character cap before the child process is invoked.",
+                "- [x] Task checkbox-169: Add supervisor repair-prompt compaction coverage proving repeated daemon parse diagnostics produce a bounded self-heal prompt with recent diagnostics, task board summary, and no accepted-work dump.",
+                "- [x] Task checkbox-170: Add a fixture-only formal-logic export bundle plus focused validation mapping PP&D requirement nodes into obligations, prerequisites, stop gates, and exact-confirmation predicates for downstream agents.",
+                "- [x] Task checkbox-171: Add a fixture-only autonomous-assistance dry-run transcript plus focused validation showing known user document-store facts, missing fact questions, reversible draft actions, and refused official actions in order.",
+            ]
+        )
+
+        replenished, labels = builtin_replenish_goal_tasks(board, rows=[])
+
+        self.assertEqual(("checkbox-172", "checkbox-173", "checkbox-174", "checkbox-175"), labels)
+        self.assertIn("## Built-In Goal Replenishment Tranche 10", replenished)
+        self.assertIn("generated-replenishment continuation coverage for tranche 10", replenished)
+        self.assertIn("requirement-risk register scenario for tranche 10", replenished)
+        self.assertNotIn("forbidden-marker self-triggering fixture fields", replenished)
+
 
 if __name__ == "__main__":
     unittest.main()

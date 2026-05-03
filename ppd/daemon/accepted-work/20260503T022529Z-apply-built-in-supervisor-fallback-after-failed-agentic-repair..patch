@@ -1,0 +1,102 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,56 +1,16 @@
+ {
+-  "createdAt": "2026-05-03T01:50:46.614166Z",
++  "createdAt": "2026-05-03T02:25:28.107657Z",
+   "decision": {
+-    "action": "repair_daemon_programming",
+-    "reason": "6 recent durable LLM parse/runtime diagnostics were recorded for the same task before the daemon exited; patch prompt, parsing, parking, or retry policy before restarting the worker again",
+-    "severity": "warning"
++    "action": "plan_next_tasks",
++    "reason": "all PP&D daemon tasks are complete; review the original PP&D goal and add the next task-board tranche",
++    "severity": "info"
+   },
+   "failedAgenticRepair": {
+-    "changedFiles": [
+-      "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+-    ],
+-    "errors": [
+-      "Validation failed; file edits were rolled back."
+-    ],
+-    "failureKind": "validation",
+-    "summary": "Add deterministic supervisor repair guidance for repeated non-JSON and syntax-validation loops.",
+-    "validationResults": [
+-      {
+-        "command": [
+-          "python3",
+-          "ppd/daemon/ppd_daemon.py",
+-          "--self-test"
+-        ],
+-        "returncode": 0,
+-        "stderr": "",
+-        "stdout": "{ \"ok\": true, \"task_count\": 163 }"
+-      },
+-      {
+-        "command": [
+-          "python3",
+-          "-m",
+-          "unittest",
+-          "discover",
+-          "-s",
+-          "ppd/tests",
+-          "-p",
+-          "test_*.py"
+-        ],
+-        "returncode": 1,
+-        "stderr": "...................................................................................................................................................................................................................................................................................................................................................................................ss..............sss....................................................................................................................................................................................................................FFF........................................................ ====================================================================== FAIL: test_guide_keeps_repair_separate_from_domain_implementation (test_supervisor_repair_guide.SupervisorRepairGuideTest.test_guide_keeps_repair_separate_from_domain_...",
+-        "stdout": ""
+-      },
+-      {
+-        "command": [
+-          "bash",
+-          "-lc",
+-          "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+-        ],
+-        "returncode": 0,
+-        "stderr": "",
+-        "stdout": ""
+-      }
+-    ]
++    "changedFiles": [],
++    "errors": [],
++    "failureKind": "no_eligible_tasks",
++    "summary": "All currently planned PP&D tasks are complete.",
++    "validationResults": []
+   },
+   "fallbackActions": [
+     "preserve failed repair diagnostics without accepting the invalid patch",
+@@ -69,10 +29,13 @@
+   ],
+   "schemaVersion": 1,
+   "taskBoardRepair": {
+-    "parkedRepeatedSyntaxLoopTasks": [
+-      "Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board."
++    "parkedRepeatedSyntaxLoopTasks": [],
++    "replenishedGoalTaskLabels": [
++      "checkbox-164",
++      "checkbox-165",
++      "checkbox-166",
++      "checkbox-167"
+     ],
+-    "replenishedGoalTaskLabels": [],
+     "supersededTaskBoardOnlyLabels": [],
+     "taskBoardUpdated": true
+   }
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -224,3 +224,14 @@
+ ## Built-In Supervisor Repair Notes
+ 
+ - Parked repeated LLM parse/runtime loop for `Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
++
++## Built-In Goal Replenishment Tranche 8
++
++- [ ] Task checkbox-164: Add supervisor validation-failure classification coverage proving forbidden-marker self-triggering fixture fields are detected and converted into neutral absence-field repair guidance.
++- [ ] Task checkbox-165: Add daemon prompt-repair coverage proving validation failures from forbidden marker substrings produce a JSON-only retry instruction with neutral artifact field names.
++- [ ] Task checkbox-166: Add supervisor stale-status reconciliation coverage proving a no-eligible or calling_llm status with a completed board triggers deterministic replanning instead of observe or restart churn.
++- [ ] Task checkbox-167: Add daemon LLM result-persistence coverage proving parse, timeout, validation-interrupted, and vanished-child failures are recorded before the worker exits or restarts.
++## Built-In Supervisor Planning Notes
++
++- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
++- Slice policy: `broad_integrated_after_green_streak`. Small slices are used after parse, syntax, validation, or task-board repair failures; broader integrated slices are used after a green accepted streak.

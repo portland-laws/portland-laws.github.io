@@ -1,0 +1,115 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "formal_logic_export_bundle",
+  "bundleId": "bundle-ppd-formal-logic-export-v1",
+  "generatedAt": "2026-05-03T00:00:00Z",
+  "boundary": {
+    "fixtureOnly": true,
+    "liveDevhubAccess": false,
+    "officialActionAllowed": false,
+    "privateArtifactStored": false
+  },
+  "requirementNodes": [
+    {
+      "requirementId": "req-project-address",
+      "sourceEvidenceIds": [
+        "src-devhub-apply-guide"
+      ],
+      "predicate": "required_fact(project.address)"
+    },
+    {
+      "requirementId": "req-site-plan-document",
+      "sourceEvidenceIds": [
+        "src-residential-building-guide"
+      ],
+      "predicate": "required_document(documents.site_plan)"
+    }
+  ],
+  "obligations": [
+    {
+      "obligationId": "obl-collect-project-address",
+      "requirementId": "req-project-address",
+      "logic": "required_fact(project.address) -> ask_or_fill_draft(project.address)",
+      "sourceEvidenceIds": [
+        "src-devhub-apply-guide"
+      ]
+    },
+    {
+      "obligationId": "obl-collect-site-plan-placeholder",
+      "requirementId": "req-site-plan-document",
+      "logic": "required_document(documents.site_plan) -> ask_user_for_document_metadata(documents.site_plan)",
+      "sourceEvidenceIds": [
+        "src-residential-building-guide"
+      ]
+    }
+  ],
+  "prerequisites": [
+    {
+      "prerequisiteId": "pre-draft-address-known",
+      "requiredBeforeAction": "draft_fill_project_address",
+      "predicate": "known(project.address)",
+      "defaultOutcomeWhenMissing": "ask_user"
+    },
+    {
+      "prerequisiteId": "pre-site-plan-known",
+      "requiredBeforeAction": "draft_package_review",
+      "predicate": "known_document_metadata(documents.site_plan)",
+      "defaultOutcomeWhenMissing": "ask_user"
+    }
+  ],
+  "stopGates": [
+    {
+      "gateId": "gate-missing-required-input",
+      "predicate": "missing(required_input) -> stop_and_ask_user",
+      "blocksActions": [
+        "draft_package_review",
+        "upload_official_document",
+        "submit_application"
+      ],
+      "defaultOutcome": "ask_user"
+    },
+    {
+      "gateId": "gate-exact-confirmation",
+      "predicate": "official_action(action) and not exact_confirmation(action) -> refuse",
+      "blocksActions": [
+        "upload_official_document",
+        "submit_application",
+        "pay_fee",
+        "certify_statement"
+      ],
+      "defaultOutcome": "refuse"
+    }
+  ],
+  "exactConfirmationPredicates": [
+    {
+      "predicateId": "confirm-upload-official-document",
+      "actionId": "upload_official_document",
+      "logic": "exact_confirmation(upload_official_document)",
+      "present": false
+    },
+    {
+      "predicateId": "confirm-submit-application",
+      "actionId": "submit_application",
+      "logic": "exact_confirmation(submit_application)",
+      "present": false
+    },
+    {
+      "predicateId": "confirm-pay-fee",
+      "actionId": "pay_fee",
+      "logic": "exact_confirmation(pay_fee)",
+      "present": false
+    },
+    {
+      "predicateId": "confirm-certify-statement",
+      "actionId": "certify_statement",
+      "logic": "exact_confirmation(certify_statement)",
+      "present": false
+    }
+  ],
+  "exportOutcome": {
+    "mayAssistDraftPreparation": true,
+    "mayAskUserForMissingFacts": true,
+    "mayPerformOfficialActions": false,
+    "defaultPolicy": "fail_closed"
+  }
+}

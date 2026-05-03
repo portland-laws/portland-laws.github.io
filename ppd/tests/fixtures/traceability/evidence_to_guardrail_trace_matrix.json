@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "evidence_to_guardrail_trace_matrix",
+  "scenarioId": "scenario-evidence-to-guardrail-trace-matrix-v1",
+  "generatedAt": "2026-05-03T00:00:00Z",
+  "boundary": {
+    "fixtureOnly": true,
+    "liveCrawlRequested": false,
+    "liveDevhubAccess": false,
+    "officialActionAllowed": false,
+    "privateArtifactStored": false
+  },
+  "processorHandoffs": [
+    {
+      "processorHandoffId": "processor-handoff-ppd-devhub-apply-guide",
+      "sourceEvidenceId": "src-devhub-apply-guide",
+      "canonicalDocumentId": "ppd-public-devhub-apply-guide",
+      "contentHashPlaceholder": "sha256:[PUBLIC_ARCHIVE_HASH_PLACEHOLDER_DEVHUB]",
+      "extractionBatchId": "extract-batch-devhub-requirements-001"
+    },
+    {
+      "processorHandoffId": "processor-handoff-ppd-residential-building-permits",
+      "sourceEvidenceId": "src-residential-building-guide",
+      "canonicalDocumentId": "ppd-public-residential-building-permits",
+      "contentHashPlaceholder": "sha256:[PUBLIC_ARCHIVE_HASH_PLACEHOLDER_RESIDENTIAL]",
+      "extractionBatchId": "extract-batch-residential-requirements-001"
+    }
+  ],
+  "requirementNodes": [
+    {
+      "requirementId": "req-project-address",
+      "nodeType": "required_user_fact",
+      "sourceEvidenceIds": [
+        "src-devhub-apply-guide"
+      ],
+      "processorHandoffIds": [
+        "processor-handoff-ppd-devhub-apply-guide"
+      ]
+    },
+    {
+      "requirementId": "req-site-plan-document",
+      "nodeType": "required_document_placeholder",
+      "sourceEvidenceIds": [
+        "src-residential-building-guide"
+      ],
+      "processorHandoffIds": [
+        "processor-handoff-ppd-residential-building-permits"
+      ]
+    }
+  ],
+  "userFacts": [
+    {
+      "factId": "fact-project-address",
+      "requirementId": "req-project-address",
+      "redactedValue": "[REDACTED_PROJECT_ADDRESS]",
+      "source": "user_document_store",
+      "freshness": "current"
+    }
+  ],
+  "missingFacts": [
+    {
+      "missingFactId": "missing-site-plan-document",
+      "requirementId": "req-site-plan-document",
+      "question": "Which redacted site plan document should be reviewed for the draft package?",
+      "defaultOutcome": "ask_user"
+    }
+  ],
+  "stopGates": [
+    {
+      "gateId": "gate-missing-required-fact",
+      "blocksWhenRequirementIdsMissing": [
+        "req-site-plan-document"
+      ],
+      "defaultOutcome": "ask_user",
+      "blocksOfficialAction": true
+    },
+    {
+      "gateId": "gate-exact-confirmation-required",
+      "blockedActions": [
+        "upload_official_document",
+        "submit_application",
+        "pay_fee",
+        "certify_statement"
+      ],
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "defaultOutcome": "refuse"
+    }
+  ],
+  "traceRows": [
+    {
+      "traceId": "trace-address-requirement",
+      "processorHandoffId": "processor-handoff-ppd-devhub-apply-guide",
+      "requirementId": "req-project-address",
+      "userFactId": "fact-project-address",
+      "missingFactId": null,
+      "stopGateIds": []
+    },
+    {
+      "traceId": "trace-site-plan-missing",
+      "processorHandoffId": "processor-handoff-ppd-residential-building-permits",
+      "requirementId": "req-site-plan-document",
+      "userFactId": null,
+      "missingFactId": "missing-site-plan-document",
+      "stopGateIds": [
+        "gate-missing-required-fact",
+        "gate-exact-confirmation-required"
+      ]
+    }
+  ],
+  "plannerOutcome": {
+    "mayUseKnownFactsForDraftPreview": true,
+    "mustAskUserForMissingFacts": true,
+    "mayPerformOfficialActions": false,
+    "nextAgentAction": "ask_user_for_missing_site_plan_metadata"
+  }
+}

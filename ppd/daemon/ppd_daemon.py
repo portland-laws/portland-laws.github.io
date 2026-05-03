@@ -97,10 +97,11 @@ class Task:
     index: int
     title: str
     status: str
+    checkbox_id: int
 
     @property
     def label(self) -> str:
-        return f"Task checkbox-{self.index}: {self.title}"
+        return f"Task checkbox-{self.checkbox_id}: {self.title}"
 
 
 @dataclass(frozen=True)
@@ -179,6 +180,7 @@ class Config:
     command_timeout_seconds: int = 300
     llm_timeout_seconds: int = 300
     max_prompt_chars: int = 60000
+    max_compact_prompt_chars: int = 4200
     allow_local_fallback: bool = False
     revisit_blocked: bool = False
     max_task_failures_before_block: int = 3
@@ -219,6 +221,13 @@ def parse_tasks(markdown: str) -> list[Task]:
         if not match:
             continue
         mark = match.group("mark")
+        raw_title = match.group("title").strip()
+        checkbox_id = len(tasks) + 1
+        title = raw_title
+        id_match = re.match(r"Task checkbox-(?P<id>\d+):\s*(?P<title>.+)$", raw_title)
+        if id_match:
+            checkbox_id = int(id_match.group("id"))
+            title = id_match.group("title").strip()
         status = "needed"
         if mark.lower() == "x":
             status = "complete"
@@ -226,7 +235,7 @@ def parse_tasks(markdown: str) -> list[Task]:
             status = "in-progress"
         elif mark == "!":
             status = "blocked"
-        tasks.append(Task(index=len(tasks) + 1, title=match.group("title").strip(), status=status))
+        tasks.append(Task(index=len(tasks) + 1, title=title, status=status, checkbox_id=checkbox_id))
     return tasks
 
 
@@ -338,9 +347,31 @@ def read_result_log(path: Path) -> list[dict[str, Any]]:
     return rows
 
 
+def read_result_and_diagnostic_log(path: Path) -> list[dict[str, Any]]:
+    if not path.exists():
+        return []
+    rows: list[dict[str, Any]] = []
+    for line in path.read_text(encoding="utf-8", errors="replace").splitlines():
+        if not line.strip():
+            continue
+        try:
+            parsed = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        proposal = parsed.get("proposal")
+        diagnostic = parsed.get("diagnostic")
+        if isinstance(proposal, dict):
+            rows.append(proposal)
+        elif isinstance(diagnostic, dict):
+            row = dict(diagnostic)
+            row["_diagnostic_stage"] = parsed.get("stage", "")
+            rows.append(row)
+    return rows
+
+
 def recent_task_failures(config: Config, task_label: str, *, limit: int = 3) -> list[dict[str, Any]]:
     failures: list[dict[str, Any]] = []
-    for proposal in reversed(read_result_log(config.resolve(config.result_log))):
+    for proposal in reversed(read_result_and_diagnostic_log(config.resolve(config.result_log))):
         if proposal.get("target_task") != task_label:
             continue
         if proposal.get("applied") and proposal.get("validation_passed") and not proposal.get("errors"):
@@ -349,6 +380,20 @@ def recent_task_failures(config: Config, task_label: str, *, limit: int = 3) -> 
         if len(failures) >= limit:
             break
     return failures
+
+
+def should_use_compact_prompt(failures: list[dict[str, Any]], *, threshold: int = 2) -> bool:
+    count = 0
+    for failure in failures:
+        if str(failure.get("failure_kind") or "") in {"parse", "llm"}:
+            count += 1
+    return count >= threshold
+
+
+def effective_prompt_limit(config: Config, *, compact_prompt: bool) -> int:
+    if compact_prompt:
+        return min(config.max_prompt_chars, config.max_compact_prompt_chars)
+    return config.max_prompt_chars
 
 
 def task_failure_count(config: Config, task_label: str, *, kinds: Optional[set[str]] = None) -> int:
@@ -667,27 +712,42 @@ def persist_failed_work(proposal: Proposal, config: Config, *, patch: str, reaso
 
 
 def build_prompt(config: Config, selected: Task) -> str:
-    plan = read_text(config.resolve(config.plan_doc), limit=22000)
-    board = read_text(config.resolve(config.task_board), limit=14000)
-    readme = read_text(config.resolve(config.readme), limit=8000) if config.resolve(config.readme).exists() else ""
-    failure_context = format_failure_context(recent_task_failures(config, selected.label))
+    failures = recent_task_failures(config, selected.label)
+    compact_prompt = should_use_compact_prompt(failures)
+    plan = read_text(config.resolve(config.plan_doc), limit=900 if compact_prompt else 22000)
+    board = read_text(config.resolve(config.task_board), limit=1800 if compact_prompt else 14000)
+    readme = (
+        read_text(config.resolve(config.readme), limit=1200 if compact_prompt else 8000)
+        if config.resolve(config.readme).exists()
+        else ""
+    )
+    failure_context = format_failure_context(failures)
     context_files: list[str] = []
-    for path in sorted((config.repo_root / "ppd").glob("**/*")):
-        if not path.is_file():
-            continue
-        rel = path.relative_to(config.repo_root).as_posix()
-        if rel.startswith("ppd/data/") or rel.startswith("ppd/daemon/accepted-work/") or rel.startswith("ppd/daemon/failed-patches/"):
-            continue
-        if rel.endswith((".py", ".md", ".json", ".ts", ".tsx", ".js", ".mjs")):
-            context_files.append(f"--- {rel} ---\n{read_text(path, limit=8000)}")
-        if len("\n".join(context_files)) > 18000:
-            break
+    if compact_prompt:
+        context_files.append(
+            "Compact retry mode: omitted broad workspace file contents after repeated LLM parse/runtime failures. "
+            "Return a minimal JSON proposal with one fixture and one focused test when possible."
+        )
+    else:
+        for path in sorted((config.repo_root / "ppd").glob("**/*")):
+            if not path.is_file():
+                continue
+            rel = path.relative_to(config.repo_root).as_posix()
+            if rel.startswith("ppd/data/") or rel.startswith("ppd/daemon/accepted-work/") or rel.startswith("ppd/daemon/failed-patches/"):
+                continue
+            if rel.endswith((".py", ".md", ".json", ".ts", ".tsx", ".js", ".mjs")):
+                context_files.append(f"--- {rel} ---\n{read_text(path, limit=8000)}")
+            if len("\n".join(context_files)) > 18000:
+                break
 
     prompt = f"""
 You are improving the isolated PP&D implementation workspace in a repository.
 
 Current task:
 {selected.label}
+
+Prompt mode:
+{"Compact retry mode: repeated LLM parse/runtime failures were recorded for this task. Return the smallest useful JSON patch and avoid broad context." if compact_prompt else "Full context mode."}
 
 Hard constraints:
 - Return ONLY one JSON object; no markdown fences and no prose outside JSON.
@@ -703,6 +763,7 @@ Hard constraints:
 - Put committed PP&D fixtures under `ppd/tests/fixtures/...`. Tests in `ppd/tests/` should derive fixture paths from their own file location, for example `Path(__file__).parent / "fixtures" / ...`, so they do not accidentally point at repository-root `tests/fixtures`.
 - Do not mark task-board checkboxes complete in the same proposal unless the implementation, fixtures, and validation code for the selected task are all included. The daemon will mark the selected task complete after validation passes.
 - Do not automate CAPTCHA, MFA, account creation, payment, submission, certification, cancellation, or upload actions.
+- If compact retry mode is active, do not inspect or request additional context. Return the smallest useful JSON patch for the current task.
 
 JSON schema:
 {{
@@ -714,6 +775,9 @@ JSON schema:
   "validation_commands": [["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]]
 }}
 
+Recent failure context for this task:
+{failure_context}
+
 PP&D plan:
 {plan}
 
@@ -723,14 +787,12 @@ PP&D task board:
 PP&D workspace context:
 {readme}
 
-Recent failure context for this task:
-{failure_context}
-
 Current files:
 {chr(10).join(context_files)}
 """
-    if len(prompt) > config.max_prompt_chars:
-        prompt = prompt[: config.max_prompt_chars] + "\n\n[truncated]\n"
+    prompt_limit = effective_prompt_limit(config, compact_prompt=compact_prompt)
+    if len(prompt) > prompt_limit:
+        prompt = prompt[:prompt_limit] + "\n\n[truncated]\n"
     return prompt
 
 
@@ -738,6 +800,10 @@ def call_llm(prompt: str, config: Config) -> str:
     backend = os.environ.get("PPD_LLM_BACKEND", "llm_router")
     if backend != "llm_router":
         raise RuntimeError(f"Unsupported PP&D LLM backend {backend!r}; expected 'llm_router'.")
+    if len(prompt) > config.max_prompt_chars + len("\n\n[truncated]\n"):
+        raise RuntimeError(
+            f"LLM prompt exceeds configured budget before llm_router child launch: {len(prompt)} > {config.max_prompt_chars}"
+        )
     prompt_file: Optional[Path] = None
     try:
         with tempfile.NamedTemporaryFile(

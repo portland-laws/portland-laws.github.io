@@ -8,6 +8,7 @@ from ppd.daemon.ppd_daemon import atomic_write_json
 from ppd.daemon.ppd_supervisor import (
     SupervisorConfig,
     append_jsonl,
+    build_supervisor_prompt,
     builtin_dead_worker_task_board,
     builtin_repair_task_board,
     diagnose,
@@ -150,6 +151,41 @@ class SupervisorStaleStatusReplanningTest(unittest.TestCase):
         self.assertEqual(("Add supervisor task-board de-duplication coverage.",), parked)
         self.assertIn("- [!] Task checkbox-160: Add supervisor task-board de-duplication coverage.", repaired)
         self.assertIn("- [ ] Task checkbox-161: Add daemon stale-worker recovery coverage.", repaired)
+
+    def test_compact_supervisor_repair_prompt_omits_failed_manifest_dump(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+            daemon_dir = repo / "ppd" / "daemon"
+            failed_dir = daemon_dir / "failed-patches"
+            failed_dir.mkdir(parents=True)
+            (repo / "docs").mkdir()
+            (repo / "docs" / "PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md").write_text(
+                "Plan\n" + ("long plan\n" * 1000),
+                encoding="utf-8",
+            )
+            (daemon_dir / "task-board.md").write_text(
+                "- [~] Task checkbox-168: Add prompt-budget enforcement.\n",
+                encoding="utf-8",
+            )
+            (daemon_dir / "ppd_daemon.py").write_text("# daemon excerpt\n" + ("x = 1\n" * 1000), encoding="utf-8")
+            (daemon_dir / "ppd_supervisor.py").write_text("# supervisor excerpt\n" + ("y = 1\n" * 1000), encoding="utf-8")
+            (failed_dir / "huge.json").write_text("FAILED_MANIFEST_SHOULD_NOT_APPEAR\n" * 1000, encoding="utf-8")
+            decision = diagnose(SupervisorConfig(repo_root=repo, pid_file=Path("ppd/daemon/missing.pid")))
+            decision = type(decision)(
+                action="repair_daemon_programming",
+                reason="3 recent durable LLM parse/runtime diagnostics were recorded for the same task before the daemon exited",
+                severity="warning",
+                should_invoke_codex=True,
+                should_restart_daemon=True,
+            )
+
+            prompt = build_supervisor_prompt(SupervisorConfig(repo_root=repo, max_repair_prompt_chars=7000), decision)
+
+        self.assertLessEqual(len(prompt), 7015)
+        self.assertIn("compact repair prompt", prompt)
+        self.assertIn("Recent daemon results", prompt)
+        self.assertIn("task-board-summary", prompt)
+        self.assertNotIn("FAILED_MANIFEST_SHOULD_NOT_APPEAR", prompt)
 
 
 if __name__ == "__main__":

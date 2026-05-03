@@ -1,0 +1,139 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "playwright_autonomous_form_planning",
+  "scenarioId": "scenario-playwright-autonomous-form-planning-v1",
+  "generatedAt": "2026-05-03T00:00:00Z",
+  "boundary": {
+    "fixtureOnly": true,
+    "playwrightLaunched": false,
+    "liveDevhubAccess": false,
+    "officialUploadAllowed": false,
+    "officialSubmissionAllowed": false,
+    "paymentAutomationAllowed": false,
+    "privateArtifactStored": false
+  },
+  "redactedUserFacts": [
+    {
+      "factId": "fact-project-address",
+      "fieldKey": "project.address",
+      "redactedValue": "[REDACTED_PROJECT_ADDRESS]",
+      "source": "user_document_store",
+      "freshness": "current"
+    },
+    {
+      "factId": "fact-project-description",
+      "fieldKey": "project.description",
+      "redactedValue": "[REDACTED_PROJECT_DESCRIPTION]",
+      "source": "user_document_store",
+      "freshness": "current"
+    }
+  ],
+  "draftFillPlan": [
+    {
+      "stepId": "draft-fill-project-address",
+      "fieldKey": "project.address",
+      "actionClass": "reversible_draft_fill",
+      "selectorPlan": {
+        "role": "textbox",
+        "accessibleName": "Project address",
+        "confidence": 0.94,
+        "sourceEvidenceIds": [
+          "src-devhub-apply-guide"
+        ]
+      },
+      "inputFactId": "fact-project-address",
+      "allowedAutonomous": true,
+      "requiresExactConfirmation": false
+    },
+    {
+      "stepId": "draft-fill-project-description",
+      "fieldKey": "project.description",
+      "actionClass": "reversible_draft_fill",
+      "selectorPlan": {
+        "role": "textbox",
+        "accessibleName": "Project description",
+        "confidence": 0.91,
+        "sourceEvidenceIds": [
+          "src-devhub-apply-guide"
+        ]
+      },
+      "inputFactId": "fact-project-description",
+      "allowedAutonomous": true,
+      "requiresExactConfirmation": false
+    }
+  ],
+  "refusedActions": [
+    {
+      "actionId": "upload_official_document",
+      "actionClass": "consequential",
+      "defaultOutcome": "refuse",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false
+    },
+    {
+      "actionId": "submit_application",
+      "actionClass": "consequential",
+      "defaultOutcome": "refuse",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false
+    },
+    {
+      "actionId": "pay_fee",
+      "actionClass": "financial",
+      "defaultOutcome": "refuse",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false
+    },
+    {
+      "actionId": "certify_statement",
+      "actionClass": "consequential",
+      "defaultOutcome": "refuse",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false
+    },
+    {
+      "actionId": "cancel_request",
+      "actionClass": "consequential",
+      "defaultOutcome": "refuse",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false
+    },
+    {
+      "actionId": "mfa",
+      "actionClass": "account_security",
+      "defaultOutcome": "human_review",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false
+    },
+    {
+      "actionId": "captcha",
+      "actionClass": "anti_automation",
+      "defaultOutcome": "human_review",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false
+    },
+    {
+      "actionId": "schedule_inspection",
+      "actionClass": "consequential",
+      "defaultOutcome": "refuse",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false
+    }
+  ],
+  "sourceEvidence": [
+    {
+      "sourceEvidenceId": "src-devhub-apply-guide",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/how-apply-permit-devhub",
+      "citation": {
+        "locator": "fixture-devhub-apply-guide-draft-planning",
+        "paraphrase": "Public DevHub guidance can inform reversible draft planning, while official actions remain gated."
+      }
+    }
+  ],
+  "plannerOutcome": {
+    "mayFillReversibleDraftFields": true,
+    "mayLaunchLiveBrowser": false,
+    "mayPerformOfficialActions": false,
+    "nextAgentAction": "prepare_reversible_draft_preview_plan"
+  }
+}
