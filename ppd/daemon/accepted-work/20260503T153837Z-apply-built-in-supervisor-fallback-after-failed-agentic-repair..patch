@@ -1,0 +1,84 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,51 +1,38 @@
+ {
+-  "createdAt": "2026-05-03T15:12:57.957336Z",
++  "createdAt": "2026-05-03T15:38:36.472673Z",
+   "decision": {
+-    "action": "repair_daemon_programming",
+-    "reason": "2 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
++    "action": "invoke_codex",
++    "reason": "4 consecutive daemon rounds failed without an accepted patch",
+     "severity": "warning"
+   },
+   "failedAgenticRepair": {
+     "changedFiles": [
+-      "ppd/daemon/syntax_preflight.py",
+-      "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
++      "ppd/daemon/llm_failure_diagnostics.py",
++      "ppd/tests/test_llm_failure_diagnostics.py"
+     ],
+     "errors": [
+-      "Validation failed; file edits were rolled back."
++      "Syntax preflight failed; file edits were rolled back. python3 -m py_compile ppd/daemon/llm_failure_diagnostics.py: File \"/home/barberb/portland-laws.github.io/ppd/daemon/llm_failure_diagnostics.py\", line 32 text = re.sub(r\" str: ^ SyntaxError: unterminated string literal (detected at line 32) Next worker attempt should be smaller: replace only the syntactically failing file plus its narrow fixture/test if needed; run py_compile for each changed Python file or strict tsc for each changed TypeScript file mentally before returning JSON; do not add new contracts, fixtures, and broad tests in the same proposal until the parser-clean core file is valid."
+     ],
+-    "failureKind": "validation",
+-    "summary": "Tighten PP&D syntax preflight retry guidance for repeated parser failures.",
++    "failureKind": "syntax_preflight",
++    "summary": "Add a parser-clean PP&D daemon diagnostic helper for repeated non-JSON LLM responses.",
+     "validationResults": [
+       {
+         "command": [
+           "python3",
+-          "ppd/daemon/ppd_daemon.py",
+-          "--self-test"
++          "-m",
++          "py_compile",
++          "ppd/daemon/llm_failure_diagnostics.py"
+         ],
+-        "returncode": 0,
+-        "stderr": "",
+-        "stdout": "{ \"ok\": true, \"task_count\": 40 }"
++        "returncode": 1,
++        "stderr": "File \"/home/barberb/portland-laws.github.io/ppd/daemon/llm_failure_diagnostics.py\", line 32 text = re.sub(r\" str: ^ SyntaxError: unterminated string literal (detected at line 32)",
++        "stdout": ""
+       },
+       {
+         "command": [
+           "python3",
+           "-m",
+-          "unittest",
+-          "discover",
+-          "-s",
+-          "ppd/tests",
+-          "-p",
+-          "test_*.py"
+-        ],
+-        "returncode": 1,
+-        "stderr": "........................................................................................................................................................................................................................................................................................................................................................................................................................................ss................sss............................................................................................................................................................................................................................FFF.................................................................. ====================================================================== FAIL: test_guide_keeps_repair_separate_from_domain_implementation (test_supervisor_repair_guid...",
+-        "stdout": ""
+-      },
+-      {
+-        "command": [
+-          "bash",
+-          "-lc",
+-          "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
++          "py_compile",
++          "ppd/tests/test_llm_failure_diagnostics.py"
+         ],
+         "returncode": 0,
+         "stderr": "",
+@@ -70,11 +57,9 @@
+   ],
+   "schemaVersion": 1,
+   "taskBoardRepair": {
+-    "parkedRepeatedSyntaxLoopTasks": [
+-      "Add one daemon-only parser-clean unittest proving a blocked-only board with stale `calling_llm` for checkbox-178 produces a new unchecked daemon-repair task and does not reopen checkbox-178, checkbox-182, checkbox-186, checkbox-187, checkbox-191, checkbox-193, checkbox-194, checkbox-195, checkbox-197, checkbox-198, or checkbox-203."
+-    ],
++    "parkedRepeatedSyntaxLoopTasks": [],
+     "replenishedGoalTaskLabels": [],
+     "supersededTaskBoardOnlyLabels": [],
+-    "taskBoardUpdated": true
++    "taskBoardUpdated": false
+   }
+ }

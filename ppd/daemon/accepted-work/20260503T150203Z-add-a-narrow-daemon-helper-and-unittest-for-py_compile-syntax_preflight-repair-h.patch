@@ -1,0 +1,103 @@
+--- a/ppd/daemon/syntax_preflight_hint.py
++++ b/ppd/daemon/syntax_preflight_hint.py
+@@ -1,37 +1,24 @@
+-"""Helpers for syntax preflight repair hints."""
++"""Helpers for turning syntax preflight failures into daemon repair hints."""
+ 
+ from __future__ import annotations
+ 
+-import re
+-from collections.abc import Mapping, Sequence
+ from pathlib import Path
+-from typing import Any
+-
+-_PY_PATH_RE = re.compile(r"(?P[A-Za-z0-9_./-]+\.py)")
+ 
+ 
+-def _stringify_py_compile_details(details: Any) -> str:
+-    if details is None:
+-        return ""
+-    if isinstance(details, BaseException):
+-        return str(details)
+-    if isinstance(details, Mapping):
+-        parts: list[str] = []
+-        for key, value in details.items():
+-            parts.append(str(key))
+-            parts.append(_stringify_py_compile_details(value))
+-        return "\n".join(part for part in parts if part)
+-    if isinstance(details, Sequence) and not isinstance(details, str):
+-        return "\n".join(_stringify_py_compile_details(item) for item in details)
+-    return str(details)
++def build_syntax_preflight_next_action_hint(path: str | Path, py_compile_detail: str) -> str:
++    """Return the narrow next action for a py_compile syntax failure.
+ 
++    Syntax failures are repair blockers. The daemon should ask for replacing only
++    the failing Python file, or a daemon repair file, before any domain retry.
++    """
+ 
+-def syntax_preflight_next_action_hint(details: Any) -> str:
+-    """Return a repair-first hint for py_compile syntax preflight failures."""
+-    text = _stringify_py_compile_details(details)
+-    paths = sorted({match.group("path") for match in _PY_PATH_RE.finditer(text)})
+-    target = Path(paths[0]).as_posix() if paths else "the syntactically failing Python file"
++    failing_path = Path(path).as_posix()
++    detail = " ".join(str(py_compile_detail).split())
++    if detail:
++        detail = f" py_compile detail: {detail}"
++
++    repair_kind = "daemon repair file" if "/daemon/" in f"/{failing_path}" else "syntactically failing Python file"
+     return (
+-        "syntax_preflight failed during py_compile. Replace only one syntactically "
+-        f"failing Python file ({target}) or one daemon repair file before any domain retry."
++        "Before any domain retry, replace only one "
++        f"{repair_kind}: {failing_path}.{detail}"
+     )
+--- a/ppd/tests/test_syntax_preflight_hint.py
++++ b/ppd/tests/test_syntax_preflight_hint.py
+@@ -1,19 +1,33 @@
+ from __future__ import annotations
+ 
+-from ppd.daemon.syntax_preflight_hint import syntax_preflight_next_action_hint
++import unittest
++
++from ppd.daemon.syntax_preflight_hint import build_syntax_preflight_next_action_hint
+ 
+ 
+-def test_py_compile_details_hint_limits_repair_before_domain_retry() -> None:
+-    details = {
+-        "phase": "syntax_preflight",
+-        "tool": "py_compile",
+-        "stderr": "File \"ppd/daemon/broken_repair.py\", line 7\n    if value:\n            ^\nSyntaxError: invalid syntax",
+-    }
++class SyntaxPreflightHintTest(unittest.TestCase):
++    def test_py_compile_failure_names_single_python_file_before_domain_retry(self) -> None:
++        hint = build_syntax_preflight_next_action_hint(
++            "ppd/scrapers/broken_page.py",
++            "SyntaxError: invalid syntax (broken_page.py, line 7)",
++        )
+ 
+-    hint = syntax_preflight_next_action_hint(details)
++        self.assertIn("Before any domain retry", hint)
++        self.assertIn("replace only one syntactically failing Python file", hint)
++        self.assertIn("ppd/scrapers/broken_page.py", hint)
++        self.assertIn("py_compile detail: SyntaxError: invalid syntax", hint)
+ 
+-    assert "py_compile" in hint
+-    assert "Replace only one syntactically failing Python file" in hint
+-    assert "ppd/daemon/broken_repair.py" in hint
+-    assert "one daemon repair file" in hint
+-    assert "before any domain retry" in hint
++    def test_py_compile_failure_allows_single_daemon_repair_file(self) -> None:
++        hint = build_syntax_preflight_next_action_hint(
++            "ppd/daemon/repair_syntax_failure.py",
++            "SyntaxError: expected ':' (repair_syntax_failure.py, line 12)",
++        )
++
++        self.assertIn("Before any domain retry", hint)
++        self.assertIn("replace only one daemon repair file", hint)
++        self.assertIn("ppd/daemon/repair_syntax_failure.py", hint)
++        self.assertNotIn("domain retry first", hint)
++
++
++if __name__ == "__main__":
++    unittest.main()

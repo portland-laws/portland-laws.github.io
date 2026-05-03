@@ -1,0 +1,32 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -67,6 +67,7 @@
+ - Tranche 16 is intentionally small after repeated parser and regex failures: each task should change either one daemon file or one focused daemon test file unless the selected task explicitly requires both.
+ - Tranche 17 replenished independent daemon-repair work after the supervisor reported no selectable tasks while checkbox-178 remained active in calling_llm.
+ - Tranche 18 keeps recovery moving after all previous repair tasks became blocked or completed. These tasks must stay daemon-scoped and must not implement checkbox-178 directly.
++- Tranche 19 adds fresh selectable daemon-repair work after checkbox-204 through checkbox-207 completed and the board again had no needed task. These tasks are validation-first and parser-clean by design.
+ 
+ ## Blocked Cascade Recovery Tranche 18
+ 
+@@ -75,8 +76,14 @@
+ - [x] Task checkbox-206: Add one daemon prompt-guard fixture or unittest proving that after two syntax_preflight failures for checkbox-178, the prompt explicitly forbids source-plus-fixture-plus-test bundles and recommends a one-file parser-clean repair.
+ - [x] Task checkbox-207: Clean up duplicated generated-status blocks in `ppd/daemon/task-board.md` with a documentation-only replacement that preserves all completed and blocked task checkboxes and leaves the active unchecked Tranche 18 tasks intact.
+ 
++## Blocked Cascade Recovery Tranche 19
+ 
+-<!-- ppd-daemon-task-board:start -->
++- [ ] Task checkbox-208: Add one daemon-only parser-clean unittest proving a blocked-only board with stale `calling_llm` for checkbox-178 produces a new unchecked daemon-repair task and does not reopen checkbox-178, checkbox-182, checkbox-186, checkbox-187, checkbox-191, checkbox-193, checkbox-194, checkbox-195, checkbox-197, checkbox-198, or checkbox-203.
++- [ ] Task checkbox-209: Add one narrow daemon helper or unittest proving repeated non-JSON LLM responses are persisted as compact diagnostics with target_task, failure_kind, compact_raw_response_summary, and next_action_hint while capping response text and excluding private artifact markers.
++- [ ] Task checkbox-210: Add one parser-clean daemon prompt-scope unittest proving that after two syntax_preflight failures for checkbox-178, a retry prompt permits exactly one parser-bearing file or one daemon repair file and rejects source-plus-fixture-plus-test bundles before any DevHub domain retry.
++
++
++
+ ## Generated Status
+ 
+ Last updated: 2026-05-03T15:05:56.170954Z
+@@ -86,4 +93,4 @@
+ - Latest summary: Add a parser-clean daemon prompt-guard unittest for checkbox-206.
+ - Counts: `{"blocked": 11, "complete": 26, "in_progress": 0, "needed": 0}`
+ 
+-<!-- ppd-daemon-task-board:end -->
++

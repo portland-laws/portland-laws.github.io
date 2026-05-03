@@ -290,3 +290,30 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260503T114513Z-repair-native-cec-exception-typescript-replacements-by-replacing-bare-partial-us.json`, `ipfs_datasets_py/.daemon/accepted-work/20260503T114513Z-repair-native-cec-exception-typescript-replacements-by-replacing-bare-partial-us.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260503T114513Z-repair-native-cec-exception-typescript-replacements-by-replacing-bare-partial-us.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-03 15:18:30 UTC
+
+- Target: `Task checkbox-221: Port remaining Python logic module `logic/CEC/native/inference_rules/propositional.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Repair propositional inference rule typing so filtered browser inputs narrow to recursive propositional expressions.
+- Impact: src/lib/logic/cec/propositionalInferenceRules.ts is used directly by the TypeScript CEC propositional rule port, and src/lib/logic/cec/propositionalInferenceRules.test.ts validates deterministic rule application, target checks, and fail-closed malformed input behavior in Jest.
+- Changed files: `src/lib/logic/cec/propositionalInferenceRules.test.ts`, `src/lib/logic/cec/propositionalInferenceRules.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260503T151830Z-repair-propositional-inference-rule-typing-so-filtered-browser-inputs-narrow-to-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260503T151830Z-repair-propositional-inference-rule-typing-so-filtered-browser-inputs-narrow-to-.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260503T151830Z-repair-propositional-inference-rule-typing-so-filtered-browser-inputs-narrow-to-.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
+## 2026-05-03 15:36:14 UTC
+
+- Target: `Task checkbox-222: Port remaining Python logic module `logic/CEC/native/inference_rules/resolution.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Repair native CEC resolution types by using typed literal arrays and AST-native disjunction handling.
+- Impact: The corrected files add the TypeScript-native resolution and unit-resolution implementation plus focused Jest coverage used by the logic port validation suite without Python, server, subprocess, filesystem, RPC, or Node-only runtime dependencies.
+- Changed files: `src/lib/logic/cec/nativeResolution.test.ts`, `src/lib/logic/cec/nativeResolution.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260503T153614Z-repair-native-cec-resolution-types-by-using-typed-literal-arrays-and-ast-native-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260503T153614Z-repair-native-cec-resolution-types-by-using-typed-literal-arrays-and-ast-native-.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260503T153614Z-repair-native-cec-resolution-types-by-using-typed-literal-arrays-and-ast-native-.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
+## 2026-05-03 15:47:18 UTC
+
+- Target: `Task checkbox-223: Port remaining Python logic module `logic/CEC/native/inference_rules/specialized.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Typed the specialized CEC inference rule port and tests so rule results and premises use CecExpression/CecSpecializedInferenceResult instead of unknown.
+- Impact: The corrected module is directly imported by TypeScript logic-port validation to apply specialized CEC rules in browser-native TypeScript with no Python, server, subprocess, RPC, filesystem, or Node-only runtime dependency.
+- Changed files: `src/lib/logic/cec/specializedInferenceRules.test.ts`, `src/lib/logic/cec/specializedInferenceRules.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260503T154718Z-typed-the-specialized-cec-inference-rule-port-and-tests-so-rule-results-and-prem.json`, `ipfs_datasets_py/.daemon/accepted-work/20260503T154718Z-typed-the-specialized-cec-inference-rule-port-and-tests-so-rule-results-and-prem.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260503T154718Z-typed-the-specialized-cec-inference-rule-port-and-tests-so-rule-results-and-prem.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

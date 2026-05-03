@@ -1,0 +1,59 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -10,19 +10,45 @@
+ - `page_number list[str]`
+ - `page_count list[str]`
+ - `if self.page_count list[str]`
++- `if len(text) dict[str, str]`
++- `if _checkbox_178_syntax_preflight_count(history) RetryScopeDecision`
++- `if _checkbox_178_syntax_preflight_count(history) None`
+ 
+-These are not business-rule failures. They are syntax and code-generation failures. A retry should repair daemon supervision or add a very small validation guardrail before the worker attempts another DevHub, crawler, extraction, logic, or fixture bundle.
++These are not business-rule failures. They are syntax and code-generation failures. A retry should repair daemon supervision or add a very small validation guardrail before the worker attempts another DevHub, crawler, extraction, logic, contract, or fixture bundle.
++
++## Parser Failure Escalation
++
++When two or more recent rollbacks for the same target task include `SyntaxError`, `py_compile`, `TS1005`, `TS1109`, or `TS1128`, the supervisor must classify the next cycle as parser repair before selecting any PP&D domain task.
++
++The next worker prompt must require all of the following:
++
++- JSON only with complete file replacements.
++- The smallest file set that can prove parser recovery.
++- At most one parser-bearing Python or TypeScript file, unless the second file is this daemon repair guide.
++- No source-plus-fixture-plus-test bundles.
++- No new DevHub, crawler, extraction, logic, contract, or live automation behavior.
++- A validation command that includes `python3 ppd/tests/validate_ppd.py`.
++
++If the failed proposal touched a Python file, the retry prompt must tell the worker to mentally run `python3 -m py_compile` for that exact changed Python file before returning JSON. If the failed proposal touched a TypeScript file, the retry prompt must tell the worker to mentally run strict TypeScript parsing for that exact changed TypeScript file before returning JSON.
+ 
+ ## Allowed Recovery Shapes
+ 
+ Use one of these shapes after SyntaxError, py_compile, TS1005, TS1109, or TS1128 failures:
+ 
+-- One syntax-valid Python unittest file
+-- One syntax-valid daemon helper file
+-- One small JSON fixture plus one syntax-valid Python unittest file
+-- One daemon operations document that tightens retry instructions
++- One syntax-valid Python unittest file.
++- One syntax-valid daemon helper file.
++- One small JSON fixture plus one syntax-valid Python unittest file, only when the fixture is essential to the parser-clean test.
++- One daemon operations document that tightens retry instructions.
+ 
+ Avoid source-plus-fixture-plus-test bundles until the parser-bearing file has passed syntax preflight. Every Python conditional uses complete comparisons such as `is None`, `is not None`, `==`, `!=`, `in`, or `isinstance(...)`. No Python file contains TypeScript-style expression fragments.
++
++## Preflight Order
++
++Parser preflight runs before broad validation whenever a proposal changes Python or TypeScript files.
++
++For Python files, run syntax preflight file by file with `python3 -m py_compile` before unittest discovery. For TypeScript files, run strict TypeScript parsing or typecheck before fixture, crawler, or domain validation. If parser preflight fails, stop immediately, roll back the patch, persist the failure kind as `syntax_preflight`, and make the next retry smaller.
++
++The failure diagnostic should include the exact parser-bearing path, the first parser error line, and this next-action hint: replace only the syntactically failing file or one daemon repair file before attempting broader PP&D work.
+ 
+ ## Separation From Domain Work
+ 
+@@ -31,3 +57,5 @@
+ ## Prompt Guidance
+ 
+ When the board has only blocked work, append or select a narrow daemon-repair task first. The next prompt should ask for JSON only, complete file replacements only, and a small file set. If the recent failure is parser-related, require the worker to mentally run py_compile for changed Python files or strict TypeScript parsing for changed TypeScript files before returning JSON.
++
++For checkbox-specific parser loops, prefer a daemon-repair or parser-clean test task over reopening blocked domain work. After two syntax_preflight failures for the same checkbox, the retry prompt should permit exactly one parser-bearing file or one daemon repair file and should reject bundled source, fixture, and test proposals before any DevHub domain retry.

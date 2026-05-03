@@ -1,0 +1,79 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,53 +1,29 @@
+ {
+-  "createdAt": "2026-05-03T13:21:41.634552Z",
++  "createdAt": "2026-05-03T15:04:26.875371Z",
+   "decision": {
+     "action": "repair_daemon_programming",
+-    "reason": "2 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
++    "reason": "3 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
+     "severity": "warning"
+   },
+   "failedAgenticRepair": {
+     "changedFiles": [
+-      "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
++      "ppd/daemon/syntax_preflight_hint.py"
+     ],
+     "errors": [
+-      "Validation failed; file edits were rolled back."
++      "Syntax preflight failed; file edits were rolled back. python3 -m py_compile ppd/daemon/syntax_preflight_hint.py: ppd/daemon/syntax_preflight_hint.py:62: malformed Python expression; use explicit operators such as `is None`, `is not None`, `isinstance(...)`, or a normal return expression. Do not place TypeScript-style type fragments inside Python control-flow or return statements. Next worker attempt should be smaller: replace only the syntactically failing file plus its narrow fixture/test if needed; run py_compile for each changed Python file or strict tsc for each changed TypeScript file mentally before returning JSON; do not add new contracts, fixtures, and broad tests in the same proposa..."
+     ],
+-    "failureKind": "validation",
+-    "summary": "Replace the PP&D supervisor repair guide with explicit syntax-preflight recovery rules for repeated parser and compile failures.",
++    "failureKind": "syntax_preflight",
++    "summary": "Add a narrow syntax-preflight prompt guard for repeated checkbox-178 parser failures plus focused unittest coverage.",
+     "validationResults": [
+       {
+         "command": [
+           "python3",
+-          "ppd/daemon/ppd_daemon.py",
+-          "--self-test"
+-        ],
+-        "returncode": 0,
+-        "stderr": "",
+-        "stdout": "{ \"ok\": true, \"task_count\": 33 }"
+-      },
+-      {
+-        "command": [
+-          "python3",
+           "-m",
+-          "unittest",
+-          "discover",
+-          "-s",
+-          "ppd/tests",
+-          "-p",
+-          "test_*.py"
++          "py_compile",
++          "ppd/daemon/syntax_preflight_hint.py"
+         ],
+         "returncode": 1,
+-        "stderr": "......................................................................................................................................................................................................................................................................................................................................................................................................................................ss................sss............................................................................................................................................................................................................................FFF................................................................ ====================================================================== FAIL: test_guide_keeps_repair_separate_from_domain_implementation (test_supervisor_repair_guide.Su...",
+-        "stdout": ""
+-      },
+-      {
+-        "command": [
+-          "bash",
+-          "-lc",
+-          "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+-        ],
+-        "returncode": 0,
+-        "stderr": "",
++        "stderr": "ppd/daemon/syntax_preflight_hint.py:62: malformed Python expression; use explicit operators such as `is None`, `is not None`, `isinstance(...)`, or a normal return expression. Do not place TypeScript-style type fragments inside Python control-flow or return statements.",
+         "stdout": ""
+       }
+     ]
+@@ -69,11 +45,9 @@
+   ],
+   "schemaVersion": 1,
+   "taskBoardRepair": {
+-    "parkedRepeatedSyntaxLoopTasks": [
+-      "Add one daemon diagnostics helper or focused unittest proving compact failure summaries include target_task, failure_kind, next_action_hint, and a raw-response length cap while excluding private DevHub artifacts, auth state, traces, crawl output, and downloaded documents."
+-    ],
++    "parkedRepeatedSyntaxLoopTasks": [],
+     "replenishedGoalTaskLabels": [],
+     "supersededTaskBoardOnlyLabels": [],
+-    "taskBoardUpdated": true
++    "taskBoardUpdated": false
+   }
+ }

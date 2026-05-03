@@ -8,7 +8,7 @@ from pathlib import Path
 from typing import Any, Iterable, Optional
 
 
-CHECKBOX_RE = re.compile(r"^(?P\s*-\s+\[)(?P[ xX~!])(?P\]\s+)(?P.+)$")
+CHECKBOX_RE = re.compile(r"^(?P<prefix>\s*-\s+\[)(?P<mark>[ xX~!])(?P<suffix>\]\s+)(?P<title>.+)$")
 
 
 class SupervisorFixtureError(ValueError):

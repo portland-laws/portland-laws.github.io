@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/daemon/syntax_preflight_hint.py",
+    "ppd/tests/test_syntax_preflight_hint.py"
+  ],
+  "created_at": "2026-05-03T15:02:03.679986Z",
+  "impact": "This gives PP&D deterministic coverage that syntax preflight failures direct repair toward exactly one syntactically failing Python or daemon repair file before any domain retry.",
+  "summary": "Add a narrow daemon helper and unittest for py_compile syntax_preflight repair hints.",
+  "target_task": "Task checkbox-205: Add one narrow daemon helper or unittest proving syntax_preflight failures with `py_compile` details generate a next_action_hint that says to replace only one syntactically failing Python file or one daemon repair file before any domain retry.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 37 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".......................................................................................................................................................................................................................................................................................................................................................................................................................................ss................sss................................................................................................................................................................................................................................................................................................. ---------------------------------------------------------------------- Ran 733 tests in 0.114s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}
