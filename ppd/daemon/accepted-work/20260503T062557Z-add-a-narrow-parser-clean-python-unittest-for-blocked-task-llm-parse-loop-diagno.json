@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/test_blocked_task_llm_parse_loop_diagnostics.py"
+  ],
+  "created_at": "2026-05-03T06:25:57.785632Z",
+  "impact": "This advances checkbox-185 by validating the daemon diagnostic shape needed for blocked-task non-JSON LLM parse loops without touching DevHub, crawler, extraction, logic, or fixture contracts.",
+  "summary": "Add a narrow parser-clean Python unittest for blocked-task LLM parse-loop diagnostics.",
+  "target_task": "Task checkbox-185: Add parser-clean daemon diagnostics validation for blocked-task LLM parse loops using one small Python unittest or one daemon helper only; do not touch DevHub, crawler, extraction, logic, or domain fixture contracts in this cycle.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 17 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "................................................................................................................................................................................................................................................................................................................................................................................................................ss..............sss............................................................................................................................................................................................................................................................................................ ---------------------------------------------------------------------- Ran 703 tests in 0.117s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

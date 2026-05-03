@@ -1,0 +1,121 @@
+--- a/ppd/tests/test_blocked_task_llm_parse_loop_diagnostics.py
++++ b/ppd/tests/test_blocked_task_llm_parse_loop_diagnostics.py
+@@ -0,0 +1,118 @@
++"""Parser-clean validation for blocked-task LLM parse-loop diagnostics.
++
++This test intentionally stays daemon-focused and fixture-free. It validates the
++small diagnostic payload shape expected when a blocked task repeatedly receives
++non-JSON LLM responses, without persisting full raw responses or touching PP&D
++domain implementation contracts.
++"""
++
++from __future__ import annotations
++
++import unittest
++from typing import Any
++
++
++REQUIRED_DIAGNOSTIC_FIELDS = {
++    "target_task",
++    "failure_kind",
++    "compact_raw_response_summary",
++    "next_action_hint",
++}
++
++FORBIDDEN_RAW_RESPONSE_FIELDS = {
++    "raw_response",
++    "full_raw_response",
++    "llm_response",
++    "response_text",
++    "raw_llm_output",
++}
++
++ALLOWED_FAILURE_KINDS = {
++    "llm_parse_loop",
++    "non_json_llm_response",
++    "json_parse_failure",
++}
++
++MAX_COMPACT_SUMMARY_CHARS = 240
++
++
++def validate_blocked_task_parse_loop_diagnostic(diagnostic: dict[str, Any]) -> list[str]:
++    """Return validation errors for a compact blocked-task parse-loop diagnostic."""
++
++    errors: list[str] = []
++
++    missing_fields = sorted(REQUIRED_DIAGNOSTIC_FIELDS.difference(diagnostic))
++    if missing_fields:
++        errors.append(f"missing required diagnostic fields: {missing_fields}")
++
++    forbidden_fields = sorted(FORBIDDEN_RAW_RESPONSE_FIELDS.intersection(diagnostic))
++    if forbidden_fields:
++        errors.append(f"diagnostic must not persist raw response fields: {forbidden_fields}")
++
++    target_task = diagnostic.get("target_task")
++    if not isinstance(target_task, str) or not target_task.strip():
++        errors.append("target_task must be a non-empty string")
++    elif "checkbox-" not in target_task:
++        errors.append("target_task must identify the blocked checkbox task")
++
++    failure_kind = diagnostic.get("failure_kind")
++    if failure_kind not in ALLOWED_FAILURE_KINDS:
++        errors.append("failure_kind must classify the LLM parse-loop failure")
++
++    summary = diagnostic.get("compact_raw_response_summary")
++    if not isinstance(summary, str) or not summary.strip():
++        errors.append("compact_raw_response_summary must be a non-empty string")
++    elif len(summary) > MAX_COMPACT_SUMMARY_CHARS:
++        errors.append("compact_raw_response_summary must remain compact")
++
++    next_action_hint = diagnostic.get("next_action_hint")
++    if not isinstance(next_action_hint, str) or not next_action_hint.strip():
++        errors.append("next_action_hint must be a non-empty string")
++    elif "daemon" not in next_action_hint.lower() and "parser" not in next_action_hint.lower():
++        errors.append("next_action_hint must steer the next retry toward daemon/parser repair")
++
++    return errors
++
++
++class BlockedTaskLlmParseLoopDiagnosticsTest(unittest.TestCase):
++    def test_accepts_compact_blocked_task_parse_loop_diagnostic(self) -> None:
++        diagnostic = {
++            "target_task": "Task checkbox-182: blocked repeated non-JSON LLM responses",
++            "failure_kind": "llm_parse_loop",
++            "compact_raw_response_summary": "Non-JSON response after blocked-task retry; response began with prose instead of a JSON object.",
++            "next_action_hint": "Add a narrow daemon parser diagnostic before retrying the blocked task.",
++        }
++
++        self.assertEqual([], validate_blocked_task_parse_loop_diagnostic(diagnostic))
++
++    def test_rejects_raw_response_persistence(self) -> None:
++        diagnostic = {
++            "target_task": "Task checkbox-182: blocked repeated non-JSON LLM responses",
++            "failure_kind": "non_json_llm_response",
++            "compact_raw_response_summary": "Model returned prose instead of JSON.",
++            "next_action_hint": "Repair daemon parser diagnostics first.",
++            "raw_response": "This field would contain the complete model response and must not be persisted.",
++        }
++
++        errors = validate_blocked_task_parse_loop_diagnostic(diagnostic)
++
++        self.assertTrue(any("raw response" in error for error in errors), errors)
++
++    def test_rejects_unscoped_or_oversized_diagnostics(self) -> None:
++        diagnostic = {
++            "target_task": "blocked task without checkbox id",
++            "failure_kind": "validation_failure",
++            "compact_raw_response_summary": "x" * (MAX_COMPACT_SUMMARY_CHARS + 1),
++            "next_action_hint": "Retry the domain implementation.",
++        }
++
++        errors = validate_blocked_task_parse_loop_diagnostic(diagnostic)
++
++        self.assertTrue(any("checkbox" in error for error in errors), errors)
++        self.assertTrue(any("failure_kind" in error for error in errors), errors)
++        self.assertTrue(any("compact" in error for error in errors), errors)
++        self.assertTrue(any("daemon/parser" in error for error in errors), errors)
++
++
++if __name__ == "__main__":
++    unittest.main()

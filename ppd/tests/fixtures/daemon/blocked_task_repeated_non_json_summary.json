@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "fixture_id": "blocked-task-repeated-non-json-summary",
+  "purpose": "Prove repeated non-JSON LLM responses for a blocked PP&D daemon task are persisted only as compact summaries.",
+  "target_task": "Task checkbox-182: Add daemon diagnostics coverage proving repeated non-JSON LLM responses for a blocked task are persisted with target task, failure kind, compact raw-response summary, and a next-action hint before the worker exits.",
+  "failure_kind": "llm_non_json_response_loop",
+  "attempt_count": 3,
+  "compact_raw_response_summary": "Three consecutive LLM attempts returned prose or malformed fenced text instead of the required single JSON object. The responses appeared to propose daemon diagnostics work but could not be parsed as JSON patches.",
+  "next_action_hint": "Block the current task for this cycle and select a narrow daemon prompt or parser repair task. Persist only this compact summary and do not store the full raw response text.",
+  "blocked_task_record": {
+    "target_task": "checkbox-182",
+    "failure_kind": "llm_non_json_response_loop",
+    "compact_raw_response_summary": "Repeated non-JSON answers prevented patch parsing; no raw response body is retained.",
+    "next_action_hint": "Use a fixture-first daemon repair prompt that requires one JSON object and forbids raw response persistence."
+  },
+  "privacy_assertions": {
+    "stores_full_raw_response": false,
+    "stores_private_devhub_artifacts": false,
+    "stores_auth_state": false,
+    "stores_browser_traces": false,
+    "stores_raw_crawl_output": false,
+    "stores_downloaded_documents": false
+  },
+  "forbidden_persistence_fields": [
+    "raw_response",
+    "full_raw_response",
+    "response_body",
+    "raw_body",
+    "transcript",
+    "prompt_completion_text"
+  ],
+  "expected_summary_fields": [
+    "target_task",
+    "failure_kind",
+    "compact_raw_response_summary",
+    "next_action_hint"
+  ]
+}
