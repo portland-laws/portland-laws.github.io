@@ -18,6 +18,7 @@ export interface CecLemmaOptions {
   rule: string;
   lemmaType?: CecLemmaTypeValue;
   usageCount?: number;
+  exactHash?: string;
   patternHash?: string;
 }
 
@@ -27,6 +28,7 @@ export class CecLemma {
   readonly rule: string;
   lemmaType: CecLemmaTypeValue;
   usageCount: number;
+  readonly exactHash: string;
   readonly patternHash: string;
 
   constructor(options: CecLemmaOptions) {
@@ -35,11 +37,12 @@ export class CecLemma {
     this.rule = options.rule;
     this.lemmaType = options.lemmaType ?? CecLemmaType.DERIVED;
     this.usageCount = options.usageCount ?? 0;
-    this.patternHash = options.patternHash ?? hashCecLemmaPattern(formatCecExpression(options.formula));
+    this.exactHash = options.exactHash ?? hashCecLemmaPattern(formatCecExpression(options.formula));
+    this.patternHash = options.patternHash ?? hashCecLemmaPattern(normalizeCecLemmaPattern(options.formula));
   }
 
   matchesPattern(otherFormula: CecExpression): boolean {
-    return cecExpressionEquals(this.formula, otherFormula);
+    return normalizeCecLemmaPattern(this.formula) === normalizeCecLemmaPattern(otherFormula);
   }
 
   incrementUsage(): void {
@@ -53,6 +56,7 @@ export class CecLemma {
       rule: this.rule,
       lemma_type: this.lemmaType,
       usage_count: this.usageCount,
+      exact_hash: this.exactHash,
       pattern_hash: this.patternHash,
     };
   }
@@ -79,7 +83,7 @@ export class CecLemmaCache {
   }
 
   add(lemma: CecLemma): void {
-    const key = lemma.patternHash || cecExpressionKey(lemma.formula);
+    const key = lemma.exactHash || cecExpressionKey(lemma.formula);
     if (this.cache.has(key)) {
       const existing = this.cache.get(key)!;
       this.cache.delete(key);
@@ -88,7 +92,7 @@ export class CecLemmaCache {
     }
 
     this.cache.set(key, lemma);
-    const pattern = extractCecLemmaPattern(lemma.formula);
+    const pattern = lemma.patternHash;
     const bucket = this.patternIndex.get(pattern) ?? new Set<string>();
     bucket.add(key);
     this.patternIndex.set(pattern, bucket);
@@ -117,7 +121,7 @@ export class CecLemmaCache {
   }
 
   findByPattern(formula: CecExpression): CecLemma[] {
-    const pattern = extractCecLemmaPattern(formula);
+    const pattern = hashCecLemmaPattern(normalizeCecLemmaPattern(formula));
     const keys = this.patternIndex.get(pattern);
     if (!keys) return [];
     const matches: CecLemma[] = [];
@@ -152,7 +156,7 @@ export class CecLemmaCache {
   }
 
   private removePatternIndex(key: string, formula: CecExpression): void {
-    const pattern = extractCecLemmaPattern(formula);
+    const pattern = hashCecLemmaPattern(normalizeCecLemmaPattern(formula));
     const bucket = this.patternIndex.get(pattern);
     if (!bucket) return;
     bucket.delete(key);
@@ -170,6 +174,11 @@ export interface CecLemmaProofTree {
   result: ProofStatus;
   axioms: CecExpression[];
   steps: CecLemmaProofStep[];
+}
+
+export interface CecLemmaProofValidationResult {
+  valid: boolean;
+  errors: string[];
 }
 
 export interface CecLemmaGeneratorStatistics {
@@ -192,16 +201,12 @@ export class CecLemmaGenerator {
 
   discoverLemmas(proofTree: CecLemmaProofTree, minComplexity = 2): CecLemma[] {
     if (proofTree.result !== 'proved') return [];
+    if (!validateCecLemmaProofTree(proofTree).valid) return [];
 
     const lemmas: CecLemma[] = [];
     for (const step of proofTree.steps) {
       if (step.premises.length < minComplexity) continue;
-      const premises = step.premises.flatMap((premiseIndex) => {
-        if (premiseIndex < proofTree.axioms.length) return [proofTree.axioms[premiseIndex]];
-        const stepIndex = premiseIndex - proofTree.axioms.length;
-        const prior = proofTree.steps[stepIndex];
-        return prior ? [prior.formula] : [];
-      });
+      const premises = step.premises.flatMap((premiseIndex) => resolveCecLemmaPremise(proofTree, premiseIndex));
 
       const lemma = new CecLemma({
         formula: step.formula,
@@ -287,7 +292,7 @@ export class CecLemmaGenerator {
   private identifyReusableLemmas(lemmas: CecLemma[]): void {
     const groups = new Map<string, CecLemma[]>();
     for (const lemma of lemmas) {
-      const pattern = formatCecExpression(lemma.formula).slice(0, 30);
+      const pattern = lemma.patternHash;
       const group = groups.get(pattern) ?? [];
       group.push(lemma);
       groups.set(pattern, group);
@@ -336,8 +341,65 @@ export function hashCecLemmaPattern(value: string): string {
   return hash.toString(16).padStart(8, '0').slice(0, 16);
 }
 
-function extractCecLemmaPattern(formula: CecExpression): string {
-  return formatCecExpression(formula).slice(0, 50);
+export function normalizeCecLemmaPattern(formula: CecExpression): string {
+  if (formula.kind === 'atom') return `atom:${formula.name}`;
+
+  const atomBindings = new Map<string, string>();
+
+  const normalize = (expression: CecExpression): string => {
+    switch (expression.kind) {
+      case 'atom':
+        return bindCecLemmaAtom(atomBindings, expression.name);
+      case 'application':
+        return `(${[expression.name, ...expression.args.map(normalize)].join(' ')})`;
+      case 'quantified':
+        return `(${expression.quantifier} ${bindCecLemmaAtom(atomBindings, expression.variable)} ${normalize(expression.expression)})`;
+      case 'unary':
+        return `(${expression.operator} ${normalize(expression.expression)})`;
+      case 'binary':
+        return `(${expression.operator} ${normalize(expression.left)} ${normalize(expression.right)})`;
+    }
+  };
+
+  return normalize(formula);
+}
+
+export function validateCecLemmaProofTree(proofTree: CecLemmaProofTree): CecLemmaProofValidationResult {
+  const errors: string[] = [];
+  const validStatuses: Array<ProofStatus> = ['proved', 'disproved', 'unknown', 'timeout', 'error'];
+  if (!validStatuses.includes(proofTree.result)) {
+    errors.push(`unsupported proof result: ${proofTree.result}`);
+  }
+
+  const axiomCount = Array.isArray(proofTree.axioms) ? proofTree.axioms.length : 0;
+  proofTree.steps.forEach((step, stepIndex) => {
+    if (step.rule.trim().length === 0) {
+      errors.push(`step ${stepIndex} has an empty rule`);
+    }
+    step.premises.forEach((premiseIndex) => {
+      const upperBound = axiomCount + stepIndex;
+      if (!Number.isInteger(premiseIndex) || premiseIndex < 0 || premiseIndex >= upperBound) {
+        errors.push(`step ${stepIndex} premise ${premiseIndex} does not reference an earlier axiom or step`);
+      }
+    });
+  });
+
+  return { valid: errors.length === 0, errors };
+}
+
+function bindCecLemmaAtom(bindings: Map<string, string>, name: string): string {
+  const existing = bindings.get(name);
+  if (existing !== undefined) return existing;
+  const bound = `?v${bindings.size}`;
+  bindings.set(name, bound);
+  return bound;
+}
+
+function resolveCecLemmaPremise(proofTree: CecLemmaProofTree, premiseIndex: number): CecExpression[] {
+  if (premiseIndex < proofTree.axioms.length) return [proofTree.axioms[premiseIndex]];
+  const stepIndex = premiseIndex - proofTree.axioms.length;
+  const prior = proofTree.steps[stepIndex];
+  return prior ? [prior.formula] : [];
 }
 
 function lemmaProofStep(lemma: CecLemma): ProofStep {

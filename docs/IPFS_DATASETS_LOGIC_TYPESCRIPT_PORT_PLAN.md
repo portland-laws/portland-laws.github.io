@@ -966,7 +966,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-03 15:47:17 UTC
+Last updated: 2026-05-03 17:17:44 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
@@ -1198,8 +1198,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [!] `Task checkbox-220: Port remaining Python logic module 'logic/CEC/native/inference_rules/modal.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
 - [x] `Task checkbox-221: Port remaining Python logic module 'logic/CEC/native/inference_rules/propositional.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-222: Port remaining Python logic module 'logic/CEC/native/inference_rules/resolution.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-223: Port remaining Python logic module 'logic/CEC/native/inference_rules/specialized.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-224: Port remaining Python logic module 'logic/CEC/native/lemma_generation.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-223: Port remaining Python logic module 'logic/CEC/native/inference_rules/specialized.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [!] `Task checkbox-224: Port remaining Python logic module 'logic/CEC/native/lemma_generation.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - latest daemon round failed validation or preflight
 - [ ] `Task checkbox-225: Port remaining Python logic module 'logic/CEC/native/modal_tableaux.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-226: Port remaining Python logic module 'logic/CEC/native/nl_converter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-227: Port remaining Python logic module 'logic/CEC/native/problem_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-223: Port remaining Python logic module 'logic/CEC/native/inference_rules/specialized.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
-- Result: `valid`
-- Summary: Typed the specialized CEC inference rule port and tests so rule results and premises use CecExpression/CecSpecializedInferenceResult instead of unknown.
-- Impact: The corrected module is directly imported by TypeScript logic-port validation to apply specialized CEC rules in browser-native TypeScript with no Python, server, subprocess, RPC, filesystem, or Node-only runtime dependency.
-- Accepted changed files: `src/lib/logic/cec/specializedInferenceRules.test.ts`, `src/lib/logic/cec/specializedInferenceRules.ts`
+- Target: `Task checkbox-224: Port remaining Python logic module 'logic/CEC/native/lemma_generation.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Result: `needs follow-up`
+- Summary: Daemon failed before producing a valid patch.
+- Errors: llm_router could not generate with model='gpt-5.5' provider='auto'. Configure the provider credentials or pass --provider. Original error: llm_router generation exceeded daemon deadline after 300.0s (timeout=300.0s, provider=auto)
+- Failure kind: `daemon_exception`
 
 ### Blocked Backlog
 

@@ -36,6 +36,7 @@ from ppd.daemon.ppd_daemon import (  # noqa: E402
     run_validation,
     utc_now,
 )
+from ppd.daemon.recovery_note_compaction import compact_task_board_repair_notes
 
 FORBIDDEN_ABSENCE_MARKERS = (
     "cookie",
@@ -73,6 +74,7 @@ MALFORMED_PYTHON_PROPOSAL_MARKERS = (
 TASK_TITLE_RE = re.compile(r"Task checkbox-\d+:\s*")
 CHECKBOX_ID_RE = re.compile(r"checkbox-(\d+)")
 REPLENISHMENT_HEADING_RE = re.compile(r"^## Built-In Goal Replenishment Tranche(?:\s+(\d+))?\s*$")
+BLOCKED_CASCADE_HEADING_RE = re.compile(r"^## Built-In Blocked Cascade Recovery Tranche(?:\s+(\d+))?\s*$")
 TASK_LINE_RE = re.compile(r"^(?P<prefix>- \[[ xX~!]\] Task checkbox-\d+: )(?P<title>.+)$")
 
 SANITIZED_REPLENISHMENT_TITLES = (
@@ -307,7 +309,15 @@ def task_board_summary(markdown: str) -> str:
         "blocked": sum(1 for task in tasks if task.status == "blocked"),
     }
     selectable = [task.label for task in tasks if task.status in {"needed", "in-progress"}][-6:]
-    return json.dumps({"counts": counts, "recentSelectable": selectable}, indent=2, sort_keys=True)
+    return json.dumps(
+        {
+            "counts": counts,
+            "recentSelectable": selectable,
+            "repairNoteSummary": compact_task_board_repair_notes(markdown),
+        },
+        indent=2,
+        sort_keys=True,
+    )
 
 
 def proposal_validation_text(proposal: dict[str, Any]) -> str:
@@ -650,6 +660,26 @@ def next_replenishment_heading(markdown: str) -> str:
     return f"## Built-In Goal Replenishment Tranche {max(numbers) + 1}"
 
 
+def blocked_cascade_heading_number(line: str) -> Optional[int]:
+    match = BLOCKED_CASCADE_HEADING_RE.match(line.strip())
+    if not match:
+        return None
+    if match.group(1) is None:
+        return 1
+    return int(match.group(1))
+
+
+def next_blocked_cascade_heading(markdown: str) -> str:
+    numbers = [
+        blocked_cascade_heading_number(line)
+        for line in markdown.splitlines()
+        if blocked_cascade_heading_number(line) is not None
+    ]
+    if not numbers:
+        return "## Built-In Blocked Cascade Recovery Tranche"
+    return f"## Built-In Blocked Cascade Recovery Tranche {max(numbers) + 1}"
+
+
 def choose_non_duplicate_replenishment_templates(
     markdown: str, candidate_tranches: list[list[str]], fallback: tuple[str, ...]
 ) -> list[str]:
@@ -773,17 +803,30 @@ def has_blocked_recovery_cascade(tasks: list[Task], *, blocked_threshold: int = 
 def builtin_blocked_cascade_replenish_task_board(markdown: str) -> tuple[str, tuple[str, ...]]:
     """Append deterministic daemon-repair tasks when all selectable work is blocked."""
 
-    if "## Built-In Blocked Cascade Recovery Tranche" in markdown:
-        return markdown, ()
     start = next_checkbox_number(markdown)
-    templates = [
-        "Add supervisor blocked-cascade recovery coverage proving a board with only blocked domain/recovery tasks gets deterministic daemon-repair tasks without invoking the LLM repair path.",
-        "Add daemon blocked-task prompt-budget fixture coverage proving repeated llm_router exits summarize the target, compact errors, and next daemon-repair hint without retrying blocked domain work.",
-        "Add daemon task-selection coverage proving blocked tasks are skipped until a new non-blocked repair task is accepted or a human explicitly reopens the blocked task.",
-        "Add supervisor recovery-note compaction coverage proving repeated repair notes are summarized before future prompt construction so task-board context stays bounded.",
+    heading = next_blocked_cascade_heading(markdown)
+    heading_number = blocked_cascade_heading_number(heading) or 1
+    candidate_tranches = [
+        [
+            "Add supervisor blocked-cascade recovery coverage proving a board with only blocked domain/recovery tasks gets deterministic daemon-repair tasks without invoking the LLM repair path.",
+            "Add daemon blocked-task prompt-budget fixture coverage proving repeated llm_router exits summarize the target, compact errors, and next daemon-repair hint without retrying blocked domain work.",
+            "Add daemon task-selection coverage proving blocked tasks are skipped until a new non-blocked repair task is accepted or a human explicitly reopens the blocked task.",
+            "Add supervisor recovery-note compaction coverage proving repeated repair notes are summarized before future prompt construction so task-board context stays bounded.",
+        ],
+        [
+            "Add one daemon-only unittest proving `select_task` does not choose blocked checkbox-178 when a fresh unchecked daemon-repair task exists, even if `revisit_blocked` is enabled.",
+            "Add one supervisor regression proving a blocked-only PP&D board appends a fresh daemon-repair tranche before restarting a worker with blocked revisits enabled.",
+            "Add one parser-clean prompt-scope unittest proving checkbox-178 retries stay blocked after three syntax_preflight failures until a daemon-repair task passes validation.",
+            "Add one task-board accounting unittest proving duplicate generated-status sections outside the managed marker are detected before daemon task selection.",
+        ],
     ]
+    fallback = tuple(
+        f"Add generated blocked-cascade daemon-repair coverage for tranche {heading_number} item {offset} proving blocked PP&D work stays parked until a fresh daemon repair task validates."
+        for offset in range(1, 5)
+    )
+    templates = choose_non_duplicate_replenishment_templates(markdown, candidate_tranches, fallback)
     labels = tuple(f"checkbox-{start + offset}" for offset in range(len(templates)))
-    lines = ["", "## Built-In Blocked Cascade Recovery Tranche", ""]
+    lines = ["", heading, ""]
     for offset, text in enumerate(templates):
         lines.append(f"- [ ] Task checkbox-{start + offset}: {text}")
     note = (

@@ -46,17 +46,17 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 
 ## Blocked Work
 
-- [!] Task checkbox-178: Add a fixture-only DevHub draft-readiness decision matrix plus focused validation that combines missing facts, redacted file placeholders, selector confidence, upload-readiness gates, fee notices, and exact-confirmation defaults while refusing official actions.
-- [!] Task checkbox-182: Add daemon diagnostics coverage proving repeated non-JSON LLM responses for a blocked task are persisted with target task, failure kind, compact raw-response summary, and a next-action hint before the worker exits.
-- [!] Task checkbox-186: Add daemon retry-scope coverage proving that after two syntax_preflight failures on checkbox-178, the next prompt permits either one parser-bearing file or one daemon repair file, and rejects source-plus-fixture-plus-test bundles.
-- [!] Task checkbox-187: Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task.
-- [!] Task checkbox-191: Add supervisor recovery-note compaction coverage proving repeated repair notes are summarized before future prompt construction so task-board context stays bounded.
-- [!] Task checkbox-193: Add one focused daemon diagnostic unittest proving a repeated non-JSON LLM response records target_task, failure_kind, compact raw-response summary, and next_action_hint without storing the full raw response.
-- [!] Task checkbox-194: Add one parser-clean supervisor recovery-note compaction helper or fixture test that summarizes repeated repair notes before prompt construction without touching DevHub, crawler, extraction, logic, or domain fixtures.
-- [!] Task checkbox-195: Replace or add only `ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md` with parser-failure recovery rules that name the recent malformed Python fragments, require syntax-valid one-file retries, and keep repair separate from PP&D domain implementation.
-- [!] Task checkbox-197: Add one daemon-only retry-scope helper or unittest proving a blocked-only board selects a new unchecked daemon-repair task before revisiting checkbox-178, checkbox-182, checkbox-186, checkbox-187, checkbox-191, checkbox-193, or checkbox-194.
-- [!] Task checkbox-198: Replace only `ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md` with the exact parser-recovery phrases expected by existing supervisor guide tests, including `must not implement the stalled PP&D domain task directly`, while keeping the file documentation-only.
-- [!] Task checkbox-203: Add one daemon diagnostics helper or focused unittest proving compact failure summaries include target_task, failure_kind, next_action_hint, and a raw-response length cap while excluding private DevHub artifacts, auth state, traces, crawl output, and downloaded documents.
+- [x] Task checkbox-178: Add a fixture-only DevHub draft-readiness decision matrix plus focused validation that combines missing facts, redacted file placeholders, selector confidence, upload-readiness gates, fee notices, and exact-confirmation defaults while refusing official actions.
+- [x] Task checkbox-182: Add daemon diagnostics coverage proving repeated non-JSON LLM responses for a blocked task are persisted with target task, failure kind, compact raw-response summary, and a next-action hint before the worker exits.
+- [x] Task checkbox-186: Add daemon retry-scope coverage proving that after two syntax_preflight failures on checkbox-178, the next prompt permits either one parser-bearing file or one daemon repair file, and rejects source-plus-fixture-plus-test bundles.
+- [x] Task checkbox-187: Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task.
+- [x] Task checkbox-191: Add supervisor recovery-note compaction coverage proving repeated repair notes are summarized before future prompt construction so task-board context stays bounded.
+- [x] Task checkbox-193: Add one focused daemon diagnostic unittest proving a repeated non-JSON LLM response records target_task, failure_kind, compact raw-response summary, and next_action_hint without storing the full raw response.
+- [x] Task checkbox-194: Add one parser-clean supervisor recovery-note compaction helper or fixture test that summarizes repeated repair notes before prompt construction without touching DevHub, crawler, extraction, logic, or domain fixtures.
+- [x] Task checkbox-195: Replace or add only `ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md` with parser-failure recovery rules that name the recent malformed Python fragments, require syntax-valid one-file retries, and keep repair separate from PP&D domain implementation.
+- [x] Task checkbox-197: Add one daemon-only retry-scope helper or unittest proving a blocked-only board selects a new unchecked daemon-repair task before revisiting checkbox-178, checkbox-182, checkbox-186, checkbox-187, checkbox-191, checkbox-193, or checkbox-194.
+- [x] Task checkbox-198: Replace only `ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md` with the exact parser-recovery phrases expected by existing supervisor guide tests, including `must not implement the stalled PP&D domain task directly`, while keeping the file documentation-only.
+- [x] Task checkbox-203: Add one daemon diagnostics helper or focused unittest proving compact failure summaries include target_task, failure_kind, next_action_hint, and a raw-response length cap while excluding private DevHub artifacts, auth state, traces, crawl output, and downloaded documents.
 
 ## Supervisor Repair Notes
 
@@ -68,6 +68,7 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 - Tranche 17 replenished independent daemon-repair work after the supervisor reported no selectable tasks while checkbox-178 remained active in calling_llm.
 - Tranche 18 keeps recovery moving after all previous repair tasks became blocked or completed. These tasks must stay daemon-scoped and must not implement checkbox-178 directly.
 - Tranche 19 adds fresh selectable daemon-repair work after checkbox-204 through checkbox-207 completed and the board again had no needed task. These tasks are validation-first and parser-clean by design.
+- Tranche 20 was added manually after Tranche 19 became fully blocked and the daemon, running with blocked revisits enabled, retried blocked checkbox-178. These tasks keep recovery in daemon tests and selection policy before any DevHub draft-readiness retry.
 
 ## Blocked Cascade Recovery Tranche 18
 
@@ -78,33 +79,40 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 
 ## Blocked Cascade Recovery Tranche 19
 
-- [!] Task checkbox-208: Add one daemon-only parser-clean unittest proving a blocked-only board with stale `calling_llm` for checkbox-178 produces a new unchecked daemon-repair task and does not reopen checkbox-178, checkbox-182, checkbox-186, checkbox-187, checkbox-191, checkbox-193, checkbox-194, checkbox-195, checkbox-197, checkbox-198, or checkbox-203.
-- [!] Task checkbox-209: Add one narrow daemon helper or unittest proving repeated non-JSON LLM responses are persisted as compact diagnostics with target_task, failure_kind, compact_raw_response_summary, and next_action_hint while capping response text and excluding private artifact markers.
-- [!] Task checkbox-210: Add one parser-clean daemon prompt-scope unittest proving that after two syntax_preflight failures for checkbox-178, a retry prompt permits exactly one parser-bearing file or one daemon repair file and rejects source-plus-fixture-plus-test bundles before any DevHub domain retry.
+- [x] Task checkbox-208: Add one daemon-only parser-clean unittest proving a blocked-only board with stale `calling_llm` for checkbox-178 produces a new unchecked daemon-repair task and does not reopen checkbox-178, checkbox-182, checkbox-186, checkbox-187, checkbox-191, checkbox-193, checkbox-194, checkbox-195, checkbox-197, checkbox-198, or checkbox-203.
+- [x] Task checkbox-209: Add one narrow daemon helper or unittest proving repeated non-JSON LLM responses are persisted as compact diagnostics with target_task, failure_kind, compact_raw_response_summary, and next_action_hint while capping response text and excluding private artifact markers.
+- [x] Task checkbox-210: Add one parser-clean daemon prompt-scope unittest proving that after two syntax_preflight failures for checkbox-178, a retry prompt permits exactly one parser-bearing file or one daemon repair file and rejects source-plus-fixture-plus-test bundles before any DevHub domain retry.
 
+## Manual Recovery Tranche 20
 
-
-## Generated Status
-
-Last updated: 2026-05-03T15:05:56.170954Z
-
-- Latest target: `Task checkbox-206: Add one daemon prompt-guard fixture or unittest proving that after two syntax_preflight failures for checkbox-178, the prompt explicitly forbids source-plus-fixture-plus-test bundles and recommends a one-file parser-clean repair.`
-- Latest result: `accepted`
-- Latest summary: Add a parser-clean daemon prompt-guard unittest for checkbox-206.
-- Counts: `{"blocked": 11, "complete": 26, "in_progress": 0, "needed": 0}`
+- [x] Task checkbox-211: Add one daemon-only unittest proving `select_task` does not choose blocked checkbox-178 when a fresh unchecked daemon-repair task exists, even if `revisit_blocked` is enabled.
+- [x] Task checkbox-212: Add one supervisor regression proving a blocked-only PP&D board appends a fresh daemon-repair tranche before restarting a worker with blocked revisits enabled.
+- [x] Task checkbox-213: Add one parser-clean prompt-scope unittest proving checkbox-178 retries stay blocked after three syntax_preflight failures until a daemon-repair task passes validation.
+- [x] Task checkbox-214: Add one task-board accounting unittest proving duplicate generated-status sections outside the managed marker are detected before daemon task selection.
 
 
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-03T16:12:30.196590Z
+Last updated: 2026-05-03T17:10:00.000000Z
 
-- Latest target: `Task checkbox-178: Add a fixture-only DevHub draft-readiness decision matrix plus focused validation that combines missing facts, redacted file placeholders, selector confidence, upload-readiness gates, fee notices, and exact-confirmation defaults while refusing official actions.`
-- Latest result: `syntax_preflight`
-- Latest summary: Adds a single parser-clean fixture-only DevHub draft-readiness matrix module with embedded validation.
-- Counts: `{"blocked": 14, "complete": 26, "in_progress": 0, "needed": 0}`
+- Latest target: `Manual implementation repair: resolve blocked board items checkbox-178, 182, 186, 187, 191, 193, 194, 195, 197, 198, 203, 208, 209, and 210`
+- Latest result: `accepted`
+- Latest summary: Added fixture-only DevHub draft-readiness decisions, compact diagnostic redaction/capping, retry-scope validation, blocked-selection coverage, supervisor recovery-note compaction, and repair-guide verification for every blocked board item.
+- Counts: `{"blocked": 0, "complete": 48, "in_progress": 0, "needed": 0}`
 
 <!-- ppd-daemon-task-board:end -->
 ## Built-In Supervisor Repair Notes
 
 - Parked repeated syntax-preflight loop for `Add one daemon-only parser-clean unittest proving a blocked-only board with stale `calling_llm` for checkbox-178 produces a new unchecked daemon-repair task and does not reopen checkbox-178, checkbox-182, checkbox-186, checkbox-187, checkbox-191, checkbox-193, checkbox-194, checkbox-195, checkbox-197, checkbox-198, or checkbox-203.` so the daemon can continue with independent selectable work. The task should be resumed only after a narrow syntax-valid fixture/test repair is available.
+
+## Built-In Blocked Cascade Recovery Tranche
+
+- [x] Task checkbox-215: Add generated blocked-cascade daemon-repair coverage for tranche 1 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [x] Task checkbox-216: Add generated blocked-cascade daemon-repair coverage for tranche 1 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [x] Task checkbox-217: Add generated blocked-cascade daemon-repair coverage for tranche 1 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [x] Task checkbox-218: Add generated blocked-cascade daemon-repair coverage for tranche 1 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+
+## Built-In Supervisor Repair Notes
+
+- Appended deterministic blocked-cascade recovery tasks because all selectable work was blocked. The supervisor avoided the LLM repair path and created daemon-repair tasks that can run independently before blocked domain work is retried.

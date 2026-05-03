@@ -6,6 +6,8 @@ import {
   CecLemmaType,
   createCecLemmaGenerator,
   hashCecLemmaPattern,
+  normalizeCecLemmaPattern,
+  validateCecLemmaProofTree,
 } from './lemmaGeneration';
 
 const atom = (name: string): CecExpression => ({ kind: 'atom', name });
@@ -29,7 +31,7 @@ describe('CEC lemma generation parity helpers', () => {
     const formula = implies(p, q);
     const lemma = new CecLemma({ formula, premises: [p, implies(p, q)], rule: 'CecModusPonens' });
 
-    expect(lemma.patternHash).toBe(hashCecLemmaPattern('(implies p q)'));
+    expect(lemma.patternHash).toBe(hashCecLemmaPattern('(implies ?v0 ?v1)'));
     expect(lemma.matchesPattern(implies(p, q))).toBe(true);
     expect(lemma.matchesPattern(q)).toBe(false);
 
@@ -40,7 +42,14 @@ describe('CEC lemma generation parity helpers', () => {
       rule: 'CecModusPonens',
       lemma_type: CecLemmaType.DERIVED,
       usage_count: 1,
+      exact_hash: hashCecLemmaPattern('(implies p q)'),
     });
+  });
+
+  it('normalizes structural lemma patterns without collapsing repeated atoms', () => {
+    expect(normalizeCecLemmaPattern(implies(atom('p'), atom('q')))).toBe('(implies ?v0 ?v1)');
+    expect(normalizeCecLemmaPattern(implies(atom('p'), atom('p')))).toBe('(implies ?v0 ?v0)');
+    expect(normalizeCecLemmaPattern(atom('p'))).toBe('atom:p');
   });
 
   it('stores lemmas in an LRU cache with exact and pattern lookup statistics', () => {
@@ -101,6 +110,34 @@ describe('CEC lemma generation parity helpers', () => {
 
     expect(applicable).toEqual([lemma]);
     expect(lemma.usageCount).toBe(1);
+  });
+
+  it('finds structurally matching browser-native lemmas without Python services', () => {
+    const generator = new CecLemmaGenerator(10);
+    const lemma = new CecLemma({ formula: implies(atom('p'), atom('q')), premises: [], rule: 'schema' });
+    generator.cache.add(lemma);
+
+    expect(generator.cache.findByPattern(implies(atom('actor'), atom('duty')))).toEqual([lemma]);
+    expect(generator.cache.findByPattern(implies(atom('actor'), atom('actor')))).toEqual([]);
+  });
+
+  it('validates proof tree premise references before lemma discovery', () => {
+    const p = atom('p');
+    const q = atom('q');
+    const validTree = {
+      result: 'proved' as const,
+      axioms: [p, q],
+      steps: [{ formula: and(p, q), premises: [0, 1], rule: 'CecConjunctionIntroduction' }],
+    };
+    const invalidTree = {
+      result: 'proved' as const,
+      axioms: [p],
+      steps: [{ formula: q, premises: [1], rule: 'bad-forward-reference' }],
+    };
+
+    expect(validateCecLemmaProofTree(validTree)).toEqual({ valid: true, errors: [] });
+    expect(validateCecLemmaProofTree(invalidTree).valid).toBe(false);
+    expect(new CecLemmaGenerator(10).discoverLemmas(invalidTree)).toEqual([]);
   });
 
   it('proves goals from cached lemmas and discovers lemmas from regular CEC proving', () => {

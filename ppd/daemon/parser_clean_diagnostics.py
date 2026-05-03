@@ -11,6 +11,18 @@ from hashlib import sha256
 from typing import Iterable, Mapping, Sequence
 
 _MAX_SNIPPET_CHARS = 120
+_PRIVATE_MARKERS = (
+    "auth-state",
+    "auth_state",
+    "storage-state",
+    "storage_state",
+    "trace.zip",
+    ".har",
+    "cookie",
+    "screenshot",
+    "downloaded document",
+    "raw crawl output",
+)
 
 
 @dataclass(frozen=True)
@@ -95,9 +107,21 @@ def _summarize_attempts(attempts: Sequence[str]) -> str:
 
 def _compact_snippet(value: str) -> str:
     compact = " ".join(value.split())
+    compact = _redact_private_markers(compact)
     if len(compact) > _MAX_SNIPPET_CHARS:
         compact = compact[: _MAX_SNIPPET_CHARS - 3] + "..."
     return compact.replace("'", "\\'")
+
+
+def _redact_private_markers(value: str) -> str:
+    redacted = value
+    lowered = redacted.lower()
+    for marker in _PRIVATE_MARKERS:
+        while marker in lowered:
+            index = lowered.index(marker)
+            redacted = redacted[:index] + "[private-marker-omitted]" + redacted[index + len(marker) :]
+            lowered = redacted.lower()
+    return redacted
 
 
 def _next_action_hint(failure_kind: str) -> str:

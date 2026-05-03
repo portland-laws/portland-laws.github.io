@@ -91,6 +91,25 @@ FORBIDDEN_ABSENCE_MARKERS = (
     ".har",
 )
 
+PROTECTED_BLOCKED_REVISIT_CHECKBOX_IDS = frozenset(
+    {
+        178,
+        182,
+        186,
+        187,
+        191,
+        193,
+        194,
+        195,
+        197,
+        198,
+        203,
+        208,
+        209,
+        210,
+    }
+)
+
 
 @dataclass(frozen=True)
 class Task:
@@ -246,7 +265,7 @@ def select_task(tasks: Iterable[Task], *, revisit_blocked: bool = False) -> Opti
             return task
     if revisit_blocked:
         for task in task_list:
-            if task.status == "blocked":
+            if task.status == "blocked" and task.checkbox_id not in PROTECTED_BLOCKED_REVISIT_CHECKBOX_IDS:
                 return task
     return None
 
@@ -265,7 +284,56 @@ def replace_task_mark(markdown: str, selected: Task, mark: str) -> str:
     return "".join(lines)
 
 
+def count_unmanaged_generated_status_sections(markdown: str) -> int:
+    """Count generated-status headings outside the daemon-managed marker block."""
+
+    count = 0
+    in_managed_block = False
+    for line in markdown.splitlines():
+        stripped = line.strip()
+        if stripped == "<!-- ppd-daemon-task-board:start -->":
+            in_managed_block = True
+            continue
+        if stripped == "<!-- ppd-daemon-task-board:end -->":
+            in_managed_block = False
+            continue
+        if not in_managed_block and stripped == "## Generated Status":
+            count += 1
+    return count
+
+
+def strip_unmanaged_generated_status_sections(markdown: str) -> str:
+    """Remove stale generated-status sections outside the managed marker block."""
+
+    lines = markdown.splitlines()
+    cleaned: list[str] = []
+    in_managed_block = False
+    skipping_unmanaged_status = False
+    for line in lines:
+        stripped = line.strip()
+        if stripped == "<!-- ppd-daemon-task-board:start -->":
+            in_managed_block = True
+            skipping_unmanaged_status = False
+            cleaned.append(line)
+            continue
+        if stripped == "<!-- ppd-daemon-task-board:end -->":
+            in_managed_block = False
+            cleaned.append(line)
+            continue
+        if skipping_unmanaged_status:
+            if stripped.startswith("## ") or stripped == "<!-- ppd-daemon-task-board:start -->":
+                skipping_unmanaged_status = False
+            else:
+                continue
+        if not in_managed_block and stripped == "## Generated Status":
+            skipping_unmanaged_status = True
+            continue
+        cleaned.append(line)
+    return "\n".join(cleaned).rstrip() + ("\n" if markdown.endswith("\n") else "")
+
+
 def update_generated_status(markdown: str, *, latest: dict[str, Any], tasks: list[Task]) -> str:
+    markdown = strip_unmanaged_generated_status_sections(markdown)
     counts = {
         "needed": sum(1 for task in tasks if task.status == "needed"),
         "in_progress": sum(1 for task in tasks if task.status == "in-progress"),
