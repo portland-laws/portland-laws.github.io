@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "human_review_packet",
+  "packetId": "packet-ppd-human-review-v1",
+  "generatedAt": "2026-05-03T00:00:00Z",
+  "boundary": {
+    "fixtureOnly": true,
+    "liveDevhubAccess": false,
+    "browserLaunchRequested": false,
+    "officialActionAllowed": false,
+    "privateArtifactStored": false,
+    "paymentDataStored": false
+  },
+  "sourceEvidence": [
+    {
+      "sourceEvidenceId": "src-public-form-a",
+      "sourceUrl": "https://www.portland.gov/ppd/apply-permit",
+      "citation": {
+        "locator": "fixture-public-form-a",
+        "paraphrase": "Public guidance says a project description is needed before application review."
+      }
+    },
+    {
+      "sourceEvidenceId": "src-public-form-b",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/how-apply-permit-devhub",
+      "citation": {
+        "locator": "fixture-public-form-b",
+        "paraphrase": "Public DevHub guidance describes draft preparation separately from official submission."
+      }
+    },
+    {
+      "sourceEvidenceId": "src-public-fee-notice",
+      "sourceUrl": "https://www.portland.gov/ppd/fees",
+      "citation": {
+        "locator": "fixture-public-fee-notice",
+        "paraphrase": "Public fee guidance can be displayed as notice-only information."
+      }
+    }
+  ],
+  "conflictingEvidence": [
+    {
+      "conflictId": "conflict-document-name",
+      "fieldKey": "documents.plan_package",
+      "candidateValues": [
+        {
+          "redactedDisplay": "[REDACTED_PLAN_PACKAGE_LABEL_A]",
+          "sourceEvidenceIds": [
+            "src-public-form-a"
+          ]
+        },
+        {
+          "redactedDisplay": "[REDACTED_PLAN_PACKAGE_LABEL_B]",
+          "sourceEvidenceIds": [
+            "src-public-form-b"
+          ]
+        }
+      ],
+      "defaultOutcome": "human_review"
+    }
+  ],
+  "staleAnswers": [
+    {
+      "answerId": "answer-project-description",
+      "fieldKey": "project.description",
+      "redactedDisplay": "[REDACTED_STALE_PROJECT_DESCRIPTION]",
+      "sourceEvidenceIds": [
+        "src-public-form-a"
+      ],
+      "stalenessReason": "source_changed_after_user_answer",
+      "defaultOutcome": "ask_user"
+    }
+  ],
+  "uploadReadiness": [
+    {
+      "placeholderId": "placeholder-plan-package",
+      "documentKey": "documents.plan_package",
+      "metadataOnly": true,
+      "contentStored": false,
+      "readiness": "metadata_present_needs_human_review",
+      "sourceEvidenceIds": [
+        "src-public-form-b"
+      ]
+    }
+  ],
+  "feeNotices": [
+    {
+      "noticeId": "notice-estimated-review-fee",
+      "noticeOnly": true,
+      "amountStored": false,
+      "redactedDisplay": "[REDACTED_ESTIMATED_REVIEW_FEE]",
+      "sourceEvidenceIds": [
+        "src-public-fee-notice"
+      ]
+    }
+  ],
+  "blockedDevhubTransitions": [
+    {
+      "transitionId": "transition-submit-application",
+      "actionId": "submit_application",
+      "actionClass": "consequential",
+      "blockedByDefault": true,
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "sourceEvidenceIds": [
+        "src-public-form-b"
+      ]
+    },
+    {
+      "transitionId": "transition-pay-fee",
+      "actionId": "pay_fee",
+      "actionClass": "financial",
+      "blockedByDefault": true,
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "sourceEvidenceIds": [
+        "src-public-fee-notice"
+      ]
+    }
+  ],
+  "reviewerActions": [
+    "review_conflicting_public_evidence",
+    "request_updated_user_answer",
+    "review_redacted_file_metadata",
+    "acknowledge_notice_only_fee_guidance",
+    "refuse_official_action_without_exact_confirmation"
+  ],
+  "plannerOutcome": {
+    "nextAgentAction": "prepare_human_review_handoff",
+    "draftPreviewAllowed": false,
+    "officialSubmissionAllowed": false,
+    "paymentAutomationAllowed": false
+  }
+}

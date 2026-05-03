@@ -1,0 +1,41 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,5 +1,5 @@
+ {
+-  "createdAt": "2026-05-02T23:43:07.658187Z",
++  "createdAt": "2026-05-03T01:41:17.314976Z",
+   "decision": {
+     "action": "plan_next_tasks",
+     "reason": "all PP&D daemon tasks are complete; review the original PP&D goal and add the next task-board tranche",
+@@ -31,10 +31,10 @@
+   "taskBoardRepair": {
+     "parkedRepeatedSyntaxLoopTasks": [],
+     "replenishedGoalTaskLabels": [
+-      "checkbox-156",
+-      "checkbox-157",
+-      "checkbox-158",
+-      "checkbox-159"
++      "checkbox-160",
++      "checkbox-161",
++      "checkbox-162",
++      "checkbox-163"
+     ],
+     "supersededTaskBoardOnlyLabels": [],
+     "taskBoardUpdated": true
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -207,3 +207,14 @@
+ 
+ - The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
+ - Slice policy: `broad_integrated_after_green_streak`. The prior agentic replenishment repeated an old heading and title set; this tranche was normalized to the next numbered non-duplicate supervisor/domain hardening tranche before worker restart.
++
++## Built-In Goal Replenishment Tranche 3
++
++- [ ] Task checkbox-160: Add a fixture-only source-change impact scenario plus focused validation that routes updated PP&D public evidence through archival provenance, affected requirement IDs, stale guardrail invalidation, and human-review flags before agents reuse old answers.
++- [ ] Task checkbox-161: Add a fixture-only agent work-order scenario plus focused validation that composes user document-store facts, missing PP&D facts, formal stop gates, and draft-only Playwright previews into an ordered autonomous-assistance plan without official DevHub actions.
++- [ ] Task checkbox-162: Add daemon parse-failure recovery coverage proving repeated non-JSON LLM responses for a completed or manually satisfied task are parked or superseded instead of being retried indefinitely.
++- [ ] Task checkbox-163: Add a fixture-only permit-process comparison scenario plus focused validation that contrasts two PP&D process types and preserves separate legal obligations, operational UI hints, document placeholders, fee notices, and exact-confirmation gates.
++## Built-In Supervisor Planning Notes
++
++- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
++- Slice policy: `broad_integrated_after_green_streak`. Small slices are used after parse, syntax, validation, or task-board repair failures; broader integrated slices are used after a green accepted streak.

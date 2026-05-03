@@ -844,6 +844,7 @@ class Daemon:
             proposal.dry_run = not self.config.apply
             self.write_status("no_eligible_tasks")
             self.write_progress([proposal])
+            self.write_cycle_diagnostic(proposal, stage="no_eligible_tasks")
             return proposal
 
         self.write_status("selected_task", target_task=selected.label)
@@ -861,6 +862,9 @@ class Daemon:
             proposal = Proposal(summary="LLM proposal failed.", errors=[compact_message(exc)], failure_kind="llm")
         proposal.target_task = selected.label
         proposal.dry_run = not self.config.apply
+        if proposal.failure_kind in {"parse", "llm"} or not proposal.files:
+            self.write_progress([proposal])
+            self.write_cycle_diagnostic(proposal, stage="before_validation")
 
         if self.config.apply and proposal.files:
             self.write_status("applying_files", target_task=selected.label)
@@ -897,6 +901,16 @@ class Daemon:
         append_jsonl(self.config.resolve(self.config.result_log), {"created_at": utc_now(), "proposal": proposal.to_dict()})
         self.write_status("cycle_completed", valid=proposal.valid, artifact=proposal.to_dict())
         return proposal
+
+    def write_cycle_diagnostic(self, proposal: Proposal, *, stage: str) -> None:
+        append_jsonl(
+            self.config.resolve(self.config.result_log),
+            {
+                "created_at": utc_now(),
+                "stage": stage,
+                "diagnostic": proposal.to_dict(),
+            },
+        )
 
     def write_progress(self, proposals: list[Proposal]) -> None:
         board = read_text(self.config.resolve(self.config.task_board))

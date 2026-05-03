@@ -1,16 +1,56 @@
 {
-  "createdAt": "2026-05-02T23:43:07.658187Z",
+  "createdAt": "2026-05-03T01:50:46.614166Z",
   "decision": {
-    "action": "plan_next_tasks",
-    "reason": "all PP&D daemon tasks are complete; review the original PP&D goal and add the next task-board tranche",
-    "severity": "info"
+    "action": "repair_daemon_programming",
+    "reason": "6 recent durable LLM parse/runtime diagnostics were recorded for the same task before the daemon exited; patch prompt, parsing, parking, or retry policy before restarting the worker again",
+    "severity": "warning"
   },
   "failedAgenticRepair": {
-    "changedFiles": [],
-    "errors": [],
-    "failureKind": "no_eligible_tasks",
-    "summary": "All currently planned PP&D tasks are complete.",
-    "validationResults": []
+    "changedFiles": [
+      "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+    ],
+    "errors": [
+      "Validation failed; file edits were rolled back."
+    ],
+    "failureKind": "validation",
+    "summary": "Add deterministic supervisor repair guidance for repeated non-JSON and syntax-validation loops.",
+    "validationResults": [
+      {
+        "command": [
+          "python3",
+          "ppd/daemon/ppd_daemon.py",
+          "--self-test"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "{ \"ok\": true, \"task_count\": 163 }"
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "ppd/tests",
+          "-p",
+          "test_*.py"
+        ],
+        "returncode": 1,
+        "stderr": "...................................................................................................................................................................................................................................................................................................................................................................................ss..............sss....................................................................................................................................................................................................................FFF........................................................ ====================================================================== FAIL: test_guide_keeps_repair_separate_from_domain_implementation (test_supervisor_repair_guide.SupervisorRepairGuideTest.test_guide_keeps_repair_separate_from_domain_...",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "bash",
+          "-lc",
+          "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      }
+    ]
   },
   "fallbackActions": [
     "preserve failed repair diagnostics without accepting the invalid patch",
@@ -29,13 +69,10 @@
   ],
   "schemaVersion": 1,
   "taskBoardRepair": {
-    "parkedRepeatedSyntaxLoopTasks": [],
-    "replenishedGoalTaskLabels": [
-      "checkbox-156",
-      "checkbox-157",
-      "checkbox-158",
-      "checkbox-159"
+    "parkedRepeatedSyntaxLoopTasks": [
+      "Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board."
     ],
+    "replenishedGoalTaskLabels": [],
     "supersededTaskBoardOnlyLabels": [],
     "taskBoardUpdated": true
   }

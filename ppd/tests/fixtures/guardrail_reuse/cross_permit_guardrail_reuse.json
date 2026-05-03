@@ -1,0 +1,123 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "cross_permit_guardrail_reuse",
+  "scenarioId": "scenario-cross-permit-guardrail-reuse-v1",
+  "generatedAt": "2026-05-03T00:00:00Z",
+  "boundary": {
+    "fixtureOnly": true,
+    "liveDevhubAccess": false,
+    "browserLaunchRequested": false,
+    "officialSubmissionAllowed": false,
+    "privateArtifactStored": false
+  },
+  "commonStopGates": [
+    {
+      "gateId": "gate-missing-required-fact",
+      "logic": "missing(required_fact) -> ask_user",
+      "defaultOutcome": "ask_user",
+      "reusableAcrossPermitTypes": true,
+      "blocksOfficialAction": true
+    },
+    {
+      "gateId": "gate-exact-confirmation-for-official-action",
+      "logic": "official_action and not exact_confirmation(action_id) -> refuse",
+      "defaultOutcome": "refuse",
+      "reusableAcrossPermitTypes": true,
+      "blocksOfficialAction": true
+    }
+  ],
+  "processBindings": [
+    {
+      "permitType": "residential_building_permit",
+      "processId": "process-residential-building-permit",
+      "sourceEvidenceIds": [
+        "src-residential-building-single-pdf",
+        "src-residential-building-plan-review"
+      ],
+      "requirementIds": [
+        "req-residential-site-plan",
+        "req-residential-structural-calculations"
+      ],
+      "documentPlaceholders": [
+        "documents.site_plan",
+        "documents.structural_calculations"
+      ],
+      "appliedStopGateIds": [
+        "gate-missing-required-fact",
+        "gate-exact-confirmation-for-official-action"
+      ],
+      "exactConfirmationActions": [
+        "submit_application",
+        "upload_official_document",
+        "certify_statement",
+        "pay_fee"
+      ]
+    },
+    {
+      "permitType": "trade_permit_with_plan_review",
+      "processId": "process-trade-permit-with-plan-review",
+      "sourceEvidenceIds": [
+        "src-trade-permit-plan-review",
+        "src-trade-permit-fixture-count"
+      ],
+      "requirementIds": [
+        "req-trade-project-scope",
+        "req-trade-fixture-count"
+      ],
+      "documentPlaceholders": [
+        "documents.trade_project_scope",
+        "documents.trade_fixture_schedule"
+      ],
+      "appliedStopGateIds": [
+        "gate-missing-required-fact",
+        "gate-exact-confirmation-for-official-action"
+      ],
+      "exactConfirmationActions": [
+        "submit_application",
+        "upload_official_document",
+        "certify_statement",
+        "pay_fee"
+      ]
+    }
+  ],
+  "sourceEvidence": [
+    {
+      "sourceEvidenceId": "src-residential-building-single-pdf",
+      "sourceUrl": "https://www.portland.gov/ppd/residential-building-permits",
+      "citation": {
+        "locator": "fixture-residential-single-pdf",
+        "paraphrase": "Residential building permit guidance can require plan documents before official application actions."
+      }
+    },
+    {
+      "sourceEvidenceId": "src-residential-building-plan-review",
+      "sourceUrl": "https://www.portland.gov/ppd/residential-permit-inspections",
+      "citation": {
+        "locator": "fixture-residential-plan-review",
+        "paraphrase": "Residential plan review evidence remains bound only to residential requirements."
+      }
+    },
+    {
+      "sourceEvidenceId": "src-trade-permit-plan-review",
+      "sourceUrl": "https://www.portland.gov/ppd/trade-permits",
+      "citation": {
+        "locator": "fixture-trade-plan-review",
+        "paraphrase": "Trade permit guidance can require project details before plan-review submission."
+      }
+    },
+    {
+      "sourceEvidenceId": "src-trade-permit-fixture-count",
+      "sourceUrl": "https://www.portland.gov/ppd/trade-permit-applications",
+      "citation": {
+        "locator": "fixture-trade-fixture-count",
+        "paraphrase": "Trade fixture details remain bound only to trade permit requirements."
+      }
+    }
+  ],
+  "guardrailCompilerOutcome": {
+    "sharedGateReuseAllowed": true,
+    "processSpecificCitationMixingAllowed": false,
+    "officialActionDefault": "refuse_without_exact_confirmation",
+    "nextAgentAction": "ask_user_for_missing_process_specific_facts"
+  }
+}

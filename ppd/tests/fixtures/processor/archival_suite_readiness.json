@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "processor_archival_suite_readiness",
+  "scenarioId": "scenario-processor-archival-suite-readiness-v1",
+  "generatedAt": "2026-05-03T00:00:00Z",
+  "boundary": {
+    "fixtureOnly": true,
+    "liveCrawlRequested": false,
+    "rawBodyStored": false,
+    "downloadedDocumentStored": false,
+    "privateDevhubDataStored": false
+  },
+  "processorSuite": {
+    "submodule": "ipfs_datasets_py",
+    "module": "processor",
+    "handoffMode": "public_source_archival_metadata_only",
+    "contentHashPlaceholdersOnly": true
+  },
+  "publicSources": [
+    {
+      "sourceEvidenceId": "src-ppd-building-permit-guide",
+      "sourceUrl": "https://www.portland.gov/ppd/residential-building-permits",
+      "canonicalDocumentId": "ppd-public-residential-building-permits",
+      "contentHashPlaceholder": "sha256:[PUBLIC_ARCHIVE_HASH_PLACEHOLDER_1]",
+      "processorHandoffId": "processor-handoff-ppd-residential-building-permits",
+      "extractionBatchId": "extract-batch-requirements-001",
+      "citation": {
+        "locator": "fixture-residential-building-guide",
+        "paraphrase": "Public building permit guidance can be archived and handed off for requirement extraction."
+      }
+    },
+    {
+      "sourceEvidenceId": "src-ppd-devhub-apply-guide",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/how-apply-permit-devhub",
+      "canonicalDocumentId": "ppd-public-devhub-apply-guide",
+      "contentHashPlaceholder": "sha256:[PUBLIC_ARCHIVE_HASH_PLACEHOLDER_2]",
+      "processorHandoffId": "processor-handoff-ppd-devhub-apply-guide",
+      "extractionBatchId": "extract-batch-devhub-draft-planning-001",
+      "citation": {
+        "locator": "fixture-devhub-apply-guide",
+        "paraphrase": "Public DevHub guidance can be archived for draft-planning hints without authenticated automation."
+      }
+    }
+  ],
+  "extractionBatches": [
+    {
+      "extractionBatchId": "extract-batch-requirements-001",
+      "outputContract": "formal_requirement_nodes",
+      "requiresSourceEvidenceIds": [
+        "src-ppd-building-permit-guide"
+      ],
+      "rawBodyAvailableToAgent": false
+    },
+    {
+      "extractionBatchId": "extract-batch-devhub-draft-planning-001",
+      "outputContract": "draft_playwright_planning_hints",
+      "requiresSourceEvidenceIds": [
+        "src-ppd-devhub-apply-guide"
+      ],
+      "rawBodyAvailableToAgent": false
+    }
+  ],
+  "plannerOutcome": {
+    "mayRunLiveCrawl": false,
+    "mayUseProcessorHandoffMetadata": true,
+    "mayExtractRequirementNodes": true,
+    "mayPlanAuthenticatedDevhubActions": false
+  }
+}

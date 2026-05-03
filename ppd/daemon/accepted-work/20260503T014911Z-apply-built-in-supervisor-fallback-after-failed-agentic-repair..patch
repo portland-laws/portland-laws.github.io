@@ -1,0 +1,92 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,22 +1,75 @@
+ {
+-  "createdAt": "2026-05-03T01:46:22.504449Z",
++  "createdAt": "2026-05-03T01:49:10.633341Z",
+   "decision": {
+-    "action": "reconcile_dead_worker_and_restart",
+-    "reason": "daemon process is not running but status is still calling_llm on Task checkbox-160: Task checkbox-160: Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.; reset the in-progress task before restart",
++    "action": "repair_daemon_programming",
++    "reason": "5 recent durable LLM parse/runtime diagnostics were recorded for the same task before the daemon exited; patch prompt, parsing, parking, or retry policy before restarting the worker again",
+     "severity": "warning"
+   },
+-  "repairKind": "dead_worker_task_reset",
+-  "resetInProgressTaskLabels": [
+-    "Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board."
++  "failedAgenticRepair": {
++    "changedFiles": [],
++    "errors": [
++      "LLM response did not contain a JSON object."
++    ],
++    "failureKind": "parse",
++    "summary": "",
++    "validationResults": [
++      {
++        "command": [
++          "python3",
++          "ppd/daemon/ppd_daemon.py",
++          "--self-test"
++        ],
++        "returncode": 0,
++        "stderr": "",
++        "stdout": "{ \"ok\": true, \"task_count\": 163 }"
++      },
++      {
++        "command": [
++          "python3",
++          "-m",
++          "unittest",
++          "discover",
++          "-s",
++          "ppd/tests",
++          "-p",
++          "test_*.py"
++        ],
++        "returncode": 0,
++        "stderr": "...................................................................................................................................................................................................................................................................................................................................................................................ss..............sss.............................................................................................................................................................................................................................................................................. ---------------------------------------------------------------------- Ran 660 tests in 0.106s OK (skipped=5)",
++        "stdout": ""
++      },
++      {
++        "command": [
++          "bash",
++          "-lc",
++          "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
++        ],
++        "returncode": 0,
++        "stderr": "",
++        "stdout": ""
++      }
++    ]
++  },
++  "fallbackActions": [
++    "preserve failed repair diagnostics without accepting the invalid patch",
++    "run full PP&D daemon validation before restarting unattended worker attempts",
++    "restart the worker with PPD_LLM_BACKEND=llm_router after fallback validation passes",
++    "keep future retry scope narrow and fixture-first"
++  ],
++  "llmBackend": "llm_router",
++  "repairKind": "builtin_supervisor_fallback",
++  "safetyBoundaries": [
++    "no private DevHub session artifacts",
++    "no raw crawl output",
++    "no downloaded documents",
++    "no browser traces or screenshots",
++    "no consequential DevHub actions"
+   ],
+   "schemaVersion": 1,
+-  "statusBeforeRepair": {
+-    "active_state": "calling_llm",
+-    "active_state_started_at": "2026-05-03T01:45:53.963059Z",
+-    "active_target_task": "Task checkbox-160: Task checkbox-160: Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.",
+-    "pid": 2000828,
+-    "state": "calling_llm",
+-    "target_task": "Task checkbox-160: Task checkbox-160: Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.",
+-    "updated_at": "2026-05-03T01:45:53.963061Z"
++  "taskBoardRepair": {
++    "parkedRepeatedSyntaxLoopTasks": [],
++    "replenishedGoalTaskLabels": [],
++    "supersededTaskBoardOnlyLabels": [],
++    "taskBoardUpdated": false
+   }
+ }

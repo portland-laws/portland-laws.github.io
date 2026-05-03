@@ -32,7 +32,6 @@ from ppd.daemon.ppd_daemon import (  # noqa: E402
     is_private_write_path,
     parse_proposal,
     parse_tasks,
-    read_result_log,
     read_text,
     run_validation,
     utc_now,
@@ -73,6 +72,22 @@ MALFORMED_PYTHON_PROPOSAL_MARKERS = (
 
 TASK_TITLE_RE = re.compile(r"Task checkbox-\d+:\s*")
 CHECKBOX_ID_RE = re.compile(r"checkbox-(\d+)")
+REPLENISHMENT_HEADING_RE = re.compile(r"^## Built-In Goal Replenishment Tranche(?:\s+(\d+))?\s*$")
+TASK_LINE_RE = re.compile(r"^(?P<prefix>- \[[ xX~!]\] Task checkbox-\d+: )(?P<title>.+)$")
+
+SANITIZED_REPLENISHMENT_TITLES = (
+    "Add supervisor deterministic-replenishment sanitization coverage proving agentic planner output with duplicate tranche headings or previously completed broad titles is rewritten to the next numbered non-duplicate tranche before the daemon starts.",
+    "Add daemon LLM result-durability coverage proving parse failures, validation interruption, child timeout, and vanished-child states write progress and result-log diagnostics before restart.",
+    "Add a fixture-only cross-permit guardrail reuse scenario plus focused validation that reuses common stop gates across two PP&D permit types while preserving process-specific citations and exact-confirmation requirements.",
+    "Add a fixture-only human-review packet scenario plus focused validation bundling conflicting evidence, stale answers, upload readiness, fee notices, and blocked DevHub transitions into one redacted review handoff.",
+)
+
+FOLLOWUP_REPLENISHMENT_TITLES = (
+    "Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.",
+    "Add daemon stale-worker recovery coverage proving a dead child recorded as calling_llm or applying_files is converted into a selectable pending task with a durable diagnostic before restart.",
+    "Add a fixture-only processor archival-suite readiness scenario plus focused validation that routes PP&D public URLs through ipfs_datasets_py processor handoff metadata, content-hash placeholders, and source-linked extraction batches without live crawling.",
+    "Add a fixture-only Playwright autonomous-form planning scenario plus focused validation that future agents may fill reversible draft fields from redacted user facts while refusing upload, submit, payment, certification, cancellation, MFA, CAPTCHA, and inspection scheduling without exact confirmation.",
+)
 
 
 @dataclass(frozen=True)
@@ -128,6 +143,28 @@ def append_jsonl(path: Path, payload: dict[str, Any]) -> None:
         handle.write(json.dumps(payload, sort_keys=True) + "\n")
 
 
+def read_supervisor_result_rows(path: Path) -> list[dict[str, Any]]:
+    """Read daemon proposal rows plus durable diagnostic-only rows."""
+
+    if not path.exists():
+        return []
+    rows: list[dict[str, Any]] = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if not line.strip():
+            continue
+        try:
+            payload = json.loads(line)
+        except json.JSONDecodeError:
+            continue
+        if isinstance(payload.get("proposal"), dict):
+            rows.append(payload["proposal"])
+        elif isinstance(payload.get("diagnostic"), dict):
+            diagnostic = dict(payload["diagnostic"])
+            diagnostic["_diagnostic_stage"] = payload.get("stage", "")
+            rows.append(diagnostic)
+    return rows
+
+
 def parse_timestamp(value: Any) -> Optional[datetime]:
     if not isinstance(value, str) or not value:
         return None
@@ -174,6 +211,49 @@ def latest_repeated_failure_count(rows: list[dict[str, Any]], *, completed_task_
             break
         count += 1
     return count
+
+
+def recent_parse_or_llm_diagnostic_failure_count(
+    rows: list[dict[str, Any]], *, completed_task_labels: Optional[set[str]] = None
+) -> int:
+    completed = completed_task_labels or set()
+    count = 0
+    target = ""
+    for proposal in reversed(rows):
+        proposal_target = str(proposal.get("target_task") or "")
+        if proposal_target in completed:
+            continue
+        if proposal.get("applied") and proposal.get("validation_passed") and not proposal.get("errors"):
+            break
+        failure_kind = str(proposal.get("failure_kind") or "")
+        if failure_kind not in {"parse", "llm"}:
+            break
+        if target and proposal_target != target:
+            break
+        target = proposal_target
+        count += 1
+    return count
+
+
+def recent_parse_or_llm_failure_target(
+    rows: list[dict[str, Any]], *, minimum: int = 3, completed_task_labels: Optional[set[str]] = None
+) -> str:
+    completed = completed_task_labels or set()
+    count = 0
+    target = ""
+    for proposal in reversed(rows):
+        proposal_target = str(proposal.get("target_task") or "")
+        if proposal_target in completed:
+            continue
+        if proposal.get("applied") and proposal.get("validation_passed") and not proposal.get("errors"):
+            break
+        if str(proposal.get("failure_kind") or "") not in {"parse", "llm"}:
+            break
+        if target and proposal_target != target:
+            break
+        target = proposal_target
+        count += 1
+    return target if count >= minimum else ""
 
 
 def proposal_validation_text(proposal: dict[str, Any]) -> str:
@@ -411,6 +491,121 @@ def should_use_broader_goal_slices(rows: list[dict[str, Any]]) -> bool:
     return recent_accepted_streak(rows, limit=4) >= 4
 
 
+def replenishment_heading_number(line: str) -> Optional[int]:
+    match = REPLENISHMENT_HEADING_RE.match(line.strip())
+    if not match:
+        return None
+    value = match.group(1)
+    return int(value) if value else 1
+
+
+def sanitize_agentic_replenishment_board(markdown: str) -> tuple[str, bool]:
+    """Normalize duplicate agentic replenishment headings and repeated titles.
+
+    Agentic planner patches have occasionally appended a new tranche with an old
+    heading such as "Tranche 2" and repeated broad titles. This sanitizer rewrites
+    only the newest replenishment section to the next heading number and swaps
+    repeated task titles for deterministic hardening titles before the daemon is
+    restarted on stale work.
+    """
+
+    lines = markdown.splitlines()
+    heading_indexes = [
+        index for index, line in enumerate(lines) if replenishment_heading_number(line) is not None
+    ]
+    if len(heading_indexes) < 2:
+        return markdown, False
+
+    latest_heading_index = heading_indexes[-1]
+    previous_heading_numbers = [
+        replenishment_heading_number(lines[index]) or 1 for index in heading_indexes[:-1]
+    ]
+    expected_heading_number = max(previous_heading_numbers) + 1
+    changed = False
+
+    if replenishment_heading_number(lines[latest_heading_index]) != expected_heading_number:
+        lines[latest_heading_index] = f"## Built-In Goal Replenishment Tranche {expected_heading_number}"
+        changed = True
+
+    previous_titles: set[str] = set()
+    for line in lines[:latest_heading_index]:
+        match = TASK_LINE_RE.match(line)
+        if match:
+            previous_titles.add(" ".join(match.group("title").casefold().split()))
+
+    task_indexes: list[int] = []
+    for index in range(latest_heading_index + 1, len(lines)):
+        if index != latest_heading_index + 1 and lines[index].startswith("## "):
+            break
+        if TASK_LINE_RE.match(lines[index]):
+            task_indexes.append(index)
+
+    latest_titles = []
+    for index in task_indexes:
+        match = TASK_LINE_RE.match(lines[index])
+        if match:
+            latest_titles.append(" ".join(match.group("title").casefold().split()))
+    repeated_title = any(title in previous_titles for title in latest_titles)
+    if repeated_title:
+        for offset, index in enumerate(task_indexes):
+            if offset >= len(SANITIZED_REPLENISHMENT_TITLES):
+                break
+            match = TASK_LINE_RE.match(lines[index])
+            if not match:
+                continue
+            lines[index] = match.group("prefix") + SANITIZED_REPLENISHMENT_TITLES[offset]
+        changed = True
+
+    if not changed:
+        return markdown, False
+    return "\n".join(lines) + ("\n" if markdown.endswith("\n") else ""), True
+
+
+def normalized_task_title(title: str) -> str:
+    normalized = " ".join(str(title or "").casefold().split())
+    return normalized.rstrip(".")
+
+
+def existing_task_titles(markdown: str) -> set[str]:
+    titles: set[str] = set()
+    for line in markdown.splitlines():
+        match = TASK_LINE_RE.match(line)
+        if match:
+            titles.add(normalized_task_title(match.group("title")))
+    return titles
+
+
+def task_title_already_covered(candidate: str, titles: set[str]) -> bool:
+    normalized = normalized_task_title(candidate)
+    if normalized in titles:
+        return True
+    return any(
+        len(title) >= 40 and (title in normalized or normalized in title)
+        for title in titles
+    )
+
+
+def next_replenishment_heading(markdown: str) -> str:
+    numbers = [
+        replenishment_heading_number(line)
+        for line in markdown.splitlines()
+        if replenishment_heading_number(line) is not None
+    ]
+    if not numbers:
+        return "## Built-In Goal Replenishment Tranche"
+    return f"## Built-In Goal Replenishment Tranche {max(numbers) + 1}"
+
+
+def choose_non_duplicate_replenishment_templates(
+    markdown: str, candidate_tranches: list[list[str]], fallback: tuple[str, ...]
+) -> list[str]:
+    titles = existing_task_titles(markdown)
+    for templates in candidate_tranches:
+        if all(not task_title_already_covered(title, titles) for title in templates):
+            return templates
+    return list(fallback)
+
+
 def builtin_replenish_goal_tasks(markdown: str, rows: Optional[list[dict[str, Any]]] = None) -> tuple[str, tuple[str, ...]]:
     """Append a deterministic fixture-first tranche when agentic planning fails.
 
@@ -423,11 +618,13 @@ def builtin_replenish_goal_tasks(markdown: str, rows: Optional[list[dict[str, An
         return markdown, ()
 
     start = next_checkbox_number(markdown)
-    existing_tranche_count = markdown.count("## Built-In Goal Replenishment Tranche")
-    heading = "## Built-In Goal Replenishment Tranche"
-    if existing_tranche_count:
-        heading = f"## Built-In Goal Replenishment Tranche {existing_tranche_count + 1}"
-    broader = should_use_broader_goal_slices(rows or []) or existing_tranche_count > 0
+    existing_tranche_numbers = [
+        replenishment_heading_number(line)
+        for line in markdown.splitlines()
+        if replenishment_heading_number(line) is not None
+    ]
+    heading = next_replenishment_heading(markdown)
+    broader = should_use_broader_goal_slices(rows or []) or bool(existing_tranche_numbers)
     if broader:
         broad_tranches = [
             [
@@ -455,7 +652,15 @@ def builtin_replenish_goal_tasks(markdown: str, rows: Optional[list[dict[str, An
                 "Add daemon LLM result-persistence coverage proving parse, timeout, validation-interrupted, and vanished-child failures are recorded before the worker exits or restarts.",
             ],
         ]
-        templates = broad_tranches[min(max(0, existing_tranche_count - 1), len(broad_tranches) - 1)]
+        max_tranche_number = max((number or 0 for number in existing_tranche_numbers), default=0)
+        if max_tranche_number >= len(broad_tranches) + 2:
+            templates = choose_non_duplicate_replenishment_templates(
+                markdown, [list(FOLLOWUP_REPLENISHMENT_TITLES), *broad_tranches], FOLLOWUP_REPLENISHMENT_TITLES
+            )
+        else:
+            templates = choose_non_duplicate_replenishment_templates(
+                markdown, broad_tranches, FOLLOWUP_REPLENISHMENT_TITLES
+            )
         policy = "broad_integrated_after_green_streak"
     else:
         templates = [
@@ -497,6 +702,27 @@ def title_from_task_label(label: str) -> str:
 
 def builtin_repair_task_board(markdown: str, rows: list[dict[str, Any]]) -> tuple[str, tuple[str, ...]]:
     """Park a repeated syntax-loop task so the daemon can advance autonomously."""
+
+    parse_loop_target = recent_parse_or_llm_failure_target(rows)
+    if parse_loop_target:
+        target_title = title_from_task_label(parse_loop_target)
+        changed = False
+        repaired_lines: list[str] = []
+        for line in markdown.splitlines(keepends=True):
+            stripped = line.rstrip("\n")
+            if target_title and target_title in stripped and ("- [~]" in stripped or "- [ ]" in stripped):
+                line = line.replace("- [~]", "- [!]", 1).replace("- [ ]", "- [!]", 1)
+                changed = True
+            repaired_lines.append(line)
+        if changed:
+            note = (
+                "\n"
+                "## Built-In Supervisor Repair Notes\n\n"
+                f"- Parked repeated LLM parse/runtime loop for `{target_title}` so the daemon can continue with the next independent selectable task. "
+                "Resume only after prompt, parser, or retry policy has been updated.\n"
+            )
+            repaired = "".join(repaired_lines).rstrip() + note
+            return repaired + "\n", (target_title,)
 
     syntax_failures = []
     for row in reversed(rows):
@@ -540,6 +766,35 @@ def builtin_repair_task_board(markdown: str, rows: list[dict[str, Any]]) -> tupl
     return repaired + "\n", (target_title,)
 
 
+def builtin_dead_worker_task_board(markdown: str, target_task: str) -> tuple[str, tuple[str, ...]]:
+    """Reset an in-progress task when the worker process died mid-cycle."""
+
+    target_title = title_from_task_label(target_task)
+    if not target_title:
+        return markdown, ()
+
+    changed = False
+    repaired_lines: list[str] = []
+    for line in markdown.splitlines(keepends=True):
+        stripped = line.rstrip("\n")
+        if target_title in stripped and "- [~]" in stripped:
+            line = line.replace("- [~]", "- [ ]", 1)
+            changed = True
+        repaired_lines.append(line)
+
+    if not changed:
+        return markdown, ()
+
+    note = (
+        "\n"
+        "## Built-In Supervisor Repair Notes\n\n"
+        f"- Reset dead-worker in-progress task `{target_title}` to pending after the daemon process exited mid-cycle. "
+        "The supervisor will restart the worker and let the task be selected again with a fresh timeout window.\n"
+    )
+    repaired = "".join(repaired_lines).rstrip() + note
+    return repaired + "\n", (target_title,)
+
+
 def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> SupervisorDecision:
     pid = read_pid(config.resolve(config.pid_file))
     running = process_running(pid)
@@ -548,8 +803,11 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
     board = read_text(config.resolve(config.task_board)) if config.resolve(config.task_board).exists() else ""
     tasks = parse_tasks(board)
     completed_task_labels = {task.label for task in tasks if task.status == "complete"}
-    rows = read_result_log(config.resolve(config.result_log))
+    rows = read_supervisor_result_rows(config.resolve(config.result_log))
     latest = progress.get("latest") if isinstance(progress.get("latest"), dict) else {}
+    heartbeat_age = age_seconds(status.get("updated_at"), now=now)
+    active_state = str(status.get("active_state") or status.get("state") or "")
+    active_state_age = age_seconds(status.get("active_state_started_at"), now=now)
 
     if tasks and all(task.status == "complete" for task in tasks):
         return SupervisorDecision(
@@ -594,7 +852,35 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
             should_restart_daemon=True,
         )
 
+    parse_or_llm_diagnostic_failures = recent_parse_or_llm_diagnostic_failure_count(
+        rows,
+        completed_task_labels=completed_task_labels,
+    )
+    if parse_or_llm_diagnostic_failures >= config.repeated_failure_threshold:
+        return SupervisorDecision(
+            action="repair_daemon_programming",
+            reason=(
+                f"{parse_or_llm_diagnostic_failures} recent durable LLM parse/runtime diagnostics were recorded "
+                "for the same task before the daemon exited; patch prompt, parsing, parking, or retry policy "
+                "before restarting the worker again"
+            ),
+            severity="warning",
+            should_invoke_codex=True,
+            should_restart_daemon=True,
+        )
+
     if not running:
+        active_target = str(status.get("active_target_task") or status.get("target_task") or "")
+        if active_state in {"calling_llm", "applying_files"} and active_target:
+            return SupervisorDecision(
+                action="reconcile_dead_worker_and_restart",
+                reason=(
+                    f"daemon process is not running but status is still {active_state} on {active_target}; "
+                    "reset the in-progress task before restart"
+                ),
+                severity="warning",
+                should_restart_daemon=True,
+            )
         return SupervisorDecision(
             action="restart_daemon",
             reason="daemon process is not running",
@@ -602,9 +888,6 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
             should_restart_daemon=True,
         )
 
-    heartbeat_age = age_seconds(status.get("updated_at"), now=now)
-    active_state = str(status.get("active_state") or status.get("state") or "")
-    active_state_age = age_seconds(status.get("active_state_started_at"), now=now)
     if heartbeat_age is None:
         return SupervisorDecision(
             action="invoke_codex",
@@ -721,7 +1004,7 @@ def build_supervisor_prompt(config: SupervisorConfig, decision: SupervisorDecisi
     plan = read_text(config.resolve(config.plan_doc), limit=18000) if config.resolve(config.plan_doc).exists() else ""
     status = load_json(config.resolve(config.status_file))
     progress = load_json(config.resolve(config.progress_file))
-    recent_results = read_result_log(config.resolve(config.result_log))[-8:]
+    recent_results = read_supervisor_result_rows(config.resolve(config.result_log))[-8:]
     failed_manifests: list[str] = []
     failed_dir = config.resolve(Path("ppd/daemon/failed-patches"))
     if failed_dir.exists():
@@ -885,7 +1168,7 @@ def invoke_builtin_repair(
 ) -> Proposal:
     """Apply deterministic supervisor fallback when Codex self-heal fails."""
 
-    rows = read_result_log(config.resolve(config.result_log))
+    rows = read_supervisor_result_rows(config.resolve(config.result_log))
     board_path = config.resolve(config.task_board)
     board = read_text(board_path) if board_path.exists() else ""
     repaired_board, parked_titles = builtin_repair_task_board(board, rows)
@@ -925,6 +1208,50 @@ def invoke_builtin_repair(
     return proposal
 
 
+def invoke_dead_worker_repair(config: SupervisorConfig, decision: SupervisorDecision) -> Proposal:
+    board_path = config.resolve(config.task_board)
+    board = read_text(board_path) if board_path.exists() else ""
+    status = load_json(config.resolve(config.status_file))
+    repaired_board, reset_labels = builtin_dead_worker_task_board(
+        board,
+        str(status.get("active_target_task") or status.get("target_task") or ""),
+    )
+    payload = {
+        "schemaVersion": 1,
+        "createdAt": utc_now(),
+        "repairKind": "dead_worker_task_reset",
+        "decision": {
+            "action": decision.action,
+            "reason": decision.reason,
+            "severity": decision.severity,
+        },
+        "resetInProgressTaskLabels": list(reset_labels),
+        "statusBeforeRepair": status,
+    }
+    files = [
+        {
+            "path": "ppd/daemon/builtin-repair-status.json",
+            "content": json.dumps(payload, indent=2, sort_keys=True) + "\n",
+        }
+    ]
+    if repaired_board != board:
+        files.append({"path": "ppd/daemon/task-board.md", "content": repaired_board})
+    proposal = Proposal(
+        summary="Reset dead-worker in-progress task before restart.",
+        impact=(
+            "The supervisor reconciles stale calling_llm/applying_files status with the dead worker process, "
+            "returns the task to pending, records the repair, and restarts the daemon without waiting for manual cleanup."
+        ),
+        files=files,
+    )
+    proposal.target_task = f"Built-in supervisor fallback: {decision.reason}"
+    proposal.dry_run = not config.apply
+    if config.apply:
+        return apply_files_with_validation(proposal, supervisor_daemon_config(config))
+    proposal.validation_results = run_validation(supervisor_daemon_config(config))
+    return proposal
+
+
 def invoke_codex_repair(config: SupervisorConfig, decision: SupervisorDecision) -> Proposal:
     if config.apply:
         run_control(config, "stop")
@@ -941,6 +1268,12 @@ def invoke_codex_repair(config: SupervisorConfig, decision: SupervisorDecision) 
     proposal.dry_run = not config.apply
 
     if config.apply and proposal.files:
+        if decision.action == "plan_next_tasks":
+            for item in proposal.files:
+                if item.get("path") == "ppd/daemon/task-board.md":
+                    sanitized, changed = sanitize_agentic_replenishment_board(item.get("content", ""))
+                    if changed:
+                        item["content"] = sanitized
         proposal = apply_files_with_validation(proposal, supervisor_daemon_config(config))
     else:
         proposal.validation_results = run_validation(supervisor_daemon_config(config))
@@ -973,7 +1306,11 @@ def write_supervisor_status(config: SupervisorConfig, decision: SupervisorDecisi
 def run_once(config: SupervisorConfig) -> SupervisorDecision:
     decision = diagnose(config)
     proposal: Optional[Proposal] = None
-    if decision.action == "reconcile_supersession_task_board" and config.apply:
+    if decision.action == "reconcile_dead_worker_and_restart" and config.apply:
+        proposal = invoke_dead_worker_repair(config, decision)
+        if config.restart_daemon:
+            run_control(config, "start")
+    elif decision.action == "reconcile_supersession_task_board" and config.apply:
         if config.restart_daemon:
             run_control(config, "stop")
         proposal = invoke_builtin_repair(

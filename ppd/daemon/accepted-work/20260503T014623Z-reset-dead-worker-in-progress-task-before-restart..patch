@@ -1,0 +1,79 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,42 +1,22 @@
+ {
+-  "createdAt": "2026-05-03T01:41:17.314976Z",
++  "createdAt": "2026-05-03T01:46:22.504449Z",
+   "decision": {
+-    "action": "plan_next_tasks",
+-    "reason": "all PP&D daemon tasks are complete; review the original PP&D goal and add the next task-board tranche",
+-    "severity": "info"
++    "action": "reconcile_dead_worker_and_restart",
++    "reason": "daemon process is not running but status is still calling_llm on Task checkbox-160: Task checkbox-160: Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.; reset the in-progress task before restart",
++    "severity": "warning"
+   },
+-  "failedAgenticRepair": {
+-    "changedFiles": [],
+-    "errors": [],
+-    "failureKind": "no_eligible_tasks",
+-    "summary": "All currently planned PP&D tasks are complete.",
+-    "validationResults": []
+-  },
+-  "fallbackActions": [
+-    "preserve failed repair diagnostics without accepting the invalid patch",
+-    "run full PP&D daemon validation before restarting unattended worker attempts",
+-    "restart the worker with PPD_LLM_BACKEND=llm_router after fallback validation passes",
+-    "keep future retry scope narrow and fixture-first"
+-  ],
+-  "llmBackend": "llm_router",
+-  "repairKind": "builtin_supervisor_fallback",
+-  "safetyBoundaries": [
+-    "no private DevHub session artifacts",
+-    "no raw crawl output",
+-    "no downloaded documents",
+-    "no browser traces or screenshots",
+-    "no consequential DevHub actions"
++  "repairKind": "dead_worker_task_reset",
++  "resetInProgressTaskLabels": [
++    "Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board."
+   ],
+   "schemaVersion": 1,
+-  "taskBoardRepair": {
+-    "parkedRepeatedSyntaxLoopTasks": [],
+-    "replenishedGoalTaskLabels": [
+-      "checkbox-160",
+-      "checkbox-161",
+-      "checkbox-162",
+-      "checkbox-163"
+-    ],
+-    "supersededTaskBoardOnlyLabels": [],
+-    "taskBoardUpdated": true
++  "statusBeforeRepair": {
++    "active_state": "calling_llm",
++    "active_state_started_at": "2026-05-03T01:45:53.963059Z",
++    "active_target_task": "Task checkbox-160: Task checkbox-160: Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.",
++    "pid": 2000828,
++    "state": "calling_llm",
++    "target_task": "Task checkbox-160: Task checkbox-160: Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.",
++    "updated_at": "2026-05-03T01:45:53.963061Z"
+   }
+ }
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -210,7 +210,7 @@
+ 
+ ## Built-In Goal Replenishment Tranche 7
+ 
+-- [~] Task checkbox-160: Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.
++- [ ] Task checkbox-160: Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.
+ - [ ] Task checkbox-161: Add daemon stale-worker recovery coverage proving a dead child recorded as calling_llm or applying_files is converted into a selectable pending task with a durable diagnostic before restart.
+ - [ ] Task checkbox-162: Add a fixture-only processor archival-suite readiness scenario plus focused validation that routes PP&D public URLs through ipfs_datasets_py processor handoff metadata, content-hash placeholders, and source-linked extraction batches without live crawling.
+ - [ ] Task checkbox-163: Add a fixture-only Playwright autonomous-form planning scenario plus focused validation that future agents may fill reversible draft fields from redacted user facts while refusing upload, submit, payment, certification, cancellation, MFA, CAPTCHA, and inspection scheduling without exact confirmation.
+@@ -218,3 +218,7 @@
+ 
+ - The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
+ - Slice policy: `broad_integrated_after_green_streak`. Small slices are used after parse, syntax, validation, or task-board repair failures; broader integrated slices are used after a green accepted streak.
++## Built-In Supervisor Repair Notes
++
++- Reset dead-worker in-progress task `Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.` to pending after the daemon process exited mid-cycle. The supervisor will restart the worker and let the task be selected again with a fresh timeout window.
++

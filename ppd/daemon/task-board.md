@@ -199,11 +199,28 @@ Last updated: 2026-05-02T23:49:46.310865Z
 
 ## Built-In Goal Replenishment Tranche 6
 
-- [~] Task checkbox-156: Add supervisor deterministic-replenishment sanitization coverage proving agentic planner output with duplicate tranche headings or previously completed broad titles is rewritten to the next numbered non-duplicate tranche before the daemon starts.
-- [ ] Task checkbox-157: Add daemon LLM result-durability coverage proving parse failures, validation interruption, child timeout, and vanished-child states write progress and result-log diagnostics before restart.
-- [ ] Task checkbox-158: Add a fixture-only cross-permit guardrail reuse scenario plus focused validation that reuses common stop gates across two PP&D permit types while preserving process-specific citations and exact-confirmation requirements.
-- [ ] Task checkbox-159: Add a fixture-only human-review packet scenario plus focused validation bundling conflicting evidence, stale answers, upload readiness, fee notices, and blocked DevHub transitions into one redacted review handoff.
+- [x] Task checkbox-156: Add supervisor deterministic-replenishment sanitization coverage proving agentic planner output with duplicate tranche headings or previously completed broad titles is rewritten to the next numbered non-duplicate tranche before the daemon starts.
+- [x] Task checkbox-157: Add daemon LLM result-durability coverage proving parse failures, validation interruption, child timeout, and vanished-child states write progress and result-log diagnostics before restart.
+- [x] Task checkbox-158: Add a fixture-only cross-permit guardrail reuse scenario plus focused validation that reuses common stop gates across two PP&D permit types while preserving process-specific citations and exact-confirmation requirements.
+- [x] Task checkbox-159: Add a fixture-only human-review packet scenario plus focused validation bundling conflicting evidence, stale answers, upload readiness, fee notices, and blocked DevHub transitions into one redacted review handoff.
 ## Built-In Supervisor Planning Notes
 
 - The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
 - Slice policy: `broad_integrated_after_green_streak`. The prior agentic replenishment repeated an old heading and title set; this tranche was normalized to the next numbered non-duplicate supervisor/domain hardening tranche before worker restart.
+
+## Built-In Goal Replenishment Tranche 7
+
+- [x] Task checkbox-160: Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.
+- [x] Task checkbox-161: Add daemon stale-worker recovery coverage proving a dead child recorded as calling_llm or applying_files is converted into a selectable pending task with a durable diagnostic before restart.
+- [x] Task checkbox-162: Add a fixture-only processor archival-suite readiness scenario plus focused validation that routes PP&D public URLs through ipfs_datasets_py processor handoff metadata, content-hash placeholders, and source-linked extraction batches without live crawling.
+- [~] Task checkbox-163: Add a fixture-only Playwright autonomous-form planning scenario plus focused validation that future agents may fill reversible draft fields from redacted user facts while refusing upload, submit, payment, certification, cancellation, MFA, CAPTCHA, and inspection scheduling without exact confirmation.
+## Built-In Supervisor Planning Notes
+
+- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
+- Slice policy: `broad_integrated_after_green_streak`. Small slices are used after parse, syntax, validation, or task-board repair failures; broader integrated slices are used after a green accepted streak.
+## Built-In Supervisor Repair Notes
+
+- Reset dead-worker in-progress task `Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.` to pending after the daemon process exited mid-cycle. The supervisor will restart the worker and let the task be selected again with a fresh timeout window.
+## Built-In Supervisor Repair Notes
+
+- Parked repeated LLM parse/runtime loop for `Add supervisor task-board de-duplication coverage proving deterministic replenishment uses the highest existing tranche number and skips any task titles already completed anywhere on the board.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
