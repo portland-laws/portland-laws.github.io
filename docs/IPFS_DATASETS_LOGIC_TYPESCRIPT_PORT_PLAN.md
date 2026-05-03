@@ -716,7 +716,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [!] Port remaining Python logic module `logic/CEC/native/dcec_cleaning.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/CEC/native/dcec_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/CEC/native/dcec_english_grammar.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/dcec_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/dcec_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/dcec_namespace.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/dcec_parsing.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/dcec_prototypes.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-03 05:56:37 UTC
+Last updated: 2026-05-03 06:03:21 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-206: Port remaining Python logic module 'logic/CEC/native/dcec_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-207: Port remaining Python logic module 'logic/CEC/native/dcec_namespace.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1433,93 +1433,127 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - Target: `Task checkbox-206: Port remaining Python logic module 'logic/CEC/native/dcec_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `needs follow-up`
 - Summary: Add browser-native DCEC native integration adapter contract
-- Impact: Adds a TypeScript-only DCEC native integration adapter under src/lib/logic/cec that uses the existing parser, formula conversion, and validator pipeline while explicitly reporting no Python, server, subprocess, RPC, or WASM fallback. Focused Jest coverage validates successful adapter execution and fail-closed behavior for forbidden Python/WASM runtime requests and malformed DCEC input.
+- Impact: Adds a deterministic source module under src/lib/logic/cec/ that validates DCEC native-integration requests, exposes browser/WASM capability metadata, performs parse-only normalization, and fails closed for proof execution until a browser-native WASM prover is supplied. The focused Jest test imports the module directly and exercises behavior used by the logic-port validation suite without Python, server, filesystem, subprocess, RPC, or Node-only fallback.
 - Errors: Preflight repair still produced rejected TypeScript replacements:
 Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/cec/dcecIntegration.ts(297,30): error TS1005: ';' expected.
-../../..src/lib/logic/cec/dcecIntegration.ts(356,30): error TS1005: ';' expected.
-../../..src/lib/logic/cec/dcecIntegration.ts(357,6): error TS1003: Identifier expected.
-../../..src/lib/logic/cec/dcecIntegration.ts(357,66): error TS1138: Parameter declaration expected.
-../../..src/lib/logic/cec/dcecIntegration.ts(357,68): error TS1138: Parameter declaration expected.
-../../..src/lib/logic/cec/dcecIntegration.ts(357,71): error TS1005: ')' expected.
-../../..src/lib/logic/cec/dcecIntegration.ts(363,4): error TS1005: ';' expected.
-../../..src/lib/logic/cec/dcecIntegration.ts(431,2): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(133,32): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(133,60): error TS1109: Expression expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(134,13): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(135,3): error TS1109: Expression expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(145,30): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(146,6): error TS1003: Identifier expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(146,78): error TS1138: Parameter declaration expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(146,80): error TS1138: Parameter declaration expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(146,83): error TS1005: ')' expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(155,4): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(222,2): error TS1128: Declaration or statement expected.
 
 Replacement diagnostic context:
-src/lib/logic/cec/dcecIntegration.ts:297:30 TS1005: ';' expected.
-  295:   let depth = 0;
-  296:   let start = 0;
-> 297:   for (let index = 0; index  part.length > 0);
-  298: }
-  299: 
+src/lib/logic/cec/dcecNativeIntegration.ts:133:32 TS1005: ';' expected.
+  131: 
+  132:   if (request.context !== undefined) {
+> 133:     for (let index = 0; index  normalizeFormulaText(entry)),
+  134:     metadata: request.metadata ?? {},
+  135:   };
 
-src/lib/logic/cec/dcecIntegration.ts:356:30 TS1005: ';' expected.
-  354:   if (!trimmed.startsWith('(') || !trimmed.endsWith(')')) return false;
-  355:   let depth = 0;
-> 356:   for (let index = 0; index  {
-  357:   it('parses infix logical expressions into DCEC formula objects', () => {
-  358:     const token = parseDcecExpressionToToken('a implies b');
+src/lib/logic/cec/dcecNativeIntegration.ts:134:13 TS1005: ';' expected.
+  132:   if (request.context !== undefined) {
+  133:     for (let index = 0; index  normalizeFormulaText(entry)),
+> 134:     metadata: request.metadata ?? {},
+  135:   };
+  136: }
 
-src/lib/logic/cec/dcecIntegration.ts:357:6 TS1003: Identifier expected.
-  355:   let depth = 0;
-  356:   for (let index = 0; index  {
-> 357:   it('parses infix logical expressions into DCEC formula objects', () => {
-  358:     const token = parseDcecExpressionToToken('a implies b');
-  359:     const formula = token && tokenToDcecFormula(token);
+src/lib/logic/cec/dcecNativeIntegration.ts:135:3 TS1109: Expression expected.
+  133:     for (let index = 0; index  normalizeFormulaText(entry)),
+  134:     metadata: request.metadata ?? {},
+> 135:   };
+  136: }
+  137: 
 
-src/lib/logic/cec/dcecIntegration.ts:363:4 TS1005: ';' expected.
-  361:     expect(token?.createSExpression()).toBe('(implies a b)');
-  362:     expect(String(formula)).toBe('(a() → b())');
-> 363:   });
-  364: 
-  365:   it('parses function-style deontic, cognitive, and temporal expressions', () => {
+src/lib/logic/cec/dcecNativeIntegration.ts:145:30 TS1005: ';' expected.
+  143:   let balance = 0;
+  144: 
+> 145:   for (let index = 0; index  {
+  146:   it('advertises browser-native capability without Python or server fallback', () => {
+  147:     const capability = getDcecNativeIntegrationCapability();
 
-src/lib/logic/cec/dcecIntegration.ts:431:2 TS1128: Declaration or statement expected.
-  429:     expect(malformedResult.diagnostics.some((diagnostic) => diagnostic.includes('Unbalanced parentheses'))).toBe(true);
-  430:   });
-> 431: });; Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/cec/dcecIntegration.ts(294,30): error TS1005: ';' expected.
-../../..src/lib/logic/cec/dcecIntegration.ts(353,30): error TS1005: ';' expected.
-../../..src/lib/logic/cec/dcecIntegration.ts(354,6): error TS1003: Identifier expected.
-../../..src/lib/logic/cec/dcecIntegration.ts(354,66): error TS1138: Parameter declaration expected.
-../../..src/lib/logic/cec/dcecIntegration.ts(354,68): error TS1138: Parameter declaration expected.
-../../..src/lib/logic/cec/dcecIntegration.ts(354,71): error TS1005: ')' expected.
-../../..src/lib/logic/cec/dcecIntegration.ts(360,4): error TS1005: ';' expected.
-../../..src/lib/logic/cec/dcecIntegration.ts(428,2): error TS1128: Declaration or statement expected.
+src/lib/logic/cec/dcecNativeIntegration.ts:146:6 TS1003: Identifier expected.
+  144: 
+  145:   for (let index = 0; index  {
+> 146:   it('advertises browser-native capability without Python or server fallback', () => {
+  147:     const capability = getDcecNativeIntegrationCapability();
+  148: 
+
+src/lib/logic/cec/dcecNativeIntegration.ts:155:4 TS1005: ';' expected.
+  153:     expect(capability.proofExecution).toBe('unavailable');
+  154:     expect(capability.supportedOperations).toEqual(['parse', 'prove', 'verify']);
+> 155:   });
+  156: 
+  157:   it('normalizes and validates parse requests deterministically', () => {
+
+src/lib/logic/cec/dcecNativeIntegration.ts:222:2 TS1128: Declaration or statement expected.
+  220:     expect(result.diagnostics).toContain('DCEC native integration context entry 1 is empty.');
+  221:   });
+> 222: });; Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(133,32): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(133,60): error TS1109: Expression expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(134,13): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(135,3): error TS1109: Expression expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(145,30): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(146,6): error TS1003: Identifier expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(146,78): error TS1138: Parameter declaration expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(146,80): error TS1138: Parameter declaration expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(146,83): error TS1005: ')' expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(155,4): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecNativeIntegration.ts(222,2): error TS1128: Declaration or statement expected.
 
 Replacement diagnostic context:
-src/lib/logic/cec/dcecIntegration.ts:294:30 TS1005: ';' expected.
-  292:   let depth = 0;
-  293:   let start = 0;
-> 294:   for (let index = 0; index  part.length > 0);
-  295: }
-  296: 
+src/lib/logic/cec/dcecNativeIntegration.ts:133:32 TS1005: ';' expected.
+  131: 
+  132:   if (request.context) {
+> 133:     for (let index = 0; index  normalizeFormulaText(entry)),
+  134:     metadata: request.metadata ?? {},
+  135:   };
 
-src/lib/logic/cec/dcecIntegration.ts:353:30 TS1005: ';' expected.
-  351:   if (!trimmed.startsWith('(') || !trimmed.endsWith(')')) return false;
-  352:   let depth = 0;
-> 353:   for (let index = 0; index  {
-  354:   it('parses infix logical expressions into DCEC formula objects', () => {
-  355:     const token = parseDcecExpressionToToken('a implies b');
+src/lib/logic/cec/dcecNativeIntegration.ts:134:13 TS1005: ';' expected.
+  132:   if (request.context) {
+  133:     for (let index = 0; index  normalizeFormulaText(entry)),
+> 134:     metadata: request.metadata ?? {},
+  135:   };
+  136: }
 
-src/lib/logic/cec/dcecIntegration.ts:354:6 TS1003: Identifier expected.
-  352:   let depth = 0;
-  353:   for (let index = 0; index  {
-> 354:   it('parses infix logical expressions into DCEC formula objects', () => {
-  355:     const token = parseDcecExpressionToToken('a implies b');
-  356:     const formula = token && tokenToDcecFormula(token);
+src/lib/logic/cec/dcecNativeIntegration.ts:135:3 TS1109: Expression expected.
+  133:     for (let index = 0; index  normalizeFormulaText(entry)),
+  134:     metadata: request.metadata ?? {},
+> 135:   };
+  136: }
+  137: 
 
-src/lib/logic/cec/dcecIntegration.ts:360:4 TS1005: ';' expected.
-  358:     expect(token?.createSExpression()).toBe('(implies a b)');
-  359:     expect(String(formula)).toBe('(a() → b())');
-> 360:   });
-  361: 
-  362:   it('parses function-style deontic, cognitive, and temporal expressions', () => {
+src/lib/logic/cec/dcecNativeIntegration.ts:145:30 TS1005: ';' expected.
+  143:   let balance = 0;
+  144: 
+> 145:   for (let index = 0; index  {
+  146:   it('advertises browser-native capability without Python or server fallback', () => {
+  147:     const capability = getDcecNativeIntegrationCapability();
 
-src/lib/logic/cec/dcecIntegration.ts:428:2 TS1128: Declaration or statement expected.
-  426:     expect(malformedResult.diagnostics.some((diagnostic) => diagnostic.includes('Unbalanced parentheses'))).toBe(true);
-  427:   });
-> 428: });
+src/lib/logic/cec/dcecNativeIntegration.ts:146:6 TS1003: Identifier expected.
+  144: 
+  145:   for (let index = 0; index  {
+> 146:   it('advertises browser-native capability without Python or server fallback', () => {
+  147:     const capability = getDcecNativeIntegrationCapability();
+  148: 
+
+src/lib/logic/cec/dcecNativeIntegration.ts:155:4 TS1005: ';' expected.
+  153:     expect(capability.proofExecution).toBe('unavailable');
+  154:     expect(capability.supportedOperations).toEqual(['parse', 'prove', 'verify']);
+> 155:   });
+  156: 
+  157:   it('normalizes and validates parse requests deterministically', () => {
+
+src/lib/logic/cec/dcecNativeIntegration.ts:222:2 TS1128: Declaration or statement expected.
+  220:     expect(result.diagnostics).toContain('DCEC native integration context entry 1 is empty.');
+  221:   });
+> 222: });
 - Failure kind: `typescript_quality`
 
 ### Blocked Backlog

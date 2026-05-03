@@ -1,0 +1,31 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,5 +1,5 @@
+ {
+-  "createdAt": "2026-05-03T06:00:24.804687Z",
++  "createdAt": "2026-05-03T06:03:18.152872Z",
+   "decision": {
+     "action": "invoke_codex",
+     "reason": "2 task(s) are blocked and no independent selectable task remains: Task checkbox-8: Task checkbox-178: Add a fixture-only DevHub draft-readiness decision matrix plus focused validation that combines missing facts, redacted file placeholders, selector confidence, upload-readiness gates, fee notices, and exact-confirmation defaults while refusing official actions.; Task checkbox-12: Task checkbox-182: Add daemon diagnostics coverage proving repeated non-JSON LLM responses for a blocked task are persisted with target task, failure kind, compact raw-response summary, and a next-action hint before the worker exits.",
+@@ -11,10 +11,10 @@
+       "ppd/tests/test_daemon_llm_response_diagnostics.py"
+     ],
+     "errors": [
+-      "Syntax preflight failed; file edits were rolled back. python3 -m py_compile ppd/daemon/llm_response_diagnostics.py: File \"/home/barberb/portland-laws.github.io/ppd/daemon/llm_response_diagnostics.py\", line 55 text = re.sub(r\" limit: ^ SyntaxError: unterminated string literal (detected at line 55) Next worker attempt should be smaller: replace only the syntactically failing file plus its narrow fixture/test if needed; run py_compile for each changed Python file or strict tsc for each changed TypeScript file mentally before returning JSON; do not add new contracts, fixtures, and broad tests in the same proposal until the parser-clean core file is valid."
++      "Syntax preflight failed; file edits were rolled back. python3 -m py_compile ppd/daemon/llm_response_diagnostics.py: ppd/daemon/llm_response_diagnostics.py:35: malformed Python expression; use explicit operators such as `is None`, `is not None`, `isinstance(...)`, or a normal return expression. Do not place TypeScript-style type fragments inside Python control-flow or return statements. Next worker attempt should be smaller: replace only the syntactically failing file plus its narrow fixture/test if needed; run py_compile for each changed Python file or strict tsc for each changed TypeScript file mentally before returning JSON; do not add new contracts, fixtures, and broad tests in the same p..."
+     ],
+     "failureKind": "syntax_preflight",
+-    "summary": "Add a parser-clean daemon diagnostics helper plus focused regression coverage for repeated non-JSON LLM responses on blocked PP&D tasks.",
++    "summary": "Add parser-clean daemon diagnostics helper and focused tests for repeated non-JSON LLM responses.",
+     "validationResults": [
+       {
+         "command": [
+@@ -24,7 +24,7 @@
+           "ppd/daemon/llm_response_diagnostics.py"
+         ],
+         "returncode": 1,
+-        "stderr": "File \"/home/barberb/portland-laws.github.io/ppd/daemon/llm_response_diagnostics.py\", line 55 text = re.sub(r\" limit: ^ SyntaxError: unterminated string literal (detected at line 55)",
++        "stderr": "ppd/daemon/llm_response_diagnostics.py:35: malformed Python expression; use explicit operators such as `is None`, `is not None`, `isinstance(...)`, or a normal return expression. Do not place TypeScript-style type fragments inside Python control-flow or return statements.",
+         "stdout": ""
+       },
+       {
