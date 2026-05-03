@@ -74,6 +74,7 @@ MALFORMED_PYTHON_PROPOSAL_MARKERS = (
 TASK_TITLE_RE = re.compile(r"Task checkbox-\d+:\s*")
 CHECKBOX_ID_RE = re.compile(r"checkbox-(\d+)")
 REPLENISHMENT_HEADING_RE = re.compile(r"^## Built-In Goal Replenishment Tranche(?:\s+(\d+))?\s*$")
+AUTONOMOUS_PLATFORM_HEADING_RE = re.compile(r"^## Built-In Autonomous PP&D Platform Tranche(?:\s+(\d+))?\s*$")
 BLOCKED_CASCADE_HEADING_RE = re.compile(r"^## Built-In Blocked Cascade Recovery Tranche(?:\s+(\d+))?\s*$")
 TASK_LINE_RE = re.compile(r"^(?P<prefix>- \[[ xX~!]\] Task checkbox-\d+: )(?P<title>.+)$")
 
@@ -103,6 +104,15 @@ THIRD_FOLLOWUP_REPLENISHMENT_TITLES = (
     "Add supervisor repair-prompt compaction coverage proving repeated daemon parse diagnostics produce a bounded self-heal prompt with recent diagnostics, task board summary, and no accepted-work dump.",
     "Add a fixture-only formal-logic export bundle plus focused validation mapping PP&D requirement nodes into obligations, prerequisites, stop gates, and exact-confirmation predicates for downstream agents.",
     "Add a fixture-only autonomous-assistance dry-run transcript plus focused validation showing known user document-store facts, missing fact questions, reversible draft actions, and refused official actions in order.",
+)
+
+AUTONOMOUS_PLATFORM_REPLENISHMENT_TITLES = (
+    "Add a side-effect-free whole-site PP&D archival plan under ppd/crawler that models full public-site discovery, processor-suite handoff, PDF normalization, requirement extraction, and formal-logic outputs without live crawling or private artifacts.",
+    "Add validation coverage for the whole-site PP&D archival plan proving it uses the ipfs_datasets_py processor suite, public allowlists, robots preflight, bounded retries, and no raw crawl, browser, or private DevHub artifacts.",
+    "Add a side-effect-free Playwright and PDF draft automation plan under ppd/devhub that models user-authorized draft form fills, local PDF field fills, audit events, and exact-confirmation checkpoints without live login or official actions.",
+    "Add validation coverage for Playwright and PDF draft automation proving reversible draft fills are allowed while upload, submit, payment, certification, cancellation, inspection scheduling, MFA, CAPTCHA, and account creation remain refused by default.",
+    "Add supervisor completed-board regression coverage proving an all-complete PP&D board appends the autonomous platform tranche and restarts the daemon instead of idling with no available work.",
+    "Add daemon/supervisor operations coverage proving watch mode starts the next cycle immediately after each task, relies on LLM and validation timeouts to avoid hangs, and leaves supervisor replanning responsible for empty boards.",
 )
 
 
@@ -660,6 +670,56 @@ def next_replenishment_heading(markdown: str) -> str:
     return f"## Built-In Goal Replenishment Tranche {max(numbers) + 1}"
 
 
+def autonomous_platform_heading_number(line: str) -> Optional[int]:
+    match = AUTONOMOUS_PLATFORM_HEADING_RE.match(line.strip())
+    if not match:
+        return None
+    if match.group(1) is None:
+        return 1
+    return int(match.group(1))
+
+
+def next_autonomous_platform_heading(markdown: str) -> str:
+    numbers = [
+        autonomous_platform_heading_number(line)
+        for line in markdown.splitlines()
+        if autonomous_platform_heading_number(line) is not None
+    ]
+    if not numbers:
+        return "## Built-In Autonomous PP&D Platform Tranche"
+    return f"## Built-In Autonomous PP&D Platform Tranche {max(numbers) + 1}"
+
+
+def should_append_autonomous_platform_tranche(markdown: str) -> bool:
+    """Return True when completed recovery work should advance to platform work."""
+
+    lowered = markdown.casefold()
+    markers = (
+        "manual recovery tranche 20",
+        "built-in blocked cascade recovery tranche",
+        "checkbox-218",
+    )
+    if not any(marker in lowered for marker in markers):
+        return False
+    return (
+        "portland permitting" in lowered
+        or "pp&d" in lowered
+        or "devhub" in lowered
+        or "processor" in lowered
+    )
+
+
+def generated_autonomous_platform_templates(markdown: str, tranche_number: int) -> list[str]:
+    """Build unique platform continuation work after the static tranche validates."""
+
+    return [
+        f"Add autonomous platform continuation coverage for tranche {tranche_number} proving whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs stay connected through source evidence IDs.",
+        f"Add processor-suite integration planning for tranche {tranche_number} proving PP&D public documents flow through archive manifests, normalized document records, PDF metadata, and requirement batches before agents use them.",
+        f"Add Playwright/PDF handoff validation for tranche {tranche_number} proving redacted user facts can fill draft fields and PDF previews while official DevHub transitions stay behind exact confirmation checkpoints.",
+        f"Add supervisor idle-recovery validation for tranche {tranche_number} proving completed boards synthesize new goal-aligned platform tasks without sleeping, duplicate tranche reuse, or blocked-task retry churn.",
+    ]
+
+
 def blocked_cascade_heading_number(line: str) -> Optional[int]:
     match = BLOCKED_CASCADE_HEADING_RE.match(line.strip())
     if not match:
@@ -713,6 +773,29 @@ def builtin_replenish_goal_tasks(markdown: str, rows: Optional[list[dict[str, An
         return markdown, ()
 
     start = next_checkbox_number(markdown)
+    if should_append_autonomous_platform_tranche(markdown):
+        heading = next_autonomous_platform_heading(markdown)
+        heading_number = autonomous_platform_heading_number(heading) or 1
+        templates = choose_non_duplicate_replenishment_templates(
+            markdown,
+            [list(AUTONOMOUS_PLATFORM_REPLENISHMENT_TITLES)],
+            tuple(generated_autonomous_platform_templates(markdown, heading_number)),
+        )
+        labels = tuple(f"checkbox-{start + offset}" for offset in range(len(templates)))
+        lines = ["", heading, ""]
+        for offset, text in enumerate(templates):
+            lines.append(f"- [ ] Task checkbox-{start + offset}: {text}")
+        note = (
+            "\n"
+            "## Built-In Supervisor Planning Notes\n\n"
+            "- The completed PP&D recovery board now advances into autonomous platform work. "
+            "This tranche is aligned to whole-site public archival, ipfs_datasets_py processor-suite handoff, "
+            "guarded Playwright draft automation, local PDF field filling, and formal-logic guardrail extraction.\n"
+            "- Slice policy: `autonomous_platform_after_completed_recovery`. The supervisor uses this deterministic tranche "
+            "when an all-complete PP&D board would otherwise leave the daemon with no work.\n"
+        )
+        return markdown.rstrip() + "\n" + "\n".join(lines) + note, labels
+
     existing_tranche_numbers = [
         replenishment_heading_number(line)
         for line in markdown.splitlines()

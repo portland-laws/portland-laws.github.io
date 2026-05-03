@@ -358,6 +358,12 @@ Last updated: {utc_now()}
     return markdown.rstrip() + "\n\n" + block
 
 
+def should_sleep_between_watch_cycles(markdown: str, *, revisit_blocked: bool = False) -> bool:
+    """Sleep only when there is no immediately selectable work on the board."""
+
+    return select_task(parse_tasks(markdown), revisit_blocked=revisit_blocked) is None
+
+
 def compact_message(value: Any, limit: int = 700) -> str:
     text = str(value or "")
     text = re.sub(
@@ -1078,6 +1084,12 @@ class Daemon:
                 if self.config.iterations > 0 and count >= self.config.iterations:
                     break
                 if self.config.interval_seconds > 0:
+                    board_now = read_text(self.config.resolve(self.config.task_board))
+                    if not should_sleep_between_watch_cycles(
+                        board_now,
+                        revisit_blocked=self.config.revisit_blocked,
+                    ):
+                        continue
                     self.write_status("sleeping", seconds=self.config.interval_seconds)
                     time.sleep(self.config.interval_seconds)
         finally:

@@ -169,6 +169,27 @@ PP&D-specific differences:
   - guardrail compiler tests.
 - Authenticated DevHub automation is never run unattended by the daemon unless a user-owned session has been explicitly authorized for that cycle.
 
+### Autonomous Supervisor Redesign
+
+As of May 3, 2026, the active PP&D daemon/supervisor implementation is Python under `ppd/daemon/`. The supervisor is responsible for keeping work moving when the daemon is stuck, when every selectable item is blocked, or when the task board is fully complete.
+
+The supervisor should now treat an all-complete PP&D board as a planning signal, not an idle state:
+
+- Diagnose the completed board as `plan_next_tasks`.
+- Review the completed work against the original PP&D goal.
+- Append the next deterministic autonomous platform tranche when no model-generated repair is acceptable.
+- Restart the daemon with `PPD_LLM_BACKEND=llm_router`.
+- Let the daemon immediately select the next pending task rather than sleeping between available tasks.
+
+The current autonomous platform tranche is intentionally broader than the parser-recovery tranches. It develops:
+
+- `ppd/crawler/whole_site_archival.py`: a side-effect-free whole-site public archival plan for PP&D public sources, processor-suite handoff, PDF normalization, requirement extraction, link graph construction, and formal-logic output manifests.
+- `ppd/devhub/playwright_pdf_automation.py`: a side-effect-free Playwright and PDF draft automation plan for user-authorized draft form fills, local PDF field fills, audit events, and exact-confirmation gates.
+- Supervisor regression coverage proving completed boards synthesize new platform tasks instead of idling.
+- Daemon operations coverage proving watch mode starts the next cycle immediately when another task is selectable, while subprocess, validation, and LLM calls remain bounded by timeouts.
+
+The supervisor may patch daemon/supervisor programming when diagnostics show the daemon is stuck, but those patches must stay inside `ppd/`, pass validation, avoid private artifacts, and preserve the fail-closed DevHub action boundaries.
+
 The first PP&D daemon milestone should be documentation-only and fixture-only:
 
 1. Create `ppd/daemon/task-board.md`.

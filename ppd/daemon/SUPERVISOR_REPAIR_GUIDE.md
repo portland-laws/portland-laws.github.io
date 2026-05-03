@@ -13,8 +13,22 @@ Treat these exact malformed fragments as parser-failure examples that require a 
 - `if len(text) dict[str, str]`
 - `if _checkbox_178_syntax_preflight_count(history) RetryScopeDecision`
 - `if _checkbox_178_syntax_preflight_count(history) None`
+- `self.assertTrue(set(field_fill["sourceEvidenceIds"]) None`
+- unmatched closing braces such as a bare `}` in a Python unittest file
 
 These are not business-rule failures. They are syntax and code-generation failures. A retry should repair daemon supervision or add a very small validation guardrail before the worker attempts another DevHub, crawler, extraction, logic, contract, or fixture bundle.
+
+## Current Tranche 2 Parser Recovery
+
+The checkbox-225 rollback failed during Python syntax preflight in `ppd/tests/test_autonomous_platform_tranche2_source_evidence.py`. The malformed line used a TypeScript-style missing operator inside `self.assertTrue(...)`.
+
+The next cycle for checkbox-225 must not regenerate a broad source-evidence fixture plus test bundle. It should do exactly one of these parser-recovery actions:
+
+- Replace only `ppd/tests/test_autonomous_platform_tranche2_source_evidence.py` with a syntax-valid unittest that can compile on its own.
+- Replace only one daemon repair file under `ppd/daemon/` that makes future parser-loop retries smaller.
+- Replace only this guide if no code change is needed to steer the next prompt.
+
+A parser-recovery prompt for checkbox-225 should say that every Python assertion must use a complete boolean expression, such as `is None`, `is not None`, `==`, `!=`, `in`, `issubset(...)`, or `isinstance(...)`. It should also require mentally running `python3 -m py_compile ppd/tests/test_autonomous_platform_tranche2_source_evidence.py` before returning JSON.
 
 ## Parser Failure Escalation
 
@@ -30,6 +44,18 @@ The next worker prompt must require all of the following:
 - A validation command that includes `python3 ppd/tests/validate_ppd.py`.
 
 If the failed proposal touched a Python file, the retry prompt must tell the worker to mentally run `python3 -m py_compile` for that exact changed Python file before returning JSON. If the failed proposal touched a TypeScript file, the retry prompt must tell the worker to mentally run strict TypeScript parsing for that exact changed TypeScript file before returning JSON.
+
+## LLM Termination Escalation
+
+When two or more consecutive daemon rounds for the same target task fail before validation with no changed files and an error like `llm_router child exited with code -15`, the supervisor must stop immediately retrying that target task. Treat the next cycle as supervisor repair or task planning, not as another attempt to implement the blocked PP&D domain task.
+
+The next prompt after repeated LLM termination should be smaller than the failed prompt and should request exactly one of these outcomes:
+
+- One daemon operations document update that narrows retry behavior.
+- One daemon prompt, timeout, or diagnostics helper under `ppd/daemon/`.
+- One task-board append that adds a narrow fixture-first or validation-first task.
+
+The prompt should omit bulky historical context unless it is necessary for the repair decision. It should preserve the hard constraints, the active target label, the recent failure kind, and the exact validation command. It should not ask the worker to resume the same broad DevHub, crawler, extraction, or logic task until a repair or planning patch has validated.
 
 ## Allowed Recovery Shapes
 
@@ -59,3 +85,5 @@ A supervisor repair cycle must not implement the stalled PP&D domain task direct
 When the board has only blocked work, append or select a narrow daemon-repair task first. The next prompt should ask for JSON only, complete file replacements only, and a small file set. If the recent failure is parser-related, require the worker to mentally run py_compile for changed Python files or strict TypeScript parsing for changed TypeScript files before returning JSON.
 
 For checkbox-specific parser loops, prefer a daemon-repair or parser-clean test task over reopening blocked domain work. After two syntax_preflight failures for the same checkbox, the retry prompt should permit exactly one parser-bearing file or one daemon repair file and should reject bundled source, fixture, and test proposals before any DevHub domain retry.
+
+For repeated LLM termination loops, prefer a repair prompt that changes only daemon supervision, daemon operations documentation, or task planning. Do not keep selecting the same blocked domain task when the worker cannot produce a patch for it.

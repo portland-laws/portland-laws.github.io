@@ -94,12 +94,12 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-03T17:10:00.000000Z
+Last updated: 2026-05-03T20:03:28.802435Z
 
-- Latest target: `Manual implementation repair: resolve blocked board items checkbox-178, 182, 186, 187, 191, 193, 194, 195, 197, 198, 203, 208, 209, and 210`
-- Latest result: `accepted`
-- Latest summary: Added fixture-only DevHub draft-readiness decisions, compact diagnostic redaction/capping, retry-scope validation, blocked-selection coverage, supervisor recovery-note compaction, and repair-guide verification for every blocked board item.
-- Counts: `{"blocked": 0, "complete": 48, "in_progress": 0, "needed": 0}`
+- Latest target: `Task checkbox-225: Add autonomous platform continuation coverage for tranche 2 proving whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs stay connected through source evidence IDs.`
+- Latest result: `syntax_preflight`
+- Latest summary: Add fixture-first tranche 2 coverage tying whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs to shared source evidence IDs.
+- Counts: `{"blocked": 0, "complete": 54, "in_progress": 0, "needed": 4}`
 
 <!-- ppd-daemon-task-board:end -->
 ## Built-In Supervisor Repair Notes
@@ -116,3 +116,24 @@ Last updated: 2026-05-03T17:10:00.000000Z
 ## Built-In Supervisor Repair Notes
 
 - Appended deterministic blocked-cascade recovery tasks because all selectable work was blocked. The supervisor avoided the LLM repair path and created daemon-repair tasks that can run independently before blocked domain work is retried.
+
+## Built-In Autonomous PP&D Platform Tranche
+
+- [x] Task checkbox-219: Add a side-effect-free whole-site PP&D archival plan under ppd/crawler that models full public-site discovery, processor-suite handoff, PDF normalization, requirement extraction, and formal-logic outputs without live crawling or private artifacts.
+- [x] Task checkbox-220: Add validation coverage for the whole-site PP&D archival plan proving it uses the ipfs_datasets_py processor suite, public allowlists, robots preflight, bounded retries, and no raw crawl, browser, or private DevHub artifacts.
+- [x] Task checkbox-221: Add a side-effect-free Playwright and PDF draft automation plan under ppd/devhub that models user-authorized draft form fills, local PDF field fills, audit events, and exact-confirmation checkpoints without live login or official actions.
+- [x] Task checkbox-222: Add validation coverage for Playwright and PDF draft automation proving reversible draft fills are allowed while upload, submit, payment, certification, cancellation, inspection scheduling, MFA, CAPTCHA, and account creation remain refused by default.
+- [x] Task checkbox-223: Add supervisor completed-board regression coverage proving an all-complete PP&D board appends the autonomous platform tranche and restarts the daemon instead of idling with no available work.
+- [x] Task checkbox-224: Add daemon/supervisor operations coverage proving watch mode starts the next cycle immediately after each task, relies on LLM and validation timeouts to avoid hangs, and leaves supervisor replanning responsible for empty boards.
+
+## Built-In Supervisor Planning Notes
+
+- The completed PP&D recovery board now advances into autonomous platform work. This tranche is aligned to whole-site public archival, ipfs_datasets_py processor-suite handoff, guarded Playwright draft automation, local PDF field filling, and formal-logic guardrail extraction.
+- Slice policy: `autonomous_platform_after_completed_recovery`. The supervisor uses this deterministic tranche when an all-complete PP&D board would otherwise leave the daemon with no work.
+
+## Built-In Autonomous PP&D Platform Tranche 2
+
+- [~] Task checkbox-225: Add autonomous platform continuation coverage for tranche 2 proving whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs stay connected through source evidence IDs.
+- [ ] Task checkbox-226: Add processor-suite integration planning for tranche 2 proving PP&D public documents flow through archive manifests, normalized document records, PDF metadata, and requirement batches before agents use them.
+- [ ] Task checkbox-227: Add Playwright/PDF handoff validation for tranche 2 proving redacted user facts can fill draft fields and PDF previews while official DevHub transitions stay behind exact confirmation checkpoints.
+- [ ] Task checkbox-228: Add supervisor idle-recovery validation for tranche 2 proving completed boards synthesize new goal-aligned platform tasks without sleeping, duplicate tranche reuse, or blocked-task retry churn.
