@@ -1,0 +1,19 @@
+{
+  "lineage_edges": [
+    {
+      "id": "edge-stale-conflict",
+      "source_id": "https://www.portland.gov/ppd/permits/commercial-permits",
+      "target_id": "urn:ppd:public:commercial-submittal-rule",
+      "review_needed": false,
+      "conflicting_evidence": true,
+      "evidence": [
+        {
+          "citation_url": "https://www.portland.gov/ppd/permits/commercial-permits",
+          "public_identifier": "urn:ppd:public:commercial-permits-page",
+          "observed_at": "2024-01-01",
+          "status": "conflicts"
+        }
+      ]
+    }
+  ]
+}

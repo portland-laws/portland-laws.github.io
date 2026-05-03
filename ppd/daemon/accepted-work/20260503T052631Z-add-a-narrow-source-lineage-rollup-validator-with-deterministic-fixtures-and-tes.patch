@@ -1,0 +1,270 @@
+--- a/ppd/source_lineage_validation.py
++++ b/ppd/source_lineage_validation.py
+@@ -0,0 +1,158 @@
++"""Validation for PP&D source lineage rollups.
++
++The validator is intentionally small and deterministic so lineage evidence can be
++checked before downstream guardrails consume it.
++"""
++
++from __future__ import annotations
++
++from datetime import date, datetime
++from typing import Any
++from urllib.parse import urlparse
++
++_PRIVATE_MARKERS = (
++    "devhub_session",
++    "auth_state",
++    "storage_state",
++    "trace.zip",
++    "raw_crawl",
++    "downloaded_documents",
++    "private_devhub",
++    "captcha",
++)
++
++_STABLE_PREFIXES = (
++    "https://www.portland.gov/",
++    "https://efiles.portlandoregon.gov/",
++    "urn:ppd:public:",
++    "sha256:",
++)
++
++
++def validate_lineage_rollup(
++    rollup: dict[str, Any],
++    *,
++    today: date | None = None,
++    stale_after_days: int = 365,
++) -> dict[str, Any]:
++    """Return validation errors for a source lineage rollup.
++
++    Expected rollup shape is deliberately simple:
++    {"lineage_edges": [{"source_id": str, "target_id": str,
++      "review_needed": bool, "evidence": [{"citation_url": str,
++      "public_identifier": str, "observed_at": "YYYY-MM-DD"}]}]}
++    """
++
++    check_date = today or date.today()
++    errors: list[str] = []
++    review_needed_edges: list[str] = []
++    edges = rollup.get("lineage_edges")
++
++    if not isinstance(edges, list):
++        return {
++            "ok": False,
++            "errors": ["lineage_edges must be a list"],
++            "review_needed_edges": [],
++        }
++
++    for index, edge in enumerate(edges):
++        edge_label = _edge_label(edge, index)
++        if not isinstance(edge, dict):
++            errors.append(f"edge[{index}] must be an object")
++            continue
++
++        source_id = edge.get("source_id")
++        target_id = edge.get("target_id")
++        review_needed = edge.get("review_needed") is True
++        evidence = edge.get("evidence")
++
++        if not _is_stable_public_identifier(source_id):
++            errors.append(f"{edge_label} source_id is not a stable public identifier")
++        if not _is_stable_public_identifier(target_id):
++            errors.append(f"{edge_label} target_id is not a stable public identifier")
++        if _contains_private_devhub_artifact(source_id) or _contains_private_devhub_artifact(target_id):
++            errors.append(f"{edge_label} references a private DevHub artifact")
++
++        if not isinstance(evidence, list) or not evidence:
++            errors.append(f"{edge_label} has no citation-backed evidence")
++            continue
++
++        edge_needs_review = edge.get("conflicting_evidence") is True
++        for evidence_index, item in enumerate(evidence):
++            item_label = f"{edge_label} evidence[{evidence_index}]"
++            if not isinstance(item, dict):
++                errors.append(f"{item_label} must be an object")
++                continue
++
++            citation_url = item.get("citation_url")
++            public_identifier = item.get("public_identifier")
++            if not _is_public_citation_url(citation_url):
++                errors.append(f"{item_label} citation_url is not a public citation")
++            if not _is_stable_public_identifier(public_identifier):
++                errors.append(f"{item_label} public_identifier is not stable and public")
++            if _contains_private_devhub_artifact(citation_url) or _contains_private_devhub_artifact(public_identifier):
++                errors.append(f"{item_label} references a private DevHub artifact")
++
++            observed_at = _parse_date(item.get("observed_at"))
++            if observed_at is None:
++                errors.append(f"{item_label} observed_at must be YYYY-MM-DD")
++            elif (check_date - observed_at).days > stale_after_days:
++                edge_needs_review = True
++
++            if item.get("conflicts") is True or item.get("status") == "conflicts":
++                edge_needs_review = True
++
++        if edge_needs_review:
++            review_needed_edges.append(edge_label)
++            if not review_needed:
++                errors.append(f"{edge_label} has stale or conflicting evidence but is not review_needed")
++
++    return {
++        "ok": not errors,
++        "errors": errors,
++        "review_needed_edges": review_needed_edges,
++    }
++
++
++def _edge_label(edge: Any, index: int) -> str:
++    if isinstance(edge, dict) and edge.get("id"):
++        return str(edge["id"])
++    return f"edge[{index}]"
++
++
++def _is_public_citation_url(value: Any) -> bool:
++    if not isinstance(value, str) or _contains_private_devhub_artifact(value):
++        return False
++    parsed = urlparse(value)
++    return parsed.scheme == "https" and parsed.netloc in {
++        "www.portland.gov",
++        "efiles.portlandoregon.gov",
++    }
++
++
++def _is_stable_public_identifier(value: Any) -> bool:
++    if not isinstance(value, str) or not value.strip():
++        return False
++    lowered = value.lower()
++    if _contains_private_devhub_artifact(lowered):
++        return False
++    if lowered.startswith("sha256:"):
++        digest = value.split(":", 1)[1]
++        return len(digest) == 64 and all(char in "0123456789abcdefABCDEF" for char in digest)
++    return value.startswith(_STABLE_PREFIXES)
++
++
++def _contains_private_devhub_artifact(value: Any) -> bool:
++    if not isinstance(value, str):
++        return False
++    lowered = value.lower()
++    return any(marker in lowered for marker in _PRIVATE_MARKERS)
++
++
++def _parse_date(value: Any) -> date | None:
++    if not isinstance(value, str):
++        return None
++    try:
++        return datetime.strptime(value, "%Y-%m-%d").date()
++    except ValueError:
++        return None
+--- a/ppd/tests/test_source_lineage_validation.py
++++ b/ppd/tests/test_source_lineage_validation.py
+@@ -0,0 +1,44 @@
++from __future__ import annotations
++
++import json
++from datetime import date
++from pathlib import Path
++
++from ppd.source_lineage_validation import validate_lineage_rollup
++
++_FIXTURES = Path(__file__).parent / "fixtures" / "source_lineage"
++
++
++def _load_fixture(name: str) -> dict:
++    return json.loads((_FIXTURES / name).read_text(encoding="utf-8"))
++
++
++def test_accepts_public_citation_backed_lineage_edges() -> None:
++    result = validate_lineage_rollup(
++        _load_fixture("valid_rollup.json"),
++        today=date(2026, 5, 3),
++    )
++
++    assert result == {"ok": True, "errors": [], "review_needed_edges": []}
++
++
++def test_rejects_private_devhub_artifacts_and_unstable_identifiers() -> None:
++    result = validate_lineage_rollup(
++        _load_fixture("private_artifact_rollup.json"),
++        today=date(2026, 5, 3),
++    )
++
++    assert result["ok"] is False
++    assert any("private DevHub artifact" in error for error in result["errors"])
++    assert any("stable public identifier" in error for error in result["errors"])
++
++
++def test_requires_review_needed_for_stale_or_conflicting_evidence() -> None:
++    result = validate_lineage_rollup(
++        _load_fixture("stale_conflict_rollup.json"),
++        today=date(2026, 5, 3),
++    )
++
++    assert result["ok"] is False
++    assert result["review_needed_edges"] == ["edge-stale-conflict"]
++    assert any("not review_needed" in error for error in result["errors"])
+--- a/ppd/tests/fixtures/source_lineage/valid_rollup.json
++++ b/ppd/tests/fixtures/source_lineage/valid_rollup.json
+@@ -0,0 +1,17 @@
++{
++  "lineage_edges": [
++    {
++      "id": "edge-public-guidance-to-checklist",
++      "source_id": "https://www.portland.gov/ppd/permits/residential-permits",
++      "target_id": "urn:ppd:public:residential-checklist",
++      "review_needed": false,
++      "evidence": [
++        {
++          "citation_url": "https://www.portland.gov/ppd/permits/residential-permits",
++          "public_identifier": "https://www.portland.gov/ppd/permits/residential-permits",
++          "observed_at": "2026-04-15"
++        }
++      ]
++    }
++  ]
++}
+--- a/ppd/tests/fixtures/source_lineage/private_artifact_rollup.json
++++ b/ppd/tests/fixtures/source_lineage/private_artifact_rollup.json
+@@ -0,0 +1,17 @@
++{
++  "lineage_edges": [
++    {
++      "id": "edge-private-devhub",
++      "source_id": "devhub_session://case/12345",
++      "target_id": "temporary-target-id",
++      "review_needed": false,
++      "evidence": [
++        {
++          "citation_url": "https://www.portland.gov/ppd/permits/residential-permits",
++          "public_identifier": "private_devhub/raw_crawl/session-12345.json",
++          "observed_at": "2026-04-20"
++        }
++      ]
++    }
++  ]
++}
+--- a/ppd/tests/fixtures/source_lineage/stale_conflict_rollup.json
++++ b/ppd/tests/fixtures/source_lineage/stale_conflict_rollup.json
+@@ -0,0 +1,19 @@
++{
++  "lineage_edges": [
++    {
++      "id": "edge-stale-conflict",
++      "source_id": "https://www.portland.gov/ppd/permits/commercial-permits",
++      "target_id": "urn:ppd:public:commercial-submittal-rule",
++      "review_needed": false,
++      "conflicting_evidence": true,
++      "evidence": [
++        {
++          "citation_url": "https://www.portland.gov/ppd/permits/commercial-permits",
++          "public_identifier": "urn:ppd:public:commercial-permits-page",
++          "observed_at": "2024-01-01",
++          "status": "conflicts"
++        }
++      ]
++    }
++  ]
++}

@@ -263,3 +263,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260502T205745Z-add-browser-native-cec-ambiguity-resolver-scaffold-with-deterministic-scoring-an.json`, `ipfs_datasets_py/.daemon/accepted-work/20260502T205745Z-add-browser-native-cec-ambiguity-resolver-scaffold-with-deterministic-scoring-an.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260502T205745Z-add-browser-native-cec-ambiguity-resolver-scaffold-with-deterministic-scoring-an.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-03 05:26:31 UTC
+
+- Target: `Task checkbox-204: Port remaining Python logic module `logic/CEC/native/dcec_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Repair dcec_core compatibility adapter typing for isolatedModules
+- Impact: The corrected dcecNativeCore.ts re-exports type-only symbols with export type and narrows adapter constructor arguments to DCEC terms/formulas, so the browser-native TypeScript DCEC compatibility surface and focused Jest coverage compile under the port validation suite.
+- Changed files: `src/lib/logic/cec/dcecCore.test.ts`, `src/lib/logic/cec/dcecNativeCore.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260503T052631Z-repair-dcec_core-compatibility-adapter-typing-for-isolatedmodules.json`, `ipfs_datasets_py/.daemon/accepted-work/20260503T052631Z-repair-dcec_core-compatibility-adapter-typing-for-isolatedmodules.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260503T052631Z-repair-dcec_core-compatibility-adapter-typing-for-isolatedmodules.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

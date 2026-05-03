@@ -714,7 +714,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [!] Port remaining Python logic module `logic/CEC/native/cec_zkp_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [!] Port remaining Python logic module `logic/CEC/native/context_manager.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [!] Port remaining Python logic module `logic/CEC/native/dcec_cleaning.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/dcec_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/CEC/native/dcec_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/dcec_english_grammar.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/dcec_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/dcec_namespace.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-03 04:23:59 UTC
+Last updated: 2026-05-03 05:26:31 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-204: Port remaining Python logic module 'logic/CEC/native/dcec_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-205: Port remaining Python logic module 'logic/CEC/native/dcec_english_grammar.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1178,8 +1178,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [!] `Task checkbox-200: Port remaining Python logic module 'logic/CEC/native/cec_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
 - [!] `Task checkbox-201: Port remaining Python logic module 'logic/CEC/native/cec_zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
 - [!] `Task checkbox-202: Port remaining Python logic module 'logic/CEC/native/context_manager.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-203: Port remaining Python logic module 'logic/CEC/native/dcec_cleaning.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - latest daemon round failed validation or preflight
-- [ ] `Task checkbox-204: Port remaining Python logic module 'logic/CEC/native/dcec_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [!] `Task checkbox-203: Port remaining Python logic module 'logic/CEC/native/dcec_cleaning.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [x] `Task checkbox-204: Port remaining Python logic module 'logic/CEC/native/dcec_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-205: Port remaining Python logic module 'logic/CEC/native/dcec_english_grammar.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-206: Port remaining Python logic module 'logic/CEC/native/dcec_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-207: Port remaining Python logic module 'logic/CEC/native/dcec_namespace.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,76 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-203: Port remaining Python logic module 'logic/CEC/native/dcec_cleaning.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
-- Result: `needs follow-up`
-- Summary: Ported a focused browser-native DCEC native cleaning slice.
-- Impact: src/lib/logic/cec/dcecCleaning.ts now provides deterministic TypeScript implementations for DCEC comment stripping, whitespace normalization, parenthesis validation, symbolic operator functorization, nested native function tucking, and fail-closed expression cleaning. src/lib/logic/cec/dcecCleaning.test.ts exercises these contracts through the existing Jest logic validation suite without Python, server, filesystem, subprocess, or Node-only runtime dependencies.
-- Errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/cec/dcecCleaning.ts(8,1): error TS1005: ':' expected.
-../../..src/lib/logic/cec/dcecCleaning.ts(8,17): error TS1005: ':' expected.
-../../..src/lib/logic/cec/dcecCleaning.ts(8,47): error TS1005: ',' expected.
-../../..src/lib/logic/cec/dcecCleaning.ts(8,56): error TS1005: ',' expected.
-../../..src/lib/logic/cec/dcecCleaning.ts(8,65): error TS1005: ',' expected.
-../../..src/lib/logic/cec/dcecCleaning.ts(9,7): error TS1005: ',' expected.
-../../..src/lib/logic/cec/dcecCleaning.ts(9,31): error TS1005: ',' expected.
-../../..src/lib/logic/cec/dcecCleaning.ts(22,1): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/cec/dcecCleaning.ts(36,76): error TS1005: ';' expected.
-../../..src/lib/logic/cec/dcecCleaning.ts(42,7): error TS1005: ')' expected.
-../../..src/lib/logic/cec/dcecCleaning.ts(44,23): error TS1005: ')' expected.
-../../..src/lib/logic/cec/dcecCleaning.ts(44,47): error TS1005: ';' expected.
-../../..src/lib/logic/cec/dcecCleaning.ts(44,48): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/cec/dcecCleaning.ts(81,30): error TS1005: ';' expected.
-
-Replacement diagnostic context:
-src/lib/logic/cec/dcecCleaning.ts:8:1 TS1005: ':' expected.
-  6:   ' = Object.keys(SYMBOL_REPLACEMENTS).sort((left, right) => right.length - left.length);
-  7: 
-> 8: export function stripDcecWhitespace(expression: string): string {
-  9:   let text = expression.trim();
-  10:   text = text.replaceAll('[', ' [').replaceAll(']', '] ');
-
-src/lib/logic/cec/dcecCleaning.ts:9:7 TS1005: ',' expected.
-  7: 
-  8: export function stripDcecWhitespace(expression: string): string {
-> 9:   let text = expression.trim();
-  10:   text = text.replaceAll('[', ' [').replaceAll(']', '] ');
-  11:   text = text.replaceAll(',', ' ');
-
-src/lib/logic/cec/dcecCleaning.ts:22:1 TS1128: Declaration or statement expected.
-  20: 
-  21:   return text.replaceAll(')(', ') (').replaceAll(' ', ',');
-> 22: }
-  23: 
-  24: export function stripDcecComments(expression: string): string {
-
-src/lib/logic/cec/dcecCleaning.ts:36:76 TS1005: ';' expected.
-  34: export function checkDcecParens(expression: string): boolean {
-  35:   let depth = 0;
-> 36:   for (let index = 0; index = input.length || input[openParenIndex] !== '(') {
-  37:     return undefined;
-  38:   }
-
-src/lib/logic/cec/dcecCleaning.ts:42:7 TS1005: ')' expected.
-  40:   let depth = 0;
-  41:   for (let index = openParenIndex; index ();
-> 42:   let firstParen = 0;
-  43: 
-  44:   while (firstParen  !deleteIndexes.has(index)).join('');
-
-src/lib/logic/cec/dcecCleaning.ts:44:23 TS1005: ')' expected.
-  42:   let firstParen = 0;
-  43: 
-> 44:   while (firstParen  !deleteIndexes.has(index)).join('');
-  45:   if (result.includes(' ')) {
-  46:     const innerAtomPattern = /(? expression.startsWith(candidate, index));
-
-src/lib/logic/cec/dcecCleaning.ts:81:30 TS1005: ';' expected.
-  79:   let start = 0;
-  80: 
-> 81:   for (let index = 0; index  0) {
-  82:     parts.push(finalPart);
-  83:   }
-- Failure kind: `typescript_quality`
+- Target: `Task checkbox-204: Port remaining Python logic module 'logic/CEC/native/dcec_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Result: `valid`
+- Summary: Repair dcec_core compatibility adapter typing for isolatedModules
+- Impact: The corrected dcecNativeCore.ts re-exports type-only symbols with export type and narrows adapter constructor arguments to DCEC terms/formulas, so the browser-native TypeScript DCEC compatibility surface and focused Jest coverage compile under the port validation suite.
+- Accepted changed files: `src/lib/logic/cec/dcecCore.test.ts`, `src/lib/logic/cec/dcecNativeCore.ts`
 
 ### Blocked Backlog
 

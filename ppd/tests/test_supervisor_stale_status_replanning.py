@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import tempfile
 import unittest
+from datetime import datetime, timezone
+import os
 from pathlib import Path
 
 from ppd.daemon.ppd_daemon import atomic_write_json
@@ -95,7 +97,7 @@ class SupervisorStaleStatusReplanningTest(unittest.TestCase):
         self.assertIn("- [ ] Task checkbox-160: Add supervisor task-board de-duplication coverage.", repaired)
         self.assertNotIn("- [~] Task checkbox-160", repaired)
 
-    def test_repeated_durable_parse_diagnostics_trigger_repair_before_restart_loop(self) -> None:
+    def test_repeated_durable_parse_diagnostics_trigger_deterministic_parking_before_restart_loop(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
             repo = Path(tempdir)
             daemon_dir = repo / "ppd" / "daemon"
@@ -129,7 +131,9 @@ class SupervisorStaleStatusReplanningTest(unittest.TestCase):
             decision = diagnose(SupervisorConfig(repo_root=repo, pid_file=Path("ppd/daemon/missing.pid")))
 
         self.assertEqual(3, len(rows))
-        self.assertEqual("repair_daemon_programming", decision.action)
+        self.assertEqual("reconcile_repeated_llm_loop_and_restart", decision.action)
+        self.assertFalse(decision.should_invoke_codex)
+        self.assertTrue(decision.should_restart_daemon)
         self.assertIn("durable LLM parse/runtime diagnostics", decision.reason)
 
     def test_repeated_parse_diagnostics_park_stuck_task_in_builtin_repair(self) -> None:
@@ -186,6 +190,39 @@ class SupervisorStaleStatusReplanningTest(unittest.TestCase):
         self.assertIn("Recent daemon results", prompt)
         self.assertIn("task-board-summary", prompt)
         self.assertNotIn("FAILED_MANIFEST_SHOULD_NOT_APPEAR", prompt)
+
+    def test_running_worker_stalled_in_calling_llm_gets_deterministic_restart_decision(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+            board = repo / "ppd" / "daemon" / "task-board.md"
+            board.parent.mkdir(parents=True)
+            board.write_text(
+                "- [~] Task checkbox-200: Add stalled worker coverage.\n",
+                encoding="utf-8",
+            )
+            atomic_write_json(
+                repo / "ppd" / "daemon" / "status.json",
+                {
+                    "updated_at": "2026-05-03T00:10:00Z",
+                    "active_state": "calling_llm",
+                    "active_state_started_at": "2026-05-03T00:00:00Z",
+                    "active_target_task": "Task checkbox-200: Add stalled worker coverage.",
+                },
+            )
+            pid_file = repo / "ppd" / "daemon" / "ppd-daemon.pid"
+            pid_file.write_text(str(os.getpid()), encoding="utf-8")
+
+            decision = diagnose(
+                SupervisorConfig(
+                    repo_root=repo,
+                    active_state_timeout_seconds=60,
+                ),
+                now=datetime(2026, 5, 3, 0, 2, 1, tzinfo=timezone.utc),
+            )
+
+        self.assertEqual("reconcile_stalled_worker_and_restart", decision.action)
+        self.assertFalse(decision.should_invoke_codex)
+        self.assertTrue(decision.should_restart_daemon)
 
 
 if __name__ == "__main__":

@@ -28,9 +28,9 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 
 ## Built-In Goal Replenishment Tranche 11
 
-- [~] Task checkbox-176: Add a fixture-only public source lineage rollup plus focused validation that summarizes PP&D seed URLs, processor handoff manifests, normalized document IDs, source freshness records, and skipped-action reasons without live crawling or raw response bodies.
-- [ ] Task checkbox-177: Add validation for source lineage rollups proving every lineage edge is citation-backed, uses stable public identifiers, excludes private DevHub artifacts, and marks stale or conflicting evidence review-needed before downstream guardrails reuse it.
-- [ ] Task checkbox-178: Add a fixture-only DevHub draft-readiness decision matrix plus focused validation that combines missing facts, redacted file placeholders, selector confidence, upload-readiness gates, fee notices, and exact-confirmation defaults while refusing official actions.
+- [!] Task checkbox-176: Add a fixture-only public source lineage rollup plus focused validation that summarizes PP&D seed URLs, processor handoff manifests, normalized document IDs, source freshness records, and skipped-action reasons without live crawling or raw response bodies.
+- [x] Task checkbox-177: Add validation for source lineage rollups proving every lineage edge is citation-backed, uses stable public identifiers, excludes private DevHub artifacts, and marks stale or conflicting evidence review-needed before downstream guardrails reuse it.
+- [~] Task checkbox-178: Add a fixture-only DevHub draft-readiness decision matrix plus focused validation that combines missing facts, redacted file placeholders, selector confidence, upload-readiness gates, fee notices, and exact-confirmation defaults while refusing official actions.
 - [ ] Task checkbox-179: Add a fixture-only formal-logic contradiction packet plus focused validation that detects incompatible PP&D obligations or prerequisites, preserves both provenance chains, marks affected predicates blocked, and asks for human review before agent planning continues.
 
 ## Built-In Supervisor Planning Notes
@@ -38,3 +38,19 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 - The supervisor reviewed the completed PP&D backlog against the original crawl, extraction, DevHub drafting, and formal-logic guardrail goals and appended the next fixture-first tranche without implementing domain artifacts.
 - This tranche keeps the next daemon cycles ordered: public lineage fixture first, validation second, draft-readiness planning third, and formal-logic contradiction handling fourth.
 - No live crawl, authenticated DevHub session, raw document download, payment, upload, certification, submission, cancellation, CAPTCHA, MFA, account creation, or inspection scheduling work is authorized by these tasks.
+## Built-In Supervisor Repair Notes
+
+- Parked repeated LLM parse/runtime loop for `Add a fixture-only public source lineage rollup plus focused validation that summarizes PP&D seed URLs, processor handoff manifests, normalized document IDs, source freshness records, and skipped-action reasons without live crawling or raw response bodies.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
+
+
+<!-- ppd-daemon-task-board:start -->
+## Generated Status
+
+Last updated: 2026-05-03T05:26:31.840884Z
+
+- Latest target: `Task checkbox-177: Add validation for source lineage rollups proving every lineage edge is citation-backed, uses stable public identifiers, excludes private DevHub artifacts, and marks stale or conflicting evidence review-needed before downstream guardrails reuse it.`
+- Latest result: `accepted`
+- Latest summary: Add a narrow source lineage rollup validator with deterministic fixtures and tests.
+- Counts: `{"blocked": 1, "complete": 6, "in_progress": 0, "needed": 2}`
+
+<!-- ppd-daemon-task-board:end -->

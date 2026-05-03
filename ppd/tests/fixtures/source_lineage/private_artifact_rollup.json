@@ -1,0 +1,17 @@
+{
+  "lineage_edges": [
+    {
+      "id": "edge-private-devhub",
+      "source_id": "devhub_session://case/12345",
+      "target_id": "temporary-target-id",
+      "review_needed": false,
+      "evidence": [
+        {
+          "citation_url": "https://www.portland.gov/ppd/permits/residential-permits",
+          "public_identifier": "private_devhub/raw_crawl/session-12345.json",
+          "observed_at": "2026-04-20"
+        }
+      ]
+    }
+  ]
+}

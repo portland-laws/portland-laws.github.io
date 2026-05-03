@@ -913,14 +913,13 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
     )
     if parse_or_llm_diagnostic_failures >= config.repeated_failure_threshold:
         return SupervisorDecision(
-            action="repair_daemon_programming",
+            action="reconcile_repeated_llm_loop_and_restart",
             reason=(
                 f"{parse_or_llm_diagnostic_failures} recent durable LLM parse/runtime diagnostics were recorded "
-                "for the same task before the daemon exited; patch prompt, parsing, parking, or retry policy "
-                "before restarting the worker again"
+                "for the same task before the daemon exited; park the looping task and restart on the next "
+                "independent task without invoking the LLM repair path"
             ),
             severity="warning",
-            should_invoke_codex=True,
             should_restart_daemon=True,
         )
 
@@ -962,13 +961,12 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
         if active_state_age > config.active_state_timeout_seconds:
             target = status.get("active_target_task") or status.get("target_task") or ""
             return SupervisorDecision(
-                action="invoke_codex",
+                action="reconcile_stalled_worker_and_restart",
                 reason=(
                     f"daemon has been in {active_state} for {int(active_state_age)} seconds "
-                    f"on {target}; repair or restart the worker so it can keep making progress"
+                    f"on {target}; reset the in-progress task and restart the worker with a fresh timeout window"
                 ),
                 severity="warning",
-                should_invoke_codex=True,
                 should_restart_daemon=True,
             )
 
@@ -1373,7 +1371,19 @@ def write_supervisor_status(config: SupervisorConfig, decision: SupervisorDecisi
 def run_once(config: SupervisorConfig) -> SupervisorDecision:
     decision = diagnose(config)
     proposal: Optional[Proposal] = None
-    if decision.action == "reconcile_dead_worker_and_restart" and config.apply:
+    if decision.action == "reconcile_repeated_llm_loop_and_restart" and config.apply:
+        if config.restart_daemon:
+            run_control(config, "stop")
+        proposal = invoke_builtin_repair(
+            config,
+            decision,
+            Proposal(summary="Repeated LLM parse/runtime diagnostic loop detected.", failure_kind="llm"),
+        )
+        if config.restart_daemon:
+            run_control(config, "start")
+    elif decision.action in {"reconcile_dead_worker_and_restart", "reconcile_stalled_worker_and_restart"} and config.apply:
+        if config.restart_daemon:
+            run_control(config, "stop")
         proposal = invoke_dead_worker_repair(config, decision)
         if config.restart_daemon:
             run_control(config, "start")

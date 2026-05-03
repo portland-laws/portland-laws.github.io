@@ -1,0 +1,60 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,15 +1,15 @@
+ {
+-  "createdAt": "2026-05-03T03:07:30.278610Z",
++  "createdAt": "2026-05-03T05:14:43.977914Z",
+   "decision": {
+-    "action": "plan_next_tasks",
+-    "reason": "all PP&D daemon tasks are complete; review the original PP&D goal and add the next task-board tranche",
+-    "severity": "info"
++    "action": "reconcile_repeated_llm_loop_and_restart",
++    "reason": "62 recent durable LLM parse/runtime diagnostics were recorded for the same task before the daemon exited; park the looping task and restart on the next independent task without invoking the LLM repair path",
++    "severity": "warning"
+   },
+   "failedAgenticRepair": {
+     "changedFiles": [],
+     "errors": [],
+-    "failureKind": "no_eligible_tasks",
+-    "summary": "All currently planned PP&D tasks are complete.",
++    "failureKind": "llm",
++    "summary": "Repeated LLM parse/runtime diagnostic loop detected.",
+     "validationResults": []
+   },
+   "fallbackActions": [
+@@ -29,13 +29,10 @@
+   ],
+   "schemaVersion": 1,
+   "taskBoardRepair": {
+-    "parkedRepeatedSyntaxLoopTasks": [],
+-    "replenishedGoalTaskLabels": [
+-      "checkbox-172",
+-      "checkbox-173",
+-      "checkbox-174",
+-      "checkbox-175"
++    "parkedRepeatedSyntaxLoopTasks": [
++      "Add a fixture-only public source lineage rollup plus focused validation that summarizes PP&D seed URLs, processor handoff manifests, normalized document IDs, source freshness records, and skipped-action reasons without live crawling or raw response bodies."
+     ],
++    "replenishedGoalTaskLabels": [],
+     "supersededTaskBoardOnlyLabels": [],
+     "taskBoardUpdated": true
+   }
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -28,7 +28,7 @@
+ 
+ ## Built-In Goal Replenishment Tranche 11
+ 
+-- [~] Task checkbox-176: Add a fixture-only public source lineage rollup plus focused validation that summarizes PP&D seed URLs, processor handoff manifests, normalized document IDs, source freshness records, and skipped-action reasons without live crawling or raw response bodies.
++- [!] Task checkbox-176: Add a fixture-only public source lineage rollup plus focused validation that summarizes PP&D seed URLs, processor handoff manifests, normalized document IDs, source freshness records, and skipped-action reasons without live crawling or raw response bodies.
+ - [ ] Task checkbox-177: Add validation for source lineage rollups proving every lineage edge is citation-backed, uses stable public identifiers, excludes private DevHub artifacts, and marks stale or conflicting evidence review-needed before downstream guardrails reuse it.
+ - [ ] Task checkbox-178: Add a fixture-only DevHub draft-readiness decision matrix plus focused validation that combines missing facts, redacted file placeholders, selector confidence, upload-readiness gates, fee notices, and exact-confirmation defaults while refusing official actions.
+ - [ ] Task checkbox-179: Add a fixture-only formal-logic contradiction packet plus focused validation that detects incompatible PP&D obligations or prerequisites, preserves both provenance chains, marks affected predicates blocked, and asks for human review before agent planning continues.
+@@ -38,3 +38,7 @@
+ - The supervisor reviewed the completed PP&D backlog against the original crawl, extraction, DevHub drafting, and formal-logic guardrail goals and appended the next fixture-first tranche without implementing domain artifacts.
+ - This tranche keeps the next daemon cycles ordered: public lineage fixture first, validation second, draft-readiness planning third, and formal-logic contradiction handling fourth.
+ - No live crawl, authenticated DevHub session, raw document download, payment, upload, certification, submission, cancellation, CAPTCHA, MFA, account creation, or inspection scheduling work is authorized by these tasks.
++## Built-In Supervisor Repair Notes
++
++- Parked repeated LLM parse/runtime loop for `Add a fixture-only public source lineage rollup plus focused validation that summarizes PP&D seed URLs, processor handoff manifests, normalized document IDs, source freshness records, and skipped-action reasons without live crawling or raw response bodies.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
++

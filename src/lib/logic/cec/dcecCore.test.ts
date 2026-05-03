@@ -18,6 +18,21 @@ import {
   sameDcecFormula,
 } from './dcecCore';
 import {
+  AtomicFormula,
+  FunctionSymbol,
+  FunctionTerm,
+  PredicateSymbol,
+  Sort,
+  Variable,
+  VariableTerm,
+  atom,
+  get_free_variables,
+  get_sort,
+  implication,
+  same_formula,
+  substitute_formula,
+} from './dcecNativeCore';
+import {
   DcecCognitiveOperator,
   DcecDeonticOperator,
   DcecFunctionSymbol,
@@ -62,9 +77,14 @@ describe('DCEC core formulas and terms', () => {
     const substituted = formula.substitute(agent, new DcecVariableTerm(reviewer));
 
     expect(String(formula)).toBe('authorized(agent:Agent, action:Action)');
-    expect([...formula.getFreeVariables()].map(String).sort()).toEqual(['action:Action', 'agent:Agent']);
+    expect([...formula.getFreeVariables()].map(String).sort()).toEqual([
+      'action:Action',
+      'agent:Agent',
+    ]);
     expect(String(substituted)).toBe('authorized(reviewer:Agent, action:Action)');
-    expect(() => new DcecAtomicFormula(predicate, [new DcecVariableTerm(agent)])).toThrow(LogicValidationError);
+    expect(() => new DcecAtomicFormula(predicate, [new DcecVariableTerm(agent)])).toThrow(
+      LogicValidationError,
+    );
   });
 
   it('renders deontic, cognitive, and temporal formulas in Python-compatible notation', () => {
@@ -72,11 +92,21 @@ describe('DCEC core formulas and terms', () => {
     const agentTerm = new DcecVariableTerm(agent);
     const timeTerm = new DcecVariableTerm(time);
 
-    expect(String(new DcecDeonticFormula(DcecDeonticOperator.OBLIGATION, permitted))).toBe('O(permit())');
-    expect(String(new DcecDeonticFormula(DcecDeonticOperator.PERMISSION, permitted, agentTerm))).toBe('P[agent:Agent](permit())');
-    expect(String(new DcecCognitiveFormula(DcecCognitiveOperator.BELIEF, agentTerm, permitted))).toBe('B(agent:Agent, permit())');
-    expect(String(new DcecTemporalFormula(DcecTemporalOperator.ALWAYS, permitted))).toBe('□(permit())');
-    expect(String(new DcecTemporalFormula(DcecTemporalOperator.EVENTUALLY, permitted, timeTerm))).toBe('◊[t:Moment](permit())');
+    expect(String(new DcecDeonticFormula(DcecDeonticOperator.OBLIGATION, permitted))).toBe(
+      'O(permit())',
+    );
+    expect(
+      String(new DcecDeonticFormula(DcecDeonticOperator.PERMISSION, permitted, agentTerm)),
+    ).toBe('P[agent:Agent](permit())');
+    expect(
+      String(new DcecCognitiveFormula(DcecCognitiveOperator.BELIEF, agentTerm, permitted)),
+    ).toBe('B(agent:Agent, permit())');
+    expect(String(new DcecTemporalFormula(DcecTemporalOperator.ALWAYS, permitted))).toBe(
+      '□(permit())',
+    );
+    expect(
+      String(new DcecTemporalFormula(DcecTemporalOperator.EVENTUALLY, permitted, timeTerm)),
+    ).toBe('◊[t:Moment](permit())');
   });
 
   it('validates and renders logical connectives and quantifiers', () => {
@@ -84,17 +114,33 @@ describe('DCEC core formulas and terms', () => {
     const q = dcecAtom('Q');
     const r = dcecAtom('R');
 
-    expect(String(new DcecConnectiveFormula(DcecLogicalConnective.AND, [p, q, r]))).toBe('(P() ∧ Q() ∧ R())');
+    expect(String(new DcecConnectiveFormula(DcecLogicalConnective.AND, [p, q, r]))).toBe(
+      '(P() ∧ Q() ∧ R())',
+    );
     expect(String(new DcecConnectiveFormula(DcecLogicalConnective.OR, [p, q]))).toBe('(P() ∨ Q())');
     expect(String(new DcecConnectiveFormula(DcecLogicalConnective.NOT, [p]))).toBe('¬(P())');
-    expect(String(new DcecConnectiveFormula(DcecLogicalConnective.IMPLIES, [p, q]))).toBe('(P() → Q())');
-    expect(String(new DcecConnectiveFormula(DcecLogicalConnective.BICONDITIONAL, [p, q]))).toBe('(P() ↔ Q())');
-    expect(String(new DcecQuantifiedFormula(DcecLogicalConnective.FORALL, agent, p))).toBe('∀agent:Agent(P())');
-    expect(String(new DcecQuantifiedFormula(DcecLogicalConnective.EXISTS, action, q))).toBe('∃action:Action(Q())');
+    expect(String(new DcecConnectiveFormula(DcecLogicalConnective.IMPLIES, [p, q]))).toBe(
+      '(P() → Q())',
+    );
+    expect(String(new DcecConnectiveFormula(DcecLogicalConnective.BICONDITIONAL, [p, q]))).toBe(
+      '(P() ↔ Q())',
+    );
+    expect(String(new DcecQuantifiedFormula(DcecLogicalConnective.FORALL, agent, p))).toBe(
+      '∀agent:Agent(P())',
+    );
+    expect(String(new DcecQuantifiedFormula(DcecLogicalConnective.EXISTS, action, q))).toBe(
+      '∃action:Action(Q())',
+    );
 
-    expect(() => new DcecConnectiveFormula(DcecLogicalConnective.NOT, [p, q])).toThrow(LogicValidationError);
-    expect(() => new DcecConnectiveFormula(DcecLogicalConnective.AND, [p])).toThrow(LogicValidationError);
-    expect(() => new DcecQuantifiedFormula(DcecLogicalConnective.AND, agent, p)).toThrow(LogicValidationError);
+    expect(() => new DcecConnectiveFormula(DcecLogicalConnective.NOT, [p, q])).toThrow(
+      LogicValidationError,
+    );
+    expect(() => new DcecConnectiveFormula(DcecLogicalConnective.AND, [p])).toThrow(
+      LogicValidationError,
+    );
+    expect(() => new DcecQuantifiedFormula(DcecLogicalConnective.AND, agent, p)).toThrow(
+      LogicValidationError,
+    );
   });
 
   it('tracks bound variables and avoids substituting quantified variables', () => {
@@ -107,20 +153,49 @@ describe('DCEC core formulas and terms', () => {
 
     expect([...quantified.getFreeVariables()].map(String)).toEqual(['action:Action']);
     expect(quantified.substitute(agent, new DcecVariableTerm(reviewer))).toBe(quantified);
-    expect(String(quantified.substitute(action, new DcecVariableTerm(new DcecVariable('appeal', actionSort))))).toBe(
-      '∀agent:Agent(assigned(agent:Agent, appeal:Action))',
-    );
+    expect(
+      String(
+        quantified.substitute(action, new DcecVariableTerm(new DcecVariable('appeal', actionSort))),
+      ),
+    ).toBe('∀agent:Agent(assigned(agent:Agent, appeal:Action))');
   });
 
   it('supports convenience constructors, statement formatting, and string equality', () => {
     const p = dcecAtom('P');
     const q = dcecAtom('Q');
     const conjunction = dcecConjunction(p, q);
-    const statement = createDcecStatement(dcecImplication(conjunction, dcecNegation(q)), 'rule1', { source: 'fixture' });
+    const statement = createDcecStatement(dcecImplication(conjunction, dcecNegation(q)), 'rule1', {
+      source: 'fixture',
+    });
 
     expect(String(dcecDisjunction(p, q))).toBe('(P() ∨ Q())');
     expect(formatDcecStatement(statement)).toBe('rule1: ((P() ∧ Q()) → ¬(Q()))');
-    expect(sameDcecFormula(dcecAtom('P'), new DcecAtomicFormula(new DcecPredicateSymbol('P', []), []))).toBe(true);
+    expect(
+      sameDcecFormula(dcecAtom('P'), new DcecAtomicFormula(new DcecPredicateSymbol('P', []), [])),
+    ).toBe(true);
     expect(statement.metadata).toEqual({ source: 'fixture' });
+  });
+
+  it('exposes a browser-native dcec_core.py compatibility surface without runtime fallbacks', () => {
+    const nativeAgentSort = new Sort('Agent');
+    const nativeActionSort = new Sort('Action');
+    const nativeAgent = new Variable('agent', nativeAgentSort);
+    const nativeAction = new Variable('action', nativeActionSort);
+    const nativeReviewer = new Variable('reviewer', nativeAgentSort);
+    const owns = new FunctionSymbol('owns', [nativeActionSort], nativeAgentSort);
+    const allowed = new PredicateSymbol('allowed', [nativeAgentSort, nativeActionSort]);
+    const nativeActionTerm = new VariableTerm(nativeAction);
+    const nativeOwnerTerm = new FunctionTerm(owns, [nativeActionTerm]);
+    const formula = new AtomicFormula(allowed, [new VariableTerm(nativeAgent), nativeActionTerm]);
+    const substituted = substitute_formula(formula, nativeAgent, new VariableTerm(nativeReviewer));
+
+    expect(get_sort(nativeOwnerTerm)).toBe(nativeAgentSort);
+    expect([...get_free_variables(nativeOwnerTerm)].map(String)).toEqual(['action:Action']);
+    expect(String(atom('ready'))).toBe('ready()');
+    expect(String(implication(formula, atom('audited')))).toBe(
+      '(allowed(agent:Agent, action:Action) → audited())',
+    );
+    expect(String(substituted)).toBe('allowed(reviewer:Agent, action:Action)');
+    expect(same_formula(atom('ready'), dcecAtom('ready'))).toBe(true);
   });
 });

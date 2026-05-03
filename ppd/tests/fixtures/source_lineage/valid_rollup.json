@@ -1,0 +1,17 @@
+{
+  "lineage_edges": [
+    {
+      "id": "edge-public-guidance-to-checklist",
+      "source_id": "https://www.portland.gov/ppd/permits/residential-permits",
+      "target_id": "urn:ppd:public:residential-checklist",
+      "review_needed": false,
+      "evidence": [
+        {
+          "citation_url": "https://www.portland.gov/ppd/permits/residential-permits",
+          "public_identifier": "https://www.portland.gov/ppd/permits/residential-permits",
+          "observed_at": "2026-04-15"
+        }
+      ]
+    }
+  ]
+}
