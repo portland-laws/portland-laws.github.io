@@ -94,12 +94,12 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-03T20:03:28.802435Z
+Last updated: 2026-05-03T20:32:00.403435Z
 
-- Latest target: `Task checkbox-225: Add autonomous platform continuation coverage for tranche 2 proving whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs stay connected through source evidence IDs.`
-- Latest result: `syntax_preflight`
-- Latest summary: Add fixture-first tranche 2 coverage tying whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs to shared source evidence IDs.
-- Counts: `{"blocked": 0, "complete": 54, "in_progress": 0, "needed": 4}`
+- Latest target: `Manual implementation repair: add live public scrape, guarded DevHub action executor, and real local PDF draft filling`
+- Latest result: `accepted`
+- Latest summary: Added bounded live public scraping, exact-confirmed DevHub execution boundaries for draft fills and official checkpoints, and a real pypdf-based local PDF draft filler; reset checkbox-225 from stale in-progress syntax failure to needed.
+- Counts: `{"blocked": 0, "complete": 57, "in_progress": 0, "needed": 4}`
 
 <!-- ppd-daemon-task-board:end -->
 ## Built-In Supervisor Repair Notes
@@ -133,7 +133,13 @@ Last updated: 2026-05-03T20:03:28.802435Z
 
 ## Built-In Autonomous PP&D Platform Tranche 2
 
-- [~] Task checkbox-225: Add autonomous platform continuation coverage for tranche 2 proving whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs stay connected through source evidence IDs.
+- [ ] Task checkbox-225: Add autonomous platform continuation coverage for tranche 2 proving whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs stay connected through source evidence IDs.
 - [ ] Task checkbox-226: Add processor-suite integration planning for tranche 2 proving PP&D public documents flow through archive manifests, normalized document records, PDF metadata, and requirement batches before agents use them.
 - [ ] Task checkbox-227: Add Playwright/PDF handoff validation for tranche 2 proving redacted user facts can fill draft fields and PDF previews while official DevHub transitions stay behind exact confirmation checkpoints.
 - [ ] Task checkbox-228: Add supervisor idle-recovery validation for tranche 2 proving completed boards synthesize new goal-aligned platform tasks without sleeping, duplicate tranche reuse, or blocked-task retry churn.
+
+## Manual Live Execution Boundary Tranche
+
+- [x] Task checkbox-229: Add bounded live public scrape execution under ppd/crawler that performs explicit live-network public fetches only after allowlist and robots preflight while persisting metadata summaries instead of raw bodies or downloaded documents.
+- [x] Task checkbox-230: Add guarded live DevHub action execution under ppd/devhub that can fill draft fields and exact-confirmed upload, submit, certification, cancellation, inspection, and payment-review checkpoints against an injected Playwright page while refusing MFA, CAPTCHA, account creation, password recovery, payment-detail entry, and final fee payment automation.
+- [x] Task checkbox-231: Add real local PDF draft filling under ppd/pdf using pypdf, with tests that create and fill a temporary PDF form while refusing private or raw output paths and never uploading or submitting the result.

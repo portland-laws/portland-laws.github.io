@@ -190,6 +190,16 @@ The current autonomous platform tranche is intentionally broader than the parser
 
 The supervisor may patch daemon/supervisor programming when diagnostics show the daemon is stuck, but those patches must stay inside `ppd/`, pass validation, avoid private artifacts, and preserve the fail-closed DevHub action boundaries.
 
+### Live Execution Boundary
+
+The PP&D workspace now has a live-capable boundary for the parts that can be exercised safely:
+
+- `ppd/crawler/live_public_scrape.py` runs a tiny live public scrape only when `--live` or `allow_live_network=True` is explicit. It performs allowlist and robots preflight, caps the seed count, records metadata summaries, and does not persist raw response bodies or downloaded documents.
+- `ppd/pdf/draft_fill.py` performs real local PDF field filling with `pypdf`. It writes only user-controlled draft output PDFs, refuses private/raw output paths, and does not upload or submit the result.
+- `ppd/devhub/live_action_executor.py` defines the guarded live DevHub action boundary. Draft field fills can execute against an injected Playwright page after user browser authorization. Upload, submit, certify, cancel, inspection scheduling, and payment-review checkpoints require explicit live execution flags plus exact action-specific confirmation. MFA, CAPTCHA, account creation, password recovery, payment-detail entry, and final fee payment remain manual handoffs.
+
+The May 3, 2026 smoke run successfully fetched the public PP&D home seed `https://www.portland.gov/ppd` through the bounded live public scraper and stored only the summary returned to the terminal, not raw site output.
+
 The first PP&D daemon milestone should be documentation-only and fixture-only:
 
 1. Create `ppd/daemon/task-board.md`.
