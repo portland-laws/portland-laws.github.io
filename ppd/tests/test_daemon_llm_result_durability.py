@@ -1,11 +1,20 @@
 from __future__ import annotations
 
 import json
+import os
+import subprocess
 import tempfile
+import time
 import unittest
 from pathlib import Path
 
-from ppd.daemon.ppd_daemon import Config, Daemon, Proposal
+from ppd.daemon.ppd_daemon import (
+    Config,
+    Daemon,
+    Proposal,
+    should_skip_validation_for_no_file_failure,
+    terminate_process_group,
+)
 
 
 class DaemonLlmResultDurabilityTest(unittest.TestCase):
@@ -70,6 +79,46 @@ class DaemonLlmResultDurabilityTest(unittest.TestCase):
         self.assertIn("timed out", rows[0]["diagnostic"]["errors"][0])
         self.assertIn("code -9", rows[1]["diagnostic"]["errors"][0])
         self.assertIn("interrupted", rows[2]["diagnostic"]["errors"][0])
+
+    def test_no_file_llm_failures_skip_full_validation_after_durable_diagnostic(self) -> None:
+        self.assertTrue(
+            should_skip_validation_for_no_file_failure(
+                Proposal(summary="LLM proposal failed.", failure_kind="llm")
+            )
+        )
+        self.assertTrue(
+            should_skip_validation_for_no_file_failure(
+                Proposal(errors=["LLM response did not contain a JSON object."], failure_kind="parse")
+            )
+        )
+        self.assertFalse(
+            should_skip_validation_for_no_file_failure(
+                Proposal(
+                    summary="Has files",
+                    failure_kind="llm",
+                    files=[{"path": "ppd/example.py", "content": "print('ok')\n"}],
+                )
+            )
+        )
+        self.assertFalse(should_skip_validation_for_no_file_failure(Proposal(summary="Needs validation")))
+
+    def test_llm_timeout_cleanup_terminates_descendant_processes(self) -> None:
+        process = subprocess.Popen(
+            ["bash", "-lc", "sleep 30 & echo $!; wait"],
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            text=True,
+            start_new_session=True,
+        )
+        assert process.stdout is not None
+        child_pid = int(process.stdout.readline().strip())
+
+        terminate_process_group(process, grace_seconds=0.2)
+        time.sleep(0.1)
+
+        self.assertIsNotNone(process.poll())
+        with self.assertRaises(ProcessLookupError):
+            os.kill(child_pid, 0)
 
 
 if __name__ == "__main__":

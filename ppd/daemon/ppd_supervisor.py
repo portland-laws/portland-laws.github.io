@@ -75,6 +75,7 @@ TASK_TITLE_RE = re.compile(r"Task checkbox-\d+:\s*")
 CHECKBOX_ID_RE = re.compile(r"checkbox-(\d+)")
 REPLENISHMENT_HEADING_RE = re.compile(r"^## Built-In Goal Replenishment Tranche(?:\s+(\d+))?\s*$")
 AUTONOMOUS_PLATFORM_HEADING_RE = re.compile(r"^## Built-In Autonomous PP&D Platform Tranche(?:\s+(\d+))?\s*$")
+AUTONOMOUS_EXECUTION_HEADING_RE = re.compile(r"^## Built-In Autonomous PP&D Execution Capability Tranche(?:\s+(\d+))?\s*$")
 BLOCKED_CASCADE_HEADING_RE = re.compile(r"^## Built-In Blocked Cascade Recovery Tranche(?:\s+(\d+))?\s*$")
 TASK_LINE_RE = re.compile(r"^(?P<prefix>- \[[ xX~!]\] Task checkbox-\d+: )(?P<title>.+)$")
 
@@ -113,6 +114,15 @@ AUTONOMOUS_PLATFORM_REPLENISHMENT_TITLES = (
     "Add validation coverage for Playwright and PDF draft automation proving reversible draft fills are allowed while upload, submit, payment, certification, cancellation, inspection scheduling, MFA, CAPTCHA, and account creation remain refused by default.",
     "Add supervisor completed-board regression coverage proving an all-complete PP&D board appends the autonomous platform tranche and restarts the daemon instead of idling with no available work.",
     "Add daemon/supervisor operations coverage proving watch mode starts the next cycle immediately after each task, relies on LLM and validation timeouts to avoid hangs, and leaves supervisor replanning responsible for empty boards.",
+)
+
+AUTONOMOUS_EXECUTION_CAPABILITY_TITLES = (
+    "Add a supervised live whole-site public crawl runner under ppd/crawler that resumes an allowlisted PP&D frontier, delegates archival capture to the ipfs_datasets_py processor suite, records robots and content-type decisions, and persists metadata manifests instead of raw bodies or downloaded documents.",
+    "Add processor-suite execution integration under ppd/crawler proving public PP&D pages and PDFs flow through archive manifests, normalized document records, PDF metadata, requirement batches, and formal-logic source evidence IDs before agent reuse.",
+    "Add an attended Playwright DevHub worker runner under ppd/devhub that supports manual login handoff, journal replay, reversible draft field fills from redacted facts, and mandatory pauses before upload, submit, certification, cancellation, inspection, security, or payment transitions.",
+    "Add a local PDF draft-fill work queue under ppd/pdf that maps public PP&D form field manifests to redacted user facts, invokes the pypdf draft filler for previews, and never uploads, submits, or stores private source documents.",
+    "Add a formal-logic guardrail extraction pipeline under ppd/logic that converts processor-backed requirement batches into obligations, prerequisites, missing-fact questions, reversible-action predicates, exact-confirmation predicates, and refused official-action stop gates.",
+    "Add supervisor execution-capability recovery coverage proving stale calling_llm or applying_files status on old platform slices parks the stale tranche, appends this comprehensive execution tranche, validates the daemon, and restarts with PPD_LLM_BACKEND=llm_router.",
 )
 
 
@@ -690,6 +700,26 @@ def next_autonomous_platform_heading(markdown: str) -> str:
     return f"## Built-In Autonomous PP&D Platform Tranche {max(numbers) + 1}"
 
 
+def autonomous_execution_heading_number(line: str) -> Optional[int]:
+    match = AUTONOMOUS_EXECUTION_HEADING_RE.match(line.strip())
+    if not match:
+        return None
+    if match.group(1) is None:
+        return 1
+    return int(match.group(1))
+
+
+def next_autonomous_execution_heading(markdown: str) -> str:
+    numbers = [
+        autonomous_execution_heading_number(line)
+        for line in markdown.splitlines()
+        if autonomous_execution_heading_number(line) is not None
+    ]
+    if not numbers:
+        return "## Built-In Autonomous PP&D Execution Capability Tranche"
+    return f"## Built-In Autonomous PP&D Execution Capability Tranche {max(numbers) + 1}"
+
+
 def should_append_autonomous_platform_tranche(markdown: str) -> bool:
     """Return True when completed recovery work should advance to platform work."""
 
@@ -718,6 +748,90 @@ def generated_autonomous_platform_templates(markdown: str, tranche_number: int) 
         f"Add Playwright/PDF handoff validation for tranche {tranche_number} proving redacted user facts can fill draft fields and PDF previews while official DevHub transitions stay behind exact confirmation checkpoints.",
         f"Add supervisor idle-recovery validation for tranche {tranche_number} proving completed boards synthesize new goal-aligned platform tasks without sleeping, duplicate tranche reuse, or blocked-task retry churn.",
     ]
+
+
+def should_escalate_stale_platform_slice(markdown: str, target_task: str) -> bool:
+    """Return True when old narrow platform slices should yield to execution work."""
+
+    lowered_board = markdown.casefold()
+    lowered_target = str(target_task or "").casefold()
+    target_markers = (
+        "checkbox-225",
+        "autonomous platform continuation",
+        "tranche 2 proving whole-site archival",
+        "playwright draft automation",
+        "pdf field filling",
+    )
+    capability_markers = (
+        "manual live execution boundary tranche",
+        "manual attended worker hardening tranche",
+        "manual attended worker journal tranche",
+        "manual attended worker resume tranche",
+    )
+    return (
+        "built-in autonomous pp&d platform tranche 2" in lowered_board
+        and any(marker in lowered_target for marker in target_markers)
+        and any(marker in lowered_board for marker in capability_markers)
+    )
+
+
+def builtin_autonomous_execution_replenish_task_board(markdown: str) -> tuple[str, tuple[str, ...]]:
+    """Append comprehensive execution-capability work when old slices stall."""
+
+    if any(autonomous_execution_heading_number(line) is not None for line in markdown.splitlines()):
+        return markdown, ()
+    templates = choose_non_duplicate_replenishment_templates(
+        markdown,
+        [list(AUTONOMOUS_EXECUTION_CAPABILITY_TITLES)],
+        tuple(
+            f"Add generated autonomous execution capability coverage for item {offset} proving live public archival, attended Playwright, PDF draft filling, formal logic guardrails, and supervisor recovery remain connected without private artifacts or official DevHub actions."
+            for offset in range(1, 7)
+        ),
+    )
+    start = next_checkbox_number(markdown)
+    labels = tuple(f"checkbox-{start + offset}" for offset in range(len(templates)))
+    lines = ["", next_autonomous_execution_heading(markdown), ""]
+    for offset, text in enumerate(templates):
+        lines.append(f"- [ ] Task checkbox-{start + offset}: {text}")
+    note = (
+        "\n"
+        "## Built-In Supervisor Planning Notes\n\n"
+        "- The supervisor detected stale narrow autonomous-platform work after live public scraping, attended Playwright, and PDF filling boundaries were added. "
+        "It appended a broader execution-capability tranche aligned to the current goal: whole-site public archival, processor-suite execution, attended DevHub draft automation, local PDF previews, and formal-logic guardrails.\n"
+        "- Slice policy: `autonomous_execution_capability_after_goal_drift`. These tasks are larger than parser-recovery slices but still keep live/authenticated work behind allowlists, user attendance, exact confirmations, and no-private-artifact persistence.\n"
+    )
+    return markdown.rstrip() + "\n" + "\n".join(lines) + note, labels
+
+
+def builtin_autonomous_execution_goal_repair_task_board(
+    markdown: str,
+    target_task: str,
+) -> tuple[str, tuple[str, ...], tuple[str, ...]]:
+    """Park stale narrow platform tasks and append comprehensive execution work."""
+
+    repaired, parked = builtin_stalled_worker_task_board(markdown, target_task)
+    if not should_escalate_stale_platform_slice(markdown, target_task):
+        return repaired, parked, ()
+
+    stale_labels: list[str] = []
+    repaired_lines: list[str] = []
+    for line in repaired.splitlines(keepends=True):
+        stripped = line.rstrip("\n")
+        stale_match = re.match(r"- \[(?P<mark>[ ~!])\] Task (?P<label>checkbox-22[5-8]):", stripped)
+        if stale_match and stale_match.group("mark") != "!":
+            line = line.replace("- [~]", "- [!]", 1).replace("- [ ]", "- [!]", 1)
+            stale_labels.append(stale_match.group("label"))
+        repaired_lines.append(line)
+    repaired = "".join(repaired_lines)
+    if stale_labels and "## Built-In Autonomous Execution Supersession Notes" not in repaired:
+        repaired = (
+            repaired.rstrip()
+            + "\n\n## Built-In Autonomous Execution Supersession Notes\n\n"
+            + "- Parked stale Autonomous PP&D Platform Tranche 2 tasks because the goal has moved from fixture-only continuation slices to supervised execution capabilities for whole-site archival, attended Playwright draft work, local PDF previews, and formal-logic guardrails.\n"
+        )
+
+    repaired, replenished = builtin_autonomous_execution_replenish_task_board(repaired)
+    return repaired, tuple(stale_labels) or parked, replenished
 
 
 def blocked_cascade_heading_number(line: str) -> Optional[int]:
@@ -932,6 +1046,14 @@ def title_from_task_label(label: str) -> str:
         text = replaced
 
 
+def task_matching_target(tasks: list[Task], target_task: str) -> Optional[Task]:
+    target_title = title_from_task_label(target_task)
+    for task in tasks:
+        if task.label == target_task or (target_title and task.title == target_title):
+            return task
+    return None
+
+
 def builtin_repair_task_board(markdown: str, rows: list[dict[str, Any]]) -> tuple[str, tuple[str, ...]]:
     """Park a repeated syntax-loop task so the daemon can advance autonomously."""
 
@@ -1143,6 +1265,18 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
     if not running:
         active_target = str(status.get("active_target_task") or status.get("target_task") or "")
         if active_state in {"calling_llm", "applying_files"} and active_target:
+            active_task = task_matching_target(tasks, active_target)
+            selectable = [task for task in tasks if task.status in {"needed", "in-progress"}]
+            if active_task and active_task.status == "blocked" and selectable:
+                return SupervisorDecision(
+                    action="restart_daemon",
+                    reason=(
+                        f"daemon process is not running and stale active target {active_target} is already parked; "
+                        f"restart on next selectable task {selectable[0].label}"
+                    ),
+                    severity="warning",
+                    should_restart_daemon=True,
+                )
             recent_active_failures = recent_failure_count_for_target(
                 rows,
                 active_target,
@@ -1554,7 +1688,7 @@ def invoke_stalled_worker_repair(config: SupervisorConfig, decision: SupervisorD
     board_path = config.resolve(config.task_board)
     board = read_text(board_path) if board_path.exists() else ""
     status = load_json(config.resolve(config.status_file))
-    repaired_board, parked_labels = builtin_stalled_worker_task_board(
+    repaired_board, parked_labels, replenished_labels = builtin_autonomous_execution_goal_repair_task_board(
         board,
         str(status.get("active_target_task") or status.get("target_task") or ""),
     )
@@ -1568,6 +1702,7 @@ def invoke_stalled_worker_repair(config: SupervisorConfig, decision: SupervisorD
             "severity": decision.severity,
         },
         "parkedStalledTaskLabels": list(parked_labels),
+        "replenishedExecutionTaskLabels": list(replenished_labels),
         "statusBeforeRepair": status,
     }
     files = [
@@ -1582,7 +1717,8 @@ def invoke_stalled_worker_repair(config: SupervisorConfig, decision: SupervisorD
         summary="Park stalled worker task before restart.",
         impact=(
             "The supervisor handles an active-state timeout deterministically by parking the stalled task, "
-            "recording the repair, validating, and restarting on the next independent task."
+            "recording the repair, appending execution-capability work when old platform slices are stale, "
+            "validating, and restarting on the next independent task."
         ),
         files=files,
     )
@@ -1951,6 +2087,24 @@ def self_test(repo_root: Path) -> int:
         errors.append(f"unexpected broader replenished labels: {broad_labels}")
     if "broad_integrated_after_green_streak" not in broad_board:
         errors.append("broader replenishment should record adaptive slice policy")
+    execution_board = (
+        "## Built-In Autonomous PP&D Platform Tranche 2\n\n"
+        "- [~] Task checkbox-225: Add autonomous platform continuation coverage for tranche 2 proving whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs stay connected through source evidence IDs.\n"
+        "- [ ] Task checkbox-226: Add processor-suite integration planning for tranche 2 proving PP&D public documents flow through archive manifests, normalized document records, PDF metadata, and requirement batches before agents use them.\n"
+        "\n## Manual Attended Worker Resume Tranche\n\n"
+        "- [x] Task checkbox-240: Add attended worker resume coverage.\n"
+    )
+    execution_target = "Task checkbox-225: Add autonomous platform continuation coverage for tranche 2 proving whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs stay connected through source evidence IDs."
+    if not should_escalate_stale_platform_slice(execution_board, execution_target):
+        errors.append("stale platform-slice goal drift was not detected")
+    execution_repaired, _execution_parked, execution_labels = builtin_autonomous_execution_goal_repair_task_board(
+        execution_board,
+        execution_target,
+    )
+    if not execution_labels:
+        errors.append("execution capability tranche was not appended during stale platform repair")
+    if "Built-In Autonomous PP&D Execution Capability Tranche" not in execution_repaired:
+        errors.append("execution capability repair did not add the expected tranche")
     invalid_repair = Proposal(summary="bad repair", errors=["Validation failed"], failure_kind="validation")
     repair_decision = SupervisorDecision(
         action="repair_daemon_programming",
@@ -2012,6 +2166,12 @@ def self_test(repo_root: Path) -> int:
     complete_board = "- [x] Finished\n"
     if parse_tasks(complete_board)[0].status != "complete":
         errors.append("task parsing failed for completed board")
+    target_tasks = parse_tasks(
+        "- [!] Task checkbox-225: Stale active task.\n"
+        "- [ ] Task checkbox-241: Next execution task.\n"
+    )
+    if task_matching_target(target_tasks, "Task checkbox-225: Stale active task.") is None:
+        errors.append("active target task matching failed")
     synthetic = SupervisorConfig(repo_root=repo_root)
     if synthetic.plan_doc != Path("docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md"):
         errors.append("supervisor plan document path changed unexpectedly")

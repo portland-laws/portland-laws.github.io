@@ -94,12 +94,12 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-03T20:32:00.403435Z
+Last updated: 2026-05-03T22:17:29.464309Z
 
-- Latest target: `Manual implementation repair: add live public scrape, guarded DevHub action executor, and real local PDF draft filling`
+- Latest target: `Manual supervisor redesign: harden stale daemon recovery and LLM child timeout cleanup`
 - Latest result: `accepted`
-- Latest summary: Added bounded live public scraping, exact-confirmed DevHub execution boundaries for draft fills and official checkpoints, and a real pypdf-based local PDF draft filler; reset checkbox-225 from stale in-progress syntax failure to needed.
-- Counts: `{"blocked": 0, "complete": 57, "in_progress": 0, "needed": 4}`
+- Latest summary: Added supervisor goal-drift recovery for stale platform slices, restart diagnosis for already-parked active targets, no-file LLM fast-fail handling, and process-group cleanup so timed-out llm_router children cannot leave orphan Copilot processes.
+- Counts: `{"blocked": 4, "complete": 69, "in_progress": 0, "needed": 6}`
 
 <!-- ppd-daemon-task-board:end -->
 ## Built-In Supervisor Repair Notes
@@ -133,13 +133,58 @@ Last updated: 2026-05-03T20:32:00.403435Z
 
 ## Built-In Autonomous PP&D Platform Tranche 2
 
-- [ ] Task checkbox-225: Add autonomous platform continuation coverage for tranche 2 proving whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs stay connected through source evidence IDs.
-- [ ] Task checkbox-226: Add processor-suite integration planning for tranche 2 proving PP&D public documents flow through archive manifests, normalized document records, PDF metadata, and requirement batches before agents use them.
-- [ ] Task checkbox-227: Add Playwright/PDF handoff validation for tranche 2 proving redacted user facts can fill draft fields and PDF previews while official DevHub transitions stay behind exact confirmation checkpoints.
-- [ ] Task checkbox-228: Add supervisor idle-recovery validation for tranche 2 proving completed boards synthesize new goal-aligned platform tasks without sleeping, duplicate tranche reuse, or blocked-task retry churn.
+- [!] Task checkbox-225: Add autonomous platform continuation coverage for tranche 2 proving whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs stay connected through source evidence IDs.
+- [!] Task checkbox-226: Add processor-suite integration planning for tranche 2 proving PP&D public documents flow through archive manifests, normalized document records, PDF metadata, and requirement batches before agents use them.
+- [!] Task checkbox-227: Add Playwright/PDF handoff validation for tranche 2 proving redacted user facts can fill draft fields and PDF previews while official DevHub transitions stay behind exact confirmation checkpoints.
+- [!] Task checkbox-228: Add supervisor idle-recovery validation for tranche 2 proving completed boards synthesize new goal-aligned platform tasks without sleeping, duplicate tranche reuse, or blocked-task retry churn.
 
 ## Manual Live Execution Boundary Tranche
 
 - [x] Task checkbox-229: Add bounded live public scrape execution under ppd/crawler that performs explicit live-network public fetches only after allowlist and robots preflight while persisting metadata summaries instead of raw bodies or downloaded documents.
 - [x] Task checkbox-230: Add guarded live DevHub action execution under ppd/devhub that can fill draft fields and exact-confirmed upload, submit, certification, cancellation, inspection, and payment-review checkpoints against an injected Playwright page while refusing MFA, CAPTCHA, account creation, password recovery, payment-detail entry, and final fee payment automation.
 - [x] Task checkbox-231: Add real local PDF draft filling under ppd/pdf using pypdf, with tests that create and fill a temporary PDF form while refusing private or raw output paths and never uploading or submitting the result.
+
+## Manual Attended Worker Hardening Tranche
+
+- [x] Task checkbox-232: Add an attended DevHub worker under ppd/devhub that pauses before any Playwright attempt unless the user is present, has reviewed the current screen, and the step has source-backed hardening evidence.
+- [x] Task checkbox-233: Add post-action completion gates proving an attempted worker step remains review-required until user outcome review, completion evidence, side-effect checks, and explicit hardening pass.
+- [x] Task checkbox-234: Add focused attended-worker tests covering reversible draft fills, exact-confirmed official actions, stronger selector confidence for consequential actions, and final payment manual handoff.
+
+## Manual Attended Worker Journal Tranche
+
+- [x] Task checkbox-235: Add commit-safe attended-worker journal entries under ppd/devhub that record transition metadata and guardrail facts without selectors, filled values, local file paths, browser state, traces, screenshots, or raw DevHub artifacts.
+- [x] Task checkbox-236: Add attended-worker journal validation proving an attempt requires a previous ready preflight event and completion requires a previous attempted review-required event.
+- [x] Task checkbox-237: Add tests proving journal payloads redact exact confirmation phrases and reject incomplete or out-of-order worker transitions.
+
+## Manual Attended Worker Resume Tranche
+
+- [x] Task checkbox-238: Add attended-worker journal replay under ppd/devhub that converts commit-safe events into deterministic resume states without inspecting browser storage, selectors, field values, local files, traces, screenshots, or raw DevHub artifacts.
+- [x] Task checkbox-239: Add resume-state validation proving ready preflight resumes to attended attempt, attempted review-required resumes to post-action hardening review, manual handoff stays user-controlled, and completed steps are closed.
+- [x] Task checkbox-240: Add tests proving journal replay rejects later worker events after a step is complete.
+
+## Built-In Autonomous Execution Supersession Notes
+
+- Parked stale Autonomous PP&D Platform Tranche 2 tasks because the goal has moved from fixture-only continuation slices to supervised execution capabilities for whole-site archival, attended Playwright draft work, local PDF previews, and formal-logic guardrails.
+
+## Built-In Autonomous PP&D Execution Capability Tranche
+
+- [ ] Task checkbox-241: Add a supervised live whole-site public crawl runner under ppd/crawler that resumes an allowlisted PP&D frontier, delegates archival capture to the ipfs_datasets_py processor suite, records robots and content-type decisions, and persists metadata manifests instead of raw bodies or downloaded documents.
+- [ ] Task checkbox-242: Add processor-suite execution integration under ppd/crawler proving public PP&D pages and PDFs flow through archive manifests, normalized document records, PDF metadata, requirement batches, and formal-logic source evidence IDs before agent reuse.
+- [ ] Task checkbox-243: Add an attended Playwright DevHub worker runner under ppd/devhub that supports manual login handoff, journal replay, reversible draft field fills from redacted facts, and mandatory pauses before upload, submit, certification, cancellation, inspection, security, or payment transitions.
+- [ ] Task checkbox-244: Add a local PDF draft-fill work queue under ppd/pdf that maps public PP&D form field manifests to redacted user facts, invokes the pypdf draft filler for previews, and never uploads, submits, or stores private source documents.
+- [ ] Task checkbox-245: Add a formal-logic guardrail extraction pipeline under ppd/logic that converts processor-backed requirement batches into obligations, prerequisites, missing-fact questions, reversible-action predicates, exact-confirmation predicates, and refused official-action stop gates.
+- [ ] Task checkbox-246: Add supervisor execution-capability recovery coverage proving stale calling_llm or applying_files status on old platform slices parks the stale tranche, appends this comprehensive execution tranche, validates the daemon, and restarts with PPD_LLM_BACKEND=llm_router.
+
+## Built-In Supervisor Planning Notes
+
+- The supervisor detected stale narrow autonomous-platform work after live public scraping, attended Playwright, and PDF filling boundaries were added. It appended a broader execution-capability tranche aligned to the current goal: whole-site public archival, processor-suite execution, attended DevHub draft automation, local PDF previews, and formal-logic guardrails.
+- Slice policy: `autonomous_execution_capability_after_goal_drift`. These tasks are larger than parser-recovery slices but still keep live/authenticated work behind allowlists, user attendance, exact confirmations, and no-private-artifact persistence.
+## Built-In Supervisor Repair Notes
+
+- Reset dead-worker in-progress task `Add a supervised live whole-site public crawl runner under ppd/crawler that resumes an allowlisted PP&D frontier, delegates archival capture to the ipfs_datasets_py processor suite, records robots and content-type decisions, and persists metadata manifests instead of raw bodies or downloaded documents.` to pending after the daemon process exited mid-cycle. The supervisor will restart the worker and let the task be selected again with a fresh timeout window.
+
+## Manual Supervisor Runtime Hardening Tranche
+
+- [x] Task checkbox-247: Add supervisor goal-drift recovery that parks stale Autonomous PP&D Platform Tranche 2 tasks and appends comprehensive execution-capability work for live public crawling, processor-suite execution, attended Playwright, PDF previews, and formal-logic guardrails.
+- [x] Task checkbox-248: Add stale active-target diagnosis proving a dead daemon whose old active task is already blocked restarts on the next selectable task instead of trying to park the same task again.
+- [x] Task checkbox-249: Add daemon LLM timeout hardening proving no-file LLM failures skip full validation after durable diagnostics and timed-out llm_router child process groups are terminated without leaving descendant Copilot processes.

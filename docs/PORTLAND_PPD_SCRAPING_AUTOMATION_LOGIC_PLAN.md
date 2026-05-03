@@ -190,6 +190,17 @@ The current autonomous platform tranche is intentionally broader than the parser
 
 The supervisor may patch daemon/supervisor programming when diagnostics show the daemon is stuck, but those patches must stay inside `ppd/`, pass validation, avoid private artifacts, and preserve the fail-closed DevHub action boundaries.
 
+The supervisor also handles goal drift. If an older narrow autonomous-platform slice, such as the tranche 2 source-evidence continuation task, stalls after newer live public scrape, attended Playwright, and PDF draft-fill boundaries exist, the supervisor should park the stale slice and append an execution-capability tranche. That tranche must include:
+
+- A supervised live whole-site public crawl runner that resumes an allowlisted PP&D frontier, delegates capture to the `ipfs_datasets_py` processor suite, and persists metadata manifests instead of raw bodies or downloaded documents.
+- Processor-suite execution integration that carries public pages and PDFs into archive manifests, normalized document records, PDF metadata, requirement batches, and formal-logic source evidence IDs.
+- An attended Playwright DevHub worker runner for manual login handoff, journal replay, reversible draft fills from redacted facts, and mandatory pauses before official or security-sensitive transitions.
+- A local PDF draft-fill work queue that maps public PP&D form fields to redacted user facts and invokes the local pypdf draft filler for previews only.
+- A formal-logic guardrail extraction pipeline that produces obligations, prerequisites, missing-fact questions, reversible-action predicates, exact-confirmation predicates, and refused official-action stop gates.
+- Supervisor recovery coverage proving stale `calling_llm` or `applying_files` status on old platform slices parks the stale tranche, appends execution-capability work, validates the daemon, and restarts with `PPD_LLM_BACKEND=llm_router`.
+
+The daemon should treat no-file LLM failures as durable runtime diagnostics rather than ordinary validation candidates. When `llm_router` times out or its child process is terminated before returning a JSON proposal, the daemon records the failure, skips full validation for the empty proposal, resets the selected task to pending, and allows the supervisor to decide whether to retry, park, or replenish. Timeout cleanup must terminate the entire child process group so npm/Copilot descendants do not continue running after the daemon cycle ends.
+
 ### Live Execution Boundary
 
 The PP&D workspace now has a live-capable boundary for the parts that can be exercised safely:
@@ -197,6 +208,7 @@ The PP&D workspace now has a live-capable boundary for the parts that can be exe
 - `ppd/crawler/live_public_scrape.py` runs a tiny live public scrape only when `--live` or `allow_live_network=True` is explicit. It performs allowlist and robots preflight, caps the seed count, records metadata summaries, and does not persist raw response bodies or downloaded documents.
 - `ppd/pdf/draft_fill.py` performs real local PDF field filling with `pypdf`. It writes only user-controlled draft output PDFs, refuses private/raw output paths, and does not upload or submit the result.
 - `ppd/devhub/live_action_executor.py` defines the guarded live DevHub action boundary. Draft field fills can execute against an injected Playwright page after user browser authorization. Upload, submit, certify, cancel, inspection scheduling, and payment-review checkpoints require explicit live execution flags plus exact action-specific confirmation. MFA, CAPTCHA, account creation, password recovery, payment-detail entry, and final fee payment remain manual handoffs.
+- `ppd/devhub/attended_worker.py` wraps the live DevHub executor with an attended-worker protocol. The worker pauses unless the user is present, has reviewed the current screen, and understands the next action. It also requires source evidence IDs, selector confidence, a dry-run or preview, an audit event, a rollback plan, and proof that private artifacts were not persisted before any attempt. After an action is attempted, the worker returns `attempted_review_required` and cannot mark the step complete until post-action hardening, user outcome review, completion evidence, and side-effect checks all pass. The worker can emit commit-safe journal events that record only transition metadata and guardrail facts; selector strings, filled values, local file paths, browser state, traces, screenshots, and exact confirmation phrases are excluded or redacted. Journal replay produces resumable worker states such as `collect_attendance_or_hardening`, `attempt_while_attended`, `review_post_action_hardening`, `manual_handoff`, and `closed_complete`, and rejects any later event for an already completed step.
 
 The May 3, 2026 smoke run successfully fetched the public PP&D home seed `https://www.portland.gov/ppd` through the bounded live public scraper and stored only the summary returned to the terminal, not raw site output.
 
@@ -325,6 +337,9 @@ Future AI agents should use Playwright only inside a guarded drafting workflow:
 - Stop before official upload, certification, submission, payment, cancellation, inspection scheduling, or any action classified as consequential/financial unless the user explicitly confirms the exact action in that session.
 - Never automate CAPTCHA, MFA, account creation, password recovery, payment entry, or bypass controls.
 - Record an audit event for every proposed and executed browser action, including the selector basis, process requirement, user confirmation state, and whether the action was read-only, draft-edit, consequential, or financial.
+- Route live browser attempts through the attended worker. The attended worker separates `ready_to_attempt`, `attempted_review_required`, and `complete` so no single step is fully completed merely because Playwright clicked or filled something.
+- Persist only commit-safe attended-worker journal entries for live-step state. A valid journal must show a ready preflight event before an attempted event, and an attempted review-required event before any completion-review event can mark the step complete.
+- On daemon or worker restart, replay the attended-worker journal to recover the last known state. A ready preflight can resume to an attended attempt; an attempted step resumes to post-action hardening review; a completed step is closed and must not receive later worker events.
 
 ### Login Workflow
 
@@ -686,6 +701,11 @@ interface DevHubWorkflowState {
   - Playwright fixtures can discover fields by accessible name, label text, role, nearby heading, and stable URL/state.
   - form-drafting scaffold can prepare reversible draft entries from redacted fixture facts.
   - scaffold refuses consequential and financial actions without exact confirmation.
+  - attended worker pauses before every attempt unless the user is present and preflight hardening passes.
+  - attended worker keeps attempted actions in review-required state until completion hardening and user outcome review pass.
+  - attended worker journals reject attempts without ready preflight and reject completions without a prior attempted event.
+  - attended worker journals redact exact confirmation phrases and never serialize selectors, values, local file paths, browser storage, screenshots, or traces.
+  - attended worker journal replay reports deterministic resume actions and rejects later events after completion.
   - mocked pages cover upload controls, validation messages, disabled submit states, save-for-later, and draft-resume navigation.
   - selectors use accessible roles/names where possible.
   - recorder captures fields without submitting.

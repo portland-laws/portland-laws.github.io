@@ -8,8 +8,11 @@ from pathlib import Path
 
 from ppd.daemon.ppd_daemon import atomic_write_json
 from ppd.daemon.ppd_supervisor import (
+    AUTONOMOUS_EXECUTION_CAPABILITY_TITLES,
     SupervisorConfig,
     append_jsonl,
+    builtin_autonomous_execution_goal_repair_task_board,
+    builtin_autonomous_execution_replenish_task_board,
     build_supervisor_prompt,
     builtin_blocked_cascade_replenish_task_board,
     builtin_dead_worker_task_board,
@@ -17,6 +20,7 @@ from ppd.daemon.ppd_supervisor import (
     builtin_stalled_worker_task_board,
     diagnose,
     read_supervisor_result_rows,
+    should_escalate_stale_platform_slice,
 )
 
 
@@ -99,6 +103,34 @@ class SupervisorStaleStatusReplanningTest(unittest.TestCase):
         self.assertIn("- [ ] Task checkbox-160: Add supervisor task-board de-duplication coverage.", repaired)
         self.assertNotIn("- [~] Task checkbox-160", repaired)
 
+    def test_dead_worker_with_already_parked_active_target_restarts_on_next_task(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+            board = repo / "ppd" / "daemon" / "task-board.md"
+            board.parent.mkdir(parents=True)
+            active_target = "Task checkbox-225: Add autonomous platform continuation coverage for tranche 2 proving whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs stay connected through source evidence IDs."
+            next_target = "Task checkbox-241: Add a supervised live whole-site public crawl runner under ppd/crawler."
+            board.write_text(
+                "- [!] " + active_target + "\n"
+                "- [ ] " + next_target + "\n",
+                encoding="utf-8",
+            )
+            atomic_write_json(
+                repo / "ppd" / "daemon" / "status.json",
+                {
+                    "updated_at": "2026-05-03T00:00:00Z",
+                    "active_state": "calling_llm",
+                    "active_state_started_at": "2026-05-03T00:00:00Z",
+                    "active_target_task": active_target,
+                },
+            )
+
+            decision = diagnose(SupervisorConfig(repo_root=repo, pid_file=Path("ppd/daemon/missing.pid")))
+
+        self.assertEqual("restart_daemon", decision.action)
+        self.assertTrue(decision.should_restart_daemon)
+        self.assertIn(next_target, decision.reason)
+
     def test_repeated_durable_parse_diagnostics_trigger_deterministic_parking_before_restart_loop(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
             repo = Path(tempdir)
@@ -157,6 +189,62 @@ class SupervisorStaleStatusReplanningTest(unittest.TestCase):
         self.assertEqual(("Add supervisor task-board de-duplication coverage.",), parked)
         self.assertIn("- [!] Task checkbox-160: Add supervisor task-board de-duplication coverage.", repaired)
         self.assertIn("- [ ] Task checkbox-161: Add daemon stale-worker recovery coverage.", repaired)
+
+    def test_execution_capability_tranche_is_comprehensive_and_unique(self) -> None:
+        board = "- [x] Task checkbox-240: Completed attended worker resume validation.\n"
+
+        repaired, labels = builtin_autonomous_execution_replenish_task_board(board)
+        repeated, repeated_labels = builtin_autonomous_execution_replenish_task_board(repaired)
+
+        self.assertEqual(tuple(f"checkbox-{number}" for number in range(241, 247)), labels)
+        self.assertIn("## Built-In Autonomous PP&D Execution Capability Tranche", repaired)
+        for title in AUTONOMOUS_EXECUTION_CAPABILITY_TITLES:
+            self.assertIn(title, repaired)
+        self.assertIn("supervised live whole-site public crawl runner", repaired)
+        self.assertIn("attended Playwright DevHub worker runner", repaired)
+        self.assertIn("local PDF draft-fill work queue", repaired)
+        self.assertIn("formal-logic guardrail extraction pipeline", repaired)
+        self.assertEqual(repaired, repeated)
+        self.assertEqual((), repeated_labels)
+
+    def test_stale_platform_slice_detection_requires_new_live_worker_capabilities(self) -> None:
+        board = (
+            "## Built-In Autonomous PP&D Platform Tranche 2\n\n"
+            "- [ ] Task checkbox-225: Add autonomous platform continuation coverage for tranche 2 proving whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs stay connected through source evidence IDs.\n"
+            "\n## Manual Attended Worker Resume Tranche\n\n"
+            "- [x] Task checkbox-240: Add tests proving journal replay rejects later worker events after a step is complete.\n"
+        )
+        stale_target = "Task checkbox-225: Add autonomous platform continuation coverage for tranche 2 proving whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs stay connected through source evidence IDs."
+        unrelated_target = "Task checkbox-226: Add processor-suite integration planning for tranche 2."
+
+        self.assertTrue(should_escalate_stale_platform_slice(board, stale_target))
+        self.assertFalse(should_escalate_stale_platform_slice(board, unrelated_target))
+        self.assertFalse(should_escalate_stale_platform_slice("- [ ] Task checkbox-225: old task.\n", stale_target))
+
+    def test_platform_stall_repair_parks_stale_small_slice_and_appends_execution_work(self) -> None:
+        board = (
+            "## Built-In Autonomous PP&D Platform Tranche 2\n\n"
+            "- [~] Task checkbox-225: Add autonomous platform continuation coverage for tranche 2 proving whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs stay connected through source evidence IDs.\n"
+            "- [ ] Task checkbox-226: Add processor-suite integration planning for tranche 2 proving PP&D public documents flow through archive manifests, normalized document records, PDF metadata, and requirement batches before agents use them.\n"
+            "- [ ] Task checkbox-227: Add Playwright/PDF handoff validation for tranche 2 proving redacted user facts can fill draft fields and PDF previews while official DevHub transitions stay behind exact confirmation checkpoints.\n"
+            "- [ ] Task checkbox-228: Add supervisor idle-recovery validation for tranche 2 proving completed boards synthesize new goal-aligned platform tasks without sleeping, duplicate tranche reuse, or blocked-task retry churn.\n"
+            "\n## Manual Live Execution Boundary Tranche\n\n"
+            "- [x] Task checkbox-229: Add bounded live public scrape execution.\n"
+            "\n## Manual Attended Worker Resume Tranche\n\n"
+            "- [x] Task checkbox-240: Add tests proving journal replay rejects later worker events after a step is complete.\n"
+        )
+        target = "Task checkbox-225: Add autonomous platform continuation coverage for tranche 2 proving whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs stay connected through source evidence IDs."
+
+        repaired, parked, replenished = builtin_autonomous_execution_goal_repair_task_board(board, target)
+
+        self.assertIn("- [!] Task checkbox-225:", repaired)
+        self.assertIn("- [!] Task checkbox-226:", repaired)
+        self.assertIn("- [!] Task checkbox-227:", repaired)
+        self.assertIn("- [!] Task checkbox-228:", repaired)
+        self.assertIn("## Built-In Autonomous PP&D Execution Capability Tranche", repaired)
+        self.assertIn("Built-In Autonomous Execution Supersession Notes", repaired)
+        self.assertEqual(("checkbox-226", "checkbox-227", "checkbox-228"), parked)
+        self.assertEqual(tuple(f"checkbox-{number}" for number in range(241, 247)), replenished)
 
     def test_compact_supervisor_repair_prompt_omits_failed_manifest_dump(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:

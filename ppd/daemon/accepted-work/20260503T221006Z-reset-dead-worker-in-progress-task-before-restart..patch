@@ -1,0 +1,54 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,20 +1,21 @@
+ {
+-  "createdAt": "2026-05-03T19:58:53.104923Z",
++  "createdAt": "2026-05-03T22:10:05.244246Z",
+   "decision": {
+-    "action": "reconcile_dead_worker_with_recent_failures_and_restart",
+-    "reason": "daemon process is not running but status is still calling_llm on Task checkbox-215: Add generated blocked-cascade daemon-repair coverage for tranche 1 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates., and 9 recent failure diagnostic(s) already exist for that target; park the task before restart instead of resetting it into another immediate retry",
++    "action": "reconcile_dead_worker_and_restart",
++    "reason": "daemon process is not running but status is still calling_llm on Task checkbox-241: Add a supervised live whole-site public crawl runner under ppd/crawler that resumes an allowlisted PP&D frontier, delegates archival capture to the ipfs_datasets_py processor suite, records robots and content-type decisions, and persists metadata manifests instead of raw bodies or downloaded documents.; reset the in-progress task before restart",
+     "severity": "warning"
+   },
+-  "parkedStalledTaskLabels": [],
+-  "repairKind": "stalled_worker_task_parked",
++  "repairKind": "dead_worker_task_reset",
++  "resetInProgressTaskLabels": [
++    "Add a supervised live whole-site public crawl runner under ppd/crawler that resumes an allowlisted PP&D frontier, delegates archival capture to the ipfs_datasets_py processor suite, records robots and content-type decisions, and persists metadata manifests instead of raw bodies or downloaded documents."
++  ],
+   "schemaVersion": 1,
+   "statusBeforeRepair": {
+     "active_state": "calling_llm",
+-    "active_state_started_at": "2026-05-03T16:42:02.403541Z",
+-    "active_target_task": "Task checkbox-215: Add generated blocked-cascade daemon-repair coverage for tranche 1 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.",
+-    "pid": 204708,
+-    "state": "calling_llm",
+-    "target_task": "Task checkbox-215: Add generated blocked-cascade daemon-repair coverage for tranche 1 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.",
+-    "updated_at": "2026-05-03T16:42:02.403543Z"
++    "active_state_started_at": "2026-05-03T22:07:51.965743Z",
++    "active_target_task": "Task checkbox-241: Add a supervised live whole-site public crawl runner under ppd/crawler that resumes an allowlisted PP&D frontier, delegates archival capture to the ipfs_datasets_py processor suite, records robots and content-type decisions, and persists metadata manifests instead of raw bodies or downloaded documents.",
++    "pid": 501660,
++    "state": "heartbeat",
++    "updated_at": "2026-05-03T22:09:21.966425Z"
+   }
+ }
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -168,7 +168,7 @@
+ 
+ ## Built-In Autonomous PP&D Execution Capability Tranche
+ 
+-- [~] Task checkbox-241: Add a supervised live whole-site public crawl runner under ppd/crawler that resumes an allowlisted PP&D frontier, delegates archival capture to the ipfs_datasets_py processor suite, records robots and content-type decisions, and persists metadata manifests instead of raw bodies or downloaded documents.
++- [ ] Task checkbox-241: Add a supervised live whole-site public crawl runner under ppd/crawler that resumes an allowlisted PP&D frontier, delegates archival capture to the ipfs_datasets_py processor suite, records robots and content-type decisions, and persists metadata manifests instead of raw bodies or downloaded documents.
+ - [ ] Task checkbox-242: Add processor-suite execution integration under ppd/crawler proving public PP&D pages and PDFs flow through archive manifests, normalized document records, PDF metadata, requirement batches, and formal-logic source evidence IDs before agent reuse.
+ - [ ] Task checkbox-243: Add an attended Playwright DevHub worker runner under ppd/devhub that supports manual login handoff, journal replay, reversible draft field fills from redacted facts, and mandatory pauses before upload, submit, certification, cancellation, inspection, security, or payment transitions.
+ - [ ] Task checkbox-244: Add a local PDF draft-fill work queue under ppd/pdf that maps public PP&D form field manifests to redacted user facts, invokes the pypdf draft filler for previews, and never uploads, submits, or stores private source documents.
+@@ -179,3 +179,7 @@
+ 
+ - The supervisor detected stale narrow autonomous-platform work after live public scraping, attended Playwright, and PDF filling boundaries were added. It appended a broader execution-capability tranche aligned to the current goal: whole-site public archival, processor-suite execution, attended DevHub draft automation, local PDF previews, and formal-logic guardrails.
+ - Slice policy: `autonomous_execution_capability_after_goal_drift`. These tasks are larger than parser-recovery slices but still keep live/authenticated work behind allowlists, user attendance, exact confirmations, and no-private-artifact persistence.
++## Built-In Supervisor Repair Notes
++
++- Reset dead-worker in-progress task `Add a supervised live whole-site public crawl runner under ppd/crawler that resumes an allowlisted PP&D frontier, delegates archival capture to the ipfs_datasets_py processor suite, records robots and content-type decisions, and persists metadata manifests instead of raw bodies or downloaded documents.` to pending after the daemon process exited mid-cycle. The supervisor will restart the worker and let the task be selected again with a fresh timeout window.
++

@@ -16,6 +16,7 @@ import json
 import os
 import py_compile
 import re
+import signal
 import subprocess
 import sys
 import tempfile
@@ -402,6 +403,14 @@ def is_retryable_failure(proposal: Proposal) -> bool:
             "provider",
         )
     )
+
+
+def should_skip_validation_for_no_file_failure(proposal: Proposal) -> bool:
+    """Avoid expensive validation when the LLM produced no candidate files."""
+
+    if proposal.files:
+        return False
+    return proposal.failure_kind in {"llm", "parse", "empty_proposal"}
 
 
 def read_result_log(path: Path) -> list[dict[str, Any]]:
@@ -919,16 +928,26 @@ text = llm_router.generate_text(
 )
 sys.stdout.write("" if text is None else str(text))
 """
-        completed = subprocess.run(
-            ["python3", "-c", child_code],
+        command = ["python3", "-c", child_code]
+        process = subprocess.Popen(
+            command,
             cwd=str(config.repo_root),
             text=True,
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             env=env,
-            timeout=config.llm_timeout_seconds + 30,
-            check=False,
             start_new_session=True,
+        )
+        try:
+            stdout, stderr = process.communicate(timeout=config.llm_timeout_seconds + 30)
+        except subprocess.TimeoutExpired as exc:
+            terminate_process_group(process)
+            raise RuntimeError(f"llm_router child timed out after {config.llm_timeout_seconds + 30} seconds") from exc
+        completed = subprocess.CompletedProcess(
+            command,
+            returncode=int(process.returncode or 0),
+            stdout=stdout,
+            stderr=stderr,
         )
     except subprocess.TimeoutExpired as exc:
         raise RuntimeError(f"llm_router child timed out after {config.llm_timeout_seconds + 30} seconds") from exc
@@ -942,6 +961,30 @@ sys.stdout.write("" if text is None else str(text))
         details = compact_message((completed.stdout or "") + " " + (completed.stderr or ""), limit=1200)
         raise RuntimeError(f"llm_router child exited with code {completed.returncode}: {details}")
     return completed.stdout
+
+
+def terminate_process_group(process: subprocess.Popen[Any], *, grace_seconds: float = 5.0) -> None:
+    """Terminate a subprocess and its descendants when it owns a session."""
+
+    if process.poll() is not None:
+        return
+    try:
+        os.killpg(process.pid, signal.SIGTERM)
+    except ProcessLookupError:
+        return
+    try:
+        process.communicate(timeout=grace_seconds)
+        return
+    except subprocess.TimeoutExpired:
+        pass
+    try:
+        os.killpg(process.pid, signal.SIGKILL)
+    except ProcessLookupError:
+        return
+    try:
+        process.communicate(timeout=grace_seconds)
+    except subprocess.TimeoutExpired:
+        pass
 
 
 class Daemon:
@@ -1009,6 +1052,8 @@ class Daemon:
         if self.config.apply and proposal.files:
             self.write_status("applying_files", target_task=selected.label)
             proposal = apply_files_with_validation(proposal, self.config)
+        elif should_skip_validation_for_no_file_failure(proposal):
+            proposal.validation_results = []
         else:
             proposal.validation_results = run_validation(self.config)
 
