@@ -966,7 +966,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-03 03:37:45 UTC
+Last updated: 2026-05-03 03:59:11 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
@@ -1177,8 +1177,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-199: Port remaining Python logic module 'logic/CEC/native/ambiguity_resolver.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [!] `Task checkbox-200: Port remaining Python logic module 'logic/CEC/native/cec_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
 - [!] `Task checkbox-201: Port remaining Python logic module 'logic/CEC/native/cec_zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-202: Port remaining Python logic module 'logic/CEC/native/context_manager.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - latest daemon round failed validation or preflight
-- [ ] `Task checkbox-203: Port remaining Python logic module 'logic/CEC/native/dcec_cleaning.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [!] `Task checkbox-202: Port remaining Python logic module 'logic/CEC/native/context_manager.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [!] `Task checkbox-203: Port remaining Python logic module 'logic/CEC/native/dcec_cleaning.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - latest daemon round failed validation or preflight
 - [ ] `Task checkbox-204: Port remaining Python logic module 'logic/CEC/native/dcec_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-205: Port remaining Python logic module 'logic/CEC/native/dcec_english_grammar.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-206: Port remaining Python logic module 'logic/CEC/native/dcec_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,284 +1430,137 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-202: Port remaining Python logic module 'logic/CEC/native/context_manager.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-203: Port remaining Python logic module 'logic/CEC/native/dcec_cleaning.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `needs follow-up`
-- Summary: Add browser-native CEC context manager parity slice
-- Impact: src/lib/logic/cec/contextManager.ts provides deterministic browser-native context entity/state tracking, snapshot validation, restore, pronoun resolution, and discourse segmentation without Python, server, filesystem, subprocess, or Node-only runtime dependencies. src/lib/logic/cec/contextManager.test.ts exercises the source through the existing Jest logic validation suite with focused snapshot restore and validation coverage.
+- Summary: Port browser-native DCEC cleaning utility parity
+- Impact: The replacement dcecCleaning.ts implements the DCEC native cleaning pipeline directly in TypeScript, including ordered comment removal, strict parenthesis validation, redundant parenthesis consolidation, function-call tucking, symbolic operator functorization, and fail-closed cleaning. The updated dcecCleaning.test.ts exercises these runtime contracts through the existing Jest harness used by the TypeScript logic port validation suite.
 - Errors: Preflight repair still produced rejected TypeScript replacements:
 Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/cec/contextManager.ts(82,50): error TS1005: ')' expected.
-../../..src/lib/logic/cec/contextManager.ts(82,62): error TS1005: ';' expected.
-../../..src/lib/logic/cec/contextManager.ts(86,22): error TS1005: ';' expected.
-../../..src/lib/logic/cec/contextManager.ts(86,43): error TS1005: ';' expected.
-../../..src/lib/logic/cec/contextManager.ts(90,14): error TS1005: ',' expected.
-../../..src/lib/logic/cec/contextManager.ts(90,33): error TS1005: ';' expected.
-../../..src/lib/logic/cec/contextManager.ts(90,35): error TS1434: Unexpected keyword or identifier.
-../../..src/lib/logic/cec/contextManager.ts(100,15): error TS1005: ';' expected.
-../../..src/lib/logic/cec/contextManager.ts(100,17): error TS1434: Unexpected keyword or identifier.
-../../..src/lib/logic/cec/contextManager.ts(108,1): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/cec/contextManager.ts(178,50): error TS1005: ')' expected.
-../../..src/lib/logic/cec/contextManager.ts(188,6): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/cec/contextManager.ts(288,136): error TS1005: ',' expected.
-../../..src/lib/logic/cec/contextManager.ts(291,74): error TS1005: ')' expected.
-../../..src/lib/logic/cec/contextManager.ts(293,6): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/cec/contextManager.ts(322,44): error TS1442: Expected '=' for property initializer.
-../../..src/lib/logic/cec/contextManager.ts(322,46): error TS1109: Expression expected.
-../../..src/lib/logic/cec/contextManager.ts(324,23): error TS1005: ',' expected.
-../../..src/lib/logic/cec/contextManager.ts(324,32): error TS1005: ',' expected.
-../../..src/lib/logic/cec/contextManager.ts(324,46): error TS1005: ',' expected.
+../../..src/lib/logic/cec/dcecCleaning.ts(8,41): error TS1005: '{' expected.
+../../..src/lib/logic/cec/dcecCleaning.ts(9,1): error TS1109: Expression expected.
+../../..src/lib/logic/cec/dcecCleaning.ts(13,48): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecCleaning.ts(17,1): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/cec/dcecCleaning.ts(45,76): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecCleaning.ts(50,43): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecCleaning.ts(61,1): error TS1128: Declaration or statement expected.
 
 Replacement diagnostic context:
-src/lib/logic/cec/contextManager.ts:82:50 TS1005: ')' expected.
-  80: 
-  81:   addMention(position: number): void {
-> 82:     if (!Number.isInteger(position) || position  left - right);
-  83:     }
-  84:   }
+src/lib/logic/cec/dcecCleaning.ts:8:41 TS1005: '{' expected.
+  6:   '': 'greater',
+  7:   ' = Object.keys(SYMBOL_REPLACEMENTS).sort(
+> 8:   (left: string, right: string): number => right.length - left.length,
+  9: );
+  10: 
 
-src/lib/logic/cec/contextManager.ts:86:22 TS1005: ';' expected.
-  84:   }
-  85: 
-> 86:   mostRecentMention(): number | undefined {
-  87:     return this.mentions.length === 0 ? undefined : Math.max(...this.mentions);
-  88:   }
+src/lib/logic/cec/dcecCleaning.ts:9:1 TS1109: Expression expected.
+  7:   ' = Object.keys(SYMBOL_REPLACEMENTS).sort(
+  8:   (left: string, right: string): number => right.length - left.length,
+> 9: );
+  10: 
+  11: function countChar(input: string, character: string): number {
 
-src/lib/logic/cec/contextManager.ts:90:14 TS1005: ',' expected.
-  88:   }
-  89: 
-> 90:   merge(other: CecContextEntity): CecContextEntity {
-  91:     if (this.name !== other.name) {
-  92:       throw new Error('Cannot merge different CEC context entities');
+src/lib/logic/cec/dcecCleaning.ts:13:48 TS1005: ';' expected.
+  11: function countChar(input: string, character: string): number {
+  12:   let count = 0;
+> 13:   for (let index = 0; index  `${prefix}${atom}`);
+  14:   }
+  15: 
 
-src/lib/logic/cec/contextManager.ts:100:15 TS1005: ';' expected.
-  98:   }
-  99: 
-> 100:   toSnapshot(): CecContextEntitySnapshot {
-  101:     return {
-  102:       name: this.name,
+src/lib/logic/cec/dcecCleaning.ts:17:1 TS1128: Declaration or statement expected.
+  15: 
+  16:   return result;
+> 17: }
+  18: 
+  19: export function stripDcecWhitespace(expression: string): string {
 
-src/lib/logic/cec/contextManager.ts:108:1 TS1128: Declaration or statement expected.
-  106:     };
-  107:   }
-> 108: }
-  109: 
-  110: export class CecContextState {
+src/lib/logic/cec/dcecCleaning.ts:45:76 TS1005: ';' expected.
+  43: export function checkDcecParens(expression: string): boolean {
+  44:   let depth = 0;
+> 45:   for (let index = 0; index = input.length || input[openParenIndex] !== '(') {
+  46:     return undefined;
+  47:   }
 
-src/lib/logic/cec/contextManager.ts:178:50 TS1005: ')' expected.
-  176: 
-  177:   ingestUtterance(utterance: string, position = this.currentState.position + 1): CecContextState {
-> 178:     if (!Number.isInteger(position) || position  {
-  179:       if (node.kind === 'application') {
-  180:         const event = new CecContextEntity(node.name, 'event', { properties: { arity: node.args.length }, mentions: [position] });
+src/lib/logic/cec/dcecCleaning.ts:50:43 TS1005: ';' expected.
+  48: 
+  49:   let depth = 0;
+> 50:   for (let index = openParenIndex; index  expression.startsWith(candidate, index));
+  51:     if (symbol !== undefined) {
+  52:       result += ` ${SYMBOL_REPLACEMENTS[symbol]} `;
 
-src/lib/logic/cec/contextManager.ts:188:6 TS1128: Declaration or statement expected.
-  186:         this.currentState.addEntity(entity);
-  187:       }
-> 188:     });
-  189: 
-  190:     this.currentState.position = Math.max(this.currentState.position, position);
-
-src/lib/logic/cec/contextManager.ts:288:136 TS1005: ',' expected.
-  286:         issues.push({ path: `${path}.properties`, message: 'properties must be an object' });
-  287:       }
-> 288:       if (!Array.isArray(entity.mentions) || entity.mentions.some((mention: unknown) => !Number.isInteger(mention) || Number(mention)  typeof utterance !== 'string')) {
-  289:     issues.push({ path: '$.discourseHistory', message: 'discourseHistory must be an array of strings' });
-  290:   }
-
-src/lib/logic/cec/contextManager.ts:291:74 TS1005: ')' expected.
-  289:     issues.push({ path: '$.discourseHistory', message: 'discourseHistory must be an array of strings' });
-  290:   }
-> 291:   if (!Number.isInteger(snapshot.position) || Number(snapshot.position)  {
-  292:       return isRecord(entity) && typeof entity.name === 'string' && normalizeEntityName(entity.name) === focus;
-  293:     });
-
-src/lib/logic/cec/contextManager.ts:293:6 TS1128: Declaration or statement expected.
-  291:   if (!Number.isInteger(snapshot.position) || Number(snapshot.position)  {
-  292:       return isRecord(entity) && typeof entity.name === 'string' && normalizeEntityName(entity.name) === focus;
-> 293:     });
-  294:     if (!hasFocus) {
-  295:       issues.push({ path: '$.focus', message: 'focus must reference an existing entity' });
-
-src/lib/logic/cec/contextManager.ts:322:44 TS1442: Expected '=' for property initializer.
-  320: 
-  321: export class CecAnaphoraResolver {
-> 322:   private readonly resolutionHistory: Array> = [];
-  323: 
-  324:   constructor(private readonly contextManager: CecContextManager) {}
-
-src/lib/logic/cec/contextManager.ts:324:23 TS1005: ',' expected.
-  322:   private readonly resolutionHistory: Array> = [];
-  323: 
-> 324:   constructor(private readonly contextManager: CecContextManager) {}
-  325: 
-  326:   resolveAnaphora(text: string): Map {
-
-src/lib/logic/cec/contextManager.ts:326:23 TS1005: ',' expected.
-  324:   constructor(private readonly contextManager: CecContextManager) {}
-  325: 
-> 326:   resolveAnaphora(text: string): Map {
-  327:     const resolutions = this.contextManager.resolvePronouns(text);
-  328:     this.resolutionHistory.push(new Map(resolutions));
-
-src/lib/logic/cec/contextManager.ts:332:25 TS1005: ';' expected.
-  330:   }
-  331: 
-> 332:   getResolutionHistory(): Array> {
-  333:     return this.resolutionHistory.map((entry: Map) => new Map(entry));
-  334:   }
-
-src/lib/logic/cec/contextManager.ts:333:12 TS1005: ':' expected.
-  331: 
-  332:   getResolutionHistory(): Array> {
-> 333:     return this.resolutionHistory.map((entry: Map) => new Map(entry));
-  334:   }
-  335: }
-
-src/lib/logic/cec/contextManager.ts:335:1 TS1128: Declaration or statement expected.
-  333:     return this.resolutionHistory.map((entry: Map) => new Map(entry));
-  334:   }
-> 335: }
-  336: 
-  337: export class CecDiscourseAnalyzer {
-
-src/lib/logic/cec/contextManager.ts:338:18 TS1442: Expected '=' for property initializer.
-  336: 
-  337: export class CecDiscourseAnalyzer {
-> 338:   segments: Array> = [];
-  339: 
-  340:   segmentDiscourse(utterances: Array): Array> {
-
-src/lib/logic/cec/contextManager.ts:340:30 TS1005: ',' expected.
-  338:   segments: Array> = [];
-  339: 
-> 340:   segmentDiscourse(utterances: Array): Array> {
-  341:     if (utterances.length === 0) {
-  342:       this.segments = [];
-
-src/lib/logic/cec/contextManager.ts:341:19 TS1005: ',' expected.
-  339: 
-  340:   segmentDiscourse(utterances: Array): Array> {
-> 341:     if (utterances.length === 0) {
-  342:       this.segments = [];
-  343:       return [];
-
-src/lib/logic/cec/contextManager.ts:346:26 TS1005: ',' expected.
-  344:     }
-  345: 
-> 346:     const segments: Array> = [];
-  347:     let currentSegment: Array = [utterances[0]];
-  348:     for (let index = 1; index (tokenize(utterances[index - 1]));
-
-src/lib/logic/cec/contextManager.ts:349:7 TS1109: Expression expected.
-  347:     let currentSegment: Array = [utterances[0]];
-  348:     for (let index = 1; index (tokenize(utterances[index - 1]));
-> 349:       const current = new Set(tokenize(utterances[index]));
-  350:       const overlap = Array.from(previous).filter((word: string) => current.has(word)).length;
-  351:       if (overlap === 0 || isTopicShift(utterances[index])) {
-
-src/lib/logic; Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/cec/contextManager.ts(293,44): error TS1442: Expected '=' for property initializer.
-../../..src/lib/logic/cec/contextManager.ts(293,46): error TS1109: Expression expected.
-../../..src/lib/logic/cec/contextManager.ts(295,23): error TS1005: ',' expected.
-../../..src/lib/logic/cec/contextManager.ts(295,32): error TS1005: ',' expected.
-../../..src/lib/logic/cec/contextManager.ts(295,46): error TS1005: ',' expected.
-../../..src/lib/logic/cec/contextManager.ts(295,67): error TS1005: ';' expected.
-../../..src/lib/logic/cec/contextManager.ts(297,23): error TS1005: ',' expected.
-../../..src/lib/logic/cec/contextManager.ts(297,32): error TS1005: ';' expected.
-../../..src/lib/logic/cec/contextManager.ts(297,34): error TS1434: Unexpected keyword or identifier.
-../../..src/lib/logic/cec/contextManager.ts(303,25): error TS1005: ';' expected.
-../../..src/lib/logic/cec/contextManager.ts(304,12): error TS1005: ':' expected.
-../../..src/lib/logic/cec/contextManager.ts(304,70): error TS1005: ',' expected.
-../../..src/lib/logic/cec/contextManager.ts(306,1): error TS1128: Declaration or statement expected.
-../../..src/lib/logic/cec/contextManager.ts(309,18): error TS1442: Expected '=' for property initializer.
-../../..src/lib/logic/cec/contextManager.ts(309,20): error TS1109: Expression expected.
-../../..src/lib/logic/cec/contextManager.ts(311,30): error TS1005: ',' expected.
-../../..src/lib/logic/cec/contextManager.ts(311,38): error TS1005: ';' expected.
-../../..src/lib/logic/cec/contextManager.ts(312,19): error TS1005: ',' expected.
-../../..src/lib/logic/cec/contextManager.ts(312,32): error TS1005: ',' expected.
-../../..src/lib/logic/cec/contextManager.ts(316,26): error TS1005: ',' expected.
+src/lib/logic/cec/dcecCleaning.ts:61:1 TS1128: Declaration or statement expected.
+  59: 
+  60:   return result.replaceAll('( ', '(');
+> 61: }
+  62: 
+  63: export function cleanDcecExpression(expression: string): string {; Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
+../../..src/lib/logic/cec/dcecCleaning.ts(25,76): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecCleaning.ts(30,43): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecCleaning.ts(31,21): error TS1005: ',' expected.
+../../..src/lib/logic/cec/dcecCleaning.ts(32,14): error TS1005: ':' expected.
+../../..src/lib/logic/cec/dcecCleaning.ts(32,18): error TS1005: ',' expected.
+../../..src/lib/logic/cec/dcecCleaning.ts(42,1): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/cec/dcecCleaning.ts(48,17): error TS1005: ')' expected.
+../../..src/lib/logic/cec/dcecCleaning.ts(48,56): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecCleaning.ts(59,1): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/cec/dcecCleaning.test.ts(53,5): error TS1005: ',' expected.
+../../..src/lib/logic/cec/dcecCleaning.test.ts(53,77): error TS1005: ')' expected.
 
 Replacement diagnostic context:
-src/lib/logic/cec/contextManager.ts:293:44 TS1442: Expected '=' for property initializer.
-  291: 
-  292: export class CecAnaphoraResolver {
-> 293:   private readonly resolutionHistory: Array> = [];
-  294: 
-  295:   constructor(private readonly contextManager: CecContextManager) {}
+src/lib/logic/cec/dcecCleaning.ts:25:76 TS1005: ';' expected.
+  23: function countChar(input: string, character: string): number {
+  24:   let count = 0;
+> 25:   for (let index = 0; index = input.length || input[openParenIndex] !== '(') {
+  26:     return undefined;
+  27:   }
 
-src/lib/logic/cec/contextManager.ts:295:23 TS1005: ',' expected.
-  293:   private readonly resolutionHistory: Array> = [];
-  294: 
-> 295:   constructor(private readonly contextManager: CecContextManager) {}
-  296: 
-  297:   resolveAnaphora(text: string): Map {
+src/lib/logic/cec/dcecCleaning.ts:30:43 TS1005: ';' expected.
+  28: 
+  29:   let depth = 0;
+> 30:   for (let index = openParenIndex; index  {
+  31:       changed = true;
+  32:       return atom;
 
-src/lib/logic/cec/contextManager.ts:297:23 TS1005: ',' expected.
-  295:   constructor(private readonly contextManager: CecContextManager) {}
-  296: 
-> 297:   resolveAnaphora(text: string): Map {
-  298:     const resolutions = this.contextManager.resolvePronouns(text);
-  299:     this.resolutionHistory.push(new Map(resolutions));
+src/lib/logic/cec/dcecCleaning.ts:31:21 TS1005: ',' expected.
+  29:   let depth = 0;
+  30:   for (let index = openParenIndex; index  {
+> 31:       changed = true;
+  32:       return atom;
+  33:     });
 
-src/lib/logic/cec/contextManager.ts:303:25 TS1005: ';' expected.
-  301:   }
-  302: 
-> 303:   getResolutionHistory(): Array> {
-  304:     return this.resolutionHistory.map((entry: Map) => new Map(entry));
-  305:   }
+src/lib/logic/cec/dcecCleaning.ts:32:14 TS1005: ':' expected.
+  30:   for (let index = openParenIndex; index  {
+  31:       changed = true;
+> 32:       return atom;
+  33:     });
+  34:     const withoutOuter = removeRedundantOuterParens(result);
 
-src/lib/logic/cec/contextManager.ts:304:12 TS1005: ':' expected.
-  302: 
-  303:   getResolutionHistory(): Array> {
-> 304:     return this.resolutionHistory.map((entry: Map) => new Map(entry));
-  305:   }
-  306: }
+src/lib/logic/cec/dcecCleaning.ts:42:1 TS1128: Declaration or statement expected.
+  40: 
+  41:   return result;
+> 42: }
+  43: 
+  44: export function tuckDcecFunctions(expression: string): string {
 
-src/lib/logic/cec/contextManager.ts:306:1 TS1128: Declaration or statement expected.
-  304:     return this.resolutionHistory.map((entry: Map) => new Map(entry));
-  305:   }
-> 306: }
-  307: 
-  308: export class CecDiscourseAnalyzer {
+src/lib/logic/cec/dcecCleaning.ts:48:17 TS1005: ')' expected.
+  46:   let index = 0;
+  47: 
+> 48:   while (index  expression.startsWith(candidate, index));
+  49:     if (symbol !== undefined) {
+  50:       result += ` ${SYMBOL_REPLACEMENTS[symbol]} `;
 
-src/lib/logic/cec/contextManager.ts:309:18 TS1442: Expected '=' for property initializer.
-  307: 
-  308: export class CecDiscourseAnalyzer {
-> 309:   segments: Array> = [];
-  310: 
-  311:   segmentDiscourse(utterances: Array): Array> {
+src/lib/logic/cec/dcecCleaning.ts:59:1 TS1128: Declaration or statement expected.
+  57: 
+  58:   return result;
+> 59: }
+  60: 
+  61: export function cleanDcecExpression(expression: string): string {
 
-src/lib/logic/cec/contextManager.ts:311:30 TS1005: ',' expected.
-  309:   segments: Array> = [];
-  310: 
-> 311:   segmentDiscourse(utterances: Array): Array> {
-  312:     if (utterances.length === 0) {
-  313:       this.segments = [];
-
-src/lib/logic/cec/contextManager.ts:312:19 TS1005: ',' expected.
-  310: 
-  311:   segmentDiscourse(utterances: Array): Array> {
-> 312:     if (utterances.length === 0) {
-  313:       this.segments = [];
-  314:       return [];
-
-src/lib/logic/cec/contextManager.ts:316:26 TS1005: ',' expected.
-  314:       return [];
-  315:     }
-> 316:     const segments: Array> = [];
-  317:     let currentSegment: Array = [utterances[0]];
-  318:     for (let index = 1; index < utterances.length; index += 1) {
-
-src/lib/logic/cec/contextManager.ts:331:3 TS1128: Declaration or statement expected.
-  329:     this.segments = segments;
-  330:     return segments;
-> 331:   }
-  332: }
-
-src/lib/logic/cec/contextManager.ts:332:1 TS1128: Declaration or statement expected.
-  330:     return segments;
-  331:   }
-> 332: }
+src/lib/logic/cec/dcecCleaning.test.ts:53:5 TS1005: ',' expected.
+  51:     expect(functorizeDcecSymbols('a  b')).toBe('a  iff  b');
+  52:     expect(functorizeDcecSymbols('x  {
+> 53:     expect(cleanDcecExpression('  ((and a b)) # comment')).toBe('(and,a,b)');
+  54:     expect(cleanDcecExpression('Happens(Attack(e),t1) ; ignored')).toBe('(Happens,(Attack,e),t1)');
+  55:     expect(cleanDcecExpression('(a -> b)')).toBe('(a,implies,b)');
 - Failure kind: `preflight`
 
 ### Blocked Backlog
