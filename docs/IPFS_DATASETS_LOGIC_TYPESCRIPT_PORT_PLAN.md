@@ -966,7 +966,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-03 06:18:55 UTC
+Last updated: 2026-05-03 06:31:43 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
@@ -1433,29 +1433,29 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - Target: `Task checkbox-207: Port remaining Python logic module 'logic/CEC/native/dcec_namespace.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `needs follow-up`
 - Summary: Add browser-native DCEC namespace validation parity
-- Impact: The DCEC namespace module now provides deterministic TypeScript validation and snapshot import/export behavior for the dcec_namespace.py parity slice without Python, server, filesystem, subprocess, RPC, or Node-only runtime dependencies. The focused Jest coverage in src/lib/logic/cec/dcecNamespace.test.ts exercises the new validation and restoration paths used by the logic port validation suite.
+- Impact: The DCEC namespace source now implements deterministic TypeScript validation for Python-style namespace symbols, sort references, predicate arity lookups, duplicate labels, and container bookkeeping. The matching Jest test file exercises the new runtime validation paths used by the TypeScript logic-port validation suite.
 - Errors: Preflight repair still produced rejected TypeScript replacements:
 Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/cec/dcecNamespace.ts(208,44): error TS1005: ')' expected.
-../../..src/lib/logic/cec/dcecNamespace.ts(208,52): error TS1005: ';' expected.
+../../..src/lib/logic/cec/dcecNamespace.ts(230,44): error TS1005: ')' expected.
+../../..src/lib/logic/cec/dcecNamespace.ts(230,53): error TS1128: Declaration or statement expected.
 
 Replacement diagnostic context:
-src/lib/logic/cec/dcecNamespace.ts:208:44 TS1005: ')' expected.
-  206:       return undefined;
-  207:     }
-> 208:     if (!Number.isInteger(arity) || arity  'Entity');
-  209:     return this.addPredicate(name, argumentSortNames);
-  210:   }; Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/cec/dcecNamespace.ts(202,16): error TS1005: ')' expected.
-../../..src/lib/logic/cec/dcecNamespace.ts(202,24): error TS1005: ';' expected.
+src/lib/logic/cec/dcecNamespace.ts:230:44 TS1005: ')' expected.
+  228: 
+  229:   private validateArity(arity: number, operation: string): void {
+> 230:     if (!Number.isInteger(arity) || arity  MAX_ARITY) {
+  231:       throw new DcecNamespaceError(`Invalid arity ${arity}`, {
+  232:         operation,; Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
+../../..src/lib/logic/cec/dcecNamespace.ts(229,44): error TS1005: ')' expected.
+../../..src/lib/logic/cec/dcecNamespace.ts(229,53): error TS1128: Declaration or statement expected.
 
 Replacement diagnostic context:
-src/lib/logic/cec/dcecNamespace.ts:202:16 TS1005: ')' expected.
-  200:       return undefined;
-  201:     }
-> 202:     if (arity  'Entity');
-  203:     return this.addPredicate(name, argumentSortNames);
-  204:   }
+src/lib/logic/cec/dcecNamespace.ts:229:44 TS1005: ')' expected.
+  227: 
+  228:   private validateArity(arity: number, operation: string): void {
+> 229:     if (!Number.isInteger(arity) || arity  MAX_ARITY) {
+  230:       throw new DcecNamespaceError(`Invalid arity ${arity}`, {
+  231:         operation,
 - Failure kind: `typescript_quality`
 
 ### Blocked Backlog

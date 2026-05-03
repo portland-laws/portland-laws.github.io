@@ -13,6 +13,7 @@ from ppd.daemon.ppd_supervisor import (
     build_supervisor_prompt,
     builtin_dead_worker_task_board,
     builtin_repair_task_board,
+    builtin_stalled_worker_task_board,
     diagnose,
     read_supervisor_result_rows,
 )
@@ -221,6 +222,59 @@ class SupervisorStaleStatusReplanningTest(unittest.TestCase):
             )
 
         self.assertEqual("reconcile_stalled_worker_and_restart", decision.action)
+        self.assertFalse(decision.should_invoke_codex)
+        self.assertTrue(decision.should_restart_daemon)
+
+    def test_stalled_worker_repair_parks_in_progress_task_instead_of_resetting(self) -> None:
+        board = (
+            "- [~] Task checkbox-200: Add stalled worker coverage.\n"
+            "- [ ] Task checkbox-201: Add next independent task.\n"
+        )
+
+        repaired, parked = builtin_stalled_worker_task_board(
+            board,
+            "Task checkbox-200: Add stalled worker coverage.",
+        )
+
+        self.assertEqual(("Add stalled worker coverage.",), parked)
+        self.assertIn("- [!] Task checkbox-200: Add stalled worker coverage.", repaired)
+        self.assertIn("- [ ] Task checkbox-201: Add next independent task.", repaired)
+        self.assertIn("Parked stalled worker task", repaired)
+
+    def test_dead_worker_with_recent_failure_parks_instead_of_resets(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+            daemon_dir = repo / "ppd" / "daemon"
+            daemon_dir.mkdir(parents=True)
+            target = "Task checkbox-300: Add dead worker recent failure coverage."
+            (daemon_dir / "task-board.md").write_text(
+                "- [~] Task checkbox-300: Add dead worker recent failure coverage.\n"
+                "- [ ] Task checkbox-301: Add next independent task.\n",
+                encoding="utf-8",
+            )
+            atomic_write_json(
+                daemon_dir / "status.json",
+                {
+                    "updated_at": "2026-05-03T00:00:00Z",
+                    "active_state": "calling_llm",
+                    "active_target_task": target,
+                },
+            )
+            append_jsonl(
+                daemon_dir / "ppd-daemon.jsonl",
+                {
+                    "stage": "before_validation",
+                    "diagnostic": {
+                        "failure_kind": "llm",
+                        "target_task": target,
+                        "errors": ["llm_router child exited with code -15:"],
+                    },
+                },
+            )
+
+            decision = diagnose(SupervisorConfig(repo_root=repo, pid_file=Path("ppd/daemon/missing.pid")))
+
+        self.assertEqual("reconcile_dead_worker_with_recent_failures_and_restart", decision.action)
         self.assertFalse(decision.should_invoke_codex)
         self.assertTrue(decision.should_restart_daemon)
 

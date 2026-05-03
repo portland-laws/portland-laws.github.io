@@ -60,8 +60,8 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 
 - [x] Task checkbox-184: Add a fixture-only daemon prompt fixture proving repeated non-JSON LLM responses for a blocked PP&D task are summarized into target_task, failure_kind, compact_raw_response_summary, and next_action_hint fields without storing the full raw response.
 - [x] Task checkbox-185: Add parser-clean daemon diagnostics validation for blocked-task LLM parse loops using one small Python unittest or one daemon helper only; do not touch DevHub, crawler, extraction, logic, or domain fixture contracts in this cycle.
-- [~] Task checkbox-186: Add daemon retry-scope coverage proving that after two syntax_preflight failures on checkbox-178, the next prompt permits either one parser-bearing file or one daemon repair file, and rejects source-plus-fixture-plus-test bundles.
-- [ ] Task checkbox-187: Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task.
+- [!] Task checkbox-186: Add daemon retry-scope coverage proving that after two syntax_preflight failures on checkbox-178, the next prompt permits either one parser-bearing file or one daemon repair file, and rejects source-plus-fixture-plus-test bundles.
+- [!] Task checkbox-187: Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task.
 
 ## Generated Status
 
@@ -86,11 +86,18 @@ Last updated: 2026-05-03T06:30:00.000000Z
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-03T06:26:51.083687Z
+Last updated: 2026-05-03T06:28:10.250878Z
 
 - Latest target: `Task checkbox-186: Add daemon retry-scope coverage proving that after two syntax_preflight failures on checkbox-178, the next prompt permits either one parser-bearing file or one daemon repair file, and rejects source-plus-fixture-plus-test bundles.`
-- Latest result: `syntax_preflight`
-- Latest summary: Add narrow daemon retry-scope helper and unit coverage for checkbox-178 syntax_preflight retries.
+- Latest result: `parse`
+- Latest summary: 
 - Counts: `{"blocked": 2, "complete": 13, "in_progress": 0, "needed": 2}`
 
 <!-- ppd-daemon-task-board:end -->
+## Built-In Supervisor Repair Notes
+
+- Parked repeated LLM parse/runtime loop for `Add daemon retry-scope coverage proving that after two syntax_preflight failures on checkbox-178, the next prompt permits either one parser-bearing file or one daemon repair file, and rejects source-plus-fixture-plus-test bundles.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
+## Built-In Supervisor Repair Notes
+
+- Parked stalled worker task `Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task.` after it exceeded the active-state timeout. The supervisor restarted the daemon on the next independent selectable task instead of reselecting the same stalled work.
+

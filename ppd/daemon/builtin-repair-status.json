@@ -1,65 +1,22 @@
 {
-  "createdAt": "2026-05-03T06:03:18.152872Z",
+  "createdAt": "2026-05-03T06:33:22.319491Z",
   "decision": {
-    "action": "invoke_codex",
-    "reason": "2 task(s) are blocked and no independent selectable task remains: Task checkbox-8: Task checkbox-178: Add a fixture-only DevHub draft-readiness decision matrix plus focused validation that combines missing facts, redacted file placeholders, selector confidence, upload-readiness gates, fee notices, and exact-confirmation defaults while refusing official actions.; Task checkbox-12: Task checkbox-182: Add daemon diagnostics coverage proving repeated non-JSON LLM responses for a blocked task are persisted with target task, failure kind, compact raw-response summary, and a next-action hint before the worker exits.",
+    "action": "reconcile_dead_worker_with_recent_failures_and_restart",
+    "reason": "daemon process is not running but status is still calling_llm on Task checkbox-187: Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task., and 2 recent failure diagnostic(s) already exist for that target; park the task before restart instead of resetting it into another immediate retry",
     "severity": "warning"
   },
-  "failedAgenticRepair": {
-    "changedFiles": [
-      "ppd/daemon/llm_response_diagnostics.py",
-      "ppd/tests/test_daemon_llm_response_diagnostics.py"
-    ],
-    "errors": [
-      "Syntax preflight failed; file edits were rolled back. python3 -m py_compile ppd/daemon/llm_response_diagnostics.py: ppd/daemon/llm_response_diagnostics.py:35: malformed Python expression; use explicit operators such as `is None`, `is not None`, `isinstance(...)`, or a normal return expression. Do not place TypeScript-style type fragments inside Python control-flow or return statements. Next worker attempt should be smaller: replace only the syntactically failing file plus its narrow fixture/test if needed; run py_compile for each changed Python file or strict tsc for each changed TypeScript file mentally before returning JSON; do not add new contracts, fixtures, and broad tests in the same p..."
-    ],
-    "failureKind": "syntax_preflight",
-    "summary": "Add parser-clean daemon diagnostics helper and focused tests for repeated non-JSON LLM responses.",
-    "validationResults": [
-      {
-        "command": [
-          "python3",
-          "-m",
-          "py_compile",
-          "ppd/daemon/llm_response_diagnostics.py"
-        ],
-        "returncode": 1,
-        "stderr": "ppd/daemon/llm_response_diagnostics.py:35: malformed Python expression; use explicit operators such as `is None`, `is not None`, `isinstance(...)`, or a normal return expression. Do not place TypeScript-style type fragments inside Python control-flow or return statements.",
-        "stdout": ""
-      },
-      {
-        "command": [
-          "python3",
-          "-m",
-          "py_compile",
-          "ppd/tests/test_daemon_llm_response_diagnostics.py"
-        ],
-        "returncode": 0,
-        "stderr": "",
-        "stdout": ""
-      }
-    ]
-  },
-  "fallbackActions": [
-    "preserve failed repair diagnostics without accepting the invalid patch",
-    "run full PP&D daemon validation before restarting unattended worker attempts",
-    "restart the worker with PPD_LLM_BACKEND=llm_router after fallback validation passes",
-    "keep future retry scope narrow and fixture-first"
+  "parkedStalledTaskLabels": [
+    "Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task."
   ],
-  "llmBackend": "llm_router",
-  "repairKind": "builtin_supervisor_fallback",
-  "safetyBoundaries": [
-    "no private DevHub session artifacts",
-    "no raw crawl output",
-    "no downloaded documents",
-    "no browser traces or screenshots",
-    "no consequential DevHub actions"
-  ],
+  "repairKind": "stalled_worker_task_parked",
   "schemaVersion": 1,
-  "taskBoardRepair": {
-    "parkedRepeatedSyntaxLoopTasks": [],
-    "replenishedGoalTaskLabels": [],
-    "supersededTaskBoardOnlyLabels": [],
-    "taskBoardUpdated": false
+  "statusBeforeRepair": {
+    "active_state": "calling_llm",
+    "active_state_started_at": "2026-05-03T06:32:50.384970Z",
+    "active_target_task": "Task checkbox-187: Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task.",
+    "pid": 2794991,
+    "state": "calling_llm",
+    "target_task": "Task checkbox-187: Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task.",
+    "updated_at": "2026-05-03T06:32:50.384973Z"
   }
 }

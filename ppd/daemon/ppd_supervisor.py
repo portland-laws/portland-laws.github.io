@@ -271,6 +271,26 @@ def recent_parse_or_llm_failure_target(
     return target if count >= minimum else ""
 
 
+def recent_failure_count_for_target(
+    rows: list[dict[str, Any]],
+    target_task: str,
+    *,
+    kinds: Optional[set[str]] = None,
+) -> int:
+    count = 0
+    for proposal in reversed(rows):
+        if str(proposal.get("target_task") or "") != target_task:
+            if count:
+                break
+            continue
+        if proposal.get("applied") and proposal.get("validation_passed") and not proposal.get("errors"):
+            break
+        failure_kind = str(proposal.get("failure_kind") or "")
+        if kinds is None or failure_kind in kinds:
+            count += 1
+    return count
+
+
 def should_compact_supervisor_repair_prompt(decision: SupervisorDecision) -> bool:
     if decision.action != "repair_daemon_programming":
         return False
@@ -850,6 +870,35 @@ def builtin_dead_worker_task_board(markdown: str, target_task: str) -> tuple[str
     return repaired + "\n", (target_title,)
 
 
+def builtin_stalled_worker_task_board(markdown: str, target_task: str) -> tuple[str, tuple[str, ...]]:
+    """Park an actively stalled worker task so restart advances to independent work."""
+
+    target_title = title_from_task_label(target_task)
+    if not target_title:
+        return markdown, ()
+
+    changed = False
+    repaired_lines: list[str] = []
+    for line in markdown.splitlines(keepends=True):
+        stripped = line.rstrip("\n")
+        if target_title in stripped and ("- [~]" in stripped or "- [ ]" in stripped):
+            line = line.replace("- [~]", "- [!]", 1).replace("- [ ]", "- [!]", 1)
+            changed = True
+        repaired_lines.append(line)
+
+    if not changed:
+        return markdown, ()
+
+    note = (
+        "\n"
+        "## Built-In Supervisor Repair Notes\n\n"
+        f"- Parked stalled worker task `{target_title}` after it exceeded the active-state timeout. "
+        "The supervisor restarted the daemon on the next independent selectable task instead of reselecting the same stalled work.\n"
+    )
+    repaired = "".join(repaired_lines).rstrip() + note
+    return repaired + "\n", (target_title,)
+
+
 def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> SupervisorDecision:
     pid = read_pid(config.resolve(config.pid_file))
     running = process_running(pid)
@@ -926,6 +975,22 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
     if not running:
         active_target = str(status.get("active_target_task") or status.get("target_task") or "")
         if active_state in {"calling_llm", "applying_files"} and active_target:
+            recent_active_failures = recent_failure_count_for_target(
+                rows,
+                active_target,
+                kinds={"parse", "llm", "syntax_preflight", "validation", "preflight"},
+            )
+            if recent_active_failures >= 1:
+                return SupervisorDecision(
+                    action="reconcile_dead_worker_with_recent_failures_and_restart",
+                    reason=(
+                        f"daemon process is not running but status is still {active_state} on {active_target}, "
+                        f"and {recent_active_failures} recent failure diagnostic(s) already exist for that target; "
+                        "park the task before restart instead of resetting it into another immediate retry"
+                    ),
+                    severity="warning",
+                    should_restart_daemon=True,
+                )
             return SupervisorDecision(
                 action="reconcile_dead_worker_and_restart",
                 reason=(
@@ -1317,6 +1382,50 @@ def invoke_dead_worker_repair(config: SupervisorConfig, decision: SupervisorDeci
     return proposal
 
 
+def invoke_stalled_worker_repair(config: SupervisorConfig, decision: SupervisorDecision) -> Proposal:
+    board_path = config.resolve(config.task_board)
+    board = read_text(board_path) if board_path.exists() else ""
+    status = load_json(config.resolve(config.status_file))
+    repaired_board, parked_labels = builtin_stalled_worker_task_board(
+        board,
+        str(status.get("active_target_task") or status.get("target_task") or ""),
+    )
+    payload = {
+        "schemaVersion": 1,
+        "createdAt": utc_now(),
+        "repairKind": "stalled_worker_task_parked",
+        "decision": {
+            "action": decision.action,
+            "reason": decision.reason,
+            "severity": decision.severity,
+        },
+        "parkedStalledTaskLabels": list(parked_labels),
+        "statusBeforeRepair": status,
+    }
+    files = [
+        {
+            "path": "ppd/daemon/builtin-repair-status.json",
+            "content": json.dumps(payload, indent=2, sort_keys=True) + "\n",
+        }
+    ]
+    if repaired_board != board:
+        files.append({"path": "ppd/daemon/task-board.md", "content": repaired_board})
+    proposal = Proposal(
+        summary="Park stalled worker task before restart.",
+        impact=(
+            "The supervisor handles an active-state timeout deterministically by parking the stalled task, "
+            "recording the repair, validating, and restarting on the next independent task."
+        ),
+        files=files,
+    )
+    proposal.target_task = f"Built-in supervisor fallback: {decision.reason}"
+    proposal.dry_run = not config.apply
+    if config.apply:
+        return apply_files_with_validation(proposal, supervisor_daemon_config(config))
+    proposal.validation_results = run_validation(supervisor_daemon_config(config))
+    return proposal
+
+
 def invoke_codex_repair(config: SupervisorConfig, decision: SupervisorDecision) -> Proposal:
     if config.apply:
         run_control(config, "stop")
@@ -1381,7 +1490,13 @@ def run_once(config: SupervisorConfig) -> SupervisorDecision:
         )
         if config.restart_daemon:
             run_control(config, "start")
-    elif decision.action in {"reconcile_dead_worker_and_restart", "reconcile_stalled_worker_and_restart"} and config.apply:
+    elif decision.action in {"reconcile_stalled_worker_and_restart", "reconcile_dead_worker_with_recent_failures_and_restart"} and config.apply:
+        if config.restart_daemon:
+            run_control(config, "stop")
+        proposal = invoke_stalled_worker_repair(config, decision)
+        if config.restart_daemon:
+            run_control(config, "start")
+    elif decision.action == "reconcile_dead_worker_and_restart" and config.apply:
         if config.restart_daemon:
             run_control(config, "stop")
         proposal = invoke_dead_worker_repair(config, decision)

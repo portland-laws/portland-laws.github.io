@@ -1,0 +1,88 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,44 +1,16 @@
+ {
+-  "createdAt": "2026-05-03T06:03:18.152872Z",
++  "createdAt": "2026-05-03T06:32:19.035784Z",
+   "decision": {
+-    "action": "invoke_codex",
+-    "reason": "2 task(s) are blocked and no independent selectable task remains: Task checkbox-8: Task checkbox-178: Add a fixture-only DevHub draft-readiness decision matrix plus focused validation that combines missing facts, redacted file placeholders, selector confidence, upload-readiness gates, fee notices, and exact-confirmation defaults while refusing official actions.; Task checkbox-12: Task checkbox-182: Add daemon diagnostics coverage proving repeated non-JSON LLM responses for a blocked task are persisted with target task, failure kind, compact raw-response summary, and a next-action hint before the worker exits.",
++    "action": "reconcile_repeated_llm_loop_and_restart",
++    "reason": "5 recent durable LLM parse/runtime diagnostics were recorded for the same task before the daemon exited; park the looping task and restart on the next independent task without invoking the LLM repair path",
+     "severity": "warning"
+   },
+   "failedAgenticRepair": {
+-    "changedFiles": [
+-      "ppd/daemon/llm_response_diagnostics.py",
+-      "ppd/tests/test_daemon_llm_response_diagnostics.py"
+-    ],
+-    "errors": [
+-      "Syntax preflight failed; file edits were rolled back. python3 -m py_compile ppd/daemon/llm_response_diagnostics.py: ppd/daemon/llm_response_diagnostics.py:35: malformed Python expression; use explicit operators such as `is None`, `is not None`, `isinstance(...)`, or a normal return expression. Do not place TypeScript-style type fragments inside Python control-flow or return statements. Next worker attempt should be smaller: replace only the syntactically failing file plus its narrow fixture/test if needed; run py_compile for each changed Python file or strict tsc for each changed TypeScript file mentally before returning JSON; do not add new contracts, fixtures, and broad tests in the same p..."
+-    ],
+-    "failureKind": "syntax_preflight",
+-    "summary": "Add parser-clean daemon diagnostics helper and focused tests for repeated non-JSON LLM responses.",
+-    "validationResults": [
+-      {
+-        "command": [
+-          "python3",
+-          "-m",
+-          "py_compile",
+-          "ppd/daemon/llm_response_diagnostics.py"
+-        ],
+-        "returncode": 1,
+-        "stderr": "ppd/daemon/llm_response_diagnostics.py:35: malformed Python expression; use explicit operators such as `is None`, `is not None`, `isinstance(...)`, or a normal return expression. Do not place TypeScript-style type fragments inside Python control-flow or return statements.",
+-        "stdout": ""
+-      },
+-      {
+-        "command": [
+-          "python3",
+-          "-m",
+-          "py_compile",
+-          "ppd/tests/test_daemon_llm_response_diagnostics.py"
+-        ],
+-        "returncode": 0,
+-        "stderr": "",
+-        "stdout": ""
+-      }
+-    ]
++    "changedFiles": [],
++    "errors": [],
++    "failureKind": "llm",
++    "summary": "Repeated LLM parse/runtime diagnostic loop detected.",
++    "validationResults": []
+   },
+   "fallbackActions": [
+     "preserve failed repair diagnostics without accepting the invalid patch",
+@@ -57,9 +29,11 @@
+   ],
+   "schemaVersion": 1,
+   "taskBoardRepair": {
+-    "parkedRepeatedSyntaxLoopTasks": [],
++    "parkedRepeatedSyntaxLoopTasks": [
++      "Add daemon retry-scope coverage proving that after two syntax_preflight failures on checkbox-178, the next prompt permits either one parser-bearing file or one daemon repair file, and rejects source-plus-fixture-plus-test bundles."
++    ],
+     "replenishedGoalTaskLabels": [],
+     "supersededTaskBoardOnlyLabels": [],
+-    "taskBoardUpdated": false
++    "taskBoardUpdated": true
+   }
+ }
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -60,7 +60,7 @@
+ 
+ - [x] Task checkbox-184: Add a fixture-only daemon prompt fixture proving repeated non-JSON LLM responses for a blocked PP&D task are summarized into target_task, failure_kind, compact_raw_response_summary, and next_action_hint fields without storing the full raw response.
+ - [x] Task checkbox-185: Add parser-clean daemon diagnostics validation for blocked-task LLM parse loops using one small Python unittest or one daemon helper only; do not touch DevHub, crawler, extraction, logic, or domain fixture contracts in this cycle.
+-- [~] Task checkbox-186: Add daemon retry-scope coverage proving that after two syntax_preflight failures on checkbox-178, the next prompt permits either one parser-bearing file or one daemon repair file, and rejects source-plus-fixture-plus-test bundles.
++- [!] Task checkbox-186: Add daemon retry-scope coverage proving that after two syntax_preflight failures on checkbox-178, the next prompt permits either one parser-bearing file or one daemon repair file, and rejects source-plus-fixture-plus-test bundles.
+ - [ ] Task checkbox-187: Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task.
+ 
+ ## Generated Status
+@@ -94,3 +94,7 @@
+ - Counts: `{"blocked": 2, "complete": 13, "in_progress": 0, "needed": 2}`
+ 
+ <!-- ppd-daemon-task-board:end -->
++## Built-In Supervisor Repair Notes
++
++- Parked repeated LLM parse/runtime loop for `Add daemon retry-scope coverage proving that after two syntax_preflight failures on checkbox-178, the next prompt permits either one parser-bearing file or one daemon repair file, and rejects source-plus-fixture-plus-test bundles.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
++

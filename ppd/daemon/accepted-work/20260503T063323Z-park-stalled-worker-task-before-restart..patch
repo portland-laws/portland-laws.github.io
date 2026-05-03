@@ -1,0 +1,75 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,39 +1,22 @@
+ {
+-  "createdAt": "2026-05-03T06:32:19.035784Z",
++  "createdAt": "2026-05-03T06:33:22.319491Z",
+   "decision": {
+-    "action": "reconcile_repeated_llm_loop_and_restart",
+-    "reason": "5 recent durable LLM parse/runtime diagnostics were recorded for the same task before the daemon exited; park the looping task and restart on the next independent task without invoking the LLM repair path",
++    "action": "reconcile_dead_worker_with_recent_failures_and_restart",
++    "reason": "daemon process is not running but status is still calling_llm on Task checkbox-187: Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task., and 2 recent failure diagnostic(s) already exist for that target; park the task before restart instead of resetting it into another immediate retry",
+     "severity": "warning"
+   },
+-  "failedAgenticRepair": {
+-    "changedFiles": [],
+-    "errors": [],
+-    "failureKind": "llm",
+-    "summary": "Repeated LLM parse/runtime diagnostic loop detected.",
+-    "validationResults": []
+-  },
+-  "fallbackActions": [
+-    "preserve failed repair diagnostics without accepting the invalid patch",
+-    "run full PP&D daemon validation before restarting unattended worker attempts",
+-    "restart the worker with PPD_LLM_BACKEND=llm_router after fallback validation passes",
+-    "keep future retry scope narrow and fixture-first"
++  "parkedStalledTaskLabels": [
++    "Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task."
+   ],
+-  "llmBackend": "llm_router",
+-  "repairKind": "builtin_supervisor_fallback",
+-  "safetyBoundaries": [
+-    "no private DevHub session artifacts",
+-    "no raw crawl output",
+-    "no downloaded documents",
+-    "no browser traces or screenshots",
+-    "no consequential DevHub actions"
+-  ],
++  "repairKind": "stalled_worker_task_parked",
+   "schemaVersion": 1,
+-  "taskBoardRepair": {
+-    "parkedRepeatedSyntaxLoopTasks": [
+-      "Add daemon retry-scope coverage proving that after two syntax_preflight failures on checkbox-178, the next prompt permits either one parser-bearing file or one daemon repair file, and rejects source-plus-fixture-plus-test bundles."
+-    ],
+-    "replenishedGoalTaskLabels": [],
+-    "supersededTaskBoardOnlyLabels": [],
+-    "taskBoardUpdated": true
++  "statusBeforeRepair": {
++    "active_state": "calling_llm",
++    "active_state_started_at": "2026-05-03T06:32:50.384970Z",
++    "active_target_task": "Task checkbox-187: Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task.",
++    "pid": 2794991,
++    "state": "calling_llm",
++    "target_task": "Task checkbox-187: Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task.",
++    "updated_at": "2026-05-03T06:32:50.384973Z"
+   }
+ }
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -61,7 +61,7 @@
+ - [x] Task checkbox-184: Add a fixture-only daemon prompt fixture proving repeated non-JSON LLM responses for a blocked PP&D task are summarized into target_task, failure_kind, compact_raw_response_summary, and next_action_hint fields without storing the full raw response.
+ - [x] Task checkbox-185: Add parser-clean daemon diagnostics validation for blocked-task LLM parse loops using one small Python unittest or one daemon helper only; do not touch DevHub, crawler, extraction, logic, or domain fixture contracts in this cycle.
+ - [!] Task checkbox-186: Add daemon retry-scope coverage proving that after two syntax_preflight failures on checkbox-178, the next prompt permits either one parser-bearing file or one daemon repair file, and rejects source-plus-fixture-plus-test bundles.
+-- [~] Task checkbox-187: Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task.
++- [!] Task checkbox-187: Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task.
+ 
+ ## Generated Status
+ 
+@@ -97,4 +97,7 @@
+ ## Built-In Supervisor Repair Notes
+ 
+ - Parked repeated LLM parse/runtime loop for `Add daemon retry-scope coverage proving that after two syntax_preflight failures on checkbox-178, the next prompt permits either one parser-bearing file or one daemon repair file, and rejects source-plus-fixture-plus-test bundles.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
++## Built-In Supervisor Repair Notes
+ 
++- Parked stalled worker task `Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task.` after it exceeded the active-state timeout. The supervisor restarted the daemon on the next independent selectable task instead of reselecting the same stalled work.
++
