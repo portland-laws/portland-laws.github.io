@@ -1,0 +1,68 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "fee_notice_payment_gate",
+  "scenarioId": "scenario-ppd-fee-notice-payment-gate-v1",
+  "generatedAt": "2026-05-02T00:00:00Z",
+  "publicFeeGuidance": [
+    {
+      "sourceEvidenceId": "src-ppd-fee-guidance",
+      "sourceUrl": "https://www.portland.gov/ppd/fees",
+      "citation": {
+        "locator": "fixture-public-fee-guidance",
+        "paraphrase": "Public fee guidance can inform estimated fee notices, but payment is a financial action requiring exact payment-specific confirmation."
+      }
+    }
+  ],
+  "estimatedFeeNotices": [
+    {
+      "noticeId": "notice-plan-review-estimate",
+      "feeKey": "fees.plan_review_estimate",
+      "amountStored": false,
+      "redactedDisplay": "[REDACTED_ESTIMATED_FEE_NOTICE]",
+      "noticeOnly": true,
+      "sourceEvidenceIds": [
+        "src-ppd-fee-guidance"
+      ]
+    }
+  ],
+  "financialActionClassification": {
+    "actionId": "pay_fee",
+    "actionClass": "financial",
+    "automationAllowed": false,
+    "paymentDataStored": false,
+    "requiresExactPaymentSpecificConfirmation": true,
+    "exactPaymentSpecificConfirmationPresent": false
+  },
+  "exactConfirmationRequirements": [
+    {
+      "confirmationId": "confirm-pay-fee-exact-action",
+      "requiredPhraseMatchesAction": "pay_fee",
+      "defaultDecision": "refuse",
+      "sourceEvidenceIds": [
+        "src-ppd-fee-guidance"
+      ]
+    }
+  ],
+  "auditEvents": [
+    {
+      "auditEventId": "audit-fee-notice-shown",
+      "eventType": "fee_notice_presented",
+      "storesPaymentData": false,
+      "redactedValue": "[REDACTED_ESTIMATED_FEE_NOTICE]",
+      "sourceEvidenceIds": [
+        "src-ppd-fee-guidance"
+      ]
+    },
+    {
+      "auditEventId": "audit-payment-refused",
+      "eventType": "financial_action_refused",
+      "storesPaymentData": false,
+      "reason": "payment automation is disabled without exact payment-specific confirmation"
+    }
+  ],
+  "plannerOutcome": {
+    "mayShowFeeNotice": true,
+    "mayPlanPaymentAutomation": false,
+    "nextAction": "ask_for_exact_payment_confirmation_only_if_user_requests_payment"
+  }
+}

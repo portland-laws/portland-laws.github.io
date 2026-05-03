@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "process_state_transition_scenario",
+  "scenarioId": "scenario-ppd-process-state-transition-v1",
+  "generatedAt": "2026-05-02T00:00:00Z",
+  "stateSources": [
+    {
+      "sourceEvidenceId": "src-public-process-guidance",
+      "sourceUrl": "https://www.portland.gov/ppd/permits",
+      "sourceType": "public_guidance"
+    },
+    {
+      "sourceEvidenceId": "src-mocked-devhub-draft-state",
+      "sourceUrl": "mock://devhub/redacted-draft-state",
+      "sourceType": "mocked_read_only_state"
+    }
+  ],
+  "states": [
+    {
+      "stateId": "public-guidance-requirements-known",
+      "stateType": "public_guidance",
+      "stale": false
+    },
+    {
+      "stateId": "mock-devhub-draft-incomplete",
+      "stateType": "mocked_devhub_read_only",
+      "stale": false
+    },
+    {
+      "stateId": "draft-preview-ready-after-user-answer",
+      "stateType": "reversible_preview",
+      "stale": false
+    },
+    {
+      "stateId": "official-submission-blocked",
+      "stateType": "blocked_consequential_transition",
+      "stale": false
+    }
+  ],
+  "transitions": [
+    {
+      "transitionId": "transition-ask-user-for-missing-address",
+      "fromState": "mock-devhub-draft-incomplete",
+      "toState": "draft-preview-ready-after-user-answer",
+      "actionClass": "ask_user_question",
+      "sourceLinkedQuestion": "What is the project site address?",
+      "allowedAutonomous": true
+    },
+    {
+      "transitionId": "transition-preview-address-fill",
+      "fromState": "draft-preview-ready-after-user-answer",
+      "toState": "mock-devhub-draft-incomplete",
+      "actionClass": "reversible_draft_preview",
+      "allowedAutonomous": false,
+      "requiresResolvedUserFact": "project.site_address"
+    },
+    {
+      "transitionId": "transition-submit-application",
+      "fromState": "mock-devhub-draft-incomplete",
+      "toState": "official-submission-blocked",
+      "actionClass": "consequential",
+      "allowedAutonomous": false,
+      "blockedByDefault": true,
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false
+    }
+  ],
+  "staleEvidenceInvalidation": {
+    "enabled": true,
+    "whenEvidenceStale": "block_preview_and_ask_human_review",
+    "affectedStates": [
+      "public-guidance-requirements-known",
+      "draft-preview-ready-after-user-answer"
+    ]
+  },
+  "runtimeBoundary": {
+    "playwrightLaunched": false,
+    "liveAccountTouched": false,
+    "authArtifactsStored": false,
+    "rawBrowserStateStored": false
+  }
+}

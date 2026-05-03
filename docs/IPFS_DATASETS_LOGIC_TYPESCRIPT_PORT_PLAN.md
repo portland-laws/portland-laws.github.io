@@ -711,7 +711,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [!] Port remaining Python logic module `logic/CEC/native/advanced_inference.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/CEC/native/ambiguity_resolver.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [!] Port remaining Python logic module `logic/CEC/native/cec_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/cec_zkp_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/cec_zkp_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/context_manager.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/dcec_cleaning.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/dcec_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-02 23:02:23 UTC
+Last updated: 2026-05-03 01:22:17 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-201: Port remaining Python logic module 'logic/CEC/native/cec_zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-202: Port remaining Python logic module 'logic/CEC/native/context_manager.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1432,18 +1432,249 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 - Target: `Task checkbox-201: Port remaining Python logic module 'logic/CEC/native/cec_zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `needs follow-up`
-- Summary: Add browser-native CEC ZKP integration parity slice
-- Impact: The CEC ZKP integration module now provides deterministic browser-native proof metadata, backend capability validation, fail-closed Groth16 handling, unified proof serialization, and local hybrid proving/caching behavior. The focused Jest tests exercise the simulated backend, private proof serialization, cache behavior, statistics reset, and unavailable Groth16 path without Python, server, filesystem, subprocess, RPC, or Node-only runtime fallbacks.
-- Errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/cec/cecZkpIntegration.ts(49,13): error TS2314: Generic type 'Record' requires 2 type argument(s).
-../../..src/lib/logic/cec/cecZkpIntegration.ts(103,24): error TS2314: Generic type 'Omit' requires 2 type argument(s).
-../../..src/lib/logic/cec/cecZkpIntegration.ts(166,13): error TS2314: Generic type 'Record' requires 2 type argument(s).
-../../..src/lib/logic/cec/cecZkpIntegration.ts(227,6): error TS2314: Generic type 'Promise<T>' requires 1 type argument(s).
-../../..src/lib/logic/cec/cecZkpIntegration.ts(283,6): error TS2314: Generic type 'Promise<T>' requires 1 type argument(s).
-../../..src/lib/logic/cec/cecZkpIntegration.ts(384,4): error TS2314: Generic type 'Promise<T>' requires 1 type argument(s).
-../../..src/lib/logic/cec/cecZkpIntegration.ts(427,42): error TS2314: Generic type 'Promise<T>' requires 1 type argument(s).
+- Summary: Add browser-native CEC ZKP integration metadata and fail-closed backend validation
+- Impact: src/lib/logic/cec/cecZkpIntegration.ts provides a browser-native deterministic ZKP metadata adapter for CEC proofs, with no Python, server, filesystem, subprocess, RPC, or FFI dependency. src/lib/logic/cec/cecZkpIntegration.test.ts validates the simulated proof contract, public inputs, unsupported backend failure behavior, and cache path through the existing Jest logic-port suite.
+- Errors: Preflight repair still produced rejected TypeScript replacements:
+Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
+../../..src/lib/logic/cec/cecZkpIntegration.ts(13,22): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(21,17): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(22,13): error TS2314: Generic type 'Record' requires 2 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(31,13): error TS2314: Generic type 'Record' requires 2 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(37,11): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(42,20): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(50,13): error TS2314: Generic type 'Record' requires 2 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(78,11): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(83,20): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(96,20): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(101,29): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(130,13): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(153,13): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(176,13): error TS2314: Generic type 'Record' requires 2 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(209,27): error TS2314: Generic type 'Map<K, V>' requires 2 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(226,13): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(228,6): error TS2314: Generic type 'Promise<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(269,15): error TS2314: Generic type 'Record' requires 2 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(285,13): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(288,6): error TS2314: Generic type 'Promise<T>' requires 1 type argument(s).
 
 Replacement diagnostic context:
+src/lib/logic/cec/cecZkpIntegration.ts:13:22 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  11:   backend: string;
+  12:   supported: boolean;
+> 13:   availableBackends: Array;
+  14:   reason?: string;
+  15: }
+
+src/lib/logic/cec/cecZkpIntegration.ts:21:17 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  19:   goal: string;
+  20:   axiomsHash: string;
+> 21:   publicInputs: Array;
+  22:   metadata: Record;
+  23: }
+
+src/lib/logic/cec/cecZkpIntegration.ts:22:13 TS2314: Generic type 'Record' requires 2 type argument(s).
+  20:   axiomsHash: string;
+  21:   publicInputs: Array;
+> 22:   metadata: Record;
+  23: }
+  24: 
+
+src/lib/logic/cec/cecZkpIntegration.ts:31:13 TS2314: Generic type 'Record' requires 2 type argument(s).
+  29:   proofDigest: string;
+  30:   verified: boolean;
+> 31:   metadata: Record;
+  32: }
+  33: 
+
+src/lib/logic/cec/cecZkpIntegration.ts:37:11 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  35:   isProved: boolean;
+  36:   formula: CecExpression;
+> 37:   axioms: Array;
+  38:   method: CecProvingMethod;
+  39:   proofTime: number;
+
+src/lib/logic/cec/cecZkpIntegration.ts:42:20 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  40:   baseResult: CecProofStatus;
+  41:   proofSteps?: number;
+> 42:   inferenceRules?: Array;
+  43:   errorMessage?: string;
+  44:   zkpProof?: CecZkpProof;
+
+src/lib/logic/cec/cecZkpIntegration.ts:50:13 TS2314: Generic type 'Record' requires 2 type argument(s).
+  48:   cacheHitTime?: number;
+  49:   timestamp: number;
+> 50:   toDict(): Record;
+  51: }
+  52: 
+
+src/lib/logic/cec/cecZkpIntegration.ts:78:11 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  76:   isProved: boolean;
+  77:   formula: CecExpression;
+> 78:   axioms: Array;
+  79:   method: CecProvingMethod;
+  80:   proofTime: number;
+
+src/lib/logic/cec/cecZkpIntegration.ts:83:20 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  81:   baseResult: CecProofStatus;
+  82:   proofSteps?: number;
+> 83:   inferenceRules?: Array;
+  84:   errorMessage?: string;
+  85:   zkpProof?: CecZkpProof;
+
+src/lib/logic/cec/cecZkpIntegration.ts:96:20 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  94:   readonly isProved: boolean;
+  95:   readonly formula: CecExpression;
+> 96:   readonly axioms: Array;
+  97:   readonly method: CecProvingMethod;
+  98:   readonly proofTime: number;
+
+src/lib/logic/cec/cecZkpIntegration.ts:101:29 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  99:   readonly baseResult: CecProofStatus;
+  100:   readonly proofSteps?: number;
+> 101:   readonly inferenceRules?: Array;
+  102:   readonly errorMessage?: string;
+  103:   readonly zkpProof?: CecZkpProof;
+
+src/lib/logic/cec/cecZkpIntegration.ts:130:13 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  128:   static fromStandardProof(
+  129:     formula: CecExpression,
+> 130:     axioms: Array,
+  131:     isProved: boolean,
+  132:     proofTime: number,
+
+src/lib/logic/cec/cecZkpIntegration.ts:153:13 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  151:   static fromZkpProof(
+  152:     formula: CecExpression,
+> 153:     axioms: Array,
+  154:     zkpProof: CecZkpProof,
+  155:     isProved: boolean,
+
+src/lib/logic/cec/cecZkpIntegration.ts:176:13 TS2314: Generic type 'Record' requires 2 type argument(s).
+  174:   }
+  175: 
+> 176:   toDict(): Record {
+  177:     return {
+  178:       is_proved: this.isProved,
+
+src/lib/logic/cec/cecZkpIntegration.ts:209:27 TS2314: Generic type 'Map<K, V>' requires 2 type argument(s).
+  207:   private readonly cacheTtl: number;
+  208:   private readonly preferPrivateProofs: boolean;
+> 209:   private readonly cache: Map;
+  210:   private zkpAttempts = 0;
+  211:   private zkpSuccesses = 0;
+
+src/lib/logic/cec/cecZkpIntegration.ts:226:13 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  224:   async proveTheorem(
+  225:     goal: CecExpression,
+> 226:     axioms: Array = [],
+  227:     options: ProveCecTheoremOptions = {},
+  228:   ): Promise {
+
+src/lib/logic/cec/cecZkpIntegration.ts:228:6 TS2314: Generic type 'Promise<T>' requires 1 type argument(s).
+  226:     axioms: Array = [],
+  227:     options: ProveCecTheoremOptions = {},
+> 228:   ): Promise {
+  229:     const start = performanceNow();
+  230:     const cacheKey = makeCacheKey(goal, axioms, options);
+
+src/lib/logic/cec/cecZkpIntegration.ts:269:15 TS2314: Generic type 'Record' requires 2 type argument(s).
+  267:   }
+  268: 
+> 269:   getStats(): Record {
+  270:     return {
+  271:       zkp_attempts: this.zkpAttempts,
+
+src/lib/logic/cec/cecZkpIntegration.ts:285:13 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  283:   private async proveWithZkp(
+  284:     goal: CecExpression,
+> 285:     axioms: Array,
+  286:     privateAxioms: boolean,
+  287:     start: number,
+
+src/lib/logic/cec/cecZkpIntegration.ts:288:6 TS2314: Generic type 'Promise<T>' requires 1 type argument(s).
+  286:     privateAxioms: boolean,
+  287:     start: number,
+> 288:   ): Promise {
+  289:     this.zkpAttempts += 1;
+  290:     const validation = validateCecZkpBackend(this.zkpBackend);
+
+src/lib/logic/cec/cecZkpIntegration.ts:350:28 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  348: 
+  349: export function validateCecZkpBackend(backend: string): CecZkpBackendValidation {
+> 350:   const availableBackends: Array = ['simulated'];
+  351:   if (backend === 'simulated') {
+  352:     return { backend, supported: true, availableBackends };
+
+src/lib/logic/cec/cecZkpIntegration.ts:365:11 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  363: export async function createSimulatedCecZkpProof(
+  364:   goal: CecExpression,
+> 365:   axioms: Array,
+  366:   isProved: boolean,
+  367: ): Promise {
+
+src/lib/logic/cec/cecZkpIntegration.ts:367:4 TS2314: Generic type 'Promise<T>' requires 1 type argument(s).
+  365:   axioms: Array,
+  366:   isProved: boolean,
+> 367: ): Promise {
+  368:   const goalText = formatCecExpression(goal);
+  36; Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
+../../..src/lib/logic/cec/cecZkpIntegration.ts(13,22): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(21,17): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(30,13): error TS2314: Generic type 'Record' requires 2 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(36,11): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(41,20): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(49,13): error TS2314: Generic type 'Record' requires 2 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(71,11): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(76,20): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(89,20): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(94,29): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(123,13): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(146,13): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(169,13): error TS2314: Generic type 'Record' requires 2 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(202,27): error TS2314: Generic type 'Map<K, V>' requires 2 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(219,13): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(221,6): error TS2314: Generic type 'Promise<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(262,15): error TS2314: Generic type 'Record' requires 2 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(278,13): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(281,6): error TS2314: Generic type 'Promise<T>' requires 1 type argument(s).
+../../..src/lib/logic/cec/cecZkpIntegration.ts(343,28): error TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+
+Replacement diagnostic context:
+src/lib/logic/cec/cecZkpIntegration.ts:13:22 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  11:   backend: string;
+  12:   supported: boolean;
+> 13:   availableBackends: Array;
+  14:   reason?: string;
+  15: }
+
+src/lib/logic/cec/cecZkpIntegration.ts:21:17 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  19:   axiomsHash: string;
+  20:   rulesetId: string;
+> 21:   publicInputs: Array;
+  22: }
+  23: 
+
+src/lib/logic/cec/cecZkpIntegration.ts:30:13 TS2314: Generic type 'Record' requires 2 type argument(s).
+  28:   proofDigest: string;
+  29:   verified: boolean;
+> 30:   metadata: Record;
+  31: }
+  32: 
+
+src/lib/logic/cec/cecZkpIntegration.ts:36:11 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  34:   isProved: boolean;
+  35:   formula: CecExpression;
+> 36:   axioms: Array;
+  37:   method: CecProvingMethod;
+  38:   proofTime: number;
+
+src/lib/logic/cec/cecZkpIntegration.ts:41:20 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  39:   baseResult: CecProofStatus;
+  40:   proofSteps?: number;
+> 41:   inferenceRules?: Array;
+  42:   errorMessage?: string;
+  43:   zkpProof?: CecZkpProof;
+
 src/lib/logic/cec/cecZkpIntegration.ts:49:13 TS2314: Generic type 'Record' requires 2 type argument(s).
   47:   cacheHitTime?: number;
   48:   timestamp: number;
@@ -1451,47 +1682,120 @@ src/lib/logic/cec/cecZkpIntegration.ts:49:13 TS2314: Generic type 'Record' requi
   50: }
   51: 
 
-src/lib/logic/cec/cecZkpIntegration.ts:103:24 TS2314: Generic type 'Omit' requires 2 type argument(s).
-  101:   readonly timestamp: number;
-  102: 
-> 103:   constructor(options: Omit & { timestamp?: number }) {
-  104:     this.isProved = options.isProved;
-  105:     this.formula = options.formula;
+src/lib/logic/cec/cecZkpIntegration.ts:71:11 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  69:   isProved: boolean;
+  70:   formula: CecExpression;
+> 71:   axioms: Array;
+  72:   method: CecProvingMethod;
+  73:   proofTime: number;
 
-src/lib/logic/cec/cecZkpIntegration.ts:166:13 TS2314: Generic type 'Record' requires 2 type argument(s).
-  164:   }
-  165: 
-> 166:   toDict(): Record {
-  167:     return {
-  168:       is_proved: this.isProved,
+src/lib/logic/cec/cecZkpIntegration.ts:76:20 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  74:   baseResult: CecProofStatus;
+  75:   proofSteps?: number;
+> 76:   inferenceRules?: Array;
+  77:   errorMessage?: string;
+  78:   zkpProof?: CecZkpProof;
 
-src/lib/logic/cec/cecZkpIntegration.ts:227:6 TS2314: Generic type 'Promise<T>' requires 1 type argument(s).
-  225:     axioms: CecExpression[] = [],
-  226:     options: ProveCecTheoremOptions = {},
-> 227:   ): Promise {
-  228:     const start = performanceNow();
-  229:     const useCache = this.enableCaching && (options.useCache ?? true);
+src/lib/logic/cec/cecZkpIntegration.ts:89:20 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  87:   readonly isProved: boolean;
+  88:   readonly formula: CecExpression;
+> 89:   readonly axioms: Array;
+  90:   readonly method: CecProvingMethod;
+  91:   readonly proofTime: number;
 
-src/lib/logic/cec/cecZkpIntegration.ts:283:6 TS2314: Generic type 'Promise<T>' requires 1 type argument(s).
-  281:     options: ProveCecTheoremOptions,
-  282:     start: number,
-> 283:   ): Promise {
-  284:     const validation = validateCecZkpBackend(this.zkpBackend);
-  285:     if (!validation.available) {
+src/lib/logic/cec/cecZkpIntegration.ts:94:29 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  92:   readonly baseResult: CecProofStatus;
+  93:   readonly proofSteps?: number;
+> 94:   readonly inferenceRules?: Array;
+  95:   readonly errorMessage?: string;
+  96:   readonly zkpProof?: CecZkpProof;
 
-src/lib/logic/cec/cecZkpIntegration.ts:384:4 TS2314: Generic type 'Promise<T>' requires 1 type argument(s).
-  382:   isProved: boolean,
-  383:   backend: CecZkpBackend = 'simulated',
-> 384: ): Promise {
-  385:   const goalText = formatCecExpression(goal);
-  386:   const axiomTexts = axioms.map(formatCecExpression);
+src/lib/logic/cec/cecZkpIntegration.ts:123:13 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  121:   static fromStandardProof(
+  122:     formula: CecExpression,
+> 123:     axioms: Array,
+  124:     isProved: boolean,
+  125:     proofTime: number,
 
-src/lib/logic/cec/cecZkpIntegration.ts:427:42 TS2314: Generic type 'Promise<T>' requires 1 type argument(s).
-  425: }
-  426: 
-> 427: async function sha256Hex(input: string): Promise {
-  428:   const bytes = new TextEncoder().encode(input);
-  429:   const digest = await globalThis.crypto.subtle.digest('SHA-256', bytes);
+src/lib/logic/cec/cecZkpIntegration.ts:146:13 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  144:   static fromZkpProof(
+  145:     formula: CecExpression,
+> 146:     axioms: Array,
+  147:     zkpProof: CecZkpProof,
+  148:     isProved: boolean,
+
+src/lib/logic/cec/cecZkpIntegration.ts:169:13 TS2314: Generic type 'Record' requires 2 type argument(s).
+  167:   }
+  168: 
+> 169:   toDict(): Record {
+  170:     return {
+  171:       is_proved: this.isProved,
+
+src/lib/logic/cec/cecZkpIntegration.ts:202:27 TS2314: Generic type 'Map<K, V>' requires 2 type argument(s).
+  200:   private readonly cacheTtl: number;
+  201:   private readonly preferPrivateProofs: boolean;
+> 202:   private readonly cache: Map;
+  203:   private zkpAttempts = 0;
+  204:   private zkpSuccesses = 0;
+
+src/lib/logic/cec/cecZkpIntegration.ts:219:13 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  217:   async proveTheorem(
+  218:     goal: CecExpression,
+> 219:     axioms: Array = [],
+  220:     options: ProveCecTheoremOptions = {},
+  221:   ): Promise {
+
+src/lib/logic/cec/cecZkpIntegration.ts:221:6 TS2314: Generic type 'Promise<T>' requires 1 type argument(s).
+  219:     axioms: Array = [],
+  220:     options: ProveCecTheoremOptions = {},
+> 221:   ): Promise {
+  222:     const start = performanceNow();
+  223:     const cacheKey = makeCacheKey(goal, axioms, options);
+
+src/lib/logic/cec/cecZkpIntegration.ts:262:15 TS2314: Generic type 'Record' requires 2 type argument(s).
+  260:   }
+  261: 
+> 262:   getStats(): Record {
+  263:     return {
+  264:       zkp_attempts: this.zkpAttempts,
+
+src/lib/logic/cec/cecZkpIntegration.ts:278:13 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  276:   private async proveWithZkp(
+  277:     goal: CecExpression,
+> 278:     axioms: Array,
+  279:     privateAxioms: boolean,
+  280:     start: number,
+
+src/lib/logic/cec/cecZkpIntegration.ts:281:6 TS2314: Generic type 'Promise<T>' requires 1 type argument(s).
+  279:     privateAxioms: boolean,
+  280:     start: number,
+> 281:   ): Promise {
+  282:     this.zkpAttempts += 1;
+  283:     const validation = validateCecZkpBackend(this.zkpBackend);
+
+src/lib/logic/cec/cecZkpIntegration.ts:343:28 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  341: 
+  342: export function validateCecZkpBackend(backend: string): CecZkpBackendValidation {
+> 343:   const availableBackends: Array = ['simulated'];
+  344:   if (backend === 'simulated') {
+  345:     return { backend, supported: true, availableBackends };
+
+src/lib/logic/cec/cecZkpIntegration.ts:358:11 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  356: export async function createSimulatedCecZkpProof(
+  357:   goal: CecExpression,
+> 358:   axioms: Array,
+  359:   isProved: boolean,
+  360: ): Promise {
+
+src/lib/logic/cec/cecZkpIntegration.ts:360:4 TS2314: Generic type 'Promise<T>' requires 1 type argument(s).
+  358:   axioms: Array,
+  359:   isProved: boolean,
+> 360: ): Promise {
+  361:   const goalText = formatCecExpression(goal);
+  362:   const axiomTexts = axioms.map(formatCecExpression).sort();
+
+src/lib/logic/cec/cecZkpIntegration.ts:365:23 TS2314: Generic type 'Array<T>' requires 1 type argument(s).
+  363:   const axiomsHash = await axiomsCommitment
 - Failure kind: `preflight`
 
 ### Blocked Backlog

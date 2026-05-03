@@ -175,9 +175,9 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 ## Built-In Goal Replenishment Tranche 5
 
 - [x] Task checkbox-152: Add a fixture-only public guidance conflict-resolution scenario plus focused validation that compares two cited PP&D guidance sources for the same permit requirement, preserves both provenance chains, marks the requirement review-needed, and prevents draft automation from relying on either source until a human resolves the conflict.
-- [~] Task checkbox-153: Add a fixture-only DevHub upload-readiness checklist scenario plus focused validation that maps required document placeholders to public single-PDF-process evidence, redacted user file inventory metadata, and explicit stop gates while refusing official upload, submission, certification, payment, cancellation, CAPTCHA, MFA, account creation, and inspection scheduling by default.
-- [ ] Task checkbox-154: Add a fixture-only fee-notice and payment-gate scenario plus focused validation that separates public fee guidance, estimated fee notices, financial-action classification, exact payment-specific confirmation requirements, and audit events without storing payment data or planning payment automation.
-- [ ] Task checkbox-155: Add a fixture-only process-state transition scenario plus focused validation that models public guidance states, mocked DevHub read-only draft states, reversible draft previews, blocked consequential transitions, stale-evidence invalidation, and source-linked user questions without launching Playwright or touching live accounts.
+- [x] Task checkbox-153: Add a fixture-only DevHub upload-readiness checklist scenario plus focused validation that maps required document placeholders to public single-PDF-process evidence, redacted user file inventory metadata, and explicit stop gates while refusing official upload, submission, certification, payment, cancellation, CAPTCHA, MFA, account creation, and inspection scheduling by default.
+- [x] Task checkbox-154: Add a fixture-only fee-notice and payment-gate scenario plus focused validation that separates public fee guidance, estimated fee notices, financial-action classification, exact payment-specific confirmation requirements, and audit events without storing payment data or planning payment automation.
+- [x] Task checkbox-155: Add a fixture-only process-state transition scenario plus focused validation that models public guidance states, mocked DevHub read-only draft states, reversible draft previews, blocked consequential transitions, stale-evidence invalidation, and source-linked user questions without launching Playwright or touching live accounts.
 
 ## Built-In Supervisor Planning Notes
 
@@ -188,11 +188,22 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-02T23:13:12.228016Z
+Last updated: 2026-05-02T23:49:46.310865Z
 
-- Latest target: `Task checkbox-152: Task checkbox-152: Add a fixture-only public guidance conflict-resolution scenario plus focused validation that compares two cited PP&D guidance sources for the same permit requirement, preserves both provenance chains, marks the requirement review-needed, and prevents draft automation from relying on either source until a human resolves the conflict.`
-- Latest result: `accepted`
-- Latest summary: Add fixture-only PP&D public guidance conflict-resolution scenario with focused validation.
-- Counts: `{"blocked": 0, "complete": 152, "in_progress": 0, "needed": 3}`
+- Latest target: `Task checkbox-156: Task checkbox-156: Add supervisor deterministic-replenishment sanitization coverage proving agentic planner output with duplicate tranche headings or previously completed broad titles is rewritten to the next numbered non-duplicate tranche before the daemon starts.`
+- Latest result: `parse`
+- Latest summary: 
+- Counts: `{"blocked": 0, "complete": 155, "in_progress": 0, "needed": 4}`
 
 <!-- ppd-daemon-task-board:end -->
+
+## Built-In Goal Replenishment Tranche 6
+
+- [~] Task checkbox-156: Add supervisor deterministic-replenishment sanitization coverage proving agentic planner output with duplicate tranche headings or previously completed broad titles is rewritten to the next numbered non-duplicate tranche before the daemon starts.
+- [ ] Task checkbox-157: Add daemon LLM result-durability coverage proving parse failures, validation interruption, child timeout, and vanished-child states write progress and result-log diagnostics before restart.
+- [ ] Task checkbox-158: Add a fixture-only cross-permit guardrail reuse scenario plus focused validation that reuses common stop gates across two PP&D permit types while preserving process-specific citations and exact-confirmation requirements.
+- [ ] Task checkbox-159: Add a fixture-only human-review packet scenario plus focused validation bundling conflicting evidence, stale answers, upload readiness, fee notices, and blocked DevHub transitions into one redacted review handoff.
+## Built-In Supervisor Planning Notes
+
+- The agentic planner did not return an acceptable task-board replacement, so the supervisor appended a deterministic tranche aligned to the original PP&D archival, Playwright draft automation, and formal-logic guardrail goals.
+- Slice policy: `broad_integrated_after_green_streak`. The prior agentic replenishment repeated an old heading and title set; this tranche was normalized to the next numbered non-duplicate supervisor/domain hardening tranche before worker restart.

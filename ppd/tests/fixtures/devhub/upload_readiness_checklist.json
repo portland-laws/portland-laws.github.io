@@ -1,0 +1,100 @@
+{
+  "schemaVersion": 1,
+  "fixtureKind": "devhub_upload_readiness_checklist",
+  "checklistId": "checklist-devhub-upload-readiness-v1",
+  "generatedAt": "2026-05-02T00:00:00Z",
+  "boundary": {
+    "fixtureOnly": true,
+    "liveDevhubAccess": false,
+    "browserLaunchRequested": false,
+    "officialUploadAllowed": false,
+    "officialSubmissionAllowed": false,
+    "storesPrivateFileContents": false
+  },
+  "publicEvidence": [
+    {
+      "sourceEvidenceId": "src-single-pdf-process",
+      "sourceUrl": "https://www.portland.gov/ppd/devhub/how-apply-permit-devhub",
+      "citation": {
+        "locator": "fixture-single-pdf-process-evidence",
+        "paraphrase": "Public guidance describes the Single PDF Process and separates supporting documents from official upload and submission actions."
+      }
+    }
+  ],
+  "redactedUserFileInventory": [
+    {
+      "fileInventoryId": "file-site-plan-placeholder",
+      "documentKey": "documents.site_plan",
+      "present": true,
+      "metadataOnly": true,
+      "redactedFilename": "[REDACTED_SITE_PLAN_FILENAME]",
+      "mimeType": "application/pdf",
+      "byteLengthStored": false,
+      "contentStored": false
+    },
+    {
+      "fileInventoryId": "file-structural-calcs-placeholder",
+      "documentKey": "documents.structural_calculations",
+      "present": false,
+      "metadataOnly": true,
+      "redactedFilename": "[REDACTED_MISSING]",
+      "mimeType": null,
+      "byteLengthStored": false,
+      "contentStored": false
+    }
+  ],
+  "requiredDocumentPlaceholders": [
+    {
+      "placeholderId": "placeholder-site-plan",
+      "documentKey": "documents.site_plan",
+      "sourceEvidenceIds": [
+        "src-single-pdf-process"
+      ],
+      "linkedFileInventoryId": "file-site-plan-placeholder",
+      "readiness": "metadata_present_needs_human_review"
+    },
+    {
+      "placeholderId": "placeholder-structural-calcs",
+      "documentKey": "documents.structural_calculations",
+      "sourceEvidenceIds": [
+        "src-single-pdf-process"
+      ],
+      "linkedFileInventoryId": "file-structural-calcs-placeholder",
+      "readiness": "missing_ask_user"
+    }
+  ],
+  "stopGates": [
+    {
+      "gateId": "gate-missing-required-document",
+      "defaultOutcome": "ask_user",
+      "blocksOfficialUpload": true,
+      "blockedWhen": [
+        "missing(documents.structural_calculations)"
+      ]
+    },
+    {
+      "gateId": "gate-official-upload-actions",
+      "defaultOutcome": "refuse",
+      "requiresExactConfirmation": true,
+      "exactConfirmationPresent": false,
+      "blockedActions": [
+        "upload_official_document",
+        "submit_application",
+        "certify_statement",
+        "pay_fee",
+        "cancel_request",
+        "schedule_inspection",
+        "captcha",
+        "mfa",
+        "account_creation"
+      ]
+    }
+  ],
+  "plannerOutcome": {
+    "nextAgentAction": "ask_user_for_missing_document_metadata",
+    "draftPreviewAllowed": false,
+    "officialUploadAllowed": false,
+    "officialSubmissionAllowed": false,
+    "humanReviewRequiredBeforeUpload": true
+  }
+}
