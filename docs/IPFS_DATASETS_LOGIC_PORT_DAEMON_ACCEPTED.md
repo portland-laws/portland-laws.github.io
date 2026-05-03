@@ -281,3 +281,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260503T053146Z-add-browser-native-native-dcec-english-grammar-parity-contract.json`, `ipfs_datasets_py/.daemon/accepted-work/20260503T053146Z-add-browser-native-native-dcec-english-grammar-parity-contract.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260503T053146Z-add-browser-native-native-dcec-english-grammar-parity-contract.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-03 11:45:13 UTC
+
+- Target: `Task checkbox-214: Port remaining Python logic module `logic/CEC/native/exceptions.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Repair native CEC exception TypeScript replacements by replacing bare Partial usage with explicit metadata options.
+- Impact: Adds the browser-native CEC exception parity module used by the TypeScript logic port and focused Jest coverage used by the validation suite, with no Python, server, filesystem, subprocess, or RPC dependency.
+- Changed files: `src/lib/logic/cec/nativeExceptions.test.ts`, `src/lib/logic/cec/nativeExceptions.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260503T114513Z-repair-native-cec-exception-typescript-replacements-by-replacing-bare-partial-us.json`, `ipfs_datasets_py/.daemon/accepted-work/20260503T114513Z-repair-native-cec-exception-typescript-replacements-by-replacing-bare-partial-us.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260503T114513Z-repair-native-cec-exception-typescript-replacements-by-replacing-bare-partial-us.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

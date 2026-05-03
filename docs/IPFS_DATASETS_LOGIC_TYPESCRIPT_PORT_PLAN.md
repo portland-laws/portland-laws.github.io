@@ -717,19 +717,19 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/CEC/native/dcec_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/CEC/native/dcec_english_grammar.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [!] Port remaining Python logic module `logic/CEC/native/dcec_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/dcec_namespace.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/dcec_parsing.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/dcec_prototypes.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/dcec_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/enhanced_grammar_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/error_handling.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/event_calculus.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/exceptions.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/grammar_engine.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/grammar_loader.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/inference_rules/base.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/inference_rules/cognitive.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/inference_rules/deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/dcec_namespace.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/dcec_parsing.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/dcec_prototypes.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/dcec_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/enhanced_grammar_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/error_handling.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/event_calculus.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/CEC/native/exceptions.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/grammar_engine.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/grammar_loader.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/inference_rules/base.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/inference_rules/cognitive.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/inference_rules/deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/inference_rules/modal.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/inference_rules/propositional.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/inference_rules/resolution.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-03 06:31:43 UTC
+Last updated: 2026-05-03 14:07:34 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-207: Port remaining Python logic module 'logic/CEC/native/dcec_namespace.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-220: Port remaining Python logic module 'logic/CEC/native/inference_rules/modal.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1182,20 +1182,20 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-204: Port remaining Python logic module 'logic/CEC/native/dcec_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-205: Port remaining Python logic module 'logic/CEC/native/dcec_english_grammar.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [!] `Task checkbox-206: Port remaining Python logic module 'logic/CEC/native/dcec_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-207: Port remaining Python logic module 'logic/CEC/native/dcec_namespace.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - latest daemon round failed validation or preflight
-- [ ] `Task checkbox-208: Port remaining Python logic module 'logic/CEC/native/dcec_parsing.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
-- [ ] `Task checkbox-209: Port remaining Python logic module 'logic/CEC/native/dcec_prototypes.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
-- [ ] `Task checkbox-210: Port remaining Python logic module 'logic/CEC/native/dcec_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
-- [ ] `Task checkbox-211: Port remaining Python logic module 'logic/CEC/native/enhanced_grammar_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
-- [ ] `Task checkbox-212: Port remaining Python logic module 'logic/CEC/native/error_handling.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
-- [ ] `Task checkbox-213: Port remaining Python logic module 'logic/CEC/native/event_calculus.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
-- [ ] `Task checkbox-214: Port remaining Python logic module 'logic/CEC/native/exceptions.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
-- [ ] `Task checkbox-215: Port remaining Python logic module 'logic/CEC/native/grammar_engine.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
-- [ ] `Task checkbox-216: Port remaining Python logic module 'logic/CEC/native/grammar_loader.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
-- [ ] `Task checkbox-217: Port remaining Python logic module 'logic/CEC/native/inference_rules/base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
-- [ ] `Task checkbox-218: Port remaining Python logic module 'logic/CEC/native/inference_rules/cognitive.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
-- [ ] `Task checkbox-219: Port remaining Python logic module 'logic/CEC/native/inference_rules/deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
-- [ ] `Task checkbox-220: Port remaining Python logic module 'logic/CEC/native/inference_rules/modal.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [!] `Task checkbox-207: Port remaining Python logic module 'logic/CEC/native/dcec_namespace.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [!] `Task checkbox-208: Port remaining Python logic module 'logic/CEC/native/dcec_parsing.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [!] `Task checkbox-209: Port remaining Python logic module 'logic/CEC/native/dcec_prototypes.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [!] `Task checkbox-210: Port remaining Python logic module 'logic/CEC/native/dcec_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [!] `Task checkbox-211: Port remaining Python logic module 'logic/CEC/native/enhanced_grammar_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [!] `Task checkbox-212: Port remaining Python logic module 'logic/CEC/native/error_handling.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [!] `Task checkbox-213: Port remaining Python logic module 'logic/CEC/native/event_calculus.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [x] `Task checkbox-214: Port remaining Python logic module 'logic/CEC/native/exceptions.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [!] `Task checkbox-215: Port remaining Python logic module 'logic/CEC/native/grammar_engine.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [!] `Task checkbox-216: Port remaining Python logic module 'logic/CEC/native/grammar_loader.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [!] `Task checkbox-217: Port remaining Python logic module 'logic/CEC/native/inference_rules/base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [!] `Task checkbox-218: Port remaining Python logic module 'logic/CEC/native/inference_rules/cognitive.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [!] `Task checkbox-219: Port remaining Python logic module 'logic/CEC/native/inference_rules/deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [!] `Task checkbox-220: Port remaining Python logic module 'logic/CEC/native/inference_rules/modal.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - latest daemon round failed validation or preflight
 - [ ] `Task checkbox-221: Port remaining Python logic module 'logic/CEC/native/inference_rules/propositional.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-222: Port remaining Python logic module 'logic/CEC/native/inference_rules/resolution.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-223: Port remaining Python logic module 'logic/CEC/native/inference_rules/specialized.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,83 +1430,77 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-207: Port remaining Python logic module 'logic/CEC/native/dcec_namespace.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-220: Port remaining Python logic module 'logic/CEC/native/inference_rules/modal.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `needs follow-up`
-- Summary: Add browser-native DCEC namespace validation parity
-- Impact: The DCEC namespace source now implements deterministic TypeScript validation for Python-style namespace symbols, sort references, predicate arity lookups, duplicate labels, and container bookkeeping. The matching Jest test file exercises the new runtime validation paths used by the TypeScript logic-port validation suite.
+- Summary: Add browser-native CEC native modal inference rules
+- Impact: Adds a deterministic TypeScript implementation of the CEC native modal inference rule surface plus focused Jest coverage that imports and exercises the module directly, giving the logic-port validation suite browser-native checks for modal.py parity without Python, server, filesystem, subprocess, RPC, or Node-only runtime dependencies.
 - Errors: Preflight repair still produced rejected TypeScript replacements:
-Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/cec/dcecNamespace.ts(230,44): error TS1005: ')' expected.
-../../..src/lib/logic/cec/dcecNamespace.ts(230,53): error TS1128: Declaration or statement expected.
-
-Replacement diagnostic context:
-src/lib/logic/cec/dcecNamespace.ts:230:44 TS1005: ')' expected.
-  228: 
-  229:   private validateArity(arity: number, operation: string): void {
-> 230:     if (!Number.isInteger(arity) || arity  MAX_ARITY) {
-  231:       throw new DcecNamespaceError(`Invalid arity ${arity}`, {
-  232:         operation,; Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/cec/dcecNamespace.ts(229,44): error TS1005: ')' expected.
-../../..src/lib/logic/cec/dcecNamespace.ts(229,53): error TS1128: Declaration or statement expected.
-
-Replacement diagnostic context:
-src/lib/logic/cec/dcecNamespace.ts:229:44 TS1005: ')' expected.
-  227: 
-  228:   private validateArity(arity: number, operation: string): void {
-> 229:     if (!Number.isInteger(arity) || arity  MAX_ARITY) {
-  230:       throw new DcecNamespaceError(`Invalid arity ${arity}`, {
-  231:         operation,
+Rejected proposal because deterministic TypeScript replacement preflight found stripped operators or TS2314-like bare generics before touching the worktree:
+src/lib/logic/cec/nativeModalInference.ts:
+line 69: missing comparison operator before a numeric bound: for (let index = 0; index  0 && right.length > 0) {; Rejected proposal because deterministic TypeScript replacement preflight found stripped operators or TS2314-like bare generics before touching the worktree:
+src/lib/logic/cec/nativeModalInference.ts:
+line 61: missing comparison operator before a numeric bound: for (let index = 0; index  0 && right.length > 0) {
 - Failure kind: `typescript_quality`
 
 ### Blocked Backlog
 
 - `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.`
   - Failures since success: `5`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"daemon_exception": 3, "parse": 2}`
   - Latest failure kind: `daemon_exception`
   - Latest errors: llm_router could not generate with model='gpt-5.5' provider='auto'. Configure the provider credentials or pass --provider. Original error: copilot CLI binary not found on PATH (required for session/tracing flags). Install the GitHub Copilot...
 - `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.`
   - Failures since success: `3`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"daemon_exception": 3}`
   - Latest failure kind: `daemon_exception`
   - Latest errors: llm_router could not generate with model='gpt-5.5' provider='auto'. Configure the provider credentials or pass --provider. Original error: copilot CLI binary not found on PATH (required for session/tracing flags). Install the GitHub Copilot...
 - `Task checkbox-111: Complete TDFOL security validator parity.`
   - Failures since success: `3`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"daemon_exception": 3}`
   - Latest failure kind: `daemon_exception`
   - Latest errors: llm_router could not generate with model='gpt-5.5' provider='auto'. Configure the provider credentials or pass --provider. Original error: copilot CLI binary not found on PATH (required for session/tracing flags). Install the GitHub Copilot...
 - `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.`
   - Failures since success: `3`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"typescript_quality": 3}`
   - Latest failure kind: `typescript_quality`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/mlConfidence.ts(13,14): error TS2314: Generic type 'Record' requires 2 type argument(...
 - `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.`
   - Failures since success: `3`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"typescript_quality": 3}`
   - Latest failure kind: `typescript_quality`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/modelArtifacts.ts(185,42): error TS1005: ')' expected. ../../..src/lib/logic/modelArt...
 - `Task checkbox-177: Remove 'nlpUnavailable' and 'mlUnavailable' capability flags once browser-native parity is implemented.`
   - Failures since success: `3`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"typescript_quality": 3}`
   - Latest failure kind: `typescript_quality`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/fol/parser.ts(164,20): error TS1005: ')' expected. ../../..src/lib/logic/fol/parser.t...
 - `Task checkbox-181: Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.`
   - Failures since success: `3`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"typescript_quality": 3}`
   - Latest failure kind: `typescript_quality`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/zkp/evmVkRegistry.ts(91,41): error TS2314: Generic type 'Promise<T>' requires 1 type...
 - `Task checkbox-190: Add richer developer-panel integration for live UI inspection.`
   - Failures since success: `3`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"typescript_quality": 3}`
   - Latest failure kind: `typescript_quality`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/developerPanel.ts(181,23): error TS1005: ';' expected. ../../..src/lib/logic/develope...
 - `Task checkbox-193: Add CLI/devtools command adapter parity for 'logic/cli.py'.`
   - Failures since success: `3`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"typescript_quality": 3}`
   - Latest failure kind: `typescript_quality`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/cliCommandAdapter.ts(125,61): error TS1005: ';' expected. ../../..src/lib/logic/cliCo...
 - `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.`
   - Failures since success: `3`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"typescript_quality": 3}`
   - Latest failure kind: `typescript_quality`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/proofCache.ts(50,17): error TS1005: ';' expected. ../../..src/lib/logic/proofCache.ts...

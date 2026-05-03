@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "case_id": "blocked-task-prompt-budget-repeated-llm-router-exits",
+  "target_task": {
+    "checkbox_id": "checkbox-178",
+    "title": "Add a fixture-only DevHub draft-readiness decision matrix plus focused validation",
+    "task_kind": "domain",
+    "blocked": true,
+    "blocked_reason": "repeated syntax_preflight rollbacks",
+    "retry_allowed": false
+  },
+  "llm_router_exits": [
+    {
+      "attempt": 1,
+      "failure_kind": "llm_router_exit",
+      "compact_error_summary": "router exited before returning JSON after syntax-preflight recovery prompt",
+      "raw_response_persisted": false
+    },
+    {
+      "attempt": 2,
+      "failure_kind": "llm_router_exit",
+      "compact_error_summary": "router exited again while target remained blocked; no domain retry was attempted",
+      "raw_response_persisted": false
+    },
+    {
+      "attempt": 3,
+      "failure_kind": "llm_router_exit",
+      "compact_error_summary": "third router exit compacted to bounded diagnostic fields for repair selection",
+      "raw_response_persisted": false
+    }
+  ],
+  "prompt_budget_summary": {
+    "max_compact_error_summary_chars": 120,
+    "max_next_action_hint_chars": 180,
+    "target_summary": "checkbox-178 is blocked after repeated syntax_preflight failures; do not retry DevHub domain implementation until daemon repair is accepted.",
+    "next_action_hint": "Select or append a narrow ppd/daemon repair task that improves prompt scoping, diagnostics, or blocked-task selection before reopening checkbox-178.",
+    "omitted_context": [
+      "raw llm responses",
+      "private DevHub session data",
+      "browser traces",
+      "raw crawl output",
+      "downloaded documents"
+    ]
+  },
+  "selection_decision": {
+    "blocked_domain_retry_attempted": false,
+    "selected_task_kind": "daemon_repair",
+    "selected_checkbox_id": "checkbox-189",
+    "reason": "blocked target remains parked until a non-blocked daemon repair is accepted or a human explicitly reopens it"
+  }
+}

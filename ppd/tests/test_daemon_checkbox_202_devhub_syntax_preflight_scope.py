@@ -1,0 +1,101 @@
+"""Regression coverage for checkbox-178 syntax-preflight retry scope.
+
+The PP&D daemon must keep recovery proposals narrow after checkbox-178 has
+syntax_preflight history. A proposal that edits a DevHub domain file is only
+acceptable when that DevHub file is the single parser-bearing repair file under
+test. Bundles that mix DevHub source with fixtures, tests, or daemon repairs are
+rejected before full validation.
+"""
+
+from __future__ import annotations
+
+import unittest
+from dataclasses import dataclass
+from pathlib import PurePosixPath
+
+
+@dataclass(frozen=True)
+class ProposalFile:
+    path: str
+    parser_bearing: bool = False
+
+
+def _is_devhub_domain_file(path: str) -> bool:
+    normalized = PurePosixPath(path)
+    return len(normalized.parts) >= 3 and normalized.parts[0] == "ppd" and normalized.parts[1] == "devhub"
+
+
+def _has_checkbox_178_syntax_preflight_history(history: tuple[dict[str, str], ...]) -> bool:
+    return any(
+        item.get("target_task") == "checkbox-178" and item.get("failure_kind") == "syntax_preflight"
+        for item in history
+    )
+
+
+def proposal_passes_checkbox_178_devhub_preflight(
+    files: tuple[ProposalFile, ...],
+    history: tuple[dict[str, str], ...],
+) -> bool:
+    """Return whether a proposal may proceed after checkbox-178 parser history."""
+
+    if not _has_checkbox_178_syntax_preflight_history(history):
+        return True
+
+    devhub_files = tuple(file for file in files if _is_devhub_domain_file(file.path))
+    if not devhub_files:
+        return True
+
+    return len(files) == 1 and len(devhub_files) == 1 and devhub_files[0].parser_bearing
+
+
+class Checkbox202DevhubSyntaxPreflightScopeTest(unittest.TestCase):
+    def test_rejects_devhub_domain_bundle_after_checkbox_178_syntax_preflight(self) -> None:
+        history = (
+            {
+                "target_task": "checkbox-178",
+                "failure_kind": "syntax_preflight",
+                "summary": "malformed Python while generating DevHub draft readiness matrix",
+            },
+        )
+        files = (
+            ProposalFile("ppd/devhub/draft_readiness.py", parser_bearing=True),
+            ProposalFile("ppd/tests/fixtures/devhub/draft_readiness_matrix.json"),
+            ProposalFile("ppd/tests/test_devhub_draft_readiness.py", parser_bearing=True),
+        )
+
+        self.assertFalse(proposal_passes_checkbox_178_devhub_preflight(files, history))
+
+    def test_rejects_devhub_domain_file_when_not_the_single_parser_repair(self) -> None:
+        history = (
+            {"target_task": "checkbox-178", "failure_kind": "syntax_preflight"},
+        )
+        files = (
+            ProposalFile("ppd/devhub/selectors.json", parser_bearing=False),
+        )
+
+        self.assertFalse(proposal_passes_checkbox_178_devhub_preflight(files, history))
+
+    def test_allows_single_parser_bearing_devhub_repair_file_under_test(self) -> None:
+        history = (
+            {"target_task": "checkbox-178", "failure_kind": "syntax_preflight"},
+        )
+        files = (
+            ProposalFile("ppd/devhub/draft_readiness.py", parser_bearing=True),
+        )
+
+        self.assertTrue(proposal_passes_checkbox_178_devhub_preflight(files, history))
+
+    def test_non_checkbox_178_history_does_not_trigger_devhub_scope_rejection(self) -> None:
+        history = (
+            {"target_task": "checkbox-182", "failure_kind": "syntax_preflight"},
+        )
+        files = (
+            ProposalFile("ppd/devhub/draft_readiness.py"),
+            ProposalFile("ppd/tests/test_devhub_draft_readiness.py"),
+        )
+
+        self.assertTrue(proposal_passes_checkbox_178_devhub_preflight(files, history))
+
+
+if __name__ == "__main__":
+    unittest.main()

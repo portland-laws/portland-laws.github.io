@@ -1,22 +1,79 @@
 {
-  "createdAt": "2026-05-03T06:33:22.319491Z",
+  "createdAt": "2026-05-03T13:21:41.634552Z",
   "decision": {
-    "action": "reconcile_dead_worker_with_recent_failures_and_restart",
-    "reason": "daemon process is not running but status is still calling_llm on Task checkbox-187: Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task., and 2 recent failure diagnostic(s) already exist for that target; park the task before restart instead of resetting it into another immediate retry",
+    "action": "repair_daemon_programming",
+    "reason": "2 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
     "severity": "warning"
   },
-  "parkedStalledTaskLabels": [
-    "Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task."
+  "failedAgenticRepair": {
+    "changedFiles": [
+      "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+    ],
+    "errors": [
+      "Validation failed; file edits were rolled back."
+    ],
+    "failureKind": "validation",
+    "summary": "Replace the PP&D supervisor repair guide with explicit syntax-preflight recovery rules for repeated parser and compile failures.",
+    "validationResults": [
+      {
+        "command": [
+          "python3",
+          "ppd/daemon/ppd_daemon.py",
+          "--self-test"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": "{ \"ok\": true, \"task_count\": 33 }"
+      },
+      {
+        "command": [
+          "python3",
+          "-m",
+          "unittest",
+          "discover",
+          "-s",
+          "ppd/tests",
+          "-p",
+          "test_*.py"
+        ],
+        "returncode": 1,
+        "stderr": "......................................................................................................................................................................................................................................................................................................................................................................................................................................ss................sss............................................................................................................................................................................................................................FFF................................................................ ====================================================================== FAIL: test_guide_keeps_repair_separate_from_domain_implementation (test_supervisor_repair_guide.Su...",
+        "stdout": ""
+      },
+      {
+        "command": [
+          "bash",
+          "-lc",
+          "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+        ],
+        "returncode": 0,
+        "stderr": "",
+        "stdout": ""
+      }
+    ]
+  },
+  "fallbackActions": [
+    "preserve failed repair diagnostics without accepting the invalid patch",
+    "run full PP&D daemon validation before restarting unattended worker attempts",
+    "restart the worker with PPD_LLM_BACKEND=llm_router after fallback validation passes",
+    "keep future retry scope narrow and fixture-first"
   ],
-  "repairKind": "stalled_worker_task_parked",
+  "llmBackend": "llm_router",
+  "repairKind": "builtin_supervisor_fallback",
+  "safetyBoundaries": [
+    "no private DevHub session artifacts",
+    "no raw crawl output",
+    "no downloaded documents",
+    "no browser traces or screenshots",
+    "no consequential DevHub actions"
+  ],
   "schemaVersion": 1,
-  "statusBeforeRepair": {
-    "active_state": "calling_llm",
-    "active_state_started_at": "2026-05-03T06:32:50.384970Z",
-    "active_target_task": "Task checkbox-187: Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task.",
-    "pid": 2794991,
-    "state": "calling_llm",
-    "target_task": "Task checkbox-187: Add blocked-task selection coverage proving that when checkbox-178 and checkbox-182 are both blocked, the daemon selects the newest unchecked daemon-repair task from this tranche before retrying either blocked task.",
-    "updated_at": "2026-05-03T06:32:50.384973Z"
+  "taskBoardRepair": {
+    "parkedRepeatedSyntaxLoopTasks": [
+      "Add one daemon diagnostics helper or focused unittest proving compact failure summaries include target_task, failure_kind, next_action_hint, and a raw-response length cap while excluding private DevHub artifacts, auth state, traces, crawl output, and downloaded documents."
+    ],
+    "replenishedGoalTaskLabels": [],
+    "supersededTaskBoardOnlyLabels": [],
+    "taskBoardUpdated": true
   }
 }

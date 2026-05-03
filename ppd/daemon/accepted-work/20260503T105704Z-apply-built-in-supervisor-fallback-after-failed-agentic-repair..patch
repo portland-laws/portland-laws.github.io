@@ -1,0 +1,32 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,8 +1,8 @@
+ {
+-  "createdAt": "2026-05-03T09:14:52.641934Z",
++  "createdAt": "2026-05-03T10:57:03.190131Z",
+   "decision": {
+-    "action": "repair_daemon_programming",
+-    "reason": "3 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
++    "action": "invoke_codex",
++    "reason": "10 consecutive daemon rounds failed without an accepted patch",
+     "severity": "warning"
+   },
+   "failedAgenticRepair": {
+@@ -13,7 +13,7 @@
+       "Validation failed; file edits were rolled back."
+     ],
+     "failureKind": "validation",
+-    "summary": "Add a narrow supervisor repair guide for repeated syntax-preflight rollbacks.",
++    "summary": "Replace the PP&D supervisor repair guide with narrow parser-failure recovery rules that match the current daemon test expectations.",
+     "validationResults": [
+       {
+         "command": [
+@@ -23,7 +23,7 @@
+         ],
+         "returncode": 0,
+         "stderr": "",
+-        "stdout": "{ \"ok\": true, \"task_count\": 24 }"
++        "stdout": "{ \"ok\": true, \"task_count\": 27 }"
+       },
+       {
+         "command": [

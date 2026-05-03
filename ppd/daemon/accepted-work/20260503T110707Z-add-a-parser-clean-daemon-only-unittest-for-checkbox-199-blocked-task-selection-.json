@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/test_checkbox_199_blocked_selection_plain.py"
+  ],
+  "created_at": "2026-05-03T11:07:07.221314Z",
+  "impact": "This gives the daemon a narrow validation target after repeated regex SyntaxError failures: blocked checkbox-178/182/186/187/191/193/194/195/197 are skipped, and a fresh unchecked daemon-repair task is selected without touching PP&D domain implementation.",
+  "summary": "Add a parser-clean daemon-only unittest for checkbox-199 blocked-task selection using plain string construction and no custom regex parsing.",
+  "target_task": "Supervisor repair: 7 consecutive daemon rounds failed without an accepted patch",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 30 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "............................................................................................................................................................................................................................................................................................................................................................................................................................ss................sss............................................................................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 720 tests in 0.118s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

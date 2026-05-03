@@ -1,0 +1,107 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,16 +1,79 @@
+ {
+-  "createdAt": "2026-05-03T06:45:49.194038Z",
++  "createdAt": "2026-05-03T08:21:47.445916Z",
+   "decision": {
+-    "action": "reconcile_blocked_cascade_and_restart",
+-    "reason": "all selectable PP&D tasks are blocked after repeated daemon recovery attempts; append deterministic daemon-repair tasks before retrying blocked domain work",
++    "action": "repair_daemon_programming",
++    "reason": "2 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
+     "severity": "warning"
+   },
+-  "repairKind": "blocked_cascade_replenishment",
+-  "replenishedTaskLabels": [
+-    "checkbox-188",
+-    "checkbox-189",
+-    "checkbox-190",
+-    "checkbox-191"
++  "failedAgenticRepair": {
++    "changedFiles": [
++      "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
++    ],
++    "errors": [
++      "Validation failed; file edits were rolled back."
++    ],
++    "failureKind": "validation",
++    "summary": "Tighten PP&D supervisor repair guidance for repeated syntax-preflight rollbacks.",
++    "validationResults": [
++      {
++        "command": [
++          "python3",
++          "ppd/daemon/ppd_daemon.py",
++          "--self-test"
++        ],
++        "returncode": 0,
++        "stderr": "",
++        "stdout": "{ \"ok\": true, \"task_count\": 21 }"
++      },
++      {
++        "command": [
++          "python3",
++          "-m",
++          "unittest",
++          "discover",
++          "-s",
++          "ppd/tests",
++          "-p",
++          "test_*.py"
++        ],
++        "returncode": 1,
++        "stderr": ".......................................................................................................................................................................................................................................................................................................................................................................................................................ss..............sss.............................................................................................................................................................................................................................FF................................................................ ====================================================================== FAIL: test_guide_requires_small_syntax_valid_retries (test_supervisor_repair_guide.SupervisorRepairGuideTest.test_g...",
++        "stdout": ""
++      },
++      {
++        "command": [
++          "bash",
++          "-lc",
++          "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
++        ],
++        "returncode": 0,
++        "stderr": "",
++        "stdout": ""
++      }
++    ]
++  },
++  "fallbackActions": [
++    "preserve failed repair diagnostics without accepting the invalid patch",
++    "run full PP&D daemon validation before restarting unattended worker attempts",
++    "restart the worker with PPD_LLM_BACKEND=llm_router after fallback validation passes",
++    "keep future retry scope narrow and fixture-first"
+   ],
+-  "schemaVersion": 1
++  "llmBackend": "llm_router",
++  "repairKind": "builtin_supervisor_fallback",
++  "safetyBoundaries": [
++    "no private DevHub session artifacts",
++    "no raw crawl output",
++    "no downloaded documents",
++    "no browser traces or screenshots",
++    "no consequential DevHub actions"
++  ],
++  "schemaVersion": 1,
++  "taskBoardRepair": {
++    "parkedRepeatedSyntaxLoopTasks": [
++      "Add supervisor recovery-note compaction coverage proving repeated repair notes are summarized before future prompt construction so task-board context stays bounded."
++    ],
++    "replenishedGoalTaskLabels": [],
++    "supersededTaskBoardOnlyLabels": [],
++    "taskBoardUpdated": true
++  }
+ }
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -106,7 +106,11 @@
+ - [x] Task checkbox-188: Add supervisor blocked-cascade recovery coverage proving a board with only blocked domain/recovery tasks gets deterministic daemon-repair tasks without invoking the LLM repair path.
+ - [x] Task checkbox-189: Add daemon blocked-task prompt-budget fixture coverage proving repeated llm_router exits summarize the target, compact errors, and next daemon-repair hint without retrying blocked domain work.
+ - [x] Task checkbox-190: Add daemon task-selection coverage proving blocked tasks are skipped until a new non-blocked repair task is accepted or a human explicitly reopens the blocked task.
+-- [~] Task checkbox-191: Add supervisor recovery-note compaction coverage proving repeated repair notes are summarized before future prompt construction so task-board context stays bounded.
++- [!] Task checkbox-191: Add supervisor recovery-note compaction coverage proving repeated repair notes are summarized before future prompt construction so task-board context stays bounded.
+ ## Built-In Supervisor Repair Notes
+ 
+ - Appended deterministic blocked-cascade recovery tasks because all selectable work was blocked. The supervisor avoided the LLM repair path and created daemon-repair tasks that can run independently before blocked domain work is retried.
++## Built-In Supervisor Repair Notes
++
++- Parked repeated syntax-preflight loop for `Add supervisor recovery-note compaction coverage proving repeated repair notes are summarized before future prompt construction so task-board context stays bounded.` so the daemon can continue with independent selectable work. The task should be resumed only after a narrow syntax-valid fixture/test repair is available.
++

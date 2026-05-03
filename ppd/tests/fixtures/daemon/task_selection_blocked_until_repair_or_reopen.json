@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "description": "Blocked PP&D daemon tasks remain skipped until a newer non-blocked daemon repair is accepted or a human explicitly reopens the blocked task.",
+  "tasks": [
+    {
+      "task_id": "checkbox-178",
+      "title": "Blocked domain draft-readiness task",
+      "status": "blocked",
+      "kind": "domain",
+      "created_order": 178,
+      "blocked_at": "2026-05-03T06:30:00Z"
+    },
+    {
+      "task_id": "checkbox-182",
+      "title": "Blocked daemon diagnostics task",
+      "status": "blocked",
+      "kind": "daemon_repair",
+      "created_order": 182,
+      "blocked_at": "2026-05-03T07:00:00Z"
+    },
+    {
+      "task_id": "checkbox-190",
+      "title": "Current non-blocked daemon selection coverage task",
+      "status": "open",
+      "kind": "daemon_repair",
+      "created_order": 190
+    },
+    {
+      "task_id": "checkbox-191",
+      "title": "Recovery-note compaction coverage",
+      "status": "open",
+      "kind": "daemon_repair",
+      "created_order": 191
+    }
+  ],
+  "accepted_repairs": [
+    {
+      "task_id": "checkbox-188",
+      "kind": "daemon_repair",
+      "accepted_at": "2026-05-03T08:00:00Z"
+    }
+  ],
+  "human_reopen": {
+    "task_id": "checkbox-182",
+    "reopened_by_human_at": "2026-05-03T08:20:00Z"
+  }
+}

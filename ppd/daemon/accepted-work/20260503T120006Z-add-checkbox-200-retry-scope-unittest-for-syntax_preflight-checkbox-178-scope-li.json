@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/tests/test_checkbox_200_syntax_preflight_retry_scope.py"
+  ],
+  "created_at": "2026-05-03T12:00:06.841601Z",
+  "impact": "This advances the PP&D daemon repair plan by pinning the parser-clean retry boundary: after syntax_preflight history for checkbox-178, broad source-plus-fixture-plus-test bundles are rejected while a one-file parser repair or one-file daemon repair remains allowed.",
+  "summary": "Add checkbox-200 retry-scope unittest for syntax_preflight checkbox-178 scope limits.",
+  "target_task": "Task checkbox-200: Add one parser-clean daemon retry-scope unittest proving a syntax_preflight history for checkbox-178 rejects a three-file source-plus-fixture-plus-test proposal and allows exactly one parser-bearing file or exactly one daemon repair file.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 30 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".................................................................................................................................................................................................................................................................................................................................................................................................................................ss................sss............................................................................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 725 tests in 0.117s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}
