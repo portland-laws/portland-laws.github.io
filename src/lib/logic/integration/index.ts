@@ -23,6 +23,7 @@ export * from './interactiveFolConstructor';
 export * from './ipldLogicStorage';
 export * from './interactive';
 export * from './logicTranslationCore';
+export * from './logicVerification';
 export * from './leanProverBridge';
 export * from './proverAdapters';
 export * from './proverInstaller';

@@ -1631,3 +1631,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T125631Z-ported-the-root-integration-logic_translation_core.py-compatibility-surface-to-a.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T125631Z-ported-the-root-integration-logic_translation_core.py-compatibility-surface-to-a.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T125631Z-ported-the-root-integration-logic_translation_core.py-compatibility-surface-to-a.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 13:01:33 UTC
+
+- Target: `Task checkbox-372: Port remaining Python logic module `logic/integration/logic_verification.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported logic/integration/logic_verification.py as a browser-native TypeScript verifier.
+- Impact: Adds a local integration verifier that performs formula input validation, runtime-bridge rejection, balanced delimiter checks, and parser-backed FOL/TDFOL/CEC syntax validation without Python, server calls, filesystem, subprocess, or RPC dependencies. The new Jest test exercises verified, invalid, runtime-bridge, and unsupported DCEC fail-closed paths.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/logicVerification.test.ts`, `src/lib/logic/integration/logicVerification.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T130133Z-ported-logic-integration-logic_verification.py-as-a-browser-native-typescript-ve.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T130133Z-ported-logic-integration-logic_verification.py-as-a-browser-native-typescript-ve.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T130133Z-ported-logic-integration-logic_verification.py-as-a-browser-native-typescript-ve.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
