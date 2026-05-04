@@ -776,3 +776,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T061336Z-ported-tdfol-nl-utils.py-helper-behavior-into-a-browser-native-typescript-utilit.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T061336Z-ported-tdfol-nl-utils.py-helper-behavior-into-a-browser-native-typescript-utilit.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T061336Z-ported-tdfol-nl-utils.py-helper-behavior-into-a-browser-native-typescript-utilit.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 06:18:45 UTC
+
+- Target: `Task checkbox-276: Port remaining Python logic module `logic/TDFOL/p2p/ipfs_proof_storage.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported TDFOL IPFS proof storage as browser-native deterministic proof storage with fail-closed transport behavior.
+- Impact: Adds an exported TypeScript storage API for logic/TDFOL/p2p/ipfs_proof_storage.py that stores proof payloads by deterministic browser-local CIDs, retrieves from memory or an injected browser-native transport, and explicitly avoids server, Python, filesystem, subprocess, and RPC fallbacks. Existing Jest validation now exercises deterministic CIDs, local retrieval, TTL fail-closed behavior, and injected transport CID verification.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cache.test.ts`, `src/lib/logic/tdfol/index.ts`, `src/lib/logic/tdfol/ipfsProofStorage.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T061845Z-ported-tdfol-ipfs-proof-storage-as-browser-native-deterministic-proof-storage-wi.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T061845Z-ported-tdfol-ipfs-proof-storage-as-browser-native-deterministic-proof-storage-wi.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T061845Z-ported-tdfol-ipfs-proof-storage-as-browser-native-deterministic-proof-storage-wi.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

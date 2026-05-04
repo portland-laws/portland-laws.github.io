@@ -5,6 +5,12 @@ import {
   createBrowserLocalCid,
   demonstrateTdfolIpfsCache,
 } from './tdfol/ipfsCacheDemo';
+import {
+  BrowserTdfolIpfsProofStorage,
+  TDFOL_IPFS_PROOF_STORAGE_STATUS,
+  type TdfolIpfsProofTransport,
+  type TdfolStoredProof,
+} from './tdfol/ipfsProofStorage';
 
 describe('BoundedCache', () => {
   it('returns cached values and records hit/miss stats', () => {
@@ -130,5 +136,78 @@ describe('BrowserTdfolIpfsCacheDemo', () => {
       source: 'unavailable-ipfs-adapter',
     });
     expect(demo.getStats()).toMatchObject({ hits: 1, misses: 1, expirations: 1 });
+  });
+});
+
+describe('BrowserTdfolIpfsProofStorage', () => {
+  const proofPayload = {
+    theorem: 'Goal(a)',
+    formula: 'P(a) -> Goal(a)',
+    axioms: ['P(a) -> Goal(a)', 'P(a)'],
+    proof: {
+      status: 'proved' as const,
+      theorem: 'Goal(a)',
+      method: 'tdfol-forward-chaining',
+      steps: [{ id: 's1', rule: 'ModusPonens', premises: ['P(a)'], conclusion: 'Goal(a)' }],
+    },
+  };
+
+  it('stores TDFOL proof payloads by deterministic browser-local CID and fails closed without transport', async () => {
+    let now = 100;
+    const storage = new BrowserTdfolIpfsProofStorage({ ttlMs: 5, now: () => now });
+    const stored = await storage.storeProof(proofPayload);
+
+    expect(stored).toMatchObject({ ok: true, source: 'browser-cache' });
+    expect(stored.cid).toMatch(/^bafylogic[0-9a-f]{16}$/);
+    expect(TDFOL_IPFS_PROOF_STORAGE_STATUS).toMatchObject({
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+    });
+
+    now = 102;
+    const repeated = await storage.storeProof({
+      ...proofPayload,
+      axioms: [...proofPayload.axioms].reverse(),
+    });
+    expect(repeated.cid).toBe(stored.cid);
+    expect((await storage.retrieveProof(stored.cid)).entry?.payload.axioms).toEqual([
+      'P(a)',
+      'P(a) -> Goal(a)',
+    ]);
+    expect(storage.getStats()).toMatchObject({
+      hits: 1,
+      transportAvailable: false,
+      storedProofs: 1,
+    });
+
+    now = 200;
+    await expect(storage.retrieveProof(stored.cid)).resolves.toMatchObject({
+      ok: false,
+      source: 'unavailable-ipfs-adapter',
+    });
+  });
+
+  it('accepts an injected browser-native transport and verifies returned CIDs', async () => {
+    const remote = new Map<string, TdfolStoredProof>();
+    const transport: TdfolIpfsProofTransport = {
+      mode: 'browser-native-ipfs',
+      async addProof(entry) {
+        remote.set(entry.cid, entry);
+        return entry.cid;
+      },
+      async getProof(cid) {
+        return remote.get(cid);
+      },
+    };
+    const storage = new BrowserTdfolIpfsProofStorage({ maxEntries: 1, transport });
+    const stored = await storage.storeProof(proofPayload);
+    const other = await storage.storeProof({ ...proofPayload, theorem: 'Other(a)' });
+
+    expect(stored).toMatchObject({ ok: true, source: 'browser-native-ipfs' });
+    expect(await storage.retrieveProof(stored.cid)).toMatchObject({
+      ok: true,
+      source: 'browser-native-ipfs',
+    });
+    expect(other.cid).not.toBe(stored.cid);
   });
 });
