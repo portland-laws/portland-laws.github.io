@@ -1,4 +1,10 @@
 import { parseTdfolFormula } from '../tdfol';
+import {
+  DEONTOLOGICAL_REASONING_TYPES_METADATA,
+  assertDeontologicalReasoningResult,
+  checkDeontologicalReasoningType,
+  isDeontologicalReasoningType,
+} from './deontologicalReasoningTypes';
 import { createImplication, runForwardChaining } from './forwardChaining';
 import { createLogicKnowledgeBase, makeFact } from './knowledgeBase';
 import {
@@ -190,6 +196,30 @@ describe('lightweight reasoning', () => {
         conditionRelationship: 'same',
         sourceIds: ['inspect', 'inspect-ban'],
       },
+    ]);
+  });
+
+  it('ports deontological reasoning type contracts with fail-closed validation', () => {
+    const result = reasonDeontologically([
+      { id: 'duty-pay', actor: 'Tenant', action: 'Pay rent', normOperator: 'O' },
+    ]);
+    const invalid = checkDeontologicalReasoningType('query', {
+      performedActions: ['pay rent', 42],
+      facts: { 'lease active': 'yes' },
+    });
+
+    expect(DEONTOLOGICAL_REASONING_TYPES_METADATA.sourcePythonModule).toBe(
+      'logic/integration/reasoning/deontological_reasoning_types.py',
+    );
+    expect(DEONTOLOGICAL_REASONING_TYPES_METADATA.runtimeDependencies).toEqual([]);
+    expect(assertDeontologicalReasoningResult(result)).toBe(result);
+    expect(
+      isDeontologicalReasoningType('norm', { action: 'Pay rent', modality: 'obligation' }),
+    ).toBe(true);
+    expect(invalid.ok).toBe(false);
+    expect(invalid.issues.map((issue) => issue.path)).toEqual([
+      '$.performedActions[1]',
+      '$.facts.lease active',
     ]);
   });
 

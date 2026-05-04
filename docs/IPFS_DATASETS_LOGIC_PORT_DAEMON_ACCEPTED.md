@@ -1739,3 +1739,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T134716Z-ported-a-browser-native-deontological-reasoning-slice-for-integration-reasoning-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T134716Z-ported-a-browser-native-deontological-reasoning-slice-for-integration-reasoning-.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T134716Z-ported-a-browser-native-deontological-reasoning-slice-for-integration-reasoning-.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 13:52:26 UTC
+
+- Target: `Task checkbox-384: Port remaining Python logic module `logic/integration/reasoning/deontological_reasoning_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Worktree direct-edit proposal.
+- Impact: Git harvested the isolated-worktree edits for validation.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/reasoning/deontologicalReasoningTypes.ts`, `src/lib/logic/reasoning/index.ts`, `src/lib/logic/reasoning/reasoning.test.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T135226Z-worktree-direct-edit-proposal..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T135226Z-worktree-direct-edit-proposal..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T135226Z-worktree-direct-edit-proposal..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
