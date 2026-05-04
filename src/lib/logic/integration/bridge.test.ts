@@ -25,6 +25,7 @@ import {
   type BrowserNativeSymbolicAiProofResult,
 } from './symbolicAiProverBridge';
 import { SymbolicFOLBridge } from './symbolicFolBridge';
+import { createBrowserNativeTdfolCecBridge } from './tdfolCecBridge';
 import {
   createBrowserNativeZ3ProverBridge,
   type BrowserNativeZ3ProofResult,
@@ -92,6 +93,41 @@ describe('BrowserNativeLogicBridge', () => {
       kind: 'unary',
       operator: 'O',
     });
+  });
+
+  it('ports tdfol_cec_bridge.py conversion and proof delegation without external fallbacks', () => {
+    const bridge = createBrowserNativeTdfolCecBridge();
+    const converted = bridge.convert('forall x. always(O(Comply(x)))');
+    const invalid = bridge.validate('always(');
+    const result = bridge.prove({
+      theorem: 'F(Enter(x))',
+      axioms: ['O(not Enter(x))'],
+    });
+
+    expect(converted).toMatchObject({
+      status: 'success',
+      source: '∀x (□(O(Comply(x))))',
+      cecText: '(forall x (always (O (Comply x))))',
+      metadata: {
+        sourcePythonModule: 'logic/integration/bridges/tdfol_cec_bridge.py',
+        browserNative: true,
+        serverCallsAllowed: false,
+        pythonRuntime: false,
+        failClosed: true,
+      },
+    });
+    expect(invalid).toMatchObject({ valid: false, metadata: { serverCallsAllowed: false } });
+    expect(result).toMatchObject({
+      status: 'proved',
+      theorem: 'F(Enter(x))',
+      method: 'tdfol_cec_bridge:cec_delegate:local',
+      cecTheorem: '(F (Enter x))',
+      sourcePythonModule: 'logic/integration/bridges/tdfol_cec_bridge.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+    });
+    expect(result.steps.map((step) => step.rule)).toContain('CecDeonticProhibitionEquivalence');
   });
 
   it('proves TDFOL and CEC requests using local proof engines', () => {

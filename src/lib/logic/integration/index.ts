@@ -7,4 +7,5 @@ export * from './proverAdapters';
 export * from './proverInstaller';
 export * from './symbolicAiProverBridge';
 export * from './symbolicFolBridge';
+export * from './tdfolCecBridge';
 export * from './z3ProverBridge';

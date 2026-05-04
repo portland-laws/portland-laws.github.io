@@ -1361,3 +1361,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T105113Z-ported-integration-bridges-symbolic_fol_bridge.py-as-a-browser-native-typescript.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T105113Z-ported-integration-bridges-symbolic_fol_bridge.py-as-a-browser-native-typescript.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T105113Z-ported-integration-bridges-symbolic_fol_bridge.py-as-a-browser-native-typescript.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 10:55:48 UTC
+
+- Target: `Task checkbox-342: Port remaining Python logic module `logic/integration/bridges/tdfol_cec_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the tdfol_cec_bridge.py integration surface to a browser-native TypeScript facade.
+- Impact: The new integration bridge converts TDFOL formulas to CEC expressions, delegates proof attempts to the existing local CEC rule engine, and exposes fail-closed metadata proving no server, Python runtime, filesystem, subprocess, or RPC fallback is used. The integration Jest suite now validates conversion, invalid-input fail-closed behavior, and delegated CEC proof results.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/tdfolCecBridge.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T105548Z-ported-the-tdfol_cec_bridge.py-integration-surface-to-a-browser-native-typescrip.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T105548Z-ported-the-tdfol_cec_bridge.py-integration-surface-to-a-browser-native-typescrip.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T105548Z-ported-the-tdfol_cec_bridge.py-integration-surface-to-a-browser-native-typescrip.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
