@@ -23,6 +23,7 @@ export type {
 } from './tdfolInferenceRules';
 export * from './lexer';
 export * from './modalTableaux';
+export * from './nlApi';
 export * from './optimization';
 export * from './parser';
 export * from './performanceDashboard';

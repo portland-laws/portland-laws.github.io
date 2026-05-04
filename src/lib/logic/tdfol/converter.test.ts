@@ -5,6 +5,11 @@ import {
   buildTdfolLlmConversionPrompt,
   getTdfolOperatorHintsForText,
 } from './browserNativeLlm';
+import {
+  BrowserNativeTdfolNlApi,
+  generateTdfolNaturalLanguage,
+  parseTdfolNaturalLanguage,
+} from './nlApi';
 
 describe('TDFOL converter', () => {
   it('converts parsed formulas back to stable TDFOL output with metadata', () => {
@@ -92,5 +97,31 @@ describe('TDFOL converter', () => {
       metadata: { serverCallsAllowed: false },
     });
     expect(failed.errors[0]).toContain('browser LLM router is fail-closed');
+  });
+
+  it('ports the TDFOL NL API facade without Python or server runtime fallback', () => {
+    const api = new BrowserNativeTdfolNlApi();
+    const parsed = api.parse('All contractors must pay taxes.');
+
+    expect(parsed.status).toBe('parsed');
+    expect(parsed.formula).toBe('forall x. Contractor(x) -> O(PayTaxes(x))');
+    expect(parsed.metadata).toMatchObject({
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      method: 'pattern',
+    });
+    expect(parsed.formattedFormula).toBe('∀x ((Contractor(x)) → (O(PayTaxes(x))))');
+    expect(api.parse('All contractors must pay taxes.').metadata.cacheHit).toBe(true);
+    expect(api.generate(parsed.formula).text).toContain(
+      'it is obligatory that PayTaxes holds for x',
+    );
+    expect(parseTdfolNaturalLanguage('')).toMatchObject({
+      status: 'failed',
+      errors: ['Input text is empty.'],
+    });
+    expect(generateTdfolNaturalLanguage('P(Comply(x))').text).toBe(
+      'it is permitted that Comply holds for x',
+    );
   });
 });

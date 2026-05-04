@@ -722,3 +722,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T054522Z-ported-tdfol-nl-llm.py-prompt-hint-cache-and-hybrid-conversion-surface-to-a-brow.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T054522Z-ported-tdfol-nl-llm.py-prompt-hint-cache-and-hybrid-conversion-surface-to-a-brow.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T054522Z-ported-tdfol-nl-llm.py-prompt-hint-cache-and-hybrid-conversion-surface-to-a-brow.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 05:50:32 UTC
+
+- Target: `Task checkbox-270: Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_api.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Added a browser-native TDFOL natural-language API facade for tdfol_nl_api.py parity.
+- Impact: The new src/lib/logic/tdfol/nlApi.ts module exposes deterministic parse and generate helpers backed only by existing browser-native TDFOL conversion, parsing, and formatting; converter tests validate successful NL parsing, cache behavior, natural-language generation, and fail-closed empty input without Python, server calls, subprocesses, or RPC.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/converter.test.ts`, `src/lib/logic/tdfol/index.ts`, `src/lib/logic/tdfol/nlApi.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T055032Z-added-a-browser-native-tdfol-natural-language-api-facade-for-tdfol_nl_api.py-par.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T055032Z-added-a-browser-native-tdfol-natural-language-api-facade-for-tdfol_nl_api.py-par.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T055032Z-added-a-browser-native-tdfol-natural-language-api-facade-for-tdfol_nl_api.py-par.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
