@@ -4,7 +4,12 @@ import { resolve } from 'node:path';
 import { analyzeCecExpression } from './analyzer';
 import { collectCecAtoms } from './ast';
 import { formatCecExpression } from './formatter';
-import { parseCecExpression, validateCecExpression } from './parser';
+import {
+  parseCecExpression,
+  parseCecNaturalLanguageBase,
+  parse_cec_natural_language_base,
+  validateCecExpression,
+} from './parser';
 
 const portlandDcec =
   '(forall agent (implies (subject_to agent portland_city_code_1_01_010) (P (always (comply_with agent portland_city_code_1_01_010)))))';
@@ -52,7 +57,9 @@ describe('CEC/DCEC parser', () => {
   });
 
   it('normalizes valid DCEC expressions back to s-expression syntax', () => {
-    const formatted = formatCecExpression(parseCecExpression(`  ${portlandDcec.replaceAll(' ', '\n  ')}  `));
+    const formatted = formatCecExpression(
+      parseCecExpression(`  ${portlandDcec.replaceAll(' ', '\n  ')}  `),
+    );
 
     expect(formatted).toBe(portlandDcec);
   });
@@ -93,6 +100,56 @@ describe('CEC/DCEC parser', () => {
       ok: false,
       error: expect.stringContaining('Unclosed application subject_to'),
     });
+  });
+
+  it('ports base_parser.py deontic natural-language clauses without runtime bridges', () => {
+    const obligation = parseCecNaturalLanguageBase('Tenant shall maintain smoke alarms.');
+    const prohibition = parseCecNaturalLanguageBase('Tenant must not block exits.');
+    const permission = parseCecNaturalLanguageBase('Tenant may enter the unit.');
+
+    expect(obligation).toMatchObject({
+      ok: true,
+      formula: '(O (maintain_smoke_alarms tenant))',
+      parseMethod: 'base_parser_pattern',
+      metadata: {
+        sourcePythonModule: 'logic/CEC/nl/base_parser.py',
+        runtime: 'browser-native-typescript',
+        browserNative: true,
+        pythonRuntime: false,
+        serverRuntime: false,
+      },
+    });
+    expect(prohibition.formula).toBe('(F (block_exits tenant))');
+    expect(permission.formula).toBe('(P (enter_unit tenant))');
+  });
+
+  it('ports base_parser.py deterministic conditional and temporal forms', () => {
+    const result = parse_cec_natural_language_base(
+      'If tenant shall pay rent then always landlord may enter unit.',
+    );
+
+    expect(result.ok).toBe(true);
+    expect(result.formula).toBe(
+      '(implies (O (pay_rent tenant)) (always (P (enter_unit landlord))))',
+    );
+    expect(result.expression?.kind).toBe('binary');
+  });
+
+  it('fails closed for base_parser.py unsupported text instead of using Python or services', () => {
+    const result = parseCecNaturalLanguageBase('greetings and salutations');
+
+    expect(result).toMatchObject({
+      ok: false,
+      parseMethod: 'fail_closed',
+      confidence: 0,
+      errors: ['No deterministic base_parser pattern matched.'],
+      metadata: {
+        implementation: 'deterministic-base-nl-parser',
+        pythonRuntime: false,
+        serverRuntime: false,
+      },
+    });
+    expect(result.expression).toBeUndefined();
   });
 
   it('parses all generated Portland DCEC snippets', () => {

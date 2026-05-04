@@ -398,3 +398,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T031836Z-ported-the-remaining-cec-native-syntax-tree-parity-surface-with-browser-native-t.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T031836Z-ported-the-remaining-cec-native-syntax-tree-parity-surface-with-browser-native-t.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T031836Z-ported-the-remaining-cec-native-syntax-tree-parity-surface-with-browser-native-t.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 03:20:55 UTC
+
+- Target: `Task checkbox-234: Port remaining Python logic module `logic/CEC/nl/base_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Added a browser-native deterministic CEC base natural-language parser surface for logic/CEC/nl/base_parser.py.
+- Impact: src/lib/logic/cec/parser.ts now exposes browser-native base_parser-compatible parsing metadata, fail-closed results, Python-compatible aliases, and deterministic deontic/temporal/conditional conversion to CEC AST/formula strings. src/lib/logic/cec/parser.test.ts directly validates the new runtime surface without Python, server, filesystem, subprocess, or RPC dependencies.
+- Changed files: `src/lib/logic/cec/parser.test.ts`, `src/lib/logic/cec/parser.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T032055Z-added-a-browser-native-deterministic-cec-base-natural-language-parser-surface-fo.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T032055Z-added-a-browser-native-deterministic-cec-base-natural-language-parser-surface-fo.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T032055Z-added-a-browser-native-deterministic-cec-base-natural-language-parser-surface-fo.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

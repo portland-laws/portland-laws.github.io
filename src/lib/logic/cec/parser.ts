@@ -21,12 +21,50 @@ interface CecToken {
 const QUANTIFIERS = new Set(['forall', 'exists']);
 const UNARY_OPERATORS = new Set(['not', 'O', 'P', 'F', 'always', 'eventually', 'next']);
 const BINARY_OPERATORS = new Set(['implies', 'and', 'or', 'iff', 'xor', 'until', 'since']);
+const BASE_NL_STOP_WORDS = new Set(['a', 'an', 'the', 'to']);
+
+export interface CecBaseNlParserMetadata {
+  readonly sourcePythonModule: 'logic/CEC/nl/base_parser.py';
+  readonly runtime: 'browser-native-typescript';
+  readonly implementation: 'deterministic-base-nl-parser';
+  readonly browserNative: true;
+  readonly pythonRuntime: false;
+  readonly serverRuntime: false;
+}
+
+export interface CecBaseNlParseResult {
+  readonly ok: boolean;
+  readonly input: string;
+  readonly normalizedText: string;
+  readonly expression?: CecExpression;
+  readonly formula?: string;
+  readonly parseMethod: 'base_parser_pattern' | 'fail_closed';
+  readonly confidence: number;
+  readonly errors: readonly string[];
+  readonly metadata: CecBaseNlParserMetadata;
+}
+
+export interface CecBaseNlParserOptions {
+  readonly defaultSubject?: string;
+  readonly maxInputLength?: number;
+}
+
+const CEC_BASE_NL_METADATA: CecBaseNlParserMetadata = {
+  sourcePythonModule: 'logic/CEC/nl/base_parser.py',
+  runtime: 'browser-native-typescript',
+  implementation: 'deterministic-base-nl-parser',
+  browserNative: true,
+  pythonRuntime: false,
+  serverRuntime: false,
+};
 
 export function parseCecExpression(source: string): CecExpression {
   return new CecParser(source).parse();
 }
 
-export function validateCecExpression(source: string): { ok: true; expression: CecExpression } | { ok: false; error: string } {
+export function validateCecExpression(
+  source: string,
+): { ok: true; expression: CecExpression } | { ok: false; error: string } {
   try {
     return { ok: true, expression: parseCecExpression(source) };
   } catch (error) {
@@ -36,6 +74,40 @@ export function validateCecExpression(source: string): { ok: true; expression: C
     };
   }
 }
+
+export function parseCecNaturalLanguageBase(
+  source: string,
+  options: CecBaseNlParserOptions = {},
+): CecBaseNlParseResult {
+  const normalizedText = normalizeBaseNlText(source);
+  const maxInputLength = options.maxInputLength ?? 2000;
+  if (source.length > maxInputLength) {
+    return failBaseNl(source, normalizedText, [`Input exceeds ${maxInputLength} characters.`]);
+  }
+  if (normalizedText.length === 0) {
+    return failBaseNl(source, normalizedText, ['Input is empty.']);
+  }
+
+  const expression = parseBaseNlClause(normalizedText, options.defaultSubject ?? 'agent');
+  if (!expression) {
+    return failBaseNl(source, normalizedText, ['No deterministic base_parser pattern matched.']);
+  }
+
+  return {
+    ok: true,
+    input: source,
+    normalizedText,
+    expression,
+    formula: formatBaseNlExpression(expression),
+    parseMethod: 'base_parser_pattern',
+    confidence: 0.72,
+    errors: [],
+    metadata: CEC_BASE_NL_METADATA,
+  };
+}
+
+export const parseCecNaturalLanguage = parseCecNaturalLanguageBase;
+export const parse_cec_natural_language_base = parseCecNaturalLanguageBase;
 
 class CecParser {
   private readonly tokens: CecToken[];
@@ -184,4 +256,111 @@ function lexCec(source: string): CecToken[] {
 
   tokens.push({ type: 'EOF', value: '', offset: source.length });
   return tokens;
+}
+
+function parseBaseNlClause(text: string, defaultSubject: string): CecExpression | undefined {
+  const conditional = /^if (.+) then (.+)$/.exec(text);
+  if (conditional) {
+    const left = parseBaseNlClause(conditional[1], defaultSubject);
+    const right = parseBaseNlClause(conditional[2], defaultSubject);
+    if (left && right) {
+      return { kind: 'binary', operator: 'implies', left, right };
+    }
+    return undefined;
+  }
+
+  const temporal = /^(always|eventually|next) (.+)$/.exec(text);
+  if (temporal) {
+    const expression = parseBaseNlClause(temporal[2], defaultSubject);
+    if (expression) {
+      return { kind: 'unary', operator: temporal[1] as CecUnaryOperator, expression };
+    }
+    return undefined;
+  }
+
+  const notMatch = /^not (.+)$/.exec(text);
+  if (notMatch) {
+    const expression = parseBaseNlClause(notMatch[1], defaultSubject);
+    if (expression) {
+      return { kind: 'unary', operator: 'not', expression };
+    }
+    return undefined;
+  }
+
+  const words = text.split(' ').filter(Boolean);
+  if (words.length < 2) {
+    return undefined;
+  }
+  const modalIndex = words.findIndex((word) =>
+    ['must', 'shall', 'may', 'can', 'must_not', 'shall_not'].includes(word),
+  );
+  if (modalIndex <= 0 || modalIndex >= words.length - 1) {
+    return undefined;
+  }
+
+  const subject = atomName(words.slice(0, modalIndex).join('_')) || defaultSubject;
+  const modal = words[modalIndex];
+  const predicateWords = words
+    .slice(modalIndex + 1)
+    .filter((word) => !BASE_NL_STOP_WORDS.has(word));
+  if (predicateWords.length === 0) {
+    return undefined;
+  }
+
+  return {
+    kind: 'unary',
+    operator: modal === 'may' || modal === 'can' ? 'P' : modal.endsWith('_not') ? 'F' : 'O',
+    expression: {
+      kind: 'application',
+      name: atomName(predicateWords.join('_')),
+      args: [{ kind: 'atom', name: subject }],
+    },
+  };
+}
+
+function normalizeBaseNlText(source: string): string {
+  return source
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}_\s-]/gu, ' ')
+    .replace(/\b(must|shall)\s+not\b/g, '$1_not')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function atomName(value: string): string {
+  return value
+    .replace(/[^a-z0-9_]+/g, '_')
+    .replace(/^_+|_+$/g, '')
+    .replace(/_{2,}/g, '_');
+}
+
+function formatBaseNlExpression(expression: CecExpression): string {
+  switch (expression.kind) {
+    case 'atom':
+      return expression.name;
+    case 'application':
+      return `(${[expression.name, ...expression.args.map(formatBaseNlExpression)].join(' ')})`;
+    case 'quantified':
+      return `(${expression.quantifier} ${expression.variable} ${formatBaseNlExpression(expression.expression)})`;
+    case 'unary':
+      return `(${expression.operator} ${formatBaseNlExpression(expression.expression)})`;
+    case 'binary':
+      return `(${expression.operator} ${formatBaseNlExpression(expression.left)} ${formatBaseNlExpression(expression.right)})`;
+  }
+}
+
+function failBaseNl(
+  source: string,
+  normalizedText: string,
+  errors: readonly string[],
+): CecBaseNlParseResult {
+  return {
+    ok: false,
+    input: source,
+    normalizedText,
+    parseMethod: 'fail_closed',
+    confidence: 0,
+    errors,
+    metadata: CEC_BASE_NL_METADATA,
+  };
 }
