@@ -6,7 +6,9 @@ import { collectCecAtoms } from './ast';
 import { formatCecExpression } from './formatter';
 import {
   parseCecExpression,
+  parseCecNaturalLanguageFrench,
   parseCecNaturalLanguageBase,
+  parse_cec_natural_language_french,
   parse_cec_natural_language_base,
   validateCecExpression,
 } from './parser';
@@ -150,6 +152,48 @@ describe('CEC/DCEC parser', () => {
       },
     });
     expect(result.expression).toBeUndefined();
+  });
+
+  it('ports french_parser.py deontic, conditional, and fail-closed clauses without runtime bridges', () => {
+    const obligation = parseCecNaturalLanguageFrench(
+      'Le locataire doit maintenir les detecteurs de fumee.',
+    );
+    const prohibition = parseCecNaturalLanguageFrench(
+      'Le locataire ne doit pas bloquer les sorties.',
+    );
+    const conditional = parse_cec_natural_language_french(
+      'Si le locataire doit payer le loyer alors toujours le bailleur peut entrer dans le logement.',
+    );
+    const unsupported = parseCecNaturalLanguageFrench('bonjour tout le monde');
+
+    expect(obligation).toMatchObject({
+      ok: true,
+      formula: '(O (maintenir_detecteurs_fumee locataire))',
+      parseMethod: 'french_parser_pattern',
+      metadata: {
+        sourcePythonModule: 'logic/CEC/nl/french_parser.py',
+        runtime: 'browser-native-typescript',
+        browserNative: true,
+        pythonRuntime: false,
+        serverRuntime: false,
+      },
+    });
+    expect(prohibition.formula).toBe('(F (bloquer_sorties locataire))');
+    expect(conditional.ok).toBe(true);
+    expect(conditional.formula).toBe(
+      '(implies (O (payer_loyer locataire)) (always (P (entrer_dans_logement bailleur))))',
+    );
+    expect(unsupported).toMatchObject({
+      ok: false,
+      parseMethod: 'fail_closed',
+      confidence: 0,
+      errors: ['No deterministic french_parser pattern matched.'],
+      metadata: {
+        implementation: 'deterministic-french-nl-parser',
+        pythonRuntime: false,
+        serverRuntime: false,
+      },
+    });
   });
 
   it('parses all generated Portland DCEC snippets', () => {

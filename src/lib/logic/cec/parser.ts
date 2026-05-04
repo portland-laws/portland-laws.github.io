@@ -22,6 +22,21 @@ const QUANTIFIERS = new Set(['forall', 'exists']);
 const UNARY_OPERATORS = new Set(['not', 'O', 'P', 'F', 'always', 'eventually', 'next']);
 const BINARY_OPERATORS = new Set(['implies', 'and', 'or', 'iff', 'xor', 'until', 'since']);
 const BASE_NL_STOP_WORDS = new Set(['a', 'an', 'the', 'to']);
+const FRENCH_NL_STOP_WORDS = new Set([
+  'a',
+  'au',
+  'aux',
+  'de',
+  'des',
+  'du',
+  'en',
+  'l',
+  'la',
+  'le',
+  'les',
+  'un',
+  'une',
+]);
 
 export interface CecBaseNlParserMetadata {
   readonly sourcePythonModule: 'logic/CEC/nl/base_parser.py';
@@ -56,6 +71,20 @@ const CEC_BASE_NL_METADATA: CecBaseNlParserMetadata = {
   browserNative: true,
   pythonRuntime: false,
   serverRuntime: false,
+};
+
+const CEC_FRENCH_NL_METADATA = {
+  sourcePythonModule: 'logic/CEC/nl/french_parser.py',
+  runtime: 'browser-native-typescript',
+  implementation: 'deterministic-french-nl-parser',
+  browserNative: true,
+  pythonRuntime: false,
+  serverRuntime: false,
+} as const;
+
+export type CecFrenchNlParseResult = Omit<CecBaseNlParseResult, 'parseMethod' | 'metadata'> & {
+  readonly parseMethod: 'french_parser_pattern' | 'fail_closed';
+  readonly metadata: typeof CEC_FRENCH_NL_METADATA;
 };
 
 export function parseCecExpression(source: string): CecExpression {
@@ -108,6 +137,41 @@ export function parseCecNaturalLanguageBase(
 
 export const parseCecNaturalLanguage = parseCecNaturalLanguageBase;
 export const parse_cec_natural_language_base = parseCecNaturalLanguageBase;
+
+export function parseCecNaturalLanguageFrench(
+  source: string,
+  options: CecBaseNlParserOptions = {},
+): CecFrenchNlParseResult {
+  const normalizedText = normalizeFrenchNlText(source);
+  const maxInputLength = options.maxInputLength ?? 2000;
+  if (source.length > maxInputLength) {
+    return failFrenchNl(source, normalizedText, [`Input exceeds ${maxInputLength} characters.`]);
+  }
+  if (normalizedText.length === 0) {
+    return failFrenchNl(source, normalizedText, ['Input is empty.']);
+  }
+
+  const expression = parseFrenchNlClause(normalizedText, options.defaultSubject ?? 'agent');
+  if (!expression) {
+    return failFrenchNl(source, normalizedText, [
+      'No deterministic french_parser pattern matched.',
+    ]);
+  }
+
+  return {
+    ok: true,
+    input: source,
+    normalizedText,
+    expression,
+    formula: formatBaseNlExpression(expression),
+    parseMethod: 'french_parser_pattern',
+    confidence: 0.7,
+    errors: [],
+    metadata: CEC_FRENCH_NL_METADATA,
+  };
+}
+
+export const parse_cec_natural_language_french = parseCecNaturalLanguageFrench;
 
 class CecParser {
   private readonly tokens: CecToken[];
@@ -318,11 +382,98 @@ function parseBaseNlClause(text: string, defaultSubject: string): CecExpression 
   };
 }
 
+function parseFrenchNlClause(text: string, defaultSubject: string): CecExpression | undefined {
+  const conditional = /^si (.+) alors (.+)$/.exec(text);
+  if (conditional) {
+    const left = parseFrenchNlClause(conditional[1], defaultSubject);
+    const right = parseFrenchNlClause(conditional[2], defaultSubject);
+    if (left && right) {
+      return { kind: 'binary', operator: 'implies', left, right };
+    }
+    return undefined;
+  }
+
+  const temporal = /^(toujours|eventuellement|ensuite) (.+)$/.exec(text);
+  if (temporal) {
+    const expression = parseFrenchNlClause(temporal[2], defaultSubject);
+    if (expression) {
+      const operator =
+        temporal[1] === 'toujours' ? 'always' : temporal[1] === 'ensuite' ? 'next' : 'eventually';
+      return { kind: 'unary', operator, expression };
+    }
+    return undefined;
+  }
+
+  const forbidden = /^il est interdit de (.+)$/.exec(text);
+  if (forbidden) {
+    return frenchApplication('F', defaultSubject, forbidden[1]);
+  }
+
+  const words = text.split(' ').filter(Boolean);
+  const modalIndex = words.findIndex((word) =>
+    ['doit', 'doivent', 'peut', 'peuvent', 'ne_doit_pas', 'ne_peut_pas'].includes(word),
+  );
+  if (modalIndex <= 0 || modalIndex >= words.length - 1) {
+    return undefined;
+  }
+
+  const subject = atomName(
+    words
+      .slice(0, modalIndex)
+      .filter((word) => !FRENCH_NL_STOP_WORDS.has(word))
+      .join('_'),
+  );
+  const modal = words[modalIndex];
+  const operator = modal.includes('peut') ? 'P' : modal.includes('pas') ? 'F' : 'O';
+  return frenchApplication(
+    operator,
+    subject || defaultSubject,
+    words.slice(modalIndex + 1).join(' '),
+  );
+}
+
+function frenchApplication(
+  operator: CecUnaryOperator,
+  subject: string,
+  predicateText: string,
+): CecUnaryExpression | undefined {
+  const predicate = atomName(
+    predicateText
+      .split(' ')
+      .filter((word) => word.length > 0 && !FRENCH_NL_STOP_WORDS.has(word))
+      .join('_'),
+  );
+  if (predicate.length === 0) {
+    return undefined;
+  }
+  return {
+    kind: 'unary',
+    operator,
+    expression: {
+      kind: 'application',
+      name: predicate,
+      args: [{ kind: 'atom', name: subject }],
+    },
+  };
+}
+
 function normalizeBaseNlText(source: string): string {
   return source
     .toLowerCase()
     .replace(/[^\p{L}\p{N}_\s-]/gu, ' ')
     .replace(/\b(must|shall)\s+not\b/g, '$1_not')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function normalizeFrenchNlText(source: string): string {
+  return source
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^\p{L}\p{N}_\s-]/gu, ' ')
+    .replace(/\bne\s+(doit|doivent|peut|peuvent)\s+pas\b/g, 'ne_$1_pas')
+    .replace(/\bn\s+(est|sont)\s+pas\s+autorise(?:e|es|s)?\s+a\b/g, 'ne_peut_pas')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -362,5 +513,21 @@ function failBaseNl(
     confidence: 0,
     errors,
     metadata: CEC_BASE_NL_METADATA,
+  };
+}
+
+function failFrenchNl(
+  source: string,
+  normalizedText: string,
+  errors: readonly string[],
+): CecFrenchNlParseResult {
+  return {
+    ok: false,
+    input: source,
+    normalizedText,
+    parseMethod: 'fail_closed',
+    confidence: 0,
+    errors,
+    metadata: CEC_FRENCH_NL_METADATA,
   };
 }

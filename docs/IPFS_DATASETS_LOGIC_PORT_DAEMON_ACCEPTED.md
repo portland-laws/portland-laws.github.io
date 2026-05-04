@@ -425,3 +425,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T033749Z-ported-domain_vocab.py-as-a-browser-native-deterministic-dcec-domain-vocabulary..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T033749Z-ported-domain_vocab.py-as-a-browser-native-deterministic-dcec-domain-vocabulary..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T033749Z-ported-domain_vocab.py-as-a-browser-native-deterministic-dcec-domain-vocabulary..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 03:42:08 UTC
+
+- Target: `Task checkbox-237: Port remaining Python logic module `logic/CEC/nl/french_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported CEC French natural-language parser patterns to browser-native TypeScript.
+- Impact: src/lib/logic/cec/parser.ts now exposes a deterministic French NL parser for deontic, conditional, and temporal CEC formulas with fail-closed metadata proving no Python, server, subprocess, or RPC runtime dependency. src/lib/logic/cec/parser.test.ts directly validates the French parser output and fail-closed behavior through the Jest logic suite.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/parser.test.ts`, `src/lib/logic/cec/parser.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T034208Z-ported-cec-french-natural-language-parser-patterns-to-browser-native-typescript..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T034208Z-ported-cec-french-natural-language-parser-patterns-to-browser-native-typescript..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T034208Z-ported-cec-french-natural-language-parser-patterns-to-browser-native-typescript..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
