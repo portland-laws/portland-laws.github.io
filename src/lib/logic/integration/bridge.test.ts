@@ -24,6 +24,7 @@ import {
   createBrowserNativeSymbolicAiProverBridge,
   type BrowserNativeSymbolicAiProofResult,
 } from './symbolicAiProverBridge';
+import { SymbolicFOLBridge } from './symbolicFolBridge';
 import {
   createBrowserNativeZ3ProverBridge,
   type BrowserNativeZ3ProofResult,
@@ -402,6 +403,57 @@ describe('BrowserNativeLogicBridge', () => {
     });
     expect(result.symbolicAi.symbolicProgram).toContain('premise_1: Resident(Ada)');
     expect(result.symbolicAi.symbolicProgram).toContain('target: Resident(Ada)');
+  });
+
+  it('ports integration/bridges/symbolic_fol_bridge.py as a browser-native FOL bridge', () => {
+    const bridge = new SymbolicFOLBridge();
+
+    const symbol = bridge.create_semantic_symbol('All tenants are residents');
+    const result = bridge.semantic_to_fol(symbol);
+    const cached = bridge.convert_to_fol('All tenants are residents');
+
+    expect(symbol).toEqual({ value: 'All tenants are residents', semantic: true });
+    expect(result).toMatchObject({
+      fol_formula: '∀x (Tenants(x) → Residents(x))',
+      confidence: 0.8,
+      fallback_used: false,
+      reasoning_steps: [
+        "Processing: 'All tenants are residents'",
+        'Pattern-based conversion succeeded',
+      ],
+    });
+    expect(result.components).toMatchObject({
+      quantifiers: ['all'],
+      predicates: ['are'],
+      entities: ['tenants', 'residents'],
+      confidence: 0.6,
+    });
+    expect(cached).toBe(result);
+    expect(bridge.validate_fol_formula(result.fol_formula)).toMatchObject({
+      valid: true,
+      structure: { has_quantifiers: true, predicate_count: 2 },
+    });
+    expect(bridge.get_stats()).toMatchObject({
+      sourcePythonModule: 'logic/integration/bridges/symbolic_fol_bridge.py',
+      runtime: 'typescript-wasm-browser',
+      symbolic_ai_available: false,
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      cache_size: 1,
+    });
+  });
+
+  it('fails closed to deterministic local SymbolicFOL fallback without SymbolicAI calls', () => {
+    const bridge = new SymbolicFOLBridge();
+    const result = bridge.convert_to_fol('Tenant uses archive records', 'tptp');
+
+    expect(result).toMatchObject({
+      fol_formula: 'fof(statement, axiom, Statement(Tenant_uses_archive_records)).',
+      confidence: 0.5,
+      fallback_used: true,
+      errors: [],
+    });
+    expect(() => bridge.create_semantic_symbol('7')).toThrow('Text cannot be empty');
   });
 
   it('accepts injectable browser-native prover adapters for bridge contract tests', () => {

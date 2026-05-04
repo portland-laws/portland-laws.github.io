@@ -6,4 +6,5 @@ export * from './leanProverBridge';
 export * from './proverAdapters';
 export * from './proverInstaller';
 export * from './symbolicAiProverBridge';
+export * from './symbolicFolBridge';
 export * from './z3ProverBridge';
