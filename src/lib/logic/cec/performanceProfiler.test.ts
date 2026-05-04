@@ -8,6 +8,11 @@ import {
   getStandardCecBenchmarks,
   profileCecFunction,
 } from './performanceProfiler';
+import {
+  measure_cec_profile,
+  normalizeCecProfilerSamples,
+  summarizeCecProfiling,
+} from './profilingUtils';
 
 describe('CecPerformanceProfiler', () => {
   it('profiles repeated function execution and stores history', () => {
@@ -142,5 +147,51 @@ describe('CecPerformanceProfiler', () => {
       functionName: 'helper',
       runs: 1,
     });
+  });
+
+  it('ports profiling_utils.py helpers with browser-native metadata and deterministic summaries', () => {
+    let clock = 10;
+    const measured = measure_cec_profile(
+      'proof-step',
+      () => 'ok',
+      () => {
+        clock += 7;
+        return clock;
+      },
+    );
+
+    expect(measured).toMatchObject({
+      name: 'proof-step',
+      result: 'ok',
+      durationMs: 7,
+      metadata: {
+        sourcePythonModule: 'logic/CEC/optimization/profiling_utils.py',
+        browserNative: true,
+        pythonRuntime: false,
+        serverRuntime: false,
+      },
+    });
+
+    const normalized = normalizeCecProfilerSamples([
+      { name: '  ', durationMs: -3, calls: 0 },
+      { name: 'proveGoal', durationMs: 1200, calls: 2, metadata: { phase: 'prove' } },
+      { name: 'ruleLoop', durationMs: 8, calls: 2500 },
+    ]);
+    expect(normalized[0]).toMatchObject({ name: 'sample_0', durationMs: 0, calls: 1 });
+    expect(normalized[1]).toMatchObject({ category: 'cec-proof', metadata: { phase: 'prove' } });
+
+    const summary = summarizeCecProfiling(normalized, { topN: 2 });
+    expect(summary).toMatchObject({
+      metadata: {
+        sourcePythonModule: 'logic/CEC/optimization/profiling_utils.py',
+        runtime: 'browser-native-typescript',
+      },
+      sampleCount: 3,
+      stats: { count: 3, max: 1200 },
+    });
+    expect(summary.slowest.map((sample) => sample.name)).toEqual(['proveGoal', 'ruleLoop']);
+    expect(summary.bottlenecks.bottlenecks.map((finding) => finding.function)).toContain(
+      'ruleLoop',
+    );
   });
 });

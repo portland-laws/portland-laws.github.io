@@ -37,6 +37,7 @@ export * from './performanceDashboard';
 export * from './performanceEngine';
 export * from './performanceMetrics';
 export * from './performanceProfiler';
+export * from './profilingUtils';
 export * from './problemParser';
 export * from './portugueseParser';
 export * from './spanishParser';

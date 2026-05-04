@@ -506,3 +506,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T041253Z-ported-cec-formula_cache.py-parity-as-a-browser-native-typescript-formula-cache..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T041253Z-ported-cec-formula_cache.py-parity-as-a-browser-native-typescript-formula-cache..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T041253Z-ported-cec-formula_cache.py-parity-as-a-browser-native-typescript-formula-cache..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 04:15:37 UTC
+
+- Target: `Task checkbox-246: Port remaining Python logic module `logic/CEC/optimization/profiling_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported CEC profiling_utils.py parity helpers to browser-native TypeScript.
+- Impact: Adds a browser-native CEC profiling utilities module with Python source metadata, deterministic sample normalization, sync measurement, and profiling summaries built on the existing timeline and bottleneck validation path. The existing performance profiler Jest suite now exercises the new helpers, and the CEC barrel export makes them available to the TypeScript logic port without Python, server, filesystem, subprocess, or RPC dependencies.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/index.ts`, `src/lib/logic/cec/performanceProfiler.test.ts`, `src/lib/logic/cec/profilingUtils.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T041537Z-ported-cec-profiling_utils.py-parity-helpers-to-browser-native-typescript..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T041537Z-ported-cec-profiling_utils.py-parity-helpers-to-browser-native-typescript..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T041537Z-ported-cec-profiling_utils.py-parity-helpers-to-browser-native-typescript..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
