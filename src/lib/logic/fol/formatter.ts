@@ -1,6 +1,13 @@
 import type { DeonticNormType } from '../deontic/parser';
 
-export type LogicOutputFormat = 'symbolic' | 'json' | 'prolog' | 'tptp' | 'defeasible' | 'text' | 'xml';
+export type LogicOutputFormat =
+  | 'symbolic'
+  | 'json'
+  | 'prolog'
+  | 'tptp'
+  | 'defeasible'
+  | 'text'
+  | 'xml';
 
 export interface FolJsonStructure {
   quantifiers: Array<{ type: 'universal' | 'existential'; variable: string; symbol: '∀' | '∃' }>;
@@ -23,6 +30,7 @@ export interface FormattedFol {
   format: LogicOutputFormat;
   prolog_form?: string;
   tptp_form?: string;
+  xml_form?: string;
   structured_form?: FolJsonStructure;
   metadata?: LogicFormatMetadata;
 }
@@ -32,6 +40,7 @@ export interface FormattedDeontic {
   norm_type: string;
   format: LogicOutputFormat;
   defeasible_form?: string;
+  xml_form?: string;
   structured_form?: Record<string, unknown>;
   metadata?: LogicFormatMetadata;
 }
@@ -48,6 +57,8 @@ export function formatFol(
     result.tptp_form = convertToTptpFormat(formula);
   } else if (outputFormat === 'json') {
     result.structured_form = parseFolToJson(formula);
+  } else if (outputFormat === 'xml') {
+    result.xml_form = formatFolXml(formula, extractFolMetadata(formula));
   }
   if (includeMetadata) {
     result.metadata = extractFolMetadata(formula);
@@ -61,11 +72,21 @@ export function formatDeontic(
   outputFormat: LogicOutputFormat = 'symbolic',
   includeMetadata = true,
 ): FormattedDeontic {
-  const result: FormattedDeontic = { deontic_formula: formula, norm_type: normType, format: outputFormat };
+  const result: FormattedDeontic = {
+    deontic_formula: formula,
+    norm_type: normType,
+    format: outputFormat,
+  };
   if (outputFormat === 'defeasible') {
     result.defeasible_form = convertToDefeasibleFormat(formula, normType);
   } else if (outputFormat === 'json') {
     result.structured_form = parseDeonticToJson(formula);
+  } else if (outputFormat === 'xml') {
+    result.xml_form = formatDeonticXml(
+      formula,
+      normType,
+      extractDeonticMetadata(formula, normType),
+    );
   }
   if (includeMetadata) {
     result.metadata = extractDeonticMetadata(formula, normType);
@@ -90,21 +111,21 @@ export function formatOutput(
     return formatTextOutput(formulas, summary);
   }
   if (outputFormat === 'xml') {
-    return JSON.stringify({ formulas, summary });
+    return formatXmlOutput(formulas, summary);
   }
   return { error: `Unsupported output format: ${outputFormat}` };
 }
 
 export function convertToPrologFormat(folFormula: string): string {
-  const universal = folFormula.match(/∀(\w+)\s*\((\w+)\((\w+)\)\s*→\s*(\w+)\((\w+)\)\)/);
+  const universal = folFormula.match(/∀(\w+)\s*\((\w+)\(([^)]*)\)\s*→\s*(\w+)\(([^)]*)\)\)/);
   if (universal) {
-    const [, variable, premise, , conclusion] = universal;
-    return `${conclusion.toLowerCase()}(${variable.toUpperCase()}) :- ${premise.toLowerCase()}(${variable.toUpperCase()}).`;
+    const [, variable, premise, premiseArgs, conclusion, conclusionArgs] = universal;
+    return `${conclusion.toLowerCase()}(${formatPrologArgs(conclusionArgs, variable)}) :- ${premise.toLowerCase()}(${formatPrologArgs(premiseArgs, variable)}).`;
   }
-  const existential = folFormula.match(/∃(\w+)\s*(\w+)\((\w+)\)/);
+  const existential = folFormula.match(/∃(\w+)\s*\(?\s*(\w+)\(([^)]*)\)\s*\)?/);
   if (existential) {
-    const [, , predicate] = existential;
-    return `${predicate.toLowerCase()}(a).`;
+    const [, variable, predicate, args] = existential;
+    return `${predicate.toLowerCase()}(${formatPrologArgs(args, variable, 'a')}).`;
   }
   return `% ${folFormula}`;
 }
@@ -136,7 +157,7 @@ export function convertToDefeasibleFormat(deonticFormula: string, normType: stri
 
 export function parseFolToJson(folFormula: string): FolJsonStructure {
   const quantifiers = [...folFormula.matchAll(/([∀∃])([a-z])/g)].map((match) => ({
-    type: match[1] === '∀' ? 'universal' as const : 'existential' as const,
+    type: match[1] === '∀' ? ('universal' as const) : ('existential' as const),
     variable: match[2],
     symbol: match[1] as '∀' | '∃',
   }));
@@ -149,6 +170,7 @@ export function parseFolToJson(folFormula: string): FolJsonStructure {
     ...(folFormula.includes('∧') ? [{ type: 'conjunction', symbol: '∧' }] : []),
     ...(folFormula.includes('∨') ? [{ type: 'disjunction', symbol: '∨' }] : []),
     ...(folFormula.includes('→') ? [{ type: 'implication', symbol: '→' }] : []),
+    ...(folFormula.includes('↔') ? [{ type: 'biconditional', symbol: '↔' }] : []),
     ...(folFormula.includes('¬') ? [{ type: 'negation', symbol: '¬' }] : []),
   ];
   return { quantifiers, predicates, variables, operators };
@@ -156,7 +178,9 @@ export function parseFolToJson(folFormula: string): FolJsonStructure {
 
 export function parseDeonticToJson(deonticFormula: string): Record<string, unknown> {
   const deonticOperators = [...deonticFormula.matchAll(/([OPF])\(/g)].map((match) => ({
-    type: { O: 'obligation', P: 'permission', F: 'prohibition' }[match[1] as 'O' | 'P' | 'F'] ?? 'unknown',
+    type:
+      { O: 'obligation', P: 'permission', F: 'prohibition' }[match[1] as 'O' | 'P' | 'F'] ??
+      'unknown',
     symbol: match[1],
   }));
   const logicalPart = deonticFormula.match(/[OPF]\((.+)\)$/)?.[1] ?? '';
@@ -169,15 +193,26 @@ export function parseDeonticToJson(deonticFormula: string): Record<string, unkno
 
 export function extractFolMetadata(formula: string): LogicFormatMetadata {
   const quantifierCount = [...formula.matchAll(/[∀∃]/g)].length;
-  const predicateArgs = [...formula.matchAll(/[A-Z][a-zA-Z]*\(([^)]+)\)/g)].map((match) => match[1]);
+  const predicateArgs = [...formula.matchAll(/[A-Z][a-zA-Z]*\(([^)]+)\)/g)].map(
+    (match) => match[1],
+  );
   const operatorCount = [...formula.matchAll(/[∧∨→↔¬]/g)].length;
+  const variables = [...new Set([...formula.matchAll(/\b([a-z])\b/g)].map((match) => match[1]))];
+  const predicateNames = [
+    ...new Set([...formula.matchAll(/\b([A-Z][a-zA-Z]*)\(/g)].map((match) => match[1])),
+  ];
   const totalComplexity = quantifierCount + predicateArgs.length + operatorCount;
   return {
     complexity: totalComplexity > 10 ? 'complex' : totalComplexity > 5 ? 'moderate' : 'simple',
     quantifier_count: quantifierCount,
     predicate_count: predicateArgs.length,
     operator_count: operatorCount,
-    max_arity: predicateArgs.length > 0 ? Math.max(...predicateArgs.map((args) => args.split(',').length)) : 0,
+    max_arity:
+      predicateArgs.length > 0
+        ? Math.max(...predicateArgs.map((args) => args.split(',').length))
+        : 0,
+    variables,
+    predicate_names: predicateNames,
   };
 }
 
@@ -193,8 +228,15 @@ export function getTimestamp(): string {
   return new Date().toISOString();
 }
 
-export function formatTextOutput(formulas: Array<Record<string, unknown>>, summary: Record<string, unknown>): string {
-  const lines = ['Logic Conversion Results', '==============================', `Total formulas: ${formulas.length}`];
+export function formatTextOutput(
+  formulas: Array<Record<string, unknown>>,
+  summary: Record<string, unknown>,
+): string {
+  const lines = [
+    'Logic Conversion Results',
+    '==============================',
+    `Total formulas: ${formulas.length}`,
+  ];
   const conversionRate = typeof summary.conversion_rate === 'number' ? summary.conversion_rate : 0;
   lines.push(`Conversion rate: ${(conversionRate * 100).toFixed(2)}%`, '');
   formulas.forEach((formula, index) => {
@@ -203,4 +245,81 @@ export function formatTextOutput(formulas: Array<Record<string, unknown>>, summa
     lines.push(`  Logic: ${String(formula.fol_formula ?? formula.deontic_formula ?? '')}`, '');
   });
   return lines.join('\n');
+}
+
+export function formatXmlOutput(
+  formulas: Array<Record<string, unknown>>,
+  summary: Record<string, unknown>,
+): string {
+  const formulaXml = formulas.map((formula, index) => {
+    const original = escapeXml(String(formula.original_text ?? ''));
+    const logic = escapeXml(String(formula.fol_formula ?? formula.deontic_formula ?? ''));
+    return [
+      `  <formula index="${index + 1}">`,
+      `    <original>${original}</original>`,
+      `    <logic>${logic}</logic>`,
+      '  </formula>',
+    ].join('\n');
+  });
+  const summaryXml = Object.entries(summary).map(
+    ([key, value]) => `    <${key}>${escapeXml(String(value))}</${key}>`,
+  );
+  return [
+    '<logic_conversion_results>',
+    '  <status>success</status>',
+    '  <summary>',
+    ...summaryXml,
+    '  </summary>',
+    '  <formulas>',
+    ...formulaXml,
+    '  </formulas>',
+    '</logic_conversion_results>',
+  ].join('\n');
+}
+
+function formatFolXml(formula: string, metadata: LogicFormatMetadata): string {
+  return [
+    '<fol_formula>',
+    `  <formula>${escapeXml(formula)}</formula>`,
+    `  <complexity>${metadata.complexity}</complexity>`,
+    `  <predicate_count>${metadata.predicate_count}</predicate_count>`,
+    '</fol_formula>',
+  ].join('\n');
+}
+
+function formatDeonticXml(
+  formula: string,
+  normType: string,
+  metadata: LogicFormatMetadata,
+): string {
+  return [
+    '<deontic_formula>',
+    `  <norm_type>${escapeXml(normType)}</norm_type>`,
+    `  <formula>${escapeXml(formula)}</formula>`,
+    `  <complexity>${metadata.complexity}</complexity>`,
+    '</deontic_formula>',
+  ].join('\n');
+}
+
+function formatPrologArgs(
+  args: string,
+  quantifiedVariable: string,
+  replacement = quantifiedVariable.toUpperCase(),
+): string {
+  return args
+    .split(',')
+    .map((arg) => {
+      const trimmed = arg.trim();
+      return trimmed === quantifiedVariable ? replacement : trimmed.toUpperCase();
+    })
+    .join(', ');
+}
+
+function escapeXml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
 }
