@@ -36,8 +36,53 @@ export interface FolConstructorIoResult {
   metadata: FolConstructorIoMetadata;
 }
 
+export interface InteractiveFolConstructorMetadata {
+  sourcePythonModule: 'logic/integration/interactive/interactive_fol_constructor.py';
+  browserNative: true;
+  serverCallsAllowed: false;
+  pythonRuntime: false;
+  runtimeDependencies: Array<string>;
+}
+
+export type InteractiveFolQuestionReason =
+  | 'empty_input'
+  | 'invalid_formula'
+  | 'missing_quantifier'
+  | 'missing_relation';
+
+export interface InteractiveFolQuestion {
+  id: string;
+  reason: InteractiveFolQuestionReason;
+}
+export interface InteractiveFolSymbol {
+  name: string;
+  kind: 'predicate' | 'variable';
+}
+export interface InteractiveFolConstructionOptions {
+  sessionId?: string;
+  role?: FolConstructorPrompt['role'];
+}
+
+export interface InteractiveFolConstructionResult {
+  ok: boolean;
+  session: FolConstructorSession;
+  formula: string;
+  questions: Array<InteractiveFolQuestion>;
+  symbols: Array<InteractiveFolSymbol>;
+  errors: Array<string>;
+  metadata: InteractiveFolConstructorMetadata;
+}
+
 export const FOL_CONSTRUCTOR_IO_METADATA: FolConstructorIoMetadata = {
   sourcePythonModule: 'logic/integration/interactive/_fol_constructor_io.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntime: false,
+  runtimeDependencies: [],
+};
+
+export const INTERACTIVE_FOL_CONSTRUCTOR_METADATA: InteractiveFolConstructorMetadata = {
+  sourcePythonModule: 'logic/integration/interactive/interactive_fol_constructor.py',
   browserNative: true,
   serverCallsAllowed: false,
   pythonRuntime: false,
@@ -126,8 +171,64 @@ export function createBrowserNativeFolConstructorIo(): BrowserNativeFolConstruct
   return new BrowserNativeFolConstructorIo();
 }
 
+export class BrowserNativeInteractiveFolConstructor {
+  readonly metadata = INTERACTIVE_FOL_CONSTRUCTOR_METADATA;
+  private readonly io: BrowserNativeFolConstructorIo;
+
+  constructor(io = createBrowserNativeFolConstructorIo()) {
+    this.io = io;
+  }
+
+  construct(
+    text: string,
+    options: InteractiveFolConstructionOptions = {},
+  ): InteractiveFolConstructionResult {
+    const session = this.io.createSession(options.sessionId ?? 'browser-native-interactive-fol');
+    return this.continueSession(session, text, options);
+  }
+
+  continueSession(
+    session: FolConstructorSession,
+    text: string,
+    options: InteractiveFolConstructionOptions = {},
+  ): InteractiveFolConstructionResult {
+    const ioResult = this.io.appendPrompt(session, text, options.role ?? 'user');
+    return this.fromIoResult(text, ioResult);
+  }
+
+  private fromIoResult(
+    sourceText: string,
+    ioResult: FolConstructorIoResult,
+  ): InteractiveFolConstructionResult {
+    const parsed = parseFolUtilityText(sourceText, { failOnInvalid: true });
+    const questions = buildInteractiveQuestions(
+      sourceText,
+      parsed,
+      ioResult.formula,
+      ioResult.errors,
+    );
+    const errors = [...ioResult.errors];
+    return {
+      ok: errors.length === 0 && questions.every((question) => question.reason !== 'empty_input'),
+      session: ioResult.session,
+      formula: ioResult.formula,
+      questions,
+      symbols: extractFormulaSymbols(ioResult.formula),
+      errors,
+      metadata: this.metadata,
+    };
+  }
+}
+
+export function createBrowserNativeInteractiveFolConstructor(): BrowserNativeInteractiveFolConstructor {
+  return new BrowserNativeInteractiveFolConstructor();
+}
+
 export const create_browser_native_fol_constructor_io = createBrowserNativeFolConstructorIo;
 export const fol_constructor_io_metadata = FOL_CONSTRUCTOR_IO_METADATA;
+export const create_browser_native_interactive_fol_constructor =
+  createBrowserNativeInteractiveFolConstructor;
+export const interactive_fol_constructor_metadata = INTERACTIVE_FOL_CONSTRUCTOR_METADATA;
 
 function promptId(content: string): string {
   const normalized = content
@@ -145,4 +246,53 @@ function isTurn(value: unknown): value is FolConstructorTurn {
     typeof turn.valid === 'boolean' &&
     Array.isArray(turn.warnings)
   );
+}
+
+function buildInteractiveQuestions(
+  text: string,
+  parsed: ReturnType<typeof parseFolUtilityText>,
+  formula: string,
+  errors: Array<string>,
+): Array<InteractiveFolQuestion> {
+  if (!text.trim()) {
+    return [
+      {
+        id: 'question-empty-input',
+        reason: 'empty_input',
+      },
+    ];
+  }
+  if (errors.length > 0 || !parsed.validation.valid) {
+    return [
+      {
+        id: 'question-invalid-formula',
+        reason: 'invalid_formula',
+      },
+    ];
+  }
+  const questions: Array<InteractiveFolQuestion> = [];
+  if (parsed.quantifiers.length === 0 && !/[∀∃]/.test(formula)) {
+    questions.push({
+      id: 'question-missing-quantifier',
+      reason: 'missing_quantifier',
+    });
+  }
+  if (parsed.operators.length === 0 && parsed.clauses.length <= 1) {
+    questions.push({
+      id: 'question-missing-relation',
+      reason: 'missing_relation',
+    });
+  }
+  return questions;
+}
+
+function extractFormulaSymbols(formula: string): Array<InteractiveFolSymbol> {
+  const symbols = new Map<string, InteractiveFolSymbol>();
+  for (const match of formula.matchAll(/\b([A-Z][A-Za-z0-9_]*)\s*\(/g)) {
+    symbols.set(`predicate:${match[1]}`, { name: match[1], kind: 'predicate' });
+  }
+  for (const match of formula.matchAll(/[∀∃]([a-z][A-Za-z0-9_]*)/g)) {
+    symbols.set(`variable:${match[1]}`, { name: match[1], kind: 'variable' });
+  }
+  return [...symbols.values()];
 }

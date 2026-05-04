@@ -1,6 +1,9 @@
 import {
   FOL_CONSTRUCTOR_IO_METADATA,
+  INTERACTIVE_FOL_CONSTRUCTOR_METADATA,
   createBrowserNativeFolConstructorIo,
+  createBrowserNativeInteractiveFolConstructor,
+  create_browser_native_interactive_fol_constructor,
   create_browser_native_fol_constructor_io,
 } from './folConstructorIo';
 
@@ -53,6 +56,49 @@ describe('BrowserNativeFolConstructorIo', () => {
     });
     expect(io.appendPrompt(restored.session, '   ')).toMatchObject({
       ok: false,
+      errors: ['empty_prompt'],
+    });
+  });
+});
+
+describe('BrowserNativeInteractiveFolConstructor', () => {
+  it('ports interactive_fol_constructor.py as a browser-native construction facade', () => {
+    const constructor = createBrowserNativeInteractiveFolConstructor();
+    const result = constructor.construct('All permits are approvals. No approval is expired.', {
+      sessionId: 'interactive-case-1',
+    });
+
+    expect(constructor.metadata).toBe(INTERACTIVE_FOL_CONSTRUCTOR_METADATA);
+    expect(result).toMatchObject({
+      ok: true,
+      formula: '(∀x (Permits(x) → Approvals(x))) ∧ (∀x (Approval(x) → ¬Expired(x)))',
+      questions: [],
+    });
+    expect(result.symbols).toContainEqual({ name: 'x', kind: 'variable' });
+  });
+
+  it('continues sessions and asks deterministic clarification questions fail-closed', () => {
+    const constructor = create_browser_native_interactive_fol_constructor();
+    const first = constructor.construct('Tenant provides notice');
+    const next = constructor.continueSession(first.session, 'If tenant then resident');
+
+    expect(first).toMatchObject({
+      ok: true,
+      formula: '(Notice(x))',
+      questions: [
+        { id: 'question-missing-quantifier', reason: 'missing_quantifier' },
+        { id: 'question-missing-relation', reason: 'missing_relation' },
+      ],
+    });
+    expect(next.session.prompts).toHaveLength(2);
+    expect(next).toMatchObject({
+      ok: true,
+      formula: '(∀x (Tenant(x) → Resident(x)))',
+      questions: [],
+    });
+    expect(constructor.construct('   ')).toMatchObject({
+      ok: false,
+      questions: [{ id: 'question-empty-input', reason: 'empty_input' }],
       errors: ['empty_prompt'],
     });
   });
