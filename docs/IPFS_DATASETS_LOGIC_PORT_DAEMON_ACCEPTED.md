@@ -344,3 +344,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T021854Z-ported-the-remaining-dcec-nl_converter-grammar-surface-to-a-browser-native-types.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T021854Z-ported-the-remaining-dcec-nl_converter-grammar-surface-to-a-browser-native-types.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T021854Z-ported-the-remaining-dcec-nl_converter-grammar-surface-to-a-browser-native-types.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 02:23:37 UTC
+
+- Target: `Task checkbox-227: Port remaining Python logic module `logic/CEC/native/problem_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the CEC native problem parser slice for typed TPTP formulas and browser-native include directive metadata.
+- Impact: The TypeScript CEC problem parser now recognizes fof, cnf, tff, and thf TPTP records, preserves type declarations separately from assumptions and goals, and records include selections without attempting filesystem, server, subprocess, or Python fallback resolution. The existing Jest parser validation directly exercises the new browser-native behavior.
+- Changed files: `src/lib/logic/cec/problemParser.test.ts`, `src/lib/logic/cec/problemParser.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T022337Z-ported-the-cec-native-problem-parser-slice-for-typed-tptp-formulas-and-browser-n.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T022337Z-ported-the-cec-native-problem-parser-slice-for-typed-tptp-formulas-and-browser-n.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T022337Z-ported-the-cec-native-problem-parser-slice-for-typed-tptp-formulas-and-browser-n.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

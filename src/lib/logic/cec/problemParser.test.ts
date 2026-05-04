@@ -31,7 +31,12 @@ describe('CEC problem parser', () => {
         totalFormulas: 4,
       },
     });
-    expect(parser.formulas.map((formula) => formula.name)).toEqual(['ax1', 'h1', 'goal', 'neg_goal']);
+    expect(parser.formulas.map((formula) => formula.name)).toEqual([
+      'ax1',
+      'h1',
+      'goal',
+      'neg_goal',
+    ]);
   });
 
   it('keeps nested TPTP formulas and annotations intact', () => {
@@ -42,12 +47,42 @@ describe('CEC problem parser', () => {
 
     expect(problem.assumptions).toEqual(['(![X] : (human(X) => mortal(X)))']);
     expect(problem.goals).toEqual(['mortal(socrates)']);
-    expect((problem.metadata?.formulas as Array<{ annotations?: string }>)[0].annotations)
-      .toBe("file('source.p', nested)");
+    expect((problem.metadata?.formulas as Array<{ annotations?: string }>)[0].annotations).toBe(
+      "file('source.p', nested)",
+    );
+  });
+
+  it('parses typed TPTP formulas and include selections without filesystem fallback', () => {
+    const parser = new CecTptpParser();
+    const problem = parser.parseString(
+      `
+      include('Axioms/Modal.ax', [mvalid, mbox]).
+      tff(person_type, type, person: $tType).
+      tff(alice_type, type, alice: person).
+      tff(ax, axiom, ! [X: person] : (human(X) => mortal(X))).
+      thf(goal, conjecture, (mortal @ alice)).
+    `,
+      'typed-tptp',
+    );
+
+    expect(detectProblemFormat('tff(person_type, type, person: $tType).')).toBe('tptp');
+    expect(problem.assumptions).toEqual(['! [X: person] : (human(X) => mortal(X))']);
+    expect(problem.goals).toEqual(['(mortal @ alice)']);
+    expect(problem.metadata).toMatchObject({
+      includes: ['Axioms/Modal.ax'],
+      includeDirectives: [{ path: 'Axioms/Modal.ax', selections: ['mvalid', 'mbox'] }],
+      includeResolution: 'browser-native-metadata-only',
+      totalFormulas: 4,
+    });
+    expect(problem.metadata?.declarations as Array<{ name: string; formula: string }>).toEqual([
+      { kind: 'tff', name: 'person_type', role: 'type', formula: 'person: $tType' },
+      { kind: 'tff', name: 'alice_type', role: 'type', formula: 'alice: person' },
+    ]);
   });
 
   it('parses custom ShadowProver problem format with logic sections', () => {
-    const problem = parseCecProblemString(`
+    const problem = parseCecProblemString(
+      `
       # browser-native custom format
       LOGIC: S4
 
@@ -57,7 +92,9 @@ describe('CEC problem parser', () => {
 
       GOALS:
       (always (q))
-    `, 'custom');
+    `,
+      'custom',
+    );
 
     expect(problem).toEqual({
       name: 'custom_problem',
@@ -81,7 +118,14 @@ describe('CEC problem parser', () => {
   });
 
   it('reports malformed TPTP formulas with parser-specific errors', () => {
-    expect(() => parseCecProblemString('fof(ax, axiom, (p => q).', 'tptp')).toThrow(CecProblemParseError);
-    expect(() => parseCecProblemString('fof(ax, axiom).', 'tptp')).toThrow('requires name, role, and formula');
+    expect(() => parseCecProblemString('fof(ax, axiom, (p => q).', 'tptp')).toThrow(
+      CecProblemParseError,
+    );
+    expect(() => parseCecProblemString('fof(ax, axiom).', 'tptp')).toThrow(
+      'requires name, role, and formula',
+    );
+    expect(() => parseCecProblemString("include('Axioms/SET001.ax', ax).", 'tptp')).toThrow(
+      'include selections must be a list',
+    );
   });
 });

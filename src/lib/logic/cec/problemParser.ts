@@ -7,7 +7,12 @@ export interface CecTptpFormula {
   role: string;
   formula: string;
   annotations?: string;
-  kind: 'fof' | 'cnf';
+  kind: 'fof' | 'cnf' | 'tff' | 'thf';
+}
+
+export interface CecTptpInclude {
+  path: string;
+  selections: string[];
 }
 
 export interface CecProblemParseOptions {
@@ -28,16 +33,20 @@ export class CecProblemParseError extends Error {
 export class CecTptpParser {
   formulas: CecTptpFormula[] = [];
   includes: string[] = [];
+  includeDirectives: CecTptpInclude[] = [];
 
   parseString(content: string, name = 'tptp_problem'): CecShadowProblemFile {
     this.formulas = [];
     this.includes = [];
+    this.includeDirectives = [];
     const source = stripTptpComments(content);
-    this.includes = parseIncludes(source);
+    this.includeDirectives = parseIncludes(source);
+    this.includes = this.includeDirectives.map((include) => include.path);
     this.formulas = parseTptpFormulas(source);
 
     const assumptions: string[] = [];
     const goals: string[] = [];
+    const declarations: CecTptpFormula[] = [];
     for (const formula of this.formulas) {
       const role = classifyProblemRole(formula.role);
       if (role === 'assumption') {
@@ -46,6 +55,8 @@ export class CecTptpParser {
         goals.push(formula.formula);
       } else if (role === 'negated_goal') {
         goals.push(`not(${formula.formula})`);
+      } else if (formula.role === 'type') {
+        declarations.push(formula);
       }
     }
 
@@ -57,8 +68,11 @@ export class CecTptpParser {
       metadata: {
         format: 'tptp',
         includes: [...this.includes],
+        includeDirectives: this.includeDirectives.map((include) => ({ ...include })),
         totalFormulas: this.formulas.length,
+        declarations: declarations.map((formula) => ({ ...formula })),
         formulas: this.formulas.map((formula) => ({ ...formula })),
+        includeResolution: 'browser-native-metadata-only',
       },
     };
   }
@@ -148,7 +162,7 @@ export function parseCecProblemString(
 }
 
 export function detectProblemFormat(content: string): CecProblemFormat {
-  return /\b(?:fof|cnf)\s*\(/i.test(content) ? 'tptp' : 'custom';
+  return /\b(?:fof|cnf|tff|thf)\s*\(/i.test(content) ? 'tptp' : 'custom';
 }
 
 function parseProblemLogic(logic: string): CecShadowModalLogic {
@@ -202,18 +216,38 @@ function stripTptpComments(content: string): string {
     .join('\n');
 }
 
-function parseIncludes(source: string): string[] {
-  const includes: string[] = [];
-  const includePattern = /include\s*\(\s*["']([^"']+)["']\s*\)/gi;
+function parseIncludes(source: string): CecTptpInclude[] {
+  const includes: CecTptpInclude[] = [];
+  const includePattern = /\binclude\s*\(/gi;
   for (const match of source.matchAll(includePattern)) {
-    includes.push(match[1]);
+    const openParenIndex = source.indexOf('(', match.index);
+    const closeParenIndex = findMatchingParen(source, openParenIndex);
+    if (closeParenIndex === -1) {
+      throw new CecProblemParseError('Unclosed TPTP include directive', {
+        source,
+        offset: match.index,
+        expected: 'matching closing parenthesis',
+      });
+    }
+    const args = splitTopLevel(source.slice(openParenIndex + 1, closeParenIndex), ',');
+    if (args.length < 1 || args.length > 2) {
+      throw new CecProblemParseError('TPTP include requires a path and optional selection list', {
+        source,
+        offset: match.index,
+        expected: "include('path', [name]).",
+      });
+    }
+    includes.push({
+      path: unquote(args[0].trim()),
+      selections: args.length === 2 ? parseIncludeSelections(args[1]) : [],
+    });
   }
   return includes;
 }
 
 function parseTptpFormulas(source: string): CecTptpFormula[] {
   const formulas: CecTptpFormula[] = [];
-  const startPattern = /\b(fof|cnf)\s*\(/gi;
+  const startPattern = /\b(fof|cnf|tff|thf)\s*\(/gi;
   for (const match of source.matchAll(startPattern)) {
     const kind = match[1].toLowerCase() as CecTptpFormula['kind'];
     const openParenIndex = source.indexOf('(', match.index);
@@ -251,6 +285,19 @@ function parseTptpFormulas(source: string): CecTptpFormula[] {
     });
   }
   return formulas;
+}
+
+function parseIncludeSelections(selectionSource: string): string[] {
+  const trimmed = selectionSource.trim();
+  if (!trimmed.startsWith('[') || !trimmed.endsWith(']')) {
+    throw new CecProblemParseError('TPTP include selections must be a list', {
+      source: selectionSource,
+      expected: '[formula_name, ...]',
+    });
+  }
+  const body = trimmed.slice(1, -1).trim();
+  if (!body) return [];
+  return splitTopLevel(body, ',').map((selection) => unquote(selection.trim()));
 }
 
 function findMatchingParen(source: string, openIndex: number): number {
