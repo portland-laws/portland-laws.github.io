@@ -794,3 +794,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T062129Z-completed-the-tdfol-performance_dashboard.py-browser-native-parity-slice-with-py.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T062129Z-completed-the-tdfol-performance_dashboard.py-browser-native-parity-slice-with-py.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T062129Z-completed-the-tdfol-performance_dashboard.py-browser-native-parity-slice-with-py.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 06:25:52 UTC
+
+- Target: `Task checkbox-278: Port remaining Python logic module `logic/TDFOL/performance_metrics.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the remaining TDFOL performance_metrics surface with browser-native collector options, async timing, sampled memory metrics, Python-compatible aliases, and metadata.
+- Impact: src/lib/logic/tdfol/performanceMetrics.ts now exposes the local TypeScript implementation for logic/TDFOL/performance_metrics.py without server or Python runtime fallback, and src/lib/logic/tdfol/performanceMetrics.test.ts validates deterministic timing, memory sampling, exports, aliases, and fail-closed browser-native metadata.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/performanceMetrics.test.ts`, `src/lib/logic/tdfol/performanceMetrics.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T062552Z-ported-the-remaining-tdfol-performance_metrics-surface-with-browser-native-colle.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T062552Z-ported-the-remaining-tdfol-performance_metrics-surface-with-browser-native-colle.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T062552Z-ported-the-remaining-tdfol-performance_metrics-surface-with-browser-native-colle.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
