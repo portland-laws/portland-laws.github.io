@@ -1487,3 +1487,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T114920Z-added-a-browser-native-root-integration-deontic-logic-converter-facade-for-logic.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T114920Z-added-a-browser-native-root-integration-deontic-logic-converter-facade-for-logic.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T114920Z-added-a-browser-native-root-integration-deontic-logic-converter-facade-for-logic.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 11:51:47 UTC
+
+- Target: `Task checkbox-356: Port remaining Python logic module `logic/integration/deontic_logic_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the root integration deontic_logic_core.py facade to browser-native TypeScript.
+- Impact: Adds a root integration deontic logic core facade that reuses the existing browser-native deterministic deontic core, exposes Python-style root aliases, preserves fail-closed validation, and is exercised by focused Jest coverage with no server or Python runtime dependency.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/converters/deonticLogicConverter.test.ts`, `src/lib/logic/integration/deonticLogicCore.ts`, `src/lib/logic/integration/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T115147Z-ported-the-root-integration-deontic_logic_core.py-facade-to-browser-native-types.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T115147Z-ported-the-root-integration-deontic_logic_core.py-facade-to-browser-native-types.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T115147Z-ported-the-root-integration-deontic_logic_core.py-facade-to-browser-native-types.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
