@@ -1,5 +1,9 @@
 import { BrowserNativeLogicBridge, createBrowserNativeLogicBridge } from './bridge';
 import {
+  createBrowserNativeCvc5ProverBridge,
+  type BrowserNativeCvc5ProofResult,
+} from './cvc5ProverBridge';
+import {
   createBrowserNativeLeanProverBridge,
   type BrowserNativeLeanProofResult,
 } from './leanProverBridge';
@@ -246,6 +250,40 @@ describe('BrowserNativeLogicBridge', () => {
     expect(result.eProver.tptpProblem).toContain(
       'fof(tdfol_conjecture, conjecture, resident(ada)).',
     );
+  });
+
+  it('ports the CVC5 prover bridge as browser-native SMT-LIB compatibility metadata', () => {
+    const adapter = createBrowserNativeCvc5ProverBridge();
+    const result = adapter.prove({
+      logic: 'tdfol',
+      theorem: 'Resident(Ada)',
+      axioms: ['Resident(Ada)'],
+    }) as BrowserNativeCvc5ProofResult;
+
+    expect(adapter.metadata).toMatchObject({
+      logic: 'tdfol',
+      name: 'browser-native-cvc5-prover-bridge',
+      runtime: 'typescript-wasm-browser',
+      requiresExternalProver: false,
+    });
+    expect(result).toMatchObject({
+      status: 'proved',
+      theorem: 'Resident(Ada)',
+      method: 'cvc5-compatible:tdfol-forward-chaining',
+    });
+    expect(result.cvc5).toMatchObject({
+      sourcePythonModule: 'logic/external_provers/smt/cvc5_prover_bridge.py',
+      externalBinaryAllowed: false,
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      command: null,
+      checkSatStatus: 'unsat',
+      isValid: true,
+      isUnsat: true,
+    });
+    expect(result.cvc5.smtLib).toContain('(assert (Resident Ada))');
+    expect(result.cvc5.smtLib).toContain('(assert (not (Resident Ada)))');
+    expect(result.cvc5.smtLib).toContain('(check-sat)');
   });
 
   it('can expose the E prover compatibility adapter through the local router without server calls', () => {
