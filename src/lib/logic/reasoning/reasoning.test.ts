@@ -3,8 +3,10 @@ import { createImplication, runForwardChaining } from './forwardChaining';
 import { createLogicKnowledgeBase, makeFact } from './knowledgeBase';
 import {
   DEONTIC_CONFLICT_MIXIN_METADATA,
+  DEONTOLOGICAL_REASONING_METADATA,
   detectDeonticConflictMixinConflicts,
   detectNormConflicts,
+  reasonDeontologically,
 } from './normConflicts';
 import { describeTemporalSummary, summarizeTemporalOperators } from './temporal';
 
@@ -140,6 +142,55 @@ describe('lightweight reasoning', () => {
     ]);
 
     expect(conflicts).toEqual([]);
+  });
+
+  it('ports deontological reasoning violations, conditions, and conflicts locally', () => {
+    const result = reasonDeontologically(
+      [
+        { id: 'duty-pay', actor: 'Tenant', action: 'Pay rent', normOperator: 'O' },
+        { id: 'ban-lock', actor: 'Tenant', action: 'Change locks', modality: 'prohibition' },
+        {
+          id: 'inspect',
+          actor: 'tenant',
+          action: 'inspect records',
+          modality: 'permission',
+          condition: 'audit pending',
+        },
+        {
+          id: 'inspect-ban',
+          actor: 'tenant',
+          action: 'inspect records',
+          normOperator: 'F',
+          condition: 'audit pending',
+          exceptions: ['court order'],
+        },
+      ],
+      {
+        actor: 'tenant',
+        performedActions: ['change locks'],
+        facts: { 'audit pending': true },
+      },
+    );
+
+    expect(DEONTOLOGICAL_REASONING_METADATA).toEqual({
+      sourcePythonModule: 'logic/integration/reasoning/deontological_reasoning.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+    });
+    expect(result.verdict).toBe('conflict');
+    expect(result.violations.map((violation) => violation.violationType)).toEqual([
+      'missing_obligation',
+      'forbidden_action',
+    ]);
+    expect(result.conflicts).toMatchObject([
+      {
+        conflictType: 'permission_prohibition',
+        severity: 'medium',
+        conditionRelationship: 'same',
+        sourceIds: ['inspect', 'inspect-ban'],
+      },
+    ]);
   });
 
   it('summarizes temporal operators from TDFOL formulas', () => {

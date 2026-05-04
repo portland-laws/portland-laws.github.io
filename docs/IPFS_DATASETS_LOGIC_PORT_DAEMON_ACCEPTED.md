@@ -1730,3 +1730,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T134205Z-ported-reasoning-prover-backend-mixin-discovery-and-selection-into-the-browser-n.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T134205Z-ported-reasoning-prover-backend-mixin-discovery-and-selection-into-the-browser-n.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T134205Z-ported-reasoning-prover-backend-mixin-discovery-and-selection-into-the-browser-n.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 13:47:16 UTC
+
+- Target: `Task checkbox-383: Port remaining Python logic module `logic/integration/reasoning/deontological_reasoning.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported a browser-native deontological reasoning slice for integration reasoning norms.
+- Impact: The existing reasoning module now exposes local norm applicability, violation, and conflict reasoning, with Jest coverage validating deterministic behavior and explicit no-server/no-Python metadata.
+- Changed files: `src/lib/logic/reasoning/normConflicts.ts`, `src/lib/logic/reasoning/reasoning.test.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T134716Z-ported-a-browser-native-deontological-reasoning-slice-for-integration-reasoning-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T134716Z-ported-a-browser-native-deontological-reasoning-slice-for-integration-reasoning-.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T134716Z-ported-a-browser-native-deontological-reasoning-slice-for-integration-reasoning-.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

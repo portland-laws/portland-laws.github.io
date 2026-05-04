@@ -123,6 +123,72 @@ export function detectDeonticConflictMixinConflicts(
 
 export const detect_deontic_conflict_mixin_conflicts = detectDeonticConflictMixinConflicts;
 
+export const DEONTOLOGICAL_REASONING_METADATA = {
+  sourcePythonModule: 'logic/integration/reasoning/deontological_reasoning.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+} as const;
+export type DeontologicalVerdict = 'compliant' | 'violation' | 'conflict' | 'permitted' | 'unknown';
+
+export interface DeontologicalNorm extends DeonticConflictClause {
+  validFrom?: Date | string;
+  validUntil?: Date | string;
+}
+
+export interface DeontologicalReasoningQuery {
+  actor?: string;
+  action?: string;
+  performedActions?: string[];
+  facts?: Record<string, boolean>;
+  atTime?: Date | string;
+}
+
+export interface DeontologicalViolation {
+  normId: string;
+  violationType: 'missing_obligation' | 'forbidden_action';
+  actor: string;
+  action: string;
+  message: string;
+}
+
+export interface DeontologicalReasoningResult {
+  verdict: DeontologicalVerdict;
+  applicableNorms: DeontologicalNorm[];
+  violations: DeontologicalViolation[];
+  conflicts: DeonticConflictMixinConflict[];
+  trace: string[];
+}
+
+interface NormalizedReasoningNorm extends NormalizedDeonticClause {
+  original: DeontologicalNorm;
+  operator: 'O' | 'P' | 'F';
+}
+
+export function reasonDeontologically(
+  norms: DeontologicalNorm[],
+  query: DeontologicalReasoningQuery = {},
+): DeontologicalReasoningResult {
+  const performed = new Set((query.performedActions || []).map(normalizeText));
+  const applicable = norms
+    .map(normalizeClause)
+    .filter(isReasoningNorm)
+    .filter((norm) => reasoningNormApplies(norm, query));
+  const conflicts = detectDeonticConflictMixinConflicts(applicable.map((norm) => norm.original));
+  const violations = applicable.flatMap((norm) => detectDeontologicalViolation(norm, performed));
+  return {
+    verdict: chooseDeontologicalVerdict(applicable, violations, conflicts),
+    applicableNorms: applicable.map((norm) => norm.original),
+    violations,
+    conflicts,
+    trace: applicable.map(
+      (norm) => `${norm.operator}:${norm.actor}:${norm.action}:${norm.sourceId}`,
+    ),
+  };
+}
+
+export const reason_deontologically = reasonDeontologically;
+
 function normalizeClause(clause: DeonticConflictClause): NormalizedDeonticClause {
   const actor = normalizeText(clause.actor || clause.subject || 'agent');
   const action = normalizeText(clause.action);
@@ -137,6 +203,74 @@ function normalizeClause(clause: DeonticConflictClause): NormalizedDeonticClause
     exceptions,
     operator: normalizeOperator(clause.normOperator, clause.modality),
   };
+}
+
+function isReasoningNorm(clause: NormalizedDeonticClause): clause is NormalizedReasoningNorm {
+  return clause.operator !== null;
+}
+
+function reasoningNormApplies(
+  norm: NormalizedReasoningNorm,
+  query: DeontologicalReasoningQuery,
+): boolean {
+  const facts = query.facts || {};
+  if (query.actor !== undefined && norm.actor !== normalizeText(query.actor)) return false;
+  if (query.action !== undefined && norm.action !== normalizeText(query.action)) return false;
+  if (!isReasoningNormWithinTime(norm.original, query.atTime)) return false;
+  if (!isConditionSatisfied(norm.condition, facts)) return false;
+  return !norm.exceptions.some((exception) => isConditionSatisfied(exception, facts));
+}
+
+function isReasoningNormWithinTime(norm: DeontologicalNorm, atTime?: Date | string): boolean {
+  if (atTime === undefined) return true;
+  const time = toTime(atTime);
+  const from = norm.validFrom === undefined ? null : toTime(norm.validFrom);
+  const until = norm.validUntil === undefined ? null : toTime(norm.validUntil);
+  return (from === null || time >= from) && (until === null || time <= until);
+}
+
+function isConditionSatisfied(condition: string, facts: Record<string, boolean>): boolean {
+  if (!condition) return true;
+  if (facts[condition] === true) return true;
+  return Object.keys(facts)
+    .filter((key) => facts[key] === true)
+    .map(normalizeText)
+    .some((fact) => fact === condition || fact.includes(condition) || condition.includes(fact));
+}
+
+function detectDeontologicalViolation(
+  norm: NormalizedReasoningNorm,
+  performed: Set<string>,
+): DeontologicalViolation[] {
+  const missing = norm.operator === 'O' && !performed.has(norm.action);
+  const forbidden = norm.operator === 'F' && performed.has(norm.action);
+  if (!missing && !forbidden) return [];
+  return [
+    {
+      normId: norm.sourceId,
+      violationType: missing ? 'missing_obligation' : 'forbidden_action',
+      actor: norm.actor,
+      action: norm.action,
+      message: missing
+        ? `${norm.actor} failed to perform obligatory action ${norm.action}.`
+        : `${norm.actor} performed prohibited action ${norm.action}.`,
+    },
+  ];
+}
+
+function chooseDeontologicalVerdict(
+  norms: NormalizedReasoningNorm[],
+  violations: DeontologicalViolation[],
+  conflicts: DeonticConflictMixinConflict[],
+): DeontologicalVerdict {
+  if (conflicts.length > 0) return 'conflict';
+  if (violations.length > 0) return 'violation';
+  if (norms.some((norm) => norm.operator === 'P')) return 'permitted';
+  return norms.length > 0 ? 'compliant' : 'unknown';
+}
+
+function toTime(value: Date | string): number {
+  return value instanceof Date ? value.getTime() : new Date(value).getTime();
 }
 
 function normalizeOperator(normOperator?: string, modality?: string): 'O' | 'P' | 'F' | null {
