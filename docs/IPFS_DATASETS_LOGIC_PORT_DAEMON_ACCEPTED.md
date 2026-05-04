@@ -1523,3 +1523,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T120612Z-ported-document-consistency-checking-as-a-browser-native-typescript-integration-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T120612Z-ported-document-consistency-checking-as-a-browser-native-typescript-integration-.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T120612Z-ported-document-consistency-checking-as-a-browser-native-typescript-integration-.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 12:11:18 UTC
+
+- Target: `Task checkbox-360: Port remaining Python logic module `logic/integration/domain/legal_domain_knowledge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported legal domain knowledge to deterministic browser-native TypeScript.
+- Impact: Adds a browser-native legal-domain taxonomy classifier with Python-style aliases, fail-closed validation, no server/Python runtime dependency, and focused Jest coverage used by the TypeScript logic validation suite.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/domain/legalDomainKnowledge.test.ts`, `src/lib/logic/integration/domain/legalDomainKnowledge.ts`, `src/lib/logic/integration/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T121118Z-ported-legal-domain-knowledge-to-deterministic-browser-native-typescript..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T121118Z-ported-legal-domain-knowledge-to-deterministic-browser-native-typescript..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T121118Z-ported-legal-domain-knowledge-to-deterministic-browser-native-typescript..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
