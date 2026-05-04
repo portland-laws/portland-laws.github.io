@@ -25,6 +25,7 @@ export * from './fluents';
 export * from './formatter';
 export * from './grammarEngine';
 export * from './inferenceRules';
+export * from './languageDetector';
 export * from './lemmaGeneration';
 export * from './modalTableaux';
 export * from './nativeTypes';

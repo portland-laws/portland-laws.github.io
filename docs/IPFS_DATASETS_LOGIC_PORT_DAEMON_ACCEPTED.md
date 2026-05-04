@@ -452,3 +452,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T035109Z-ported-grammar_nl_policy_compiler.py-as-a-browser-native-deterministic-cec-gramm.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T035109Z-ported-grammar_nl_policy_compiler.py-as-a-browser-native-deterministic-cec-gramm.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T035109Z-ported-grammar_nl_policy_compiler.py-as-a-browser-native-deterministic-cec-gramm.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 03:53:30 UTC
+
+- Target: `Task checkbox-240: Port remaining Python logic module `logic/CEC/nl/language_detector.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported CEC language_detector.py to a browser-native deterministic TypeScript detector.
+- Impact: Adds a reusable CEC language detector under src/lib/logic with Python-compatible aliases, explicit browser-native capability metadata, and focused Jest coverage in the existing validate:logic-port CEC NL test path. The port performs local keyword-profile scoring for English, Spanish, French, German, Portuguese, and fail-closed unknown inputs without server, Python, filesystem, subprocess, or RPC dependencies.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/index.ts`, `src/lib/logic/cec/languageDetector.ts`, `src/lib/logic/cec/nlConverter.test.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T035330Z-ported-cec-language_detector.py-to-a-browser-native-deterministic-typescript-det.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T035330Z-ported-cec-language_detector.py-to-a-browser-native-deterministic-typescript-det.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T035330Z-ported-cec-language_detector.py-to-a-browser-native-deterministic-typescript-det.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

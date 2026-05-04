@@ -16,6 +16,11 @@ import {
   parse_with_grammar,
   proveDcecFormula,
 } from './nlConverter';
+import {
+  CecLanguageDetector,
+  detect_language,
+  getCecLanguageDetectorCapabilities,
+} from './languageDetector';
 import { DcecNamespace } from './dcecNamespace';
 
 describe('DCEC natural language converter parity helpers', () => {
@@ -145,6 +150,31 @@ describe('DCEC natural language converter parity helpers', () => {
     expect(english.scores.en).toBeGreaterThan(english.scores.es);
     expect(spanish.language).toBe('es');
     expect(spanish.scores.es).toBeGreaterThan(spanish.scores.en);
+  });
+
+  it('ports language_detector.py as a browser-native deterministic detector', () => {
+    const detector = new CecLanguageDetector();
+    const english = detector.detect_language('The tenant shall maintain the policy.');
+    const portuguese = detect_language('O inquilino deve pagar a politica.');
+    const unknown = detector.detect('4815162342');
+
+    expect(getCecLanguageDetectorCapabilities()).toMatchObject({
+      browserNative: true,
+      pythonRuntime: false,
+      serverRuntime: false,
+      pythonModule: 'logic/CEC/nl/language_detector.py',
+    });
+    expect(english.language).toBe('en');
+    expect(english.browser_native).toBe(true);
+    expect(english.python_module).toBe('logic/CEC/nl/language_detector.py');
+    expect(portuguese.language).toBe('pt');
+    expect(portuguese.scores.pt).toBeGreaterThan(portuguese.scores.en);
+    expect(unknown).toMatchObject({
+      language: 'unknown',
+      confidence: 0,
+      matched_terms: [],
+      browser_native: true,
+    });
   });
 
   it('compiles English policy text to DCEC metadata without server fallbacks', () => {
