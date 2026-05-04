@@ -341,6 +341,127 @@ class SupervisorStaleStatusReplanningTest(unittest.TestCase):
         self.assertEqual("termination_storm", status["proposal"]["failure_kind"])
         self.assertEqual([], status["proposal"]["validation_results"])
 
+    def test_termination_storm_quarantines_open_generated_tasks_and_pauses_status(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+            daemon_dir = repo / "ppd" / "daemon"
+            daemon_dir.mkdir(parents=True)
+            open_one = (
+                "Add generated blocked-cascade daemon-repair coverage for tranche 50 item 2 proving "
+                "blocked PP&D work stays parked until a fresh daemon repair task validates."
+            )
+            open_two = (
+                "Add generated blocked-cascade daemon-repair coverage for tranche 50 item 3 proving "
+                "blocked PP&D work stays parked until a fresh daemon repair task validates."
+            )
+            parked = (
+                "Add generated blocked-cascade daemon-repair coverage for tranche 50 item 4 proving "
+                "blocked PP&D work stays parked until a fresh daemon repair task validates."
+            )
+            (daemon_dir / "task-board.md").write_text(
+                f"- [~] Task checkbox-443: {open_one}\n"
+                f"- [ ] Task checkbox-444: {open_two}\n"
+                f"- [!] Task checkbox-445: {parked}\n",
+                encoding="utf-8",
+            )
+            atomic_write_json(
+                daemon_dir / "status.json",
+                {
+                    "updated_at": "2026-05-04T00:00:00Z",
+                    "active_state": "calling_llm",
+                    "active_target_task": f"Task checkbox-443: {open_one}",
+                },
+            )
+            for _ in range(4):
+                append_jsonl(
+                    daemon_dir / "ppd-daemon.jsonl",
+                    {
+                        "stage": "before_validation",
+                        "diagnostic": {
+                            "failure_kind": "llm",
+                            "target_task": f"Task checkbox-443: {open_one}",
+                            "errors": ["llm_router child exited with code -15:"],
+                        },
+                    },
+                )
+
+            decision = supervisor.run_once(
+                SupervisorConfig(
+                    repo_root=repo,
+                    pid_file=Path("ppd/daemon/missing.pid"),
+                    apply=True,
+                    termination_storm_threshold=4,
+                )
+            )
+            final_board = (daemon_dir / "task-board.md").read_text(encoding="utf-8")
+            paused = json.loads((daemon_dir / "status.json").read_text(encoding="utf-8"))
+            breaker = json.loads((daemon_dir / "supervisor-circuit-breaker.json").read_text(encoding="utf-8"))
+
+        self.assertEqual("enter_termination_storm_circuit_breaker", decision.action)
+        self.assertIn("- [!] Task checkbox-443", final_board)
+        self.assertIn("- [!] Task checkbox-444", final_board)
+        self.assertIn("Built-In Generated Blocked-Cascade Quarantine Notes", final_board)
+        self.assertEqual("paused_by_supervisor_circuit_breaker", paused["active_state"])
+        self.assertEqual(["checkbox-443", "checkbox-444"], breaker["quarantinedGeneratedTaskLabels"])
+
+    def test_active_circuit_breaker_observes_without_rewriting(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+            daemon_dir = repo / "ppd" / "daemon"
+            daemon_dir.mkdir(parents=True)
+            now = datetime(2026, 5, 4, 12, 0, tzinfo=timezone.utc)
+            (daemon_dir / "task-board.md").write_text("- [!] Task checkbox-430: Parked.\n", encoding="utf-8")
+            atomic_write_json(
+                daemon_dir / "status.json",
+                {
+                    "updated_at": now.isoformat().replace("+00:00", "Z"),
+                    "active_state": "paused_by_supervisor_circuit_breaker",
+                },
+            )
+            atomic_write_json(
+                daemon_dir / "supervisor-circuit-breaker.json",
+                {
+                    "schemaVersion": 1,
+                    "createdAt": now.isoformat().replace("+00:00", "Z"),
+                    "repairKind": "termination_storm_circuit_breaker",
+                },
+            )
+
+            decision = diagnose(
+                SupervisorConfig(
+                    repo_root=repo,
+                    pid_file=Path("ppd/daemon/missing.pid"),
+                    termination_storm_backoff_seconds=900,
+                ),
+                now=now,
+            )
+
+        self.assertEqual("observe_circuit_breaker", decision.action)
+        self.assertFalse(decision.should_restart_daemon)
+
+    def test_generated_blocked_cascade_budget_exhaustion_trips_breaker_without_more_tasks(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+            daemon_dir = repo / "ppd" / "daemon"
+            daemon_dir.mkdir(parents=True)
+            lines = []
+            for offset in range(supervisor.MAX_GENERATED_BLOCKED_CASCADE_TASKS):
+                lines.append(
+                    "- [!] Task checkbox-"
+                    f"{300 + offset}: Add generated blocked-cascade daemon-repair coverage for tranche "
+                    f"{offset + 1} item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates."
+                )
+            board = "\n".join(lines) + "\n"
+            (daemon_dir / "task-board.md").write_text(board, encoding="utf-8")
+
+            decision = diagnose(SupervisorConfig(repo_root=repo, pid_file=Path("ppd/daemon/missing.pid")))
+            repaired, labels = builtin_blocked_cascade_replenish_task_board(board)
+
+        self.assertEqual("enter_termination_storm_circuit_breaker", decision.action)
+        self.assertIn("fallback budget", decision.reason)
+        self.assertEqual(board, repaired)
+        self.assertEqual((), labels)
+
     def test_run_once_safely_records_supervisor_exception_without_raising(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
             repo = Path(tempdir)
