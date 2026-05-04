@@ -1,6 +1,11 @@
 import { LogicValidationError } from '../errors';
-import { AuditLogger, logProofAttempt, setAuditLogger } from './auditLog';
-import { CircuitBreakerOpenError, getCircuitBreaker, LLMCircuitBreaker, resetAllCircuitBreakers } from './circuitBreaker';
+import { AUDIT_LOG_METADATA, AuditLogger, logProofAttempt, setAuditLogger } from './auditLog';
+import {
+  CircuitBreakerOpenError,
+  getCircuitBreaker,
+  LLMCircuitBreaker,
+  resetAllCircuitBreakers,
+} from './circuitBreaker';
 import { InputValidator, validateFormulaList, validateText } from './inputValidation';
 import { RateLimitExceeded, RateLimiter, rateLimit, setRateLimiter } from './rateLimiting';
 
@@ -35,7 +40,12 @@ describe('logic security browser-native parity helpers', () => {
 
     now = 11;
     expect(limiter.getRemaining('ada')).toBe(2);
-    expect(limiter.wrap((value: number) => value + 1, () => 'bob')(1)).toBe(2);
+    expect(
+      limiter.wrap(
+        (value: number) => value + 1,
+        () => 'bob',
+      )(1),
+    ).toBe(2);
 
     setRateLimiter(new RateLimiter(1, 60, () => 0));
     const guarded = rateLimit(() => 'ok');
@@ -53,8 +63,16 @@ describe('logic security browser-native parity helpers', () => {
       now: () => now,
     });
 
-    expect(() => breaker.call(() => { throw new Error('boom'); })).toThrow('boom');
-    expect(() => breaker.call(() => { throw new Error('boom'); })).toThrow('boom');
+    expect(() =>
+      breaker.call(() => {
+        throw new Error('boom');
+      }),
+    ).toThrow('boom');
+    expect(() =>
+      breaker.call(() => {
+        throw new Error('boom');
+      }),
+    ).toThrow('boom');
     expect(breaker.state).toBe('open');
     expect(() => breaker.call(() => 'blocked')).toThrow(CircuitBreakerOpenError);
 
@@ -82,7 +100,11 @@ describe('logic security browser-native parity helpers', () => {
       name: 'fallback',
     });
 
-    expect(() => breaker.call(() => { throw new Error('fail'); })).toThrow('fail');
+    expect(() =>
+      breaker.call(() => {
+        throw new Error('fail');
+      }),
+    ).toThrow('fail');
     expect(breaker.call(() => 'blocked')).toBe('fallback');
     expect(getCircuitBreaker('shared')).toBe(getCircuitBreaker('shared'));
     expect(resetAllCircuitBreakers()).toBeGreaterThanOrEqual(1);
@@ -106,5 +128,56 @@ describe('logic security browser-native parity helpers', () => {
     });
     expect((logger.events[3].details?.formula as string).length).toBe(100);
     expect(logger.toJsonLines().split('\n')).toHaveLength(4);
+  });
+
+  it('ports audit_log.py metadata, listeners, filtering, and bounded memory storage', () => {
+    const observed: Array<string> = [];
+    const logger = new AuditLogger({
+      now: () => '2026-01-01T00:00:00.000Z',
+      maxEvents: 2,
+      listeners: [(event) => observed.push(event.event_type)],
+    });
+
+    expect(logger.metadata).toEqual(AUDIT_LOG_METADATA);
+    expect(logger.metadata).toMatchObject({
+      sourcePythonModule: 'logic/security/audit_log.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      storage: 'memory',
+    });
+
+    const unsubscribe = logger.addEventListener((event) =>
+      observed.push(`extra:${event.event_type}`),
+    );
+    logger.logEvent(
+      'proof_attempt',
+      'ada',
+      true,
+      { prover: 'browser-prover' },
+      { request_id: 'r1' },
+    );
+    unsubscribe();
+    logger.logSecurityEvent('bob', 'validation_error', 'low', 'Bad formula');
+    logger.logValidationError('ada', 'formula', 'empty');
+
+    expect(logger.events.map((event) => event.event_type)).toEqual([
+      'security.validation_error',
+      'security.validation_error',
+    ]);
+    expect(observed).toEqual([
+      'proof_attempt',
+      'extra:proof_attempt',
+      'security.validation_error',
+      'security.validation_error',
+    ]);
+    expect(logger.getEvents({ userId: 'ada', limit: 1 })).toEqual([
+      expect.objectContaining({
+        event_type: 'security.validation_error',
+        user_id: 'ada',
+        success: false,
+      }),
+    ]);
+    expect(JSON.parse(logger.toJson())).toHaveLength(2);
   });
 });
