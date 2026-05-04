@@ -1,5 +1,7 @@
 import {
+  BrowserNativeIntegrationDeonticLogicCore,
   BrowserNativeIntegrationDeonticLogicConverter,
+  convert_deontic_logic_core,
   convert_deontic_logic,
 } from './deonticLogicConverter';
 
@@ -58,6 +60,56 @@ describe('BrowserNativeIntegrationDeonticLogicConverter', () => {
       metadata: {
         sourcePythonModule: 'logic/integration/converters/deontic_logic_converter.py',
         serverCallsAllowed: false,
+      },
+    });
+  });
+});
+
+describe('BrowserNativeIntegrationDeonticLogicCore', () => {
+  it('ports deontic_logic_core.py as browser-native norm partitions', () => {
+    const core = new BrowserNativeIntegrationDeonticLogicCore({ outputFormat: 'json' });
+    const result = core.analyze(
+      'The agency shall publish the rule within 30 days. Contractors may appeal. Officers must not disclose sealed records unless the court orders disclosure.',
+    );
+
+    expect(core.metadata).toMatchObject({
+      sourcePythonModule: 'logic/integration/converters/deontic_logic_core.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+    });
+    expect(result).toMatchObject({
+      status: 'success',
+      success: true,
+      metadata: {
+        sourcePythonModule: 'logic/integration/converters/deontic_logic_core.py',
+        core: 'browser-native-deontic-logic-core',
+        norm_counts: { obligation: 1, permission: 1, prohibition: 1 },
+      },
+    });
+    expect(result.obligations).toHaveLength(1);
+    expect(result.permissions).toHaveLength(1);
+    expect(result.prohibitions).toHaveLength(1);
+    expect(result.formulas).toEqual([
+      expect.stringContaining('O('),
+      expect.stringContaining('P('),
+      expect.stringContaining('F('),
+    ]);
+    expect(result.prohibitions[0].exceptions).toContain('the court orders disclosure');
+  });
+
+  it('fails closed locally and supports batch conversion without Python bridges', () => {
+    const core = new BrowserNativeIntegrationDeonticLogicCore();
+    const batch = core.analyzeBatch(['Tenants must pay rent.', 'Owners may inspect units.']);
+
+    expect(batch.map((entry) => entry.success)).toEqual([true, true]);
+    expect(convert_deontic_logic_core('x')).toMatchObject({
+      status: 'validation_failed',
+      success: false,
+      metadata: {
+        sourcePythonModule: 'logic/integration/converters/deontic_logic_core.py',
+        serverCallsAllowed: false,
+        pythonRuntimeAllowed: false,
       },
     });
   });

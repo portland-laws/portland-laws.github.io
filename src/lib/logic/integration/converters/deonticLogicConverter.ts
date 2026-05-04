@@ -21,6 +21,21 @@ export const INTEGRATION_DEONTIC_LOGIC_CONVERTER_METADATA = {
   parity: ['legal_text_norm_extraction', 'multi_format_projection', 'local_fail_closed_validation'],
 } as const;
 
+export const INTEGRATION_DEONTIC_LOGIC_CORE_METADATA = {
+  sourcePythonModule: 'logic/integration/converters/deontic_logic_core.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  runtimeDependencies: [],
+  failClosed: true,
+  parity: [
+    'core_norm_extraction',
+    'core_formula_projection',
+    'norm_type_partitioning',
+    'local_fail_closed_validation',
+  ],
+} as const;
+
 export class BrowserNativeIntegrationDeonticLogicConverter {
   readonly metadata = INTEGRATION_DEONTIC_LOGIC_CONVERTER_METADATA;
   private readonly converter: DeonticConverter;
@@ -65,6 +80,48 @@ export class BrowserNativeIntegrationDeonticLogicConverter {
   }
 }
 
+export class BrowserNativeIntegrationDeonticLogicCore {
+  readonly metadata = INTEGRATION_DEONTIC_LOGIC_CORE_METADATA;
+  private readonly converter: BrowserNativeIntegrationDeonticLogicConverter;
+
+  constructor(options: IntegrationDeonticConverterOptions = {}) {
+    this.converter = new BrowserNativeIntegrationDeonticLogicConverter(options);
+  }
+
+  analyze(text: string, options: IntegrationDeonticConversionOptions = {}) {
+    const result = this.converter.convert(text, options);
+    const partitions = partitionNorms(result.norms);
+    return {
+      status: result.status,
+      success: result.success,
+      sourceText: text,
+      formulas: result.formulas,
+      norms: result.norms,
+      obligations: partitions.obligations,
+      permissions: partitions.permissions,
+      prohibitions: partitions.prohibitions,
+      output: result.output,
+      confidence: result.confidence,
+      warnings: result.warnings,
+      errors: result.errors,
+      metadata: {
+        ...INTEGRATION_DEONTIC_LOGIC_CORE_METADATA,
+        core: 'browser-native-deontic-logic-core',
+        norm_counts: countNorms(result.norms),
+        output_format: result.outputFormat,
+      },
+    };
+  }
+
+  convert(text: string, options: IntegrationDeonticConversionOptions = {}) {
+    return this.analyze(text, options);
+  }
+
+  analyzeBatch(texts: string[], options: IntegrationDeonticConversionOptions = {}) {
+    return texts.map((text) => this.analyze(text, options));
+  }
+}
+
 export function createBrowserNativeIntegrationDeonticLogicConverter(
   options: IntegrationDeonticConverterOptions = {},
 ) {
@@ -72,6 +129,14 @@ export function createBrowserNativeIntegrationDeonticLogicConverter(
 }
 
 export const create_deontic_logic_converter = createBrowserNativeIntegrationDeonticLogicConverter;
+
+export function createBrowserNativeIntegrationDeonticLogicCore(
+  options: IntegrationDeonticConverterOptions = {},
+) {
+  return new BrowserNativeIntegrationDeonticLogicCore(options);
+}
+
+export const create_deontic_logic_core = createBrowserNativeIntegrationDeonticLogicCore;
 
 export function convertDeonticLogic(
   text: string,
@@ -83,6 +148,17 @@ export function convertDeonticLogic(
 }
 
 export const convert_deontic_logic = convertDeonticLogic;
+
+export function convertDeonticLogicCore(
+  text: string,
+  options: IntegrationDeonticConversionOptions = {},
+) {
+  return new BrowserNativeIntegrationDeonticLogicCore({
+    outputFormat: options.outputFormat,
+  }).convert(text, options);
+}
+
+export const convert_deontic_logic_core = convertDeonticLogicCore;
 
 function formatOutput(
   formulas: string[],
@@ -129,6 +205,18 @@ function countNorms(norms: NormativeElement[]): Record<DeonticNormType, number> 
   const counts: Record<DeonticNormType, number> = { obligation: 0, permission: 0, prohibition: 0 };
   for (const norm of norms) counts[norm.normType] += 1;
   return counts;
+}
+
+function partitionNorms(norms: NormativeElement[]): {
+  obligations: NormativeElement[];
+  permissions: NormativeElement[];
+  prohibitions: NormativeElement[];
+} {
+  return {
+    obligations: norms.filter((norm) => norm.normType === 'obligation'),
+    permissions: norms.filter((norm) => norm.normType === 'permission'),
+    prohibitions: norms.filter((norm) => norm.normType === 'prohibition'),
+  };
 }
 
 function quote(value: string): string {
