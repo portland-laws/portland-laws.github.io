@@ -1019,3 +1019,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T075108Z-ported-logic-common-bounded_cache.py-compatibility-surface-onto-the-browser-nati.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T075108Z-ported-logic-common-bounded_cache.py-compatibility-surface-onto-the-browser-nati.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T075108Z-ported-logic-common-bounded_cache.py-compatibility-surface-onto-the-browser-nati.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 07:55:07 UTC
+
+- Target: `Task checkbox-303: Port remaining Python logic module `logic/common/feature_detection.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported feature detection to a deterministic browser-native availability registry with explicit local adapter support.
+- Impact: src/lib/logic/featureDetection.ts now exposes per-feature browser-native availability for Python optional dependency parity without importing Python, spaCy, server, filesystem, or subprocess fallbacks; src/lib/logic/featureDetection.test.ts validates fail-closed Python-only features, explicit local adapters, and injected browser capability probing.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/featureDetection.test.ts`, `src/lib/logic/featureDetection.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T075507Z-ported-feature-detection-to-a-deterministic-browser-native-availability-registry.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T075507Z-ported-feature-detection-to-a-deterministic-browser-native-availability-registry.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T075507Z-ported-feature-detection-to-a-deterministic-browser-native-availability-registry.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
