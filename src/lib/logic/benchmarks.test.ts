@@ -2,8 +2,11 @@ import {
   BenchmarkResult,
   CacheBenchmarks,
   FOLBenchmarks,
+  Phase7_4Benchmarks,
+  Phase7_4PerformanceMetric,
   PerformanceBenchmark,
   runComprehensiveBenchmarks,
+  runPhase7_4Benchmarks,
 } from './benchmarks';
 
 describe('logic benchmarks browser-native parity helpers', () => {
@@ -50,12 +53,22 @@ describe('logic benchmarks browser-native parity helpers', () => {
     let syncCalls = 0;
     let asyncCalls = 0;
 
-    const sync = benchmark.benchmark('sync', () => {
-      syncCalls += 1;
-    }, 3, 'sync function');
-    const asyncResult = await benchmark.benchmarkAsync('async', async () => {
-      asyncCalls += 1;
-    }, 2, 'async function');
+    const sync = benchmark.benchmark(
+      'sync',
+      () => {
+        syncCalls += 1;
+      },
+      3,
+      'sync function',
+    );
+    const asyncResult = await benchmark.benchmarkAsync(
+      'async',
+      async () => {
+        asyncCalls += 1;
+      },
+      2,
+      'async function',
+    );
 
     expect(syncCalls).toBe(4);
     expect(asyncCalls).toBe(3);
@@ -132,5 +145,80 @@ describe('logic benchmarks browser-native parity helpers', () => {
       total_benchmarks: 6,
     });
     expect(summary.results).toHaveLength(6);
+  });
+
+  it('ports phase7_4_benchmarks.py performance metrics without Python services', () => {
+    const metric = new Phase7_4PerformanceMetric({
+      name: 'Cache Hit Rate',
+      target: '>60%',
+      measured: '100.0%',
+      passed: true,
+      details: { hit_rate: 1 },
+    });
+
+    expect(metric.summary()).toBe('PASS Cache Hit Rate: 100.0% (target: >60%)');
+    expect(metric.toDict()).toEqual({
+      name: 'Cache Hit Rate',
+      target: '>60%',
+      measured: '100.0%',
+      passed: true,
+      details: { hit_rate: 1 },
+    });
+  });
+
+  it('runs Phase 7.4 browser-native validation suite with Python-compatible results', async () => {
+    let clock = 0;
+    const summary = await runPhase7_4Benchmarks({
+      iterations: 2,
+      now: () => {
+        clock += 0.0001;
+        return clock;
+      },
+    });
+
+    expect(summary).toMatchObject({
+      phase: '7.4',
+      name: 'Performance Benchmarking',
+      source_python_module: 'logic/phase7_4_benchmarks.py',
+      browser_native: true,
+      server_calls_allowed: false,
+      python_runtime_allowed: false,
+      passed: true,
+      total_benchmarks: 9,
+      passed_benchmarks: 9,
+    });
+    expect(summary.metrics).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ name: 'Cache Hit Rate', passed: true }),
+        expect.objectContaining({ name: 'ML Confidence Overhead', passed: true }),
+        expect.objectContaining({ name: 'ZKP Verification', passed: true }),
+        expect.objectContaining({ name: 'Deontic Converter', passed: true }),
+      ]),
+    );
+    expect(summary.detailed_results).toMatchObject({
+      batch: { batch_size: 40 },
+      cache: { total_queries: 3 },
+      nlp: { adapter: 'browser-native-deterministic', available: true },
+    });
+  });
+
+  it('supports Python-style Phase7_4Benchmarks orchestration and summaries', async () => {
+    let clock = 0;
+    const benchmarks = new Phase7_4Benchmarks({
+      iterations: 1,
+      now: () => {
+        clock += 0.0001;
+        return clock;
+      },
+    });
+
+    await benchmarks.benchmarkCachePerformance();
+
+    expect(benchmarks.getResults()).toMatchObject({
+      phase: '7.4',
+      total_benchmarks: 2,
+      passed_benchmarks: 2,
+    });
+    expect(benchmarks.printSummary()).toContain('PHASE 7.4 BENCHMARK SUMMARY');
   });
 });
