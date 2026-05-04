@@ -2,8 +2,10 @@ import type { ProofResult } from '../types';
 import {
   TDFOL_EXAMPLE_FORMULA_DEPENDENCY_PROOF,
   TdfolFormulaDependencyGraph,
+  analyzeTdfolProofDependencies,
   buildExampleTdfolFormulaDependencyGraph,
   buildTdfolDependencyGraph,
+  findTdfolProofChain,
 } from './dependencyGraph';
 
 const proof: ProofResult = {
@@ -44,6 +46,49 @@ describe('TdfolFormulaDependencyGraph', () => {
     graph.addDependency('Used(x)', 'Goal(x)', 'Rule');
 
     expect(graph.findUnusedAxioms()).toEqual(['Axiom(x)']);
+  });
+
+  it('ports Python formula dependency queries and statistics', () => {
+    const graph = new TdfolFormulaDependencyGraph();
+    graph.addFormulaWithDependencies('P(a)', [], 'Axiom', '', 'axiom');
+    graph.addFormulaWithDependencies('Q(a)', ['P(a)'], 'Rule1', 'from P');
+    graph.addFormulaWithDependencies('R(a)', ['Q(a)'], 'Rule2', 'from Q');
+    graph.addFormulaWithDependencies('R(a)', ['P(a)'], 'Rule3', 'direct shortcut');
+    graph.addFormulaWithDependencies('Unused(a)', [], 'Axiom', '', 'axiom');
+
+    expect(graph.getDependencies('R(a)')).toEqual(['P(a)', 'Q(a)']);
+    expect(graph.getDependents('P(a)')).toEqual(['Q(a)', 'R(a)']);
+    expect(graph.getAllDependencies('R(a)')).toEqual(['P(a)', 'Q(a)']);
+    expect(graph.getAllDependents('P(a)')).toEqual(['Q(a)', 'R(a)']);
+    expect(graph.detectCycles()).toEqual([]);
+    expect(graph.findCriticalPath('P(a)', 'R(a)')).toEqual(['P(a)', 'R(a)']);
+    expect(graph.getStatistics()).toMatchObject({
+      num_nodes: 4,
+      num_edges: 3,
+      has_cycles: false,
+      num_axioms: 2,
+      num_derived: 2,
+    });
+    expect(graph.toJson().statistics?.edge_types.direct).toBe(3);
+  });
+
+  it('exports the Python adjacency matrix shape without filesystem dependencies', () => {
+    const graph = buildTdfolDependencyGraph(proof);
+    const { formulas, matrix } = graph.toAdjacencyMatrix();
+    const predIndex = formulas.indexOf('Pred(x)');
+    const goalIndex = formulas.indexOf('Goal(x)');
+
+    expect(matrix[predIndex][goalIndex]).toBe(1);
+    expect(matrix[goalIndex][predIndex]).toBe(0);
+  });
+
+  it('provides browser-native proof analysis convenience functions', () => {
+    const graph = analyzeTdfolProofDependencies(proof);
+    const chain = findTdfolProofChain('Pred(x)', 'Goal(x)', [proof]);
+
+    expect(graph.getStatistics().num_edges).toBe(2);
+    expect(chain).toEqual(['Pred(x)', 'Goal(x)']);
+    expect(findTdfolProofChain('Goal(x)', 'Pred(x)', [proof])).toBeNull();
   });
 
   it('rejects circular dependencies', () => {

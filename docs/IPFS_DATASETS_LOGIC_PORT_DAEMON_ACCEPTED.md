@@ -641,3 +641,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T050914Z-ported-remaining-tdfol-expansion_rules-quantifier-behavior-with-deterministic-br.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T050914Z-ported-remaining-tdfol-expansion_rules-quantifier-behavior-with-deterministic-br.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T050914Z-ported-remaining-tdfol-expansion_rules-quantifier-behavior-with-deterministic-br.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 05:14:24 UTC
+
+- Target: `Task checkbox-261: Port remaining Python logic module `logic/TDFOL/formula_dependency_graph.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Worktree direct-edit proposal.
+- Impact: Git harvested the isolated-worktree edits for validation.
+- Changed files: `src/lib/logic/tdfol/dependencyGraph.test.ts`, `src/lib/logic/tdfol/dependencyGraph.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T051424Z-worktree-direct-edit-proposal..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T051424Z-worktree-direct-edit-proposal..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T051424Z-worktree-direct-edit-proposal..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

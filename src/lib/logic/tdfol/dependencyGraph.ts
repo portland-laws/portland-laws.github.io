@@ -23,6 +23,23 @@ export interface TdfolDependencyEdge {
 export interface TdfolDependencyGraphJson {
   nodes: TdfolDependencyNode[];
   edges: TdfolDependencyEdge[];
+  statistics?: TdfolDependencyGraphStatistics;
+}
+
+export interface TdfolDependencyGraphStatistics {
+  num_nodes: number;
+  num_edges: number;
+  node_types: Record<TdfolFormulaNodeType, number>;
+  edge_types: Record<TdfolDependencyType, number>;
+  has_cycles: boolean;
+  num_axioms: number;
+  num_theorems: number;
+  num_derived: number;
+}
+
+export interface TdfolAdjacencyMatrix {
+  formulas: string[];
+  matrix: Array<Array<number>>;
 }
 
 export interface TdfolExampleFormulaDependencyGraph {
@@ -87,7 +104,9 @@ export class TdfolFormulaDependencyGraph {
     const id = nodeId(formula);
     const existing = this.nodes.get(id);
     if (existing) {
-      if (existing.type === 'derived' && type !== 'derived') {
+      if (existing.type === 'premise' && type !== 'premise') {
+        existing.type = type;
+      } else if (existing.type === 'derived' && type !== 'derived' && type !== 'premise') {
         existing.type = type;
       }
       existing.metadata = { ...existing.metadata, ...metadata };
@@ -105,6 +124,8 @@ export class TdfolFormulaDependencyGraph {
     targetFormula: string,
     rule?: string,
     type: TdfolDependencyType = 'direct',
+    justification = '',
+    metadata: Record<string, unknown> = {},
   ): void {
     const source = this.addFormula(sourceFormula, 'premise');
     const target = this.addFormula(targetFormula, 'derived');
@@ -113,8 +134,9 @@ export class TdfolFormulaDependencyGraph {
       source: source.id,
       target: target.id,
       rule,
+      justification,
       type,
-      metadata: {},
+      metadata,
     });
     this.adjacency.get(source.id)?.add(target.id);
     this.reverseAdjacency.get(target.id)?.add(source.id);
@@ -134,8 +156,65 @@ export class TdfolFormulaDependencyGraph {
   addStep(step: ProofStep): void {
     this.addFormula(step.conclusion, 'derived', { step_id: step.id, rule: step.rule });
     for (const premise of step.premises) {
-      this.addDependency(premise, step.conclusion, step.rule);
+      this.addDependency(premise, step.conclusion, step.rule, 'direct', step.explanation ?? '');
     }
+  }
+
+  addFormulaWithDependencies(
+    formula: string,
+    dependsOn: string[],
+    rule: string,
+    justification = '',
+    nodeType: TdfolFormulaNodeType = 'derived',
+    metadata: Record<string, unknown> = {},
+  ): void {
+    this.addFormula(formula, nodeType, metadata);
+    for (const premise of dependsOn) {
+      this.addDependency(premise, formula, rule, 'direct', justification);
+    }
+  }
+
+  getDependencies(formula: string): string[] {
+    return this.sortedFormulas(this.reverseAdjacency.get(nodeId(formula)) ?? new Set());
+  }
+
+  getDependents(formula: string): string[] {
+    return this.sortedFormulas(this.adjacency.get(nodeId(formula)) ?? new Set());
+  }
+
+  getAllDependencies(formula: string): string[] {
+    return this.walkFormulaClosure(formula, (current) => this.getDependencies(current));
+  }
+
+  getAllDependents(formula: string): string[] {
+    return this.walkFormulaClosure(formula, (current) => this.getDependents(current));
+  }
+
+  detectCycles(): string[][] {
+    const cycles: string[][] = [],
+      path: string[] = [];
+    const visited = new Set<string>(),
+      active = new Set<string>();
+    const visit = (id: string): void => {
+      visited.add(id);
+      active.add(id);
+      path.push(id);
+      for (const next of this.adjacency.get(id) ?? []) {
+        if (!visited.has(next)) visit(next);
+        else if (active.has(next)) {
+          const cycleStart = path.indexOf(next);
+          cycles.push(
+            [...path.slice(cycleStart), next].map((cycleId) => this.nodeFormula(cycleId)),
+          );
+        }
+      }
+      path.pop();
+      active.delete(id);
+    };
+    for (const id of this.nodes.keys()) {
+      if (!visited.has(id)) visit(id);
+    }
+    return cycles;
   }
 
   findPath(sourceFormula: string, targetFormula: string): string[] {
@@ -157,6 +236,11 @@ export class TdfolFormulaDependencyGraph {
     return [];
   }
 
+  findCriticalPath(sourceFormula: string, targetFormula: string): string[] | null {
+    const path = this.findPath(sourceFormula, targetFormula);
+    return path.length > 0 ? path : null;
+  }
+
   findUnusedAxioms(): string[] {
     return [...this.nodes.values()]
       .filter((node) => node.type === 'axiom' && (this.adjacency.get(node.id)?.size ?? 0) === 0)
@@ -164,6 +248,10 @@ export class TdfolFormulaDependencyGraph {
   }
 
   topologicalOrder(): string[] {
+    const cycles = this.detectCycles();
+    if (cycles.length > 0) {
+      throw new TdfolCircularDependencyError(cycles[0]);
+    }
     const indegree = new Map(
       [...this.nodes.keys()].map((id) => [id, this.reverseAdjacency.get(id)?.size ?? 0]),
     );
@@ -184,11 +272,56 @@ export class TdfolFormulaDependencyGraph {
     return ordered.map((id) => this.nodes.get(id)?.formula ?? id);
   }
 
+  topologicalSort(): string[] {
+    return this.topologicalOrder();
+  }
+
+  getStatistics(): TdfolDependencyGraphStatistics {
+    const emptyNodeTypes: Record<TdfolFormulaNodeType, number> = {
+      axiom: 0,
+      theorem: 0,
+      derived: 0,
+      premise: 0,
+      goal: 0,
+      lemma: 0,
+    };
+    const emptyEdgeTypes: Record<TdfolDependencyType, number> = {
+      direct: 0,
+      transitive: 0,
+      support: 0,
+    };
+    for (const node of this.nodes.values()) emptyNodeTypes[node.type] += 1;
+    for (const edge of this.edges.values()) emptyEdgeTypes[edge.type] += 1;
+    return {
+      num_nodes: this.nodes.size,
+      num_edges: this.edges.size,
+      node_types: emptyNodeTypes,
+      edge_types: emptyEdgeTypes,
+      has_cycles: this.detectCycles().length > 0,
+      num_axioms: emptyNodeTypes.axiom,
+      num_theorems: emptyNodeTypes.theorem,
+      num_derived: emptyNodeTypes.derived,
+    };
+  }
+
   toJson(): TdfolDependencyGraphJson {
     return {
       nodes: [...this.nodes.values()],
       edges: [...this.edges.values()],
+      statistics: this.getStatistics(),
     };
+  }
+
+  toAdjacencyMatrix(): TdfolAdjacencyMatrix {
+    const formulas = [...this.nodes.values()].map((node) => node.formula);
+    const indexById = new Map([...this.nodes.keys()].map((id, index) => [id, index]));
+    const matrix = formulas.map(() => formulas.map(() => 0));
+    for (const edge of this.edges.values()) {
+      const source = indexById.get(edge.source);
+      const target = indexById.get(edge.target);
+      if (source !== undefined && target !== undefined) matrix[source][target] = 1;
+    }
+    return { formulas, matrix };
   }
 
   toDot(): string {
@@ -209,10 +342,52 @@ export class TdfolFormulaDependencyGraph {
   private assertAcyclic(): void {
     this.topologicalOrder();
   }
+
+  private sortedFormulas(ids: Set<string>): string[] {
+    return [...ids].map((id) => this.nodeFormula(id)).sort();
+  }
+
+  private nodeFormula(id: string): string {
+    return this.nodes.get(id)?.formula ?? id;
+  }
+
+  private walkFormulaClosure(
+    formula: string,
+    nextFormulas: (current: string) => string[],
+  ): string[] {
+    const seen = new Set<string>();
+    const queue = [formula];
+    while (queue.length > 0) {
+      const current = queue.shift()!;
+      if (seen.has(current)) continue;
+      seen.add(current);
+      for (const next of nextFormulas(current)) {
+        if (!seen.has(next)) queue.push(next);
+      }
+    }
+    seen.delete(formula);
+    return [...seen].sort();
+  }
 }
 
 export function buildTdfolDependencyGraph(proofResult: ProofResult): TdfolFormulaDependencyGraph {
   return new TdfolFormulaDependencyGraph(proofResult);
+}
+
+export function analyzeTdfolProofDependencies(
+  proofResult: ProofResult,
+): TdfolFormulaDependencyGraph {
+  return new TdfolFormulaDependencyGraph(proofResult);
+}
+
+export function findTdfolProofChain(
+  startFormula: string,
+  endFormula: string,
+  proofResults: ProofResult[],
+): string[] | null {
+  const graph = new TdfolFormulaDependencyGraph();
+  for (const proofResult of proofResults) graph.addProof(proofResult);
+  return graph.findCriticalPath(startFormula, endFormula);
 }
 
 export function buildExampleTdfolFormulaDependencyGraph(): TdfolExampleFormulaDependencyGraph {
