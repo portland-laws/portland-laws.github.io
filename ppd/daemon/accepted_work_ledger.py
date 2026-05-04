@@ -60,6 +60,7 @@ def build_accepted_work_ledger_entry(
     summary: str,
     impact: str,
     changed_files: Iterable[str],
+    transport: str,
     artifacts: AcceptedWorkArtifacts,
     validation_results: Iterable[dict[str, Any]],
     created_at: str | None = None,
@@ -78,6 +79,7 @@ def build_accepted_work_ledger_entry(
         "summary": str(summary),
         "impact": str(impact),
         "changed_files": sorted(str(path) for path in changed_files),
+        "transport": str(transport),
         "artifacts": {
             "manifest": _as_repo_path(artifacts.manifest, repo_root),
             "patch": _as_repo_path(artifacts.patch, repo_root),

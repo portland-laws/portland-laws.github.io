@@ -326,3 +326,21 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T015404Z-ported-the-remaining-cec-lemma-generation-parity-slice-by-adding-browser-native-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T015404Z-ported-the-remaining-cec-lemma-generation-parity-slice-by-adding-browser-native-.patch`, `ipfs_datasets_py/.daemon/accepted-work/20260504T015404Z-ported-the-remaining-cec-lemma-generation-parity-slice-by-adding-browser-native-.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 02:13:19 UTC
+
+- Target: `Task checkbox-225: Port remaining Python logic module `logic/CEC/native/modal_tableaux.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Worktree direct-edit proposal.
+- Impact: Git harvested the isolated-worktree edits for validation.
+- Changed files: `src/lib/logic/cec/modalTableaux.test.ts`, `src/lib/logic/cec/modalTableaux.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T021319Z-worktree-direct-edit-proposal..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T021319Z-worktree-direct-edit-proposal..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T021319Z-worktree-direct-edit-proposal..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
+## 2026-05-04 02:18:54 UTC
+
+- Target: `Task checkbox-226: Port remaining Python logic module `logic/CEC/native/nl_converter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the remaining DCEC nl_converter grammar surface to a browser-native TypeScript adapter and Python-compatible API aliases.
+- Impact: src/lib/logic/cec/nlConverter.ts now provides local grammar parse/linearize hooks, snake_case method aliases, conversion history parity, and typed proof cache internals without Python, server, filesystem, subprocess, or RPC dependencies. src/lib/logic/cec/nlConverter.test.ts directly validates the browser-native grammar path and Python-compatible nl_converter names in the Jest suite.
+- Changed files: `src/lib/logic/cec/nlConverter.test.ts`, `src/lib/logic/cec/nlConverter.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T021854Z-ported-the-remaining-dcec-nl_converter-grammar-surface-to-a-browser-native-types.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T021854Z-ported-the-remaining-dcec-nl_converter-grammar-surface-to-a-browser-native-types.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T021854Z-ported-the-remaining-dcec-nl_converter-grammar-surface-to-a-browser-native-types.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

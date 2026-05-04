@@ -16,6 +16,14 @@ Expected local runtime files include:
 
 These runtime files are operational evidence, not source fixtures. They must not contain private DevHub credentials, authentication state, trace archives, downloaded documents, raw crawl output, payment data, or user-specific permit data.
 
+## Temporary Worktrees
+
+Candidate daemon proposals are validated in isolated temporary PP&D worktrees under `ppd/daemon/worktrees/`. The daemon copies the PP&D workspace and plan document into the temporary tree, materializes candidate file replacements there, runs syntax preflight and full validation there, and promotes files back to the real repository only after validation passes.
+
+Accepted-work and failed-patch artifacts may still include compact diff files for audit, but those diffs are not the application mechanism. Failed candidate worktrees are removed after diagnostics are persisted. On later starts, the daemon and supervisor sweep stale marked worktrees left by interrupted runs.
+
+When full validation fails after syntax preflight passes, the controlled daemon start path enables one repair pass inside the same temporary worktree. The repair pass must return complete file replacements, rerun syntax preflight and validation in the isolated tree, and promote nothing unless the repaired candidate passes.
+
 ## Start
 
 Start the daemon from the repository root with the local control wrapper:

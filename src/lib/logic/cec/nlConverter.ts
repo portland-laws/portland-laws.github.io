@@ -60,6 +60,12 @@ export interface DcecPolicyCompilationResult extends DcecNlConversionResult {
   browser_native: true;
 }
 
+export interface DcecGrammarAdapter {
+  parse_to_dcec(text: string): DcecFormula | undefined;
+  formula_to_english(formula: DcecFormula): string | undefined;
+  browser_native: true;
+}
+
 export type DcecProofStrategy =
   | 'direct'
   | 'advanced_inference'
@@ -86,7 +92,7 @@ export interface DcecProofResult {
 }
 
 export class DcecProofCache {
-  private readonly entries = new Map();
+  private readonly entries = new Map<string, DcecProofResult>();
 
   get(key: string): DcecProofResult | undefined {
     const cached = this.entries.get(key);
@@ -277,7 +283,7 @@ export class DcecNaturalLanguageConverter {
   readonly proofCache = new DcecProofCache();
   private initialized = true;
   useGrammar = false;
-  grammar: unknown = undefined;
+  grammar: DcecGrammarAdapter | undefined = undefined;
 
   constructor(namespace = new DcecNamespace()) {
     this.namespace = namespace;
@@ -287,6 +293,10 @@ export class DcecNaturalLanguageConverter {
   initialize(): boolean {
     this.initialized = true;
     return this.initialized;
+  }
+
+  get conversion_history(): DcecNlConversionResult[] {
+    return this.conversionHistory;
   }
 
   convertToDcec(text: string): DcecNlConversionResult {
@@ -312,6 +322,10 @@ export class DcecNaturalLanguageConverter {
       this.conversionHistory.push(result);
       return result;
     }
+  }
+
+  convert_to_dcec(text: string): DcecNlConversionResult {
+    return this.convertToDcec(text);
   }
 
   compilePolicyText(text: string): DcecPolicyCompilationResult {
@@ -369,6 +383,10 @@ export class DcecNaturalLanguageConverter {
     return formula.toString();
   }
 
+  convert_from_dcec(formula: DcecFormula): string {
+    return this.convertFromDcec(formula);
+  }
+
   getConversionStatistics(): DcecConversionStatistics {
     if (this.conversionHistory.length === 0) return { total_conversions: 0 };
     const successful = this.conversionHistory.filter((result) => result.success).length;
@@ -381,6 +399,10 @@ export class DcecNaturalLanguageConverter {
         this.conversionHistory.reduce((sum, result) => sum + result.confidence, 0) /
         this.conversionHistory.length,
     };
+  }
+
+  get_conversion_statistics(): DcecConversionStatistics {
+    return this.getConversionStatistics();
   }
 
   toString(): string {
@@ -605,8 +627,8 @@ function temporalLiftProof(
 }
 
 function findContradiction(formulas: DcecFormula[]): string | undefined {
-  const obligations = new Set();
-  const prohibitions = new Set();
+  const obligations = new Set<string>();
+  const prohibitions = new Set<string>();
   for (const formula of formulas) {
     if (!(formula instanceof DcecDeonticFormula)) continue;
     const inner = formula.formula.toString();
@@ -653,20 +675,37 @@ function proofCacheKey(
 
 export function createEnhancedDcecNlConverter(useGrammar = true): DcecNaturalLanguageConverter {
   const converter = new DcecNaturalLanguageConverter();
-  converter.useGrammar = false;
-  converter.grammar = undefined;
   if (useGrammar) {
+    converter.grammar = createBrowserNativeDcecGrammar(converter);
+    converter.useGrammar = true;
+  } else {
+    converter.grammar = undefined;
     converter.useGrammar = false;
   }
   return converter;
 }
 
-export function parseDcecWithGrammar(_text: string): DcecFormula | undefined {
-  return undefined;
+export function parseDcecWithGrammar(text: string): DcecFormula | undefined {
+  return createBrowserNativeDcecGrammar().parse_to_dcec(text);
 }
 
-export function linearizeDcecWithGrammar(_formula: DcecFormula): string | undefined {
-  return undefined;
+export function linearizeDcecWithGrammar(formula: DcecFormula): string | undefined {
+  return createBrowserNativeDcecGrammar().formula_to_english(formula);
+}
+
+export function createBrowserNativeDcecGrammar(
+  converter = new DcecNaturalLanguageConverter(),
+): DcecGrammarAdapter {
+  return {
+    browser_native: true,
+    parse_to_dcec(text: string): DcecFormula | undefined {
+      const result = converter.convertToDcec(text);
+      return result.success ? result.dcec_formula : undefined;
+    },
+    formula_to_english(formula: DcecFormula): string | undefined {
+      return converter.convertFromDcec(formula);
+    },
+  };
 }
 
 function normalizeEnglish(text: string): string {
@@ -690,3 +729,9 @@ function containsLanguageTerm(text: string, term: string): boolean {
 function escapeRegExp(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
+
+export const NaturalLanguageConverter = DcecNaturalLanguageConverter;
+export const PatternMatcher = DcecPatternMatcher;
+export const create_enhanced_nl_converter = createEnhancedDcecNlConverter;
+export const parse_with_grammar = parseDcecWithGrammar;
+export const linearize_with_grammar = linearizeDcecWithGrammar;

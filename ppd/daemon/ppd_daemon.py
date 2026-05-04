@@ -679,6 +679,254 @@ def diff_for_file(path: str, before: str, after: str) -> str:
     )
 
 
+def worktree_marker_payload(*, state: str, source_root: Path) -> dict[str, Any]:
+    return {
+        "created_at": utc_now(),
+        "schema_version": 1,
+        "source_root": source_root.as_posix(),
+        "state": state,
+        "transport": "temporary_worktree",
+    }
+
+
+def cleanup_stale_validation_worktrees(config: Config, *, max_age_seconds: Optional[int] = None) -> list[str]:
+    """Remove old PP&D validation worktrees left by interrupted daemon runs."""
+
+    root = config.resolve(config.worktree_dir)
+    if not root.exists():
+        return []
+    cutoff = time.time() - float(config.worktree_stale_seconds if max_age_seconds is None else max_age_seconds)
+    removed: list[str] = []
+    for child in root.iterdir():
+        marker = child / "ppd-worktree.json"
+        if not child.is_dir() or not marker.exists():
+            continue
+        try:
+            if child.stat().st_mtime > cutoff:
+                continue
+            shutil.rmtree(child)
+            removed.append(child.name)
+        except FileNotFoundError:
+            continue
+    return removed
+
+
+def _copy_if_exists(source: Path, destination: Path, *, ignore: Optional[Callable[[str, list[str]], set[str]]] = None) -> None:
+    if not source.exists():
+        return
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    if source.is_dir():
+        shutil.copytree(source, destination, symlinks=True, dirs_exist_ok=True, ignore=ignore)
+    else:
+        shutil.copy2(source, destination)
+
+
+def _ignore_validation_tree_entries(directory: str, names: list[str]) -> set[str]:
+    ignored = {"__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "node_modules"}
+    path = Path(directory)
+    if path.name == "daemon":
+        ignored.update({"worktrees", "failed-patches", "accepted-work"})
+        ignored.update(name for name in names if name.endswith(".pid") or name.endswith(".out") or name.endswith(".jsonl"))
+        ignored.update({"status.json", "progress.json", "supervisor-status.json", "supervisor-actions.jsonl"})
+    return {name for name in names if name in ignored}
+
+
+@contextmanager
+def temporary_validation_worktree(config: Config) -> Iterator[Path]:
+    """Create an isolated PP&D validation tree and remove it after the cycle."""
+
+    cleanup_stale_validation_worktrees(config)
+    root = config.resolve(config.worktree_dir)
+    root.mkdir(parents=True, exist_ok=True)
+    worktree = root / f"cycle-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%S%fZ')}-{uuid.uuid4().hex[:8]}"
+    worktree.mkdir(parents=True)
+    marker = worktree / "ppd-worktree.json"
+    marker.write_text(
+        json.dumps(worktree_marker_payload(state="initializing", source_root=config.repo_root), indent=2, sort_keys=True)
+        + "\n",
+        encoding="utf-8",
+    )
+    try:
+        _copy_if_exists(config.repo_root / "ppd", worktree / "ppd", ignore=_ignore_validation_tree_entries)
+        docs_plan = config.resolve(config.plan_doc)
+        if docs_plan.exists():
+            _copy_if_exists(docs_plan, worktree / config.plan_doc)
+        for root_file in ("package.json", "package-lock.json", "tsconfig.json"):
+            _copy_if_exists(config.repo_root / root_file, worktree / root_file)
+        marker.write_text(
+            json.dumps(worktree_marker_payload(state="ready", source_root=config.repo_root), indent=2, sort_keys=True)
+            + "\n",
+            encoding="utf-8",
+        )
+        yield worktree
+    finally:
+        try:
+            shutil.rmtree(worktree)
+        except FileNotFoundError:
+            pass
+
+
+def worktree_config(config: Config, worktree: Path) -> Config:
+    return replace(
+        config,
+        repo_root=worktree,
+        repair_validation_failures=False,
+        validation_repair_callback=None,
+    )
+
+
+def proposal_patch_from_worktree(config: Config, worktree: Path, changed: Iterable[str]) -> str:
+    parts: list[str] = []
+    for rel in changed:
+        source = config.resolve(Path(rel))
+        candidate = worktree / rel
+        before = source.read_text(encoding="utf-8") if source.exists() else ""
+        after = candidate.read_text(encoding="utf-8") if candidate.exists() else ""
+        parts.append(diff_for_file(rel, before, after))
+    return "".join(parts)
+
+
+def materialize_proposal_in_worktree(proposal: Proposal, config: Config, worktree: Path) -> list[str]:
+    changed: list[str] = []
+    seen: set[str] = set()
+    for item in proposal.files:
+        rel = normalized_relative_path(item["path"])
+        target = worktree / rel
+        before = target.read_text(encoding="utf-8") if target.exists() else None
+        after = item["content"]
+        if before == after:
+            continue
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(after, encoding="utf-8")
+        if rel not in seen:
+            seen.add(rel)
+            changed.append(rel)
+    return changed
+
+
+def proposal_files_from_worktree(worktree: Path, changed: Iterable[str]) -> list[dict[str, str]]:
+    files: list[dict[str, str]] = []
+    for rel in changed:
+        target = worktree / rel
+        if target.exists():
+            files.append({"path": rel, "content": target.read_text(encoding="utf-8")})
+    return files
+
+
+def promote_worktree_files(config: Config, worktree: Path, changed: Iterable[str]) -> None:
+    for rel in changed:
+        source = worktree / rel
+        target = config.resolve(Path(rel))
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(source.read_text(encoding="utf-8"), encoding="utf-8")
+
+
+def validation_results_from_syntax_preflight(worktree: Path, changed: list[str], config: Config) -> tuple[list[CommandResult], list[str], str]:
+    syntax_preflight = run_apply_flow_syntax_preflight(
+        worktree,
+        changed,
+        timeout=config.command_timeout_seconds,
+    )
+    results = [
+        CommandResult(
+            command=result.command,
+            returncode=result.returncode,
+            stdout=result.stdout,
+            stderr=result.stderr,
+        )
+        for result in syntax_preflight.validation_results
+    ]
+    return results, list(syntax_preflight.errors), syntax_preflight.failure_kind
+
+
+def build_validation_repair_prompt(proposal: Proposal, config: Config) -> str:
+    failed_results = "\n".join(
+        json.dumps(result.compact(limit=1200), sort_keys=True)
+        for result in proposal.validation_results
+        if not result.ok
+    )
+    files = "\n".join(f"- {path}" for path in proposal.changed_files)
+    return f"""
+You are repairing a PP&D daemon candidate inside an isolated temporary validation worktree.
+
+Return exactly one JSON object with complete file replacements. Do not include markdown.
+
+Original task:
+{proposal.target_task}
+
+Current failed candidate:
+- summary: {proposal.summary}
+- changed files:
+{files}
+
+Failing validation results:
+{failed_results or "No failing command output was captured."}
+
+Repair rules:
+- Edit only files under ppd/ or docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md.
+- Keep the repair smaller than the failed candidate when possible.
+- Do not create private DevHub artifacts, raw crawl output, downloaded documents, browser traces, screenshots, credentials, or payment data.
+- Return JSON in this shape:
+{{"summary":"short repair summary","impact":"why this fixes validation","files":[{{"path":"ppd/...","content":"complete replacement"}}]}}
+"""
+
+
+def call_validation_repair_llm(prompt: str, config: Config) -> str:
+    if config.validation_repair_callback is not None:
+        return config.validation_repair_callback(prompt, config)
+    return call_llm(prompt, config)
+
+
+def attempt_validation_repair_pass(
+    proposal: Proposal,
+    config: Config,
+    worktree: Path,
+) -> tuple[bool, list[str], str]:
+    if not config.repair_validation_failures or config.max_validation_repair_attempts <= 0:
+        return False, proposal.changed_files, ""
+    try:
+        raw = call_validation_repair_llm(build_validation_repair_prompt(proposal, config), config)
+        repair = parse_proposal(raw)
+    except BaseException as exc:
+        proposal.errors.append(f"Validation repair pass failed before producing JSON: {compact_message(exc)}")
+        return False, proposal.changed_files, ""
+    repair.target_task = proposal.target_task
+    repair_errors: list[str] = []
+    for item in repair.files:
+        repair_errors.extend(validate_write_path(item["path"]))
+    if repair_errors:
+        proposal.errors.extend(f"Validation repair pass rejected write path: {error}" for error in repair_errors)
+        return False, proposal.changed_files, ""
+    if not repair.files:
+        proposal.errors.append("Validation repair pass produced no file replacements.")
+        return False, proposal.changed_files, ""
+
+    changed = list(dict.fromkeys(proposal.changed_files + materialize_proposal_in_worktree(repair, config, worktree)))
+    repair_results, repair_preflight_errors, repair_failure_kind = validation_results_from_syntax_preflight(
+        worktree,
+        changed,
+        config,
+    )
+    proposal.validation_results = repair_results
+    if repair_preflight_errors:
+        proposal.errors.extend("Validation repair pass syntax preflight failed: " + error for error in repair_preflight_errors)
+        proposal.failure_kind = repair_failure_kind or "syntax_preflight"
+        return False, changed, proposal_patch_from_worktree(config, worktree, changed)
+
+    proposal.validation_results = run_validation(worktree_config(config, worktree))
+    if not all(result.ok for result in proposal.validation_results):
+        proposal.errors.append("Validation repair pass failed; candidate worktree was not promoted.")
+        proposal.failure_kind = "validation"
+        return False, changed, proposal_patch_from_worktree(config, worktree, changed)
+
+    proposal.summary = repair.summary or proposal.summary
+    proposal.impact = repair.impact or proposal.impact
+    proposal.files = proposal_files_from_worktree(worktree, changed)
+    proposal.changed_files = changed
+    proposal.errors = []
+    return True, changed, proposal_patch_from_worktree(config, worktree, changed)
+
+
 def apply_files_with_validation(proposal: Proposal, config: Config) -> Proposal:
     preflight_errors: list[str] = []
     for item in proposal.files:
@@ -689,80 +937,47 @@ def apply_files_with_validation(proposal: Proposal, config: Config) -> Proposal:
         persist_failed_work(proposal, config, patch="", reason="preflight")
         return proposal
 
-    backups: dict[Path, Optional[str]] = {}
-    changed: list[str] = []
-    patch_parts: list[str] = []
-    for item in proposal.files:
-        rel = normalized_relative_path(item["path"])
-        target = config.resolve(Path(rel))
-        before = target.read_text(encoding="utf-8") if target.exists() else None
-        after = item["content"]
-        if before == after:
-            continue
-        backups[target] = before
-        target.parent.mkdir(parents=True, exist_ok=True)
-        target.write_text(after, encoding="utf-8")
-        changed.append(rel)
-        patch_parts.append(diff_for_file(rel, before or "", after))
+    with temporary_validation_worktree(config) as worktree:
+        changed = materialize_proposal_in_worktree(proposal, config, worktree)
+        proposal.changed_files = changed
+        if not changed:
+            proposal.errors.append("Proposal made no content changes.")
+            proposal.failure_kind = "no_change"
+            proposal.validation_results = run_validation(worktree_config(config, worktree))
+            persist_failed_work(proposal, config, patch="", reason="no_change", transport="temporary_worktree")
+            return proposal
 
-    proposal.changed_files = changed
-    if not changed:
-        proposal.errors.append("Proposal made no content changes.")
-        proposal.failure_kind = "no_change"
-        proposal.validation_results = run_validation(config)
-        persist_failed_work(proposal, config, patch="", reason="no_change")
-        return proposal
-
-    patch_text = "".join(patch_parts)
-    syntax_preflight = run_apply_flow_syntax_preflight(
-        config.repo_root,
-        changed,
-        timeout=config.command_timeout_seconds,
-    )
-    proposal.validation_results = [
-        CommandResult(
-            command=result.command,
-            returncode=result.returncode,
-            stdout=result.stdout,
-            stderr=result.stderr,
+        patch_text = proposal_patch_from_worktree(config, worktree, changed)
+        proposal.validation_results, preflight_errors, failure_kind = validation_results_from_syntax_preflight(
+            worktree,
+            changed,
+            config,
         )
-        for result in syntax_preflight.validation_results
-    ]
-    if not syntax_preflight.ok:
-        for path, before in backups.items():
-            if before is None:
-                try:
-                    path.unlink()
-                except FileNotFoundError:
-                    pass
-            else:
-                path.write_text(before, encoding="utf-8")
-        proposal.errors.extend(syntax_preflight.errors)
-        proposal.failure_kind = syntax_preflight.failure_kind
-        persist_failed_work(proposal, config, patch=patch_text, reason="syntax_preflight")
-        return proposal
+        if preflight_errors:
+            proposal.errors.extend(preflight_errors)
+            proposal.failure_kind = failure_kind
+            persist_failed_work(proposal, config, patch=patch_text, reason="syntax_preflight", transport="temporary_worktree")
+            return proposal
 
-    proposal.validation_results = run_validation(config)
-    if not all(result.ok for result in proposal.validation_results):
-        for path, before in backups.items():
-            if before is None:
-                try:
-                    path.unlink()
-                except FileNotFoundError:
-                    pass
-            else:
-                path.write_text(before, encoding="utf-8")
-        proposal.errors.append("Validation failed; file edits were rolled back.")
-        proposal.failure_kind = "validation"
-        persist_failed_work(proposal, config, patch=patch_text, reason="validation")
-        return proposal
+        proposal.validation_results = run_validation(worktree_config(config, worktree))
+        if not all(result.ok for result in proposal.validation_results):
+            repaired, changed, repair_patch = attempt_validation_repair_pass(proposal, config, worktree)
+            patch_text = repair_patch or proposal_patch_from_worktree(config, worktree, changed)
+            proposal.changed_files = changed
+            if not repaired:
+                if not proposal.failure_kind:
+                    proposal.errors.append("Validation failed in temporary worktree; candidate was not promoted.")
+                    proposal.failure_kind = "validation"
+                persist_failed_work(proposal, config, patch=patch_text, reason=proposal.failure_kind or "validation", transport="temporary_worktree")
+                return proposal
 
-    proposal.applied = True
-    persist_accepted_work(proposal, config, patch=patch_text)
+        promote_worktree_files(config, worktree, proposal.changed_files)
+        proposal.applied = True
+        persist_accepted_work(proposal, config, patch=patch_text, transport="temporary_worktree")
     return proposal
 
 
-def persist_accepted_work(proposal: Proposal, config: Config, *, patch: str) -> None:
+def persist_accepted_work(proposal: Proposal, config: Config, *, patch: str, transport: str = "direct") -> None:
     config.resolve(config.accepted_dir).mkdir(parents=True, exist_ok=True)
     slug = re.sub(r"[^A-Za-z0-9._-]+", "-", proposal.summary.lower()).strip("-")[:80] or "accepted-work"
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
@@ -773,21 +988,23 @@ def persist_accepted_work(proposal: Proposal, config: Config, *, patch: str) -> 
         "summary": proposal.summary,
         "impact": proposal.impact,
         "changed_files": proposal.changed_files,
+        "transport": transport,
         "validation_results": [result.compact() for result in proposal.validation_results],
     }
     base.with_suffix(".json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     base.with_suffix(".patch").write_text(patch, encoding="utf-8")
     base.with_suffix(".stat.txt").write_text("\n".join(proposal.changed_files) + "\n", encoding="utf-8")
-    append_accepted_work_ledger(proposal, config, base=base)
+    append_accepted_work_ledger(proposal, config, base=base, transport=transport)
 
 
-def append_accepted_work_ledger(proposal: Proposal, config: Config, *, base: Path) -> None:
+def append_accepted_work_ledger(proposal: Proposal, config: Config, *, base: Path, transport: str = "direct") -> None:
     entry = build_accepted_work_ledger_entry(
         repo_root=config.repo_root,
         target_task=proposal.target_task,
         summary=proposal.summary,
         impact=proposal.impact,
         changed_files=proposal.changed_files,
+        transport=transport,
         artifacts=AcceptedWorkArtifacts(
             manifest=base.with_suffix(".json"),
             patch=base.with_suffix(".patch"),
@@ -798,7 +1015,7 @@ def append_accepted_work_ledger(proposal: Proposal, config: Config, *, base: Pat
     append_accepted_work_jsonl(config.resolve(config.accepted_dir), entry)
 
 
-def persist_failed_work(proposal: Proposal, config: Config, *, patch: str, reason: str) -> None:
+def persist_failed_work(proposal: Proposal, config: Config, *, patch: str, reason: str, transport: str = "direct") -> None:
     config.resolve(config.failed_dir).mkdir(parents=True, exist_ok=True)
     slug = re.sub(r"[^A-Za-z0-9._-]+", "-", (proposal.summary or reason).lower()).strip("-")[:80] or "failed-work"
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
@@ -812,6 +1029,7 @@ def persist_failed_work(proposal: Proposal, config: Config, *, patch: str, reaso
         "files": [item.get("path", "") for item in proposal.files],
         "changed_files": proposal.changed_files,
         "errors": [compact_message(error) for error in proposal.errors],
+        "transport": transport,
         "validation_results": [result.compact() for result in proposal.validation_results],
     }
     base.with_suffix(".json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
@@ -1210,7 +1428,7 @@ def self_test(repo_root: Path) -> int:
     if not parse_tasks(board):
         errors.append("task board has no checkbox tasks")
     gitignore = (repo_root / "ppd/.gitignore").read_text(encoding="utf-8") if (repo_root / "ppd/.gitignore").exists() else ""
-    for needle in ("data/private/", "data/raw/", "daemon/failed-patches/"):
+    for needle in ("data/private/", "data/raw/", "daemon/failed-patches/", "daemon/worktrees/"):
         if needle not in gitignore:
             errors.append(f"ppd/.gitignore missing {needle}")
     for prefix in DISALLOWED_WRITE_PREFIXES:
@@ -1342,6 +1560,8 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     parser.add_argument("--allow-local-fallback", action="store_true", help="Allow local fallback providers")
     parser.add_argument("--revisit-blocked", action="store_true", help="Revisit blocked tasks after needed tasks are exhausted")
     parser.add_argument("--max-task-failures-before-block", type=int, default=3, help="Validation/preflight failures before marking a task blocked")
+    parser.add_argument("--repair-validation-failures", action="store_true", help="Run one temporary-worktree repair pass when validation fails")
+    parser.add_argument("--max-validation-repair-attempts", type=int, default=1, help="Validation repair attempts per candidate worktree")
     parser.add_argument("--self-test", action="store_true", help="Run daemon self-test and exit")
     return parser.parse_args(argv)
 
@@ -1363,6 +1583,8 @@ def main(argv: Optional[list[str]] = None) -> int:
         allow_local_fallback=bool(args.allow_local_fallback),
         revisit_blocked=bool(args.revisit_blocked),
         max_task_failures_before_block=max(1, int(args.max_task_failures_before_block)),
+        repair_validation_failures=bool(args.repair_validation_failures),
+        max_validation_repair_attempts=max(0, int(args.max_validation_repair_attempts)),
     )
     proposals = Daemon(config).run()
     print(json.dumps([proposal.to_dict() for proposal in proposals], indent=2))

@@ -34,6 +34,7 @@ class DaemonControlProcessFamilyShutdownTest(unittest.TestCase):
         self.assertIn('kill -KILL -- "-$pgid"', source)
         self.assertIn('[[ "$ppid" == "1" ]]', source)
         self.assertIn("/PPD_LLM_PROMPT_FILE/", source)
+        self.assertIn("--repair-validation-failures", source)
         self.assertIn('terminate_process_family "$pid" "PP&D daemon"', source)
         self.assertIn('terminate_process_family "$pid" "PP&D supervisor"', source)
 

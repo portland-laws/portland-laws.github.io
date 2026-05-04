@@ -29,6 +29,7 @@ from ppd.daemon.ppd_daemon import (  # noqa: E402
     apply_files_with_validation,
     atomic_write_json,
     compact_message,
+    cleanup_stale_validation_worktrees,
     is_private_write_path,
     parse_proposal,
     parse_tasks,
@@ -1563,7 +1564,14 @@ def run_control(config: SupervisorConfig, command: str) -> subprocess.CompletedP
 
 
 def supervisor_daemon_config(config: SupervisorConfig) -> DaemonConfig:
-    return DaemonConfig(repo_root=config.repo_root, apply=True)
+    return DaemonConfig(
+        repo_root=config.repo_root,
+        apply=True,
+        llm_timeout_seconds=config.llm_timeout_seconds,
+        model_name=config.model_name,
+        provider=config.provider,
+        repair_validation_failures=config.self_heal,
+    )
 
 
 def should_apply_builtin_repair(decision: SupervisorDecision, proposal: Proposal) -> bool:
@@ -1846,6 +1854,7 @@ def write_supervisor_status(config: SupervisorConfig, decision: SupervisorDecisi
 
 
 def run_once(config: SupervisorConfig) -> SupervisorDecision:
+    cleanup_stale_validation_worktrees(supervisor_daemon_config(config))
     decision = diagnose(config)
     proposal: Optional[Proposal] = None
     if decision.action == "reconcile_repeated_llm_loop_and_restart" and config.apply:

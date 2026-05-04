@@ -25,6 +25,7 @@ class AcceptedWorkLedgerTests(unittest.TestCase):
                 summary="Add accepted ledger",
                 impact="Makes successful daemon rounds auditable.",
                 changed_files=["ppd/tests/example.py", "ppd/daemon/example.py"],
+                transport="temporary_worktree",
                 artifacts=artifacts,
                 validation_results=[{"command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"], "returncode": 0, "stdout": "raw output ignored"}],
                 created_at="2026-05-01T00:00:00Z",
@@ -32,6 +33,7 @@ class AcceptedWorkLedgerTests(unittest.TestCase):
 
         self.assertEqual(entry["schema_version"], 1)
         self.assertTrue(entry["validation_passed"])
+        self.assertEqual(entry["transport"], "temporary_worktree")
         self.assertEqual(entry["changed_files"], ["ppd/daemon/example.py", "ppd/tests/example.py"])
         self.assertEqual(entry["artifacts"]["manifest"], "ppd/daemon/accepted-work/round.json")
         self.assertNotIn("stdout", entry["validation_results"][0])

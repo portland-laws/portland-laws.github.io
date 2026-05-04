@@ -2,11 +2,16 @@ import {
   DcecNaturalLanguageConverter,
   DcecPatternMatcher,
   DcecProofCache,
+  NaturalLanguageConverter,
+  PatternMatcher,
   compileDcecPolicyText,
   createEnhancedDcecNlConverter,
+  create_enhanced_nl_converter,
   detectDcecPolicyLanguage,
   linearizeDcecWithGrammar,
+  linearize_with_grammar,
   parseDcecWithGrammar,
+  parse_with_grammar,
   proveDcecFormula,
 } from './nlConverter';
 import { DcecNamespace } from './dcecNamespace';
@@ -104,11 +109,28 @@ describe('DCEC natural language converter parity helpers', () => {
   it('keeps enhanced grammar hooks local and dependency-free', () => {
     const converter = createEnhancedDcecNlConverter(true);
 
-    expect(converter.useGrammar).toBe(false);
-    expect(parseDcecWithGrammar('tenant must pay')).toBeUndefined();
+    expect(converter.useGrammar).toBe(true);
+    expect(converter.grammar?.browser_native).toBe(true);
+    expect(parseDcecWithGrammar('tenant must pay')?.toString()).toBe('O(pay(tenant:Agent))');
+    expect(linearizeDcecWithGrammar(converter.convertToDcec('tenant must pay').dcec_formula!)).toBe(
+      'must pay',
+    );
+  });
+
+  it('exposes Python-compatible nl_converter names without runtime bridges', () => {
+    const converter = new NaturalLanguageConverter();
+    const matcher = new PatternMatcher(new DcecNamespace());
+    const enhanced = create_enhanced_nl_converter(true);
+
+    expect(converter.convert_to_dcec('tenant may enter').dcec_formula?.toString()).toBe(
+      'P(enter(tenant:Agent))',
+    );
+    expect(converter.convert_from_dcec(matcher.convert('tenant must repair'))).toBe('must repair');
+    expect(enhanced.useGrammar).toBe(true);
+    expect(parse_with_grammar('next tenant must pay')?.toString()).toBe('X(O(pay(tenant:Agent)))');
     expect(
-      linearizeDcecWithGrammar(converter.convertToDcec('tenant must pay').dcec_formula!),
-    ).toBeUndefined();
+      linearize_with_grammar(converter.convertToDcec('tenant must not smoke').dcec_formula!),
+    ).toBe('must not smoke');
   });
 
   it('detects policy language with browser-native keyword profiles', () => {

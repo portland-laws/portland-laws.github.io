@@ -9,6 +9,7 @@
 /daemon/*.out
 /daemon/accepted-work/*.tmp
 /daemon/failed-patches/
+/daemon/worktrees/
 
 # Private DevHub account/session artifacts
 /data/private/
