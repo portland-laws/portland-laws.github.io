@@ -19,6 +19,7 @@ export * from './domain/temporalDeonticRagStore';
 export * from './cvc5ProverBridge';
 export * from './demoTemporalDeonticRag';
 export * from './externalProversBridge';
+export * from './interactiveFolConstructor';
 export * from './ipldLogicStorage';
 export * from './interactive';
 export * from './leanProverBridge';

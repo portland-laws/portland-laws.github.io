@@ -7,6 +7,10 @@ import {
   create_browser_native_fol_constructor_io,
 } from './folConstructorIo';
 import {
+  INTEGRATION_INTERACTIVE_FOL_CONSTRUCTOR_METADATA,
+  create_browser_native_integration_interactive_fol_constructor,
+} from '../interactiveFolConstructor';
+import {
   INTERACTIVE_FOL_UTILS_METADATA,
   analyze_interactive_fol_input,
   extract_interactive_fol_symbols,
@@ -183,6 +187,49 @@ describe('BrowserNativeInteractiveFolConstructor', () => {
       ok: false,
       questions: [{ id: 'question-empty-input', reason: 'empty_input' }],
       errors: ['empty_prompt'],
+    });
+  });
+});
+
+describe('BrowserNativeIntegrationInteractiveFolConstructor', () => {
+  it('ports root interactive_fol_constructor.py as a browser-native compatibility facade', () => {
+    const constructor = create_browser_native_integration_interactive_fol_constructor();
+    const batch = constructor.constructBatch([
+      'All tenants are residents.',
+      'No resident is expired.',
+    ]);
+
+    expect(constructor.metadata).toEqual({
+      sourcePythonModule: 'logic/integration/interactive_fol_constructor.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      runtimeDependencies: [],
+      implementation: 'browser-native-typescript',
+      delegatesTo: 'logic/integration/interactive/interactive_fol_constructor.py',
+    });
+    expect(batch).toHaveLength(2);
+    expect(batch[0]).toMatchObject({
+      ok: true,
+      formula: '(∀x (Tenants(x) → Residents(x)))',
+      metadata: INTEGRATION_INTERACTIVE_FOL_CONSTRUCTOR_METADATA,
+    });
+    expect(batch[1]).toMatchObject({
+      ok: true,
+      formula: '(∀x (Resident(x) → ¬Expired(x)))',
+      metadata: INTEGRATION_INTERACTIVE_FOL_CONSTRUCTOR_METADATA,
+    });
+    expect(batch[1].session.prompts).toHaveLength(2);
+  });
+
+  it('fails closed locally for empty root-constructor input', () => {
+    const constructor = create_browser_native_integration_interactive_fol_constructor();
+
+    expect(constructor.construct('   ')).toMatchObject({
+      ok: false,
+      questions: [{ id: 'question-empty-input', reason: 'empty_input' }],
+      errors: ['empty_prompt'],
+      metadata: INTEGRATION_INTERACTIVE_FOL_CONSTRUCTOR_METADATA,
     });
   });
 });
