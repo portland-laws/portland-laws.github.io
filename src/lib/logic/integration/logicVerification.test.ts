@@ -20,6 +20,12 @@ import {
   normalize_logic_verification_formula,
   summarize_logic_verification_results,
 } from './logicVerificationUtils';
+import {
+  build_reasoning_logic_theorem_formula,
+  normalize_reasoning_logic_assumptions,
+  summarize_reasoning_logic_verification_results,
+  validate_reasoning_logic_verification_inputs,
+} from './reasoningLogicVerificationUtils';
 
 describe('BrowserNativeLogicVerification', () => {
   it('ports logic_verification.py as local browser-native formula verification', () => {
@@ -243,5 +249,52 @@ describe('BrowserNativeLogicVerification', () => {
     expect(new ReasoningLogicVerification().metadata.sourcePythonModule).toBe(
       'logic/integration/reasoning/logic_verification.py',
     );
+  });
+
+  it('ports reasoning logic_verification_utils.py as local theorem utilities', () => {
+    const formula = build_reasoning_logic_theorem_formula('  ∀ x  (Comply(x)) ', [
+      ' Resident(x) ',
+      'Resident(x)',
+      '',
+    ]);
+    const result = verify_logic_formula('Tenant(x)', { format: 'fol' });
+    const blocked = validate_reasoning_logic_verification_inputs('Comply(x)', [
+      'fetch("https://example.test/prove")',
+    ]);
+    const summary = summarize_reasoning_logic_verification_results([
+      result,
+      verify_logic_formula('fetch("https://example.test/prove")', { requirePredicate: false }),
+    ]);
+
+    expect(normalize_reasoning_logic_assumptions([' A(x) ', 'A(x)', null, 'B(x)'])).toEqual([
+      'A(x)',
+      'B(x)',
+    ]);
+    expect(formula).toBe('(forall x (implies (and Resident(x)) forall x (Comply(x))))');
+    expect(blocked).toMatchObject({
+      valid: false,
+      metadata: {
+        sourcePythonModule: 'logic/integration/reasoning/logic_verification_utils.py',
+        browserNative: true,
+        serverCallsAllowed: false,
+        pythonRuntimeAllowed: false,
+      },
+    });
+    expect(blocked.issues).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({ field: 'assumptions.0', severity: 'error' }),
+      ]),
+    );
+    expect(summary).toMatchObject({
+      total: 2,
+      verified: 1,
+      invalid: 1,
+      unsupported: 0,
+      success: false,
+      failedClosed: true,
+      metadata: {
+        sourcePythonModule: 'logic/integration/reasoning/logic_verification_utils.py',
+      },
+    });
   });
 });

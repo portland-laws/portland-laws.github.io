@@ -26,6 +26,7 @@ export * from './logicTranslationCore';
 export * from './logicVerification';
 export * from './logicVerificationTypes';
 export * from './logicVerificationUtils';
+export * from './reasoningLogicVerificationUtils';
 export * from './leanProverBridge';
 export * from './modalLogicExtension';
 export * from './neurosymbolic';

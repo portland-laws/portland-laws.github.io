@@ -8,6 +8,7 @@ import {
   makeLogicVerificationIssue,
   normalizeLogicVerificationFormula,
 } from './logicVerificationUtils';
+import { buildReasoningLogicTheoremFormula } from './reasoningLogicVerificationUtils';
 
 export type LogicVerificationFormat = 'auto' | 'fol' | 'tdfol' | 'cec' | 'dcec';
 export type LogicVerificationStatus = 'verified' | 'invalid' | 'unsupported';
@@ -277,14 +278,7 @@ export class BrowserNativeReasoningLogicVerification {
     assumptions: Array<string> = [],
     options: LogicVerificationOptions = {},
   ): LogicVerificationResult {
-    const joinedAssumptions = assumptions
-      .map((assumption) => normalizeLogicVerificationFormula(assumption))
-      .filter((assumption) => assumption.length > 0);
-    const theoremFormula = normalizeLogicVerificationFormula(theorem);
-    const formula =
-      joinedAssumptions.length === 0
-        ? theoremFormula
-        : `(forall x (implies (and ${joinedAssumptions.join(' ')}) ${theoremFormula}))`;
+    const formula = buildReasoningLogicTheoremFormula(theorem, assumptions);
     const result = this.verifier.verify(formula, options);
     return {
       ...result,
