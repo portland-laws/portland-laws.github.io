@@ -7,6 +7,12 @@ import {
   create_browser_native_fol_constructor_io,
 } from './folConstructorIo';
 import {
+  INTERACTIVE_FOL_UTILS_METADATA,
+  analyze_interactive_fol_input,
+  extract_interactive_fol_symbols,
+  normalize_interactive_fol_input,
+} from './interactiveFolUtils';
+import {
   INTERACTIVE_FOL_TYPES_METADATA,
   checkInteractiveFolType,
   interactive_fol_type_descriptors,
@@ -63,6 +69,46 @@ describe('BrowserNativeFolConstructorIo', () => {
     expect(io.appendPrompt(restored.session, '   ')).toMatchObject({
       ok: false,
       errors: ['empty_prompt'],
+    });
+  });
+});
+
+describe('Interactive FOL utils', () => {
+  it('ports interactive_fol_utils.py normalization and deterministic analysis', () => {
+    const analysis = analyze_interactive_fol_input('  Tenant   provides notice  ', '(Notice(x))');
+
+    expect(INTERACTIVE_FOL_UTILS_METADATA).toEqual({
+      sourcePythonModule: 'logic/integration/interactive/interactive_fol_utils.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      runtimeDependencies: [],
+    });
+    expect(normalize_interactive_fol_input(12)).toBe('');
+    expect(analysis).toMatchObject({
+      normalizedText: 'Tenant provides notice',
+      formula: '(Notice(x))',
+      questions: [
+        { id: 'question-missing-quantifier', reason: 'missing_quantifier' },
+        { id: 'question-missing-relation', reason: 'missing_relation' },
+      ],
+      metadata: INTERACTIVE_FOL_UTILS_METADATA,
+    });
+    expect(analysis.symbols).toEqual([
+      { name: 'Notice', kind: 'predicate' },
+      { name: 'x', kind: 'variable' },
+    ]);
+  });
+
+  it('extracts predicates and variables from quantified formulas without runtime fallbacks', () => {
+    expect(extract_interactive_fol_symbols('∀x (Tenant(x) → Resident(x))')).toEqual([
+      { name: 'Tenant', kind: 'predicate' },
+      { name: 'Resident', kind: 'predicate' },
+      { name: 'x', kind: 'variable' },
+    ]);
+    expect(analyze_interactive_fol_input('   ', '', ['empty_prompt'])).toMatchObject({
+      questions: [{ id: 'question-empty-input', reason: 'empty_input' }],
+      warnings: ['empty_input'],
     });
   });
 });

@@ -1,4 +1,5 @@
 import { parseFolUtilityText, validateFolSyntax } from '../../fol/parser';
+import { analyzeInteractiveFolInput } from './interactiveFolUtils';
 
 export interface FolConstructorIoMetadata {
   sourcePythonModule: 'logic/integration/interactive/_fol_constructor_io.py';
@@ -200,20 +201,16 @@ export class BrowserNativeInteractiveFolConstructor {
     sourceText: string,
     ioResult: FolConstructorIoResult,
   ): InteractiveFolConstructionResult {
-    const parsed = parseFolUtilityText(sourceText, { failOnInvalid: true });
-    const questions = buildInteractiveQuestions(
-      sourceText,
-      parsed,
-      ioResult.formula,
-      ioResult.errors,
-    );
+    const analysis = analyzeInteractiveFolInput(sourceText, ioResult.formula, ioResult.errors);
     const errors = [...ioResult.errors];
     return {
-      ok: errors.length === 0 && questions.every((question) => question.reason !== 'empty_input'),
+      ok:
+        errors.length === 0 &&
+        analysis.questions.every((question) => question.reason !== 'empty_input'),
       session: ioResult.session,
       formula: ioResult.formula,
-      questions,
-      symbols: extractFormulaSymbols(ioResult.formula),
+      questions: analysis.questions,
+      symbols: analysis.symbols,
       errors,
       metadata: this.metadata,
     };
