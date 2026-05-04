@@ -632,3 +632,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T050645Z-ported-tdfol-exceptions-to-browser-native-typescript-with-focused-jest-coverage..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T050645Z-ported-tdfol-exceptions-to-browser-native-typescript-with-focused-jest-coverage..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T050645Z-ported-tdfol-exceptions-to-browser-native-typescript-with-focused-jest-coverage..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 05:09:14 UTC
+
+- Target: `Task checkbox-260: Port remaining Python logic module `logic/TDFOL/expansion_rules.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported remaining TDFOL expansion_rules quantifier behavior with deterministic browser-native gamma and delta witness expansion.
+- Impact: Extends src/lib/logic/tdfol/expansionRules.ts beyond propositional tableaux so TDFOL universal and existential formulas expand locally through deterministic substitution metadata, and adds focused Jest coverage that validates formatted instances, witness terms, rule classes, and registry selection without Python, server, filesystem, subprocess, RPC, or Node-only browser runtime dependencies.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/expansionRules.test.ts`, `src/lib/logic/tdfol/expansionRules.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T050914Z-ported-remaining-tdfol-expansion_rules-quantifier-behavior-with-deterministic-br.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T050914Z-ported-remaining-tdfol-expansion_rules-quantifier-behavior-with-deterministic-br.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T050914Z-ported-remaining-tdfol-expansion_rules-quantifier-behavior-with-deterministic-br.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

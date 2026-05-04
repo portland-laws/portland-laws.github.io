@@ -770,7 +770,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/TDFOL/example_formula_dependency_graph.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/TDFOL/example_performance_profiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/TDFOL/exceptions.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/TDFOL/expansion_rules.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/TDFOL/expansion_rules.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/formula_dependency_graph.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/inference_rules/base.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/inference_rules/deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 05:06:45 UTC
+Last updated: 2026-05-04 05:09:14 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-260: Port remaining Python logic module 'logic/TDFOL/expansion_rules.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-261: Port remaining Python logic module 'logic/TDFOL/formula_dependency_graph.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1234,8 +1234,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-256: Port remaining Python logic module 'logic/TDFOL/demonstrate_performance_dashboard.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-257: Port remaining Python logic module 'logic/TDFOL/example_formula_dependency_graph.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-258: Port remaining Python logic module 'logic/TDFOL/example_performance_profiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-259: Port remaining Python logic module 'logic/TDFOL/exceptions.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-260: Port remaining Python logic module 'logic/TDFOL/expansion_rules.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-259: Port remaining Python logic module 'logic/TDFOL/exceptions.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-260: Port remaining Python logic module 'logic/TDFOL/expansion_rules.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-261: Port remaining Python logic module 'logic/TDFOL/formula_dependency_graph.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-262: Port remaining Python logic module 'logic/TDFOL/inference_rules/base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-263: Port remaining Python logic module 'logic/TDFOL/inference_rules/deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-259: Port remaining Python logic module 'logic/TDFOL/exceptions.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-260: Port remaining Python logic module 'logic/TDFOL/expansion_rules.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported TDFOL exceptions to browser-native TypeScript with focused Jest coverage.
-- Impact: Adds an exported TDFOL exception hierarchy, stable parity error codes, JSON serialization, Python-style aliases, and normalization of unknown thrown values for browser-native TDFOL callers. The focused Jest test validates hierarchy metadata, alias behavior, and fail-closed normalization without Python, server, filesystem, subprocess, or RPC dependencies.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/exceptions.test.ts`, `src/lib/logic/tdfol/exceptions.ts`, `src/lib/logic/tdfol/index.ts`
+- Summary: Ported remaining TDFOL expansion_rules quantifier behavior with deterministic browser-native gamma and delta witness expansion.
+- Impact: Extends src/lib/logic/tdfol/expansionRules.ts beyond propositional tableaux so TDFOL universal and existential formulas expand locally through deterministic substitution metadata, and adds focused Jest coverage that validates formatted instances, witness terms, rule classes, and registry selection without Python, server, filesystem, subprocess, RPC, or Node-only browser runtime dependencies.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/expansionRules.test.ts`, `src/lib/logic/tdfol/expansionRules.ts`
 
 ### Blocked Backlog
 
