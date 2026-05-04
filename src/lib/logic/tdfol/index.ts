@@ -2,6 +2,7 @@ export * from './ast';
 export * from './converter';
 export * from './countermodels';
 export * from './dependencyGraph';
+export * from './exceptions';
 export * from './expansionRules';
 export * from './formatter';
 export * from './inferenceRules';

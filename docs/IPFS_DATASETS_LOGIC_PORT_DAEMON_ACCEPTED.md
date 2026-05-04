@@ -623,3 +623,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T050259Z-ported-logic-tdfol-example_performance_profiler.py-as-a-browser-native-tdfol-pro.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T050259Z-ported-logic-tdfol-example_performance_profiler.py-as-a-browser-native-tdfol-pro.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T050259Z-ported-logic-tdfol-example_performance_profiler.py-as-a-browser-native-tdfol-pro.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 05:06:45 UTC
+
+- Target: `Task checkbox-259: Port remaining Python logic module `logic/TDFOL/exceptions.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported TDFOL exceptions to browser-native TypeScript with focused Jest coverage.
+- Impact: Adds an exported TDFOL exception hierarchy, stable parity error codes, JSON serialization, Python-style aliases, and normalization of unknown thrown values for browser-native TDFOL callers. The focused Jest test validates hierarchy metadata, alias behavior, and fail-closed normalization without Python, server, filesystem, subprocess, or RPC dependencies.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/exceptions.test.ts`, `src/lib/logic/tdfol/exceptions.ts`, `src/lib/logic/tdfol/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T050645Z-ported-tdfol-exceptions-to-browser-native-typescript-with-focused-jest-coverage..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T050645Z-ported-tdfol-exceptions-to-browser-native-typescript-with-focused-jest-coverage..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T050645Z-ported-tdfol-exceptions-to-browser-native-typescript-with-focused-jest-coverage..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
