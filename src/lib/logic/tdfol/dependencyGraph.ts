@@ -25,6 +25,41 @@ export interface TdfolDependencyGraphJson {
   edges: TdfolDependencyEdge[];
 }
 
+export interface TdfolExampleFormulaDependencyGraph {
+  proofResult: ProofResult;
+  graph: TdfolFormulaDependencyGraph;
+  json: TdfolDependencyGraphJson;
+  dot: string;
+  topologicalOrder: string[];
+  accessDecisionPath: string[];
+  unusedAxioms: string[];
+}
+
+export const TDFOL_EXAMPLE_FORMULA_DEPENDENCY_PROOF: ProofResult = {
+  status: 'proved',
+  theorem: 'Permitted(Alice, DatasetAlpha)',
+  method: 'tdfol-example-formula-dependency-graph',
+  steps: [
+    {
+      id: 's1',
+      rule: 'UniversalInstantiation',
+      premises: [
+        '∀a:Agent (RequestsAccess(a, DatasetAlpha) → OBLIGATION(ReviewAccess(a, DatasetAlpha)))',
+        'RequestsAccess(Alice, DatasetAlpha)',
+      ],
+      conclusion: 'OBLIGATION(ReviewAccess(Alice, DatasetAlpha))',
+      explanation: 'Instantiate the access-review policy for Alice.',
+    },
+    {
+      id: 's2',
+      rule: 'DeonticDischarge',
+      premises: ['OBLIGATION(ReviewAccess(Alice, DatasetAlpha))', 'Approved(Alice, DatasetAlpha)'],
+      conclusion: 'Permitted(Alice, DatasetAlpha)',
+      explanation: 'A completed approval discharges the review obligation into permission.',
+    },
+  ],
+};
+
 export class TdfolCircularDependencyError extends Error {
   constructor(readonly cycle: string[]) {
     super(`Circular dependency detected: ${cycle.join(' -> ')}`);
@@ -44,7 +79,11 @@ export class TdfolFormulaDependencyGraph {
     }
   }
 
-  addFormula(formula: string, type: TdfolFormulaNodeType = 'derived', metadata: Record<string, unknown> = {}): TdfolDependencyNode {
+  addFormula(
+    formula: string,
+    type: TdfolFormulaNodeType = 'derived',
+    metadata: Record<string, unknown> = {},
+  ): TdfolDependencyNode {
     const id = nodeId(formula);
     const existing = this.nodes.get(id);
     if (existing) {
@@ -61,7 +100,12 @@ export class TdfolFormulaDependencyGraph {
     return node;
   }
 
-  addDependency(sourceFormula: string, targetFormula: string, rule?: string, type: TdfolDependencyType = 'direct'): void {
+  addDependency(
+    sourceFormula: string,
+    targetFormula: string,
+    rule?: string,
+    type: TdfolDependencyType = 'direct',
+  ): void {
     const source = this.addFormula(sourceFormula, 'premise');
     const target = this.addFormula(targetFormula, 'derived');
     const edgeKey = `${source.id}->${target.id}:${rule ?? ''}:${type}`;
@@ -120,7 +164,9 @@ export class TdfolFormulaDependencyGraph {
   }
 
   topologicalOrder(): string[] {
-    const indegree = new Map([...this.nodes.keys()].map((id) => [id, this.reverseAdjacency.get(id)?.size ?? 0]));
+    const indegree = new Map(
+      [...this.nodes.keys()].map((id) => [id, this.reverseAdjacency.get(id)?.size ?? 0]),
+    );
     const queue = [...indegree.entries()].filter(([, degree]) => degree === 0).map(([id]) => id);
     const ordered: string[] = [];
     while (queue.length > 0) {
@@ -148,7 +194,9 @@ export class TdfolFormulaDependencyGraph {
   toDot(): string {
     const lines = ['digraph TDFOLProof {', '  rankdir=LR;'];
     for (const node of this.nodes.values()) {
-      lines.push(`  "${node.id}" [label="${escapeDot(node.formula)}", shape=${nodeShape(node.type)}];`);
+      lines.push(
+        `  "${node.id}" [label="${escapeDot(node.formula)}", shape=${nodeShape(node.type)}];`,
+      );
     }
     for (const edge of this.edges.values()) {
       const label = edge.rule ? ` [label="${escapeDot(edge.rule)}"]` : '';
@@ -165,6 +213,27 @@ export class TdfolFormulaDependencyGraph {
 
 export function buildTdfolDependencyGraph(proofResult: ProofResult): TdfolFormulaDependencyGraph {
   return new TdfolFormulaDependencyGraph(proofResult);
+}
+
+export function buildExampleTdfolFormulaDependencyGraph(): TdfolExampleFormulaDependencyGraph {
+  const graph = buildTdfolDependencyGraph(TDFOL_EXAMPLE_FORMULA_DEPENDENCY_PROOF);
+  graph.addFormula('RetentionOnly(ArchiveNotice)', 'axiom', {
+    example: 'unused_axiom',
+    reason: 'Included to mirror the Python example diagnostic path for unused axioms.',
+  });
+
+  return {
+    proofResult: TDFOL_EXAMPLE_FORMULA_DEPENDENCY_PROOF,
+    graph,
+    json: graph.toJson(),
+    dot: graph.toDot(),
+    topologicalOrder: graph.topologicalOrder(),
+    accessDecisionPath: graph.findPath(
+      'RequestsAccess(Alice, DatasetAlpha)',
+      'Permitted(Alice, DatasetAlpha)',
+    ),
+    unusedAxioms: graph.findUnusedAxioms(),
+  };
 }
 
 function nodeId(formula: string): string {

@@ -1,5 +1,10 @@
 import type { ProofResult } from '../types';
-import { TdfolFormulaDependencyGraph, buildTdfolDependencyGraph } from './dependencyGraph';
+import {
+  TDFOL_EXAMPLE_FORMULA_DEPENDENCY_PROOF,
+  TdfolFormulaDependencyGraph,
+  buildExampleTdfolFormulaDependencyGraph,
+  buildTdfolDependencyGraph,
+} from './dependencyGraph';
 
 const proof: ProofResult = {
   status: 'proved',
@@ -46,5 +51,32 @@ describe('TdfolFormulaDependencyGraph', () => {
     graph.addDependency('A', 'B', 'Rule');
 
     expect(() => graph.addDependency('B', 'A', 'Rule')).toThrow('Circular dependency detected');
+  });
+
+  it('ports the Python example formula dependency graph as a browser-native fixture', () => {
+    const example = buildExampleTdfolFormulaDependencyGraph();
+
+    expect(example.proofResult).toBe(TDFOL_EXAMPLE_FORMULA_DEPENDENCY_PROOF);
+    expect(example.json.nodes.map((node) => node.formula)).toEqual(
+      expect.arrayContaining([
+        'RequestsAccess(Alice, DatasetAlpha)',
+        'OBLIGATION(ReviewAccess(Alice, DatasetAlpha))',
+        'Permitted(Alice, DatasetAlpha)',
+        'RetentionOnly(ArchiveNotice)',
+      ]),
+    );
+    expect(example.json.edges.map((edge) => edge.rule)).toEqual(
+      expect.arrayContaining(['UniversalInstantiation', 'DeonticDischarge']),
+    );
+    expect(example.accessDecisionPath).toEqual([
+      'RequestsAccess(Alice, DatasetAlpha)',
+      'OBLIGATION(ReviewAccess(Alice, DatasetAlpha))',
+      'Permitted(Alice, DatasetAlpha)',
+    ]);
+    expect(example.topologicalOrder.indexOf('RequestsAccess(Alice, DatasetAlpha)')).toBeLessThan(
+      example.topologicalOrder.indexOf('Permitted(Alice, DatasetAlpha)'),
+    );
+    expect(example.unusedAxioms).toEqual(['RetentionOnly(ArchiveNotice)']);
+    expect(example.dot).toContain('DeonticDischarge');
   });
 });

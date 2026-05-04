@@ -605,3 +605,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T045857Z-ported-the-tdfol-performance-dashboard-demonstration-as-a-deterministic-browser-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T045857Z-ported-the-tdfol-performance-dashboard-demonstration-as-a-deterministic-browser-.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T045857Z-ported-the-tdfol-performance-dashboard-demonstration-as-a-deterministic-browser-.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 05:00:56 UTC
+
+- Target: `Task checkbox-257: Port remaining Python logic module `logic/TDFOL/example_formula_dependency_graph.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the TDFOL formula dependency graph example to a browser-native TypeScript fixture API.
+- Impact: The TDFOL dependency graph module now exports a deterministic example proof graph with JSON, DOT, topological order, path lookup, and unused-axiom diagnostics, and the Jest suite directly validates that browser-native surface without Python, server, filesystem, subprocess, RPC, or Node-only runtime dependencies.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/dependencyGraph.test.ts`, `src/lib/logic/tdfol/dependencyGraph.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T050056Z-ported-the-tdfol-formula-dependency-graph-example-to-a-browser-native-typescript.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T050056Z-ported-the-tdfol-formula-dependency-graph-example-to-a-browser-native-typescript.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T050056Z-ported-the-tdfol-formula-dependency-graph-example-to-a-browser-native-typescript.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
