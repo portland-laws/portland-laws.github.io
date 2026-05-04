@@ -805,7 +805,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/TDFOL/tdfol_inference_rules.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/TDFOL/tdfol_optimization.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/TDFOL/tdfol_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/TDFOL/tdfol_performance_engine.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/TDFOL/tdfol_performance_engine.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/tdfol_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/tdfol_prover.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/zkp_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 07:18:32 UTC
+Last updated: 2026-05-04 07:20:51 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-295: Port remaining Python logic module 'logic/TDFOL/tdfol_performance_engine.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-296: Port remaining Python logic module 'logic/TDFOL/tdfol_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1269,8 +1269,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-291: Port remaining Python logic module 'logic/TDFOL/tdfol_dcec_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-292: Port remaining Python logic module 'logic/TDFOL/tdfol_inference_rules.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-293: Port remaining Python logic module 'logic/TDFOL/tdfol_optimization.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-294: Port remaining Python logic module 'logic/TDFOL/tdfol_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-295: Port remaining Python logic module 'logic/TDFOL/tdfol_performance_engine.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-294: Port remaining Python logic module 'logic/TDFOL/tdfol_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-295: Port remaining Python logic module 'logic/TDFOL/tdfol_performance_engine.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-296: Port remaining Python logic module 'logic/TDFOL/tdfol_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-297: Port remaining Python logic module 'logic/TDFOL/tdfol_prover.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-298: Port remaining Python logic module 'logic/TDFOL/zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-294: Port remaining Python logic module 'logic/TDFOL/tdfol_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-295: Port remaining Python logic module 'logic/TDFOL/tdfol_performance_engine.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported the remaining tdfol_parser.py public parser surface into the browser-native TDFOL parser.
-- Impact: The TypeScript TDFOL parser now exposes tdfol_parser.py parity metadata, safe formula parsing, standalone term parsing, and Python-compatible sorted identifier handling, all exercised by the existing Jest parser validation with no server, Python, filesystem, subprocess, or RPC runtime dependency.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/parser.test.ts`, `src/lib/logic/tdfol/parser.ts`
+- Summary: Completed the TDFOL performance engine browser-native parity slice with module metadata and Python-compatible API aliases.
+- Impact: The TypeScript TDFOL performance engine now advertises logic/TDFOL/tdfol_performance_engine.py parity, exports metadata through statistics, and exposes snake_case methods that validation and Python-parity callers can exercise without server calls or a Python runtime.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/performanceEngine.test.ts`, `src/lib/logic/tdfol/performanceEngine.ts`
 
 ### Blocked Backlog
 
