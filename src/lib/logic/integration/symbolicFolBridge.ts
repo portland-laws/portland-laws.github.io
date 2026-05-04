@@ -32,6 +32,8 @@ export interface SymbolicFOLBridgeOptions {
   sourcePythonModule?: string;
 }
 
+export type RootSymbolicFOLBridgeOptions = Omit<SymbolicFOLBridgeOptions, 'sourcePythonModule'>;
+
 const STOP_WORDS = new Set([
   'all',
   'every',
@@ -231,6 +233,23 @@ export class SymbolicFOLBridge {
 }
 
 export const BrowserNativeSymbolicFOLBridge = SymbolicFOLBridge;
+
+export class RootSymbolicFOLBridge extends SymbolicFOLBridge {
+  constructor(options: RootSymbolicFOLBridgeOptions = {}) {
+    super({
+      ...options,
+      sourcePythonModule: 'logic/integration/symbolic_fol_bridge.py',
+    });
+  }
+}
+
+export const BrowserNativeRootSymbolicFOLBridge = RootSymbolicFOLBridge;
+
+export function createBrowserNativeRootSymbolicFOLBridge(
+  options: RootSymbolicFOLBridgeOptions = {},
+): RootSymbolicFOLBridge {
+  return new RootSymbolicFOLBridge(options);
+}
 
 function makeResult(
   folFormula: string,

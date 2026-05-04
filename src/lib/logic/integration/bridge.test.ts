@@ -27,7 +27,7 @@ import {
   createBrowserNativeSymbolicAiProverBridge,
   type BrowserNativeSymbolicAiProofResult,
 } from './symbolicAiProverBridge';
-import { SymbolicFOLBridge } from './symbolicFolBridge';
+import { SymbolicFOLBridge, createBrowserNativeRootSymbolicFOLBridge } from './symbolicFolBridge';
 import { createBrowserNativeSymbolicFOLConverterBridge } from './converters/symbolicFolBridge';
 import { createBrowserNativeTdfolCecBridge } from './tdfolCecBridge';
 import { createBrowserNativeTdfolGrammarBridge } from './tdfolGrammarBridge';
@@ -670,6 +670,38 @@ describe('BrowserNativeLogicBridge', () => {
       serverCallsAllowed: false,
       pythonRuntime: false,
       cache_size: 2,
+    });
+  });
+
+  it('ports integration/symbolic_fol_bridge.py with root-module metadata and local caching', () => {
+    const bridge = createBrowserNativeRootSymbolicFOLBridge({ confidenceThreshold: 0.6 });
+
+    const result = bridge.convert_to_fol(
+      'If all tenants are residents then some tenants are protected',
+    );
+    const cached = bridge.semantic_to_fol(
+      bridge.create_semantic_symbol('If all tenants are residents then some tenants are protected'),
+    );
+    const stats = bridge.get_statistics();
+
+    expect(result).toMatchObject({
+      fol_formula: '(∀x (Tenants(x) → Residents(x)) → ∃x (Tenants(x) ∧ Protected(x)))',
+      confidence: 0.8,
+      fallback_used: false,
+      errors: [],
+    });
+    expect(cached).toBe(result);
+    expect(stats).toMatchObject({
+      sourcePythonModule: 'logic/integration/symbolic_fol_bridge.py',
+      source_python_module: 'logic/integration/symbolic_fol_bridge.py',
+      runtime: 'typescript-wasm-browser',
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      symbolic_ai_available: false,
+      fallback_available: true,
+      confidence_threshold: 0.6,
+      cache_size: 1,
+      total_conversions: 1,
     });
   });
 
