@@ -1190,3 +1190,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T094051Z-ported-external_provers-proof_cache.py-parity-into-the-browser-native-proof-cach.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T094051Z-ported-external_provers-proof_cache.py-parity-into-the-browser-native-proof-cach.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T094051Z-ported-external_provers-proof_cache.py-parity-into-the-browser-native-proof-cach.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 09:42:58 UTC
+
+- Target: `Task checkbox-323: Port remaining Python logic module `logic/external_provers/prover_router.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported external_provers/prover_router.py parity into the browser-native prover adapter router.
+- Impact: The TypeScript integration router now exposes prover_router.py provenance, browser-only runtime guarantees, deterministic route planning, preferred local adapter selection, and fail-closed unsupported-route blockers. The focused Jest integration tests exercise router metadata, local adapter routing, E-prover compatibility selection, and Python/RPC-free failure behavior.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/proverAdapters.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T094258Z-ported-external_provers-prover_router.py-parity-into-the-browser-native-prover-a.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T094258Z-ported-external_provers-prover_router.py-parity-into-the-browser-native-prover-a.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T094258Z-ported-external_provers-prover_router.py-parity-into-the-browser-native-prover-a.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

@@ -111,6 +111,17 @@ describe('BrowserNativeLogicBridge', () => {
     const router = createBrowserNativeProverRouter();
     const adapters = router.listAdapters();
 
+    expect(router.getMetadata()).toMatchObject({
+      sourcePythonModule: 'logic/external_provers/prover_router.py',
+      runtime: 'typescript-wasm-browser',
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      subprocessAllowed: false,
+      rpcAllowed: false,
+      routingStrategy: 'first-supported-local-adapter',
+      failClosed: true,
+      adapterCount: 3,
+    });
     expect(adapters.map((adapter) => adapter.logic)).toEqual(['tdfol', 'cec', 'dcec']);
     expect(adapters.every((adapter) => adapter.runtime === 'typescript-wasm-browser')).toBe(true);
     expect(adapters.every((adapter) => adapter.requiresExternalProver === false)).toBe(true);
@@ -144,6 +155,63 @@ describe('BrowserNativeLogicBridge', () => {
     });
     expect(tdfol.timeMs).toEqual(expect.any(Number));
     expect(dcec.timeMs).toEqual(expect.any(Number));
+  });
+
+  it('ports prover_router.py route planning and preferred local adapter selection', () => {
+    const router = createBrowserNativeProverRouter({ includeEProverCompatibilityAdapter: true });
+
+    const defaultRoute = router.planRoute({ logic: 'tdfol' });
+    const eProverRoute = router.planRoute({ logic: 'tdfol', preferredProverFamily: 'e-prover' });
+    const eProverResult = router.prove({
+      logic: 'tdfol',
+      theorem: 'Resident(Ada)',
+      axioms: ['Resident(Ada)'],
+      preferredProverFamily: 'e-prover',
+    }) as EProverCompatibilityResult;
+
+    expect(defaultRoute).toMatchObject({
+      sourcePythonModule: 'logic/external_provers/prover_router.py',
+      logic: 'tdfol',
+      selectedAdapter: { name: 'local-tdfol-forward-prover', proverFamily: 'local' },
+      blockers: [],
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+    });
+    expect(eProverRoute.selectedAdapter).toMatchObject({
+      name: 'browser-native-e-prover-adapter',
+      proverFamily: 'e-prover',
+    });
+    expect(eProverRoute.candidates.map((candidate) => candidate.name)).toEqual([
+      'local-tdfol-forward-prover',
+      'browser-native-e-prover-adapter',
+    ]);
+    expect(eProverResult).toMatchObject({
+      status: 'proved',
+      method: 'adapter:browser-native-e-prover-adapter:e-prover-compatible:tdfol-forward-chaining',
+    });
+  });
+
+  it('fails closed for unsupported prover_router.py routes without Python or RPC fallback', () => {
+    const router = createBrowserNativeProverRouter();
+    const route = router.planRoute({ logic: 'cec', preferredProverFamily: 'e-prover' });
+
+    expect(route).toMatchObject({
+      sourcePythonModule: 'logic/external_provers/prover_router.py',
+      selectedAdapter: null,
+      blockers: ['unsupported_preferred_prover_family:e-prover'],
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+    });
+    expect(() =>
+      router.prove({
+        logic: 'cec',
+        theorem: '(subject_to ada code)',
+        axioms: ['(subject_to ada code)'],
+        preferredProverFamily: 'e-prover',
+      }),
+    ).toThrow(
+      'Unsupported browser-native proof route: unsupported_preferred_prover_family:e-prover',
+    );
   });
 
   it('ports the E prover adapter as a browser-native fail-closed TDFOL compatibility adapter', () => {

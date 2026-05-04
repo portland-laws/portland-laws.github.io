@@ -15,6 +15,7 @@ export interface BrowserNativeProofRequest {
   theorems?: string[];
   maxSteps?: number;
   maxDerivedFormulas?: number;
+  preferredProverFamily?: BrowserNativeProofAdapterMetadata['proverFamily'];
 }
 
 export interface BrowserNativeProofAdapterMetadata {
@@ -35,6 +36,28 @@ export interface BrowserNativeProofAdapterOptions {
   tdfol?: TdfolProverOptions;
   cec?: CecProverOptions;
   includeEProverCompatibilityAdapter?: boolean;
+}
+
+export interface BrowserNativeProverRouterMetadata {
+  sourcePythonModule: 'logic/external_provers/prover_router.py';
+  runtime: 'typescript-wasm-browser';
+  serverCallsAllowed: false;
+  pythonRuntime: false;
+  subprocessAllowed: false;
+  rpcAllowed: false;
+  routingStrategy: 'first-supported-local-adapter';
+  failClosed: true;
+  adapterCount: number;
+}
+
+export interface BrowserNativeProverRoutePlan {
+  sourcePythonModule: 'logic/external_provers/prover_router.py';
+  logic: BrowserNativeProofLogic;
+  selectedAdapter: BrowserNativeProofAdapterMetadata | null;
+  candidates: BrowserNativeProofAdapterMetadata[];
+  blockers: string[];
+  serverCallsAllowed: false;
+  pythonRuntime: false;
 }
 
 export interface EProverCompatibilityMetadata {
@@ -60,6 +83,20 @@ export class BrowserNativeProverRouter {
     this.adapters = [...adapters];
   }
 
+  getMetadata(): BrowserNativeProverRouterMetadata {
+    return {
+      sourcePythonModule: 'logic/external_provers/prover_router.py',
+      runtime: 'typescript-wasm-browser',
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      subprocessAllowed: false,
+      rpcAllowed: false,
+      routingStrategy: 'first-supported-local-adapter',
+      failClosed: true,
+      adapterCount: this.adapters.length,
+    };
+  }
+
   listAdapters(): BrowserNativeProofAdapterMetadata[] {
     return this.adapters.map((adapter) => ({ ...adapter.metadata }));
   }
@@ -68,10 +105,38 @@ export class BrowserNativeProverRouter {
     return this.adapters.some((adapter) => adapter.supports(logic));
   }
 
+  planRoute(
+    request: Pick<BrowserNativeProofRequest, 'logic' | 'preferredProverFamily'>,
+  ): BrowserNativeProverRoutePlan {
+    const candidates = this.adapters
+      .filter((candidate) => candidate.supports(request.logic))
+      .map((candidate) => ({ ...candidate.metadata }));
+    const selectedAdapter = this.selectAdapter(request)?.metadata;
+    const blockers =
+      candidates.length === 0
+        ? [`unsupported_logic:${request.logic}`]
+        : selectedAdapter
+          ? []
+          : [`unsupported_preferred_prover_family:${request.preferredProverFamily ?? 'unknown'}`];
+
+    return {
+      sourcePythonModule: 'logic/external_provers/prover_router.py',
+      logic: request.logic,
+      selectedAdapter: selectedAdapter ? { ...selectedAdapter } : null,
+      candidates,
+      blockers,
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+    };
+  }
+
   prove(request: BrowserNativeProofRequest): ProofResult {
-    const adapter = this.adapters.find((candidate) => candidate.supports(request.logic));
+    const adapter = this.selectAdapter(request);
     if (!adapter) {
-      throw new LogicBridgeError(`Unsupported browser-native proof logic: ${request.logic}`);
+      const route = this.planRoute(request);
+      throw new LogicBridgeError(
+        `Unsupported browser-native proof route: ${route.blockers.join(', ')}`,
+      );
     }
 
     const startedAt = performance.now();
@@ -81,6 +146,16 @@ export class BrowserNativeProverRouter {
       timeMs: performance.now() - startedAt,
       method: `adapter:${adapter.metadata.name}:${result.method ?? request.logic}`,
     };
+  }
+
+  private selectAdapter(
+    request: Pick<BrowserNativeProofRequest, 'logic' | 'preferredProverFamily'>,
+  ): BrowserNativeProofAdapter | undefined {
+    const candidates = this.adapters.filter((candidate) => candidate.supports(request.logic));
+    if (!request.preferredProverFamily) return candidates[0];
+    return candidates.find(
+      (candidate) => candidate.metadata.proverFamily === request.preferredProverFamily,
+    );
   }
 }
 
