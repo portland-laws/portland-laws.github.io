@@ -34,6 +34,17 @@ export interface ProofExecutionResult {
   warnings: Array<string>;
   metadata: Record<string, unknown>;
 }
+export interface ProofExecutionTypeIssue {
+  path: string;
+  message: string;
+}
+export type ProofExecutionTypeName = 'options' | 'result' | 'metadata';
+export interface ProofExecutionTypeCheckResult {
+  ok: boolean;
+  typeName: ProofExecutionTypeName;
+  issues: Array<ProofExecutionTypeIssue>;
+  metadata: typeof PROOF_EXECUTION_ENGINE_TYPES_METADATA;
+}
 
 export const PROOF_EXECUTION_ENGINE_METADATA = {
   sourcePythonModule: 'logic/integration/reasoning/proof_execution_engine.py',
@@ -51,6 +62,22 @@ export const PROOF_EXECUTION_ENGINE_METADATA = {
     'bounded_memory_cache',
     'rule_set_execution',
     'fail_closed_external_provers',
+  ] as Array<string>,
+} as const;
+export const PROOF_EXECUTION_ENGINE_TYPES_METADATA = {
+  sourcePythonModule: 'logic/integration/reasoning/proof_execution_engine_types.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  filesystemAllowed: false,
+  subprocessAllowed: false,
+  rpcAllowed: false,
+  runtimeDependencies: [] as Array<string>,
+  parity: [
+    'proof_execution_options_type',
+    'proof_execution_result_type',
+    'proof_execution_status_type',
+    'proof_execution_metadata_type',
   ] as Array<string>,
 } as const;
 
@@ -200,6 +227,34 @@ export const checkConsistency = (
 ): ProofExecutionResult => createProofEngine().proveConsistency(ruleSet, prover);
 export const check_consistency = checkConsistency;
 export const proof_execution_engine_metadata = PROOF_EXECUTION_ENGINE_METADATA;
+export const proof_execution_engine_types_metadata = PROOF_EXECUTION_ENGINE_TYPES_METADATA;
+
+export function checkProofExecutionType(
+  typeName: ProofExecutionTypeName,
+  value: unknown,
+): ProofExecutionTypeCheckResult {
+  const object = asRecord(value);
+  const issues: Array<ProofExecutionTypeIssue> = [];
+  if (!object) return proofTypeChecked(typeName, [{ path: '$', message: 'expected_object' }]);
+  if (typeName === 'options') validateOptions(object, issues);
+  else if (typeName === 'result') validateExecutionResult(object, issues);
+  else validateProofMetadata(object, '$', issues);
+  return proofTypeChecked(typeName, issues);
+}
+export function isProofExecutionType(typeName: ProofExecutionTypeName, value: unknown): boolean {
+  return checkProofExecutionType(typeName, value).ok;
+}
+export function assertProofExecutionResult(value: unknown): ProofExecutionResult {
+  const result = checkProofExecutionType('result', value);
+  if (!result.ok)
+    throw new TypeError(
+      `Invalid proof execution result: ${result.issues.map((issue) => `${issue.path}:${issue.message}`).join(', ')}`,
+    );
+  return value as ProofExecutionResult;
+}
+export const check_proof_execution_type = checkProofExecutionType;
+export const is_proof_execution_type = isProofExecutionType;
+export const assert_proof_execution_result = assertProofExecutionResult;
 
 function buildResult(
   prover: string,
@@ -250,4 +305,133 @@ function cloneResult(
     warnings: [...result.warnings],
     metadata: { ...result.metadata, ...metadata },
   };
+}
+function validateOptions(
+  object: Record<string, unknown>,
+  issues: Array<ProofExecutionTypeIssue>,
+): void {
+  if ('timeout' in object) requireNumber(object, 'timeout', issues);
+  if ('cacheSize' in object) requireInteger(object, 'cacheSize', issues);
+  if ('defaultProver' in object && !isProver(object.defaultProver))
+    issues.push({ path: '$.defaultProver', message: 'expected_proof_execution_prover' });
+  ['enableRateLimiting', 'enableValidation', 'enableCaching'].forEach((field) =>
+    field in object && typeof object[field] !== 'boolean'
+      ? issues.push({ path: `$.${field}`, message: 'expected_boolean' })
+      : undefined,
+  );
+}
+function validateExecutionResult(
+  object: Record<string, unknown>,
+  issues: Array<ProofExecutionTypeIssue>,
+): void {
+  ['prover', 'statement', 'proofOutput'].forEach((field) =>
+    requireStringField(object, field, issues),
+  );
+  if (!isStatus(object.status)) issues.push({ path: '$.status', message: 'expected_status' });
+  requireNumber(object, 'executionTime', issues);
+  ['errors', 'warnings'].forEach((field) =>
+    requireStringArray(object[field], `$.${field}`, issues),
+  );
+  requireMetadata(object.metadata, '$.metadata', issues);
+}
+function validateProofMetadata(
+  object: Record<string, unknown>,
+  path: string,
+  issues: Array<ProofExecutionTypeIssue>,
+): void {
+  if (object.browserNative !== true)
+    issues.push({ path: `${path}.browserNative`, message: 'expected_true' });
+  [
+    'serverCallsAllowed',
+    'pythonRuntimeAllowed',
+    'filesystemAllowed',
+    'subprocessAllowed',
+    'rpcAllowed',
+  ].forEach((field) => {
+    if (object[field] !== false)
+      issues.push({ path: `${path}.${field}`, message: 'expected_false' });
+  });
+  requireStringArray(object.runtimeDependencies, `${path}.runtimeDependencies`, issues);
+}
+function requireMetadata(
+  value: unknown,
+  path: string,
+  issues: Array<ProofExecutionTypeIssue>,
+): void {
+  const metadata = asRecord(value);
+  if (!metadata) issues.push({ path, message: 'expected_object' });
+  else validateProofMetadata(metadata, path, issues);
+}
+function requireStringField(
+  object: Record<string, unknown>,
+  field: string,
+  issues: Array<ProofExecutionTypeIssue>,
+): void {
+  if (typeof object[field] !== 'string')
+    issues.push({ path: `$.${field}`, message: 'expected_string' });
+}
+function requireStringArray(
+  value: unknown,
+  path: string,
+  issues: Array<ProofExecutionTypeIssue>,
+): void {
+  if (!Array.isArray(value) || value.some((item) => typeof item !== 'string'))
+    issues.push({ path, message: 'expected_string_array' });
+}
+function isStatus(value: unknown): value is ProofExecutionStatus {
+  return (
+    value === 'success' ||
+    value === 'failure' ||
+    value === 'timeout' ||
+    value === 'error' ||
+    value === 'unsupported'
+  );
+}
+function isProver(value: unknown): value is ProofExecutionProver {
+  return (
+    value === 'local' ||
+    value === 'fol' ||
+    value === 'tdfol' ||
+    value === 'cec' ||
+    value === 'dcec' ||
+    value === 'z3' ||
+    value === 'cvc5' ||
+    value === 'lean' ||
+    value === 'coq'
+  );
+}
+function requireNumber(
+  object: Record<string, unknown>,
+  field: string,
+  issues: Array<ProofExecutionTypeIssue>,
+): void {
+  if (!isNonNegativeNumber(object[field]))
+    issues.push({ path: `$.${field}`, message: 'expected_non_negative_number' });
+}
+function requireInteger(
+  object: Record<string, unknown>,
+  field: string,
+  issues: Array<ProofExecutionTypeIssue>,
+): void {
+  if (!Number.isInteger(object[field]) || (object[field] as number) < 0)
+    issues.push({ path: `$.${field}`, message: 'expected_non_negative_integer' });
+}
+function isNonNegativeNumber(value: unknown): value is number {
+  return typeof value === 'number' && Number.isFinite(value) && value >= 0;
+}
+function proofTypeChecked(
+  typeName: ProofExecutionTypeName,
+  issues: Array<ProofExecutionTypeIssue>,
+): ProofExecutionTypeCheckResult {
+  return {
+    ok: issues.length === 0,
+    typeName,
+    issues,
+    metadata: PROOF_EXECUTION_ENGINE_TYPES_METADATA,
+  };
+}
+function asRecord(value: unknown): Record<string, unknown> | undefined {
+  return value && typeof value === 'object' && !Array.isArray(value)
+    ? (value as Record<string, unknown>)
+    : undefined;
 }

@@ -26,7 +26,13 @@ import {
   summarize_reasoning_logic_verification_results,
   validate_reasoning_logic_verification_inputs,
 } from './reasoningLogicVerificationUtils';
-import { ProofExecutionEngine, check_consistency } from './proofExecutionEngine';
+import {
+  ProofExecutionEngine,
+  assert_proof_execution_result,
+  check_consistency,
+  check_proof_execution_type,
+  is_proof_execution_type,
+} from './proofExecutionEngine';
 
 describe('BrowserNativeLogicVerification', () => {
   it('ports logic_verification.py as local browser-native formula verification', () => {
@@ -323,6 +329,46 @@ describe('BrowserNativeLogicVerification', () => {
     expect(consistency).toMatchObject({ status: 'success', metadata: { checkedFormulas: 2 } });
     expect(engine.get_prover_status()).toMatchObject({
       availableProvers: { local: true, z3: false },
+    });
+  });
+
+  it('ports proof_execution_engine_types.py as browser-native runtime contracts', () => {
+    const engine = new ProofExecutionEngine({ timeout: 12, cacheSize: 2 });
+    const result = engine.prove('Tenant(x)');
+    const invalid = check_proof_execution_type('result', {
+      ...result,
+      status: 'pending',
+      metadata: { ...result.metadata, pythonRuntimeAllowed: true },
+    });
+
+    expect(
+      check_proof_execution_type('options', {
+        timeout: 12,
+        cacheSize: 2,
+        defaultProver: 'local',
+        enableCaching: true,
+      }),
+    ).toMatchObject({
+      ok: true,
+      metadata: {
+        sourcePythonModule: 'logic/integration/reasoning/proof_execution_engine_types.py',
+        browserNative: true,
+        serverCallsAllowed: false,
+        pythonRuntimeAllowed: false,
+      },
+    });
+    expect(is_proof_execution_type('result', result)).toBe(true);
+    expect(assert_proof_execution_result(result)).toBe(result);
+    expect(check_proof_execution_type('metadata', result.metadata)).toMatchObject({ ok: true });
+    expect(invalid).toMatchObject({
+      ok: false,
+      issues: expect.arrayContaining([
+        expect.objectContaining({ path: '$.status', message: 'expected_status' }),
+        expect.objectContaining({
+          path: '$.metadata.pythonRuntimeAllowed',
+          message: 'expected_false',
+        }),
+      ]),
     });
   });
 });
