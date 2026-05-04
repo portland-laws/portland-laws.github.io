@@ -67,6 +67,24 @@ export interface TdfolBenchmarkResults {
   passRate: number;
 }
 
+export interface TdfolPerformanceProfilerMetadata {
+  sourcePythonModule: 'logic/TDFOL/performance_profiler.py';
+  browserNative: true;
+  pythonRuntimeRequired: false;
+  serverCallsAllowed: false;
+  memoryBackend: 'performance.memory';
+  timingBackend: 'performance.now';
+}
+
+export interface TdfolPerformanceProfilerRun {
+  metadata: TdfolPerformanceProfilerMetadata;
+  profile: TdfolProfilingStats;
+  memory: TdfolMemoryStats;
+  bottlenecks: TdfolBottleneck[];
+  benchmarks: TdfolBenchmarkResults;
+  reports: Record<TdfolProfilerReportFormat, string>;
+}
+
 export interface TdfolPerformanceProfilerExampleResult {
   sourcePythonModule: 'logic/TDFOL/example_performance_profiler.py';
   browserNative: true;
@@ -84,6 +102,15 @@ export interface TdfolPerformanceProfilerExampleResult {
     passRate: number;
   };
 }
+
+export const TDFOL_PERFORMANCE_PROFILER_METADATA: TdfolPerformanceProfilerMetadata = {
+  sourcePythonModule: 'logic/TDFOL/performance_profiler.py',
+  browserNative: true,
+  pythonRuntimeRequired: false,
+  serverCallsAllowed: false,
+  memoryBackend: 'performance.memory',
+  timingBackend: 'performance.now',
+};
 
 export class TdfolPerformanceProfiler {
   readonly history: Array<{ function: string; timestamp: string; stats: TdfolProfilingStats }> = [];
@@ -224,7 +251,12 @@ export class TdfolPerformanceProfiler {
   generateReport(format: TdfolProfilerReportFormat = 'html'): string {
     if (format === 'json') {
       return JSON.stringify(
-        { timestamp: new Date().toISOString(), history: this.history, baseline: this.baseline },
+        {
+          metadata: TDFOL_PERFORMANCE_PROFILER_METADATA,
+          timestamp: new Date().toISOString(),
+          history: this.history,
+          baseline: this.baseline,
+        },
         null,
         2,
       );
@@ -243,7 +275,11 @@ export class TdfolPerformanceProfiler {
           ]),
       ].join('\n');
     }
-    const data = JSON.stringify({ history: this.history, baseline: this.baseline });
+    const data = JSON.stringify({
+      metadata: TDFOL_PERFORMANCE_PROFILER_METADATA,
+      history: this.history,
+      baseline: this.baseline,
+    });
     return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>TDFOL Profiling Report</title></head><body><h1>TDFOL Performance Profiling Report</h1><script type="application/json" id="tdfol-profiler-data">${escapeHtml(data)}</script><p>Total profiles: ${this.history.length}</p></body></html>`;
   }
 }
@@ -272,6 +308,55 @@ export function profileTdfolFunction<T>(
   runs = 10,
 ): TdfolProfilingStats {
   return new TdfolPerformanceProfiler().profileFunction(functionName, fn, runs);
+}
+
+export function runTdfolPerformanceProfiler(
+  options: {
+    functionName?: string;
+    runs?: number;
+    formula?: string;
+    customBenchmarks?: TdfolBenchmarkConfig[];
+    baseline?: Record<string, number>;
+  } = {},
+): TdfolPerformanceProfilerRun {
+  const functionName = options.functionName ?? 'tdfol_profiled_workload';
+  const formula = options.formula ?? 'forall x. obligation(x) -> eventually compliant(x)';
+  const profiler = new TdfolPerformanceProfiler({ baseline: options.baseline });
+  const profile = profiler.profileFunction(
+    functionName,
+    () => deterministicTdfolWorkload(formula),
+    options.runs ?? 5,
+  );
+  const memory = profiler.memoryProfile(`${functionName}_memory`, () =>
+    deterministicTdfolWorkload(`${formula} memory snapshot`),
+  );
+  const bottlenecks = profiler.identifyBottlenecks([
+    {
+      function: profile.functionName,
+      timeMs: Math.max(profile.totalTimeMs, 1),
+      calls: profile.runs,
+    },
+    {
+      function: `${functionName}_allocation_delta`,
+      timeMs: Math.max(memory.growthMb * 10, 0),
+      calls: 1,
+    },
+  ]);
+  const benchmarks = profiler.runBenchmarkSuite(options.customBenchmarks);
+  const reports: Record<TdfolProfilerReportFormat, string> = {
+    text: profiler.generateReport('text'),
+    json: profiler.generateReport('json'),
+    html: profiler.generateReport('html'),
+  };
+
+  return {
+    metadata: TDFOL_PERFORMANCE_PROFILER_METADATA,
+    profile,
+    memory,
+    bottlenecks,
+    benchmarks,
+    reports,
+  };
 }
 
 export function runTdfolPerformanceProfilerExample(

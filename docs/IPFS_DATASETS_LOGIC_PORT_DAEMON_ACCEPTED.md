@@ -803,3 +803,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T062552Z-ported-the-remaining-tdfol-performance_metrics-surface-with-browser-native-colle.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T062552Z-ported-the-remaining-tdfol-performance_metrics-surface-with-browser-native-colle.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T062552Z-ported-the-remaining-tdfol-performance_metrics-surface-with-browser-native-colle.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 06:28:02 UTC
+
+- Target: `Task checkbox-279: Port remaining Python logic module `logic/TDFOL/performance_profiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the TDFOL performance_profiler.py contract to the browser-native TypeScript profiler surface.
+- Impact: The TypeScript TDFOL profiler now exposes metadata and a module-level run helper for logic/TDFOL/performance_profiler.py with repeated timing samples, browser memory snapshots, bottleneck classification, benchmark suites, and text/JSON/HTML reports. Focused Jest coverage validates the browser-native contract, no Python runtime requirement, and no server-call fallback.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/performanceProfiler.test.ts`, `src/lib/logic/tdfol/performanceProfiler.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T062802Z-ported-the-tdfol-performance_profiler.py-contract-to-the-browser-native-typescri.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T062802Z-ported-the-tdfol-performance_profiler.py-contract-to-the-browser-native-typescri.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T062802Z-ported-the-tdfol-performance_profiler.py-contract-to-the-browser-native-typescri.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
