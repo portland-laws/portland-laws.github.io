@@ -1,10 +1,12 @@
 import {
   analyze_neurosymbolic,
   analyze_neurosymbolic_graphrag,
+  coordinate_reasoning,
   create_browser_native_hybrid_confidence,
   create_browser_native_embedding_prover,
   create_browser_native_neurosymbolic_integration,
   create_browser_native_neurosymbolic_graphrag,
+  create_browser_native_reasoning_coordinator,
   prove_embedding,
   query_neurosymbolic_graphrag,
   reason_neurosymbolic,
@@ -226,6 +228,48 @@ describe('browser-native hybrid confidence parity', () => {
       metadata: {
         sourcePythonModule: 'logic/integration/symbolic/neurosymbolic/hybrid_confidence.py',
       },
+    });
+  });
+});
+
+describe('browser-native reasoning coordinator parity', () => {
+  it('orchestrates symbolic, embedding, and confidence reasoning locally', () => {
+    const coordinator = create_browser_native_reasoning_coordinator();
+    const result = coordinator.coordinate('The tenant must pay rent.', 'Protected(Tenant)', {
+      rules: ['O(the_tenant_must_pay_rent) => Protected(Tenant)'],
+      premises: ['Tenant rent payment creates protected tenancy evidence.'],
+      embedding: { threshold: 0.4 },
+    });
+
+    expect(coordinator.metadata).toMatchObject({
+      sourcePythonModule: 'logic/integration/symbolic/neurosymbolic/reasoning_coordinator.py',
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      coordinatorRuntime: 'deterministic-local-reasoning-orchestrator',
+    });
+    expect(result).toMatchObject({
+      status: 'success',
+      runtime: 'browser-native',
+      selectedProof: 'symbolic',
+      proofStatus: 'proved',
+      metadata: {
+        sourcePythonModule: 'logic/integration/symbolic/neurosymbolic/reasoning_coordinator.py',
+      },
+    });
+    expect(result.symbolic.inferredFacts).toEqual(['Protected(Tenant)']);
+    expect(result.embedding?.runtime).toBe('browser-native');
+    expect(result.confidence.passedThreshold).toBe(true);
+    expect(result.reasoningSteps.map((step) => step.kind)).toContain('query_match');
+  });
+
+  it('fails closed without local symbolic text or embedding evidence', () => {
+    expect(coordinate_reasoning('', 'Protected(Tenant)', { premises: [] })).toMatchObject({
+      status: 'validation_failed',
+      success: false,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      selectedProof: 'none',
+      issues: expect.arrayContaining(['no local reasoning evidence is available']),
     });
   });
 });

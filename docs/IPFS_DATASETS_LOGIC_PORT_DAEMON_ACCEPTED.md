@@ -1829,3 +1829,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T143004Z-ported-hybrid_confidence.py-parity-as-a-deterministic-browser-native-typescript-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T143004Z-ported-hybrid_confidence.py-parity-as-a-deterministic-browser-native-typescript-.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T143004Z-ported-hybrid_confidence.py-parity-as-a-deterministic-browser-native-typescript-.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 14:32:12 UTC
+
+- Target: `Task checkbox-394: Port remaining Python logic module `logic/integration/symbolic/neurosymbolic/reasoning_coordinator.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported reasoning_coordinator.py as a browser-native neurosymbolic coordinator.
+- Impact: src/lib/logic/integration/neurosymbolic.ts now exposes a deterministic local reasoning coordinator that orchestrates symbolic reasoning, embedding proof, and hybrid confidence scoring without server or Python runtime fallback. The matching Jest test exercises successful orchestration and fail-closed validation, and the TypeScript port ledger marks checkbox-394 complete.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/neurosymbolic.test.ts`, `src/lib/logic/integration/neurosymbolic.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T143212Z-ported-reasoning_coordinator.py-as-a-browser-native-neurosymbolic-coordinator..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T143212Z-ported-reasoning_coordinator.py-as-a-browser-native-neurosymbolic-coordinator..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T143212Z-ported-reasoning_coordinator.py-as-a-browser-native-neurosymbolic-coordinator..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

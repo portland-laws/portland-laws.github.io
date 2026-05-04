@@ -133,6 +133,29 @@ export interface HybridConfidenceResult {
   readonly issues: readonly string[];
   readonly metadata: typeof HYBRID_CONFIDENCE_METADATA;
 }
+export interface ReasoningCoordinatorOptions extends NeuroSymbolicOptions {
+  readonly premises?: readonly EmbeddingProverPremise[];
+  readonly embedding?: EmbeddingProverOptions;
+  readonly confidence?: HybridConfidenceOptions;
+}
+export interface ReasoningCoordinatorResult {
+  readonly status: 'success' | 'validation_failed';
+  readonly success: boolean;
+  readonly runtime: 'browser-native';
+  readonly wasmCompatible: true;
+  readonly serverCallsAllowed: false;
+  readonly pythonRuntimeAllowed: false;
+  readonly sourceText: string;
+  readonly query: string | null;
+  readonly symbolic: NeuroSymbolicResult;
+  readonly embedding: EmbeddingProverResult | null;
+  readonly confidence: HybridConfidenceResult;
+  readonly selectedProof: 'symbolic' | 'embedding' | 'none';
+  readonly proofStatus: 'proved' | 'not_proved' | 'unknown' | 'not_applicable';
+  readonly reasoningSteps: readonly NeuroSymbolicReasoningStep[];
+  readonly issues: readonly string[];
+  readonly metadata: typeof REASONING_COORDINATOR_METADATA;
+}
 export const NEUROSYMBOLIC_METADATA = {
   sourcePythonModule: 'logic/integration/neurosymbolic.py',
   browserNative: true,
@@ -173,6 +196,20 @@ export const HYBRID_CONFIDENCE_METADATA = {
   confidenceRuntime: 'deterministic-local-hybrid-scorer',
   runtimeDependencies: [],
   parity: ['weighted_signal_fusion', 'symbolic_proof_adjustment', 'fail_closed_confidence'],
+} as const;
+export const REASONING_COORDINATOR_METADATA = {
+  sourcePythonModule: 'logic/integration/symbolic/neurosymbolic/reasoning_coordinator.py',
+  browserNative: true,
+  wasmCompatible: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  coordinatorRuntime: 'deterministic-local-reasoning-orchestrator',
+  runtimeDependencies: [],
+  parity: [
+    'symbolic_embedding_coordination',
+    'hybrid_confidence_selection',
+    'fail_closed_reasoning',
+  ],
 } as const;
 const INTENTS: readonly [NeuroSymbolicIntent, RegExp, string][] = [
   ['prohibition', /\b(shall not|must not|may not|prohibited from|forbidden to)\b/i, 'F'],
@@ -303,6 +340,88 @@ export class BrowserNativeNeuroSymbolicGraphRag {
     return this.analyze(text, { ...options, query });
   }
 }
+export class BrowserNativeReasoningCoordinator {
+  readonly metadata = REASONING_COORDINATOR_METADATA;
+
+  coordinate(
+    text: string,
+    query: string,
+    options: ReasoningCoordinatorOptions = {},
+  ): ReasoningCoordinatorResult {
+    const normalizedQuery = typeof query === 'string' ? query.replace(/\s+/g, ' ').trim() : '';
+    const symbolic = reasonNeuroSymbolic(text, normalizedQuery, {
+      facts: options.facts,
+      rules: options.rules,
+    });
+    const premises = options.premises ?? [
+      ...symbolic.symbolicFacts,
+      ...symbolic.inferredFacts,
+      ...symbolic.neuralSignals.map((signal) => signal.evidence),
+    ];
+    const embedding =
+      normalizedQuery.length >= 3
+        ? proveEmbedding(premises, normalizedQuery, options.embedding)
+        : null;
+    const selectedProof =
+      symbolic.proofStatus === 'proved'
+        ? 'symbolic'
+        : embedding?.status === 'proved'
+          ? 'embedding'
+          : 'none';
+    const proofStatus = coordinatorProofStatus(symbolic, embedding, selectedProof);
+    const confidence = scoreHybridConfidence(
+      {
+        signals: symbolic.neuralSignals,
+        symbolicConfidence: symbolic.confidence,
+        retrievalScore: embedding?.bestSimilarity,
+        proofStatus,
+        evidenceCount: symbolic.symbolicFacts.length + symbolic.inferredFacts.length,
+      },
+      options.confidence,
+    );
+    const issues = [
+      ...symbolic.issues,
+      ...(embedding?.issues ?? []),
+      ...confidence.issues,
+      ...(selectedProof === 'none' && symbolic.status === 'validation_failed'
+        ? ['no local reasoning evidence is available']
+        : []),
+    ];
+    return {
+      status:
+        symbolic.status === 'validation_failed' && selectedProof === 'none'
+          ? 'validation_failed'
+          : 'success',
+      success: selectedProof !== 'none',
+      runtime: 'browser-native',
+      wasmCompatible: true,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      sourceText: text,
+      query: normalizedQuery || null,
+      symbolic,
+      embedding,
+      confidence,
+      selectedProof,
+      proofStatus,
+      reasoningSteps: [
+        ...symbolic.reasoningSteps,
+        ...(embedding?.proofSteps ?? []),
+        { kind: 'query_match' as const, detail: `coordinator:${selectedProof}:${proofStatus}` },
+      ],
+      issues: unique(issues),
+      metadata: this.metadata,
+    };
+  }
+
+  reason(
+    text: string,
+    query: string,
+    options: ReasoningCoordinatorOptions = {},
+  ): ReasoningCoordinatorResult {
+    return this.coordinate(text, query, options);
+  }
+}
 export function analyzeNeuroSymbolic(
   text: string,
   options: NeuroSymbolicOptions = {},
@@ -334,6 +453,15 @@ export const queryNeuroSymbolicGraphRag = (
   new BrowserNativeNeuroSymbolicGraphRag().query(text, query, options);
 export const analyze_neurosymbolic_graphrag = analyzeNeuroSymbolicGraphRag;
 export const query_neurosymbolic_graphrag = queryNeuroSymbolicGraphRag;
+export const coordinateReasoning = (
+  text: string,
+  query: string,
+  options: ReasoningCoordinatorOptions = {},
+): ReasoningCoordinatorResult =>
+  new BrowserNativeReasoningCoordinator().coordinate(text, query, options);
+export const create_browser_native_reasoning_coordinator = (): BrowserNativeReasoningCoordinator =>
+  new BrowserNativeReasoningCoordinator();
+export const coordinate_reasoning = coordinateReasoning;
 export const proveEmbedding = (
   premises: readonly EmbeddingProverPremise[],
   theorem: string,
@@ -614,6 +742,16 @@ function proofStatusScore(status: HybridConfidenceProofStatus): number {
   if (status === 'not_proved') return 0.24;
   if (status === 'unknown') return 0.46;
   return 0.5;
+}
+function coordinatorProofStatus(
+  symbolic: NeuroSymbolicResult,
+  embedding: EmbeddingProverResult | null,
+  selectedProof: ReasoningCoordinatorResult['selectedProof'],
+): ReasoningCoordinatorResult['proofStatus'] {
+  if (selectedProof === 'symbolic') return symbolic.proofStatus;
+  if (selectedProof === 'embedding') return 'proved';
+  if (embedding?.status === 'not_proved') return 'not_proved';
+  return symbolic.proofStatus;
 }
 function evidenceScore(count: number): number {
   if (!Number.isFinite(count) || count <= 0) return 0;
