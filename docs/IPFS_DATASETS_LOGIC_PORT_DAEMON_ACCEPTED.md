@@ -1415,3 +1415,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T111951Z-ported-logic-integration-caching-proof_cache.py-as-a-browser-native-integration-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T111951Z-ported-logic-integration-caching-proof_cache.py-as-a-browser-native-integration-.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T111951Z-ported-logic-integration-caching-proof_cache.py-as-a-browser-native-integration-.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 11:23:35 UTC
+
+- Target: `Task checkbox-348: Port remaining Python logic module `logic/integration/cec_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported logic/integration/cec_bridge.py as a browser-native TypeScript CEC bridge.
+- Impact: The new integration bridge exposes local CEC conversion, validation, and proof delegation using existing TypeScript parser/prover cores, with Jest coverage proving no server, Python runtime, filesystem, subprocess, or RPC fallback is required.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/cecBridge.ts`, `src/lib/logic/integration/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T112335Z-ported-logic-integration-cec_bridge.py-as-a-browser-native-typescript-cec-bridge.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T112335Z-ported-logic-integration-cec_bridge.py-as-a-browser-native-typescript-cec-bridge.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T112335Z-ported-logic-integration-cec_bridge.py-as-a-browser-native-typescript-cec-bridge.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

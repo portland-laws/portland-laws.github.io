@@ -1,4 +1,5 @@
 import { BrowserNativeLogicBridge, createBrowserNativeLogicBridge } from './bridge';
+import { createBrowserNativeCecBridge } from './cecBridge';
 import {
   createBrowserNativeBaseProverBridge,
   createBrowserNativeIntegrationBridgesBaseProverBridge,
@@ -130,6 +131,44 @@ describe('BrowserNativeLogicBridge', () => {
       pythonRuntime: false,
     });
     expect(result.steps.map((step) => step.rule)).toContain('CecDeonticProhibitionEquivalence');
+  });
+
+  it('ports cec_bridge.py through local CEC parsing, validation, and proof search', () => {
+    const bridge = createBrowserNativeCecBridge({ maxSteps: 4, maxDerivedExpressions: 25 });
+    const converted = bridge.convert('(implies p q)', 'json');
+    const invalid = bridge.validate('(implies p');
+    const result = bridge.prove({
+      theorem: 'q',
+      axioms: ['p', '(implies p q)'],
+    });
+
+    expect(converted).toMatchObject({
+      status: 'success',
+      source: '(implies p q)',
+      target: 'json',
+      metadata: {
+        sourcePythonModule: 'logic/integration/cec_bridge.py',
+        browserNative: true,
+        serverCallsAllowed: false,
+        pythonRuntime: false,
+        failClosed: true,
+      },
+    });
+    expect(JSON.parse(converted.output)).toMatchObject({ kind: 'binary', operator: 'implies' });
+    expect(invalid).toMatchObject({
+      valid: false,
+      metadata: { serverCallsAllowed: false, pythonRuntime: false },
+    });
+    expect(result).toMatchObject({
+      status: 'proved',
+      theorem: 'q',
+      method: 'cec_bridge:cec-forward-chaining',
+      sourcePythonModule: 'logic/integration/cec_bridge.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+    });
+    expect(result.steps.map((step) => step.rule)).toContain('CecModusPonens');
   });
 
   it('ports tdfol_grammar_bridge.py with deterministic browser-native grammar parsing', () => {
