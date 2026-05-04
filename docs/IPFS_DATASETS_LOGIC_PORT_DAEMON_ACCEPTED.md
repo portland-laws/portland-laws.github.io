@@ -1856,3 +1856,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T143824Z-ported-the-symbolic-neurosymbolic-graphrag-module-surface-to-the-existing-browse.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T143824Z-ported-the-symbolic-neurosymbolic-graphrag-module-surface-to-the-existing-browse.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T143824Z-ported-the-symbolic-neurosymbolic-graphrag-module-surface-to-the-existing-browse.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 14:43:35 UTC
+
+- Target: `Task checkbox-397: Port remaining Python logic module `logic/integration/symbolic/symbolic_logic_primitives.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Worktree direct-edit proposal.
+- Impact: Git harvested the isolated-worktree edits for validation.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/symbolic/symbolicLogicPrimitives.test.ts`, `src/lib/logic/integration/symbolic/symbolicLogicPrimitives.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T144335Z-worktree-direct-edit-proposal..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T144335Z-worktree-direct-edit-proposal..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T144335Z-worktree-direct-edit-proposal..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

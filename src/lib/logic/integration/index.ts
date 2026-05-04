@@ -35,6 +35,7 @@ export * from './nlUcanPolicyCompiler';
 export * from './proverAdapters';
 export * from './proverInstaller';
 export * from './symbolicAiProverBridge';
+export * from './symbolic/symbolicLogicPrimitives';
 export * from './symbolicFolBridge';
 export * from './tdfolCecBridge';
 export * from './tdfolGrammarBridge';
