@@ -848,3 +848,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T064238Z-ported-the-remaining-tdfol-security-validator-slice-with-parser-backed-fail-clos.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T064238Z-ported-the-remaining-tdfol-security-validator-slice-with-parser-backed-fail-clos.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T064238Z-ported-the-remaining-tdfol-security-validator-slice-with-parser-backed-fail-clos.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 06:45:14 UTC
+
+- Target: `Task checkbox-284: Port remaining Python logic module `logic/TDFOL/strategies/base.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the remaining TDFOL strategies/base.py contract as a browser-native TypeScript base strategy.
+- Impact: src/lib/logic/tdfol/strategies.ts now exports a validated TdfolBaseProverStrategy with Python source metadata, default priority/cost behavior, proof-result helpers, and no server or Python runtime dependency. src/lib/logic/tdfol/strategies.test.ts directly exercises the base contract through Jest, and the port ledger marks Task checkbox-284 complete.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/strategies.test.ts`, `src/lib/logic/tdfol/strategies.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T064514Z-ported-the-remaining-tdfol-strategies-base.py-contract-as-a-browser-native-types.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T064514Z-ported-the-remaining-tdfol-strategies-base.py-contract-as-a-browser-native-types.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T064514Z-ported-the-remaining-tdfol-strategies-base.py-contract-as-a-browser-native-types.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

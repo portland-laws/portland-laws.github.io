@@ -45,6 +45,107 @@ export interface TdfolProverStrategy {
   estimateCost(formula: TdfolFormula, kb: TdfolKnowledgeBase): number;
 }
 
+export interface TdfolBaseStrategyOptions {
+  name: string;
+  strategyType: TdfolStrategyType;
+  priority?: number;
+  sourcePythonModule?: string;
+  defaultTimeoutMs?: number;
+}
+
+export interface TdfolStrategyMetadata extends TdfolStrategyInfo {
+  sourcePythonModule: string;
+  browserNative: true;
+  defaultTimeoutMs: number;
+}
+
+export abstract class TdfolBaseProverStrategy implements TdfolProverStrategy {
+  readonly name: string;
+  readonly strategyType: TdfolStrategyType;
+  readonly sourcePythonModule: string;
+  protected readonly priority: number;
+  protected readonly defaultTimeoutMs: number;
+
+  constructor(options: TdfolBaseStrategyOptions) {
+    if (!options.name.trim()) {
+      throw new Error('TDFOL prover strategy name must be non-empty');
+    }
+    const priority = options.priority ?? 50;
+    if (!Number.isFinite(priority)) {
+      throw new Error(`TDFOL prover strategy ${options.name} has invalid priority`);
+    }
+    this.name = options.name;
+    this.strategyType = options.strategyType;
+    this.priority = priority;
+    this.sourcePythonModule = options.sourcePythonModule ?? 'logic/TDFOL/strategies/base.py';
+    this.defaultTimeoutMs = options.defaultTimeoutMs ?? 2000;
+  }
+
+  canHandle(_formula: TdfolFormula, _kb: TdfolKnowledgeBase): boolean {
+    return true;
+  }
+
+  abstract prove(formula: TdfolFormula, kb: TdfolKnowledgeBase, timeoutMs?: number): ProofResult;
+
+  getPriority(): number {
+    return this.priority;
+  }
+
+  estimateCost(formula: TdfolFormula, kb: TdfolKnowledgeBase): number {
+    const kbSize = kb.axioms.length + (kb.theorems?.length ?? 0);
+    return Math.max(1, formulaNodeCount(formula) * Math.log2(kbSize + 2));
+  }
+
+  getMetadata(formula?: TdfolFormula, kb?: TdfolKnowledgeBase): TdfolStrategyMetadata {
+    return {
+      name: this.name,
+      type: this.strategyType,
+      priority: this.priority,
+      cost: formula && kb ? this.estimateCost(formula, kb) : undefined,
+      sourcePythonModule: this.sourcePythonModule,
+      browserNative: true,
+      defaultTimeoutMs: this.defaultTimeoutMs,
+    };
+  }
+
+  toString(): string {
+    return `${this.name} (${this.strategyType})`;
+  }
+
+  protected finishResult(
+    status: ProofStatus,
+    theorem: TdfolFormula,
+    steps: ProofStep[],
+    start: number,
+    error?: string,
+  ): ProofResult {
+    return {
+      status,
+      theorem: formatTdfolFormula(theorem),
+      steps,
+      method: this.strategyType,
+      timeMs: Math.max(0, nowMs() - start),
+      error,
+    };
+  }
+
+  protected createStep(
+    index: number,
+    rule: string,
+    premises: TdfolFormula[],
+    conclusion: TdfolFormula,
+    explanation: string,
+  ): ProofStep {
+    return {
+      id: `tdfol-base-strategy-step-${index}`,
+      rule,
+      premises: premises.map(formatTdfolFormula),
+      conclusion: formatTdfolFormula(conclusion),
+      explanation,
+    };
+  }
+}
+
 export interface TdfolForwardChainingStrategyOptions {
   maxIterations?: number;
   maxDerivedFormulas?: number;
@@ -903,5 +1004,19 @@ function temporalDepth(formula: TdfolFormula, depth = 0): number {
         temporalDepth(formula.left, nextDepth),
         temporalDepth(formula.right, nextDepth),
       );
+  }
+}
+
+function formulaNodeCount(formula: TdfolFormula): number {
+  switch (formula.kind) {
+    case 'predicate':
+      return 1;
+    case 'unary':
+    case 'temporal':
+    case 'deontic':
+    case 'quantified':
+      return 1 + formulaNodeCount(formula.formula);
+    case 'binary':
+      return 1 + formulaNodeCount(formula.left) + formulaNodeCount(formula.right);
   }
 }
