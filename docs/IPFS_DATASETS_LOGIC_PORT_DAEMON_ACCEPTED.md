@@ -1649,3 +1649,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T130617Z-ported-logic_verification_types.py-as-browser-native-typescript-verification-typ.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T130617Z-ported-logic_verification_types.py-as-browser-native-typescript-verification-typ.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T130617Z-ported-logic_verification_types.py-as-browser-native-typescript-verification-typ.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 13:10:28 UTC
+
+- Target: `Task checkbox-374: Port remaining Python logic module `logic/integration/logic_verification_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported logic_verification_utils.py as browser-native TypeScript utilities for formula normalization, runtime bridge detection, issue creation, and batch verification summaries.
+- Impact: The existing browser-native logic verifier now consumes the utility normalization and fail-closed bridge detection helpers directly, the integration barrel exports the new utility surface, and focused Jest coverage validates Python-compatible snake_case aliases, metadata, and batch summaries without server or Python runtime dependencies.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/logicVerification.test.ts`, `src/lib/logic/integration/logicVerification.ts`, `src/lib/logic/integration/logicVerificationUtils.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T131028Z-ported-logic_verification_utils.py-as-browser-native-typescript-utilities-for-fo.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T131028Z-ported-logic_verification_utils.py-as-browser-native-typescript-utilities-for-fo.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T131028Z-ported-logic_verification_utils.py-as-browser-native-typescript-utilities-for-fo.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

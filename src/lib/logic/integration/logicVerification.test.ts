@@ -8,6 +8,11 @@ import {
   check_logic_verification_type,
   is_logic_verification_type,
 } from './logicVerificationTypes';
+import {
+  detect_logic_verification_runtime_bridge,
+  normalize_logic_verification_formula,
+  summarize_logic_verification_results,
+} from './logicVerificationUtils';
 
 describe('BrowserNativeLogicVerification', () => {
   it('ports logic_verification.py as local browser-native formula verification', () => {
@@ -88,5 +93,36 @@ describe('BrowserNativeLogicVerification', () => {
         expect.objectContaining({ path: '$.metadata.runtimeDependencies' }),
       ]),
     });
+  });
+
+  it('ports logic_verification_utils.py as deterministic browser-native utilities', () => {
+    const verifier = new BrowserNativeLogicVerification();
+    const verified = verifier.verify('(forall x (implies (Resident x) (Comply x)))', {
+      format: 'cec',
+    });
+    const blocked = verifier.verify('python subprocess fetch("https://example.test")', {
+      requirePredicate: false,
+    });
+    const summary = summarize_logic_verification_results([verified, blocked]);
+
+    expect(normalize_logic_verification_formula('  ∀ x   (A(x) → B(x)) ')).toBe(
+      'forall x (A(x) implies B(x))',
+    );
+    expect(detect_logic_verification_runtime_bridge(blocked.normalizedFormula)).toMatchObject({
+      safe: false,
+      markers: expect.arrayContaining(['python', 'subprocess', 'http', 'fetch']),
+      metadata: { sourcePythonModule: 'logic/integration/logic_verification_utils.py' },
+    });
+    expect(summary).toMatchObject({
+      total: 2,
+      verified: 1,
+      invalid: 1,
+      unsupported: 0,
+      failedClosed: true,
+      metadata: { sourcePythonModule: 'logic/integration/logic_verification_utils.py' },
+    });
+    expect(summary.issues).toEqual(
+      expect.arrayContaining([expect.objectContaining({ resultIndex: 1, field: 'formula' })]),
+    );
   });
 });

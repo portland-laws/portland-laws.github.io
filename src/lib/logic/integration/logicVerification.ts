@@ -3,6 +3,11 @@ import { validateFolSyntax } from '../fol/parser';
 import { parseTdfolFormula } from '../tdfol/parser';
 import type { LogicValidationIssue } from '../types';
 import { validateFormulaString } from '../validation';
+import {
+  detectLogicVerificationRuntimeBridge,
+  makeLogicVerificationIssue,
+  normalizeLogicVerificationFormula,
+} from './logicVerificationUtils';
 
 export type LogicVerificationFormat = 'auto' | 'fol' | 'tdfol' | 'cec' | 'dcec';
 export type LogicVerificationStatus = 'verified' | 'invalid' | 'unsupported';
@@ -31,18 +36,17 @@ export const LOGIC_VERIFICATION_METADATA = {
   parity: [
     'local_formula_validation',
     'parser_backed_fol_tdfol_cec_validation',
+    'logic_verification_utils_normalization',
     'fail_closed_unsupported_runtime',
   ] as Array<string>,
 } as const;
-const RUNTIME_BRIDGE_PATTERN =
-  /\b(?:python|subprocess|rpc|server|http:\/\/|https:\/\/|fetch\(|XMLHttpRequest|child_process|fs\.)\b/i;
 
 export class BrowserNativeLogicVerification {
   readonly metadata = LOGIC_VERIFICATION_METADATA;
 
   verify(formula: string, options: LogicVerificationOptions = {}): LogicVerificationResult {
     const format = options.format ?? 'auto';
-    const normalizedFormula = typeof formula === 'string' ? formula.trim() : '';
+    const normalizedFormula = normalizeLogicVerificationFormula(formula);
     const checks = ['input_string', 'no_runtime_bridge_markers', 'balanced_delimiters'];
     const issues: Array<LogicValidationIssue> = [];
 
@@ -53,13 +57,14 @@ export class BrowserNativeLogicVerification {
       return buildResult('invalid', formula, format, normalizedFormula, checks, issues);
     }
 
-    if (RUNTIME_BRIDGE_PATTERN.test(normalizedFormula)) {
-      issues.push({
-        severity: 'error',
-        field: 'formula',
-        message: 'Formula contains runtime bridge markers that are not browser-native.',
-      });
-    }
+    if (!detectLogicVerificationRuntimeBridge(normalizedFormula).safe)
+      issues.push(
+        makeLogicVerificationIssue(
+          'Formula contains runtime bridge markers that are not browser-native.',
+          'error',
+          'formula',
+        ),
+      );
     issues.push(...validateBalancedDelimiters(normalizedFormula));
     if (options.requirePredicate !== false && !/[A-Za-z][A-Za-z0-9_]*\s*\(/.test(normalizedFormula))
       issues.push({
