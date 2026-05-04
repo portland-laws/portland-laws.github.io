@@ -1568,3 +1568,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T122951Z-ported-temporal_deontic_api.py-as-a-browser-native-typescript-domain-api..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T122951Z-ported-temporal_deontic_api.py-as-a-browser-native-typescript-domain-api..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T122951Z-ported-temporal_deontic_api.py-as-a-browser-native-typescript-domain-api..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 12:35:02 UTC
+
+- Target: `Task checkbox-365: Port remaining Python logic module `logic/integration/domain/temporal_deontic_rag_store.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported temporal_deontic_rag_store.py as a browser-native temporal deontic RAG store.
+- Impact: Adds an in-memory TypeScript/WASM-compatible store that ingests local documents, indexes deterministic deontic norms and temporal constraints, ranks local RAG evidence, exports the API, and validates fail-closed behavior without server, Python, filesystem, subprocess, or RPC fallback.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/domain/temporalDeonticRagStore.test.ts`, `src/lib/logic/integration/domain/temporalDeonticRagStore.ts`, `src/lib/logic/integration/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T123502Z-ported-temporal_deontic_rag_store.py-as-a-browser-native-temporal-deontic-rag-st.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T123502Z-ported-temporal_deontic_rag_store.py-as-a-browser-native-temporal-deontic-rag-st.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T123502Z-ported-temporal_deontic_rag_store.py-as-a-browser-native-temporal-deontic-rag-st.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

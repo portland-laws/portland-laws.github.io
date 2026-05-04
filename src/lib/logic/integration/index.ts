@@ -15,6 +15,7 @@ export * from './domain/legalSymbolicAnalyzer';
 export * from './domain/medicalTheoremFramework';
 export * from './domain/symbolicContracts';
 export * from './domain/temporalDeonticApi';
+export * from './domain/temporalDeonticRagStore';
 export * from './cvc5ProverBridge';
 export * from './demoTemporalDeonticRag';
 export * from './externalProversBridge';
