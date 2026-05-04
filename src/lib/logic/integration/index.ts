@@ -9,6 +9,7 @@ export * from './converters/modalLogicExtension';
 export * from './converters/symbolicFolBridge';
 export * from './domain/caselawBulkProcessor';
 export * from './domain/deonticQueryEngine';
+export * from './domain/documentConsistencyChecker';
 export * from './cvc5ProverBridge';
 export * from './demoTemporalDeonticRag';
 export * from './externalProversBridge';
