@@ -106,6 +106,33 @@ export interface EmbeddingProverResult {
   readonly issues: readonly string[];
   readonly metadata: typeof EMBEDDING_PROVER_METADATA;
 }
+export type HybridConfidenceProofStatus = 'proved' | 'not_proved' | 'unknown' | 'not_applicable';
+export interface HybridConfidenceInput {
+  readonly neuralConfidence?: number;
+  readonly symbolicConfidence?: number;
+  readonly retrievalScore?: number;
+  readonly proofStatus?: HybridConfidenceProofStatus;
+  readonly evidenceCount?: number;
+  readonly contradictionCount?: number;
+  readonly signals?: readonly NeuroSymbolicSignal[];
+}
+export interface HybridConfidenceOptions {
+  readonly threshold?: number;
+}
+export interface HybridConfidenceResult {
+  readonly status: 'success' | 'validation_failed';
+  readonly success: boolean;
+  readonly runtime: 'browser-native';
+  readonly wasmCompatible: true;
+  readonly serverCallsAllowed: false;
+  readonly pythonRuntimeAllowed: false;
+  readonly confidence: number;
+  readonly threshold: number;
+  readonly passedThreshold: boolean;
+  readonly components: Record<string, number>;
+  readonly issues: readonly string[];
+  readonly metadata: typeof HYBRID_CONFIDENCE_METADATA;
+}
 export const NEUROSYMBOLIC_METADATA = {
   sourcePythonModule: 'logic/integration/neurosymbolic.py',
   browserNative: true,
@@ -136,6 +163,16 @@ export const EMBEDDING_PROVER_METADATA = {
   embeddingRuntime: 'deterministic-local-token-vector',
   runtimeDependencies: [],
   parity: ['local_embedding_projection', 'cosine_similarity_proof', 'fail_closed_reasoning'],
+} as const;
+export const HYBRID_CONFIDENCE_METADATA = {
+  sourcePythonModule: 'logic/integration/symbolic/neurosymbolic/hybrid_confidence.py',
+  browserNative: true,
+  wasmCompatible: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  confidenceRuntime: 'deterministic-local-hybrid-scorer',
+  runtimeDependencies: [],
+  parity: ['weighted_signal_fusion', 'symbolic_proof_adjustment', 'fail_closed_confidence'],
 } as const;
 const INTENTS: readonly [NeuroSymbolicIntent, RegExp, string][] = [
   ['prohibition', /\b(shall not|must not|may not|prohibited from|forbidden to)\b/i, 'F'],
@@ -335,6 +372,48 @@ export const create_browser_native_embedding_prover = () => ({
   prove: proveEmbedding,
 });
 export const prove_embedding = proveEmbedding;
+export class BrowserNativeHybridConfidence {
+  readonly metadata = HYBRID_CONFIDENCE_METADATA;
+
+  score(
+    input: HybridConfidenceInput,
+    options: HybridConfidenceOptions = {},
+  ): HybridConfidenceResult {
+    return scoreHybridConfidence(input, options);
+  }
+}
+export const scoreHybridConfidence = (
+  input: HybridConfidenceInput,
+  options: HybridConfidenceOptions = {},
+): HybridConfidenceResult => {
+  const signals = input.signals ?? [];
+  const neural =
+    input.neuralConfidence ??
+    (signals.length === 0 ? undefined : average(signals.map((signal) => signal.confidence)));
+  const symbolic = input.symbolicConfidence;
+  const retrieval = input.retrievalScore;
+  const available = [neural, symbolic, retrieval].filter((value) => value !== undefined);
+  const threshold = clampThreshold(options.threshold ?? 0.62);
+  if (available.length === 0) {
+    return hybridConfidenceResult(
+      { neural: 0, symbolic: 0, retrieval: 0, proof: 0, evidence: 0, contradictionPenalty: 0 },
+      threshold,
+      ['at least one confidence signal is required'],
+    );
+  }
+  const components = {
+    neural: clamp01(neural ?? 0),
+    symbolic: clamp01(symbolic ?? proofStatusScore(input.proofStatus ?? 'not_applicable')),
+    retrieval: clamp01(retrieval ?? 0),
+    proof: proofStatusScore(input.proofStatus ?? 'not_applicable'),
+    evidence: evidenceScore(input.evidenceCount ?? signals.length),
+    contradictionPenalty: contradictionPenalty(input.contradictionCount ?? 0),
+  };
+  return hybridConfidenceResult(components, threshold, []);
+};
+export const create_browser_native_hybrid_confidence = (): BrowserNativeHybridConfidence =>
+  new BrowserNativeHybridConfidence();
+export const score_hybrid_confidence = scoreHybridConfidence;
 function extractSignals(sentence: string): readonly NeuroSymbolicSignal[] {
   const matched = INTENTS.filter(([, pattern]) => pattern.test(sentence));
   const intents: readonly [NeuroSymbolicIntent, RegExp, string][] =
@@ -467,9 +546,7 @@ function terms(text: string): readonly string[] {
       .filter((term) => term.length > 2),
   );
 }
-function normalizeEmbeddingPremises(
-  premises: readonly EmbeddingProverPremise[],
-): readonly {
+function normalizeEmbeddingPremises(premises: readonly EmbeddingProverPremise[]): readonly {
   readonly id: string;
   readonly index: number;
   readonly text: string;
@@ -524,6 +601,54 @@ function cosineSimilarity(left: readonly number[], right: readonly number[]): nu
 function clampThreshold(value: number): number {
   if (!Number.isFinite(value)) return 0.62;
   return Number(Math.min(0.99, Math.max(0.01, value)).toFixed(3));
+}
+function clamp01(value: number): number {
+  if (!Number.isFinite(value)) return 0;
+  return Number(Math.min(1, Math.max(0, value)).toFixed(3));
+}
+function average(values: readonly number[]): number {
+  return values.length === 0 ? 0 : values.reduce((sum, value) => sum + value, 0) / values.length;
+}
+function proofStatusScore(status: HybridConfidenceProofStatus): number {
+  if (status === 'proved') return 0.92;
+  if (status === 'not_proved') return 0.24;
+  if (status === 'unknown') return 0.46;
+  return 0.5;
+}
+function evidenceScore(count: number): number {
+  if (!Number.isFinite(count) || count <= 0) return 0;
+  return Number(Math.min(0.08, count * 0.02).toFixed(3));
+}
+function contradictionPenalty(count: number): number {
+  if (!Number.isFinite(count) || count <= 0) return 0;
+  return Number(Math.min(0.35, count * 0.12).toFixed(3));
+}
+function hybridConfidenceResult(
+  components: HybridConfidenceResult['components'],
+  threshold: number,
+  issues: readonly string[],
+): HybridConfidenceResult {
+  const fused =
+    components.neural * 0.45 +
+    components.symbolic * 0.4 +
+    components.retrieval * 0.15 +
+    components.evidence -
+    components.contradictionPenalty;
+  const confidence = issues.length > 0 ? 0 : clamp01(fused);
+  return {
+    status: issues.length > 0 ? 'validation_failed' : 'success',
+    success: issues.length === 0,
+    runtime: 'browser-native',
+    wasmCompatible: true,
+    serverCallsAllowed: false,
+    pythonRuntimeAllowed: false,
+    confidence,
+    threshold,
+    passedThreshold: confidence >= threshold,
+    components,
+    issues,
+    metadata: HYBRID_CONFIDENCE_METADATA,
+  };
 }
 function score(
   signals: readonly NeuroSymbolicSignal[],

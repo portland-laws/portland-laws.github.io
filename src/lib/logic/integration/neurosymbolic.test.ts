@@ -1,12 +1,14 @@
 import {
   analyze_neurosymbolic,
   analyze_neurosymbolic_graphrag,
+  create_browser_native_hybrid_confidence,
   create_browser_native_embedding_prover,
   create_browser_native_neurosymbolic_integration,
   create_browser_native_neurosymbolic_graphrag,
   prove_embedding,
   query_neurosymbolic_graphrag,
   reason_neurosymbolic,
+  score_hybrid_confidence,
 } from './neurosymbolic';
 
 describe('browser-native neurosymbolic integration parity', () => {
@@ -183,5 +185,47 @@ describe('browser-native neurosymbolic embedding prover parity', () => {
     expect(result).toMatchObject({ status: 'not_proved', success: false });
     expect(result.issues).toContain('embedding similarity did not meet proof threshold');
     expect(result.matchedPremises).toHaveLength(1);
+  });
+});
+
+describe('browser-native hybrid confidence parity', () => {
+  it('fuses local signals and fails closed without runtime fallbacks', () => {
+    const scorer = create_browser_native_hybrid_confidence();
+    const result = scorer.score({
+      signals: [{ intent: 'obligation', evidence: 'The tenant must pay rent.', confidence: 0.82 }],
+      symbolicConfidence: 0.88,
+      retrievalScore: 0.7,
+      proofStatus: 'proved',
+      evidenceCount: 3,
+    });
+
+    expect(scorer.metadata).toMatchObject({
+      sourcePythonModule: 'logic/integration/symbolic/neurosymbolic/hybrid_confidence.py',
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      confidenceRuntime: 'deterministic-local-hybrid-scorer',
+    });
+    expect(result).toMatchObject({
+      status: 'success',
+      runtime: 'browser-native',
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      passedThreshold: true,
+      metadata: {
+        sourcePythonModule: 'logic/integration/symbolic/neurosymbolic/hybrid_confidence.py',
+      },
+    });
+    expect(result.confidence).toBeGreaterThan(0.8);
+    expect(result.components.neural).toBe(0.82);
+    expect(result.components.evidence).toBe(0.06);
+    expect(score_hybrid_confidence({})).toMatchObject({
+      status: 'validation_failed',
+      success: false,
+      confidence: 0,
+      issues: ['at least one confidence signal is required'],
+      metadata: {
+        sourcePythonModule: 'logic/integration/symbolic/neurosymbolic/hybrid_confidence.py',
+      },
+    });
   });
 });

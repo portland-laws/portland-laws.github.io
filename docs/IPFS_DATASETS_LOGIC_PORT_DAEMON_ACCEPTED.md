@@ -1820,3 +1820,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T142639Z-ported-symbolic-neurosymbolic-embedding-prover-parity-through-a-deterministic-br.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T142639Z-ported-symbolic-neurosymbolic-embedding-prover-parity-through-a-deterministic-br.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T142639Z-ported-symbolic-neurosymbolic-embedding-prover-parity-through-a-deterministic-br.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 14:30:04 UTC
+
+- Target: `Task checkbox-393: Port remaining Python logic module `logic/integration/symbolic/neurosymbolic/hybrid_confidence.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported hybrid_confidence.py parity as a deterministic browser-native TypeScript confidence scorer.
+- Impact: src/lib/logic/integration/neurosymbolic.ts now exposes hybrid_confidence.py metadata, Python-compatible aliases, weighted local confidence fusion, proof/evidence adjustments, contradiction penalties, and fail-closed validation with no server or Python runtime dependency. src/lib/logic/integration/neurosymbolic.test.ts validates successful fusion and validation_failed behavior, and the TypeScript port ledger marks checkbox-393 complete.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/neurosymbolic.test.ts`, `src/lib/logic/integration/neurosymbolic.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T143004Z-ported-hybrid_confidence.py-parity-as-a-deterministic-browser-native-typescript-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T143004Z-ported-hybrid_confidence.py-parity-as-a-deterministic-browser-native-typescript-.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T143004Z-ported-hybrid_confidence.py-parity-as-a-deterministic-browser-native-typescript-.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
