@@ -1397,3 +1397,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T111144Z-ported-integration-ipfs-proof-cache-parity-to-browser-native-typescript-with-det.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T111144Z-ported-integration-ipfs-proof-cache-parity-to-browser-native-typescript-with-det.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T111144Z-ported-integration-ipfs-proof-cache-parity-to-browser-native-typescript-with-det.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 11:15:51 UTC
+
+- Target: `Task checkbox-346: Port remaining Python logic module `logic/integration/caching/ipld_logic_storage.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported browser-native IPLD logic storage with deterministic content IDs, local bounded cache, optional injected IPLD transport, and focused Jest coverage.
+- Impact: src/lib/logic/integration/ipldLogicStorage.ts adds the TypeScript/WASM-safe replacement for logic/integration/caching/ipld_logic_storage.py and is exported through the integration barrel. The focused Jest test validates canonical IPLD payload storage, order-insensitive axiom CIDs, fail-closed adapter behavior, and CID verification for remote reads without server, Python, filesystem, subprocess, or RPC dependencies.
+- Changed files: `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/ipldLogicStorage.test.ts`, `src/lib/logic/integration/ipldLogicStorage.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T111551Z-ported-browser-native-ipld-logic-storage-with-deterministic-content-ids-local-bo.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T111551Z-ported-browser-native-ipld-logic-storage-with-deterministic-content-ids-local-bo.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T111551Z-ported-browser-native-ipld-logic-storage-with-deterministic-content-ids-local-bo.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

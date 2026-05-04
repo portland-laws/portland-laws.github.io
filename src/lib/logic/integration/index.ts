@@ -2,6 +2,7 @@ export * from './baseProverBridge';
 export * from './bridge';
 export * from './cvc5ProverBridge';
 export * from './externalProversBridge';
+export * from './ipldLogicStorage';
 export * from './leanProverBridge';
 export * from './proverAdapters';
 export * from './proverInstaller';
