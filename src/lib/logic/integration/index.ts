@@ -4,6 +4,7 @@ export * from './cecBridge';
 export * from './converters/deonticLogicConverter';
 export * from './converters/logicTranslationCore';
 export * from './converters/modalLogicExtension';
+export * from './converters/symbolicFolBridge';
 export * from './cvc5ProverBridge';
 export * from './externalProversBridge';
 export * from './ipldLogicStorage';

@@ -25,6 +25,13 @@ export interface FOLConversionResult {
   errors: string[];
 }
 
+export interface SymbolicFOLBridgeOptions {
+  confidenceThreshold?: number;
+  fallbackEnabled?: boolean;
+  enableCaching?: boolean;
+  sourcePythonModule?: string;
+}
+
 const STOP_WORDS = new Set([
   'all',
   'every',
@@ -54,18 +61,15 @@ export class SymbolicFOLBridge {
   readonly confidenceThreshold: number;
   readonly fallbackEnabled: boolean;
   readonly enableCaching: boolean;
+  readonly sourcePythonModule: string;
   private readonly cache = new Map<string, FOLConversionResult>();
 
-  constructor(
-    options: {
-      confidenceThreshold?: number;
-      fallbackEnabled?: boolean;
-      enableCaching?: boolean;
-    } = {},
-  ) {
+  constructor(options: SymbolicFOLBridgeOptions = {}) {
     this.confidenceThreshold = options.confidenceThreshold ?? 0.7;
     this.fallbackEnabled = options.fallbackEnabled ?? true;
     this.enableCaching = options.enableCaching ?? true;
+    this.sourcePythonModule =
+      options.sourcePythonModule ?? 'logic/integration/bridges/symbolic_fol_bridge.py';
   }
 
   createSemanticSymbol(text: string): BrowserNativeSemanticSymbol {
@@ -175,7 +179,8 @@ export class SymbolicFOLBridge {
   getStatistics(): Record<string, unknown> {
     const totalConversions = this.enableCaching ? this.cache.size : 'N/A';
     return {
-      sourcePythonModule: 'logic/integration/bridges/symbolic_fol_bridge.py',
+      sourcePythonModule: this.sourcePythonModule,
+      source_python_module: this.sourcePythonModule,
       runtime: 'typescript-wasm-browser',
       symbolicAiAvailable: false,
       symbolic_ai_available: false,
@@ -205,10 +210,23 @@ export class SymbolicFOLBridge {
   }
 
   private patternBasedConversion(text: string): string | undefined {
-    const all = lower(text).match(/^(?:all|every)\s+(\w+)\s+are\s+(\w+)/);
+    const normalized = lower(text.trim());
+    const implication = normalized.match(/^if\s+(.+?)\s+then\s+(.+)$/);
+    if (implication) {
+      const antecedent = this.patternBasedConversion(implication[1]);
+      const consequent = this.patternBasedConversion(implication[2]);
+      if (antecedent && consequent) return `(${antecedent} → ${consequent})`;
+    }
+    const all = normalized.match(/^(?:all|every)\s+(\w+)\s+are\s+(\w+)/);
     if (all) return `∀x (${cap(all[1])}(x) → ${cap(all[2])}(x))`;
-    const some = lower(text).match(/^some\s+(\w+)\s+are\s+(\w+)/);
-    return some ? `∃x (${cap(some[1])}(x) ∧ ${cap(some[2])}(x))` : undefined;
+    const some = normalized.match(/^some\s+(\w+)\s+are\s+(\w+)/);
+    if (some) return `∃x (${cap(some[1])}(x) ∧ ${cap(some[2])}(x))`;
+    const relation = text
+      .trim()
+      .match(/^([A-Z][a-zA-Z]*)\s+(loves?|knows?|requires?)\s+([A-Z][a-zA-Z]*)$/);
+    return relation
+      ? `${cap(lower(relation[2]).replace(/s$/, ''))}(${relation[1]}, ${relation[3]})`
+      : undefined;
   }
 }
 

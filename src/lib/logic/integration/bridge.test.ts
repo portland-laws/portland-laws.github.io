@@ -26,6 +26,7 @@ import {
   type BrowserNativeSymbolicAiProofResult,
 } from './symbolicAiProverBridge';
 import { SymbolicFOLBridge } from './symbolicFolBridge';
+import { createBrowserNativeSymbolicFOLConverterBridge } from './converters/symbolicFolBridge';
 import { createBrowserNativeTdfolCecBridge } from './tdfolCecBridge';
 import { createBrowserNativeTdfolGrammarBridge } from './tdfolGrammarBridge';
 import { createBrowserNativeTdfolShadowProverBridge } from './tdfolShadowProverBridge';
@@ -609,6 +610,32 @@ describe('BrowserNativeLogicBridge', () => {
       errors: [],
     });
     expect(() => bridge.create_semantic_symbol('7')).toThrow('Text cannot be empty');
+  });
+
+  it('ports integration/converters/symbolic_fol_bridge.py with converter-scoped metadata', () => {
+    const bridge = createBrowserNativeSymbolicFOLConverterBridge();
+
+    const directRelation = bridge.convert_to_fol('Alice loves Bob');
+    const implication = bridge.convert_to_fol(
+      'If all tenants are residents then some tenants are protected',
+    );
+
+    expect(directRelation).toMatchObject({
+      fol_formula: 'Love(Alice, Bob)',
+      confidence: 0.8,
+      fallback_used: false,
+    });
+    expect(implication).toMatchObject({
+      fol_formula: '(∀x (Tenants(x) → Residents(x)) → ∃x (Tenants(x) ∧ Protected(x)))',
+      fallback_used: false,
+    });
+    expect(bridge.get_statistics()).toMatchObject({
+      sourcePythonModule: 'logic/integration/converters/symbolic_fol_bridge.py',
+      source_python_module: 'logic/integration/converters/symbolic_fol_bridge.py',
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      cache_size: 2,
+    });
   });
 
   it('accepts injectable browser-native prover adapters for bridge contract tests', () => {

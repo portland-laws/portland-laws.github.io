@@ -863,7 +863,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/integration/converters/deontic_logic_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/converters/logic_translation_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/converters/modal_logic_extension.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/integration/converters/symbolic_fol_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/integration/converters/symbolic_fol_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/demos/demo_temporal_deontic_rag.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/deontic_logic_converter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/deontic_logic_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 11:41:03 UTC
+Last updated: 2026-05-04 11:43:30 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-353: Port remaining Python logic module 'logic/integration/converters/symbolic_fol_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-354: Port remaining Python logic module 'logic/integration/demos/demo_temporal_deontic_rag.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1327,8 +1327,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-349: Port remaining Python logic module 'logic/integration/converters/deontic_logic_converter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-350: Port remaining Python logic module 'logic/integration/converters/deontic_logic_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-351: Port remaining Python logic module 'logic/integration/converters/logic_translation_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-352: Port remaining Python logic module 'logic/integration/converters/modal_logic_extension.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-353: Port remaining Python logic module 'logic/integration/converters/symbolic_fol_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-352: Port remaining Python logic module 'logic/integration/converters/modal_logic_extension.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-353: Port remaining Python logic module 'logic/integration/converters/symbolic_fol_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-354: Port remaining Python logic module 'logic/integration/demos/demo_temporal_deontic_rag.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-355: Port remaining Python logic module 'logic/integration/deontic_logic_converter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-356: Port remaining Python logic module 'logic/integration/deontic_logic_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-352: Port remaining Python logic module 'logic/integration/converters/modal_logic_extension.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-353: Port remaining Python logic module 'logic/integration/converters/symbolic_fol_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported modal_logic_extension.py as a browser-native TypeScript modal extraction and projection facade.
-- Impact: Adds a local modal logic extension converter under src/lib/logic/integration/converters that extracts necessity, possibility, and prohibition statements into modal formulas, optionally validates them with the existing TypeScript tableaux engine, exports Python-style aliases, and is exercised by focused Jest tests.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/converters/modalLogicExtension.test.ts`, `src/lib/logic/integration/converters/modalLogicExtension.ts`, `src/lib/logic/integration/index.ts`
+- Summary: Ported the converter-scoped symbolic_fol_bridge.py entry point to browser-native TypeScript.
+- Impact: Adds a converter-specific SymbolicFOL bridge export with Python module provenance, reuses the deterministic local FOL conversion core, extends browser-native pattern conversion for simple binary relations and if-then composition, and validates the converter contract in the integration Jest suite without Python, server, RPC, subprocess, filesystem, or Node-only browser runtime dependencies.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/converters/symbolicFolBridge.ts`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/symbolicFolBridge.ts`
 
 ### Blocked Backlog
 
