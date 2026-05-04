@@ -871,7 +871,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/integration/domain/deontic_query_engine.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/domain/document_consistency_checker.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/domain/legal_domain_knowledge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/integration/domain/legal_symbolic_analyzer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/integration/domain/legal_symbolic_analyzer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/domain/medical_theorem_framework.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/domain/symbolic_contracts.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/domain/temporal_deontic_api.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 12:11:18 UTC
+Last updated: 2026-05-04 12:15:54 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-361: Port remaining Python logic module 'logic/integration/domain/legal_symbolic_analyzer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-362: Port remaining Python logic module 'logic/integration/domain/medical_theorem_framework.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1335,8 +1335,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-357: Port remaining Python logic module 'logic/integration/domain/caselaw_bulk_processor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-358: Port remaining Python logic module 'logic/integration/domain/deontic_query_engine.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-359: Port remaining Python logic module 'logic/integration/domain/document_consistency_checker.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-360: Port remaining Python logic module 'logic/integration/domain/legal_domain_knowledge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-361: Port remaining Python logic module 'logic/integration/domain/legal_symbolic_analyzer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-360: Port remaining Python logic module 'logic/integration/domain/legal_domain_knowledge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-361: Port remaining Python logic module 'logic/integration/domain/legal_symbolic_analyzer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-362: Port remaining Python logic module 'logic/integration/domain/medical_theorem_framework.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-363: Port remaining Python logic module 'logic/integration/domain/symbolic_contracts.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-364: Port remaining Python logic module 'logic/integration/domain/temporal_deontic_api.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-360: Port remaining Python logic module 'logic/integration/domain/legal_domain_knowledge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-361: Port remaining Python logic module 'logic/integration/domain/legal_symbolic_analyzer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported legal domain knowledge to deterministic browser-native TypeScript.
-- Impact: Adds a browser-native legal-domain taxonomy classifier with Python-style aliases, fail-closed validation, no server/Python runtime dependency, and focused Jest coverage used by the TypeScript logic validation suite.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/domain/legalDomainKnowledge.test.ts`, `src/lib/logic/integration/domain/legalDomainKnowledge.ts`, `src/lib/logic/integration/index.ts`
+- Summary: Ported legal symbolic analyzer to deterministic browser-native TypeScript with focused validation.
+- Impact: Adds a dependency-free TypeScript analyzer exported from the integration surface; Jest validation exercises legal symbolic operator extraction, legal reference detection, domain taxonomy reuse, Python-style aliases, and fail-closed behavior without server or Python runtime fallback.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/domain/legalSymbolicAnalyzer.test.ts`, `src/lib/logic/integration/domain/legalSymbolicAnalyzer.ts`, `src/lib/logic/integration/index.ts`
 
 ### Blocked Backlog
 

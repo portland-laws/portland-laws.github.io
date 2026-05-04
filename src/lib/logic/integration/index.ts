@@ -11,6 +11,7 @@ export * from './domain/caselawBulkProcessor';
 export * from './domain/deonticQueryEngine';
 export * from './domain/documentConsistencyChecker';
 export * from './domain/legalDomainKnowledge';
+export * from './domain/legalSymbolicAnalyzer';
 export * from './cvc5ProverBridge';
 export * from './demoTemporalDeonticRag';
 export * from './externalProversBridge';
