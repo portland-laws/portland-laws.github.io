@@ -1928,3 +1928,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T150255Z-ported-logic-integration-ucan_policy_bridge.py-to-a-browser-native-typescript-br.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T150255Z-ported-logic-integration-ucan_policy_bridge.py-to-a-browser-native-typescript-br.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T150255Z-ported-logic-integration-ucan_policy_bridge.py-to-a-browser-native-typescript-br.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 15:06:47 UTC
+
+- Target: `Task checkbox-405: Port remaining Python logic module `logic/integrations/enhanced_graphrag_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported enhanced GraphRAG integration as a browser-native deterministic facade over the local GraphRAG, symbolic inference, evidence-pack, and hybrid-confidence logic.
+- Impact: src/lib/logic/integration/neurosymbolic.ts now exposes the logic/integrations/enhanced_graphrag_integration.py surface with citation-grounded evidence packs, answer synthesis, confidence gating, Python-compatible aliases, and explicit no-server/no-Python runtime metadata. The matching Jest test directly validates successful local evidence generation and fail-closed behavior, and the TypeScript port ledger marks checkbox-405 complete.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/neurosymbolic.test.ts`, `src/lib/logic/integration/neurosymbolic.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T150647Z-ported-enhanced-graphrag-integration-as-a-browser-native-deterministic-facade-ov.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T150647Z-ported-enhanced-graphrag-integration-as-a-browser-native-deterministic-facade-ov.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T150647Z-ported-enhanced-graphrag-integration-as-a-browser-native-deterministic-facade-ov.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

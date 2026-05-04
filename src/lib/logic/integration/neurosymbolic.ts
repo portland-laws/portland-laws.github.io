@@ -78,6 +78,28 @@ export type NeuroSymbolicGraphRagResult = Omit<NeuroSymbolicResult, 'metadata'> 
 export type SymbolicNeuroSymbolicGraphRagResult = Omit<NeuroSymbolicGraphRagResult, 'metadata'> & {
   readonly metadata: typeof SYMBOLIC_NEUROSYMBOLIC_GRAPHRAG_METADATA;
 };
+export type EnhancedGraphRagOptions = NeuroSymbolicGraphRagOptions & {
+  readonly confidenceThreshold?: number;
+};
+export type EnhancedGraphRagEvidencePack = {
+  readonly query: string | null;
+  readonly citations: readonly {
+    readonly id: string;
+    readonly title: string | null;
+    readonly text: string;
+    readonly facts: readonly string[];
+    readonly score: number;
+  }[];
+  readonly supportingFacts: readonly string[];
+  readonly inferredFacts: readonly string[];
+  readonly graph: { readonly nodes: number; readonly edges: number };
+};
+export type EnhancedGraphRagResult = Omit<NeuroSymbolicGraphRagResult, 'metadata'> & {
+  readonly metadata: typeof ENHANCED_GRAPHRAG_INTEGRATION_METADATA;
+  readonly answer: string;
+  readonly evidencePack: EnhancedGraphRagEvidencePack;
+  readonly confidenceDecision: HybridConfidenceResult;
+};
 export type EmbeddingProverStatus = 'proved' | 'not_proved' | 'validation_failed';
 export type EmbeddingProverPremise =
   | string
@@ -195,6 +217,22 @@ export const SYMBOLIC_NEUROSYMBOLIC_GRAPHRAG_METADATA = {
   neuralRuntime: 'deterministic-local-adapter',
   runtimeDependencies: [],
   parity: ['local_symbolic_graph_construction', 'symbolic_rag_retrieval', 'fail_closed_reasoning'],
+} as const;
+export const ENHANCED_GRAPHRAG_INTEGRATION_METADATA = {
+  sourcePythonModule: 'logic/integrations/enhanced_graphrag_integration.py',
+  browserNative: true,
+  wasmCompatible: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  graphRuntime: 'deterministic-local-enhanced-graph-rag-adapter',
+  neuralRuntime: 'deterministic-local-adapter',
+  runtimeDependencies: [],
+  parity: [
+    'local_evidence_pack_generation',
+    'citation_grounded_answer_synthesis',
+    'hybrid_confidence_gate',
+    'fail_closed_reasoning',
+  ],
 } as const;
 export const EMBEDDING_PROVER_METADATA = {
   sourcePythonModule: 'logic/integration/symbolic/neurosymbolic/embedding_prover.py',
@@ -410,6 +448,48 @@ export class BrowserNativeSymbolicNeuroSymbolicGraphRag {
     return this.analyze(text, { ...options, query });
   }
 }
+export class BrowserNativeEnhancedGraphRagIntegration {
+  readonly metadata = ENHANCED_GRAPHRAG_INTEGRATION_METADATA;
+  private readonly graphRag = new BrowserNativeNeuroSymbolicGraphRag();
+
+  analyze(text: string, options: EnhancedGraphRagOptions = {}): EnhancedGraphRagResult {
+    const graphResult = this.graphRag.analyze(text, options);
+    const confidenceDecision = scoreHybridConfidence(
+      {
+        neuralConfidence: graphResult.confidence,
+        proofStatus: graphResult.proofStatus,
+        evidenceCount: graphResult.symbolicFacts.length + graphResult.inferredFacts.length,
+        signals: graphResult.neuralSignals,
+      },
+      { threshold: options.confidenceThreshold },
+    );
+    const evidencePack = buildEnhancedEvidencePack(graphResult);
+    const success = graphResult.success && confidenceDecision.success;
+    return {
+      ...graphResult,
+      status: success ? 'success' : 'validation_failed',
+      success,
+      confidence: success ? confidenceDecision.confidence : 0,
+      issues: unique([
+        ...graphResult.issues,
+        ...confidenceDecision.issues,
+        ...(confidenceDecision.passedThreshold ? [] : ['enhanced graphrag confidence gate failed']),
+      ]),
+      metadata: this.metadata,
+      answer: synthesizeEnhancedAnswer(graphResult, evidencePack, confidenceDecision),
+      evidencePack,
+      confidenceDecision,
+    };
+  }
+
+  query(
+    text: string,
+    query: string,
+    options: Omit<EnhancedGraphRagOptions, 'query'> = {},
+  ): EnhancedGraphRagResult {
+    return this.analyze(text, { ...options, query });
+  }
+}
 export class BrowserNativeReasoningCoordinator {
   readonly metadata = REASONING_COORDINATOR_METADATA;
 
@@ -606,6 +686,8 @@ export const create_browser_native_neurosymbolic_graphrag =
 export const create_browser_native_symbolic_neurosymbolic_graphrag =
   (): BrowserNativeSymbolicNeuroSymbolicGraphRag =>
     new BrowserNativeSymbolicNeuroSymbolicGraphRag();
+export const create_browser_native_enhanced_graphrag_integration =
+  (): BrowserNativeEnhancedGraphRagIntegration => new BrowserNativeEnhancedGraphRagIntegration();
 export const analyze_neurosymbolic = analyzeNeuroSymbolic;
 export const reason_neurosymbolic = reasonNeuroSymbolic;
 export const analyzeNeuroSymbolicGraphRag = (
@@ -633,6 +715,18 @@ export const querySymbolicNeuroSymbolicGraphRag = (
   new BrowserNativeSymbolicNeuroSymbolicGraphRag().query(text, query, options);
 export const analyze_symbolic_neurosymbolic_graphrag = analyzeSymbolicNeuroSymbolicGraphRag;
 export const query_symbolic_neurosymbolic_graphrag = querySymbolicNeuroSymbolicGraphRag;
+export const analyzeEnhancedGraphRagIntegration = (
+  text: string,
+  options: EnhancedGraphRagOptions = {},
+): EnhancedGraphRagResult => new BrowserNativeEnhancedGraphRagIntegration().analyze(text, options);
+export const queryEnhancedGraphRagIntegration = (
+  text: string,
+  query: string,
+  options: Omit<EnhancedGraphRagOptions, 'query'> = {},
+): EnhancedGraphRagResult =>
+  new BrowserNativeEnhancedGraphRagIntegration().query(text, query, options);
+export const analyze_enhanced_graphrag_integration = analyzeEnhancedGraphRagIntegration;
+export const query_enhanced_graphrag_integration = queryEnhancedGraphRagIntegration;
 export const coordinateReasoning = (
   text: string,
   query: string,
@@ -849,6 +943,51 @@ function retrieveDocuments(
     .sort((left, right) => right.score - left.score || left.index - right.index)
     .slice(0, Math.max(1, topK))
     .map((entry) => entry.document);
+}
+function buildEnhancedEvidencePack(
+  result: NeuroSymbolicGraphRagResult,
+): EnhancedGraphRagEvidencePack {
+  const factsByDocument = new Map<string, string[]>();
+  result.graphEdges
+    .filter((edge) => edge.relation === 'contains')
+    .forEach((edge) => {
+      const fact = result.graphNodes.find((node) => node.id === edge.target)?.label;
+      if (fact === undefined) return;
+      const current = factsByDocument.get(edge.source) ?? [];
+      factsByDocument.set(edge.source, [...current, fact]);
+    });
+  const citations = result.retrievedDocuments.map((document, index) => {
+    const documentId = document.id ?? `doc-${index + 1}`;
+    return {
+      id: documentId,
+      title: document.title ?? null,
+      text: document.text,
+      facts: unique(factsByDocument.get(documentId) ?? []),
+      score: Number(Math.max(0.01, result.confidence - index * 0.05).toFixed(3)),
+    };
+  });
+  return {
+    query: result.query,
+    citations,
+    supportingFacts: result.symbolicFacts,
+    inferredFacts: result.inferredFacts,
+    graph: {
+      nodes: result.graphNodes.length,
+      edges: result.graphEdges.length,
+    },
+  };
+}
+function synthesizeEnhancedAnswer(
+  result: NeuroSymbolicGraphRagResult,
+  evidencePack: EnhancedGraphRagEvidencePack,
+  confidence: HybridConfidenceResult,
+): string {
+  if (!result.success || evidencePack.citations.length === 0 || !confidence.passedThreshold) {
+    return 'No browser-native enhanced GraphRAG answer is available for the supplied evidence.';
+  }
+  const facts = unique([...evidencePack.supportingFacts, ...evidencePack.inferredFacts]);
+  const prefix = result.proofStatus === 'proved' ? 'Proved' : 'Retrieved';
+  return `${prefix} ${result.query ?? 'local evidence'} from ${evidencePack.citations.length} citation(s): ${facts.join('; ')}`;
 }
 function extractEntities(text: string): readonly string[] {
   const proper = text.match(/\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b/g) ?? [];

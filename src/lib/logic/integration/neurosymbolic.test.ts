@@ -1,9 +1,11 @@
 import {
   analyze_neurosymbolic,
   analyze_neurosymbolic_api,
+  analyze_enhanced_graphrag_integration,
   analyze_neurosymbolic_graphrag,
   analyze_symbolic_neurosymbolic_graphrag,
   coordinate_reasoning,
+  create_browser_native_enhanced_graphrag_integration,
   create_browser_native_neurosymbolic_api,
   create_browser_native_hybrid_confidence,
   create_browser_native_embedding_prover,
@@ -13,6 +15,7 @@ import {
   create_browser_native_reasoning_coordinator,
   prove_embedding,
   query_neurosymbolic_api,
+  query_enhanced_graphrag_integration,
   query_neurosymbolic_graphrag,
   query_symbolic_neurosymbolic_graphrag,
   reason_neurosymbolic,
@@ -265,6 +268,58 @@ describe('browser-native symbolic neurosymbolic GraphRAG parity', () => {
         sourcePythonModule: 'logic/integration/symbolic/neurosymbolic_graphrag.py',
       },
     });
+  });
+});
+
+describe('browser-native enhanced GraphRAG integration parity', () => {
+  it('builds citation-grounded evidence packs and fails closed locally', () => {
+    const integration = create_browser_native_enhanced_graphrag_integration();
+    const result = integration.query('ignored corpus', 'Compliant(Agency)', {
+      documents: [
+        {
+          id: 'publication-duty',
+          title: 'Publication duty',
+          text: 'The agency shall publish the rule before enforcement.',
+        },
+      ],
+      rules: ['O(the_agency_shall_publish_the_rule_before_enforcement) => Compliant(Agency)'],
+      confidenceThreshold: 0.5,
+    });
+
+    expect(integration.metadata.sourcePythonModule).toBe(
+      'logic/integrations/enhanced_graphrag_integration.py',
+    );
+    expect(result).toMatchObject({
+      status: 'success',
+      runtime: 'browser-native',
+      proofStatus: 'proved',
+      metadata: {
+        sourcePythonModule: 'logic/integrations/enhanced_graphrag_integration.py',
+      },
+    });
+    expect(result.serverCallsAllowed).toBe(false);
+    expect(result.pythonRuntimeAllowed).toBe(false);
+    expect(result.evidencePack.citations[0]).toMatchObject({
+      id: 'publication-duty',
+      facts: ['O(the_agency_shall_publish_the_rule_before_enforcement)'],
+    });
+    expect(result.evidencePack.inferredFacts).toContain('Compliant(Agency)');
+    expect(result.confidenceDecision.passedThreshold).toBe(true);
+    expect(result.answer).toContain('Compliant(Agency)');
+    const aliasResult = analyze_enhanced_graphrag_integration('The clerk may issue notice.', {
+      query: 'P(the_clerk_may_issue_notice)',
+      confidenceThreshold: 0.5,
+    });
+    const closed = query_enhanced_graphrag_integration('', 'Any(Query)');
+
+    expect(aliasResult.evidencePack.supportingFacts).toContain('P(the_clerk_may_issue_notice)');
+    expect(closed.status).toBe('validation_failed');
+    expect(closed.serverCallsAllowed).toBe(false);
+    expect(closed.pythonRuntimeAllowed).toBe(false);
+    expect(closed.metadata.sourcePythonModule).toBe(
+      'logic/integrations/enhanced_graphrag_integration.py',
+    );
+    expect(closed.answer).toContain('No browser-native enhanced GraphRAG answer');
   });
 });
 
