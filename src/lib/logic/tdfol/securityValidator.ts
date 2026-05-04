@@ -1,3 +1,5 @@
+import { parseTdfolFormula } from './parser';
+
 export type TdfolSecurityLevel = 'low' | 'medium' | 'high' | 'paranoid';
 export type TdfolThreatType =
   | 'injection'
@@ -7,6 +9,7 @@ export type TdfolThreatType =
   | 'side_channel'
   | 'timing_attack'
   | 'recursive_bomb'
+  | 'parse_error'
   | 'invalid_zkp';
 
 export interface TdfolSecurityConfig {
@@ -59,7 +62,9 @@ export class TdfolRateLimiter {
 
   checkRateLimit(identifier: string): { allowed: boolean; error?: string } {
     const currentTime = this.now();
-    const recent = (this.requests.get(identifier) ?? []).filter((time) => currentTime - time < this.timeWindowMs);
+    const recent = (this.requests.get(identifier) ?? []).filter(
+      (time) => currentTime - time < this.timeWindowMs,
+    );
     if (recent.length >= this.maxRequests) {
       this.requests.set(identifier, recent);
       return {
@@ -91,16 +96,36 @@ export class TdfolSecurityValidator {
       maxRequestsPerMinute: config.maxRequestsPerMinute ?? 100,
       maxConcurrentRequests: config.maxConcurrentRequests ?? 10,
       securityLevel: config.securityLevel ?? 'medium',
-      allowedChars: config.allowedChars ?? new Set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]{}∀∃∧∨¬→↔=≠<>≤≥+-*/,.:_\' '),
-      dangerousPatterns:
-        config.dangerousPatterns ??
-        [/__.*__/, /eval/i, /exec/i, /compile/i, /import/i, /__import__/i, /getattr/i, /setattr/i, /delattr/i],
+      allowedChars:
+        config.allowedChars ??
+        new Set(
+          "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]{}∀∃∧∨¬→↔=≠<>≤≥+-*/,.:_' ",
+        ),
+      dangerousPatterns: config.dangerousPatterns ?? [
+        /__.*__/,
+        /eval/i,
+        /exec/i,
+        /compile/i,
+        /import/i,
+        /__import__/i,
+        /getattr/i,
+        /setattr/i,
+        /delattr/i,
+      ],
       now: config.now ?? (() => Date.now()),
     };
-    this.rateLimiter = new TdfolRateLimiter(this.config.maxRequestsPerMinute, 60_000, this.config.now);
+    this.rateLimiter = new TdfolRateLimiter(
+      this.config.maxRequestsPerMinute,
+      60_000,
+      this.config.now,
+    );
   }
 
-  validateFormula(formula: unknown, identifier = 'default'): TdfolSecurityValidationResult {
+  validateFormula(
+    formula: unknown,
+    identifier = 'default',
+    options: { parse?: boolean } = {},
+  ): TdfolSecurityValidationResult {
     const result = createSecurityValidationResult();
     const rate = this.rateLimiter.checkRateLimit(identifier);
     if (!rate.allowed) {
@@ -125,8 +150,12 @@ export class TdfolSecurityValidator {
         this.detectInjection(formula, result);
         this.detectDosPatterns(formula, result);
         this.detectRecursiveBombs(formula, result);
+        if (options.parse ?? true) this.validateParse(formula, result);
         result.metadata = {
           formula_length: formula.length,
+          formula_depth: calculateDepth(formula),
+          variable_count: countVariables(formula),
+          operator_count: countOperators(formula),
           validation_time: this.config.now(),
           security_level: this.config.securityLevel,
         };
@@ -142,7 +171,11 @@ export class TdfolSecurityValidator {
     if (!input) return '';
     let sanitized = input.replace(/\x00/g, '');
     for (const pattern of this.config.dangerousPatterns) {
-      sanitized = sanitized.replace(pattern, '');
+      let previous = '';
+      while (previous !== sanitized) {
+        previous = sanitized;
+        sanitized = sanitized.replace(pattern, '');
+      }
     }
     sanitized = sanitized.replace(/\s+/g, ' ');
     sanitized = [...sanitized].filter((char) => /[\n\t]/.test(char) || char >= ' ').join('');
@@ -232,13 +265,13 @@ export class TdfolSecurityValidator {
       result.errors.push(`Formula too deep: ${depth} > ${this.config.maxFormulaDepth}`);
       result.threats.push('resource_exhaustion');
     }
-    const variableCount = [...formula.matchAll(/\b[a-z][a-z0-9_]*\b/g)].length;
+    const variableCount = countVariables(formula);
     if (variableCount > this.config.maxVariables) {
       result.valid = false;
       result.errors.push(`Too many variables: ${variableCount} > ${this.config.maxVariables}`);
       result.threats.push('resource_exhaustion');
     }
-    const operatorCount = [...formula.matchAll(/[∀∃∧∨¬→↔=≠<>≤≥]/g)].length;
+    const operatorCount = countOperators(formula);
     if (operatorCount > this.config.maxOperators) {
       result.valid = false;
       result.errors.push(`Too many operators: ${operatorCount} > ${this.config.maxOperators}`);
@@ -248,7 +281,9 @@ export class TdfolSecurityValidator {
 
   private validateCharacters(formula: string, result: TdfolSecurityValidationResult): void {
     if (this.config.securityLevel !== 'high' && this.config.securityLevel !== 'paranoid') return;
-    const invalidChars = [...new Set([...formula].filter((char) => !this.config.allowedChars.has(char)))];
+    const invalidChars = [
+      ...new Set([...formula].filter((char) => !this.config.allowedChars.has(char))),
+    ];
     if (invalidChars.length === 0) return;
     const message = `Invalid characters: ${invalidChars.map((char) => JSON.stringify(char)).join(', ')}`;
     if (this.config.securityLevel === 'paranoid') {
@@ -269,7 +304,7 @@ export class TdfolSecurityValidator {
         this.logSecurityEvent('injection', `Pattern: ${pattern.source}`, formula.slice(0, 100));
       }
     }
-    for (const sequence of ['$(' , '`', '${', '|', ';', '&&', '||']) {
+    for (const sequence of ['$(', '`', '${', '|', ';', '&&', '||']) {
       if (!formula.includes(sequence)) continue;
       if (this.config.securityLevel === 'high' || this.config.securityLevel === 'paranoid') {
         result.valid = false;
@@ -308,15 +343,33 @@ export class TdfolSecurityValidator {
     if (duplicates > 10) result.warnings.push(`High variable reuse: ${duplicates} duplicates`);
   }
 
-  private validateProofStructure(proof: Record<string, unknown>, result: TdfolZkpAuditResult): void {
+  private validateParse(formula: string, result: TdfolSecurityValidationResult): void {
+    if (!result.valid) return;
+    try {
+      parseTdfolFormula(formula);
+    } catch (error) {
+      result.valid = false;
+      result.errors.push(error instanceof Error ? error.message : 'Invalid TDFOL formula');
+      result.threats.push('parse_error');
+    }
+  }
+
+  private validateProofStructure(
+    proof: Record<string, unknown>,
+    result: TdfolZkpAuditResult,
+  ): void {
     for (const field of ['commitment', 'challenge', 'response']) {
       if (!(field in proof)) {
         result.passed = false;
         result.vulnerabilities.push(`Missing required field: ${field}`);
       }
     }
-    const unexpected = Object.keys(proof).filter((key) => !['commitment', 'challenge', 'response', 'metadata', 'timestamp', 'version'].includes(key));
-    if (unexpected.length > 0) result.recommendations.push(`Unexpected fields in proof: ${unexpected.join(', ')}`);
+    const unexpected = Object.keys(proof).filter(
+      (key) =>
+        !['commitment', 'challenge', 'response', 'metadata', 'timestamp', 'version'].includes(key),
+    );
+    if (unexpected.length > 0)
+      result.recommendations.push(`Unexpected fields in proof: ${unexpected.join(', ')}`);
   }
 
   private checkCryptoParameters(proof: Record<string, unknown>, result: TdfolZkpAuditResult): void {
@@ -324,7 +377,10 @@ export class TdfolSecurityValidator {
       result.passed = false;
       result.vulnerabilities.push('Commitment too short (< 32 bytes)');
     }
-    if (typeof proof.challenge === 'string' && new Set(proof.challenge).size < proof.challenge.length / 4) {
+    if (
+      typeof proof.challenge === 'string' &&
+      new Set(proof.challenge).size < proof.challenge.length / 4
+    ) {
       result.recommendations.push('Challenge appears to have low entropy');
     }
   }
@@ -332,7 +388,9 @@ export class TdfolSecurityValidator {
   private checkProofIntegrity(proof: Record<string, unknown>, result: TdfolZkpAuditResult): void {
     const metadata = proof.metadata;
     if (!metadata || typeof metadata !== 'object' || !('hash' in metadata)) return;
-    const proofData = Object.fromEntries(Object.entries(proof).filter(([key]) => key !== 'metadata'));
+    const proofData = Object.fromEntries(
+      Object.entries(proof).filter(([key]) => key !== 'metadata'),
+    );
     const calculatedHash = simpleHash(JSON.stringify(Object.entries(proofData).sort()));
     if ((metadata as { hash?: unknown }).hash !== calculatedHash) {
       result.passed = false;
@@ -343,9 +401,14 @@ export class TdfolSecurityValidator {
   private analyzeSideChannels(proof: Record<string, unknown>, result: TdfolZkpAuditResult): void {
     const metadata = proof.metadata;
     if (!metadata || typeof metadata !== 'object') return;
-    if (JSON.stringify(metadata).length > 1000) result.recommendations.push('Large metadata could leak information');
+    if (JSON.stringify(metadata).length > 1000)
+      result.recommendations.push('Large metadata could leak information');
     for (const key of Object.keys(metadata)) {
-      if (['secret', 'private', 'key', 'password'].some((keyword) => key.toLowerCase().includes(keyword))) {
+      if (
+        ['secret', 'private', 'key', 'password'].some((keyword) =>
+          key.toLowerCase().includes(keyword),
+        )
+      ) {
         result.passed = false;
         result.vulnerabilities.push(`Potentially sensitive metadata field: ${key}`);
       }
@@ -388,6 +451,14 @@ export function simpleHash(value: string): string {
     hash = Math.imul(hash, 16777619);
   }
   return (hash >>> 0).toString(16).padStart(8, '0');
+}
+
+function countVariables(formula: string): number {
+  return [...formula.matchAll(/\b[a-z][a-z0-9_]*\b/g)].length;
+}
+
+function countOperators(formula: string): number {
+  return [...formula.matchAll(/[∀∃∧∨¬→↔=≠<>≤≥]/g)].length;
 }
 
 function hasExcessiveRepetition(formula: string, threshold = 100): boolean {

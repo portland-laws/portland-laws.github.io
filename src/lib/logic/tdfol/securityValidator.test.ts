@@ -1,4 +1,9 @@
-import { TdfolRateLimiter, TdfolSecurityValidator, calculateDepth, simpleHash } from './securityValidator';
+import {
+  TdfolRateLimiter,
+  TdfolSecurityValidator,
+  calculateDepth,
+  simpleHash,
+} from './securityValidator';
 
 describe('TdfolSecurityValidator', () => {
   it('validates ordinary formulas and reports metadata', () => {
@@ -9,6 +14,9 @@ describe('TdfolSecurityValidator', () => {
       errors: [],
       metadata: {
         formula_length: 29,
+        formula_depth: 3,
+        variable_count: 3,
+        operator_count: 2,
         security_level: 'medium',
       },
     });
@@ -34,6 +42,25 @@ describe('TdfolSecurityValidator', () => {
 
     expect(result.valid).toBe(false);
     expect(result.threats).toContain('resource_exhaustion');
+  });
+
+  it('fails closed on parser errors while allowing explicit structural-only validation', () => {
+    const validator = new TdfolSecurityValidator({ now: () => 0 });
+
+    expect(validator.validateFormula('forall x. Person(')).toMatchObject({
+      valid: false,
+      threats: expect.arrayContaining(['parse_error']),
+    });
+    expect(validator.validateFormula('forall x. Person(', 'draft', { parse: false })).toMatchObject(
+      {
+        valid: true,
+        threats: [],
+        metadata: {
+          formula_depth: 1,
+          variable_count: 2,
+        },
+      },
+    );
   });
 
   it('detects injection and DoS patterns according to security level', () => {
@@ -77,11 +104,15 @@ describe('TdfolSecurityValidator', () => {
       challenge: 'abcdef123456',
       response: 'response',
       metadata: {
-        hash: simpleHash(JSON.stringify(Object.entries({
-          commitment: 'a'.repeat(32),
-          challenge: 'abcdef123456',
-          response: 'response',
-        }).sort())),
+        hash: simpleHash(
+          JSON.stringify(
+            Object.entries({
+              commitment: 'a'.repeat(32),
+              challenge: 'abcdef123456',
+              response: 'response',
+            }).sort(),
+          ),
+        ),
       },
     };
 
@@ -89,7 +120,14 @@ describe('TdfolSecurityValidator', () => {
       passed: true,
       riskLevel: 'low',
     });
-    expect(validator.auditZkpProof({ commitment: 'short', challenge: 'aaaa', response: 'r', metadata: { privateKey: 'x' } })).toMatchObject({
+    expect(
+      validator.auditZkpProof({
+        commitment: 'short',
+        challenge: 'aaaa',
+        response: 'r',
+        metadata: { privateKey: 'x' },
+      }),
+    ).toMatchObject({
       passed: false,
       riskLevel: 'critical',
     });
