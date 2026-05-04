@@ -75,6 +75,9 @@ export type NeuroSymbolicGraphRagResult = Omit<NeuroSymbolicResult, 'metadata'> 
   readonly graphEdges: readonly NeuroSymbolicGraphEdge[];
   readonly retrievalTrace: readonly NeuroSymbolicReasoningStep[];
 };
+export type SymbolicNeuroSymbolicGraphRagResult = Omit<NeuroSymbolicGraphRagResult, 'metadata'> & {
+  readonly metadata: typeof SYMBOLIC_NEUROSYMBOLIC_GRAPHRAG_METADATA;
+};
 export type EmbeddingProverStatus = 'proved' | 'not_proved' | 'validation_failed';
 export type EmbeddingProverPremise =
   | string
@@ -181,6 +184,17 @@ export const NEUROSYMBOLIC_GRAPHRAG_METADATA = {
   neuralRuntime: 'deterministic-local-adapter',
   runtimeDependencies: [],
   parity: ['local_graph_construction', 'symbolic_rag_retrieval', 'fail_closed_reasoning'],
+} as const;
+export const SYMBOLIC_NEUROSYMBOLIC_GRAPHRAG_METADATA = {
+  sourcePythonModule: 'logic/integration/symbolic/neurosymbolic_graphrag.py',
+  browserNative: true,
+  wasmCompatible: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  graphRuntime: 'deterministic-local-symbolic-graph-rag-adapter',
+  neuralRuntime: 'deterministic-local-adapter',
+  runtimeDependencies: [],
+  parity: ['local_symbolic_graph_construction', 'symbolic_rag_retrieval', 'fail_closed_reasoning'],
 } as const;
 export const EMBEDDING_PROVER_METADATA = {
   sourcePythonModule: 'logic/integration/symbolic/neurosymbolic/embedding_prover.py',
@@ -356,6 +370,43 @@ export class BrowserNativeNeuroSymbolicGraphRag {
     query: string,
     options: Omit<NeuroSymbolicGraphRagOptions, 'query'> = {},
   ): NeuroSymbolicGraphRagResult {
+    return this.analyze(text, { ...options, query });
+  }
+}
+export class BrowserNativeSymbolicNeuroSymbolicGraphRag {
+  readonly metadata = SYMBOLIC_NEUROSYMBOLIC_GRAPHRAG_METADATA;
+  private readonly graphRag = new BrowserNativeNeuroSymbolicGraphRag();
+
+  analyze(
+    text: string,
+    options: NeuroSymbolicGraphRagOptions = {},
+  ): SymbolicNeuroSymbolicGraphRagResult {
+    const result = this.graphRag.analyze(text, options);
+    return {
+      ...result,
+      metadata: this.metadata,
+      reasoningSteps: [
+        ...result.reasoningSteps,
+        {
+          kind: 'query_match' as const,
+          detail: `symbolic_graphrag:${result.proofStatus}:${result.retrievedDocuments.length}`,
+        },
+      ],
+      retrievalTrace: [
+        ...result.retrievalTrace,
+        {
+          kind: 'query_match' as const,
+          detail: `symbolic_graphrag:${result.query ?? 'corpus'}`,
+        },
+      ],
+    };
+  }
+
+  query(
+    text: string,
+    query: string,
+    options: Omit<NeuroSymbolicGraphRagOptions, 'query'> = {},
+  ): SymbolicNeuroSymbolicGraphRagResult {
     return this.analyze(text, { ...options, query });
   }
 }
@@ -552,6 +603,9 @@ export const create_browser_native_neurosymbolic_integration =
   (): BrowserNativeNeuroSymbolicIntegration => new BrowserNativeNeuroSymbolicIntegration();
 export const create_browser_native_neurosymbolic_graphrag =
   (): BrowserNativeNeuroSymbolicGraphRag => new BrowserNativeNeuroSymbolicGraphRag();
+export const create_browser_native_symbolic_neurosymbolic_graphrag =
+  (): BrowserNativeSymbolicNeuroSymbolicGraphRag =>
+    new BrowserNativeSymbolicNeuroSymbolicGraphRag();
 export const analyze_neurosymbolic = analyzeNeuroSymbolic;
 export const reason_neurosymbolic = reasonNeuroSymbolic;
 export const analyzeNeuroSymbolicGraphRag = (
@@ -566,6 +620,19 @@ export const queryNeuroSymbolicGraphRag = (
   new BrowserNativeNeuroSymbolicGraphRag().query(text, query, options);
 export const analyze_neurosymbolic_graphrag = analyzeNeuroSymbolicGraphRag;
 export const query_neurosymbolic_graphrag = queryNeuroSymbolicGraphRag;
+export const analyzeSymbolicNeuroSymbolicGraphRag = (
+  text: string,
+  options: NeuroSymbolicGraphRagOptions = {},
+): SymbolicNeuroSymbolicGraphRagResult =>
+  new BrowserNativeSymbolicNeuroSymbolicGraphRag().analyze(text, options);
+export const querySymbolicNeuroSymbolicGraphRag = (
+  text: string,
+  query: string,
+  options: Omit<NeuroSymbolicGraphRagOptions, 'query'> = {},
+): SymbolicNeuroSymbolicGraphRagResult =>
+  new BrowserNativeSymbolicNeuroSymbolicGraphRag().query(text, query, options);
+export const analyze_symbolic_neurosymbolic_graphrag = analyzeSymbolicNeuroSymbolicGraphRag;
+export const query_symbolic_neurosymbolic_graphrag = querySymbolicNeuroSymbolicGraphRag;
 export const coordinateReasoning = (
   text: string,
   query: string,

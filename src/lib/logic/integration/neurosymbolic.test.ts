@@ -2,16 +2,19 @@ import {
   analyze_neurosymbolic,
   analyze_neurosymbolic_api,
   analyze_neurosymbolic_graphrag,
+  analyze_symbolic_neurosymbolic_graphrag,
   coordinate_reasoning,
   create_browser_native_neurosymbolic_api,
   create_browser_native_hybrid_confidence,
   create_browser_native_embedding_prover,
   create_browser_native_neurosymbolic_integration,
   create_browser_native_neurosymbolic_graphrag,
+  create_browser_native_symbolic_neurosymbolic_graphrag,
   create_browser_native_reasoning_coordinator,
   prove_embedding,
   query_neurosymbolic_api,
   query_neurosymbolic_graphrag,
+  query_symbolic_neurosymbolic_graphrag,
   reason_neurosymbolic,
   score_hybrid_confidence,
 } from './neurosymbolic';
@@ -195,6 +198,72 @@ describe('browser-native neurosymbolic GraphRAG parity', () => {
       serverCallsAllowed: false,
       pythonRuntimeAllowed: false,
       metadata: { sourcePythonModule: 'logic/integration/neurosymbolic_graphrag.py' },
+    });
+  });
+});
+
+describe('browser-native symbolic neurosymbolic GraphRAG parity', () => {
+  it('ports the symbolic module facade to local deterministic graph retrieval', () => {
+    const graphrag = create_browser_native_symbolic_neurosymbolic_graphrag();
+    const result = graphrag.query('ignored corpus', 'Compliant(Agency)', {
+      documents: [
+        {
+          id: 'rule-publication',
+          title: 'Publication duty',
+          text: 'The agency shall publish the final rule before enforcement.',
+        },
+        {
+          id: 'appeal-window',
+          text: 'Contractors may appeal within thirty days.',
+        },
+      ],
+      rules: ['O(the_agency_shall_publish_the_final_rule_before_enforcement) => Compliant(Agency)'],
+      topK: 1,
+    });
+
+    expect(graphrag.metadata).toMatchObject({
+      sourcePythonModule: 'logic/integration/symbolic/neurosymbolic_graphrag.py',
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      graphRuntime: 'deterministic-local-symbolic-graph-rag-adapter',
+    });
+    expect(result).toMatchObject({
+      status: 'success',
+      runtime: 'browser-native',
+      proofStatus: 'proved',
+      inferredFacts: ['Compliant(Agency)'],
+      metadata: {
+        sourcePythonModule: 'logic/integration/symbolic/neurosymbolic_graphrag.py',
+      },
+    });
+    expect(result.retrievedDocuments.map((document) => document.id)).toEqual(['rule-publication']);
+    expect(result.retrievalTrace.map((step) => step.detail)).toContain(
+      'symbolic_graphrag:Compliant(Agency)',
+    );
+  });
+
+  it('exposes Python-compatible symbolic aliases and fails closed locally', () => {
+    const result = analyze_symbolic_neurosymbolic_graphrag(
+      'The court shall dismiss the claim. The clerk may issue notice.',
+      {
+        query: 'P(the_clerk_may_issue_notice)',
+        topK: 1,
+      },
+    );
+    const closed = query_symbolic_neurosymbolic_graphrag('', 'Any(Query)');
+
+    expect(result.symbolicFacts).toContain('P(the_clerk_may_issue_notice)');
+    expect(result.metadata.sourcePythonModule).toBe(
+      'logic/integration/symbolic/neurosymbolic_graphrag.py',
+    );
+    expect(closed).toMatchObject({
+      status: 'validation_failed',
+      success: false,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      metadata: {
+        sourcePythonModule: 'logic/integration/symbolic/neurosymbolic_graphrag.py',
+      },
     });
   });
 });
