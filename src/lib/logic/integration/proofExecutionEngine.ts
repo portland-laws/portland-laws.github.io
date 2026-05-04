@@ -4,6 +4,11 @@ import {
   type LogicVerificationFormat,
   type LogicVerifierBackendName,
 } from './logicVerification';
+import {
+  detectLogicVerificationRuntimeBridge,
+  makeLogicVerificationIssue,
+  normalizeLogicVerificationFormula,
+} from './logicVerificationUtils';
 
 export type ProofExecutionStatus = 'success' | 'failure' | 'timeout' | 'error' | 'unsupported';
 export type ProofExecutionProver =
@@ -45,7 +50,6 @@ export interface ProofExecutionTypeCheckResult {
   issues: Array<ProofExecutionTypeIssue>;
   metadata: typeof PROOF_EXECUTION_ENGINE_TYPES_METADATA;
 }
-
 export const PROOF_EXECUTION_ENGINE_METADATA = {
   sourcePythonModule: 'logic/integration/reasoning/proof_execution_engine.py',
   browserNative: true,
@@ -78,6 +82,23 @@ export const PROOF_EXECUTION_ENGINE_TYPES_METADATA = {
     'proof_execution_result_type',
     'proof_execution_status_type',
     'proof_execution_metadata_type',
+  ] as Array<string>,
+} as const;
+export const PROOF_EXECUTION_ENGINE_UTILS_METADATA = {
+  sourcePythonModule: 'logic/integration/reasoning/proof_execution_engine_utils.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  filesystemAllowed: false,
+  subprocessAllowed: false,
+  rpcAllowed: false,
+  runtimeDependencies: [] as Array<string>,
+  parity: [
+    'statement_normalization',
+    'runtime_bridge_marker_detection',
+    'proof_request_validation',
+    'execution_result_summarization',
+    'cache_key_construction',
   ] as Array<string>,
 } as const;
 
@@ -255,6 +276,109 @@ export function assertProofExecutionResult(value: unknown): ProofExecutionResult
 export const check_proof_execution_type = checkProofExecutionType;
 export const is_proof_execution_type = isProofExecutionType;
 export const assert_proof_execution_result = assertProofExecutionResult;
+export const proof_execution_engine_utils_metadata = PROOF_EXECUTION_ENGINE_UTILS_METADATA;
+
+export function normalizeProofExecutionStatement(formula: unknown): string {
+  return normalizeLogicVerificationFormula(stringifyFormula(formula));
+}
+
+export function detectProofExecutionRuntimeBridge(formula: unknown) {
+  const statement = normalizeProofExecutionStatement(formula);
+  const bridge = detectLogicVerificationRuntimeBridge(statement);
+  return { ...bridge, statement, metadata: PROOF_EXECUTION_ENGINE_UTILS_METADATA };
+}
+
+export function buildProofExecutionCacheKey(
+  formula: unknown,
+  prover: ProofExecutionProver = 'local',
+): string {
+  return `${prover}:${normalizeProofExecutionStatement(formula)}`;
+}
+
+export function validateProofExecutionRequest(formula: unknown, prover: unknown = 'local') {
+  const issues: Array<LogicValidationIssue> = [];
+  const statement = normalizeProofExecutionStatement(formula);
+  if (statement.length === 0)
+    issues.push(
+      makeLogicVerificationIssue('Proof statement must be non-empty.', 'error', 'formula'),
+    );
+  if (!isProver(prover))
+    issues.push(makeLogicVerificationIssue('Proof prover is not supported.', 'error', 'prover'));
+  const bridge = detectProofExecutionRuntimeBridge(statement);
+  if (!bridge.safe)
+    issues.push(
+      makeLogicVerificationIssue(
+        `Proof statement contains runtime bridge markers: ${bridge.markers.join(', ')}.`,
+        'error',
+        'formula',
+      ),
+    );
+  return {
+    valid: !issues.some((issue) => issue.severity === 'error'),
+    statement,
+    prover: isProver(prover) ? prover : undefined,
+    issues,
+    metadata: PROOF_EXECUTION_ENGINE_UTILS_METADATA,
+  };
+}
+
+export function summarizeProofExecutionResults(results: Array<ProofExecutionResult>) {
+  const counts: Record<ProofExecutionStatus, number> = {
+    success: 0,
+    failure: 0,
+    timeout: 0,
+    error: 0,
+    unsupported: 0,
+  };
+  const provers = new Set<string>();
+  const issues: Array<Record<string, unknown>> = [];
+  results.forEach((result, resultIndex) => {
+    counts[result.status] += 1;
+    provers.add(result.prover);
+    result.errors.forEach((message) =>
+      issues.push({
+        resultIndex,
+        statement: result.statement,
+        prover: result.prover,
+        severity: 'error',
+        message,
+      }),
+    );
+    result.warnings.forEach((message) =>
+      issues.push({
+        resultIndex,
+        statement: result.statement,
+        prover: result.prover,
+        severity: 'warning',
+        message,
+      }),
+    );
+  });
+  return {
+    total: results.length,
+    successful: counts.success,
+    failure: counts.failure,
+    timeout: counts.timeout,
+    error: counts.error,
+    unsupported: counts.unsupported,
+    success:
+      results.length > 0 &&
+      counts.failure === 0 &&
+      counts.timeout === 0 &&
+      counts.error === 0 &&
+      counts.unsupported === 0,
+    failedClosed:
+      counts.failure > 0 || counts.timeout > 0 || counts.error > 0 || counts.unsupported > 0,
+    provers: Array.from(provers),
+    issues,
+    metadata: PROOF_EXECUTION_ENGINE_UTILS_METADATA,
+  };
+}
+export const normalize_proof_execution_statement = normalizeProofExecutionStatement;
+export const detect_proof_execution_runtime_bridge = detectProofExecutionRuntimeBridge;
+export const build_proof_execution_cache_key = buildProofExecutionCacheKey;
+export const validate_proof_execution_request = validateProofExecutionRequest;
+export const summarize_proof_execution_results = summarizeProofExecutionResults;
 
 function buildResult(
   prover: string,

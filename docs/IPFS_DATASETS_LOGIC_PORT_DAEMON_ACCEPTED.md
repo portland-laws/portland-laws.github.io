@@ -1802,3 +1802,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T141810Z-ported-proof_execution_engine_types.py-contracts-into-the-browser-native-proof-e.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T141810Z-ported-proof_execution_engine_types.py-contracts-into-the-browser-native-proof-e.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T141810Z-ported-proof_execution_engine_types.py-contracts-into-the-browser-native-proof-e.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 14:21:59 UTC
+
+- Target: `Task checkbox-391: Port remaining Python logic module `logic/integration/reasoning/proof_execution_engine_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported proof_execution_engine_utils.py browser-native utility parity.
+- Impact: Adds deterministic TypeScript proof execution utility exports for statement normalization, runtime bridge detection, request validation, stable cache keys, and result summarization. Existing integration Jest coverage now exercises the utility surface, and the port ledger marks checkbox-391 complete.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/logicVerification.test.ts`, `src/lib/logic/integration/proofExecutionEngine.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T142159Z-ported-proof_execution_engine_utils.py-browser-native-utility-parity..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T142159Z-ported-proof_execution_engine_utils.py-browser-native-utility-parity..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T142159Z-ported-proof_execution_engine_utils.py-browser-native-utility-parity..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

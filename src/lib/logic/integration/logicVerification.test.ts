@@ -29,9 +29,14 @@ import {
 import {
   ProofExecutionEngine,
   assert_proof_execution_result,
+  build_proof_execution_cache_key,
   check_consistency,
   check_proof_execution_type,
+  detect_proof_execution_runtime_bridge,
   is_proof_execution_type,
+  normalize_proof_execution_statement,
+  summarize_proof_execution_results,
+  validate_proof_execution_request,
 } from './proofExecutionEngine';
 
 describe('BrowserNativeLogicVerification', () => {
@@ -369,6 +374,49 @@ describe('BrowserNativeLogicVerification', () => {
           message: 'expected_false',
         }),
       ]),
+    });
+  });
+
+  it('ports proof_execution_engine_utils.py as browser-native proof utilities', () => {
+    const engine = new ProofExecutionEngine();
+    const local = engine.prove('Tenant(x)');
+    const blocked = engine.prove('Tenant(x)', 'z3');
+    const summary = summarize_proof_execution_results([local, blocked]);
+
+    expect(normalize_proof_execution_statement('∀ x (Tenant(x) → Resident(x))')).toBe(
+      'forall x (Tenant(x) implies Resident(x))',
+    );
+    expect(build_proof_execution_cache_key('  Tenant(x)  ', 'local')).toBe('local:Tenant(x)');
+    expect(
+      detect_proof_execution_runtime_bridge('fetch("https://example.test/prove")'),
+    ).toMatchObject({
+      safe: false,
+      markers: expect.arrayContaining(['http', 'fetch']),
+      metadata: {
+        sourcePythonModule: 'logic/integration/reasoning/proof_execution_engine_utils.py',
+        browserNative: true,
+        serverCallsAllowed: false,
+        pythonRuntimeAllowed: false,
+      },
+    });
+    expect(validate_proof_execution_request('', 'local')).toMatchObject({
+      valid: false,
+      issues: expect.arrayContaining([expect.objectContaining({ field: 'formula' })]),
+    });
+    expect(validate_proof_execution_request('Tenant(x)', 'python')).toMatchObject({
+      valid: false,
+      issues: expect.arrayContaining([expect.objectContaining({ field: 'prover' })]),
+    });
+    expect(summary).toMatchObject({
+      total: 2,
+      successful: 1,
+      unsupported: 1,
+      success: false,
+      failedClosed: true,
+      provers: expect.arrayContaining(['local', 'z3']),
+      metadata: {
+        sourcePythonModule: 'logic/integration/reasoning/proof_execution_engine_utils.py',
+      },
     });
   });
 });
