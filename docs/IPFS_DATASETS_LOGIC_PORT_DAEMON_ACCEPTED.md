@@ -1442,3 +1442,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T113149Z-ported-the-integration-converters-deontic_logic_core.py-surface-to-browser-nativ.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T113149Z-ported-the-integration-converters-deontic_logic_core.py-surface-to-browser-nativ.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T113149Z-ported-the-integration-converters-deontic_logic_core.py-surface-to-browser-nativ.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 11:36:20 UTC
+
+- Target: `Task checkbox-351: Port remaining Python logic module `logic/integration/converters/logic_translation_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported logic_translation_core.py to a browser-native TypeScript translation core facade.
+- Impact: Adds a local LogicTranslationCore implementation that normalizes Python-style format aliases, routes deterministic formula translations through the existing browser-native bridge, supports batch translation, and fails closed without server calls or Python runtime bridges; focused Jest coverage exercises the new validation surface.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/converters/logicTranslationCore.test.ts`, `src/lib/logic/integration/converters/logicTranslationCore.ts`, `src/lib/logic/integration/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T113620Z-ported-logic_translation_core.py-to-a-browser-native-typescript-translation-core.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T113620Z-ported-logic_translation_core.py-to-a-browser-native-typescript-translation-core.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T113620Z-ported-logic_translation_core.py-to-a-browser-native-typescript-translation-core.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
