@@ -4,6 +4,39 @@ import { formatTdfolFormula } from './formatter';
 export type TdfolModalLogicType = 'K' | 'T' | 'D' | 'S4' | 'S5';
 export type TdfolCountermodelFormat = 'ascii' | 'dot' | 'json' | 'html' | 'compact-ascii';
 
+export interface TdfolCountermodelRenderOptions {
+  includeDataScript?: boolean;
+  includeLegend?: boolean;
+  includeProperties?: boolean;
+  includeValuation?: boolean;
+}
+
+export interface TdfolCountermodelWorldSnapshot {
+  id: string;
+  label: string;
+  atoms: string[];
+  is_initial: boolean;
+  world_id: number;
+}
+
+export interface TdfolCountermodelRelationSnapshot {
+  source: string;
+  target: string;
+  from: number;
+  to: number;
+}
+
+export interface TdfolCountermodelVisualizerSnapshot {
+  nodes: TdfolCountermodelWorldSnapshot[];
+  links: TdfolCountermodelRelationSnapshot[];
+  logic_type: TdfolModalLogicType;
+  initial_world: number;
+  num_worlds: number;
+  num_relations: number;
+  property_checks: { reflexive: boolean; symmetric: boolean; transitive: boolean; serial: boolean };
+  expected_properties: string[];
+}
+
 export interface TdfolTableauxWorldLike {
   id: number;
   formulas: TdfolFormula[];
@@ -66,7 +99,10 @@ export class TdfolKripkeStructure {
       accessibility: Object.fromEntries(
         [...this.accessibility.entries()]
           .sort(([left], [right]) => left - right)
-          .map(([world, targets]) => [String(world), [...targets].sort((left, right) => left - right)]),
+          .map(([world, targets]) => [
+            String(world),
+            [...targets].sort((left, right) => left - right),
+          ]),
       ),
       valuation: Object.fromEntries(
         [...this.valuation.entries()]
@@ -98,7 +134,9 @@ export class TdfolCounterModel {
     const lines = [
       `Countermodel for: ${formatTdfolFormula(this.formula)}`,
       `Logic: ${this.kripke.logicType}`,
-      `Worlds: ${this.sortedWorlds().map((world) => `w${world}`).join(', ')}`,
+      `Worlds: ${this.sortedWorlds()
+        .map((world) => `w${world}`)
+        .join(', ')}`,
       `Initial: w${this.kripke.initialWorld}`,
       '',
       'Valuation (true atoms):',
@@ -111,7 +149,9 @@ export class TdfolCounterModel {
 
     lines.push('', 'Accessibility:');
     for (const worldId of this.sortedWorlds()) {
-      const targets = [...this.kripke.getAccessibleWorlds(worldId)].sort((left, right) => left - right);
+      const targets = [...this.kripke.getAccessibleWorlds(worldId)].sort(
+        (left, right) => left - right,
+      );
       if (targets.length > 0) {
         lines.push(`  w${worldId} -> ${targets.map((target) => `w${target}`).join(', ')}`);
       }
@@ -129,7 +169,9 @@ export class TdfolCounterModel {
       const atoms = this.sortedAtoms(worldId);
       const prefix = worldId === this.kripke.initialWorld ? '-> ' : '   ';
       lines.push(`${prefix}w${worldId}: {${atoms.length > 0 ? atoms.join(', ') : '∅'}}`);
-      for (const target of [...this.kripke.getAccessibleWorlds(worldId)].sort((left, right) => left - right)) {
+      for (const target of [...this.kripke.getAccessibleWorlds(worldId)].sort(
+        (left, right) => left - right,
+      )) {
         lines.push(`   |-> w${target}`);
       }
     }
@@ -147,13 +189,16 @@ export class TdfolCounterModel {
 
     for (const worldId of this.sortedWorlds()) {
       const atomLabel = this.sortedAtoms(worldId).join('\\n') || '∅';
-      const style = worldId === this.kripke.initialWorld ? ', style=filled, fillcolor=lightblue' : '';
+      const style =
+        worldId === this.kripke.initialWorld ? ', style=filled, fillcolor=lightblue' : '';
       lines.push(`  w${worldId} [label="w${worldId}\\n${escapeDot(atomLabel)}"${style}];`);
     }
 
     lines.push('');
     for (const worldId of this.sortedWorlds()) {
-      for (const target of [...this.kripke.getAccessibleWorlds(worldId)].sort((left, right) => left - right)) {
+      for (const target of [...this.kripke.getAccessibleWorlds(worldId)].sort(
+        (left, right) => left - right,
+      )) {
         lines.push(`  w${worldId} -> w${target};`);
       }
     }
@@ -213,7 +258,10 @@ export class TdfolCounterModelExtractor {
 
   private generateExplanation(formula: TdfolFormula, kripke: TdfolKripkeStructure): string[] {
     const initialAtoms = [...(kripke.valuation.get(kripke.initialWorld) ?? [])].sort();
-    const relations = [...kripke.accessibility.values()].reduce((sum, targets) => sum + targets.size, 0);
+    const relations = [...kripke.accessibility.values()].reduce(
+      (sum, targets) => sum + targets.size,
+      0,
+    );
     const lines = [
       `Formula '${formatTdfolFormula(formula)}' is not ${this.logicType}-valid`,
       `Countermodel has ${kripke.worlds.size} world(s)`,
@@ -243,18 +291,33 @@ export class TdfolCounterModelVisualizer {
   }
 
   renderCompactAscii(): string {
-    const relationCount = [...this.kripke.accessibility.values()].reduce((sum, targets) => sum + targets.size, 0);
-    const lines = [`Kripke(${this.kripke.logicType}) W=${this.kripke.worlds.size} R=${relationCount}`, '--------------------------------------------------'];
+    const relationCount = [...this.kripke.accessibility.values()].reduce(
+      (sum, targets) => sum + targets.size,
+      0,
+    );
+    const lines = [
+      `Kripke(${this.kripke.logicType}) W=${this.kripke.worlds.size} R=${relationCount}`,
+      '--------------------------------------------------',
+    ];
     for (const worldId of [...this.kripke.worlds].sort((left, right) => left - right)) {
       const atoms = [...(this.kripke.valuation.get(worldId) ?? [])].sort().join(',') || '∅';
-      const targets = [...this.kripke.getAccessibleWorlds(worldId)].sort((left, right) => left - right).map((target) => `w${target}`).join(',') || '∅';
-      lines.push(`${worldId === this.kripke.initialWorld ? '=>' : '*'} w${worldId}: {${atoms}} -> {${targets}}`);
+      const targets =
+        [...this.kripke.getAccessibleWorlds(worldId)]
+          .sort((left, right) => left - right)
+          .map((target) => `w${target}`)
+          .join(',') || '∅';
+      lines.push(
+        `${worldId === this.kripke.initialWorld ? '=>' : '*'} w${worldId}: {${atoms}} -> {${targets}}`,
+      );
     }
     return lines.join('\n');
   }
 
   renderExpandedAscii(): string {
-    const relationCount = [...this.kripke.accessibility.values()].reduce((sum, targets) => sum + targets.size, 0);
+    const relationCount = [...this.kripke.accessibility.values()].reduce(
+      (sum, targets) => sum + targets.size,
+      0,
+    );
     const header = `Kripke Structure (Logic: ${this.kripke.logicType})`;
     const info = `Worlds: ${this.kripke.worlds.size}, Relations: ${relationCount}`;
     const width = Math.max(header.length, info.length) + 4;
@@ -268,10 +331,16 @@ export class TdfolCounterModelVisualizer {
 
     for (const worldId of [...this.kripke.worlds].sort((left, right) => left - right)) {
       const atoms = [...(this.kripke.valuation.get(worldId) ?? [])].sort();
-      const targets = [...this.kripke.getAccessibleWorlds(worldId)].sort((left, right) => left - right);
-      lines.push(`${worldId === this.kripke.initialWorld ? '->' : '  '} World w${worldId}${worldId === this.kripke.initialWorld ? ' (initial)' : ''}`);
+      const targets = [...this.kripke.getAccessibleWorlds(worldId)].sort(
+        (left, right) => left - right,
+      );
+      lines.push(
+        `${worldId === this.kripke.initialWorld ? '->' : '  '} World w${worldId}${worldId === this.kripke.initialWorld ? ' (initial)' : ''}`,
+      );
       lines.push(`| Atoms: ${atoms.length > 0 ? atoms.join(', ') : '∅ (none)'}`);
-      lines.push(`| Accessible: ${targets.length > 0 ? targets.map((target) => `w${target}`).join(', ') : '(none)'}`);
+      lines.push(
+        `| Accessible: ${targets.length > 0 ? targets.map((target) => `w${target}`).join(', ') : '(none)'}`,
+      );
       lines.push('+----------------------------------------+');
     }
 
@@ -295,7 +364,12 @@ export class TdfolCounterModelVisualizer {
     return lines.join('\n');
   }
 
-  getPropertyChecks(): { reflexive: boolean; symmetric: boolean; transitive: boolean; serial: boolean } {
+  getPropertyChecks(): {
+    reflexive: boolean;
+    symmetric: boolean;
+    transitive: boolean;
+    serial: boolean;
+  } {
     return {
       reflexive: this.isReflexive(),
       symmetric: this.isSymmetric(),
@@ -304,41 +378,83 @@ export class TdfolCounterModelVisualizer {
     };
   }
 
-  toHtmlString(): string {
-    const nodes = [...this.kripke.worlds].sort((left, right) => left - right).map((worldId) => ({
-      id: `w${worldId}`,
-      label: `w${worldId}`,
-      atoms: [...(this.kripke.valuation.get(worldId) ?? [])].sort(),
-      is_initial: worldId === this.kripke.initialWorld,
-      world_id: worldId,
-    }));
-    const links = [...this.kripke.accessibility.entries()].flatMap(([from, targets]) =>
-      [...targets].sort((left, right) => left - right).map((to) => ({ source: `w${from}`, target: `w${to}`, from, to })),
-    );
-    const data = { nodes, links, logic_type: this.kripke.logicType, num_worlds: nodes.length, num_relations: links.length };
-    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Kripke Structure - ${escapeHtml(this.kripke.logicType)}</title><style>body{font-family:system-ui,sans-serif;margin:24px}.world{border:1px solid #999;border-radius:6px;padding:8px;margin:8px 0}.initial{border-color:#0a7;background:#eefaf4}.edge{color:#555}</style></head><body><h1>Kripke Structure (${escapeHtml(this.kripke.logicType)})</h1><script type="application/json" id="kripke-data">${escapeHtml(JSON.stringify(data))}</script>${nodes.map((node) => `<section class="world${node.is_initial ? ' initial' : ''}"><strong>${escapeHtml(node.label)}</strong><div>Atoms: ${escapeHtml(node.atoms.join(', ') || '∅')}</div></section>`).join('')}<h2>Accessibility</h2>${links.map((link) => `<div class="edge">${escapeHtml(link.source)} -> ${escapeHtml(link.target)}</div>`).join('') || '<div class="edge">(none)</div>'}</body></html>`;
+  toDataSnapshot(
+    options: TdfolCountermodelRenderOptions = {},
+  ): TdfolCountermodelVisualizerSnapshot {
+    const includeValuation = options.includeValuation ?? true;
+    const nodes = [...this.kripke.worlds]
+      .sort((left, right) => left - right)
+      .map((worldId) => ({
+        id: `w${worldId}`,
+        label: `w${worldId}`,
+        atoms: includeValuation ? [...(this.kripke.valuation.get(worldId) ?? [])].sort() : [],
+        is_initial: worldId === this.kripke.initialWorld,
+        world_id: worldId,
+      }));
+    const links = [...this.kripke.accessibility.entries()]
+      .sort(([left], [right]) => left - right)
+      .flatMap(([from, targets]) =>
+        [...targets]
+          .sort((left, right) => left - right)
+          .map((to) => ({ source: `w${from}`, target: `w${to}`, from, to })),
+      );
+    return {
+      nodes,
+      links,
+      logic_type: this.kripke.logicType,
+      initial_world: this.kripke.initialWorld,
+      num_worlds: nodes.length,
+      num_relations: links.length,
+      property_checks: this.getPropertyChecks(),
+      expected_properties: expectedModalProperties(this.kripke.logicType),
+    };
+  }
+
+  toHtmlString(options: TdfolCountermodelRenderOptions = {}): string {
+    const includeDataScript = options.includeDataScript ?? true;
+    const includeLegend = options.includeLegend ?? true;
+    const includeProperties = options.includeProperties ?? true;
+    const data = this.toDataSnapshot(options);
+    const dataScript = includeDataScript
+      ? `<script type="application/json" id="kripke-data">${escapeHtml(JSON.stringify(data))}</script>`
+      : '';
+    const properties = includeProperties
+      ? `<section class="properties"><h2>Modal Properties</h2><pre>${escapeHtml(this.renderLogicProperties())}</pre></section>`
+      : '';
+    const legend = includeLegend
+      ? '<aside class="legend"><strong>Legend</strong><div>Highlighted world: initial evaluation point</div><div>Arrows: accessibility relation</div></aside>'
+      : '';
+    return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>Kripke Structure - ${escapeHtml(this.kripke.logicType)}</title><style>body{font-family:system-ui,sans-serif;margin:24px}.world{border:1px solid #999;border-radius:6px;padding:8px;margin:8px 0}.initial{border-color:#0a7;background:#eefaf4}.edge{color:#555}.legend{border-left:4px solid #888;padding-left:12px}.properties pre{white-space:pre-wrap}</style></head><body><h1>Kripke Structure (${escapeHtml(this.kripke.logicType)})</h1>${dataScript}${legend}${data.nodes.map((node) => `<section class="world${node.is_initial ? ' initial' : ''}"><strong>${escapeHtml(node.label)}</strong><div>Atoms: ${escapeHtml(node.atoms.join(', ') || '∅')}</div></section>`).join('')}<h2>Accessibility</h2>${data.links.map((link) => `<div class="edge">${escapeHtml(link.source)} -> ${escapeHtml(link.target)}</div>`).join('') || '<div class="edge">(none)</div>'}${properties}</body></html>`;
   }
 
   private isReflexive(): boolean {
-    return [...this.kripke.worlds].every((world) => this.kripke.getAccessibleWorlds(world).has(world));
+    return [...this.kripke.worlds].every((world) =>
+      this.kripke.getAccessibleWorlds(world).has(world),
+    );
   }
 
   private isSymmetric(): boolean {
     return [...this.kripke.worlds].every((from) =>
-      [...this.kripke.getAccessibleWorlds(from)].every((to) => this.kripke.getAccessibleWorlds(to).has(from)),
+      [...this.kripke.getAccessibleWorlds(from)].every((to) =>
+        this.kripke.getAccessibleWorlds(to).has(from),
+      ),
     );
   }
 
   private isTransitive(): boolean {
     return [...this.kripke.worlds].every((first) =>
       [...this.kripke.getAccessibleWorlds(first)].every((second) =>
-        [...this.kripke.getAccessibleWorlds(second)].every((third) => this.kripke.getAccessibleWorlds(first).has(third)),
+        [...this.kripke.getAccessibleWorlds(second)].every((third) =>
+          this.kripke.getAccessibleWorlds(first).has(third),
+        ),
       ),
     );
   }
 
   private isSerial(): boolean {
-    return [...this.kripke.worlds].every((world) => this.kripke.getAccessibleWorlds(world).size > 0);
+    return [...this.kripke.worlds].every(
+      (world) => this.kripke.getAccessibleWorlds(world).size > 0,
+    );
   }
 }
 
@@ -350,7 +466,10 @@ export function extractTdfolCountermodel(
   return new TdfolCounterModelExtractor(logicType).extract(formula, branch);
 }
 
-export function visualizeTdfolCountermodel(countermodel: TdfolCounterModel, format: TdfolCountermodelFormat = 'ascii'): string {
+export function visualizeTdfolCountermodel(
+  countermodel: TdfolCounterModel,
+  format: TdfolCountermodelFormat = 'ascii',
+): string {
   if (format === 'ascii') return countermodel.toAsciiArt();
   if (format === 'dot') return countermodel.toDot();
   if (format === 'json') return countermodel.toJson();
@@ -370,20 +489,30 @@ function extractPositiveAtoms(formulas: TdfolFormula[]): Set<string> {
   return atoms;
 }
 
-function normalizeWorldEntries(worlds: TdfolTableauxBranchLike['worlds']): Array<[number, TdfolTableauxWorldLike]> {
-  return worlds instanceof Map
+function normalizeWorldEntries(
+  worlds: TdfolTableauxBranchLike['worlds'],
+): Array<[number, TdfolTableauxWorldLike]> {
+  return isMapLike(worlds)
     ? [...worlds.entries()].sort(([left], [right]) => left - right)
     : Object.entries(worlds)
         .map(([key, value]): [number, TdfolTableauxWorldLike] => [Number(key), value])
         .sort(([left], [right]) => left - right);
 }
 
-function normalizeAccessibilityEntries(accessibility: TdfolTableauxBranchLike['accessibility']): Array<[number, number[]]> {
-  return accessibility instanceof Map
-    ? [...accessibility.entries()].map(([key, value]): [number, number[]] => [key, [...value]]).sort(([left], [right]) => left - right)
+function normalizeAccessibilityEntries(
+  accessibility: TdfolTableauxBranchLike['accessibility'],
+): Array<[number, number[]]> {
+  return isMapLike(accessibility)
+    ? [...accessibility.entries()]
+        .map(([key, value]): [number, number[]] => [key, [...value]])
+        .sort(([left], [right]) => left - right)
     : Object.entries(accessibility)
         .map(([key, value]): [number, number[]] => [Number(key), value])
         .sort(([left], [right]) => left - right);
+}
+
+function isMapLike<Key, Value>(value: unknown): value is Map<Key, Value> {
+  return Object.prototype.toString.call(value) === '[object Map]';
 }
 
 function expectedModalProperties(logicType: TdfolModalLogicType): string[] {
@@ -399,5 +528,9 @@ function escapeDot(value: string): string {
 }
 
 function escapeHtml(value: string): string {
-  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }

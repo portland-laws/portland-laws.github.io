@@ -71,7 +71,9 @@ describe('TDFOL countermodels', () => {
     expect(countermodel.toDot()).toContain('w0 -> w1;');
     expect(JSON.parse(countermodel.toJson()).kripke_structure.logic_type).toBe('D');
     expect(visualizeTdfolCountermodel(countermodel, 'compact-ascii')).toContain('Kripke(D)');
-    expect(visualizeTdfolCountermodel(countermodel, 'html')).toContain('<script type="application/json" id="kripke-data">');
+    expect(visualizeTdfolCountermodel(countermodel, 'html')).toContain(
+      '<script type="application/json" id="kripke-data">',
+    );
   });
 
   it('checks modal accessibility properties for visualizer summaries', () => {
@@ -89,7 +91,42 @@ describe('TDFOL countermodels', () => {
       transitive: true,
       serial: true,
     });
-    expect(visualizer.renderLogicProperties()).toContain('Expected for S5: Reflexive, Symmetric, Transitive');
+    expect(visualizer.renderLogicProperties()).toContain(
+      'Expected for S5: Reflexive, Symmetric, Transitive',
+    );
     expect(visualizer.renderAsciiEnhanced()).toContain('Kripke Structure (Logic: S5)');
+  });
+
+  it('exports deterministic browser-native visualizer snapshots and optional HTML sections', () => {
+    const kripke = new TdfolKripkeStructure({ logicType: 'S4' });
+    kripke.addAccessibility(2, 2);
+    kripke.addAccessibility(0, 2);
+    kripke.addAccessibility(0, 1);
+    kripke.setAtomTrue(2, 'Zed(x)');
+    kripke.setAtomTrue(2, 'Alpha(x)');
+
+    const visualizer = new TdfolCounterModelVisualizer(kripke);
+    const snapshot = visualizer.toDataSnapshot();
+
+    expect(snapshot.nodes.map((node) => node.id)).toEqual(['w0', 'w1', 'w2']);
+    expect(snapshot.nodes[2].atoms).toEqual(['Alpha(x)', 'Zed(x)']);
+    expect(snapshot.links).toEqual([
+      { source: 'w0', target: 'w1', from: 0, to: 1 },
+      { source: 'w0', target: 'w2', from: 0, to: 2 },
+      { source: 'w2', target: 'w2', from: 2, to: 2 },
+    ]);
+    expect(snapshot.expected_properties).toEqual(['Reflexive', 'Transitive']);
+    expect(snapshot.property_checks.serial).toBe(false);
+
+    const html = visualizer.toHtmlString({
+      includeDataScript: false,
+      includeLegend: false,
+      includeProperties: false,
+    });
+
+    expect(html).not.toContain('id="kripke-data"');
+    expect(html).not.toContain('Legend');
+    expect(html).not.toContain('Modal Properties');
+    expect(html).toContain('Kripke Structure (S4)');
   });
 });
