@@ -966,7 +966,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 02:48:26 UTC
+Last updated: 2026-05-04 02:59:24 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
@@ -1432,27 +1432,27 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 - Target: `Task checkbox-230: Port remaining Python logic module 'logic/CEC/native/prover_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `needs follow-up`
-- Summary: Ported a browser-native CEC prover_core parity slice with premise-array proving, validity metadata, cloned proof traces, and local prover statistics.
-- Impact: src/lib/logic/cec/prover.ts now exposes Python prover_core-style local proof helpers and deterministic result metadata without server, Python, filesystem, subprocess, or RPC dependencies; src/lib/logic/cec/prover.test.ts validates the new runtime contract through Jest.
-- Accepted changed files: `src/lib/logic/cec/prover.test.ts`, `src/lib/logic/cec/prover.ts`
+- Summary: Ported a browser-native CEC prover_core parity slice for premise-array proving, validity metadata, cloned proof traces, rule usage, timing, and local prover statistics.
+- Impact: src/lib/logic/cec/prover.ts now exposes Python prover_core-style local proof helpers and deterministic result metadata without server, Python, filesystem, subprocess, or RPC dependencies; src/lib/logic/cec/prover.test.ts validates the runtime contract through Jest, and the TypeScript port ledger marks checkbox-230 complete.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/prover.test.ts`, `src/lib/logic/cec/prover.ts`
 - Errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/cec/prover.ts(153,7): error TS2322: Type '{ id: string; rule: any; premises: any; conclusion: any; explanation: string; ruleGroup: CecNativeRuleGroupName; ruleDescription: any; derivedExpressionCount: number; }' is not assignable to type 'CecProofTraceStep'.
-../../..src/lib/logic/cec/prover.ts(175,7): error TS2322: Type '{ status: ProofStatus; theorem: any; steps: CecProofTraceStep[]; method: string; timeMs: number; error: string; isValid: boolean; ruleGroups: CecNativeRuleGroupName[]; rulesUsed: string[]; statistics: CecProverStatisticsSnapshot; trace: CecProofTraceStep[]; }' is not assignable to type 'CecProofResult'.
+../../..src/lib/logic/cec/prover.ts(90,11): error TS2322: Type '{ id: string; rule: any; ruleGroup: CecNativeRuleGroupName; ruleDescription: any; premises: any; conclusion: any; explanation: string; derivedExpressionCount: number; }' is not assignable to type 'CecProofTraceStep'.
+../../..src/lib/logic/cec/prover.ts(145,7): error TS2322: Type '{ status: ProofStatus; theorem: any; steps: CecProofTraceStep[]; method: string; timeMs: number; error: string; isValid: boolean; ruleGroups: CecNativeRuleGroupName[]; rulesUsed: string[]; statistics: CecProofStatisticsDict; trace: CecProofTraceStep[]; }' is not assignable to type 'CecProofResult'.
 
 Replacement diagnostic context:
-src/lib/logic/cec/prover.ts:153:7 TS2322: Type '{ id: string; rule: any; premises: any; conclusion: any; explanation: string; ruleGroup: CecNativeRuleGroupName; ruleDescription: any; derivedExpressionCount: number; }' is not assignable to type 'CecProofTraceStep'.
-  151:     const rule = this.rules.find((candidate) => candidate.name === application.rule);
-  152:     const step: CecProofTraceStep = {
-> 153:       id: `cec-step-${stepNumber}`,
-  154:       rule: application.rule,
-  155:       premises: application.premises.map(formatCecExpression),
+src/lib/logic/cec/prover.ts:90:11 TS2322: Type '{ id: string; rule: any; ruleGroup: CecNativeRuleGroupName; ruleDescription: any; premises: any; conclusion: any; explanation: string; derivedExpressionCount: number; }' is not assignable to type 'CecProofTraceStep'.
+  88:         this.statistics.recordRule(application.rule);
+  89:         const step: CecProofTraceStep = {
+> 90:           id: `cec-step-${steps.length + 1}`,
+  91:           rule: application.rule,
+  92:           ruleGroup: this.ruleGroupByRuleName.get(application.rule),
 
-src/lib/logic/cec/prover.ts:175:7 TS2322: Type '{ status: ProofStatus; theorem: any; steps: CecProofTraceStep[]; method: string; timeMs: number; error: string; isValid: boolean; ruleGroups: CecNativeRuleGroupName[]; rulesUsed: string[]; statistics: CecProverStatisticsSnapshot; trace: CecProofTraceStep[]; }' is not assignable to type 'CecProofResult'.
-  173:     const clonedSteps = cloneCecProofTrace(steps);
-  174:     const result: CecProofResult = {
-> 175:       status,
-  176:       theorem: formatCecExpression(theorem),
-  177:       steps: clonedSteps,
+src/lib/logic/cec/prover.ts:145:7 TS2322: Type '{ status: ProofStatus; theorem: any; steps: CecProofTraceStep[]; method: string; timeMs: number; error: string; isValid: boolean; ruleGroups: CecNativeRuleGroupName[]; rulesUsed: string[]; statistics: CecProofStatisticsDict; trace: CecProofTraceStep[]; }' is not assignable to type 'CecProofResult'.
+  143:     const clonedSteps = cloneCecProofTrace(steps);
+  144:     return {
+> 145:       status,
+  146:       theorem: formatCecExpression(theorem),
+  147:       steps: clonedSteps,
 - Failure kind: `typescript_quality`
 
 ### Blocked Backlog
