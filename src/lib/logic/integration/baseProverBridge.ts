@@ -7,8 +7,12 @@ import type {
   BrowserNativeProofRequest,
 } from './proverAdapters';
 
+export type BaseProverBridgePythonModule =
+  | 'logic/integration/base_prover_bridge.py'
+  | 'logic/integration/bridges/base_prover_bridge.py';
+
 export interface BaseProverBridgeMetadata {
-  sourcePythonModule: 'logic/integration/base_prover_bridge.py';
+  sourcePythonModule: BaseProverBridgePythonModule;
   runtime: 'typescript-wasm-browser';
   serverCallsAllowed: false;
   pythonRuntime: false;
@@ -26,7 +30,7 @@ export interface BaseProverBridgeInfo {
   runtime: 'typescript-wasm-browser';
   supportedLogics: Array<BrowserNativeProofLogic>;
   requiresExternalProver: false;
-  sourcePythonModule: 'logic/integration/base_prover_bridge.py';
+  sourcePythonModule: BaseProverBridgePythonModule;
 }
 
 export interface BaseProverBridgeValidation {
@@ -38,6 +42,7 @@ export interface BaseProverBridgeValidation {
 export interface BaseProverBridgeOptions {
   name?: string;
   supportedLogics?: Array<BrowserNativeProofLogic>;
+  sourcePythonModule?: BaseProverBridgePythonModule;
 }
 
 const DEFAULT_SUPPORTED_LOGICS: Array<BrowserNativeProofLogic> = ['tdfol', 'cec', 'dcec'];
@@ -45,15 +50,18 @@ const DEFAULT_SUPPORTED_LOGICS: Array<BrowserNativeProofLogic> = ['tdfol', 'cec'
 export abstract class BrowserNativeBaseProverBridge {
   readonly name: string;
   readonly supportedLogics: Array<BrowserNativeProofLogic>;
+  readonly sourcePythonModule: BaseProverBridgePythonModule;
 
   protected constructor(options: BaseProverBridgeOptions = {}) {
     this.name = options.name ?? 'browser-native-base-prover-bridge';
     this.supportedLogics = [...(options.supportedLogics ?? DEFAULT_SUPPORTED_LOGICS)];
+    this.sourcePythonModule =
+      options.sourcePythonModule ?? 'logic/integration/base_prover_bridge.py';
   }
 
   getMetadata(): BaseProverBridgeMetadata {
     return {
-      sourcePythonModule: 'logic/integration/base_prover_bridge.py',
+      sourcePythonModule: this.sourcePythonModule,
       runtime: 'typescript-wasm-browser',
       serverCallsAllowed: false,
       pythonRuntime: false,
@@ -73,7 +81,7 @@ export abstract class BrowserNativeBaseProverBridge {
       runtime: 'typescript-wasm-browser',
       supportedLogics: [...this.supportedLogics],
       requiresExternalProver: false,
-      sourcePythonModule: 'logic/integration/base_prover_bridge.py',
+      sourcePythonModule: this.sourcePythonModule,
     };
   }
 
@@ -136,10 +144,19 @@ export abstract class BrowserNativeBaseProverBridge {
 
 export class BrowserNativeAdapterBaseProverBridge extends BrowserNativeBaseProverBridge {
   private readonly adapter: BrowserNativeProofAdapter;
+  private readonly methodPrefix: string;
 
-  constructor(adapter: BrowserNativeProofAdapter) {
-    super({ name: adapter.metadata.name, supportedLogics: [adapter.metadata.logic] });
+  constructor(
+    adapter: BrowserNativeProofAdapter,
+    options: Pick<BaseProverBridgeOptions, 'sourcePythonModule'> & { methodPrefix?: string } = {},
+  ) {
+    super({
+      name: adapter.metadata.name,
+      supportedLogics: [adapter.metadata.logic],
+      sourcePythonModule: options.sourcePythonModule,
+    });
     this.adapter = adapter;
+    this.methodPrefix = options.methodPrefix ?? 'base-prover-bridge';
   }
 
   getAdapterMetadata(): BrowserNativeProofAdapterMetadata {
@@ -153,8 +170,17 @@ export class BrowserNativeAdapterBaseProverBridge extends BrowserNativeBaseProve
     const result = this.adapter.prove(request);
     return {
       ...result,
-      method: `base-prover-bridge:${this.adapter.metadata.name}:${result.method ?? request.logic}`,
+      method: `${this.methodPrefix}:${this.adapter.metadata.name}:${result.method ?? request.logic}`,
     };
+  }
+}
+
+export class BrowserNativeIntegrationBridgesBaseProverBridge extends BrowserNativeAdapterBaseProverBridge {
+  constructor(adapter: BrowserNativeProofAdapter) {
+    super(adapter, {
+      sourcePythonModule: 'logic/integration/bridges/base_prover_bridge.py',
+      methodPrefix: 'integration-bridges-base-prover-bridge',
+    });
   }
 }
 
@@ -164,4 +190,12 @@ export function createBrowserNativeBaseProverBridge(
   return new BrowserNativeAdapterBaseProverBridge(adapter);
 }
 
+export function createBrowserNativeIntegrationBridgesBaseProverBridge(
+  adapter: BrowserNativeProofAdapter,
+): BrowserNativeIntegrationBridgesBaseProverBridge {
+  return new BrowserNativeIntegrationBridgesBaseProverBridge(adapter);
+}
+
 export const create_browser_native_base_prover_bridge = createBrowserNativeBaseProverBridge;
+export const create_browser_native_integration_bridges_base_prover_bridge =
+  createBrowserNativeIntegrationBridgesBaseProverBridge;

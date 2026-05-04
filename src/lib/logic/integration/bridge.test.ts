@@ -1,5 +1,8 @@
 import { BrowserNativeLogicBridge, createBrowserNativeLogicBridge } from './bridge';
-import { createBrowserNativeBaseProverBridge } from './baseProverBridge';
+import {
+  createBrowserNativeBaseProverBridge,
+  createBrowserNativeIntegrationBridgesBaseProverBridge,
+} from './baseProverBridge';
 import {
   createBrowserNativeCvc5ProverBridge,
   type BrowserNativeCvc5ProofResult,
@@ -484,6 +487,57 @@ describe('BrowserNativeLogicBridge', () => {
     });
     expect(() => bridge.prove({ logic: 'cec', theorem: 'p', axioms: [] })).toThrow(
       'Invalid browser-native proof request: unsupported logic: cec',
+    );
+  });
+
+  it('ports integration/bridges/base_prover_bridge.py as a browser-native local adapter base', () => {
+    const adapter: BrowserNativeProofAdapter = {
+      metadata: {
+        logic: 'dcec',
+        name: 'nested-base-test-adapter',
+        runtime: 'typescript-wasm-browser',
+        requiresExternalProver: false,
+      },
+      supports: (logic) => logic === 'dcec',
+      prove: (request) => ({
+        status: 'proved',
+        theorem: request.theorem,
+        steps: [],
+        method: 'local-dcec-proof',
+      }),
+    };
+    const bridge = createBrowserNativeIntegrationBridgesBaseProverBridge(adapter);
+
+    const result = bridge.prove({
+      logic: 'dcec',
+      theorem: '  (P (always (comply_with ada code)))  ',
+      axioms: [' (P (always (comply_with ada code))) '],
+      maxSteps: 20,
+    });
+
+    expect(bridge.getMetadata()).toMatchObject({
+      sourcePythonModule: 'logic/integration/bridges/base_prover_bridge.py',
+      runtime: 'typescript-wasm-browser',
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      subprocessAllowed: false,
+      rpcAllowed: false,
+      externalProverAllowed: false,
+      failClosed: true,
+      supportedLogics: ['dcec'],
+    });
+    expect(bridge.getProverInfo()).toMatchObject({
+      available: true,
+      requiresExternalProver: false,
+      sourcePythonModule: 'logic/integration/bridges/base_prover_bridge.py',
+    });
+    expect(result).toMatchObject({
+      status: 'proved',
+      theorem: '(P (always (comply_with ada code)))',
+      method: 'integration-bridges-base-prover-bridge:nested-base-test-adapter:local-dcec-proof',
+    });
+    expect(() => bridge.prove({ logic: 'dcec', theorem: 'p', axioms: [], maxSteps: 0 })).toThrow(
+      'Invalid browser-native proof request: maxSteps must be positive',
     );
   });
 
