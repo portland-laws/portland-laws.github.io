@@ -1424,3 +1424,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T112335Z-ported-logic-integration-cec_bridge.py-as-a-browser-native-typescript-cec-bridge.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T112335Z-ported-logic-integration-cec_bridge.py-as-a-browser-native-typescript-cec-bridge.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T112335Z-ported-logic-integration-cec_bridge.py-as-a-browser-native-typescript-cec-bridge.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 11:28:46 UTC
+
+- Target: `Task checkbox-349: Port remaining Python logic module `logic/integration/converters/deontic_logic_converter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Added a browser-native integration deontic logic converter for logic/integration/converters/deontic_logic_converter.py parity.
+- Impact: The TypeScript logic port now exposes a local integration converter that extracts deontic norms, projects formula/json/defeasible/prolog/tptp outputs, fails closed on invalid input, and is covered by focused Jest validation without Python, server calls, or runtime bridges.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/converters/deonticLogicConverter.test.ts`, `src/lib/logic/integration/converters/deonticLogicConverter.ts`, `src/lib/logic/integration/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T112846Z-added-a-browser-native-integration-deontic-logic-converter-for-logic-integration.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T112846Z-added-a-browser-native-integration-deontic-logic-converter-for-logic-integration.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T112846Z-added-a-browser-native-integration-deontic-logic-converter-for-logic-integration.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

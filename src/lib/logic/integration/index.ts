@@ -1,6 +1,7 @@
 export * from './baseProverBridge';
 export * from './bridge';
 export * from './cecBridge';
+export * from './converters/deonticLogicConverter';
 export * from './cvc5ProverBridge';
 export * from './externalProversBridge';
 export * from './ipldLogicStorage';
