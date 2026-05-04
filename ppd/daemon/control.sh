@@ -17,12 +17,16 @@ DAEMON_UNIT="ppd-daemon.service"
 SUPERVISOR_UNIT="ppd-supervisor.service"
 
 systemd_available() {
-  command -v systemd-run >/dev/null 2>&1 && systemctl --user is-system-running >/dev/null 2>&1
+  command -v systemd-run >/dev/null 2>&1 && systemctl --user list-units >/dev/null 2>&1
 }
 
 systemd_unit_active() {
   local unit="$1"
   systemctl --user is-active --quiet "$unit" >/dev/null 2>&1
+}
+
+supervisor_systemd_enabled() {
+  [[ "${PPD_SUPERVISOR_USE_SYSTEMD:-0}" == "1" ]] && systemd_available
 }
 
 systemd_unit_loaded() {
@@ -76,6 +80,23 @@ wait_for_systemd_inactive() {
   return 1
 }
 
+wait_for_systemd_unloaded() {
+  local unit="$1"
+  local timeout_seconds="${2:-5}"
+  local load_state
+  local deadline
+  deadline=$((SECONDS + timeout_seconds))
+
+  while (( SECONDS < deadline )); do
+    load_state="$(systemctl --user show "$unit" --property=LoadState --value 2>/dev/null || true)"
+    if [[ "$load_state" == "not-found" || -z "$load_state" ]]; then
+      return 0
+    fi
+    sleep 0.2
+  done
+  return 1
+}
+
 wait_for_systemd_main_pid() {
   local unit="$1"
   local timeout_seconds="${2:-10}"
@@ -103,6 +124,7 @@ stop_systemd_unit() {
     systemctl --user stop "$unit" >/dev/null 2>&1 || true
     wait_for_systemd_inactive "$unit" 10 || true
     systemctl --user reset-failed "$unit" >/dev/null 2>&1 || true
+    wait_for_systemd_unloaded "$unit" 5 || true
   fi
 }
 
@@ -116,10 +138,6 @@ run_systemd_watchdog_unit() {
     return 0
   fi
 
-  if systemd_unit_loaded "$unit"; then
-    systemctl --user start "$unit"
-    return $?
-  fi
   return 1
 }
 
@@ -388,6 +406,9 @@ supervisor_start() {
 
   if systemd_available; then
     stop_systemd_unit "$SUPERVISOR_UNIT"
+  fi
+
+  if supervisor_systemd_enabled; then
     rm -f "$SUPERVISOR_CHILD_PID_FILE"
     run_systemd_watchdog_unit "$SUPERVISOR_UNIT" \
       "cd '$ROOT'; rm -f '$SUPERVISOR_PID_FILE.stop' '$SUPERVISOR_CHILD_PID_FILE'; exec env PYTHONPATH=ipfs_datasets_py PPD_LLM_BACKEND=llm_router IPFS_DATASETS_PY_CODEX_SANDBOX=read-only python3 ppd/daemon/ppd_supervisor.py --watch --interval 120 --exception-backoff 5 --termination-storm-threshold 8 --termination-storm-backoff 900 --apply --self-heal --restart-daemon --llm-timeout 300 >> '$SUPERVISOR_OUT_FILE' 2>&1" \
@@ -414,6 +435,10 @@ supervisor_start() {
 }
 
 supervisor_stop() {
+  touch "$SUPERVISOR_PID_FILE.stop"
+  if systemd_available; then
+    stop_systemd_unit "$SUPERVISOR_UNIT"
+  fi
   if [[ ! -f "$SUPERVISOR_PID_FILE" ]]; then
     if [[ -f "$SUPERVISOR_CHILD_PID_FILE" ]]; then
       local child_pid
@@ -427,8 +452,6 @@ supervisor_stop() {
   fi
   local pid
   pid="$(cat "$SUPERVISOR_PID_FILE")"
-  touch "$SUPERVISOR_PID_FILE.stop"
-  stop_systemd_unit "$SUPERVISOR_UNIT"
   terminate_process_family "$pid" "PP&D supervisor"
   if [[ -f "$SUPERVISOR_CHILD_PID_FILE" ]]; then
     local child_pid

@@ -9,9 +9,11 @@ worker is stuck, repeatedly blocked, or no longer making meaningful progress.
 from __future__ import annotations
 
 import argparse
+import atexit
 import json
 import os
 import re
+import signal
 import subprocess
 import sys
 import time
@@ -145,6 +147,7 @@ class SupervisorConfig:
     plan_doc: Path = Path("docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md")
     supervisor_status_file: Path = Path("ppd/daemon/supervisor-status.json")
     supervisor_log: Path = Path("ppd/daemon/supervisor-actions.jsonl")
+    supervisor_pid_file: Path = Path("ppd/daemon/ppd-supervisor.pid")
     circuit_breaker_file: Path = Path("ppd/daemon/supervisor-circuit-breaker.json")
     control_script: Path = Path("ppd/daemon/control.sh")
     stall_seconds: int = 900
@@ -165,6 +168,50 @@ class SupervisorConfig:
 
     def resolve(self, path: Path) -> Path:
         return path if path.is_absolute() else self.repo_root / path
+
+
+_WATCH_CONFIG: Optional[SupervisorConfig] = None
+
+
+def supervisor_stop_sentinel(config: SupervisorConfig) -> Path:
+    return Path(str(config.resolve(config.supervisor_pid_file)) + ".stop")
+
+
+def append_supervisor_runtime_event(config: SupervisorConfig, event: str, **payload: Any) -> None:
+    row = {"event": event, "updated_at": utc_now(), "pid": os.getpid(), **payload}
+    append_jsonl(config.resolve(config.supervisor_log), row)
+
+
+def handle_supervisor_signal(signum: int, _frame: object) -> None:
+    config = _WATCH_CONFIG
+    if config is None:
+        raise SystemExit(128 + signum)
+    signal_name = signal.Signals(signum).name
+    if supervisor_stop_sentinel(config).exists():
+        append_supervisor_runtime_event(config, "supervisor_signal_stop", signal=signal_name)
+        raise SystemExit(128 + signum)
+    append_supervisor_runtime_event(
+        config,
+        "supervisor_signal_ignored",
+        signal=signal_name,
+        message="ignored supervisor signal because the stop sentinel was absent",
+    )
+
+
+def record_supervisor_watch_exit() -> None:
+    if _WATCH_CONFIG is not None:
+        try:
+            append_supervisor_runtime_event(_WATCH_CONFIG, "supervisor_watch_exit")
+        except Exception:
+            pass
+
+
+def install_supervisor_runtime_guards(config: SupervisorConfig) -> None:
+    global _WATCH_CONFIG
+    _WATCH_CONFIG = config
+    signal.signal(signal.SIGTERM, handle_supervisor_signal)
+    signal.signal(signal.SIGHUP, handle_supervisor_signal)
+    atexit.register(record_supervisor_watch_exit)
 
 
 @dataclass(frozen=True)
@@ -2563,6 +2610,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         exception_backoff_seconds=max(0.0, float(args.exception_backoff)),
     )
     if args.watch:
+        install_supervisor_runtime_guards(config)
         while True:
             decision = run_once_safely(config)
             sleep_seconds = (
@@ -2571,6 +2619,12 @@ def main(argv: Optional[list[str]] = None) -> int:
                 else float(config.termination_storm_backoff_seconds)
                 if decision.action in {"enter_termination_storm_circuit_breaker", "observe_circuit_breaker"}
                 else float(args.interval)
+            )
+            append_supervisor_runtime_event(
+                config,
+                "supervisor_watch_sleep",
+                action=decision.action,
+                sleep_seconds=max(1.0, sleep_seconds),
             )
             time.sleep(max(1.0, sleep_seconds))
     decision = run_once_safely(config)
