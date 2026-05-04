@@ -94,12 +94,12 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-04T07:18:52.798901Z
+Last updated: 2026-05-04T07:19:38.792548Z
 
-- Latest target: `Task checkbox-440: Add generated blocked-cascade daemon-repair coverage for tranche 49 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.`
+- Latest target: `Task checkbox-441: Add generated blocked-cascade daemon-repair coverage for tranche 49 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.`
 - Latest result: `llm`
 - Latest summary: LLM proposal failed.
-- Counts: `{"blocked": 195, "complete": 74, "in_progress": 0, "needed": 2}`
+- Counts: `{"blocked": 196, "complete": 74, "in_progress": 0, "needed": 1}`
 
 <!-- ppd-daemon-task-board:end -->
 ## Built-In Supervisor Repair Notes
@@ -1268,4 +1268,3 @@ Last updated: 2026-05-04T07:18:52.798901Z
 ## Built-In Supervisor Repair Notes
 
 - Parked repeated LLM parse/runtime loop for `Add generated blocked-cascade daemon-repair coverage for tranche 49 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
-
