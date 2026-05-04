@@ -2,6 +2,15 @@ import type { ProofResult, ProofStatus, ProofStep } from '../types';
 import { analyzeCecExpression } from '../cec/analyzer';
 import type { CecBinaryOperator, CecExpression } from '../cec/ast';
 import { formatCecExpression } from '../cec/formatter';
+import {
+  applyCecRules,
+  cecExpressionEquals,
+  cecExpressionKey,
+  getAllCecRules,
+  getDeonticCecRules,
+  getTemporalCecRules,
+  type CecInferenceRule,
+} from '../cec/inferenceRules';
 import type { TdfolBinaryFormula, TdfolFormula, TdfolTerm } from './ast';
 import { formatTdfolFormula } from './formatter';
 import {
@@ -518,16 +527,25 @@ export interface TdfolCecDelegate {
 
 export interface TdfolLocalCecDelegateOptions {
   maxDepth?: number;
+  maxIterations?: number;
+  maxDerivedExpressions?: number;
+  rules?: CecInferenceRule[];
   defaultTimeoutMs?: number;
 }
 
 export class TdfolLocalCecDelegate implements TdfolCecDelegate {
   readonly name = 'Local CEC Delegate';
   private readonly maxDepth: number;
+  private readonly maxIterations: number;
+  private readonly maxDerivedExpressions: number;
+  private readonly rules: CecInferenceRule[];
   private readonly defaultTimeoutMs: number;
 
   constructor(options: TdfolLocalCecDelegateOptions = {}) {
     this.maxDepth = options.maxDepth ?? 8;
+    this.maxIterations = options.maxIterations ?? 6;
+    this.maxDerivedExpressions = options.maxDerivedExpressions ?? 150;
+    this.rules = options.rules ?? createDefaultCecDelegateRules();
     this.defaultTimeoutMs = options.defaultTimeoutMs ?? 2000;
   }
 
@@ -549,7 +567,9 @@ export class TdfolLocalCecDelegate implements TdfolCecDelegate {
     const theoremCec = tdfolToCecExpression(formula);
     const analysis = analyzeCecExpression(theoremCec);
     const steps: ProofStep[] = [];
-    const proved = this.proveGoal(formula, kb, deadline, 0, new Set(), steps);
+    const proved =
+      this.proveGoal(formula, kb, deadline, 0, new Set(), steps) ||
+      this.proveWithCecRules(theoremCec, kb, deadline, steps);
     return {
       status: proved ? 'proved' : nowMs() > deadline ? 'timeout' : 'unknown',
       theorem: formatTdfolFormula(formula),
@@ -560,6 +580,69 @@ export class TdfolLocalCecDelegate implements TdfolCecDelegate {
         ? undefined
         : `Local CEC delegate could not prove ${formatCecExpression(theoremCec)}; predicates=${analysis.predicates.join(',') || 'none'}`,
     };
+  }
+
+  private proveWithCecRules(
+    theorem: CecExpression,
+    kb: TdfolKnowledgeBase,
+    deadline: number,
+    steps: ProofStep[],
+  ): boolean {
+    const expressions = [...kb.axioms, ...(kb.theorems ?? [])].map(tdfolToCecExpression);
+    const knownKeys = new Set<string>();
+    const theoremKey = cecExpressionKey(theorem);
+
+    for (const expression of expressions) {
+      const key = cecExpressionKey(expression);
+      knownKeys.add(key);
+      if (key === theoremKey) {
+        steps.push({
+          id: `tdfol-cec-delegate-step-${steps.length + 1}`,
+          rule: 'CecKnowledgeBaseLookup',
+          premises: [],
+          conclusion: formatCecExpression(expression),
+          explanation: 'Translated TDFOL goal to CEC and matched a local knowledge-base formula',
+        });
+        return true;
+      }
+    }
+
+    for (let iteration = 0; iteration < this.maxIterations; iteration += 1) {
+      if (nowMs() > deadline || expressions.length >= this.maxDerivedExpressions) {
+        return false;
+      }
+
+      const applications = applyCecRules(expressions, this.rules);
+      let added = 0;
+      for (const application of applications) {
+        if (nowMs() > deadline || expressions.length >= this.maxDerivedExpressions) {
+          return false;
+        }
+        const key = cecExpressionKey(application.conclusion);
+        if (knownKeys.has(key)) {
+          continue;
+        }
+        knownKeys.add(key);
+        expressions.push(application.conclusion);
+        added += 1;
+        steps.push({
+          id: `tdfol-cec-delegate-step-${steps.length + 1}`,
+          rule: application.rule,
+          premises: application.premises.map(formatCecExpression),
+          conclusion: formatCecExpression(application.conclusion),
+          explanation: 'Applied a browser-native CEC inference rule to translated TDFOL formulas',
+        });
+        if (cecExpressionEquals(application.conclusion, theorem)) {
+          return true;
+        }
+      }
+
+      if (added === 0) {
+        return false;
+      }
+    }
+
+    return false;
   }
 
   private proveGoal(
@@ -632,6 +715,18 @@ export class TdfolLocalCecDelegate implements TdfolCecDelegate {
     visited.delete(key);
     return false;
   }
+}
+
+function createDefaultCecDelegateRules(): CecInferenceRule[] {
+  const rules = [...getAllCecRules(), ...getTemporalCecRules(), ...getDeonticCecRules()];
+  const seen = new Set<string>();
+  return rules.filter((rule) => {
+    if (seen.has(rule.name)) {
+      return false;
+    }
+    seen.add(rule.name);
+    return true;
+  });
 }
 
 export interface TdfolCecDelegateStrategyOptions {

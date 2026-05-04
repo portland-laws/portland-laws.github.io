@@ -795,7 +795,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/TDFOL/quickstart_visualizer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/TDFOL/security_validator.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/TDFOL/strategies/base.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/TDFOL/strategies/cec_delegate.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/TDFOL/strategies/cec_delegate.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/strategies/forward_chaining.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/strategies/modal_tableaux.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/strategies/strategy_selector.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 06:45:14 UTC
+Last updated: 2026-05-04 06:48:16 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-285: Port remaining Python logic module 'logic/TDFOL/strategies/cec_delegate.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-286: Port remaining Python logic module 'logic/TDFOL/strategies/forward_chaining.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1259,8 +1259,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-281: Port remaining Python logic module 'logic/TDFOL/proof_tree_visualizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-282: Port remaining Python logic module 'logic/TDFOL/quickstart_visualizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-283: Port remaining Python logic module 'logic/TDFOL/security_validator.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-284: Port remaining Python logic module 'logic/TDFOL/strategies/base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-285: Port remaining Python logic module 'logic/TDFOL/strategies/cec_delegate.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-284: Port remaining Python logic module 'logic/TDFOL/strategies/base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-285: Port remaining Python logic module 'logic/TDFOL/strategies/cec_delegate.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-286: Port remaining Python logic module 'logic/TDFOL/strategies/forward_chaining.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-287: Port remaining Python logic module 'logic/TDFOL/strategies/modal_tableaux.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-288: Port remaining Python logic module 'logic/TDFOL/strategies/strategy_selector.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,10 +1430,10 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-284: Port remaining Python logic module 'logic/TDFOL/strategies/base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-285: Port remaining Python logic module 'logic/TDFOL/strategies/cec_delegate.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported the remaining TDFOL strategies/base.py contract as a browser-native TypeScript base strategy.
-- Impact: src/lib/logic/tdfol/strategies.ts now exports a validated TdfolBaseProverStrategy with Python source metadata, default priority/cost behavior, proof-result helpers, and no server or Python runtime dependency. src/lib/logic/tdfol/strategies.test.ts directly exercises the base contract through Jest, and the port ledger marks Task checkbox-284 complete.
+- Summary: Ported the remaining TDFOL CEC delegate slice with bounded browser-native CEC rule delegation.
+- Impact: The TDFOL local CEC delegate now translates knowledge-base formulas into CEC expressions and runs a bounded fixed point over existing browser-native CEC temporal, deontic, and core inference rules, producing proof traces without Python, server, filesystem, subprocess, or RPC dependencies. Focused Jest coverage validates deontic distribution and temporal implication delegation through the TypeScript strategy surface.
 - Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/strategies.test.ts`, `src/lib/logic/tdfol/strategies.ts`
 
 ### Blocked Backlog

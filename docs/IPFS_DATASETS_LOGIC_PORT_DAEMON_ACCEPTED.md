@@ -857,3 +857,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T064514Z-ported-the-remaining-tdfol-strategies-base.py-contract-as-a-browser-native-types.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T064514Z-ported-the-remaining-tdfol-strategies-base.py-contract-as-a-browser-native-types.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T064514Z-ported-the-remaining-tdfol-strategies-base.py-contract-as-a-browser-native-types.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 06:48:16 UTC
+
+- Target: `Task checkbox-285: Port remaining Python logic module `logic/TDFOL/strategies/cec_delegate.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the remaining TDFOL CEC delegate slice with bounded browser-native CEC rule delegation.
+- Impact: The TDFOL local CEC delegate now translates knowledge-base formulas into CEC expressions and runs a bounded fixed point over existing browser-native CEC temporal, deontic, and core inference rules, producing proof traces without Python, server, filesystem, subprocess, or RPC dependencies. Focused Jest coverage validates deontic distribution and temporal implication delegation through the TypeScript strategy surface.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/strategies.test.ts`, `src/lib/logic/tdfol/strategies.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T064816Z-ported-the-remaining-tdfol-cec-delegate-slice-with-bounded-browser-native-cec-ru.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T064816Z-ported-the-remaining-tdfol-cec-delegate-slice-with-bounded-browser-native-cec-ru.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T064816Z-ported-the-remaining-tdfol-cec-delegate-slice-with-bounded-browser-native-cec-ru.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

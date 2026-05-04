@@ -318,6 +318,41 @@ describe('TDFOL proving strategies', () => {
     expect(result.steps.at(-1)?.conclusion).toBe('(F (Enter x))');
   });
 
+  it('runs native CEC inference rules over translated TDFOL formulas', () => {
+    const strategy = new TdfolCecDelegateStrategy({
+      delegate: new TdfolLocalCecDelegate({ maxIterations: 2 }),
+    });
+    const result = strategy.prove(parseTdfolFormula('O(Comply(x)) and O(Report(x))'), {
+      axioms: [parseTdfolFormula('O(Comply(x) and Report(x))')],
+    });
+
+    expect(result).toMatchObject({
+      status: 'proved',
+      method: 'cec_delegate',
+    });
+    expect(result.steps.some((step) => step.rule === 'CecObligationDistribution')).toBe(true);
+    expect(result.steps.at(-1)?.conclusion).toBe('(and (O (Comply x)) (O (Report x)))');
+  });
+
+  it('delegates temporal implication chaining to browser-native CEC rules', () => {
+    const strategy = new TdfolCecDelegateStrategy({
+      delegate: new TdfolLocalCecDelegate({ maxIterations: 2 }),
+    });
+    const result = strategy.prove(parseTdfolFormula('always(Goal(x))'), {
+      axioms: [
+        parseTdfolFormula('always(Pred(x))'),
+        parseTdfolFormula('always(Pred(x) -> Goal(x))'),
+      ],
+    });
+
+    expect(result).toMatchObject({
+      status: 'proved',
+      method: 'cec_delegate',
+    });
+    expect(result.steps.some((step) => step.rule === 'CecAlwaysImplication')).toBe(true);
+    expect(result.steps.at(-1)?.conclusion).toBe('(always (Goal x))');
+  });
+
   it('returns explicit unknown results when the local CEC delegate cannot justify a proof', () => {
     const strategy = new TdfolCecDelegateStrategy();
 
