@@ -94,12 +94,12 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-03T22:17:29.464309Z
+Last updated: 2026-05-04T02:00:05.044633Z
 
-- Latest target: `Manual supervisor redesign: harden stale daemon recovery and LLM child timeout cleanup`
-- Latest result: `accepted`
-- Latest summary: Added supervisor goal-drift recovery for stale platform slices, restart diagnosis for already-parked active targets, no-file LLM fast-fail handling, and process-group cleanup so timed-out llm_router children cannot leave orphan Copilot processes.
-- Counts: `{"blocked": 4, "complete": 69, "in_progress": 0, "needed": 6}`
+- Latest target: `Task checkbox-245: Add a formal-logic guardrail extraction pipeline under ppd/logic that converts processor-backed requirement batches into obligations, prerequisites, missing-fact questions, reversible-action predicates, exact-confirmation predicates, and refused official-action stop gates.`
+- Latest result: `llm`
+- Latest summary: LLM proposal failed.
+- Counts: `{"blocked": 8, "complete": 69, "in_progress": 0, "needed": 2}`
 
 <!-- ppd-daemon-task-board:end -->
 ## Built-In Supervisor Repair Notes
@@ -168,11 +168,11 @@ Last updated: 2026-05-03T22:17:29.464309Z
 
 ## Built-In Autonomous PP&D Execution Capability Tranche
 
-- [ ] Task checkbox-241: Add a supervised live whole-site public crawl runner under ppd/crawler that resumes an allowlisted PP&D frontier, delegates archival capture to the ipfs_datasets_py processor suite, records robots and content-type decisions, and persists metadata manifests instead of raw bodies or downloaded documents.
-- [ ] Task checkbox-242: Add processor-suite execution integration under ppd/crawler proving public PP&D pages and PDFs flow through archive manifests, normalized document records, PDF metadata, requirement batches, and formal-logic source evidence IDs before agent reuse.
-- [ ] Task checkbox-243: Add an attended Playwright DevHub worker runner under ppd/devhub that supports manual login handoff, journal replay, reversible draft field fills from redacted facts, and mandatory pauses before upload, submit, certification, cancellation, inspection, security, or payment transitions.
-- [ ] Task checkbox-244: Add a local PDF draft-fill work queue under ppd/pdf that maps public PP&D form field manifests to redacted user facts, invokes the pypdf draft filler for previews, and never uploads, submits, or stores private source documents.
-- [ ] Task checkbox-245: Add a formal-logic guardrail extraction pipeline under ppd/logic that converts processor-backed requirement batches into obligations, prerequisites, missing-fact questions, reversible-action predicates, exact-confirmation predicates, and refused official-action stop gates.
+- [!] Task checkbox-241: Add a supervised live whole-site public crawl runner under ppd/crawler that resumes an allowlisted PP&D frontier, delegates archival capture to the ipfs_datasets_py processor suite, records robots and content-type decisions, and persists metadata manifests instead of raw bodies or downloaded documents.
+- [!] Task checkbox-242: Add processor-suite execution integration under ppd/crawler proving public PP&D pages and PDFs flow through archive manifests, normalized document records, PDF metadata, requirement batches, and formal-logic source evidence IDs before agent reuse.
+- [!] Task checkbox-243: Add an attended Playwright DevHub worker runner under ppd/devhub that supports manual login handoff, journal replay, reversible draft field fills from redacted facts, and mandatory pauses before upload, submit, certification, cancellation, inspection, security, or payment transitions.
+- [!] Task checkbox-244: Add a local PDF draft-fill work queue under ppd/pdf that maps public PP&D form field manifests to redacted user facts, invokes the pypdf draft filler for previews, and never uploads, submits, or stores private source documents.
+- [~] Task checkbox-245: Add a formal-logic guardrail extraction pipeline under ppd/logic that converts processor-backed requirement batches into obligations, prerequisites, missing-fact questions, reversible-action predicates, exact-confirmation predicates, and refused official-action stop gates.
 - [ ] Task checkbox-246: Add supervisor execution-capability recovery coverage proving stale calling_llm or applying_files status on old platform slices parks the stale tranche, appends this comprehensive execution tranche, validates the daemon, and restarts with PPD_LLM_BACKEND=llm_router.
 
 ## Built-In Supervisor Planning Notes
@@ -188,3 +188,30 @@ Last updated: 2026-05-03T22:17:29.464309Z
 - [x] Task checkbox-247: Add supervisor goal-drift recovery that parks stale Autonomous PP&D Platform Tranche 2 tasks and appends comprehensive execution-capability work for live public crawling, processor-suite execution, attended Playwright, PDF previews, and formal-logic guardrails.
 - [x] Task checkbox-248: Add stale active-target diagnosis proving a dead daemon whose old active task is already blocked restarts on the next selectable task instead of trying to park the same task again.
 - [x] Task checkbox-249: Add daemon LLM timeout hardening proving no-file LLM failures skip full validation after durable diagnostics and timed-out llm_router child process groups are terminated without leaving descendant Copilot processes.
+## Built-In Supervisor Repair Notes
+
+- Parked repeated LLM parse/runtime loop for `Add a supervised live whole-site public crawl runner under ppd/crawler that resumes an allowlisted PP&D frontier, delegates archival capture to the ipfs_datasets_py processor suite, records robots and content-type decisions, and persists metadata manifests instead of raw bodies or downloaded documents.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
+## Built-In Supervisor Repair Notes
+
+- Reset dead-worker in-progress task `Add processor-suite execution integration under ppd/crawler proving public PP&D pages and PDFs flow through archive manifests, normalized document records, PDF metadata, requirement batches, and formal-logic source evidence IDs before agent reuse.` to pending after the daemon process exited mid-cycle. The supervisor will restart the worker and let the task be selected again with a fresh timeout window.
+## Built-In Supervisor Repair Notes
+
+- Reset dead-worker in-progress task `Add processor-suite execution integration under ppd/crawler proving public PP&D pages and PDFs flow through archive manifests, normalized document records, PDF metadata, requirement batches, and formal-logic source evidence IDs before agent reuse.` to pending after the daemon process exited mid-cycle. The supervisor will restart the worker and let the task be selected again with a fresh timeout window.
+## Built-In Supervisor Repair Notes
+
+- Reset dead-worker in-progress task `Add processor-suite execution integration under ppd/crawler proving public PP&D pages and PDFs flow through archive manifests, normalized document records, PDF metadata, requirement batches, and formal-logic source evidence IDs before agent reuse.` to pending after the daemon process exited mid-cycle. The supervisor will restart the worker and let the task be selected again with a fresh timeout window.
+## Built-In Supervisor Repair Notes
+
+- Reset dead-worker in-progress task `Add processor-suite execution integration under ppd/crawler proving public PP&D pages and PDFs flow through archive manifests, normalized document records, PDF metadata, requirement batches, and formal-logic source evidence IDs before agent reuse.` to pending after the daemon process exited mid-cycle. The supervisor will restart the worker and let the task be selected again with a fresh timeout window.
+## Built-In Supervisor Repair Notes
+
+- Reset dead-worker in-progress task `Add processor-suite execution integration under ppd/crawler proving public PP&D pages and PDFs flow through archive manifests, normalized document records, PDF metadata, requirement batches, and formal-logic source evidence IDs before agent reuse.` to pending after the daemon process exited mid-cycle. The supervisor will restart the worker and let the task be selected again with a fresh timeout window.
+## Built-In Supervisor Repair Notes
+
+- Parked stalled worker task `Add processor-suite execution integration under ppd/crawler proving public PP&D pages and PDFs flow through archive manifests, normalized document records, PDF metadata, requirement batches, and formal-logic source evidence IDs before agent reuse.` after it exceeded the active-state timeout. The supervisor restarted the daemon on the next independent selectable task instead of reselecting the same stalled work.
+## Built-In Supervisor Repair Notes
+
+- Parked stalled worker task `Add an attended Playwright DevHub worker runner under ppd/devhub that supports manual login handoff, journal replay, reversible draft field fills from redacted facts, and mandatory pauses before upload, submit, certification, cancellation, inspection, security, or payment transitions.` after it exceeded the active-state timeout. The supervisor restarted the daemon on the next independent selectable task instead of reselecting the same stalled work.
+## Built-In Supervisor Repair Notes
+
+- Parked stalled worker task `Add a local PDF draft-fill work queue under ppd/pdf that maps public PP&D form field manifests to redacted user facts, invokes the pypdf draft filler for previews, and never uploads, submits, or stores private source documents.` after it exceeded the active-state timeout. The supervisor restarted the daemon on the next independent selectable task instead of reselecting the same stalled work.

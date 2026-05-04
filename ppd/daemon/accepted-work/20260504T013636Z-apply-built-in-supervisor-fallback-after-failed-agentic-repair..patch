@@ -1,0 +1,23 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,5 +1,5 @@
+ {
+-  "createdAt": "2026-05-04T01:34:53.159279Z",
++  "createdAt": "2026-05-04T01:36:34.889815Z",
+   "decision": {
+     "action": "reconcile_repeated_llm_loop_and_restart",
+     "reason": "3 recent durable LLM parse/runtime diagnostics were recorded for the same task before the daemon exited; park the looping task and restart on the next independent task without invoking the LLM repair path",
+@@ -29,11 +29,9 @@
+   ],
+   "schemaVersion": 1,
+   "taskBoardRepair": {
+-    "parkedRepeatedSyntaxLoopTasks": [
+-      "Add a supervised live whole-site public crawl runner under ppd/crawler that resumes an allowlisted PP&D frontier, delegates archival capture to the ipfs_datasets_py processor suite, records robots and content-type decisions, and persists metadata manifests instead of raw bodies or downloaded documents."
+-    ],
++    "parkedRepeatedSyntaxLoopTasks": [],
+     "replenishedGoalTaskLabels": [],
+     "supersededTaskBoardOnlyLabels": [],
+-    "taskBoardUpdated": true
++    "taskBoardUpdated": false
+   }
+ }

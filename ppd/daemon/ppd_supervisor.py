@@ -238,11 +238,20 @@ def process_running(pid: Optional[int]) -> bool:
     return True
 
 
+def target_matches_any_label(target_task: str, labels: set[str]) -> bool:
+    """Match task labels even when older diagnostics nested checkbox prefixes."""
+
+    if target_task in labels:
+        return True
+    target_title = title_from_task_label(target_task)
+    return bool(target_title and any(target_title == title_from_task_label(label) for label in labels))
+
+
 def latest_repeated_failure_count(rows: list[dict[str, Any]], *, completed_task_labels: Optional[set[str]] = None) -> int:
     completed = completed_task_labels or set()
     count = 0
     for proposal in reversed(rows):
-        if str(proposal.get("target_task") or "") in completed:
+        if target_matches_any_label(str(proposal.get("target_task") or ""), completed):
             continue
         if proposal.get("applied") and proposal.get("validation_passed") and not proposal.get("errors"):
             break
@@ -258,7 +267,7 @@ def recent_parse_or_llm_diagnostic_failure_count(
     target = ""
     for proposal in reversed(rows):
         proposal_target = str(proposal.get("target_task") or "")
-        if proposal_target in completed:
+        if target_matches_any_label(proposal_target, completed):
             continue
         if proposal.get("applied") and proposal.get("validation_passed") and not proposal.get("errors"):
             break
@@ -280,7 +289,7 @@ def recent_parse_or_llm_failure_target(
     target = ""
     for proposal in reversed(rows):
         proposal_target = str(proposal.get("target_task") or "")
-        if proposal_target in completed:
+        if target_matches_any_label(proposal_target, completed):
             continue
         if proposal.get("applied") and proposal.get("validation_passed") and not proposal.get("errors"):
             break
@@ -372,7 +381,7 @@ def recent_forbidden_absence_marker_failure_count(
     latest_task = ""
     for proposal in reversed(rows):
         target = str(proposal.get("target_task") or "")
-        if target in completed:
+        if target_matches_any_label(target, completed):
             continue
         if proposal.get("applied") and proposal.get("validation_passed") and not proposal.get("errors"):
             break
@@ -405,7 +414,7 @@ def recent_syntax_failure_count(
     count = 0
     inspected = 0
     for proposal in reversed(rows):
-        if str(proposal.get("target_task") or "") in completed:
+        if target_matches_any_label(str(proposal.get("target_task") or ""), completed):
             continue
         if proposal.get("applied") and proposal.get("validation_passed") and not proposal.get("errors"):
             break
@@ -426,7 +435,7 @@ def repeated_malformed_syntax_count(
     count = 0
     for proposal in reversed(rows):
         target = str(proposal.get("target_task") or "")
-        if target in completed:
+        if target_matches_any_label(target, completed):
             continue
         if proposal.get("applied") and proposal.get("validation_passed") and not proposal.get("errors"):
             break
@@ -1054,6 +1063,20 @@ def task_matching_target(tasks: list[Task], target_task: str) -> Optional[Task]:
     return None
 
 
+def rows_for_current_task_board(rows: list[dict[str, Any]], tasks: list[Task]) -> list[dict[str, Any]]:
+    """Keep failure-history decisions scoped to tasks still present on the board."""
+
+    labels = {task.label for task in tasks}
+    titles = {task.title for task in tasks}
+    filtered: list[dict[str, Any]] = []
+    for row in rows:
+        target = str(row.get("target_task") or "")
+        target_title = title_from_task_label(target)
+        if target in labels or (target_title and target_title in titles):
+            filtered.append(row)
+    return filtered
+
+
 def builtin_repair_task_board(markdown: str, rows: list[dict[str, Any]]) -> tuple[str, tuple[str, ...]]:
     """Park a repeated syntax-loop task so the daemon can advance autonomously."""
 
@@ -1186,7 +1209,9 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
     board = read_text(config.resolve(config.task_board)) if config.resolve(config.task_board).exists() else ""
     tasks = parse_tasks(board)
     completed_task_labels = {task.label for task in tasks if task.status == "complete"}
+    inactive_task_labels = {task.label for task in tasks if task.status in {"complete", "blocked"}}
     rows = read_supervisor_result_rows(config.resolve(config.result_log))
+    current_rows = rows_for_current_task_board(rows, tasks)
     latest = progress.get("latest") if isinstance(progress.get("latest"), dict) else {}
     heartbeat_age = age_seconds(status.get("updated_at"), now=now)
     active_state = str(status.get("active_state") or status.get("state") or "")
@@ -1247,8 +1272,8 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
         )
 
     parse_or_llm_diagnostic_failures = recent_parse_or_llm_diagnostic_failure_count(
-        rows,
-        completed_task_labels=completed_task_labels,
+        current_rows,
+        completed_task_labels=inactive_task_labels,
     )
     if parse_or_llm_diagnostic_failures >= config.repeated_failure_threshold:
         return SupervisorDecision(
@@ -1337,7 +1362,7 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
                 should_restart_daemon=True,
             )
 
-    malformed_count = repeated_malformed_syntax_count(rows, completed_task_labels=completed_task_labels)
+    malformed_count = repeated_malformed_syntax_count(current_rows, completed_task_labels=inactive_task_labels)
     if malformed_count >= 2:
         return SupervisorDecision(
             action="repair_daemon_programming",
@@ -1351,8 +1376,8 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
         )
 
     forbidden_marker_count = recent_forbidden_absence_marker_failure_count(
-        rows,
-        completed_task_labels=completed_task_labels,
+        current_rows,
+        completed_task_labels=inactive_task_labels,
     )
     if forbidden_marker_count >= 1:
         return SupervisorDecision(
@@ -1378,7 +1403,7 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
             should_invoke_codex=True,
         )
 
-    syntax_failures = recent_syntax_failure_count(rows, completed_task_labels=completed_task_labels)
+    syntax_failures = recent_syntax_failure_count(current_rows, completed_task_labels=inactive_task_labels)
     if syntax_failures >= 2:
         return SupervisorDecision(
             action="repair_daemon_programming",
@@ -1391,7 +1416,7 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
             should_restart_daemon=True,
         )
 
-    repeated_failures = latest_repeated_failure_count(rows, completed_task_labels=completed_task_labels)
+    repeated_failures = latest_repeated_failure_count(current_rows, completed_task_labels=inactive_task_labels)
     if repeated_failures >= config.repeated_failure_threshold:
         return SupervisorDecision(
             action="invoke_codex",

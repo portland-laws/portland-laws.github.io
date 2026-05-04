@@ -2,6 +2,7 @@ import type { ProofResult, ProofStatus, ProofStep } from '../types';
 import type { CecExpression } from './ast';
 import { formatCecExpression } from './formatter';
 import { cecExpressionEquals, cecExpressionKey, type CecInferenceRule } from './inferenceRules';
+import { parseCecExpression } from './parser';
 import { CecKnowledgeBase, CecProver, type CecProverOptions } from './prover';
 
 export const CecLemmaType = {
@@ -10,7 +11,7 @@ export const CecLemmaType = {
   PATTERN: 'pattern',
 } as const;
 
-export type CecLemmaTypeValue = typeof CecLemmaType[keyof typeof CecLemmaType];
+export type CecLemmaTypeValue = (typeof CecLemmaType)[keyof typeof CecLemmaType];
 
 export interface CecLemmaOptions {
   formula: CecExpression;
@@ -20,6 +21,16 @@ export interface CecLemmaOptions {
   usageCount?: number;
   exactHash?: string;
   patternHash?: string;
+}
+
+export interface CecLemmaJson {
+  formula: string;
+  premises?: Array<string>;
+  rule: string;
+  lemma_type?: CecLemmaTypeValue;
+  usage_count?: number;
+  exact_hash?: string;
+  pattern_hash?: string;
 }
 
 export class CecLemma {
@@ -38,7 +49,8 @@ export class CecLemma {
     this.lemmaType = options.lemmaType ?? CecLemmaType.DERIVED;
     this.usageCount = options.usageCount ?? 0;
     this.exactHash = options.exactHash ?? hashCecLemmaPattern(formatCecExpression(options.formula));
-    this.patternHash = options.patternHash ?? hashCecLemmaPattern(normalizeCecLemmaPattern(options.formula));
+    this.patternHash =
+      options.patternHash ?? hashCecLemmaPattern(normalizeCecLemmaPattern(options.formula));
   }
 
   matchesPattern(otherFormula: CecExpression): boolean {
@@ -49,7 +61,11 @@ export class CecLemma {
     this.usageCount += 1;
   }
 
-  toJSON() {
+  static fromJSON(json: CecLemmaJson): CecLemma {
+    return cecLemmaFromJSON(json);
+  }
+
+  toJSON(): CecLemmaJson {
     return {
       formula: formatCecExpression(this.formula),
       premises: this.premises.map(formatCecExpression),
@@ -136,6 +152,20 @@ export class CecLemmaCache {
     return [...this.cache.values()];
   }
 
+  importJSON(entries: Array<CecLemmaJson>): CecLemma[] {
+    const imported: CecLemma[] = [];
+    for (const entry of entries) {
+      const lemma = cecLemmaFromJSON(entry);
+      this.add(lemma);
+      imported.push(lemma);
+    }
+    return imported;
+  }
+
+  exportJSON(): Array<CecLemmaJson> {
+    return this.values().map((lemma) => lemma.toJSON());
+  }
+
   getStatistics(): CecLemmaCacheStatistics {
     const total = this.hits + this.misses;
     return {
@@ -199,6 +229,13 @@ export class CecLemmaGenerator {
     this.cache = new CecLemmaCache(maxLemmas);
   }
 
+  importLemmas(entries: Array<CecLemmaJson>): CecLemma[] {
+    const imported = this.cache.importJSON(entries);
+    this.discoveryCount += imported.length;
+    this.identifyReusableLemmas(imported);
+    return imported;
+  }
+
   discoverLemmas(proofTree: CecLemmaProofTree, minComplexity = 2): CecLemma[] {
     if (proofTree.result !== 'proved') return [];
     if (!validateCecLemmaProofTree(proofTree).valid) return [];
@@ -206,7 +243,9 @@ export class CecLemmaGenerator {
     const lemmas: CecLemma[] = [];
     for (const step of proofTree.steps) {
       if (step.premises.length < minComplexity) continue;
-      const premises = step.premises.flatMap((premiseIndex) => resolveCecLemmaPremise(proofTree, premiseIndex));
+      const premises = step.premises.flatMap((premiseIndex) =>
+        resolveCecLemmaPremise(proofTree, premiseIndex),
+      );
 
       const lemma = new CecLemma({
         formula: step.formula,
@@ -252,7 +291,12 @@ export class CecLemmaGenerator {
     const goalLemma = this.cache.get(goal);
     if (goalLemma) {
       this.reuseCount += 1;
-      return this.proofResult('proved', goal, [lemmaProofStep(goalLemma)], 'Proved by cached CEC lemma');
+      return this.proofResult(
+        'proved',
+        goal,
+        [lemmaProofStep(goalLemma)],
+        'Proved by cached CEC lemma',
+      );
     }
 
     for (const lemma of this.getApplicableLemmas(goal, known)) {
@@ -304,7 +348,11 @@ export class CecLemmaGenerator {
     }
   }
 
-  private discoverFromProofResult(goal: CecExpression, axioms: CecExpression[], result: ProofResult): void {
+  private discoverFromProofResult(
+    goal: CecExpression,
+    axioms: CecExpression[],
+    result: ProofResult,
+  ): void {
     if (result.steps.length === 0) return;
     const finalStep = result.steps[result.steps.length - 1];
     const lemma = new CecLemma({
@@ -317,7 +365,12 @@ export class CecLemmaGenerator {
     this.discoveryCount += 1;
   }
 
-  private proofResult(status: ProofStatus, theorem: CecExpression, steps: ProofStep[], explanation?: string): ProofResult {
+  private proofResult(
+    status: ProofStatus,
+    theorem: CecExpression,
+    steps: ProofStep[],
+    explanation?: string,
+  ): ProofResult {
     return {
       status,
       theorem: formatCecExpression(theorem),
@@ -330,6 +383,41 @@ export class CecLemmaGenerator {
 
 export function createCecLemmaGenerator(maxLemmas = 100): CecLemmaGenerator {
   return new CecLemmaGenerator(maxLemmas);
+}
+
+export function cecLemmaFromJSON(json: CecLemmaJson): CecLemma {
+  if (json.rule.trim().length === 0) {
+    throw new Error('CEC lemma JSON rule must be non-empty');
+  }
+  if (json.lemma_type !== undefined && !Object.values(CecLemmaType).includes(json.lemma_type)) {
+    throw new Error(`Unsupported CEC lemma type: ${json.lemma_type}`);
+  }
+
+  const formula = parseCecExpression(json.formula);
+  const premises = (json.premises ?? []).map((premise) => parseCecExpression(premise));
+  const exactHash = hashCecLemmaPattern(formatCecExpression(formula));
+  const patternHash = hashCecLemmaPattern(normalizeCecLemmaPattern(formula));
+
+  if (json.exact_hash !== undefined && json.exact_hash !== exactHash) {
+    throw new Error(
+      `CEC lemma exact hash mismatch: expected ${exactHash} but received ${json.exact_hash}`,
+    );
+  }
+  if (json.pattern_hash !== undefined && json.pattern_hash !== patternHash) {
+    throw new Error(
+      `CEC lemma pattern hash mismatch: expected ${patternHash} but received ${json.pattern_hash}`,
+    );
+  }
+
+  return new CecLemma({
+    formula,
+    premises,
+    rule: json.rule,
+    lemmaType: json.lemma_type,
+    usageCount: json.usage_count,
+    exactHash,
+    patternHash,
+  });
 }
 
 export function hashCecLemmaPattern(value: string): string {
@@ -364,7 +452,9 @@ export function normalizeCecLemmaPattern(formula: CecExpression): string {
   return normalize(formula);
 }
 
-export function validateCecLemmaProofTree(proofTree: CecLemmaProofTree): CecLemmaProofValidationResult {
+export function validateCecLemmaProofTree(
+  proofTree: CecLemmaProofTree,
+): CecLemmaProofValidationResult {
   const errors: string[] = [];
   const validStatuses: Array<ProofStatus> = ['proved', 'disproved', 'unknown', 'timeout', 'error'];
   if (!validStatuses.includes(proofTree.result)) {
@@ -379,7 +469,9 @@ export function validateCecLemmaProofTree(proofTree: CecLemmaProofTree): CecLemm
     step.premises.forEach((premiseIndex) => {
       const upperBound = axiomCount + stepIndex;
       if (!Number.isInteger(premiseIndex) || premiseIndex < 0 || premiseIndex >= upperBound) {
-        errors.push(`step ${stepIndex} premise ${premiseIndex} does not reference an earlier axiom or step`);
+        errors.push(
+          `step ${stepIndex} premise ${premiseIndex} does not reference an earlier axiom or step`,
+        );
       }
     });
   });
@@ -395,7 +487,10 @@ function bindCecLemmaAtom(bindings: Map<string, string>, name: string): string {
   return bound;
 }
 
-function resolveCecLemmaPremise(proofTree: CecLemmaProofTree, premiseIndex: number): CecExpression[] {
+function resolveCecLemmaPremise(
+  proofTree: CecLemmaProofTree,
+  premiseIndex: number,
+): CecExpression[] {
   if (premiseIndex < proofTree.axioms.length) return [proofTree.axioms[premiseIndex]];
   const stepIndex = premiseIndex - proofTree.axioms.length;
   const prior = proofTree.steps[stepIndex];

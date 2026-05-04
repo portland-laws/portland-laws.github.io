@@ -1,21 +1,23 @@
 {
-  "createdAt": "2026-05-03T22:10:05.244246Z",
+  "createdAt": "2026-05-04T01:59:33.891509Z",
   "decision": {
-    "action": "reconcile_dead_worker_and_restart",
-    "reason": "daemon process is not running but status is still calling_llm on Task checkbox-241: Add a supervised live whole-site public crawl runner under ppd/crawler that resumes an allowlisted PP&D frontier, delegates archival capture to the ipfs_datasets_py processor suite, records robots and content-type decisions, and persists metadata manifests instead of raw bodies or downloaded documents.; reset the in-progress task before restart",
+    "action": "reconcile_dead_worker_with_recent_failures_and_restart",
+    "reason": "daemon process is not running but status is still calling_llm on Task checkbox-244: Add a local PDF draft-fill work queue under ppd/pdf that maps public PP&D form field manifests to redacted user facts, invokes the pypdf draft filler for previews, and never uploads, submits, or stores private source documents., and 2 recent failure diagnostic(s) already exist for that target; park the task before restart instead of resetting it into another immediate retry",
     "severity": "warning"
   },
-  "repairKind": "dead_worker_task_reset",
-  "resetInProgressTaskLabels": [
-    "Add a supervised live whole-site public crawl runner under ppd/crawler that resumes an allowlisted PP&D frontier, delegates archival capture to the ipfs_datasets_py processor suite, records robots and content-type decisions, and persists metadata manifests instead of raw bodies or downloaded documents."
+  "parkedStalledTaskLabels": [
+    "Add a local PDF draft-fill work queue under ppd/pdf that maps public PP&D form field manifests to redacted user facts, invokes the pypdf draft filler for previews, and never uploads, submits, or stores private source documents."
   ],
+  "repairKind": "stalled_worker_task_parked",
+  "replenishedExecutionTaskLabels": [],
   "schemaVersion": 1,
   "statusBeforeRepair": {
     "active_state": "calling_llm",
-    "active_state_started_at": "2026-05-03T22:07:51.965743Z",
-    "active_target_task": "Task checkbox-241: Add a supervised live whole-site public crawl runner under ppd/crawler that resumes an allowlisted PP&D frontier, delegates archival capture to the ipfs_datasets_py processor suite, records robots and content-type decisions, and persists metadata manifests instead of raw bodies or downloaded documents.",
-    "pid": 501660,
-    "state": "heartbeat",
-    "updated_at": "2026-05-03T22:09:21.966425Z"
+    "active_state_started_at": "2026-05-04T01:57:57.856366Z",
+    "active_target_task": "Task checkbox-244: Add a local PDF draft-fill work queue under ppd/pdf that maps public PP&D form field manifests to redacted user facts, invokes the pypdf draft filler for previews, and never uploads, submits, or stores private source documents.",
+    "pid": 828391,
+    "state": "calling_llm",
+    "target_task": "Task checkbox-244: Add a local PDF draft-fill work queue under ppd/pdf that maps public PP&D form field manifests to redacted user facts, invokes the pypdf draft filler for previews, and never uploads, submits, or stores private source documents.",
+    "updated_at": "2026-05-04T01:57:57.856374Z"
   }
 }

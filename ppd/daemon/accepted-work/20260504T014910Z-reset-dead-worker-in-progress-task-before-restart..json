@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/daemon/builtin-repair-status.json",
+    "ppd/daemon/task-board.md"
+  ],
+  "created_at": "2026-05-04T01:49:10.903078Z",
+  "impact": "The supervisor reconciles stale calling_llm/applying_files status with the dead worker process, returns the task to pending, records the repair, and restarts the daemon without waiting for manual cleanup.",
+  "summary": "Reset dead-worker in-progress task before restart.",
+  "target_task": "Built-in supervisor fallback: daemon process is not running but status is still calling_llm on Task checkbox-242: Add processor-suite execution integration under ppd/crawler proving public PP&D pages and PDFs flow through archive manifests, normalized document records, PDF metadata, requirement batches, and formal-logic source evidence IDs before agent reuse.; reset the in-progress task before restart",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 79 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "......................................................................................................................................................................................................................................................................................................................................................................................................................................................................................ss..................sss....................................................................................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 788 tests in 0.232s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

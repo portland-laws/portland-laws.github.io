@@ -12,6 +12,8 @@ from ppd.daemon.ppd_daemon import (
     Config,
     Daemon,
     Proposal,
+    failure_block_threshold,
+    should_block_task_before_llm,
     should_skip_validation_for_no_file_failure,
     terminate_process_group,
 )
@@ -101,6 +103,53 @@ class DaemonLlmResultDurabilityTest(unittest.TestCase):
             )
         )
         self.assertFalse(should_skip_validation_for_no_file_failure(Proposal(summary="Needs validation")))
+
+    def test_syntax_preflight_failures_block_after_tighter_threshold(self) -> None:
+        config = Config(repo_root=Path("."), max_task_failures_before_block=3)
+
+        self.assertEqual(2, failure_block_threshold(Proposal(failure_kind="syntax_preflight"), config))
+        self.assertEqual(3, failure_block_threshold(Proposal(failure_kind="validation"), config))
+        self.assertEqual(
+            1,
+            failure_block_threshold(
+                Proposal(failure_kind="syntax_preflight"),
+                Config(repo_root=Path("."), max_task_failures_before_block=1),
+            ),
+        )
+
+    def test_repeated_syntax_preflight_failures_block_before_next_llm(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+            daemon_dir = repo / "ppd" / "daemon"
+            daemon_dir.mkdir(parents=True)
+            target = "Task checkbox-242: Add processor-suite execution integration."
+            for kind in ("syntax_preflight", "syntax_preflight"):
+                with (daemon_dir / "ppd-daemon.jsonl").open("a", encoding="utf-8") as handle:
+                    handle.write(
+                        json.dumps(
+                            {
+                                "proposal": {
+                                    "failure_kind": kind,
+                                    "target_task": target,
+                                    "errors": ["Syntax preflight failed."],
+                                }
+                            }
+                        )
+                        + "\n"
+                    )
+
+            self.assertTrue(
+                should_block_task_before_llm(
+                    Config(repo_root=repo, max_task_failures_before_block=3),
+                    target,
+                )
+            )
+            self.assertFalse(
+                should_block_task_before_llm(
+                    Config(repo_root=repo, max_task_failures_before_block=3),
+                    "Task checkbox-243: Add attended Playwright runner.",
+                )
+            )
 
     def test_llm_timeout_cleanup_terminates_descendant_processes(self) -> None:
         process = subprocess.Popen(

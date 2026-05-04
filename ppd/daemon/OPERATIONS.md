@@ -36,7 +36,7 @@ Stop the daemon from the repository root:
 bash ppd/daemon/control.sh stop
 ```
 
-Stopping should terminate the local daemon process identified by the PP&D daemon PID file. It should not delete accepted-work records or failed-patch records. If a task was in progress, inspect `ppd/daemon/status.json`, `ppd/daemon/progress.json`, and `ppd/daemon/ppd-daemon.log` before restarting.
+Stopping should terminate the local daemon process identified by the PP&D daemon PID file plus any captured descendant process groups, including detached `llm_router` or Codex children created by the active task. It also sweeps orphaned PP&D `llm_router` children whose daemon parent has already exited before removing the PID file. It should not delete accepted-work records or failed-patch records. If a task was in progress, inspect `ppd/daemon/status.json`, `ppd/daemon/progress.json`, and `ppd/daemon/ppd-daemon.log` before restarting.
 
 ## Status
 
@@ -73,7 +73,7 @@ bash ppd/daemon/control.sh supervisor-status
 bash ppd/daemon/control.sh supervisor-stop
 ```
 
-Supervisor state is written to `ppd/daemon/supervisor-status.json` and `ppd/daemon/supervisor-actions.jsonl`. These are runtime files and must not contain private DevHub data or raw crawl artifacts.
+Supervisor state is written to `ppd/daemon/supervisor-status.json` and `ppd/daemon/supervisor-actions.jsonl`. These are runtime files and must not contain private DevHub data or raw crawl artifacts. `supervisor-stop` uses the same process-family shutdown path as daemon stop so a repair-time LLM child is not left running after an operator stop or supervisor restart.
 
 ## Progress
 

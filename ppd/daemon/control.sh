@@ -9,7 +9,75 @@ SUPERVISOR_PID_FILE="$ROOT/ppd/daemon/ppd-supervisor.pid"
 SUPERVISOR_OUT_FILE="$ROOT/ppd/daemon/ppd-supervisor.out"
 SUPERVISOR_STATUS_FILE="$ROOT/ppd/daemon/supervisor-status.json"
 
+collect_descendant_pids() {
+  local parent="$1"
+  local child
+  while IFS= read -r child; do
+    [[ -z "$child" ]] && continue
+    echo "$child"
+    collect_descendant_pids "$child"
+  done < <(pgrep -P "$parent" 2>/dev/null || true)
+}
+
+process_group_for_pid() {
+  local pid="$1"
+  ps -o pgid= -p "$pid" 2>/dev/null | tr -d '[:space:]'
+}
+
+terminate_process_family() {
+  local root_pid="$1"
+  local label="$2"
+  local -a family_pids=()
+  local -a process_groups=()
+  local pid
+  local pgid
+
+  if [[ -z "$root_pid" ]] || ! ps -p "$root_pid" >/dev/null 2>&1; then
+    echo "$label not running: ${root_pid:-unknown}"
+    return 0
+  fi
+
+  mapfile -t family_pids < <(
+    {
+      echo "$root_pid"
+      collect_descendant_pids "$root_pid"
+    } | awk 'NF && !seen[$0]++'
+  )
+
+  for pid in "${family_pids[@]}"; do
+    pgid="$(process_group_for_pid "$pid")"
+    [[ -n "$pgid" ]] && process_groups+=("$pgid")
+  done
+  mapfile -t process_groups < <(printf '%s\n' "${process_groups[@]}" | awk 'NF && !seen[$0]++')
+
+  for pgid in "${process_groups[@]}"; do
+    kill -TERM -- "-$pgid" 2>/dev/null || true
+  done
+  sleep 2
+  for pgid in "${process_groups[@]}"; do
+    kill -KILL -- "-$pgid" 2>/dev/null || true
+  done
+
+  echo "$label stopped: $root_pid"
+}
+
+sweep_orphaned_ppd_llm_children() {
+  local pid
+  local ppid
+  while read -r pid ppid; do
+    [[ -z "$pid" ]] && continue
+    if [[ "$ppid" == "1" ]]; then
+      terminate_process_family "$pid" "Orphaned PP&D LLM child"
+    fi
+  done < <(
+    ps -eo pid=,ppid=,args= |
+      awk '/python3 -c/ && /PPD_LLM_PROMPT_FILE/ && /ipfs_datasets_py/ {print $1, $2}'
+  )
+}
+
 start() {
+  sweep_orphaned_ppd_llm_children
+
   if [[ -f "$PID_FILE" ]]; then
     local old_pid
     old_pid="$(cat "$PID_FILE" 2>/dev/null || true)"
@@ -46,12 +114,9 @@ stop() {
   fi
   local pid
   pid="$(cat "$PID_FILE")"
-  if ps -p "$pid" >/dev/null 2>&1; then
-    kill "$pid"
-    echo "PP&D daemon stopped: $pid"
-  else
-    echo "PP&D daemon not running: $pid"
-  fi
+  terminate_process_family "$pid" "PP&D daemon"
+  sweep_orphaned_ppd_llm_children
+  rm -f "$PID_FILE"
 }
 
 status() {
@@ -94,12 +159,8 @@ supervisor_stop() {
   fi
   local pid
   pid="$(cat "$SUPERVISOR_PID_FILE")"
-  if ps -p "$pid" >/dev/null 2>&1; then
-    kill "$pid"
-    echo "PP&D supervisor stopped: $pid"
-  else
-    echo "PP&D supervisor not running: $pid"
-  fi
+  terminate_process_family "$pid" "PP&D supervisor"
+  rm -f "$SUPERVISOR_PID_FILE"
 }
 
 supervisor_status() {

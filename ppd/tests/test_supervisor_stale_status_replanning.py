@@ -170,6 +170,109 @@ class SupervisorStaleStatusReplanningTest(unittest.TestCase):
         self.assertTrue(decision.should_restart_daemon)
         self.assertIn("durable LLM parse/runtime diagnostics", decision.reason)
 
+    def test_repeated_parse_diagnostics_for_blocked_task_do_not_interrupt_current_work(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+            daemon_dir = repo / "ppd" / "daemon"
+            daemon_dir.mkdir(parents=True)
+            current = (
+                "Task checkbox-242: Add processor-suite execution integration under ppd/crawler "
+                "proving public PP&D pages and PDFs flow through archive manifests."
+            )
+            blocked = (
+                "Task checkbox-241: Add a supervised live whole-site public crawl runner "
+                "under ppd/crawler."
+            )
+            (daemon_dir / "task-board.md").write_text(
+                f"- [!] {blocked}\n"
+                f"- [~] {current}\n"
+                "- [ ] Task checkbox-243: Add attended Playwright runner.\n",
+                encoding="utf-8",
+            )
+            (daemon_dir / "ppd-daemon.pid").write_text(str(os.getpid()), encoding="utf-8")
+            now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+            atomic_write_json(
+                daemon_dir / "status.json",
+                {
+                    "updated_at": now,
+                    "active_state": "calling_llm",
+                    "active_state_started_at": now,
+                    "active_target_task": current,
+                },
+            )
+            for _ in range(3):
+                append_jsonl(
+                    daemon_dir / "ppd-daemon.jsonl",
+                    {
+                        "stage": "before_validation",
+                        "diagnostic": {
+                            "failure_kind": "llm",
+                            "target_task": blocked,
+                            "errors": ["llm_router child timed out after 90 seconds"],
+                        },
+                    },
+                )
+
+            decision = diagnose(SupervisorConfig(repo_root=repo))
+
+        self.assertEqual("observe", decision.action)
+        self.assertNotIn("durable LLM parse/runtime diagnostics", decision.reason)
+
+    def test_archived_task_failures_do_not_trigger_current_board_self_heal(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+            daemon_dir = repo / "ppd" / "daemon"
+            daemon_dir.mkdir(parents=True)
+            current = "Task checkbox-242: Add processor-suite execution integration under ppd/crawler."
+            archived = "Task checkbox-215: Add generated blocked-cascade daemon-repair coverage."
+            completed = "Task checkbox-172: Add supervisor validation-failure classification coverage."
+            (daemon_dir / "task-board.md").write_text(
+                f"- [x] {completed}\n"
+                f"- [~] {current}\n"
+                "- [ ] Task checkbox-243: Add attended Playwright runner.\n",
+                encoding="utf-8",
+            )
+            (daemon_dir / "ppd-daemon.pid").write_text(str(os.getpid()), encoding="utf-8")
+            now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+            atomic_write_json(
+                daemon_dir / "status.json",
+                {
+                    "updated_at": now,
+                    "active_state": "calling_llm",
+                    "active_state_started_at": now,
+                    "active_target_task": current,
+                },
+            )
+            for _ in range(4):
+                append_jsonl(
+                    daemon_dir / "ppd-daemon.jsonl",
+                    {
+                        "stage": "before_validation",
+                        "diagnostic": {
+                            "failure_kind": "llm",
+                            "target_task": archived,
+                            "errors": ["llm_router child exited with code -15:"],
+                        },
+                    },
+                )
+            for _ in range(3):
+                append_jsonl(
+                    daemon_dir / "ppd-daemon.jsonl",
+                    {
+                        "stage": "before_validation",
+                        "diagnostic": {
+                            "failure_kind": "llm",
+                            "target_task": f"Task checkbox-999: {completed}",
+                            "errors": ["llm_router child exited with code -15:"],
+                        },
+                    },
+                )
+
+            decision = diagnose(SupervisorConfig(repo_root=repo))
+
+        self.assertEqual("observe", decision.action)
+        self.assertFalse(decision.should_invoke_codex)
+
     def test_repeated_parse_diagnostics_park_stuck_task_in_builtin_repair(self) -> None:
         board = (
             "- [~] Task checkbox-160: Add supervisor task-board de-duplication coverage.\n"

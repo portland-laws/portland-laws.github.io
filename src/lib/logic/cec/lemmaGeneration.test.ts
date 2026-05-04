@@ -4,6 +4,7 @@ import {
   CecLemmaCache,
   CecLemmaGenerator,
   CecLemmaType,
+  cecLemmaFromJSON,
   createCecLemmaGenerator,
   hashCecLemmaPattern,
   normalizeCecLemmaPattern,
@@ -114,11 +115,53 @@ describe('CEC lemma generation parity helpers', () => {
 
   it('finds structurally matching browser-native lemmas without Python services', () => {
     const generator = new CecLemmaGenerator(10);
-    const lemma = new CecLemma({ formula: implies(atom('p'), atom('q')), premises: [], rule: 'schema' });
+    const lemma = new CecLemma({
+      formula: implies(atom('p'), atom('q')),
+      premises: [],
+      rule: 'schema',
+    });
     generator.cache.add(lemma);
 
     expect(generator.cache.findByPattern(implies(atom('actor'), atom('duty')))).toEqual([lemma]);
     expect(generator.cache.findByPattern(implies(atom('actor'), atom('actor')))).toEqual([]);
+  });
+
+  it('rehydrates serialized lemmas with deterministic local hash validation', () => {
+    const formula = '(implies (subject_to ada code) (comply_with ada code))';
+    const premise = '(subject_to ada code)';
+    const lemma = cecLemmaFromJSON({
+      formula,
+      premises: [premise],
+      rule: 'python-parity-fixture',
+      lemma_type: CecLemmaType.REUSABLE,
+      usage_count: 3,
+      exact_hash: hashCecLemmaPattern(formula),
+      pattern_hash: hashCecLemmaPattern('(implies (subject_to ?v0 ?v1) (comply_with ?v0 ?v1))'),
+    });
+
+    expect(lemma.toJSON()).toMatchObject({
+      formula,
+      premises: [premise],
+      rule: 'python-parity-fixture',
+      lemma_type: CecLemmaType.REUSABLE,
+      usage_count: 3,
+    });
+
+    const generator = new CecLemmaGenerator(10);
+    const imported = generator.importLemmas([lemma.toJSON()]);
+    expect(generator.getApplicableLemmas(atom('goal'), [lemma.formula])).toEqual([imported[0]]);
+    expect(generator.getStatistics().discovery_count).toBe(1);
+  });
+
+  it('fails closed when serialized lemma hashes do not match browser-native parsing', () => {
+    expect(() =>
+      cecLemmaFromJSON({
+        formula: '(implies p q)',
+        premises: ['p'],
+        rule: 'bad-hash-fixture',
+        exact_hash: '00000000',
+      }),
+    ).toThrow('CEC lemma exact hash mismatch');
   });
 
   it('validates proof tree premise references before lemma discovery', () => {

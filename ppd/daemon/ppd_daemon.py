@@ -405,6 +405,14 @@ def is_retryable_failure(proposal: Proposal) -> bool:
     )
 
 
+def failure_block_threshold(proposal: Proposal, config: Config) -> int:
+    """Use a tighter stop condition for parser-invalid generated patches."""
+
+    if proposal.failure_kind == "syntax_preflight":
+        return min(config.max_task_failures_before_block, 2)
+    return config.max_task_failures_before_block
+
+
 def should_skip_validation_for_no_file_failure(proposal: Proposal) -> bool:
     """Avoid expensive validation when the LLM produced no candidate files."""
 
@@ -486,6 +494,16 @@ def task_failure_count(config: Config, task_label: str, *, kinds: Optional[set[s
         if kinds is None or kind in kinds:
             count += 1
     return count
+
+
+def should_block_task_before_llm(config: Config, task_label: str) -> bool:
+    """Stop retrying a task that already hit the parser-invalid patch threshold."""
+
+    syntax_probe = Proposal(failure_kind="syntax_preflight")
+    return (
+        task_failure_count(config, task_label, kinds={"syntax_preflight"})
+        >= failure_block_threshold(syntax_probe, config)
+    )
 
 
 def format_failure_context(failures: list[dict[str, Any]]) -> str:
@@ -1031,6 +1049,33 @@ class Daemon:
             return proposal
 
         self.write_status("selected_task", target_task=selected.label)
+        if (
+            self.config.apply
+            and selected.status in {"needed", "in-progress"}
+            and should_block_task_before_llm(self.config, selected.label)
+        ):
+            proposal = Proposal(
+                summary="Task blocked before LLM after repeated syntax-preflight failures.",
+                failure_kind="syntax_preflight",
+                target_task=selected.label,
+            )
+            proposal.dry_run = False
+            board = replace_task_mark(board, selected, "!")
+            tasks_after = parse_tasks(board)
+            board = update_generated_status(
+                board,
+                latest={
+                    "target_task": selected.label,
+                    "result": "syntax_preflight_blocked",
+                    "summary": proposal.summary,
+                },
+                tasks=tasks_after,
+            )
+            board_path.write_text(board, encoding="utf-8")
+            self.write_progress([proposal])
+            append_jsonl(self.config.resolve(self.config.result_log), {"created_at": utc_now(), "proposal": proposal.to_dict()})
+            self.write_status("cycle_completed", valid=False, artifact=proposal.to_dict())
+            return proposal
         if selected.status == "needed" and self.config.apply:
             board = replace_task_mark(board, selected, "~")
             board_path.write_text(board, encoding="utf-8")
@@ -1067,7 +1112,7 @@ class Daemon:
                     selected.label,
                     kinds={"validation", "preflight", "no_change", "syntax_preflight"},
                 )
-                mark = "!" if prior_failures + 1 >= self.config.max_task_failures_before_block else " "
+                mark = "!" if prior_failures + 1 >= failure_block_threshold(proposal, self.config) else " "
                 board = replace_task_mark(board, selected, mark)
             elif selected.status in {"needed", "in-progress"}:
                 board = replace_task_mark(board, selected, " ")
