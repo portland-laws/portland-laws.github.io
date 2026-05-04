@@ -378,6 +378,19 @@ Potentially consequential and financial actions require:
 - explicit user instruction for that exact action.
 - a summarized action preview.
 - source-backed explanation of the consequence.
+
+### PP&D Surface Registry
+
+The implementation should keep one side-effect-free registry that maps every PP&D process surface to its executor, automation mode, guardrails, and completion rule. The current registry lives under `ppd/surfaces/` and covers:
+
+- public guidance, public status/search references, processor archive handoff, requirement/formal-logic export, and user document-store fact matching.
+- local PDF draft filling and draft previews.
+- DevHub login handoff, reversible draft field reads/fills/saves, messages/checksheets, uploads, submissions/certifications/cancellations, payment review, inspection scheduling, and security/account handoffs.
+- completion evidence and audit closeout.
+
+Agents should consult the registry before touching any PP&D surface. Public and local draft surfaces may advance autonomously only within their read-only or draft-only guardrails. DevHub draft surfaces require an attended user, screen review, source evidence IDs, selector confidence, preview/dry-run evidence, an audit event, rollback plan, and proof that private artifacts were not persisted. Official uploads, submissions, certifications, cancellations, and inspections require exact action confirmation plus post-action hardening and user outcome review. Payment-detail entry, final payment execution, MFA, CAPTCHA, account creation, and password recovery remain manual handoffs.
+
+No process should be marked complete merely because an agent clicked, filled, uploaded, submitted, scheduled, or opened payment review. Completion requires source-backed guardrails, attended attempts for live surfaces, post-action hardening, user outcome review, and completion evidence IDs.
 - confirmation checkpoint.
 - durable audit event.
 

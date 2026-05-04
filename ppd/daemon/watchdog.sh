@@ -52,21 +52,72 @@ append_event() {
   } >> "$LIFECYCLE_LOG"
 }
 
+collect_descendant_pids() {
+  local parent="$1"
+  local child
+  while IFS= read -r child; do
+    [[ -z "$child" ]] && continue
+    echo "$child"
+    collect_descendant_pids "$child"
+  done < <(pgrep -P "$parent" 2>/dev/null || true)
+}
+
+process_group_for_pid() {
+  local pid="$1"
+  ps -o pgid= -p "$pid" 2>/dev/null | tr -d '[:space:]'
+}
+
+terminate_process_family() {
+  local root_pid="$1"
+  local -a family_pids=()
+  local -a process_groups=()
+  local pid
+  local pgid
+
+  [[ -z "$root_pid" ]] && return 0
+  if ! kill -0 "$root_pid" 2>/dev/null; then
+    return 0
+  fi
+
+  mapfile -t family_pids < <(
+    {
+      echo "$root_pid"
+      collect_descendant_pids "$root_pid"
+    } | awk 'NF && !seen[$0]++'
+  )
+
+  for pid in "${family_pids[@]}"; do
+    pgid="$(process_group_for_pid "$pid")"
+    [[ -n "$pgid" ]] && process_groups+=("$pgid")
+  done
+  mapfile -t process_groups < <(printf '%s\n' "${process_groups[@]}" | awk 'NF && !seen[$0]++')
+
+  for pgid in "${process_groups[@]}"; do
+    kill -TERM -- "-$pgid" 2>/dev/null || true
+  done
+  sleep 2
+  for pgid in "${process_groups[@]}"; do
+    kill -KILL -- "-$pgid" 2>/dev/null || true
+  done
+}
+
 terminate_child() {
   local pid="${child_pid:-}"
   [[ -z "$pid" ]] && return 0
-  if ! kill -0 "$pid" 2>/dev/null; then
-    return 0
-  fi
-  kill -TERM "$pid" 2>/dev/null || true
-  for _ in 1 2 3 4 5; do
-    if ! kill -0 "$pid" 2>/dev/null; then
-      break
-    fi
-    sleep 1
-  done
-  kill -KILL "$pid" 2>/dev/null || true
+  terminate_process_family "$pid"
   wait "$pid" 2>/dev/null || true
+}
+
+cleanup_stale_child_on_start() {
+  local stale_pid=""
+  if [[ -f "$CHILD_PID_FILE" ]]; then
+    stale_pid="$(cat "$CHILD_PID_FILE" 2>/dev/null || true)"
+  fi
+  if [[ -n "$stale_pid" ]] && kill -0 "$stale_pid" 2>/dev/null; then
+    append_event "stale_child_cleanup" "" "" "$stale_pid" 0 "" "cleaning stale child from previous watchdog"
+    terminate_process_family "$stale_pid"
+  fi
+  rm -f "$CHILD_PID_FILE"
 }
 
 cleanup() {
@@ -89,12 +140,17 @@ trap 'handle_signal INT' INT
 trap 'handle_signal HUP' HUP
 
 rm -f "$STOP_FILE"
+cleanup_stale_child_on_start
 echo "$$" > "$PID_FILE"
 append_event "watchdog_start" "" "" "$$" 0 "" "watchdog started"
 
 while true; do
   started_at="$(utc_now)"
-  "$@" &
+  if command -v setsid >/dev/null 2>&1; then
+    setsid "$@" &
+  else
+    "$@" &
+  fi
   child_pid="$!"
   echo "$child_pid" > "$CHILD_PID_FILE"
   append_event "child_start" "$started_at" "" "$child_pid" 0 "" "child process started"

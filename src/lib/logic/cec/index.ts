@@ -54,3 +54,4 @@ export * from './strategies';
 export * from './syntaxTree';
 export * from './tptpUtils';
 export * from './vampireAdapter';
+export * from './z3Adapter';

@@ -18,11 +18,11 @@ Expected local runtime files include:
 
 These runtime files are operational evidence, not source fixtures. They must not contain private DevHub credentials, authentication state, trace archives, downloaded documents, raw crawl output, payment data, or user-specific permit data.
 
-## Temporary Worktrees
+## Ephemeral Worktrees
 
-Candidate daemon proposals are validated in isolated temporary PP&D worktrees under `ppd/daemon/worktrees/`. The daemon copies the PP&D workspace and plan document into the temporary tree, materializes candidate file replacements there, runs syntax preflight and full validation there, and promotes files back to the real repository only after validation passes.
+Candidate daemon proposals are validated in isolated ephemeral PP&D worktrees under `ppd/daemon/worktrees/`. The daemon copies the PP&D workspace and plan document into the ephemeral tree, exposes required read-only processor-suite metadata, materializes candidate file replacements there, runs syntax preflight and full validation there, and promotes files back to the real repository only after validation passes.
 
-Accepted-work and failed-patch artifacts may still include compact diff files for audit, but those diffs are not the application mechanism. Failed candidate worktrees are removed after diagnostics are persisted. On later starts, the daemon and supervisor sweep stale marked worktrees left by interrupted runs.
+Accepted-work and failed-work artifacts now persist ephemeral workspace manifests plus compact audit diffs. They do not apply `.patch` files, and new daemon rounds should not create `.patch` artifacts. Failed candidate worktrees are removed after diagnostics are persisted. On later starts, the daemon and supervisor sweep stale marked worktrees left by interrupted runs.
 
 When full validation fails after syntax preflight passes, the controlled daemon start path enables one repair pass inside the same temporary worktree. The repair pass must return complete file replacements, rerun syntax preflight and validation in the isolated tree, and promote nothing unless the repaired candidate passes.
 
@@ -64,7 +64,7 @@ The structured status file is `ppd/daemon/status.json`. It is intended for quick
 
 ## Supervisor
 
-The supervisor watches the daemon heartbeat, task-board blockage, and repeated failure streaks. It can restart the daemon when the worker is down, and it can invoke Codex for a narrow, validated patch to `ppd/daemon/` or daemon tests when the worker is stuck or its own programming needs improvement.
+The supervisor watches the daemon heartbeat, task-board blockage, lifecycle signals, and repeated failure streaks. It can restart the daemon when the worker is down, and it can invoke Codex for a narrow, validated file-replacement proposal to `ppd/daemon/` or daemon tests when the worker is stuck or its own programming needs improvement.
 
 Run one supervised repair cycle:
 
@@ -125,11 +125,11 @@ The repair goal should be narrow:
 
 For the next worker attempt after syntax rollback, the prompt should steer toward the smallest syntactically valid change that advances the task. If the failed proposal touched three or more files, the retry should usually touch fewer files. If the failure was a Python parser error, the worker should avoid clever inline comprehensions, generated code strings, or language-mixed syntax and should favor plain Python functions with explicit conditionals. If the failure was a TypeScript parser error, the worker should avoid broad contract rewrites and first add a minimal typecheckable fixture or test harness.
 
-A syntax rollback should not be treated the same as an assertion failure. Assertion failures can indicate a contract mismatch. Syntax and compile failures indicate the daemon accepted an invalid proposal shape too late, so repair guidance should push validation earlier and keep the next generated patch smaller.
+A syntax rollback should not be treated the same as an assertion failure. Assertion failures can indicate a contract mismatch. Syntax and compile failures indicate the daemon accepted an invalid proposal shape too late, so repair guidance should push validation earlier and keep the next generated file replacements smaller.
 
 ## Failed Work
 
-Failed patches are recorded under `ppd/daemon/failed-patches/` when validation fails or the daemon cannot safely apply a generated change. Failed records should classify the failure and preserve enough context to diagnose it without storing private or raw crawl artifacts.
+Failed ephemeral workspaces are recorded under `ppd/daemon/failed-patches/` when validation fails or the daemon cannot safely apply a generated change. The historical directory name is retained for compatibility, but new artifacts should be `.json`, `.workspace.json`, `.diff.txt`, and `.stat.txt`, not `.patch`. Failed records should classify the failure and preserve enough context to diagnose it without storing private or raw crawl artifacts.
 
 A blocked task should be marked explicitly rather than repeatedly retried without new evidence. If the failed-patch manifest shows parser or compile errors for the same task twice in a row, supervisor repair should happen before another worker attempt on that task.
 
@@ -155,8 +155,8 @@ Before restarting after a stop, failure, or interrupted run:
 
 1. Check `ppd/daemon/status.json` for the last task and result.
 2. Check `ppd/daemon/progress.json` for the last phase and heartbeat.
-3. Check `ppd/daemon/ppd-daemon.log` for validation or patch errors.
-4. Confirm any failed patch under `ppd/daemon/failed-patches/` does not contain private data.
+3. Check `ppd/daemon/ppd-daemon.log` for validation or file-replacement errors.
+4. Confirm any failed workspace artifact under `ppd/daemon/failed-patches/` does not contain private data.
 5. Run `python3 ppd/daemon/ppd_daemon.py --self-test` before starting unattended operation.
 6. If the last two rollbacks were syntax or compile failures, run a supervisor repair cycle before restarting unattended worker attempts.
 

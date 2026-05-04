@@ -510,7 +510,7 @@ def task_failure_count(config: Config, task_label: str, *, kinds: Optional[set[s
 
 
 def should_block_task_before_llm(config: Config, task_label: str) -> bool:
-    """Stop retrying a task that already hit the parser-invalid patch threshold."""
+    """Stop retrying a task that already hit the parser-invalid proposal threshold."""
 
     syntax_probe = Proposal(failure_kind="syntax_preflight")
     return (
@@ -691,7 +691,7 @@ def worktree_marker_payload(*, state: str, source_root: Path) -> dict[str, Any]:
         "schema_version": 1,
         "source_root": source_root.as_posix(),
         "state": state,
-        "transport": "temporary_worktree",
+        "transport": "ephemeral_worktree",
     }
 
 
@@ -802,7 +802,7 @@ def worktree_config(config: Config, worktree: Path) -> Config:
     )
 
 
-def proposal_patch_from_worktree(config: Config, worktree: Path, changed: Iterable[str]) -> str:
+def proposal_diff_from_worktree(config: Config, worktree: Path, changed: Iterable[str]) -> str:
     parts: list[str] = []
     for rel in changed:
         source = config.resolve(Path(rel))
@@ -811,6 +811,29 @@ def proposal_patch_from_worktree(config: Config, worktree: Path, changed: Iterab
         after = candidate.read_text(encoding="utf-8") if candidate.exists() else ""
         parts.append(diff_for_file(rel, before, after))
     return "".join(parts)
+
+
+def workspace_artifact_payload(
+    proposal: Proposal,
+    *,
+    transport: str,
+    promoted: bool,
+    reason: str = "",
+) -> dict[str, Any]:
+    return {
+        "artifact_kind": "ephemeral-workspace",
+        "schema_version": 1,
+        "created_at": utc_now(),
+        "transport": transport,
+        "promoted_to_main_worktree": promoted,
+        "reason": reason,
+        "target_task": proposal.target_task,
+        "summary": proposal.summary,
+        "changed_files": list(proposal.changed_files),
+        "validation_passed": bool(proposal.validation_results)
+        and all(result.ok for result in proposal.validation_results),
+        "validation_commands": [list(result.command) for result in proposal.validation_results],
+    }
 
 
 def materialize_proposal_in_worktree(proposal: Proposal, config: Config, worktree: Path) -> list[str]:
@@ -938,20 +961,20 @@ def attempt_validation_repair_pass(
     if repair_preflight_errors:
         proposal.errors.extend("Validation repair pass syntax preflight failed: " + error for error in repair_preflight_errors)
         proposal.failure_kind = repair_failure_kind or "syntax_preflight"
-        return False, changed, proposal_patch_from_worktree(config, worktree, changed)
+        return False, changed, proposal_diff_from_worktree(config, worktree, changed)
 
     proposal.validation_results = run_validation(worktree_config(config, worktree))
     if not all(result.ok for result in proposal.validation_results):
         proposal.errors.append("Validation repair pass failed; candidate worktree was not promoted.")
         proposal.failure_kind = "validation"
-        return False, changed, proposal_patch_from_worktree(config, worktree, changed)
+        return False, changed, proposal_diff_from_worktree(config, worktree, changed)
 
     proposal.summary = repair.summary or proposal.summary
     proposal.impact = repair.impact or proposal.impact
     proposal.files = proposal_files_from_worktree(worktree, changed)
     proposal.changed_files = changed
     proposal.errors = []
-    return True, changed, proposal_patch_from_worktree(config, worktree, changed)
+    return True, changed, proposal_diff_from_worktree(config, worktree, changed)
 
 
 def apply_files_with_validation(proposal: Proposal, config: Config) -> Proposal:
@@ -961,7 +984,7 @@ def apply_files_with_validation(proposal: Proposal, config: Config) -> Proposal:
     if preflight_errors:
         proposal.errors.extend(preflight_errors)
         proposal.failure_kind = "preflight"
-        persist_failed_work(proposal, config, patch="", reason="preflight")
+        persist_failed_work(proposal, config, diff_text="", reason="preflight")
         return proposal
 
     with temporary_validation_worktree(config) as worktree:
@@ -971,10 +994,10 @@ def apply_files_with_validation(proposal: Proposal, config: Config) -> Proposal:
             proposal.errors.append("Proposal made no content changes.")
             proposal.failure_kind = "no_change"
             proposal.validation_results = run_validation(worktree_config(config, worktree))
-            persist_failed_work(proposal, config, patch="", reason="no_change", transport="temporary_worktree")
+            persist_failed_work(proposal, config, diff_text="", reason="no_change", transport="ephemeral_worktree")
             return proposal
 
-        patch_text = proposal_patch_from_worktree(config, worktree, changed)
+        diff_text = proposal_diff_from_worktree(config, worktree, changed)
         proposal.validation_results, preflight_errors, failure_kind = validation_results_from_syntax_preflight(
             worktree,
             changed,
@@ -983,34 +1006,35 @@ def apply_files_with_validation(proposal: Proposal, config: Config) -> Proposal:
         if preflight_errors:
             proposal.errors.extend(preflight_errors)
             proposal.failure_kind = failure_kind
-            persist_failed_work(proposal, config, patch=patch_text, reason="syntax_preflight", transport="temporary_worktree")
+            persist_failed_work(proposal, config, diff_text=diff_text, reason="syntax_preflight", transport="ephemeral_worktree")
             return proposal
 
         proposal.validation_results = run_validation(worktree_config(config, worktree))
         if not all(result.ok for result in proposal.validation_results):
-            repaired, changed, repair_patch = attempt_validation_repair_pass(proposal, config, worktree)
-            patch_text = repair_patch or proposal_patch_from_worktree(config, worktree, changed)
+            repaired, changed, repair_diff = attempt_validation_repair_pass(proposal, config, worktree)
+            diff_text = repair_diff or proposal_diff_from_worktree(config, worktree, changed)
             proposal.changed_files = changed
             if not repaired:
                 if not proposal.failure_kind:
                     proposal.errors.append("Validation failed in temporary worktree; candidate was not promoted.")
                     proposal.failure_kind = "validation"
-                persist_failed_work(proposal, config, patch=patch_text, reason=proposal.failure_kind or "validation", transport="temporary_worktree")
+                persist_failed_work(proposal, config, diff_text=diff_text, reason=proposal.failure_kind or "validation", transport="ephemeral_worktree")
                 return proposal
 
         promote_worktree_files(config, worktree, proposal.changed_files)
         proposal.applied = True
-        persist_accepted_work(proposal, config, patch=patch_text, transport="temporary_worktree")
+        persist_accepted_work(proposal, config, diff_text=diff_text, transport="ephemeral_worktree")
     return proposal
 
 
-def persist_accepted_work(proposal: Proposal, config: Config, *, patch: str, transport: str = "direct") -> None:
+def persist_accepted_work(proposal: Proposal, config: Config, *, diff_text: str, transport: str = "direct") -> None:
     config.resolve(config.accepted_dir).mkdir(parents=True, exist_ok=True)
     slug = re.sub(r"[^A-Za-z0-9._-]+", "-", proposal.summary.lower()).strip("-")[:80] or "accepted-work"
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     base = config.resolve(config.accepted_dir) / f"{stamp}-{slug}"
     manifest = {
         "created_at": utc_now(),
+        "artifact_kind": "accepted_ephemeral_workspace",
         "target_task": proposal.target_task,
         "summary": proposal.summary,
         "impact": proposal.impact,
@@ -1018,8 +1042,17 @@ def persist_accepted_work(proposal: Proposal, config: Config, *, patch: str, tra
         "transport": transport,
         "validation_results": [result.compact() for result in proposal.validation_results],
     }
+    workspace_artifact = workspace_artifact_payload(
+        proposal,
+        transport=transport,
+        promoted=True,
+    )
     base.with_suffix(".json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    base.with_suffix(".patch").write_text(patch, encoding="utf-8")
+    base.with_suffix(".workspace.json").write_text(
+        json.dumps(workspace_artifact, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    base.with_suffix(".diff.txt").write_text(diff_text, encoding="utf-8")
     base.with_suffix(".stat.txt").write_text("\n".join(proposal.changed_files) + "\n", encoding="utf-8")
     append_accepted_work_ledger(proposal, config, base=base, transport=transport)
 
@@ -1034,7 +1067,8 @@ def append_accepted_work_ledger(proposal: Proposal, config: Config, *, base: Pat
         transport=transport,
         artifacts=AcceptedWorkArtifacts(
             manifest=base.with_suffix(".json"),
-            patch=base.with_suffix(".patch"),
+            workspace=base.with_suffix(".workspace.json"),
+            diff=base.with_suffix(".diff.txt"),
             stat=base.with_suffix(".stat.txt"),
         ),
         validation_results=[result.compact() for result in proposal.validation_results],
@@ -1042,13 +1076,14 @@ def append_accepted_work_ledger(proposal: Proposal, config: Config, *, base: Pat
     append_accepted_work_jsonl(config.resolve(config.accepted_dir), entry)
 
 
-def persist_failed_work(proposal: Proposal, config: Config, *, patch: str, reason: str, transport: str = "direct") -> None:
+def persist_failed_work(proposal: Proposal, config: Config, *, diff_text: str, reason: str, transport: str = "direct") -> None:
     config.resolve(config.failed_dir).mkdir(parents=True, exist_ok=True)
     slug = re.sub(r"[^A-Za-z0-9._-]+", "-", (proposal.summary or reason).lower()).strip("-")[:80] or "failed-work"
     stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
     base = config.resolve(config.failed_dir) / f"{stamp}-{reason}-{slug}"
     manifest = {
         "created_at": utc_now(),
+        "artifact_kind": "failed_ephemeral_workspace",
         "reason": reason,
         "target_task": proposal.target_task,
         "summary": proposal.summary,
@@ -1059,8 +1094,18 @@ def persist_failed_work(proposal: Proposal, config: Config, *, patch: str, reaso
         "transport": transport,
         "validation_results": [result.compact() for result in proposal.validation_results],
     }
+    workspace_artifact = workspace_artifact_payload(
+        proposal,
+        transport=transport,
+        promoted=False,
+        reason=reason,
+    )
     base.with_suffix(".json").write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-    base.with_suffix(".patch").write_text(patch, encoding="utf-8")
+    base.with_suffix(".workspace.json").write_text(
+        json.dumps(workspace_artifact, indent=2, sort_keys=True) + "\n",
+        encoding="utf-8",
+    )
+    base.with_suffix(".diff.txt").write_text(diff_text, encoding="utf-8")
     base.with_suffix(".stat.txt").write_text("\n".join(proposal.changed_files) + "\n", encoding="utf-8")
 
 
@@ -1100,7 +1145,7 @@ Current task:
 {selected.label}
 
 Prompt mode:
-{"Compact retry mode: repeated LLM parse/runtime failures were recorded for this task. Return the smallest useful JSON patch and avoid broad context." if compact_prompt else "Full context mode."}
+{"Compact retry mode: repeated LLM parse/runtime failures were recorded for this task. Return the smallest useful JSON file replacements and avoid broad context." if compact_prompt else "Full context mode."}
 
 Hard constraints:
 - Return ONLY one JSON object; no markdown fences and no prose outside JSON.
@@ -1116,7 +1161,7 @@ Hard constraints:
 - Put committed PP&D fixtures under `ppd/tests/fixtures/...`. Tests in `ppd/tests/` should derive fixture paths from their own file location, for example `Path(__file__).parent / "fixtures" / ...`, so they do not accidentally point at repository-root `tests/fixtures`.
 - Do not mark task-board checkboxes complete in the same proposal unless the implementation, fixtures, and validation code for the selected task are all included. The daemon will mark the selected task complete after validation passes.
 - Do not automate CAPTCHA, MFA, account creation, payment, submission, certification, cancellation, or upload actions.
-- If compact retry mode is active, do not inspect or request additional context. Return the smallest useful JSON patch for the current task.
+- If compact retry mode is active, do not inspect or request additional context. Return the smallest useful JSON file replacements for the current task.
 
 JSON schema:
 {{

@@ -1,23 +1,23 @@
 {
-  "createdAt": "2026-05-04T04:18:33.979545Z",
+  "createdAt": "2026-05-04T04:39:34.899825Z",
   "decision": {
     "action": "reconcile_dead_worker_with_recent_failures_and_restart",
-    "reason": "daemon process is not running but status is still calling_llm on Task checkbox-284: Add generated blocked-cascade daemon-repair coverage for tranche 10 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates., and 2 recent failure diagnostic(s) already exist for that target; park the task before restart instead of resetting it into another immediate retry",
+    "reason": "daemon process is not running but status is still calling_llm on Task checkbox-292: Add generated blocked-cascade daemon-repair coverage for tranche 12 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates., and 2 recent failure diagnostic(s) already exist for that target; park the task before restart instead of resetting it into another immediate retry",
     "severity": "warning"
   },
   "parkedStalledTaskLabels": [
-    "Add generated blocked-cascade daemon-repair coverage for tranche 10 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates."
+    "Add generated blocked-cascade daemon-repair coverage for tranche 12 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates."
   ],
   "repairKind": "stalled_worker_task_parked",
   "replenishedExecutionTaskLabels": [],
   "schemaVersion": 1,
   "statusBeforeRepair": {
     "active_state": "calling_llm",
-    "active_state_started_at": "2026-05-04T04:18:22.840471Z",
-    "active_target_task": "Task checkbox-284: Add generated blocked-cascade daemon-repair coverage for tranche 10 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.",
-    "pid": 1308246,
+    "active_state_started_at": "2026-05-04T04:39:19.465700Z",
+    "active_target_task": "Task checkbox-292: Add generated blocked-cascade daemon-repair coverage for tranche 12 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.",
+    "pid": 1398399,
     "state": "calling_llm",
-    "target_task": "Task checkbox-284: Add generated blocked-cascade daemon-repair coverage for tranche 10 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.",
-    "updated_at": "2026-05-04T04:18:22.840488Z"
+    "target_task": "Task checkbox-292: Add generated blocked-cascade daemon-repair coverage for tranche 12 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.",
+    "updated_at": "2026-05-04T04:39:19.465710Z"
   }
 }

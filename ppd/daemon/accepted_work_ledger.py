@@ -1,8 +1,7 @@
 """Append-only accepted-work ledger support for the PP&D daemon.
 
-The daemon already writes per-round accepted artifacts. This module keeps the
-cumulative ledger logic small, deterministic, and easy to test before wiring it
-into a daemon cycle.
+The daemon writes per-round ephemeral-workspace artifacts. This module keeps
+the cumulative ledger logic small, deterministic, and easy to test.
 """
 
 from __future__ import annotations
@@ -15,13 +14,14 @@ from typing import Any, Iterable
 
 
 LEDGER_FILENAME = "accepted-work.jsonl"
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 
 @dataclass(frozen=True)
 class AcceptedWorkArtifacts:
     manifest: Path
-    patch: Path
+    workspace: Path
+    diff: Path
     stat: Path
 
 
@@ -82,7 +82,8 @@ def build_accepted_work_ledger_entry(
         "transport": str(transport),
         "artifacts": {
             "manifest": _as_repo_path(artifacts.manifest, repo_root),
-            "patch": _as_repo_path(artifacts.patch, repo_root),
+            "workspace": _as_repo_path(artifacts.workspace, repo_root),
+            "diff": _as_repo_path(artifacts.diff, repo_root),
             "stat": _as_repo_path(artifacts.stat, repo_root),
         },
         "validation_results": compact_results,

@@ -101,7 +101,7 @@ class DaemonCompactPromptRetryTest(unittest.TestCase):
         self.assertIn("Return ONLY one JSON object", prompt)
         self.assertIn("no prose outside JSON", prompt)
         self.assertIn("complete file replacements", prompt)
-        self.assertIn("smallest useful JSON patch", prompt)
+        self.assertIn("smallest useful JSON file replacements", prompt)
         self.assertIn("one fixture and one focused test", prompt)
 
     def test_compact_prompt_respects_named_budget_before_llm_router_child(self) -> None:

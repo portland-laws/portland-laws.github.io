@@ -60,10 +60,18 @@ class DaemonTemporaryWorktreeTransportTest(unittest.TestCase):
             self.assertFalse(target.exists())
             worktree_root = repo / "ppd" / "daemon" / "worktrees"
             self.assertEqual([], list(worktree_root.iterdir()) if worktree_root.exists() else [])
-            manifests = list((repo / "ppd" / "daemon" / "failed-patches").glob("*validation*.json"))
+            manifests = [
+                path
+                for path in (repo / "ppd" / "daemon" / "failed-patches").glob("*validation*.json")
+                if not path.name.endswith(".workspace.json")
+            ]
             self.assertEqual(1, len(manifests))
             manifest = json.loads(manifests[0].read_text(encoding="utf-8"))
-            self.assertEqual("temporary_worktree", manifest["transport"])
+            self.assertEqual("ephemeral_worktree", manifest["transport"])
+            self.assertEqual("failed_ephemeral_workspace", manifest["artifact_kind"])
+            self.assertTrue(manifests[0].with_suffix(".workspace.json").exists())
+            self.assertTrue(manifests[0].with_suffix(".diff.txt").exists())
+            self.assertFalse(manifests[0].with_suffix(".patch").exists())
 
     def test_validation_repair_pass_promotes_repaired_candidate_only_after_tests_pass(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
@@ -113,10 +121,18 @@ class DaemonTemporaryWorktreeTransportTest(unittest.TestCase):
             self.assertEqual("Repair candidate value", result.summary)
             self.assertEqual("VALUE = 2\n", target.read_text(encoding="utf-8"))
             self.assertEqual(["ppd/generated/candidate.py"], result.changed_files)
-            manifests = list((repo / "ppd" / "daemon" / "accepted-work").glob("*.json"))
+            manifests = [
+                path
+                for path in (repo / "ppd" / "daemon" / "accepted-work").glob("*.json")
+                if not path.name.endswith(".workspace.json")
+            ]
             self.assertEqual(1, len(manifests))
             manifest = json.loads(manifests[0].read_text(encoding="utf-8"))
-            self.assertEqual("temporary_worktree", manifest["transport"])
+            self.assertEqual("ephemeral_worktree", manifest["transport"])
+            self.assertEqual("accepted_ephemeral_workspace", manifest["artifact_kind"])
+            self.assertTrue(manifests[0].with_suffix(".workspace.json").exists())
+            self.assertTrue(manifests[0].with_suffix(".diff.txt").exists())
+            self.assertFalse(manifests[0].with_suffix(".patch").exists())
 
     def test_stale_worktree_cleanup_removes_interrupted_validation_trees(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:

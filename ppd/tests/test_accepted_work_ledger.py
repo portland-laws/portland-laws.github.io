@@ -16,7 +16,8 @@ class AcceptedWorkLedgerTests(unittest.TestCase):
             repo_root = Path(tmp)
             artifacts = AcceptedWorkArtifacts(
                 manifest=repo_root / "ppd/daemon/accepted-work/round.json",
-                patch=repo_root / "ppd/daemon/accepted-work/round.patch",
+                workspace=repo_root / "ppd/daemon/accepted-work/round.workspace.json",
+                diff=repo_root / "ppd/daemon/accepted-work/round.diff.txt",
                 stat=repo_root / "ppd/daemon/accepted-work/round.stat.txt",
             )
             entry = build_accepted_work_ledger_entry(
@@ -25,17 +26,20 @@ class AcceptedWorkLedgerTests(unittest.TestCase):
                 summary="Add accepted ledger",
                 impact="Makes successful daemon rounds auditable.",
                 changed_files=["ppd/tests/example.py", "ppd/daemon/example.py"],
-                transport="temporary_worktree",
+                transport="ephemeral_worktree",
                 artifacts=artifacts,
                 validation_results=[{"command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"], "returncode": 0, "stdout": "raw output ignored"}],
                 created_at="2026-05-01T00:00:00Z",
             )
 
-        self.assertEqual(entry["schema_version"], 1)
+        self.assertEqual(entry["schema_version"], 2)
         self.assertTrue(entry["validation_passed"])
-        self.assertEqual(entry["transport"], "temporary_worktree")
+        self.assertEqual(entry["transport"], "ephemeral_worktree")
         self.assertEqual(entry["changed_files"], ["ppd/daemon/example.py", "ppd/tests/example.py"])
         self.assertEqual(entry["artifacts"]["manifest"], "ppd/daemon/accepted-work/round.json")
+        self.assertEqual(entry["artifacts"]["workspace"], "ppd/daemon/accepted-work/round.workspace.json")
+        self.assertEqual(entry["artifacts"]["diff"], "ppd/daemon/accepted-work/round.diff.txt")
+        self.assertNotIn("patch", entry["artifacts"])
         self.assertNotIn("stdout", entry["validation_results"][0])
 
     def test_appends_jsonl_entries(self):

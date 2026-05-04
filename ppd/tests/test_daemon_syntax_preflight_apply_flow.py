@@ -47,7 +47,11 @@ class DaemonSyntaxPreflightApplyFlowTests(unittest.TestCase):
             self.assertEqual(len(result.validation_results), 1)
             self.assertEqual(result.validation_results[0].command[:3], ("python3", "-m", "py_compile"))
             self.assertIn("Syntax preflight failed", result.errors[0])
-            failed_manifests = list((repo_root / "ppd/daemon/failed-patches").glob("*syntax_preflight*.json"))
+            failed_manifests = [
+                path
+                for path in (repo_root / "ppd/daemon/failed-patches").glob("*syntax_preflight*.json")
+                if not path.name.endswith(".workspace.json")
+            ]
             self.assertEqual(len(failed_manifests), 1)
 
 

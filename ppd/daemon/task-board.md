@@ -94,12 +94,12 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-04T04:18:20.823953Z
+Last updated: 2026-05-04T04:41:16.334338Z
 
-- Latest target: `Task checkbox-284: Add generated blocked-cascade daemon-repair coverage for tranche 10 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.`
+- Latest target: `Task checkbox-293: Add generated blocked-cascade daemon-repair coverage for tranche 12 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.`
 - Latest result: `llm`
 - Latest summary: LLM proposal failed.
-- Counts: `{"blocked": 40, "complete": 73, "in_progress": 0, "needed": 2}`
+- Counts: `{"blocked": 49, "complete": 73, "in_progress": 0, "needed": 1}`
 
 <!-- ppd-daemon-task-board:end -->
 ## Built-In Supervisor Repair Notes
@@ -391,7 +391,7 @@ Last updated: 2026-05-04T04:18:20.823953Z
 - [!] Task checkbox-282: Add generated blocked-cascade daemon-repair coverage for tranche 10 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
 - [!] Task checkbox-283: Add generated blocked-cascade daemon-repair coverage for tranche 10 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
 - [!] Task checkbox-284: Add generated blocked-cascade daemon-repair coverage for tranche 10 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
-- [~] Task checkbox-285: Add generated blocked-cascade daemon-repair coverage for tranche 10 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [!] Task checkbox-285: Add generated blocked-cascade daemon-repair coverage for tranche 10 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
 ## Built-In Supervisor Repair Notes
 
 - Appended deterministic blocked-cascade recovery tasks because all selectable work was blocked. The supervisor avoided the LLM repair path and created daemon-repair tasks that can run independently before blocked domain work is retried.
@@ -404,4 +404,50 @@ Last updated: 2026-05-04T04:18:20.823953Z
 ## Built-In Supervisor Repair Notes
 
 - Parked stalled worker task `Add generated blocked-cascade daemon-repair coverage for tranche 10 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` after it exceeded the active-state timeout. The supervisor restarted the daemon on the next independent selectable task instead of reselecting the same stalled work.
+## Built-In Supervisor Repair Notes
 
+- Parked stalled worker task `Add generated blocked-cascade daemon-repair coverage for tranche 10 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` after it exceeded the active-state timeout. The supervisor restarted the daemon on the next independent selectable task instead of reselecting the same stalled work.
+
+## Built-In Blocked Cascade Recovery Tranche 11
+
+- [!] Task checkbox-286: Add generated blocked-cascade daemon-repair coverage for tranche 11 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [!] Task checkbox-287: Add generated blocked-cascade daemon-repair coverage for tranche 11 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [!] Task checkbox-288: Add generated blocked-cascade daemon-repair coverage for tranche 11 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [!] Task checkbox-289: Add generated blocked-cascade daemon-repair coverage for tranche 11 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+## Built-In Supervisor Repair Notes
+
+- Appended deterministic blocked-cascade recovery tasks because all selectable work was blocked. The supervisor avoided the LLM repair path and created daemon-repair tasks that can run independently before blocked domain work is retried.
+## Built-In Supervisor Repair Notes
+
+- Parked repeated LLM parse/runtime loop for `Add generated blocked-cascade daemon-repair coverage for tranche 11 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
+## Built-In Supervisor Repair Notes
+
+- Parked stalled worker task `Add generated blocked-cascade daemon-repair coverage for tranche 11 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` after it exceeded the active-state timeout. The supervisor restarted the daemon on the next independent selectable task instead of reselecting the same stalled work.
+## Built-In Supervisor Repair Notes
+
+- Parked stalled worker task `Add generated blocked-cascade daemon-repair coverage for tranche 11 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` after it exceeded the active-state timeout. The supervisor restarted the daemon on the next independent selectable task instead of reselecting the same stalled work.
+## Built-In Supervisor Repair Notes
+
+- Parked repeated LLM parse/runtime loop for `Add generated blocked-cascade daemon-repair coverage for tranche 11 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
+
+## Built-In Blocked Cascade Recovery Tranche 12
+
+- [!] Task checkbox-290: Add generated blocked-cascade daemon-repair coverage for tranche 12 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [!] Task checkbox-291: Add generated blocked-cascade daemon-repair coverage for tranche 12 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [!] Task checkbox-292: Add generated blocked-cascade daemon-repair coverage for tranche 12 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [~] Task checkbox-293: Add generated blocked-cascade daemon-repair coverage for tranche 12 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+## Built-In Supervisor Repair Notes
+
+- Appended deterministic blocked-cascade recovery tasks because all selectable work was blocked. The supervisor avoided the LLM repair path and created daemon-repair tasks that can run independently before blocked domain work is retried.
+## Built-In Supervisor Repair Notes
+
+- Reset dead-worker in-progress task `Add generated blocked-cascade daemon-repair coverage for tranche 12 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` to pending after the daemon process exited mid-cycle. The supervisor will restart the worker and let the task be selected again with a fresh timeout window.
+## Built-In Supervisor Repair Notes
+
+- Parked repeated LLM parse/runtime loop for `Add generated blocked-cascade daemon-repair coverage for tranche 12 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
+## Built-In Supervisor Repair Notes
+
+- Parked stalled worker task `Add generated blocked-cascade daemon-repair coverage for tranche 12 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` after it exceeded the active-state timeout. The supervisor restarted the daemon on the next independent selectable task instead of reselecting the same stalled work.
+## Built-In Supervisor Repair Notes
+
+- Parked stalled worker task `Add generated blocked-cascade daemon-repair coverage for tranche 12 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` after it exceeded the active-state timeout. The supervisor restarted the daemon on the next independent selectable task instead of reselecting the same stalled work.

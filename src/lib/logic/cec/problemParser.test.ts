@@ -5,6 +5,7 @@ import {
   proveCecWithVampireAdapter,
   type CecVampireProofResult,
 } from './vampireAdapter';
+import { CecZ3Adapter, mapCecZ3Status, proveCecWithZ3Adapter } from './z3Adapter';
 import {
   CecProblemParseError,
   CecProblemParser,
@@ -225,5 +226,40 @@ describe('CEC problem parser', () => {
     expect(result.vampire.statusMapping).toBe('GaveUp');
     expect(result.vampire.warnings[0]).toContain('local TypeScript CEC engine');
     expect(result.vampire.command).toBeNull();
+  });
+
+  it('ports the CEC Z3 adapter as browser-native SMT-LIB compatibility metadata', () => {
+    const adapter = new CecZ3Adapter({ logic: 'UF' });
+    const result = adapter.prove('(comply_with ada code)', ['(comply_with ada code)']);
+
+    expect(result).toMatchObject({
+      status: 'proved',
+      theorem: '(comply_with ada code)',
+      method: 'z3-compatible:cec-forward-chaining',
+    });
+    expect(result.z3).toMatchObject({
+      adapter: 'browser-native-cec-z3-adapter',
+      sourcePythonModule: 'logic/CEC/provers/z3_adapter.py',
+      externalBinaryAllowed: false,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      command: null,
+      checkSatStatus: 'unsat',
+    });
+    expect(result.z3.smtLibProblem).toContain('(set-logic UF)');
+    expect(result.z3.smtLibProblem).toContain('(declare-fun comply_with (Entity Entity) Bool)');
+    expect(result.z3.smtLibAxioms).toEqual(['(assert (comply_with ada code))']);
+    expect(result.z3.smtLibNegatedTheorem).toBe('(assert (not (comply_with ada code)))');
+    expect(mapCecZ3Status('disproved')).toBe('sat');
+  });
+
+  it('fails closed for unproved Z3-compatible CEC requests without Python or server delegation', () => {
+    const result = proveCecWithZ3Adapter('(comply_with ada code)', ['(subject_to ada code)']);
+
+    expect(result.status).toBe('unknown');
+    expect(result.z3.checkSatStatus).toBe('unknown');
+    expect(result.z3.warnings[0]).toContain('local TypeScript CEC engine');
+    expect(result.z3.command).toBeNull();
+    expect(result.z3.smtLibProblem).toContain('(check-sat)');
   });
 });
