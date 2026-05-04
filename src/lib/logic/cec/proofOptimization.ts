@@ -5,7 +5,7 @@ export const CecPruningStrategy = {
   COMBINED: 'combined',
 } as const;
 
-export type CecPruningStrategyValue = typeof CecPruningStrategy[keyof typeof CecPruningStrategy];
+export type CecPruningStrategyValue = (typeof CecPruningStrategy)[keyof typeof CecPruningStrategy];
 
 export interface CecProofNodeOptions {
   formula: string;
@@ -73,6 +73,8 @@ export interface CecOptimizationMetricsDict {
   pruning_ratio: number;
 }
 
+const GOAL_REACHED_REASON = 'goal_reached';
+
 export class CecOptimizationMetrics {
   nodesExplored = 0;
   nodesPruned = 0;
@@ -120,8 +122,8 @@ export class CecProofTreePruner {
 
   shouldPrune(node: CecProofNode, visited: Set<string>): [boolean, string] {
     if (node.depth > this.maxDepth) return [true, CecPruningStrategy.DEPTH_LIMIT];
-    if (visited.has(node.formula)) return [true, 'redundancy'];
-    if (this.enableEarlyTermination && node.isGoal) return [false, 'goal_reached'];
+    if (visited.has(node.formula)) return [true, CecPruningStrategy.REDUNDANCY_CHECK];
+    if (this.enableEarlyTermination && node.isGoal) return [false, GOAL_REACHED_REASON];
     return [false, ''];
   }
 
@@ -135,13 +137,18 @@ export class CecProofTreePruner {
       const [shouldPrune, reason] = this.shouldPrune(node, visited);
       if (shouldPrune) {
         this.metrics.nodesPruned += 1;
-        node.isRedundant = reason === 'redundancy';
-        if (reason === 'redundancy') this.metrics.duplicatesEliminated += 1;
+        node.isRedundant = reason === CecPruningStrategy.REDUNDANCY_CHECK;
+        if (reason === CecPruningStrategy.REDUNDANCY_CHECK) this.metrics.duplicatesEliminated += 1;
         return undefined;
       }
 
       this.metrics.nodesExplored += 1;
       visited.add(node.formula);
+      if (reason === GOAL_REACHED_REASON) {
+        this.metrics.nodesPruned += countDescendants(node);
+        node.children = [];
+        return node;
+      }
       node.children = node.children.flatMap((child) => {
         const pruned = pruneRecursive(child);
         if (!pruned) return [];
@@ -159,7 +166,7 @@ export class CecProofTreePruner {
 
 export class CecRedundancyEliminator {
   readonly seenFormulas = new Set<string>();
-  readonly subsumptionCache = new Map<string, string[]>();
+  readonly subsumptionCache = new Map<string, boolean>();
   metrics = new CecOptimizationMetrics();
 
   isDuplicate(formula: string): boolean {
@@ -172,13 +179,22 @@ export class CecRedundancyEliminator {
   }
 
   subsumes(formula1: string, formula2: string): boolean {
+    const cacheKey = `${formula1}\u0000${formula2}`;
+    const cached = this.subsumptionCache.get(cacheKey);
+    if (cached !== undefined) return cached;
+
+    let result = false;
     if (formula1 === formula2) return true;
-    return formula2.includes(formula1) && formula2.length > formula1.length;
+    if (formula2.includes(formula1) && formula2.length > formula1.length) result = true;
+
+    this.subsumptionCache.set(cacheKey, result);
+    return result;
   }
 
   eliminateRedundancy(formulas: string[]): string[] {
     const start = now();
     this.seenFormulas.clear();
+    this.subsumptionCache.clear();
     this.metrics = new CecOptimizationMetrics();
     const result: string[] = [];
 
@@ -222,13 +238,15 @@ export class CecParallelProofSearch {
 
     while (pending.length > 0) {
       const batch = pending.splice(0, this.maxWorkers);
-      const results = await Promise.all(batch.map(async (space) => {
-        try {
-          return await searchFn(space);
-        } catch {
-          return undefined;
-        }
-      }));
+      const results = await Promise.all(
+        batch.map(async (space) => {
+          try {
+            return await searchFn(space);
+          } catch {
+            return undefined;
+          }
+        }),
+      );
       const found = results.find((result) => result !== undefined && result !== null);
       this.metrics.nodesExplored += batch.length;
       if (found !== undefined) {
@@ -296,6 +314,22 @@ export class CecProofOptimizer {
     return [result, this.combinedMetrics];
   }
 
+  optimizeFormulas(formulas: string[]): [string[], CecOptimizationMetrics] {
+    const start = now();
+    this.combinedMetrics = new CecOptimizationMetrics();
+    const result = this.enableRedundancyElimination
+      ? this.eliminator.eliminateRedundancy(formulas)
+      : [...formulas];
+
+    if (this.enableRedundancyElimination) {
+      this.combinedMetrics.add(this.eliminator.getMetrics());
+    } else {
+      this.combinedMetrics.nodesExplored = result.length;
+    }
+    this.combinedMetrics.totalTime = elapsedSeconds(start);
+    return [result, this.combinedMetrics];
+  }
+
   collectFormulas(node: CecProofNode): string[] {
     return [node.formula, ...node.children.flatMap((child) => this.collectFormulas(child))];
   }
@@ -305,7 +339,11 @@ export class CecProofOptimizer {
   }
 }
 
-export function createCecProofNode(formula: string, depth: number, children: CecProofNode[] = []): CecProofNode {
+export function createCecProofNode(
+  formula: string,
+  depth: number,
+  children: CecProofNode[] = [],
+): CecProofNode {
   return new CecProofNode({ formula, depth, children });
 }
 
@@ -317,4 +355,8 @@ function now(): number {
 
 function elapsedSeconds(start: number): number {
   return Math.max(0, (now() - start) / 1000);
+}
+
+function countDescendants(node: CecProofNode): number {
+  return node.children.reduce((total, child) => total + 1 + countDescendants(child), 0);
 }

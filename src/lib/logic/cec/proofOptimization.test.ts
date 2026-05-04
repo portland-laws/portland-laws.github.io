@@ -45,6 +45,29 @@ describe('CEC proof optimization parity helpers', () => {
     expect(metrics.pruningRatio()).toBe(0.5);
   });
 
+  it('terminates a branch once a goal node is reached', () => {
+    const root = new CecProofNode({
+      formula: 'root',
+      depth: 0,
+      children: [
+        new CecProofNode({
+          formula: 'goal',
+          depth: 1,
+          isGoal: true,
+          children: [new CecProofNode({ formula: 'unneeded-step', depth: 2 })],
+        }),
+      ],
+    });
+    const pruner = new CecProofTreePruner(10, true);
+
+    const [pruned, metrics] = pruner.pruneTree(root);
+
+    expect(pruned.children[0].formula).toBe('goal');
+    expect(pruned.children[0].children).toEqual([]);
+    expect(metrics.nodesExplored).toBe(2);
+    expect(metrics.nodesPruned).toBe(1);
+  });
+
   it('eliminates duplicate and syntactically subsumed formulas', () => {
     const eliminator = new CecRedundancyEliminator();
 
@@ -59,12 +82,28 @@ describe('CEC proof optimization parity helpers', () => {
     });
   });
 
+  it('resets redundancy metrics and subsumption cache between formula batches', () => {
+    const eliminator = new CecRedundancyEliminator();
+
+    expect(eliminator.eliminateRedundancy(['p', 'p(x)'])).toEqual(['p']);
+    expect(eliminator.subsumptionCache.size).toBeGreaterThan(0);
+    expect(eliminator.eliminateRedundancy(['q', 'r'])).toEqual(['q', 'r']);
+
+    expect(eliminator.subsumptionCache.size).toBeGreaterThan(0);
+    expect(eliminator.getMetrics().toDict()).toMatchObject({
+      duplicates_eliminated: 0,
+      subsumptions_found: 0,
+      nodes_explored: 2,
+    });
+  });
+
   it('searches browser-native async batches without worker dependencies', async () => {
     const search = new CecParallelProofSearch(2);
 
-    const result = await search.searchParallel(async (space: number) => (
-      space === 3 ? `found-${space}` : undefined
-    ), [1, 2, 3, 4]);
+    const result = await search.searchParallel(
+      async (space: number) => (space === 3 ? `found-${space}` : undefined),
+      [1, 2, 3, 4],
+    );
 
     expect(result).toBe('found-3');
     expect(search.getMetrics().nodesExplored).toBe(4);
@@ -96,6 +135,22 @@ describe('CEC proof optimization parity helpers', () => {
     expect(metrics.nodesPruned).toBe(1);
     expect(metrics.duplicatesEliminated).toBe(1);
     expect(metrics.subsumptionsFound).toBeGreaterThanOrEqual(1);
+    expect(optimizer.getCombinedMetrics()).toBe(metrics);
+  });
+
+  it('optimizes formula batches without mutating the input list', () => {
+    const optimizer = new CecProofOptimizer();
+    const formulas = ['p', 'p', 'p(x)', 'q'];
+
+    const [optimized, metrics] = optimizer.optimizeFormulas(formulas);
+
+    expect(optimized).toEqual(['p', 'q']);
+    expect(formulas).toEqual(['p', 'p', 'p(x)', 'q']);
+    expect(metrics.toDict()).toMatchObject({
+      duplicates_eliminated: 1,
+      subsumptions_found: 1,
+      nodes_explored: 2,
+    });
     expect(optimizer.getCombinedMetrics()).toBe(metrics);
   });
 });
