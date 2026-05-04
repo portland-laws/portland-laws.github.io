@@ -1,8 +1,13 @@
 import { parseTdfolFormula } from './parser';
 import {
+  BiconditionalEliminationLeftRule,
+  BiconditionalEliminationRightRule,
+  BiconditionalIntroductionRule,
   ConjunctionEliminationLeftRule,
   DeonticDAxiomRule,
   DeonticKAxiomRule,
+  DisjunctionIntroductionLeftRule,
+  DisjunctiveSyllogismRule,
   ExistentialGeneralizationRule,
   ExistentialInstantiationRule,
   ModusPonensRule,
@@ -32,6 +37,36 @@ describe('TDFOL inference rules', () => {
     expect(ModusPonensRule.canApply(p, implication)).toBe(true);
     expect(formatTdfolFormula(ModusPonensRule.apply(p, implication))).toBe('Goal(x)');
     expect(formatTdfolFormula(ConjunctionEliminationLeftRule.apply(conjunction))).toBe('Pred(x)');
+  });
+
+  it('ports remaining Python propositional.py rules without runtime bridges', () => {
+    const p = parseTdfolFormula('Pred(x)');
+    const q = parseTdfolFormula('Goal(x)');
+    const disjunction = parseTdfolFormula('Pred(x) | Goal(x)');
+    const notP = parseTdfolFormula('not Pred(x)');
+    const pImpliesQ = parseTdfolFormula('Pred(x) -> Goal(x)');
+    const qImpliesP = parseTdfolFormula('Goal(x) -> Pred(x)');
+    const biconditional = parseTdfolFormula('Pred(x) <-> Goal(x)');
+
+    expect(formatTdfolFormula(DisjunctiveSyllogismRule.apply(disjunction, notP))).toBe('Goal(x)');
+    expect(formatTdfolFormula(DisjunctionIntroductionLeftRule.apply(p, q))).toBe(
+      '(Pred(x)) ∨ (Goal(x))',
+    );
+    expect(formatTdfolFormula(BiconditionalIntroductionRule.apply(pImpliesQ, qImpliesP))).toBe(
+      '(Pred(x)) ↔ (Goal(x))',
+    );
+    expect(formatTdfolFormula(BiconditionalEliminationLeftRule.apply(biconditional))).toBe(
+      '(Pred(x)) → (Goal(x))',
+    );
+    expect(formatTdfolFormula(BiconditionalEliminationRightRule.apply(biconditional))).toBe(
+      '(Goal(x)) → (Pred(x))',
+    );
+    expect(
+      BiconditionalIntroductionRule.canApply(pImpliesQ, parseTdfolFormula('Other(x) -> Pred(x)')),
+    ).toBe(false);
+    expect(DisjunctiveSyllogismRule.sourcePythonModule).toBe(
+      'logic/TDFOL/inference_rules/propositional.py',
+    );
   });
 
   it('applies temporal K and T axioms', () => {
@@ -120,6 +155,8 @@ describe('TDFOL inference rules', () => {
     expect(getAllTdfolRules().map((rule) => rule.name)).toEqual(
       expect.arrayContaining([
         'DeonticKAxiom',
+        'DisjunctiveSyllogism',
+        'BiconditionalIntroduction',
         'ObligationConjunction',
         'PermissionDuality',
         'UniversalModusPonens',
@@ -134,7 +171,7 @@ describe('TDFOL inference rules', () => {
     expect(ModusPonensRule).toMatchObject({
       id: 'modus_ponens',
       category: 'propositional',
-      sourcePythonModule: 'logic/TDFOL/inference_rules/base.py',
+      sourcePythonModule: 'logic/TDFOL/inference_rules/propositional.py',
     });
     expect(UniversalModusPonensRule).toMatchObject({
       id: 'universal_modus_ponens',

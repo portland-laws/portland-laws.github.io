@@ -49,6 +49,7 @@ type RuleSpec = {
 
 const DEONTIC_RULE_SOURCE = 'logic/TDFOL/inference_rules/deontic.py';
 const FIRST_ORDER_RULE_SOURCE = 'logic/TDFOL/inference_rules/first_order.py';
+const PROPOSITIONAL_RULE_SOURCE = 'logic/TDFOL/inference_rules/propositional.py';
 
 export class TdfolRule implements TdfolInferenceRule {
   readonly name: string;
@@ -127,6 +128,7 @@ export const ModusPonensRule = new TdfolRule({
   description: 'From phi and phi -> psi, infer psi',
   arity: 2,
   category: 'propositional',
+  sourcePythonModule: PROPOSITIONAL_RULE_SOURCE,
   canApply: (left, right) => isImplication(right) && formulaEquals(right.left, left),
   apply: (_left, right) => (right as TdfolBinaryFormula).right,
 });
@@ -136,6 +138,7 @@ export const ModusTollensRule = new TdfolRule({
   description: 'From phi -> psi and not psi, infer not phi',
   arity: 2,
   category: 'propositional',
+  sourcePythonModule: PROPOSITIONAL_RULE_SOURCE,
   canApply: (implication, negatedConsequent) =>
     isImplication(implication) &&
     negatedConsequent.kind === 'unary' &&
@@ -153,6 +156,7 @@ export const HypotheticalSyllogismRule = new TdfolRule({
   description: 'From phi -> psi and psi -> chi, infer phi -> chi',
   arity: 2,
   category: 'propositional',
+  sourcePythonModule: PROPOSITIONAL_RULE_SOURCE,
   canApply: (first, second) =>
     isImplication(first) && isImplication(second) && formulaEquals(first.right, second.left),
   apply: (first, second) => ({
@@ -163,11 +167,33 @@ export const HypotheticalSyllogismRule = new TdfolRule({
   }),
 });
 
+export const DisjunctiveSyllogismRule = new TdfolRule({
+  name: 'DisjunctiveSyllogism',
+  description: 'From phi or psi and not phi, infer psi',
+  arity: 2,
+  category: 'propositional',
+  sourcePythonModule: PROPOSITIONAL_RULE_SOURCE,
+  canApply: (disjunction, negated) =>
+    disjunction.kind === 'binary' &&
+    disjunction.operator === 'OR' &&
+    negated.kind === 'unary' &&
+    negated.operator === 'NOT' &&
+    (formulaEquals(negated.formula, disjunction.left) ||
+      formulaEquals(negated.formula, disjunction.right)),
+  apply: (disjunction, negated) => {
+    if (disjunction.kind !== 'binary' || negated.kind !== 'unary') {
+      throw new Error('Invalid disjunctive syllogism premises');
+    }
+    return formulaEquals(negated.formula, disjunction.left) ? disjunction.right : disjunction.left;
+  },
+});
+
 export const ConjunctionIntroductionRule = new TdfolRule({
   name: 'ConjunctionIntroduction',
   description: 'From phi and psi, infer phi and psi',
   arity: 2,
   category: 'propositional',
+  sourcePythonModule: PROPOSITIONAL_RULE_SOURCE,
   canApply: () => true,
   apply: (left, right) => ({ kind: 'binary', operator: 'AND', left, right }),
 });
@@ -177,6 +203,7 @@ export const ConjunctionEliminationLeftRule = new TdfolRule({
   description: 'From phi and psi, infer phi',
   arity: 1,
   category: 'propositional',
+  sourcePythonModule: PROPOSITIONAL_RULE_SOURCE,
   canApply: (formula) => formula.kind === 'binary' && formula.operator === 'AND',
   apply: (formula) => (formula as TdfolBinaryFormula).left,
 });
@@ -186,8 +213,29 @@ export const ConjunctionEliminationRightRule = new TdfolRule({
   description: 'From phi and psi, infer psi',
   arity: 1,
   category: 'propositional',
+  sourcePythonModule: PROPOSITIONAL_RULE_SOURCE,
   canApply: (formula) => formula.kind === 'binary' && formula.operator === 'AND',
   apply: (formula) => (formula as TdfolBinaryFormula).right,
+});
+
+export const DisjunctionIntroductionLeftRule = new TdfolRule({
+  name: 'DisjunctionIntroductionLeft',
+  description: 'From phi and psi, infer phi or psi',
+  arity: 2,
+  category: 'propositional',
+  sourcePythonModule: PROPOSITIONAL_RULE_SOURCE,
+  canApply: () => true,
+  apply: (left, right) => ({ kind: 'binary', operator: 'OR', left, right }),
+});
+
+export const DisjunctionIntroductionRightRule = new TdfolRule({
+  name: 'DisjunctionIntroductionRight',
+  description: 'From phi and psi, infer psi or phi',
+  arity: 2,
+  category: 'propositional',
+  sourcePythonModule: PROPOSITIONAL_RULE_SOURCE,
+  canApply: () => true,
+  apply: (left, right) => ({ kind: 'binary', operator: 'OR', left: right, right: left }),
 });
 
 export const DoubleNegationEliminationRule = new TdfolRule({
@@ -195,6 +243,7 @@ export const DoubleNegationEliminationRule = new TdfolRule({
   description: 'From not not phi, infer phi',
   arity: 1,
   category: 'propositional',
+  sourcePythonModule: PROPOSITIONAL_RULE_SOURCE,
   canApply: (formula) =>
     formula.kind === 'unary' &&
     formula.operator === 'NOT' &&
@@ -204,6 +253,49 @@ export const DoubleNegationEliminationRule = new TdfolRule({
     if (formula.kind !== 'unary' || formula.formula.kind !== 'unary')
       throw new Error('Invalid double negation');
     return formula.formula.formula;
+  },
+});
+
+export const BiconditionalIntroductionRule = new TdfolRule({
+  name: 'BiconditionalIntroduction',
+  description: 'From phi -> psi and psi -> phi, infer phi iff psi',
+  arity: 2,
+  category: 'propositional',
+  sourcePythonModule: PROPOSITIONAL_RULE_SOURCE,
+  canApply: (left, right) =>
+    isImplication(left) &&
+    isImplication(right) &&
+    formulaEquals(left.left, right.right) &&
+    formulaEquals(left.right, right.left),
+  apply: (left) => {
+    if (!isImplication(left)) throw new Error('Invalid biconditional introduction premise');
+    return { kind: 'binary', operator: 'IFF', left: left.left, right: left.right };
+  },
+});
+
+export const BiconditionalEliminationLeftRule = new TdfolRule({
+  name: 'BiconditionalEliminationLeft',
+  description: 'From phi iff psi, infer phi -> psi',
+  arity: 1,
+  category: 'propositional',
+  sourcePythonModule: PROPOSITIONAL_RULE_SOURCE,
+  canApply: (formula) => formula.kind === 'binary' && formula.operator === 'IFF',
+  apply: (formula) => {
+    if (formula.kind !== 'binary') throw new Error('Invalid biconditional premise');
+    return { kind: 'binary', operator: 'IMPLIES', left: formula.left, right: formula.right };
+  },
+});
+
+export const BiconditionalEliminationRightRule = new TdfolRule({
+  name: 'BiconditionalEliminationRight',
+  description: 'From phi iff psi, infer psi -> phi',
+  arity: 1,
+  category: 'propositional',
+  sourcePythonModule: PROPOSITIONAL_RULE_SOURCE,
+  canApply: (formula) => formula.kind === 'binary' && formula.operator === 'IFF',
+  apply: (formula) => {
+    if (formula.kind !== 'binary') throw new Error('Invalid biconditional premise');
+    return { kind: 'binary', operator: 'IMPLIES', left: formula.right, right: formula.left };
   },
 });
 
@@ -516,9 +608,16 @@ export function getAllTdfolRules(): TdfolInferenceRule[] {
     ModusPonensRule,
     ModusTollensRule,
     HypotheticalSyllogismRule,
+    DisjunctiveSyllogismRule,
+    ConjunctionIntroductionRule,
     ConjunctionEliminationLeftRule,
     ConjunctionEliminationRightRule,
+    DisjunctionIntroductionLeftRule,
+    DisjunctionIntroductionRightRule,
     DoubleNegationEliminationRule,
+    BiconditionalIntroductionRule,
+    BiconditionalEliminationLeftRule,
+    BiconditionalEliminationRightRule,
     TemporalKAxiomRule,
     TemporalTAxiomRule,
     EventuallyIntroductionRule,
