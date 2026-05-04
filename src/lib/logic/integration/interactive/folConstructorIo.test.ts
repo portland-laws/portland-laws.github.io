@@ -6,6 +6,12 @@ import {
   create_browser_native_interactive_fol_constructor,
   create_browser_native_fol_constructor_io,
 } from './folConstructorIo';
+import {
+  INTERACTIVE_FOL_TYPES_METADATA,
+  checkInteractiveFolType,
+  interactive_fol_type_descriptors,
+  is_interactive_fol_type,
+} from './interactiveFolTypes';
 
 describe('BrowserNativeFolConstructorIo', () => {
   it('ports _fol_constructor_io.py prompt/session I/O without runtime fallbacks', () => {
@@ -57,6 +63,37 @@ describe('BrowserNativeFolConstructorIo', () => {
     expect(io.appendPrompt(restored.session, '   ')).toMatchObject({
       ok: false,
       errors: ['empty_prompt'],
+    });
+  });
+});
+
+describe('Interactive FOL types', () => {
+  it('ports interactive_fol_types.py descriptors and fail-closed shape guards', () => {
+    const prompt = { id: 'prompt-1', role: 'user', content: 'All tenants are residents.' };
+    const turn = { prompt, formula: '(∀x (Tenants(x) → Residents(x)))', valid: true, warnings: [] };
+    expect(INTERACTIVE_FOL_TYPES_METADATA).toEqual({
+      sourcePythonModule: 'logic/integration/interactive/interactive_fol_types.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      runtimeDependencies: [],
+    });
+    expect(interactive_fol_type_descriptors.session.requiredFields).toEqual([
+      'id',
+      'prompts',
+      'turns',
+    ]);
+    expect(checkInteractiveFolType('prompt', prompt)).toMatchObject({ ok: true, issues: [] });
+    expect(checkInteractiveFolType('turn', turn)).toMatchObject({ ok: true, issues: [] });
+    expect(is_interactive_fol_type('symbol', { name: 'Tenant', kind: 'predicate' })).toBe(true);
+    expect(
+      checkInteractiveFolType('prompt', { id: 'bad', role: 'tool', content: 12 }),
+    ).toMatchObject({
+      ok: false,
+      issues: [
+        { path: '$.role', message: 'expected_prompt_role' },
+        { path: '$.content', message: 'expected_string' },
+      ],
     });
   });
 });

@@ -878,7 +878,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/integration/domain/temporal_deontic_rag_store.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/interactive/_fol_constructor_io.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/interactive/interactive_fol_constructor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/integration/interactive/interactive_fol_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/integration/interactive/interactive_fol_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/interactive/interactive_fol_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/interactive_fol_constructor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/logic_translation_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 12:44:11 UTC
+Last updated: 2026-05-04 12:48:17 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-368: Port remaining Python logic module 'logic/integration/interactive/interactive_fol_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-369: Port remaining Python logic module 'logic/integration/interactive/interactive_fol_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1342,8 +1342,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-364: Port remaining Python logic module 'logic/integration/domain/temporal_deontic_api.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-365: Port remaining Python logic module 'logic/integration/domain/temporal_deontic_rag_store.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-366: Port remaining Python logic module 'logic/integration/interactive/_fol_constructor_io.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-367: Port remaining Python logic module 'logic/integration/interactive/interactive_fol_constructor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-368: Port remaining Python logic module 'logic/integration/interactive/interactive_fol_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-367: Port remaining Python logic module 'logic/integration/interactive/interactive_fol_constructor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-368: Port remaining Python logic module 'logic/integration/interactive/interactive_fol_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-369: Port remaining Python logic module 'logic/integration/interactive/interactive_fol_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-370: Port remaining Python logic module 'logic/integration/interactive_fol_constructor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-371: Port remaining Python logic module 'logic/integration/logic_translation_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-367: Port remaining Python logic module 'logic/integration/interactive/interactive_fol_constructor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-368: Port remaining Python logic module 'logic/integration/interactive/interactive_fol_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported the interactive FOL constructor facade to browser-native TypeScript.
-- Impact: The interactive constructor now exposes deterministic construct and continue-session APIs with Python module provenance, no Python/server/runtime dependencies, clarification-question generation, symbol extraction, and fail-closed empty-input handling. The focused Jest suite imports the runtime module directly and validates the browser-native contract for logic/integration/interactive/interactive_fol_constructor.py.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/interactive/folConstructorIo.test.ts`, `src/lib/logic/integration/interactive/folConstructorIo.ts`
+- Summary: Ported interactive FOL type descriptors and fail-closed guards to browser-native TypeScript.
+- Impact: The new src/lib/logic/integration/interactive/interactiveFolTypes.ts module exposes the interactive_fol_types.py type metadata, descriptors, and deterministic shape validators without server, Python, filesystem, subprocess, or RPC fallbacks. The interactive index re-exports the port, and the existing Jest suite validates both accepted Python-style payloads and rejected malformed payloads.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/interactive/folConstructorIo.test.ts`, `src/lib/logic/integration/interactive/index.ts`, `src/lib/logic/integration/interactive/interactiveFolTypes.ts`
 
 ### Blocked Backlog
 
