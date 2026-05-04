@@ -1,0 +1,37 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,5 +1,5 @@
+ {
+-  "createdAt": "2026-05-04T07:18:05.456616Z",
++  "createdAt": "2026-05-04T07:18:56.946658Z",
+   "decision": {
+     "action": "reconcile_repeated_llm_loop_and_restart",
+     "reason": "4 recent durable LLM parse/runtime diagnostics were recorded for the same task before the daemon exited; park the looping task and restart on the next independent task without invoking the LLM repair path",
+@@ -30,7 +30,7 @@
+   "schemaVersion": 1,
+   "taskBoardRepair": {
+     "parkedRepeatedSyntaxLoopTasks": [
+-      "Add generated blocked-cascade daemon-repair coverage for tranche 49 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates."
++      "Add generated blocked-cascade daemon-repair coverage for tranche 49 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates."
+     ],
+     "replenishedGoalTaskLabels": [],
+     "supersededTaskBoardOnlyLabels": [],
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -1254,7 +1254,7 @@
+ 
+ - [!] Task checkbox-438: Add generated blocked-cascade daemon-repair coverage for tranche 49 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+ - [!] Task checkbox-439: Add generated blocked-cascade daemon-repair coverage for tranche 49 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+-- [~] Task checkbox-440: Add generated blocked-cascade daemon-repair coverage for tranche 49 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
++- [!] Task checkbox-440: Add generated blocked-cascade daemon-repair coverage for tranche 49 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+ - [ ] Task checkbox-441: Add generated blocked-cascade daemon-repair coverage for tranche 49 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+ ## Built-In Supervisor Repair Notes
+ 
+@@ -1265,3 +1265,7 @@
+ ## Built-In Supervisor Repair Notes
+ 
+ - Parked repeated LLM parse/runtime loop for `Add generated blocked-cascade daemon-repair coverage for tranche 49 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
++## Built-In Supervisor Repair Notes
++
++- Parked repeated LLM parse/runtime loop for `Add generated blocked-cascade daemon-repair coverage for tranche 49 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
++

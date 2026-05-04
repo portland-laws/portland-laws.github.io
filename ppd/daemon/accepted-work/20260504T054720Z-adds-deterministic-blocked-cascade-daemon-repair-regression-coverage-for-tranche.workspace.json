@@ -1,0 +1,37 @@
+{
+  "artifact_kind": "ephemeral-workspace",
+  "changed_files": [
+    "ppd/tests/fixtures/daemon/blocked_cascade_tranche27_item4.json",
+    "ppd/tests/test_blocked_cascade_daemon_repair_tranche27_item4.py"
+  ],
+  "created_at": "2026-05-04T05:47:20.832154Z",
+  "promoted_to_main_worktree": true,
+  "reason": "",
+  "schema_version": 1,
+  "summary": "Adds deterministic blocked-cascade daemon-repair regression coverage for tranche 27 item 4.",
+  "target_task": "Task checkbox-353: Add generated blocked-cascade daemon-repair coverage for tranche 27 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.",
+  "transport": "ephemeral_worktree",
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ],
+    [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "ppd/tests",
+      "-p",
+      "test_*.py"
+    ],
+    [
+      "bash",
+      "-lc",
+      "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+    ]
+  ],
+  "validation_passed": true
+}

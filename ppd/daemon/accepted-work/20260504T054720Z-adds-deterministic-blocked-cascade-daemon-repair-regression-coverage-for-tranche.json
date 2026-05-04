@@ -1,0 +1,49 @@
+{
+  "artifact_kind": "accepted_ephemeral_workspace",
+  "changed_files": [
+    "ppd/tests/fixtures/daemon/blocked_cascade_tranche27_item4.json",
+    "ppd/tests/test_blocked_cascade_daemon_repair_tranche27_item4.py"
+  ],
+  "created_at": "2026-05-04T05:47:20.831804Z",
+  "impact": "This advances the PP&D daemon plan by proving blocked work remains parked through stale, pending, running, and failed repair states, and only becomes selectable after a fresh daemon repair task validates.",
+  "summary": "Adds deterministic blocked-cascade daemon-repair regression coverage for tranche 27 item 4.",
+  "target_task": "Task checkbox-353: Add generated blocked-cascade daemon-repair coverage for tranche 27 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.",
+  "transport": "ephemeral_worktree",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 183 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "...................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................ss..................sss............................................................................................................................................................................................................................................................................................................. ---------------------------------------------------------------------- Ran 807 tests in 4.787s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "tranche": 27,
+  "item": 4,
+  "blocked_task": {
+    "id": "checkbox-353-source-work",
+    "status": "blocked",
+    "blocked_by": "checkbox-353-repair",
+    "parked": true,
+    "reason": "blocked_cascade_waiting_for_daemon_repair_validation"
+  },
+  "repair_task": {
+    "id": "checkbox-353-repair",
+    "kind": "daemon_repair",
+    "generation": 2,
+    "fresh_after_blocked_at": "2026-05-03T00:00:00Z"
+  },
+  "events": [
+    {
+      "name": "stale_prior_repair_validated",
+      "repair_generation": 1,
+      "repair_status": "validated",
+      "expect_parked": true,
+      "expect_selectable": false
+    },
+    {
+      "name": "fresh_repair_pending",
+      "repair_generation": 2,
+      "repair_status": "pending",
+      "expect_parked": true,
+      "expect_selectable": false
+    },
+    {
+      "name": "fresh_repair_running",
+      "repair_generation": 2,
+      "repair_status": "running",
+      "expect_parked": true,
+      "expect_selectable": false
+    },
+    {
+      "name": "fresh_repair_failed",
+      "repair_generation": 2,
+      "repair_status": "failed",
+      "expect_parked": true,
+      "expect_selectable": false
+    },
+    {
+      "name": "fresh_repair_validated",
+      "repair_generation": 2,
+      "repair_status": "validated",
+      "expect_parked": false,
+      "expect_selectable": true
+    }
+  ]
+}
