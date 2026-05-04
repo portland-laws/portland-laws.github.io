@@ -821,3 +821,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T063242Z-ported-the-remaining-tdfol-proof_explainer.py-surface-into-the-browser-native-ty.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T063242Z-ported-the-remaining-tdfol-proof_explainer.py-surface-into-the-browser-native-ty.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T063242Z-ported-the-remaining-tdfol-proof_explainer.py-surface-into-the-browser-native-ty.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 06:36:33 UTC
+
+- Target: `Task checkbox-281: Port remaining Python logic module `logic/TDFOL/proof_tree_visualizer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the remaining TDFOL proof tree visualizer slice with browser-native graph, layout, subtree, path, and SVG exports.
+- Impact: The TypeScript TDFOL proof tree visualizer now exposes deterministic JSON graph data, layout coordinates, path and subtree lookup, and escaped inline SVG rendering without server, Python, filesystem, subprocess, RPC, or Node-only browser-runtime dependencies. The focused Jest coverage validates those exports against a nested TDFOL proof.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/proofTree.test.ts`, `src/lib/logic/tdfol/proofTree.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T063633Z-ported-the-remaining-tdfol-proof-tree-visualizer-slice-with-browser-native-graph.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T063633Z-ported-the-remaining-tdfol-proof-tree-visualizer-slice-with-browser-native-graph.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T063633Z-ported-the-remaining-tdfol-proof-tree-visualizer-slice-with-browser-native-graph.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
