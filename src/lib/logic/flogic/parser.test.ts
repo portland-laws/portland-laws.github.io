@@ -20,6 +20,13 @@ import {
   evaluateFLogicGoal,
 } from './zkpIntegration';
 import {
+  FLOGIC_SEMANTIC_NORMALIZER_METADATA,
+  SemanticNormalizer,
+  clearGlobalFLogicSemanticNormalizer,
+  getGlobalFLogicSemanticNormalizer,
+  normalizeFLogicSemanticGoal,
+} from './semanticNormalizer';
+import {
   FLOGIC_TYPES_METADATA,
   createFLogicFrame,
   createFLogicOntology,
@@ -345,5 +352,49 @@ describe('F-logic parser', () => {
       status: 'success',
     });
     expect(prover.getStatistics()).toMatchObject({ standard_queries: 1, zkp_attempts: 0 });
+  });
+
+  it('ports semantic_normalizer.py dictionary, adapter, and singleton behavior', () => {
+    const normalizer = new SemanticNormalizer({
+      synonymMap: { 'city code section': 'municipal law section' },
+      similarityAdapter: {
+        resolveTerm(term) {
+          return term === 'ordinance' ? { canonical: 'law', confidence: 0.92 } : null;
+        },
+      },
+    });
+
+    expect(FLOGIC_SEMANTIC_NORMALIZER_METADATA).toMatchObject({
+      sourcePythonModule: 'logic/flogic/semantic_normalizer.py',
+      browserNative: true,
+      runtimeDependencies: [],
+    });
+    expect(normalizer.semanticSimilarityAvailable).toBe(true);
+    expect([
+      normalizer.normalizeTerm('Canine'),
+      normalizer.normalizeTerm('city code section'),
+      normalizer.normalizeTerm('ordinance'),
+    ]).toEqual(['dog', 'municipal law section', 'law']);
+    expect(
+      normalizer.normalizeGoal('?X : Canine, ?Y[status -> "Permitted", citation -> ?Citation]'),
+    ).toBe('?X : dog, ?Y[status -> "Permitted", citation -> ?Citation]');
+    expect(normalizer.getMapSnapshot()).toMatchObject({ ordinance: 'law' });
+
+    const failClosed = new SemanticNormalizer({
+      confidenceThreshold: 0.8,
+      similarityAdapter: {
+        resolveTerm() {
+          return { canonical: 'required', confidence: 0.4 };
+        },
+      },
+    });
+
+    expect(failClosed.normalizeTerm('compulsory')).toBe('compulsory');
+    failClosed.addSynonym('compulsory', 'required');
+    expect(failClosed.normalizeTerm('compulsory')).toBe('required');
+    clearGlobalFLogicSemanticNormalizer();
+    const first = getGlobalFLogicSemanticNormalizer({ synonymMap: { vehicle: 'conveyance' } });
+    expect(normalizeFLogicSemanticGoal('?Thing : Vehicle')).toBe('?Thing : conveyance');
+    expect(getGlobalFLogicSemanticNormalizer()).toBe(first);
   });
 });
