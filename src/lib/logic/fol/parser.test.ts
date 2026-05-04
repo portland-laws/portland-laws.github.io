@@ -1,8 +1,11 @@
 import {
   buildFolFormula,
+  FOL_PARSER_METADATA,
   parseFolOperators,
   parseFolQuantifiers,
   parseFolText,
+  parseFolUtilityText,
+  parse_fol_text,
   parse_deontic_text_to_fol,
   parseFolDeonticText,
   parseSimplePredicate,
@@ -24,6 +27,7 @@ describe('FOL parser utilities', () => {
   it('builds simple first-order formulas', () => {
     expect(buildFolFormula('All tenants are residents')).toBe('∀x (Tenants(x) → Residents(x))');
     expect(buildFolFormula('If tenant then resident')).toBe('∀x (Tenant(x) → Resident(x))');
+    expect(buildFolFormula('No tenant is exempt')).toBe('∀x (Tenant(x) → ¬Exempt(x))');
     expect(parseSimplePredicate('pay rent')).toBe('Rent(x)');
   });
 
@@ -37,6 +41,35 @@ describe('FOL parser utilities', () => {
   it('validates common syntax failures', () => {
     expect(validateFolSyntax('∀ (Broken(x)').valid).toBe(false);
     expect(validateFolSyntax('⊤').valid).toBe(true);
+  });
+
+  it('ports fol/utils/fol_parser.py as a browser-native parse facade', () => {
+    const result = parseFolUtilityText(
+      'All tenants are residents. No tenant is exempt. If tenant then resident.',
+    );
+
+    expect(result).toMatchObject({
+      success: true,
+      formula:
+        '(∀x (Tenants(x) → Residents(x))) ∧ (∀x (Tenant(x) → ¬Exempt(x))) ∧ (∀x (Tenant(x) → Resident(x)))',
+      metadata: {
+        parser: 'browser-native-fol-parser',
+        sourcePythonModule: 'logic/fol/utils/fol_parser.py',
+        browserNative: true,
+        pythonRuntime: false,
+        serverCallsAllowed: false,
+        runtimeDependencies: [],
+      },
+    });
+    expect(result.clauses.map((clause) => clause.formula)).toEqual([
+      '∀x (Tenants(x) → Residents(x))',
+      '∀x (Tenant(x) → ¬Exempt(x))',
+      '∀x (Tenant(x) → Resident(x))',
+    ]);
+    expect(result.quantifiers.map((match) => match.symbol)).toEqual(['∀', '∀']);
+    expect(result.operators.map((match) => match.type)).toEqual(['negation', 'implication']);
+    expect(parse_fol_text('Some tenant files appeal').formula).toBe('(∃x (Tenant(x) ∧ Files(x)))');
+    expect(FOL_PARSER_METADATA.runtimeDependencies).toEqual([]);
   });
 
   it('ports text_to_fol.py as a browser-native deterministic adapter', () => {

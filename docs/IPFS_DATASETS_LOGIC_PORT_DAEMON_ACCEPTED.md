@@ -1280,3 +1280,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T102334Z-ported-the-fol-facing-deontic-parser-facade-for-logic-fol-utils-deontic_parser.p.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T102334Z-ported-the-fol-facing-deontic-parser-facade-for-logic-fol-utils-deontic_parser.p.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T102334Z-ported-the-fol-facing-deontic-parser-facade-for-logic-fol-utils-deontic_parser.p.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 10:26:04 UTC
+
+- Target: `Task checkbox-333: Port remaining Python logic module `logic/fol/utils/fol_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the browser-native FOL utility parser facade for logic/fol/utils/fol_parser.py.
+- Impact: src/lib/logic/fol/parser.ts now exposes Python-module metadata, a deterministic parseFolUtilityText/parse_fol_text facade, sentence-level parse records, validation, and negative-universal relation handling without server, Python runtime, or Node-only dependencies. src/lib/logic/fol/parser.test.ts directly validates the new facade and metadata through Jest.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/fol/parser.test.ts`, `src/lib/logic/fol/parser.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T102604Z-ported-the-browser-native-fol-utility-parser-facade-for-logic-fol-utils-fol_pars.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T102604Z-ported-the-browser-native-fol-utility-parser-facade-for-logic-fol-utils-fol_pars.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T102604Z-ported-the-browser-native-fol-utility-parser-facade-for-logic-fol-utils-fol_pars.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

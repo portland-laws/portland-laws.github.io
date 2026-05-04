@@ -22,8 +22,51 @@ export interface FolParseResult {
   };
 }
 
+export interface FolParserMetadata {
+  parser: 'browser-native-fol-parser';
+  sourcePythonModule: 'logic/fol/utils/fol_parser.py';
+  browserNative: true;
+  pythonRuntime: false;
+  serverCallsAllowed: false;
+  runtimeDependencies: Array<string>;
+}
+
+export interface FolParserClause {
+  text: string;
+  formula: string;
+  quantifiers: FolTokenMatch[];
+  operators: FolTokenMatch[];
+  validation: LogicValidationResult;
+}
+
+export interface FolUtilityParseOptions {
+  splitSentences?: boolean;
+  failOnInvalid?: boolean;
+}
+
+export interface FolUtilityParseResult {
+  success: boolean;
+  formula: string;
+  clauses: Array<FolParserClause>;
+  quantifiers: Array<FolTokenMatch>;
+  operators: Array<FolTokenMatch>;
+  validation: LogicValidationResult;
+  metadata: FolParserMetadata;
+  warnings: Array<string>;
+}
+
+export const FOL_PARSER_METADATA: FolParserMetadata = {
+  parser: 'browser-native-fol-parser',
+  sourcePythonModule: 'logic/fol/utils/fol_parser.py',
+  browserNative: true,
+  pythonRuntime: false,
+  serverCallsAllowed: false,
+  runtimeDependencies: [],
+};
+
 const UNIVERSAL_PATTERNS = [
   /\b(?:all|every|each)\s+(\w+)/gi,
+  /\bno\s+(\w+)/gi,
   /\b(?:any|everything|everyone)\b/gi,
   /\bfor\s+all\s+(\w+)/gi,
 ];
@@ -61,6 +104,58 @@ export function parseFolText(text: string): FolParseResult {
     },
   };
 }
+
+export function parseFolUtilityText(
+  text: string,
+  options: FolUtilityParseOptions = {},
+): FolUtilityParseResult {
+  const normalized = text.trim();
+  if (!normalized) {
+    const validation = validateFolSyntax('');
+    return {
+      success: false,
+      formula: '',
+      clauses: [],
+      quantifiers: [],
+      operators: [],
+      validation,
+      metadata: FOL_PARSER_METADATA,
+      warnings: ['empty_input'],
+    };
+  }
+
+  const clauseTexts =
+    options.splitSentences === false ? [normalized] : splitFolSentences(normalized);
+  const clauses = clauseTexts.map((clauseText) => {
+    const quantifiers = parseFolQuantifiers(clauseText);
+    const operators = parseFolOperators(clauseText);
+    const formula = buildFolFormula(clauseText, quantifiers, operators);
+    return {
+      text: clauseText,
+      formula,
+      quantifiers,
+      operators,
+      validation: validateFolSyntax(formula),
+    };
+  });
+  const formula = clauses.map((clause) => `(${clause.formula})`).join(' ∧ ');
+  const validation = validateFolSyntax(formula);
+  const invalidClauses = clauses.filter((clause) => !clause.validation.valid).length;
+  const warnings = invalidClauses > 0 ? [`invalid_clause_count:${invalidClauses}`] : [];
+
+  return {
+    success: validation.valid && (!options.failOnInvalid || invalidClauses === 0),
+    formula,
+    clauses,
+    quantifiers: parseFolQuantifiers(normalized),
+    operators: parseFolOperators(normalized),
+    validation,
+    metadata: FOL_PARSER_METADATA,
+    warnings,
+  };
+}
+
+export const parse_fol_text = parseFolUtilityText;
 
 export function parseFolQuantifiers(text: string): FolTokenMatch[] {
   const matches: FolTokenMatch[] = [];
@@ -112,9 +207,18 @@ export function buildFolFormula(
     return `∀x (${parseSimplePredicate(implication[1])} → ${parseSimplePredicate(implication[2])})`;
   }
 
-  const allRelation = text.match(/\b(?:all|every|each)\s+(\w+)\s+(?:are|is|must be|shall be)\s+(\w+)/i);
+  const allRelation = text.match(
+    /\b(?:all|every|each)\s+(\w+)\s+(?:are|is|must be|shall be)\s+(\w+)/i,
+  );
   if (allRelation) {
     return `∀x (${toPredicateName(allRelation[1])}(x) → ${toPredicateName(allRelation[2])}(x))`;
+  }
+
+  const noRelation = text.match(
+    /\b(?:no|none)\s+(\w+)\s+(?:are|is|may be|must be|shall be)\s+(\w+)/i,
+  );
+  if (noRelation) {
+    return `∀x (${toPredicateName(noRelation[1])}(x) → ¬${toPredicateName(noRelation[2])}(x))`;
   }
 
   const someRelation = text.match(/\b(?:some|there (?:is|are))\s+(\w+)\s+(?:are|is)?\s*(\w+)?/i);
@@ -135,6 +239,13 @@ export function buildFolFormula(
     return `¬${predicate}`;
   }
   return predicate;
+}
+
+function splitFolSentences(text: string): Array<string> {
+  return text
+    .split(/[.!?]+/g)
+    .map((sentence) => sentence.trim())
+    .filter(Boolean);
 }
 
 export function parseSimplePredicate(text: string): string {
