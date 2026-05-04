@@ -154,7 +154,7 @@ class DaemonLlmResultDurabilityTest(unittest.TestCase):
 
     def test_llm_timeout_cleanup_terminates_descendant_processes(self) -> None:
         process = subprocess.Popen(
-            ["bash", "-lc", "sleep 30 & echo $!; wait"],
+            ["bash", "-lc", "setsid sleep 30 & echo $!; wait"],
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE,
             text=True,

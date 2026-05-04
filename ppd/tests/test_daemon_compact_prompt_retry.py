@@ -144,6 +144,35 @@ class DaemonCompactPromptRetryTest(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "exceeds configured budget"):
                 call_llm("x" * 100, config)
 
+    def test_call_llm_passes_configured_generation_budget_to_router_child(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+            package = repo / "ipfs_datasets_py"
+            package.mkdir()
+            (package / "__init__.py").write_text("", encoding="utf-8")
+            (package / "llm_router.py").write_text(
+                "\n".join(
+                    [
+                        "import json",
+                        "",
+                        "def generate_text(prompt, model_name, provider, allow_local_fallback, timeout, max_new_tokens, temperature):",
+                        "    return json.dumps({'max_new_tokens': max_new_tokens, 'timeout': timeout})",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+            config = Config(
+                repo_root=repo,
+                max_prompt_chars=1000,
+                llm_timeout_seconds=7,
+                llm_max_new_tokens=321,
+            )
+
+            parsed = json.loads(call_llm("hello", config))
+
+        self.assertEqual(321, parsed["max_new_tokens"])
+        self.assertEqual(7, parsed["timeout"])
+
 
 if __name__ == "__main__":
     unittest.main()

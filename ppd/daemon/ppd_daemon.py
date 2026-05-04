@@ -114,6 +114,8 @@ PROTECTED_BLOCKED_REVISIT_CHECKBOX_IDS = frozenset(
     }
 )
 
+_ACTIVE_LLM_PROCESS: Optional[subprocess.Popen[Any]] = None
+
 
 @dataclass(frozen=True)
 class Task:
@@ -205,6 +207,7 @@ class Config:
     llm_timeout_seconds: int = 300
     max_prompt_chars: int = 60000
     max_compact_prompt_chars: int = 4200
+    llm_max_new_tokens: int = 2048
     allow_local_fallback: bool = False
     revisit_blocked: bool = False
     max_task_failures_before_block: int = 3
@@ -1221,6 +1224,7 @@ def call_llm(prompt: str, config: Config) -> str:
                 "PPD_LLM_PROVIDER": config.provider or "",
                 "PPD_LLM_ALLOW_LOCAL_FALLBACK": "1" if config.allow_local_fallback else "0",
                 "PPD_LLM_TIMEOUT": str(config.llm_timeout_seconds),
+                "PPD_LLM_MAX_NEW_TOKENS": str(config.llm_max_new_tokens),
             }
         )
         child_code = r"""
@@ -1238,7 +1242,7 @@ text = llm_router.generate_text(
     provider=provider,
     allow_local_fallback=os.environ.get("PPD_LLM_ALLOW_LOCAL_FALLBACK") == "1",
     timeout=int(os.environ["PPD_LLM_TIMEOUT"]),
-    max_new_tokens=4096,
+    max_new_tokens=int(os.environ["PPD_LLM_MAX_NEW_TOKENS"]),
     temperature=0.1,
 )
 sys.stdout.write("" if text is None else str(text))
@@ -1253,11 +1257,16 @@ sys.stdout.write("" if text is None else str(text))
             env=env,
             start_new_session=True,
         )
+        global _ACTIVE_LLM_PROCESS
+        _ACTIVE_LLM_PROCESS = process
         try:
             stdout, stderr = process.communicate(timeout=config.llm_timeout_seconds + 30)
         except subprocess.TimeoutExpired as exc:
             terminate_process_group(process)
             raise RuntimeError(f"llm_router child timed out after {config.llm_timeout_seconds + 30} seconds") from exc
+        finally:
+            if _ACTIVE_LLM_PROCESS is process:
+                _ACTIVE_LLM_PROCESS = None
         completed = subprocess.CompletedProcess(
             command,
             returncode=int(process.returncode or 0),
@@ -1278,28 +1287,86 @@ sys.stdout.write("" if text is None else str(text))
     return completed.stdout
 
 
+def collect_descendant_pids(pid: int) -> list[int]:
+    try:
+        completed = subprocess.run(
+            ["pgrep", "-P", str(pid)],
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.DEVNULL,
+            check=False,
+        )
+    except OSError:
+        return []
+    descendants: list[int] = []
+    for line in completed.stdout.splitlines():
+        try:
+            child = int(line.strip())
+        except ValueError:
+            continue
+        descendants.append(child)
+        descendants.extend(collect_descendant_pids(child))
+    return descendants
+
+
+def process_groups_for_family(root_pid: int) -> set[int]:
+    groups: set[int] = set()
+    for pid in [root_pid, *collect_descendant_pids(root_pid)]:
+        try:
+            groups.add(os.getpgid(pid))
+        except ProcessLookupError:
+            continue
+    return groups
+
+
 def terminate_process_group(process: subprocess.Popen[Any], *, grace_seconds: float = 5.0) -> None:
-    """Terminate a subprocess and its descendants when it owns a session."""
+    """Terminate a subprocess and descendant process groups when it owns a session."""
 
     if process.poll() is not None:
         return
+    process_groups = process_groups_for_family(process.pid) or {process.pid}
     try:
-        os.killpg(process.pid, signal.SIGTERM)
+        for pgid in process_groups:
+            try:
+                os.killpg(pgid, signal.SIGTERM)
+            except ProcessLookupError:
+                continue
+            except PermissionError:
+                continue
     except ProcessLookupError:
-        return
+        pass
     try:
         process.communicate(timeout=grace_seconds)
         return
     except subprocess.TimeoutExpired:
         pass
     try:
-        os.killpg(process.pid, signal.SIGKILL)
+        for pgid in process_groups:
+            try:
+                os.killpg(pgid, signal.SIGKILL)
+            except ProcessLookupError:
+                continue
+            except PermissionError:
+                continue
     except ProcessLookupError:
-        return
+        pass
     try:
         process.communicate(timeout=grace_seconds)
     except subprocess.TimeoutExpired:
         pass
+
+
+def handle_daemon_signal(signum: int, _frame: object) -> None:
+    process = _ACTIVE_LLM_PROCESS
+    if process is not None and process.poll() is None:
+        terminate_process_group(process, grace_seconds=1.0)
+    raise SystemExit(128 + signum)
+
+
+def install_daemon_signal_handlers() -> None:
+    signal.signal(signal.SIGTERM, handle_daemon_signal)
+    signal.signal(signal.SIGINT, handle_daemon_signal)
+    signal.signal(signal.SIGHUP, handle_daemon_signal)
 
 
 class Daemon:
@@ -1675,6 +1742,9 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     parser.add_argument("--iterations", type=int, default=1, help="Number of cycles; with --watch, 0 means unbounded")
     parser.add_argument("--interval", type=float, default=0.0, help="Seconds between watch cycles")
     parser.add_argument("--llm-timeout", type=int, default=300, help="Seconds to allow for one LLM proposal")
+    parser.add_argument("--llm-max-new-tokens", type=int, default=2048, help="llm_router max_new_tokens budget")
+    parser.add_argument("--max-prompt-chars", type=int, default=60000, help="Maximum prompt characters before llm_router launch")
+    parser.add_argument("--max-compact-prompt-chars", type=int, default=4200, help="Maximum compact retry prompt characters")
     parser.add_argument("--model", default="gpt-5.5", help="llm_router model")
     parser.add_argument("--provider", default=None, help="llm_router provider")
     parser.add_argument("--allow-local-fallback", action="store_true", help="Allow local fallback providers")
@@ -1692,6 +1762,7 @@ def main(argv: Optional[list[str]] = None) -> int:
     repo_root = Path(args.repo_root).resolve()
     if args.self_test:
         return self_test(repo_root)
+    install_daemon_signal_handlers()
     config = Config(
         repo_root=repo_root,
         apply=bool(args.apply),
@@ -1699,6 +1770,9 @@ def main(argv: Optional[list[str]] = None) -> int:
         iterations=int(args.iterations),
         interval_seconds=float(args.interval),
         llm_timeout_seconds=int(args.llm_timeout),
+        llm_max_new_tokens=max(256, int(args.llm_max_new_tokens)),
+        max_prompt_chars=max(1000, int(args.max_prompt_chars)),
+        max_compact_prompt_chars=max(1000, int(args.max_compact_prompt_chars)),
         model_name=str(args.model),
         provider=args.provider,
         allow_local_fallback=bool(args.allow_local_fallback),

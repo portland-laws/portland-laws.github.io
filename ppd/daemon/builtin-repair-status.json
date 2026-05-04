@@ -1,23 +1,39 @@
 {
-  "createdAt": "2026-05-04T04:39:34.899825Z",
+  "createdAt": "2026-05-04T05:18:36.827721Z",
   "decision": {
-    "action": "reconcile_dead_worker_with_recent_failures_and_restart",
-    "reason": "daemon process is not running but status is still calling_llm on Task checkbox-292: Add generated blocked-cascade daemon-repair coverage for tranche 12 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates., and 2 recent failure diagnostic(s) already exist for that target; park the task before restart instead of resetting it into another immediate retry",
+    "action": "reconcile_repeated_llm_loop_and_restart",
+    "reason": "4 recent durable LLM parse/runtime diagnostics were recorded for the same task before the daemon exited; park the looping task and restart on the next independent task without invoking the LLM repair path",
     "severity": "warning"
   },
-  "parkedStalledTaskLabels": [
-    "Add generated blocked-cascade daemon-repair coverage for tranche 12 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates."
+  "failedAgenticRepair": {
+    "changedFiles": [],
+    "errors": [],
+    "failureKind": "llm",
+    "summary": "Repeated LLM parse/runtime diagnostic loop detected.",
+    "validationResults": []
+  },
+  "fallbackActions": [
+    "preserve failed repair diagnostics without accepting the invalid patch",
+    "run full PP&D daemon validation before restarting unattended worker attempts",
+    "restart the worker with PPD_LLM_BACKEND=llm_router after fallback validation passes",
+    "keep future retry scope narrow and fixture-first"
   ],
-  "repairKind": "stalled_worker_task_parked",
-  "replenishedExecutionTaskLabels": [],
+  "llmBackend": "llm_router",
+  "repairKind": "builtin_supervisor_fallback",
+  "safetyBoundaries": [
+    "no private DevHub session artifacts",
+    "no raw crawl output",
+    "no downloaded documents",
+    "no browser traces or screenshots",
+    "no consequential DevHub actions"
+  ],
   "schemaVersion": 1,
-  "statusBeforeRepair": {
-    "active_state": "calling_llm",
-    "active_state_started_at": "2026-05-04T04:39:19.465700Z",
-    "active_target_task": "Task checkbox-292: Add generated blocked-cascade daemon-repair coverage for tranche 12 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.",
-    "pid": 1398399,
-    "state": "calling_llm",
-    "target_task": "Task checkbox-292: Add generated blocked-cascade daemon-repair coverage for tranche 12 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.",
-    "updated_at": "2026-05-04T04:39:19.465710Z"
+  "taskBoardRepair": {
+    "parkedRepeatedSyntaxLoopTasks": [
+      "Add generated blocked-cascade daemon-repair coverage for tranche 21 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates."
+    ],
+    "replenishedGoalTaskLabels": [],
+    "supersededTaskBoardOnlyLabels": [],
+    "taskBoardUpdated": true
   }
 }
