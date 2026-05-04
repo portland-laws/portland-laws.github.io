@@ -983,3 +983,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T073738Z-ported-tdfol-zkp-integration-to-a-browser-native-typescript-adapter-using-the-ex.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T073738Z-ported-tdfol-zkp-integration-to-a-browser-native-typescript-adapter-using-the-ex.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T073738Z-ported-tdfol-zkp-integration-to-a-browser-native-typescript-adapter-using-the-ex.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 07:42:49 UTC
+
+- Target: `Task checkbox-299: Port remaining Python logic module `logic/api_server.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Added a browser-native api_server-style request facade for health, conversion, and proof requests.
+- Impact: The TypeScript logic API now accepts endpoint-shaped requests in-process and routes them to existing browser-native conversion and proof cores without HTTP, Python, filesystem, subprocess, RPC, or server fallbacks. The focused Jest coverage validates successful health/convert/prove dispatch and fail-closed malformed request handling.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/api.test.ts`, `src/lib/logic/api.ts`, `src/lib/logic/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T074249Z-added-a-browser-native-api_server-style-request-facade-for-health-conversion-and.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T074249Z-added-a-browser-native-api_server-style-request-facade-for-health-conversion-and.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T074249Z-added-a-browser-native-api_server-style-request-facade-for-health-conversion-and.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

@@ -12,11 +12,15 @@ export {
   evaluateNlPolicy,
   evaluate_nl_policy,
   getGlobalLogicApi,
+  handleLogicApiServerRequest,
+  handle_logic_api_server_request,
   proveLogic,
   requireBrowserNativeSignedDelegation,
   resetGlobalLogicApi,
 } from './api';
 export type {
+  LogicApiServerRequest,
+  LogicApiServerResponse,
   LogicApiOptions,
   NlPolicyCompileResult,
   NlPolicyEvaluationResult,

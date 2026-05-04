@@ -809,7 +809,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/TDFOL/tdfol_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/TDFOL/tdfol_prover.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/TDFOL/zkp_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/api_server.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/api_server.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/batch_processing.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/cli.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/common/bounded_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 07:37:38 UTC
+Last updated: 2026-05-04 07:42:49 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-299: Port remaining Python logic module 'logic/api_server.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-300: Port remaining Python logic module 'logic/batch_processing.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1273,8 +1273,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-295: Port remaining Python logic module 'logic/TDFOL/tdfol_performance_engine.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-296: Port remaining Python logic module 'logic/TDFOL/tdfol_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-297: Port remaining Python logic module 'logic/TDFOL/tdfol_prover.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-298: Port remaining Python logic module 'logic/TDFOL/zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-299: Port remaining Python logic module 'logic/api_server.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-298: Port remaining Python logic module 'logic/TDFOL/zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-299: Port remaining Python logic module 'logic/api_server.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-300: Port remaining Python logic module 'logic/batch_processing.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-301: Port remaining Python logic module 'logic/cli.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-302: Port remaining Python logic module 'logic/common/bounded_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-298: Port remaining Python logic module 'logic/TDFOL/zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-299: Port remaining Python logic module 'logic/api_server.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported TDFOL ZKP integration to a browser-native TypeScript adapter using the existing simulated ZKP backend.
-- Impact: Adds exported TDFOL hybrid proof helpers that can produce private simulated ZKP proof results, fail closed for unavailable Groth16 proving, and validate the behavior through focused Jest coverage without Python, server, filesystem, subprocess, RPC, or Node-only browser runtime fallbacks.
-- Accepted changed files: `src/lib/logic/tdfol/index.ts`, `src/lib/logic/tdfol/zkpIntegration.test.ts`, `src/lib/logic/tdfol/zkpIntegration.ts`
+- Summary: Added a browser-native api_server-style request facade for health, conversion, and proof requests.
+- Impact: The TypeScript logic API now accepts endpoint-shaped requests in-process and routes them to existing browser-native conversion and proof cores without HTTP, Python, filesystem, subprocess, RPC, or server fallbacks. The focused Jest coverage validates successful health/convert/prove dispatch and fail-closed malformed request handling.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/api.test.ts`, `src/lib/logic/api.ts`, `src/lib/logic/index.ts`
 
 ### Blocked Backlog
 
