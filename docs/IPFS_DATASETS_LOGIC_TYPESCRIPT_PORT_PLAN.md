@@ -966,7 +966,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 15:40:43 UTC
+Last updated: 2026-05-04 15:55:49 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
@@ -1388,8 +1388,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-410: Port remaining Python logic module 'logic/observability/otel_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-411: Port remaining Python logic module 'logic/observability/structured_logging.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-412: Port remaining Python logic module 'logic/phase7_4_benchmarks.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-413: Port remaining Python logic module 'logic/security/audit_log.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-414: Port remaining Python logic module 'logic/security/input_validation.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-413: Port remaining Python logic module 'logic/security/audit_log.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [!] `Task checkbox-414: Port remaining Python logic module 'logic/security/input_validation.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - latest daemon round failed validation or preflight
 - [ ] `Task checkbox-415: Port remaining Python logic module 'logic/security/llm_circuit_breaker.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-416: Port remaining Python logic module 'logic/security/rate_limiting.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-417: Port remaining Python logic module 'logic/types/bridge_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,31 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-413: Port remaining Python logic module 'logic/security/audit_log.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
-- Result: `valid`
+- Target: `Task checkbox-414: Port remaining Python logic module 'logic/security/input_validation.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Result: `needs follow-up`
 - Summary: Worktree direct-edit proposal.
 - Impact: Git harvested the isolated-worktree edits for validation.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/security/auditLog.ts`, `src/lib/logic/security/security.test.ts`
+- Errors: worktree edit command failed without producing allowed changes: 2026-05-04T15:50:54.278088Z ERROR codex_models_manager::manager: failed to refresh available models: timeout waiting for child process to exit
+OpenAI Codex v0.128.0 (research preview)
+--------
+workdir: /home/barberb/portland-laws.github.io/ipfs_datasets_py/.daemon/logic-port-worktrees/cycle_03_20260504T155047798572Z_912725
+model: gpt-5.5
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: medium
+reasoning summaries: none
+session id: 019df3af-7046-7010-ab76-943fe647dd2d
+--------
+user
+You are Codex running inside a throwaway Git worktree for the TypeScript/WASM logic-port daemon.
+Edit files directly in this isolated worktree. Do not commit. Do not output or hand-author a patch.
+The daemon will harvest Git's canonical diff and complete file contents after your edit, then validate them in the real project.
+
+Task source:
+- Use docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md as the controlling task ledger.
+- Do not work from the deterministic legal-parser plans; t
+- Failure kind: `worktree_codex_failed`
 
 ### Blocked Backlog
 
