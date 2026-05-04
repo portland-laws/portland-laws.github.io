@@ -614,3 +614,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T050056Z-ported-the-tdfol-formula-dependency-graph-example-to-a-browser-native-typescript.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T050056Z-ported-the-tdfol-formula-dependency-graph-example-to-a-browser-native-typescript.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T050056Z-ported-the-tdfol-formula-dependency-graph-example-to-a-browser-native-typescript.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 05:02:59 UTC
+
+- Target: `Task checkbox-258: Port remaining Python logic module `logic/TDFOL/example_performance_profiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported logic/TDFOL/example_performance_profiler.py as a browser-native TDFOL profiler example runner.
+- Impact: The TypeScript TDFOL profiler now exposes runTdfolPerformanceProfilerExample(), which exercises profiling, memory snapshots, bottleneck classification, benchmark execution, and report generation without Python, server, filesystem, subprocess, or RPC dependencies. The focused Jest test validates the exported browser-native contract and the port ledger marks checkbox-258 complete.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/performanceProfiler.test.ts`, `src/lib/logic/tdfol/performanceProfiler.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T050259Z-ported-logic-tdfol-example_performance_profiler.py-as-a-browser-native-tdfol-pro.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T050259Z-ported-logic-tdfol-example_performance_profiler.py-as-a-browser-native-tdfol-pro.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T050259Z-ported-logic-tdfol-example_performance_profiler.py-as-a-browser-native-tdfol-pro.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

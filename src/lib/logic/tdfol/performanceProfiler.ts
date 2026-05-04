@@ -67,6 +67,24 @@ export interface TdfolBenchmarkResults {
   passRate: number;
 }
 
+export interface TdfolPerformanceProfilerExampleResult {
+  sourcePythonModule: 'logic/TDFOL/example_performance_profiler.py';
+  browserNative: true;
+  pythonRuntime: false;
+  serverRuntime: false;
+  profile: TdfolProfilingStats;
+  memory: TdfolMemoryStats;
+  bottlenecks: TdfolBottleneck[];
+  benchmarks: TdfolBenchmarkResults;
+  reports: Record<TdfolProfilerReportFormat, string>;
+  summary: {
+    profiledFunction: string;
+    benchmarkCount: number;
+    bottleneckCount: number;
+    passRate: number;
+  };
+}
+
 export class TdfolPerformanceProfiler {
   readonly history: Array<{ function: string; timestamp: string; stats: TdfolProfilingStats }> = [];
   readonly baseline: Record<string, number>;
@@ -96,11 +114,19 @@ export class TdfolPerformanceProfiler {
       callsPerRun: 1,
       meetsThreshold: stats.mean < 100,
     };
-    this.history.push({ function: functionName, timestamp: new Date().toISOString(), stats: profile });
+    this.history.push({
+      function: functionName,
+      timestamp: new Date().toISOString(),
+      stats: profile,
+    });
     return profile;
   }
 
-  identifyBottlenecks(samples: Array<{ function: string; timeMs: number; calls?: number }>, topN = 20, minTimeMs = 1): TdfolBottleneck[] {
+  identifyBottlenecks(
+    samples: Array<{ function: string; timeMs: number; calls?: number }>,
+    topN = 20,
+    minTimeMs = 1,
+  ): TdfolBottleneck[] {
     return samples
       .filter((sample) => sample.timeMs >= minTimeMs)
       .map((sample) => {
@@ -114,7 +140,11 @@ export class TdfolPerformanceProfiler {
           ...analyzed,
         };
       })
-      .sort((left, right) => severityOrder(left.severity) - severityOrder(right.severity) || right.timeMs - left.timeMs)
+      .sort(
+        (left, right) =>
+          severityOrder(left.severity) - severityOrder(right.severity) ||
+          right.timeMs - left.timeMs,
+      )
       .slice(0, topN);
   }
 
@@ -151,7 +181,9 @@ export class TdfolPerformanceProfiler {
         const timeMs = nowMs() - startedAt;
         const memoryMb = Math.max(0, getJsHeapMb() - memoryBefore);
         const baselineTimeMs = this.baseline[benchmark.name];
-        const regressionPct = baselineTimeMs ? ((timeMs - baselineTimeMs) / baselineTimeMs) * 100 : undefined;
+        const regressionPct = baselineTimeMs
+          ? ((timeMs - baselineTimeMs) / baselineTimeMs) * 100
+          : undefined;
         if (regressionPct !== undefined && regressionPct > 10) regressions += 1;
         results.push({
           name: benchmark.name,
@@ -191,18 +223,24 @@ export class TdfolPerformanceProfiler {
 
   generateReport(format: TdfolProfilerReportFormat = 'html'): string {
     if (format === 'json') {
-      return JSON.stringify({ timestamp: new Date().toISOString(), history: this.history, baseline: this.baseline }, null, 2);
+      return JSON.stringify(
+        { timestamp: new Date().toISOString(), history: this.history, baseline: this.baseline },
+        null,
+        2,
+      );
     }
     if (format === 'text') {
       return [
         'TDFOL Performance Profiling Report',
         `Generated: ${new Date().toISOString()}`,
         `Total profiles: ${this.history.length}`,
-        ...this.history.slice(-5).flatMap((entry) => [
-          `Function: ${entry.function}`,
-          `Mean time: ${entry.stats.meanTimeMs.toFixed(3)}ms`,
-          `Runs: ${entry.stats.runs}`,
-        ]),
+        ...this.history
+          .slice(-5)
+          .flatMap((entry) => [
+            `Function: ${entry.function}`,
+            `Mean time: ${entry.stats.meanTimeMs.toFixed(3)}ms`,
+            `Runs: ${entry.stats.runs}`,
+          ]),
       ].join('\n');
     }
     const data = JSON.stringify({ history: this.history, baseline: this.baseline });
@@ -215,7 +253,12 @@ export function getStandardBenchmarks(): TdfolBenchmarkConfig[] {
     { name: 'simple_propositional', formula: 'P ∧ Q', thresholdMs: 10, run: () => true },
     { name: 'simple_implication', formula: 'P → Q', thresholdMs: 10, run: () => true },
     { name: 'quantified_simple', formula: '∀x. P(x)', thresholdMs: 20, run: () => true },
-    { name: 'quantified_complex', formula: '∀x. ∃y. (P(x) → Q(x, y))', thresholdMs: 100, run: () => true },
+    {
+      name: 'quantified_complex',
+      formula: '∀x. ∃y. (P(x) → Q(x, y))',
+      thresholdMs: 100,
+      run: () => true,
+    },
     { name: 'temporal_always', formula: '□P', thresholdMs: 10, run: () => true },
     { name: 'temporal_eventually', formula: '◊P', thresholdMs: 10, run: () => true },
     { name: 'deontic_obligation', formula: 'O(P)', thresholdMs: 10, run: () => true },
@@ -223,17 +266,110 @@ export function getStandardBenchmarks(): TdfolBenchmarkConfig[] {
   ];
 }
 
-export function profileTdfolFunction<T>(functionName: string, fn: () => T, runs = 10): TdfolProfilingStats {
+export function profileTdfolFunction<T>(
+  functionName: string,
+  fn: () => T,
+  runs = 10,
+): TdfolProfilingStats {
   return new TdfolPerformanceProfiler().profileFunction(functionName, fn, runs);
 }
 
-function analyzeBottleneck(functionName: string, totalTimeMs: number, calls: number): Pick<TdfolBottleneck, 'severity' | 'recommendation' | 'complexityEstimate'> {
-  if (calls > 1000) return { severity: 'critical', recommendation: `Potential O(n^3) operation with ${calls} calls. Consider indexing or caching.`, complexityEstimate: 'O(n^3)' };
-  if (totalTimeMs > 1000 && functionName.toLowerCase().includes('unify')) return { severity: 'critical', recommendation: 'Unification is slow. Consider indexed KB or constraint propagation.', complexityEstimate: 'O(n^2)' };
-  if (totalTimeMs > 1000 && functionName.toLowerCase().includes('prove')) return { severity: 'critical', recommendation: 'Proving is slow. Enable caching or use optimized prover.' };
-  if (totalTimeMs > 1000) return { severity: 'critical', recommendation: `Function takes ${(totalTimeMs / 1000).toFixed(2)}s. Profile and optimize.` };
-  if (totalTimeMs > 100) return { severity: 'high', recommendation: `Function takes ${totalTimeMs.toFixed(1)}ms. Consider optimization.` };
-  if (totalTimeMs > 10) return { severity: 'medium', recommendation: 'Minor bottleneck. Optimize if called frequently.' };
+export function runTdfolPerformanceProfilerExample(
+  options: { runs?: number } = {},
+): TdfolPerformanceProfilerExampleResult {
+  const profiler = new TdfolPerformanceProfiler({
+    baseline: {
+      example_quantified_profile: 100,
+      quantified_complex: 100,
+    },
+  });
+  const profile = profiler.profileFunction(
+    'example_quantified_profile',
+    () => deterministicTdfolWorkload('forall x. obligation(x) implies eventually compliant(x)'),
+    options.runs ?? 3,
+  );
+  const memory = profiler.memoryProfile('example_memory_snapshot', () =>
+    deterministicTdfolWorkload('always permitted(agent, action)'),
+  );
+  const bottlenecks = profiler.identifyBottlenecks([
+    {
+      function: profile.functionName,
+      timeMs: Math.max(profile.totalTimeMs, 1),
+      calls: profile.runs,
+    },
+    { function: 'tdfol_rule_loop', timeMs: 3, calls: 1501 },
+    { function: 'tdfol_report_render', timeMs: 12, calls: 1 },
+  ]);
+  const benchmarks = profiler.runBenchmarkSuite([
+    {
+      name: 'example_quantified_profile',
+      formula: 'forall x. obligation(x) -> eventually compliant(x)',
+      thresholdMs: 100,
+      run: () => deterministicTdfolWorkload('obligation compliant eventually'),
+    },
+  ]);
+  const reports: Record<TdfolProfilerReportFormat, string> = {
+    text: profiler.generateReport('text'),
+    json: profiler.generateReport('json'),
+    html: profiler.generateReport('html'),
+  };
+
+  return {
+    sourcePythonModule: 'logic/TDFOL/example_performance_profiler.py',
+    browserNative: true,
+    pythonRuntime: false,
+    serverRuntime: false,
+    profile,
+    memory,
+    bottlenecks,
+    benchmarks,
+    reports,
+    summary: {
+      profiledFunction: profile.functionName,
+      benchmarkCount: benchmarks.benchmarks.length,
+      bottleneckCount: bottlenecks.length,
+      passRate: benchmarks.passRate,
+    },
+  };
+}
+
+function analyzeBottleneck(
+  functionName: string,
+  totalTimeMs: number,
+  calls: number,
+): Pick<TdfolBottleneck, 'severity' | 'recommendation' | 'complexityEstimate'> {
+  if (calls > 1000)
+    return {
+      severity: 'critical',
+      recommendation: `Potential O(n^3) operation with ${calls} calls. Consider indexing or caching.`,
+      complexityEstimate: 'O(n^3)',
+    };
+  if (totalTimeMs > 1000 && functionName.toLowerCase().includes('unify'))
+    return {
+      severity: 'critical',
+      recommendation: 'Unification is slow. Consider indexed KB or constraint propagation.',
+      complexityEstimate: 'O(n^2)',
+    };
+  if (totalTimeMs > 1000 && functionName.toLowerCase().includes('prove'))
+    return {
+      severity: 'critical',
+      recommendation: 'Proving is slow. Enable caching or use optimized prover.',
+    };
+  if (totalTimeMs > 1000)
+    return {
+      severity: 'critical',
+      recommendation: `Function takes ${(totalTimeMs / 1000).toFixed(2)}s. Profile and optimize.`,
+    };
+  if (totalTimeMs > 100)
+    return {
+      severity: 'high',
+      recommendation: `Function takes ${totalTimeMs.toFixed(1)}ms. Consider optimization.`,
+    };
+  if (totalTimeMs > 10)
+    return {
+      severity: 'medium',
+      recommendation: 'Minor bottleneck. Optimize if called frequently.',
+    };
   return { severity: 'low', recommendation: 'Performance acceptable.' };
 }
 
@@ -242,14 +378,31 @@ function severityOrder(severity: TdfolBottleneckSeverity): number {
 }
 
 function getJsHeapMb(): number {
-  const memory = (globalThis.performance as (Performance & { memory?: { usedJSHeapSize?: number } }) | undefined)?.memory;
+  const memory = (
+    globalThis.performance as (Performance & { memory?: { usedJSHeapSize?: number } }) | undefined
+  )?.memory;
   return memory?.usedJSHeapSize ? memory.usedJSHeapSize / 1024 / 1024 : 0;
 }
 
 function nowMs(): number {
-  return typeof globalThis.performance?.now === 'function' ? globalThis.performance.now() : Date.now();
+  return typeof globalThis.performance?.now === 'function'
+    ? globalThis.performance.now()
+    : Date.now();
 }
 
 function escapeHtml(value: string): string {
-  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+function deterministicTdfolWorkload(formula: string): number {
+  let score = 0;
+  for (let index = 0; index < formula.length; index += 1) {
+    const code = formula.charCodeAt(index);
+    score = (score + code * (index + 1)) % 9973;
+  }
+  return score;
 }
