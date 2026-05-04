@@ -34,6 +34,14 @@ export * from './neurosymbolic';
 export * from './nlUcanPolicyCompiler';
 export * from './proverAdapters';
 export * from './proverInstaller';
+export {
+  BrowserNativeIntegrationSymbolicContracts,
+  INTEGRATION_SYMBOLIC_CONTRACTS_METADATA,
+  analyzeIntegrationSymbolicContract,
+  type IntegrationSymbolicContractClause,
+  type IntegrationSymbolicContractElement,
+  type IntegrationSymbolicContractResult,
+} from './symbolicContracts';
 export * from './symbolicAiProverBridge';
 export * from './symbolic/symbolicLogicPrimitives';
 export * from './symbolicFolBridge';
