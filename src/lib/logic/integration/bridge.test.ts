@@ -1,4 +1,5 @@
 import { BrowserNativeLogicBridge, createBrowserNativeLogicBridge } from './bridge';
+import { createBrowserNativeBaseProverBridge } from './baseProverBridge';
 import {
   createBrowserNativeCvc5ProverBridge,
   type BrowserNativeCvc5ProofResult,
@@ -424,6 +425,66 @@ describe('BrowserNativeLogicBridge', () => {
       theorem: 'opaque theorem',
       method: 'adapter:test-local-adapter:injected-local-proof',
     });
+  });
+
+  it('ports base_prover_bridge.py as a browser-native fail-closed adapter wrapper', () => {
+    const adapter: BrowserNativeProofAdapter = {
+      metadata: {
+        logic: 'tdfol',
+        name: 'base-test-local-adapter',
+        runtime: 'typescript-wasm-browser',
+        requiresExternalProver: false,
+      },
+      supports: (logic) => logic === 'tdfol',
+      prove: (request) => ({
+        status: 'proved',
+        theorem: request.theorem,
+        steps: [],
+        method: 'local-proof',
+      }),
+    };
+    const bridge = createBrowserNativeBaseProverBridge(adapter);
+
+    const validation = bridge.validateRequest({
+      logic: 'tdfol',
+      theorem: '  Resident(Ada)  ',
+      axioms: [' Resident(Ada) ', ''],
+    });
+    const result = bridge.prove({
+      logic: 'tdfol',
+      theorem: '  Resident(Ada)  ',
+      axioms: [' Resident(Ada) ', ''],
+    });
+
+    expect(bridge.getMetadata()).toMatchObject({
+      sourcePythonModule: 'logic/integration/base_prover_bridge.py',
+      runtime: 'typescript-wasm-browser',
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      subprocessAllowed: false,
+      rpcAllowed: false,
+      externalProverAllowed: false,
+      failClosed: true,
+      supportedLogics: ['tdfol'],
+      name: 'base-test-local-adapter',
+    });
+    expect(bridge.getProverInfo()).toMatchObject({
+      available: true,
+      requiresExternalProver: false,
+      sourcePythonModule: 'logic/integration/base_prover_bridge.py',
+    });
+    expect(validation.normalizedRequest).toMatchObject({
+      theorem: 'Resident(Ada)',
+      axioms: ['Resident(Ada)'],
+    });
+    expect(result).toMatchObject({
+      status: 'proved',
+      theorem: 'Resident(Ada)',
+      method: 'base-prover-bridge:base-test-local-adapter:local-proof',
+    });
+    expect(() => bridge.prove({ logic: 'cec', theorem: 'p', axioms: [] })).toThrow(
+      'Invalid browser-native proof request: unsupported logic: cec',
+    );
   });
 
   it('returns explicit unsupported conversion results for missing local routes', () => {
