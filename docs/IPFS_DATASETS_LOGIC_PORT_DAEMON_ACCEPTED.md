@@ -461,3 +461,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T035330Z-ported-cec-language_detector.py-to-a-browser-native-deterministic-typescript-det.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T035330Z-ported-cec-language_detector.py-to-a-browser-native-deterministic-typescript-det.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T035330Z-ported-cec-language_detector.py-to-a-browser-native-deterministic-typescript-det.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 03:56:20 UTC
+
+- Target: `Task checkbox-241: Port remaining Python logic module `logic/CEC/nl/nl_policy_conflict_detector.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the CEC natural-language policy conflict detector to browser-native TypeScript.
+- Impact: Adds a CEC-exported deterministic policy conflict detector that extracts deontic NL statements from in-memory policy documents, reports direct/conditional/jurisdictional/temporal conflicts, and is covered by focused Jest validation without server, filesystem, Python, or RPC dependencies.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/index.ts`, `src/lib/logic/cec/nlPolicyConflictDetector.test.ts`, `src/lib/logic/cec/nlPolicyConflictDetector.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T035620Z-ported-the-cec-natural-language-policy-conflict-detector-to-browser-native-types.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T035620Z-ported-the-cec-natural-language-policy-conflict-detector-to-browser-native-types.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T035620Z-ported-the-cec-natural-language-policy-conflict-detector-to-browser-native-types.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

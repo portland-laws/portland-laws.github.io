@@ -30,6 +30,7 @@ export * from './lemmaGeneration';
 export * from './modalTableaux';
 export * from './nativeTypes';
 export * from './nlConverter';
+export * from './nlPolicyConflictDetector';
 export * from './parser';
 export * from './performanceDashboard';
 export * from './performanceEngine';

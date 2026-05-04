@@ -751,7 +751,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/CEC/nl/german_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/CEC/nl/grammar_nl_policy_compiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/CEC/nl/language_detector.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/nl/nl_policy_conflict_detector.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/CEC/nl/nl_policy_conflict_detector.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/nl/nl_to_policy_compiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/nl/portuguese_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/nl/spanish_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 03:53:30 UTC
+Last updated: 2026-05-04 03:56:20 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-241: Port remaining Python logic module 'logic/CEC/nl/nl_policy_conflict_detector.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-242: Port remaining Python logic module 'logic/CEC/nl/nl_to_policy_compiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1215,8 +1215,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-237: Port remaining Python logic module 'logic/CEC/nl/french_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-238: Port remaining Python logic module 'logic/CEC/nl/german_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-239: Port remaining Python logic module 'logic/CEC/nl/grammar_nl_policy_compiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-240: Port remaining Python logic module 'logic/CEC/nl/language_detector.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-241: Port remaining Python logic module 'logic/CEC/nl/nl_policy_conflict_detector.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-240: Port remaining Python logic module 'logic/CEC/nl/language_detector.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-241: Port remaining Python logic module 'logic/CEC/nl/nl_policy_conflict_detector.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-242: Port remaining Python logic module 'logic/CEC/nl/nl_to_policy_compiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-243: Port remaining Python logic module 'logic/CEC/nl/portuguese_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-244: Port remaining Python logic module 'logic/CEC/nl/spanish_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-240: Port remaining Python logic module 'logic/CEC/nl/language_detector.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-241: Port remaining Python logic module 'logic/CEC/nl/nl_policy_conflict_detector.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported CEC language_detector.py to a browser-native deterministic TypeScript detector.
-- Impact: Adds a reusable CEC language detector under src/lib/logic with Python-compatible aliases, explicit browser-native capability metadata, and focused Jest coverage in the existing validate:logic-port CEC NL test path. The port performs local keyword-profile scoring for English, Spanish, French, German, Portuguese, and fail-closed unknown inputs without server, Python, filesystem, subprocess, or RPC dependencies.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/index.ts`, `src/lib/logic/cec/languageDetector.ts`, `src/lib/logic/cec/nlConverter.test.ts`
+- Summary: Ported the CEC natural-language policy conflict detector to browser-native TypeScript.
+- Impact: Adds a CEC-exported deterministic policy conflict detector that extracts deontic NL statements from in-memory policy documents, reports direct/conditional/jurisdictional/temporal conflicts, and is covered by focused Jest validation without server, filesystem, Python, or RPC dependencies.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/index.ts`, `src/lib/logic/cec/nlPolicyConflictDetector.test.ts`, `src/lib/logic/cec/nlPolicyConflictDetector.ts`
 
 ### Blocked Backlog
 
