@@ -1,6 +1,8 @@
 import {
   BrowserNativeLogicVerification,
   LogicVerifier,
+  get_logic_verifier_backends,
+  select_logic_verifier_backend,
   verify_logic_formula,
 } from './logicVerification';
 import {
@@ -30,7 +32,12 @@ describe('BrowserNativeLogicVerification', () => {
     expect(result).toMatchObject({
       status: 'verified',
       success: true,
-      checks: expect.arrayContaining(['balanced_delimiters', 'cec_syntax']),
+      checks: expect.arrayContaining(['balanced_delimiters', 'backend:cec', 'cec_syntax']),
+      backend: {
+        name: 'cec',
+        available: true,
+        sourcePythonModule: 'logic/integration/reasoning/_logic_verifier_backends_mixin.py',
+      },
       metadata: { sourcePythonModule: 'logic/integration/logic_verification.py' },
     });
   });
@@ -52,6 +59,40 @@ describe('BrowserNativeLogicVerification', () => {
     ).toMatchObject({
       status: 'unsupported',
       success: false,
+    });
+  });
+
+  it('ports reasoning logic verifier backend mixin selection without runtime bridges', () => {
+    const verifier = new BrowserNativeLogicVerification();
+    const backends = get_logic_verifier_backends();
+
+    expect(verifier.backendsMetadata).toMatchObject({
+      sourcePythonModule: 'logic/integration/reasoning/_logic_verifier_backends_mixin.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      runtimeDependencies: [],
+    });
+    expect(backends.map((backend) => backend.name)).toEqual(
+      expect.arrayContaining(['local', 'fol', 'tdfol', 'cec', 'dcec', 'z3', 'cvc5', 'lean']),
+    );
+    expect(select_logic_verifier_backend('tdfol')).toMatchObject({
+      name: 'tdfol',
+      available: true,
+      runtimeDependencies: [],
+    });
+    expect(verifier.verify('Tenant(x)', { format: 'fol', backend: 'z3' })).toMatchObject({
+      status: 'unsupported',
+      success: false,
+      backend: {
+        name: 'z3',
+        available: false,
+        failureMode: 'fail_closed',
+        runtimeDependencies: [],
+      },
+      issues: expect.arrayContaining([
+        expect.objectContaining({ field: 'backend', severity: 'error' }),
+      ]),
     });
   });
 

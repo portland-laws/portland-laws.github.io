@@ -11,16 +11,38 @@ import {
 
 export type LogicVerificationFormat = 'auto' | 'fol' | 'tdfol' | 'cec' | 'dcec';
 export type LogicVerificationStatus = 'verified' | 'invalid' | 'unsupported';
+export type LogicVerifierBackendName =
+  | 'local'
+  | 'fol'
+  | 'tdfol'
+  | 'cec'
+  | 'dcec'
+  | 'z3'
+  | 'cvc5'
+  | 'lean'
+  | 'external';
 
 export interface LogicVerificationOptions {
   format?: LogicVerificationFormat;
   requirePredicate?: boolean;
+  backend?: LogicVerifierBackendName;
+}
+export interface LogicVerifierBackendDescriptor {
+  name: LogicVerifierBackendName;
+  formats: Array<LogicVerificationFormat>;
+  available: boolean;
+  browserNative: boolean;
+  wasmCompatible: boolean;
+  failureMode: 'local' | 'fail_closed';
+  runtimeDependencies: Array<string>;
+  sourcePythonModule: 'logic/integration/reasoning/_logic_verifier_backends_mixin.py';
 }
 export interface LogicVerificationResult {
   status: LogicVerificationStatus;
   success: boolean;
   formula: string;
   format: LogicVerificationFormat;
+  backend: LogicVerifierBackendDescriptor;
   normalizedFormula: string;
   checks: Array<string>;
   issues: Array<LogicValidationIssue>;
@@ -36,17 +58,95 @@ export const LOGIC_VERIFICATION_METADATA = {
   parity: [
     'local_formula_validation',
     'parser_backed_fol_tdfol_cec_validation',
+    'logic_verifier_backends_mixin_selection',
     'logic_verification_utils_normalization',
     'fail_closed_unsupported_runtime',
   ] as Array<string>,
 } as const;
 
+export const LOGIC_VERIFIER_BACKENDS_MIXIN_METADATA = {
+  sourcePythonModule: 'logic/integration/reasoning/_logic_verifier_backends_mixin.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  runtimeDependencies: [] as Array<string>,
+} as const;
+
+const LOGIC_VERIFIER_BACKENDS: Array<LogicVerifierBackendDescriptor> = [
+  {
+    name: 'local',
+    formats: ['fol', 'tdfol', 'cec'],
+    available: true,
+    browserNative: true,
+    wasmCompatible: true,
+    failureMode: 'local',
+    runtimeDependencies: [],
+    sourcePythonModule: 'logic/integration/reasoning/_logic_verifier_backends_mixin.py',
+  },
+  {
+    name: 'fol',
+    formats: ['fol'],
+    available: true,
+    browserNative: true,
+    wasmCompatible: true,
+    failureMode: 'local',
+    runtimeDependencies: [],
+    sourcePythonModule: 'logic/integration/reasoning/_logic_verifier_backends_mixin.py',
+  },
+  {
+    name: 'tdfol',
+    formats: ['tdfol'],
+    available: true,
+    browserNative: true,
+    wasmCompatible: true,
+    failureMode: 'local',
+    runtimeDependencies: [],
+    sourcePythonModule: 'logic/integration/reasoning/_logic_verifier_backends_mixin.py',
+  },
+  {
+    name: 'cec',
+    formats: ['cec'],
+    available: true,
+    browserNative: true,
+    wasmCompatible: true,
+    failureMode: 'local',
+    runtimeDependencies: [],
+    sourcePythonModule: 'logic/integration/reasoning/_logic_verifier_backends_mixin.py',
+  },
+  ...(['dcec', 'z3', 'cvc5', 'lean', 'external'] as Array<LogicVerifierBackendName>).map(
+    (name): LogicVerifierBackendDescriptor => ({
+      name,
+      formats: name === 'dcec' ? ['dcec'] : ['fol', 'tdfol', 'cec', 'dcec'],
+      available: false,
+      browserNative: true,
+      wasmCompatible: false,
+      failureMode: 'fail_closed',
+      runtimeDependencies: [],
+      sourcePythonModule: 'logic/integration/reasoning/_logic_verifier_backends_mixin.py',
+    }),
+  ),
+];
+
 export class BrowserNativeLogicVerification {
   readonly metadata = LOGIC_VERIFICATION_METADATA;
+  readonly backendsMetadata = LOGIC_VERIFIER_BACKENDS_MIXIN_METADATA;
+
+  getBackends(): Array<LogicVerifierBackendDescriptor> {
+    return getLogicVerifierBackends();
+  }
+
+  selectBackend(
+    format: LogicVerificationFormat,
+    backend?: LogicVerifierBackendName,
+  ): LogicVerifierBackendDescriptor {
+    return selectLogicVerifierBackend(format, backend);
+  }
 
   verify(formula: string, options: LogicVerificationOptions = {}): LogicVerificationResult {
     const format = options.format ?? 'auto';
     const normalizedFormula = normalizeLogicVerificationFormula(formula);
+    const detectedFormat = format === 'auto' ? detectFormat(normalizedFormula) : format;
+    const backend = this.selectBackend(detectedFormat, options.backend);
     const checks = ['input_string', 'no_runtime_bridge_markers', 'balanced_delimiters'];
     const issues: Array<LogicValidationIssue> = [];
 
@@ -54,7 +154,7 @@ export class BrowserNativeLogicVerification {
       validateFormulaString(formula, { fieldName: 'formula' });
     } catch (error) {
       issues.push({ severity: 'error', field: 'formula', message: errorMessage(error) });
-      return buildResult('invalid', formula, format, normalizedFormula, checks, issues);
+      return buildResult('invalid', formula, format, backend, normalizedFormula, checks, issues);
     }
 
     if (!detectLogicVerificationRuntimeBridge(normalizedFormula).safe)
@@ -73,7 +173,23 @@ export class BrowserNativeLogicVerification {
         message: 'Formula must contain at least one predicate application.',
       });
 
-    const detectedFormat = format === 'auto' ? detectFormat(normalizedFormula) : format;
+    checks.push(`backend:${backend.name}`);
+    if (!backend.available || !backend.formats.includes(detectedFormat)) {
+      issues.push({
+        severity: 'error',
+        field: 'backend',
+        message: `Logic verifier backend '${backend.name}' is not available in the browser-native runtime for ${detectedFormat}.`,
+      });
+      return buildResult(
+        'unsupported',
+        formula,
+        format,
+        backend,
+        normalizedFormula,
+        checks,
+        issues,
+      );
+    }
     checks.push(`${detectedFormat}_syntax`);
     issues.push(...validateByFormat(normalizedFormula, detectedFormat));
     if (detectedFormat === 'dcec') {
@@ -82,12 +198,21 @@ export class BrowserNativeLogicVerification {
         field: 'format',
         message: 'DCEC verification requires a dedicated local adapter and fails closed here.',
       });
-      return buildResult('unsupported', formula, format, normalizedFormula, checks, issues);
+      return buildResult(
+        'unsupported',
+        formula,
+        format,
+        backend,
+        normalizedFormula,
+        checks,
+        issues,
+      );
     }
     return buildResult(
       hasErrors(issues) ? 'invalid' : 'verified',
       formula,
       format,
+      backend,
       normalizedFormula,
       checks,
       issues,
@@ -112,11 +237,28 @@ export const verifyLogicFormula = (
   options: LogicVerificationOptions = {},
 ): LogicVerificationResult => createBrowserNativeLogicVerification().verify(formula, options);
 export const verify_logic_formula = verifyLogicFormula;
+export const getLogicVerifierBackends = (): Array<LogicVerifierBackendDescriptor> =>
+  LOGIC_VERIFIER_BACKENDS.map((backend) => ({ ...backend, formats: [...backend.formats] }));
+export const get_logic_verifier_backends = getLogicVerifierBackends;
+export const selectLogicVerifierBackend = (
+  format: LogicVerificationFormat,
+  backend: LogicVerifierBackendName = 'local',
+): LogicVerifierBackendDescriptor => {
+  const selected = LOGIC_VERIFIER_BACKENDS.find((entry) => entry.name === backend);
+  if (!selected) return LOGIC_VERIFIER_BACKENDS[0];
+  if (backend === 'local' && format !== 'auto') {
+    const formatBackend = LOGIC_VERIFIER_BACKENDS.find((entry) => entry.name === format);
+    return formatBackend && formatBackend.available ? formatBackend : selected;
+  }
+  return selected;
+};
+export const select_logic_verifier_backend = selectLogicVerifierBackend;
 
 function buildResult(
   status: LogicVerificationStatus,
   formula: string,
   format: LogicVerificationFormat,
+  backend: LogicVerifierBackendDescriptor,
   normalizedFormula: string,
   checks: Array<string>,
   issues: Array<LogicValidationIssue>,
@@ -126,6 +268,7 @@ function buildResult(
     success: status === 'verified',
     formula,
     format,
+    backend,
     normalizedFormula,
     checks,
     issues,

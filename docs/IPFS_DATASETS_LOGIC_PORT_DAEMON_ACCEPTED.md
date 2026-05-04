@@ -1712,3 +1712,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T133534Z-ported-the-integration-reasoning-deontic-conflict-mixin-as-a-browser-native-type.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T133534Z-ported-the-integration-reasoning-deontic-conflict-mixin-as-a-browser-native-type.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T133534Z-ported-the-integration-reasoning-deontic-conflict-mixin-as-a-browser-native-type.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 13:39:05 UTC
+
+- Target: `Task checkbox-381: Port remaining Python logic module `logic/integration/reasoning/_logic_verifier_backends_mixin.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the reasoning logic verifier backend mixin as browser-native backend discovery and selection in the existing TypeScript verifier.
+- Impact: src/lib/logic/integration/logicVerification.ts now returns deterministic backend metadata on every verification result, selects local FOL/TDFOL/CEC adapters without Python or server calls, and fails closed for DCEC/external prover-style backends. src/lib/logic/integration/logicVerification.test.ts validates the backend registry, local selection, and unsupported-backend behavior in Jest.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/logicVerification.test.ts`, `src/lib/logic/integration/logicVerification.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T133905Z-ported-the-reasoning-logic-verifier-backend-mixin-as-browser-native-backend-disc.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T133905Z-ported-the-reasoning-logic-verifier-backend-mixin-as-browser-native-backend-disc.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T133905Z-ported-the-reasoning-logic-verifier-backend-mixin-as-browser-native-backend-disc.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
