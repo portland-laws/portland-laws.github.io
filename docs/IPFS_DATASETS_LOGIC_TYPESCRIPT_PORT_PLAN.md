@@ -836,7 +836,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/external_provers/prover_router.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/external_provers/smt/cvc5_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/external_provers/smt/z3_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/flogic/ergoai_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/flogic/ergoai_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/flogic/flogic_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/flogic/flogic_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/flogic/flogic_zkp_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 09:53:49 UTC
+Last updated: 2026-05-04 09:56:32 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-326: Port remaining Python logic module 'logic/flogic/ergoai_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-327: Port remaining Python logic module 'logic/flogic/flogic_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1300,8 +1300,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-322: Port remaining Python logic module 'logic/external_provers/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-323: Port remaining Python logic module 'logic/external_provers/prover_router.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-324: Port remaining Python logic module 'logic/external_provers/smt/cvc5_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-325: Port remaining Python logic module 'logic/external_provers/smt/z3_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-326: Port remaining Python logic module 'logic/flogic/ergoai_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-325: Port remaining Python logic module 'logic/external_provers/smt/z3_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-326: Port remaining Python logic module 'logic/flogic/ergoai_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-327: Port remaining Python logic module 'logic/flogic/flogic_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-328: Port remaining Python logic module 'logic/flogic/flogic_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-329: Port remaining Python logic module 'logic/flogic/flogic_zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-325: Port remaining Python logic module 'logic/external_provers/smt/z3_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-326: Port remaining Python logic module 'logic/flogic/ergoai_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported the external Z3 SMT prover bridge as a browser-native TypeScript compatibility adapter.
-- Impact: The logic integration layer now exports a Z3-compatible TDFOL adapter that runs local browser-native proof search, emits SMT-LIB/check-sat metadata, and explicitly disallows Python, subprocess, RPC, and server fallbacks. The existing Jest integration validation directly exercises the new Z3 bridge contract.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/z3ProverBridge.ts`
+- Summary: Ported the F-logic ErgoAI wrapper surface to browser-native TypeScript with fail-closed local query behavior.
+- Impact: The TypeScript F-logic export now includes an ErgoAIWrapper-compatible adapter for ontology construction, Ergo program rendering, statistics, batch query result shapes, and deterministic Ergo output parsing without subprocesses, filesystem access, RPC, Python, or server dependencies. Focused Jest coverage exercises the wrapper through the existing flogic validation suite.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/flogic/ergoaiWrapper.ts`, `src/lib/logic/flogic/index.ts`, `src/lib/logic/flogic/parser.test.ts`
 
 ### Blocked Backlog
 

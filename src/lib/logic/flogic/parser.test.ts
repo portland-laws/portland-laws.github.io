@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
 import { frameToDisplayRow, formatFLogicOntology } from './formatter';
+import { ERGOAI_AVAILABLE, ErgoAIWrapper, parseErgoOutput } from './ergoaiWrapper';
 import { normalizeFLogicGoal, parseFLogicOntology } from './parser';
 
 const generatedProgram = `
@@ -70,7 +71,10 @@ describe('F-logic parser', () => {
   it('parses all generated Portland F-logic snippets without warnings', () => {
     const rows = JSON.parse(
       readFileSync(
-        resolve(process.cwd(), 'public/corpus/portland-or/current/generated/logic-proof-summaries.json'),
+        resolve(
+          process.cwd(),
+          'public/corpus/portland-or/current/generated/logic-proof-summaries.json',
+        ),
         'utf8',
       ),
     ) as Array<{ frame_logic_ergo: string }>;
@@ -82,5 +86,54 @@ describe('F-logic parser', () => {
 
     expect(warningCount).toBe(0);
   });
-});
 
+  it('exposes a browser-native ErgoAI wrapper for structural operations', () => {
+    const wrapper = new ErgoAIWrapper('Portland wrapper');
+    wrapper.addClass({
+      classId: 'PortlandCityCodeSection',
+      superclasses: ['CityCodeSection'],
+      signatureMethods: {},
+    });
+    wrapper.addFrame({
+      objectId: 'portland_city_code_1_01_010',
+      scalarMethods: { identifier: 'Portland City Code 1.01.010' },
+      setMethods: {},
+      isa: 'PortlandCityCodeSection',
+      isaset: ['PortlandCityCodeSection'],
+    });
+    wrapper.addRule('requires_compliance(?Agent, ?Section) :- ?Section : PortlandCityCodeSection.');
+
+    expect(ERGOAI_AVAILABLE).toBe(false);
+    expect(wrapper.getStatistics()).toEqual({
+      ontologyName: 'Portland wrapper',
+      frames: 1,
+      classes: 1,
+      rules: 1,
+      simulationMode: true,
+      ergoaiBinary: null,
+    });
+    expect(wrapper.getProgram()).toContain('portland_city_code_1_01_010');
+    expect(wrapper.buildErgoProgram('?Section : PortlandCityCodeSection')).toContain(
+      '?- ?Section : PortlandCityCodeSection.',
+    );
+  });
+
+  it('fails closed for browser-local ErgoAI queries while preserving query shape', () => {
+    const wrapper = new ErgoAIWrapper();
+    const [first, second] = wrapper.batchQuery(['?X : Dog', '?Y : Cat']);
+
+    expect(first).toMatchObject({
+      goal: '?X : Dog',
+      bindings: [],
+      status: 'unknown',
+    });
+    expect(first.errorMessage).toContain('browser-native TypeScript runtime');
+    expect(second.goal).toBe('?Y : Cat');
+  });
+
+  it('parses ErgoAI-style textual bindings deterministically', () => {
+    const bindings = parseErgoOutput('% comment\n?X = rex, ?Y = Dog\nunrelated\n?X = fido');
+
+    expect(bindings).toEqual([{ '?X': 'rex', '?Y': 'Dog' }, { '?X': 'fido' }]);
+  });
+});

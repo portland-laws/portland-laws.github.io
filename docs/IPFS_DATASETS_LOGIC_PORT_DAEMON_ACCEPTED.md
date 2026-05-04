@@ -1217,3 +1217,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T095349Z-ported-the-external-z3-smt-prover-bridge-as-a-browser-native-typescript-compatib.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T095349Z-ported-the-external-z3-smt-prover-bridge-as-a-browser-native-typescript-compatib.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T095349Z-ported-the-external-z3-smt-prover-bridge-as-a-browser-native-typescript-compatib.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 09:56:32 UTC
+
+- Target: `Task checkbox-326: Port remaining Python logic module `logic/flogic/ergoai_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the F-logic ErgoAI wrapper surface to browser-native TypeScript with fail-closed local query behavior.
+- Impact: The TypeScript F-logic export now includes an ErgoAIWrapper-compatible adapter for ontology construction, Ergo program rendering, statistics, batch query result shapes, and deterministic Ergo output parsing without subprocesses, filesystem access, RPC, Python, or server dependencies. Focused Jest coverage exercises the wrapper through the existing flogic validation suite.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/flogic/ergoaiWrapper.ts`, `src/lib/logic/flogic/index.ts`, `src/lib/logic/flogic/parser.test.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T095632Z-ported-the-f-logic-ergoai-wrapper-surface-to-browser-native-typescript-with-fail.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T095632Z-ported-the-f-logic-ergoai-wrapper-surface-to-browser-native-typescript-with-fail.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T095632Z-ported-the-f-logic-ergoai-wrapper-surface-to-browser-native-typescript-with-fail.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
