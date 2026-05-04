@@ -966,7 +966,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 03:20:55 UTC
+Last updated: 2026-05-04 03:29:48 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
@@ -1209,8 +1209,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-231: Port remaining Python logic module 'logic/CEC/native/prover_core_extended_rules.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-232: Port remaining Python logic module 'logic/CEC/native/shadow_prover.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-233: Port remaining Python logic module 'logic/CEC/native/syntax_tree.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-234: Port remaining Python logic module 'logic/CEC/nl/base_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-235: Port remaining Python logic module 'logic/CEC/nl/dcec_to_ucan_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-234: Port remaining Python logic module 'logic/CEC/nl/base_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [!] `Task checkbox-235: Port remaining Python logic module 'logic/CEC/nl/dcec_to_ucan_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - latest daemon round failed validation or preflight
 - [ ] `Task checkbox-236: Port remaining Python logic module 'logic/CEC/nl/domain_vocabularies/domain_vocab.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-237: Port remaining Python logic module 'logic/CEC/nl/french_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-238: Port remaining Python logic module 'logic/CEC/nl/german_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,22 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-234: Port remaining Python logic module 'logic/CEC/nl/base_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
-- Result: `valid`
-- Summary: Added a browser-native deterministic CEC base natural-language parser surface for logic/CEC/nl/base_parser.py.
-- Impact: src/lib/logic/cec/parser.ts now exposes browser-native base_parser-compatible parsing metadata, fail-closed results, Python-compatible aliases, and deterministic deontic/temporal/conditional conversion to CEC AST/formula strings. src/lib/logic/cec/parser.test.ts directly validates the new runtime surface without Python, server, filesystem, subprocess, or RPC dependencies.
-- Accepted changed files: `src/lib/logic/cec/parser.test.ts`, `src/lib/logic/cec/parser.ts`
+- Target: `Task checkbox-235: Port remaining Python logic module 'logic/CEC/nl/dcec_to_ucan_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Result: `needs follow-up`
+- Summary: Ported the DCEC-to-UCAN bridge as a browser-native TypeScript mapper for deontic formulas.
+- Impact: src/lib/logic/cec/dcecToUcanBridge.ts exports deterministic DCEC formula to UCAN capability, deny-capability, and unsigned delegation-token helpers with Python-compatible method aliases; src/lib/logic/cec/dcecToUcanBridge.test.ts exercises token creation, prohibition denial handling, and fail-closed non-deontic behavior through the existing Jest suite.
+- Accepted changed files: `src/lib/logic/cec/dcecToUcanBridge.test.ts`, `src/lib/logic/cec/dcecToUcanBridge.ts`, `src/lib/logic/cec/index.ts`
+- Errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
+../../..src/lib/logic/cec/dcecToUcanBridge.ts(235,3): error TS2322: Type 'unknown' is not assignable to type 'string'.
+
+Replacement diagnostic context:
+src/lib/logic/cec/dcecToUcanBridge.ts:235:3 TS2322: Type 'unknown' is not assignable to type 'string'.
+  233:     [DcecDeonticOperator.IMMUNITY]: 'IMMUNITY',
+  234:   };
+> 235:   return names[operator] ?? operator.toUpperCase();
+  236: }
+  237: 
+- Failure kind: `typescript_quality`
 
 ### Blocked Backlog
 
