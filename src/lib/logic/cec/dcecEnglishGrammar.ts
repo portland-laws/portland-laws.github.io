@@ -305,7 +305,7 @@ export class DcecEnglishGrammar {
     this.addWords(['then'], 'Conj', { type: 'then' });
     this.addWords(['not'], 'Adv', { type: 'not', connective: DcecLogicalConnective.NOT });
 
-    this.addWords(['must', 'obligated', 'should', 'required'], 'V', {
+    this.addWords(['must', 'shall', 'obligated', 'should', 'required'], 'V', {
       type: 'deontic',
       operator: 'obligated',
     });
@@ -440,17 +440,25 @@ export class DcecEnglishGrammar {
     }
 
     const deontic = normalized.match(
-      /^(\w+) (must|should|may|forbidden|prohibited|permitted|allowed)(?: to)? (.+)$/,
+      /^(\w+) (must|shall|should|may|forbidden|prohibited|permitted|allowed)(?: to)? (.+)$/,
     );
     if (deontic) {
       const op = normalizeDeontic(deontic[2]);
-      return op
-        ? new DcecDeonticFormula(
-            op,
-            this.atomic(deontic[3], deontic[1]),
-            this.agentTerm(deontic[1]),
-          )
-        : undefined;
+      if (!op) return undefined;
+      const actionText = deontic[3].trim();
+      const effectiveOperator =
+        op === DcecDeonticOperator.OBLIGATION && actionText.startsWith('not ')
+          ? DcecDeonticOperator.PROHIBITION
+          : op;
+      const effectiveAction =
+        effectiveOperator === DcecDeonticOperator.PROHIBITION && actionText.startsWith('not ')
+          ? actionText.slice(4)
+          : actionText;
+      return new DcecDeonticFormula(
+        effectiveOperator,
+        this.atomic(effectiveAction, deontic[1]),
+        this.agentTerm(deontic[1]),
+      );
     }
 
     const action = normalized.match(/^(\w+) (.+)$/);
@@ -625,7 +633,7 @@ function normalizeDeontic(value: unknown): DcecDeonticOperatorValue | undefined 
   const raw = String(value).toLowerCase();
   if (
     value === DcecDeonticOperator.OBLIGATION ||
-    ['obligated', 'must', 'should', 'required'].includes(raw)
+    ['obligated', 'must', 'shall', 'should', 'required'].includes(raw)
   )
     return DcecDeonticOperator.OBLIGATION;
   if (value === DcecDeonticOperator.PERMISSION || ['permitted', 'may', 'allowed'].includes(raw))

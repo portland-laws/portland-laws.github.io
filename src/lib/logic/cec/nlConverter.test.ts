@@ -4,10 +4,12 @@ import {
   DcecProofCache,
   NaturalLanguageConverter,
   PatternMatcher,
+  compileDcecGrammarNlPolicy,
   compileDcecPolicyText,
   createEnhancedDcecNlConverter,
   create_enhanced_nl_converter,
   detectDcecPolicyLanguage,
+  getDcecGrammarNlPolicyCompilerCapabilities,
   linearizeDcecWithGrammar,
   linearize_with_grammar,
   parseDcecWithGrammar,
@@ -154,6 +156,47 @@ describe('DCEC natural language converter parity helpers', () => {
     expect(result.language_detection.language).toBe('en');
     expect(result.normalized_policy_text).toBe('the tenant shall maintain smoke alarms');
     expect(result.policy_formula_text).toBe('O(maintain_smoke_alarms(tenant:Agent))');
+  });
+
+  it('ports grammar_nl_policy_compiler.py as a browser-native grammar policy facade', () => {
+    const capabilities = getDcecGrammarNlPolicyCompilerCapabilities();
+    const result = compileDcecGrammarNlPolicy(
+      'Policy 1: The tenant shall maintain smoke alarms. Rule 2: landlord must not enter.',
+    );
+    const rejected = compileDcecGrammarNlPolicy('tenant shall pay rent', { maxInputLength: 10 });
+
+    expect(capabilities).toEqual({
+      browserNative: true,
+      pythonRuntime: false,
+      serverRuntime: false,
+      filesystem: false,
+      subprocess: false,
+      rpc: false,
+      wasmCompatible: true,
+      wasmRequired: false,
+      implementation: 'deterministic-typescript',
+      pythonModule: 'logic/CEC/nl/grammar_nl_policy_compiler.py',
+    });
+    expect(result.ok).toBe(true);
+    expect(result.parse_method).toBe('browser_native_grammar_policy_compiler');
+    expect(result.metadata).toEqual({
+      sourcePythonModule: 'logic/CEC/nl/grammar_nl_policy_compiler.py',
+      runtime: 'browser-native-typescript',
+      implementation: 'deterministic-grammar-nl-policy-compiler',
+    });
+    expect(result.policy_formula_texts).toEqual([
+      'O[tenant:Agent](maintain_smoke_alarms(tenant:Agent))',
+      'F[landlord:Agent](enter(landlord:Agent))',
+    ]);
+    expect(result.rules.map((rule) => rule.normalized_text)).toEqual([
+      'tenant shall maintain smoke alarms',
+      'landlord must not enter',
+    ]);
+    expect(rejected).toMatchObject({
+      ok: false,
+      fail_closed_reason: 'input_too_long',
+      browser_native: true,
+    });
   });
 
   it('fails closed for non-English policy text instead of calling external NLP', () => {

@@ -19,6 +19,8 @@ import {
   DcecTemporalOperator,
   DcecTemporalOperatorValue,
 } from './dcecTypes';
+import { createDcecEnglishGrammar } from './dcecEnglishGrammar';
+import type { DcecNativeEnglishGrammarOptions } from './dcecEnglishGrammar';
 
 export interface DcecNlConversionResult {
   english_text: string;
@@ -158,7 +160,6 @@ const POLICY_LANGUAGE_PROFILES: DcecLanguageProfile[] = [
     policyTerms: ['muss', 'darf', 'verboten'],
   },
 ];
-
 export class DcecPatternMatcher {
   readonly namespace: DcecNamespace;
   readonly deonticPatterns: DeonticPattern[];
@@ -497,6 +498,121 @@ export function compileDcecPolicyText(
   };
 }
 
+export function getDcecGrammarNlPolicyCompilerCapabilities() {
+  return {
+    browserNative: true,
+    pythonRuntime: false,
+    serverRuntime: false,
+    filesystem: false,
+    subprocess: false,
+    rpc: false,
+    wasmCompatible: true,
+    wasmRequired: false,
+    implementation: 'deterministic-typescript',
+    pythonModule: 'logic/CEC/nl/grammar_nl_policy_compiler.py',
+  } as const;
+}
+
+export function compileDcecGrammarNlPolicy(
+  text: string,
+  options: DcecNativeEnglishGrammarOptions = {},
+) {
+  const input = typeof text === 'string' ? text : '';
+  const normalizedPolicyText = normalizePolicyText(input);
+  const baseResult = {
+    input,
+    normalized_policy_text: normalizedPolicyText,
+    parse_method: 'browser_native_grammar_policy_compiler' as const,
+    browser_native: true as const,
+    metadata: {
+      sourcePythonModule: 'logic/CEC/nl/grammar_nl_policy_compiler.py',
+      runtime: 'browser-native-typescript',
+      implementation: 'deterministic-grammar-nl-policy-compiler',
+    } as const,
+  };
+
+  if (!normalizedPolicyText) {
+    return {
+      ...baseResult,
+      ok: false,
+      success: false,
+      rules: [],
+      formulas: [],
+      policy_formula_texts: [],
+      errors: ['Policy text is empty.'],
+      fail_closed_reason: 'empty_policy_text',
+    };
+  }
+
+  if (
+    options.maxInputLength !== undefined &&
+    normalizedPolicyText.length > options.maxInputLength
+  ) {
+    return {
+      ...baseResult,
+      ok: false,
+      success: false,
+      rules: [],
+      formulas: [],
+      policy_formula_texts: [],
+      errors: [`Policy text exceeds maximum length of ${options.maxInputLength} characters.`],
+      fail_closed_reason: 'input_too_long',
+    };
+  }
+
+  const grammar = createDcecEnglishGrammar();
+  const rules: Array<{
+    readonly dcec: string;
+    readonly normalized_text: string;
+    readonly [key: string]: unknown;
+  }> = [];
+  const formulas: Array<DcecFormula> = [];
+  const errors: string[] = [];
+  const clauses = splitGrammarPolicyClauses(input);
+
+  clauses.forEach((clause, index) => {
+    const normalizedClause = normalizeGrammarPolicyClause(clause);
+    const parsed = grammar.parseNativeEnglishGrammar(normalizedClause, options);
+    if (!parsed.ok || !parsed.formula || !parsed.dcec) {
+      errors.push(
+        `Rule ${index + 1} failed: ${parsed.errors.join('; ') || 'Unable to parse policy rule.'}`,
+      );
+      return;
+    }
+    rules.push({
+      index: index + 1,
+      source_text: clause.trim(),
+      normalized_text: normalizedClause,
+      dcec: parsed.dcec,
+      semantic: parsed.semantic,
+    });
+    formulas.push(parsed.formula);
+  });
+
+  if (errors.length > 0 || rules.length === 0) {
+    return {
+      ...baseResult,
+      ok: false,
+      success: false,
+      rules,
+      formulas,
+      policy_formula_texts: rules.map((rule) => rule.dcec),
+      errors: errors.length > 0 ? errors : ['No policy rules were parsed.'],
+      fail_closed_reason: 'policy_parse_failed',
+    };
+  }
+
+  return {
+    ...baseResult,
+    ok: true,
+    success: true,
+    rules,
+    formulas,
+    policy_formula_texts: rules.map((rule) => rule.dcec),
+    errors: [],
+  };
+}
+
 export function proveDcecFormula(request: DcecProofRequest): DcecProofResult {
   const strategy = request.strategy ?? 'advanced_inference';
   const assumptions = request.assumptions ?? [];
@@ -710,6 +826,19 @@ export function createBrowserNativeDcecGrammar(
 
 function normalizeEnglish(text: string): string {
   return normalizePolicyText(text);
+}
+
+function splitGrammarPolicyClauses(text: string): string[] {
+  return text
+    .split(/[\n.;]+/u)
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0);
+}
+
+function normalizeGrammarPolicyClause(text: string): string {
+  return normalizePolicyText(text)
+    .replace(/^(?:policy|rule|requirement)(?:\s+\d+)?\s+/u, '')
+    .replace(/^(?:the|a|an)\s+/u, '');
 }
 
 function normalizePolicyText(text: string): string {

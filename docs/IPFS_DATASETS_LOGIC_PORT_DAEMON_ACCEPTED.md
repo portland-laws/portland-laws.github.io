@@ -443,3 +443,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T034559Z-ported-the-cec-german-natural-language-parser-to-deterministic-browser-native-ty.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T034559Z-ported-the-cec-german-natural-language-parser-to-deterministic-browser-native-ty.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T034559Z-ported-the-cec-german-natural-language-parser-to-deterministic-browser-native-ty.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 03:51:09 UTC
+
+- Target: `Task checkbox-239: Port remaining Python logic module `logic/CEC/nl/grammar_nl_policy_compiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported grammar_nl_policy_compiler.py as a browser-native deterministic CEC grammar policy compiler.
+- Impact: Adds exported TypeScript policy compilation helpers that split and normalize policy/rule clauses, parse them through the local DCEC English grammar, expose Python-module capability metadata, and fail closed without server, Python, filesystem, subprocess, RPC, or Node-only runtime dependencies. Focused Jest coverage validates multi-rule grammar policy compilation, metadata, and fail-closed length handling.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/dcecEnglishGrammar.ts`, `src/lib/logic/cec/nlConverter.test.ts`, `src/lib/logic/cec/nlConverter.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T035109Z-ported-grammar_nl_policy_compiler.py-as-a-browser-native-deterministic-cec-gramm.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T035109Z-ported-grammar_nl_policy_compiler.py-as-a-browser-native-deterministic-cec-gramm.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T035109Z-ported-grammar_nl_policy_compiler.py-as-a-browser-native-deterministic-cec-gramm.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
