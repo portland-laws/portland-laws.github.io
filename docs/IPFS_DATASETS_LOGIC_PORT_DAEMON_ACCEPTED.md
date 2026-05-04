@@ -1667,3 +1667,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T131304Z-ported-root-integration-modal_logic_extension.py-as-a-browser-native-typescript-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T131304Z-ported-root-integration-modal_logic_extension.py-as-a-browser-native-typescript-.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T131304Z-ported-root-integration-modal_logic_extension.py-as-a-browser-native-typescript-.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 13:18:10 UTC
+
+- Target: `Task checkbox-376: Port remaining Python logic module `logic/integration/neurosymbolic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported logic/integration/neurosymbolic.py as a browser-native deterministic TypeScript adapter.
+- Impact: Adds a local neurosymbolic integration module that extracts deterministic neural-style legal signals, projects symbolic facts, applies local rule/query reasoning, exports the integration surface, and validates fail-closed behavior with Jest without Python, server calls, subprocesses, or Node-only runtime dependencies.
+- Changed files: `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/neurosymbolic.test.ts`, `src/lib/logic/integration/neurosymbolic.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T131810Z-ported-logic-integration-neurosymbolic.py-as-a-browser-native-deterministic-type.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T131810Z-ported-logic-integration-neurosymbolic.py-as-a-browser-native-deterministic-type.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T131810Z-ported-logic-integration-neurosymbolic.py-as-a-browser-native-deterministic-type.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

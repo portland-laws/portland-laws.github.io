@@ -28,6 +28,7 @@ export * from './logicVerificationTypes';
 export * from './logicVerificationUtils';
 export * from './leanProverBridge';
 export * from './modalLogicExtension';
+export * from './neurosymbolic';
 export * from './proverAdapters';
 export * from './proverInstaller';
 export * from './symbolicAiProverBridge';
