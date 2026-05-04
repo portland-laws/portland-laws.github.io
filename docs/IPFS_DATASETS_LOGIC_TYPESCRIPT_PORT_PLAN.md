@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 04:36:11 UTC
+Last updated: 2026-05-04 04:41:21 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-251: Port remaining Python logic module 'logic/CEC/provers/z3_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-252: Port remaining Python logic module 'logic/CEC/shadow_prover_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1225,7 +1225,7 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-247: Port remaining Python logic module 'logic/CEC/provers/e_prover_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-248: Port remaining Python logic module 'logic/CEC/provers/prover_manager.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-249: Port remaining Python logic module 'logic/CEC/provers/tptp_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-250: Port remaining Python logic module 'logic/CEC/provers/vampire_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
+- [x] `Task checkbox-250: Port remaining Python logic module 'logic/CEC/provers/vampire_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-251: Port remaining Python logic module 'logic/CEC/provers/z3_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-252: Port remaining Python logic module 'logic/CEC/shadow_prover_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-253: Port remaining Python logic module 'logic/CEC/talos_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-250: Port remaining Python logic module 'logic/CEC/provers/vampire_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-251: Port remaining Python logic module 'logic/CEC/provers/z3_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported the CEC Vampire adapter as a browser-native TypeScript compatibility layer.
-- Impact: The new CEC adapter builds deterministic TPTP problems, maps local CEC proof outcomes to Vampire-style statuses, exposes explicit no-subprocess/no-server/no-Python metadata, exports through the CEC barrel, and is exercised by focused Jest validation plus the full logic-port suite.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/index.ts`, `src/lib/logic/cec/problemParser.test.ts`, `src/lib/logic/cec/vampireAdapter.ts`
+- Summary: Ported the CEC Z3 adapter to a browser-native TypeScript compatibility adapter with SMT-LIB generation and local CEC proof fallback.
+- Impact: The TypeScript logic port now exposes a Z3-compatible CEC adapter under src/lib/logic/cec that emits SMT-LIB metadata, maps Z3 check-sat statuses, and proves only through the existing browser-native CEC prover without Python, subprocess, server, filesystem, or RPC delegation. Focused Jest coverage validates proved and fail-closed unknown paths.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/index.ts`, `src/lib/logic/cec/problemParser.test.ts`, `src/lib/logic/cec/z3Adapter.ts`
 
 ### Blocked Backlog
 
