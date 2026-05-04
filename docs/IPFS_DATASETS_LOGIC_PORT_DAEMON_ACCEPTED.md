@@ -362,3 +362,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T023655Z-ported-the-remaining-cec-proof-optimization-parity-slice-with-browser-native-pru.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T023655Z-ported-the-remaining-cec-proof-optimization-parity-slice-with-browser-native-pru.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T023655Z-ported-the-remaining-cec-proof-optimization-parity-slice-with-browser-native-pru.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 02:41:08 UTC
+
+- Target: `Task checkbox-229: Port remaining Python logic module `logic/CEC/native/proof_strategies.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported remaining CEC native proof-strategies parity surface into browser-native TypeScript strategy planning and aliases.
+- Impact: The CEC strategy module now exposes deterministic Python proof_strategies.py-style aliases, explicit strategy plans with selection reasons, and proof results carrying the selected browser-native plan. The existing Jest strategy suite validates alias normalization, low-cost planning, direct strategy execution, planned strategy selection, and fail-closed unsupported strategy names without server, Python, filesystem, subprocess, RPC, or Node-only runtime dependencies.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/strategies.test.ts`, `src/lib/logic/cec/strategies.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T024108Z-ported-remaining-cec-native-proof-strategies-parity-surface-into-browser-native-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T024108Z-ported-remaining-cec-native-proof-strategies-parity-surface-into-browser-native-.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T024108Z-ported-remaining-cec-native-proof-strategies-parity-surface-into-browser-native-.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
