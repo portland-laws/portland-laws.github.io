@@ -6,6 +6,10 @@ import {
   ExistentialGeneralizationRule,
   ExistentialInstantiationRule,
   ModusPonensRule,
+  ObligationConjunctionRule,
+  ObligationWeakeningRightRule,
+  PermissionDualityRule,
+  PermissionFromNonObligationRule,
   ProhibitionEquivalenceRule,
   TemporalKAxiomRule,
   TemporalTAxiomRule,
@@ -53,6 +57,28 @@ describe('TDFOL inference rules', () => {
     expect(formatTdfolFormula(ProhibitionEquivalenceRule.apply(prohibition))).toBe('O(¬(Pred(x)))');
   });
 
+  it('ports remaining Python deontic inference rule behavior without runtime bridges', () => {
+    const obligationLeft = parseTdfolFormula('O(PayRent(tenant))');
+    const obligationRight = parseTdfolFormula('O(KeepUnit(tenant))');
+    const conjunctiveObligation = parseTdfolFormula('O(PayRent(tenant) & KeepUnit(tenant))');
+    const permission = parseTdfolFormula('P(Enter(unit))');
+    const nonObligation = parseTdfolFormula('not O(not Enter(unit))');
+
+    expect(
+      formatTdfolFormula(ObligationConjunctionRule.apply(obligationLeft, obligationRight)),
+    ).toBe('O((PayRent(tenant)) ∧ (KeepUnit(tenant)))');
+    expect(formatTdfolFormula(ObligationWeakeningRightRule.apply(conjunctiveObligation))).toBe(
+      'O(KeepUnit(tenant))',
+    );
+    expect(formatTdfolFormula(PermissionDualityRule.apply(permission))).toBe(
+      '¬(O(¬(Enter(unit))))',
+    );
+    expect(formatTdfolFormula(PermissionFromNonObligationRule.apply(nonObligation))).toBe(
+      'P(Enter(unit))',
+    );
+    expect(PermissionDualityRule.sourcePythonModule).toBe('logic/TDFOL/inference_rules/deontic.py');
+  });
+
   it('applies universal modus ponens with repeated variable bindings', () => {
     const rule = parseTdfolFormula('forall x. Parent(x, x) -> Related(x)');
     const premise = parseTdfolFormula('Parent(Alice, Alice)');
@@ -94,6 +120,8 @@ describe('TDFOL inference rules', () => {
     expect(getAllTdfolRules().map((rule) => rule.name)).toEqual(
       expect.arrayContaining([
         'DeonticKAxiom',
+        'ObligationConjunction',
+        'PermissionDuality',
         'UniversalModusPonens',
         'ExistentialInstantiation',
         'ExistentialGeneralization',

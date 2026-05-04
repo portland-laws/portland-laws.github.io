@@ -47,6 +47,8 @@ type RuleSpec = {
   apply: (...formulas: TdfolFormula[]) => TdfolFormula;
 };
 
+const DEONTIC_RULE_SOURCE = 'logic/TDFOL/inference_rules/deontic.py';
+
 export class TdfolRule implements TdfolInferenceRule {
   readonly name: string;
   readonly description: string;
@@ -249,6 +251,7 @@ export const DeonticKAxiomRule = new TdfolRule({
   description: 'From O(phi -> psi) and O(phi), infer O(psi)',
   arity: 2,
   category: 'deontic',
+  sourcePythonModule: DEONTIC_RULE_SOURCE,
   canApply: (rule, premise) =>
     rule.kind === 'deontic' &&
     rule.operator === 'OBLIGATION' &&
@@ -268,6 +271,7 @@ export const DeonticDAxiomRule = new TdfolRule({
   description: 'From O(phi), infer P(phi)',
   arity: 1,
   category: 'deontic',
+  sourcePythonModule: DEONTIC_RULE_SOURCE,
   canApply: (formula) => formula.kind === 'deontic' && formula.operator === 'OBLIGATION',
   apply: (formula) => {
     if (formula.kind !== 'deontic') throw new Error('Invalid deontic premise');
@@ -280,6 +284,7 @@ export const ProhibitionEquivalenceRule = new TdfolRule({
   description: 'From F(phi), infer O(not phi)',
   arity: 1,
   category: 'deontic',
+  sourcePythonModule: DEONTIC_RULE_SOURCE,
   canApply: (formula) => formula.kind === 'deontic' && formula.operator === 'PROHIBITION',
   apply: (formula) => {
     if (formula.kind !== 'deontic') throw new Error('Invalid prohibition premise');
@@ -296,6 +301,7 @@ export const ProhibitionFromObligationRule = new TdfolRule({
   description: 'From O(not phi), infer F(phi)',
   arity: 1,
   category: 'deontic',
+  sourcePythonModule: DEONTIC_RULE_SOURCE,
   canApply: (formula) =>
     formula.kind === 'deontic' &&
     formula.operator === 'OBLIGATION' &&
@@ -313,6 +319,7 @@ export const ObligationWeakeningRule = new TdfolRule({
   description: 'From O(phi and psi), infer O(phi)',
   arity: 1,
   category: 'deontic',
+  sourcePythonModule: DEONTIC_RULE_SOURCE,
   canApply: (formula) =>
     formula.kind === 'deontic' &&
     formula.operator === 'OBLIGATION' &&
@@ -322,6 +329,96 @@ export const ObligationWeakeningRule = new TdfolRule({
     if (formula.kind !== 'deontic' || formula.formula.kind !== 'binary')
       throw new Error('Invalid obligation premise');
     return { kind: 'deontic', operator: 'OBLIGATION', formula: formula.formula.left };
+  },
+});
+
+export const ObligationWeakeningRightRule = new TdfolRule({
+  name: 'ObligationWeakeningRight',
+  description: 'From O(phi and psi), infer O(psi)',
+  arity: 1,
+  category: 'deontic',
+  sourcePythonModule: DEONTIC_RULE_SOURCE,
+  canApply: (formula) =>
+    formula.kind === 'deontic' &&
+    formula.operator === 'OBLIGATION' &&
+    formula.formula.kind === 'binary' &&
+    formula.formula.operator === 'AND',
+  apply: (formula) => {
+    if (formula.kind !== 'deontic' || formula.formula.kind !== 'binary')
+      throw new Error('Invalid obligation premise');
+    return { kind: 'deontic', operator: 'OBLIGATION', formula: formula.formula.right };
+  },
+});
+
+export const ObligationConjunctionRule = new TdfolRule({
+  name: 'ObligationConjunction',
+  description: 'From O(phi) and O(psi), infer O(phi and psi)',
+  arity: 2,
+  category: 'deontic',
+  sourcePythonModule: DEONTIC_RULE_SOURCE,
+  canApply: (left, right) =>
+    left.kind === 'deontic' &&
+    left.operator === 'OBLIGATION' &&
+    right.kind === 'deontic' &&
+    right.operator === 'OBLIGATION',
+  apply: (left, right) => {
+    if (left.kind !== 'deontic' || right.kind !== 'deontic')
+      throw new Error('Invalid obligation premises');
+    return {
+      kind: 'deontic',
+      operator: 'OBLIGATION',
+      formula: { kind: 'binary', operator: 'AND', left: left.formula, right: right.formula },
+    };
+  },
+});
+
+export const PermissionDualityRule = new TdfolRule({
+  name: 'PermissionDuality',
+  description: 'From P(phi), infer not O(not phi)',
+  arity: 1,
+  category: 'deontic',
+  sourcePythonModule: DEONTIC_RULE_SOURCE,
+  canApply: (formula) => formula.kind === 'deontic' && formula.operator === 'PERMISSION',
+  apply: (formula) => {
+    if (formula.kind !== 'deontic') throw new Error('Invalid permission premise');
+    return {
+      kind: 'unary',
+      operator: 'NOT',
+      formula: {
+        kind: 'deontic',
+        operator: 'OBLIGATION',
+        formula: { kind: 'unary', operator: 'NOT', formula: formula.formula },
+      },
+    };
+  },
+});
+
+export const PermissionFromNonObligationRule = new TdfolRule({
+  name: 'PermissionFromNonObligation',
+  description: 'From not O(not phi), infer P(phi)',
+  arity: 1,
+  category: 'deontic',
+  sourcePythonModule: DEONTIC_RULE_SOURCE,
+  canApply: (formula) =>
+    formula.kind === 'unary' &&
+    formula.operator === 'NOT' &&
+    formula.formula.kind === 'deontic' &&
+    formula.formula.operator === 'OBLIGATION' &&
+    formula.formula.formula.kind === 'unary' &&
+    formula.formula.formula.operator === 'NOT',
+  apply: (formula) => {
+    if (
+      formula.kind !== 'unary' ||
+      formula.formula.kind !== 'deontic' ||
+      formula.formula.formula.kind !== 'unary'
+    ) {
+      throw new Error('Invalid non-obligation premise');
+    }
+    return {
+      kind: 'deontic',
+      operator: 'PERMISSION',
+      formula: formula.formula.formula.formula,
+    };
   },
 });
 
@@ -425,6 +522,10 @@ export function getAllTdfolRules(): TdfolInferenceRule[] {
     ProhibitionEquivalenceRule,
     ProhibitionFromObligationRule,
     ObligationWeakeningRule,
+    ObligationWeakeningRightRule,
+    ObligationConjunctionRule,
+    PermissionDualityRule,
+    PermissionFromNonObligationRule,
     UniversalModusPonensRule,
     ExistentialInstantiationRule,
     ExistentialGeneralizationRule,

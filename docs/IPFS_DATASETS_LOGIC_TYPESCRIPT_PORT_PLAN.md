@@ -773,7 +773,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/TDFOL/expansion_rules.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/TDFOL/formula_dependency_graph.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/TDFOL/inference_rules/base.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/TDFOL/inference_rules/deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/TDFOL/inference_rules/deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/inference_rules/first_order.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/inference_rules/propositional.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/inference_rules/temporal_deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 05:17:15 UTC
+Last updated: 2026-05-04 05:20:20 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-263: Port remaining Python logic module 'logic/TDFOL/inference_rules/deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-264: Port remaining Python logic module 'logic/TDFOL/inference_rules/first_order.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1237,8 +1237,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-259: Port remaining Python logic module 'logic/TDFOL/exceptions.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-260: Port remaining Python logic module 'logic/TDFOL/expansion_rules.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-261: Port remaining Python logic module 'logic/TDFOL/formula_dependency_graph.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-262: Port remaining Python logic module 'logic/TDFOL/inference_rules/base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-263: Port remaining Python logic module 'logic/TDFOL/inference_rules/deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-262: Port remaining Python logic module 'logic/TDFOL/inference_rules/base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-263: Port remaining Python logic module 'logic/TDFOL/inference_rules/deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-264: Port remaining Python logic module 'logic/TDFOL/inference_rules/first_order.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-265: Port remaining Python logic module 'logic/TDFOL/inference_rules/propositional.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-266: Port remaining Python logic module 'logic/TDFOL/inference_rules/temporal_deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-262: Port remaining Python logic module 'logic/TDFOL/inference_rules/base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-263: Port remaining Python logic module 'logic/TDFOL/inference_rules/deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported the TDFOL inference_rules/base.py rule contract into the browser-native TypeScript inference rule base.
-- Impact: The TDFOL rule base now exposes deterministic ids, categories, Python source metadata, constructor validation, and a fail-closed non-throwing application helper used by the Jest validation suite without adding server, Python, filesystem, subprocess, RPC, or Node-only runtime dependencies.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/inferenceRules.test.ts`, `src/lib/logic/tdfol/inferenceRules.ts`
+- Summary: Ported the remaining browser-native TDFOL deontic inference rule slice.
+- Impact: The TypeScript TDFOL inference engine now exposes deterministic deontic.py parity rules for obligation conjunction, right-side obligation weakening, permission duality, and permission-from-non-obligation, all tagged to the Python source module and covered by focused Jest validation.
+- Accepted changed files: `src/lib/logic/tdfol/inferenceRules.test.ts`, `src/lib/logic/tdfol/inferenceRules.ts`
 
 ### Blocked Backlog
 

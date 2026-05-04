@@ -659,3 +659,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T051715Z-ported-the-tdfol-inference_rules-base.py-rule-contract-into-the-browser-native-t.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T051715Z-ported-the-tdfol-inference_rules-base.py-rule-contract-into-the-browser-native-t.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T051715Z-ported-the-tdfol-inference_rules-base.py-rule-contract-into-the-browser-native-t.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 05:20:21 UTC
+
+- Target: `Task checkbox-263: Port remaining Python logic module `logic/TDFOL/inference_rules/deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the remaining browser-native TDFOL deontic inference rule slice.
+- Impact: The TypeScript TDFOL inference engine now exposes deterministic deontic.py parity rules for obligation conjunction, right-side obligation weakening, permission duality, and permission-from-non-obligation, all tagged to the Python source module and covered by focused Jest validation.
+- Changed files: `src/lib/logic/tdfol/inferenceRules.test.ts`, `src/lib/logic/tdfol/inferenceRules.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T052021Z-ported-the-remaining-browser-native-tdfol-deontic-inference-rule-slice..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T052021Z-ported-the-remaining-browser-native-tdfol-deontic-inference-rule-slice..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T052021Z-ported-the-remaining-browser-native-tdfol-deontic-inference-rule-slice..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
