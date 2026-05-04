@@ -1,5 +1,9 @@
 import { BrowserNativeLogicBridge, createBrowserNativeLogicBridge } from './bridge';
 import {
+  createBrowserNativeLeanProverBridge,
+  type BrowserNativeLeanProofResult,
+} from './leanProverBridge';
+import {
   BrowserNativeProverRouter,
   createBrowserNativeEProverAdapter,
   createBrowserNativeProverRouter,
@@ -178,6 +182,39 @@ describe('BrowserNativeLogicBridge', () => {
 
     expect(adapters.map((adapter) => adapter.name)).toContain('browser-native-e-prover-adapter');
     expect(adapters.every((adapter) => adapter.requiresExternalProver === false)).toBe(true);
+  });
+
+  it('ports the Lean prover bridge as a browser-native TDFOL compatibility adapter', () => {
+    const adapter = createBrowserNativeLeanProverBridge();
+    const result = adapter.prove({
+      logic: 'tdfol',
+      theorem: 'Resident(Ada)',
+      axioms: ['Resident(Ada)'],
+    }) as BrowserNativeLeanProofResult;
+
+    expect(adapter.metadata).toMatchObject({
+      logic: 'tdfol',
+      name: 'browser-native-lean-prover-bridge',
+      runtime: 'typescript-wasm-browser',
+      requiresExternalProver: false,
+    });
+    expect(adapter.supports('cec')).toBe(false);
+    expect(result).toMatchObject({
+      status: 'proved',
+      theorem: 'Resident(Ada)',
+      method: 'lean-compatible:tdfol-forward-chaining',
+    });
+    expect(result.lean).toMatchObject({
+      adapter: 'browser-native-lean-prover-bridge',
+      externalBinaryAllowed: false,
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      command: null,
+      leanVersion: null,
+      statusMapping: 'proved',
+    });
+    expect(result.lean.theoremDeclaration).toContain('axiom h1 : (Resident Ada)');
+    expect(result.lean.theoremDeclaration).toContain('theorem target : (Resident Ada)');
   });
 
   it('accepts injectable browser-native prover adapters for bridge contract tests', () => {
