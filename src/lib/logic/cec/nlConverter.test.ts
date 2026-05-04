@@ -24,6 +24,7 @@ import {
   getCecLanguageDetectorCapabilities,
 } from './languageDetector';
 import { DcecNamespace } from './dcecNamespace';
+import { getSpanishParserCapabilities, parseSpanishDcec, parse_spanish } from './spanishParser';
 
 describe('DCEC natural language converter parity helpers', () => {
   it('converts deontic patterns with prohibition ordered before obligation', () => {
@@ -65,6 +66,31 @@ describe('DCEC natural language converter parity helpers', () => {
     expect(converter.convertToDcec('not tenant may enter').dcec_formula?.toString()).toBe(
       '¬(P(enter(tenant:Agent)))',
     );
+  });
+
+  it('ports spanish_parser.py through browser-native deterministic DCEC patterns', () => {
+    expect(getSpanishParserCapabilities()).toMatchObject({
+      browserNative: true,
+      pythonRuntime: false,
+      serverRuntime: false,
+      pythonModule: 'logic/CEC/nl/spanish_parser.py',
+    });
+    expect(parseSpanishDcec('El inquilino debe pagar la renta.')).toMatchObject({
+      ok: true,
+      success: true,
+      english_text: 'tenant must pay rent',
+      dcec: 'O(pay_rent(tenant:Agent))',
+      parse_method: 'browser_native_spanish_parser',
+    });
+    expect(
+      parse_spanish('Si el inquilino debe pagar la renta entonces el arrendador puede entrar.')
+        .dcec,
+    ).toBe('(O(pay_rent(tenant:Agent)) → P(enter(landlord:Agent)))');
+    expect(parseSpanishDcec('   ')).toMatchObject({
+      ok: false,
+      fail_closed_reason: 'empty_input',
+      browser_native: true,
+    });
   });
 
   it('falls back to simple atomic predicates and reuses namespace symbols', () => {
