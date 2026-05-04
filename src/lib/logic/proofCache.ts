@@ -113,6 +113,16 @@ export interface IpfsProofCacheOptions<Result = unknown> extends ProofCacheOptio
   transport?: BrowserNativeIpfsProofTransport<Result>;
 }
 
+export interface IntegrationCachingProofCacheQuery {
+  logic: string;
+  formula: unknown;
+  axioms?: Array<unknown>;
+  bridgeName?: string;
+  cacheNamespace?: string;
+  proverConfig?: Record<string, unknown>;
+  context?: Record<string, unknown>;
+}
+
 export const COMMON_PROOF_CACHE_METADATA = {
   sourcePythonModule: 'logic/common/proof_cache.py',
   browserNative: true,
@@ -158,6 +168,23 @@ export const IPFS_PROOF_CACHE_METADATA = {
     'fail_closed_unavailable_adapter',
     'cid_verification_on_remote_reads',
     'ttl_lru_statistics',
+  ] as Array<string>,
+} as const;
+
+export const INTEGRATION_CACHING_PROOF_CACHE_METADATA = {
+  sourcePythonModule: 'logic/integration/caching/proof_cache.py',
+  browserNative: true,
+  runtimeDependencies: [] as Array<string>,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  parity: [
+    'logic_and_bridge_scoped_keys',
+    'namespace_sensitive_lookup',
+    'order_insensitive_axiom_keys',
+    'prover_config_sensitive_lookup',
+    'context_sensitive_lookup',
+    'ttl_lru_statistics',
+    'invalidation_and_snapshot_introspection',
   ] as Array<string>,
 } as const;
 
@@ -448,6 +475,59 @@ export class IpfsProofCache<Result = unknown> {
   }
 }
 
+export class IntegrationCachingProofCache<Result = unknown> {
+  private readonly cache: ProofCache<Result>;
+
+  constructor(options: ProofCacheOptions = {}) {
+    this.cache = new ProofCache<Result>(options);
+  }
+
+  computeCid(query: IntegrationCachingProofCacheQuery): string {
+    return this.cache.computeCid(
+      toIntegrationProofCacheQuery(normalizeIntegrationProofQuery(query)),
+    );
+  }
+
+  set(query: IntegrationCachingProofCacheQuery, result: Result): string {
+    const normalized = normalizeIntegrationProofQuery(query);
+    return this.cache.set(
+      normalized.formula,
+      result,
+      normalized.axioms,
+      integrationProofProverName(normalized),
+      integrationProofConfig(normalized),
+    );
+  }
+
+  get(query: IntegrationCachingProofCacheQuery): Result | undefined {
+    const normalized = normalizeIntegrationProofQuery(query);
+    return this.cache.get(
+      normalized.formula,
+      normalized.axioms,
+      integrationProofProverName(normalized),
+      integrationProofConfig(normalized),
+    );
+  }
+
+  invalidate(query: IntegrationCachingProofCacheQuery): boolean {
+    const normalized = normalizeIntegrationProofQuery(query);
+    return this.cache.invalidate(
+      normalized.formula,
+      normalized.axioms,
+      integrationProofProverName(normalized),
+      integrationProofConfig(normalized),
+    );
+  }
+
+  snapshot(): Array<ProofCacheSnapshotEntry<Result>> {
+    return this.cache.snapshot();
+  }
+
+  getStats(): ProofCacheStats {
+    return this.cache.getStats();
+  }
+}
+
 let globalProofCache: ProofCache | undefined;
 
 export function getGlobalProofCache(): ProofCache {
@@ -515,6 +595,52 @@ function verifyIpfsProofEntry(entry: IpfsProofCacheEntry<unknown>, expectedCid: 
     entry.canonicalJson === stableStringify({ query: entry.query, result: entry.result }) &&
     cidForObject({ query: entry.query, result: entry.result }) === expectedCid
   );
+}
+
+function normalizeIntegrationProofQuery(
+  query: IntegrationCachingProofCacheQuery,
+): Required<IntegrationCachingProofCacheQuery> & { formula: string; axioms: Array<string> } {
+  const logic = query.logic.trim();
+  const formula = String(query.formula).trim();
+  if (logic.length === 0)
+    throw new Error('Integration proof cache requires a non-empty logic identifier.');
+  if (formula.length === 0)
+    throw new Error('Integration proof cache requires a non-empty formula.');
+  return {
+    logic,
+    formula,
+    axioms: normalizeAxiomStrings(query.axioms),
+    bridgeName: query.bridgeName ?? 'unknown',
+    cacheNamespace: query.cacheNamespace ?? 'default',
+    proverConfig: query.proverConfig ?? {},
+    context: query.context ?? {},
+  };
+}
+
+function toIntegrationProofCacheQuery(
+  query: Required<IntegrationCachingProofCacheQuery> & { formula: string; axioms: Array<string> },
+): ProofCacheQuery {
+  return {
+    formula: query.formula,
+    axioms: query.axioms,
+    proverName: integrationProofProverName(query),
+    proverConfig: integrationProofConfig(query),
+  };
+}
+
+function integrationProofProverName(
+  query: Required<IntegrationCachingProofCacheQuery> & { formula: string; axioms: Array<string> },
+): string {
+  return `${query.logic}:${query.bridgeName}:${query.cacheNamespace}`;
+}
+
+function integrationProofConfig(
+  query: Required<IntegrationCachingProofCacheQuery> & { formula: string; axioms: Array<string> },
+): Record<string, unknown> {
+  return {
+    context: query.context,
+    proverConfig: query.proverConfig,
+  };
 }
 
 function hashString(value: string): string {

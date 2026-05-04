@@ -1406,3 +1406,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T111551Z-ported-browser-native-ipld-logic-storage-with-deterministic-content-ids-local-bo.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T111551Z-ported-browser-native-ipld-logic-storage-with-deterministic-content-ids-local-bo.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T111551Z-ported-browser-native-ipld-logic-storage-with-deterministic-content-ids-local-bo.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 11:19:51 UTC
+
+- Target: `Task checkbox-347: Port remaining Python logic module `logic/integration/caching/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported logic/integration/caching/proof_cache.py as a browser-native integration proof cache surface.
+- Impact: Adds a deterministic TypeScript IntegrationCachingProofCache that reuses the existing browser-local TTL/LRU proof cache for logic, bridge, namespace, config, context, and axiom-normalized integration proof lookups. Focused Jest coverage validates the parity metadata, scoped cache keys, namespace/context isolation, invalidation, TTL behavior, and absence of remote or Python runtime fallbacks.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/proofCache.test.ts`, `src/lib/logic/proofCache.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T111951Z-ported-logic-integration-caching-proof_cache.py-as-a-browser-native-integration-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T111951Z-ported-logic-integration-caching-proof_cache.py-as-a-browser-native-integration-.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T111951Z-ported-logic-integration-caching-proof_cache.py-as-a-browser-native-integration-.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

@@ -1,7 +1,9 @@
 import {
   COMMON_PROOF_CACHE_METADATA,
   EXTERNAL_PROVER_PROOF_CACHE_METADATA,
+  INTEGRATION_CACHING_PROOF_CACHE_METADATA,
   IPFS_PROOF_CACHE_METADATA,
+  IntegrationCachingProofCache,
   IpfsProofCache,
   type BrowserNativeIpfsProofTransport,
   type IpfsProofCacheEntry,
@@ -192,6 +194,65 @@ describe('ProofCache', () => {
         'cid_verification_on_remote_reads',
       ]),
     );
+  });
+
+  it('declares the browser-native integration caching proof_cache.py parity contract', () => {
+    expect(INTEGRATION_CACHING_PROOF_CACHE_METADATA).toMatchObject({
+      sourcePythonModule: 'logic/integration/caching/proof_cache.py',
+      browserNative: true,
+      runtimeDependencies: [],
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+    });
+    expect(INTEGRATION_CACHING_PROOF_CACHE_METADATA.parity).toEqual(
+      expect.arrayContaining([
+        'logic_and_bridge_scoped_keys',
+        'namespace_sensitive_lookup',
+        'context_sensitive_lookup',
+        'ttl_lru_statistics',
+      ]),
+    );
+  });
+
+  it('keys integration proof cache entries by normalized query scope', () => {
+    const cache = new IntegrationCachingProofCache<{ status: string }>({ now: () => 30 });
+    const query = {
+      logic: 'tdfol',
+      formula: 'P -> Q',
+      axioms: ['B', 'A'],
+      bridgeName: 'symbolic-fol',
+      cacheNamespace: 'rag-session',
+      proverConfig: { depth: 4 },
+      context: { corpusCid: 'bafy-docs' },
+    };
+
+    const cid = cache.set(query, { status: 'proved' });
+
+    expect(cid).toBe(cache.computeCid({ ...query, axioms: ['A', 'B'] }));
+    expect(cache.get({ ...query, axioms: ['A', 'B'] })).toEqual({ status: 'proved' });
+    expect(cache.snapshot()[0]).toMatchObject({
+      formulaString: 'P -> Q',
+      axiomStrings: ['A', 'B'],
+      proverName: 'tdfol:symbolic-fol:rag-session',
+      hitCount: 1,
+    });
+    expect(cache.getStats()).toMatchObject({ hits: 1, sets: 1 });
+  });
+
+  it('isolates integration namespaces and supports TTL invalidation without remote fallbacks', () => {
+    let now = 0;
+    const cache = new IntegrationCachingProofCache<string>({ ttlMs: 5, now: () => now });
+    const query = { logic: 'fol', formula: 'P', cacheNamespace: 'local', context: { matter: 'A' } };
+
+    cache.set(query, 'proof');
+    expect(cache.get({ ...query, cacheNamespace: 'remote' })).toBeUndefined();
+    expect(cache.get({ ...query, context: { matter: 'B' } })).toBeUndefined();
+    expect(cache.invalidate(query)).toBe(true);
+    cache.set(query, 'proof');
+    expect(cache.snapshot()).toHaveLength(1);
+    now = 10;
+    expect(cache.get(query)).toBeUndefined();
+    expect(cache.getStats()).toMatchObject({ misses: 3, cacheSize: 0 });
   });
 
   it('stores IPFS proof cache entries with deterministic content addressing and local reads', async () => {
