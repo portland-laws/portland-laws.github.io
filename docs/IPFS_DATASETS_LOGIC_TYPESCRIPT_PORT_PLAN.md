@@ -890,7 +890,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/integration/neurosymbolic_graphrag.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/nl_ucan_policy_compiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/integration/reasoning/_deontic_conflict_mixin.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/integration/reasoning/_deontic_conflict_mixin.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/reasoning/_logic_verifier_backends_mixin.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/reasoning/_prover_backend_mixin.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/reasoning/deontological_reasoning.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 13:30:53 UTC
+Last updated: 2026-05-04 13:35:34 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-380: Port remaining Python logic module 'logic/integration/reasoning/_deontic_conflict_mixin.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-381: Port remaining Python logic module 'logic/integration/reasoning/_logic_verifier_backends_mixin.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1354,8 +1354,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-376: Port remaining Python logic module 'logic/integration/neurosymbolic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-377: Port remaining Python logic module 'logic/integration/neurosymbolic_graphrag.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-378: Port remaining Python logic module 'logic/integration/nl_ucan_policy_compiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-379: Port remaining Python logic module 'logic/integration/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-380: Port remaining Python logic module 'logic/integration/reasoning/_deontic_conflict_mixin.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-379: Port remaining Python logic module 'logic/integration/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-380: Port remaining Python logic module 'logic/integration/reasoning/_deontic_conflict_mixin.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-381: Port remaining Python logic module 'logic/integration/reasoning/_logic_verifier_backends_mixin.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-382: Port remaining Python logic module 'logic/integration/reasoning/_prover_backend_mixin.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-383: Port remaining Python logic module 'logic/integration/reasoning/deontological_reasoning.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-379: Port remaining Python logic module 'logic/integration/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-380: Port remaining Python logic module 'logic/integration/reasoning/_deontic_conflict_mixin.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported logic/integration/proof_cache.py as a browser-native integration proof cache facade.
-- Impact: src/lib/logic/proofCache.ts now exposes IntegrationProofCache and metadata for deterministic integration-scoped proof caching without server, Python, filesystem, subprocess, or RPC fallbacks. src/lib/logic/proofCache.test.ts validates the browser-native contract, scoped content IDs, local lookup, TTL expiry, and cache statistics. The TypeScript port ledger marks checkbox-379 complete.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/proofCache.test.ts`, `src/lib/logic/proofCache.ts`
+- Summary: Ported the integration reasoning deontic conflict mixin as a browser-native TypeScript conflict detector.
+- Impact: src/lib/logic/reasoning/normConflicts.ts now exposes local metadata and deterministic deontic clause conflict detection for obligation/prohibition and permission/prohibition clashes, including condition overlap and exception suppression. src/lib/logic/reasoning/reasoning.test.ts directly validates the new browser-native behavior without Python, server, filesystem, subprocess, RPC, or Node-only runtime dependencies.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/reasoning/normConflicts.ts`, `src/lib/logic/reasoning/reasoning.test.ts`
 
 ### Blocked Backlog
 

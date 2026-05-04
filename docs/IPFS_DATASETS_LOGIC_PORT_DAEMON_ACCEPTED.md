@@ -1703,3 +1703,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T133053Z-ported-logic-integration-proof_cache.py-as-a-browser-native-integration-proof-ca.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T133053Z-ported-logic-integration-proof_cache.py-as-a-browser-native-integration-proof-ca.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T133053Z-ported-logic-integration-proof_cache.py-as-a-browser-native-integration-proof-ca.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 13:35:34 UTC
+
+- Target: `Task checkbox-380: Port remaining Python logic module `logic/integration/reasoning/_deontic_conflict_mixin.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the integration reasoning deontic conflict mixin as a browser-native TypeScript conflict detector.
+- Impact: src/lib/logic/reasoning/normConflicts.ts now exposes local metadata and deterministic deontic clause conflict detection for obligation/prohibition and permission/prohibition clashes, including condition overlap and exception suppression. src/lib/logic/reasoning/reasoning.test.ts directly validates the new browser-native behavior without Python, server, filesystem, subprocess, RPC, or Node-only runtime dependencies.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/reasoning/normConflicts.ts`, `src/lib/logic/reasoning/reasoning.test.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T133534Z-ported-the-integration-reasoning-deontic-conflict-mixin-as-a-browser-native-type.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T133534Z-ported-the-integration-reasoning-deontic-conflict-mixin-as-a-browser-native-type.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T133534Z-ported-the-integration-reasoning-deontic-conflict-mixin-as-a-browser-native-type.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

@@ -1,7 +1,11 @@
 import { parseTdfolFormula } from '../tdfol';
 import { createImplication, runForwardChaining } from './forwardChaining';
 import { createLogicKnowledgeBase, makeFact } from './knowledgeBase';
-import { detectNormConflicts } from './normConflicts';
+import {
+  DEONTIC_CONFLICT_MIXIN_METADATA,
+  detectDeonticConflictMixinConflicts,
+  detectNormConflicts,
+} from './normConflicts';
 import { describeTemporalSummary, summarizeTemporalOperators } from './temporal';
 
 describe('lightweight reasoning', () => {
@@ -69,17 +73,82 @@ describe('lightweight reasoning', () => {
         conflictType: 'obligation_prohibition',
         severity: 'high',
         sourceIds: ['cid-o', 'cid-f'],
-        message: 'Potential conflict: the same action appears both obligatory and prohibited (agent|comply|).',
+        message:
+          'Potential conflict: the same action appears both obligatory and prohibited (agent|comply|).',
       },
     ]);
   });
 
+  it('ports integration reasoning deontic conflict mixin semantics locally', () => {
+    const conflicts = detectDeonticConflictMixinConflicts([
+      {
+        id: 'rule-o',
+        actor: 'Tenant',
+        action: 'Pay rent',
+        condition: 'Lease is active',
+        modality: 'obligation',
+      },
+      {
+        id: 'rule-f',
+        actor: 'tenant',
+        action: 'pay rent',
+        condition: 'the lease is active and unit is uninhabitable',
+        modality: 'prohibition',
+      },
+      { id: 'rule-p', actor: 'Tenant', action: 'inspect records', normOperator: 'P' },
+      { id: 'rule-f2', actor: 'Tenant', action: 'inspect records', normOperator: 'F' },
+    ]);
+
+    expect(DEONTIC_CONFLICT_MIXIN_METADATA).toMatchObject({
+      sourcePythonModule: 'logic/integration/reasoning/_deontic_conflict_mixin.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+    });
+    expect(conflicts).toMatchObject([
+      {
+        conflictType: 'obligation_prohibition',
+        severity: 'high',
+        conditionRelationship: 'overlap',
+        sourceIds: ['rule-o', 'rule-f'],
+      },
+      {
+        conflictType: 'permission_prohibition',
+        severity: 'medium',
+        conditionRelationship: 'unconditional',
+        sourceIds: ['rule-p', 'rule-f2'],
+      },
+    ]);
+  });
+
+  it('treats explicit exceptions as local conflict suppressors', () => {
+    const conflicts = detectDeonticConflictMixinConflicts([
+      {
+        id: 'general-duty',
+        actor: 'Tenant',
+        action: 'pay rent',
+        modality: 'obligation',
+        exceptions: ['unit is uninhabitable'],
+      },
+      {
+        id: 'exception-rule',
+        actor: 'Tenant',
+        action: 'pay rent',
+        modality: 'prohibition',
+        condition: 'the unit is uninhabitable',
+      },
+    ]);
+
+    expect(conflicts).toEqual([]);
+  });
+
   it('summarizes temporal operators from TDFOL formulas', () => {
-    const formula = parseTdfolFormula('forall a. SubjectTo(a, section) -> O([]ComplyWith(a, section))');
+    const formula = parseTdfolFormula(
+      'forall a. SubjectTo(a, section) -> O([]ComplyWith(a, section))',
+    );
     const summary = summarizeTemporalOperators(formula);
 
     expect(summary).toEqual(['always']);
     expect(describeTemporalSummary(summary)).toBe('Always/continuing condition');
   });
 });
-
