@@ -992,3 +992,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T074249Z-added-a-browser-native-api_server-style-request-facade-for-health-conversion-and.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T074249Z-added-a-browser-native-api_server-style-request-facade-for-health-conversion-and.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T074249Z-added-a-browser-native-api_server-style-request-facade-for-health-conversion-and.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 07:44:52 UTC
+
+- Target: `Task checkbox-300: Port remaining Python logic module `logic/batch_processing.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the remaining batch_processing.py export surface with browser-native BatchResult dict, JSON, and CSV serialization.
+- Impact: src/lib/logic/batchProcessing.ts now exposes filesystem-free result export helpers directly usable by browser callers and validation. src/lib/logic/batchProcessing.test.ts exercises the new serialization surface alongside existing async batching, FOL conversion, proof batching, and chunk aggregation tests. The TypeScript port ledger marks checkbox-300 complete and records the no-filesystem/no-server export contract.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/batchProcessing.test.ts`, `src/lib/logic/batchProcessing.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T074452Z-ported-the-remaining-batch_processing.py-export-surface-with-browser-native-batc.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T074452Z-ported-the-remaining-batch_processing.py-export-surface-with-browser-native-batc.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T074452Z-ported-the-remaining-batch_processing.py-export-surface-with-browser-native-batc.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

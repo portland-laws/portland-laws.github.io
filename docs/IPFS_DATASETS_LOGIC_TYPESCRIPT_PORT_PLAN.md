@@ -81,7 +81,7 @@ The TypeScript target should be a clean client-side domain library that preserve
 | `logic/common/validators.py` | Port fully | Initial browser-native parity now covers formula string, axiom list, logic system, timeout, and format validators with Python-style errors. |
 | `logic/config.py` | Port as browser-native config objects | Initial TypeScript parity now covers prover/cache/security/monitoring config defaults, Python-compatible dictionary serialization, object loading, and explicit env-record loading without YAML/filesystem/process runtime dependencies. |
 | `logic/common/converters.py` | Port fully as idiomatic TS interfaces/classes | Preserve converter lifecycle, validation, caching, batch behavior, and result shapes in browser-native form. |
-| `logic/batch_processing.py` | Port as browser-native async batching | Initial TypeScript parity now covers batch result stats, bounded async processing, FOL conversion batches, local bridge proof batches, and chunked large-batch aggregation without Python thread/process pools or server workers. |
+| `logic/batch_processing.py` | Port as browser-native async batching | TypeScript parity now covers batch result stats, bounded async processing, FOL conversion batches, local bridge proof batches, chunked large-batch aggregation, and browser-native dict/JSON/CSV result exports without Python thread/process pools, filesystem writes, or server workers. |
 | `logic/monitoring.py` | Port as browser-native telemetry objects | Initial TypeScript parity now covers operation metrics, operation tracking, error/warning counters, health checks, reset, operation summaries, global monitor helper, and optional Prometheus text export without server daemons or threads. |
 | `logic/benchmarks.py` | Port as browser-native benchmark helpers | Initial TypeScript parity now covers benchmark result stats, sync/async benchmark runners, comparisons, summaries, FOL conversion benchmarks, proof-cache benchmarks, and comprehensive local benchmark runs with browser timing APIs. |
 | `logic/api.py` | Port as browser-native public API facade | Initial TypeScript parity now covers stable FOL/deontic conversion wrappers, generic bridge conversion/proving, monitoring integration, local benchmark entrypoint, Python-compatible aliases, NL policy compile/evaluate helpers, and explicit unsupported UCAN signing status without server fallback. |
@@ -810,7 +810,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/TDFOL/tdfol_prover.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/TDFOL/zkp_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/api_server.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/batch_processing.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/batch_processing.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/cli.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/common/bounded_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/common/feature_detection.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 07:42:49 UTC
+Last updated: 2026-05-04 07:44:52 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-300: Port remaining Python logic module 'logic/batch_processing.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-301: Port remaining Python logic module 'logic/cli.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1274,8 +1274,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-296: Port remaining Python logic module 'logic/TDFOL/tdfol_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-297: Port remaining Python logic module 'logic/TDFOL/tdfol_prover.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-298: Port remaining Python logic module 'logic/TDFOL/zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-299: Port remaining Python logic module 'logic/api_server.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-300: Port remaining Python logic module 'logic/batch_processing.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-299: Port remaining Python logic module 'logic/api_server.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-300: Port remaining Python logic module 'logic/batch_processing.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-301: Port remaining Python logic module 'logic/cli.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-302: Port remaining Python logic module 'logic/common/bounded_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-303: Port remaining Python logic module 'logic/common/feature_detection.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-299: Port remaining Python logic module 'logic/api_server.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-300: Port remaining Python logic module 'logic/batch_processing.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Added a browser-native api_server-style request facade for health, conversion, and proof requests.
-- Impact: The TypeScript logic API now accepts endpoint-shaped requests in-process and routes them to existing browser-native conversion and proof cores without HTTP, Python, filesystem, subprocess, RPC, or server fallbacks. The focused Jest coverage validates successful health/convert/prove dispatch and fail-closed malformed request handling.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/api.test.ts`, `src/lib/logic/api.ts`, `src/lib/logic/index.ts`
+- Summary: Ported the remaining batch_processing.py export surface with browser-native BatchResult dict, JSON, and CSV serialization.
+- Impact: src/lib/logic/batchProcessing.ts now exposes filesystem-free result export helpers directly usable by browser callers and validation. src/lib/logic/batchProcessing.test.ts exercises the new serialization surface alongside existing async batching, FOL conversion, proof batching, and chunk aggregation tests. The TypeScript port ledger marks checkbox-300 complete and records the no-filesystem/no-server export contract.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/batchProcessing.test.ts`, `src/lib/logic/batchProcessing.ts`
 
 ### Blocked Backlog
 
