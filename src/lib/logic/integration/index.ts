@@ -4,5 +4,6 @@ export * from './cvc5ProverBridge';
 export * from './externalProversBridge';
 export * from './leanProverBridge';
 export * from './proverAdapters';
+export * from './proverInstaller';
 export * from './symbolicAiProverBridge';
 export * from './z3ProverBridge';

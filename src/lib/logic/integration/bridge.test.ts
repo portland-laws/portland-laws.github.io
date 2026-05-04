@@ -19,6 +19,7 @@ import {
   type BrowserNativeProofAdapter,
   type EProverCompatibilityResult,
 } from './proverAdapters';
+import { createBrowserNativeProverInstaller } from './proverInstaller';
 import {
   createBrowserNativeSymbolicAiProverBridge,
   type BrowserNativeSymbolicAiProofResult,
@@ -587,6 +588,50 @@ describe('BrowserNativeLogicBridge', () => {
         prover: 'coq',
       }),
     ).toThrow('no Python, subprocess, RPC, or server fallback is available');
+  });
+
+  it('ports prover_installer.py as a browser-native local adapter catalog', () => {
+    const installer = createBrowserNativeProverInstaller();
+    const eProverPlan = installer.planInstall('e-prover');
+
+    expect(installer.metadata.sourcePythonModule).toBe(
+      'logic/integration/bridges/prover_installer.py',
+    );
+    expect(installer.metadata).toMatchObject({
+      runtime: 'typescript-wasm-browser',
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      subprocessAllowed: false,
+      filesystemAllowed: false,
+      packageManagerAllowed: false,
+    });
+    expect(eProverPlan).toMatchObject({
+      status: 'already-local',
+      target: {
+        name: 'e-prover',
+        available: true,
+        installableInBrowser: false,
+        localAdapter: 'browser-native-e-prover-adapter',
+        supportedLogics: ['tdfol'],
+      },
+    });
+    expect(eProverPlan.target.blockedOperations).toContain('subprocess');
+  });
+
+  it('fails closed for prover_installer.py targets without bundled browser adapters', () => {
+    const installer = createBrowserNativeProverInstaller();
+    const coqPlan = installer.planInstall('coq');
+
+    expect(coqPlan).toMatchObject({
+      status: 'blocked',
+      target: {
+        name: 'coq',
+        available: false,
+        installableInBrowser: false,
+        localAdapter: null,
+      },
+    });
+    expect(() => installer.install('coq')).toThrow('coq cannot be installed from browser code');
   });
 
   it('returns explicit unsupported conversion results for missing local routes', () => {

@@ -1343,3 +1343,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T104226Z-ported-integration-bridges-external_provers.py-as-a-browser-native-typescript-ex.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T104226Z-ported-integration-bridges-external_provers.py-as-a-browser-native-typescript-ex.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T104226Z-ported-integration-bridges-external_provers.py-as-a-browser-native-typescript-ex.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 10:46:10 UTC
+
+- Target: `Task checkbox-340: Port remaining Python logic module `logic/integration/bridges/prover_installer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported prover_installer.py as a browser-native prover installer catalog and fail-closed install planner.
+- Impact: The TypeScript integration layer now exposes a browser-native replacement for prover installer behavior: bundled adapters report as already local, unsupported external prover installs fail closed without filesystem, subprocess, package-manager, Python, RPC, or server fallback. The existing Jest integration test validates both the local-adapter path and blocked-install path.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/proverInstaller.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T104610Z-ported-prover_installer.py-as-a-browser-native-prover-installer-catalog-and-fail.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T104610Z-ported-prover_installer.py-as-a-browser-native-prover-installer-catalog-and-fail.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T104610Z-ported-prover_installer.py-as-a-browser-native-prover-installer-catalog-and-fail.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
