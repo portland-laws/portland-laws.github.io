@@ -10,6 +10,10 @@ import {
   type BrowserNativeProofAdapter,
   type EProverCompatibilityResult,
 } from './proverAdapters';
+import {
+  createBrowserNativeSymbolicAiProverBridge,
+  type BrowserNativeSymbolicAiProofResult,
+} from './symbolicAiProverBridge';
 
 describe('BrowserNativeLogicBridge', () => {
   it('reports local browser-native metadata and supported routes', () => {
@@ -215,6 +219,39 @@ describe('BrowserNativeLogicBridge', () => {
     });
     expect(result.lean.theoremDeclaration).toContain('axiom h1 : (Resident Ada)');
     expect(result.lean.theoremDeclaration).toContain('theorem target : (Resident Ada)');
+  });
+
+  it('ports the SymbolicAI neural prover bridge without Python or service calls', () => {
+    const adapter = createBrowserNativeSymbolicAiProverBridge();
+    const result = adapter.prove({
+      logic: 'tdfol',
+      theorem: 'Resident(Ada)',
+      axioms: ['Resident(Ada)'],
+    }) as BrowserNativeSymbolicAiProofResult;
+
+    expect(adapter.metadata).toMatchObject({
+      logic: 'tdfol',
+      name: 'browser-native-symbolicai-prover-bridge',
+      runtime: 'typescript-wasm-browser',
+      requiresExternalProver: false,
+    });
+    expect(result).toMatchObject({
+      status: 'proved',
+      theorem: 'Resident(Ada)',
+      method: 'symbolicai-compatible:tdfol-forward-chaining',
+    });
+    expect(result.symbolicAi).toMatchObject({
+      adapter: 'browser-native-symbolicai-prover-bridge',
+      externalPackageAllowed: false,
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      neuralRuntime: 'deterministic-local-tdfol',
+      confidence: 1,
+      premiseOverlap: 1,
+      statusMapping: 'success',
+    });
+    expect(result.symbolicAi.symbolicProgram).toContain('premise_1: Resident(Ada)');
+    expect(result.symbolicAi.symbolicProgram).toContain('target: Resident(Ada)');
   });
 
   it('accepts injectable browser-native prover adapters for bridge contract tests', () => {
