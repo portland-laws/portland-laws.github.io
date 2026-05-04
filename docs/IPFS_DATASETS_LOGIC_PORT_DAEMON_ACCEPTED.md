@@ -533,3 +533,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T042758Z-ported-cec-prover_manager.py-as-a-browser-native-typescript-strategy-manager..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T042758Z-ported-cec-prover_manager.py-as-a-browser-native-typescript-strategy-manager..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T042758Z-ported-cec-prover_manager.py-as-a-browser-native-typescript-strategy-manager..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 04:33:00 UTC
+
+- Target: `Task checkbox-249: Port remaining Python logic module `logic/CEC/provers/tptp_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported CEC TPTP utilities to browser-native TypeScript.
+- Impact: Adds a local CEC AST to TPTP formatter/problem builder and converter facade under src/lib/logic/cec, exports it through the CEC barrel, and exercises the utility through the existing Jest logic-port validation path without Python, server, filesystem, subprocess, RPC, or Node-only runtime dependencies.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/index.ts`, `src/lib/logic/cec/problemParser.test.ts`, `src/lib/logic/cec/tptpUtils.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T043300Z-ported-cec-tptp-utilities-to-browser-native-typescript..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T043300Z-ported-cec-tptp-utilities-to-browser-native-typescript..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T043300Z-ported-cec-tptp-utilities-to-browser-native-typescript..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
