@@ -1109,3 +1109,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T083109Z-ported-the-deontic-legal_text_to_deontic-browser-native-facade-with-structured-e.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T083109Z-ported-the-deontic-legal_text_to_deontic-browser-native-facade-with-structured-e.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T083109Z-ported-the-deontic-legal_text_to_deontic-browser-native-facade-with-structured-e.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 08:37:25 UTC
+
+- Target: `Task checkbox-313: Port remaining Python logic module `logic/deontic/metrics.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Fixed TypeScript narrowing for resolved cross-reference metrics by binding the candidate value before Array.isArray filtering.
+- Impact: Preserves the browser-native deontic metrics port and focused tests while resolving the daemon validation compile failure.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/deontic/index.ts`, `src/lib/logic/deontic/metrics.test.ts`, `src/lib/logic/deontic/metrics.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T083725Z-fixed-typescript-narrowing-for-resolved-cross-reference-metrics-by-binding-the-c.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T083725Z-fixed-typescript-narrowing-for-resolved-cross-reference-metrics-by-binding-the-c.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T083725Z-fixed-typescript-narrowing-for-resolved-cross-reference-metrics-by-binding-the-c.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

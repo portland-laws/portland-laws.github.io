@@ -823,7 +823,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/deontic/ir.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/deontic/knowledge_base.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/deontic/legal_text_to_deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/deontic/metrics.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/deontic/metrics.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/deontic/prover_syntax.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/deontic/support_map.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/deontic/utils/deontic_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 08:31:09 UTC
+Last updated: 2026-05-04 08:37:25 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-313: Port remaining Python logic module 'logic/deontic/metrics.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-314: Port remaining Python logic module 'logic/deontic/prover_syntax.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1287,8 +1287,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-309: Port remaining Python logic module 'logic/deontic/formula_builder.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-310: Port remaining Python logic module 'logic/deontic/ir.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-311: Port remaining Python logic module 'logic/deontic/knowledge_base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-312: Port remaining Python logic module 'logic/deontic/legal_text_to_deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-313: Port remaining Python logic module 'logic/deontic/metrics.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-312: Port remaining Python logic module 'logic/deontic/legal_text_to_deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-313: Port remaining Python logic module 'logic/deontic/metrics.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-314: Port remaining Python logic module 'logic/deontic/prover_syntax.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-315: Port remaining Python logic module 'logic/deontic/support_map.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-316: Port remaining Python logic module 'logic/deontic/utils/deontic_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-312: Port remaining Python logic module 'logic/deontic/legal_text_to_deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-313: Port remaining Python logic module 'logic/deontic/metrics.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported the deontic legal_text_to_deontic browser-native facade with structured extraction metadata and Python-style aliases.
-- Impact: The TypeScript deontic parser now returns sentence offsets, norm-count metadata, and explicit browser-native/no-Python runtime metadata from convertLegalTextToDeontic, while tests validate the legal_text_to_deontic alias and no server-call capability contract.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/deontic/parser.test.ts`, `src/lib/logic/deontic/parser.ts`
+- Summary: Fixed TypeScript narrowing for resolved cross-reference metrics by binding the candidate value before Array.isArray filtering.
+- Impact: Preserves the browser-native deontic metrics port and focused tests while resolving the daemon validation compile failure.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/deontic/index.ts`, `src/lib/logic/deontic/metrics.test.ts`, `src/lib/logic/deontic/metrics.ts`
 
 ### Blocked Backlog
 
