@@ -4,6 +4,11 @@ import {
   create_logic_symbol,
   get_available_primitives,
 } from './symbolicLogicPrimitives';
+import {
+  INTEGRATION_SYMBOLIC_LOGIC_PRIMITIVES_METADATA,
+  create_logic_symbol as create_root_logic_symbol,
+  get_available_primitives as get_root_available_primitives,
+} from '../symbolicLogicPrimitives';
 
 describe('symbolic logic primitives browser-native parity', () => {
   it('creates local logic symbols and converts deterministic FOL formats', () => {
@@ -43,5 +48,30 @@ describe('symbolic logic primitives browser-native parity', () => {
     expect(create_logic_symbol('  (  A   ∧   B  )  ').simplify_logic().value).toBe('(A ∧ B)');
     expect(get_available_primitives()).toEqual(expect.arrayContaining(['to_fol', 'implies']));
     expect(SYMBOLIC_LOGIC_PRIMITIVES_METADATA).toMatchObject({ runtimeDependencies: [] });
+  });
+
+  it('exposes the root integration Python module without runtime fallbacks', () => {
+    const symbol = create_root_logic_symbol('All lessees are tenants');
+    const result = symbol.to_fol();
+    const analysis = JSON.parse(symbol.analyze_logical_structure().value);
+
+    expect(symbol.metadata).toMatchObject({
+      sourcePythonModule: 'logic/integration/symbolic_logic_primitives.py',
+      implementationModule: 'logic/integration/symbolic/symbolic_logic_primitives.py',
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      runtimeDependencies: [],
+    });
+    expect(result.metadata.sourcePythonModule).toBe(
+      'logic/integration/symbolic_logic_primitives.py',
+    );
+    expect(result.value).toBe('∀x (Lessees(x) → Tenants(x))');
+    expect(analysis).toMatchObject({ type: 'universal', hasQuantifiers: true });
+    expect(get_root_available_primitives()).toEqual(
+      expect.arrayContaining(['to_fol', 'extract_quantifiers', 'simplify_logic']),
+    );
+    expect(INTEGRATION_SYMBOLIC_LOGIC_PRIMITIVES_METADATA.parity).toEqual(
+      expect.arrayContaining(['root_integration_module_compatibility']),
+    );
   });
 });

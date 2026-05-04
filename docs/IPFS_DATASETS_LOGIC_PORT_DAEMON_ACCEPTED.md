@@ -1883,3 +1883,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T144814Z-added-a-browser-native-root-symbolicfol-bridge-for-logic-integration-symbolic_fo.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T144814Z-added-a-browser-native-root-symbolicfol-bridge-for-logic-integration-symbolic_fo.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T144814Z-added-a-browser-native-root-symbolicfol-bridge-for-logic-integration-symbolic_fo.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 14:51:09 UTC
+
+- Target: `Task checkbox-400: Port remaining Python logic module `logic/integration/symbolic_logic_primitives.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Added browser-native root integration symbolic logic primitives compatibility surface.
+- Impact: The new src/lib/logic/integration/symbolicLogicPrimitives.ts module exposes Python-style root-module symbolic primitive constructors and metadata for logic/integration/symbolic_logic_primitives.py while delegating all behavior to the existing deterministic browser-native implementation. The focused Jest test imports the root module, validates FOL conversion, metadata, primitive discovery, and the no server/Python runtime contract.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/symbolic/symbolicLogicPrimitives.test.ts`, `src/lib/logic/integration/symbolicLogicPrimitives.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T145109Z-added-browser-native-root-integration-symbolic-logic-primitives-compatibility-su.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T145109Z-added-browser-native-root-integration-symbolic-logic-primitives-compatibility-su.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T145109Z-added-browser-native-root-integration-symbolic-logic-primitives-compatibility-su.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
