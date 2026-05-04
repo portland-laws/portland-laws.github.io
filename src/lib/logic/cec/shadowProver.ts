@@ -4,6 +4,7 @@ import { formatCecExpression } from './formatter';
 import { parseCecExpression } from './parser';
 import { CecModalTableaux, type CecModalLogicType } from './modalTableaux';
 import { CecProver, type CecProverOptions } from './prover';
+import { CecProblemParser, type CecProblemFormat } from './problemParser';
 
 export type CecShadowModalLogic = 'K' | 'T' | 'S4' | 'S5' | 'D' | 'LP' | 'LP1' | 'LP2';
 export type CecShadowProofStatus = 'success' | 'failure' | 'timeout' | 'unknown' | 'error';
@@ -59,6 +60,32 @@ export interface CecShadowProverOptions extends CecProverOptions {
   maxDepth?: number;
 }
 
+export interface CecShadowWrapperRuntimeContract {
+  browserNative: boolean;
+  dependencyMode: 'local-typescript';
+  pythonRuntime: false;
+  serverRuntime: false;
+  filesystemAccess: false;
+  subprocessAccess: false;
+}
+
+export interface CecShadowWrapperProblemSource {
+  content: string;
+  name?: string;
+  formatHint?: CecProblemFormat;
+  metadata?: Record<string, unknown>;
+}
+
+export type CecShadowWrapperProblemInput =
+  | string
+  | CecShadowProblemFile
+  | CecShadowWrapperProblemSource;
+
+export interface CecShadowProverWrapperOptions extends CecShadowProverOptions {
+  defaultLogic?: CecShadowModalLogic;
+  formatHint?: CecProblemFormat;
+}
+
 export class CecShadowProof implements CecShadowProofTree {
   constructor(
     readonly goal: CecShadowFormula,
@@ -74,6 +101,98 @@ export class CecShadowProof implements CecShadowProofTree {
 
   getDepth(): number {
     return this.steps.length;
+  }
+}
+
+export class CecShadowProverWrapper {
+  readonly runtimeContract: CecShadowWrapperRuntimeContract = {
+    browserNative: true,
+    dependencyMode: 'local-typescript',
+    pythonRuntime: false,
+    serverRuntime: false,
+    filesystemAccess: false,
+    subprocessAccess: false,
+  };
+
+  constructor(readonly options: CecShadowProverWrapperOptions = {}) {}
+
+  loadProblem(input: CecShadowWrapperProblemInput): CecShadowProblemFile {
+    if (typeof input === 'string') {
+      return new CecProblemParser().parseString(input, {
+        formatHint: this.options.formatHint,
+      });
+    }
+    if (isProblemSource(input)) {
+      const parsed = new CecProblemParser().parseString(input.content, {
+        name: input.name,
+        formatHint: input.formatHint ?? this.options.formatHint,
+      });
+      return {
+        ...parsed,
+        metadata: {
+          ...parsed.metadata,
+          ...input.metadata,
+          wrapper: 'browser-native-shadow-prover-wrapper',
+        },
+      };
+    }
+    return readCecShadowProblemObject({
+      ...input,
+      logic: input.logic ?? this.options.defaultLogic ?? 'K',
+    });
+  }
+
+  load_problem(input: CecShadowWrapperProblemInput): CecShadowProblemFile {
+    return this.loadProblem(input);
+  }
+
+  proveProblem(input: CecShadowWrapperProblemInput): CecShadowProofTree[] {
+    const problem = this.loadProblem(input);
+    if (!isSupportedWrapperLogic(problem.logic)) {
+      return problem.goals.map((goal) => this.unsupportedLogicProof(goal, problem.logic));
+    }
+    return createCecShadowProver(problem.logic, this.options).proveProblem(problem);
+  }
+
+  prove_problem(input: CecShadowWrapperProblemInput): CecShadowProofTree[] {
+    return this.proveProblem(input);
+  }
+
+  proveTheorem(
+    theorem: CecShadowFormula,
+    axioms: CecShadowFormula[] = [],
+    logic: CecShadowModalLogic = this.options.defaultLogic ?? 'K',
+  ): CecShadowProofTree {
+    if (!isSupportedWrapperLogic(logic)) return this.unsupportedLogicProof(theorem, logic);
+    return createCecShadowProver(logic, this.options).proveTheorem(theorem, axioms);
+  }
+
+  prove_theorem(
+    theorem: CecShadowFormula,
+    axioms: CecShadowFormula[] = [],
+    logic: CecShadowModalLogic = this.options.defaultLogic ?? 'K',
+  ): CecShadowProofTree {
+    return this.proveTheorem(theorem, axioms, logic);
+  }
+
+  getRuntimeContract(): CecShadowWrapperRuntimeContract {
+    return { ...this.runtimeContract };
+  }
+
+  get_runtime_contract(): CecShadowWrapperRuntimeContract {
+    return this.getRuntimeContract();
+  }
+
+  private unsupportedLogicProof(
+    goal: CecShadowFormula,
+    logic: CecShadowModalLogic,
+  ): CecShadowProofTree {
+    return new CecShadowProof(goal, [], 'unknown', logic, {
+      method: 'shadow-prover-wrapper',
+      failClosed: true,
+      message: `Unsupported browser-native ShadowProver wrapper logic: ${logic}`,
+      runtime: this.runtimeContract,
+    });
   }
 }
 
@@ -384,6 +503,12 @@ export function createCecCognitiveProver(
   return new CecCognitiveCalculusProver(options);
 }
 
+export function createCecShadowProverWrapper(
+  options: CecShadowProverWrapperOptions = {},
+): CecShadowProverWrapper {
+  return new CecShadowProverWrapper(options);
+}
+
 export function proveCecShadowTheorem(
   theorem: CecShadowFormula,
   axioms: CecShadowFormula[] = [],
@@ -437,6 +562,14 @@ function assumptionsImplyGoal(assumptions: CecExpression[], goal: CecExpression)
 
 function isTableauxLogic(logic: CecShadowModalLogic): logic is CecModalLogicType {
   return logic === 'K' || logic === 'T' || logic === 'D' || logic === 'S4' || logic === 'S5';
+}
+
+function isSupportedWrapperLogic(logic: CecShadowModalLogic): logic is CecModalLogicType {
+  return isTableauxLogic(logic);
+}
+
+function isProblemSource(input: object): input is CecShadowWrapperProblemSource {
+  return 'content' in input && typeof input.content === 'string';
 }
 
 function formulaKey(formula: CecShadowFormula): string {

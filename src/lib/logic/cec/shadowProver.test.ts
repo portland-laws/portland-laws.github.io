@@ -1,10 +1,12 @@
 import {
   CecKProver,
   CecShadowProver,
+  CecShadowProverWrapper,
   CecS4Prover,
   CecS5Prover,
   createCecCognitiveProver,
   createCecShadowProver,
+  createCecShadowProverWrapper,
   proveCecShadowBatch,
   prove_cec_shadow_theorem,
   readCecShadowProblemObject,
@@ -120,6 +122,47 @@ describe('CEC ShadowProver', () => {
       browserNative: true,
       dependencyMode: 'local-typescript',
       pythonRuntime: false,
+    });
+  });
+
+  it('loads and proves Python wrapper-style problem content in browser-native TypeScript', () => {
+    const wrapper = new CecShadowProverWrapper();
+    const results = wrapper.prove_problem({
+      name: 'wrapper-custom-problem',
+      formatHint: 'custom',
+      content: `
+        LOGIC: T
+        GOALS:
+        (implies (always (comply_with agent code)) (comply_with agent code))
+      `,
+    });
+
+    expect(results).toHaveLength(1);
+    expect(results[0]).toMatchObject({
+      status: 'success',
+      logic: 'T',
+      metadata: { method: 'tableau' },
+    });
+    expect(wrapper.get_runtime_contract()).toMatchObject({
+      browserNative: true,
+      pythonRuntime: false,
+      serverRuntime: false,
+      subprocessAccess: false,
+    });
+  });
+
+  it('fails closed for unsupported wrapper logics instead of delegating to Python', () => {
+    const wrapper = createCecShadowProverWrapper();
+    const proof = wrapper.prove_theorem('(lp_claim)', [], 'LP1');
+
+    expect(proof).toMatchObject({
+      status: 'unknown',
+      logic: 'LP1',
+      metadata: {
+        method: 'shadow-prover-wrapper',
+        failClosed: true,
+        runtime: { browserNative: true, pythonRuntime: false },
+      },
     });
   });
 });
