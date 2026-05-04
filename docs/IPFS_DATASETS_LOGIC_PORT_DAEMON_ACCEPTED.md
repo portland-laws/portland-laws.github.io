@@ -1577,3 +1577,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T123502Z-ported-temporal_deontic_rag_store.py-as-a-browser-native-temporal-deontic-rag-st.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T123502Z-ported-temporal_deontic_rag_store.py-as-a-browser-native-temporal-deontic-rag-st.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T123502Z-ported-temporal_deontic_rag_store.py-as-a-browser-native-temporal-deontic-rag-st.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 12:39:06 UTC
+
+- Target: `Task checkbox-366: Port remaining Python logic module `logic/integration/interactive/_fol_constructor_io.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported integration interactive FOL constructor I/O to browser-native TypeScript.
+- Impact: Adds a deterministic TypeScript-only constructor I/O adapter under src/lib/logic/integration/interactive with source Python parity metadata, session prompt normalization, FOL formula construction via the existing browser-native parser, JSON serialization/parsing, and fail-closed invalid input handling. The focused Jest test imports the runtime module directly and validates the browser-native no-server/no-Python contract.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/interactive/folConstructorIo.test.ts`, `src/lib/logic/integration/interactive/folConstructorIo.ts`, `src/lib/logic/integration/interactive/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T123906Z-ported-integration-interactive-fol-constructor-i-o-to-browser-native-typescript..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T123906Z-ported-integration-interactive-fol-constructor-i-o-to-browser-native-typescript..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T123906Z-ported-integration-interactive-fol-constructor-i-o-to-browser-native-typescript..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

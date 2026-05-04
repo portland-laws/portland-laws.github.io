@@ -20,6 +20,7 @@ export * from './cvc5ProverBridge';
 export * from './demoTemporalDeonticRag';
 export * from './externalProversBridge';
 export * from './ipldLogicStorage';
+export * from './interactive';
 export * from './leanProverBridge';
 export * from './proverAdapters';
 export * from './proverInstaller';
