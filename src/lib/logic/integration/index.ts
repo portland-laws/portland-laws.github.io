@@ -7,6 +7,7 @@ export * from './deonticLogicConverter';
 export * from './converters/logicTranslationCore';
 export * from './converters/modalLogicExtension';
 export * from './converters/symbolicFolBridge';
+export * from './domain/caselawBulkProcessor';
 export * from './cvc5ProverBridge';
 export * from './demoTemporalDeonticRag';
 export * from './externalProversBridge';

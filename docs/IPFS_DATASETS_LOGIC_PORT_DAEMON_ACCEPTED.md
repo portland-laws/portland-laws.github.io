@@ -1496,3 +1496,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T115147Z-ported-the-root-integration-deontic_logic_core.py-facade-to-browser-native-types.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T115147Z-ported-the-root-integration-deontic_logic_core.py-facade-to-browser-native-types.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T115147Z-ported-the-root-integration-deontic_logic_core.py-facade-to-browser-native-types.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 11:56:30 UTC
+
+- Target: `Task checkbox-357: Port remaining Python logic module `logic/integration/domain/caselaw_bulk_processor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported caselaw bulk processing to a browser-native TypeScript integration domain module.
+- Impact: The new processor is exported through the TypeScript logic integration surface and is directly exercised by Jest tests that validate deterministic citation, case-name, year, jurisdiction, concept extraction, and fail-closed local rejection without server or Python dependencies.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/domain/caselawBulkProcessor.test.ts`, `src/lib/logic/integration/domain/caselawBulkProcessor.ts`, `src/lib/logic/integration/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T115630Z-ported-caselaw-bulk-processing-to-a-browser-native-typescript-integration-domain.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T115630Z-ported-caselaw-bulk-processing-to-a-browser-native-typescript-integration-domain.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T115630Z-ported-caselaw-bulk-processing-to-a-browser-native-typescript-integration-domain.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
