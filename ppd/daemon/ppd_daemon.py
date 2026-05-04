@@ -11,11 +11,13 @@ commands returned by the model.
 from __future__ import annotations
 
 import argparse
+from contextlib import contextmanager
 import difflib
 import json
 import os
 import py_compile
 import re
+import shutil
 import signal
 import subprocess
 import sys
@@ -23,10 +25,10 @@ import tempfile
 import threading
 import time
 import uuid
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
 from pathlib import Path
-from typing import Any, Iterable, Optional
+from typing import Any, Callable, Iterable, Iterator, Optional
 from urllib.parse import urlparse
 
 if __package__ in {None, ""}:
@@ -190,6 +192,7 @@ class Config:
     result_log: Path = Path("ppd/daemon/ppd-daemon.jsonl")
     accepted_dir: Path = Path("ppd/daemon/accepted-work")
     failed_dir: Path = Path("ppd/daemon/failed-patches")
+    worktree_dir: Path = Path("ppd/daemon/worktrees")
     model_name: str = "gpt-5.5"
     provider: Optional[str] = None
     apply: bool = False
@@ -204,6 +207,10 @@ class Config:
     allow_local_fallback: bool = False
     revisit_blocked: bool = False
     max_task_failures_before_block: int = 3
+    repair_validation_failures: bool = False
+    max_validation_repair_attempts: int = 1
+    worktree_stale_seconds: int = 7200
+    validation_repair_callback: Optional[Callable[[str, "Config"], str]] = None
     validation_commands: tuple[tuple[str, ...], ...] = DEFAULT_VALIDATION_COMMANDS
 
     def resolve(self, path: Path) -> Path:
