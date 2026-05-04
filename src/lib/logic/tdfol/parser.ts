@@ -17,6 +17,30 @@ export function parseTdfolFormula(source: string): TdfolFormula {
   return new TdfolParser(source).parse();
 }
 
+export function parseTdfolSafeFormula(source: string): TdfolFormula | null {
+  try {
+    return parseTdfolFormula(source);
+  } catch {
+    return null;
+  }
+}
+
+export function parseTdfolTerm(source: string): TdfolTerm {
+  return new TdfolParser(source).parseTermOnly();
+}
+
+export const TDFOL_PARSER_METADATA = {
+  sourcePythonModule: 'logic/TDFOL/tdfol_parser.py',
+  browserNative: true,
+  runtimeDependencies: [] as Array<string>,
+  parity: [
+    'lexer',
+    'recursive_descent_formula_parser',
+    'recursive_descent_term_parser',
+    'safe_parse_null_on_error',
+  ] as Array<string>,
+} as const;
+
 export const TDFOL_DCEC_PARSER_METADATA = {
   sourcePythonModule: 'logic/TDFOL/tdfol_dcec_parser.py',
   browserNative: true,
@@ -44,6 +68,12 @@ class TdfolParser {
     const formula = this.parseIff();
     this.expect('EOF');
     return formula;
+  }
+
+  parseTermOnly(): TdfolTerm {
+    const term = this.parseTerm();
+    this.expect('EOF');
+    return term;
   }
 
   private parseIff(): TdfolFormula {
@@ -213,6 +243,9 @@ class TdfolParser {
 
     if (this.match('COLON')) {
       sort = this.expect('IDENTIFIER').value;
+      if (token.type === 'IDENTIFIER') {
+        return { kind: 'variable', name, sort };
+      }
     }
 
     if (token.type === 'NUMBER') {

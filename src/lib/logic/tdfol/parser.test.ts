@@ -1,7 +1,14 @@
 import { LogicParseError } from '../errors';
 import { formatTdfolFormula } from './formatter';
 import { lexTdfol } from './lexer';
-import { TDFOL_DCEC_PARSER_METADATA, parseTdfolDcecFormula, parseTdfolFormula } from './parser';
+import {
+  TDFOL_DCEC_PARSER_METADATA,
+  TDFOL_PARSER_METADATA,
+  parseTdfolDcecFormula,
+  parseTdfolFormula,
+  parseTdfolSafeFormula,
+  parseTdfolTerm,
+} from './parser';
 import { TDFOL_CORE_METADATA, getBoundVariables, getFreeVariables, substituteFormula } from './ast';
 
 const portlandFormula =
@@ -66,6 +73,28 @@ describe('TDFOL parser', () => {
     expect(formatTdfolFormula(formula)).toBe(
       '∀x ((Person(x)) → (O(□(ComplyWith(x, code_section)))))',
     );
+  });
+
+  it('ports tdfol_parser.py metadata, term parsing, and safe parse API', () => {
+    const term = parseTdfolTerm('Lookup(section_1, owner:Agent):Condition');
+
+    expect(TDFOL_PARSER_METADATA).toMatchObject({
+      sourcePythonModule: 'logic/TDFOL/tdfol_parser.py',
+      browserNative: true,
+      runtimeDependencies: [],
+    });
+    expect(term).toEqual({
+      kind: 'function',
+      name: 'Lookup',
+      args: [
+        { kind: 'constant', name: 'section_1', sort: undefined },
+        { kind: 'variable', name: 'owner', sort: 'Agent' },
+      ],
+      sort: 'Condition',
+    });
+    expect(parseTdfolSafeFormula('forall x. Person(x)')).toMatchObject({ kind: 'quantified' });
+    expect(parseTdfolSafeFormula('forall x. Person(')).toBeNull();
+    expect(() => parseTdfolTerm('Lookup(x), trailing')).toThrow(LogicParseError);
   });
 
   it('parses prohibitions distinctly from eventuality', () => {
