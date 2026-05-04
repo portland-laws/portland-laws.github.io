@@ -48,4 +48,5 @@ export * from './symbolicFolBridge';
 export * from './tdfolCecBridge';
 export * from './tdfolGrammarBridge';
 export * from './tdfolShadowProverBridge';
+export * from './ucanPolicyBridge';
 export * from './z3ProverBridge';
