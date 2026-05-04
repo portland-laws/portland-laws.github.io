@@ -1541,3 +1541,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T121554Z-ported-legal-symbolic-analyzer-to-deterministic-browser-native-typescript-with-f.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T121554Z-ported-legal-symbolic-analyzer-to-deterministic-browser-native-typescript-with-f.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T121554Z-ported-legal-symbolic-analyzer-to-deterministic-browser-native-typescript-with-f.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 12:20:24 UTC
+
+- Target: `Task checkbox-362: Port remaining Python logic module `logic/integration/domain/medical_theorem_framework.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported medical theorem framework domain logic to a browser-native TypeScript module.
+- Impact: Adds a local deterministic medical evidence extractor and theorem builder under src/lib/logic/integration/domain with fail-closed contraindication and incomplete-evidence handling, exports it through the integration barrel, and validates the behavior with focused Jest tests without server, Python, filesystem, subprocess, or RPC dependencies.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/domain/medicalTheoremFramework.test.ts`, `src/lib/logic/integration/domain/medicalTheoremFramework.ts`, `src/lib/logic/integration/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T122024Z-ported-medical-theorem-framework-domain-logic-to-a-browser-native-typescript-mod.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T122024Z-ported-medical-theorem-framework-domain-logic-to-a-browser-native-typescript-mod.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T122024Z-ported-medical-theorem-framework-domain-logic-to-a-browser-native-typescript-mod.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
