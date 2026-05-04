@@ -14,10 +14,10 @@ import {
 import type { TdfolBinaryFormula, TdfolFormula, TdfolTerm } from './ast';
 import { formatTdfolFormula } from './formatter';
 import {
-  applyTdfolRules,
   formulaEquals,
   formulaKey,
   getAllTdfolRules,
+  type TdfolRuleApplication,
   type TdfolInferenceRule,
 } from './inferenceRules';
 import { TdfolModalTableaux, type TdfolModalTableauxOptions } from './modalTableaux';
@@ -196,6 +196,7 @@ export class TdfolForwardChainingStrategy implements TdfolProverStrategy {
     const deadline = start + Math.min(timeoutMs, this.defaultTimeoutMs);
     const derived = [...kb.axioms, ...(kb.theorems ?? [])];
     const derivedKeys = new Set(derived.map(formulaKey));
+    let frontierStart = 0;
     const steps: ProofStep[] = [];
     const theoremKey = formulaKey(formula);
 
@@ -214,7 +215,9 @@ export class TdfolForwardChainingStrategy implements TdfolProverStrategy {
         );
       }
 
-      const newApplications = this.applyRulesBounded(derived, derivedKeys, deadline);
+      const frontier = derived.slice(frontierStart);
+      frontierStart = derived.length;
+      const newApplications = this.applyRulesBounded(derived, frontier, derivedKeys, deadline);
       if (newApplications.length === 0) {
         return this.finish(
           'unknown',
@@ -282,30 +285,125 @@ export class TdfolForwardChainingStrategy implements TdfolProverStrategy {
 
   private applyRulesBounded(
     derived: TdfolFormula[],
+    frontier: TdfolFormula[],
     knownKeys: Set<string>,
     deadline: number,
-  ): Array<{ rule: string; premises: TdfolFormula[]; conclusion: TdfolFormula }> {
-    const applications = applyTdfolRules(derived.slice(0, this.binaryPremiseWindow), this.rules);
-    const newApplications: Array<{
-      rule: string;
-      premises: TdfolFormula[];
-      conclusion: TdfolFormula;
-    }> = [];
+  ): TdfolRuleApplication[] {
+    const activeFrontier = frontier.length > 0 ? frontier : derived;
+    const newApplications: TdfolRuleApplication[] = [];
     const localKeys = new Set(knownKeys);
 
-    for (const application of applications) {
-      if (nowMs() > deadline || newApplications.length >= this.maxNewFormulasPerIteration) {
-        break;
+    for (const rule of this.rules) {
+      if (rule.arity === 1) {
+        for (const premise of activeFrontier) {
+          if (
+            this.addApplication(
+              rule.name,
+              [premise],
+              rule.canApply(premise),
+              () => rule.apply(premise),
+              newApplications,
+              localKeys,
+              deadline,
+            )
+          ) {
+            return newApplications;
+          }
+        }
+      } else if (rule.arity === 2) {
+        for (const left of activeFrontier) {
+          if (
+            this.applyBinaryRuleWithFrontier(
+              rule,
+              left,
+              derived,
+              true,
+              newApplications,
+              localKeys,
+              deadline,
+            )
+          ) {
+            return newApplications;
+          }
+        }
+        for (const right of activeFrontier) {
+          if (
+            this.applyBinaryRuleWithFrontier(
+              rule,
+              right,
+              derived,
+              false,
+              newApplications,
+              localKeys,
+              deadline,
+            )
+          ) {
+            return newApplications;
+          }
+        }
       }
-      const key = formulaKey(application.conclusion);
-      if (localKeys.has(key)) {
-        continue;
-      }
-      localKeys.add(key);
-      newApplications.push(application);
     }
 
     return newApplications;
+  }
+
+  private applyBinaryRuleWithFrontier(
+    rule: TdfolInferenceRule,
+    frontierFormula: TdfolFormula,
+    derived: TdfolFormula[],
+    frontierAsLeft: boolean,
+    newApplications: TdfolRuleApplication[],
+    localKeys: Set<string>,
+    deadline: number,
+  ): boolean {
+    const candidateBudget = Math.max(this.binaryPremiseWindow, derived.length);
+    let compared = 0;
+    for (const candidate of derived) {
+      if (compared >= candidateBudget) {
+        break;
+      }
+      compared += 1;
+      const premises = frontierAsLeft ? [frontierFormula, candidate] : [candidate, frontierFormula];
+      if (
+        this.addApplication(
+          rule.name,
+          premises,
+          rule.canApply(premises[0], premises[1]),
+          () => rule.apply(premises[0], premises[1]),
+          newApplications,
+          localKeys,
+          deadline,
+        )
+      ) {
+        return true;
+      }
+    }
+    return false;
+  }
+
+  private addApplication(
+    ruleName: string,
+    premises: TdfolFormula[],
+    canApply: boolean,
+    conclude: () => TdfolFormula,
+    newApplications: TdfolRuleApplication[],
+    localKeys: Set<string>,
+    deadline: number,
+  ): boolean {
+    if (nowMs() > deadline || newApplications.length >= this.maxNewFormulasPerIteration) {
+      return true;
+    }
+    if (!canApply) {
+      return false;
+    }
+    const conclusion = conclude();
+    const key = formulaKey(conclusion);
+    if (localKeys.has(key)) {
+      return false;
+    }
+    localKeys.add(key);
+    newApplications.push({ rule: ruleName, premises, conclusion });
+    return nowMs() > deadline || newApplications.length >= this.maxNewFormulasPerIteration;
   }
 
   private finish(

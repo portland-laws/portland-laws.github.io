@@ -866,3 +866,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T064816Z-ported-the-remaining-tdfol-cec-delegate-slice-with-bounded-browser-native-cec-ru.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T064816Z-ported-the-remaining-tdfol-cec-delegate-slice-with-bounded-browser-native-cec-ru.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T064816Z-ported-the-remaining-tdfol-cec-delegate-slice-with-bounded-browser-native-cec-ru.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 06:51:18 UTC
+
+- Target: `Task checkbox-286: Port remaining Python logic module `logic/TDFOL/strategies/forward_chaining.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the remaining TDFOL forward-chaining strategy slice by replacing first-window-only rule application with browser-native frontier-based derivation.
+- Impact: The TDFOL strategy layer now considers late knowledge-base axioms and formulas derived in prior iterations during local forward chaining, improving parity with the Python forward_chaining.py behavior without server, Python, filesystem, subprocess, or RPC dependencies. The focused Jest regression exercises the strategy through the existing TypeScript validation suite.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/strategies.test.ts`, `src/lib/logic/tdfol/strategies.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T065118Z-ported-the-remaining-tdfol-forward-chaining-strategy-slice-by-replacing-first-wi.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T065118Z-ported-the-remaining-tdfol-forward-chaining-strategy-slice-by-replacing-first-wi.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T065118Z-ported-the-remaining-tdfol-forward-chaining-strategy-slice-by-replacing-first-wi.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

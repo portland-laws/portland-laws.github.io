@@ -77,6 +77,33 @@ describe('TDFOL proving strategies', () => {
     expect(result.timeMs).toBeGreaterThanOrEqual(0);
   });
 
+  it('uses late axioms and newly derived formulas as the forward-chaining frontier', () => {
+    const filler = Array.from({ length: 25 }, (_value, index) =>
+      parseTdfolFormula(`Noise${index}(x)`),
+    );
+    const strategy = new TdfolForwardChainingStrategy({
+      rules: [ModusPonensRule],
+      maxIterations: 5,
+      binaryPremiseWindow: 2,
+    });
+
+    const result = strategy.prove(parseTdfolFormula('Goal(x)'), {
+      axioms: [
+        ...filler,
+        parseTdfolFormula('LateFact(x)'),
+        parseTdfolFormula('LateFact(x) -> Mid(x)'),
+        parseTdfolFormula('Mid(x) -> Goal(x)'),
+      ],
+    });
+
+    expect(result).toMatchObject({
+      status: 'proved',
+      theorem: 'Goal(x)',
+      method: 'forward_chaining',
+    });
+    expect(result.steps.map((step) => step.conclusion)).toEqual(['Mid(x)', 'Goal(x)']);
+  });
+
   it('chains temporal and propositional rules using the strategy facade', () => {
     const result = proveTdfolWithStrategySelection(
       parseTdfolFormula('Goal(x)'),
