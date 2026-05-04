@@ -37,6 +37,7 @@ export * from './performanceDashboard';
 export * from './performanceEngine';
 export * from './performanceMetrics';
 export * from './performanceProfiler';
+export * from './proofCache';
 export * from './proofExplainer';
 export * from './proofTree';
 export * from './prover';

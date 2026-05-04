@@ -956,3 +956,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T072051Z-completed-the-tdfol-performance-engine-browser-native-parity-slice-with-module-m.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T072051Z-completed-the-tdfol-performance-engine-browser-native-parity-slice-with-module-m.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T072051Z-completed-the-tdfol-performance-engine-browser-native-parity-slice-with-module-m.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 07:24:07 UTC
+
+- Target: `Task checkbox-296: Port remaining Python logic module `logic/TDFOL/tdfol_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported TDFOL proof cache parity with a browser-native deterministic cache wrapper.
+- Impact: src/lib/logic/tdfol/proofCache.ts exposes normalized theorem/axiom/config cache keys, TTL/LRU-backed stats, invalidation, global helpers, and cached TDFOL proving without Python, server, filesystem, subprocess, or RPC dependencies. src/lib/logic/tdfol/prover.test.ts is already part of validate:logic-port and now exercises the cache behavior directly.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/index.ts`, `src/lib/logic/tdfol/proofCache.ts`, `src/lib/logic/tdfol/prover.test.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T072407Z-ported-tdfol-proof-cache-parity-with-a-browser-native-deterministic-cache-wrappe.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T072407Z-ported-tdfol-proof-cache-parity-with-a-browser-native-deterministic-cache-wrappe.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T072407Z-ported-tdfol-proof-cache-parity-with-a-browser-native-deterministic-cache-wrappe.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
