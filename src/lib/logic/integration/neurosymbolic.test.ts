@@ -1,13 +1,16 @@
 import {
   analyze_neurosymbolic,
+  analyze_neurosymbolic_api,
   analyze_neurosymbolic_graphrag,
   coordinate_reasoning,
+  create_browser_native_neurosymbolic_api,
   create_browser_native_hybrid_confidence,
   create_browser_native_embedding_prover,
   create_browser_native_neurosymbolic_integration,
   create_browser_native_neurosymbolic_graphrag,
   create_browser_native_reasoning_coordinator,
   prove_embedding,
+  query_neurosymbolic_api,
   query_neurosymbolic_graphrag,
   reason_neurosymbolic,
   score_hybrid_confidence,
@@ -69,6 +72,66 @@ describe('browser-native neurosymbolic integration parity', () => {
     expect(analyze_neurosymbolic('Plain background context.').issues).toContain(
       'no local neural-symbolic signals matched',
     );
+  });
+});
+
+describe('browser-native neurosymbolic API parity', () => {
+  it('coordinates symbolic, GraphRAG, embedding, and confidence evidence locally', () => {
+    const api = create_browser_native_neurosymbolic_api();
+    const result = api.analyze({
+      text: 'The agency shall publish the rule.',
+      query: 'Protected(Agency)',
+      documents: [
+        {
+          id: 'agency-rule',
+          text: 'The agency shall publish the rule before enforcement.',
+        },
+      ],
+      rules: ['O(the_agency_shall_publish_the_rule_before_enforcement) => Protected(Agency)'],
+      embedding: { threshold: 0.4 },
+    });
+
+    expect(api.metadata).toMatchObject({
+      sourcePythonModule: 'logic/integration/symbolic/neurosymbolic_api.py',
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      apiRuntime: 'deterministic-local-neurosymbolic-api',
+    });
+    expect(result).toMatchObject({
+      status: 'success',
+      runtime: 'browser-native',
+      selectedMode: 'graphrag',
+      proofStatus: 'proved',
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      metadata: {
+        sourcePythonModule: 'logic/integration/symbolic/neurosymbolic_api.py',
+      },
+    });
+    expect(result.answerFacts).toContain('Protected(Agency)');
+    expect(result.graphrag?.retrievedDocuments[0]?.id).toBe('agency-rule');
+  });
+
+  it('exposes Python-compatible aliases and fails closed without runtime fallbacks', () => {
+    const proved = analyze_neurosymbolic_api({
+      text: 'The tenant must pay rent.',
+      query: 'O(the_tenant_must_pay_rent)',
+    });
+    const closed = query_neurosymbolic_api({ text: '', query: 'Any(Query)' });
+
+    expect(proved).toMatchObject({
+      status: 'success',
+      selectedMode: 'coordinator',
+      proofStatus: 'proved',
+    });
+    expect(closed).toMatchObject({
+      status: 'validation_failed',
+      success: false,
+      selectedMode: 'none',
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      issues: expect.arrayContaining(['no local neurosymbolic api evidence is available']),
+    });
   });
 });
 

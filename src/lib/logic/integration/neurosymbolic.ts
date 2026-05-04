@@ -156,6 +156,11 @@ export interface ReasoningCoordinatorResult {
   readonly issues: readonly string[];
   readonly metadata: typeof REASONING_COORDINATOR_METADATA;
 }
+export interface NeuroSymbolicApiRequest extends ReasoningCoordinatorOptions {
+  readonly text: string;
+  readonly documents?: readonly (string | NeuroSymbolicGraphRagDocument)[];
+  readonly topK?: number;
+}
 export const NEUROSYMBOLIC_METADATA = {
   sourcePythonModule: 'logic/integration/neurosymbolic.py',
   browserNative: true,
@@ -209,6 +214,20 @@ export const REASONING_COORDINATOR_METADATA = {
     'symbolic_embedding_coordination',
     'hybrid_confidence_selection',
     'fail_closed_reasoning',
+  ],
+} as const;
+export const NEUROSYMBOLIC_API_METADATA = {
+  sourcePythonModule: 'logic/integration/symbolic/neurosymbolic_api.py',
+  browserNative: true,
+  wasmCompatible: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  apiRuntime: 'deterministic-local-neurosymbolic-api',
+  runtimeDependencies: [],
+  parity: [
+    'local_api_facade',
+    'symbolic_graphrag_embedding_coordination',
+    'fail_closed_api_validation',
   ],
 } as const;
 const INTENTS: readonly [NeuroSymbolicIntent, RegExp, string][] = [
@@ -422,6 +441,100 @@ export class BrowserNativeReasoningCoordinator {
     return this.coordinate(text, query, options);
   }
 }
+export class BrowserNativeNeuroSymbolicApi {
+  readonly metadata = NEUROSYMBOLIC_API_METADATA;
+
+  analyze(request: NeuroSymbolicApiRequest) {
+    const sourceText = typeof request.text === 'string' ? request.text : '';
+    const query = request.query?.replace(/\s+/g, ' ').trim() || null;
+    const symbolic = analyzeNeuroSymbolic(sourceText, {
+      facts: request.facts,
+      query: query ?? undefined,
+      rules: request.rules,
+    });
+    const graphrag =
+      request.documents !== undefined
+        ? analyzeNeuroSymbolicGraphRag(sourceText, {
+            documents: request.documents,
+            facts: request.facts,
+            query: query ?? undefined,
+            rules: request.rules,
+            topK: request.topK,
+          })
+        : null;
+    const coordinator =
+      query === null
+        ? null
+        : coordinateReasoning(sourceText, query, {
+            confidence: request.confidence,
+            facts: [
+              ...symbolic.symbolicFacts,
+              ...(graphrag?.symbolicFacts ?? []),
+              ...(request.facts ?? []),
+            ],
+            premises: request.premises ?? [
+              ...symbolic.symbolicFacts,
+              ...(graphrag?.symbolicFacts ?? []),
+              ...(graphrag?.retrievedDocuments.map((document) => document.text) ?? []),
+            ],
+            rules: request.rules,
+            embedding: request.embedding,
+          });
+    const selectedMode =
+      graphrag?.proofStatus === 'proved'
+        ? 'graphrag'
+        : coordinator?.selectedProof !== undefined && coordinator.selectedProof !== 'none'
+          ? 'coordinator'
+          : symbolic.success
+            ? 'symbolic'
+            : 'none';
+    const proofStatus =
+      selectedMode === 'graphrag'
+        ? (graphrag?.proofStatus ?? 'unknown')
+        : selectedMode === 'coordinator'
+          ? (coordinator?.proofStatus ?? 'unknown')
+          : symbolic.proofStatus;
+    const answerFacts = unique([
+      ...symbolic.symbolicFacts,
+      ...symbolic.inferredFacts,
+      ...(graphrag?.symbolicFacts ?? []),
+      ...(graphrag?.inferredFacts ?? []),
+      ...(coordinator?.symbolic.inferredFacts ?? []),
+    ]);
+    const confidence = scoreHybridConfidence({
+      neuralConfidence: Math.max(symbolic.confidence, graphrag?.confidence ?? 0),
+      proofStatus,
+      retrievalScore: coordinator?.embedding?.bestSimilarity,
+      evidenceCount: answerFacts.length,
+    });
+    const issues = unique([
+      ...symbolic.issues,
+      ...(graphrag?.issues ?? []),
+      ...(coordinator?.issues ?? []),
+      ...confidence.issues,
+      ...(selectedMode === 'none' ? ['no local neurosymbolic api evidence is available'] : []),
+    ]);
+    return {
+      status: selectedMode === 'none' ? 'validation_failed' : 'success',
+      success: selectedMode !== 'none',
+      runtime: 'browser-native',
+      wasmCompatible: true,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      sourceText,
+      query,
+      selectedMode,
+      proofStatus,
+      answerFacts,
+      symbolic,
+      graphrag,
+      coordinator,
+      confidence,
+      issues,
+      metadata: this.metadata,
+    };
+  }
+}
 export function analyzeNeuroSymbolic(
   text: string,
   options: NeuroSymbolicOptions = {},
@@ -462,6 +575,15 @@ export const coordinateReasoning = (
 export const create_browser_native_reasoning_coordinator = (): BrowserNativeReasoningCoordinator =>
   new BrowserNativeReasoningCoordinator();
 export const coordinate_reasoning = coordinateReasoning;
+export const create_browser_native_neurosymbolic_api = (): BrowserNativeNeuroSymbolicApi =>
+  new BrowserNativeNeuroSymbolicApi();
+export const analyzeNeuroSymbolicApi = (request: NeuroSymbolicApiRequest) =>
+  new BrowserNativeNeuroSymbolicApi().analyze(request);
+export const queryNeuroSymbolicApi = (
+  request: NeuroSymbolicApiRequest & { readonly query: string },
+) => new BrowserNativeNeuroSymbolicApi().analyze(request);
+export const analyze_neurosymbolic_api = analyzeNeuroSymbolicApi;
+export const query_neurosymbolic_api = queryNeuroSymbolicApi;
 export const proveEmbedding = (
   premises: readonly EmbeddingProverPremise[],
   theorem: string,

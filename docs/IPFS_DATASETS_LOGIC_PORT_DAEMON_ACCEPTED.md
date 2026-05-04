@@ -1838,3 +1838,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T143212Z-ported-reasoning_coordinator.py-as-a-browser-native-neurosymbolic-coordinator..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T143212Z-ported-reasoning_coordinator.py-as-a-browser-native-neurosymbolic-coordinator..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T143212Z-ported-reasoning_coordinator.py-as-a-browser-native-neurosymbolic-coordinator..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 14:36:15 UTC
+
+- Target: `Task checkbox-395: Port remaining Python logic module `logic/integration/symbolic/neurosymbolic_api.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported a browser-native neurosymbolic_api facade over the existing local neurosymbolic engines.
+- Impact: src/lib/logic/integration/neurosymbolic.ts now exposes BrowserNativeNeuroSymbolicApi plus Python-compatible analyze/query aliases that coordinate symbolic, GraphRAG, embedding, and confidence reasoning without server calls or Python runtime fallback. The Jest suite directly validates successful local coordination and fail-closed API behavior, and the TypeScript port ledger marks checkbox-395 complete.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/neurosymbolic.test.ts`, `src/lib/logic/integration/neurosymbolic.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T143615Z-ported-a-browser-native-neurosymbolic_api-facade-over-the-existing-local-neurosy.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T143615Z-ported-a-browser-native-neurosymbolic_api-facade-over-the-existing-local-neurosy.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T143615Z-ported-a-browser-native-neurosymbolic_api-facade-over-the-existing-local-neurosy.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
