@@ -17,6 +17,8 @@ import {
   BrowserNativeProverRouter,
   createBrowserNativeEProverAdapter,
   createBrowserNativeProverRouter,
+  get_prover_backend_mixin_backends,
+  select_prover_backend_mixin,
   type BrowserNativeProofAdapter,
   type EProverCompatibilityResult,
 } from './proverAdapters';
@@ -284,6 +286,7 @@ describe('BrowserNativeLogicBridge', () => {
 
     expect(router.getMetadata()).toMatchObject({
       sourcePythonModule: 'logic/external_provers/prover_router.py',
+      backendMixinSourcePythonModule: 'logic/integration/reasoning/_prover_backend_mixin.py',
       runtime: 'typescript-wasm-browser',
       serverCallsAllowed: false,
       pythonRuntime: false,
@@ -298,6 +301,38 @@ describe('BrowserNativeLogicBridge', () => {
     expect(adapters.every((adapter) => adapter.requiresExternalProver === false)).toBe(true);
     expect(router.supports('tdfol')).toBe(true);
     expect(router.supports('dcec')).toBe(true);
+  });
+
+  it('ports reasoning prover backend mixin selection without runtime bridges', () => {
+    const router = createBrowserNativeProverRouter({ includeEProverCompatibilityAdapter: true });
+    const backends = get_prover_backend_mixin_backends();
+
+    expect(router.getBackendMixinMetadata()).toMatchObject({
+      sourcePythonModule: 'logic/integration/reasoning/_prover_backend_mixin.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      subprocessAllowed: false,
+      rpcAllowed: false,
+      runtimeDependencies: [],
+    });
+    expect(backends.map((backend) => backend.name)).toEqual(
+      expect.arrayContaining(['local', 'tdfol', 'cec', 'dcec', 'e-prover', 'z3', 'external']),
+    );
+    expect(select_prover_backend_mixin('cec')).toMatchObject({
+      name: 'cec',
+      available: true,
+      adapterName: 'local-cec-forward-prover',
+      runtimeDependencies: [],
+    });
+    expect(router.selectBackend('tdfol', 'z3')).toMatchObject({
+      name: 'z3',
+      available: false,
+      browserNative: true,
+      failureMode: 'fail_closed',
+      adapterName: null,
+      runtimeDependencies: [],
+    });
   });
 
   it('routes proof requests through local browser adapters without external prover delegation', () => {

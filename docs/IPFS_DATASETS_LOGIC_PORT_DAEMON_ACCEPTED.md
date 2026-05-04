@@ -1721,3 +1721,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T133905Z-ported-the-reasoning-logic-verifier-backend-mixin-as-browser-native-backend-disc.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T133905Z-ported-the-reasoning-logic-verifier-backend-mixin-as-browser-native-backend-disc.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T133905Z-ported-the-reasoning-logic-verifier-backend-mixin-as-browser-native-backend-disc.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 13:42:05 UTC
+
+- Target: `Task checkbox-382: Port remaining Python logic module `logic/integration/reasoning/_prover_backend_mixin.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported reasoning prover backend mixin discovery and selection into the browser-native prover adapter layer.
+- Impact: src/lib/logic/integration/proverAdapters.ts now exposes deterministic _prover_backend_mixin.py metadata, backend descriptors, local backend selection, and fail-closed unsupported external backend descriptors without server, subprocess, RPC, filesystem, or Python runtime dependencies. src/lib/logic/integration/bridge.test.ts validates those contracts through the existing Jest integration suite, and the task ledger marks checkbox-382 complete.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/proverAdapters.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T134205Z-ported-reasoning-prover-backend-mixin-discovery-and-selection-into-the-browser-n.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T134205Z-ported-reasoning-prover-backend-mixin-discovery-and-selection-into-the-browser-n.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T134205Z-ported-reasoning-prover-backend-mixin-discovery-and-selection-into-the-browser-n.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

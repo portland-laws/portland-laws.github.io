@@ -7,6 +7,16 @@ import { proveTdfol, type TdfolProverOptions } from '../tdfol/prover';
 import type { ProofResult } from '../types';
 
 export type BrowserNativeProofLogic = 'tdfol' | 'cec' | 'dcec';
+export type ProverBackendMixinName =
+  | 'local'
+  | 'tdfol'
+  | 'cec'
+  | 'dcec'
+  | 'e-prover'
+  | 'z3'
+  | 'cvc5'
+  | 'lean'
+  | 'external';
 
 export interface BrowserNativeProofRequest {
   logic: BrowserNativeProofLogic;
@@ -25,6 +35,17 @@ export interface BrowserNativeProofAdapterMetadata {
   requiresExternalProver: false;
   proverFamily?: 'local' | 'e-prover';
 }
+export interface ProverBackendMixinDescriptor {
+  name: ProverBackendMixinName;
+  logics: Array<BrowserNativeProofLogic>;
+  available: boolean;
+  browserNative: boolean;
+  wasmCompatible: boolean;
+  failureMode: 'local' | 'fail_closed';
+  adapterName: string | null;
+  runtimeDependencies: Array<string>;
+  sourcePythonModule: 'logic/integration/reasoning/_prover_backend_mixin.py';
+}
 
 export interface BrowserNativeProofAdapter {
   metadata: BrowserNativeProofAdapterMetadata;
@@ -40,6 +61,7 @@ export interface BrowserNativeProofAdapterOptions {
 
 export interface BrowserNativeProverRouterMetadata {
   sourcePythonModule: 'logic/external_provers/prover_router.py';
+  backendMixinSourcePythonModule: 'logic/integration/reasoning/_prover_backend_mixin.py';
   runtime: 'typescript-wasm-browser';
   serverCallsAllowed: false;
   pythonRuntime: false;
@@ -49,6 +71,28 @@ export interface BrowserNativeProverRouterMetadata {
   failClosed: true;
   adapterCount: number;
 }
+
+export const PROVER_BACKEND_MIXIN_METADATA = {
+  sourcePythonModule: 'logic/integration/reasoning/_prover_backend_mixin.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  subprocessAllowed: false,
+  rpcAllowed: false,
+  runtimeDependencies: [] as Array<string>,
+} as const;
+
+const PROVER_BACKEND_MIXIN_BACKENDS: Array<ProverBackendMixinDescriptor> = [
+  backend('local', ['tdfol', 'cec', 'dcec'], true, 'local-tdfol-forward-prover'),
+  backend('tdfol', ['tdfol'], true, 'local-tdfol-forward-prover'),
+  backend('cec', ['cec'], true, 'local-cec-forward-prover'),
+  backend('dcec', ['dcec'], true, 'local-dcec-forward-prover'),
+  backend('e-prover', ['tdfol'], true, 'browser-native-e-prover-adapter'),
+  backend('z3', ['tdfol'], false, null),
+  backend('cvc5', ['tdfol'], false, null),
+  backend('lean', ['tdfol'], false, null),
+  backend('external', ['tdfol', 'cec', 'dcec'], false, null),
+];
 
 export interface BrowserNativeProverRoutePlan {
   sourcePythonModule: 'logic/external_provers/prover_router.py';
@@ -86,6 +130,7 @@ export class BrowserNativeProverRouter {
   getMetadata(): BrowserNativeProverRouterMetadata {
     return {
       sourcePythonModule: 'logic/external_provers/prover_router.py',
+      backendMixinSourcePythonModule: 'logic/integration/reasoning/_prover_backend_mixin.py',
       runtime: 'typescript-wasm-browser',
       serverCallsAllowed: false,
       pythonRuntime: false,
@@ -99,6 +144,21 @@ export class BrowserNativeProverRouter {
 
   listAdapters(): BrowserNativeProofAdapterMetadata[] {
     return this.adapters.map((adapter) => ({ ...adapter.metadata }));
+  }
+
+  getBackendMixinMetadata(): typeof PROVER_BACKEND_MIXIN_METADATA {
+    return PROVER_BACKEND_MIXIN_METADATA;
+  }
+
+  getBackends(): Array<ProverBackendMixinDescriptor> {
+    return getProverBackendMixinBackends();
+  }
+
+  selectBackend(
+    logic: BrowserNativeProofLogic,
+    backendName: ProverBackendMixinName = 'local',
+  ): ProverBackendMixinDescriptor {
+    return selectProverBackendMixin(logic, backendName);
   }
 
   supports(logic: BrowserNativeProofLogic): boolean {
@@ -177,6 +237,63 @@ export function createBrowserNativeProverRouter(
   options: BrowserNativeProofAdapterOptions = {},
 ): BrowserNativeProverRouter {
   return new BrowserNativeProverRouter(createDefaultProverAdapters(options));
+}
+
+export const getProverBackendMixinBackends = (): Array<ProverBackendMixinDescriptor> =>
+  PROVER_BACKEND_MIXIN_BACKENDS.map((candidate) => ({
+    ...candidate,
+    logics: [...candidate.logics],
+    runtimeDependencies: [...candidate.runtimeDependencies],
+  }));
+export const get_prover_backend_mixin_backends = getProverBackendMixinBackends;
+
+export const selectProverBackendMixin = (
+  logic: BrowserNativeProofLogic,
+  backendName: ProverBackendMixinName = 'local',
+): ProverBackendMixinDescriptor => {
+  const selected = PROVER_BACKEND_MIXIN_BACKENDS.find(
+    (candidate) => candidate.name === backendName,
+  );
+  if (!selected) return PROVER_BACKEND_MIXIN_BACKENDS[0];
+  if (backendName === 'local') {
+    const localForLogic = PROVER_BACKEND_MIXIN_BACKENDS.find(
+      (candidate) => candidate.name === logic,
+    );
+    return localForLogic && localForLogic.available
+      ? cloneBackend(localForLogic)
+      : cloneBackend(selected);
+  }
+  return cloneBackend(selected);
+};
+export const select_prover_backend_mixin = selectProverBackendMixin;
+
+function backend(
+  name: ProverBackendMixinName,
+  logics: Array<BrowserNativeProofLogic>,
+  available: boolean,
+  adapterName: string | null,
+): ProverBackendMixinDescriptor {
+  return {
+    name,
+    logics,
+    available,
+    browserNative: true,
+    wasmCompatible: available,
+    failureMode: available ? 'local' : 'fail_closed',
+    adapterName,
+    runtimeDependencies: [],
+    sourcePythonModule: 'logic/integration/reasoning/_prover_backend_mixin.py',
+  };
+}
+
+function cloneBackend(
+  backendDescriptor: ProverBackendMixinDescriptor,
+): ProverBackendMixinDescriptor {
+  return {
+    ...backendDescriptor,
+    logics: [...backendDescriptor.logics],
+    runtimeDependencies: [...backendDescriptor.runtimeDependencies],
+  };
 }
 
 function createTdfolProofAdapter(options: TdfolProverOptions = {}): BrowserNativeProofAdapter {
