@@ -1127,3 +1127,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T084102Z-ported-deontic-prover-syntax-normalization-and-validation-to-browser-native-type.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T084102Z-ported-deontic-prover-syntax-normalization-and-validation-to-browser-native-type.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T084102Z-ported-deontic-prover-syntax-normalization-and-validation-to-browser-native-type.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 08:44:51 UTC
+
+- Target: `Task checkbox-315: Port remaining Python logic module `logic/deontic/support_map.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the remaining deontic support-map slice for browser-native source support classification and summaries.
+- Impact: The TypeScript support-map builder now recognizes deontic graph fact nodes beyond fact: IDs, carries satisfied and missing source IDs, classifies entries as supported, partial, or unsupported, and exposes deterministic summary metadata used by the Jest logic-port validation suite.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/deontic/supportMap.test.ts`, `src/lib/logic/deontic/supportMap.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T084451Z-ported-the-remaining-deontic-support-map-slice-for-browser-native-source-support.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T084451Z-ported-the-remaining-deontic-support-map-slice-for-browser-native-source-support.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T084451Z-ported-the-remaining-deontic-support-map-slice-for-browser-native-source-support.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

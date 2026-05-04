@@ -88,6 +88,9 @@ describe('deontic support map parity helpers', () => {
       rule_id: 'rule:inactive',
       modality: 'obligation',
       predicate: 'file notice',
+      support_status: 'unsupported',
+      satisfied_source_ids: [],
+      missing_source_ids: ['fact:notice'],
       facts: [
         {
           fact_id: 'fact:notice',
@@ -98,6 +101,63 @@ describe('deontic support map parity helpers', () => {
         },
       ],
       filings: [],
+    });
+  });
+
+  it('recognizes graph fact nodes and exports support summaries', () => {
+    const graph = new DeonticGraphBuilder().buildFromMatrix([
+      {
+        rule_id: 'rule:mixed',
+        modality: 'obligation',
+        predicate: 'inspect premises',
+        target_id: 'action:inspect',
+        target_label: 'inspect premises',
+        sources: [
+          {
+            id: 'finding:permit-issued',
+            label: 'Permit was issued',
+            node_type: 'fact',
+            active: true,
+          },
+          {
+            id: 'condition:notice',
+            label: 'Notice was served',
+            node_type: 'condition',
+            active: false,
+          },
+        ],
+        authorities: ['code:inspection'],
+        evidence_ids: ['ev:inspection'],
+        active: true,
+      },
+    ]);
+
+    const supportMap = new SupportMapBuilder().buildFromDeonticGraph(graph);
+
+    expect(supportMap.entries[0]).toMatchObject({
+      rule_id: 'rule:mixed',
+      support_status: 'partial',
+      satisfied_source_ids: ['finding:permit-issued'],
+      missing_source_ids: ['condition:notice'],
+      facts: [
+        {
+          fact_id: 'finding:permit-issued',
+          predicate: 'Permit was issued',
+          status: 'established',
+        },
+      ],
+    });
+    expect(supportMap.summary()).toMatchObject({
+      entry_count: 1,
+      partial_entry_count: 1,
+      established_fact_count: 1,
+      missing_source_count: 1,
+      authority_count: 1,
+      evidence_count: 1,
+    });
+    expect(supportMap.toDict()).toMatchObject({
+      entry_count: 1,
+      summary: { partial_entry_count: 1 },
     });
   });
 });
