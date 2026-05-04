@@ -569,3 +569,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T044503Z-added-a-browser-native-cec-shadowprover-wrapper-compatibility-layer-for-shadow_p.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T044503Z-added-a-browser-native-cec-shadowprover-wrapper-compatibility-layer-for-shadow_p.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T044503Z-added-a-browser-native-cec-shadowprover-wrapper-compatibility-layer-for-shadow_p.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 04:47:30 UTC
+
+- Target: `Task checkbox-253: Port remaining Python logic module `logic/CEC/talos_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported logic/CEC/talos_wrapper.py as a browser-native TypeScript CEC wrapper.
+- Impact: Adds a Talos-compatible CEC wrapper that executes the existing local TypeScript prover, exposes fail-closed browser-native capability metadata, and validates the wrapper contract with focused Jest coverage without Python, server, filesystem, subprocess, or RPC dependencies.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/index.ts`, `src/lib/logic/cec/talosWrapper.test.ts`, `src/lib/logic/cec/talosWrapper.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T044730Z-ported-logic-cec-talos_wrapper.py-as-a-browser-native-typescript-cec-wrapper..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T044730Z-ported-logic-cec-talos_wrapper.py-as-a-browser-native-typescript-cec-wrapper..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T044730Z-ported-logic-cec-talos_wrapper.py-as-a-browser-native-typescript-cec-wrapper..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
