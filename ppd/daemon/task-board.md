@@ -1275,12 +1275,17 @@ Last updated: 2026-05-04T07:30:42.161311Z
 ## Built-In Blocked Cascade Recovery Tranche 50
 
 - [!] Task checkbox-442: Add generated blocked-cascade daemon-repair coverage for tranche 50 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
-- [~] Task checkbox-443: Add generated blocked-cascade daemon-repair coverage for tranche 50 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
-- [ ] Task checkbox-444: Add generated blocked-cascade daemon-repair coverage for tranche 50 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
-- [ ] Task checkbox-445: Add generated blocked-cascade daemon-repair coverage for tranche 50 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [!] Task checkbox-443: Add generated blocked-cascade daemon-repair coverage for tranche 50 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [!] Task checkbox-444: Add generated blocked-cascade daemon-repair coverage for tranche 50 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [!] Task checkbox-445: Add generated blocked-cascade daemon-repair coverage for tranche 50 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
 ## Built-In Supervisor Repair Notes
 
 - Appended deterministic blocked-cascade recovery tasks because all selectable work was blocked. The supervisor avoided the LLM repair path and created daemon-repair tasks that can run independently before blocked domain work is retried.
 ## Built-In Supervisor Repair Notes
 
 - Parked repeated LLM parse/runtime loop for `Add generated blocked-cascade daemon-repair coverage for tranche 50 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
+
+## Built-In Generated Blocked-Cascade Quarantine Notes
+
+- Parked open generated blocked-cascade daemon-repair tasks after a systemic termination storm. The supervisor will not grow generated fallback tranches again until the resource policy is hardened or a vetted human-authored task is reopened.
+

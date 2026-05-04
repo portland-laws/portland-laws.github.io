@@ -1,11 +1,16 @@
 {
-  "createdAt": "2026-05-04T07:32:47.234295Z",
+  "createdAt": "2026-05-04T07:39:34.986102Z",
   "decision": {
     "action": "enter_termination_storm_circuit_breaker",
     "reason": "16 recent llm_router termination diagnostics across 1 target(s) indicate a systemic termination storm; pause worker restarts and task-board growth until daemon/supervisor resource policy is hardened",
     "severity": "critical"
   },
   "operatorAction": "The supervisor paused daemon restarts because repeated llm_router terminations were systemic. Harden resource limits or deterministic task handling before resuming.",
+  "quarantinedGeneratedTaskLabels": [
+    "checkbox-443",
+    "checkbox-444",
+    "checkbox-445"
+  ],
   "repairKind": "termination_storm_circuit_breaker",
   "schemaVersion": 1
 }

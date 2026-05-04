@@ -30,6 +30,11 @@ systemd_unit_loaded() {
   [[ "$(systemctl --user show "$unit" --property=LoadState --value 2>/dev/null || true)" == "loaded" ]]
 }
 
+systemd_unit_main_pid() {
+  local unit="$1"
+  systemctl --user show "$unit" --property=MainPID --value 2>/dev/null || true
+}
+
 wait_for_pid_file_process() {
   local pid_file="$1"
   local timeout_seconds="${2:-10}"
@@ -104,8 +109,9 @@ stop_systemd_unit() {
 run_systemd_watchdog_unit() {
   local unit="$1"
   local command="$2"
+  local restart_policy="${3:-always}"
 
-  if systemd-run --user --unit="$unit" --collect --property=Restart=always --property=RestartSec=5 --property=KillMode=process --working-directory="$ROOT" \
+  if systemd-run --user --unit="$unit" --collect --property=Restart="$restart_policy" --property=RestartSec=5 --property=KillMode=process --working-directory="$ROOT" \
     bash -lc "$command" >/dev/null; then
     return 0
   fi
@@ -175,6 +181,20 @@ is_current_managed_child() {
   return 1
 }
 
+is_systemd_unit_process() {
+  local pid="$1"
+  local unit="$2"
+  local main_pid
+
+  [[ -z "$pid" || -z "$unit" ]] && return 1
+  main_pid="$(systemd_unit_main_pid "$unit")"
+  if process_running "$main_pid"; then
+    [[ "$pid" == "$main_pid" ]] && return 0
+    is_descendant_of "$pid" "$main_pid" && return 0
+  fi
+  return 1
+}
+
 terminate_process_family() {
   local root_pid="$1"
   local label="$2"
@@ -235,6 +255,9 @@ sweep_unwatched_ppd_daemon_children() {
   local pid
   while read -r pid; do
     [[ -z "$pid" ]] && continue
+    if systemd_available && is_systemd_unit_process "$pid" "$DAEMON_UNIT"; then
+      continue
+    fi
     if ! is_current_managed_child "$pid" "$PID_FILE" "$CHILD_PID_FILE"; then
       terminate_process_family "$pid" "Unwatched PP&D daemon"
     fi
@@ -248,6 +271,9 @@ sweep_unwatched_ppd_supervisor_children() {
   local pid
   while read -r pid; do
     [[ -z "$pid" ]] && continue
+    if systemd_available && is_systemd_unit_process "$pid" "$SUPERVISOR_UNIT"; then
+      continue
+    fi
     if ! is_current_managed_child "$pid" "$SUPERVISOR_PID_FILE" "$SUPERVISOR_CHILD_PID_FILE"; then
       terminate_process_family "$pid" "Unwatched PP&D supervisor"
     fi
@@ -364,7 +390,8 @@ supervisor_start() {
     stop_systemd_unit "$SUPERVISOR_UNIT"
     rm -f "$SUPERVISOR_CHILD_PID_FILE"
     run_systemd_watchdog_unit "$SUPERVISOR_UNIT" \
-      "cd '$ROOT'; rm -f '$SUPERVISOR_PID_FILE.stop' '$SUPERVISOR_CHILD_PID_FILE'; exec env PYTHONPATH=ipfs_datasets_py PPD_LLM_BACKEND=llm_router IPFS_DATASETS_PY_CODEX_SANDBOX=read-only python3 ppd/daemon/ppd_supervisor.py --watch --interval 120 --exception-backoff 5 --termination-storm-threshold 8 --termination-storm-backoff 900 --apply --self-heal --restart-daemon --llm-timeout 300 >> '$SUPERVISOR_OUT_FILE' 2>&1"
+      "cd '$ROOT'; rm -f '$SUPERVISOR_PID_FILE.stop' '$SUPERVISOR_CHILD_PID_FILE'; exec env PYTHONPATH=ipfs_datasets_py PPD_LLM_BACKEND=llm_router IPFS_DATASETS_PY_CODEX_SANDBOX=read-only python3 ppd/daemon/ppd_supervisor.py --watch --interval 120 --exception-backoff 5 --termination-storm-threshold 8 --termination-storm-backoff 900 --apply --self-heal --restart-daemon --llm-timeout 300 >> '$SUPERVISOR_OUT_FILE' 2>&1" \
+      "on-failure"
     local pid
     if ! pid="$(wait_for_systemd_main_pid "$SUPERVISOR_UNIT" 10)"; then
       echo "PP&D supervisor did not start; see $SUPERVISOR_OUT_FILE" >&2
@@ -413,15 +440,21 @@ supervisor_stop() {
 }
 
 supervisor_status() {
-  if [[ -f "$SUPERVISOR_PID_FILE" ]]; then
-    local pid
-    pid="$(cat "$SUPERVISOR_PID_FILE")"
-    echo "watchdog:"
-    ps -p "$pid" -o pid,ppid,sid,etime,cmd || true
-  fi
   if systemd_available && systemd_unit_active "$SUPERVISOR_UNIT"; then
+    local main_pid
+    main_pid="$(systemd_unit_main_pid "$SUPERVISOR_UNIT")"
+    if process_running "$main_pid"; then
+      echo "$main_pid" > "$SUPERVISOR_PID_FILE"
+      echo "supervisor:"
+      ps -p "$main_pid" -o pid,ppid,sid,etime,cmd || true
+    fi
     echo "systemd:"
     systemctl --user --no-pager --plain status "$SUPERVISOR_UNIT" | sed -n '1,8p' || true
+  elif [[ -f "$SUPERVISOR_PID_FILE" ]]; then
+    local pid
+    pid="$(cat "$SUPERVISOR_PID_FILE")"
+    echo "supervisor:"
+    ps -p "$pid" -o pid,ppid,sid,etime,cmd || true
   fi
   if [[ -f "$SUPERVISOR_CHILD_PID_FILE" ]]; then
     local child_pid

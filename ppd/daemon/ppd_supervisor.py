@@ -27,6 +27,7 @@ if __package__ in {None, ""}:
 from ppd.daemon.ppd_daemon import (  # noqa: E402
     Config as DaemonConfig,
     Proposal,
+    Task,
     apply_files_with_validation,
     atomic_write_json,
     compact_message,
@@ -80,6 +81,11 @@ AUTONOMOUS_PLATFORM_HEADING_RE = re.compile(r"^## Built-In Autonomous PP&D Platf
 AUTONOMOUS_EXECUTION_HEADING_RE = re.compile(r"^## Built-In Autonomous PP&D Execution Capability Tranche(?:\s+(\d+))?\s*$")
 BLOCKED_CASCADE_HEADING_RE = re.compile(r"^## Built-In Blocked Cascade Recovery Tranche(?:\s+(\d+))?\s*$")
 TASK_LINE_RE = re.compile(r"^(?P<prefix>- \[[ xX~!]\] Task checkbox-\d+: )(?P<title>.+)$")
+GENERATED_BLOCKED_CASCADE_TITLE_RE = re.compile(
+    r"^Add generated blocked-cascade daemon-repair coverage for tranche \d+ item \d+ "
+    r"proving blocked PP&D work stays parked until a fresh daemon repair task validates\.?$"
+)
+MAX_GENERATED_BLOCKED_CASCADE_TASKS = 16
 
 SANITIZED_REPLENISHMENT_TITLES = (
     "Add supervisor deterministic-replenishment sanitization coverage proving agentic planner output with duplicate tranche headings or previously completed broad titles is rewritten to the next numbered non-duplicate tranche before the daemon starts.",
@@ -184,6 +190,13 @@ def append_jsonl(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(payload, sort_keys=True) + "\n")
+
+
+def atomic_write_text(path: Path, text: str) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    tmp = path.with_suffix(path.suffix + ".tmp")
+    tmp.write_text(text, encoding="utf-8")
+    tmp.replace(path)
 
 
 def exception_diagnostic(exc: BaseException, *, limit: int = 5000) -> str:
@@ -365,6 +378,64 @@ def daemon_has_fresh_active_work(
     if active_state in {"calling_llm", "applying_files"}:
         return active_state_age is None or active_state_age <= config.active_state_timeout_seconds
     return True
+
+
+def is_generated_blocked_cascade_task(task: Task) -> bool:
+    return bool(GENERATED_BLOCKED_CASCADE_TITLE_RE.match(task.title.strip()))
+
+
+def generated_blocked_cascade_task_counts(tasks: list[Task]) -> tuple[int, int]:
+    generated = [task for task in tasks if is_generated_blocked_cascade_task(task)]
+    open_generated = [task for task in generated if task.status in {"needed", "in-progress"}]
+    return len(generated), len(open_generated)
+
+
+def generated_blocked_cascade_budget_exhausted(tasks: list[Task]) -> bool:
+    total, _open = generated_blocked_cascade_task_counts(tasks)
+    return total >= MAX_GENERATED_BLOCKED_CASCADE_TASKS
+
+
+def active_termination_storm_circuit_breaker(
+    config: SupervisorConfig,
+    *,
+    now: Optional[datetime] = None,
+) -> tuple[dict[str, Any], Optional[float]]:
+    payload = load_json(config.resolve(config.circuit_breaker_file))
+    if payload.get("repairKind") != "termination_storm_circuit_breaker":
+        return {}, None
+    age = age_seconds(payload.get("createdAt"), now=now)
+    if age is None or age > config.termination_storm_backoff_seconds:
+        return {}, None
+    return payload, max(0.0, float(config.termination_storm_backoff_seconds) - age)
+
+
+def quarantine_generated_blocked_cascade_tasks(markdown: str) -> tuple[str, tuple[str, ...]]:
+    """Park generated blocked-cascade tasks so a storm cannot keep selecting them."""
+
+    changed_labels: list[str] = []
+    repaired_lines: list[str] = []
+    for line in markdown.splitlines(keepends=True):
+        stripped = line.rstrip("\n")
+        match = TASK_LINE_RE.match(stripped)
+        if match and GENERATED_BLOCKED_CASCADE_TITLE_RE.match(match.group("title").strip()):
+            checkbox = CHECKBOX_ID_RE.search(match.group("prefix"))
+            if checkbox and ("- [ ]" in match.group("prefix") or "- [~]" in match.group("prefix")):
+                changed_labels.append(f"checkbox-{checkbox.group(1)}")
+                line = line.replace("- [ ]", "- [!]", 1).replace("- [~]", "- [!]", 1)
+        repaired_lines.append(line)
+
+    if not changed_labels:
+        return markdown, ()
+
+    repaired = "".join(repaired_lines).rstrip()
+    if "## Built-In Generated Blocked-Cascade Quarantine Notes" not in repaired:
+        repaired += (
+            "\n\n## Built-In Generated Blocked-Cascade Quarantine Notes\n\n"
+            "- Parked open generated blocked-cascade daemon-repair tasks after a systemic termination storm. "
+            "The supervisor will not grow generated fallback tranches again until the resource policy is hardened "
+            "or a vetted human-authored task is reopened.\n"
+        )
+    return repaired + "\n", tuple(changed_labels)
 
 
 def recent_failure_count_for_target(
@@ -1074,6 +1145,10 @@ def has_blocked_recovery_cascade(tasks: list[Task], *, blocked_threshold: int = 
 def builtin_blocked_cascade_replenish_task_board(markdown: str) -> tuple[str, tuple[str, ...]]:
     """Append deterministic daemon-repair tasks when all selectable work is blocked."""
 
+    tasks = parse_tasks(markdown)
+    if generated_blocked_cascade_budget_exhausted(tasks):
+        return markdown, ()
+
     start = next_checkbox_number(markdown)
     heading = next_blocked_cascade_heading(markdown)
     heading_number = blocked_cascade_heading_number(heading) or 1
@@ -1282,6 +1357,8 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
     active_state = str(status.get("active_state") or status.get("state") or "")
     active_state_age = age_seconds(status.get("active_state_started_at"), now=now)
     termination_storm_count, termination_storm_targets = recent_llm_termination_storm_count(current_rows)
+    active_breaker, breaker_remaining = active_termination_storm_circuit_breaker(config, now=now)
+    generated_blocked_total, generated_blocked_open = generated_blocked_cascade_task_counts(tasks)
 
     if tasks and all(task.status == "complete" for task in tasks):
         return SupervisorDecision(
@@ -1342,6 +1419,21 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
             severity="info",
         )
 
+    if (
+        active_breaker
+        and generated_blocked_open == 0
+        and active_state == "paused_by_supervisor_circuit_breaker"
+    ):
+        return SupervisorDecision(
+            action="observe_circuit_breaker",
+            reason=(
+                "termination storm circuit breaker is active; "
+                f"daemon remains paused for about {int(breaker_remaining or 0)} more seconds"
+            ),
+            severity="critical",
+            should_restart_daemon=False,
+        )
+
     if termination_storm_count >= config.termination_storm_threshold:
         return SupervisorDecision(
             action="enter_termination_storm_circuit_breaker",
@@ -1349,6 +1441,18 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
                 f"{termination_storm_count} recent llm_router termination diagnostics across "
                 f"{termination_storm_targets} target(s) indicate a systemic termination storm; "
                 "pause worker restarts and task-board growth until daemon/supervisor resource policy is hardened"
+            ),
+            severity="critical",
+            should_restart_daemon=False,
+        )
+
+    if generated_blocked_total >= MAX_GENERATED_BLOCKED_CASCADE_TASKS:
+        return SupervisorDecision(
+            action="enter_termination_storm_circuit_breaker",
+            reason=(
+                f"{generated_blocked_total} generated blocked-cascade daemon-repair tasks exhausted the "
+                "fallback budget; pause worker restarts and task-board growth until the generated repair "
+                "pile is quarantined or a vetted task is reopened"
             ),
             severity="critical",
             should_restart_daemon=False,
@@ -1896,29 +2000,55 @@ def invoke_blocked_cascade_repair(config: SupervisorConfig, decision: Supervisor
 
 
 def invoke_termination_storm_circuit_breaker(config: SupervisorConfig, decision: SupervisorDecision) -> Proposal:
+    created_at = utc_now()
+    board_path = config.resolve(config.task_board)
+    status_path = config.resolve(config.status_file)
+    board = read_text(board_path) if board_path.exists() else ""
+    repaired_board, quarantined_labels = quarantine_generated_blocked_cascade_tasks(board)
+    previous_status = load_json(status_path)
+    paused_status = {
+        "schemaVersion": 1,
+        "updated_at": created_at,
+        "state": "paused_by_supervisor_circuit_breaker",
+        "active_state": "paused_by_supervisor_circuit_breaker",
+        "active_state_started_at": created_at,
+        "active_target_task": previous_status.get("active_target_task") or previous_status.get("target_task") or "",
+        "supervisor_action": decision.action,
+        "supervisor_reason": decision.reason,
+        "previous_state": previous_status.get("active_state") or previous_status.get("state") or "",
+    }
     payload = {
         "schemaVersion": 1,
-        "createdAt": utc_now(),
+        "createdAt": created_at,
         "repairKind": "termination_storm_circuit_breaker",
         "decision": {
             "action": decision.action,
             "reason": decision.reason,
             "severity": decision.severity,
         },
+        "quarantinedGeneratedTaskLabels": list(quarantined_labels),
         "operatorAction": (
             "The supervisor paused daemon restarts because repeated llm_router terminations "
             "were systemic. Harden resource limits or deterministic task handling before resuming."
         ),
     }
     if config.apply:
+        if repaired_board != board:
+            atomic_write_text(board_path, repaired_board)
+        atomic_write_json(status_path, paused_status)
         atomic_write_json(config.resolve(config.circuit_breaker_file), payload)
+    changed_files = ["ppd/daemon/status.json", "ppd/daemon/supervisor-circuit-breaker.json"]
+    if repaired_board != board:
+        changed_files.insert(0, "ppd/daemon/task-board.md")
     proposal = Proposal(
         summary="Pause daemon restarts after systemic llm_router termination storm.",
         impact=(
             "The supervisor wrote a circuit-breaker diagnostic and avoided appending more tasks, "
-            "running full validation, or restarting the worker into another termination loop."
+            "running full validation, or restarting the worker into another termination loop. "
+            f"Quarantined {len(quarantined_labels)} open generated blocked-cascade task(s)."
         ),
         failure_kind="termination_storm",
+        changed_files=changed_files if config.apply else [],
         applied=config.apply,
         dry_run=not config.apply,
     )
@@ -2439,7 +2569,7 @@ def main(argv: Optional[list[str]] = None) -> int:
                 config.exception_backoff_seconds
                 if decision.action == "supervisor_exception"
                 else float(config.termination_storm_backoff_seconds)
-                if decision.action == "enter_termination_storm_circuit_breaker"
+                if decision.action in {"enter_termination_storm_circuit_breaker", "observe_circuit_breaker"}
                 else float(args.interval)
             )
             time.sleep(max(1.0, sleep_seconds))
