@@ -1559,3 +1559,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T122442Z-ported-domain-symbolic-contract-analysis-to-browser-native-typescript..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T122442Z-ported-domain-symbolic-contract-analysis-to-browser-native-typescript..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T122442Z-ported-domain-symbolic-contract-analysis-to-browser-native-typescript..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 12:29:51 UTC
+
+- Target: `Task checkbox-364: Port remaining Python logic module `logic/integration/domain/temporal_deontic_api.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported temporal_deontic_api.py as a browser-native TypeScript domain API.
+- Impact: Adds a deterministic temporal deontic API under src/lib/logic that reuses the local deontic parser, projects temporal statuses without Python/server dependencies, exports the module through the integration barrel, and validates it with focused Jest coverage.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/domain/temporalDeonticApi.test.ts`, `src/lib/logic/integration/domain/temporalDeonticApi.ts`, `src/lib/logic/integration/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T122951Z-ported-temporal_deontic_api.py-as-a-browser-native-typescript-domain-api..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T122951Z-ported-temporal_deontic_api.py-as-a-browser-native-typescript-domain-api..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T122951Z-ported-temporal_deontic_api.py-as-a-browser-native-typescript-domain-api..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
