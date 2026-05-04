@@ -1082,3 +1082,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T082048Z-ported-deontic-formula-builder-behavior-into-a-dedicated-browser-native-typescri.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T082048Z-ported-deontic-formula-builder-behavior-into-a-dedicated-browser-native-typescri.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T082048Z-ported-deontic-formula-builder-behavior-into-a-dedicated-browser-native-typescri.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 08:24:57 UTC
+
+- Target: `Task checkbox-310: Port remaining Python logic module `logic/deontic/ir.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported a browser-native deontic IR normalization and validation module.
+- Impact: The TypeScript logic port can now normalize Python-style deontic IR records into deterministic browser-native objects, validate missing required slots fail-closed, serialize records for existing deontic export/decoder flows, and exercise the behavior with focused Jest tests without server, Python, filesystem, subprocess, or RPC runtime dependencies.
+- Changed files: `src/lib/logic/deontic/index.ts`, `src/lib/logic/deontic/ir.test.ts`, `src/lib/logic/deontic/ir.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T082457Z-ported-a-browser-native-deontic-ir-normalization-and-validation-module..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T082457Z-ported-a-browser-native-deontic-ir-normalization-and-validation-module..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T082457Z-ported-a-browser-native-deontic-ir-normalization-and-validation-module..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

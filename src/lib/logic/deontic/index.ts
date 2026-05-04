@@ -4,6 +4,7 @@ export * from './decoder';
 export * from './exports';
 export * from './formulaBuilder';
 export * from './graph';
+export * from './ir';
 export * from './knowledgeBase';
 export * from './parser';
 export * from './supportMap';

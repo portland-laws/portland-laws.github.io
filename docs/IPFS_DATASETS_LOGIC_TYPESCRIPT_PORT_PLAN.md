@@ -820,7 +820,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/deontic/decoder.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/deontic/exports.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/deontic/formula_builder.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/deontic/ir.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/deontic/ir.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/deontic/knowledge_base.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/deontic/legal_text_to_deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/deontic/metrics.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 08:20:47 UTC
+Last updated: 2026-05-04 08:24:57 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-310: Port remaining Python logic module 'logic/deontic/ir.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-311: Port remaining Python logic module 'logic/deontic/knowledge_base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1284,8 +1284,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-306: Port remaining Python logic module 'logic/common/validators.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-307: Port remaining Python logic module 'logic/deontic/decoder.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-308: Port remaining Python logic module 'logic/deontic/exports.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-309: Port remaining Python logic module 'logic/deontic/formula_builder.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-310: Port remaining Python logic module 'logic/deontic/ir.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-309: Port remaining Python logic module 'logic/deontic/formula_builder.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-310: Port remaining Python logic module 'logic/deontic/ir.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-311: Port remaining Python logic module 'logic/deontic/knowledge_base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-312: Port remaining Python logic module 'logic/deontic/legal_text_to_deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-313: Port remaining Python logic module 'logic/deontic/metrics.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-309: Port remaining Python logic module 'logic/deontic/formula_builder.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-310: Port remaining Python logic module 'logic/deontic/ir.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported deontic formula-builder behavior into a dedicated browser-native TypeScript module.
-- Impact: The deontic parser now delegates formula construction to src/lib/logic/deontic/formulaBuilder.ts, preserving the existing parser export while adding deterministic condition, exception, and temporal antecedent handling that is exercised by Jest validation.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/deontic/formulaBuilder.ts`, `src/lib/logic/deontic/index.ts`, `src/lib/logic/deontic/parser.test.ts`, `src/lib/logic/deontic/parser.ts`
+- Summary: Ported a browser-native deontic IR normalization and validation module.
+- Impact: The TypeScript logic port can now normalize Python-style deontic IR records into deterministic browser-native objects, validate missing required slots fail-closed, serialize records for existing deontic export/decoder flows, and exercise the behavior with focused Jest tests without server, Python, filesystem, subprocess, or RPC runtime dependencies.
+- Accepted changed files: `src/lib/logic/deontic/index.ts`, `src/lib/logic/deontic/ir.test.ts`, `src/lib/logic/deontic/ir.ts`
 
 ### Blocked Backlog
 
