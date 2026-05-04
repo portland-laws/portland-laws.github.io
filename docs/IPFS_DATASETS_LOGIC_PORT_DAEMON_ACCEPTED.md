@@ -1064,3 +1064,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T081305Z-added-the-missing-browser-native-typescript-deontic-decoder-module..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T081305Z-added-the-missing-browser-native-typescript-deontic-decoder-module..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T081305Z-added-the-missing-browser-native-typescript-deontic-decoder-module..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 08:17:14 UTC
+
+- Target: `Task checkbox-308: Port remaining Python logic module `logic/deontic/exports.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported deontic export table builders to browser-native TypeScript.
+- Impact: The deontic logic package now exposes deterministic export table specs plus canonical, formal-logic, proof-obligation, repair-queue, and decoder-reconstruction rows from IR-like objects without Python, server calls, filesystem access, subprocesses, or RPC fallbacks. Focused Jest coverage exercises the exported API and repair fail-closed behavior.
+- Changed files: `src/lib/logic/deontic/exports.test.ts`, `src/lib/logic/deontic/exports.ts`, `src/lib/logic/deontic/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T081714Z-ported-deontic-export-table-builders-to-browser-native-typescript..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T081714Z-ported-deontic-export-table-builders-to-browser-native-typescript..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T081714Z-ported-deontic-export-table-builders-to-browser-native-typescript..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
