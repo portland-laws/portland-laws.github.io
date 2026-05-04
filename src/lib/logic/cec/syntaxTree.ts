@@ -35,7 +35,11 @@ export class CecAstSyntaxNode {
   constructor(
     nodeType: CecSyntaxNodeType,
     value?: unknown,
-    options: { children?: CecAstSyntaxNode[]; semantics?: unknown; metadata?: Record<string, unknown> } = {},
+    options: {
+      children?: CecAstSyntaxNode[];
+      semantics?: unknown;
+      metadata?: Record<string, unknown>;
+    } = {},
   ) {
     this.nodeType = nodeType;
     this.value = value;
@@ -45,14 +49,23 @@ export class CecAstSyntaxNode {
   }
 
   addChild(child: CecAstSyntaxNode): CecAstSyntaxNode {
+    if (child.parent) child.parent.removeChild(child);
     this.children.push(child);
     child.parent = this;
     return child;
   }
 
+  add_child(child: CecAstSyntaxNode): CecAstSyntaxNode {
+    return this.addChild(child);
+  }
+
   addChildren(children: CecAstSyntaxNode[]): this {
     children.forEach((child) => this.addChild(child));
     return this;
+  }
+
+  add_children(children: Array<CecAstSyntaxNode>): this {
+    return this.addChildren(children);
   }
 
   removeChild(child: CecAstSyntaxNode): boolean {
@@ -63,12 +76,43 @@ export class CecAstSyntaxNode {
     return true;
   }
 
+  remove_child(child: CecAstSyntaxNode): boolean {
+    return this.removeChild(child);
+  }
+
+  replaceChild(existingChild: CecAstSyntaxNode, replacement: CecAstSyntaxNode): boolean {
+    const index = this.children.indexOf(existingChild);
+    if (index === -1) return false;
+    if (replacement.parent) replacement.parent.removeChild(replacement);
+    this.children[index] = replacement;
+    existingChild.parent = undefined;
+    replacement.parent = this;
+    return true;
+  }
+
+  replace_child(existingChild: CecAstSyntaxNode, replacement: CecAstSyntaxNode): boolean {
+    return this.replaceChild(existingChild, replacement);
+  }
+
+  detach(): this {
+    if (this.parent) this.parent.removeChild(this);
+    return this;
+  }
+
   isLeaf(): boolean {
     return this.children.length === 0;
   }
 
+  is_leaf(): boolean {
+    return this.isLeaf();
+  }
+
   isRoot(): boolean {
     return this.parent === undefined;
+  }
+
+  is_root(): boolean {
+    return this.isRoot();
   }
 
   height(): number {
@@ -82,6 +126,28 @@ export class CecAstSyntaxNode {
 
   depth(): number {
     return this.parent ? 1 + this.parent.depth() : 0;
+  }
+
+  ancestors(): Array<CecAstSyntaxNode> {
+    const nodes: Array<CecAstSyntaxNode> = [];
+    let current = this.parent;
+    while (current !== undefined) {
+      nodes.push(current);
+      current = current.parent;
+    }
+    return nodes;
+  }
+
+  pathToRoot(): Array<CecAstSyntaxNode> {
+    return [this, ...this.ancestors()];
+  }
+
+  path_to_root(): Array<CecAstSyntaxNode> {
+    return this.pathToRoot();
+  }
+
+  descendants(): Array<CecAstSyntaxNode> {
+    return this.children.flatMap((child) => [child, ...child.descendants()]);
   }
 
   clone(): CecAstSyntaxNode {
@@ -144,7 +210,41 @@ export class CecAstSyntaxTree {
     return this.preorder().filter(predicate);
   }
 
-  transform(transformer: (node: CecAstSyntaxNode) => CecAstSyntaxNode | undefined): CecAstSyntaxTree {
+  findByType(nodeType: CecSyntaxNodeType): CecAstSyntaxNode | undefined {
+    return this.find((node) => node.nodeType === nodeType);
+  }
+
+  find_by_type(nodeType: CecSyntaxNodeType): CecAstSyntaxNode | undefined {
+    return this.findByType(nodeType);
+  }
+
+  findAllByType(nodeType: CecSyntaxNodeType): Array<CecAstSyntaxNode> {
+    return this.findAll((node) => node.nodeType === nodeType);
+  }
+
+  find_all_by_type(nodeType: CecSyntaxNodeType): Array<CecAstSyntaxNode> {
+    return this.findAllByType(nodeType);
+  }
+
+  findByValue(value: unknown): CecAstSyntaxNode | undefined {
+    return this.find((node) => node.value === value);
+  }
+
+  find_by_value(value: unknown): CecAstSyntaxNode | undefined {
+    return this.findByValue(value);
+  }
+
+  findAllByValue(value: unknown): Array<CecAstSyntaxNode> {
+    return this.findAll((node) => node.value === value);
+  }
+
+  find_all_by_value(value: unknown): Array<CecAstSyntaxNode> {
+    return this.findAllByValue(value);
+  }
+
+  transform(
+    transformer: (node: CecAstSyntaxNode) => CecAstSyntaxNode | undefined,
+  ): CecAstSyntaxTree {
     const transformNode = (node: CecAstSyntaxNode): CecAstSyntaxNode | undefined => {
       const transformed = transformer(node.clone());
       if (!transformed) return undefined;
@@ -160,19 +260,27 @@ export class CecAstSyntaxTree {
 
   map(mapper: (value: unknown) => unknown): CecAstSyntaxTree {
     return this.transform((node) => {
-      const mapped = new CecAstSyntaxNode(node.nodeType, node.value === undefined ? undefined : mapper(node.value), {
-        semantics: node.semantics,
-        metadata: { ...node.metadata },
-      });
+      const mapped = new CecAstSyntaxNode(
+        node.nodeType,
+        node.value === undefined ? undefined : mapper(node.value),
+        {
+          semantics: node.semantics,
+          metadata: { ...node.metadata },
+        },
+      );
       return mapped;
     });
   }
 
   filter(predicate: (node: CecAstSyntaxNode) => boolean): CecAstSyntaxTree {
-    return this.transform((node) => predicate(node) ? new CecAstSyntaxNode(node.nodeType, node.value, {
-      semantics: node.semantics,
-      metadata: { ...node.metadata },
-    }) : undefined);
+    return this.transform((node) =>
+      predicate(node)
+        ? new CecAstSyntaxNode(node.nodeType, node.value, {
+            semantics: node.semantics,
+            metadata: { ...node.metadata },
+          })
+        : undefined,
+    );
   }
 
   prettyPrint(node: CecAstSyntaxNode = this.root, indent = 0, prefix = ''): string {
@@ -198,6 +306,14 @@ export class CecAstSyntaxTree {
 
   leaves(): CecAstSyntaxNode[] {
     return this.preorder().filter((node) => node.isLeaf());
+  }
+
+  leafValues(): Array<unknown> {
+    return this.leaves().map((node) => node.value);
+  }
+
+  leaf_values(): Array<unknown> {
+    return this.leafValues();
   }
 
   height(): number {

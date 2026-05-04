@@ -743,7 +743,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [!] Port remaining Python logic module `logic/CEC/native/prover_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/CEC/native/prover_core_extended_rules.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/CEC/native/shadow_prover.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/syntax_tree.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/CEC/native/syntax_tree.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/nl/base_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/nl/dcec_to_ucan_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/nl/domain_vocabularies/domain_vocab.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 03:16:23 UTC
+Last updated: 2026-05-04 03:18:36 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-233: Port remaining Python logic module 'logic/CEC/native/syntax_tree.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-234: Port remaining Python logic module 'logic/CEC/nl/base_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1207,8 +1207,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-229: Port remaining Python logic module 'logic/CEC/native/proof_strategies.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [!] `Task checkbox-230: Port remaining Python logic module 'logic/CEC/native/prover_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
 - [x] `Task checkbox-231: Port remaining Python logic module 'logic/CEC/native/prover_core_extended_rules.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-232: Port remaining Python logic module 'logic/CEC/native/shadow_prover.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-233: Port remaining Python logic module 'logic/CEC/native/syntax_tree.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-232: Port remaining Python logic module 'logic/CEC/native/shadow_prover.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-233: Port remaining Python logic module 'logic/CEC/native/syntax_tree.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-234: Port remaining Python logic module 'logic/CEC/nl/base_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-235: Port remaining Python logic module 'logic/CEC/nl/dcec_to_ucan_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-236: Port remaining Python logic module 'logic/CEC/nl/domain_vocabularies/domain_vocab.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-232: Port remaining Python logic module 'logic/CEC/native/shadow_prover.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-233: Port remaining Python logic module 'logic/CEC/native/syntax_tree.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported the remaining CEC native ShadowProver surface with browser-native theorem and batch proof entry points plus Python-style aliases.
-- Impact: The TypeScript ShadowProver now exposes local theorem, request, and batch APIs backed by existing CEC forward proving and modal tableaux, with tests validating mixed-logic dispatch and explicit no-Python runtime metadata.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/shadowProver.test.ts`, `src/lib/logic/cec/shadowProver.ts`
+- Summary: Ported the remaining CEC native syntax tree parity surface with browser-native TypeScript helpers and focused Jest coverage.
+- Impact: src/lib/logic/cec/syntaxTree.ts now exposes Python-style syntax_tree child mutation, path, descendant, search, and leaf-value helpers without server, Python runtime, filesystem, subprocess, or RPC dependencies; src/lib/logic/cec/syntaxTree.test.ts validates those helpers through the existing Jest logic-port suite, and the port ledger marks checkbox-233 complete.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/syntaxTree.test.ts`, `src/lib/logic/cec/syntaxTree.ts`
 
 ### Blocked Backlog
 
