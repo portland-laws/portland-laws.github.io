@@ -27,6 +27,7 @@ export * from './logicVerification';
 export * from './logicVerificationTypes';
 export * from './logicVerificationUtils';
 export * from './leanProverBridge';
+export * from './modalLogicExtension';
 export * from './proverAdapters';
 export * from './proverInstaller';
 export * from './symbolicAiProverBridge';

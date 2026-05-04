@@ -1658,3 +1658,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T131028Z-ported-logic_verification_utils.py-as-browser-native-typescript-utilities-for-fo.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T131028Z-ported-logic_verification_utils.py-as-browser-native-typescript-utilities-for-fo.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T131028Z-ported-logic_verification_utils.py-as-browser-native-typescript-utilities-for-fo.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 13:13:04 UTC
+
+- Target: `Task checkbox-375: Port remaining Python logic module `logic/integration/modal_logic_extension.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported root integration modal_logic_extension.py as a browser-native TypeScript facade over the existing local modal converter.
+- Impact: The integration barrel now exposes a root modal logic extension with metadata for logic/integration/modal_logic_extension.py, deterministic modal projection, tableaux validation, batch conversion, aliases, and fail-closed validation covered by focused Jest tests.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/modalLogicExtension.test.ts`, `src/lib/logic/integration/modalLogicExtension.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T131304Z-ported-root-integration-modal_logic_extension.py-as-a-browser-native-typescript-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T131304Z-ported-root-integration-modal_logic_extension.py-as-a-browser-native-typescript-.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T131304Z-ported-root-integration-modal_logic_extension.py-as-a-browser-native-typescript-.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

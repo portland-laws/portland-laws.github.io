@@ -885,7 +885,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/integration/logic_verification.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/logic_verification_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/logic_verification_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/integration/modal_logic_extension.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/integration/modal_logic_extension.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/neurosymbolic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/neurosymbolic_graphrag.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/nl_ucan_policy_compiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 13:10:28 UTC
+Last updated: 2026-05-04 13:13:04 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-375: Port remaining Python logic module 'logic/integration/modal_logic_extension.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-376: Port remaining Python logic module 'logic/integration/neurosymbolic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1349,8 +1349,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-371: Port remaining Python logic module 'logic/integration/logic_translation_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-372: Port remaining Python logic module 'logic/integration/logic_verification.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-373: Port remaining Python logic module 'logic/integration/logic_verification_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-374: Port remaining Python logic module 'logic/integration/logic_verification_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-375: Port remaining Python logic module 'logic/integration/modal_logic_extension.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-374: Port remaining Python logic module 'logic/integration/logic_verification_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-375: Port remaining Python logic module 'logic/integration/modal_logic_extension.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-376: Port remaining Python logic module 'logic/integration/neurosymbolic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-377: Port remaining Python logic module 'logic/integration/neurosymbolic_graphrag.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-378: Port remaining Python logic module 'logic/integration/nl_ucan_policy_compiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-374: Port remaining Python logic module 'logic/integration/logic_verification_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-375: Port remaining Python logic module 'logic/integration/modal_logic_extension.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported logic_verification_utils.py as browser-native TypeScript utilities for formula normalization, runtime bridge detection, issue creation, and batch verification summaries.
-- Impact: The existing browser-native logic verifier now consumes the utility normalization and fail-closed bridge detection helpers directly, the integration barrel exports the new utility surface, and focused Jest coverage validates Python-compatible snake_case aliases, metadata, and batch summaries without server or Python runtime dependencies.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/logicVerification.test.ts`, `src/lib/logic/integration/logicVerification.ts`, `src/lib/logic/integration/logicVerificationUtils.ts`
+- Summary: Ported root integration modal_logic_extension.py as a browser-native TypeScript facade over the existing local modal converter.
+- Impact: The integration barrel now exposes a root modal logic extension with metadata for logic/integration/modal_logic_extension.py, deterministic modal projection, tableaux validation, batch conversion, aliases, and fail-closed validation covered by focused Jest tests.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/modalLogicExtension.test.ts`, `src/lib/logic/integration/modalLogicExtension.ts`
 
 ### Blocked Backlog
 
