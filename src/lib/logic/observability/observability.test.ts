@@ -1,4 +1,4 @@
-import { OTelTracer } from './otelTracer';
+import { BrowserNativeOtelIntegration, OTelTracer, setupOtelIntegration } from './otelTracer';
 import { PrometheusMetricsCollector } from './prometheusMetrics';
 import {
   clearContext,
@@ -101,5 +101,73 @@ describe('logic observability browser-native parity helpers', () => {
       key: 'component',
       value: 'llm',
     });
+  });
+
+  it('ports otel_integration.py as browser-native instrumentation and local snapshots', () => {
+    let now = 20;
+    let id = 0;
+    const tracer = new OTelTracer(
+      'logic',
+      () => now,
+      () => `otel-${++id}`,
+    );
+    const integration = new BrowserNativeOtelIntegration(
+      {
+        serviceName: 'logic-port',
+        exporterEndpoint: 'https://collector.example/v1/traces',
+      },
+      tracer,
+    );
+
+    integration.instrument('parse', { component: 'fol' }, (span) => {
+      tracer.recordEvent(span, 'log.entry', { event_name: 'parser.started', document_id: 'doc-1' });
+      tracer.setSpanAttribute(span, 'formula_count', 2);
+      now = 21;
+      return 'parsed';
+    });
+    const snapshot = integration.exportSnapshot(23);
+    expect(snapshot).toMatchObject({
+      status: 'success',
+      metadata: {
+        sourcePythonModule: 'logic/observability/otel_integration.py',
+        browserNative: true,
+        serverCallsAllowed: false,
+        pythonRuntimeAllowed: false,
+      },
+      service: { name: 'logic-port' },
+      exporter: {
+        endpoint: 'https://collector.example/v1/traces',
+        mode: 'in-memory-browser-native',
+        networkExportAttempted: false,
+      },
+    });
+    const traces = snapshot.traces as Array<{
+      spans: Array<{ attributes: Record<string, unknown>; events: Array<Record<string, unknown>> }>;
+    }>;
+    expect(traces.map((trace) => trace.spans[0].attributes['service.name'])).toEqual([
+      'logic-port',
+    ]);
+    expect(traces[0].spans[0].events[0]).toMatchObject({
+      name: 'log.entry',
+      attributes: { event_name: 'parser.started', document_id: 'doc-1' },
+    });
+  });
+
+  it('fails closed when otel integration is disabled and exposes default setup helpers', () => {
+    const disabled = new BrowserNativeOtelIntegration({ enabled: false });
+    const result = disabled.instrument('skip', { component: 'logic' }, (span) => {
+      expect(span.attributes).toMatchObject({ component: 'logic', disabled: true });
+      return 7;
+    });
+
+    expect(result).toBe(7);
+    expect(disabled.exportSnapshot()).toMatchObject({
+      status: 'disabled',
+      traces: [],
+      exporter: { networkExportAttempted: false },
+    });
+    const integration = setupOtelIntegration({ serviceName: 'default-logic' });
+    expect(integration.tracer.serviceName).toBe('default-logic');
+    expect(integration.metadata.browserNative).toBe(true);
   });
 });
