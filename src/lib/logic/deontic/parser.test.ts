@@ -3,9 +3,14 @@ import {
   buildDeonticFormula,
   convertLegalTextToDeontic,
   extractNormativeElements,
+  extractObligations,
+  extractPermissions,
+  extractProhibitions,
   extractTemporalConstraints,
   formatTemporalPredicate,
   legal_text_to_deontic,
+  parse_deontic_text,
+  parseDeonticText,
 } from './parser';
 
 describe('deontic parser utilities', () => {
@@ -128,6 +133,49 @@ describe('deontic parser utilities', () => {
       prohibition: 0,
     });
     expect(result.capabilities.serverCallsAllowed).toBe(false);
+  });
+
+  it('exposes a browser-native deontic_parser.py style structured parse facade', () => {
+    const result = parse_deontic_text(
+      'Owners shall repair sidewalks. Owners may request a variance. Owners shall not block inspections.',
+    );
+
+    expect(result).toMatchObject({
+      success: true,
+      metadata: {
+        parser: 'browser-native-deontic-parser',
+        pythonRuntime: false,
+        serverCallsAllowed: false,
+        elementCount: 3,
+      },
+    });
+    expect(result.norms.map((norm) => norm.norm_type)).toEqual([
+      'obligation',
+      'permission',
+      'prohibition',
+    ]);
+    expect(result.norms[2]).toMatchObject({
+      deontic_operator: 'F',
+      indicator: 'shall not',
+      sentence_index: 2,
+    });
+    expect(result.formulas[0]).toContain('O(∀x');
+  });
+
+  it('filters obligations, permissions, and prohibitions through Python-compatible helpers', () => {
+    const text =
+      'The tenant must pay rent. The landlord may enter for repairs. The tenant must not block access.';
+
+    expect(extractObligations(text).map((norm) => norm.indicator)).toEqual(['must']);
+    expect(extractPermissions(text).map((norm) => norm.indicator)).toEqual(['may']);
+    expect(extractProhibitions(text).map((norm) => norm.indicator)).toEqual(['must not']);
+    expect(
+      parseDeonticText(text, { includeObligations: false }).norms.map((norm) => norm.norm_type),
+    ).toEqual(['permission', 'prohibition']);
+  });
+
+  it('uses word-bounded indicators to avoid false positive can matches', () => {
+    expect(analyzeNormativeSentence('A vacancy notice describes the office')).toBeNull();
   });
 
   it('returns a warning when no normative language is detected', () => {

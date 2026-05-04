@@ -54,6 +54,43 @@ export interface DeonticConversionResult {
   };
 }
 
+export interface DeonticParserOptions {
+  includeObligations?: boolean;
+  includePermissions?: boolean;
+  includeProhibitions?: boolean;
+  minConfidence?: number;
+}
+
+export interface DeonticParsedNorm {
+  text: string;
+  norm_type: DeonticNormType;
+  deontic_operator: DeonticOperator;
+  indicator: string;
+  subjects: string[];
+  actions: string[];
+  conditions: string[];
+  exceptions: string[];
+  temporal_constraints: TemporalConstraint[];
+  confidence: number;
+  sentence_index: number;
+  start_offset: number;
+  end_offset: number;
+}
+
+export interface DeonticParserResult {
+  success: boolean;
+  norms: DeonticParsedNorm[];
+  obligations: DeonticParsedNorm[];
+  permissions: DeonticParsedNorm[];
+  prohibitions: DeonticParsedNorm[];
+  formulas: string[];
+  metadata: DeonticConversionResult['metadata'] & {
+    parser: 'browser-native-deontic-parser';
+    pythonRuntime: false;
+    serverCallsAllowed: false;
+  };
+}
+
 const INDICATORS: Array<{
   normType: DeonticNormType;
   deonticOperator: DeonticOperator;
@@ -128,9 +165,61 @@ export function convertLegalTextToDeontic(text: string): DeonticConversionResult
   };
 }
 
+export function parseDeonticText(
+  text: string,
+  options: DeonticParserOptions = {},
+): DeonticParserResult {
+  const minConfidence = options.minConfidence ?? 0;
+  const elements = extractNormativeElements(text).filter(
+    (element) => includesNormType(element.normType, options) && element.confidence >= minConfidence,
+  );
+  const norms = elements.map(toParsedNorm);
+  return {
+    success: norms.length > 0,
+    norms,
+    obligations: norms.filter((norm) => norm.norm_type === 'obligation'),
+    permissions: norms.filter((norm) => norm.norm_type === 'permission'),
+    prohibitions: norms.filter((norm) => norm.norm_type === 'prohibition'),
+    formulas: elements.map((element) => buildDeonticFormula(element)),
+    metadata: {
+      ...buildConversionMetadata(text, elements),
+      parser: 'browser-native-deontic-parser',
+      pythonRuntime: false,
+      serverCallsAllowed: false,
+    },
+  };
+}
+
+export function extractObligations(text: string): DeonticParsedNorm[] {
+  return parseDeonticText(text, {
+    includePermissions: false,
+    includeProhibitions: false,
+  }).obligations;
+}
+
+export function extractPermissions(text: string): DeonticParsedNorm[] {
+  return parseDeonticText(text, {
+    includeObligations: false,
+    includeProhibitions: false,
+  }).permissions;
+}
+
+export function extractProhibitions(text: string): DeonticParsedNorm[] {
+  return parseDeonticText(text, {
+    includeObligations: false,
+    includePermissions: false,
+  }).prohibitions;
+}
+
 export const legalTextToDeontic = convertLegalTextToDeontic;
 export const legal_text_to_deontic = convertLegalTextToDeontic;
 export const extract_normative_elements = extractNormativeElements;
+export const parse_deontic_text = parseDeonticText;
+export const parseDeontic = parseDeonticText;
+export const parse_deontic = parseDeonticText;
+export const extract_obligations = extractObligations;
+export const extract_permissions = extractPermissions;
+export const extract_prohibitions = extractProhibitions;
 
 export interface NormativeSentenceLocation {
   sentenceIndex?: number;
@@ -144,7 +233,7 @@ export function analyzeNormativeSentence(
 ): NormativeElement | null {
   const lower = sentence.toLowerCase();
   for (const indicator of INDICATORS) {
-    const phrase = indicator.phrases.find((candidate) => lower.includes(candidate));
+    const phrase = indicator.phrases.find((candidate) => hasIndicatorPhrase(lower, candidate));
     if (!phrase) {
       continue;
     }
@@ -179,6 +268,39 @@ export function analyzeNormativeSentence(
     };
   }
   return null;
+}
+
+function hasIndicatorPhrase(lowerSentence: string, phrase: string): boolean {
+  const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
+  return new RegExp(`\\b${escaped}\\b`, 'i').test(lowerSentence);
+}
+
+function includesNormType(normType: DeonticNormType, options: DeonticParserOptions): boolean {
+  if (normType === 'obligation') {
+    return options.includeObligations ?? true;
+  }
+  if (normType === 'permission') {
+    return options.includePermissions ?? true;
+  }
+  return options.includeProhibitions ?? true;
+}
+
+function toParsedNorm(element: NormativeElement): DeonticParsedNorm {
+  return {
+    text: element.text,
+    norm_type: element.normType,
+    deontic_operator: element.deonticOperator,
+    indicator: element.matchedIndicator,
+    subjects: element.subjects,
+    actions: element.actions,
+    conditions: element.conditions,
+    exceptions: element.exceptions,
+    temporal_constraints: element.temporalConstraints,
+    confidence: element.confidence,
+    sentence_index: element.sentenceIndex,
+    start_offset: element.startOffset,
+    end_offset: element.endOffset,
+  };
 }
 
 function buildConversionMetadata(

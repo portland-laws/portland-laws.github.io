@@ -1136,3 +1136,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T084451Z-ported-the-remaining-deontic-support-map-slice-for-browser-native-source-support.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T084451Z-ported-the-remaining-deontic-support-map-slice-for-browser-native-source-support.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T084451Z-ported-the-remaining-deontic-support-map-slice-for-browser-native-source-support.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 08:47:06 UTC
+
+- Target: `Task checkbox-316: Port remaining Python logic module `logic/deontic/utils/deontic_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the deontic utils parser surface to browser-native TypeScript with Python-style structured results and aliases.
+- Impact: The existing deontic parser now directly exposes parse_deontic_text, parseDeonticText, and extraction helpers for obligations, permissions, and prohibitions without server calls or Python bridges. The Jest coverage validates structured norm output, filter helpers, formulas, metadata, and word-bounded indicator matching.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/deontic/parser.test.ts`, `src/lib/logic/deontic/parser.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T084706Z-ported-the-deontic-utils-parser-surface-to-browser-native-typescript-with-python.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T084706Z-ported-the-deontic-utils-parser-surface-to-browser-native-typescript-with-python.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T084706Z-ported-the-deontic-utils-parser-surface-to-browser-native-typescript-with-python.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
