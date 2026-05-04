@@ -966,7 +966,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 08:55:29 UTC
+Last updated: 2026-05-04 09:07:01 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
@@ -1293,8 +1293,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-315: Port remaining Python logic module 'logic/deontic/support_map.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-316: Port remaining Python logic module 'logic/deontic/utils/deontic_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-317: Port remaining Python logic module 'logic/e2e_validation.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-318: Port remaining Python logic module 'logic/external_provers/formula_analyzer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-319: Port remaining Python logic module 'logic/external_provers/interactive/coq_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-318: Port remaining Python logic module 'logic/external_provers/formula_analyzer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [!] `Task checkbox-319: Port remaining Python logic module 'logic/external_provers/interactive/coq_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - latest daemon round failed validation or preflight
 - [ ] `Task checkbox-320: Port remaining Python logic module 'logic/external_provers/interactive/lean_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-321: Port remaining Python logic module 'logic/external_provers/neural/symbolicai_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-322: Port remaining Python logic module 'logic/external_provers/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,22 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-318: Port remaining Python logic module 'logic/external_provers/formula_analyzer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
-- Result: `valid`
-- Summary: Ported external prover formula analysis to deterministic browser-native TypeScript.
-- Impact: CEC formula analysis now exposes formula class, decidable fragment, predicate arity, symbols, operators, and fail-closed parse errors for local prover routing without Python, server, filesystem, subprocess, or RPC dependencies. Focused Jest coverage validates successful analysis and unsupported formula handling.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/analyzer.ts`, `src/lib/logic/cec/parser.test.ts`
+- Target: `Task checkbox-319: Port remaining Python logic module 'logic/external_provers/interactive/coq_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Result: `needs follow-up`
+- Summary: Ported the interactive Coq prover bridge as a browser-native TypeScript proof-script contract.
+- Impact: Adds an exported Coq bridge under src/lib/logic/integration that checks supported Coq proof-script shapes locally, returns fail-closed metadata for unsupported tactics, and is directly exercised by the existing Jest integration test suite without Python, subprocess, server, or Node-only browser runtime dependencies.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/coqProverBridge.ts`, `src/lib/logic/integration/index.ts`
+- Errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
+../../..src/lib/logic/integration/coqProverBridge.ts(50,5): error TS2322: Type '{ status: ProofStatus; theorem: string; steps: ProofStep[]; method: string; timeMs: number; error: string; coq: { adapter: "browser-native-coq-prover-bridge"; sourcePythonModule: "logic/external_provers/interactive/coq_prover_bridge.py"; ... 7 more ...; blockers: string[]; }; }' is not assignable to type 'BrowserNativeCoqProofResult'.
+
+Replacement diagnostic context:
+src/lib/logic/integration/coqProverBridge.ts:50:5 TS2322: Type '{ status: ProofStatus; theorem: string; steps: ProofStep[]; method: string; timeMs: number; error: string; coq: { adapter: "browser-native-coq-prover-bridge"; sourcePythonModule: "logic/external_provers/interactive/coq_prover_bridge.py"; ... 7 more ...; blockers: string[]; }; }' is not assignable to type 'BrowserNativeCoqProofResult'.
+  48: 
+  49:   return {
+> 50:     status,
+  51:     theorem,
+  52:     steps,
+- Failure kind: `typescript_quality`
 
 ### Blocked Backlog
 
