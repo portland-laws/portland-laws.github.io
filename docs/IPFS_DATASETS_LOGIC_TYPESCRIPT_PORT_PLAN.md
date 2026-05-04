@@ -895,7 +895,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/integration/reasoning/_prover_backend_mixin.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/reasoning/deontological_reasoning.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/reasoning/deontological_reasoning_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/integration/reasoning/deontological_reasoning_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/integration/reasoning/deontological_reasoning_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/reasoning/logic_verification.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/reasoning/logic_verification_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/reasoning/logic_verification_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 13:52:26 UTC
+Last updated: 2026-05-04 13:55:07 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-385: Port remaining Python logic module 'logic/integration/reasoning/deontological_reasoning_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-386: Port remaining Python logic module 'logic/integration/reasoning/logic_verification.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1359,8 +1359,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-381: Port remaining Python logic module 'logic/integration/reasoning/_logic_verifier_backends_mixin.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-382: Port remaining Python logic module 'logic/integration/reasoning/_prover_backend_mixin.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-383: Port remaining Python logic module 'logic/integration/reasoning/deontological_reasoning.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-384: Port remaining Python logic module 'logic/integration/reasoning/deontological_reasoning_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-385: Port remaining Python logic module 'logic/integration/reasoning/deontological_reasoning_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-384: Port remaining Python logic module 'logic/integration/reasoning/deontological_reasoning_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-385: Port remaining Python logic module 'logic/integration/reasoning/deontological_reasoning_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-386: Port remaining Python logic module 'logic/integration/reasoning/logic_verification.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-387: Port remaining Python logic module 'logic/integration/reasoning/logic_verification_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-388: Port remaining Python logic module 'logic/integration/reasoning/logic_verification_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-384: Port remaining Python logic module 'logic/integration/reasoning/deontological_reasoning_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-385: Port remaining Python logic module 'logic/integration/reasoning/deontological_reasoning_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Worktree direct-edit proposal.
-- Impact: Git harvested the isolated-worktree edits for validation.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/reasoning/deontologicalReasoningTypes.ts`, `src/lib/logic/reasoning/index.ts`, `src/lib/logic/reasoning/reasoning.test.ts`
+- Summary: Ported deontological reasoning utility helpers to browser-native TypeScript.
+- Impact: Adds deterministic TypeScript exports for the Python deontological_reasoning_utils.py keyword, similarity, normalization, condition, exception, and regex pattern helpers; the existing reasoning barrel exports them and the Jest reasoning suite validates the parity surface without server calls or Python runtime use.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/reasoning/deontologicalReasoningUtils.ts`, `src/lib/logic/reasoning/index.ts`, `src/lib/logic/reasoning/reasoning.test.ts`
 
 ### Blocked Backlog
 

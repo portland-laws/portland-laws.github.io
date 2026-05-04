@@ -1748,3 +1748,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T135226Z-worktree-direct-edit-proposal..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T135226Z-worktree-direct-edit-proposal..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T135226Z-worktree-direct-edit-proposal..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 13:55:07 UTC
+
+- Target: `Task checkbox-385: Port remaining Python logic module `logic/integration/reasoning/deontological_reasoning_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported deontological reasoning utility helpers to browser-native TypeScript.
+- Impact: Adds deterministic TypeScript exports for the Python deontological_reasoning_utils.py keyword, similarity, normalization, condition, exception, and regex pattern helpers; the existing reasoning barrel exports them and the Jest reasoning suite validates the parity surface without server calls or Python runtime use.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/reasoning/deontologicalReasoningUtils.ts`, `src/lib/logic/reasoning/index.ts`, `src/lib/logic/reasoning/reasoning.test.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T135507Z-ported-deontological-reasoning-utility-helpers-to-browser-native-typescript..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T135507Z-ported-deontological-reasoning-utility-helpers-to-browser-native-typescript..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T135507Z-ported-deontological-reasoning-utility-helpers-to-browser-native-typescript..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

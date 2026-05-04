@@ -5,6 +5,17 @@ import {
   checkDeontologicalReasoningType,
   isDeontologicalReasoningType,
 } from './deontologicalReasoningTypes';
+import {
+  DEONTOLOGICAL_REASONING_UTILS_METADATA,
+  areActionsSimilar,
+  areEntitiesSimilar,
+  calculateTextSimilarity,
+  extractConditionsFromText,
+  extractExceptionsFromText,
+  extractKeywords,
+  normalizeAction,
+  normalizeEntity,
+} from './deontologicalReasoningUtils';
 import { createImplication, runForwardChaining } from './forwardChaining';
 import { createLogicKnowledgeBase, makeFact } from './knowledgeBase';
 import {
@@ -221,6 +232,35 @@ describe('lightweight reasoning', () => {
       '$.performedActions[1]',
       '$.facts.lease active',
     ]);
+  });
+
+  it('ports deontological reasoning utility keyword and clause helpers locally', () => {
+    expect(DEONTOLOGICAL_REASONING_UTILS_METADATA).toEqual({
+      sourcePythonModule: 'logic/integration/reasoning/deontological_reasoning_utils.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      runtimeDependencies: [],
+    });
+    expect(Array.from(extractKeywords('The tenant must pay annual taxes.')).sort()).toEqual([
+      'annual',
+      'must',
+      'pay',
+      'taxes',
+      'tenant',
+    ]);
+    expect(calculateTextSimilarity('pay taxes', 'pay annual taxes')).toBeCloseTo(2 / 3);
+    expect(areEntitiesSimilar('citizen', 'citizens')).toBe(true);
+    expect(areEntitiesSimilar('citizen', 'corporation')).toBe(false);
+    expect(areActionsSimilar('pay taxes', 'pay annual taxes')).toBe(true);
+    expect(normalizeEntity('  CITIZEN  ')).toBe('citizen');
+    expect(normalizeAction('  PAY TAXES  ')).toBe('pay taxes');
+    expect(
+      extractConditionsFromText('if employed, tenant must pay unless exempt, then file'),
+    ).toEqual(['employed', 'exempt']);
+    expect(
+      extractExceptionsFromText('tenant must pay unless exempt, but not when waived.'),
+    ).toEqual(['exempt', 'waived.']);
   });
 
   it('summarizes temporal operators from TDFOL formulas', () => {
