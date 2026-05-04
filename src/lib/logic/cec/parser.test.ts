@@ -7,8 +7,10 @@ import { formatCecExpression } from './formatter';
 import {
   parseCecExpression,
   parseCecNaturalLanguageFrench,
+  parseCecNaturalLanguageGerman,
   parseCecNaturalLanguageBase,
   parse_cec_natural_language_french,
+  parse_cec_natural_language_german,
   parse_cec_natural_language_base,
   validateCecExpression,
 } from './parser';
@@ -190,6 +192,46 @@ describe('CEC/DCEC parser', () => {
       errors: ['No deterministic french_parser pattern matched.'],
       metadata: {
         implementation: 'deterministic-french-nl-parser',
+        pythonRuntime: false,
+        serverRuntime: false,
+      },
+    });
+  });
+
+  it('ports german_parser.py deontic, conditional, and fail-closed clauses without runtime bridges', () => {
+    const obligation = parseCecNaturalLanguageGerman('Der Mieter muss Rauchmelder warten.');
+    const prohibition = parseCecNaturalLanguageGerman(
+      'Der Mieter darf nicht Ausgaenge blockieren.',
+    );
+    const conditional = parse_cec_natural_language_german(
+      'Wenn der Mieter muss Miete zahlen dann immer der Vermieter darf die Wohnung betreten.',
+    );
+    const unsupported = parseCecNaturalLanguageGerman('guten tag zusammen');
+
+    expect(obligation).toMatchObject({
+      ok: true,
+      formula: '(O (rauchmelder_warten mieter))',
+      parseMethod: 'german_parser_pattern',
+      metadata: {
+        sourcePythonModule: 'logic/CEC/nl/german_parser.py',
+        runtime: 'browser-native-typescript',
+        browserNative: true,
+        pythonRuntime: false,
+        serverRuntime: false,
+      },
+    });
+    expect(prohibition.formula).toBe('(F (ausgaenge_blockieren mieter))');
+    expect(conditional).toMatchObject({
+      ok: true,
+      formula: '(implies (O (miete_zahlen mieter)) (always (P (wohnung_betreten vermieter))))',
+    });
+    expect(unsupported).toMatchObject({
+      ok: false,
+      parseMethod: 'fail_closed',
+      confidence: 0,
+      errors: ['No deterministic german_parser pattern matched.'],
+      metadata: {
+        implementation: 'deterministic-german-nl-parser',
         pythonRuntime: false,
         serverRuntime: false,
       },

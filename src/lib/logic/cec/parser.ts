@@ -37,6 +37,26 @@ const FRENCH_NL_STOP_WORDS = new Set([
   'un',
   'une',
 ]);
+const GERMAN_NL_STOP_WORDS = new Set([
+  'am',
+  'auf',
+  'das',
+  'dem',
+  'den',
+  'der',
+  'des',
+  'die',
+  'ein',
+  'eine',
+  'einen',
+  'einem',
+  'einer',
+  'im',
+  'in',
+  'zu',
+  'zum',
+  'zur',
+]);
 
 export interface CecBaseNlParserMetadata {
   readonly sourcePythonModule: 'logic/CEC/nl/base_parser.py';
@@ -82,9 +102,23 @@ const CEC_FRENCH_NL_METADATA = {
   serverRuntime: false,
 } as const;
 
+const CEC_GERMAN_NL_METADATA = {
+  sourcePythonModule: 'logic/CEC/nl/german_parser.py',
+  runtime: 'browser-native-typescript',
+  implementation: 'deterministic-german-nl-parser',
+  browserNative: true,
+  pythonRuntime: false,
+  serverRuntime: false,
+} as const;
+
 export type CecFrenchNlParseResult = Omit<CecBaseNlParseResult, 'parseMethod' | 'metadata'> & {
   readonly parseMethod: 'french_parser_pattern' | 'fail_closed';
   readonly metadata: typeof CEC_FRENCH_NL_METADATA;
+};
+
+export type CecGermanNlParseResult = Omit<CecBaseNlParseResult, 'parseMethod' | 'metadata'> & {
+  readonly parseMethod: 'german_parser_pattern' | 'fail_closed';
+  readonly metadata: typeof CEC_GERMAN_NL_METADATA;
 };
 
 export function parseCecExpression(source: string): CecExpression {
@@ -172,6 +206,41 @@ export function parseCecNaturalLanguageFrench(
 }
 
 export const parse_cec_natural_language_french = parseCecNaturalLanguageFrench;
+
+export function parseCecNaturalLanguageGerman(
+  source: string,
+  options: CecBaseNlParserOptions = {},
+): CecGermanNlParseResult {
+  const normalizedText = normalizeGermanNlText(source);
+  const maxInputLength = options.maxInputLength ?? 2000;
+  if (source.length > maxInputLength) {
+    return failGermanNl(source, normalizedText, [`Input exceeds ${maxInputLength} characters.`]);
+  }
+  if (normalizedText.length === 0) {
+    return failGermanNl(source, normalizedText, ['Input is empty.']);
+  }
+
+  const expression = parseGermanNlClause(normalizedText, options.defaultSubject ?? 'agent');
+  if (!expression) {
+    return failGermanNl(source, normalizedText, [
+      'No deterministic german_parser pattern matched.',
+    ]);
+  }
+
+  return {
+    ok: true,
+    input: source,
+    normalizedText,
+    expression,
+    formula: formatBaseNlExpression(expression),
+    parseMethod: 'german_parser_pattern',
+    confidence: 0.7,
+    errors: [],
+    metadata: CEC_GERMAN_NL_METADATA,
+  };
+}
+
+export const parse_cec_natural_language_german = parseCecNaturalLanguageGerman;
 
 class CecParser {
   private readonly tokens: CecToken[];
@@ -457,6 +526,89 @@ function frenchApplication(
   };
 }
 
+function parseGermanNlClause(text: string, defaultSubject: string): CecExpression | undefined {
+  const conditional = /^wenn (.+) dann (.+)$/.exec(text);
+  if (conditional) {
+    const left = parseGermanNlClause(conditional[1], defaultSubject);
+    const right = parseGermanNlClause(conditional[2], defaultSubject);
+    if (left && right) {
+      return { kind: 'binary', operator: 'implies', left, right };
+    }
+    return undefined;
+  }
+
+  const temporal = /^(immer|stets|schliesslich|danach) (.+)$/.exec(text);
+  if (temporal) {
+    const expression = parseGermanNlClause(temporal[2], defaultSubject);
+    if (expression) {
+      const operator = temporal[1] === 'immer' || temporal[1] === 'stets' ? 'always' : 'eventually';
+      return { kind: 'unary', operator, expression };
+    }
+    return undefined;
+  }
+
+  const words = text.split(' ').filter(Boolean);
+  const modalIndex = words.findIndex((word) =>
+    [
+      'muss',
+      'muessen',
+      'soll',
+      'sollen',
+      'darf',
+      'duerfen',
+      'darf_nicht',
+      'duerfen_nicht',
+    ].includes(word),
+  );
+  if (modalIndex <= 0 || modalIndex >= words.length - 1) {
+    return undefined;
+  }
+
+  const subject = atomName(
+    words
+      .slice(0, modalIndex)
+      .filter((word) => !GERMAN_NL_STOP_WORDS.has(word))
+      .join('_'),
+  );
+  const modal = words[modalIndex];
+  const operator =
+    modal.includes('darf') || modal.includes('duerfen')
+      ? modal.includes('nicht')
+        ? 'F'
+        : 'P'
+      : 'O';
+  return germanApplication(
+    operator,
+    subject || defaultSubject,
+    words.slice(modalIndex + 1).join(' '),
+  );
+}
+
+function germanApplication(
+  operator: CecUnaryOperator,
+  subject: string,
+  predicateText: string,
+): CecUnaryExpression | undefined {
+  const predicate = atomName(
+    predicateText
+      .split(' ')
+      .filter((word) => word.length > 0 && !GERMAN_NL_STOP_WORDS.has(word))
+      .join('_'),
+  );
+  if (predicate.length === 0) {
+    return undefined;
+  }
+  return {
+    kind: 'unary',
+    operator,
+    expression: {
+      kind: 'application',
+      name: predicate,
+      args: [{ kind: 'atom', name: subject }],
+    },
+  };
+}
+
 function normalizeBaseNlText(source: string): string {
   return source
     .toLowerCase()
@@ -474,6 +626,16 @@ function normalizeFrenchNlText(source: string): string {
     .replace(/[^\p{L}\p{N}_\s-]/gu, ' ')
     .replace(/\bne\s+(doit|doivent|peut|peuvent)\s+pas\b/g, 'ne_$1_pas')
     .replace(/\bn\s+(est|sont)\s+pas\s+autorise(?:e|es|s)?\s+a\b/g, 'ne_peut_pas')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function normalizeGermanNlText(source: string): string {
+  return source
+    .toLowerCase()
+    .replace(/[äöüß]/g, (char) => ({ ä: 'ae', ö: 'oe', ü: 'ue', ß: 'ss' })[char] ?? char)
+    .replace(/[^\p{L}\p{N}_\s-]/gu, ' ')
+    .replace(/\b(darf|duerfen)\s+nicht\b/g, '$1_nicht')
     .replace(/\s+/g, ' ')
     .trim();
 }
@@ -529,5 +691,21 @@ function failFrenchNl(
     confidence: 0,
     errors,
     metadata: CEC_FRENCH_NL_METADATA,
+  };
+}
+
+function failGermanNl(
+  source: string,
+  normalizedText: string,
+  errors: readonly string[],
+): CecGermanNlParseResult {
+  return {
+    ok: false,
+    input: source,
+    normalizedText,
+    parseMethod: 'fail_closed',
+    confidence: 0,
+    errors,
+    metadata: CEC_GERMAN_NL_METADATA,
   };
 }
