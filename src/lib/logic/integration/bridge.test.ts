@@ -26,6 +26,7 @@ import {
 } from './symbolicAiProverBridge';
 import { SymbolicFOLBridge } from './symbolicFolBridge';
 import { createBrowserNativeTdfolCecBridge } from './tdfolCecBridge';
+import { createBrowserNativeTdfolGrammarBridge } from './tdfolGrammarBridge';
 import {
   createBrowserNativeZ3ProverBridge,
   type BrowserNativeZ3ProofResult,
@@ -128,6 +129,36 @@ describe('BrowserNativeLogicBridge', () => {
       pythonRuntime: false,
     });
     expect(result.steps.map((step) => step.rule)).toContain('CecDeonticProhibitionEquivalence');
+  });
+
+  it('ports tdfol_grammar_bridge.py with deterministic browser-native grammar parsing', () => {
+    const bridge = createBrowserNativeTdfolGrammarBridge();
+    const controlled = bridge.parse('Always Alice must file appeal.');
+    const direct = bridge.parse({ source: 'forall x. O(FileAppeal(x))', inputKind: 'tdfol' });
+    const invalid = bridge.validate('Alice might file appeal');
+
+    expect(controlled).toMatchObject({
+      status: 'success',
+      formulaText: 'O(□(File_appeal(alice)))',
+      metadata: {
+        sourcePythonModule: 'logic/integration/bridges/tdfol_grammar_bridge.py',
+        browserNative: true,
+        serverCallsAllowed: false,
+        pythonRuntime: false,
+        failClosed: true,
+      },
+      grammarTrace: ['controlled_english:normalize', 'temporal:always', 'modal:obligation'],
+    });
+    expect(direct).toMatchObject({
+      status: 'success',
+      inputKind: 'tdfol',
+      formulaText: '∀x (O(FileAppeal(x)))',
+      grammarTrace: ['tdfol:parser'],
+    });
+    expect(invalid).toMatchObject({
+      valid: false,
+      metadata: { serverCallsAllowed: false, pythonRuntime: false },
+    });
   });
 
   it('proves TDFOL and CEC requests using local proof engines', () => {

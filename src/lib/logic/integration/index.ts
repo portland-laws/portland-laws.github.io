@@ -8,4 +8,5 @@ export * from './proverInstaller';
 export * from './symbolicAiProverBridge';
 export * from './symbolicFolBridge';
 export * from './tdfolCecBridge';
+export * from './tdfolGrammarBridge';
 export * from './z3ProverBridge';

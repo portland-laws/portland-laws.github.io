@@ -1370,3 +1370,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T105548Z-ported-the-tdfol_cec_bridge.py-integration-surface-to-a-browser-native-typescrip.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T105548Z-ported-the-tdfol_cec_bridge.py-integration-surface-to-a-browser-native-typescrip.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T105548Z-ported-the-tdfol_cec_bridge.py-integration-surface-to-a-browser-native-typescrip.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 11:00:33 UTC
+
+- Target: `Task checkbox-343: Port remaining Python logic module `logic/integration/bridges/tdfol_grammar_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported tdfol_grammar_bridge.py as a browser-native deterministic TDFOL grammar bridge.
+- Impact: Adds an exported TypeScript integration bridge that parses direct TDFOL formulas and controlled-English deontic/temporal grammar locally, fails closed on unsupported grammar, and is exercised by the existing integration Jest suite without Python, server, RPC, subprocess, or filesystem fallbacks.
+- Changed files: `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/tdfolGrammarBridge.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T110033Z-ported-tdfol_grammar_bridge.py-as-a-browser-native-deterministic-tdfol-grammar-b.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T110033Z-ported-tdfol_grammar_bridge.py-as-a-browser-native-deterministic-tdfol-grammar-b.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T110033Z-ported-tdfol_grammar_bridge.py-as-a-browser-native-deterministic-tdfol-grammar-b.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
