@@ -902,3 +902,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T065949Z-ported-the-browser-native-tdfol-converter-facade-for-logic-tdfol-tdfol_converter.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T065949Z-ported-the-browser-native-tdfol-converter-facade-for-logic-tdfol-tdfol_converter.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T065949Z-ported-the-browser-native-tdfol-converter-facade-for-logic-tdfol-tdfol_converter.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 07:03:26 UTC
+
+- Target: `Task checkbox-290: Port remaining Python logic module `logic/TDFOL/tdfol_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported a focused browser-native TDFOL core parity slice for tdfol_core.py.
+- Impact: The TypeScript TDFOL AST core now exposes tdfol_core.py metadata, includes agent terms in free-variable analysis, exposes bound-variable analysis, and performs capture-avoiding substitution under quantifiers. The focused Jest coverage exercises these browser-native behaviors without server, Python runtime, filesystem, subprocess, or RPC dependencies.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/ast.ts`, `src/lib/logic/tdfol/parser.test.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T070326Z-ported-a-focused-browser-native-tdfol-core-parity-slice-for-tdfol_core.py..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T070326Z-ported-a-focused-browser-native-tdfol-core-parity-slice-for-tdfol_core.py..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T070326Z-ported-a-focused-browser-native-tdfol-core-parity-slice-for-tdfol_core.py..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

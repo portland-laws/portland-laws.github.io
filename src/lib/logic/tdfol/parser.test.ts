@@ -2,7 +2,7 @@ import { LogicParseError } from '../errors';
 import { formatTdfolFormula } from './formatter';
 import { lexTdfol } from './lexer';
 import { parseTdfolFormula } from './parser';
-import { getFreeVariables, substituteFormula } from './ast';
+import { TDFOL_CORE_METADATA, getBoundVariables, getFreeVariables, substituteFormula } from './ast';
 
 const portlandFormula =
   '∀a:Agent (SubjectTo(a,portland_city_code_1_01_010) → P(□(ComplyWith(a,portland_city_code_1_01_010))))';
@@ -98,5 +98,36 @@ describe('TDFOL parser', () => {
     const substitutedBound = substituteFormula(bound, 'x', { kind: 'constant', name: 'auditor' });
 
     expect(formatTdfolFormula(substitutedBound)).toBe('∀x (ComplyWith(x, section))');
+  });
+
+  it('matches tdfol_core.py variable analysis for agents and quantified formulas', () => {
+    const formula = {
+      kind: 'quantified' as const,
+      quantifier: 'FORALL' as const,
+      variable: { kind: 'variable' as const, name: 'x' },
+      formula: {
+        kind: 'deontic' as const,
+        operator: 'PERMISSION' as const,
+        agent: { kind: 'variable' as const, name: 'agent' },
+        formula: parseTdfolFormula('always ComplyWith(x, section)'),
+      },
+    };
+
+    expect([...getFreeVariables(formula)].sort()).toEqual(['agent']);
+    expect([...getBoundVariables(formula)]).toEqual(['x']);
+    expect(TDFOL_CORE_METADATA).toMatchObject({
+      sourcePythonModule: 'logic/TDFOL/tdfol_core.py',
+      browserNative: true,
+      runtimeDependencies: [],
+    });
+  });
+
+  it('uses capture-avoiding substitution under quantifiers', () => {
+    const formula = parseTdfolFormula('forall y. Requires(x, y)');
+    const substituted = substituteFormula(formula, 'x', { kind: 'variable', name: 'y' });
+
+    expect(formatTdfolFormula(substituted)).toBe('∀y_1 (Requires(y, y_1))');
+    expect([...getFreeVariables(substituted)]).toEqual(['y']);
+    expect([...getBoundVariables(substituted)]).toEqual(['y_1']);
   });
 });

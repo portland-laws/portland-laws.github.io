@@ -83,6 +83,19 @@ export interface TdfolTemporalFormula {
   formula: TdfolFormula;
 }
 
+export const TDFOL_CORE_METADATA = {
+  sourcePythonModule: 'logic/TDFOL/tdfol_core.py',
+  browserNative: true,
+  runtimeDependencies: [] as Array<string>,
+  parity: [
+    'terms',
+    'formulas',
+    'free_variables',
+    'bound_variables',
+    'capture_avoiding_substitution',
+  ] as Array<string>,
+} as const;
+
 export function getFreeVariables(formula: TdfolFormula): Set<string> {
   switch (formula.kind) {
     case 'predicate':
@@ -91,14 +104,35 @@ export function getFreeVariables(formula: TdfolFormula): Set<string> {
         new Set<string>(),
       );
     case 'unary':
-    case 'deontic':
     case 'temporal':
       return getFreeVariables(formula.formula);
     case 'binary':
       return unionInto(getFreeVariables(formula.left), getFreeVariables(formula.right));
+    case 'deontic': {
+      const vars = getFreeVariables(formula.formula);
+      return formula.agent ? unionInto(vars, getTermVariables(formula.agent)) : vars;
+    }
     case 'quantified': {
       const vars = getFreeVariables(formula.formula);
       vars.delete(formula.variable.name);
+      return vars;
+    }
+  }
+}
+
+export function getBoundVariables(formula: TdfolFormula): Set<string> {
+  switch (formula.kind) {
+    case 'predicate':
+      return new Set();
+    case 'unary':
+    case 'deontic':
+    case 'temporal':
+      return getBoundVariables(formula.formula);
+    case 'binary':
+      return unionInto(getBoundVariables(formula.left), getBoundVariables(formula.right));
+    case 'quantified': {
+      const vars = getBoundVariables(formula.formula);
+      vars.add(formula.variable.name);
       return vars;
     }
   }
@@ -149,7 +183,7 @@ export function substituteFormula(
       if (formula.variable.name === variableName) {
         return formula;
       }
-      return { ...formula, formula: substituteFormula(formula.formula, variableName, replacement) };
+      return substituteQuantifiedFormula(formula, variableName, replacement);
   }
 }
 
@@ -169,6 +203,46 @@ export function substituteTerm(
         args: term.args.map((arg) => substituteTerm(arg, variableName, replacement)),
       };
   }
+}
+
+function substituteQuantifiedFormula(
+  formula: TdfolQuantifiedFormula,
+  variableName: string,
+  replacement: TdfolTerm,
+): TdfolQuantifiedFormula {
+  if (!getFreeVariables(formula.formula).has(variableName)) {
+    return formula;
+  }
+  const replacementVariables = getTermVariables(replacement);
+  if (!replacementVariables.has(formula.variable.name)) {
+    return { ...formula, formula: substituteFormula(formula.formula, variableName, replacement) };
+  }
+  const freshName = freshVariableName(formula.variable.name, formula.formula, replacement);
+  const renamedVariable: TdfolVariable = { ...formula.variable, name: freshName };
+  const renamedBody = substituteFormula(formula.formula, formula.variable.name, renamedVariable);
+  return {
+    ...formula,
+    variable: renamedVariable,
+    formula: substituteFormula(renamedBody, variableName, replacement),
+  };
+}
+
+function freshVariableName(
+  baseName: string,
+  formula: TdfolFormula,
+  replacement: TdfolTerm,
+): string {
+  const used = unionInto(
+    unionInto(getFreeVariables(formula), getBoundVariables(formula)),
+    getTermVariables(replacement),
+  );
+  let index = 1;
+  let candidate = `${baseName}_${index}`;
+  while (used.has(candidate)) {
+    index += 1;
+    candidate = `${baseName}_${index}`;
+  }
+  return candidate;
 }
 
 function unionInto<T>(target: Set<T>, source: Set<T>): Set<T> {
