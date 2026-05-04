@@ -1955,3 +1955,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T151644Z-ported-unixfs_integration.py-behavior-to-a-browser-native-typescript-unixfs-adap.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T151644Z-ported-unixfs_integration.py-behavior-to-a-browser-native-typescript-unixfs-adap.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T151644Z-ported-unixfs_integration.py-behavior-to-a-browser-native-typescript-unixfs-adap.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 15:19:08 UTC
+
+- Target: `Task checkbox-408: Port remaining Python logic module `logic/ml_confidence.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the remaining ml_confidence.py slice with browser-native deterministic model artifact loading, scoring, state, and unload controls.
+- Impact: src/lib/logic/mlConfidence.ts now exposes a fail-closed local artifact contract for deterministic linear/logistic confidence models with no server, Python, filesystem, subprocess, or RPC dependency; src/lib/logic/mlConfidence.test.ts validates artifact lifecycle behavior through Jest, and the task ledger marks checkbox-408 complete.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/mlConfidence.test.ts`, `src/lib/logic/mlConfidence.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T151908Z-ported-the-remaining-ml_confidence.py-slice-with-browser-native-deterministic-mo.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T151908Z-ported-the-remaining-ml_confidence.py-slice-with-browser-native-deterministic-mo.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T151908Z-ported-the-remaining-ml_confidence.py-slice-with-browser-native-deterministic-mo.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

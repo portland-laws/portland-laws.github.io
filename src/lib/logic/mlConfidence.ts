@@ -23,6 +23,26 @@ export interface ConfidenceTrainingMetrics {
   n_val: number;
 }
 
+export interface MLConfidenceModelArtifact {
+  format: 'deterministic-linear-v1' | 'deterministic-logistic-v1';
+  version: string;
+  featureNames: Array<MLConfidenceFeatureName>;
+  weights: Array<number>;
+  bias: number;
+  threshold?: number;
+  metadata?: Record<string, unknown>;
+}
+
+export interface MLConfidenceModelState {
+  loaded: boolean;
+  source: 'heuristic' | 'trained' | 'artifact';
+  format?: MLConfidenceModelArtifact['format'];
+  version?: string;
+  featureCount: number;
+  serverCallsAllowed: false;
+  pythonRuntimeAllowed: false;
+}
+
 export const ML_CONFIDENCE_FEATURE_NAMES = [
   'sentence_length',
   'word_count',
@@ -92,10 +112,12 @@ export class FeatureExtractor {
 }
 
 export class MLConfidenceScorer {
-  readonly config: Required<Omit<MLConfidenceConfig, 'modelPath'>> & Pick<MLConfidenceConfig, 'modelPath'>;
+  readonly config: Required<Omit<MLConfidenceConfig, 'modelPath'>> &
+    Pick<MLConfidenceConfig, 'modelPath'>;
   readonly featureExtractor = FeatureExtractor;
   private trainedWeights?: number[];
   private trainedBias = 0;
+  private artifact?: MLConfidenceModelArtifact;
 
   constructor(config: MLConfidenceConfig = {}) {
     this.config = {
@@ -109,7 +131,28 @@ export class MLConfidenceScorer {
   }
 
   get isTrained(): boolean {
-    return Boolean(this.trainedWeights);
+    return Boolean(this.trainedWeights) || Boolean(this.artifact);
+  }
+
+  get modelState(): MLConfidenceModelState {
+    if (this.artifact) {
+      return {
+        loaded: true,
+        source: 'artifact',
+        format: this.artifact.format,
+        version: this.artifact.version,
+        featureCount: this.artifact.weights.length,
+        serverCallsAllowed: false,
+        pythonRuntimeAllowed: false,
+      };
+    }
+    return {
+      loaded: Boolean(this.trainedWeights),
+      source: this.trainedWeights ? 'trained' : 'heuristic',
+      featureCount: this.trainedWeights?.length ?? ML_CONFIDENCE_FEATURE_NAMES.length,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+    };
   }
 
   extractFeatures(
@@ -119,7 +162,13 @@ export class MLConfidenceScorer {
     quantifiers: string[],
     operators: string[],
   ): MLConfidenceFeatureVector {
-    return FeatureExtractor.extractFeatures(sentence, folFormula, predicates, quantifiers, operators);
+    return FeatureExtractor.extractFeatures(
+      sentence,
+      folFormula,
+      predicates,
+      quantifiers,
+      operators,
+    );
   }
 
   predictConfidence(
@@ -130,6 +179,14 @@ export class MLConfidenceScorer {
     operators: string[],
   ): number {
     const features = this.extractFeatures(sentence, folFormula, predicates, quantifiers, operators);
+    if (this.artifact) {
+      return scoreFeatureVector(
+        features,
+        this.artifact.weights,
+        this.artifact.bias,
+        this.artifact.format,
+      );
+    }
     if (!this.trainedWeights) {
       if (this.config.fallbackToHeuristic) {
         return this.heuristicConfidence(sentence, folFormula, predicates, quantifiers, operators);
@@ -137,9 +194,26 @@ export class MLConfidenceScorer {
       return 0.5;
     }
 
-    const raw =
-      features.reduce((total, feature, index) => total + feature * (this.trainedWeights?.[index] ?? 0), this.trainedBias);
+    const raw = features.reduce(
+      (total, feature, index) => total + feature * (this.trainedWeights?.[index] ?? 0),
+      this.trainedBias,
+    );
     return clamp01(1 / (1 + Math.exp(-raw)));
+  }
+
+  loadModelArtifact(artifact: MLConfidenceModelArtifact): MLConfidenceModelState {
+    const normalized = validateModelArtifact(artifact);
+    this.artifact = normalized;
+    this.trainedWeights = normalized.weights.slice();
+    this.trainedBias = normalized.bias;
+    return this.modelState;
+  }
+
+  unloadModel(): MLConfidenceModelState {
+    this.artifact = undefined;
+    this.trainedWeights = undefined;
+    this.trainedBias = 0;
+    return this.modelState;
   }
 
   heuristicConfidence(
@@ -182,39 +256,55 @@ export class MLConfidenceScorer {
       throw new Error('Training data must include one label for each feature vector');
     }
 
-    const splitIndex = Math.max(1, Math.min(matrix.length - 1, Math.floor(matrix.length * (1 - validationSplit))));
+    const splitIndex = Math.max(
+      1,
+      Math.min(matrix.length - 1, Math.floor(matrix.length * (1 - validationSplit))),
+    );
     const trainX = matrix.slice(0, splitIndex);
     const trainY = labels.slice(0, splitIndex).map(clamp01);
     const valX = matrix.slice(splitIndex);
     const valY = labels.slice(splitIndex).map(clamp01);
 
     const featureCount = matrix[0]?.length ?? ML_CONFIDENCE_FEATURE_NAMES.length;
-    const means = Array.from({ length: featureCount }, (_, index) => mean(trainX.map((row) => row[index] ?? 0)));
+    const means = Array.from({ length: featureCount }, (_, index) =>
+      mean(trainX.map((row) => row[index] ?? 0)),
+    );
     const yMean = mean(trainY);
     const weights = means.map((featureMean, index) => {
-      const covariance = mean(trainX.map((row, rowIndex) => ((row[index] ?? 0) - featureMean) * (trainY[rowIndex] - yMean)));
+      const covariance = mean(
+        trainX.map(
+          (row, rowIndex) => ((row[index] ?? 0) - featureMean) * (trainY[rowIndex] - yMean),
+        ),
+      );
       const variance = mean(trainX.map((row) => Math.pow((row[index] ?? 0) - featureMean, 2))) || 1;
       return covariance / variance;
     });
 
+    this.artifact = undefined;
     this.trainedWeights = weights;
-    this.trainedBias = logit(yMean) - weights.reduce((total, weight, index) => total + weight * means[index], 0);
+    this.trainedBias =
+      logit(yMean) - weights.reduce((total, weight, index) => total + weight * means[index], 0);
 
     return {
       train_accuracy: scorePredictions(trainX, trainY, weights, this.trainedBias, taskType),
-      val_accuracy: valX.length > 0 ? scorePredictions(valX, valY, weights, this.trainedBias, taskType) : 0,
+      val_accuracy:
+        valX.length > 0 ? scorePredictions(valX, valY, weights, this.trainedBias, taskType) : 0,
       n_train: trainX.length,
       n_val: valX.length,
     };
   }
 
   getFeatureImportance(): Record<MLConfidenceFeatureName, number> | null {
-    if (!this.trainedWeights) {
+    const weights = this.artifact?.weights ?? this.trainedWeights;
+    if (!weights) {
       return null;
     }
-    const total = this.trainedWeights.reduce((sum, value) => sum + Math.abs(value), 0) || 1;
+    const total = weights.reduce((sum, value) => sum + Math.abs(value), 0) || 1;
     return Object.fromEntries(
-      ML_CONFIDENCE_FEATURE_NAMES.map((name, index) => [name, Math.abs(this.trainedWeights?.[index] ?? 0) / total]),
+      ML_CONFIDENCE_FEATURE_NAMES.map((name, index) => [
+        name,
+        Math.abs(weights[index] ?? 0) / total,
+      ]),
     ) as Record<MLConfidenceFeatureName, number>;
   }
 }
@@ -238,7 +328,27 @@ export function predictMLConfidence(
   quantifiers: string[],
   operators: string[],
 ): number {
-  return defaultMLConfidenceScorer.predictConfidence(sentence, folFormula, predicates, quantifiers, operators);
+  return defaultMLConfidenceScorer.predictConfidence(
+    sentence,
+    folFormula,
+    predicates,
+    quantifiers,
+    operators,
+  );
+}
+
+export function loadMLConfidenceModelArtifact(
+  artifact: MLConfidenceModelArtifact,
+): MLConfidenceModelState {
+  return defaultMLConfidenceScorer.loadModelArtifact(artifact);
+}
+
+export function unloadMLConfidenceModel(): MLConfidenceModelState {
+  return defaultMLConfidenceScorer.unloadModel();
+}
+
+export function getMLConfidenceModelState(): MLConfidenceModelState {
+  return defaultMLConfidenceScorer.modelState;
 }
 
 function countOccurrences(text: string, value: string): number {
@@ -258,6 +368,57 @@ function countKeyword(lowerText: string, keyword: string): number {
 
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function validateModelArtifact(artifact: MLConfidenceModelArtifact): MLConfidenceModelArtifact {
+  if (
+    artifact.format !== 'deterministic-linear-v1' &&
+    artifact.format !== 'deterministic-logistic-v1'
+  ) {
+    throw new Error(`Unsupported ML confidence artifact format: ${artifact.format}`);
+  }
+  if (!artifact.version.trim()) {
+    throw new Error('ML confidence artifact version is required');
+  }
+  if (artifact.featureNames.length !== ML_CONFIDENCE_FEATURE_NAMES.length) {
+    throw new Error('ML confidence artifact featureNames length mismatch');
+  }
+  if (artifact.weights.length !== ML_CONFIDENCE_FEATURE_NAMES.length) {
+    throw new Error('ML confidence artifact weights length mismatch');
+  }
+  for (let index = 0; index < ML_CONFIDENCE_FEATURE_NAMES.length; index += 1) {
+    if (artifact.featureNames[index] !== ML_CONFIDENCE_FEATURE_NAMES[index]) {
+      throw new Error(`ML confidence artifact feature order mismatch at ${index}`);
+    }
+    if (!Number.isFinite(artifact.weights[index])) {
+      throw new Error(`ML confidence artifact weight ${index} must be finite`);
+    }
+  }
+  if (!Number.isFinite(artifact.bias)) {
+    throw new Error('ML confidence artifact bias must be finite');
+  }
+  return {
+    ...artifact,
+    featureNames: artifact.featureNames.slice(),
+    weights: artifact.weights.slice(),
+    metadata: artifact.metadata ? { ...artifact.metadata } : undefined,
+  };
+}
+
+function scoreFeatureVector(
+  features: MLConfidenceFeatureVector,
+  weights: Array<number>,
+  bias: number,
+  format: MLConfidenceModelArtifact['format'],
+): number {
+  const raw = features.reduce(
+    (total, feature, index) => total + feature * (weights[index] ?? 0),
+    bias,
+  );
+  if (format === 'deterministic-linear-v1') {
+    return clamp01(raw);
+  }
+  return clamp01(1 / (1 + Math.exp(-raw)));
 }
 
 function clamp01(value: number): number {
@@ -280,9 +441,21 @@ function scorePredictions(
   bias: number,
   taskType: ConfidenceTaskType,
 ): number {
-  const predictions = matrix.map((row) => clamp01(1 / (1 + Math.exp(-(row.reduce((total, value, index) => total + value * (weights[index] ?? 0), bias))))));
+  const predictions = matrix.map((row) =>
+    clamp01(
+      1 /
+        (1 +
+          Math.exp(
+            -row.reduce((total, value, index) => total + value * (weights[index] ?? 0), bias),
+          )),
+    ),
+  );
   if (taskType === 'classification') {
-    return mean(predictions.map((prediction, index) => (Number(prediction >= 0.5) === Number(labels[index] >= 0.5) ? 1 : 0)));
+    return mean(
+      predictions.map((prediction, index) =>
+        Number(prediction >= 0.5) === Number(labels[index] >= 0.5) ? 1 : 0,
+      ),
+    );
   }
   const yMean = mean(labels);
   const variance = mean(labels.map((label) => Math.pow(label - yMean, 2))) || 1;
