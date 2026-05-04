@@ -48,6 +48,16 @@ export interface LogicVerificationResult {
   issues: Array<LogicValidationIssue>;
   metadata: typeof LOGIC_VERIFICATION_METADATA;
 }
+export interface ReasoningLogicVerificationSummary {
+  total: number;
+  verified: number;
+  invalid: number;
+  unsupported: number;
+  success: boolean;
+  failedClosed: boolean;
+  results: Array<LogicVerificationResult>;
+  metadata: typeof REASONING_LOGIC_VERIFICATION_METADATA;
+}
 export const LOGIC_VERIFICATION_METADATA = {
   verifier: 'browser-native-logic-verification',
   sourcePythonModule: 'logic/integration/logic_verification.py',
@@ -70,6 +80,21 @@ export const LOGIC_VERIFIER_BACKENDS_MIXIN_METADATA = {
   serverCallsAllowed: false,
   pythonRuntimeAllowed: false,
   runtimeDependencies: [] as Array<string>,
+} as const;
+
+export const REASONING_LOGIC_VERIFICATION_METADATA = {
+  verifier: 'browser-native-reasoning-logic-verification',
+  sourcePythonModule: 'logic/integration/reasoning/logic_verification.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  runtimeDependencies: [] as Array<string>,
+  parity: [
+    'reasoning_logic_verifier_facade',
+    'local_theorem_verification',
+    'batch_reasoning_summary',
+    'fail_closed_runtime_backends',
+  ] as Array<string>,
 } as const;
 
 const LOGIC_VERIFIER_BACKENDS: Array<LogicVerifierBackendDescriptor> = [
@@ -227,16 +252,96 @@ export class BrowserNativeLogicVerification {
   }
 }
 
+export class BrowserNativeReasoningLogicVerification {
+  readonly metadata = REASONING_LOGIC_VERIFICATION_METADATA;
+  readonly backendsMetadata = LOGIC_VERIFIER_BACKENDS_MIXIN_METADATA;
+  private readonly verifier: BrowserNativeLogicVerification;
+
+  constructor(verifier: BrowserNativeLogicVerification = new BrowserNativeLogicVerification()) {
+    this.verifier = verifier;
+  }
+
+  getBackends(): Array<LogicVerifierBackendDescriptor> {
+    return this.verifier.getBackends();
+  }
+
+  selectBackend(
+    format: LogicVerificationFormat,
+    backend?: LogicVerifierBackendName,
+  ): LogicVerifierBackendDescriptor {
+    return this.verifier.selectBackend(format, backend);
+  }
+
+  verifyTheorem(
+    theorem: string,
+    assumptions: Array<string> = [],
+    options: LogicVerificationOptions = {},
+  ): LogicVerificationResult {
+    const joinedAssumptions = assumptions
+      .map((assumption) => normalizeLogicVerificationFormula(assumption))
+      .filter((assumption) => assumption.length > 0);
+    const theoremFormula = normalizeLogicVerificationFormula(theorem);
+    const formula =
+      joinedAssumptions.length === 0
+        ? theoremFormula
+        : `(forall x (implies (and ${joinedAssumptions.join(' ')}) ${theoremFormula}))`;
+    const result = this.verifier.verify(formula, options);
+    return {
+      ...result,
+      checks: [...result.checks, 'reasoning_theorem_formula'],
+    };
+  }
+
+  verifyBatch(
+    formulas: Array<string>,
+    options: LogicVerificationOptions = {},
+  ): ReasoningLogicVerificationSummary {
+    const results = this.verifier.verifyBatch(formulas, options).map((result) => ({
+      ...result,
+      checks: [...result.checks, 'reasoning_batch_formula'],
+    }));
+    let verified = 0;
+    let invalid = 0;
+    let unsupported = 0;
+    results.forEach((result) => {
+      if (result.status === 'verified') verified += 1;
+      else if (result.status === 'invalid') invalid += 1;
+      else unsupported += 1;
+    });
+    return {
+      total: results.length,
+      verified,
+      invalid,
+      unsupported,
+      success: results.length > 0 && invalid === 0 && unsupported === 0,
+      failedClosed: invalid > 0 || unsupported > 0,
+      results,
+      metadata: REASONING_LOGIC_VERIFICATION_METADATA,
+    };
+  }
+}
+
 export const LogicVerification = BrowserNativeLogicVerification;
 export const LogicVerifier = BrowserNativeLogicVerification;
+export const ReasoningLogicVerification = BrowserNativeReasoningLogicVerification;
 export const createBrowserNativeLogicVerification = (): BrowserNativeLogicVerification =>
   new BrowserNativeLogicVerification();
+export const createBrowserNativeReasoningLogicVerification =
+  (): BrowserNativeReasoningLogicVerification => new BrowserNativeReasoningLogicVerification();
 export const create_logic_verification = createBrowserNativeLogicVerification;
+export const create_reasoning_logic_verification = createBrowserNativeReasoningLogicVerification;
 export const verifyLogicFormula = (
   formula: string,
   options: LogicVerificationOptions = {},
 ): LogicVerificationResult => createBrowserNativeLogicVerification().verify(formula, options);
 export const verify_logic_formula = verifyLogicFormula;
+export const verifyReasoningTheorem = (
+  theorem: string,
+  assumptions: Array<string> = [],
+  options: LogicVerificationOptions = {},
+): LogicVerificationResult =>
+  createBrowserNativeReasoningLogicVerification().verifyTheorem(theorem, assumptions, options);
+export const verify_reasoning_theorem = verifyReasoningTheorem;
 export const getLogicVerifierBackends = (): Array<LogicVerifierBackendDescriptor> =>
   LOGIC_VERIFIER_BACKENDS.map((backend) => ({ ...backend, formats: [...backend.formats] }));
 export const get_logic_verifier_backends = getLogicVerifierBackends;

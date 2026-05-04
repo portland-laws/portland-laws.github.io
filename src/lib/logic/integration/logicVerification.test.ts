@@ -1,9 +1,12 @@
 import {
   BrowserNativeLogicVerification,
+  BrowserNativeReasoningLogicVerification,
   LogicVerifier,
+  ReasoningLogicVerification,
   get_logic_verifier_backends,
   select_logic_verifier_backend,
   verify_logic_formula,
+  verify_reasoning_theorem,
 } from './logicVerification';
 import {
   assert_logic_verification_result,
@@ -164,6 +167,52 @@ describe('BrowserNativeLogicVerification', () => {
     });
     expect(summary.issues).toEqual(
       expect.arrayContaining([expect.objectContaining({ resultIndex: 1, field: 'formula' })]),
+    );
+  });
+
+  it('ports reasoning logic_verification.py as a browser-native theorem facade', () => {
+    const verifier = new BrowserNativeReasoningLogicVerification();
+    const result = verifier.verifyTheorem('(forall x (implies (Resident x) (O (Comply x))))', [], {
+      format: 'cec',
+    });
+    const summary = verifier.verifyBatch(['Tenant(x)', 'fetch("https://example.test/prove")'], {
+      format: 'fol',
+      requirePredicate: false,
+    });
+
+    expect(verifier.metadata).toMatchObject({
+      sourcePythonModule: 'logic/integration/reasoning/logic_verification.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      runtimeDependencies: [],
+    });
+    expect(result).toMatchObject({
+      status: 'verified',
+      success: true,
+      checks: expect.arrayContaining(['cec_syntax', 'reasoning_theorem_formula']),
+    });
+    expect(summary).toMatchObject({
+      total: 2,
+      verified: 1,
+      invalid: 1,
+      unsupported: 0,
+      success: false,
+      failedClosed: true,
+      metadata: {
+        sourcePythonModule: 'logic/integration/reasoning/logic_verification.py',
+      },
+    });
+    expect(summary.results[1].issues).toEqual(
+      expect.arrayContaining([expect.objectContaining({ field: 'formula', severity: 'error' })]),
+    );
+    expect(
+      verify_reasoning_theorem('(forall x (implies (Resident x) (O (Comply x))))', [], {
+        format: 'cec',
+      }),
+    ).toMatchObject({ status: 'verified' });
+    expect(new ReasoningLogicVerification().metadata.sourcePythonModule).toBe(
+      'logic/integration/reasoning/logic_verification.py',
     );
   });
 });
