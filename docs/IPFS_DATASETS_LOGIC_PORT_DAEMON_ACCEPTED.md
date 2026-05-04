@@ -1001,3 +1001,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T074452Z-ported-the-remaining-batch_processing.py-export-surface-with-browser-native-batc.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T074452Z-ported-the-remaining-batch_processing.py-export-surface-with-browser-native-batc.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T074452Z-ported-the-remaining-batch_processing.py-export-surface-with-browser-native-batc.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 07:49:11 UTC
+
+- Target: `Task checkbox-301: Port remaining Python logic module `logic/cli.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported logic/cli.py as a browser-native TypeScript argv adapter.
+- Impact: The new src/lib/logic/cli.ts exposes health, convert, prove, and policy commands that call existing deterministic TypeScript logic APIs and fail closed for Python, server, filesystem, subprocess, RPC, and URL fallbacks. src/lib/logic/cli.test.ts validates local command behavior and runtime-denial semantics, while src/lib/logic/index.ts exports the adapter for the logic port validation suite.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cli.test.ts`, `src/lib/logic/cli.ts`, `src/lib/logic/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T074911Z-ported-logic-cli.py-as-a-browser-native-typescript-argv-adapter..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T074911Z-ported-logic-cli.py-as-a-browser-native-typescript-argv-adapter..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T074911Z-ported-logic-cli.py-as-a-browser-native-typescript-argv-adapter..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
