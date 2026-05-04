@@ -221,6 +221,126 @@ class SupervisorStaleStatusReplanningTest(unittest.TestCase):
         self.assertEqual("observe", decision.action)
         self.assertNotIn("durable LLM parse/runtime diagnostics", decision.reason)
 
+    def test_repeated_llm_diagnostics_do_not_stop_fresh_active_worker(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+            daemon_dir = repo / "ppd" / "daemon"
+            daemon_dir.mkdir(parents=True)
+            current = "Task checkbox-225: Add autonomous platform continuation coverage."
+            (daemon_dir / "task-board.md").write_text(
+                "- [~] Task checkbox-225: Add autonomous platform continuation coverage.\n"
+                "- [ ] Task checkbox-226: Add follow-up platform coverage.\n",
+                encoding="utf-8",
+            )
+            (daemon_dir / "ppd-daemon.pid").write_text(str(os.getpid()), encoding="utf-8")
+            now = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+            atomic_write_json(
+                daemon_dir / "status.json",
+                {
+                    "updated_at": now,
+                    "active_state": "calling_llm",
+                    "active_state_started_at": now,
+                    "active_target_task": current,
+                },
+            )
+            for _ in range(4):
+                append_jsonl(
+                    daemon_dir / "ppd-daemon.jsonl",
+                    {
+                        "stage": "before_validation",
+                        "diagnostic": {
+                            "failure_kind": "llm",
+                            "target_task": current,
+                            "errors": ["llm_router child exited with code -15:"],
+                        },
+                    },
+                )
+
+            decision = diagnose(SupervisorConfig(repo_root=repo))
+
+        self.assertEqual("observe", decision.action)
+        self.assertFalse(decision.should_restart_daemon)
+        self.assertIn("actively working", decision.reason)
+
+    def test_termination_storm_trips_circuit_breaker_before_blocked_cascade_growth(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+            daemon_dir = repo / "ppd" / "daemon"
+            daemon_dir.mkdir(parents=True)
+            (daemon_dir / "task-board.md").write_text(
+                "- [!] Task checkbox-430: Blocked repair task one.\n"
+                "- [!] Task checkbox-431: Blocked repair task two.\n",
+                encoding="utf-8",
+            )
+            targets = [
+                "Task checkbox-430: Blocked repair task one.",
+                "Task checkbox-431: Blocked repair task two.",
+                "Task checkbox-430: Blocked repair task one.",
+                "Task checkbox-431: Blocked repair task two.",
+            ]
+            for target in targets:
+                append_jsonl(
+                    daemon_dir / "ppd-daemon.jsonl",
+                    {
+                        "stage": "before_validation",
+                        "diagnostic": {
+                            "failure_kind": "llm",
+                            "target_task": target,
+                            "errors": ["llm_router child exited with code -15:"],
+                        },
+                    },
+                )
+
+            decision = diagnose(
+                SupervisorConfig(
+                    repo_root=repo,
+                    pid_file=Path("ppd/daemon/missing.pid"),
+                    termination_storm_threshold=4,
+                )
+            )
+
+        self.assertEqual("enter_termination_storm_circuit_breaker", decision.action)
+        self.assertFalse(decision.should_restart_daemon)
+        self.assertIn("termination storm", decision.reason)
+
+    def test_run_once_writes_circuit_breaker_without_validation_restart_or_board_growth(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+            daemon_dir = repo / "ppd" / "daemon"
+            daemon_dir.mkdir(parents=True)
+            board = "- [!] Task checkbox-430: Blocked repair task one.\n"
+            (daemon_dir / "task-board.md").write_text(board, encoding="utf-8")
+            for _ in range(4):
+                append_jsonl(
+                    daemon_dir / "ppd-daemon.jsonl",
+                    {
+                        "stage": "before_validation",
+                        "diagnostic": {
+                            "failure_kind": "llm",
+                            "target_task": "Task checkbox-430: Blocked repair task one.",
+                            "errors": ["143"],
+                        },
+                    },
+                )
+            config = SupervisorConfig(
+                repo_root=repo,
+                pid_file=Path("ppd/daemon/missing.pid"),
+                apply=True,
+                restart_daemon=False,
+                termination_storm_threshold=4,
+            )
+
+            decision = supervisor.run_once(config)
+            breaker = json.loads((daemon_dir / "supervisor-circuit-breaker.json").read_text(encoding="utf-8"))
+            status = json.loads((daemon_dir / "supervisor-status.json").read_text(encoding="utf-8"))
+            final_board = (daemon_dir / "task-board.md").read_text(encoding="utf-8")
+
+        self.assertEqual("enter_termination_storm_circuit_breaker", decision.action)
+        self.assertEqual("termination_storm_circuit_breaker", breaker["repairKind"])
+        self.assertEqual(board, final_board)
+        self.assertEqual("termination_storm", status["proposal"]["failure_kind"])
+        self.assertEqual([], status["proposal"]["validation_results"])
+
     def test_run_once_safely_records_supervisor_exception_without_raising(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:
             repo = Path(tempdir)

@@ -139,10 +139,13 @@ class SupervisorConfig:
     plan_doc: Path = Path("docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md")
     supervisor_status_file: Path = Path("ppd/daemon/supervisor-status.json")
     supervisor_log: Path = Path("ppd/daemon/supervisor-actions.jsonl")
+    circuit_breaker_file: Path = Path("ppd/daemon/supervisor-circuit-breaker.json")
     control_script: Path = Path("ppd/daemon/control.sh")
     stall_seconds: int = 900
     blocked_task_threshold: int = 1
     repeated_failure_threshold: int = 3
+    termination_storm_threshold: int = 8
+    termination_storm_backoff_seconds: int = 900
     active_state_timeout_seconds: int = 420
     max_prompt_chars: int = 50000
     max_repair_prompt_chars: int = 9000
@@ -307,6 +310,61 @@ def recent_parse_or_llm_failure_target(
         target = proposal_target
         count += 1
     return target if count >= minimum else ""
+
+
+TERMINATION_ERROR_MARKERS = (
+    "143",
+    "137",
+    "code -15",
+    "code -9",
+    "signal 15",
+    "signal 9",
+    "sigterm",
+    "sigkill",
+)
+
+
+def is_llm_termination_failure(proposal: dict[str, Any]) -> bool:
+    if str(proposal.get("failure_kind") or "") != "llm":
+        return False
+    text = " ".join(str(error).lower() for error in proposal.get("errors", []) or [])
+    return bool(text and any(marker in text for marker in TERMINATION_ERROR_MARKERS))
+
+
+def recent_llm_termination_storm_count(rows: list[dict[str, Any]]) -> tuple[int, int]:
+    """Return recent termination count and distinct targets since the last accepted green row."""
+
+    count = 0
+    targets: set[str] = set()
+    for proposal in reversed(rows):
+        if proposal.get("applied") and proposal.get("validation_passed") and not proposal.get("errors"):
+            break
+        if not is_llm_termination_failure(proposal):
+            if count:
+                break
+            continue
+        count += 1
+        target = str(proposal.get("target_task") or "")
+        if target:
+            targets.add(title_from_task_label(target))
+    return count, len(targets)
+
+
+def daemon_has_fresh_active_work(
+    *,
+    running: bool,
+    heartbeat_age: Optional[float],
+    active_state: str,
+    active_state_age: Optional[float],
+    config: SupervisorConfig,
+) -> bool:
+    if not running or heartbeat_age is None or heartbeat_age > config.stall_seconds:
+        return False
+    if active_state not in {"calling_llm", "applying_files", "heartbeat"}:
+        return False
+    if active_state in {"calling_llm", "applying_files"}:
+        return active_state_age is None or active_state_age <= config.active_state_timeout_seconds
+    return True
 
 
 def recent_failure_count_for_target(
@@ -1223,6 +1281,7 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
     heartbeat_age = age_seconds(status.get("updated_at"), now=now)
     active_state = str(status.get("active_state") or status.get("state") or "")
     active_state_age = age_seconds(status.get("active_state_started_at"), now=now)
+    termination_storm_count, termination_storm_targets = recent_llm_termination_storm_count(current_rows)
 
     if tasks and all(task.status == "complete" for task in tasks):
         return SupervisorDecision(
@@ -1255,17 +1314,6 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
             should_restart_daemon=True,
         )
 
-    if has_blocked_recovery_cascade(tasks):
-        return SupervisorDecision(
-            action="reconcile_blocked_cascade_and_restart",
-            reason=(
-                "all selectable PP&D tasks are blocked after repeated daemon recovery attempts; "
-                "append deterministic daemon-repair tasks before retrying blocked domain work"
-            ),
-            severity="warning",
-            should_restart_daemon=True,
-        )
-
     if is_private_session_preflight_false_positive(latest):
         return SupervisorDecision(
             action="repair_daemon_programming",
@@ -1275,6 +1323,45 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
             ),
             severity="warning",
             should_invoke_codex=True,
+            should_restart_daemon=True,
+        )
+
+    if daemon_has_fresh_active_work(
+        running=running,
+        heartbeat_age=heartbeat_age,
+        active_state=active_state,
+        active_state_age=active_state_age,
+        config=config,
+    ):
+        return SupervisorDecision(
+            action="observe",
+            reason=(
+                f"daemon is actively working in {active_state}; defer historical repair decisions "
+                "until the worker exits, stalls, or records a fresh result"
+            ),
+            severity="info",
+        )
+
+    if termination_storm_count >= config.termination_storm_threshold:
+        return SupervisorDecision(
+            action="enter_termination_storm_circuit_breaker",
+            reason=(
+                f"{termination_storm_count} recent llm_router termination diagnostics across "
+                f"{termination_storm_targets} target(s) indicate a systemic termination storm; "
+                "pause worker restarts and task-board growth until daemon/supervisor resource policy is hardened"
+            ),
+            severity="critical",
+            should_restart_daemon=False,
+        )
+
+    if has_blocked_recovery_cascade(tasks):
+        return SupervisorDecision(
+            action="reconcile_blocked_cascade_and_restart",
+            reason=(
+                "all selectable PP&D tasks are blocked after repeated daemon recovery attempts; "
+                "append deterministic daemon-repair tasks before retrying blocked domain work"
+            ),
+            severity="warning",
             should_restart_daemon=True,
         )
 
@@ -1808,6 +1895,37 @@ def invoke_blocked_cascade_repair(config: SupervisorConfig, decision: Supervisor
     return proposal
 
 
+def invoke_termination_storm_circuit_breaker(config: SupervisorConfig, decision: SupervisorDecision) -> Proposal:
+    payload = {
+        "schemaVersion": 1,
+        "createdAt": utc_now(),
+        "repairKind": "termination_storm_circuit_breaker",
+        "decision": {
+            "action": decision.action,
+            "reason": decision.reason,
+            "severity": decision.severity,
+        },
+        "operatorAction": (
+            "The supervisor paused daemon restarts because repeated llm_router terminations "
+            "were systemic. Harden resource limits or deterministic task handling before resuming."
+        ),
+    }
+    if config.apply:
+        atomic_write_json(config.resolve(config.circuit_breaker_file), payload)
+    proposal = Proposal(
+        summary="Pause daemon restarts after systemic llm_router termination storm.",
+        impact=(
+            "The supervisor wrote a circuit-breaker diagnostic and avoided appending more tasks, "
+            "running full validation, or restarting the worker into another termination loop."
+        ),
+        failure_kind="termination_storm",
+        applied=config.apply,
+        dry_run=not config.apply,
+    )
+    proposal.target_task = f"Supervisor circuit breaker: {decision.reason}"
+    return proposal
+
+
 def invoke_codex_repair(config: SupervisorConfig, decision: SupervisorDecision) -> Proposal:
     if config.apply:
         run_control(config, "stop")
@@ -1911,7 +2029,11 @@ def run_once(config: SupervisorConfig) -> SupervisorDecision:
     cleanup_stale_validation_worktrees(supervisor_daemon_config(config))
     decision = diagnose(config)
     proposal: Optional[Proposal] = None
-    if decision.action == "reconcile_repeated_llm_loop_and_restart" and config.apply:
+    if decision.action == "enter_termination_storm_circuit_breaker" and config.apply:
+        if config.restart_daemon:
+            run_control(config, "stop")
+        proposal = invoke_termination_storm_circuit_breaker(config, decision)
+    elif decision.action == "reconcile_repeated_llm_loop_and_restart" and config.apply:
         if config.restart_daemon:
             run_control(config, "stop")
         proposal = invoke_builtin_repair(
@@ -2283,6 +2405,8 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     parser.add_argument("--self-heal", action="store_true", help="Invoke Codex for daemon/supervisor programming repairs")
     parser.add_argument("--restart-daemon", action="store_true", help="Start/restart the worker daemon when appropriate")
     parser.add_argument("--llm-timeout", type=int, default=300, help="Seconds to allow for one Codex repair proposal")
+    parser.add_argument("--termination-storm-threshold", type=int, default=8, help="Recent llm_router terminations before pausing worker restarts")
+    parser.add_argument("--termination-storm-backoff", type=int, default=900, help="Supervisor sleep seconds while termination circuit breaker is active")
     parser.add_argument("--model", default="gpt-5.5", help="llm_router model")
     parser.add_argument("--provider", default=None, help="llm_router provider (default: auto-select with fallback)")
     parser.add_argument("--exception-backoff", type=float, default=5.0, help="Seconds to pause after a contained supervisor exception")
@@ -2299,6 +2423,8 @@ def main(argv: Optional[list[str]] = None) -> int:
         repo_root=repo_root,
         stall_seconds=max(1, int(args.stall_seconds)),
         llm_timeout_seconds=max(1, int(args.llm_timeout)),
+        termination_storm_threshold=max(1, int(args.termination_storm_threshold)),
+        termination_storm_backoff_seconds=max(1, int(args.termination_storm_backoff)),
         model_name=str(args.model),
         provider=args.provider,
         apply=bool(args.apply),
@@ -2312,6 +2438,8 @@ def main(argv: Optional[list[str]] = None) -> int:
             sleep_seconds = (
                 config.exception_backoff_seconds
                 if decision.action == "supervisor_exception"
+                else float(config.termination_storm_backoff_seconds)
+                if decision.action == "enter_termination_storm_circuit_breaker"
                 else float(args.interval)
             )
             time.sleep(max(1.0, sleep_seconds))
