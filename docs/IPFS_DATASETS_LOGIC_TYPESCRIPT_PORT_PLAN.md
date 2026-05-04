@@ -855,7 +855,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/integration/bridges/tdfol_cec_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/bridges/tdfol_grammar_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/bridges/tdfol_shadowprover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/integration/caching/ipfs_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/integration/caching/ipfs_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/caching/ipld_logic_storage.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/caching/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/cec_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 11:08:02 UTC
+Last updated: 2026-05-04 11:11:44 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-345: Port remaining Python logic module 'logic/integration/caching/ipfs_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-346: Port remaining Python logic module 'logic/integration/caching/ipld_logic_storage.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1319,8 +1319,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-341: Port remaining Python logic module 'logic/integration/bridges/symbolic_fol_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-342: Port remaining Python logic module 'logic/integration/bridges/tdfol_cec_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-343: Port remaining Python logic module 'logic/integration/bridges/tdfol_grammar_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-344: Port remaining Python logic module 'logic/integration/bridges/tdfol_shadowprover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-345: Port remaining Python logic module 'logic/integration/caching/ipfs_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-344: Port remaining Python logic module 'logic/integration/bridges/tdfol_shadowprover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-345: Port remaining Python logic module 'logic/integration/caching/ipfs_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-346: Port remaining Python logic module 'logic/integration/caching/ipld_logic_storage.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-347: Port remaining Python logic module 'logic/integration/caching/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-348: Port remaining Python logic module 'logic/integration/cec_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-344: Port remaining Python logic module 'logic/integration/bridges/tdfol_shadowprover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-345: Port remaining Python logic module 'logic/integration/caching/ipfs_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported tdfol_shadowprover_bridge.py as a browser-native TypeScript integration adapter over the local CEC ShadowProver.
-- Impact: The new integration bridge converts TDFOL formulas to CEC ShadowProver formulas, proves them through the existing local browser-native ShadowProver, maps proof status back to the shared ProofResult contract, and fails closed for unsupported logic without Python, server, RPC, subprocess, or filesystem fallback. The integration Jest suite now validates successful conversion/proof metadata and unsupported-logic fail-closed behavior.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/tdfolShadowProverBridge.ts`
+- Summary: Ported integration IPFS proof cache parity to browser-native TypeScript with deterministic CIDs, local cache reads, injected browser IPFS transport support, fail-closed adapter behavior, and CID verification.
+- Impact: src/lib/logic/proofCache.ts now exports the IPFS proof cache metadata, types, and runtime class used directly by browser logic code; src/lib/logic/proofCache.test.ts validates the parity contract, deterministic content addressing, cache-first reads, fail-closed missing-adapter behavior, and tamper detection; the port ledger marks checkbox-345 complete.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/proofCache.test.ts`, `src/lib/logic/proofCache.ts`
 
 ### Blocked Backlog
 

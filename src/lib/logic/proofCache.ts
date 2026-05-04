@@ -74,6 +74,45 @@ export interface ExternalProverProofCacheOptions extends ProofCacheOptions {
   ) => boolean;
 }
 
+export interface IpfsProofCacheQuery {
+  formula: unknown;
+  axioms?: Array<unknown>;
+  proverName?: string;
+  proverConfig?: Record<string, unknown>;
+}
+
+export interface IpfsProofCacheEntry<Result = unknown> {
+  cid: string;
+  result: Result;
+  query: {
+    formula: string;
+    axioms: Array<string>;
+    proverName: string;
+    proverConfig: Record<string, unknown>;
+  };
+  canonicalJson: string;
+  storedAt: number;
+  sourcePythonModule: 'logic/integration/caching/ipfs_proof_cache.py';
+}
+
+export interface BrowserNativeIpfsProofTransport<Result = unknown> {
+  readonly mode: 'browser-native-ipfs';
+  addProof(entry: IpfsProofCacheEntry<Result>): Promise<string>;
+  getProof(cid: string): Promise<IpfsProofCacheEntry<Result> | undefined>;
+}
+
+export interface IpfsProofCacheResult<Result = unknown> {
+  ok: boolean;
+  cid: string;
+  source: 'browser-cache' | 'browser-native-ipfs' | 'unavailable-ipfs-adapter';
+  entry?: IpfsProofCacheEntry<Result>;
+  error?: string;
+}
+
+export interface IpfsProofCacheOptions<Result = unknown> extends ProofCacheOptions {
+  transport?: BrowserNativeIpfsProofTransport<Result>;
+}
+
 export const COMMON_PROOF_CACHE_METADATA = {
   sourcePythonModule: 'logic/common/proof_cache.py',
   browserNative: true,
@@ -101,6 +140,24 @@ export const EXTERNAL_PROVER_PROOF_CACHE_METADATA = {
     'fail_closed_replay_validation',
     'ttl_lru_statistics',
     'local_snapshot_introspection',
+  ] as Array<string>,
+} as const;
+
+export const IPFS_PROOF_CACHE_METADATA = {
+  sourcePythonModule: 'logic/integration/caching/ipfs_proof_cache.py',
+  browserNative: true,
+  runtimeDependencies: [] as Array<string>,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  parity: [
+    'deterministic_content_addressed_entries',
+    'order_insensitive_axiom_keys',
+    'prover_config_sensitive_lookup',
+    'browser_cache_first_reads',
+    'injected_browser_ipfs_transport',
+    'fail_closed_unavailable_adapter',
+    'cid_verification_on_remote_reads',
+    'ttl_lru_statistics',
   ] as Array<string>,
 } as const;
 
@@ -305,6 +362,92 @@ export class ExternalProverProofCache {
   }
 }
 
+export class IpfsProofCache<Result = unknown> {
+  private readonly cache: ProofCache<IpfsProofCacheEntry<Result>>;
+  private readonly now: () => number;
+  private readonly transport?: BrowserNativeIpfsProofTransport<Result>;
+
+  constructor(options: IpfsProofCacheOptions<Result> = {}) {
+    this.now = options.now ?? (() => Date.now());
+    this.transport = options.transport;
+    this.cache = new ProofCache<IpfsProofCacheEntry<Result>>({ ...options, now: this.now });
+  }
+
+  computeCid(query: IpfsProofCacheQuery, result?: Result): string {
+    return cidForObject({ query: normalizeIpfsProofQuery(query), result });
+  }
+
+  async set(query: IpfsProofCacheQuery, result: Result): Promise<IpfsProofCacheResult<Result>> {
+    const normalized = normalizeIpfsProofQuery(query);
+    const canonicalJson = stableStringify({ query: normalized, result });
+    const cid = cidForObject({ query: normalized, result });
+    const entry: IpfsProofCacheEntry<Result> = {
+      cid,
+      result,
+      query: normalized,
+      canonicalJson,
+      storedAt: this.now(),
+      sourcePythonModule: IPFS_PROOF_CACHE_METADATA.sourcePythonModule,
+    };
+    this.cache.set(cid, entry);
+    if (!this.transport) {
+      return { ok: true, cid, source: 'browser-cache', entry };
+    }
+    try {
+      const remoteCid = await this.transport.addProof(entry);
+      if (remoteCid === cid) {
+        return { ok: true, cid, source: 'browser-native-ipfs', entry };
+      }
+      return {
+        ok: false,
+        cid,
+        source: 'browser-native-ipfs',
+        entry,
+        error: `Injected IPFS transport returned ${remoteCid}`,
+      };
+    } catch (error) {
+      return { ok: false, cid, source: 'browser-native-ipfs', entry, error: String(error) };
+    }
+  }
+
+  async get(cid: string): Promise<IpfsProofCacheResult<Result>> {
+    const cached = this.cache.get(cid);
+    if (cached) {
+      return { ok: true, cid, source: 'browser-cache', entry: cached };
+    }
+    if (!this.transport) {
+      return {
+        ok: false,
+        cid,
+        source: 'unavailable-ipfs-adapter',
+        error: 'No browser-native IPFS proof cache transport was injected.',
+      };
+    }
+    const entry = await this.transport.getProof(cid);
+    if (!entry) {
+      return { ok: false, cid, source: 'browser-native-ipfs', error: 'Proof CID was not found.' };
+    }
+    if (!verifyIpfsProofEntry(entry, cid)) {
+      return {
+        ok: false,
+        cid,
+        source: 'browser-native-ipfs',
+        error: 'Proof CID verification failed.',
+      };
+    }
+    this.cache.set(cid, entry);
+    return { ok: true, cid, source: 'browser-native-ipfs', entry };
+  }
+
+  snapshot(): Array<ProofCacheSnapshotEntry<IpfsProofCacheEntry<Result>>> {
+    return this.cache.snapshot();
+  }
+
+  getStats(): ProofCacheStats & { transportAvailable: boolean } {
+    return { ...this.cache.getStats(), transportAvailable: this.transport !== undefined };
+  }
+}
+
 let globalProofCache: ProofCache | undefined;
 
 export function getGlobalProofCache(): ProofCache {
@@ -352,6 +495,26 @@ function externalProverConfig(query: ExternalProverProofCacheQuery): Record<stri
     options: query.options ?? {},
     version: query.prover.version,
   };
+}
+
+function normalizeIpfsProofQuery(
+  query: IpfsProofCacheQuery,
+): IpfsProofCacheEntry<unknown>['query'] {
+  return {
+    formula: String(query.formula),
+    axioms: normalizeAxiomStrings(query.axioms),
+    proverName: query.proverName ?? 'unknown',
+    proverConfig: query.proverConfig ?? {},
+  };
+}
+
+function verifyIpfsProofEntry(entry: IpfsProofCacheEntry<unknown>, expectedCid: string): boolean {
+  return (
+    entry.cid === expectedCid &&
+    entry.sourcePythonModule === IPFS_PROOF_CACHE_METADATA.sourcePythonModule &&
+    entry.canonicalJson === stableStringify({ query: entry.query, result: entry.result }) &&
+    cidForObject({ query: entry.query, result: entry.result }) === expectedCid
+  );
 }
 
 function hashString(value: string): string {

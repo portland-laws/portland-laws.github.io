@@ -1388,3 +1388,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T110803Z-ported-tdfol_shadowprover_bridge.py-as-a-browser-native-typescript-integration-a.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T110803Z-ported-tdfol_shadowprover_bridge.py-as-a-browser-native-typescript-integration-a.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T110803Z-ported-tdfol_shadowprover_bridge.py-as-a-browser-native-typescript-integration-a.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 11:11:44 UTC
+
+- Target: `Task checkbox-345: Port remaining Python logic module `logic/integration/caching/ipfs_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported integration IPFS proof cache parity to browser-native TypeScript with deterministic CIDs, local cache reads, injected browser IPFS transport support, fail-closed adapter behavior, and CID verification.
+- Impact: src/lib/logic/proofCache.ts now exports the IPFS proof cache metadata, types, and runtime class used directly by browser logic code; src/lib/logic/proofCache.test.ts validates the parity contract, deterministic content addressing, cache-first reads, fail-closed missing-adapter behavior, and tamper detection; the port ledger marks checkbox-345 complete.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/proofCache.test.ts`, `src/lib/logic/proofCache.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T111144Z-ported-integration-ipfs-proof-cache-parity-to-browser-native-typescript-with-det.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T111144Z-ported-integration-ipfs-proof-cache-parity-to-browser-native-typescript-with-det.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T111144Z-ported-integration-ipfs-proof-cache-parity-to-browser-native-typescript-with-det.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

@@ -1,6 +1,10 @@
 import {
   COMMON_PROOF_CACHE_METADATA,
   EXTERNAL_PROVER_PROOF_CACHE_METADATA,
+  IPFS_PROOF_CACHE_METADATA,
+  IpfsProofCache,
+  type BrowserNativeIpfsProofTransport,
+  type IpfsProofCacheEntry,
   ExternalProverProofCache,
   ProofCache,
   cidForObject,
@@ -170,5 +174,86 @@ describe('ProofCache', () => {
       /^browsets-/,
     );
     expect(cache.get(query)).toMatchObject({ replayValidated: true });
+  });
+
+  it('declares the browser-native integration ipfs_proof_cache.py parity contract', () => {
+    expect(IPFS_PROOF_CACHE_METADATA).toMatchObject({
+      sourcePythonModule: 'logic/integration/caching/ipfs_proof_cache.py',
+      browserNative: true,
+      runtimeDependencies: [],
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+    });
+    expect(IPFS_PROOF_CACHE_METADATA.parity).toEqual(
+      expect.arrayContaining([
+        'deterministic_content_addressed_entries',
+        'injected_browser_ipfs_transport',
+        'fail_closed_unavailable_adapter',
+        'cid_verification_on_remote_reads',
+      ]),
+    );
+  });
+
+  it('stores IPFS proof cache entries with deterministic content addressing and local reads', async () => {
+    const cache = new IpfsProofCache<{ status: string }>({ now: () => 25 });
+    const query = {
+      formula: 'Q',
+      axioms: ['B', 'A'],
+      proverName: 'tdfol',
+      proverConfig: { depth: 3 },
+    };
+
+    const stored = await cache.set(query, { status: 'proved' });
+    const sameCid = cache.computeCid({ ...query, axioms: ['A', 'B'] }, { status: 'proved' });
+
+    expect(stored).toMatchObject({ ok: true, cid: sameCid, source: 'browser-cache' });
+    expect(stored.entry).toMatchObject({
+      cid: sameCid,
+      query: { formula: 'Q', axioms: ['A', 'B'], proverName: 'tdfol' },
+      storedAt: 25,
+      sourcePythonModule: 'logic/integration/caching/ipfs_proof_cache.py',
+    });
+    await expect(cache.get(stored.cid)).resolves.toMatchObject({
+      ok: true,
+      source: 'browser-cache',
+      entry: { result: { status: 'proved' } },
+    });
+    expect(cache.getStats()).toMatchObject({ hits: 1, sets: 1, transportAvailable: false });
+  });
+
+  it('fails closed without an adapter and verifies injected IPFS transport CIDs', async () => {
+    const remote = new Map<string, IpfsProofCacheEntry<{ status: string }>>();
+    const transport: BrowserNativeIpfsProofTransport<{ status: string }> = {
+      mode: 'browser-native-ipfs',
+      async addProof(entry) {
+        remote.set(entry.cid, entry);
+        return entry.cid;
+      },
+      async getProof(cid) {
+        return remote.get(cid);
+      },
+    };
+    const writer = new IpfsProofCache<{ status: string }>({ transport });
+    const stored = await writer.set({ formula: 'P', proverName: 'cec' }, { status: 'proved' });
+    const reader = new IpfsProofCache<{ status: string }>({ transport });
+
+    await expect(reader.get(stored.cid)).resolves.toMatchObject({
+      ok: true,
+      source: 'browser-native-ipfs',
+      entry: { result: { status: 'proved' } },
+    });
+
+    const offline = new IpfsProofCache<{ status: string }>();
+    await expect(offline.get(stored.cid)).resolves.toMatchObject({
+      ok: false,
+      source: 'unavailable-ipfs-adapter',
+    });
+
+    remote.set(stored.cid, { ...remote.get(stored.cid)!, canonicalJson: '{"tampered":true}' });
+    const verifier = new IpfsProofCache<{ status: string }>({ transport });
+    await expect(verifier.get(stored.cid)).resolves.toMatchObject({
+      ok: false,
+      error: 'Proof CID verification failed.',
+    });
   });
 });
