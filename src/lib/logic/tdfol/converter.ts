@@ -115,7 +115,10 @@ function tdfolToJson(formula: TdfolFormula): Record<string, unknown> {
   };
 }
 
-function analyzeTdfolConversion(formula: TdfolFormula, target: TdfolConversionTarget): TdfolConversionMetadata {
+function analyzeTdfolConversion(
+  formula: TdfolFormula,
+  target: TdfolConversionTarget,
+): TdfolConversionMetadata {
   let quantifierCount = 0;
   let predicateCount = 0;
   let operatorCount = 0;
@@ -161,7 +164,8 @@ function visitFormula(formula: TdfolFormula, visitor: (formula: TdfolFormula) =>
 
 function tdfolTermToTptp(term: TdfolTerm): string {
   if (term.kind === 'variable') return toTptpVariable(term.name);
-  if (term.kind === 'function') return `${toTptpSymbol(term.name)}(${term.args.map(tdfolTermToTptp).join(',')})`;
+  if (term.kind === 'function')
+    return `${toTptpSymbol(term.name)}(${term.args.map(tdfolTermToTptp).join(',')})`;
   return toTptpSymbol(formatTdfolTerm(term));
 }
 
@@ -172,6 +176,7 @@ function binarySymbol(operator: TdfolBinaryFormula['operator']): string {
     IMPLIES: '→',
     IFF: '↔',
     XOR: '⊕',
+    UNTIL: 'U',
   }[operator];
 }
 
@@ -182,6 +187,7 @@ function tptpBinarySymbol(operator: TdfolBinaryFormula['operator']): string {
     IMPLIES: '=>',
     IFF: '<=>',
     XOR: '<~>',
+    UNTIL: 'U',
   }[operator];
 }
 

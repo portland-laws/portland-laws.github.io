@@ -49,9 +49,17 @@ class TdfolParser {
   }
 
   private parseOr(): TdfolFormula {
-    let left = this.parseAnd();
+    let left = this.parseUntil();
     while (this.match('OR')) {
-      left = this.binary('OR', left, this.parseAnd());
+      left = this.binary('OR', left, this.parseUntil());
+    }
+    return left;
+  }
+
+  private parseUntil(): TdfolFormula {
+    let left = this.parseAnd();
+    while (this.match('UNTIL')) {
+      left = this.binary('UNTIL', left, this.parseAnd());
     }
     return left;
   }
@@ -203,7 +211,11 @@ class TdfolParser {
     return { kind: 'constant', name, sort };
   }
 
-  private binary(operator: TdfolBinaryOperator, left: TdfolFormula, right: TdfolFormula): TdfolBinaryFormula {
+  private binary(
+    operator: TdfolBinaryOperator,
+    left: TdfolFormula,
+    right: TdfolFormula,
+  ): TdfolBinaryFormula {
     return { kind: 'binary', operator, left, right };
   }
 

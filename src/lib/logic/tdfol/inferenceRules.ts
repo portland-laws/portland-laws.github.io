@@ -1,5 +1,11 @@
 import { getFreeVariables, substituteFormula } from './ast';
-import type { TdfolBinaryFormula, TdfolFormula, TdfolTerm } from './ast';
+import type {
+  TdfolBinaryFormula,
+  TdfolDeonticOperator,
+  TdfolFormula,
+  TdfolTemporalOperator,
+  TdfolTerm,
+} from './ast';
 import { formatTdfolFormula } from './formatter';
 
 export type TdfolRuleArity = number | 'any';
@@ -50,6 +56,7 @@ type RuleSpec = {
 const DEONTIC_RULE_SOURCE = 'logic/TDFOL/inference_rules/deontic.py';
 const FIRST_ORDER_RULE_SOURCE = 'logic/TDFOL/inference_rules/first_order.py';
 const PROPOSITIONAL_RULE_SOURCE = 'logic/TDFOL/inference_rules/propositional.py';
+const TEMPORAL_DEONTIC_RULE_SOURCE = 'logic/TDFOL/inference_rules/temporal_deontic.py';
 
 export class TdfolRule implements TdfolInferenceRule {
   readonly name: string;
@@ -339,6 +346,182 @@ export const EventuallyIntroductionRule = new TdfolRule({
   apply: (formula) => ({ kind: 'temporal', operator: 'EVENTUALLY', formula }),
 });
 
+const temporalDeonticRule = (
+  name: string,
+  description: string,
+  canApply: (formula: TdfolFormula) => boolean,
+  apply: (formula: TdfolFormula) => TdfolFormula,
+): TdfolRule =>
+  new TdfolRule({
+    name,
+    description,
+    arity: 1,
+    category: 'temporal_deontic',
+    sourcePythonModule: TEMPORAL_DEONTIC_RULE_SOURCE,
+    canApply,
+    apply,
+  });
+
+const hasDeonticTemporal = (
+  formula: TdfolFormula,
+  deontic: TdfolDeonticOperator,
+  temporal: TdfolTemporalOperator,
+): boolean =>
+  formula.kind === 'deontic' &&
+  formula.operator === deontic &&
+  formula.formula.kind === 'temporal' &&
+  formula.formula.operator === temporal;
+
+const deonticTemporalInner = (formula: TdfolFormula, message: string): TdfolFormula => {
+  if (formula.kind !== 'deontic' || formula.formula.kind !== 'temporal') {
+    throw new Error(message);
+  }
+  return formula.formula.formula;
+};
+
+export const TemporalObligationPersistenceRule = temporalDeonticRule(
+  'TemporalObligationPersistence',
+  'From O(always phi), infer always O(phi)',
+  (formula) => hasDeonticTemporal(formula, 'OBLIGATION', 'ALWAYS'),
+  (formula) => ({
+    kind: 'temporal',
+    operator: 'ALWAYS',
+    formula: {
+      kind: 'deontic',
+      operator: 'OBLIGATION',
+      formula: deonticTemporalInner(formula, 'Invalid temporal obligation premise'),
+    },
+  }),
+);
+
+export const DeonticTemporalIntroductionRule = temporalDeonticRule(
+  'DeonticTemporalIntroduction',
+  'From O(phi), infer O(next phi)',
+  (formula) => formula.kind === 'deontic' && formula.operator === 'OBLIGATION',
+  (formula) => {
+    if (formula.kind !== 'deontic') throw new Error('Invalid obligation premise');
+    return {
+      kind: 'deontic',
+      operator: 'OBLIGATION',
+      formula: { kind: 'temporal', operator: 'NEXT', formula: formula.formula },
+    };
+  },
+);
+
+export const UntilObligationRule = temporalDeonticRule(
+  'UntilObligation',
+  'From O(phi until psi), infer eventually O(psi)',
+  (formula) =>
+    formula.kind === 'deontic' &&
+    formula.operator === 'OBLIGATION' &&
+    formula.formula.kind === 'binary' &&
+    formula.formula.operator === 'UNTIL',
+  (formula) => {
+    if (formula.kind !== 'deontic' || formula.formula.kind !== 'binary') {
+      throw new Error('Invalid until obligation premise');
+    }
+    return {
+      kind: 'temporal',
+      operator: 'EVENTUALLY',
+      formula: { kind: 'deontic', operator: 'OBLIGATION', formula: formula.formula.right },
+    };
+  },
+);
+
+export const AlwaysPermissionRule = temporalDeonticRule(
+  'AlwaysPermission',
+  'From P(always phi), infer always P(phi)',
+  (formula) => hasDeonticTemporal(formula, 'PERMISSION', 'ALWAYS'),
+  (formula) => ({
+    kind: 'temporal',
+    operator: 'ALWAYS',
+    formula: {
+      kind: 'deontic',
+      operator: 'PERMISSION',
+      formula: deonticTemporalInner(formula, 'Invalid temporal permission premise'),
+    },
+  }),
+);
+
+export const EventuallyForbiddenRule = temporalDeonticRule(
+  'EventuallyForbidden',
+  'From F(eventually phi), infer always F(phi)',
+  (formula) => hasDeonticTemporal(formula, 'PROHIBITION', 'EVENTUALLY'),
+  (formula) => ({
+    kind: 'temporal',
+    operator: 'ALWAYS',
+    formula: {
+      kind: 'deontic',
+      operator: 'PROHIBITION',
+      formula: deonticTemporalInner(formula, 'Invalid eventual prohibition premise'),
+    },
+  }),
+);
+
+export const ObligationEventuallyRule = temporalDeonticRule(
+  'ObligationEventually',
+  'From O(eventually phi), infer eventually O(phi)',
+  (formula) => hasDeonticTemporal(formula, 'OBLIGATION', 'EVENTUALLY'),
+  (formula) => ({
+    kind: 'temporal',
+    operator: 'EVENTUALLY',
+    formula: {
+      kind: 'deontic',
+      operator: 'OBLIGATION',
+      formula: deonticTemporalInner(formula, 'Invalid eventual obligation premise'),
+    },
+  }),
+);
+
+export const PermissionTemporalWeakeningRule = temporalDeonticRule(
+  'PermissionTemporalWeakening',
+  'From P(phi), infer P(eventually phi)',
+  (formula) => formula.kind === 'deontic' && formula.operator === 'PERMISSION',
+  (formula) => {
+    if (formula.kind !== 'deontic') throw new Error('Invalid permission premise');
+    return {
+      kind: 'deontic',
+      operator: 'PERMISSION',
+      formula: { kind: 'temporal', operator: 'EVENTUALLY', formula: formula.formula },
+    };
+  },
+);
+
+export const AlwaysObligationDistributionRule = temporalDeonticRule(
+  'AlwaysObligationDistribution',
+  'From always O(phi), infer O(always phi)',
+  (formula) =>
+    formula.kind === 'temporal' &&
+    formula.operator === 'ALWAYS' &&
+    formula.formula.kind === 'deontic' &&
+    formula.formula.operator === 'OBLIGATION',
+  (formula) => {
+    if (formula.kind !== 'temporal' || formula.formula.kind !== 'deontic') {
+      throw new Error('Invalid always obligation premise');
+    }
+    return {
+      kind: 'deontic',
+      operator: 'OBLIGATION',
+      formula: { kind: 'temporal', operator: 'ALWAYS', formula: formula.formula.formula },
+    };
+  },
+);
+
+export const FutureObligationPersistenceRule = temporalDeonticRule(
+  'FutureObligationPersistence',
+  'From O(next phi), infer next O(phi)',
+  (formula) => hasDeonticTemporal(formula, 'OBLIGATION', 'NEXT'),
+  (formula) => ({
+    kind: 'temporal',
+    operator: 'NEXT',
+    formula: {
+      kind: 'deontic',
+      operator: 'OBLIGATION',
+      formula: deonticTemporalInner(formula, 'Invalid future obligation premise'),
+    },
+  }),
+);
+
 export const DeonticKAxiomRule = new TdfolRule({
   name: 'DeonticKAxiom',
   description: 'From O(phi -> psi) and O(phi), infer O(psi)',
@@ -621,6 +804,15 @@ export function getAllTdfolRules(): TdfolInferenceRule[] {
     TemporalKAxiomRule,
     TemporalTAxiomRule,
     EventuallyIntroductionRule,
+    TemporalObligationPersistenceRule,
+    DeonticTemporalIntroductionRule,
+    UntilObligationRule,
+    AlwaysPermissionRule,
+    EventuallyForbiddenRule,
+    ObligationEventuallyRule,
+    PermissionTemporalWeakeningRule,
+    AlwaysObligationDistributionRule,
+    FutureObligationPersistenceRule,
     DeonticKAxiomRule,
     DeonticDAxiomRule,
     ProhibitionEquivalenceRule,

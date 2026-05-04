@@ -1,10 +1,16 @@
 import type { ProofResult, ProofStatus, ProofStep } from '../types';
 import { analyzeCecExpression } from '../cec/analyzer';
-import type { CecExpression } from '../cec/ast';
+import type { CecBinaryOperator, CecExpression } from '../cec/ast';
 import { formatCecExpression } from '../cec/formatter';
 import type { TdfolBinaryFormula, TdfolFormula, TdfolTerm } from './ast';
 import { formatTdfolFormula } from './formatter';
-import { applyTdfolRules, formulaEquals, formulaKey, getAllTdfolRules, type TdfolInferenceRule } from './inferenceRules';
+import {
+  applyTdfolRules,
+  formulaEquals,
+  formulaKey,
+  getAllTdfolRules,
+  type TdfolInferenceRule,
+} from './inferenceRules';
 import { TdfolModalTableaux, type TdfolModalTableauxOptions } from './modalTableaux';
 import type { TdfolModalLogicType } from './countermodels';
 import type { TdfolKnowledgeBase } from './prover';
@@ -71,7 +77,11 @@ export class TdfolForwardChainingStrategy implements TdfolProverStrategy {
     return true;
   }
 
-  prove(formula: TdfolFormula, kb: TdfolKnowledgeBase, timeoutMs = this.defaultTimeoutMs): ProofResult {
+  prove(
+    formula: TdfolFormula,
+    kb: TdfolKnowledgeBase,
+    timeoutMs = this.defaultTimeoutMs,
+  ): ProofResult {
     const start = nowMs();
     const deadline = start + Math.min(timeoutMs, this.defaultTimeoutMs);
     const derived = [...kb.axioms, ...(kb.theorems ?? [])];
@@ -85,12 +95,24 @@ export class TdfolForwardChainingStrategy implements TdfolProverStrategy {
 
     for (let iteration = 0; iteration < this.maxIterations; iteration += 1) {
       if (nowMs() > deadline) {
-        return this.finish('timeout', formula, steps, start, `Timeout after ${iteration} iterations`);
+        return this.finish(
+          'timeout',
+          formula,
+          steps,
+          start,
+          `Timeout after ${iteration} iterations`,
+        );
       }
 
       const newApplications = this.applyRulesBounded(derived, derivedKeys, deadline);
       if (newApplications.length === 0) {
-        return this.finish('unknown', formula, steps, start, `Forward chaining exhausted after ${iteration} iterations`);
+        return this.finish(
+          'unknown',
+          formula,
+          steps,
+          start,
+          `Forward chaining exhausted after ${iteration} iterations`,
+        );
       }
 
       for (const application of newApplications) {
@@ -109,13 +131,25 @@ export class TdfolForwardChainingStrategy implements TdfolProverStrategy {
         });
 
         if (formulaEquals(application.conclusion, formula)) {
-          return this.finish('proved', formula, steps, start, `Proved in ${iteration + 1} iterations`);
+          return this.finish(
+            'proved',
+            formula,
+            steps,
+            start,
+            `Proved in ${iteration + 1} iterations`,
+          );
         }
         if (derived.length >= this.maxDerivedFormulas) {
           return this.finish('timeout', formula, steps, start, 'Derived formula budget exceeded');
         }
         if (nowMs() > deadline) {
-          return this.finish('timeout', formula, steps, start, `Timeout after ${iteration + 1} iterations`);
+          return this.finish(
+            'timeout',
+            formula,
+            steps,
+            start,
+            `Timeout after ${iteration + 1} iterations`,
+          );
         }
       }
     }
@@ -142,7 +176,11 @@ export class TdfolForwardChainingStrategy implements TdfolProverStrategy {
     deadline: number,
   ): Array<{ rule: string; premises: TdfolFormula[]; conclusion: TdfolFormula }> {
     const applications = applyTdfolRules(derived.slice(0, this.binaryPremiseWindow), this.rules);
-    const newApplications: Array<{ rule: string; premises: TdfolFormula[]; conclusion: TdfolFormula }> = [];
+    const newApplications: Array<{
+      rule: string;
+      premises: TdfolFormula[];
+      conclusion: TdfolFormula;
+    }> = [];
     const localKeys = new Set(knownKeys);
 
     for (const application of applications) {
@@ -160,7 +198,13 @@ export class TdfolForwardChainingStrategy implements TdfolProverStrategy {
     return newApplications;
   }
 
-  private finish(status: ProofStatus, theorem: TdfolFormula, steps: ProofStep[], start: number, error?: string): ProofResult {
+  private finish(
+    status: ProofStatus,
+    theorem: TdfolFormula,
+    steps: ProofStep[],
+    start: number,
+    error?: string,
+  ): ProofResult {
     return {
       status,
       theorem: formatTdfolFormula(theorem),
@@ -197,7 +241,11 @@ export class TdfolBackwardChainingStrategy implements TdfolProverStrategy {
     return getImplications(kb).some((implication) => formulaEquals(implication.right, formula));
   }
 
-  prove(formula: TdfolFormula, kb: TdfolKnowledgeBase, timeoutMs = this.defaultTimeoutMs): ProofResult {
+  prove(
+    formula: TdfolFormula,
+    kb: TdfolKnowledgeBase,
+    timeoutMs = this.defaultTimeoutMs,
+  ): ProofResult {
     const start = nowMs();
     const deadline = start + Math.min(timeoutMs, this.defaultTimeoutMs);
     const state = {
@@ -215,7 +263,11 @@ export class TdfolBackwardChainingStrategy implements TdfolProverStrategy {
       steps: state.steps,
       method: this.strategyType,
       timeMs: Math.max(0, nowMs() - start),
-      error: proved ? undefined : state.timeout ? 'Backward chaining timeout or budget exceeded' : 'No backward proof found',
+      error: proved
+        ? undefined
+        : state.timeout
+          ? 'Backward chaining timeout or budget exceeded'
+          : 'No backward proof found',
     };
   }
 
@@ -224,7 +276,9 @@ export class TdfolBackwardChainingStrategy implements TdfolProverStrategy {
   }
 
   estimateCost(formula: TdfolFormula, kb: TdfolKnowledgeBase): number {
-    const implications = getImplications(kb).filter((implication) => formulaEquals(implication.right, formula)).length;
+    const implications = getImplications(kb).filter((implication) =>
+      formulaEquals(implication.right, formula),
+    ).length;
     const kbSize = kb.axioms.length + (kb.theorems?.length ?? 0);
     return Math.max(1, (implications || 1) * Math.log2(kbSize + 2));
   }
@@ -234,7 +288,13 @@ export class TdfolBackwardChainingStrategy implements TdfolProverStrategy {
     kb: TdfolKnowledgeBase,
     depth: number,
     deadline: number,
-    state: { steps: ProofStep[]; branchCount: number; visited: Set<string>; timeout: boolean; exhausted: boolean },
+    state: {
+      steps: ProofStep[];
+      branchCount: number;
+      visited: Set<string>;
+      timeout: boolean;
+      exhausted: boolean;
+    },
   ): boolean {
     if (nowMs() > deadline || depth > this.maxDepth || state.branchCount >= this.maxBranches) {
       state.timeout = true;
@@ -245,7 +305,9 @@ export class TdfolBackwardChainingStrategy implements TdfolProverStrategy {
     if (state.visited.has(goalKey)) return false;
     state.visited.add(goalKey);
 
-    const direct = [...kb.axioms, ...(kb.theorems ?? [])].find((candidate) => formulaEquals(candidate, goal));
+    const direct = [...kb.axioms, ...(kb.theorems ?? [])].find((candidate) =>
+      formulaEquals(candidate, goal),
+    );
     if (direct) {
       state.steps.push({
         id: `tdfol-backward-step-${state.steps.length + 1}`,
@@ -274,7 +336,9 @@ export class TdfolBackwardChainingStrategy implements TdfolProverStrategy {
       }
     }
 
-    const candidateRules = getImplications(kb).filter((implication) => formulaEquals(implication.right, goal));
+    const candidateRules = getImplications(kb).filter((implication) =>
+      formulaEquals(implication.right, goal),
+    );
     for (const implication of candidateRules) {
       state.branchCount += 1;
       if (this.proveGoal(implication.left, kb, depth + 1, deadline, state)) {
@@ -325,11 +389,11 @@ export class TdfolBidirectionalStrategy implements TdfolProverStrategy {
     return {
       ...forwardResult,
       method: this.strategyType,
-      steps: [
-        ...backwardResult.steps,
-        ...forwardResult.steps,
-      ],
-      error: forwardResult.status === 'proved' ? undefined : forwardResult.error ?? backwardResult.error,
+      steps: [...backwardResult.steps, ...forwardResult.steps],
+      error:
+        forwardResult.status === 'proved'
+          ? undefined
+          : (forwardResult.error ?? backwardResult.error),
     };
   }
 
@@ -338,7 +402,10 @@ export class TdfolBidirectionalStrategy implements TdfolProverStrategy {
   }
 
   estimateCost(formula: TdfolFormula, kb: TdfolKnowledgeBase): number {
-    return Math.min(this.backward.estimateCost(formula, kb), this.forward.estimateCost(formula, kb) * 0.8);
+    return Math.min(
+      this.backward.estimateCost(formula, kb),
+      this.forward.estimateCost(formula, kb) * 0.8,
+    );
   }
 }
 
@@ -364,10 +431,18 @@ export class TdfolLocalCecDelegate implements TdfolCecDelegate {
   }
 
   canProve(formula: TdfolFormula, kb: TdfolKnowledgeBase): boolean {
-    return isCecShapedFormula(formula) || containsFormula(kb, formula) || getImplications(kb).some((rule) => formulaEquals(rule.right, formula));
+    return (
+      isCecShapedFormula(formula) ||
+      containsFormula(kb, formula) ||
+      getImplications(kb).some((rule) => formulaEquals(rule.right, formula))
+    );
   }
 
-  prove(formula: TdfolFormula, kb: TdfolKnowledgeBase, timeoutMs = this.defaultTimeoutMs): ProofResult {
+  prove(
+    formula: TdfolFormula,
+    kb: TdfolKnowledgeBase,
+    timeoutMs = this.defaultTimeoutMs,
+  ): ProofResult {
     const start = nowMs();
     const deadline = start + Math.min(timeoutMs, this.defaultTimeoutMs);
     const theoremCec = tdfolToCecExpression(formula);
@@ -399,7 +474,9 @@ export class TdfolLocalCecDelegate implements TdfolCecDelegate {
     if (visited.has(key)) return false;
     visited.add(key);
 
-    const direct = [...kb.axioms, ...(kb.theorems ?? [])].find((candidate) => formulaEquals(candidate, goal));
+    const direct = [...kb.axioms, ...(kb.theorems ?? [])].find((candidate) =>
+      formulaEquals(candidate, goal),
+    );
     if (direct) {
       steps.push({
         id: `tdfol-cec-delegate-step-${steps.length + 1}`,
@@ -424,14 +501,17 @@ export class TdfolLocalCecDelegate implements TdfolCecDelegate {
           rule: 'CecDeonticProhibitionEquivalence',
           premises: [formatCecExpression(tdfolToCecExpression(obligationOfNot))],
           conclusion: formatCecExpression(tdfolToCecExpression(goal)),
-          explanation: 'Used the CEC deontic equivalence between prohibition and obligation of negation',
+          explanation:
+            'Used the CEC deontic equivalence between prohibition and obligation of negation',
         });
         visited.delete(key);
         return true;
       }
     }
 
-    for (const implication of getImplications(kb).filter((rule) => formulaEquals(rule.right, goal))) {
+    for (const implication of getImplications(kb).filter((rule) =>
+      formulaEquals(rule.right, goal),
+    )) {
       if (this.proveGoal(implication.left, kb, deadline, depth + 1, visited, steps)) {
         steps.push({
           id: `tdfol-cec-delegate-step-${steps.length + 1}`,
@@ -512,18 +592,22 @@ export class TdfolModalTableauxStrategy implements TdfolProverStrategy {
 
   prove(formula: TdfolFormula, kb: TdfolKnowledgeBase, _timeoutMs?: number): ProofResult {
     const start = nowMs();
-    const direct = [...kb.axioms, ...(kb.theorems ?? [])].find((candidate) => formulaEquals(candidate, formula));
+    const direct = [...kb.axioms, ...(kb.theorems ?? [])].find((candidate) =>
+      formulaEquals(candidate, formula),
+    );
     if (direct) {
       return {
         status: 'proved',
         theorem: formatTdfolFormula(formula),
-        steps: [{
-          id: 'tdfol-modal-tableaux-direct-1',
-          rule: 'KnowledgeBaseLookup',
-          premises: [],
-          conclusion: formatTdfolFormula(direct),
-          explanation: 'Found in knowledge base',
-        }],
+        steps: [
+          {
+            id: 'tdfol-modal-tableaux-direct-1',
+            rule: 'KnowledgeBaseLookup',
+            premises: [],
+            conclusion: formatTdfolFormula(direct),
+            explanation: 'Found in knowledge base',
+          },
+        ],
         method: this.strategyType,
         timeMs: Math.max(0, nowMs() - start),
       };
@@ -543,7 +627,9 @@ export class TdfolModalTableauxStrategy implements TdfolProverStrategy {
       })),
       method: `${this.strategyType}:${logicType}`,
       timeMs: Math.max(0, nowMs() - start),
-      error: result.isValid ? undefined : `Open branch remains after ${result.totalBranches} branch(es)`,
+      error: result.isValid
+        ? undefined
+        : `Open branch remains after ${result.totalBranches} branch(es)`,
     };
   }
 
@@ -583,7 +669,11 @@ export class TdfolStrategySelector {
     );
   }
 
-  selectStrategy(formula: TdfolFormula, kb: TdfolKnowledgeBase, preferLowCost = false): TdfolProverStrategy {
+  selectStrategy(
+    formula: TdfolFormula,
+    kb: TdfolKnowledgeBase,
+    preferLowCost = false,
+  ): TdfolProverStrategy {
     if (this.strategies.length === 0) {
       throw new Error('No strategies available for selection');
     }
@@ -602,13 +692,20 @@ export class TdfolStrategySelector {
     return applicable[0];
   }
 
-  selectMultiple(formula: TdfolFormula, kb: TdfolKnowledgeBase, maxStrategies = 3): TdfolProverStrategy[] {
+  selectMultiple(
+    formula: TdfolFormula,
+    kb: TdfolKnowledgeBase,
+    maxStrategies = 3,
+  ): TdfolProverStrategy[] {
     if (this.strategies.length === 0 || maxStrategies <= 0) {
       return [];
     }
 
     const applicable = this.strategies.filter((strategy) => strategy.canHandle(formula, kb));
-    return (applicable.length > 0 ? applicable : [this.getFallbackStrategy()]).slice(0, maxStrategies);
+    return (applicable.length > 0 ? applicable : [this.getFallbackStrategy()]).slice(
+      0,
+      maxStrategies,
+    );
   }
 
   getStrategyInfo(formula?: TdfolFormula, kb?: TdfolKnowledgeBase): TdfolStrategyInfo[] {
@@ -635,7 +732,9 @@ export class TdfolStrategySelector {
   }
 
   private getFallbackStrategy(): TdfolProverStrategy {
-    const forwardChaining = this.strategies.find((strategy) => strategy.strategyType === 'forward_chaining');
+    const forwardChaining = this.strategies.find(
+      (strategy) => strategy.strategyType === 'forward_chaining',
+    );
     return forwardChaining ?? this.strategies[0];
   }
 }
@@ -655,34 +754,50 @@ export function proveTdfolWithStrategySelection(
   kb: TdfolKnowledgeBase,
   options: { strategies?: TdfolProverStrategy[]; preferLowCost?: boolean; timeoutMs?: number } = {},
 ): ProofResult {
-  return new TdfolStrategySelector({ strategies: options.strategies }).proveWithSelectedStrategy(theorem, kb, {
-    preferLowCost: options.preferLowCost,
-    timeoutMs: options.timeoutMs,
-  });
+  return new TdfolStrategySelector({ strategies: options.strategies }).proveWithSelectedStrategy(
+    theorem,
+    kb,
+    {
+      preferLowCost: options.preferLowCost,
+      timeoutMs: options.timeoutMs,
+    },
+  );
 }
 
 function nowMs(): number {
-  return typeof globalThis.performance?.now === 'function' ? globalThis.performance.now() : Date.now();
+  return typeof globalThis.performance?.now === 'function'
+    ? globalThis.performance.now()
+    : Date.now();
 }
 
 function containsFormula(kb: TdfolKnowledgeBase, formula: TdfolFormula): boolean {
-  return [...kb.axioms, ...(kb.theorems ?? [])].some((candidate) => formulaEquals(candidate, formula));
+  return [...kb.axioms, ...(kb.theorems ?? [])].some((candidate) =>
+    formulaEquals(candidate, formula),
+  );
 }
 
 function getImplications(kb: TdfolKnowledgeBase): TdfolBinaryFormula[] {
   return [...kb.axioms, ...(kb.theorems ?? [])].filter(
-    (formula): formula is TdfolBinaryFormula => formula.kind === 'binary' && formula.operator === 'IMPLIES',
+    (formula): formula is TdfolBinaryFormula =>
+      formula.kind === 'binary' && formula.operator === 'IMPLIES',
   );
 }
 
 function isCecShapedFormula(formula: TdfolFormula): boolean {
-  return traverseFormula(formula, (node) => node.kind === 'deontic' || node.kind === 'temporal' || node.kind === 'quantified');
+  return traverseFormula(
+    formula,
+    (node) => node.kind === 'deontic' || node.kind === 'temporal' || node.kind === 'quantified',
+  );
 }
 
 export function tdfolToCecExpression(formula: TdfolFormula): CecExpression {
   switch (formula.kind) {
     case 'predicate':
-      return { kind: 'application', name: formula.name, args: formula.args.map(tdfolTermToCecExpression) };
+      return {
+        kind: 'application',
+        name: formula.name,
+        args: formula.args.map(tdfolTermToCecExpression),
+      };
     case 'unary':
       return { kind: 'unary', operator: 'not', expression: tdfolToCecExpression(formula.formula) };
     case 'binary':
@@ -702,13 +817,19 @@ export function tdfolToCecExpression(formula: TdfolFormula): CecExpression {
     case 'deontic':
       return {
         kind: 'unary',
-        operator: formula.operator === 'OBLIGATION' ? 'O' : formula.operator === 'PERMISSION' ? 'P' : 'F',
+        operator:
+          formula.operator === 'OBLIGATION' ? 'O' : formula.operator === 'PERMISSION' ? 'P' : 'F',
         expression: tdfolToCecExpression(formula.formula),
       };
     case 'temporal':
       return {
         kind: 'unary',
-        operator: formula.operator === 'ALWAYS' ? 'always' : formula.operator === 'EVENTUALLY' ? 'eventually' : 'next',
+        operator:
+          formula.operator === 'ALWAYS'
+            ? 'always'
+            : formula.operator === 'EVENTUALLY'
+              ? 'eventually'
+              : 'next',
         expression: tdfolToCecExpression(formula.formula),
       };
   }
@@ -721,13 +842,14 @@ function tdfolTermToCecExpression(term: TdfolTerm): CecExpression {
   return { kind: 'atom', name: term.name };
 }
 
-function tdfolBinaryToCecOperator(operator: TdfolBinaryFormula['operator']): 'implies' | 'and' | 'or' | 'iff' | 'xor' {
-  const operators: Record<TdfolBinaryFormula['operator'], 'implies' | 'and' | 'or' | 'iff' | 'xor'> = {
+function tdfolBinaryToCecOperator(operator: TdfolBinaryFormula['operator']): CecBinaryOperator {
+  const operators: Record<TdfolBinaryFormula['operator'], CecBinaryOperator> = {
     AND: 'and',
     OR: 'or',
     IMPLIES: 'implies',
     IFF: 'iff',
     XOR: 'xor',
+    UNTIL: 'until',
   };
   return operators[operator];
 }
@@ -748,7 +870,10 @@ function hasNestedTemporalFormula(formula: TdfolFormula): boolean {
   return temporalDepth(formula) >= 2;
 }
 
-function traverseFormula(formula: TdfolFormula, predicate: (formula: TdfolFormula) => boolean): boolean {
+function traverseFormula(
+  formula: TdfolFormula,
+  predicate: (formula: TdfolFormula) => boolean,
+): boolean {
   if (predicate(formula)) return true;
   switch (formula.kind) {
     case 'predicate':
@@ -774,6 +899,9 @@ function temporalDepth(formula: TdfolFormula, depth = 0): number {
     case 'quantified':
       return temporalDepth(formula.formula, nextDepth);
     case 'binary':
-      return Math.max(temporalDepth(formula.left, nextDepth), temporalDepth(formula.right, nextDepth));
+      return Math.max(
+        temporalDepth(formula.left, nextDepth),
+        temporalDepth(formula.right, nextDepth),
+      );
   }
 }

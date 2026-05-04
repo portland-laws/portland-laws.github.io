@@ -8,6 +8,7 @@ export type TdfolTokenType =
   | 'IMPLIES'
   | 'IFF'
   | 'XOR'
+  | 'UNTIL'
   | 'FORALL'
   | 'EXISTS'
   | 'OBLIGATION'
@@ -40,6 +41,7 @@ const WORD_TOKENS: Record<string, TdfolTokenType> = {
   always: 'ALWAYS',
   eventually: 'EVENTUALLY',
   next: 'NEXT',
+  until: 'UNTIL',
 };
 
 export function lexTdfol(source: string): TdfolToken[] {
@@ -198,6 +200,9 @@ function deonticOrIdentifier(word: string): TdfolTokenType {
   }
   if (word === 'X') {
     return 'NEXT';
+  }
+  if (word === 'U') {
+    return 'UNTIL';
   }
   return 'IDENTIFIER';
 }

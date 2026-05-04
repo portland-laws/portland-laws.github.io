@@ -45,7 +45,7 @@ export interface TdfolPredicate {
 }
 
 export type TdfolUnaryOperator = 'NOT';
-export type TdfolBinaryOperator = 'AND' | 'OR' | 'IMPLIES' | 'IFF' | 'XOR';
+export type TdfolBinaryOperator = 'AND' | 'OR' | 'IMPLIES' | 'IFF' | 'XOR' | 'UNTIL';
 export type TdfolQuantifier = 'FORALL' | 'EXISTS';
 export type TdfolDeonticOperator = 'OBLIGATION' | 'PERMISSION' | 'PROHIBITION';
 export type TdfolTemporalOperator = 'ALWAYS' | 'EVENTUALLY' | 'NEXT';
@@ -86,7 +86,10 @@ export interface TdfolTemporalFormula {
 export function getFreeVariables(formula: TdfolFormula): Set<string> {
   switch (formula.kind) {
     case 'predicate':
-      return formula.args.reduce((vars, term) => unionInto(vars, getTermVariables(term)), new Set<string>());
+      return formula.args.reduce(
+        (vars, term) => unionInto(vars, getTermVariables(term)),
+        new Set<string>(),
+      );
     case 'unary':
     case 'deontic':
     case 'temporal':
@@ -108,11 +111,18 @@ export function getTermVariables(term: TdfolTerm): Set<string> {
     case 'constant':
       return new Set();
     case 'function':
-      return term.args.reduce((vars, arg) => unionInto(vars, getTermVariables(arg)), new Set<string>());
+      return term.args.reduce(
+        (vars, arg) => unionInto(vars, getTermVariables(arg)),
+        new Set<string>(),
+      );
   }
 }
 
-export function substituteFormula(formula: TdfolFormula, variableName: string, replacement: TdfolTerm): TdfolFormula {
+export function substituteFormula(
+  formula: TdfolFormula,
+  variableName: string,
+  replacement: TdfolTerm,
+): TdfolFormula {
   switch (formula.kind) {
     case 'predicate':
       return {
@@ -143,7 +153,11 @@ export function substituteFormula(formula: TdfolFormula, variableName: string, r
   }
 }
 
-export function substituteTerm(term: TdfolTerm, variableName: string, replacement: TdfolTerm): TdfolTerm {
+export function substituteTerm(
+  term: TdfolTerm,
+  variableName: string,
+  replacement: TdfolTerm,
+): TdfolTerm {
   switch (term.kind) {
     case 'variable':
       return term.name === variableName ? replacement : term;

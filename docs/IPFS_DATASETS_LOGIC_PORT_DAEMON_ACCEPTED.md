@@ -686,3 +686,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T052753Z-ported-the-remaining-tdfol-propositional-inference-rule-behavior-to-browser-nati.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T052753Z-ported-the-remaining-tdfol-propositional-inference-rule-behavior-to-browser-nati.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T052753Z-ported-the-remaining-tdfol-propositional-inference-rule-behavior-to-browser-nati.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 05:33:04 UTC
+
+- Target: `Task checkbox-266: Port remaining Python logic module `logic/TDFOL/inference_rules/temporal_deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Worktree direct-edit proposal.
+- Impact: Git harvested the isolated-worktree edits for validation.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/ast.ts`, `src/lib/logic/tdfol/converter.ts`, `src/lib/logic/tdfol/formatter.ts`, `src/lib/logic/tdfol/inferenceRules.test.ts`, `src/lib/logic/tdfol/inferenceRules.ts`, `src/lib/logic/tdfol/lexer.ts`, `src/lib/logic/tdfol/parser.ts`, `src/lib/logic/tdfol/strategies.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T053304Z-worktree-direct-edit-proposal..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T053304Z-worktree-direct-edit-proposal..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T053304Z-worktree-direct-edit-proposal..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

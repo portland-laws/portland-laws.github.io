@@ -6,18 +6,27 @@ import {
   ConjunctionEliminationLeftRule,
   DeonticDAxiomRule,
   DeonticKAxiomRule,
+  AlwaysObligationDistributionRule,
+  AlwaysPermissionRule,
+  DeonticTemporalIntroductionRule,
   DisjunctionIntroductionLeftRule,
   DisjunctiveSyllogismRule,
+  EventuallyForbiddenRule,
   ExistentialGeneralizationRule,
   ExistentialInstantiationRule,
+  FutureObligationPersistenceRule,
   ModusPonensRule,
   ObligationConjunctionRule,
+  ObligationEventuallyRule,
   ObligationWeakeningRightRule,
   PermissionDualityRule,
   PermissionFromNonObligationRule,
+  PermissionTemporalWeakeningRule,
   ProhibitionEquivalenceRule,
+  TemporalObligationPersistenceRule,
   TemporalKAxiomRule,
   TemporalTAxiomRule,
+  UntilObligationRule,
   UniversalGeneralizationRule,
   UniversalModusPonensRule,
   TdfolRule,
@@ -78,6 +87,53 @@ describe('TDFOL inference rules', () => {
       '□(Goal(x))',
     );
     expect(formatTdfolFormula(TemporalTAxiomRule.apply(temporalPremise))).toBe('Pred(x)');
+  });
+
+  it('ports Python temporal_deontic.py rules without runtime bridges', () => {
+    expect(
+      formatTdfolFormula(
+        TemporalObligationPersistenceRule.apply(parseTdfolFormula('O(always Pay(x))')),
+      ),
+    ).toBe('□(O(Pay(x)))');
+    expect(
+      formatTdfolFormula(DeonticTemporalIntroductionRule.apply(parseTdfolFormula('O(Pay(x))'))),
+    ).toBe('O(X(Pay(x)))');
+    expect(
+      formatTdfolFormula(
+        UntilObligationRule.apply(parseTdfolFormula('O(Active(x) U Complete(x))')),
+      ),
+    ).toBe('◊(O(Complete(x)))');
+    expect(
+      formatTdfolFormula(AlwaysPermissionRule.apply(parseTdfolFormula('P(always Enter(x))'))),
+    ).toBe('□(P(Enter(x)))');
+    expect(
+      formatTdfolFormula(
+        EventuallyForbiddenRule.apply(parseTdfolFormula('F(eventually Breach(x))')),
+      ),
+    ).toBe('□(F(Breach(x)))');
+    expect(
+      formatTdfolFormula(
+        ObligationEventuallyRule.apply(parseTdfolFormula('O(eventually Cure(x))')),
+      ),
+    ).toBe('◊(O(Cure(x)))');
+    expect(
+      formatTdfolFormula(PermissionTemporalWeakeningRule.apply(parseTdfolFormula('P(Enter(x))'))),
+    ).toBe('P(◊(Enter(x)))');
+    expect(
+      formatTdfolFormula(
+        AlwaysObligationDistributionRule.apply(parseTdfolFormula('always O(Pay(x))')),
+      ),
+    ).toBe('O(□(Pay(x)))');
+    expect(
+      formatTdfolFormula(
+        FutureObligationPersistenceRule.apply(parseTdfolFormula('O(next Pay(x))')),
+      ),
+    ).toBe('X(O(Pay(x)))');
+
+    expect(DeonticTemporalIntroductionRule.canApply(parseTdfolFormula('P(Pay(x))'))).toBe(false);
+    expect(UntilObligationRule.sourcePythonModule).toBe(
+      'logic/TDFOL/inference_rules/temporal_deontic.py',
+    );
   });
 
   it('applies deontic K, D, and prohibition equivalence rules', () => {
@@ -159,6 +215,8 @@ describe('TDFOL inference rules', () => {
         'BiconditionalIntroduction',
         'ObligationConjunction',
         'PermissionDuality',
+        'UntilObligation',
+        'FutureObligationPersistence',
         'UniversalModusPonens',
         'ExistentialInstantiation',
         'ExistentialGeneralization',
