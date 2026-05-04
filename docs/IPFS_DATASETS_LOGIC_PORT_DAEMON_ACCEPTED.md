@@ -1073,3 +1073,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T081714Z-ported-deontic-export-table-builders-to-browser-native-typescript..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T081714Z-ported-deontic-export-table-builders-to-browser-native-typescript..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T081714Z-ported-deontic-export-table-builders-to-browser-native-typescript..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 08:20:48 UTC
+
+- Target: `Task checkbox-309: Port remaining Python logic module `logic/deontic/formula_builder.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported deontic formula-builder behavior into a dedicated browser-native TypeScript module.
+- Impact: The deontic parser now delegates formula construction to src/lib/logic/deontic/formulaBuilder.ts, preserving the existing parser export while adding deterministic condition, exception, and temporal antecedent handling that is exercised by Jest validation.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/deontic/formulaBuilder.ts`, `src/lib/logic/deontic/index.ts`, `src/lib/logic/deontic/parser.test.ts`, `src/lib/logic/deontic/parser.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T082048Z-ported-deontic-formula-builder-behavior-into-a-dedicated-browser-native-typescri.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T082048Z-ported-deontic-formula-builder-behavior-into-a-dedicated-browser-native-typescri.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T082048Z-ported-deontic-formula-builder-behavior-into-a-dedicated-browser-native-typescri.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

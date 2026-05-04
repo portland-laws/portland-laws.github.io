@@ -4,6 +4,7 @@ import {
   convertLegalTextToDeontic,
   extractNormativeElements,
   extractTemporalConstraints,
+  formatTemporalPredicate,
 } from './parser';
 
 describe('deontic parser utilities', () => {
@@ -18,7 +19,9 @@ describe('deontic parser utilities', () => {
       deonticOperator: 'P',
       matchedIndicator: 'may',
     });
-    expect(analyzeNormativeSentence('The employer shall not retaliate against workers')).toMatchObject({
+    expect(
+      analyzeNormativeSentence('The employer shall not retaliate against workers'),
+    ).toMatchObject({
       normType: 'prohibition',
       deonticOperator: 'F',
       matchedIndicator: 'shall not',
@@ -47,6 +50,25 @@ describe('deontic parser utilities', () => {
 
     expect(buildDeonticFormula(element)).toContain('O(∀x');
     expect(buildDeonticFormula(element)).toContain('Tenant(x)');
+  });
+
+  it('builds formulas with conditions, exceptions, and temporal constraints without server dependencies', () => {
+    const element = analyzeNormativeSentence(
+      'The applicant must file a notice within 10 days if the permit is denied, unless the Director extends the period',
+    );
+    if (!element) {
+      throw new Error('Expected normative element');
+    }
+
+    expect(buildDeonticFormula(element)).toBe(
+      'O(∀x (Applicant(x) ∧ ThePermitIsDenied(x) ∧ ¬TheDirectorExtendsThePeriod(x) ∧ Within(x, P10Days) → FileANotice(x)))',
+    );
+  });
+
+  it('formats browser-native temporal predicates for formula-builder parity', () => {
+    expect(formatTemporalPredicate({ type: 'period', value: 'monthly' }, 'party')).toBe(
+      'Periodic(party, Monthly)',
+    );
   });
 
   it('extracts multiple normative elements from text', () => {
@@ -85,7 +107,9 @@ describe('deontic parser utilities', () => {
   });
 
   it('extracts temporal periods and durations', () => {
-    expect(extractTemporalConstraints('Reports are due monthly and must be kept for 3 years')).toEqual([
+    expect(
+      extractTemporalConstraints('Reports are due monthly and must be kept for 3 years'),
+    ).toEqual([
       { type: 'duration', value: '3 years' },
       { type: 'period', value: 'monthly' },
     ]);

@@ -1,6 +1,14 @@
 import { normalizePredicateName } from '../normalization';
 import { getLogicRuntimeCapabilities } from '../runtimeCapabilities';
 import { predictMLConfidence } from '../mlConfidence';
+import { buildDeonticFormula } from './formulaBuilder';
+
+export {
+  buildDeonticAtomicPredicate,
+  buildDeonticFormula,
+  buildDeonticFormulaParts,
+  formatTemporalPredicate,
+} from './formulaBuilder';
 
 export type DeonticOperator = 'O' | 'P' | 'F';
 export type DeonticNormType = 'obligation' | 'permission' | 'prohibition';
@@ -35,7 +43,11 @@ export interface DeonticConversionResult {
   };
 }
 
-const INDICATORS: Array<{ normType: DeonticNormType; deonticOperator: DeonticOperator; phrases: string[] }> = [
+const INDICATORS: Array<{
+  normType: DeonticNormType;
+  deonticOperator: DeonticOperator;
+  phrases: string[];
+}> = [
   {
     normType: 'prohibition',
     deonticOperator: 'F',
@@ -64,7 +76,7 @@ export function extractNormativeElements(text: string): NormativeElement[] {
 
 export function convertLegalTextToDeontic(text: string): DeonticConversionResult {
   const elements = extractNormativeElements(text);
-  const formulas = elements.map(buildDeonticFormula);
+  const formulas = elements.map((element) => buildDeonticFormula(element));
   const confidence =
     elements.length > 0
       ? elements.reduce((total, element) => total + element.confidence, 0) / elements.length
@@ -77,7 +89,9 @@ export function convertLegalTextToDeontic(text: string): DeonticConversionResult
     confidence,
     warnings: [
       ...(elements.length > 0 ? [] : ['No normative indicators were detected']),
-      ...(getLogicRuntimeCapabilities().deontic.mlUnavailable ? ['Browser-native ML confidence is not yet available.'] : []),
+      ...(getLogicRuntimeCapabilities().deontic.mlUnavailable
+        ? ['Browser-native ML confidence is not yet available.']
+        : []),
     ],
     capabilities: {
       mlUnavailable: getLogicRuntimeCapabilities().deontic.mlUnavailable,
@@ -110,23 +124,17 @@ export function analyzeNormativeSentence(sentence: string): NormativeElement | n
       conditions,
       exceptions,
       temporalConstraints,
-      confidence: scoreConfidence(sentence, subjects, actions, conditions, exceptions, temporalConstraints),
+      confidence: scoreConfidence(
+        sentence,
+        subjects,
+        actions,
+        conditions,
+        exceptions,
+        temporalConstraints,
+      ),
     };
   }
   return null;
-}
-
-export function buildDeonticFormula(element: NormativeElement): string {
-  const operator = element.deonticOperator;
-  const subject = toPascalPredicate(element.subjects[0] || 'Agent');
-  const action = toPascalPredicate(element.actions[0] || 'Action');
-
-  if (element.conditions.length > 0) {
-    const condition = toPascalPredicate(element.conditions[0]);
-    return `${operator}(∀x (${subject}(x) ∧ ${condition}(x) → ${action}(x)))`;
-  }
-
-  return `${operator}(∀x (${subject}(x) → ${action}(x)))`;
 }
 
 export function extractLegalSubjects(sentence: string): string[] {
@@ -152,7 +160,8 @@ export function extractLegalActions(sentence: string): string[] {
   for (const match of lower.matchAll(modal)) {
     actions.add(cleanAction(match[1]));
   }
-  const prohibited = /(?:prohibited from|forbidden to|required to|permitted to|allowed to)\s+(.+?)(?:\s+(?:by|before|after|until|unless|except|when|if)|$)/g;
+  const prohibited =
+    /(?:prohibited from|forbidden to|required to|permitted to|allowed to)\s+(.+?)(?:\s+(?:by|before|after|until|unless|except|when|if)|$)/g;
   for (const match of lower.matchAll(prohibited)) {
     actions.add(cleanAction(match[1]));
   }
@@ -201,7 +210,10 @@ function extractPatternGroups(sentence: string, patterns: RegExp[]): string[] {
 }
 
 function cleanAction(value: string): string {
-  return value.replace(/\s+/g, ' ').replace(/[.;:]$/g, '').trim();
+  return value
+    .replace(/\s+/g, ' ')
+    .replace(/[.;:]$/g, '')
+    .trim();
 }
 
 function toPascalPredicate(value: string): string {
@@ -223,7 +235,11 @@ function scoreConfidence(
   const predicates = {
     nouns: subjects.map(toPascalPredicate),
     verbs: actions.map(toPascalPredicate),
-    adjectives: [...conditions, ...exceptions, ...temporalConstraints.map((constraint) => constraint.value)].map(toPascalPredicate),
+    adjectives: [
+      ...conditions,
+      ...exceptions,
+      ...temporalConstraints.map((constraint) => constraint.value),
+    ].map(toPascalPredicate),
   };
   const quantifiers = subjects.length > 0 ? ['∀'] : [];
   const operators = [
@@ -231,10 +247,25 @@ function scoreConfidence(
     ...(exceptions.length > 0 ? ['¬'] : []),
     ...(actions.length > 1 ? Array(actions.length - 1).fill('∧') : []),
   ];
-  return Math.min(0.95, 0.35 + predictMLConfidence(sentence, buildConfidenceFormula(subjects, actions, conditions), predicates, quantifiers, operators) * 0.6);
+  return Math.min(
+    0.95,
+    0.35 +
+      predictMLConfidence(
+        sentence,
+        buildConfidenceFormula(subjects, actions, conditions),
+        predicates,
+        quantifiers,
+        operators,
+      ) *
+        0.6,
+  );
 }
 
-function buildConfidenceFormula(subjects: string[], actions: string[], conditions: string[]): string {
+function buildConfidenceFormula(
+  subjects: string[],
+  actions: string[],
+  conditions: string[],
+): string {
   const subject = toPascalPredicate(subjects[0] || 'Agent');
   const action = toPascalPredicate(actions[0] || 'Action');
   if (conditions.length > 0) {
