@@ -37,6 +37,44 @@ export interface NeuroSymbolicResult {
   readonly issues: readonly string[];
   readonly metadata: typeof NEUROSYMBOLIC_METADATA;
 }
+export type NeuroSymbolicGraphRagDocument = {
+  readonly id?: string;
+  readonly title?: string;
+  readonly text: string;
+  readonly metadata?: Record<string, unknown>;
+};
+export type NeuroSymbolicGraphNode = {
+  readonly id: string;
+  readonly kind: 'document' | 'entity' | 'fact';
+  readonly label: string;
+  readonly weight: number;
+};
+export type NeuroSymbolicGraphEdge = {
+  readonly source: string;
+  readonly target: string;
+  readonly relation: 'contains' | 'mentions' | 'supports';
+  readonly weight: number;
+};
+export type NeuroSymbolicGraphRagOptions = NeuroSymbolicOptions & {
+  readonly documents?: readonly (string | NeuroSymbolicGraphRagDocument)[];
+  readonly topK?: number;
+};
+type GraphBuild = {
+  readonly nodes: readonly NeuroSymbolicGraphNode[];
+  readonly edges: readonly NeuroSymbolicGraphEdge[];
+  readonly documentSignals: readonly {
+    readonly documentId: string;
+    readonly signal: NeuroSymbolicSignal;
+  }[];
+  readonly documentFacts: readonly { readonly documentId: string; readonly fact: string }[];
+};
+export type NeuroSymbolicGraphRagResult = Omit<NeuroSymbolicResult, 'metadata'> & {
+  readonly metadata: typeof NEUROSYMBOLIC_GRAPHRAG_METADATA;
+  readonly retrievedDocuments: readonly NeuroSymbolicGraphRagDocument[];
+  readonly graphNodes: readonly NeuroSymbolicGraphNode[];
+  readonly graphEdges: readonly NeuroSymbolicGraphEdge[];
+  readonly retrievalTrace: readonly NeuroSymbolicReasoningStep[];
+};
 export const NEUROSYMBOLIC_METADATA = {
   sourcePythonModule: 'logic/integration/neurosymbolic.py',
   browserNative: true,
@@ -46,6 +84,17 @@ export const NEUROSYMBOLIC_METADATA = {
   neuralRuntime: 'deterministic-local-adapter',
   runtimeDependencies: [],
   parity: ['local_signal_extraction', 'symbolic_projection', 'fail_closed_reasoning'],
+} as const;
+export const NEUROSYMBOLIC_GRAPHRAG_METADATA = {
+  sourcePythonModule: 'logic/integration/neurosymbolic_graphrag.py',
+  browserNative: true,
+  wasmCompatible: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  graphRuntime: 'deterministic-local-graph-rag-adapter',
+  neuralRuntime: 'deterministic-local-adapter',
+  runtimeDependencies: [],
+  parity: ['local_graph_construction', 'symbolic_rag_retrieval', 'fail_closed_reasoning'],
 } as const;
 const INTENTS: readonly [NeuroSymbolicIntent, RegExp, string][] = [
   ['prohibition', /\b(shall not|must not|may not|prohibited from|forbidden to)\b/i, 'F'],
@@ -107,6 +156,75 @@ export class BrowserNativeNeuroSymbolicIntegration {
     return this.analyze(text, { ...options, query });
   }
 }
+export class BrowserNativeNeuroSymbolicGraphRag {
+  readonly metadata = NEUROSYMBOLIC_GRAPHRAG_METADATA;
+
+  analyze(text: string, options: NeuroSymbolicGraphRagOptions = {}): NeuroSymbolicGraphRagResult {
+    const sourceText = typeof text === 'string' ? text : '';
+    const documents = normalizeDocuments(sourceText, options.documents);
+    if (documents.length === 0)
+      return closedGraphRag(sourceText, options.query ?? null, ['source documents are required']);
+    const graph = buildGraph(documents);
+    const query = options.query?.trim() || null;
+    const retrievedDocuments = retrieveDocuments(documents, query ?? sourceText, options.topK ?? 3);
+    const retrievedIds = new Set<string>(retrievedDocuments.map((document) => document.id ?? ''));
+    const retrievedFacts = graph.documentFacts
+      .filter((entry) => retrievedIds.has(entry.documentId))
+      .map((entry) => entry.fact);
+    const symbolicFacts = unique([...(options.facts ?? []), ...retrievedFacts]);
+    const inferredFacts = inferFacts(symbolicFacts, options.rules ?? []);
+    const allFacts = new Set<string>([...symbolicFacts, ...inferredFacts].map(canonical));
+    const proofStatus =
+      query === null ? 'not_applicable' : allFacts.has(canonical(query)) ? 'proved' : 'unknown';
+    const neuralSignals = graph.documentSignals
+      .filter((entry) => retrievedIds.has(entry.documentId))
+      .map((entry) => entry.signal);
+    const retrievalTrace = retrievedDocuments.map((document) => ({
+      kind: 'query_match' as const,
+      detail: `${document.id ?? 'document'}:${query ?? 'corpus'}`,
+    }));
+    return {
+      status: 'success',
+      success: true,
+      runtime: 'browser-native',
+      wasmCompatible: true,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      sourceText,
+      query,
+      neuralSignals,
+      symbolicFacts,
+      inferredFacts,
+      proofStatus,
+      confidence: score(neuralSignals, proofStatus, inferredFacts.length),
+      reasoningSteps: [
+        ...retrievalTrace,
+        ...neuralSignals.map((signal) => ({
+          kind: 'neural_signal' as const,
+          detail: `${signal.intent}:${signal.evidence}`,
+        })),
+        ...symbolicFacts.map((fact) => ({ kind: 'symbolic_fact' as const, detail: fact })),
+        ...inferredFacts.map((fact) => ({ kind: 'rule_match' as const, detail: fact })),
+      ],
+      issues: neuralSignals.every((signal) => signal.intent === 'fact')
+        ? ['no local neural-symbolic graph signals matched']
+        : [],
+      metadata: this.metadata,
+      retrievedDocuments,
+      graphNodes: graph.nodes,
+      graphEdges: graph.edges,
+      retrievalTrace,
+    };
+  }
+
+  query(
+    text: string,
+    query: string,
+    options: Omit<NeuroSymbolicGraphRagOptions, 'query'> = {},
+  ): NeuroSymbolicGraphRagResult {
+    return this.analyze(text, { ...options, query });
+  }
+}
 export function analyzeNeuroSymbolic(
   text: string,
   options: NeuroSymbolicOptions = {},
@@ -122,8 +240,22 @@ export function reasonNeuroSymbolic(
 }
 export const create_browser_native_neurosymbolic_integration =
   (): BrowserNativeNeuroSymbolicIntegration => new BrowserNativeNeuroSymbolicIntegration();
+export const create_browser_native_neurosymbolic_graphrag =
+  (): BrowserNativeNeuroSymbolicGraphRag => new BrowserNativeNeuroSymbolicGraphRag();
 export const analyze_neurosymbolic = analyzeNeuroSymbolic;
 export const reason_neurosymbolic = reasonNeuroSymbolic;
+export const analyzeNeuroSymbolicGraphRag = (
+  text: string,
+  options: NeuroSymbolicGraphRagOptions = {},
+): NeuroSymbolicGraphRagResult => new BrowserNativeNeuroSymbolicGraphRag().analyze(text, options);
+export const queryNeuroSymbolicGraphRag = (
+  text: string,
+  query: string,
+  options: Omit<NeuroSymbolicGraphRagOptions, 'query'> = {},
+): NeuroSymbolicGraphRagResult =>
+  new BrowserNativeNeuroSymbolicGraphRag().query(text, query, options);
+export const analyze_neurosymbolic_graphrag = analyzeNeuroSymbolicGraphRag;
+export const query_neurosymbolic_graphrag = queryNeuroSymbolicGraphRag;
 function extractSignals(sentence: string): readonly NeuroSymbolicSignal[] {
   const matched = INTENTS.filter(([, pattern]) => pattern.test(sentence));
   const intents: readonly [NeuroSymbolicIntent, RegExp, string][] =
@@ -167,6 +299,95 @@ function canonical(value: string): string {
 function unique(items: readonly string[]): readonly string[] {
   return [...new Set(items.map((item) => item.trim()).filter((item) => item.length > 0))];
 }
+function normalizeDocuments(
+  sourceText: string,
+  documents: readonly (string | NeuroSymbolicGraphRagDocument)[] = [],
+): readonly NeuroSymbolicGraphRagDocument[] {
+  const candidates =
+    documents.length > 0
+      ? documents
+      : splitSentences(sourceText).map((sentence, index) => ({
+          id: `doc-${index + 1}`,
+          text: sentence,
+        }));
+  return candidates
+    .map((document, index) =>
+      typeof document === 'string'
+        ? { id: `doc-${index + 1}`, text: document }
+        : { ...document, id: document.id ?? `doc-${index + 1}` },
+    )
+    .filter((document) => document.text.replace(/\s+/g, ' ').trim().length >= 3);
+}
+function buildGraph(documents: readonly NeuroSymbolicGraphRagDocument[]): GraphBuild {
+  const nodes = new Map<string, NeuroSymbolicGraphNode>();
+  const edges: NeuroSymbolicGraphEdge[] = [];
+  const documentSignals: { readonly documentId: string; readonly signal: NeuroSymbolicSignal }[] =
+    [];
+  const documentFacts: { readonly documentId: string; readonly fact: string }[] = [];
+
+  documents.forEach((document) => {
+    const documentId = document.id ?? predicate(document.text);
+    nodes.set(documentId, {
+      id: documentId,
+      kind: 'document',
+      label: document.title ?? document.text.slice(0, 80),
+      weight: 1,
+    });
+    splitSentences(document.text)
+      .flatMap(extractSignals)
+      .forEach((signal) => {
+        const fact = toFormula(signal);
+        const factId = `fact:${canonical(fact)}`;
+        nodes.set(factId, { id: factId, kind: 'fact', label: fact, weight: signal.confidence });
+        edges.push({
+          source: documentId,
+          target: factId,
+          relation: 'contains',
+          weight: signal.confidence,
+        });
+        documentSignals.push({ documentId, signal });
+        documentFacts.push({ documentId, fact });
+        extractEntities(signal.evidence).forEach((entity) => {
+          const entityId = `entity:${predicate(entity)}`;
+          nodes.set(entityId, { id: entityId, kind: 'entity', label: entity, weight: 0.7 });
+          edges.push({ source: factId, target: entityId, relation: 'mentions', weight: 0.7 });
+          edges.push({ source: entityId, target: documentId, relation: 'supports', weight: 0.45 });
+        });
+      });
+  });
+  return { nodes: [...nodes.values()], edges, documentSignals, documentFacts };
+}
+function retrieveDocuments(
+  documents: readonly NeuroSymbolicGraphRagDocument[],
+  query: string,
+  topK: number,
+): readonly NeuroSymbolicGraphRagDocument[] {
+  const queryTerms = new Set<string>(terms(query));
+  const scored = documents.map((document, index) => ({
+    document,
+    index,
+    score:
+      terms(`${document.title ?? ''} ${document.text}`).filter((term) => queryTerms.has(term))
+        .length / Math.max(1, queryTerms.size),
+  }));
+  return scored
+    .sort((left, right) => right.score - left.score || left.index - right.index)
+    .slice(0, Math.max(1, topK))
+    .map((entry) => entry.document);
+}
+function extractEntities(text: string): readonly string[] {
+  const proper = text.match(/\b[A-Z][a-z]+(?:\s+[A-Z][a-z]+)*\b/g) ?? [];
+  const legal = text.match(/\b(tenant|landlord|owner|agency|contractor|court|employer)\b/gi) ?? [];
+  return unique([...proper, ...legal].map((entity) => entity.toLowerCase()));
+}
+function terms(text: string): readonly string[] {
+  return unique(
+    text
+      .toLowerCase()
+      .split(/[^a-z0-9]+/)
+      .filter((term) => term.length > 2),
+  );
+}
 function score(
   signals: readonly NeuroSymbolicSignal[],
   proofStatus: NeuroSymbolicResult['proofStatus'],
@@ -205,5 +426,19 @@ function closed(
     reasoningSteps: [],
     issues,
     metadata: NEUROSYMBOLIC_METADATA,
+  };
+}
+function closedGraphRag(
+  sourceText: string,
+  query: string | null,
+  issues: readonly string[],
+): NeuroSymbolicGraphRagResult {
+  return {
+    ...closed(sourceText, query, issues),
+    metadata: NEUROSYMBOLIC_GRAPHRAG_METADATA,
+    retrievedDocuments: [],
+    graphNodes: [],
+    graphEdges: [],
+    retrievalTrace: [],
   };
 }

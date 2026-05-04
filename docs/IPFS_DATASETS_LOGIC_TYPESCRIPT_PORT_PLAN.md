@@ -887,7 +887,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/integration/logic_verification_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/modal_logic_extension.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/neurosymbolic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/integration/neurosymbolic_graphrag.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/integration/neurosymbolic_graphrag.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/nl_ucan_policy_compiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/reasoning/_deontic_conflict_mixin.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 13:18:09 UTC
+Last updated: 2026-05-04 13:23:20 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-377: Port remaining Python logic module 'logic/integration/neurosymbolic_graphrag.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-378: Port remaining Python logic module 'logic/integration/nl_ucan_policy_compiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1351,8 +1351,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-373: Port remaining Python logic module 'logic/integration/logic_verification_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-374: Port remaining Python logic module 'logic/integration/logic_verification_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-375: Port remaining Python logic module 'logic/integration/modal_logic_extension.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-376: Port remaining Python logic module 'logic/integration/neurosymbolic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-377: Port remaining Python logic module 'logic/integration/neurosymbolic_graphrag.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-376: Port remaining Python logic module 'logic/integration/neurosymbolic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-377: Port remaining Python logic module 'logic/integration/neurosymbolic_graphrag.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-378: Port remaining Python logic module 'logic/integration/nl_ucan_policy_compiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-379: Port remaining Python logic module 'logic/integration/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-380: Port remaining Python logic module 'logic/integration/reasoning/_deontic_conflict_mixin.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-376: Port remaining Python logic module 'logic/integration/neurosymbolic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-377: Port remaining Python logic module 'logic/integration/neurosymbolic_graphrag.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported logic/integration/neurosymbolic.py as a browser-native deterministic TypeScript adapter.
-- Impact: Adds a local neurosymbolic integration module that extracts deterministic neural-style legal signals, projects symbolic facts, applies local rule/query reasoning, exports the integration surface, and validates fail-closed behavior with Jest without Python, server calls, subprocesses, or Node-only runtime dependencies.
-- Accepted changed files: `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/neurosymbolic.test.ts`, `src/lib/logic/integration/neurosymbolic.ts`
+- Summary: Worktree direct-edit proposal.
+- Impact: Git harvested the isolated-worktree edits for validation.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/neurosymbolic.test.ts`, `src/lib/logic/integration/neurosymbolic.ts`
 
 ### Blocked Backlog
 

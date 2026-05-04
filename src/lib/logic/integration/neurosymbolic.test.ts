@@ -1,6 +1,9 @@
 import {
   analyze_neurosymbolic,
+  analyze_neurosymbolic_graphrag,
   create_browser_native_neurosymbolic_integration,
+  create_browser_native_neurosymbolic_graphrag,
+  query_neurosymbolic_graphrag,
   reason_neurosymbolic,
 } from './neurosymbolic';
 
@@ -60,5 +63,69 @@ describe('browser-native neurosymbolic integration parity', () => {
     expect(analyze_neurosymbolic('Plain background context.').issues).toContain(
       'no local neural-symbolic signals matched',
     );
+  });
+});
+
+describe('browser-native neurosymbolic GraphRAG parity', () => {
+  it('builds a deterministic local graph and retrieves symbolic evidence', () => {
+    const graphrag = create_browser_native_neurosymbolic_graphrag();
+    const result = graphrag.query('unused corpus', 'Protected(Tenant)', {
+      documents: [
+        {
+          id: 'lease',
+          title: 'Lease duties',
+          text: 'The tenant must pay rent. The landlord may inspect after notice.',
+        },
+        {
+          id: 'retaliation',
+          title: 'Retaliation rule',
+          text: 'The owner shall not retaliate against the tenant.',
+        },
+      ],
+      rules: ['O(the_tenant_must_pay_rent) => Protected(Tenant)'],
+      topK: 1,
+    });
+
+    expect(graphrag.metadata).toMatchObject({
+      sourcePythonModule: 'logic/integration/neurosymbolic_graphrag.py',
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      graphRuntime: 'deterministic-local-graph-rag-adapter',
+    });
+    expect(result).toMatchObject({
+      status: 'success',
+      runtime: 'browser-native',
+      proofStatus: 'proved',
+      inferredFacts: ['Protected(Tenant)'],
+      metadata: { sourcePythonModule: 'logic/integration/neurosymbolic_graphrag.py' },
+    });
+    expect(result.retrievedDocuments.map((document) => document.id)).toEqual(['lease']);
+    expect(result.graphNodes.map((node) => node.kind)).toEqual(
+      expect.arrayContaining(['document', 'fact', 'entity']),
+    );
+    expect(result.graphEdges.map((edge) => edge.relation)).toEqual(
+      expect.arrayContaining(['contains', 'mentions', 'supports']),
+    );
+    expect(result.reasoningSteps.map((step) => step.kind)).toContain('query_match');
+  });
+
+  it('uses corpus sentences as documents and fails closed without runtime fallbacks', () => {
+    const result = analyze_neurosymbolic_graphrag(
+      'The agency shall publish the rule. Contractors may appeal.',
+      {
+        query: 'P(contractors_may_appeal)',
+        topK: 1,
+      },
+    );
+
+    expect(result.retrievedDocuments).toHaveLength(1);
+    expect(result.symbolicFacts).toContain('P(contractors_may_appeal)');
+    expect(query_neurosymbolic_graphrag('', 'Any(Query)')).toMatchObject({
+      status: 'validation_failed',
+      success: false,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      metadata: { sourcePythonModule: 'logic/integration/neurosymbolic_graphrag.py' },
+    });
   });
 });
