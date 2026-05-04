@@ -48,6 +48,7 @@ type RuleSpec = {
 };
 
 const DEONTIC_RULE_SOURCE = 'logic/TDFOL/inference_rules/deontic.py';
+const FIRST_ORDER_RULE_SOURCE = 'logic/TDFOL/inference_rules/first_order.py';
 
 export class TdfolRule implements TdfolInferenceRule {
   readonly name: string;
@@ -427,6 +428,7 @@ export const UniversalModusPonensRule = new TdfolRule({
   description: 'From forall x. (phi(x) -> psi(x)) and phi(a), infer psi(a)',
   arity: 2,
   category: 'first_order',
+  sourcePythonModule: FIRST_ORDER_RULE_SOURCE,
   canApply: (universal, premise) => {
     if (
       universal.kind !== 'quantified' ||
@@ -459,6 +461,7 @@ export const ExistentialInstantiationRule = new TdfolRule({
   description: 'From exists x. phi(x), infer phi(skolem_x)',
   arity: 1,
   category: 'first_order',
+  sourcePythonModule: FIRST_ORDER_RULE_SOURCE,
   canApply: (formula) => formula.kind === 'quantified' && formula.quantifier === 'EXISTS',
   apply: (formula) => {
     if (formula.kind !== 'quantified') throw new Error('Invalid existential premise');
@@ -475,6 +478,7 @@ export const ExistentialGeneralizationRule = new TdfolRule({
   description: 'From phi(a), infer exists x. phi(x) by replacing the first constant',
   arity: 1,
   category: 'first_order',
+  sourcePythonModule: FIRST_ORDER_RULE_SOURCE,
   canApply: (formula) => findFirstConstant(formula) !== undefined,
   apply: (formula) => {
     const constant = findFirstConstant(formula);
@@ -494,6 +498,7 @@ export const UniversalGeneralizationRule = new TdfolRule({
   description: 'From phi(x), infer forall x. phi(x) for a free variable',
   arity: 1,
   category: 'first_order',
+  sourcePythonModule: FIRST_ORDER_RULE_SOURCE,
   canApply: (formula) => getFreeVariables(formula).size > 0,
   apply: (formula) => {
     const [variableName] = [...getFreeVariables(formula)].sort();

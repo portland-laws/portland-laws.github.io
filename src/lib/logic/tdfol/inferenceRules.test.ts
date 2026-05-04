@@ -139,11 +139,27 @@ describe('TDFOL inference rules', () => {
     expect(UniversalModusPonensRule).toMatchObject({
       id: 'universal_modus_ponens',
       category: 'first_order',
-      sourcePythonModule: 'logic/TDFOL/inference_rules/base.py',
+      sourcePythonModule: 'logic/TDFOL/inference_rules/first_order.py',
     });
     expect(
       getAllTdfolRules().every(
         (rule) => typeof rule.canApply === 'function' && typeof rule.apply === 'function',
+      ),
+    ).toBe(true);
+  });
+
+  it('tags every browser-native first_order.py rule with its Python source module', () => {
+    const firstOrderRules = getAllTdfolRules().filter((rule) => rule.category === 'first_order');
+
+    expect(firstOrderRules.map((rule) => rule.id)).toEqual([
+      'universal_modus_ponens',
+      'existential_instantiation',
+      'existential_generalization',
+      'universal_generalization',
+    ]);
+    expect(
+      firstOrderRules.every(
+        (rule) => rule.sourcePythonModule === 'logic/TDFOL/inference_rules/first_order.py',
       ),
     ).toBe(true);
   });

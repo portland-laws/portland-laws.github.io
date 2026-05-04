@@ -163,7 +163,7 @@ const normalizeRuleName = (name: string): string =>
     .toLowerCase()
     .replace(/[\s-]+/g, '_');
 
-const ruleLookup = new Map();
+const ruleLookup = new Map<string, TdfolInferenceRule>();
 for (const rule of TDFOL_INFERENCE_RULES) {
   ruleLookup.set(normalizeRuleName(rule.id), rule);
   ruleLookup.set(normalizeRuleName(rule.pythonName), rule);

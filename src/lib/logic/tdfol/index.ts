@@ -6,6 +6,19 @@ export * from './exceptions';
 export * from './expansionRules';
 export * from './formatter';
 export * from './inferenceRules';
+export {
+  TDFOL_INFERENCE_RULES,
+  getTdfolInferenceRule,
+  listTdfolInferenceRules,
+  validateTdfolRuleApplication,
+} from './tdfolInferenceRules';
+export type {
+  TdfolInferenceRule as TdfolCatalogInferenceRule,
+  TdfolInferenceRuleId as TdfolCatalogInferenceRuleId,
+  TdfolInferenceRuleKind as TdfolCatalogInferenceRuleKind,
+  TdfolRuleApplication as TdfolCatalogRuleApplication,
+  TdfolRuleValidationResult as TdfolCatalogRuleValidationResult,
+} from './tdfolInferenceRules';
 export * from './lexer';
 export * from './modalTableaux';
 export * from './optimization';
