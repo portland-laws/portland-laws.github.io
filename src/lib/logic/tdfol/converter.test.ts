@@ -1,5 +1,13 @@
 import { parseTdfolFormula } from './parser';
-import { convertTdfolBatch, convertTdfolFormula, tdfolToFol, tdfolToTptp } from './converter';
+import {
+  BrowserNativeTdfolConverter,
+  TDFOL_CONVERTER_METADATA,
+  convertTdfolBatch,
+  convertTdfolFormula,
+  normalizeTdfolConversionTarget,
+  tdfolToFol,
+  tdfolToTptp,
+} from './converter';
 import {
   BrowserNativeTdfolLlmConverter,
   buildTdfolLlmConversionPrompt,
@@ -76,6 +84,56 @@ describe('TDFOL converter', () => {
     expect(
       convertTdfolBatch(['Permit(Alice)', 'O(Comply(x))'], 'dcec').map((result) => result.output),
     ).toEqual(['(Permit Alice)', '(O (Comply x))']);
+  });
+
+  it('ports the tdfol_converter.py facade with aliases, validation, and local metadata', async () => {
+    const converter = new BrowserNativeTdfolConverter();
+
+    expect(TDFOL_CONVERTER_METADATA).toMatchObject({
+      sourcePythonModule: 'logic/TDFOL/tdfol_converter.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      supportedTargets: ['tdfol', 'fol', 'dcec', 'tptp', 'json'],
+    });
+    expect(normalizeTdfolConversionTarget('first-order logic')).toBe('fol');
+    expect(normalizeTdfolConversionTarget('FOF')).toBe('tptp');
+    expect(() => normalizeTdfolConversionTarget('python-service')).toThrow(
+      'Unsupported TDFOL conversion target',
+    );
+
+    const fol = converter.convert('always(O(Comply(x)))', 'first-order');
+    expect(fol.output).toBe('Comply(x)');
+    expect(fol.metadata).toMatchObject({
+      sourcePythonModule: 'logic/TDFOL/tdfol_converter.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      containsTemporal: true,
+      containsDeontic: true,
+    });
+    expect(converter.convertToDcec('forall x. O(Comply(x))').output).toBe(
+      '(forall x (O (Comply x)))',
+    );
+    await expect(converter.convertAsync('Permit(Alice)', 'json')).resolves.toMatchObject({
+      target: 'json',
+      metadata: { sourcePythonModule: 'logic/TDFOL/tdfol_converter.py' },
+    });
+    expect(converter.validate('always(O(Comply(x)))')).toMatchObject({
+      valid: true,
+      warnings: [
+        'Temporal operators require projection warnings when converting to pure FOL.',
+        'Deontic operators require projection warnings when converting to pure FOL.',
+      ],
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+    });
+    expect(converter.validate('forall . Broken(')).toMatchObject({
+      valid: false,
+      sourcePythonModule: 'logic/TDFOL/tdfol_converter.py',
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+    });
   });
 
   it('ports TDFOL llm.py prompts, hints, cache, and fail-closed browser conversion', () => {
