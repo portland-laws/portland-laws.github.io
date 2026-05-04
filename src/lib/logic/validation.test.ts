@@ -8,6 +8,7 @@ import {
   validateAxiomList,
   validateFormat,
   validateFormulaString,
+  validateLogicE2eRuntime,
   validateLogicProblemPayload,
   validateLogicSystem,
   validateTimeoutMs,
@@ -122,5 +123,66 @@ describe('logic validation helpers', () => {
     expect(() => validateLogicProblemPayload({ formula: 'P', timeout_ms: 9 })).toThrow(
       "'timeout_ms' must be >= 10ms",
     );
+  });
+
+  it('ports e2e validation as a browser-native local runtime contract', () => {
+    const result = validateLogicE2eRuntime([
+      {
+        name: 'deterministic fol case',
+        payload: {
+          formula: 'forall x. Human(x) -> Mortal(x)',
+          axioms: ['Human(socrates)'],
+          logic: 'fol',
+          format: 'fol',
+          timeout_ms: 100,
+        },
+        requiredCapabilities: [
+          'browser_native_typescript',
+          'deterministic_nlp',
+          'deterministic_ml',
+        ],
+      },
+      {
+        name: 'default tdfol case',
+        payload: { formula: 'P -> Q' },
+        requiredCapabilities: ['no_python_runtime', 'no_server_calls'],
+      },
+    ]);
+
+    expect(result.valid).toBe(true);
+    expect(result.runtime).toEqual({
+      browserNative: true,
+      pythonRuntime: false,
+      serverCalls: false,
+      filesystemAccess: false,
+      subprocessAccess: false,
+    });
+    expect(result.capabilities).toContain('wasm_compatible');
+    expect(result.cases.map((testCase) => testCase.payload?.logic)).toEqual(['fol', 'tdfol']);
+  });
+
+  it('fails closed when e2e cases request Python, server, RPC, or filesystem hooks', () => {
+    const result = validateLogicE2eRuntime([
+      {
+        name: 'blocked runtime bridge',
+        payload: {
+          formula: 'P',
+          python_runtime: 'spacy',
+          serverUrl: 'http://localhost:8000/prove',
+          nested: { subprocess: 'python -m prover' },
+        },
+        requiredCapabilities: ['no_python_runtime'],
+      },
+    ]);
+
+    expect(result.valid).toBe(false);
+    expect(result.issues.map((issue) => issue.field)).toEqual([
+      'blocked runtime bridge.payload.python_runtime',
+      'blocked runtime bridge.payload.python_runtime',
+      'blocked runtime bridge.payload.serverUrl',
+      'blocked runtime bridge.payload.serverUrl',
+      'blocked runtime bridge.payload.nested.subprocess',
+      'blocked runtime bridge.payload.nested.subprocess',
+    ]);
   });
 });

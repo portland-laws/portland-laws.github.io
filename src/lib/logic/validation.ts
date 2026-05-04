@@ -235,6 +235,62 @@ export interface ValidatedLogicProblemPayload {
   timeoutMs: number;
 }
 
+export type LogicE2eCapability =
+  | 'browser_native_typescript'
+  | 'wasm_compatible'
+  | 'deterministic_nlp'
+  | 'deterministic_ml'
+  | 'no_python_runtime'
+  | 'no_server_calls';
+
+export interface LogicE2eValidationCase {
+  name: string;
+  payload: unknown;
+  requiredCapabilities?: readonly LogicE2eCapability[];
+}
+export interface LogicE2eCaseResult {
+  name: string;
+  valid: boolean;
+  payload?: ValidatedLogicProblemPayload;
+  issues: LogicValidationIssue[];
+}
+export interface LogicE2eValidationResult {
+  valid: boolean;
+  runtime: {
+    browserNative: true;
+    pythonRuntime: false;
+    serverCalls: false;
+    filesystemAccess: false;
+    subprocessAccess: false;
+  };
+  capabilities: readonly LogicE2eCapability[];
+  cases: LogicE2eCaseResult[];
+  issues: LogicValidationIssue[];
+}
+
+const BROWSER_NATIVE_E2E_CAPABILITIES: readonly LogicE2eCapability[] = [
+  'browser_native_typescript',
+  'wasm_compatible',
+  'deterministic_nlp',
+  'deterministic_ml',
+  'no_python_runtime',
+  'no_server_calls',
+];
+const FORBIDDEN_E2E_KEYS = new Set([
+  'endpoint',
+  'filesystem',
+  'fs',
+  'nodefs',
+  'python',
+  'pythonruntime',
+  'rpc',
+  'server',
+  'serverurl',
+  'subprocess',
+]);
+
+const FORBIDDEN_E2E_VALUE_PATTERN = /\b(?:file:|https?:\/\/|python|spacy|subprocess|rpc|server)\b/i;
+
 export function validateLogicProblemPayload(
   payload: unknown,
   options: LogicProblemPayloadValidationOptions = {},
@@ -281,12 +337,114 @@ export function validateLogicProblemPayload(
   };
 }
 
+export function validateLogicE2eRuntime(
+  cases: readonly LogicE2eValidationCase[],
+  options: LogicProblemPayloadValidationOptions = {},
+): LogicE2eValidationResult {
+  const suiteIssues: LogicValidationIssue[] = [];
+  if (!Array.isArray(cases) || cases.length === 0) {
+    suiteIssues.push({
+      severity: 'error',
+      field: 'cases',
+      message: 'e2e validation requires at least one browser-native case',
+    });
+  }
+
+  const caseResults = cases.map((testCase, index) => {
+    const name = testCase.name.trim() || `case_${index}`;
+    const issues: LogicValidationIssue[] = [];
+    let validated: ValidatedLogicProblemPayload | undefined;
+
+    if (!isRecord(testCase.payload)) {
+      issues.push({
+        severity: 'error',
+        field: `${name}.payload`,
+        message: 'payload must be a browser-serializable mapping',
+      });
+    } else {
+      issues.push(...findForbiddenRuntimeHooks(testCase.payload, `${name}.payload`));
+      try {
+        validated = validateLogicProblemPayload(testCase.payload, options);
+      } catch (error) {
+        issues.push({
+          severity: 'error',
+          field: `${name}.payload`,
+          message: error instanceof Error ? error.message : String(error),
+        });
+      }
+    }
+
+    for (const capability of testCase.requiredCapabilities ?? []) {
+      if (!BROWSER_NATIVE_E2E_CAPABILITIES.includes(capability)) {
+        issues.push({
+          severity: 'error',
+          field: `${name}.requiredCapabilities`,
+          message: `unsupported browser-native e2e capability: ${capability}`,
+        });
+      }
+    }
+
+    return {
+      name,
+      valid: !issues.some((issue) => issue.severity === 'error'),
+      payload: validated,
+      issues,
+    };
+  });
+
+  const issues = [...suiteIssues, ...caseResults.flatMap((result) => result.issues)];
+  return {
+    valid: !issues.some((issue) => issue.severity === 'error'),
+    runtime: {
+      browserNative: true,
+      pythonRuntime: false,
+      serverCalls: false,
+      filesystemAccess: false,
+      subprocessAccess: false,
+    },
+    capabilities: BROWSER_NATIVE_E2E_CAPABILITIES,
+    cases: caseResults,
+    issues,
+  };
+}
+
 export const validate_formula_string = validateFormulaString;
 export const validate_axiom_list = validateAxiomList;
 export const validate_logic_system = validateLogicSystem;
 export const validate_timeout_ms = validateTimeoutMs;
 export const validate_format = validateFormat;
 export const validate_logic_problem_payload = validateLogicProblemPayload;
+export const validate_logic_e2e_runtime = validateLogicE2eRuntime;
+
+function findForbiddenRuntimeHooks(
+  value: unknown,
+  path: string,
+  seen: WeakSet<object> = new WeakSet<object>(),
+): LogicValidationIssue[] {
+  if (!isRecord(value)) {
+    if (typeof value === 'string' && FORBIDDEN_E2E_VALUE_PATTERN.test(value)) {
+      return [{ severity: 'error', field: path, message: 'runtime value is not browser-native' }];
+    }
+    return [];
+  }
+  if (seen.has(value)) return [];
+  seen.add(value);
+
+  const issues: LogicValidationIssue[] = [];
+  for (const [key, nested] of Object.entries(value)) {
+    const normalizedKey = key.replace(/[_-]/g, '').toLowerCase();
+    const nestedPath = `${path}.${key}`;
+    if (FORBIDDEN_E2E_KEYS.has(normalizedKey)) {
+      issues.push({
+        severity: 'error',
+        field: nestedPath,
+        message: 'runtime hook is not allowed in browser-native e2e validation',
+      });
+    }
+    issues.push(...findForbiddenRuntimeHooks(nested, nestedPath, seen));
+  }
+  return issues;
+}
 
 function typeofName(value: unknown): string {
   if (Array.isArray(value)) return 'list';

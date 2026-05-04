@@ -1145,3 +1145,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T084706Z-ported-the-deontic-utils-parser-surface-to-browser-native-typescript-with-python.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T084706Z-ported-the-deontic-utils-parser-surface-to-browser-native-typescript-with-python.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T084706Z-ported-the-deontic-utils-parser-surface-to-browser-native-typescript-with-python.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 08:50:18 UTC
+
+- Target: `Task checkbox-317: Port remaining Python logic module `logic/e2e_validation.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported e2e validation to a browser-native TypeScript runtime contract.
+- Impact: src/lib/logic/validation.ts now exposes validateLogicE2eRuntime and a Python-style alias that validate serializable logic payload suites, advertise deterministic browser-native NLP/ML capability evidence, and fail closed on Python, spaCy, server, RPC, subprocess, or filesystem hooks. src/lib/logic/validation.test.ts directly exercises valid local suites and blocked runtime bridge inputs. The TypeScript port ledger marks checkbox-317 complete for this initial implementation.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/validation.test.ts`, `src/lib/logic/validation.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T085018Z-ported-e2e-validation-to-a-browser-native-typescript-runtime-contract..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T085018Z-ported-e2e-validation-to-a-browser-native-typescript-runtime-contract..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T085018Z-ported-e2e-validation-to-a-browser-native-typescript-runtime-contract..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
