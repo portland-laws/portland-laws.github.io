@@ -1307,3 +1307,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T103155Z-ported-the-fol-nlp-predicate-extractor-slice-with-deterministic-browser-native-t.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T103155Z-ported-the-fol-nlp-predicate-extractor-slice-with-deterministic-browser-native-t.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T103155Z-ported-the-fol-nlp-predicate-extractor-slice-with-deterministic-browser-native-t.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 10:33:57 UTC
+
+- Target: `Task checkbox-336: Port remaining Python logic module `logic/fol/utils/predicate_extractor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the remaining plain FOL predicate_extractor.py surface with browser-native adapter metadata and a composed extraction result.
+- Impact: src/lib/logic/fol/predicateExtractor.ts now exposes a local predicate_extractor.py adapter and extractPredicateLogic entrypoint that returns predicates, logical relations, variables, and formula output without Python, server, filesystem, subprocess, RPC, or Node-only runtime dependencies; the focused Jest test validates the adapter contract and complete local parity surface.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/fol/predicateExtractor.test.ts`, `src/lib/logic/fol/predicateExtractor.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T103357Z-ported-the-remaining-plain-fol-predicate_extractor.py-surface-with-browser-nativ.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T103357Z-ported-the-remaining-plain-fol-predicate_extractor.py-surface-with-browser-nativ.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T103357Z-ported-the-remaining-plain-fol-predicate_extractor.py-surface-with-browser-nativ.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

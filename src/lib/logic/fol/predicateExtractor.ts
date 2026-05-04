@@ -29,6 +29,22 @@ export interface NlpPredicateExtractionResult {
   adapter: NlpPredicateAdapterMetadata;
 }
 
+export interface PredicateExtractionResult {
+  predicates: ExtractedPredicates;
+  logicalRelations: LogicalRelation[];
+  variables: string[];
+  formula: string;
+  adapter: PredicateExtractorAdapterMetadata;
+}
+
+export interface PredicateExtractorAdapterMetadata {
+  id: string;
+  runtime: 'browser-native';
+  pythonModule: 'logic/fol/utils/predicate_extractor.py';
+  dependencies: string[];
+  failClosed: boolean;
+}
+
 export interface NlpPredicateAdapterMetadata {
   id: string;
   runtime: 'browser-native';
@@ -122,6 +138,14 @@ const COMMON_RELATION_VERBS = new Set([
   'submits',
 ]);
 
+export const BROWSER_NATIVE_PREDICATE_EXTRACTOR: PredicateExtractorAdapterMetadata = {
+  id: 'browser-native-deterministic-predicate-extractor',
+  runtime: 'browser-native',
+  pythonModule: 'logic/fol/utils/predicate_extractor.py',
+  dependencies: [],
+  failClosed: true,
+};
+
 export const BROWSER_NATIVE_NLP_PREDICATE_EXTRACTOR: NlpPredicateAdapterMetadata = {
   id: 'browser-native-deterministic-nlp-predicate-extractor',
   runtime: 'browser-native',
@@ -138,6 +162,18 @@ export function extractPredicates(text: string): ExtractedPredicates {
       [...text.matchAll(ADJECTIVE_PATTERN)].map((match) => normalizePredicate(match[1])),
     ),
     relations: [],
+  };
+}
+
+export function extractPredicateLogic(text: string): PredicateExtractionResult {
+  const predicates = extractPredicates(text);
+  const logicalRelations = extractLogicalRelations(text);
+  return {
+    predicates,
+    logicalRelations,
+    variables: extractVariables(predicates),
+    formula: buildFolFormulaFromParts([], predicates, [], logicalRelations),
+    adapter: BROWSER_NATIVE_PREDICATE_EXTRACTOR,
   };
 }
 

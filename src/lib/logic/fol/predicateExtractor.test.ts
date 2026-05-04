@@ -1,8 +1,10 @@
 import {
   BROWSER_NATIVE_NLP_PREDICATE_EXTRACTOR,
+  BROWSER_NATIVE_PREDICATE_EXTRACTOR,
   buildFolFormulaFromParts,
   extractLogicalRelations,
   extractNlpPredicates,
+  extractPredicateLogic,
   extractPredicates,
   extractVariables,
   normalizePredicate,
@@ -46,6 +48,31 @@ describe('FOL predicate extractor', () => {
     expect(
       extractVariables({ nouns: ['A', 'B'], verbs: ['C'], adjectives: [], relations: [] }),
     ).toEqual(['x', 'y', 'z']);
+  });
+
+  it('exposes a browser-native regex predicate extractor without runtime fallbacks', () => {
+    expect(BROWSER_NATIVE_PREDICATE_EXTRACTOR).toEqual({
+      id: 'browser-native-deterministic-predicate-extractor',
+      runtime: 'browser-native',
+      pythonModule: 'logic/fol/utils/predicate_extractor.py',
+      dependencies: [],
+      failClosed: true,
+    });
+  });
+
+  it('returns the complete predicate_extractor.py parity surface locally', () => {
+    expect(extractPredicateLogic('All tenants are residents.')).toEqual({
+      predicates: {
+        nouns: ['All'],
+        verbs: ['Residents'],
+        adjectives: ['Residents'],
+        relations: [],
+      },
+      logicalRelations: [{ type: 'universal', subject: 'tenants', predicate: 'residents' }],
+      variables: ['x', 'y'],
+      formula: '∀x (Tenants(x) → Residents(x))',
+      adapter: BROWSER_NATIVE_PREDICATE_EXTRACTOR,
+    });
   });
 
   it('exposes a browser-native NLP predicate adapter without runtime fallbacks', () => {
