@@ -47,6 +47,7 @@ export * from './proofExplainer';
 export * from './proofOptimization';
 export * from './proofTree';
 export * from './prover';
+export * from './proverManager';
 export * from './securityValidator';
 export * from './shadowProver';
 export * from './strategies';

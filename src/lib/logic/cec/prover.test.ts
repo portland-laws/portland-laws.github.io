@@ -15,6 +15,7 @@ import { parseCecExpression } from './parser';
 import { PYTHON_CEC_DCEC_PARITY_FIXTURES } from './pythonParityFixtures';
 import { parseCecProblemString } from './problemParser';
 import { CecProver, proveCec } from './prover';
+import { CEC_PROVER_MANAGER_RUNTIME, CecProverManager, proveCecManaged } from './proverManager';
 import {
   CEC_PROVER_CORE_EXTENDED_RUNTIME,
   applyCecProverCoreExtendedRules,
@@ -276,5 +277,67 @@ describe('CEC prover', () => {
       status: 'timeout',
       error: 'Derived expression budget exceeded',
     });
+  });
+
+  it('exposes prover_manager.py as a local browser-native strategy manager', () => {
+    const result = proveCecManaged(parseCecExpression('(comply_with agent code)'), {
+      axioms: [
+        parseCecExpression('(always (subject_to agent code))'),
+        parseCecExpression('(implies (subject_to agent code) (comply_with agent code))'),
+      ],
+    });
+
+    expect(CEC_PROVER_MANAGER_RUNTIME.pythonRuntime).toBe(false);
+    expect(CEC_PROVER_MANAGER_RUNTIME.serverDelegation).toBe(false);
+    expect(result).toMatchObject({
+      status: 'proved',
+      manager: {
+        selectedStrategy: 'temporal-propositional-specialized',
+        pythonRuntime: false,
+        serverDelegation: false,
+      },
+    });
+    expect(result.attempts.map((attempt) => attempt.strategy)).toEqual([
+      'direct',
+      'temporal-propositional-specialized',
+    ]);
+    expect(result.trace.map((step) => step.rule)).toEqual(['CecTemporalT', 'CecModusPonens']);
+  });
+
+  it('keeps managed prover failures fail-closed and continues to later strategies', () => {
+    const failingRule: CecInferenceRule = {
+      name: 'CecLocalAdapterFailure',
+      description: 'Fails closed without delegating to Python or a server',
+      arity: 1,
+      canApply: () => true,
+      apply: () => {
+        throw new Error('local adapter unavailable');
+      },
+    };
+    const manager = new CecProverManager({
+      strategies: [
+        { name: 'fail-closed-adapter', rules: [failingRule] },
+        { name: 'temporal-only', ruleGroups: ['temporal'] },
+      ],
+    });
+
+    const result = manager.prove(parseCecExpression('(subject_to agent code)'), {
+      axioms: [parseCecExpression('(always (subject_to agent code))')],
+    });
+
+    expect(result.status).toBe('proved');
+    expect(result.manager).toMatchObject({
+      selectedStrategy: 'temporal-only',
+      pythonRuntime: false,
+      serverDelegation: false,
+    });
+    expect(result.attempts).toEqual([
+      expect.objectContaining({
+        strategy: 'fail-closed-adapter',
+        status: 'error',
+        error: 'local adapter unavailable',
+      }),
+      expect.objectContaining({ strategy: 'temporal-only', status: 'proved' }),
+    ]);
   });
 });
