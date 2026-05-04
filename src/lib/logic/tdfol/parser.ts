@@ -17,6 +17,20 @@ export function parseTdfolFormula(source: string): TdfolFormula {
   return new TdfolParser(source).parse();
 }
 
+export const TDFOL_DCEC_PARSER_METADATA = {
+  sourcePythonModule: 'logic/TDFOL/tdfol_dcec_parser.py',
+  browserNative: true,
+  runtimeDependencies: [] as Array<string>,
+} as const;
+
+export function parseTdfolDcecFormula(source: string): TdfolFormula {
+  const trimmed = source.trim();
+  if (trimmed.length === 0) {
+    throw new LogicParseError('Expected DCEC/TDFOL formula but found empty input', { source });
+  }
+  return parseTdfolFormula(normalizeDcecExpression(trimmed, source));
+}
+
 class TdfolParser {
   private readonly tokens: TdfolToken[];
   private index = 0;
@@ -271,4 +285,148 @@ function isTermToken(type: TdfolTokenType): boolean {
     type === 'PERMISSION' ||
     type === 'PROHIBITION'
   );
+}
+
+interface DcecCall {
+  name: string;
+  args: string[];
+}
+
+const DCEC_BINARY_OPERATORS: Record<string, TdfolBinaryOperator> = {
+  and: 'AND',
+  or: 'OR',
+  implies: 'IMPLIES',
+  iff: 'IFF',
+};
+
+const DCEC_DEONTIC_OPERATORS: Record<string, string> = {
+  obligation: 'O',
+  permission: 'P',
+  prohibition: 'F',
+};
+
+const DCEC_TEMPORAL_OPERATORS: Record<string, string> = {
+  always: 'always',
+  eventually: 'eventually',
+  next: 'next',
+};
+
+function normalizeDcecExpression(expression: string, source: string): string {
+  const call = parseDcecCall(expression);
+  if (!call) {
+    return expression;
+  }
+
+  const name = call.name.toLowerCase();
+  if (name === 'forall' || name === 'exists') {
+    const quantifier = name === 'forall' ? 'forall' : 'exists';
+    const { variable, body } = normalizeDcecQuantifier(call, source);
+    return `${quantifier} ${variable}. ${normalizeDcecExpression(body, source)}`;
+  }
+  if (name === 'not' || name === 'neg' || name === 'negation') {
+    expectDcecArity(call, 1, source);
+    return `not (${normalizeDcecExpression(call.args[0], source)})`;
+  }
+
+  const binary = DCEC_BINARY_OPERATORS[name];
+  if (binary) {
+    expectDcecArity(call, 2, source);
+    return `(${normalizeDcecExpression(call.args[0], source)}) ${dcecBinarySymbol(binary)} (${normalizeDcecExpression(
+      call.args[1],
+      source,
+    )})`;
+  }
+
+  const deontic = DCEC_DEONTIC_OPERATORS[name];
+  if (deontic) {
+    expectDcecArity(call, 1, source);
+    return `${deontic}(${normalizeDcecExpression(call.args[0], source)})`;
+  }
+
+  const temporal = DCEC_TEMPORAL_OPERATORS[name];
+  if (temporal) {
+    expectDcecArity(call, 1, source);
+    return `${temporal}(${normalizeDcecExpression(call.args[0], source)})`;
+  }
+
+  return expression;
+}
+
+function normalizeDcecQuantifier(
+  call: DcecCall,
+  source: string,
+): { variable: string; body: string } {
+  if (call.args.length === 2) {
+    return { variable: call.args[0], body: call.args[1] };
+  }
+  if (call.args.length === 3) {
+    return { variable: `${call.args[0]}:${call.args[1]}`, body: call.args[2] };
+  }
+  throw new LogicParseError(`${call.name} expects 2 or 3 arguments`, { source, value: call.name });
+}
+
+function parseDcecCall(expression: string): DcecCall | null {
+  const open = expression.indexOf('(');
+  if (open <= 0 || !expression.endsWith(')')) {
+    return null;
+  }
+  const name = expression.slice(0, open).trim();
+  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) {
+    return null;
+  }
+  const body = expression.slice(open + 1, -1);
+  const args = splitDcecArgs(body);
+  if (!args) {
+    return null;
+  }
+  return { name, args };
+}
+
+function splitDcecArgs(body: string): string[] | null {
+  const args: string[] = [];
+  let depth = 0;
+  let start = 0;
+  for (let index = 0; index < body.length; index += 1) {
+    const char = body[index];
+    if (char === '(') {
+      depth += 1;
+    } else if (char === ')') {
+      depth -= 1;
+      if (depth < 0) {
+        return null;
+      }
+    } else if (char === ',' && depth === 0) {
+      args.push(body.slice(start, index).trim());
+      start = index + 1;
+    }
+  }
+  const finalArg = body.slice(start).trim();
+  if (finalArg.length > 0) {
+    args.push(finalArg);
+  }
+  return depth === 0 ? args : null;
+}
+
+function expectDcecArity(call: DcecCall, arity: number, source: string): void {
+  if (call.args.length !== arity) {
+    throw new LogicParseError(`${call.name} expects ${arity} arguments`, {
+      source,
+      value: call.name,
+    });
+  }
+}
+
+function dcecBinarySymbol(operator: TdfolBinaryOperator): string {
+  switch (operator) {
+    case 'AND':
+      return 'and';
+    case 'OR':
+      return 'or';
+    case 'IMPLIES':
+      return '->';
+    case 'IFF':
+      return '<->';
+    default:
+      throw new LogicParseError(`Unsupported DCEC binary operator: ${operator}`);
+  }
 }

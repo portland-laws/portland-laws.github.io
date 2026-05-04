@@ -1,7 +1,7 @@
 import { LogicParseError } from '../errors';
 import { formatTdfolFormula } from './formatter';
 import { lexTdfol } from './lexer';
-import { parseTdfolFormula } from './parser';
+import { TDFOL_DCEC_PARSER_METADATA, parseTdfolDcecFormula, parseTdfolFormula } from './parser';
 import { TDFOL_CORE_METADATA, getBoundVariables, getFreeVariables, substituteFormula } from './ast';
 
 const portlandFormula =
@@ -129,5 +129,26 @@ describe('TDFOL parser', () => {
     expect(formatTdfolFormula(substituted)).toBe('∀y_1 (Requires(y, y_1))');
     expect([...getFreeVariables(substituted)]).toEqual(['y']);
     expect([...getBoundVariables(substituted)]).toEqual(['y_1']);
+  });
+
+  it('ports tdfol_dcec_parser.py prefix quantifier and modal functor parsing', () => {
+    const dcec = [
+      'forall(a, Agent,',
+      'implies(SubjectTo(a, portland_city_code_1_01_010),',
+      'permission(always(ComplyWith(a, portland_city_code_1_01_010)))))',
+    ].join(' ');
+    const formula = parseTdfolDcecFormula(dcec);
+
+    expect(TDFOL_DCEC_PARSER_METADATA).toMatchObject({
+      sourcePythonModule: 'logic/TDFOL/tdfol_dcec_parser.py',
+    });
+    expect(formatTdfolFormula(formula)).toBe(
+      '∀a:Agent ((SubjectTo(a, portland_city_code_1_01_010)) → (P(□(ComplyWith(a, portland_city_code_1_01_010)))))',
+    );
+    expect([...getFreeVariables(formula)]).toEqual([]);
+  });
+
+  it('fails closed for malformed DCEC connective arity without runtime fallback', () => {
+    expect(() => parseTdfolDcecFormula('implies(OnlyOneArgument)')).toThrow(LogicParseError);
   });
 });
