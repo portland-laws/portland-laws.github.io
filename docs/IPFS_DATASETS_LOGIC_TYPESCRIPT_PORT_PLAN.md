@@ -917,7 +917,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/integration/ucan_policy_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integrations/enhanced_graphrag_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integrations/phase7_complete_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/integrations/unixfs_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/integrations/unixfs_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/ml_confidence.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/observability/metrics_prometheus.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/observability/otel_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 15:11:33 UTC
+Last updated: 2026-05-04 15:16:44 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-407: Port remaining Python logic module 'logic/integrations/unixfs_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-408: Port remaining Python logic module 'logic/ml_confidence.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1381,8 +1381,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-403: Port remaining Python logic module 'logic/integration/tdfol_shadowprover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-404: Port remaining Python logic module 'logic/integration/ucan_policy_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-405: Port remaining Python logic module 'logic/integrations/enhanced_graphrag_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-406: Port remaining Python logic module 'logic/integrations/phase7_complete_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-407: Port remaining Python logic module 'logic/integrations/unixfs_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-406: Port remaining Python logic module 'logic/integrations/phase7_complete_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-407: Port remaining Python logic module 'logic/integrations/unixfs_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-408: Port remaining Python logic module 'logic/ml_confidence.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-409: Port remaining Python logic module 'logic/observability/metrics_prometheus.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-410: Port remaining Python logic module 'logic/observability/otel_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-406: Port remaining Python logic module 'logic/integrations/phase7_complete_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-407: Port remaining Python logic module 'logic/integrations/unixfs_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported phase7_complete_integration.py as a browser-native TypeScript orchestration facade.
-- Impact: The new integration facade is exported from src/lib/logic/integration, routes phase 7 text and logic artifacts through existing local TypeScript bridge/core paths, and adds Jest coverage for successful local orchestration plus fail-closed WASM ZKP policy without server or Python runtime dependency.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/phase7CompleteIntegration.test.ts`, `src/lib/logic/integration/phase7CompleteIntegration.ts`
+- Summary: Ported unixfs_integration.py behavior to a browser-native TypeScript UnixFS adapter.
+- Impact: Adds deterministic UnixFS file and directory handling under src/lib/logic/integration with injected browser transport support, CID verification, and fail-closed behavior exercised by focused Jest tests.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/unixfsIntegration.test.ts`, `src/lib/logic/integration/unixfsIntegration.ts`
 
 ### Blocked Backlog
 

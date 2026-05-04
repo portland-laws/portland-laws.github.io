@@ -50,4 +50,5 @@ export * from './tdfolCecBridge';
 export * from './tdfolGrammarBridge';
 export * from './tdfolShadowProverBridge';
 export * from './ucanPolicyBridge';
+export * from './unixfsIntegration';
 export * from './z3ProverBridge';
