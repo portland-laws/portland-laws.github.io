@@ -920,3 +920,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T070802Z-added-a-browser-native-tdfol-dcec-prefix-parser-adapter-with-focused-parser-cove.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T070802Z-added-a-browser-native-tdfol-dcec-prefix-parser-adapter-with-focused-parser-cove.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T070802Z-added-a-browser-native-tdfol-dcec-prefix-parser-adapter-with-focused-parser-cove.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 07:13:13 UTC
+
+- Target: `Task checkbox-292: Port remaining Python logic module `logic/TDFOL/tdfol_inference_rules.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Worktree direct-edit proposal.
+- Impact: Git harvested the isolated-worktree edits for validation.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/index.ts`, `src/lib/logic/tdfol/tdfolInferenceRules.test.ts`, `src/lib/logic/tdfol/tdfolInferenceRules.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T071313Z-worktree-direct-edit-proposal..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T071313Z-worktree-direct-edit-proposal..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T071313Z-worktree-direct-edit-proposal..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

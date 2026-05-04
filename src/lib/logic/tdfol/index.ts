@@ -10,6 +10,7 @@ export * from './inferenceRules';
 export * from './ipfsCacheDemo';
 export * from './ipfsProofStorage';
 export {
+  TDFOL_INFERENCE_RULES_METADATA,
   TDFOL_INFERENCE_RULES,
   getTdfolInferenceRule,
   listTdfolInferenceRules,
