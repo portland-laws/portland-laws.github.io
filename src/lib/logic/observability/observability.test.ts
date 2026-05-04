@@ -5,12 +5,16 @@ import {
   EventType,
   filterLogs,
   getCurrentContext,
+  getStructuredLoggingMetadata,
   LogContext,
   logError,
   logEvent,
   logMcpTool,
   logPerformance,
+  normalizeLogLevel,
+  parseJsonLogLinesDetailed,
   parseJsonLogLines,
+  serializeJsonLogLine,
   StructuredLogger,
 } from './structuredLogging';
 
@@ -31,6 +35,62 @@ describe('logic observability browser-native parity helpers', () => {
     expect(filterLogs(logger.records, { requestId: 'req-1' })).toHaveLength(3);
     expect(filterLogs(logger.records, { eventType: EventType.ERROR_OCCURRED })).toHaveLength(1);
     expect(parseJsonLogLines(`${logger.toJsonLines()}\nnot-json`)).toHaveLength(4);
+  });
+
+  it('ports structured_logging.py as local JSON-line records and fail-closed sinks', () => {
+    const sinkRecords: Array<Record<string, unknown>> = [];
+    const logger = new StructuredLogger(
+      'structured',
+      () => '2026-01-02T00:00:00.000Z',
+      (record) => sinkRecords.push(record),
+    );
+
+    const record = new LogContext({ request_id: 'req-2', component: 'observability' }).run(() =>
+      logger.warning('policy evaluated', { policy_name: 'local-only' }),
+    );
+    const jsonLine = serializeJsonLogLine(record);
+    const parsed = parseJsonLogLinesDetailed(`${jsonLine}\n[]\nnot-json`);
+
+    expect(sinkRecords).toHaveLength(1);
+    expect(record).toMatchObject({
+      timestamp: '2026-01-02T00:00:00.000Z',
+      schema_version: '1.0.0',
+      level: 'WARNING',
+      logger: 'structured',
+      request_id: 'req-2',
+      component: 'observability',
+      policy_name: 'local-only',
+    });
+    expect(parsed.records).toEqual([record]);
+    expect(parsed.rejected_lines).toHaveLength(2);
+    expect(logger.exportSnapshot(42)).toMatchObject({
+      exported_at: 42,
+      metadata: {
+        sourcePythonModule: 'logic/observability/structured_logging.py',
+        browserNative: true,
+        serverCallsAllowed: false,
+        pythonRuntimeAllowed: false,
+        sink: 'in-memory',
+      },
+      records: [record],
+    });
+
+    const failing = new StructuredLogger(
+      'failing',
+      () => '2026-01-02T00:00:01.000Z',
+      () => {
+        throw new Error('no transport');
+      },
+    );
+    failing.info('kept locally');
+    expect(failing.records).toHaveLength(2);
+    expect(failing.records[1]).toMatchObject({
+      level: 'ERROR',
+      event_type: EventType.ERROR_OCCURRED,
+      error_message: 'no transport',
+    });
+    expect(getStructuredLoggingMetadata().serverCallsAllowed).toBe(false);
+    expect(normalizeLogLevel('warn')).toBe('WARNING');
   });
 
   it('collects circuit-breaker and log metrics in Prometheus text format', () => {
