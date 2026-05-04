@@ -841,7 +841,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/flogic/flogic_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/flogic/flogic_zkp_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/flogic/semantic_normalizer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/fol/text_to_fol.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/fol/text_to_fol.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/fol/utils/deontic_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/fol/utils/fol_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/fol/utils/logic_formatter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 10:16:05 UTC
+Last updated: 2026-05-04 10:18:50 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-331: Port remaining Python logic module 'logic/fol/text_to_fol.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-332: Port remaining Python logic module 'logic/fol/utils/deontic_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1305,8 +1305,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-327: Port remaining Python logic module 'logic/flogic/flogic_proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-328: Port remaining Python logic module 'logic/flogic/flogic_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-329: Port remaining Python logic module 'logic/flogic/flogic_zkp_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-330: Port remaining Python logic module 'logic/flogic/semantic_normalizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-331: Port remaining Python logic module 'logic/fol/text_to_fol.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-330: Port remaining Python logic module 'logic/flogic/semantic_normalizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-331: Port remaining Python logic module 'logic/fol/text_to_fol.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-332: Port remaining Python logic module 'logic/fol/utils/deontic_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-333: Port remaining Python logic module 'logic/fol/utils/fol_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-334: Port remaining Python logic module 'logic/fol/utils/logic_formatter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-330: Port remaining Python logic module 'logic/flogic/semantic_normalizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-331: Port remaining Python logic module 'logic/fol/text_to_fol.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Worktree direct-edit proposal.
-- Impact: Git harvested the isolated-worktree edits for validation.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/flogic/index.ts`, `src/lib/logic/flogic/parser.test.ts`, `src/lib/logic/flogic/semanticNormalizer.ts`
+- Summary: Ported logic/fol/text_to_fol.py as a deterministic browser-native TypeScript adapter.
+- Impact: Adds a source-exported FOL text-to-FOL adapter that converts natural-language clauses to validated FOL formulas with browser-native NLP metadata and no Python, server, filesystem, subprocess, RPC, or Node-only runtime dependency. Existing FOL Jest coverage now validates universal action rules, named facts, negative universals, existential action clauses, and fail-closed local metadata.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/fol/index.ts`, `src/lib/logic/fol/parser.test.ts`, `src/lib/logic/fol/textToFol.ts`
 
 ### Blocked Backlog
 

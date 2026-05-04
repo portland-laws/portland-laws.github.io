@@ -1262,3 +1262,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T101605Z-worktree-direct-edit-proposal..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T101605Z-worktree-direct-edit-proposal..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T101605Z-worktree-direct-edit-proposal..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 10:18:51 UTC
+
+- Target: `Task checkbox-331: Port remaining Python logic module `logic/fol/text_to_fol.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported logic/fol/text_to_fol.py as a deterministic browser-native TypeScript adapter.
+- Impact: Adds a source-exported FOL text-to-FOL adapter that converts natural-language clauses to validated FOL formulas with browser-native NLP metadata and no Python, server, filesystem, subprocess, RPC, or Node-only runtime dependency. Existing FOL Jest coverage now validates universal action rules, named facts, negative universals, existential action clauses, and fail-closed local metadata.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/fol/index.ts`, `src/lib/logic/fol/parser.test.ts`, `src/lib/logic/fol/textToFol.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T101851Z-ported-logic-fol-text_to_fol.py-as-a-deterministic-browser-native-typescript-ada.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T101851Z-ported-logic-fol-text_to_fol.py-as-a-deterministic-browser-native-typescript-ada.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T101851Z-ported-logic-fol-text_to_fol.py-as-a-deterministic-browser-native-typescript-ada.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
