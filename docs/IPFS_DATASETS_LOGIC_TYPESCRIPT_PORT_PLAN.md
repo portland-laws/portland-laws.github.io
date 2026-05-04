@@ -919,7 +919,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/integrations/phase7_complete_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integrations/unixfs_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/ml_confidence.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/observability/metrics_prometheus.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/observability/metrics_prometheus.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/observability/otel_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/observability/structured_logging.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/phase7_4_benchmarks.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 15:19:08 UTC
+Last updated: 2026-05-04 15:21:35 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-409: Port remaining Python logic module 'logic/observability/metrics_prometheus.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-410: Port remaining Python logic module 'logic/observability/otel_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1383,8 +1383,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-405: Port remaining Python logic module 'logic/integrations/enhanced_graphrag_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-406: Port remaining Python logic module 'logic/integrations/phase7_complete_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-407: Port remaining Python logic module 'logic/integrations/unixfs_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-408: Port remaining Python logic module 'logic/ml_confidence.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-409: Port remaining Python logic module 'logic/observability/metrics_prometheus.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-408: Port remaining Python logic module 'logic/ml_confidence.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-409: Port remaining Python logic module 'logic/observability/metrics_prometheus.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-410: Port remaining Python logic module 'logic/observability/otel_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-411: Port remaining Python logic module 'logic/observability/structured_logging.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-412: Port remaining Python logic module 'logic/phase7_4_benchmarks.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-408: Port remaining Python logic module 'logic/ml_confidence.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-409: Port remaining Python logic module 'logic/observability/metrics_prometheus.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported the remaining ml_confidence.py slice with browser-native deterministic model artifact loading, scoring, state, and unload controls.
-- Impact: src/lib/logic/mlConfidence.ts now exposes a fail-closed local artifact contract for deterministic linear/logistic confidence models with no server, Python, filesystem, subprocess, or RPC dependency; src/lib/logic/mlConfidence.test.ts validates artifact lifecycle behavior through Jest, and the task ledger marks checkbox-408 complete.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/mlConfidence.test.ts`, `src/lib/logic/mlConfidence.ts`
+- Summary: Ported Prometheus observability parity with browser-native snapshots, safe metric labels, log-level normalization, and last-failure gauges.
+- Impact: The TypeScript observability collector now exposes deterministic in-memory Prometheus text and JSON snapshot outputs without server, Python, filesystem, subprocess, or RPC dependencies, and the focused Jest suite directly validates the metrics_prometheus parity behavior.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/observability/observability.test.ts`, `src/lib/logic/observability/prometheusMetrics.ts`
 
 ### Blocked Backlog
 

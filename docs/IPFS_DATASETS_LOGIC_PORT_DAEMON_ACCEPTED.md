@@ -1964,3 +1964,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T151908Z-ported-the-remaining-ml_confidence.py-slice-with-browser-native-deterministic-mo.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T151908Z-ported-the-remaining-ml_confidence.py-slice-with-browser-native-deterministic-mo.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T151908Z-ported-the-remaining-ml_confidence.py-slice-with-browser-native-deterministic-mo.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 15:21:35 UTC
+
+- Target: `Task checkbox-409: Port remaining Python logic module `logic/observability/metrics_prometheus.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported Prometheus observability parity with browser-native snapshots, safe metric labels, log-level normalization, and last-failure gauges.
+- Impact: The TypeScript observability collector now exposes deterministic in-memory Prometheus text and JSON snapshot outputs without server, Python, filesystem, subprocess, or RPC dependencies, and the focused Jest suite directly validates the metrics_prometheus parity behavior.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/observability/observability.test.ts`, `src/lib/logic/observability/prometheusMetrics.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T152135Z-ported-prometheus-observability-parity-with-browser-native-snapshots-safe-metric.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T152135Z-ported-prometheus-observability-parity-with-browser-native-snapshots-safe-metric.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T152135Z-ported-prometheus-observability-parity-with-browser-native-snapshots-safe-metric.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
