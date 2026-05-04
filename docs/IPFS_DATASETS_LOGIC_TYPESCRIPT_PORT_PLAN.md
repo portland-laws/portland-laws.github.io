@@ -832,7 +832,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [!] Port remaining Python logic module `logic/external_provers/interactive/coq_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/external_provers/interactive/lean_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/external_provers/neural/symbolicai_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/external_provers/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/external_provers/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/external_provers/prover_router.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/external_provers/smt/cvc5_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/external_provers/smt/z3_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 09:37:25 UTC
+Last updated: 2026-05-04 09:40:51 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-322: Port remaining Python logic module 'logic/external_provers/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-323: Port remaining Python logic module 'logic/external_provers/prover_router.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1296,8 +1296,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-318: Port remaining Python logic module 'logic/external_provers/formula_analyzer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [!] `Task checkbox-319: Port remaining Python logic module 'logic/external_provers/interactive/coq_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
 - [x] `Task checkbox-320: Port remaining Python logic module 'logic/external_provers/interactive/lean_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-321: Port remaining Python logic module 'logic/external_provers/neural/symbolicai_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-322: Port remaining Python logic module 'logic/external_provers/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-321: Port remaining Python logic module 'logic/external_provers/neural/symbolicai_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-322: Port remaining Python logic module 'logic/external_provers/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-323: Port remaining Python logic module 'logic/external_provers/prover_router.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-324: Port remaining Python logic module 'logic/external_provers/smt/cvc5_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-325: Port remaining Python logic module 'logic/external_provers/smt/z3_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-321: Port remaining Python logic module 'logic/external_provers/neural/symbolicai_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-322: Port remaining Python logic module 'logic/external_provers/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported the SymbolicAI neural prover bridge as a browser-native deterministic TDFOL compatibility adapter.
-- Impact: Adds a TypeScript adapter exported from src/lib/logic/integration that preserves the SymbolicAI bridge contract without Python, SymbolicAI package execution, server calls, or external prover processes, and validates it through the existing Jest integration bridge suite.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/symbolicAiProverBridge.ts`
+- Summary: Ported external_provers proof_cache.py parity into the browser-native proof cache layer.
+- Impact: Adds an ExternalProverProofCache facade under src/lib/logic that uses deterministic content IDs, external prover identity/version/logic/options-sensitive lookup, TTL/LRU/statistics via the existing browser cache, and fail-closed local replay validation without server, filesystem, subprocess, RPC, or Python runtime dependencies. Focused Jest coverage validates the exported parity metadata, cache key sensitivity, and replay-validation behavior.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/proofCache.test.ts`, `src/lib/logic/proofCache.ts`
 
 ### Blocked Backlog
 

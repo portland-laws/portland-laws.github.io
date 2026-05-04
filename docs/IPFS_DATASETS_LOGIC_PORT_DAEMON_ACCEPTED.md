@@ -1181,3 +1181,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T093725Z-ported-the-symbolicai-neural-prover-bridge-as-a-browser-native-deterministic-tdf.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T093725Z-ported-the-symbolicai-neural-prover-bridge-as-a-browser-native-deterministic-tdf.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T093725Z-ported-the-symbolicai-neural-prover-bridge-as-a-browser-native-deterministic-tdf.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 09:40:51 UTC
+
+- Target: `Task checkbox-322: Port remaining Python logic module `logic/external_provers/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported external_provers proof_cache.py parity into the browser-native proof cache layer.
+- Impact: Adds an ExternalProverProofCache facade under src/lib/logic that uses deterministic content IDs, external prover identity/version/logic/options-sensitive lookup, TTL/LRU/statistics via the existing browser cache, and fail-closed local replay validation without server, filesystem, subprocess, RPC, or Python runtime dependencies. Focused Jest coverage validates the exported parity metadata, cache key sensitivity, and replay-validation behavior.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/proofCache.test.ts`, `src/lib/logic/proofCache.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T094051Z-ported-external_provers-proof_cache.py-parity-into-the-browser-native-proof-cach.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T094051Z-ported-external_provers-proof_cache.py-parity-into-the-browser-native-proof-cach.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T094051Z-ported-external_provers-proof_cache.py-parity-into-the-browser-native-proof-cach.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

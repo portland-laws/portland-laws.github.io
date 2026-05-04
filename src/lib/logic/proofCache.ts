@@ -39,6 +39,41 @@ export interface ProofCacheSnapshotEntry<Result = unknown> extends CachedProofRe
   expired: boolean;
 }
 
+export interface ExternalProverIdentity {
+  name: string;
+  version?: string;
+  logic?: string;
+  backend?: 'browser-native' | 'wasm' | 'local-adapter' | 'simulated';
+}
+
+export interface ExternalProverProofCacheQuery {
+  formula: unknown;
+  axioms?: Array<unknown>;
+  prover: ExternalProverIdentity;
+  options?: Record<string, unknown>;
+}
+
+export interface ExternalProverProofArtifact {
+  status: 'proved' | 'disproved' | 'unknown' | 'error';
+  proofText?: string;
+  modelText?: string;
+  stdout?: string;
+  stderr?: string;
+  metadata?: Record<string, unknown>;
+}
+
+export interface ExternalProverCachedProof extends ExternalProverProofArtifact {
+  replayValidated: boolean;
+}
+
+export interface ExternalProverProofCacheOptions extends ProofCacheOptions {
+  requireReplayValidation?: boolean;
+  replayValidator?: (
+    query: ExternalProverProofCacheQuery,
+    artifact: ExternalProverProofArtifact,
+  ) => boolean;
+}
+
 export const COMMON_PROOF_CACHE_METADATA = {
   sourcePythonModule: 'logic/common/proof_cache.py',
   browserNative: true,
@@ -51,6 +86,20 @@ export const COMMON_PROOF_CACHE_METADATA = {
     'invalidation_and_clear',
     'cache_statistics',
     'global_cache_helpers',
+    'local_snapshot_introspection',
+  ] as Array<string>,
+} as const;
+
+export const EXTERNAL_PROVER_PROOF_CACHE_METADATA = {
+  sourcePythonModule: 'logic/external_provers/proof_cache.py',
+  browserNative: true,
+  runtimeDependencies: [] as Array<string>,
+  parity: [
+    'external_prover_identity_keys',
+    'version_and_logic_sensitive_lookup',
+    'option_sensitive_lookup',
+    'fail_closed_replay_validation',
+    'ttl_lru_statistics',
     'local_snapshot_introspection',
   ] as Array<string>,
 } as const;
@@ -205,6 +254,57 @@ export class ProofCache<Result = unknown> {
   }
 }
 
+export class ExternalProverProofCache {
+  private readonly cache: ProofCache<ExternalProverCachedProof>;
+  private readonly requireReplayValidation: boolean;
+  private readonly replayValidator?: ExternalProverProofCacheOptions['replayValidator'];
+
+  constructor(options: ExternalProverProofCacheOptions = {}) {
+    this.cache = new ProofCache<ExternalProverCachedProof>(options);
+    this.requireReplayValidation = options.requireReplayValidation ?? false;
+    this.replayValidator = options.replayValidator;
+  }
+
+  computeCid(query: ExternalProverProofCacheQuery): string {
+    return this.cache.computeCid(toProofCacheQuery(query));
+  }
+
+  get(query: ExternalProverProofCacheQuery): ExternalProverCachedProof | undefined {
+    return this.cache.get(
+      String(query.formula),
+      normalizeAxiomStrings(query.axioms),
+      query.prover.name,
+      externalProverConfig(query),
+    );
+  }
+
+  set(
+    query: ExternalProverProofCacheQuery,
+    artifact: ExternalProverProofArtifact,
+  ): string | undefined {
+    const replayValidated = this.replayValidator?.(query, artifact) ?? false;
+    if (this.requireReplayValidation && !replayValidated) {
+      return undefined;
+    }
+    const cached: ExternalProverCachedProof = { ...artifact, replayValidated };
+    return this.cache.set(
+      String(query.formula),
+      cached,
+      normalizeAxiomStrings(query.axioms),
+      query.prover.name,
+      externalProverConfig(query),
+    );
+  }
+
+  snapshot(): Array<ProofCacheSnapshotEntry<ExternalProverCachedProof>> {
+    return this.cache.snapshot();
+  }
+
+  getStats(): ProofCacheStats {
+    return this.cache.getStats();
+  }
+}
+
 let globalProofCache: ProofCache | undefined;
 
 export function getGlobalProofCache(): ProofCache {
@@ -234,6 +334,24 @@ function normalizeProofCacheArgs(
 
 function normalizeAxiomStrings(axioms: unknown[] | undefined): Array<string> {
   return (axioms ?? []).map(String).sort((left, right) => left.localeCompare(right));
+}
+
+function toProofCacheQuery(query: ExternalProverProofCacheQuery): ProofCacheQuery {
+  return {
+    formula: String(query.formula),
+    axioms: normalizeAxiomStrings(query.axioms),
+    proverName: query.prover.name,
+    proverConfig: externalProverConfig(query),
+  };
+}
+
+function externalProverConfig(query: ExternalProverProofCacheQuery): Record<string, unknown> {
+  return {
+    backend: query.prover.backend,
+    logic: query.prover.logic,
+    options: query.options ?? {},
+    version: query.prover.version,
+  };
 }
 
 function hashString(value: string): string {

@@ -1,5 +1,7 @@
 import {
   COMMON_PROOF_CACHE_METADATA,
+  EXTERNAL_PROVER_PROOF_CACHE_METADATA,
+  ExternalProverProofCache,
   ProofCache,
   cidForObject,
   clearGlobalProofCache,
@@ -112,5 +114,61 @@ describe('ProofCache', () => {
     clearGlobalProofCache();
     getGlobalProofCache().set('A', 'proved');
     expect(getGlobalProofCache().get('A')).toBe('proved');
+  });
+
+  it('declares the browser-native external_provers proof_cache.py parity contract', () => {
+    expect(EXTERNAL_PROVER_PROOF_CACHE_METADATA).toMatchObject({
+      sourcePythonModule: 'logic/external_provers/proof_cache.py',
+      browserNative: true,
+      runtimeDependencies: [],
+    });
+    expect(EXTERNAL_PROVER_PROOF_CACHE_METADATA.parity).toEqual(
+      expect.arrayContaining([
+        'external_prover_identity_keys',
+        'version_and_logic_sensitive_lookup',
+        'fail_closed_replay_validation',
+      ]),
+    );
+  });
+
+  it('caches external prover artifacts by prover identity, version, logic, and options', () => {
+    const cache = new ExternalProverProofCache();
+    const query = {
+      formula: '(assert (=> P Q))',
+      axioms: ['P'],
+      prover: { name: 'z3', version: '4.13.0', logic: 'SMT-LIB' },
+      options: { timeoutMs: 500, model: false },
+    };
+    const stored = cache.set(query, { status: 'proved', proofText: 'sat-proof' });
+
+    expect(stored).toMatch(/^browsets-/);
+    expect(cache.get(query)).toMatchObject({
+      status: 'proved',
+      proofText: 'sat-proof',
+      replayValidated: false,
+    });
+    expect(
+      cache.get({
+        ...query,
+        prover: { name: 'z3', version: '4.12.0', logic: 'SMT-LIB' },
+      }),
+    ).toBeUndefined();
+    expect(cache.get({ ...query, options: { timeoutMs: 1000, model: false } })).toBeUndefined();
+  });
+
+  it('fails closed when external prover replay validation is required', () => {
+    const cache = new ExternalProverProofCache({
+      requireReplayValidation: true,
+      replayValidator: (_query, artifact) => artifact.proofText === 'locally-replayed',
+    });
+    const query = { formula: 'P', prover: { name: 'cvc5', version: '1.2.0' } };
+
+    expect(cache.set(query, { status: 'proved', proofText: 'opaque' })).toBeUndefined();
+    expect(cache.get(query)).toBeUndefined();
+
+    expect(cache.set(query, { status: 'proved', proofText: 'locally-replayed' })).toMatch(
+      /^browsets-/,
+    );
+    expect(cache.get(query)).toMatchObject({ replayValidated: true });
   });
 });
