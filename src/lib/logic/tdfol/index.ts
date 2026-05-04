@@ -1,4 +1,5 @@
 export * from './ast';
+export * from './browserNativeLlm';
 export * from './converter';
 export * from './countermodels';
 export * from './dependencyGraph';

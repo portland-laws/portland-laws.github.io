@@ -713,3 +713,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T054012Z-ported-demonstrate_ipfs_cache.py-as-a-browser-native-tdfol-proof-cache-demo-with.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T054012Z-ported-demonstrate_ipfs_cache.py-as-a-browser-native-tdfol-proof-cache-demo-with.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T054012Z-ported-demonstrate_ipfs_cache.py-as-a-browser-native-tdfol-proof-cache-demo-with.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 05:45:22 UTC
+
+- Target: `Task checkbox-269: Port remaining Python logic module `logic/TDFOL/nl/llm.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported TDFOL nl/llm.py prompt, hint, cache, and hybrid conversion surface to a browser-native TypeScript adapter.
+- Impact: src/lib/logic/tdfol/browserNativeLlm.ts is exported through the TDFOL index and exercised by the existing Jest TDFOL converter validation path; it provides deterministic local conversion for high-confidence legal/deontic sentences and fails closed without server, Python, subprocess, RPC, or Node-only fallback for low-confidence LLM cases.
+- Changed files: `src/lib/logic/tdfol/browserNativeLlm.ts`, `src/lib/logic/tdfol/converter.test.ts`, `src/lib/logic/tdfol/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T054522Z-ported-tdfol-nl-llm.py-prompt-hint-cache-and-hybrid-conversion-surface-to-a-brow.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T054522Z-ported-tdfol-nl-llm.py-prompt-hint-cache-and-hybrid-conversion-surface-to-a-brow.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T054522Z-ported-tdfol-nl-llm.py-prompt-hint-cache-and-hybrid-conversion-surface-to-a-brow.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

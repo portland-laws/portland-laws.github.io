@@ -1,10 +1,10 @@
 import { parseTdfolFormula } from './parser';
+import { convertTdfolBatch, convertTdfolFormula, tdfolToFol, tdfolToTptp } from './converter';
 import {
-  convertTdfolBatch,
-  convertTdfolFormula,
-  tdfolToFol,
-  tdfolToTptp,
-} from './converter';
+  BrowserNativeTdfolLlmConverter,
+  buildTdfolLlmConversionPrompt,
+  getTdfolOperatorHintsForText,
+} from './browserNativeLlm';
 
 describe('TDFOL converter', () => {
   it('converts parsed formulas back to stable TDFOL output with metadata', () => {
@@ -41,7 +41,9 @@ describe('TDFOL converter', () => {
     const formula = parseTdfolFormula('forall x. Resident(x) -> O(Comply(x))');
 
     expect(tdfolToTptp(formula)).toBe('![X]:((resident(X) => obligation(comply(X))))');
-    expect(convertTdfolFormula(formula, 'tptp').output).toBe('fof(tdfol_formula, axiom, ![X]:((resident(X) => obligation(comply(X))))).');
+    expect(convertTdfolFormula(formula, 'tptp').output).toBe(
+      'fof(tdfol_formula, axiom, ![X]:((resident(X) => obligation(comply(X))))).',
+    );
   });
 
   it('converts formulas to JSON and supports batch conversion', () => {
@@ -52,9 +54,43 @@ describe('TDFOL converter', () => {
       freeVariables: [],
     });
     expect(tdfolToFol(parseTdfolFormula('Permit(Alice)'))).toBe('Permit(Alice)');
-    expect(convertTdfolBatch(['Permit(Alice)', 'O(Comply(x))'], 'dcec').map((result) => result.output)).toEqual([
-      '(Permit Alice)',
-      '(O (Comply x))',
-    ]);
+    expect(
+      convertTdfolBatch(['Permit(Alice)', 'O(Comply(x))'], 'dcec').map((result) => result.output),
+    ).toEqual(['(Permit Alice)', '(O (Comply x))']);
+  });
+
+  it('ports TDFOL llm.py prompts, hints, cache, and fail-closed browser conversion', () => {
+    const hints = getTdfolOperatorHintsForText('All contractors must pay taxes.');
+    expect(hints).toEqual(['universal', 'obligation']);
+    expect(buildTdfolLlmConversionPrompt('All contractors must pay taxes.', hints)).toContain(
+      'server, Python, subprocess, or RPC fallback',
+    );
+
+    const converter = new BrowserNativeTdfolLlmConverter();
+    const first = converter.convert('All contractors must pay taxes.');
+    const second = converter.convert('All contractors must pay taxes.');
+    expect(first).toMatchObject({
+      success: true,
+      formula: 'forall x. Contractor(x) -> O(PayTaxes(x))',
+      confidence: 0.9,
+      method: 'pattern',
+      cacheHit: false,
+    });
+    expect(first.metadata).toMatchObject({
+      llmAvailable: false,
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+    });
+    expect(() => parseTdfolFormula(first.formula)).not.toThrow();
+    expect(second.cacheHit).toBe(true);
+    expect(converter.getStats()).toMatchObject({ size: 1, hits: 1, misses: 1 });
+
+    const failed = converter.convert('This ambiguous policy needs external judgement.');
+    expect(failed).toMatchObject({
+      success: false,
+      method: 'failed',
+      metadata: { serverCallsAllowed: false },
+    });
+    expect(failed.errors[0]).toContain('browser LLM router is fail-closed');
   });
 });
