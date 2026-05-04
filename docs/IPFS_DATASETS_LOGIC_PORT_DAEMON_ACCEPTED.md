@@ -1244,3 +1244,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T100543Z-ported-flogic_types.py-parity-helpers-into-the-browser-native-f-logic-type-modul.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T100543Z-ported-flogic_types.py-parity-helpers-into-the-browser-native-f-logic-type-modul.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T100543Z-ported-flogic_types.py-parity-helpers-into-the-browser-native-f-logic-type-modul.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 10:10:54 UTC
+
+- Target: `Task checkbox-329: Port remaining Python logic module `logic/flogic/flogic_zkp_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported F-logic ZKP integration as a browser-native simulated certificate adapter with deterministic local F-logic fact querying.
+- Impact: The new F-logic ZKP module is exported from src/lib/logic/flogic, produces locally verified simulated ZKP certificates through the existing browser-native ZKP facade, and is exercised by focused Jest coverage for class hierarchy queries, scalar attribute bindings, private certificate summaries, and standard fallback behavior.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/flogic/index.ts`, `src/lib/logic/flogic/parser.test.ts`, `src/lib/logic/flogic/zkpIntegration.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T101054Z-ported-f-logic-zkp-integration-as-a-browser-native-simulated-certificate-adapter.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T101054Z-ported-f-logic-zkp-integration-as-a-browser-native-simulated-certificate-adapter.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T101054Z-ported-f-logic-zkp-integration-as-a-browser-native-simulated-certificate-adapter.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

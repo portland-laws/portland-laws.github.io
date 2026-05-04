@@ -3,3 +3,4 @@ export * from './formatter';
 export * from './parser';
 export * from './proofCache';
 export * from './types';
+export * from './zkpIntegration';

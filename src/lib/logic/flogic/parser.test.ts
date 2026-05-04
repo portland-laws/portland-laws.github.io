@@ -1,5 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
+import { webcrypto } from 'node:crypto';
+import { TextEncoder } from 'node:util';
 
 import { frameToDisplayRow, formatFLogicOntology } from './formatter';
 import { ERGOAI_AVAILABLE, ErgoAIWrapper, parseErgoOutput } from './ergoaiWrapper';
@@ -12,6 +14,12 @@ import {
   queryFLogicWithCache,
 } from './proofCache';
 import {
+  HAVE_FLOGIC_ZKP,
+  ZkpFLogicProver,
+  createHybridFLogicProver,
+  evaluateFLogicGoal,
+} from './zkpIntegration';
+import {
   FLOGIC_TYPES_METADATA,
   createFLogicFrame,
   createFLogicOntology,
@@ -21,6 +29,9 @@ import {
   flogicQueryToDict,
   validateFLogicOntology,
 } from './types';
+
+Object.defineProperty(globalThis, 'crypto', { value: webcrypto, configurable: true });
+Object.defineProperty(globalThis, 'TextEncoder', { value: TextEncoder, configurable: true });
 
 const generatedProgram = `
 MunicipalLaw :: LegalNorm.
@@ -287,5 +298,52 @@ describe('F-logic parser', () => {
     expect(result.warnings).toEqual([
       'F-logic frame section references undeclared class UndeclaredClass',
     ]);
+  });
+
+  it('ports flogic_zkp_integration.py with local simulated ZKP certificates', async () => {
+    const ontology = parseFLogicOntology(generatedProgram, 'Portland fixture');
+    const direct = evaluateFLogicGoal('?Section : MunicipalLaw', ontology);
+    const prover = createHybridFLogicProver({ enableZkp: true });
+    const result = await prover.proveTheorem('?Section : MunicipalLaw', ontology, {
+      preferZkp: true,
+      privateOntology: true,
+    });
+
+    expect(HAVE_FLOGIC_ZKP).toBe(true);
+    expect(direct.bindings).toEqual([{ '?Section': 'portland_city_code_1_01_010' }]);
+    expect(
+      evaluateFLogicGoal('?Section[identifier -> ?Identifier]', ontology).bindings[0],
+    ).toMatchObject({
+      '?Identifier': 'Portland City Code 1.01.010',
+      '?Section': 'portland_city_code_1_01_010',
+    });
+    expect(result.isProved).toBe(true);
+    expect(result.zkpProof?.publicInputs.ruleset_id).toBe('FLOGIC_v1');
+    expect(result.toDict()).toMatchObject({
+      is_proved: true,
+      bindings: ['<private>'],
+      method: 'flogic_zkp',
+      zkp_backend: 'simulated',
+    });
+    expect(result.toDict().zkp_security_note).toContain('not cryptographically secure');
+  });
+
+  it('falls back to deterministic standard F-logic query mode when ZKP is disabled', async () => {
+    const ontology = parseFLogicOntology(generatedProgram, 'Portland fixture');
+    const prover = new ZkpFLogicProver({ enableZkp: false });
+    const result = await prover.proveTheorem(
+      'portland_city_code_1_01_010 : MunicipalLaw',
+      ontology,
+      {
+        preferZkp: true,
+      },
+    );
+
+    expect(result.toDict()).toMatchObject({
+      is_proved: true,
+      method: 'flogic_standard',
+      status: 'success',
+    });
+    expect(prover.getStatistics()).toMatchObject({ standard_queries: 1, zkp_attempts: 0 });
   });
 });
