@@ -32,6 +32,7 @@ export * from './leanProverBridge';
 export * from './modalLogicExtension';
 export * from './neurosymbolic';
 export * from './nlUcanPolicyCompiler';
+export * from './phase7CompleteIntegration';
 export * from './proverAdapters';
 export * from './proverInstaller';
 export {
