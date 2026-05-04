@@ -11,6 +11,16 @@ import {
   parseTdfolNaturalLanguage,
 } from './nlApi';
 import { createBrowserNativeTdfolNlContext, resolveTdfolNlContextText } from './nlContext';
+import {
+  TDFOL_NL_UTILS_METADATA,
+  detectTdfolNlOperatorHints,
+  extractTdfolNlLegalReferences,
+  normalizeTdfolNlText,
+  singularizeTdfolNlNoun,
+  splitTdfolNlSentences,
+  toTdfolPredicateName,
+  tokenizeTdfolNl,
+} from './nlUtils';
 import { BrowserNativeTdfolNlGenerator, generateTdfolNl } from './tdfolNlGenerator';
 import { preprocessTdfolNaturalLanguage } from './tdfolNlPreprocessor';
 import { matchTdfolNlPattern } from './tdfolNlPatterns';
@@ -164,6 +174,40 @@ describe('TDFOL converter', () => {
           normalizedText: 'All contractors must not delete records.',
         },
       },
+    });
+  });
+
+  it('ports TDFOL nl/utils.py helpers as deterministic browser-native utilities', () => {
+    expect(normalizeTdfolNlText(' “All   tenants”\r\nshall comply ; see § 5.33. ')).toBe(
+      '"All tenants" shall comply; see § 5.33.',
+    );
+    expect(splitTdfolNlSentences('All tenants shall comply. Some tenants may appeal')).toEqual([
+      'All tenants shall comply.',
+      'Some tenants may appeal',
+    ]);
+    expect(tokenizeTdfolNl('Tenant-owner shall not appeal.')).toEqual([
+      { text: 'Tenant-owner', normalized: 'tenant-owner', start: 0, end: 12 },
+      { text: 'shall', normalized: 'shall', start: 13, end: 18 },
+      { text: 'not', normalized: 'not', start: 19, end: 22 },
+      { text: 'appeal', normalized: 'appeal', start: 23, end: 29 },
+    ]);
+    expect(singularizeTdfolNlNoun('Parties')).toBe('party');
+    expect(toTdfolPredicateName('the tenant must keep records')).toBe('TenantMustKeepRecords');
+    expect(detectTdfolNlOperatorHints('Every tenant shall not eventually delete records')).toEqual([
+      'universal',
+      'forbidden',
+      'obligation',
+      'temporal_eventually',
+    ]);
+    expect(extractTdfolNlLegalReferences('See section 5.33 and Sec. 3.96.020.')).toEqual([
+      '5.33',
+      '3.96.020',
+    ]);
+    expect(TDFOL_NL_UTILS_METADATA).toMatchObject({
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      sourcePythonModule: 'logic/TDFOL/nl/utils.py',
     });
   });
 

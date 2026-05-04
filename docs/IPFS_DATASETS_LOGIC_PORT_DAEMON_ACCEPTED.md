@@ -767,3 +767,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T061030Z-ported-tdfol-nl-preprocessing-into-the-browser-native-typescript-logic-stack..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T061030Z-ported-tdfol-nl-preprocessing-into-the-browser-native-typescript-logic-stack..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T061030Z-ported-tdfol-nl-preprocessing-into-the-browser-native-typescript-logic-stack..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 06:13:36 UTC
+
+- Target: `Task checkbox-275: Port remaining Python logic module `logic/TDFOL/nl/utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported TDFOL nl/utils.py helper behavior into a browser-native TypeScript utility module.
+- Impact: The new src/lib/logic/tdfol/nlUtils.ts module provides deterministic normalization, tokenization, sentence splitting, predicate naming, singularization, operator hint detection, and legal-reference extraction for the TDFOL NL pipeline without server, Python, filesystem, subprocess, RPC, or Node-only runtime dependencies. Existing TDFOL Jest coverage now validates those helpers and metadata.
+- Changed files: `src/lib/logic/tdfol/converter.test.ts`, `src/lib/logic/tdfol/index.ts`, `src/lib/logic/tdfol/nlUtils.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T061336Z-ported-tdfol-nl-utils.py-helper-behavior-into-a-browser-native-typescript-utilit.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T061336Z-ported-tdfol-nl-utils.py-helper-behavior-into-a-browser-native-typescript-utilit.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T061336Z-ported-tdfol-nl-utils.py-helper-behavior-into-a-browser-native-typescript-utilit.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

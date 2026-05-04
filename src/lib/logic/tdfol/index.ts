@@ -25,6 +25,7 @@ export * from './lexer';
 export * from './modalTableaux';
 export * from './nlApi';
 export * from './nlContext';
+export * from './nlUtils';
 export * from './tdfolNlPreprocessor';
 export * from './tdfolNlPatterns';
 export * from './tdfolNlGenerator';
