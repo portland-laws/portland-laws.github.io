@@ -44,3 +44,4 @@ export * from './prover';
 export * from './quickstartVisualizer';
 export * from './securityValidator';
 export * from './strategies';
+export * from './zkpIntegration';

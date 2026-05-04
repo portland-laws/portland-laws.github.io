@@ -974,3 +974,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T072737Z-ported-the-remaining-tdfol-prover-parity-slice-with-browser-native-metadata-dire.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T072737Z-ported-the-remaining-tdfol-prover-parity-slice-with-browser-native-metadata-dire.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T072737Z-ported-the-remaining-tdfol-prover-parity-slice-with-browser-native-metadata-dire.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 07:37:38 UTC
+
+- Target: `Task checkbox-298: Port remaining Python logic module `logic/TDFOL/zkp_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported TDFOL ZKP integration to a browser-native TypeScript adapter using the existing simulated ZKP backend.
+- Impact: Adds exported TDFOL hybrid proof helpers that can produce private simulated ZKP proof results, fail closed for unavailable Groth16 proving, and validate the behavior through focused Jest coverage without Python, server, filesystem, subprocess, RPC, or Node-only browser runtime fallbacks.
+- Changed files: `src/lib/logic/tdfol/index.ts`, `src/lib/logic/tdfol/zkpIntegration.test.ts`, `src/lib/logic/tdfol/zkpIntegration.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T073738Z-ported-tdfol-zkp-integration-to-a-browser-native-typescript-adapter-using-the-ex.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T073738Z-ported-tdfol-zkp-integration-to-a-browser-native-typescript-adapter-using-the-ex.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T073738Z-ported-tdfol-zkp-integration-to-a-browser-native-typescript-adapter-using-the-ex.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
