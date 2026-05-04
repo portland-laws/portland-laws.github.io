@@ -407,3 +407,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T032055Z-added-a-browser-native-deterministic-cec-base-natural-language-parser-surface-fo.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T032055Z-added-a-browser-native-deterministic-cec-base-natural-language-parser-surface-fo.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T032055Z-added-a-browser-native-deterministic-cec-base-natural-language-parser-surface-fo.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 03:34:14 UTC
+
+- Target: `Task checkbox-235: Port remaining Python logic module `logic/CEC/nl/dcec_to_ucan_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported logic/CEC/nl/dcec_to_ucan_bridge.py as a browser-native DCEC-to-UCAN bridge.
+- Impact: src/lib/logic/cec/dcecToUcanBridge.ts maps parsed DCEC deontic formulas into deterministic UCAN-style capabilities and unsigned local delegation payloads, exports Python-compatible aliases through the CEC barrel, and src/lib/logic/cec/dcecToUcanBridge.test.ts validates permission, prohibition, unsigned-token, and fail-closed behavior without Python, server, filesystem, subprocess, or RPC dependencies.
+- Changed files: `src/lib/logic/cec/dcecToUcanBridge.test.ts`, `src/lib/logic/cec/dcecToUcanBridge.ts`, `src/lib/logic/cec/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T033414Z-ported-logic-cec-nl-dcec_to_ucan_bridge.py-as-a-browser-native-dcec-to-ucan-brid.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T033414Z-ported-logic-cec-nl-dcec_to_ucan_bridge.py-as-a-browser-native-dcec-to-ucan-brid.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T033414Z-ported-logic-cec-nl-dcec_to_ucan_bridge.py-as-a-browser-native-dcec-to-ucan-brid.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

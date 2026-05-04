@@ -15,6 +15,7 @@ export * from './dcecNamespace';
 export * from './dcecParsing';
 export * from './dcecPrototypes';
 export * from './dcecTemporal';
+export * from './dcecToUcanBridge';
 export * from './dcecTypes';
 export * from './dependencyGraph';
 export * from './eventCalculus';
