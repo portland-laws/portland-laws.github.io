@@ -4,6 +4,13 @@ import { resolve } from 'node:path';
 import { frameToDisplayRow, formatFLogicOntology } from './formatter';
 import { ERGOAI_AVAILABLE, ErgoAIWrapper, parseErgoOutput } from './ergoaiWrapper';
 import { normalizeFLogicGoal, parseFLogicOntology } from './parser';
+import {
+  FLOGIC_PROOF_CACHE_METADATA,
+  FLogicProofCache,
+  clearGlobalFLogicProofCache,
+  getGlobalFLogicProofCache,
+  queryFLogicWithCache,
+} from './proofCache';
 
 const generatedProgram = `
 MunicipalLaw :: LegalNorm.
@@ -135,5 +142,70 @@ describe('F-logic parser', () => {
     const bindings = parseErgoOutput('% comment\n?X = rex, ?Y = Dog\nunrelated\n?X = fido');
 
     expect(bindings).toEqual([{ '?X': 'rex', '?Y': 'Dog' }, { '?X': 'fido' }]);
+  });
+
+  it('declares browser-native flogic_proof_cache.py parity metadata and keys cached queries', () => {
+    expect(FLOGIC_PROOF_CACHE_METADATA).toMatchObject({
+      sourcePythonModule: 'logic/flogic/flogic_proof_cache.py',
+      browserNative: true,
+      runtimeDependencies: [],
+    });
+    expect(FLOGIC_PROOF_CACHE_METADATA.parity).toEqual(
+      expect.arrayContaining([
+        'normalized_goal_ontology_keys',
+        'query_option_sensitive_lookup',
+        'ttl_lru_statistics',
+        'fail_closed_browser_query_facade',
+      ]),
+    );
+
+    const ontology = parseFLogicOntology(generatedProgram, 'Portland fixture');
+    const cache = new FLogicProofCache();
+    const result = {
+      goal: '?Section : PortlandCityCodeSection',
+      bindings: [{ '?Section': 'portland_city_code_1_01_010' }],
+      status: 'success' as const,
+    };
+
+    const cid = cache.set('?Section : PortlandCityCodeSection', ontology, result, {
+      maxSolutions: 1,
+    });
+
+    expect(cid).toMatch(/^browsets-/);
+    expect(
+      cache.computeCid('?Section : portland_city_code_section', ontology, { maxSolutions: 1 }),
+    ).toBe(cid);
+    expect(
+      cache.get('?Section : portland_city_code_section', ontology, { maxSolutions: 1 }),
+    ).toEqual(result);
+    expect(
+      cache.get('?Section : portland_city_code_section', ontology, { maxSolutions: 2 }),
+    ).toBeUndefined();
+    expect(cache.getStats()).toMatchObject({ hits: 1, misses: 1, sets: 1 });
+  });
+
+  it('uses fail-closed browser-local query caching and global helpers', () => {
+    const ontology = parseFLogicOntology(generatedProgram, 'Portland fixture');
+    const cache = new FLogicProofCache();
+
+    expect(cache.query('?Section : PortlandCityCodeSection', ontology)).toMatchObject({
+      goal: '?Section : PortlandCityCodeSection',
+      bindings: [],
+      status: 'unknown',
+    });
+    expect(cache.query('?Section : PortlandCityCodeSection', ontology)).toMatchObject({
+      errorMessage: expect.stringContaining('browser-native TypeScript runtime'),
+    });
+    expect(cache.getStats()).toMatchObject({ hits: 1, sets: 1 });
+
+    clearGlobalFLogicProofCache();
+    expect(queryFLogicWithCache('?Section : PortlandCityCodeSection', ontology)).toMatchObject({
+      status: 'unknown',
+    });
+    expect(
+      getGlobalFLogicProofCache().get('?Section : PortlandCityCodeSection', ontology),
+    ).toMatchObject({
+      status: 'unknown',
+    });
   });
 });

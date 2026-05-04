@@ -1226,3 +1226,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T095632Z-ported-the-f-logic-ergoai-wrapper-surface-to-browser-native-typescript-with-fail.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T095632Z-ported-the-f-logic-ergoai-wrapper-surface-to-browser-native-typescript-with-fail.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T095632Z-ported-the-f-logic-ergoai-wrapper-surface-to-browser-native-typescript-with-fail.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 10:00:32 UTC
+
+- Target: `Task checkbox-327: Port remaining Python logic module `logic/flogic/flogic_proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported logic/flogic/flogic_proof_cache.py as a browser-native F-logic proof query cache.
+- Impact: Adds an exported FLogicProofCache under src/lib/logic/flogic that reuses the browser-native ProofCache for deterministic content IDs, normalized F-logic goal and ontology keys, query-option-sensitive lookup, TTL/LRU statistics, fail-closed ErgoAI query caching, and global helpers without Python, server, filesystem, subprocess, RPC, or Node-only browser runtime dependencies. Existing F-logic Jest coverage now validates the parity metadata, cache key behavior, and global fail-closed query facade.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/flogic/index.ts`, `src/lib/logic/flogic/parser.test.ts`, `src/lib/logic/flogic/proofCache.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T100032Z-ported-logic-flogic-flogic_proof_cache.py-as-a-browser-native-f-logic-proof-quer.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T100032Z-ported-logic-flogic-flogic_proof_cache.py-as-a-browser-native-f-logic-proof-quer.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T100032Z-ported-logic-flogic-flogic_proof_cache.py-as-a-browser-native-f-logic-proof-quer.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
