@@ -26,6 +26,7 @@ import {
   summarize_reasoning_logic_verification_results,
   validate_reasoning_logic_verification_inputs,
 } from './reasoningLogicVerificationUtils';
+import { ProofExecutionEngine, check_consistency } from './proofExecutionEngine';
 
 describe('BrowserNativeLogicVerification', () => {
   it('ports logic_verification.py as local browser-native formula verification', () => {
@@ -295,6 +296,33 @@ describe('BrowserNativeLogicVerification', () => {
       metadata: {
         sourcePythonModule: 'logic/integration/reasoning/logic_verification_utils.py',
       },
+    });
+  });
+
+  it('ports proof_execution_engine.py as a browser-native proof facade', () => {
+    const engine = new ProofExecutionEngine({ enableRateLimiting: false });
+    const first = engine.prove_deontic_formula('Tenant(x)', 'local');
+    const cached = engine.prove('Tenant(x)');
+    const blocked = engine.prove('fetch("https://example.test/prove")', 'z3');
+    const consistency = check_consistency({ formulas: ['Tenant(x)', 'Resident(x)'] });
+
+    expect(engine.metadata).toMatchObject({
+      sourcePythonModule: 'logic/integration/reasoning/proof_execution_engine.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      subprocessAllowed: false,
+      runtimeDependencies: [],
+    });
+    expect(first).toMatchObject({ prover: 'local', status: 'success' });
+    expect(cached.metadata).toMatchObject({ cacheHit: true });
+    expect(blocked).toMatchObject({
+      prover: 'z3',
+      status: 'unsupported',
+    });
+    expect(consistency).toMatchObject({ status: 'success', metadata: { checkedFormulas: 2 } });
+    expect(engine.get_prover_status()).toMatchObject({
+      availableProvers: { local: true, z3: false },
     });
   });
 });
