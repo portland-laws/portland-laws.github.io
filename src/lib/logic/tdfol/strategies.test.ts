@@ -16,6 +16,7 @@ import {
   TdfolLocalCecDelegate,
   TdfolModalTableauxStrategy,
   TdfolStrategySelector,
+  TDFOL_STRATEGY_SELECTOR_METADATA,
   tdfolToCecExpression,
   type TdfolProverStrategy,
 } from './strategies';
@@ -191,6 +192,69 @@ describe('TDFOL proving strategies', () => {
     expect(
       selector.selectMultiple(parseTdfolFormula('Goal(x)'), { axioms: [] }, 1).map((s) => s.name),
     ).toEqual(['High']);
+  });
+
+  it('ports strategy_selector.py metadata and priority selection diagnostics', () => {
+    const selector = new TdfolStrategySelector({
+      strategies: [fakeStrategy('Low', 5, 1, false), fakeStrategy('High', 50, 2, false)],
+    });
+    const selection = selector.selectStrategyWithTrace(parseTdfolFormula('Goal(x)'), {
+      axioms: [],
+    });
+
+    expect(TDFOL_STRATEGY_SELECTOR_METADATA).toMatchObject({
+      sourcePythonModule: 'logic/TDFOL/strategies/strategy_selector.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntimeRequired: false,
+    });
+    expect(selector.getMetadata().strategyCount).toBe(2);
+    expect(selection.strategy.name).toBe('High');
+    expect(selection.trace).toMatchObject({
+      mode: 'priority',
+      fallbackUsed: false,
+      selected: { name: 'High', priority: 50, cost: 2 },
+      sourcePythonModule: 'logic/TDFOL/strategies/strategy_selector.py',
+      serverCallsAllowed: false,
+      pythonRuntimeRequired: false,
+    });
+    expect(selection.trace.applicableStrategies.map((strategy) => strategy.name)).toEqual([
+      'High',
+      'Low',
+    ]);
+  });
+
+  it('ports strategy_selector.py low-cost and fallback selection traces', () => {
+    const lowCostSelector = new TdfolStrategySelector({
+      strategies: [fakeStrategy('Expensive', 100, 200, false), fakeStrategy('Cheap', 10, 1, false)],
+    });
+
+    expect(
+      lowCostSelector.selectStrategyWithTrace(parseTdfolFormula('Goal(x)'), { axioms: [] }, true)
+        .trace,
+    ).toMatchObject({
+      mode: 'low_cost',
+      selected: { name: 'Cheap', cost: 1 },
+      fallbackUsed: false,
+    });
+
+    const fallbackSelector = new TdfolStrategySelector({
+      strategies: [
+        fakeStrategy('ModalOnly', 90, 4, false, false, 'modal_tableaux'),
+        fakeStrategy('ForwardFallback', 30, 8, false, false, 'forward_chaining'),
+      ],
+    });
+    const fallback = fallbackSelector.selectStrategyWithTrace(parseTdfolFormula('Goal(x)'), {
+      axioms: [],
+    });
+
+    expect(fallback.strategy.name).toBe('ForwardFallback');
+    expect(fallback.trace).toMatchObject({
+      mode: 'fallback',
+      fallbackUsed: true,
+      applicableStrategies: [],
+      selected: { name: 'ForwardFallback', type: 'forward_chaining' },
+    });
   });
 
   it('selects modal tableaux for modal formulas in the default strategy set', () => {
@@ -399,11 +463,13 @@ function fakeStrategy(
   priority: number,
   cost: number,
   proved: boolean,
+  canHandle = true,
+  strategyType: TdfolProverStrategy['strategyType'] = 'forward_chaining',
 ): TdfolProverStrategy {
   return {
     name,
-    strategyType: 'forward_chaining',
-    canHandle: () => true,
+    strategyType,
+    canHandle: () => canHandle,
     prove: (formula): ProofResult => ({
       status: proved ? 'proved' : 'unknown',
       theorem: String(formula),

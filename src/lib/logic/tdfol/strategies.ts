@@ -954,6 +954,29 @@ export interface TdfolStrategySelectorOptions {
   strategies?: TdfolProverStrategy[];
 }
 
+export type TdfolStrategySelectionMode = 'priority' | 'low_cost' | 'fallback';
+
+export interface TdfolStrategySelectionTrace {
+  selected: TdfolStrategyInfo;
+  mode: TdfolStrategySelectionMode;
+  applicableStrategies: TdfolStrategyInfo[];
+  fallbackUsed: boolean;
+  reason: string;
+  sourcePythonModule: 'logic/TDFOL/strategies/strategy_selector.py';
+  browserNative: true;
+  serverCallsAllowed: false;
+  pythonRuntimeRequired: false;
+}
+
+export const TDFOL_STRATEGY_SELECTOR_METADATA = {
+  sourcePythonModule: 'logic/TDFOL/strategies/strategy_selector.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeRequired: false,
+  selectionAlgorithm:
+    'applicable strategies, optional low-cost preference, priority order, forward fallback',
+} as const;
+
 export class TdfolStrategySelector {
   private strategies: TdfolProverStrategy[];
 
@@ -968,22 +991,41 @@ export class TdfolStrategySelector {
     kb: TdfolKnowledgeBase,
     preferLowCost = false,
   ): TdfolProverStrategy {
+    return this.selectStrategyWithTrace(formula, kb, preferLowCost).strategy;
+  }
+
+  selectStrategyWithTrace(
+    formula: TdfolFormula,
+    kb: TdfolKnowledgeBase,
+    preferLowCost = false,
+  ): { strategy: TdfolProverStrategy; trace: TdfolStrategySelectionTrace } {
     if (this.strategies.length === 0) {
       throw new Error('No strategies available for selection');
     }
 
     const applicable = this.strategies.filter((strategy) => strategy.canHandle(formula, kb));
     if (applicable.length === 0) {
-      return this.getFallbackStrategy();
+      const fallback = this.getFallbackStrategy();
+      return {
+        strategy: fallback,
+        trace: this.createTrace(fallback, [], formula, kb, 'fallback', true),
+      };
     }
 
     if (preferLowCost) {
-      return applicable.reduce((best, candidate) =>
+      const strategy = applicable.reduce((best, candidate) =>
         candidate.estimateCost(formula, kb) < best.estimateCost(formula, kb) ? candidate : best,
       );
+      return {
+        strategy,
+        trace: this.createTrace(strategy, applicable, formula, kb, 'low_cost', false),
+      };
     }
 
-    return applicable[0];
+    return {
+      strategy: applicable[0],
+      trace: this.createTrace(applicable[0], applicable, formula, kb, 'priority', false),
+    };
   }
 
   selectMultiple(
@@ -1011,6 +1053,13 @@ export class TdfolStrategySelector {
     }));
   }
 
+  getMetadata(): typeof TDFOL_STRATEGY_SELECTOR_METADATA & { strategyCount: number } {
+    return {
+      ...TDFOL_STRATEGY_SELECTOR_METADATA,
+      strategyCount: this.strategies.length,
+    };
+  }
+
   addStrategy(strategy: TdfolProverStrategy): void {
     this.strategies.push(strategy);
     this.strategies.sort((left, right) => right.getPriority() - left.getPriority());
@@ -1030,6 +1079,48 @@ export class TdfolStrategySelector {
       (strategy) => strategy.strategyType === 'forward_chaining',
     );
     return forwardChaining ?? this.strategies[0];
+  }
+
+  private createTrace(
+    selected: TdfolProverStrategy,
+    applicable: TdfolProverStrategy[],
+    formula: TdfolFormula,
+    kb: TdfolKnowledgeBase,
+    mode: TdfolStrategySelectionMode,
+    fallbackUsed: boolean,
+  ): TdfolStrategySelectionTrace {
+    const reason =
+      mode === 'fallback'
+        ? 'No applicable strategy accepted the formula; selected fallback strategy.'
+        : mode === 'low_cost'
+          ? 'Selected applicable strategy with the lowest estimated cost.'
+          : 'Selected first applicable strategy after priority ordering.';
+    return {
+      selected: this.describeStrategy(selected, formula, kb),
+      mode,
+      applicableStrategies: applicable.map((strategy) =>
+        this.describeStrategy(strategy, formula, kb),
+      ),
+      fallbackUsed,
+      reason,
+      sourcePythonModule: TDFOL_STRATEGY_SELECTOR_METADATA.sourcePythonModule,
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntimeRequired: false,
+    };
+  }
+
+  private describeStrategy(
+    strategy: TdfolProverStrategy,
+    formula: TdfolFormula,
+    kb: TdfolKnowledgeBase,
+  ): TdfolStrategyInfo {
+    return {
+      name: strategy.name,
+      type: strategy.strategyType,
+      priority: strategy.getPriority(),
+      cost: strategy.estimateCost(formula, kb),
+    };
   }
 }
 

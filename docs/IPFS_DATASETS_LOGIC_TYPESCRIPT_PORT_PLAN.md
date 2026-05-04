@@ -798,7 +798,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/TDFOL/strategies/cec_delegate.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/TDFOL/strategies/forward_chaining.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/TDFOL/strategies/modal_tableaux.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/TDFOL/strategies/strategy_selector.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/TDFOL/strategies/strategy_selector.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/tdfol_converter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/tdfol_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/tdfol_dcec_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 06:53:42 UTC
+Last updated: 2026-05-04 06:56:46 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-288: Port remaining Python logic module 'logic/TDFOL/strategies/strategy_selector.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-289: Port remaining Python logic module 'logic/TDFOL/tdfol_converter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1262,8 +1262,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-284: Port remaining Python logic module 'logic/TDFOL/strategies/base.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-285: Port remaining Python logic module 'logic/TDFOL/strategies/cec_delegate.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-286: Port remaining Python logic module 'logic/TDFOL/strategies/forward_chaining.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-287: Port remaining Python logic module 'logic/TDFOL/strategies/modal_tableaux.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-288: Port remaining Python logic module 'logic/TDFOL/strategies/strategy_selector.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-287: Port remaining Python logic module 'logic/TDFOL/strategies/modal_tableaux.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-288: Port remaining Python logic module 'logic/TDFOL/strategies/strategy_selector.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-289: Port remaining Python logic module 'logic/TDFOL/tdfol_converter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-290: Port remaining Python logic module 'logic/TDFOL/tdfol_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-291: Port remaining Python logic module 'logic/TDFOL/tdfol_dcec_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-287: Port remaining Python logic module 'logic/TDFOL/strategies/modal_tableaux.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-288: Port remaining Python logic module 'logic/TDFOL/strategies/strategy_selector.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Extended TDFOL modal tableaux with browser-native NEXT successor and XOR branch expansion parity.
-- Impact: The TypeScript modal tableaux core now expands one-step temporal NEXT formulas into local Kripke successor worlds and handles XOR truth branches without Python, server calls, or Node-only runtime dependencies. The focused Jest suite validates both expansions through the existing browser-native TDFOL tableaux API.
-- Accepted changed files: `src/lib/logic/tdfol/modalTableaux.test.ts`, `src/lib/logic/tdfol/modalTableaux.ts`
+- Summary: Ported TDFOL strategy_selector.py parity metadata and observable browser-native selection diagnostics.
+- Impact: The TDFOL strategy selector now exposes Python-source parity metadata and a traceable selection result for priority, low-cost, and fallback paths while preserving the existing browser-native selection API. Focused Jest coverage validates the selector contract without server calls, Python runtime bridges, or Node-only browser dependencies.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/strategies.test.ts`, `src/lib/logic/tdfol/strategies.ts`
 
 ### Blocked Backlog
 
