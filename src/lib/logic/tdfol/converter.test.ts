@@ -11,6 +11,7 @@ import {
   parseTdfolNaturalLanguage,
 } from './nlApi';
 import { createBrowserNativeTdfolNlContext, resolveTdfolNlContextText } from './nlContext';
+import { BrowserNativeTdfolNlGenerator, generateTdfolNl } from './tdfolNlGenerator';
 
 describe('TDFOL converter', () => {
   it('converts parsed formulas back to stable TDFOL output with metadata', () => {
@@ -123,6 +124,32 @@ describe('TDFOL converter', () => {
     });
     expect(generateTdfolNaturalLanguage('P(Comply(x))').text).toBe(
       'it is permitted that Comply holds for x',
+    );
+  });
+
+  it('ports the TDFOL NL generator as deterministic browser-native formula narration', () => {
+    const generator = new BrowserNativeTdfolNlGenerator({ style: 'controlled' });
+    const result = generator.generate('forall x:Agent. Contractor(x) -> [](O(PayTaxes(x)))');
+
+    expect(result).toMatchObject({
+      source: '∀x:Agent ((Contractor(x)) → (□(O(PayTaxes(x)))))',
+      text: 'for every x of sort Agent, contractor holds for x implies that always it is obligatory that pay taxes holds for x.',
+      confidence: 1,
+      metadata: {
+        browserNative: true,
+        serverCallsAllowed: false,
+        pythonRuntime: false,
+        sourcePythonModule: 'logic/TDFOL/nl/tdfol_nl_generator.py',
+        style: 'controlled',
+        formulaKind: 'quantified',
+        predicateCount: 2,
+        quantifierCount: 1,
+        operatorCount: 3,
+      },
+    });
+
+    expect(generateTdfolNl('F(DeleteRecords(Alice))').text).toBe(
+      'it is forbidden that delete records applies to alice.',
     );
   });
 

@@ -740,3 +740,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T055500Z-ported-tdfol-natural-language-discourse-context-to-browser-native-typescript..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T055500Z-ported-tdfol-natural-language-discourse-context-to-browser-native-typescript..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T055500Z-ported-tdfol-natural-language-discourse-context-to-browser-native-typescript..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 06:00:10 UTC
+
+- Target: `Task checkbox-272: Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_generator.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported TDFOL NL formula generation to a deterministic browser-native TypeScript module.
+- Impact: The TypeScript logic package now exports BrowserNativeTdfolNlGenerator/generateTdfolNl for local formula-to-natural-language narration with explicit no-server/no-Python metadata, and converter.test.ts validates deontic, temporal, quantified, and binary narration.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/converter.test.ts`, `src/lib/logic/tdfol/index.ts`, `src/lib/logic/tdfol/tdfolNlGenerator.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T060010Z-ported-tdfol-nl-formula-generation-to-a-deterministic-browser-native-typescript-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T060010Z-ported-tdfol-nl-formula-generation-to-a-deterministic-browser-native-typescript-.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T060010Z-ported-tdfol-nl-formula-generation-to-a-deterministic-browser-native-typescript-.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
