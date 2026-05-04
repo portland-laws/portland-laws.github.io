@@ -1469,3 +1469,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T114330Z-ported-the-converter-scoped-symbolic_fol_bridge.py-entry-point-to-browser-native.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T114330Z-ported-the-converter-scoped-symbolic_fol_bridge.py-entry-point-to-browser-native.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T114330Z-ported-the-converter-scoped-symbolic_fol_bridge.py-entry-point-to-browser-native.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 11:47:07 UTC
+
+- Target: `Task checkbox-354: Port remaining Python logic module `logic/integration/demos/demo_temporal_deontic_rag.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported demo_temporal_deontic_rag.py as a browser-native deterministic temporal deontic RAG demo.
+- Impact: Adds a local TypeScript integration demo that ingests in-memory legal documents, extracts temporal deontic norms with existing browser-native parser code, ranks evidence deterministically, and is directly exercised by focused Jest tests without server, Python, filesystem, subprocess, or RPC dependencies.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/demoTemporalDeonticRag.test.ts`, `src/lib/logic/integration/demoTemporalDeonticRag.ts`, `src/lib/logic/integration/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T114707Z-ported-demo_temporal_deontic_rag.py-as-a-browser-native-deterministic-temporal-d.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T114707Z-ported-demo_temporal_deontic_rag.py-as-a-browser-native-deterministic-temporal-d.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T114707Z-ported-demo_temporal_deontic_rag.py-as-a-browser-native-deterministic-temporal-d.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

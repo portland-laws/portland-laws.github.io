@@ -6,6 +6,7 @@ export * from './converters/logicTranslationCore';
 export * from './converters/modalLogicExtension';
 export * from './converters/symbolicFolBridge';
 export * from './cvc5ProverBridge';
+export * from './demoTemporalDeonticRag';
 export * from './externalProversBridge';
 export * from './ipldLogicStorage';
 export * from './leanProverBridge';
