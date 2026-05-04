@@ -10,7 +10,9 @@ import {
 } from './logicVerification';
 import {
   assert_logic_verification_result,
+  assert_reasoning_logic_verification_summary,
   check_logic_verification_type,
+  check_reasoning_logic_verification_type,
   is_logic_verification_type,
 } from './logicVerificationTypes';
 import {
@@ -206,6 +208,33 @@ describe('BrowserNativeLogicVerification', () => {
     expect(summary.results[1].issues).toEqual(
       expect.arrayContaining([expect.objectContaining({ field: 'formula', severity: 'error' })]),
     );
+    expect(assert_reasoning_logic_verification_summary(summary)).toBe(summary);
+    expect(check_reasoning_logic_verification_type('batch_summary', summary)).toMatchObject({
+      ok: true,
+      typeName: 'batch_summary',
+      metadata: {
+        sourcePythonModule: 'logic/integration/reasoning/logic_verification_types.py',
+      },
+    });
+    expect(
+      check_reasoning_logic_verification_type('batch_summary', {
+        total: -1,
+        verified: 0,
+        invalid: 0,
+        unsupported: 0,
+        success: 'yes',
+        failedClosed: false,
+        results: [{ status: 'proved' }],
+        metadata: { sourcePythonModule: 'logic/integration/reasoning/logic_verification_types.py' },
+      }),
+    ).toMatchObject({
+      ok: false,
+      issues: expect.arrayContaining([
+        expect.objectContaining({ path: '$.total', message: 'expected_non_negative_integer' }),
+        expect.objectContaining({ path: '$.success', message: 'expected_boolean' }),
+        expect.objectContaining({ path: '$.metadata.sourcePythonModule' }),
+      ]),
+    });
     expect(
       verify_reasoning_theorem('(forall x (implies (Resident x) (O (Comply x))))', [], {
         format: 'cec',

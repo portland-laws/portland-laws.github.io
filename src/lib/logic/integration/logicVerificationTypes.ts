@@ -2,10 +2,13 @@ import type {
   LogicVerificationFormat,
   LogicVerificationResult,
   LogicVerificationStatus,
+  ReasoningLogicVerificationSummary,
 } from './logicVerification';
 
 export interface LogicVerificationTypesMetadata {
-  sourcePythonModule: 'logic/integration/logic_verification_types.py';
+  sourcePythonModule:
+    | 'logic/integration/logic_verification_types.py'
+    | 'logic/integration/reasoning/logic_verification_types.py';
   browserNative: true;
   serverCallsAllowed: false;
   pythonRuntimeAllowed: false;
@@ -13,6 +16,10 @@ export interface LogicVerificationTypesMetadata {
 }
 
 export type LogicVerificationTypeName = 'options' | 'result' | 'issue' | 'metadata';
+export type ReasoningLogicVerificationTypeName =
+  | LogicVerificationTypeName
+  | 'theorem'
+  | 'batch_summary';
 
 export interface LogicVerificationTypeIssue {
   path: string;
@@ -21,13 +28,20 @@ export interface LogicVerificationTypeIssue {
 
 export interface LogicVerificationTypeCheckResult {
   ok: boolean;
-  typeName: LogicVerificationTypeName;
+  typeName: ReasoningLogicVerificationTypeName;
   issues: Array<LogicVerificationTypeIssue>;
   metadata: LogicVerificationTypesMetadata;
 }
 
 export const LOGIC_VERIFICATION_TYPES_METADATA: LogicVerificationTypesMetadata = {
   sourcePythonModule: 'logic/integration/logic_verification_types.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  runtimeDependencies: [],
+};
+export const REASONING_LOGIC_VERIFICATION_TYPES_METADATA: LogicVerificationTypesMetadata = {
+  sourcePythonModule: 'logic/integration/reasoning/logic_verification_types.py',
   browserNative: true,
   serverCallsAllowed: false,
   pythonRuntimeAllowed: false,
@@ -49,7 +63,6 @@ const REQUIRED_FIELDS: Record<LogicVerificationTypeName, Array<string>> = {
     'metadata',
   ],
 };
-
 export function checkLogicVerificationType(
   typeName: LogicVerificationTypeName,
   value: unknown,
@@ -78,6 +91,64 @@ export function isLogicVerificationType(
   return checkLogicVerificationType(typeName, value).ok;
 }
 
+export function checkReasoningLogicVerificationType(
+  typeName: ReasoningLogicVerificationTypeName,
+  value: unknown,
+): LogicVerificationTypeCheckResult {
+  if (isBaseTypeName(typeName)) return checkLogicVerificationType(typeName, value);
+  const object = asRecord(value);
+  const issues: Array<LogicVerificationTypeIssue> = [];
+  if (!object)
+    return {
+      ok: false,
+      typeName,
+      issues: [{ path: '$', message: 'expected_object' }],
+      metadata: REASONING_LOGIC_VERIFICATION_TYPES_METADATA,
+    };
+  const requiredFields =
+    typeName === 'theorem'
+      ? ['theorem']
+      : [
+          'total',
+          'verified',
+          'invalid',
+          'unsupported',
+          'success',
+          'failedClosed',
+          'results',
+          'metadata',
+        ];
+  for (const field of requiredFields) {
+    if (!(field in object)) issues.push({ path: `$.${field}`, message: 'missing_required_field' });
+  }
+  if (typeName === 'theorem') validateTheoremRequest(object, issues);
+  else validateReasoningSummary(object, issues);
+  return {
+    ok: issues.length === 0,
+    typeName,
+    issues,
+    metadata: REASONING_LOGIC_VERIFICATION_TYPES_METADATA,
+  };
+}
+
+export function isReasoningLogicVerificationType(
+  typeName: ReasoningLogicVerificationTypeName,
+  value: unknown,
+): boolean {
+  return checkReasoningLogicVerificationType(typeName, value).ok;
+}
+
+export function assertReasoningLogicVerificationSummary(
+  value: unknown,
+): ReasoningLogicVerificationSummary {
+  const result = checkReasoningLogicVerificationType('batch_summary', value);
+  if (!result.ok)
+    throw new TypeError(
+      `Invalid reasoning logic verification summary: ${result.issues.map((issue) => `${issue.path}:${issue.message}`).join(', ')}`,
+    );
+  return value as ReasoningLogicVerificationSummary;
+}
+
 export function assertLogicVerificationResult(value: unknown): LogicVerificationResult {
   const result = checkLogicVerificationType('result', value);
   if (!result.ok)
@@ -88,9 +159,63 @@ export function assertLogicVerificationResult(value: unknown): LogicVerification
 }
 
 export const logic_verification_types_metadata = LOGIC_VERIFICATION_TYPES_METADATA;
+export const reasoning_logic_verification_types_metadata =
+  REASONING_LOGIC_VERIFICATION_TYPES_METADATA;
 export const check_logic_verification_type = checkLogicVerificationType;
+export const check_reasoning_logic_verification_type = checkReasoningLogicVerificationType;
 export const is_logic_verification_type = isLogicVerificationType;
+export const is_reasoning_logic_verification_type = isReasoningLogicVerificationType;
 export const assert_logic_verification_result = assertLogicVerificationResult;
+export const assert_reasoning_logic_verification_summary = assertReasoningLogicVerificationSummary;
+
+function validateTheoremRequest(
+  object: Record<string, unknown>,
+  issues: Array<LogicVerificationTypeIssue>,
+): void {
+  requireKind(object, 'theorem', 'string', issues);
+  if ('assumptions' in object) requireStringArray(object.assumptions, '$.assumptions', issues);
+  if ('options' in object) {
+    const options = checkLogicVerificationType('options', object.options);
+    options.issues.forEach((issue) =>
+      issues.push({ path: `$.options${issue.path.slice(1)}`, message: issue.message }),
+    );
+  }
+}
+
+function validateReasoningSummary(
+  object: Record<string, unknown>,
+  issues: Array<LogicVerificationTypeIssue>,
+): void {
+  ['total', 'verified', 'invalid', 'unsupported'].forEach((field) =>
+    requireNonNegativeInteger(object, field, issues),
+  );
+  requireKind(object, 'success', 'boolean', issues);
+  requireKind(object, 'failedClosed', 'boolean', issues);
+  if (!Array.isArray(object.results)) issues.push({ path: '$.results', message: 'expected_array' });
+  else
+    object.results.forEach((result, index) => {
+      const checkedResult = checkLogicVerificationType('result', result);
+      checkedResult.issues.forEach((issue) =>
+        issues.push({ path: `$.results[${index}]${issue.path.slice(1)}`, message: issue.message }),
+      );
+    });
+  const metadata = asRecord(object.metadata);
+  if (!metadata) issues.push({ path: '$.metadata', message: 'expected_object' });
+  else validateReasoningMetadata(metadata, '$.metadata', issues);
+}
+
+function validateReasoningMetadata(
+  object: Record<string, unknown>,
+  path: string,
+  issues: Array<LogicVerificationTypeIssue>,
+): void {
+  if (object.sourcePythonModule !== 'logic/integration/reasoning/logic_verification.py')
+    issues.push({
+      path: `${path}.sourcePythonModule`,
+      message: 'expected_reasoning_logic_verification_module',
+    });
+  validateMetadata(object, path, issues);
+}
 
 function validateResult(
   object: Record<string, unknown>,
@@ -165,6 +290,15 @@ function requireStringArray(
     issues.push({ path, message: 'expected_string_array' });
 }
 
+function requireNonNegativeInteger(
+  object: Record<string, unknown>,
+  field: string,
+  issues: Array<LogicVerificationTypeIssue>,
+): void {
+  if (!Number.isInteger(object[field]) || (object[field] as number) < 0)
+    issues.push({ path: `$.${field}`, message: 'expected_non_negative_integer' });
+}
+
 function isFormat(value: unknown): value is LogicVerificationFormat {
   return (
     value === 'auto' || value === 'fol' || value === 'tdfol' || value === 'cec' || value === 'dcec'
@@ -180,6 +314,17 @@ function checked(
   issues: Array<LogicVerificationTypeIssue>,
 ): LogicVerificationTypeCheckResult {
   return { ok: issues.length === 0, typeName, issues, metadata: LOGIC_VERIFICATION_TYPES_METADATA };
+}
+
+function isBaseTypeName(
+  typeName: ReasoningLogicVerificationTypeName,
+): typeName is LogicVerificationTypeName {
+  return (
+    typeName === 'options' ||
+    typeName === 'result' ||
+    typeName === 'issue' ||
+    typeName === 'metadata'
+  );
 }
 
 function asRecord(value: unknown): Record<string, unknown> | undefined {
