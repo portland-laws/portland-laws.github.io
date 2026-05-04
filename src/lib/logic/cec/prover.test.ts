@@ -10,10 +10,18 @@ import {
   CecUniversalModusPonensRule,
   type CecInferenceRule,
 } from './inferenceRules';
+import { formatCecExpression } from './formatter';
 import { parseCecExpression } from './parser';
 import { PYTHON_CEC_DCEC_PARITY_FIXTURES } from './pythonParityFixtures';
 import { parseCecProblemString } from './problemParser';
 import { CecProver, proveCec } from './prover';
+import {
+  CEC_PROVER_CORE_EXTENDED_RUNTIME,
+  applyCecProverCoreExtendedRules,
+  getCecProverCoreExtendedRule,
+  getCecProverCoreExtendedRules,
+  proveCecWithExtendedRules,
+} from './proverCoreExtendedRules';
 import type { CecShadowFormula } from './shadowProver';
 
 const PARITY_RULES_BY_NAME: { [name: string]: CecInferenceRule } = {
@@ -188,6 +196,52 @@ describe('CEC prover', () => {
     expect(result.steps.map((step) => step.rule)).toEqual(
       expect.arrayContaining(['CecHypotheticalSyllogism', 'CecModusPonens']),
     );
+  });
+
+  it('exposes prover_core_extended_rules.py as a browser-native rule surface', () => {
+    const names = getCecProverCoreExtendedRules().map((rule) => rule.name);
+
+    expect(CEC_PROVER_CORE_EXTENDED_RUNTIME).toEqual({
+      module: 'logic/CEC/native/prover_core_extended_rules.py',
+      runtime: 'browser-native-typescript',
+      pythonRuntime: false,
+      serverDelegation: false,
+    });
+    expect(names).toEqual(
+      expect.arrayContaining([
+        'CecMaterialImplication',
+        'CecDistribution',
+        'CecAssociation',
+        'CecClaviusLaw',
+        'CecIdempotence',
+      ]),
+    );
+    expect(getCecProverCoreExtendedRule('CecTransposition').name).toBe('CecTransposition');
+  });
+
+  it('derives theorem clauses through the extended prover-core rule set', () => {
+    const applications = applyCecProverCoreExtendedRules([
+      parseCecExpression('(implies (not (liable alice)) (liable alice))'),
+    ]);
+
+    expect(applications.map((application) => application.rule)).toContain('CecClaviusLaw');
+    expect(
+      applications.map((application) => formatCecExpression(application.conclusion)),
+    ).toContain('(liable alice)');
+
+    const result = proveCecWithExtendedRules(
+      parseCecExpression('(liable alice)'),
+      {
+        axioms: [parseCecExpression('(implies (not (liable alice)) (liable alice))')],
+      },
+      { maxSteps: 2 },
+    );
+
+    expect(result).toMatchObject({
+      status: 'proved',
+      method: 'cec-forward-chaining',
+    });
+    expect(result.steps.map((step) => step.rule)).toContain('CecClaviusLaw');
   });
 
   it('returns unknown when no CEC rule can prove the theorem', () => {

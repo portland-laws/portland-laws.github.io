@@ -371,3 +371,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T024108Z-ported-remaining-cec-native-proof-strategies-parity-surface-into-browser-native-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T024108Z-ported-remaining-cec-native-proof-strategies-parity-surface-into-browser-native-.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T024108Z-ported-remaining-cec-native-proof-strategies-parity-surface-into-browser-native-.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 03:14:02 UTC
+
+- Target: `Task checkbox-231: Port remaining Python logic module `logic/CEC/native/prover_core_extended_rules.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Added a browser-native CEC prover-core extended rules facade and validation coverage.
+- Impact: The TypeScript CEC port now exposes the Python prover_core_extended_rules.py rule surface through deterministic local rules, exports it from the CEC barrel, and validates both rule discovery and proving via extended rules without Python, server, RPC, filesystem, or subprocess runtime dependencies.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/index.ts`, `src/lib/logic/cec/prover.test.ts`, `src/lib/logic/cec/proverCoreExtendedRules.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T031402Z-added-a-browser-native-cec-prover-core-extended-rules-facade-and-validation-cove.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T031402Z-added-a-browser-native-cec-prover-core-extended-rules-facade-and-validation-cove.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T031402Z-added-a-browser-native-cec-prover-core-extended-rules-facade-and-validation-cove.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
