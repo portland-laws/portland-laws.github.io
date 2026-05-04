@@ -1685,3 +1685,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T132320Z-worktree-direct-edit-proposal..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T132320Z-worktree-direct-edit-proposal..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T132320Z-worktree-direct-edit-proposal..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 13:27:46 UTC
+
+- Target: `Task checkbox-378: Port remaining Python logic module `logic/integration/nl_ucan_policy_compiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported logic/integration/nl_ucan_policy_compiler.py as a browser-native NL-to-UCAN policy compiler facade.
+- Impact: src/lib/logic/integration/nlUcanPolicyCompiler.ts reuses the existing deterministic browser-native DCEC NL policy compiler and projects its policy formulas into unsigned UCAN-style capabilities and delegation payloads with explicit no-server/no-Python metadata; src/lib/logic/integration/nlUcanPolicyCompiler.test.ts validates obligation, permission, prohibition, alias, and fail-closed behavior through Jest.
+- Changed files: `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/nlUcanPolicyCompiler.test.ts`, `src/lib/logic/integration/nlUcanPolicyCompiler.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T132746Z-ported-logic-integration-nl_ucan_policy_compiler.py-as-a-browser-native-nl-to-uc.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T132746Z-ported-logic-integration-nl_ucan_policy_compiler.py-as-a-browser-native-nl-to-uc.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T132746Z-ported-logic-integration-nl_ucan_policy_compiler.py-as-a-browser-native-nl-to-uc.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
