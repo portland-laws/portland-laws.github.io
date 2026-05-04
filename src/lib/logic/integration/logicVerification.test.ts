@@ -3,6 +3,11 @@ import {
   LogicVerifier,
   verify_logic_formula,
 } from './logicVerification';
+import {
+  assert_logic_verification_result,
+  check_logic_verification_type,
+  is_logic_verification_type,
+} from './logicVerificationTypes';
 
 describe('BrowserNativeLogicVerification', () => {
   it('ports logic_verification.py as local browser-native formula verification', () => {
@@ -42,6 +47,46 @@ describe('BrowserNativeLogicVerification', () => {
     ).toMatchObject({
       status: 'unsupported',
       success: false,
+    });
+  });
+
+  it('ports logic_verification_types.py as browser-native runtime type checks', () => {
+    const verifier = new BrowserNativeLogicVerification();
+    const result = verifier.verify('Tenant(x)', { format: 'fol' });
+
+    expect(is_logic_verification_type('options', { format: 'cec', requirePredicate: true })).toBe(
+      true,
+    );
+    expect(assert_logic_verification_result(result)).toBe(result);
+    expect(check_logic_verification_type('result', result)).toMatchObject({
+      ok: true,
+      typeName: 'result',
+      metadata: { sourcePythonModule: 'logic/integration/logic_verification_types.py' },
+    });
+    expect(
+      check_logic_verification_type('result', {
+        status: 'proved',
+        success: true,
+        formula: 'Tenant(x)',
+        format: 'fol',
+        normalizedFormula: 'Tenant(x)',
+        checks: ['input_string'],
+        issues: [{ severity: 'notice', message: '' }],
+        metadata: {
+          sourcePythonModule: 'logic/integration/logic_verification_types.py',
+          browserNative: false,
+          serverCallsAllowed: true,
+          pythonRuntimeAllowed: true,
+          runtimeDependencies: ['python'],
+        },
+      }),
+    ).toMatchObject({
+      ok: false,
+      issues: expect.arrayContaining([
+        expect.objectContaining({ path: '$.status', message: 'expected_status' }),
+        expect.objectContaining({ path: '$.metadata.browserNative', message: 'expected_true' }),
+        expect.objectContaining({ path: '$.metadata.runtimeDependencies' }),
+      ]),
     });
   });
 });

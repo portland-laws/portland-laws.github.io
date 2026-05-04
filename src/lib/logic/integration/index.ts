@@ -24,6 +24,7 @@ export * from './ipldLogicStorage';
 export * from './interactive';
 export * from './logicTranslationCore';
 export * from './logicVerification';
+export * from './logicVerificationTypes';
 export * from './leanProverBridge';
 export * from './proverAdapters';
 export * from './proverInstaller';
