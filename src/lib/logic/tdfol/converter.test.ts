@@ -10,6 +10,7 @@ import {
   generateTdfolNaturalLanguage,
   parseTdfolNaturalLanguage,
 } from './nlApi';
+import { createBrowserNativeTdfolNlContext, resolveTdfolNlContextText } from './nlContext';
 
 describe('TDFOL converter', () => {
   it('converts parsed formulas back to stable TDFOL output with metadata', () => {
@@ -123,5 +124,42 @@ describe('TDFOL converter', () => {
     expect(generateTdfolNaturalLanguage('P(Comply(x))').text).toBe(
       'it is permitted that Comply holds for x',
     );
+  });
+
+  it('ports TDFOL NL discourse context with deterministic browser-native pronoun resolution', () => {
+    const context = createBrowserNativeTdfolNlContext();
+    const api = new BrowserNativeTdfolNlApi();
+
+    const first = context.addTurn('All contractors must pay taxes.');
+    expect(first).toMatchObject({
+      resolvedText: 'All contractors must pay taxes.',
+      entityIds: ['contractor'],
+      actionIds: ['pay-taxes'],
+    });
+    expect(context.snapshot()).toMatchObject({
+      focusEntity: { id: 'contractor', label: 'Contractor', mentions: 1 },
+      focusAction: {
+        id: 'pay-taxes',
+        label: 'Pay Taxes',
+        operatorHints: ['universal', 'obligation'],
+      },
+      metadata: { browserNative: true, serverCallsAllowed: false, pythonRuntime: false },
+    });
+
+    const resolved = resolveTdfolNlContextText('They shall comply.', context);
+    expect(resolved).toBe('All contractors shall comply.');
+    expect(api.parse(resolved)).toMatchObject({
+      status: 'parsed',
+      formula: 'forall x. Contractor(x) -> O(Comply(x))',
+      metadata: { serverCallsAllowed: false, pythonRuntime: false },
+    });
+
+    const second = context.addTurn('They shall comply.');
+    expect(second).toMatchObject({
+      resolvedText: 'All contractors shall comply.',
+      entityIds: ['contractor'],
+      actionIds: ['comply'],
+    });
+    expect(context.snapshot().focusEntity).toMatchObject({ id: 'contractor', mentions: 2 });
   });
 });

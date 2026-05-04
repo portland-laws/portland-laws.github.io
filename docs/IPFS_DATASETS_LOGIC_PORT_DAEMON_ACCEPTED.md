@@ -731,3 +731,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T055032Z-added-a-browser-native-tdfol-natural-language-api-facade-for-tdfol_nl_api.py-par.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T055032Z-added-a-browser-native-tdfol-natural-language-api-facade-for-tdfol_nl_api.py-par.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T055032Z-added-a-browser-native-tdfol-natural-language-api-facade-for-tdfol_nl_api.py-par.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 05:55:00 UTC
+
+- Target: `Task checkbox-271: Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_context.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported TDFOL natural-language discourse context to browser-native TypeScript.
+- Impact: Adds a deterministic TDFOL NL context module for local discourse memory, focus tracking, and pronoun/ellipsis resolution, exports it from the TDFOL package, and validates that resolved context text feeds the existing browser-native NL parser without Python or server fallback.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/converter.test.ts`, `src/lib/logic/tdfol/index.ts`, `src/lib/logic/tdfol/nlContext.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T055500Z-ported-tdfol-natural-language-discourse-context-to-browser-native-typescript..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T055500Z-ported-tdfol-natural-language-discourse-context-to-browser-native-typescript..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T055500Z-ported-tdfol-natural-language-discourse-context-to-browser-native-typescript..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

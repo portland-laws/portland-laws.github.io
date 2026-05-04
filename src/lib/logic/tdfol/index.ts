@@ -24,6 +24,7 @@ export type {
 export * from './lexer';
 export * from './modalTableaux';
 export * from './nlApi';
+export * from './nlContext';
 export * from './optimization';
 export * from './parser';
 export * from './performanceDashboard';
