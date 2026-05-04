@@ -829,7 +829,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/deontic/utils/deontic_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/e2e_validation.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/external_provers/formula_analyzer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/external_provers/interactive/coq_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/external_provers/interactive/coq_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/external_provers/interactive/lean_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/external_provers/neural/symbolicai_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/external_provers/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 09:18:16 UTC
+Last updated: 2026-05-04 09:28:28 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-319: Port remaining Python logic module 'logic/external_provers/interactive/coq_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-320: Port remaining Python logic module 'logic/external_provers/interactive/lean_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1432,19 +1432,19 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 - Target: `Task checkbox-319: Port remaining Python logic module 'logic/external_provers/interactive/coq_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `needs follow-up`
-- Summary: Ported the interactive Coq prover bridge to a browser-native TypeScript proof-script checker.
-- Impact: Adds an exported Coq bridge under src/lib/logic/integration that checks supported Coq proof-script shapes locally, returns fail-closed metadata for unsupported tactics, and is directly exercised by the existing Jest integration test suite without Python, subprocess, server, or Node-only browser runtime dependencies.
+- Summary: Ported the interactive Coq prover bridge as a browser-native TypeScript proof-script checker.
+- Impact: Adds an exported Coq bridge under src/lib/logic/integration that validates a supported local subset of Coq proof scripts, reports fail-closed metadata for unsupported tactics or admitted proofs, and is directly exercised by Jest integration tests without Python, subprocess, server, RPC, filesystem, or Node-only browser runtime dependencies.
 - Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/coqProverBridge.ts`, `src/lib/logic/integration/index.ts`
 - Errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/integration/coqProverBridge.ts(68,7): error TS2322: Type '{ status: ProofStatus; theorem: string; steps: ProofStep[]; method: string; timeMs: number; coq: { adapter: "browser-native-coq-prover-bridge"; sourcePythonModule: "logic/external_provers/interactive/coq_prover_bridge.py"; ... 7 more ...; checkedCommands: string[]; }; }' is not assignable to type 'BrowserNativeCoqProofResult'.
+../../..src/lib/logic/integration/coqProverBridge.ts(110,5): error TS2322: Type '{ status: ProofStatus; theorem: string; steps: ProofStep[]; method: string; timeMs: number; coq: { adapter: "browser-native-coq-prover-bridge"; sourcePythonModule: "logic/external_provers/interactive/coq_prover_bridge.py"; ... 7 more ...; warnings: string[]; }; }' is not assignable to type 'BrowserNativeCoqProofResult'.
 
 Replacement diagnostic context:
-src/lib/logic/integration/coqProverBridge.ts:68:7 TS2322: Type '{ status: ProofStatus; theorem: string; steps: ProofStep[]; method: string; timeMs: number; coq: { adapter: "browser-native-coq-prover-bridge"; sourcePythonModule: "logic/external_provers/interactive/coq_prover_bridge.py"; ... 7 more ...; checkedCommands: string[]; }; }' is not assignable to type 'BrowserNativeCoqProofResult'.
-  66:     const status: ProofStatus = blockers.length > 0 ? 'unknown' : 'proved';
-  67:     const result: BrowserNativeCoqProofResult = {
-> 68:       status,
-  69:       theorem,
-  70:       steps,
+src/lib/logic/integration/coqProverBridge.ts:110:5 TS2322: Type '{ status: ProofStatus; theorem: string; steps: ProofStep[]; method: string; timeMs: number; coq: { adapter: "browser-native-coq-prover-bridge"; sourcePythonModule: "logic/external_provers/interactive/coq_prover_bridge.py"; ... 7 more ...; warnings: string[]; }; }' is not assignable to type 'BrowserNativeCoqProofResult'.
+  108: ): BrowserNativeCoqProofResult {
+  109:   return {
+> 110:     status,
+  111:     theorem,
+  112:     steps,
 - Failure kind: `typescript_quality`
 
 ### Blocked Backlog
