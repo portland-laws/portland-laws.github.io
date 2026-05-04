@@ -1,5 +1,9 @@
 import { canonicalizeJson, createBrowserLocalCid } from './ipfsCacheDemo';
 import { matchTdfolNlPattern } from './tdfolNlPatterns';
+import {
+  preprocessTdfolNaturalLanguage,
+  type TdfolNlPreprocessResult,
+} from './tdfolNlPreprocessor';
 
 export type TdfolLlmOperatorHint =
   | 'universal'
@@ -31,6 +35,10 @@ export type BrowserNativeTdfolLlmParseResult = {
     llmAvailable: false;
     serverCallsAllowed: false;
     pythonRuntime: false;
+    preprocessor: TdfolNlPreprocessResult['metadata'] & {
+      normalizedText: string;
+      legalReferences: string[];
+    };
   };
 };
 
@@ -145,9 +153,13 @@ export class BrowserNativeTdfolLlmConverter {
 
   convert(text: string): BrowserNativeTdfolLlmParseResult {
     const threshold = this.options.confidenceThreshold ?? 0.85;
-    const operatorHints = getTdfolOperatorHintsForText(text);
-    const prompt = buildTdfolLlmConversionPrompt(text, operatorHints);
-    const cached = this.options.enableCaching === false ? undefined : this.cache.get(text, prompt);
+    const preprocessed = preprocessTdfolNaturalLanguage(text);
+    const operatorHints = preprocessed.operatorHints;
+    const prompt = buildTdfolLlmConversionPrompt(preprocessed.normalizedText, operatorHints);
+    const cached =
+      this.options.enableCaching === false
+        ? undefined
+        : this.cache.get(preprocessed.normalizedText, prompt);
     if (cached)
       return makeResult(
         true,
@@ -158,11 +170,12 @@ export class BrowserNativeTdfolLlmConverter {
         [],
         threshold,
         operatorHints,
+        preprocessed,
       );
-    const pattern = convertPattern(text, operatorHints);
+    const pattern = convertPattern(preprocessed.normalizedText, operatorHints);
     if (pattern && pattern.confidence >= threshold) {
       if (this.options.enableCaching !== false)
-        this.cache.put(text, prompt, pattern.formula, pattern.confidence);
+        this.cache.put(preprocessed.normalizedText, prompt, pattern.formula, pattern.confidence);
       return makeResult(
         true,
         pattern.formula,
@@ -172,6 +185,7 @@ export class BrowserNativeTdfolLlmConverter {
         [],
         threshold,
         operatorHints,
+        preprocessed,
       );
     }
     return makeResult(
@@ -183,6 +197,7 @@ export class BrowserNativeTdfolLlmConverter {
       ['Local pattern confidence too low; browser LLM router is fail-closed.'],
       threshold,
       operatorHints,
+      preprocessed,
     );
   }
 
@@ -204,6 +219,7 @@ function makeResult(
   errors: string[],
   threshold: number,
   operatorHints: TdfolLlmOperatorHint[],
+  preprocessor: TdfolNlPreprocessResult,
 ): BrowserNativeTdfolLlmParseResult {
   return {
     success,
@@ -218,6 +234,11 @@ function makeResult(
       llmAvailable: false,
       serverCallsAllowed: false,
       pythonRuntime: false,
+      preprocessor: {
+        ...preprocessor.metadata,
+        normalizedText: preprocessor.normalizedText,
+        legalReferences: preprocessor.legalReferences,
+      },
     },
   };
 }

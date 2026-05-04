@@ -758,3 +758,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T060520Z-ported-tdfol-natural-language-pattern-matching-to-browser-native-typescript..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T060520Z-ported-tdfol-natural-language-pattern-matching-to-browser-native-typescript..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T060520Z-ported-tdfol-natural-language-pattern-matching-to-browser-native-typescript..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 06:10:30 UTC
+
+- Target: `Task checkbox-274: Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_preprocessor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported TDFOL NL preprocessing into the browser-native TypeScript logic stack.
+- Impact: The TDFOL browser LLM facade now normalizes list markers, modal wording, contractions, whitespace, and legal section references before deterministic pattern conversion, with metadata proving no server or Python runtime fallback. Focused Jest coverage exercises the preprocessor and its integration with TDFOL NL conversion.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/browserNativeLlm.ts`, `src/lib/logic/tdfol/converter.test.ts`, `src/lib/logic/tdfol/index.ts`, `src/lib/logic/tdfol/tdfolNlPreprocessor.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T061030Z-ported-tdfol-nl-preprocessing-into-the-browser-native-typescript-logic-stack..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T061030Z-ported-tdfol-nl-preprocessing-into-the-browser-native-typescript-logic-stack..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T061030Z-ported-tdfol-nl-preprocessing-into-the-browser-native-typescript-logic-stack..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

@@ -12,6 +12,7 @@ import {
 } from './nlApi';
 import { createBrowserNativeTdfolNlContext, resolveTdfolNlContextText } from './nlContext';
 import { BrowserNativeTdfolNlGenerator, generateTdfolNl } from './tdfolNlGenerator';
+import { preprocessTdfolNaturalLanguage } from './tdfolNlPreprocessor';
 import { matchTdfolNlPattern } from './tdfolNlPatterns';
 
 describe('TDFOL converter', () => {
@@ -128,6 +129,41 @@ describe('TDFOL converter', () => {
       success: true,
       formula: 'exists x. Tenant(x) & F(DeleteRecords(x))',
       method: 'pattern',
+    });
+  });
+
+  it('ports the TDFOL NL preprocessor for browser-native normalization before parsing', () => {
+    const preprocessed = preprocessTdfolNaturalLanguage(
+      '  1. All contractors are prohibited from deleting records under § 5.33.  ',
+    );
+
+    expect(preprocessed).toMatchObject({
+      normalizedText: 'All contractors must not deleting records under section 5.33.',
+      sentences: ['All contractors must not deleting records under section 5.33.'],
+      operatorHints: ['universal', 'forbidden', 'obligation'],
+      legalReferences: ['5.33'],
+      metadata: {
+        browserNative: true,
+        serverCallsAllowed: false,
+        pythonRuntime: false,
+        sourcePythonModule: 'logic/TDFOL/nl/tdfol_nl_preprocessor.py',
+      },
+    });
+
+    const converter = new BrowserNativeTdfolLlmConverter();
+    expect(
+      converter.convert('- All contractors are prohibited from delete records.'),
+    ).toMatchObject({
+      success: true,
+      formula: 'forall x. Contractor(x) -> F(DeleteRecords(x))',
+      metadata: {
+        serverCallsAllowed: false,
+        pythonRuntime: false,
+        preprocessor: {
+          sourcePythonModule: 'logic/TDFOL/nl/tdfol_nl_preprocessor.py',
+          normalizedText: 'All contractors must not delete records.',
+        },
+      },
     });
   });
 
