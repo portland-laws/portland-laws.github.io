@@ -5,6 +5,7 @@ import {
   extractNormativeElements,
   extractTemporalConstraints,
   formatTemporalPredicate,
+  legal_text_to_deontic,
 } from './parser';
 
 describe('deontic parser utilities', () => {
@@ -81,6 +82,11 @@ describe('deontic parser utilities', () => {
       'permission',
       'prohibition',
     ]);
+    expect(elements.map((element) => element.sentenceIndex)).toEqual([0, 1, 2]);
+    expect(elements[1]).toMatchObject({
+      startOffset: 26,
+      endOffset: 60,
+    });
   });
 
   it('converts legal text through a browser facade', () => {
@@ -95,7 +101,33 @@ describe('deontic parser utilities', () => {
       },
     });
     expect(result.warnings).toEqual([]);
+    expect(result.metadata).toEqual({
+      sourceLength: 40,
+      sentenceCount: 1,
+      elementCount: 1,
+      normCounts: {
+        obligation: 0,
+        permission: 1,
+        prohibition: 0,
+      },
+      browserNative: true,
+      pythonRuntime: false,
+    });
     expect(result.formulas[0]).toContain('P(∀x');
+  });
+
+  it('exposes Python module style legal_text_to_deontic alias without runtime bridges', () => {
+    const result = legal_text_to_deontic(
+      'Owners shall repair sidewalks. Owners may request a variance.',
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.metadata.normCounts).toEqual({
+      obligation: 1,
+      permission: 1,
+      prohibition: 0,
+    });
+    expect(result.capabilities.serverCallsAllowed).toBe(false);
   });
 
   it('returns a warning when no normative language is detected', () => {

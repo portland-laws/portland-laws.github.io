@@ -20,6 +20,9 @@ export interface TemporalConstraint {
 
 export interface NormativeElement {
   text: string;
+  sentenceIndex: number;
+  startOffset: number;
+  endOffset: number;
   normType: DeonticNormType;
   deonticOperator: DeonticOperator;
   matchedIndicator: string;
@@ -37,6 +40,14 @@ export interface DeonticConversionResult {
   formulas: string[];
   confidence: number;
   warnings: string[];
+  metadata: {
+    sourceLength: number;
+    sentenceCount: number;
+    elementCount: number;
+    normCounts: Record<DeonticNormType, number>;
+    browserNative: true;
+    pythonRuntime: false;
+  };
   capabilities: {
     mlUnavailable: boolean;
     serverCallsAllowed: false;
@@ -66,12 +77,28 @@ const INDICATORS: Array<{
 ];
 
 export function extractNormativeElements(text: string): NormativeElement[] {
-  return text
-    .split(/[.!?]+/)
-    .map((sentence) => sentence.trim())
-    .filter(Boolean)
-    .map(analyzeNormativeSentence)
-    .filter((element): element is NormativeElement => Boolean(element));
+  const elements: NormativeElement[] = [];
+  const sentencePattern = /[^.!?]+/g;
+  let sentenceIndex = 0;
+  for (const match of text.matchAll(sentencePattern)) {
+    const rawSentence = match[0];
+    const trimmed = rawSentence.trim();
+    if (trimmed.length === 0) {
+      continue;
+    }
+    const leadingWhitespace = rawSentence.length - rawSentence.trimStart().length;
+    const startOffset = (match.index ?? 0) + leadingWhitespace;
+    const analyzed = analyzeNormativeSentence(trimmed, {
+      sentenceIndex,
+      startOffset,
+      endOffset: startOffset + trimmed.length,
+    });
+    if (analyzed) {
+      elements.push(analyzed);
+    }
+    sentenceIndex += 1;
+  }
+  return elements;
 }
 
 export function convertLegalTextToDeontic(text: string): DeonticConversionResult {
@@ -93,6 +120,7 @@ export function convertLegalTextToDeontic(text: string): DeonticConversionResult
         ? ['Browser-native ML confidence is not yet available.']
         : []),
     ],
+    metadata: buildConversionMetadata(text, elements),
     capabilities: {
       mlUnavailable: getLogicRuntimeCapabilities().deontic.mlUnavailable,
       serverCallsAllowed: false,
@@ -100,7 +128,20 @@ export function convertLegalTextToDeontic(text: string): DeonticConversionResult
   };
 }
 
-export function analyzeNormativeSentence(sentence: string): NormativeElement | null {
+export const legalTextToDeontic = convertLegalTextToDeontic;
+export const legal_text_to_deontic = convertLegalTextToDeontic;
+export const extract_normative_elements = extractNormativeElements;
+
+export interface NormativeSentenceLocation {
+  sentenceIndex?: number;
+  startOffset?: number;
+  endOffset?: number;
+}
+
+export function analyzeNormativeSentence(
+  sentence: string,
+  location: NormativeSentenceLocation = {},
+): NormativeElement | null {
   const lower = sentence.toLowerCase();
   for (const indicator of INDICATORS) {
     const phrase = indicator.phrases.find((candidate) => lower.includes(candidate));
@@ -116,6 +157,9 @@ export function analyzeNormativeSentence(sentence: string): NormativeElement | n
 
     return {
       text: sentence,
+      sentenceIndex: location.sentenceIndex ?? 0,
+      startOffset: location.startOffset ?? 0,
+      endOffset: location.endOffset ?? sentence.length,
       normType: indicator.normType,
       deonticOperator: indicator.deonticOperator,
       matchedIndicator: phrase,
@@ -135,6 +179,32 @@ export function analyzeNormativeSentence(sentence: string): NormativeElement | n
     };
   }
   return null;
+}
+
+function buildConversionMetadata(
+  text: string,
+  elements: NormativeElement[],
+): DeonticConversionResult['metadata'] {
+  const normCounts: Record<DeonticNormType, number> = {
+    obligation: 0,
+    permission: 0,
+    prohibition: 0,
+  };
+  for (const element of elements) {
+    normCounts[element.normType] += 1;
+  }
+  return {
+    sourceLength: text.length,
+    sentenceCount: countSentences(text),
+    elementCount: elements.length,
+    normCounts,
+    browserNative: true,
+    pythonRuntime: false,
+  };
+}
+
+function countSentences(text: string): number {
+  return [...text.matchAll(/[^.!?]+/g)].filter((match) => match[0].trim().length > 0).length;
 }
 
 export function extractLegalSubjects(sentence: string): string[] {

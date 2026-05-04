@@ -1100,3 +1100,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T082836Z-ported-the-remaining-deontic-knowledge-base-query-surface-with-browser-native-in.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T082836Z-ported-the-remaining-deontic-knowledge-base-query-surface-with-browser-native-in.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T082836Z-ported-the-remaining-deontic-knowledge-base-query-surface-with-browser-native-in.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 08:31:09 UTC
+
+- Target: `Task checkbox-312: Port remaining Python logic module `logic/deontic/legal_text_to_deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the deontic legal_text_to_deontic browser-native facade with structured extraction metadata and Python-style aliases.
+- Impact: The TypeScript deontic parser now returns sentence offsets, norm-count metadata, and explicit browser-native/no-Python runtime metadata from convertLegalTextToDeontic, while tests validate the legal_text_to_deontic alias and no server-call capability contract.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/deontic/parser.test.ts`, `src/lib/logic/deontic/parser.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T083109Z-ported-the-deontic-legal_text_to_deontic-browser-native-facade-with-structured-e.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T083109Z-ported-the-deontic-legal_text_to_deontic-browser-native-facade-with-structured-e.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T083109Z-ported-the-deontic-legal_text_to_deontic-browser-native-facade-with-structured-e.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
