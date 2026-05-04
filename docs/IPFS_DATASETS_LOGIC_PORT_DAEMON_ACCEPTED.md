@@ -875,3 +875,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T065118Z-ported-the-remaining-tdfol-forward-chaining-strategy-slice-by-replacing-first-wi.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T065118Z-ported-the-remaining-tdfol-forward-chaining-strategy-slice-by-replacing-first-wi.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T065118Z-ported-the-remaining-tdfol-forward-chaining-strategy-slice-by-replacing-first-wi.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 06:53:42 UTC
+
+- Target: `Task checkbox-287: Port remaining Python logic module `logic/TDFOL/strategies/modal_tableaux.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Extended TDFOL modal tableaux with browser-native NEXT successor and XOR branch expansion parity.
+- Impact: The TypeScript modal tableaux core now expands one-step temporal NEXT formulas into local Kripke successor worlds and handles XOR truth branches without Python, server calls, or Node-only runtime dependencies. The focused Jest suite validates both expansions through the existing browser-native TDFOL tableaux API.
+- Changed files: `src/lib/logic/tdfol/modalTableaux.test.ts`, `src/lib/logic/tdfol/modalTableaux.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T065342Z-extended-tdfol-modal-tableaux-with-browser-native-next-successor-and-xor-branch-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T065342Z-extended-tdfol-modal-tableaux-with-browser-native-next-successor-and-xor-branch-.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T065342Z-extended-tdfol-modal-tableaux-with-browser-native-next-successor-and-xor-branch-.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

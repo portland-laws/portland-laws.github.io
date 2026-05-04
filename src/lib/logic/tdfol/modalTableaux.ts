@@ -368,6 +368,25 @@ export class TdfolModalTableaux {
       );
     }
 
+    if (formula.operator === 'XOR') {
+      const leftBranch = branch.copy();
+      const rightBranch = branch.copy();
+      if (!negated) {
+        leftBranch.worlds.get(worldId)?.addFormula(formula.left);
+        leftBranch.worlds.get(worldId)?.addFormula(formula.right, true);
+        rightBranch.worlds.get(worldId)?.addFormula(formula.left, true);
+        rightBranch.worlds.get(worldId)?.addFormula(formula.right);
+        proofSteps.push(`XOR split at world ${worldId}`);
+      } else {
+        leftBranch.worlds.get(worldId)?.addFormula(formula.left);
+        leftBranch.worlds.get(worldId)?.addFormula(formula.right);
+        rightBranch.worlds.get(worldId)?.addFormula(formula.left, true);
+        rightBranch.worlds.get(worldId)?.addFormula(formula.right, true);
+        proofSteps.push(`Negated XOR split at world ${worldId}`);
+      }
+      return [leftBranch, rightBranch];
+    }
+
     return [branch];
   }
 
@@ -451,6 +470,15 @@ export class TdfolModalTableaux {
       for (const target of branch.getAccessibleWorlds(worldId))
         branch.worlds.get(target)?.addFormula(formula.formula, true);
       proofSteps.push(`Negated DIAMOND expansion at world ${worldId}`);
+      return [branch];
+    }
+
+    if (formula.operator === 'NEXT') {
+      const newWorld = this.createAccessibleWorld(branch, worldId);
+      newWorld.addFormula(formula.formula, negated);
+      this.propagateModalHistories(branch, worldId, newWorld);
+      this.applyS5WorldLinks(branch, newWorld);
+      proofSteps.push(`${negated ? 'Negated NEXT' : 'NEXT'}: created world ${newWorld.id}`);
       return [branch];
     }
 
