@@ -755,7 +755,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/CEC/nl/nl_to_policy_compiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/CEC/nl/portuguese_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/CEC/nl/spanish_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/optimization/formula_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/CEC/optimization/formula_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/optimization/profiling_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/provers/e_prover_adapter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/provers/prover_manager.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 04:08:03 UTC
+Last updated: 2026-05-04 04:12:53 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-245: Port remaining Python logic module 'logic/CEC/optimization/formula_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-246: Port remaining Python logic module 'logic/CEC/optimization/profiling_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1219,8 +1219,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-241: Port remaining Python logic module 'logic/CEC/nl/nl_policy_conflict_detector.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-242: Port remaining Python logic module 'logic/CEC/nl/nl_to_policy_compiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-243: Port remaining Python logic module 'logic/CEC/nl/portuguese_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-244: Port remaining Python logic module 'logic/CEC/nl/spanish_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-245: Port remaining Python logic module 'logic/CEC/optimization/formula_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-244: Port remaining Python logic module 'logic/CEC/nl/spanish_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-245: Port remaining Python logic module 'logic/CEC/optimization/formula_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-246: Port remaining Python logic module 'logic/CEC/optimization/profiling_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-247: Port remaining Python logic module 'logic/CEC/provers/e_prover_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-248: Port remaining Python logic module 'logic/CEC/provers/prover_manager.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-244: Port remaining Python logic module 'logic/CEC/nl/spanish_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-245: Port remaining Python logic module 'logic/CEC/optimization/formula_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported logic/CEC/nl/spanish_parser.py as a browser-native deterministic Spanish DCEC parser.
-- Impact: The new Spanish parser is exported from src/lib/logic/cec and validated by focused Jest tests that exercise Spanish legal deontic, temporal, connective, and fail-closed parsing without Python, server, filesystem, subprocess, or RPC runtime dependencies.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/index.ts`, `src/lib/logic/cec/nlConverter.test.ts`, `src/lib/logic/cec/spanishParser.ts`
+- Summary: Ported CEC formula_cache.py parity as a browser-native TypeScript formula cache.
+- Impact: Adds a CEC formula cache exported from src/lib/logic/cec that canonicalizes formula keys, caches parsed expressions and fail-closed parse errors, tracks dependencies and cache statistics, and is covered by the existing Jest logic-port validation path without Python, server, filesystem, subprocess, or RPC fallback.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/formulaCache.ts`, `src/lib/logic/cec/index.ts`, `src/lib/logic/cec/proofOptimization.test.ts`
 
 ### Blocked Backlog
 

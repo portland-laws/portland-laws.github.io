@@ -23,6 +23,7 @@ export * from './eventCalculus';
 export * from './enhancedGrammarParser';
 export * from './fluents';
 export * from './formatter';
+export * from './formulaCache';
 export * from './grammarEngine';
 export * from './inferenceRules';
 export * from './languageDetector';

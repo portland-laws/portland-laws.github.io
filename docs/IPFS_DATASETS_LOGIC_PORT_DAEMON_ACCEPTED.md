@@ -497,3 +497,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T040803Z-ported-logic-cec-nl-spanish_parser.py-as-a-browser-native-deterministic-spanish-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T040803Z-ported-logic-cec-nl-spanish_parser.py-as-a-browser-native-deterministic-spanish-.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T040803Z-ported-logic-cec-nl-spanish_parser.py-as-a-browser-native-deterministic-spanish-.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 04:12:53 UTC
+
+- Target: `Task checkbox-245: Port remaining Python logic module `logic/CEC/optimization/formula_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported CEC formula_cache.py parity as a browser-native TypeScript formula cache.
+- Impact: Adds a CEC formula cache exported from src/lib/logic/cec that canonicalizes formula keys, caches parsed expressions and fail-closed parse errors, tracks dependencies and cache statistics, and is covered by the existing Jest logic-port validation path without Python, server, filesystem, subprocess, or RPC fallback.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/formulaCache.ts`, `src/lib/logic/cec/index.ts`, `src/lib/logic/cec/proofOptimization.test.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T041253Z-ported-cec-formula_cache.py-parity-as-a-browser-native-typescript-formula-cache..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T041253Z-ported-cec-formula_cache.py-parity-as-a-browser-native-typescript-formula-cache..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T041253Z-ported-cec-formula_cache.py-parity-as-a-browser-native-typescript-formula-cache..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

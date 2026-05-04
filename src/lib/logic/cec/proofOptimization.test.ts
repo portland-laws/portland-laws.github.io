@@ -6,8 +6,73 @@ import {
   CecRedundancyEliminator,
   createCecProofNode,
 } from './proofOptimization';
+import {
+  CecFormulaCache,
+  canonicalizeCecFormulaSource,
+  createCecFormulaCache,
+} from './formulaCache';
 
 describe('CEC proof optimization parity helpers', () => {
+  it('caches parsed CEC formulas by canonical source with Python metadata', () => {
+    const cache = createCecFormulaCache({ maxSize: 4 });
+
+    const first = cache.getFormula('  (and p   q) ');
+    const second = cache.get_formula('(and p q)');
+
+    expect(first).toBe(second);
+    expect(first).toMatchObject({
+      ok: true,
+      canonical: '(and p q)',
+      dependencies: ['p', 'q'],
+      metadata: {
+        sourcePythonModule: 'logic/CEC/optimization/formula_cache.py',
+        browserNative: true,
+        pythonRuntime: false,
+        serverRuntime: false,
+      },
+    });
+    expect(cache.getStats()).toMatchObject({
+      hits: 1,
+      misses: 1,
+      parseAttempts: 1,
+      parseFailures: 0,
+    });
+    expect(canonicalizeCecFormulaSource('\n(and   p\tq)  ')).toBe('(and p q)');
+  });
+
+  it('caches fail-closed errors and bounds entries deterministically', () => {
+    const errors = new CecFormulaCache({
+      parser: () => {
+        throw new Error('bad formula');
+      },
+    });
+
+    const first = errors.getFormula('not-valid');
+    const second = errors.getFormula(' not-valid ');
+
+    expect(first).toBe(second);
+    expect(first.ok).toBe(false);
+    expect(first.error).toBe('bad formula');
+    expect(errors.get_stats()).toMatchObject({
+      hits: 1,
+      misses: 1,
+      parseAttempts: 1,
+      parseFailures: 1,
+    });
+    let now = 0;
+    const cache = createCecFormulaCache({ maxSize: 2, ttlMs: 10, now: () => now });
+
+    cache.getFormula('p');
+    cache.getFormula('q');
+    expect(cache.hasFormula('p')).toBe(true);
+    cache.getFormula('r');
+
+    expect(cache.has_formula('q')).toBe(false);
+    now = 11;
+    expect(cache.getFormula('p').ok).toBe(true);
+    expect(cache.getStats().expirations).toBe(1);
+  });
+
   it('models proof nodes with parent links, equality, and clone support', () => {
     const root = createCecProofNode('p', 0);
     const child = createCecProofNode('q', 1);
