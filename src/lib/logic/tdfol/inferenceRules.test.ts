@@ -11,9 +11,11 @@ import {
   TemporalTAxiomRule,
   UniversalGeneralizationRule,
   UniversalModusPonensRule,
+  TdfolRule,
   applyTdfolRules,
   formulaEquals,
   getAllTdfolRules,
+  tryApplyTdfolRule,
 } from './inferenceRules';
 import { formatTdfolFormula } from './formatter';
 
@@ -33,7 +35,9 @@ describe('TDFOL inference rules', () => {
     const temporalPremise = parseTdfolFormula('always(Pred(x))');
 
     expect(TemporalKAxiomRule.canApply(temporalRule, temporalPremise)).toBe(true);
-    expect(formatTdfolFormula(TemporalKAxiomRule.apply(temporalRule, temporalPremise))).toBe('□(Goal(x))');
+    expect(formatTdfolFormula(TemporalKAxiomRule.apply(temporalRule, temporalPremise))).toBe(
+      '□(Goal(x))',
+    );
     expect(formatTdfolFormula(TemporalTAxiomRule.apply(temporalPremise))).toBe('Pred(x)');
   });
 
@@ -42,7 +46,9 @@ describe('TDFOL inference rules', () => {
     const deonticPremise = parseTdfolFormula('O(Pred(x))');
     const prohibition = parseTdfolFormula('F(Pred(x))');
 
-    expect(formatTdfolFormula(DeonticKAxiomRule.apply(deonticRule, deonticPremise))).toBe('O(Goal(x))');
+    expect(formatTdfolFormula(DeonticKAxiomRule.apply(deonticRule, deonticPremise))).toBe(
+      'O(Goal(x))',
+    );
     expect(formatTdfolFormula(DeonticDAxiomRule.apply(deonticPremise))).toBe('P(Pred(x))');
     expect(formatTdfolFormula(ProhibitionEquivalenceRule.apply(prohibition))).toBe('O(¬(Pred(x)))');
   });
@@ -52,22 +58,30 @@ describe('TDFOL inference rules', () => {
     const premise = parseTdfolFormula('Parent(Alice, Alice)');
 
     expect(UniversalModusPonensRule.canApply(rule, premise)).toBe(true);
-    expect(formatTdfolFormula(UniversalModusPonensRule.apply(rule, premise))).toBe('Related(Alice)');
-    expect(UniversalModusPonensRule.canApply(rule, parseTdfolFormula('Parent(Alice, Bob)'))).toBe(false);
+    expect(formatTdfolFormula(UniversalModusPonensRule.apply(rule, premise))).toBe(
+      'Related(Alice)',
+    );
+    expect(UniversalModusPonensRule.canApply(rule, parseTdfolFormula('Parent(Alice, Bob)'))).toBe(
+      false,
+    );
   });
 
   it('instantiates and generalizes existential formulas deterministically', () => {
     const existential = parseTdfolFormula('exists x. Permit(x)');
     const ground = parseTdfolFormula('Permit(Alice)');
 
-    expect(formatTdfolFormula(ExistentialInstantiationRule.apply(existential))).toBe('Permit(skolem_x)');
+    expect(formatTdfolFormula(ExistentialInstantiationRule.apply(existential))).toBe(
+      'Permit(skolem_x)',
+    );
     expect(formatTdfolFormula(ExistentialGeneralizationRule.apply(ground))).toBe('∃x (Permit(x))');
   });
 
   it('generalizes formulas over the first sorted free variable', () => {
     const formula = parseTdfolFormula('Resident(y) -> Tenant(y)');
 
-    expect(formatTdfolFormula(UniversalGeneralizationRule.apply(formula))).toBe('∀y ((Resident(y)) → (Tenant(y)))');
+    expect(formatTdfolFormula(UniversalGeneralizationRule.apply(formula))).toBe(
+      '∀y ((Resident(y)) → (Tenant(y)))',
+    );
   });
 
   it('enumerates rule applications without duplicating known formulas externally', () => {
@@ -77,12 +91,70 @@ describe('TDFOL inference rules', () => {
 
     expect(applications).toHaveLength(1);
     expect(formulaEquals(applications[0].conclusion, parseTdfolFormula('Goal(x)'))).toBe(true);
-    expect(getAllTdfolRules().map((rule) => rule.name)).toEqual(expect.arrayContaining([
-      'DeonticKAxiom',
-      'UniversalModusPonens',
-      'ExistentialInstantiation',
-      'ExistentialGeneralization',
-      'UniversalGeneralization',
-    ]));
+    expect(getAllTdfolRules().map((rule) => rule.name)).toEqual(
+      expect.arrayContaining([
+        'DeonticKAxiom',
+        'UniversalModusPonens',
+        'ExistentialInstantiation',
+        'ExistentialGeneralization',
+        'UniversalGeneralization',
+      ]),
+    );
+  });
+
+  it('ports the Python base rule metadata contract without runtime bridges', () => {
+    expect(ModusPonensRule).toMatchObject({
+      id: 'modus_ponens',
+      category: 'propositional',
+      sourcePythonModule: 'logic/TDFOL/inference_rules/base.py',
+    });
+    expect(UniversalModusPonensRule).toMatchObject({
+      id: 'universal_modus_ponens',
+      category: 'first_order',
+      sourcePythonModule: 'logic/TDFOL/inference_rules/base.py',
+    });
+    expect(
+      getAllTdfolRules().every(
+        (rule) => typeof rule.canApply === 'function' && typeof rule.apply === 'function',
+      ),
+    ).toBe(true);
+  });
+
+  it('validates base rule construction fail-closed', () => {
+    expect(
+      () =>
+        new TdfolRule({
+          name: '',
+          description: 'invalid',
+          arity: 1,
+          canApply: () => false,
+          apply: (formula) => formula,
+        }),
+    ).toThrow('name must be non-empty');
+
+    expect(
+      () =>
+        new TdfolRule({
+          name: 'BadArity',
+          description: 'invalid',
+          arity: -1,
+          canApply: () => false,
+          apply: (formula) => formula,
+        }),
+    ).toThrow('invalid arity');
+  });
+
+  it('returns fail-closed application results instead of throwing from the base helper', () => {
+    const p = parseTdfolFormula('Pred(x)');
+    const implication = parseTdfolFormula('Pred(x) -> Goal(x)');
+    const result = tryApplyTdfolRule(ModusPonensRule, p, implication);
+
+    expect(result.ok).toBe(true);
+    expect(result.conclusion ? formatTdfolFormula(result.conclusion) : '').toBe('Goal(x)');
+    expect(tryApplyTdfolRule(ModusPonensRule, implication, p)).toMatchObject({
+      ok: false,
+      rule: 'ModusPonens',
+      error: 'Rule ModusPonens cannot be applied to 2 premise(s)',
+    });
   });
 });
