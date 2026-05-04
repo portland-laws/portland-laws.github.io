@@ -380,3 +380,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T031402Z-added-a-browser-native-cec-prover-core-extended-rules-facade-and-validation-cove.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T031402Z-added-a-browser-native-cec-prover-core-extended-rules-facade-and-validation-cove.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T031402Z-added-a-browser-native-cec-prover-core-extended-rules-facade-and-validation-cove.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 03:16:23 UTC
+
+- Target: `Task checkbox-232: Port remaining Python logic module `logic/CEC/native/shadow_prover.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the remaining CEC native ShadowProver surface with browser-native theorem and batch proof entry points plus Python-style aliases.
+- Impact: The TypeScript ShadowProver now exposes local theorem, request, and batch APIs backed by existing CEC forward proving and modal tableaux, with tests validating mixed-logic dispatch and explicit no-Python runtime metadata.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/shadowProver.test.ts`, `src/lib/logic/cec/shadowProver.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T031623Z-ported-the-remaining-cec-native-shadowprover-surface-with-browser-native-theorem.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T031623Z-ported-the-remaining-cec-native-shadowprover-surface-with-browser-native-theorem.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T031623Z-ported-the-remaining-cec-native-shadowprover-surface-with-browser-native-theorem.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

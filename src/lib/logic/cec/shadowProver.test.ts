@@ -5,6 +5,8 @@ import {
   CecS5Prover,
   createCecCognitiveProver,
   createCecShadowProver,
+  proveCecShadowBatch,
+  prove_cec_shadow_theorem,
   readCecShadowProblemObject,
 } from './shadowProver';
 import { parseCecExpression } from './parser';
@@ -38,7 +40,9 @@ describe('CEC ShadowProver', () => {
   });
 
   it('delegates modal validity to K/T/D/S4/S5 tableaux locally', () => {
-    const formula = parseCecExpression('(implies (always (comply_with agent code)) (comply_with agent code))');
+    const formula = parseCecExpression(
+      '(implies (always (comply_with agent code)) (comply_with agent code))',
+    );
 
     expect(new CecShadowProver('K').prove(formula).status).toBe('failure');
     expect(new CecShadowProver('T').prove(formula).status).toBe('success');
@@ -73,5 +77,49 @@ describe('CEC ShadowProver', () => {
     expect(createCecShadowProver('S4')).toBeInstanceOf(CecS4Prover);
     expect(createCecShadowProver('S5')).toBeInstanceOf(CecS5Prover);
     expect(() => createCecShadowProver('LP')).toThrow('Unsupported modal logic');
+  });
+
+  it('exposes Python-native theorem helpers as local TypeScript proof entry points', () => {
+    const theorem = parseCecExpression('(comply_with agent code)');
+    const proof = prove_cec_shadow_theorem(theorem, [theorem]);
+
+    expect(proof).toMatchObject({
+      status: 'success',
+      logic: 'K',
+      metadata: { method: 'direct-assumption' },
+    });
+  });
+
+  it('proves mixed-logic batches without server, Python, or subprocess fallbacks', () => {
+    const batch = proveCecShadowBatch([
+      {
+        theorem: '(comply_with agent code)',
+        axioms: [
+          '(subject_to agent code)',
+          '(implies (subject_to agent code) (comply_with agent code))',
+        ],
+      },
+      {
+        theorem: '(implies (always (comply_with agent code)) (comply_with agent code))',
+        logic: 'T',
+        metadata: { source: 'native-shadow-prover-parity' },
+      },
+    ]);
+
+    expect(batch.results.map((result) => result.status)).toEqual(['success', 'success']);
+    expect(batch.results.map((result) => result.logic)).toEqual(['K', 'T']);
+    expect(batch.results[1].metadata.requestMetadata).toEqual({
+      source: 'native-shadow-prover-parity',
+    });
+    expect(batch.statistics).toMatchObject({
+      proofsAttempted: 2,
+      proofsSucceeded: 2,
+      proofsFailed: 0,
+    });
+    expect(batch.metadata).toEqual({
+      browserNative: true,
+      dependencyMode: 'local-typescript',
+      pythonRuntime: false,
+    });
   });
 });

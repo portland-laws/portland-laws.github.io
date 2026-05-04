@@ -7,7 +7,13 @@ import { CecProver, type CecProverOptions } from './prover';
 
 export type CecShadowModalLogic = 'K' | 'T' | 'S4' | 'S5' | 'D' | 'LP' | 'LP1' | 'LP2';
 export type CecShadowProofStatus = 'success' | 'failure' | 'timeout' | 'unknown' | 'error';
-export type CecModalOperator = 'necessary' | 'possible' | 'belief' | 'knowledge' | 'says' | 'perceives';
+export type CecModalOperator =
+  | 'necessary'
+  | 'possible'
+  | 'belief'
+  | 'knowledge'
+  | 'says'
+  | 'perceives';
 export type CecShadowFormula = CecExpression | string;
 
 export interface CecShadowProofTree {
@@ -26,6 +32,19 @@ export interface CecShadowProblemFile {
   assumptions: CecShadowFormula[];
   goals: CecShadowFormula[];
   metadata?: Record<string, unknown>;
+}
+
+export interface CecShadowProveRequest {
+  theorem: CecShadowFormula;
+  axioms?: CecShadowFormula[];
+  logic?: CecShadowModalLogic;
+  metadata?: Record<string, unknown>;
+}
+
+export interface CecShadowBatchResult {
+  results: CecShadowProofTree[];
+  statistics: CecShadowStatistics;
+  metadata: Record<string, unknown>;
 }
 
 export interface CecShadowStatistics {
@@ -68,7 +87,10 @@ export class CecShadowProver {
     averageSteps: 0,
   };
 
-  constructor(logic: CecShadowModalLogic = 'K', protected readonly options: CecShadowProverOptions = {}) {
+  constructor(
+    logic: CecShadowModalLogic = 'K',
+    protected readonly options: CecShadowProverOptions = {},
+  ) {
     this.logic = logic;
   }
 
@@ -94,8 +116,60 @@ export class CecShadowProver {
   }
 
   proveProblem(problem: CecShadowProblemFile): CecShadowProofTree[] {
-    const prover = problem.logic === this.logic ? this : createCecShadowProver(problem.logic, this.options);
+    const prover =
+      problem.logic === this.logic ? this : createCecShadowProver(problem.logic, this.options);
     return problem.goals.map((goal) => prover.prove(goal, problem.assumptions));
+  }
+
+  proveTheorem(theorem: CecShadowFormula, axioms: CecShadowFormula[] = []): CecShadowProofTree {
+    return this.prove(theorem, axioms);
+  }
+
+  prove_theorem(theorem: CecShadowFormula, axioms: CecShadowFormula[] = []): CecShadowProofTree {
+    return this.proveTheorem(theorem, axioms);
+  }
+
+  proveRequest(request: CecShadowProveRequest): CecShadowProofTree {
+    const prover =
+      request.logic && request.logic !== this.logic
+        ? createCecShadowProver(request.logic, this.options)
+        : this;
+    const proof = prover.prove(request.theorem, request.axioms ?? []);
+    if (!request.metadata || Object.keys(request.metadata).length === 0) return proof;
+    return new CecShadowProof(proof.goal, proof.steps, proof.status, proof.logic, {
+      ...proof.metadata,
+      requestMetadata: request.metadata,
+    });
+  }
+
+  prove_request(request: CecShadowProveRequest): CecShadowProofTree {
+    return this.proveRequest(request);
+  }
+
+  proveBatch(requests: CecShadowProveRequest[]): CecShadowBatchResult {
+    const results = requests.map((request) => this.proveRequest(request));
+    const successful = results.filter((result) => result.status === 'success').length;
+    return {
+      results,
+      statistics: {
+        proofsAttempted: results.length,
+        proofsSucceeded: successful,
+        proofsFailed: results.length - successful,
+        averageSteps:
+          results.length === 0
+            ? 0
+            : results.reduce((total, result) => total + result.steps.length, 0) / results.length,
+      },
+      metadata: {
+        browserNative: true,
+        dependencyMode: 'local-typescript',
+        pythonRuntime: false,
+      },
+    };
+  }
+
+  prove_batch(requests: CecShadowProveRequest[]): CecShadowBatchResult {
+    return this.proveBatch(requests);
   }
 
   getStatistics(): CecShadowStatistics {
@@ -106,7 +180,10 @@ export class CecShadowProver {
     this.proofCache.clear();
   }
 
-  protected proveUncached(goal: CecShadowFormula, assumptions: CecShadowFormula[]): CecShadowProofTree {
+  protected proveUncached(
+    goal: CecShadowFormula,
+    assumptions: CecShadowFormula[],
+  ): CecShadowProofTree {
     if (!isTableauxLogic(this.logic)) {
       return new CecShadowProof(goal, [], 'unknown', this.logic, {
         method: 'shadow-prover',
@@ -116,11 +193,17 @@ export class CecShadowProver {
 
     const goalExpression = toCecExpression(goal);
     const assumptionExpressions = assumptions.map(toCecExpression);
-    if (assumptionExpressions.some((assumption) => formatCecExpression(assumption) === formatCecExpression(goalExpression))) {
+    if (
+      assumptionExpressions.some(
+        (assumption) => formatCecExpression(assumption) === formatCecExpression(goalExpression),
+      )
+    ) {
       return new CecShadowProof(goal, [], 'success', this.logic, { method: 'direct-assumption' });
     }
 
-    const forwardResult = new CecProver(this.options).prove(goalExpression, { axioms: assumptionExpressions });
+    const forwardResult = new CecProver(this.options).prove(goalExpression, {
+      axioms: assumptionExpressions,
+    });
     if (forwardResult.status === 'proved') {
       return new CecShadowProof(goal, forwardResult.steps, 'success', this.logic, {
         method: forwardResult.method ?? 'cec-forward-chaining',
@@ -133,7 +216,10 @@ export class CecShadowProver {
       });
     }
 
-    const modalFormula = assumptionExpressions.length > 0 ? assumptionsImplyGoal(assumptionExpressions, goalExpression) : goalExpression;
+    const modalFormula =
+      assumptionExpressions.length > 0
+        ? assumptionsImplyGoal(assumptionExpressions, goalExpression)
+        : goalExpression;
     const tableaux = new CecModalTableaux({
       logicType: this.logic,
       maxDepth: this.options.maxDepth,
@@ -242,7 +328,10 @@ export class CecCognitiveCalculusProver extends CecShadowProver {
     return [...new Set(derived)];
   }
 
-  protected proveUncached(goal: CecShadowFormula, assumptions: CecShadowFormula[]): CecShadowProofTree {
+  protected proveUncached(
+    goal: CecShadowFormula,
+    assumptions: CecShadowFormula[],
+  ): CecShadowProofTree {
     const derived = this.applyCognitiveRules(assumptions);
     if (derived.includes(formulaKey(goal))) {
       return new CecShadowProof(
@@ -276,19 +365,60 @@ export class CecCognitiveCalculusProver extends CecShadowProver {
   }
 }
 
-export function createCecShadowProver(logic: CecShadowModalLogic, options: CecShadowProverOptions = {}): CecShadowProver {
+export function createCecShadowProver(
+  logic: CecShadowModalLogic,
+  options: CecShadowProverOptions = {},
+): CecShadowProver {
   if (logic === 'K') return new CecKProver(options);
   if (logic === 'T' || logic === 'D') return new CecShadowProver(logic, options);
   if (logic === 'S4') return new CecS4Prover(options);
   if (logic === 'S5') return new CecS5Prover(options);
-  throw new Error(`Unsupported modal logic: ${logic}. Use K, T, D, S4, or S5 for browser-native ShadowProver.`);
+  throw new Error(
+    `Unsupported modal logic: ${logic}. Use K, T, D, S4, or S5 for browser-native ShadowProver.`,
+  );
 }
 
-export function createCecCognitiveProver(options: CecShadowProverOptions = {}): CecCognitiveCalculusProver {
+export function createCecCognitiveProver(
+  options: CecShadowProverOptions = {},
+): CecCognitiveCalculusProver {
   return new CecCognitiveCalculusProver(options);
 }
 
-export function readCecShadowProblemObject(problem: Partial<CecShadowProblemFile>): CecShadowProblemFile {
+export function proveCecShadowTheorem(
+  theorem: CecShadowFormula,
+  axioms: CecShadowFormula[] = [],
+  logic: CecShadowModalLogic = 'K',
+  options: CecShadowProverOptions = {},
+): CecShadowProofTree {
+  return createCecShadowProver(logic, options).proveTheorem(theorem, axioms);
+}
+
+export function prove_cec_shadow_theorem(
+  theorem: CecShadowFormula,
+  axioms: CecShadowFormula[] = [],
+  logic: CecShadowModalLogic = 'K',
+  options: CecShadowProverOptions = {},
+): CecShadowProofTree {
+  return proveCecShadowTheorem(theorem, axioms, logic, options);
+}
+
+export function proveCecShadowBatch(
+  requests: CecShadowProveRequest[],
+  options: CecShadowProverOptions = {},
+): CecShadowBatchResult {
+  return new CecShadowProver('K', options).proveBatch(requests);
+}
+
+export function prove_cec_shadow_batch(
+  requests: CecShadowProveRequest[],
+  options: CecShadowProverOptions = {},
+): CecShadowBatchResult {
+  return proveCecShadowBatch(requests, options);
+}
+
+export function readCecShadowProblemObject(
+  problem: Partial<CecShadowProblemFile>,
+): CecShadowProblemFile {
   return {
     name: problem.name ?? 'placeholder',
     logic: problem.logic ?? 'K',
@@ -299,7 +429,9 @@ export function readCecShadowProblemObject(problem: Partial<CecShadowProblemFile
 }
 
 function assumptionsImplyGoal(assumptions: CecExpression[], goal: CecExpression): CecExpression {
-  const premise = assumptions.reduce((left, right) => ({ kind: 'binary', operator: 'and', left, right }) as CecExpression);
+  const premise = assumptions.reduce(
+    (left, right) => ({ kind: 'binary', operator: 'and', left, right }) as CecExpression,
+  );
   return { kind: 'binary', operator: 'implies', left: premise, right: goal };
 }
 
