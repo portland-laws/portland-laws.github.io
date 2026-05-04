@@ -765,7 +765,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/CEC/shadow_prover_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/CEC/talos_wrapper.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/TDFOL/countermodel_visualizer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/TDFOL/demonstrate_countermodel_visualizer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/TDFOL/demonstrate_countermodel_visualizer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/demonstrate_performance_dashboard.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/example_formula_dependency_graph.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/example_performance_profiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 04:52:25 UTC
+Last updated: 2026-05-04 04:55:01 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-255: Port remaining Python logic module 'logic/TDFOL/demonstrate_countermodel_visualizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-256: Port remaining Python logic module 'logic/TDFOL/demonstrate_performance_dashboard.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1229,8 +1229,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-251: Port remaining Python logic module 'logic/CEC/provers/z3_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-252: Port remaining Python logic module 'logic/CEC/shadow_prover_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-253: Port remaining Python logic module 'logic/CEC/talos_wrapper.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-254: Port remaining Python logic module 'logic/TDFOL/countermodel_visualizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-255: Port remaining Python logic module 'logic/TDFOL/demonstrate_countermodel_visualizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-254: Port remaining Python logic module 'logic/TDFOL/countermodel_visualizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-255: Port remaining Python logic module 'logic/TDFOL/demonstrate_countermodel_visualizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-256: Port remaining Python logic module 'logic/TDFOL/demonstrate_performance_dashboard.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-257: Port remaining Python logic module 'logic/TDFOL/example_formula_dependency_graph.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-258: Port remaining Python logic module 'logic/TDFOL/example_performance_profiler.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,10 +1430,10 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-254: Port remaining Python logic module 'logic/TDFOL/countermodel_visualizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-255: Port remaining Python logic module 'logic/TDFOL/demonstrate_countermodel_visualizer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported the remaining TDFOL countermodel visualizer slice with deterministic browser-native snapshots and configurable HTML rendering.
-- Impact: src/lib/logic/tdfol/countermodels.ts now exposes sorted visualizer data snapshots and render options that browser clients can consume without server, Python, filesystem, subprocess, or RPC dependencies; src/lib/logic/tdfol/countermodels.test.ts validates the exported snapshot ordering and HTML option behavior.
+- Summary: Ported the TDFOL countermodel visualizer demo as deterministic browser-native TypeScript scenarios.
+- Impact: src/lib/logic/tdfol/countermodels.ts now exports createTdfolCountermodelVisualizerDemo for browser clients to obtain canned Kripke countermodel scenarios, snapshots, and rendered outputs without server, Python, filesystem, subprocess, or RPC dependencies; src/lib/logic/tdfol/countermodels.test.ts validates the deterministic demo surface and docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md marks checkbox-255 complete.
 - Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/countermodels.test.ts`, `src/lib/logic/tdfol/countermodels.ts`
 
 ### Blocked Backlog

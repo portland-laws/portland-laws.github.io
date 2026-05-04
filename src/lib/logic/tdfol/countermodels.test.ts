@@ -1,5 +1,6 @@
 import { parseTdfolFormula } from './parser';
 import {
+  createTdfolCountermodelVisualizerDemo,
   extractTdfolCountermodel,
   TdfolCounterModel,
   TdfolCounterModelExtractor,
@@ -128,5 +129,27 @@ describe('TDFOL countermodels', () => {
     expect(html).not.toContain('Legend');
     expect(html).not.toContain('Modal Properties');
     expect(html).toContain('Kripke Structure (S4)');
+  });
+
+  it('builds deterministic browser-native countermodel visualizer demo scenarios', () => {
+    const scenarios = createTdfolCountermodelVisualizerDemo({
+      formats: ['compact-ascii', 'snapshot'],
+    });
+
+    expect(scenarios.map((scenario) => scenario.id)).toEqual([
+      'non-reflexive-t-countermodel',
+      'serial-d-visualization',
+    ]);
+    expect(scenarios[0].logic_type).toBe('T');
+    expect(scenarios[0].countermodel.accessibility).toEqual({ '0': [1], '1': [] });
+    expect(scenarios[0].snapshot.property_checks.reflexive).toBe(false);
+    expect(scenarios[0].rendered['compact-ascii']).toContain('Kripke(T)');
+    expect(JSON.parse(scenarios[0].rendered.snapshot ?? '{}').expected_properties).toEqual([
+      'Reflexive',
+    ]);
+
+    expect(scenarios[1].logic_type).toBe('D');
+    expect(scenarios[1].snapshot.property_checks.serial).toBe(true);
+    expect(scenarios[1].countermodel.valuation['1']).toEqual(['Permitted(a)']);
   });
 });

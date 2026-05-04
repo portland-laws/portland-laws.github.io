@@ -3,6 +3,7 @@ import { formatTdfolFormula } from './formatter';
 
 export type TdfolModalLogicType = 'K' | 'T' | 'D' | 'S4' | 'S5';
 export type TdfolCountermodelFormat = 'ascii' | 'dot' | 'json' | 'html' | 'compact-ascii';
+export type TdfolCountermodelDemoFormat = TdfolCountermodelFormat | 'snapshot';
 
 export interface TdfolCountermodelRenderOptions {
   includeDataScript?: boolean;
@@ -35,6 +36,21 @@ export interface TdfolCountermodelVisualizerSnapshot {
   num_relations: number;
   property_checks: { reflexive: boolean; symmetric: boolean; transitive: boolean; serial: boolean };
   expected_properties: string[];
+}
+
+export interface TdfolCountermodelDemoScenario {
+  id: string;
+  title: string;
+  description: string;
+  formula: string;
+  logic_type: TdfolModalLogicType;
+  countermodel: TdfolKripkeStructureJson;
+  snapshot: TdfolCountermodelVisualizerSnapshot;
+  rendered: Partial<Record<TdfolCountermodelDemoFormat, string>>;
+}
+
+export interface TdfolCountermodelDemoOptions {
+  formats?: TdfolCountermodelDemoFormat[];
 }
 
 export interface TdfolTableauxWorldLike {
@@ -479,6 +495,78 @@ export function visualizeTdfolCountermodel(
   throw new Error(`Unsupported countermodel format: ${format}`);
 }
 
+export function createTdfolCountermodelVisualizerDemo(
+  options: TdfolCountermodelDemoOptions = {},
+): TdfolCountermodelDemoScenario[] {
+  const formats = options.formats ?? ['compact-ascii', 'json', 'html', 'snapshot'];
+  return buildDemoCountermodels().map(({ id, title, description, countermodel }) => {
+    const visualizer = new TdfolCounterModelVisualizer(countermodel.kripke);
+    const snapshot = visualizer.toDataSnapshot();
+    const rendered = Object.fromEntries(
+      formats.map((format): [TdfolCountermodelDemoFormat, string] => [
+        format,
+        format === 'snapshot'
+          ? JSON.stringify(snapshot, null, 2)
+          : visualizeTdfolCountermodel(countermodel, format),
+      ]),
+    ) as Partial<Record<TdfolCountermodelDemoFormat, string>>;
+
+    return {
+      id,
+      title,
+      description,
+      formula: formatTdfolFormula(countermodel.formula),
+      logic_type: countermodel.kripke.logicType,
+      countermodel: countermodel.kripke.toDict(),
+      snapshot,
+      rendered,
+    };
+  });
+}
+
+function buildDemoCountermodels(): Array<{
+  id: string;
+  title: string;
+  description: string;
+  countermodel: TdfolCounterModel;
+}> {
+  const tCounterexample = new TdfolKripkeStructure({ logicType: 'T' });
+  tCounterexample.addAccessibility(0, 1);
+  tCounterexample.setAtomTrue(1, 'Compliant(a)');
+
+  const dWitness = new TdfolKripkeStructure({ logicType: 'D' });
+  dWitness.addAccessibility(0, 1);
+  dWitness.addAccessibility(1, 1);
+  dWitness.setAtomTrue(1, 'Permitted(a)');
+
+  return [
+    {
+      id: 'non-reflexive-t-countermodel',
+      title: 'T countermodel for necessary implication',
+      description:
+        'A non-reflexive initial world demonstrates why box Compliant(a) does not force Compliant(a) outside reflexive frames.',
+      countermodel: new TdfolCounterModel(
+        makeUnaryFormula('ALWAYS', makePredicateFormula('Compliant', 'a')),
+        tCounterexample,
+        ['w0 reaches w1, but w0 is not reflexive and Compliant(a) is false at w0.'],
+      ),
+    },
+    {
+      id: 'serial-d-visualization',
+      title: 'D serial countermodel visualization',
+      description:
+        'A serial frame shows the visualizer legend, property checks, valuation, and accessibility export used by browser demos.',
+      countermodel: new TdfolCounterModel(
+        makeUnaryFormula('EVENTUALLY', makePredicateFormula('Permitted', 'a')),
+        dWitness,
+        [
+          'Every world has at least one successor, so the D serial property is visible in the snapshot.',
+        ],
+      ),
+    },
+  ];
+}
+
 function extractPositiveAtoms(formulas: TdfolFormula[]): Set<string> {
   const atoms = new Set<string>();
   for (const formula of formulas) {
@@ -533,4 +621,19 @@ function escapeHtml(value: string): string {
     .replace(/</g, '&lt;')
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;');
+}
+
+function makePredicateFormula(name: string, constantName: string): TdfolFormula {
+  return {
+    kind: 'predicate',
+    name,
+    args: [{ kind: 'constant', name: constantName }],
+  };
+}
+
+function makeUnaryFormula(
+  operator: 'ALWAYS' | 'EVENTUALLY' | 'NEXT',
+  formula: TdfolFormula,
+): TdfolFormula {
+  return { kind: 'temporal', operator, formula };
 }
