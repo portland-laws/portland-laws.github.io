@@ -1622,3 +1622,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T125420Z-ported-the-root-integration-interactive_fol_constructor.py-surface-as-a-browser-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T125420Z-ported-the-root-integration-interactive_fol_constructor.py-surface-as-a-browser-.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T125420Z-ported-the-root-integration-interactive_fol_constructor.py-surface-as-a-browser-.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 12:56:31 UTC
+
+- Target: `Task checkbox-371: Port remaining Python logic module `logic/integration/logic_translation_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the root integration logic_translation_core.py compatibility surface to a browser-native TypeScript facade.
+- Impact: The new src/lib/logic/integration/logicTranslationCore.ts module exposes Python-compatible root-module aliases while delegating only to the existing deterministic browser-native converter, preserving fail-closed validation and no server or Python runtime dependency. Focused Jest coverage validates the facade metadata, aliases, batch conversion, and empty-input failure path, and the integration barrel now exports the root facade for downstream TypeScript port users.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/logicTranslationCore.test.ts`, `src/lib/logic/integration/logicTranslationCore.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T125631Z-ported-the-root-integration-logic_translation_core.py-compatibility-surface-to-a.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T125631Z-ported-the-root-integration-logic_translation_core.py-compatibility-surface-to-a.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T125631Z-ported-the-root-integration-logic_translation_core.py-compatibility-surface-to-a.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
