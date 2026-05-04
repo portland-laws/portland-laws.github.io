@@ -1154,3 +1154,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T085018Z-ported-e2e-validation-to-a-browser-native-typescript-runtime-contract..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T085018Z-ported-e2e-validation-to-a-browser-native-typescript-runtime-contract..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T085018Z-ported-e2e-validation-to-a-browser-native-typescript-runtime-contract..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 08:55:30 UTC
+
+- Target: `Task checkbox-318: Port remaining Python logic module `logic/external_provers/formula_analyzer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported external prover formula analysis to deterministic browser-native TypeScript.
+- Impact: CEC formula analysis now exposes formula class, decidable fragment, predicate arity, symbols, operators, and fail-closed parse errors for local prover routing without Python, server, filesystem, subprocess, or RPC dependencies. Focused Jest coverage validates successful analysis and unsupported formula handling.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/analyzer.ts`, `src/lib/logic/cec/parser.test.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T085530Z-ported-external-prover-formula-analysis-to-deterministic-browser-native-typescri.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T085530Z-ported-external-prover-formula-analysis-to-deterministic-browser-native-typescri.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T085530Z-ported-external-prover-formula-analysis-to-deterministic-browser-native-typescri.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

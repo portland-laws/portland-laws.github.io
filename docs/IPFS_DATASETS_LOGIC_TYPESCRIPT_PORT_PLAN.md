@@ -828,7 +828,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/deontic/support_map.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/deontic/utils/deontic_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/e2e_validation.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/external_provers/formula_analyzer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/external_provers/formula_analyzer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/external_provers/interactive/coq_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/external_provers/interactive/lean_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/external_provers/neural/symbolicai_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 08:50:18 UTC
+Last updated: 2026-05-04 08:55:29 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-318: Port remaining Python logic module 'logic/external_provers/formula_analyzer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-319: Port remaining Python logic module 'logic/external_provers/interactive/coq_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1292,8 +1292,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-314: Port remaining Python logic module 'logic/deontic/prover_syntax.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-315: Port remaining Python logic module 'logic/deontic/support_map.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-316: Port remaining Python logic module 'logic/deontic/utils/deontic_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-317: Port remaining Python logic module 'logic/e2e_validation.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-318: Port remaining Python logic module 'logic/external_provers/formula_analyzer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-317: Port remaining Python logic module 'logic/e2e_validation.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-318: Port remaining Python logic module 'logic/external_provers/formula_analyzer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-319: Port remaining Python logic module 'logic/external_provers/interactive/coq_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-320: Port remaining Python logic module 'logic/external_provers/interactive/lean_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-321: Port remaining Python logic module 'logic/external_provers/neural/symbolicai_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-317: Port remaining Python logic module 'logic/e2e_validation.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-318: Port remaining Python logic module 'logic/external_provers/formula_analyzer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported e2e validation to a browser-native TypeScript runtime contract.
-- Impact: src/lib/logic/validation.ts now exposes validateLogicE2eRuntime and a Python-style alias that validate serializable logic payload suites, advertise deterministic browser-native NLP/ML capability evidence, and fail closed on Python, spaCy, server, RPC, subprocess, or filesystem hooks. src/lib/logic/validation.test.ts directly exercises valid local suites and blocked runtime bridge inputs. The TypeScript port ledger marks checkbox-317 complete for this initial implementation.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/validation.test.ts`, `src/lib/logic/validation.ts`
+- Summary: Ported external prover formula analysis to deterministic browser-native TypeScript.
+- Impact: CEC formula analysis now exposes formula class, decidable fragment, predicate arity, symbols, operators, and fail-closed parse errors for local prover routing without Python, server, filesystem, subprocess, or RPC dependencies. Focused Jest coverage validates successful analysis and unsupported formula handling.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/analyzer.ts`, `src/lib/logic/cec/parser.test.ts`
 
 ### Blocked Backlog
 

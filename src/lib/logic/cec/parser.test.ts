@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import { analyzeCecExpression } from './analyzer';
+import { analyzeCecExpression, analyzeExternalProverFormula } from './analyzer';
 import { collectCecAtoms } from './ast';
 import { formatCecExpression } from './formatter';
 import {
@@ -87,6 +87,38 @@ describe('CEC/DCEC parser', () => {
       maxDepth: 6,
       nodeCount: 10,
     });
+  });
+
+  it('ports external_provers/formula_analyzer.py formula classification without runtime bridges', () => {
+    const analysis = analyzeExternalProverFormula(
+      '(forall tenant (implies (licensed tenant) (O (operate tenant portland_city_code_1_01_010))))',
+    );
+
+    expect(analysis.ok).toBe(true);
+    expect(analysis.formulaClass).toBe('modal-deontic');
+    expect(analysis.decidableFragment).toBe('modal-temporal');
+    expect(analysis.predicates).toEqual(['licensed', 'operate']);
+    expect(analysis.constants).toEqual(['portland_city_code_1_01_010']);
+    expect(analysis.variables).toEqual(['tenant']);
+    expect(analysis.quantifiers).toEqual(['forall']);
+    expect(analysis.unaryOperators).toEqual(['O']);
+    expect(analysis.binaryOperators).toEqual(['implies']);
+    expect(analysis.arityByPredicate).toEqual({ licensed: 1, operate: 2 });
+    expect(analysis.metadata.pythonRuntime).toBe(false);
+    expect(analysis.metadata.serverRuntime).toBe(false);
+    expect([analysis.maxDepth, analysis.nodeCount]).toEqual([5, 8]);
+  });
+
+  it('fails closed for external prover formula analysis parse errors', () => {
+    const analysis = analyzeExternalProverFormula('(forall tenant (licensed tenant)');
+
+    expect(analysis.ok).toBe(false);
+    expect(analysis.formulaClass).toBe('unsupported');
+    expect(analysis.decidableFragment).toBe('unknown');
+    expect(analysis.predicates).toEqual([]);
+    expect(analysis.errors).toEqual([expect.stringContaining('Expected RPAREN but found EOF')]);
+    expect(analysis.metadata.pythonRuntime).toBe(false);
+    expect(analysis.metadata.serverRuntime).toBe(false);
   });
 
   it('returns validation failures for malformed expressions', () => {
