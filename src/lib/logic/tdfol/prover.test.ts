@@ -1,5 +1,5 @@
 import { parseTdfolFormula } from './parser';
-import { proveTdfol, TdfolProver } from './prover';
+import { proveTdfol, proveTdfolPythonStyle, TDFOL_PROVER_METADATA, TdfolProver } from './prover';
 import { ModusPonensRule, TemporalKAxiomRule, TemporalTAxiomRule } from './inferenceRules';
 import {
   clearGlobalTdfolProofCache,
@@ -58,6 +58,23 @@ describe('TdfolProver', () => {
     });
   });
 
+  it('fails closed as disproved when the local knowledge base directly contradicts the theorem', () => {
+    const theorem = parseTdfolFormula('Goal(x)');
+    const prover = new TdfolProver({ rules: [ModusPonensRule], maxSteps: 2 });
+
+    expect(prover.prove(theorem, { axioms: [parseTdfolFormula('not Goal(x)')] })).toMatchObject({
+      status: 'disproved',
+      method: 'tdfol-direct-contradiction',
+      steps: [
+        {
+          rule: 'DirectContradiction',
+          premises: ['¬(Goal(x))'],
+          conclusion: 'Goal(x)',
+        },
+      ],
+    });
+  });
+
   it('returns timeout when the derived formula budget is exceeded', () => {
     const prover = new TdfolProver({ maxDerivedFormulas: 1 });
 
@@ -66,6 +83,51 @@ describe('TdfolProver', () => {
     ).toMatchObject({
       status: 'timeout',
       error: 'Derived formula budget exceeded',
+    });
+  });
+
+  it('can route proof search through browser-native strategy selection', () => {
+    const theorem = parseTdfolFormula('Goal(x)');
+    const result = proveTdfol(
+      theorem,
+      {
+        axioms: [parseTdfolFormula('Pred(x)'), parseTdfolFormula('Pred(x) -> Goal(x)')],
+      },
+      {
+        useStrategySelection: true,
+        preferLowCostStrategy: true,
+        timeoutMs: 100,
+      },
+    );
+
+    expect(result).toMatchObject({
+      status: 'proved',
+      theorem: 'Goal(x)',
+      method: expect.stringMatching(/chaining|bidirectional/),
+    });
+  });
+
+  it('exposes Python-style proof reports and browser-native module metadata', () => {
+    const theorem = parseTdfolFormula('Goal(x)');
+    const report = proveTdfolPythonStyle(theorem, {
+      axioms: [parseTdfolFormula('Pred(x)'), parseTdfolFormula('Pred(x) -> Goal(x)')],
+    });
+
+    expect(TDFOL_PROVER_METADATA).toMatchObject({
+      sourcePythonModule: 'logic/TDFOL/tdfol_prover.py',
+      browserNative: true,
+      runtimeDependencies: [],
+      serverCallsAllowed: false,
+      pythonRuntimeRequired: false,
+    });
+    expect(report).toMatchObject({
+      success: true,
+      status: 'proved',
+      theorem: 'Goal(x)',
+      assumptions: ['Pred(x)', '(Pred(x)) → (Goal(x))'],
+      method: 'tdfol-forward-chaining',
+      stepCount: 1,
+      metadata: TDFOL_PROVER_METADATA,
     });
   });
 
