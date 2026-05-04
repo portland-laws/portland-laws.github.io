@@ -416,3 +416,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T033414Z-ported-logic-cec-nl-dcec_to_ucan_bridge.py-as-a-browser-native-dcec-to-ucan-brid.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T033414Z-ported-logic-cec-nl-dcec_to_ucan_bridge.py-as-a-browser-native-dcec-to-ucan-brid.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T033414Z-ported-logic-cec-nl-dcec_to_ucan_bridge.py-as-a-browser-native-dcec-to-ucan-brid.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 03:37:49 UTC
+
+- Target: `Task checkbox-236: Port remaining Python logic module `logic/CEC/nl/domain_vocabularies/domain_vocab.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported domain_vocab.py as a browser-native deterministic DCEC domain vocabulary.
+- Impact: The new src/lib/logic/cec/domainVocabulary.ts module exposes local vocabulary capabilities, term lookup, synonym normalization, and predicate mapping with no Python, server, filesystem, subprocess, RPC, or Node-only dependency. DCEC English grammar now consumes the vocabulary for lexical entries and predicate normalization, and the focused Jest test validates the standalone vocabulary contract plus existing domain parsing behavior.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/dcecEnglishGrammar.test.ts`, `src/lib/logic/cec/dcecEnglishGrammar.ts`, `src/lib/logic/cec/domainVocabulary.ts`, `src/lib/logic/cec/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T033749Z-ported-domain_vocab.py-as-a-browser-native-deterministic-dcec-domain-vocabulary..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T033749Z-ported-domain_vocab.py-as-a-browser-native-deterministic-dcec-domain-vocabulary..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T033749Z-ported-domain_vocab.py-as-a-browser-native-deterministic-dcec-domain-vocabulary..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

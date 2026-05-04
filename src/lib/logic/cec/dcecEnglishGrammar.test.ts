@@ -5,6 +5,12 @@ import {
   parseDcecNativeEnglishGrammar,
 } from './dcecEnglishGrammar';
 import { createEngDcecWrapper, parseEnglishToDcec } from './dcecEnglishWrapper';
+import {
+  createDomainVocabulary,
+  getDomainVocabularyCapabilities,
+  lookupDomainVocabularyTerm,
+  normalizeDomainPredicate,
+} from './domainVocabulary';
 import { DcecDeonticOperator, DcecLogicalConnective } from './dcecTypes';
 
 describe('DCEC English grammar parity facade', () => {
@@ -51,6 +57,31 @@ describe('DCEC English grammar parity facade', () => {
     expect(grammar.parseToDcec('if tenant must pay then landlord may enter')?.toString()).toBe(
       '(O[tenant:Agent](pay(tenant:Agent)) → P[landlord:Agent](enter(landlord:Agent)))',
     );
+  });
+
+  it('ports domain_vocab.py as deterministic browser-native vocabulary metadata', () => {
+    const vocabulary = createDomainVocabulary([
+      { canonical: 'repair', category: 'action', synonyms: ['fix'] },
+    ]);
+
+    expect(getDomainVocabularyCapabilities()).toMatchObject({
+      browserNative: true,
+      pythonRuntime: false,
+      serverRuntime: false,
+      filesystem: false,
+      subprocess: false,
+      rpc: false,
+      wasmCompatible: true,
+      pythonModule: 'logic/CEC/nl/domain_vocabularies/domain_vocab.py',
+    });
+    expect(vocabulary.agents).toEqual(expect.arrayContaining(['tenant', 'renter', 'landlord']));
+    expect(vocabulary.actions).toEqual(expect.arrayContaining(['pay rent', 'notify', 'repair']));
+    expect(lookupDomainVocabularyTerm('Lessee', vocabulary)).toMatchObject({
+      canonical: 'tenant',
+      category: 'agent',
+    });
+    expect(normalizeDomainPredicate('pay rental amount', vocabulary)).toBe('pay_rent');
+    expect(normalizeDomainPredicate('fix', vocabulary)).toBe('repair');
   });
 
   it('converts semantic records to DCEC formulas across modalities', () => {

@@ -18,6 +18,7 @@ export * from './dcecTemporal';
 export * from './dcecToUcanBridge';
 export * from './dcecTypes';
 export * from './dependencyGraph';
+export * from './domainVocabulary';
 export * from './eventCalculus';
 export * from './enhancedGrammarParser';
 export * from './fluents';
