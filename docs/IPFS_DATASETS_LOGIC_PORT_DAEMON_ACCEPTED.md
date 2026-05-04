@@ -542,3 +542,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T043300Z-ported-cec-tptp-utilities-to-browser-native-typescript..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T043300Z-ported-cec-tptp-utilities-to-browser-native-typescript..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T043300Z-ported-cec-tptp-utilities-to-browser-native-typescript..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 04:36:11 UTC
+
+- Target: `Task checkbox-250: Port remaining Python logic module `logic/CEC/provers/vampire_adapter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the CEC Vampire adapter as a browser-native TypeScript compatibility layer.
+- Impact: The new CEC adapter builds deterministic TPTP problems, maps local CEC proof outcomes to Vampire-style statuses, exposes explicit no-subprocess/no-server/no-Python metadata, exports through the CEC barrel, and is exercised by focused Jest validation plus the full logic-port suite.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/index.ts`, `src/lib/logic/cec/problemParser.test.ts`, `src/lib/logic/cec/vampireAdapter.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T043611Z-ported-the-cec-vampire-adapter-as-a-browser-native-typescript-compatibility-laye.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T043611Z-ported-the-cec-vampire-adapter-as-a-browser-native-typescript-compatibility-laye.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T043611Z-ported-the-cec-vampire-adapter-as-a-browser-native-typescript-compatibility-laye.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

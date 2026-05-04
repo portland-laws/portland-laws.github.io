@@ -1,5 +1,11 @@
 import type { CecExpression } from './ast';
 import {
+  CecVampireAdapter,
+  mapCecVampireStatus,
+  proveCecWithVampireAdapter,
+  type CecVampireProofResult,
+} from './vampireAdapter';
+import {
   CecProblemParseError,
   CecProblemParser,
   CecTptpParser,
@@ -182,5 +188,42 @@ describe('CEC problem parser', () => {
       tptp: 'fof(f1, conjecture, compliant(ada)).',
     });
     expect(converter.createProblem(goal, [], 'single')).toContain('% Problem: single');
+  });
+
+  it('ports the CEC Vampire adapter as browser-native TPTP compatibility metadata', () => {
+    const adapter = new CecVampireAdapter({ problemName: 'policy_vampire_case' });
+    const result = adapter.prove('(comply_with ada code)', [
+      '(comply_with ada code)',
+    ]) as CecVampireProofResult;
+
+    expect(result).toMatchObject({
+      status: 'proved',
+      theorem: '(comply_with ada code)',
+      method: 'vampire-compatible:cec-forward-chaining',
+    });
+    expect(result.vampire).toMatchObject({
+      adapter: 'browser-native-cec-vampire-adapter',
+      sourcePythonModule: 'logic/CEC/provers/vampire_adapter.py',
+      externalBinaryAllowed: false,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      command: null,
+      statusMapping: 'Theorem',
+    });
+    expect(result.vampire.tptpProblem).toContain('% Problem: policy_vampire_case');
+    expect(result.vampire.tptpAxioms).toEqual(['fof(vampire_ax1, axiom, comply_with(ada, code)).']);
+    expect(result.vampire.tptpTheorem).toBe(
+      'fof(vampire_goal, conjecture, comply_with(ada, code)).',
+    );
+    expect(mapCecVampireStatus('timeout')).toBe('ResourceOut');
+  });
+
+  it('fails closed for unproved Vampire-compatible CEC requests without delegation', () => {
+    const result = proveCecWithVampireAdapter('(comply_with ada code)', ['(subject_to ada code)']);
+
+    expect(result.status).toBe('unknown');
+    expect(result.vampire.statusMapping).toBe('GaveUp');
+    expect(result.vampire.warnings[0]).toContain('local TypeScript CEC engine');
+    expect(result.vampire.command).toBeNull();
   });
 });
