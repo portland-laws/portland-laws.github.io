@@ -11,6 +11,16 @@ import {
   getGlobalFLogicProofCache,
   queryFLogicWithCache,
 } from './proofCache';
+import {
+  FLOGIC_TYPES_METADATA,
+  createFLogicFrame,
+  createFLogicOntology,
+  flogicOntologyFromDict,
+  flogicOntologyToDict,
+  flogicQueryFromDict,
+  flogicQueryToDict,
+  validateFLogicOntology,
+} from './types';
 
 const generatedProgram = `
 MunicipalLaw :: LegalNorm.
@@ -207,5 +217,75 @@ describe('F-logic parser', () => {
     ).toMatchObject({
       status: 'unknown',
     });
+  });
+
+  it('ports flogic_types.py dataclass defaults, dictionaries, and validation', () => {
+    expect(FLOGIC_TYPES_METADATA).toMatchObject({
+      sourcePythonModule: 'logic/flogic/flogic_types.py',
+      browserNative: true,
+      runtimeDependencies: [],
+    });
+
+    const frame = createFLogicFrame({
+      objectId: 'portland_city_code_1_01_010',
+      scalarMethods: { identifier: 'Portland City Code 1.01.010' },
+      setMethods: { tags: ['procedure', 'general'] },
+      isa: 'PortlandCityCodeSection',
+    });
+    const ontology = createFLogicOntology({
+      name: 'Portland fixture',
+      frames: [frame],
+      classes: [
+        {
+          classId: 'PortlandCityCodeSection',
+          superclasses: ['CityCodeSection'],
+          signatureMethods: { identifier: 'string' },
+        },
+      ],
+      rules: ['requires_compliance(?Agent, ?Section).'],
+    });
+    const query = flogicQueryFromDict({
+      goal: '?Section : PortlandCityCodeSection',
+      bindings: [{ '?Section': 'portland_city_code_1_01_010' }],
+      status: 'success',
+      error_message: 'ignored by success callers',
+    });
+
+    expect(frame.isaset).toEqual(['PortlandCityCodeSection']);
+    const dict = flogicOntologyToDict(ontology);
+    expect(dict.frames[0]).toMatchObject({ object_id: 'portland_city_code_1_01_010' });
+    expect(dict.classes[0]).toMatchObject({ class_id: 'PortlandCityCodeSection' });
+    expect(flogicOntologyFromDict(dict)).toEqual(ontology);
+    expect(flogicQueryToDict(query)).toMatchObject({
+      status: 'success',
+      error_message: 'ignored by success callers',
+    });
+
+    const invalidOntology = {
+      name: 'Invalid fixture',
+      frames: [
+        {
+          objectId: 'section',
+          scalarMethods: {},
+          setMethods: {},
+          isa: 'UndeclaredClass',
+          isaset: ['OtherClass'],
+        },
+        { objectId: 'section', scalarMethods: {}, setMethods: {}, isaset: [] },
+      ],
+      classes: [],
+      rules: [],
+      warnings: [],
+    };
+
+    const result = validateFLogicOntology(invalidOntology);
+    expect(result.valid).toBe(false);
+    expect(result.errors).toEqual([
+      'F-logic frame section isa must also appear in isaset',
+      'Duplicate F-logic frame objectId: section',
+    ]);
+    expect(result.warnings).toEqual([
+      'F-logic frame section references undeclared class UndeclaredClass',
+    ]);
   });
 });
