@@ -757,7 +757,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/CEC/nl/spanish_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/CEC/optimization/formula_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/CEC/optimization/profiling_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/provers/e_prover_adapter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/CEC/provers/e_prover_adapter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/provers/prover_manager.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/provers/tptp_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/provers/vampire_adapter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 04:15:37 UTC
+Last updated: 2026-05-04 04:18:12 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-247: Port remaining Python logic module 'logic/CEC/provers/e_prover_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-248: Port remaining Python logic module 'logic/CEC/provers/prover_manager.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1221,8 +1221,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-243: Port remaining Python logic module 'logic/CEC/nl/portuguese_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-244: Port remaining Python logic module 'logic/CEC/nl/spanish_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-245: Port remaining Python logic module 'logic/CEC/optimization/formula_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-246: Port remaining Python logic module 'logic/CEC/optimization/profiling_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-247: Port remaining Python logic module 'logic/CEC/provers/e_prover_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-246: Port remaining Python logic module 'logic/CEC/optimization/profiling_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-247: Port remaining Python logic module 'logic/CEC/provers/e_prover_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-248: Port remaining Python logic module 'logic/CEC/provers/prover_manager.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-249: Port remaining Python logic module 'logic/CEC/provers/tptp_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-250: Port remaining Python logic module 'logic/CEC/provers/vampire_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-246: Port remaining Python logic module 'logic/CEC/optimization/profiling_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-247: Port remaining Python logic module 'logic/CEC/provers/e_prover_adapter.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported CEC profiling_utils.py parity helpers to browser-native TypeScript.
-- Impact: Adds a browser-native CEC profiling utilities module with Python source metadata, deterministic sample normalization, sync measurement, and profiling summaries built on the existing timeline and bottleneck validation path. The existing performance profiler Jest suite now exercises the new helpers, and the CEC barrel export makes them available to the TypeScript logic port without Python, server, filesystem, subprocess, or RPC dependencies.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cec/index.ts`, `src/lib/logic/cec/performanceProfiler.test.ts`, `src/lib/logic/cec/profilingUtils.ts`
+- Summary: Ported the CEC E prover adapter as a browser-native TDFOL compatibility adapter.
+- Impact: The TypeScript logic integration layer now exposes an E-prover-compatible adapter that never spawns an external binary, never calls a server, emits TPTP evidence for the translated theorem and axioms, and routes proof search through the local browser-native TDFOL prover. Focused Jest coverage validates the adapter metadata, fail-closed support boundary, TPTP problem emission, and optional router exposure.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/proverAdapters.ts`
 
 ### Blocked Backlog
 

@@ -515,3 +515,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T041537Z-ported-cec-profiling_utils.py-parity-helpers-to-browser-native-typescript..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T041537Z-ported-cec-profiling_utils.py-parity-helpers-to-browser-native-typescript..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T041537Z-ported-cec-profiling_utils.py-parity-helpers-to-browser-native-typescript..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 04:18:12 UTC
+
+- Target: `Task checkbox-247: Port remaining Python logic module `logic/CEC/provers/e_prover_adapter.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the CEC E prover adapter as a browser-native TDFOL compatibility adapter.
+- Impact: The TypeScript logic integration layer now exposes an E-prover-compatible adapter that never spawns an external binary, never calls a server, emits TPTP evidence for the translated theorem and axioms, and routes proof search through the local browser-native TDFOL prover. Focused Jest coverage validates the adapter metadata, fail-closed support boundary, TPTP problem emission, and optional router exposure.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/proverAdapters.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T041812Z-ported-the-cec-e-prover-adapter-as-a-browser-native-tdfol-compatibility-adapter..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T041812Z-ported-the-cec-e-prover-adapter-as-a-browser-native-tdfol-compatibility-adapter..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T041812Z-ported-the-cec-e-prover-adapter-as-a-browser-native-tdfol-compatibility-adapter..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

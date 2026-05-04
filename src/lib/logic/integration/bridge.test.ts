@@ -1,8 +1,10 @@
 import { BrowserNativeLogicBridge, createBrowserNativeLogicBridge } from './bridge';
 import {
   BrowserNativeProverRouter,
+  createBrowserNativeEProverAdapter,
   createBrowserNativeProverRouter,
   type BrowserNativeProofAdapter,
+  type EProverCompatibilityResult,
 } from './proverAdapters';
 
 describe('BrowserNativeLogicBridge', () => {
@@ -134,6 +136,48 @@ describe('BrowserNativeLogicBridge', () => {
     });
     expect(tdfol.timeMs).toEqual(expect.any(Number));
     expect(dcec.timeMs).toEqual(expect.any(Number));
+  });
+
+  it('ports the E prover adapter as a browser-native fail-closed TDFOL compatibility adapter', () => {
+    const adapter = createBrowserNativeEProverAdapter();
+    const result = adapter.prove({
+      logic: 'tdfol',
+      theorem: 'Resident(Ada)',
+      axioms: ['Resident(Ada)'],
+    }) as EProverCompatibilityResult;
+
+    expect(adapter.metadata).toMatchObject({
+      logic: 'tdfol',
+      name: 'browser-native-e-prover-adapter',
+      runtime: 'typescript-wasm-browser',
+      requiresExternalProver: false,
+      proverFamily: 'e-prover',
+    });
+    expect(adapter.supports('cec')).toBe(false);
+    expect(result).toMatchObject({
+      status: 'proved',
+      theorem: 'Resident(Ada)',
+      method: 'e-prover-compatible:tdfol-forward-chaining',
+    });
+    expect(result.eProver).toMatchObject({
+      adapter: 'browser-native-e-prover-adapter',
+      externalBinaryAllowed: false,
+      serverCallsAllowed: false,
+      command: null,
+      statusMapping: 'Theorem',
+    });
+    expect(result.eProver.tptpProblem).toContain('fof(tdfol_formula, axiom, resident(ada)).');
+    expect(result.eProver.tptpProblem).toContain(
+      'fof(tdfol_conjecture, conjecture, resident(ada)).',
+    );
+  });
+
+  it('can expose the E prover compatibility adapter through the local router without server calls', () => {
+    const router = createBrowserNativeProverRouter({ includeEProverCompatibilityAdapter: true });
+    const adapters = router.listAdapters();
+
+    expect(adapters.map((adapter) => adapter.name)).toContain('browser-native-e-prover-adapter');
+    expect(adapters.every((adapter) => adapter.requiresExternalProver === false)).toBe(true);
   });
 
   it('accepts injectable browser-native prover adapters for bridge contract tests', () => {
