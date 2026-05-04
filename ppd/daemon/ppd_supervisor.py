@@ -15,6 +15,7 @@ import re
 import subprocess
 import sys
 import time
+import traceback
 from dataclasses import dataclass
 from datetime import datetime, timezone
 from pathlib import Path
@@ -151,6 +152,7 @@ class SupervisorConfig:
     apply: bool = False
     self_heal: bool = False
     restart_daemon: bool = False
+    exception_backoff_seconds: float = 5.0
 
     def resolve(self, path: Path) -> Path:
         return path if path.is_absolute() else self.repo_root / path
@@ -179,6 +181,10 @@ def append_jsonl(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(payload, sort_keys=True) + "\n")
+
+
+def exception_diagnostic(exc: BaseException, *, limit: int = 5000) -> str:
+    return compact_message("".join(traceback.format_exception(type(exc), exc, exc.__traceback__)), limit=limit)
 
 
 def read_supervisor_result_rows(path: Path) -> list[dict[str, Any]]:
@@ -1853,6 +1859,54 @@ def write_supervisor_status(config: SupervisorConfig, decision: SupervisorDecisi
     append_jsonl(config.resolve(config.supervisor_log), payload)
 
 
+def record_supervisor_exception(config: SupervisorConfig, exc: BaseException) -> SupervisorDecision:
+    diagnostic = exception_diagnostic(exc)
+    decision = SupervisorDecision(
+        action="supervisor_exception",
+        reason=f"supervisor cycle raised an exception: {diagnostic}",
+        severity="critical",
+        should_invoke_codex=True,
+        should_restart_daemon=False,
+    )
+    proposal = Proposal(
+        summary="Supervisor cycle crashed before completion.",
+        impact="The supervisor caught the exception, wrote diagnostics, and can continue in watch mode.",
+        errors=[diagnostic],
+        failure_kind="supervisor_exception",
+    )
+    proposal.dry_run = not config.apply
+    try:
+        write_supervisor_status(config, decision, proposal)
+    except Exception as status_exc:
+        fallback = {
+            "updated_at": utc_now(),
+            "pid": os.getpid(),
+            "decision": {
+                "action": decision.action,
+                "reason": compact_message(decision.reason, limit=1200),
+                "severity": decision.severity,
+                "should_invoke_codex": decision.should_invoke_codex,
+                "should_restart_daemon": decision.should_restart_daemon,
+            },
+            "status_error": exception_diagnostic(status_exc, limit=1200),
+        }
+        try:
+            append_jsonl(config.resolve(config.supervisor_log), fallback)
+        except Exception:
+            pass
+        print(json.dumps(fallback, sort_keys=True), file=sys.stderr)
+    return decision
+
+
+def run_once_safely(config: SupervisorConfig) -> SupervisorDecision:
+    try:
+        return run_once(config)
+    except KeyboardInterrupt:
+        raise
+    except BaseException as exc:
+        return record_supervisor_exception(config, exc)
+
+
 def run_once(config: SupervisorConfig) -> SupervisorDecision:
     cleanup_stale_validation_worktrees(supervisor_daemon_config(config))
     decision = diagnose(config)
@@ -2231,6 +2285,7 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     parser.add_argument("--llm-timeout", type=int, default=300, help="Seconds to allow for one Codex repair proposal")
     parser.add_argument("--model", default="gpt-5.5", help="llm_router model")
     parser.add_argument("--provider", default=None, help="llm_router provider (default: auto-select with fallback)")
+    parser.add_argument("--exception-backoff", type=float, default=5.0, help="Seconds to pause after a contained supervisor exception")
     parser.add_argument("--self-test", action="store_true", help="Run supervisor self-test and exit")
     return parser.parse_args(argv)
 
@@ -2249,14 +2304,20 @@ def main(argv: Optional[list[str]] = None) -> int:
         apply=bool(args.apply),
         self_heal=bool(args.self_heal),
         restart_daemon=bool(args.restart_daemon),
+        exception_backoff_seconds=max(0.0, float(args.exception_backoff)),
     )
     if args.watch:
         while True:
-            run_once(config)
-            time.sleep(max(1.0, float(args.interval)))
-    decision = run_once(config)
+            decision = run_once_safely(config)
+            sleep_seconds = (
+                config.exception_backoff_seconds
+                if decision.action == "supervisor_exception"
+                else float(args.interval)
+            )
+            time.sleep(max(1.0, sleep_seconds))
+    decision = run_once_safely(config)
     print(json.dumps({"action": decision.action, "reason": decision.reason, "severity": decision.severity}, indent=2))
-    return 0
+    return 1 if decision.action == "supervisor_exception" else 0
 
 
 if __name__ == "__main__":

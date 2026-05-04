@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import json
 import tempfile
 import unittest
 from datetime import datetime, timezone
 import os
 from pathlib import Path
 
+import ppd.daemon.ppd_supervisor as supervisor
 from ppd.daemon.ppd_daemon import atomic_write_json
 from ppd.daemon.ppd_supervisor import (
     AUTONOMOUS_EXECUTION_CAPABILITY_TITLES,
@@ -217,6 +219,34 @@ class SupervisorStaleStatusReplanningTest(unittest.TestCase):
 
         self.assertEqual("observe", decision.action)
         self.assertNotIn("durable LLM parse/runtime diagnostics", decision.reason)
+
+    def test_run_once_safely_records_supervisor_exception_without_raising(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+            daemon_dir = repo / "ppd" / "daemon"
+            daemon_dir.mkdir(parents=True)
+            original_diagnose = supervisor.diagnose
+
+            def crash_diagnose(config: SupervisorConfig) -> supervisor.SupervisorDecision:
+                raise RuntimeError("synthetic supervisor crash")
+
+            supervisor.diagnose = crash_diagnose  # type: ignore[assignment]
+            try:
+                decision = supervisor.run_once_safely(SupervisorConfig(repo_root=repo))
+            finally:
+                supervisor.diagnose = original_diagnose  # type: ignore[assignment]
+
+            status = json.loads((daemon_dir / "supervisor-status.json").read_text(encoding="utf-8"))
+            rows = [
+                json.loads(line)
+                for line in (daemon_dir / "supervisor-actions.jsonl").read_text(encoding="utf-8").splitlines()
+            ]
+
+        self.assertEqual("supervisor_exception", decision.action)
+        self.assertEqual("supervisor_exception", status["decision"]["action"])
+        self.assertEqual("supervisor_exception", rows[0]["decision"]["action"])
+        self.assertEqual("supervisor_exception", status["proposal"]["failure_kind"])
+        self.assertIn("synthetic supervisor crash", status["proposal"]["errors"][0])
 
     def test_archived_task_failures_do_not_trigger_current_board_self_heal(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:

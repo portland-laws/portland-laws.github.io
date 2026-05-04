@@ -9,6 +9,7 @@ import unittest
 from pathlib import Path
 
 from ppd.daemon.ppd_daemon import (
+    CommandResult,
     Config,
     Daemon,
     Proposal,
@@ -168,6 +169,79 @@ class DaemonLlmResultDurabilityTest(unittest.TestCase):
         self.assertIsNotNone(process.poll())
         with self.assertRaises(ProcessLookupError):
             os.kill(child_pid, 0)
+
+    def test_daemon_run_records_cycle_exception_without_raising(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+            daemon_dir = repo / "ppd" / "daemon"
+            daemon_dir.mkdir(parents=True)
+            (daemon_dir / "task-board.md").write_text(
+                "- [ ] Task checkbox-1: Synthetic task.\n",
+                encoding="utf-8",
+            )
+            daemon = Daemon(
+                Config(
+                    repo_root=repo,
+                    apply=True,
+                    watch=True,
+                    iterations=1,
+                    crash_backoff_seconds=0,
+                )
+            )
+
+            def crash_once() -> Proposal:
+                raise RuntimeError("synthetic daemon cycle crash")
+
+            daemon.run_cycle = crash_once  # type: ignore[method-assign]
+            proposals = daemon.run()
+
+            status = json.loads((daemon_dir / "status.json").read_text(encoding="utf-8"))
+            rows = [json.loads(line) for line in (daemon_dir / "ppd-daemon.jsonl").read_text(encoding="utf-8").splitlines()]
+
+        self.assertEqual(1, len(proposals))
+        self.assertEqual("daemon_exception", proposals[0].failure_kind)
+        self.assertEqual("cycle_exception", status["state"])
+        self.assertEqual("cycle_exception", rows[0]["stage"])
+        self.assertIn("synthetic daemon cycle crash", rows[0]["diagnostic"]["errors"][0])
+
+    def test_daemon_watch_continues_after_contained_cycle_exception(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+            daemon_dir = repo / "ppd" / "daemon"
+            daemon_dir.mkdir(parents=True)
+            (daemon_dir / "task-board.md").write_text(
+                "- [ ] Task checkbox-1: Synthetic task.\n",
+                encoding="utf-8",
+            )
+            daemon = Daemon(
+                Config(
+                    repo_root=repo,
+                    apply=True,
+                    watch=True,
+                    iterations=2,
+                    crash_backoff_seconds=0,
+                )
+            )
+            calls = 0
+
+            def flaky_cycle() -> Proposal:
+                nonlocal calls
+                calls += 1
+                if calls == 1:
+                    raise RuntimeError("synthetic first cycle crash")
+                return Proposal(
+                    summary="Recovered cycle.",
+                    applied=True,
+                    dry_run=False,
+                    validation_results=[CommandResult(("true",), 0, "", "")],
+                )
+
+            daemon.run_cycle = flaky_cycle  # type: ignore[method-assign]
+            proposals = daemon.run()
+
+        self.assertEqual(2, len(proposals))
+        self.assertEqual("daemon_exception", proposals[0].failure_kind)
+        self.assertTrue(proposals[1].valid)
 
 
 if __name__ == "__main__":

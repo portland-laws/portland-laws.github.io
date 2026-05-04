@@ -24,6 +24,7 @@ import sys
 import tempfile
 import threading
 import time
+import traceback
 import uuid
 from dataclasses import dataclass, field, replace
 from datetime import datetime, timezone
@@ -210,6 +211,7 @@ class Config:
     repair_validation_failures: bool = False
     max_validation_repair_attempts: int = 1
     worktree_stale_seconds: int = 7200
+    crash_backoff_seconds: float = 5.0
     validation_repair_callback: Optional[Callable[[str, "Config"], str]] = None
     validation_commands: tuple[tuple[str, ...], ...] = DEFAULT_VALIDATION_COMMANDS
 
@@ -392,6 +394,10 @@ def compact_message(value: Any, limit: int = 700) -> str:
     if len(text) > limit:
         return text[:limit].rstrip() + "..."
     return text
+
+
+def exception_diagnostic(exc: BaseException, *, limit: int = 5000) -> str:
+    return compact_message("".join(traceback.format_exception(type(exc), exc, exc.__traceback__)), limit=limit)
 
 
 def is_retryable_failure(proposal: Proposal) -> bool:
@@ -1367,6 +1373,39 @@ class Daemon:
             },
         )
 
+    def record_cycle_exception(self, exc: BaseException, *, consecutive_exceptions: int) -> Proposal:
+        proposal = Proposal(
+            summary="Daemon cycle crashed before completion.",
+            impact=(
+                "The exception was captured as a durable diagnostic so watch mode can continue "
+                "and the supervisor can inspect the failure history."
+            ),
+            errors=[exception_diagnostic(exc)],
+            failure_kind="daemon_exception",
+            target_task=self._active_target_task,
+        )
+        proposal.dry_run = not self.config.apply
+        proposal.applied = False
+        artifact = proposal.to_dict()
+        try:
+            self.write_progress([proposal])
+        except Exception as progress_exc:
+            artifact["progress_error"] = exception_diagnostic(progress_exc, limit=1200)
+        try:
+            self.write_cycle_diagnostic(proposal, stage="cycle_exception")
+        except Exception:
+            pass
+        try:
+            self.write_status(
+                "cycle_exception",
+                valid=False,
+                consecutive_exceptions=consecutive_exceptions,
+                artifact=artifact,
+            )
+        except Exception:
+            pass
+        return proposal
+
     def write_progress(self, proposals: list[Proposal]) -> None:
         board = read_text(self.config.resolve(self.config.task_board))
         tasks = parse_tasks(board)
@@ -1388,9 +1427,20 @@ class Daemon:
         proposals: list[Proposal] = []
         try:
             count = 0
+            consecutive_exceptions = 0
             while True:
                 count += 1
-                proposal = self.run_cycle()
+                try:
+                    proposal = self.run_cycle()
+                    consecutive_exceptions = 0
+                except KeyboardInterrupt:
+                    raise
+                except BaseException as exc:
+                    consecutive_exceptions += 1
+                    proposal = self.record_cycle_exception(
+                        exc,
+                        consecutive_exceptions=consecutive_exceptions,
+                    )
                 proposals.append(proposal)
                 if not self.config.watch:
                     break
@@ -1398,6 +1448,10 @@ class Daemon:
                     break
                 if self.config.iterations > 0 and count >= self.config.iterations:
                     break
+                if proposal.failure_kind == "daemon_exception":
+                    if self.config.crash_backoff_seconds > 0:
+                        time.sleep(self.config.crash_backoff_seconds)
+                    continue
                 if self.config.interval_seconds > 0:
                     board_now = read_text(self.config.resolve(self.config.task_board))
                     if not should_sleep_between_watch_cycles(
@@ -1562,6 +1616,7 @@ def parse_args(argv: Optional[list[str]] = None) -> argparse.Namespace:
     parser.add_argument("--max-task-failures-before-block", type=int, default=3, help="Validation/preflight failures before marking a task blocked")
     parser.add_argument("--repair-validation-failures", action="store_true", help="Run one temporary-worktree repair pass when validation fails")
     parser.add_argument("--max-validation-repair-attempts", type=int, default=1, help="Validation repair attempts per candidate worktree")
+    parser.add_argument("--crash-backoff", type=float, default=5.0, help="Seconds to pause after a contained daemon cycle exception")
     parser.add_argument("--self-test", action="store_true", help="Run daemon self-test and exit")
     return parser.parse_args(argv)
 
@@ -1585,6 +1640,7 @@ def main(argv: Optional[list[str]] = None) -> int:
         max_task_failures_before_block=max(1, int(args.max_task_failures_before_block)),
         repair_validation_failures=bool(args.repair_validation_failures),
         max_validation_repair_attempts=max(0, int(args.max_validation_repair_attempts)),
+        crash_backoff_seconds=max(0.0, float(args.crash_backoff)),
     )
     proposals = Daemon(config).run()
     print(json.dumps([proposal.to_dict() for proposal in proposals], indent=2))
