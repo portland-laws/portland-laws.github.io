@@ -26,6 +26,10 @@ export interface TdfolProofMetricsInput {
   timestamp?: number;
 }
 
+export interface TdfolPerformanceDashboardOptions {
+  now?: () => number;
+}
+
 export interface TdfolProofMetrics {
   timestamp: number;
   datetime: string;
@@ -87,22 +91,54 @@ export interface TdfolAggregatedDashboardStats {
   };
 }
 
+export type TdfolPerformanceDashboardDemoFormat = 'summary' | 'json' | 'html' | 'snapshot';
+
+export interface TdfolPerformanceDashboardDemoOptions {
+  formats?: TdfolPerformanceDashboardDemoFormat[];
+}
+
+export interface TdfolPerformanceDashboardDemo {
+  id: string;
+  title: string;
+  description: string;
+  dashboard: Record<string, unknown>;
+  statistics: TdfolAggregatedDashboardStats;
+  strategyComparison: { strategies: Record<string, Record<string, number>> };
+  rendered: Partial<Record<TdfolPerformanceDashboardDemoFormat, string>>;
+}
+
 export class TdfolPerformanceDashboard {
   readonly proofMetrics: TdfolProofMetrics[] = [];
   readonly timeseriesMetrics: TdfolTimeSeriesMetric[] = [];
-  private startedAt = Date.now();
+  private readonly now: () => number;
+  private startedAt: number;
   private statsCache?: TdfolAggregatedDashboardStats;
 
-  recordProof(input: TdfolProofMetricsInput | ProofResult, metadata: Record<string, unknown> = {}): void {
-    const metric = isProofResult(input) ? proofResultToMetric(input, metadata) : inputToMetric(input);
+  constructor(options: TdfolPerformanceDashboardOptions = {}) {
+    this.now = options.now ?? Date.now;
+    this.startedAt = this.now();
+  }
+
+  recordProof(
+    input: TdfolProofMetricsInput | ProofResult,
+    metadata: Record<string, unknown> = {},
+  ): void {
+    const metric = isProofResult(input)
+      ? proofResultToMetric(input, metadata)
+      : inputToMetric(input);
     this.proofMetrics.push(metric);
     this.statsCache = undefined;
-    this.recordMetric('proof_time_ms', metric.proofTimeMs, { strategy: metric.strategy, success: String(metric.success) });
-    this.recordMetric(metric.cacheHit ? 'cache_hit' : 'cache_miss', 1, { strategy: metric.strategy });
+    this.recordMetric('proof_time_ms', metric.proofTimeMs, {
+      strategy: metric.strategy,
+      success: String(metric.success),
+    });
+    this.recordMetric(metric.cacheHit ? 'cache_hit' : 'cache_miss', 1, {
+      strategy: metric.strategy,
+    });
   }
 
   recordMetric(metricName: string, value: number, tags: Record<string, string> = {}): void {
-    const timestamp = Date.now();
+    const timestamp = this.now();
     this.timeseriesMetrics.push({
       timestamp,
       datetime: new Date(timestamp).toISOString(),
@@ -137,12 +173,13 @@ export class TdfolPerformanceDashboard {
   }
 
   exportJson(): Record<string, unknown> {
+    const exportTime = this.now();
     return {
       metadata: {
         dashboardStartTime: this.startedAt,
         dashboardStartDatetime: new Date(this.startedAt).toISOString(),
-        exportTime: Date.now(),
-        exportDatetime: new Date().toISOString(),
+        exportTime,
+        exportDatetime: new Date(exportTime).toISOString(),
         totalProofs: this.proofMetrics.length,
         totalMetrics: this.timeseriesMetrics.length,
       },
@@ -162,12 +199,12 @@ export class TdfolPerformanceDashboard {
   clear(): void {
     this.proofMetrics.length = 0;
     this.timeseriesMetrics.length = 0;
-    this.startedAt = Date.now();
+    this.startedAt = this.now();
     this.statsCache = undefined;
   }
 
   getUptime(): number {
-    return (Date.now() - this.startedAt) / 1000;
+    return (this.now() - this.startedAt) / 1000;
   }
 
   calculateComplexity(formula: string): number {
@@ -210,7 +247,11 @@ export class TdfolPerformanceDashboard {
       cacheHits: cacheHits.length,
       cacheMisses: cacheMisses.length,
       cacheHitRate: ratio(cacheHits.length, metrics.length),
-      avgSpeedupFromCache: cacheHits.length && cacheMisses.length ? mean(cacheMisses.map((m) => m.proofTimeMs)) / Math.max(mean(cacheHits.map((m) => m.proofTimeMs)), Number.EPSILON) : 0,
+      avgSpeedupFromCache:
+        cacheHits.length && cacheMisses.length
+          ? mean(cacheMisses.map((m) => m.proofTimeMs)) /
+            Math.max(mean(cacheHits.map((m) => m.proofTimeMs)), Number.EPSILON)
+          : 0,
       timing: {
         totalMs: sum(times),
         minMs: times.length ? Math.min(...times) : 0,
@@ -241,6 +282,115 @@ export function createTdfolProofMetrics(input: TdfolProofMetricsInput): TdfolPro
   return inputToMetric(input);
 }
 
+export function createTdfolPerformanceDashboardDemo(
+  options: TdfolPerformanceDashboardDemoOptions = {},
+): TdfolPerformanceDashboardDemo {
+  const formats = options.formats ?? ['summary', 'json', 'html', 'snapshot'];
+  const baseTime = Date.UTC(2026, 0, 1, 12, 0, 0);
+  let tick = 0;
+  const dashboard = new TdfolPerformanceDashboard({
+    now: () => baseTime + tick++ * 1000,
+  });
+
+  for (const proof of buildDemoProofs(baseTime)) {
+    dashboard.recordProof(proof);
+  }
+  dashboard.recordMetric('dashboard_render_ms', 1.25, { renderer: 'browser-html' });
+
+  const dashboardJson = dashboard.exportJson();
+  const statistics = dashboard.getStatistics();
+  const strategyComparison = dashboard.compareStrategies();
+  const rendered = Object.fromEntries(
+    formats.map((format): [TdfolPerformanceDashboardDemoFormat, string] => [
+      format,
+      renderDemoFormat(format, dashboard, dashboardJson, statistics, strategyComparison),
+    ]),
+  ) as Partial<Record<TdfolPerformanceDashboardDemoFormat, string>>;
+
+  return {
+    id: 'tdfol-performance-dashboard-demo',
+    title: 'TDFOL performance dashboard demo',
+    description:
+      'Deterministic browser-native port of the Python demonstration module using local proof metrics, aggregate statistics, strategy comparison, JSON export, and self-contained HTML.',
+    dashboard: dashboardJson,
+    statistics,
+    strategyComparison,
+    rendered,
+  };
+}
+
+function buildDemoProofs(baseTime: number): TdfolProofMetricsInput[] {
+  return [
+    {
+      formula: 'always(O(Comply(alice)) -> eventually(Audit(alice)))',
+      proofTimeMs: 18,
+      success: true,
+      method: 'tableaux',
+      strategy: 'temporal-deontic',
+      cacheHit: false,
+      memoryUsageMb: 7,
+      numSteps: 6,
+      formulaType: 'temporal_deontic',
+      timestamp: baseTime + 100,
+    },
+    {
+      formula: 'O(Comply(alice))',
+      proofTimeMs: 4,
+      success: true,
+      method: 'direct',
+      strategy: 'direct',
+      cacheHit: true,
+      memoryUsageMb: 3,
+      numSteps: 2,
+      timestamp: baseTime + 200,
+    },
+    {
+      formula: 'Necessary(Permitted(bob))',
+      proofTimeMs: 11,
+      success: false,
+      method: 'modal-tableaux',
+      strategy: 'modal',
+      cacheHit: false,
+      memoryUsageMb: 5,
+      numSteps: 5,
+      formulaType: 'modal',
+      timestamp: baseTime + 300,
+    },
+  ];
+}
+
+function renderDemoFormat(
+  format: TdfolPerformanceDashboardDemoFormat,
+  dashboard: TdfolPerformanceDashboard,
+  dashboardJson: Record<string, unknown>,
+  statistics: TdfolAggregatedDashboardStats,
+  strategyComparison: { strategies: Record<string, Record<string, number>> },
+): string {
+  if (format === 'html') return dashboard.toHtmlString();
+  if (format === 'json') return JSON.stringify(dashboardJson, null, 2);
+  if (format === 'snapshot') {
+    return JSON.stringify(
+      {
+        total_proofs: statistics.totalProofs,
+        success_rate: statistics.successRate,
+        cache_hit_rate: statistics.cacheHitRate,
+        avg_time_ms: statistics.timing.avgMs,
+        strategies: Object.keys(strategyComparison.strategies).sort(),
+        formula_types: Object.keys(statistics.formulaTypes.counts).sort(),
+      },
+      null,
+      2,
+    );
+  }
+  return [
+    'TDFOL Performance Dashboard Demo',
+    `proofs=${statistics.totalProofs}`,
+    `success_rate=${statistics.successRate.toFixed(3)}`,
+    `cache_hit_rate=${statistics.cacheHitRate.toFixed(3)}`,
+    `avg_time_ms=${statistics.timing.avgMs.toFixed(3)}`,
+  ].join('\n');
+}
+
 function inputToMetric(input: TdfolProofMetricsInput): TdfolProofMetrics {
   const timestamp = input.timestamp ?? Date.now();
   const dashboard = new TdfolPerformanceDashboard();
@@ -261,7 +411,10 @@ function inputToMetric(input: TdfolProofMetricsInput): TdfolProofMetrics {
   };
 }
 
-function proofResultToMetric(result: ProofResult, metadata: Record<string, unknown>): TdfolProofMetrics {
+function proofResultToMetric(
+  result: ProofResult,
+  metadata: Record<string, unknown>,
+): TdfolProofMetrics {
   return inputToMetric({
     formula: result.theorem,
     proofTimeMs: result.timeMs ?? Number(metadata.proofTimeMs ?? 0),
@@ -288,10 +441,17 @@ function groupBy<T>(values: T[], key: (value: T) => string): Record<string, T[]>
   }, {});
 }
 
-function summarizeGroups(groups: Record<string, TdfolProofMetrics[]>): TdfolAggregatedDashboardStats['strategies'] {
+function summarizeGroups(
+  groups: Record<string, TdfolProofMetrics[]>,
+): TdfolAggregatedDashboardStats['strategies'] {
   const counts = countGroups(groups);
   const success = successRates(groups);
-  const avgTimesMs = Object.fromEntries(Object.entries(groups).map(([name, metrics]) => [name, mean(metrics.map((metric) => metric.proofTimeMs))]));
+  const avgTimesMs = Object.fromEntries(
+    Object.entries(groups).map(([name, metrics]) => [
+      name,
+      mean(metrics.map((metric) => metric.proofTimeMs)),
+    ]),
+  );
   return { counts, successRates: success, avgTimesMs };
 }
 
@@ -300,7 +460,12 @@ function countGroups(groups: Record<string, unknown[]>): Record<string, number> 
 }
 
 function successRates(groups: Record<string, TdfolProofMetrics[]>): Record<string, number> {
-  return Object.fromEntries(Object.entries(groups).map(([name, metrics]) => [name, ratio(metrics.filter((metric) => metric.success).length, metrics.length)]));
+  return Object.fromEntries(
+    Object.entries(groups).map(([name, metrics]) => [
+      name,
+      ratio(metrics.filter((metric) => metric.success).length, metrics.length),
+    ]),
+  );
 }
 
 function sum(values: number[]): number {
@@ -327,5 +492,9 @@ function ratio(numerator: number, denominator: number): number {
 }
 
 function escapeHtml(value: string): string {
-  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }
