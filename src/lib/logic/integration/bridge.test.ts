@@ -18,6 +18,10 @@ import {
   createBrowserNativeSymbolicAiProverBridge,
   type BrowserNativeSymbolicAiProofResult,
 } from './symbolicAiProverBridge';
+import {
+  createBrowserNativeZ3ProverBridge,
+  type BrowserNativeZ3ProofResult,
+} from './z3ProverBridge';
 
 describe('BrowserNativeLogicBridge', () => {
   it('reports local browser-native metadata and supported routes', () => {
@@ -284,6 +288,40 @@ describe('BrowserNativeLogicBridge', () => {
     expect(result.cvc5.smtLib).toContain('(assert (Resident Ada))');
     expect(result.cvc5.smtLib).toContain('(assert (not (Resident Ada)))');
     expect(result.cvc5.smtLib).toContain('(check-sat)');
+  });
+
+  it('ports the Z3 prover bridge as browser-native SMT-LIB compatibility metadata', () => {
+    const adapter = createBrowserNativeZ3ProverBridge();
+    const result = adapter.prove({
+      logic: 'tdfol',
+      theorem: 'Resident(Ada)',
+      axioms: ['Resident(Ada)'],
+    }) as BrowserNativeZ3ProofResult;
+
+    expect(adapter.metadata).toMatchObject({
+      logic: 'tdfol',
+      name: 'browser-native-z3-prover-bridge',
+      runtime: 'typescript-wasm-browser',
+      requiresExternalProver: false,
+    });
+    expect(result).toMatchObject({
+      status: 'proved',
+      theorem: 'Resident(Ada)',
+      method: 'z3-compatible:tdfol-forward-chaining',
+    });
+    expect(result.z3).toMatchObject({
+      sourcePythonModule: 'logic/external_provers/smt/z3_prover_bridge.py',
+      externalBinaryAllowed: false,
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      command: null,
+      checkSatStatus: 'unsat',
+      isValid: true,
+      isUnsat: true,
+    });
+    expect(result.z3.smtLib).toContain('(assert (Resident Ada))');
+    expect(result.z3.smtLib).toContain('(assert (not (Resident Ada)))');
+    expect(result.z3.smtLib).toContain('(check-sat)');
   });
 
   it('can expose the E prover compatibility adapter through the local router without server calls', () => {
