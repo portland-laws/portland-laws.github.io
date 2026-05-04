@@ -783,7 +783,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_api.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_context.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_generator.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_patterns.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_patterns.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_preprocessor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/nl/utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/p2p/ipfs_proof_storage.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 06:00:10 UTC
+Last updated: 2026-05-04 06:05:20 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-273: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_patterns.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-274: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_preprocessor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1247,8 +1247,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-269: Port remaining Python logic module 'logic/TDFOL/nl/llm.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-270: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_api.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-271: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_context.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-272: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_generator.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-273: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_patterns.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-272: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_generator.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-273: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_patterns.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-274: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_preprocessor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-275: Port remaining Python logic module 'logic/TDFOL/nl/utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-276: Port remaining Python logic module 'logic/TDFOL/p2p/ipfs_proof_storage.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-272: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_generator.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-273: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_patterns.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported TDFOL NL formula generation to a deterministic browser-native TypeScript module.
-- Impact: The TypeScript logic package now exports BrowserNativeTdfolNlGenerator/generateTdfolNl for local formula-to-natural-language narration with explicit no-server/no-Python metadata, and converter.test.ts validates deontic, temporal, quantified, and binary narration.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/converter.test.ts`, `src/lib/logic/tdfol/index.ts`, `src/lib/logic/tdfol/tdfolNlGenerator.ts`
+- Summary: Ported TDFOL natural-language pattern matching to browser-native TypeScript.
+- Impact: Adds a dedicated deterministic tdfol_nl_patterns browser module consumed by the existing TDFOL LLM facade, with Jest coverage for universal, existential, qualified, temporal, permission, and prohibition policy patterns and no Python/server fallback.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/browserNativeLlm.ts`, `src/lib/logic/tdfol/converter.test.ts`, `src/lib/logic/tdfol/index.ts`, `src/lib/logic/tdfol/tdfolNlPatterns.ts`
 
 ### Blocked Backlog
 

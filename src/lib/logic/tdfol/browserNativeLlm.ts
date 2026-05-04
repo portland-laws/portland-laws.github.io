@@ -1,5 +1,5 @@
 import { canonicalizeJson, createBrowserLocalCid } from './ipfsCacheDemo';
-import { parseTdfolFormula } from './parser';
+import { matchTdfolNlPattern } from './tdfolNlPatterns';
 
 export type TdfolLlmOperatorHint =
   | 'universal'
@@ -226,35 +226,10 @@ function convertPattern(
   text: string,
   hints: TdfolLlmOperatorHint[],
 ): { formula: string; confidence: number } | null {
-  const match = text
-    .toLowerCase()
-    .replace(/[.]/g, '')
-    .trim()
-    .match(
-      /^(?:all|every|each)\s+([a-z ]+?)\s+(must not|shall not|must|shall|may|can|is required to|is allowed to|are required to|are allowed to)\s+(.+)$/,
-    );
-  if (!match) return null;
-  const subject = match[1].trim().replace(/\s+/g, ' ').replace(/ies$/, 'y').replace(/s$/, '');
-  const action = match[3].replace(/^not\s+/, '');
-  const operator = match[2].includes('not') ? 'F' : hints.includes('permission') ? 'P' : 'O';
-  const body = hints.includes('temporal_always')
-    ? `[](${operator}(${predicate(action)}(x)))`
-    : `${operator}(${predicate(action)}(x))`;
-  const formula = `forall x. ${predicate(subject)}(x) -> ${body}`;
-  parseTdfolFormula(formula);
-  return { formula, confidence: hints.includes('universal') && hints.length >= 2 ? 0.9 : 0.8 };
+  const pattern = matchTdfolNlPattern(text, hints);
+  return pattern ? { formula: pattern.formula, confidence: pattern.confidence } : null;
 }
 
 function has(text: string, needles: string[]): boolean {
   return needles.some((needle) => text.includes(needle));
-}
-
-function predicate(value: string): string {
-  return value
-    .replace(/\b(the|a|an|to|from|within|without)\b/g, ' ')
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean)
-    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
-    .join('');
 }

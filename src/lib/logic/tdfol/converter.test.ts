@@ -12,6 +12,7 @@ import {
 } from './nlApi';
 import { createBrowserNativeTdfolNlContext, resolveTdfolNlContextText } from './nlContext';
 import { BrowserNativeTdfolNlGenerator, generateTdfolNl } from './tdfolNlGenerator';
+import { matchTdfolNlPattern } from './tdfolNlPatterns';
 
 describe('TDFOL converter', () => {
   it('converts parsed formulas back to stable TDFOL output with metadata', () => {
@@ -99,6 +100,35 @@ describe('TDFOL converter', () => {
       metadata: { serverCallsAllowed: false },
     });
     expect(failed.errors[0]).toContain('browser LLM router is fail-closed');
+  });
+
+  it('ports TDFOL NL patterns for deterministic browser-native policy matching', () => {
+    const permitted = matchTdfolNlPattern('Some tenants may appeal.', [
+      'existential',
+      'permission',
+    ]);
+    expect(permitted).toMatchObject({
+      formula: 'exists x. Tenant(x) & P(Appeal(x))',
+      patternKind: 'existential_policy',
+      metadata: { sourcePythonModule: 'logic/TDFOL/nl/tdfol_nl_patterns.py' },
+    });
+    expect(() => parseTdfolFormula(permitted?.formula ?? '')).not.toThrow();
+    expect(
+      matchTdfolNlPattern('All contractors who submit invoices must always keep records.', [
+        'universal',
+        'obligation',
+        'temporal_always',
+      ]),
+    ).toMatchObject({
+      formula: 'forall x. (Contractor(x) & SubmitInvoices(x)) -> [](O(KeepRecords(x)))',
+      patternKind: 'qualified_universal_policy',
+    });
+    const converter = new BrowserNativeTdfolLlmConverter();
+    expect(converter.convert('There is a tenant that shall not delete records.')).toMatchObject({
+      success: true,
+      formula: 'exists x. Tenant(x) & F(DeleteRecords(x))',
+      method: 'pattern',
+    });
   });
 
   it('ports the TDFOL NL API facade without Python or server runtime fallback', () => {

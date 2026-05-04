@@ -749,3 +749,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T060010Z-ported-tdfol-nl-formula-generation-to-a-deterministic-browser-native-typescript-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T060010Z-ported-tdfol-nl-formula-generation-to-a-deterministic-browser-native-typescript-.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T060010Z-ported-tdfol-nl-formula-generation-to-a-deterministic-browser-native-typescript-.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 06:05:20 UTC
+
+- Target: `Task checkbox-273: Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_patterns.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported TDFOL natural-language pattern matching to browser-native TypeScript.
+- Impact: Adds a dedicated deterministic tdfol_nl_patterns browser module consumed by the existing TDFOL LLM facade, with Jest coverage for universal, existential, qualified, temporal, permission, and prohibition policy patterns and no Python/server fallback.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/tdfol/browserNativeLlm.ts`, `src/lib/logic/tdfol/converter.test.ts`, `src/lib/logic/tdfol/index.ts`, `src/lib/logic/tdfol/tdfolNlPatterns.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T060520Z-ported-tdfol-natural-language-pattern-matching-to-browser-native-typescript..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T060520Z-ported-tdfol-natural-language-pattern-matching-to-browser-native-typescript..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T060520Z-ported-tdfol-natural-language-pattern-matching-to-browser-native-typescript..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
