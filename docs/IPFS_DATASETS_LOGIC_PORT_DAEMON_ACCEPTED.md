@@ -1091,3 +1091,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T082457Z-ported-a-browser-native-deontic-ir-normalization-and-validation-module..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T082457Z-ported-a-browser-native-deontic-ir-normalization-and-validation-module..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T082457Z-ported-a-browser-native-deontic-ir-normalization-and-validation-module..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 08:28:36 UTC
+
+- Target: `Task checkbox-311: Port remaining Python logic module `logic/deontic/knowledge_base.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the remaining deontic knowledge base query surface with browser-native indexed statement lookup and focused validation.
+- Impact: The TypeScript deontic knowledge base now supports deterministic local actor/action/modality indexes, active-window queries, fact checks, snapshots, derived-rule inclusion, and compliance results with matched statements. The existing Jest suite directly exercises those APIs without server, Python, filesystem, subprocess, RPC, or Node-only browser-runtime dependencies.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/deontic/knowledgeBase.test.ts`, `src/lib/logic/deontic/knowledgeBase.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T082836Z-ported-the-remaining-deontic-knowledge-base-query-surface-with-browser-native-in.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T082836Z-ported-the-remaining-deontic-knowledge-base-query-surface-with-browser-native-in.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T082836Z-ported-the-remaining-deontic-knowledge-base-query-surface-with-browser-native-in.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
