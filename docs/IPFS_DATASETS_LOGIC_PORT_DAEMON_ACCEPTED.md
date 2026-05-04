@@ -1037,3 +1037,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T075713Z-ported-the-common-proof_cache.py-parity-slice-into-the-browser-native-proofcache.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T075713Z-ported-the-common-proof_cache.py-parity-slice-into-the-browser-native-proofcache.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T075713Z-ported-the-common-proof_cache.py-parity-slice-into-the-browser-native-proofcache.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 08:01:47 UTC
+
+- Target: `Task checkbox-305: Port remaining Python logic module `logic/common/utility_monitor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported utility monitor parity for browser-native performance tracking and deterministic cache accounting.
+- Impact: src/lib/logic/utilityMonitor.ts now exposes typed browser-native utility monitoring with call/error timing stats, cache hit/miss accounting, TTL and max-entry eviction, deterministic argument keys, global helpers, and Python-style module aliases. src/lib/logic/utilityMonitor.test.ts validates the runtime behavior in the Jest logic-port suite without server, filesystem, subprocess, RPC, or Python dependencies.
+- Changed files: `src/lib/logic/utilityMonitor.test.ts`, `src/lib/logic/utilityMonitor.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T080147Z-ported-utility-monitor-parity-for-browser-native-performance-tracking-and-determ.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T080147Z-ported-utility-monitor-parity-for-browser-native-performance-tracking-and-determ.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T080147Z-ported-utility-monitor-parity-for-browser-native-performance-tracking-and-determ.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

@@ -1,4 +1,12 @@
-import { UtilityMonitor, clearGlobalCache, getGlobalStats, resetGlobalStats, trackPerformance, withCaching } from './utilityMonitor';
+import {
+  UtilityMonitor,
+  clearGlobalCache,
+  getGlobalCacheStats,
+  getGlobalStats,
+  resetGlobalStats,
+  trackPerformance,
+  withCaching,
+} from './utilityMonitor';
 
 describe('UtilityMonitor', () => {
   it('tracks calls, time, and errors for wrapped utilities', () => {
@@ -25,6 +33,31 @@ describe('UtilityMonitor', () => {
     expect(cached(4)).toBe(8);
     expect(cached(4)).toBe(8);
     expect(calls).toBe(1);
+    expect(monitor.getStats('double')).toMatchObject({ cacheHits: 1, cacheMisses: 1 });
+    expect(monitor.getCacheStats()).toMatchObject({ entries: 1, hits: 1, misses: 1 });
+  });
+
+  it('supports TTL and bounded browser-native cache entries', () => {
+    const monitor = new UtilityMonitor({ cache: { maxEntries: 1 } });
+    let calls = 0;
+    const ttlCached = monitor.withCaching(
+      'ttl',
+      (value: number) => {
+        calls += 1;
+        return value + calls;
+      },
+      undefined,
+      { ttlMs: 0 },
+    );
+    const bounded = monitor.withCaching('bounded', (value: string) => value.toUpperCase());
+
+    expect(ttlCached(1)).toBe(2);
+    expect(ttlCached(1)).toBe(3);
+    expect(calls).toBe(2);
+
+    expect(bounded('a')).toBe('A');
+    expect(bounded('b')).toBe('B');
+    expect(monitor.getCacheStats().entries).toBe(1);
   });
 
   it('provides global helper functions', () => {
@@ -37,5 +70,6 @@ describe('UtilityMonitor', () => {
     expect(cached('a')).toBe('aa');
     expect(cached('a')).toBe('aa');
     expect(getGlobalStats()).toHaveProperty('global_upper');
+    expect(getGlobalCacheStats()).toMatchObject({ entries: 1, hits: 1, misses: 1 });
   });
 });
