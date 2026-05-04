@@ -4,6 +4,10 @@ import {
   convert_deontic_logic_core,
   convert_deontic_logic,
 } from './deonticLogicConverter';
+import {
+  BrowserNativeIntegrationRootDeonticLogicConverter,
+  convert_integration_deontic_logic,
+} from '../deonticLogicConverter';
 
 describe('BrowserNativeIntegrationDeonticLogicConverter', () => {
   it('converts legal text to structured obligations, permissions, and prohibitions', () => {
@@ -108,6 +112,55 @@ describe('BrowserNativeIntegrationDeonticLogicCore', () => {
       success: false,
       metadata: {
         sourcePythonModule: 'logic/integration/converters/deontic_logic_core.py',
+        serverCallsAllowed: false,
+        pythonRuntimeAllowed: false,
+      },
+    });
+  });
+});
+
+describe('BrowserNativeIntegrationRootDeonticLogicConverter', () => {
+  it('ports logic/integration/deontic_logic_converter.py as a browser-native facade', () => {
+    const converter = new BrowserNativeIntegrationRootDeonticLogicConverter({
+      outputFormat: 'json',
+    });
+    const result = converter.convert(
+      'The processor shall delete records within 10 days unless litigation hold applies. The auditor may inspect logs.',
+    );
+
+    expect(converter.metadata).toMatchObject({
+      sourcePythonModule: 'logic/integration/deontic_logic_converter.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+    });
+    expect(result).toMatchObject({
+      status: 'success',
+      success: true,
+      metadata: {
+        sourcePythonModule: 'logic/integration/deontic_logic_converter.py',
+        serverCallsAllowed: false,
+        pythonRuntimeAllowed: false,
+        norm_counts: { obligation: 1, permission: 1, prohibition: 0 },
+      },
+    });
+    expect(result.output).toMatchObject({
+      norm_counts: { obligation: 1, permission: 1, prohibition: 0 },
+    });
+    expect(result.formulas).toEqual([expect.stringContaining('O('), expect.stringContaining('P(')]);
+  });
+
+  it('keeps Python-style root aliases local and fail-closed', () => {
+    expect(
+      convert_integration_deontic_logic('The custodian must preserve records.', {
+        outputFormat: 'prolog',
+      }).output,
+    ).toContain('deontic_norm(1');
+    expect(convert_integration_deontic_logic('x')).toMatchObject({
+      status: 'validation_failed',
+      success: false,
+      metadata: {
+        sourcePythonModule: 'logic/integration/deontic_logic_converter.py',
         serverCallsAllowed: false,
         pythonRuntimeAllowed: false,
       },
