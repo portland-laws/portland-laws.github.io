@@ -9,4 +9,5 @@ export * from './symbolicAiProverBridge';
 export * from './symbolicFolBridge';
 export * from './tdfolCecBridge';
 export * from './tdfolGrammarBridge';
+export * from './tdfolShadowProverBridge';
 export * from './z3ProverBridge';

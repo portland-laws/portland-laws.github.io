@@ -1379,3 +1379,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T110033Z-ported-tdfol_grammar_bridge.py-as-a-browser-native-deterministic-tdfol-grammar-b.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T110033Z-ported-tdfol_grammar_bridge.py-as-a-browser-native-deterministic-tdfol-grammar-b.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T110033Z-ported-tdfol_grammar_bridge.py-as-a-browser-native-deterministic-tdfol-grammar-b.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 11:08:03 UTC
+
+- Target: `Task checkbox-344: Port remaining Python logic module `logic/integration/bridges/tdfol_shadowprover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported tdfol_shadowprover_bridge.py as a browser-native TypeScript integration adapter over the local CEC ShadowProver.
+- Impact: The new integration bridge converts TDFOL formulas to CEC ShadowProver formulas, proves them through the existing local browser-native ShadowProver, maps proof status back to the shared ProofResult contract, and fails closed for unsupported logic without Python, server, RPC, subprocess, or filesystem fallback. The integration Jest suite now validates successful conversion/proof metadata and unsupported-logic fail-closed behavior.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/index.ts`, `src/lib/logic/integration/tdfolShadowProverBridge.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T110803Z-ported-tdfol_shadowprover_bridge.py-as-a-browser-native-typescript-integration-a.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T110803Z-ported-tdfol_shadowprover_bridge.py-as-a-browser-native-typescript-integration-a.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T110803Z-ported-tdfol_shadowprover_bridge.py-as-a-browser-native-typescript-integration-a.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

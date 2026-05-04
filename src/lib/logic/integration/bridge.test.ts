@@ -27,6 +27,7 @@ import {
 import { SymbolicFOLBridge } from './symbolicFolBridge';
 import { createBrowserNativeTdfolCecBridge } from './tdfolCecBridge';
 import { createBrowserNativeTdfolGrammarBridge } from './tdfolGrammarBridge';
+import { createBrowserNativeTdfolShadowProverBridge } from './tdfolShadowProverBridge';
 import {
   createBrowserNativeZ3ProverBridge,
   type BrowserNativeZ3ProofResult,
@@ -158,6 +159,54 @@ describe('BrowserNativeLogicBridge', () => {
     expect(invalid).toMatchObject({
       valid: false,
       metadata: { serverCallsAllowed: false, pythonRuntime: false },
+    });
+  });
+
+  it('ports tdfol_shadowprover_bridge.py through the browser-native CEC ShadowProver', () => {
+    const bridge = createBrowserNativeTdfolShadowProverBridge();
+    const converted = bridge.convert('always(O(Comply(Ada)))');
+    const result = bridge.prove({
+      theorem: 'Resident(Ada)',
+      axioms: ['Resident(Ada)'],
+      logic: 'K',
+    });
+    const unsupported = bridge.prove({
+      theorem: 'Resident(Ada)',
+      axioms: ['Resident(Ada)'],
+      logic: 'LP',
+    });
+
+    expect(converted).toMatchObject({
+      status: 'success',
+      source: '□(O(Comply(Ada)))',
+      shadowFormula: '(always (O (Comply Ada)))',
+      metadata: {
+        sourcePythonModule: 'logic/integration/bridges/tdfol_shadowprover_bridge.py',
+        browserNative: true,
+        serverCallsAllowed: false,
+        pythonRuntime: false,
+        failClosed: true,
+      },
+    });
+    expect(result).toMatchObject({
+      status: 'proved',
+      theorem: 'Resident(Ada)',
+      method: 'tdfol_shadowprover_bridge:direct-assumption',
+      cecTheorem: '(Resident Ada)',
+      shadowLogic: 'K',
+      shadowProofStatus: 'success',
+      sourcePythonModule: 'logic/integration/bridges/tdfol_shadowprover_bridge.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+    });
+    expect(unsupported).toMatchObject({
+      status: 'error',
+      method: 'tdfol_shadowprover_bridge:fail_closed',
+      shadowLogic: 'LP',
+      shadowProofStatus: 'error',
+      serverCallsAllowed: false,
+      pythonRuntime: false,
     });
   });
 
