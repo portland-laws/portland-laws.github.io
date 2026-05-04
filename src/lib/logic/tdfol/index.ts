@@ -39,5 +39,6 @@ export * from './performanceProfiler';
 export * from './proofExplainer';
 export * from './proofTree';
 export * from './prover';
+export * from './quickstartVisualizer';
 export * from './securityValidator';
 export * from './strategies';

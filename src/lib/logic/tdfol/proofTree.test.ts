@@ -1,5 +1,9 @@
 import type { ProofResult } from '../types';
 import { visualizeTdfolProofTree } from './proofTree';
+import {
+  buildTdfolQuickstartVisualizerSnapshot,
+  TDFOL_QUICKSTART_VISUALIZER_METADATA,
+} from './quickstartVisualizer';
 
 const proof: ProofResult = {
   status: 'proved',
@@ -80,5 +84,30 @@ describe('TdfolProofTreeVisualizer', () => {
     });
     expect(visualizer.renderSvg()).toContain('tdfol-proof-tree-svg');
     expect(visualizer.renderSvg()).toContain('Policy&lt;AccessReview&gt;');
+  });
+
+  it('ports quickstart_visualizer.py as a browser-native deterministic snapshot', () => {
+    const snapshot = buildTdfolQuickstartVisualizerSnapshot();
+
+    expect(TDFOL_QUICKSTART_VISUALIZER_METADATA).toMatchObject({
+      sourcePythonModule: 'logic/TDFOL/quickstart_visualizer.py',
+      runtime: 'browser-native-typescript',
+      serverCallsAllowed: false,
+      pythonRuntimeRequired: false,
+    });
+    expect(snapshot.proofStatus).toBe('proved');
+    expect(snapshot.asciiTree).toContain('Permitted(Alice, DatasetAlpha) [DeonticDischarge]');
+    expect(snapshot.treeJson).toMatchObject({ theorem: 'Permitted(Alice, DatasetAlpha)' });
+    expect(snapshot.graphJson.edges).toEqual(
+      expect.arrayContaining([expect.objectContaining({ rule: 'UniversalInstantiation' })]),
+    );
+    expect(snapshot.dependencyJson.statistics).toMatchObject({ num_edges: 4 });
+    expect(snapshot.dot).toContain('digraph TDFOLProof');
+    expect(snapshot.svg).toContain('tdfol-proof-tree-svg');
+    expect(snapshot.html).toContain('tdfol-quickstart-visualizer');
+    expect(snapshot.html).toContain('logic/TDFOL/quickstart_visualizer.py');
+    expect(snapshot.quickstartSteps).toContain(
+      'Render deterministic ASCII, JSON, DOT, SVG, and HTML outputs without Python or server calls.',
+    );
   });
 });
