@@ -66,7 +66,7 @@ describe('browser-native logic public API facade', () => {
       success: true,
       capabilities: { serverCallsAllowed: false, ucanSigningAvailable: false },
     });
-    expect(compiled.policyFormula).toContain('P(');
+    expect(compiled.policyFormula).toContain('P[tenants:Agent]');
     expect(evaluation).toMatchObject({
       tool: 'use-community-room',
       actor: 'did:example:tenant',
@@ -90,8 +90,12 @@ describe('browser-native logic public API facade', () => {
     api.convertLegalTextToDeontic('Employers shall not retaliate.');
     api.convertLogic('Resident(Ada)', 'tdfol', 'json');
 
-    expect(api.monitor.getOperationSummary('api.convert_text_to_fol')).toMatchObject({ total_count: 1 });
-    expect(api.monitor.getOperationSummary('api.convert_legal_text_to_deontic')).toMatchObject({ total_count: 1 });
+    expect(api.monitor.getOperationSummary('api.convert_text_to_fol')).toMatchObject({
+      total_count: 1,
+    });
+    expect(api.monitor.getOperationSummary('api.convert_legal_text_to_deontic')).toMatchObject({
+      total_count: 1,
+    });
     expect(api.monitor.getOperationSummary('api.convert_logic')).toMatchObject({ total_count: 1 });
   });
 });

@@ -5,11 +5,13 @@ import {
   NaturalLanguageConverter,
   PatternMatcher,
   compileDcecGrammarNlPolicy,
+  compileDcecNlToPolicy,
   compileDcecPolicyText,
   createEnhancedDcecNlConverter,
   create_enhanced_nl_converter,
   detectDcecPolicyLanguage,
   getDcecGrammarNlPolicyCompilerCapabilities,
+  getDcecNlToPolicyCompilerCapabilities,
   linearizeDcecWithGrammar,
   linearize_with_grammar,
   parseDcecWithGrammar,
@@ -227,6 +229,43 @@ describe('DCEC natural language converter parity helpers', () => {
       fail_closed_reason: 'input_too_long',
       browser_native: true,
     });
+  });
+
+  it('ports nl_to_policy_compiler.py as browser-native policy rule output', () => {
+    const capabilities = getDcecNlToPolicyCompilerCapabilities();
+    const result = compileDcecNlToPolicy(
+      'Policy 1: The tenant shall maintain smoke alarms. Rule 2: landlord may inspect alarms.',
+    );
+    const withoutLabels = compileDcecNlToPolicy('tenant must pay rent', { includeLabels: false });
+
+    expect(capabilities).toMatchObject({
+      browserNative: true,
+      pythonRuntime: false,
+      serverRuntime: false,
+      filesystem: false,
+      subprocess: false,
+      rpc: false,
+      pythonModule: 'logic/CEC/nl/nl_to_policy_compiler.py',
+    });
+    expect(result).toMatchObject({
+      ok: true,
+      success: true,
+      parse_method: 'browser_native_nl_to_policy_compiler',
+      browser_native: true,
+      metadata: {
+        sourcePythonModule: 'logic/CEC/nl/nl_to_policy_compiler.py',
+        runtime: 'browser-native-typescript',
+        implementation: 'deterministic-nl-to-policy-compiler',
+      },
+    });
+    expect(result.policy_formula).toBe(
+      'O[tenant:Agent](maintain_smoke_alarms(tenant:Agent))\nP[landlord:Agent](inspect_alarms(landlord:Agent))',
+    );
+    expect(result.policy_rules.map((rule) => rule.label)).toEqual([
+      'obligation:tenant_maintain_smoke_alarms',
+      'permission:landlord_inspect_alarms',
+    ]);
+    expect(withoutLabels.policy_rules[0].label).toBeUndefined();
   });
 
   it('fails closed for non-English policy text instead of calling external NLP', () => {

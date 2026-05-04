@@ -62,6 +62,38 @@ export interface DcecPolicyCompilationResult extends DcecNlConversionResult {
   browser_native: true;
 }
 
+export interface DcecNlToPolicyCompilerOptions extends DcecNativeEnglishGrammarOptions {
+  includeLabels?: boolean;
+}
+
+export interface DcecNlToPolicyRule {
+  index: number;
+  source_text: string;
+  normalized_text: string;
+  dcec: string;
+  policy_formula: string;
+  label?: string;
+}
+
+export interface DcecNlToPolicyCompilerResult {
+  ok: boolean;
+  success: boolean;
+  input: string;
+  normalized_policy_text: string;
+  policy_rules: DcecNlToPolicyRule[];
+  policy_formula: string;
+  policy_formula_texts: string[];
+  errors: string[];
+  fail_closed_reason?: string;
+  parse_method: 'browser_native_nl_to_policy_compiler';
+  browser_native: true;
+  metadata: {
+    sourcePythonModule: 'logic/CEC/nl/nl_to_policy_compiler.py';
+    runtime: 'browser-native-typescript';
+    implementation: 'deterministic-nl-to-policy-compiler';
+  };
+}
+
 export interface DcecGrammarAdapter {
   parse_to_dcec(text: string): DcecFormula | undefined;
   formula_to_english(formula: DcecFormula): string | undefined;
@@ -613,6 +645,60 @@ export function compileDcecGrammarNlPolicy(
   };
 }
 
+export function getDcecNlToPolicyCompilerCapabilities() {
+  return {
+    browserNative: true,
+    pythonRuntime: false,
+    serverRuntime: false,
+    filesystem: false,
+    subprocess: false,
+    rpc: false,
+    wasmCompatible: true,
+    wasmRequired: false,
+    implementation: 'deterministic-typescript',
+    pythonModule: 'logic/CEC/nl/nl_to_policy_compiler.py',
+  } as const;
+}
+
+export function compileDcecNlToPolicy(
+  text: string,
+  options: DcecNlToPolicyCompilerOptions = {},
+): DcecNlToPolicyCompilerResult {
+  const grammarResult = compileDcecGrammarNlPolicy(text, options);
+  const policyRules: DcecNlToPolicyRule[] = grammarResult.rules.map((rule) => {
+    const normalized = String(rule.normalized_text);
+    return {
+      index: Number(rule.index),
+      source_text: String(rule.source_text),
+      normalized_text: normalized,
+      dcec: rule.dcec,
+      policy_formula: rule.dcec,
+      label: options.includeLabels === false ? undefined : policyRuleLabel(normalized, rule.dcec),
+    };
+  });
+  const policyFormula = policyRules.map((rule) => rule.policy_formula).join('\n');
+
+  return {
+    ok: grammarResult.ok,
+    success: grammarResult.success,
+    input: grammarResult.input,
+    normalized_policy_text: grammarResult.normalized_policy_text,
+    policy_rules: policyRules,
+    policy_formula: policyFormula,
+    policy_formula_texts: policyRules.map((rule) => rule.policy_formula),
+    errors: [...grammarResult.errors],
+    fail_closed_reason:
+      'fail_closed_reason' in grammarResult ? grammarResult.fail_closed_reason : undefined,
+    parse_method: 'browser_native_nl_to_policy_compiler',
+    browser_native: true,
+    metadata: {
+      sourcePythonModule: 'logic/CEC/nl/nl_to_policy_compiler.py',
+      runtime: 'browser-native-typescript',
+      implementation: 'deterministic-nl-to-policy-compiler',
+    },
+  };
+}
+
 export function proveDcecFormula(request: DcecProofRequest): DcecProofResult {
   const strategy = request.strategy ?? 'advanced_inference';
   const assumptions = request.assumptions ?? [];
@@ -839,6 +925,22 @@ function normalizeGrammarPolicyClause(text: string): string {
   return normalizePolicyText(text)
     .replace(/^(?:policy|rule|requirement)(?:\s+\d+)?\s+/u, '')
     .replace(/^(?:the|a|an)\s+/u, '');
+}
+
+function policyRuleLabel(normalizedText: string, formulaText: string): string {
+  const modality = formulaText.startsWith('O[')
+    ? 'obligation'
+    : formulaText.startsWith('P[')
+      ? 'permission'
+      : formulaText.startsWith('F[')
+        ? 'prohibition'
+        : 'policy';
+  const action = normalizedText
+    .replace(/\b(?:the|a|an)\b/gu, '')
+    .replace(/\b(?:must not|shall not|may not|must|shall|should|may|can)\b/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return action ? `${modality}:${action.replace(/\s+/g, '_')}` : modality;
 }
 
 function normalizePolicyText(text: string): string {

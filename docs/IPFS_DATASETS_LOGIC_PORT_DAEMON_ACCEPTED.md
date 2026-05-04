@@ -470,3 +470,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T035620Z-ported-the-cec-natural-language-policy-conflict-detector-to-browser-native-types.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T035620Z-ported-the-cec-natural-language-policy-conflict-detector-to-browser-native-types.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T035620Z-ported-the-cec-natural-language-policy-conflict-detector-to-browser-native-types.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 03:59:27 UTC
+
+- Target: `Task checkbox-242: Port remaining Python logic module `logic/CEC/nl/nl_to_policy_compiler.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported CEC nl_to_policy_compiler.py as a browser-native deterministic TypeScript policy compiler facade.
+- Impact: The new CEC compiler exports policy-rule output, capabilities metadata, fail-closed errors, and DCEC policy formulas without Python, server, filesystem, subprocess, or RPC dependencies; the public NL policy API now uses that compiler and Jest validates the new module parity path.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/api.test.ts`, `src/lib/logic/api.ts`, `src/lib/logic/cec/nlConverter.test.ts`, `src/lib/logic/cec/nlConverter.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T035927Z-ported-cec-nl_to_policy_compiler.py-as-a-browser-native-deterministic-typescript.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T035927Z-ported-cec-nl_to_policy_compiler.py-as-a-browser-native-deterministic-typescript.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T035927Z-ported-cec-nl_to_policy_compiler.py-as-a-browser-native-deterministic-typescript.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

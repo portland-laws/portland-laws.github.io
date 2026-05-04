@@ -1,5 +1,9 @@
 import { runComprehensiveBenchmarks } from './benchmarks';
-import { DeonticConverter, type DeonticConverterOptions, type DeonticFormula } from './deontic/converter';
+import {
+  DeonticConverter,
+  type DeonticConverterOptions,
+  type DeonticFormula,
+} from './deontic/converter';
 import { FOLConverter, type FolConverterOptions, type FolFormula } from './fol/converter';
 import {
   BrowserNativeLogicBridge,
@@ -8,6 +12,7 @@ import {
 } from './integration/bridge';
 import { LogicBridgeError } from './errors';
 import { getGlobalMonitor, type LogicMonitor } from './monitoring';
+import { compileDcecNlToPolicy } from './cec/nlConverter';
 import type { ConversionResult } from './converters';
 import type { LogicBridgeConversionResult, ProofResult } from './types';
 
@@ -58,31 +63,49 @@ export class BrowserNativeLogicApi {
   constructor(options: LogicApiOptions = {}) {
     this.folConverter = new FOLConverter(options.fol);
     this.deonticConverter = new DeonticConverter(options.deontic);
-    this.bridge = options.bridge ?? new BrowserNativeLogicBridge({
-      fol: options.fol,
-      deontic: options.deontic,
-    });
+    this.bridge =
+      options.bridge ??
+      new BrowserNativeLogicBridge({
+        fol: options.fol,
+        deontic: options.deontic,
+      });
     this.monitor = options.monitor ?? getGlobalMonitor();
   }
 
   convertTextToFol(text: string): ConversionResult<FolFormula> {
     const startedAt = nowSeconds();
     const result = this.folConverter.convert(text);
-    this.monitor.recordOperation('api.convert_text_to_fol', result.success, nowSeconds() - startedAt);
+    this.monitor.recordOperation(
+      'api.convert_text_to_fol',
+      result.success,
+      nowSeconds() - startedAt,
+    );
     return result;
   }
 
   convertLegalTextToDeontic(text: string): ConversionResult<DeonticFormula> {
     const startedAt = nowSeconds();
     const result = this.deonticConverter.convert(text);
-    this.monitor.recordOperation('api.convert_legal_text_to_deontic', result.success, nowSeconds() - startedAt);
+    this.monitor.recordOperation(
+      'api.convert_legal_text_to_deontic',
+      result.success,
+      nowSeconds() - startedAt,
+    );
     return result;
   }
 
-  convertLogic(source: string, sourceFormat: LogicBridgeFormat, targetFormat: LogicBridgeFormat): LogicBridgeConversionResult {
+  convertLogic(
+    source: string,
+    sourceFormat: LogicBridgeFormat,
+    targetFormat: LogicBridgeFormat,
+  ): LogicBridgeConversionResult {
     const startedAt = nowSeconds();
     const result = this.bridge.convert(source, sourceFormat, targetFormat);
-    this.monitor.recordOperation('api.convert_logic', result.isSuccessful(), nowSeconds() - startedAt);
+    this.monitor.recordOperation(
+      'api.convert_logic',
+      result.isSuccessful(),
+      nowSeconds() - startedAt,
+    );
     return result;
   }
 
@@ -94,14 +117,16 @@ export class BrowserNativeLogicApi {
   }
 
   compileNlToPolicy(text: string): NlPolicyCompileResult {
-    const conversion = this.bridge.convert(text, 'legal_text', 'deontic');
+    const compiled = compileDcecNlToPolicy(text);
     return {
-      success: conversion.isSuccessful(),
+      success: compiled.success,
       sourceText: text,
-      policyFormula: conversion.targetFormula,
-      warnings: conversion.warnings,
+      policyFormula: compiled.policy_formula,
+      warnings: compiled.errors,
       metadata: {
-        ...conversion.metadata,
+        ...compiled.metadata,
+        policy_rule_count: compiled.policy_rules.length,
+        parse_method: compiled.parse_method,
         browser_native_policy_compiler: true,
       },
       capabilities: {
@@ -111,11 +136,16 @@ export class BrowserNativeLogicApi {
     };
   }
 
-  evaluateNlPolicy(nlText: string, options: { tool: string; actor?: string }): NlPolicyEvaluationResult {
+  evaluateNlPolicy(
+    nlText: string,
+    options: { tool: string; actor?: string },
+  ): NlPolicyEvaluationResult {
     const compiled = this.compileNlToPolicy(nlText);
     const normalizedFormula = compiled.policyFormula.toLowerCase();
     const normalizedTool = options.tool.toLowerCase().replace(/[_-]+/g, ' ');
-    const allowed = compiled.success && normalizedFormula.includes(normalizedTool.split(/\s+/)[0] ?? normalizedTool);
+    const allowed =
+      compiled.success &&
+      normalizedFormula.includes(normalizedTool.split(/\s+/)[0] ?? normalizedTool);
     return {
       ...compiled,
       tool: options.tool,
@@ -127,7 +157,10 @@ export class BrowserNativeLogicApi {
     };
   }
 
-  async buildSignedDelegation(nlText: string, options: { audienceDid: string }): Promise<SignedDelegationResult> {
+  async buildSignedDelegation(
+    nlText: string,
+    options: { audienceDid: string },
+  ): Promise<SignedDelegationResult> {
     return {
       success: false,
       status: 'unsupported',
@@ -161,7 +194,10 @@ export function resetGlobalLogicApi(): void {
   globalApi = undefined;
 }
 
-export function convertTextToFol(text: string, options: FolConverterOptions = {}): ConversionResult<FolFormula> {
+export function convertTextToFol(
+  text: string,
+  options: FolConverterOptions = {},
+): ConversionResult<FolFormula> {
   return new BrowserNativeLogicApi({ fol: options }).convertTextToFol(text);
 }
 
