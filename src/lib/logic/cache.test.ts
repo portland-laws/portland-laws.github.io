@@ -1,4 +1,10 @@
 import { BoundedCache } from './cache';
+import {
+  BrowserTdfolIpfsCacheDemo,
+  canonicalizeJson,
+  createBrowserLocalCid,
+  demonstrateTdfolIpfsCache,
+} from './tdfol/ipfsCacheDemo';
 
 describe('BoundedCache', () => {
   it('returns cached values and records hit/miss stats', () => {
@@ -75,3 +81,54 @@ describe('BoundedCache', () => {
   });
 });
 
+describe('BrowserTdfolIpfsCacheDemo', () => {
+  const proofPayload = {
+    theorem: 'Goal(a)',
+    formula: 'P(a) -> Goal(a)',
+    proof: {
+      status: 'proved' as const,
+      theorem: 'Goal(a)',
+      method: 'tdfol-forward-chaining',
+      steps: [
+        {
+          id: 'tdfol-step-1',
+          rule: 'ModusPonens',
+          premises: ['P(a)', 'P(a) -> Goal(a)'],
+          conclusion: 'Goal(a)',
+        },
+      ],
+    },
+    metadata: { module: 'logic/TDFOL/nl/demonstrate_ipfs_cache.py' },
+  };
+
+  it('stores proof payloads by deterministic browser-local CID', () => {
+    const canonical = canonicalizeJson({ b: 2, a: 1 });
+
+    expect(canonical).toBe('{"a":1,"b":2}');
+    expect(createBrowserLocalCid(canonical)).toBe(createBrowserLocalCid(canonical));
+
+    const result = demonstrateTdfolIpfsCache(proofPayload);
+
+    expect(result.cid).toMatch(/^bafylogic[0-9a-f]{16}$/);
+    expect(result.firstLookup).toMatchObject({ hit: true, source: 'browser-cache' });
+    expect(result.secondLookup).toMatchObject({ hit: true, source: 'browser-cache' });
+    expect(result.stats).toMatchObject({ hits: 2, misses: 0, totalRequests: 2 });
+    expect(result.transport).toMatchObject({ available: false, mode: 'fail-closed-local-only' });
+  });
+
+  it('expires locally cached proof payloads without remote IPFS fallback', () => {
+    let now = 10;
+    const demo = new BrowserTdfolIpfsCacheDemo({ ttlMs: 5, now: () => now });
+    const entry = demo.putProof(proofPayload);
+
+    expect(demo.getProof(entry.cid).hit).toBe(true);
+    now = 20;
+
+    expect(demo.getProof(entry.cid)).toMatchObject({
+      cid: entry.cid,
+      hit: false,
+      source: 'unavailable-ipfs-adapter',
+    });
+    expect(demo.getStats()).toMatchObject({ hits: 1, misses: 1, expirations: 1 });
+  });
+});

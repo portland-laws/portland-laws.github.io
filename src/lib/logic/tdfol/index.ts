@@ -6,6 +6,7 @@ export * from './exceptions';
 export * from './expansionRules';
 export * from './formatter';
 export * from './inferenceRules';
+export * from './ipfsCacheDemo';
 export {
   TDFOL_INFERENCE_RULES,
   getTdfolInferenceRule,

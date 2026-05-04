@@ -704,3 +704,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T053542Z-ported-tdfol-modal-tableaux-quantifier-instantiation-into-the-browser-native-pro.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T053542Z-ported-tdfol-modal-tableaux-quantifier-instantiation-into-the-browser-native-pro.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T053542Z-ported-tdfol-modal-tableaux-quantifier-instantiation-into-the-browser-native-pro.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 05:40:12 UTC
+
+- Target: `Task checkbox-268: Port remaining Python logic module `logic/TDFOL/nl/demonstrate_ipfs_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported demonstrate_ipfs_cache.py as a browser-native TDFOL proof cache demo with deterministic local CIDs and fail-closed IPFS transport metadata.
+- Impact: The new TDFOL module is exported through the logic package and exercised by the existing cache Jest suite. It validates browser-local proof payload storage, deterministic content addressing, cache hit and expiry behavior, and absence of server, Python, filesystem, subprocess, RPC, or remote IPFS fallbacks.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cache.test.ts`, `src/lib/logic/tdfol/index.ts`, `src/lib/logic/tdfol/ipfsCacheDemo.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T054012Z-ported-demonstrate_ipfs_cache.py-as-a-browser-native-tdfol-proof-cache-demo-with.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T054012Z-ported-demonstrate_ipfs_cache.py-as-a-browser-native-tdfol-proof-cache-demo-with.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T054012Z-ported-demonstrate_ipfs_cache.py-as-a-browser-native-tdfol-proof-cache-demo-with.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

@@ -778,7 +778,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/TDFOL/inference_rules/propositional.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/TDFOL/inference_rules/temporal_deontic.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/TDFOL/modal_tableaux.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/TDFOL/nl/demonstrate_ipfs_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/TDFOL/nl/demonstrate_ipfs_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/nl/llm.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_api.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/TDFOL/nl/tdfol_nl_context.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 05:35:42 UTC
+Last updated: 2026-05-04 05:40:12 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-268: Port remaining Python logic module 'logic/TDFOL/nl/demonstrate_ipfs_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-269: Port remaining Python logic module 'logic/TDFOL/nl/llm.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1242,8 +1242,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-264: Port remaining Python logic module 'logic/TDFOL/inference_rules/first_order.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-265: Port remaining Python logic module 'logic/TDFOL/inference_rules/propositional.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-266: Port remaining Python logic module 'logic/TDFOL/inference_rules/temporal_deontic.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-267: Port remaining Python logic module 'logic/TDFOL/modal_tableaux.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-268: Port remaining Python logic module 'logic/TDFOL/nl/demonstrate_ipfs_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-267: Port remaining Python logic module 'logic/TDFOL/modal_tableaux.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-268: Port remaining Python logic module 'logic/TDFOL/nl/demonstrate_ipfs_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-269: Port remaining Python logic module 'logic/TDFOL/nl/llm.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-270: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_api.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-271: Port remaining Python logic module 'logic/TDFOL/nl/tdfol_nl_context.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-267: Port remaining Python logic module 'logic/TDFOL/modal_tableaux.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-268: Port remaining Python logic module 'logic/TDFOL/nl/demonstrate_ipfs_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported TDFOL modal tableaux quantifier instantiation into the browser-native proof loop.
-- Impact: The TDFOL modal tableaux prover now expands universal and existential formulas during branch saturation without Python, server, or Node-only runtime fallbacks, and the existing Jest modal tableaux suite validates first-order closure behavior against branch constants.
-- Accepted changed files: `src/lib/logic/tdfol/modalTableaux.test.ts`, `src/lib/logic/tdfol/modalTableaux.ts`
+- Summary: Ported demonstrate_ipfs_cache.py as a browser-native TDFOL proof cache demo with deterministic local CIDs and fail-closed IPFS transport metadata.
+- Impact: The new TDFOL module is exported through the logic package and exercised by the existing cache Jest suite. It validates browser-local proof payload storage, deterministic content addressing, cache hit and expiry behavior, and absence of server, Python, filesystem, subprocess, RPC, or remote IPFS fallbacks.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cache.test.ts`, `src/lib/logic/tdfol/index.ts`, `src/lib/logic/tdfol/ipfsCacheDemo.ts`
 
 ### Blocked Backlog
 
