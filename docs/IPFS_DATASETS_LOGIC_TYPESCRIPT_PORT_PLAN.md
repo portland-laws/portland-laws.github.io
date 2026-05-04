@@ -814,7 +814,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/cli.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/common/bounded_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/common/feature_detection.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/common/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/common/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/common/utility_monitor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/common/validators.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/deontic/decoder.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 07:55:07 UTC
+Last updated: 2026-05-04 07:57:13 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-304: Port remaining Python logic module 'logic/common/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-305: Port remaining Python logic module 'logic/common/utility_monitor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1278,8 +1278,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-300: Port remaining Python logic module 'logic/batch_processing.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-301: Port remaining Python logic module 'logic/cli.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-302: Port remaining Python logic module 'logic/common/bounded_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-303: Port remaining Python logic module 'logic/common/feature_detection.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-304: Port remaining Python logic module 'logic/common/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-303: Port remaining Python logic module 'logic/common/feature_detection.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-304: Port remaining Python logic module 'logic/common/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-305: Port remaining Python logic module 'logic/common/utility_monitor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-306: Port remaining Python logic module 'logic/common/validators.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-307: Port remaining Python logic module 'logic/deontic/decoder.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-303: Port remaining Python logic module 'logic/common/feature_detection.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-304: Port remaining Python logic module 'logic/common/proof_cache.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported feature detection to a deterministic browser-native availability registry with explicit local adapter support.
-- Impact: src/lib/logic/featureDetection.ts now exposes per-feature browser-native availability for Python optional dependency parity without importing Python, spaCy, server, filesystem, or subprocess fallbacks; src/lib/logic/featureDetection.test.ts validates fail-closed Python-only features, explicit local adapters, and injected browser capability probing.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/featureDetection.test.ts`, `src/lib/logic/featureDetection.ts`
+- Summary: Ported the common proof_cache.py parity slice into the browser-native ProofCache implementation.
+- Impact: The TypeScript logic cache now declares its common Python source parity contract, uses deterministic order-insensitive axiom keys, exposes browser-local cache snapshots and expired-entry cleanup, and the Jest logic-port suite validates those behaviors without server, Python, filesystem, subprocess, or RPC dependencies.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/proofCache.test.ts`, `src/lib/logic/proofCache.ts`
 
 ### Blocked Backlog
 

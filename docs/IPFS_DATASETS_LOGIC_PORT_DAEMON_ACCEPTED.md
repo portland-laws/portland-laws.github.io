@@ -1028,3 +1028,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T075507Z-ported-feature-detection-to-a-deterministic-browser-native-availability-registry.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T075507Z-ported-feature-detection-to-a-deterministic-browser-native-availability-registry.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T075507Z-ported-feature-detection-to-a-deterministic-browser-native-availability-registry.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 07:57:13 UTC
+
+- Target: `Task checkbox-304: Port remaining Python logic module `logic/common/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the common proof_cache.py parity slice into the browser-native ProofCache implementation.
+- Impact: The TypeScript logic cache now declares its common Python source parity contract, uses deterministic order-insensitive axiom keys, exposes browser-local cache snapshots and expired-entry cleanup, and the Jest logic-port suite validates those behaviors without server, Python, filesystem, subprocess, or RPC dependencies.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/proofCache.test.ts`, `src/lib/logic/proofCache.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T075713Z-ported-the-common-proof_cache.py-parity-slice-into-the-browser-native-proofcache.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T075713Z-ported-the-common-proof_cache.py-parity-slice-into-the-browser-native-proofcache.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T075713Z-ported-the-common-proof_cache.py-parity-slice-into-the-browser-native-proofcache.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
