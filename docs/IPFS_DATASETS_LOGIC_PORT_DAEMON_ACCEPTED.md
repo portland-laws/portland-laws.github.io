@@ -1892,3 +1892,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T145109Z-added-browser-native-root-integration-symbolic-logic-primitives-compatibility-su.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T145109Z-added-browser-native-root-integration-symbolic-logic-primitives-compatibility-su.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T145109Z-added-browser-native-root-integration-symbolic-logic-primitives-compatibility-su.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 14:54:10 UTC
+
+- Target: `Task checkbox-401: Port remaining Python logic module `logic/integration/tdfol_cec_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the top-level TDFOL CEC integration bridge surface to browser-native TypeScript helpers.
+- Impact: The TypeScript bridge now identifies logic/integration/tdfol_cec_bridge.py as its source module, preserves legacy nested-module provenance, exposes browser-callable convert/prove/validate helpers, returns translated CEC theorem/axiom evidence in proof results, and has focused Jest coverage in the existing integration bridge validation suite.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/tdfolCecBridge.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T145410Z-ported-the-top-level-tdfol-cec-integration-bridge-surface-to-browser-native-type.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T145410Z-ported-the-top-level-tdfol-cec-integration-bridge-surface-to-browser-native-type.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T145410Z-ported-the-top-level-tdfol-cec-integration-bridge-surface-to-browser-native-type.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

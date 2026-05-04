@@ -29,7 +29,12 @@ import {
 } from './symbolicAiProverBridge';
 import { SymbolicFOLBridge, createBrowserNativeRootSymbolicFOLBridge } from './symbolicFolBridge';
 import { createBrowserNativeSymbolicFOLConverterBridge } from './converters/symbolicFolBridge';
-import { createBrowserNativeTdfolCecBridge } from './tdfolCecBridge';
+import {
+  convertTdfolToCec,
+  createBrowserNativeTdfolCecBridge,
+  proveTdfolWithCec,
+  validateTdfolCecBridgeInput,
+} from './tdfolCecBridge';
 import { createBrowserNativeTdfolGrammarBridge } from './tdfolGrammarBridge';
 import { createBrowserNativeTdfolShadowProverBridge } from './tdfolShadowProverBridge';
 import {
@@ -101,7 +106,7 @@ describe('BrowserNativeLogicBridge', () => {
     });
   });
 
-  it('ports tdfol_cec_bridge.py conversion and proof delegation without external fallbacks', () => {
+  it('ports top-level tdfol_cec_bridge.py conversion and proof delegation without external fallbacks', () => {
     const bridge = createBrowserNativeTdfolCecBridge();
     const converted = bridge.convert('forall x. always(O(Comply(x)))');
     const invalid = bridge.validate('always(');
@@ -115,7 +120,8 @@ describe('BrowserNativeLogicBridge', () => {
       source: '∀x (□(O(Comply(x))))',
       cecText: '(forall x (always (O (Comply x))))',
       metadata: {
-        sourcePythonModule: 'logic/integration/bridges/tdfol_cec_bridge.py',
+        sourcePythonModule: 'logic/integration/tdfol_cec_bridge.py',
+        legacySourcePythonModules: ['logic/integration/bridges/tdfol_cec_bridge.py'],
         browserNative: true,
         serverCallsAllowed: false,
         pythonRuntime: false,
@@ -123,17 +129,53 @@ describe('BrowserNativeLogicBridge', () => {
       },
     });
     expect(invalid).toMatchObject({ valid: false, metadata: { serverCallsAllowed: false } });
+    expect(invalid.warnings).toContain(
+      'TDFOL to CEC bridge failed closed without external fallback.',
+    );
     expect(result).toMatchObject({
       status: 'proved',
       theorem: 'F(Enter(x))',
       method: 'tdfol_cec_bridge:cec_delegate:local',
       cecTheorem: '(F (Enter x))',
-      sourcePythonModule: 'logic/integration/bridges/tdfol_cec_bridge.py',
+      cecAxioms: ['(O (not (Enter x)))'],
+      cecTheorems: [],
+      sourcePythonModule: 'logic/integration/tdfol_cec_bridge.py',
+      legacySourcePythonModules: ['logic/integration/bridges/tdfol_cec_bridge.py'],
       browserNative: true,
       serverCallsAllowed: false,
       pythonRuntime: false,
     });
     expect(result.steps.map((step) => step.rule)).toContain('CecDeonticProhibitionEquivalence');
+  });
+
+  it('exposes top-level tdfol_cec_bridge.py functional helpers for browser callers', () => {
+    const converted = convertTdfolToCec('P(Inspect(Ada))');
+    const validation = validateTdfolCecBridgeInput('P(Inspect(Ada))');
+    const result = proveTdfolWithCec({
+      theorem: 'P(Inspect(Ada))',
+      axioms: ['P(Inspect(Ada))'],
+      theorems: ['O(Log(Ada))'],
+    });
+
+    expect(converted).toMatchObject({
+      status: 'success',
+      cecText: '(P (Inspect Ada))',
+      metadata: {
+        sourcePythonModule: 'logic/integration/tdfol_cec_bridge.py',
+        serverCallsAllowed: false,
+        pythonRuntime: false,
+      },
+    });
+    expect(validation).toMatchObject({ valid: true, errors: [], warnings: [] });
+    expect(result).toMatchObject({
+      status: 'proved',
+      cecAxioms: ['(P (Inspect Ada))'],
+      cecTheorems: ['(O (Log Ada))'],
+      sourcePythonModule: 'logic/integration/tdfol_cec_bridge.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+    });
   });
 
   it('ports cec_bridge.py through local CEC parsing, validation, and proof search', () => {

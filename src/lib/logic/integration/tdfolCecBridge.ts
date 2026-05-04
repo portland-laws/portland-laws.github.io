@@ -12,7 +12,8 @@ import {
 } from '../tdfol/strategies';
 
 export const TDFOL_CEC_BRIDGE_METADATA = {
-  sourcePythonModule: 'logic/integration/bridges/tdfol_cec_bridge.py',
+  sourcePythonModule: 'logic/integration/tdfol_cec_bridge.py',
+  legacySourcePythonModules: ['logic/integration/bridges/tdfol_cec_bridge.py'],
   browserNative: true,
   runtime: 'typescript-wasm-browser',
   serverCallsAllowed: false,
@@ -44,10 +45,13 @@ export interface TdfolCecBridgeProofRequest {
 
 export interface TdfolCecBridgeProofResult extends ProofResult {
   sourcePythonModule: typeof TDFOL_CEC_BRIDGE_METADATA.sourcePythonModule;
+  legacySourcePythonModules: typeof TDFOL_CEC_BRIDGE_METADATA.legacySourcePythonModules;
   browserNative: true;
   serverCallsAllowed: false;
   pythonRuntime: false;
   cecTheorem: string;
+  cecAxioms: Array<string>;
+  cecTheorems: Array<string>;
 }
 
 function bridgeInputSource(input: TdfolCecBridgeInput): string {
@@ -89,9 +93,11 @@ export class BrowserNativeTdfolCecBridge {
 
   prove(request: TdfolCecBridgeProofRequest): TdfolCecBridgeProofResult {
     const theorem = normalizeTdfolBridgeInput(request.theorem);
+    const axioms = request.axioms.map(normalizeTdfolBridgeInput);
+    const theorems = request.theorems?.map(normalizeTdfolBridgeInput);
     const kb: TdfolKnowledgeBase = {
-      axioms: request.axioms.map(normalizeTdfolBridgeInput),
-      theorems: request.theorems?.map(normalizeTdfolBridgeInput),
+      axioms,
+      theorems,
     };
     const cecTheorem = formatCecExpression(tdfolToCecExpression(theorem));
     const result = this.delegate.prove(theorem, kb, request.timeoutMs);
@@ -99,18 +105,28 @@ export class BrowserNativeTdfolCecBridge {
       ...result,
       method: `tdfol_cec_bridge:${result.method ?? 'local'}`,
       sourcePythonModule: this.metadata.sourcePythonModule,
+      legacySourcePythonModules: this.metadata.legacySourcePythonModules,
       browserNative: true,
       serverCallsAllowed: false,
       pythonRuntime: false,
       cecTheorem,
+      cecAxioms: axioms.map((axiom) => formatCecExpression(tdfolToCecExpression(axiom))),
+      cecTheorems:
+        theorems?.map((candidate) => formatCecExpression(tdfolToCecExpression(candidate))) ?? [],
     };
   }
 
-  validate(input: TdfolCecBridgeInput) {
+  validate(input: TdfolCecBridgeInput): {
+    valid: boolean;
+    errors: Array<string>;
+    warnings: Array<string>;
+    metadata: typeof TDFOL_CEC_BRIDGE_METADATA;
+  } {
     const conversion = this.convert(input);
     return {
       valid: conversion.status === 'success',
       errors: conversion.error ? [conversion.error] : [],
+      warnings: conversion.warnings,
       metadata: this.metadata,
     };
   }
@@ -120,6 +136,26 @@ export function createBrowserNativeTdfolCecBridge(
   options: TdfolLocalCecDelegateOptions = {},
 ): BrowserNativeTdfolCecBridge {
   return new BrowserNativeTdfolCecBridge(options);
+}
+
+export function convertTdfolToCec(input: TdfolCecBridgeInput): TdfolCecBridgeConversion {
+  return createBrowserNativeTdfolCecBridge().convert(input);
+}
+
+export function proveTdfolWithCec(
+  request: TdfolCecBridgeProofRequest,
+  options: TdfolLocalCecDelegateOptions = {},
+): TdfolCecBridgeProofResult {
+  return createBrowserNativeTdfolCecBridge(options).prove(request);
+}
+
+export function validateTdfolCecBridgeInput(input: TdfolCecBridgeInput): {
+  valid: boolean;
+  errors: Array<string>;
+  warnings: Array<string>;
+  metadata: typeof TDFOL_CEC_BRIDGE_METADATA;
+} {
+  return createBrowserNativeTdfolCecBridge().validate(input);
 }
 
 function normalizeTdfolBridgeInput(input: TdfolCecBridgeInput): TdfolFormula {
