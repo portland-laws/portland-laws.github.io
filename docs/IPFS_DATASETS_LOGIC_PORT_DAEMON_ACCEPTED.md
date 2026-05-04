@@ -1271,3 +1271,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T101851Z-ported-logic-fol-text_to_fol.py-as-a-deterministic-browser-native-typescript-ada.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T101851Z-ported-logic-fol-text_to_fol.py-as-a-deterministic-browser-native-typescript-ada.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T101851Z-ported-logic-fol-text_to_fol.py-as-a-deterministic-browser-native-typescript-ada.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 10:23:34 UTC
+
+- Target: `Task checkbox-332: Port remaining Python logic module `logic/fol/utils/deontic_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the FOL-facing deontic parser facade for logic/fol/utils/deontic_parser.py.
+- Impact: Adds a browser-native FOL deontic parser adapter under src/lib/logic/fol that reuses deterministic deontic extraction, emits FOL and deontic formula records, exposes Python-style aliases, and is directly validated by the existing FOL Jest suite without server, Python, filesystem, subprocess, or RPC dependencies.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/fol/deonticParser.ts`, `src/lib/logic/fol/index.ts`, `src/lib/logic/fol/parser.test.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T102334Z-ported-the-fol-facing-deontic-parser-facade-for-logic-fol-utils-deontic_parser.p.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T102334Z-ported-the-fol-facing-deontic-parser-facade-for-logic-fol-utils-deontic_parser.p.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T102334Z-ported-the-fol-facing-deontic-parser-facade-for-logic-fol-utils-deontic_parser.p.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
