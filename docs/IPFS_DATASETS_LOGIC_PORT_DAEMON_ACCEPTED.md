@@ -1055,3 +1055,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T080422Z-ported-the-remaining-validators.py-browser-native-payload-validation-surface..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T080422Z-ported-the-remaining-validators.py-browser-native-payload-validation-surface..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T080422Z-ported-the-remaining-validators.py-browser-native-payload-validation-surface..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 08:13:05 UTC
+
+- Target: `Task checkbox-307: Port remaining Python logic module `logic/deontic/decoder.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Added the missing browser-native TypeScript deontic decoder module.
+- Impact: The deontic logic library now resolves and exports decodeLegalNormIr/decode_legal_norm_ir, renders LegalNormIR-like records deterministically without Python or server dependencies, preserves phrase provenance, and satisfies the focused decoder tests.
+- Changed files: `src/lib/logic/deontic/decoder.test.ts`, `src/lib/logic/deontic/decoder.ts`, `src/lib/logic/deontic/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T081305Z-added-the-missing-browser-native-typescript-deontic-decoder-module..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T081305Z-added-the-missing-browser-native-typescript-deontic-decoder-module..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T081305Z-added-the-missing-browser-native-typescript-deontic-decoder-module..stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+
