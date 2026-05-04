@@ -54,6 +54,16 @@ export interface TdfolTimeSeriesMetric {
   tags: Record<string, string>;
 }
 
+export interface TdfolTimeSeriesSummary {
+  count: number;
+  total: number;
+  min: number;
+  max: number;
+  avg: number;
+  latestValue: number;
+  latestTimestamp: number;
+}
+
 export interface TdfolAggregatedDashboardStats {
   totalProofs: number;
   successfulProofs: number;
@@ -107,6 +117,13 @@ export interface TdfolPerformanceDashboardDemo {
   rendered: Partial<Record<TdfolPerformanceDashboardDemoFormat, string>>;
 }
 
+export const TDFOL_PERFORMANCE_DASHBOARD_METADATA = {
+  sourcePythonModule: 'logic/TDFOL/performance_dashboard.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeRequired: false,
+} as const;
+
 export class TdfolPerformanceDashboard {
   readonly proofMetrics: TdfolProofMetrics[] = [];
   readonly timeseriesMetrics: TdfolTimeSeriesMetric[] = [];
@@ -137,6 +154,13 @@ export class TdfolPerformanceDashboard {
     });
   }
 
+  record_proof(
+    input: TdfolProofMetricsInput | ProofResult,
+    metadata: Record<string, unknown> = {},
+  ): void {
+    this.recordProof(input, metadata);
+  }
+
   recordMetric(metricName: string, value: number, tags: Record<string, string> = {}): void {
     const timestamp = this.now();
     this.timeseriesMetrics.push({
@@ -148,9 +172,49 @@ export class TdfolPerformanceDashboard {
     });
   }
 
+  record_metric(metricName: string, value: number, tags: Record<string, string> = {}): void {
+    this.recordMetric(metricName, value, tags);
+  }
+
   getStatistics(): TdfolAggregatedDashboardStats {
     this.statsCache ??= this.calculateStatistics();
     return this.statsCache;
+  }
+
+  get_statistics(): TdfolAggregatedDashboardStats {
+    return this.getStatistics();
+  }
+
+  getTimeSeriesSummary(metricName?: string): Record<string, TdfolTimeSeriesSummary> {
+    const metrics =
+      metricName === undefined
+        ? this.timeseriesMetrics
+        : this.timeseriesMetrics.filter((metric) => metric.metric === metricName);
+    const grouped = groupBy(metrics, (metric) => metric.metric);
+    return Object.fromEntries(
+      Object.entries(grouped).map(([name, values]) => {
+        const metricValues = values.map((metric) => metric.value);
+        const latest = values.reduce((current, next) =>
+          next.timestamp >= current.timestamp ? next : current,
+        );
+        return [
+          name,
+          {
+            count: values.length,
+            total: sum(metricValues),
+            min: metricValues.length ? Math.min(...metricValues) : 0,
+            max: metricValues.length ? Math.max(...metricValues) : 0,
+            avg: mean(metricValues),
+            latestValue: latest.value,
+            latestTimestamp: latest.timestamp,
+          },
+        ];
+      }),
+    );
+  }
+
+  get_timeseries_summary(metricName?: string): Record<string, TdfolTimeSeriesSummary> {
+    return this.getTimeSeriesSummary(metricName);
   }
 
   compareStrategies(): { strategies: Record<string, Record<string, number>> } {
@@ -172,10 +236,18 @@ export class TdfolPerformanceDashboard {
     return { strategies };
   }
 
+  compare_strategies(): { strategies: Record<string, Record<string, number>> } {
+    return this.compareStrategies();
+  }
+
   exportJson(): Record<string, unknown> {
     const exportTime = this.now();
     return {
       metadata: {
+        sourcePythonModule: TDFOL_PERFORMANCE_DASHBOARD_METADATA.sourcePythonModule,
+        browserNative: TDFOL_PERFORMANCE_DASHBOARD_METADATA.browserNative,
+        serverCallsAllowed: TDFOL_PERFORMANCE_DASHBOARD_METADATA.serverCallsAllowed,
+        pythonRuntimeRequired: TDFOL_PERFORMANCE_DASHBOARD_METADATA.pythonRuntimeRequired,
         dashboardStartTime: this.startedAt,
         dashboardStartDatetime: new Date(this.startedAt).toISOString(),
         exportTime,
@@ -185,9 +257,36 @@ export class TdfolPerformanceDashboard {
       },
       statistics: this.getStatistics(),
       strategyComparison: this.compareStrategies(),
+      timeseriesSummary: this.getTimeSeriesSummary(),
       proofMetrics: this.proofMetrics,
       timeseriesMetrics: this.timeseriesMetrics,
     };
+  }
+
+  export_json(): Record<string, unknown> {
+    return this.exportJson();
+  }
+
+  exportPythonCompatibleJson(): Record<string, unknown> {
+    const json = this.exportJson();
+    return {
+      metadata: {
+        ...(json.metadata as Record<string, unknown>),
+        source_python_module: TDFOL_PERFORMANCE_DASHBOARD_METADATA.sourcePythonModule,
+        browser_native: true,
+        server_calls_allowed: false,
+        python_runtime_required: false,
+      },
+      statistics: json.statistics,
+      strategy_comparison: json.strategyComparison,
+      timeseries_summary: json.timeseriesSummary,
+      proof_metrics: json.proofMetrics,
+      timeseries_metrics: json.timeseriesMetrics,
+    };
+  }
+
+  export_python_compatible_json(): Record<string, unknown> {
+    return this.exportPythonCompatibleJson();
   }
 
   toHtmlString(): string {
@@ -196,11 +295,19 @@ export class TdfolPerformanceDashboard {
     return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>TDFOL Performance Dashboard</title><style>body{font-family:system-ui,sans-serif;margin:24px;color:#222}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.card{border:1px solid #bbb;border-radius:8px;padding:12px}.value{font-size:1.6rem;font-weight:700}</style></head><body><h1>TDFOL Performance Dashboard</h1><script type="application/json" id="tdfol-dashboard-data">${escapeHtml(JSON.stringify(data))}</script><section class="grid"><div class="card"><div>Total proofs</div><div class="value">${stats.totalProofs}</div></div><div class="card"><div>Success rate</div><div class="value">${(stats.successRate * 100).toFixed(1)}%</div></div><div class="card"><div>Cache hit rate</div><div class="value">${(stats.cacheHitRate * 100).toFixed(1)}%</div></div><div class="card"><div>Avg proof time</div><div class="value">${stats.timing.avgMs.toFixed(3)}ms</div></div></section></body></html>`;
   }
 
+  to_html_string(): string {
+    return this.toHtmlString();
+  }
+
   clear(): void {
     this.proofMetrics.length = 0;
     this.timeseriesMetrics.length = 0;
     this.startedAt = this.now();
     this.statsCache = undefined;
+  }
+
+  clear_metrics(): void {
+    this.clear();
   }
 
   getUptime(): number {

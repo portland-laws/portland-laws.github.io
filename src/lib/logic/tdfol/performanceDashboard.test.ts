@@ -2,6 +2,7 @@ import type { ProofResult } from '../types';
 import {
   createTdfolPerformanceDashboardDemo,
   createTdfolProofMetrics,
+  TDFOL_PERFORMANCE_DASHBOARD_METADATA,
   TdfolPerformanceDashboard,
 } from './performanceDashboard';
 
@@ -140,6 +141,63 @@ describe('TdfolPerformanceDashboard', () => {
     expect(dashboard.toHtmlString()).toContain(
       '<script type="application/json" id="tdfol-dashboard-data">',
     );
+  });
+
+  it('exposes Python-compatible dashboard aliases and browser-native export metadata', () => {
+    let tick = 0;
+    const dashboard = new TdfolPerformanceDashboard({
+      now: () => Date.UTC(2026, 0, 2, 0, 0, tick++),
+    });
+
+    dashboard.record_proof({
+      formula: 'Pred(x)',
+      proofTimeMs: 2,
+      success: true,
+      strategy: 'forward',
+      cacheHit: true,
+    });
+    dashboard.record_metric('memory_usage_mb', 7, { source: 'alias-test' });
+    dashboard.record_metric('memory_usage_mb', 11, { source: 'alias-test' });
+
+    expect(TDFOL_PERFORMANCE_DASHBOARD_METADATA).toMatchObject({
+      sourcePythonModule: 'logic/TDFOL/performance_dashboard.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntimeRequired: false,
+    });
+    expect(dashboard.get_statistics().totalProofs).toBe(1);
+    expect(dashboard.compare_strategies().strategies.forward.avgTimeMs).toBe(2);
+    expect(dashboard.get_timeseries_summary('memory_usage_mb')).toEqual({
+      memory_usage_mb: {
+        count: 2,
+        total: 18,
+        min: 7,
+        max: 11,
+        avg: 9,
+        latestValue: 11,
+        latestTimestamp: Date.UTC(2026, 0, 2, 0, 0, 4),
+      },
+    });
+
+    const json = dashboard.export_json();
+    expect(json).toHaveProperty(
+      'metadata.sourcePythonModule',
+      'logic/TDFOL/performance_dashboard.py',
+    );
+    expect(json).toHaveProperty('timeseriesSummary.memory_usage_mb.avg', 9);
+    expect(dashboard.to_html_string()).toContain('tdfol-dashboard-data');
+
+    const pythonJson = dashboard.export_python_compatible_json();
+    expect(pythonJson).toHaveProperty(
+      'metadata.source_python_module',
+      'logic/TDFOL/performance_dashboard.py',
+    );
+    expect(pythonJson).toHaveProperty('metadata.server_calls_allowed', false);
+    expect(pythonJson).toHaveProperty('strategy_comparison.strategies.forward.count', 1);
+    expect(pythonJson).toHaveProperty('timeseries_summary.memory_usage_mb.latestValue', 11);
+
+    dashboard.clear_metrics();
+    expect(dashboard.get_statistics().totalProofs).toBe(0);
   });
 
   it('records ProofResult objects and clears dashboard state', () => {
