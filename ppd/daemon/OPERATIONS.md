@@ -11,6 +11,8 @@ Expected local runtime files include:
 - `ppd/daemon/status.json`
 - `ppd/daemon/progress.json`
 - `ppd/daemon/ppd-daemon.pid`
+- `ppd/daemon/ppd-daemon.child.pid`
+- `ppd/daemon/ppd-daemon-lifecycle.jsonl`
 - `ppd/daemon/ppd-daemon.log`
 - append-only accepted-work records under `ppd/daemon/accepted-work/`
 
@@ -33,6 +35,8 @@ bash ppd/daemon/control.sh start
 ```
 
 Starting the daemon should create or update the local PID, status, progress, and log files under `ppd/daemon/`. The daemon should work one task-board item at a time and validate changes before accepting them.
+
+The control wrapper starts a small watchdog process. When user systemd is available, `control.sh` runs the watchdog as a transient `ppd-daemon.service` unit with `Restart=always`; otherwise it falls back to a detached `setsid` launch. The main PID file points to the watchdog, while `ppd-daemon.child.pid` points to the current Python worker. If the Python worker exits because the interpreter is terminated, a signal is delivered, or a normal watch loop returns unexpectedly, the watchdog records the exit in `ppd-daemon-lifecycle.jsonl` and starts a fresh worker after a short backoff. The watchdog ignores incidental `TERM`, `INT`, or `HUP` signals unless the control script first creates the matching `.stop` sentinel, which lets lifecycle logs distinguish an intentional operator stop from an environmental signal.
 
 Before accepting any generated work, the daemon is expected to run deterministic PP&D validation only. The current validation path must remain fixture-based and must not crawl live public sites, open DevHub, authenticate, submit, upload, pay, cancel, certify, or schedule inspections.
 
@@ -82,6 +86,8 @@ bash ppd/daemon/control.sh supervisor-stop
 ```
 
 Supervisor state is written to `ppd/daemon/supervisor-status.json` and `ppd/daemon/supervisor-actions.jsonl`. These are runtime files and must not contain private DevHub data or raw crawl artifacts. `supervisor-stop` uses the same process-family shutdown path as daemon stop so a repair-time LLM child is not left running after an operator stop or supervisor restart.
+
+Like the daemon, the continuous supervisor is launched under the watchdog, preferably through transient user unit `ppd-supervisor.service` with `Restart=always`. `ppd-supervisor.pid` identifies the supervisor watchdog, `ppd-supervisor.child.pid` identifies the current Python supervisor process, and `ppd-supervisor-lifecycle.jsonl` records child exits and restarts. If the supervisor Python process dies, the watchdog should restart it so daemon health checks continue; if the watchdog itself exits unexpectedly, user systemd should restart the watchdog unit.
 
 ## Progress
 

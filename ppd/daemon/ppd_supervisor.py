@@ -1576,7 +1576,7 @@ def supervisor_daemon_config(config: SupervisorConfig) -> DaemonConfig:
         llm_timeout_seconds=config.llm_timeout_seconds,
         model_name=config.model_name,
         provider=config.provider,
-        repair_validation_failures=config.self_heal,
+        repair_validation_failures=False,
     )
 
 

@@ -1,0 +1,35 @@
+{
+  "task": "checkbox-256",
+  "tranche": 3,
+  "item": 3,
+  "generated": true,
+  "blocked_work": {
+    "id": "ppd-work-tranche-3-item-3",
+    "status": "blocked",
+    "blocked_by": "daemon-repair",
+    "blocked_after_generation": 7
+  },
+  "repair_attempts": [
+    {
+      "id": "repair-stale-valid",
+      "kind": "daemon-repair",
+      "generation": 7,
+      "validated": true,
+      "expected_status": "parked"
+    },
+    {
+      "id": "repair-fresh-failed",
+      "kind": "daemon-repair",
+      "generation": 8,
+      "validated": false,
+      "expected_status": "parked"
+    },
+    {
+      "id": "repair-fresh-valid",
+      "kind": "daemon-repair",
+      "generation": 9,
+      "validated": true,
+      "expected_status": "ready"
+    }
+  ]
+}

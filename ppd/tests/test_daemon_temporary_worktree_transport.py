@@ -11,6 +11,7 @@ from ppd.daemon.ppd_daemon import (
     Proposal,
     apply_files_with_validation,
     cleanup_stale_validation_worktrees,
+    temporary_validation_worktree,
 )
 
 
@@ -130,6 +131,19 @@ class DaemonTemporaryWorktreeTransportTest(unittest.TestCase):
 
             self.assertEqual(["cycle-stale"], removed)
             self.assertFalse(stale.exists())
+
+    def test_validation_worktree_exposes_processor_suite_metadata(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+            make_minimal_repo(repo)
+            processor_metadata = repo / "ipfs_datasets_py" / "ipfs_datasets_py" / "processors"
+            processor_metadata.mkdir(parents=True)
+            (processor_metadata / "web_archiving").write_text("metadata placeholder\n", encoding="utf-8")
+
+            with temporary_validation_worktree(Config(repo_root=repo)) as worktree:
+                copied = worktree / "ipfs_datasets_py" / "ipfs_datasets_py" / "processors" / "web_archiving"
+                self.assertTrue(copied.exists())
+                self.assertEqual("metadata placeholder\n", copied.read_text(encoding="utf-8"))
 
 
 if __name__ == "__main__":

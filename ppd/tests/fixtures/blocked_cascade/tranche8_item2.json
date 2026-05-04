@@ -1,0 +1,24 @@
+{
+  "case": "tranche8_item2_blocked_cascade_daemon_repair",
+  "tasks": [
+    {
+      "id": "task-checkbox-275",
+      "kind": "ppd-work",
+      "state": "blocked",
+      "blocked_by": "daemon-repair-2026-05-04T00:00:00Z",
+      "validated_at": null
+    },
+    {
+      "id": "daemon-repair-2026-05-04T00:00:00Z",
+      "kind": "daemon-repair",
+      "state": "pending",
+      "validated_at": null
+    }
+  ],
+  "fresh_repair": {
+    "id": "daemon-repair-2026-05-04T00:15:00Z",
+    "kind": "daemon-repair",
+    "state": "validated",
+    "validated_at": "2026-05-04T00:16:00Z"
+  }
+}

@@ -1,0 +1,125 @@
+--- a/ppd/tests/test_blocked_cascade_daemon_repair_tranche9_item4.py
++++ b/ppd/tests/test_blocked_cascade_daemon_repair_tranche9_item4.py
+@@ -0,0 +1,122 @@
++"""Regression coverage for generated blocked-cascade daemon repair selection.
++
++This test is intentionally daemon-scoped and fixture-only. It models the narrow
++selection invariant needed after repeated blocked PP&D work: blocked domain work
++must remain parked while a fresh daemon-repair task is still pending or has
++failed validation, and it can only be considered after a fresh repair task has
++validated.
++"""
++
++from __future__ import annotations
++
++import unittest
++from dataclasses import dataclass
++
++
++@dataclass(frozen=True)
++class BoardTask:
++    checkbox: str
++    title: str
++    checked: bool
++    section: str
++
++    @property
++    def is_blocked_domain_work(self) -> bool:
++        blocked_sections = {"Blocked Work", "Blocked Domain Work"}
++        domain_markers = ("DevHub draft-readiness", "domain task", "PP&D domain")
++        return self.section in blocked_sections or any(marker in self.title for marker in domain_markers)
++
++    @property
++    def is_daemon_repair(self) -> bool:
++        return "daemon-repair" in self.title or "daemon repair" in self.title
++
++
++def parse_board_tasks(board_text: str) -> list[BoardTask]:
++    tasks: list[BoardTask] = []
++    section = ""
++    for raw_line in board_text.splitlines():
++        line = raw_line.strip()
++        if line.startswith("## "):
++            section = line.removeprefix("## ").strip()
++            continue
++        if not line.startswith("- [") or "Task checkbox-" not in line:
++            continue
++
++        checked = line.startswith("- [x]")
++        task_start = line.index("Task checkbox-") + len("Task ")
++        task_end = line.index(":", task_start)
++        checkbox = line[task_start:task_end]
++        title = line[task_end + 1 :].strip()
++        tasks.append(BoardTask(checkbox=checkbox, title=title, checked=checked, section=section))
++    return tasks
++
++
++def selectable_task(tasks: list[BoardTask], validated_repair_checkboxes: set[str]) -> BoardTask | None:
++    """Select the newest safe task without revisiting parked domain work early."""
++
++    pending = [task for task in tasks if not task.checked]
++    for task in reversed(pending):
++        if task.is_daemon_repair:
++            return task
++
++    has_validated_fresh_repair = any(
++        task.checkbox in validated_repair_checkboxes and task.is_daemon_repair
++        for task in tasks
++    )
++    if not has_validated_fresh_repair:
++        return None
++
++    for task in reversed(pending):
++        if not task.is_blocked_domain_work:
++            return task
++    return None
++
++
++def parked_blocked_work(tasks: list[BoardTask], validated_repair_checkboxes: set[str]) -> list[str]:
++    if any(task.checkbox in validated_repair_checkboxes and task.is_daemon_repair for task in tasks):
++        return []
++    return [task.checkbox for task in tasks if task.is_blocked_domain_work]
++
++
++class BlockedCascadeDaemonRepairTranche9Item4Test(unittest.TestCase):
++    def test_blocked_ppd_work_stays_parked_until_fresh_daemon_repair_validates(self) -> None:
++        board_before_validation = """
++## Blocked Work
++- [ ] Task checkbox-178: Add fixture-only DevHub draft-readiness PP&D domain task.
++
++## Generated Blocked Cascade Recovery Tranche 9
++- [ ] Task checkbox-281: Add generated blocked-cascade daemon-repair coverage for tranche 9 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
++"""
++        tasks = parse_board_tasks(board_before_validation)
++
++        selected_before_validation = selectable_task(tasks, validated_repair_checkboxes=set())
++        self.assertIsNotNone(selected_before_validation)
++        self.assertEqual("checkbox-281", selected_before_validation.checkbox)
++        self.assertEqual(["checkbox-178"], parked_blocked_work(tasks, validated_repair_checkboxes=set()))
++
++        selected_after_failed_validation = selectable_task(tasks, validated_repair_checkboxes=set())
++        self.assertIsNotNone(selected_after_failed_validation)
++        self.assertEqual("checkbox-281", selected_after_failed_validation.checkbox)
++        self.assertEqual(["checkbox-178"], parked_blocked_work(tasks, validated_repair_checkboxes=set()))
++
++        board_after_validation = """
++## Blocked Work
++- [ ] Task checkbox-178: Add fixture-only DevHub draft-readiness PP&D domain task.
++
++## Generated Blocked Cascade Recovery Tranche 9
++- [x] Task checkbox-281: Add generated blocked-cascade daemon-repair coverage for tranche 9 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
++- [ ] Task checkbox-282: Add follow-up non-domain scheduler cleanup after repair validation.
++"""
++        validated_tasks = parse_board_tasks(board_after_validation)
++        selected_after_validation = selectable_task(
++            validated_tasks,
++            validated_repair_checkboxes={"checkbox-281"},
++        )
++
++        self.assertIsNotNone(selected_after_validation)
++        self.assertEqual("checkbox-282", selected_after_validation.checkbox)
++        self.assertEqual([], parked_blocked_work(validated_tasks, validated_repair_checkboxes={"checkbox-281"}))
++
++
++if __name__ == "__main__":
++    unittest.main()

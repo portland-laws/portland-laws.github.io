@@ -23,6 +23,7 @@ from ppd.daemon.ppd_supervisor import (
     diagnose,
     read_supervisor_result_rows,
     should_escalate_stale_platform_slice,
+    supervisor_daemon_config,
 )
 
 
@@ -247,6 +248,11 @@ class SupervisorStaleStatusReplanningTest(unittest.TestCase):
         self.assertEqual("supervisor_exception", rows[0]["decision"]["action"])
         self.assertEqual("supervisor_exception", status["proposal"]["failure_kind"])
         self.assertIn("synthetic supervisor crash", status["proposal"]["errors"][0])
+
+    def test_supervisor_validation_does_not_invoke_nested_repair_pass(self) -> None:
+        config = supervisor_daemon_config(SupervisorConfig(repo_root=Path("."), self_heal=True))
+
+        self.assertFalse(config.repair_validation_failures)
 
     def test_archived_task_failures_do_not_trigger_current_board_self_heal(self) -> None:
         with tempfile.TemporaryDirectory() as tempdir:

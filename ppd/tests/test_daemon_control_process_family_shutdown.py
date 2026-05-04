@@ -1,27 +1,34 @@
 from __future__ import annotations
 
+import json
+import os
+import signal
 import subprocess
+import tempfile
+import time
 import unittest
 from pathlib import Path
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 CONTROL_SCRIPT = REPO_ROOT / "ppd" / "daemon" / "control.sh"
+WATCHDOG_SCRIPT = REPO_ROOT / "ppd" / "daemon" / "watchdog.sh"
 
 
 class DaemonControlProcessFamilyShutdownTest(unittest.TestCase):
     def test_control_script_is_syntax_valid(self) -> None:
-        result = subprocess.run(
-            ["bash", "-n", str(CONTROL_SCRIPT)],
-            cwd=REPO_ROOT,
-            text=True,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=False,
-        )
+        for script in (CONTROL_SCRIPT, WATCHDOG_SCRIPT):
+            result = subprocess.run(
+                ["bash", "-n", str(script)],
+                cwd=REPO_ROOT,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                check=False,
+            )
 
-        self.assertEqual("", result.stderr)
-        self.assertEqual(0, result.returncode)
+            self.assertEqual("", result.stderr)
+            self.assertEqual(0, result.returncode)
 
     def test_stop_paths_terminate_captured_descendant_process_groups(self) -> None:
         source = CONTROL_SCRIPT.read_text(encoding="utf-8")
@@ -34,11 +41,112 @@ class DaemonControlProcessFamilyShutdownTest(unittest.TestCase):
         self.assertIn('kill -KILL -- "-$pgid"', source)
         self.assertIn('[[ "$ppid" == "1" ]]', source)
         self.assertIn("/PPD_LLM_PROMPT_FILE/", source)
+        self.assertIn("watchdog.sh", source)
+        self.assertIn("systemd-run --user", source)
+        self.assertIn("--property=Restart=always", source)
+        self.assertIn("ppd-daemon.service", source)
+        self.assertIn("ppd-supervisor.service", source)
+        self.assertIn("ppd-daemon.child.pid", source)
+        self.assertIn("ppd-supervisor.child.pid", source)
+        self.assertIn("ppd-daemon-lifecycle.jsonl", source)
+        self.assertIn("ppd-supervisor-lifecycle.jsonl", source)
+        self.assertIn('touch "$PID_FILE.stop"', source)
+        self.assertIn('touch "$SUPERVISOR_PID_FILE.stop"', source)
         self.assertIn("--repair-validation-failures", source)
         self.assertIn("--crash-backoff 5", source)
         self.assertIn("--exception-backoff 5", source)
         self.assertIn('terminate_process_family "$pid" "PP&D daemon"', source)
         self.assertIn('terminate_process_family "$pid" "PP&D supervisor"', source)
+
+    def test_watchdog_records_child_exit_and_cleans_pid_files_in_oneshot_mode(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            temp = Path(tempdir)
+            pid_file = temp / "watchdog.pid"
+            child_pid_file = temp / "child.pid"
+            lifecycle_log = temp / "lifecycle.jsonl"
+            env = os.environ.copy()
+            env["PPD_WATCHDOG_ONESHOT"] = "1"
+
+            result = subprocess.run(
+                [
+                    "bash",
+                    str(WATCHDOG_SCRIPT),
+                    "test-role",
+                    str(pid_file),
+                    str(child_pid_file),
+                    str(lifecycle_log),
+                    "0",
+                    "bash",
+                    "-lc",
+                    "exit 7",
+                ],
+                cwd=REPO_ROOT,
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                env=env,
+                check=False,
+            )
+
+            rows = [json.loads(line) for line in lifecycle_log.read_text(encoding="utf-8").splitlines()]
+
+        self.assertEqual(7, result.returncode)
+        self.assertFalse(pid_file.exists())
+        self.assertFalse(child_pid_file.exists())
+        self.assertEqual("watchdog_start", rows[0]["event"])
+        self.assertEqual("child_start", rows[1]["event"])
+        self.assertEqual("child_exit", rows[2]["event"])
+        self.assertEqual(7, rows[2]["exit_code"])
+        self.assertEqual("test-role", rows[2]["role"])
+
+    def test_watchdog_ignores_term_without_stop_sentinel(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            temp = Path(tempdir)
+            pid_file = temp / "watchdog.pid"
+            child_pid_file = temp / "child.pid"
+            lifecycle_log = temp / "lifecycle.jsonl"
+            process = subprocess.Popen(
+                [
+                    "bash",
+                    str(WATCHDOG_SCRIPT),
+                    "test-role",
+                    str(pid_file),
+                    str(child_pid_file),
+                    str(lifecycle_log),
+                    "0.1",
+                    "bash",
+                    "-lc",
+                    "sleep 30",
+                ],
+                cwd=REPO_ROOT,
+                text=True,
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            try:
+                for _ in range(50):
+                    if pid_file.exists() and child_pid_file.exists():
+                        break
+                    time.sleep(0.02)
+                self.assertTrue(pid_file.exists())
+                os.kill(process.pid, signal.SIGTERM)
+                time.sleep(0.2)
+                self.assertIsNone(process.poll())
+
+                (temp / "watchdog.pid.stop").write_text("stop\n", encoding="utf-8")
+                os.kill(process.pid, signal.SIGTERM)
+                process.wait(timeout=5)
+                rows = [json.loads(line) for line in lifecycle_log.read_text(encoding="utf-8").splitlines()]
+            finally:
+                if process.poll() is None:
+                    process.kill()
+                    process.wait(timeout=5)
+
+        events = [row["event"] for row in rows]
+        self.assertIn("watchdog_signal_ignored", events)
+        self.assertIn("watchdog_stop", events)
+        self.assertFalse(pid_file.exists())
+        self.assertFalse(child_pid_file.exists())
 
 
 if __name__ == "__main__":

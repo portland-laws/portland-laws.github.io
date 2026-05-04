@@ -727,6 +727,26 @@ def _copy_if_exists(source: Path, destination: Path, *, ignore: Optional[Callabl
         shutil.copy2(source, destination)
 
 
+def _link_or_copy_if_exists(source: Path, destination: Path) -> None:
+    if not source.exists():
+        return
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    try:
+        destination.symlink_to(source.resolve(), target_is_directory=source.is_dir())
+    except OSError:
+        _copy_if_exists(source, destination)
+
+
+def _copy_validation_external_references(config: Config, worktree: Path) -> None:
+    """Expose read-only external metadata needed by PP&D validation tests."""
+
+    processor_metadata = Path("ipfs_datasets_py/ipfs_datasets_py/processors")
+    _link_or_copy_if_exists(
+        config.repo_root / processor_metadata,
+        worktree / processor_metadata,
+    )
+
+
 def _ignore_validation_tree_entries(directory: str, names: list[str]) -> set[str]:
     ignored = {"__pycache__", ".pytest_cache", ".mypy_cache", ".ruff_cache", "node_modules"}
     path = Path(directory)
@@ -759,6 +779,7 @@ def temporary_validation_worktree(config: Config) -> Iterator[Path]:
             _copy_if_exists(docs_plan, worktree / config.plan_doc)
         for root_file in ("package.json", "package-lock.json", "tsconfig.json"):
             _copy_if_exists(config.repo_root / root_file, worktree / root_file)
+        _copy_validation_external_references(config, worktree)
         marker.write_text(
             json.dumps(worktree_marker_payload(state="ready", source_root=config.repo_root), indent=2, sort_keys=True)
             + "\n",
