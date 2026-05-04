@@ -1010,3 +1010,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T074911Z-ported-logic-cli.py-as-a-browser-native-typescript-argv-adapter..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T074911Z-ported-logic-cli.py-as-a-browser-native-typescript-argv-adapter..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T074911Z-ported-logic-cli.py-as-a-browser-native-typescript-argv-adapter..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 07:51:08 UTC
+
+- Target: `Task checkbox-302: Port remaining Python logic module `logic/common/bounded_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported logic/common/bounded_cache.py compatibility surface onto the browser-native TypeScript BoundedCache.
+- Impact: The TypeScript logic cache now supports Python-compatible maxsize/ttl constructor options, snake_case stats and cleanup aliases, containment checks, length helper semantics, and explicit browser-native runtime metadata. The existing Jest cache validation directly exercises TTL, LRU, unlimited/no-expiration behavior, aliases, and fail-closed no-Python/no-server constraints.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/cache.test.ts`, `src/lib/logic/cache.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T075108Z-ported-logic-common-bounded_cache.py-compatibility-surface-onto-the-browser-nati.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T075108Z-ported-logic-common-bounded_cache.py-compatibility-surface-onto-the-browser-nati.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T075108Z-ported-logic-common-bounded_cache.py-compatibility-surface-onto-the-browser-nati.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

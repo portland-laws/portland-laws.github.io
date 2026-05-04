@@ -1,4 +1,4 @@
-import { BoundedCache } from './cache';
+import { BOUNDED_CACHE_PORT_STATUS, BoundedCache } from './cache';
 import {
   BrowserTdfolIpfsCacheDemo,
   canonicalizeJson,
@@ -83,6 +83,56 @@ describe('BoundedCache', () => {
       hits: 0,
       misses: 0,
       totalRequests: 0,
+    });
+  });
+
+  it('ports Python bounded_cache maxsize, ttl, stats, and cleanup aliases', () => {
+    let now = 10_000;
+    const cache = new BoundedCache<string>({ maxsize: 2, ttl: 1, now: () => now });
+
+    expect(cache.maxsize).toBe(2);
+    expect(cache.ttl).toBe(1);
+    cache.set('a', 'alpha');
+    cache.set('b', 'bravo');
+    expect(cache.contains('a')).toBe(true);
+    expect(cache.__len__()).toBe(2);
+
+    expect(cache.get('a')).toBe('alpha');
+    cache.set('c', 'charlie');
+    expect(cache.get('b')).toBeUndefined();
+
+    now = 11_001;
+    expect(cache.contains('a')).toBe(false);
+    expect(cache.cleanup_expired()).toBe(1);
+    expect(cache.get_stats()).toMatchObject({
+      size: 0,
+      maxsize: 2,
+      ttl: 1,
+      hits: 1,
+      misses: 1,
+      evictions: 1,
+      expirations: 2,
+      hit_rate: 0.5,
+      total_requests: 2,
+    });
+  });
+
+  it('keeps Python ttl zero semantics as no expiration with no runtime fallback', () => {
+    let now = 100;
+    const cache = new BoundedCache<string>({ maxsize: 0, ttl: 0, now: () => now });
+
+    cache.set('a', 'alpha');
+    cache.set('b', 'bravo');
+    now = 1_000_000;
+
+    expect(cache.contains('a')).toBe(true);
+    expect(cache.cleanup_expired()).toBe(0);
+    expect(cache.get('b')).toBe('bravo');
+    expect(BOUNDED_CACHE_PORT_STATUS).toMatchObject({
+      sourcePythonModule: 'logic/common/bounded_cache.py',
+      runtime: 'browser-native-typescript',
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
     });
   });
 });
