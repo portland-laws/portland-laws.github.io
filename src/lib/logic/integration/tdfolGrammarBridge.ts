@@ -9,7 +9,8 @@ import { formatTdfolFormula } from '../tdfol/formatter';
 import { parseTdfolFormula } from '../tdfol/parser';
 
 export const TDFOL_GRAMMAR_BRIDGE_METADATA = {
-  sourcePythonModule: 'logic/integration/bridges/tdfol_grammar_bridge.py',
+  sourcePythonModule: 'logic/integration/tdfol_grammar_bridge.py',
+  legacySourcePythonModules: ['logic/integration/bridges/tdfol_grammar_bridge.py'],
   browserNative: true,
   runtime: 'typescript-wasm-browser',
   serverCallsAllowed: false,
@@ -22,6 +23,13 @@ export const TDFOL_GRAMMAR_BRIDGE_METADATA = {
 } as const;
 
 export type TdfolGrammarBridgeInputKind = 'tdfol' | 'controlled_english';
+export type TdfolGrammarBridgeRequest =
+  | string
+  | {
+      source: string;
+      inputKind?: TdfolGrammarBridgeInputKind;
+    };
+
 export interface TdfolGrammarBridgeParseResult {
   status: 'success' | 'failed';
   source: string;
@@ -66,9 +74,7 @@ const MODAL_PATTERNS: Array<[RegExp, TdfolDeonticOperator, string]> = [
 export class BrowserNativeTdfolGrammarBridge {
   readonly metadata = TDFOL_GRAMMAR_BRIDGE_METADATA;
 
-  parse(
-    requestOrSource: { source: string; inputKind?: TdfolGrammarBridgeInputKind } | string,
-  ): TdfolGrammarBridgeParseResult {
+  parse(requestOrSource: TdfolGrammarBridgeRequest): TdfolGrammarBridgeParseResult {
     const request =
       typeof requestOrSource === 'string'
         ? { source: requestOrSource, inputKind: 'controlled_english' as const }
@@ -96,7 +102,7 @@ export class BrowserNativeTdfolGrammarBridge {
     }
   }
 
-  validate(requestOrSource: { source: string; inputKind?: TdfolGrammarBridgeInputKind } | string) {
+  validate(requestOrSource: TdfolGrammarBridgeRequest) {
     const result = this.parse(requestOrSource);
     return {
       valid: result.status === 'success',
@@ -109,6 +115,16 @@ export class BrowserNativeTdfolGrammarBridge {
 
 export function createBrowserNativeTdfolGrammarBridge(): BrowserNativeTdfolGrammarBridge {
   return new BrowserNativeTdfolGrammarBridge();
+}
+
+export function parseTdfolGrammarBridgeInput(
+  requestOrSource: TdfolGrammarBridgeRequest,
+): TdfolGrammarBridgeParseResult {
+  return createBrowserNativeTdfolGrammarBridge().parse(requestOrSource);
+}
+
+export function validateTdfolGrammarBridgeInput(requestOrSource: TdfolGrammarBridgeRequest) {
+  return createBrowserNativeTdfolGrammarBridge().validate(requestOrSource);
 }
 
 function parseControlledEnglish(source: string): { formula: TdfolFormula; trace: Array<string> } {

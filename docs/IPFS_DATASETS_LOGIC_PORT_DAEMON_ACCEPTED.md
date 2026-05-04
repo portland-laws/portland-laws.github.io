@@ -1901,3 +1901,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T145410Z-ported-the-top-level-tdfol-cec-integration-bridge-surface-to-browser-native-type.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T145410Z-ported-the-top-level-tdfol-cec-integration-bridge-surface-to-browser-native-type.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T145410Z-ported-the-top-level-tdfol-cec-integration-bridge-surface-to-browser-native-type.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 14:56:14 UTC
+
+- Target: `Task checkbox-402: Port remaining Python logic module `logic/integration/tdfol_grammar_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the top-level TDFOL grammar bridge contract to browser-native TypeScript helpers.
+- Impact: The TDFOL grammar bridge now identifies logic/integration/tdfol_grammar_bridge.py as its primary parity source, preserves the legacy bridges path in metadata, and exposes browser-native functional parse/validate helpers that are directly exercised by the integration Jest suite without Python, server, filesystem, subprocess, or RPC fallback.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/tdfolGrammarBridge.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T145614Z-ported-the-top-level-tdfol-grammar-bridge-contract-to-browser-native-typescript-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T145614Z-ported-the-top-level-tdfol-grammar-bridge-contract-to-browser-native-typescript-.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T145614Z-ported-the-top-level-tdfol-grammar-bridge-contract-to-browser-native-typescript-.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

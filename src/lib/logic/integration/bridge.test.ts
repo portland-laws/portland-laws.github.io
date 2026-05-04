@@ -35,7 +35,11 @@ import {
   proveTdfolWithCec,
   validateTdfolCecBridgeInput,
 } from './tdfolCecBridge';
-import { createBrowserNativeTdfolGrammarBridge } from './tdfolGrammarBridge';
+import {
+  createBrowserNativeTdfolGrammarBridge,
+  parseTdfolGrammarBridgeInput,
+  validateTdfolGrammarBridgeInput,
+} from './tdfolGrammarBridge';
 import { createBrowserNativeTdfolShadowProverBridge } from './tdfolShadowProverBridge';
 import {
   createBrowserNativeZ3ProverBridge,
@@ -226,7 +230,8 @@ describe('BrowserNativeLogicBridge', () => {
       status: 'success',
       formulaText: 'O(□(File_appeal(alice)))',
       metadata: {
-        sourcePythonModule: 'logic/integration/bridges/tdfol_grammar_bridge.py',
+        sourcePythonModule: 'logic/integration/tdfol_grammar_bridge.py',
+        legacySourcePythonModules: ['logic/integration/bridges/tdfol_grammar_bridge.py'],
         browserNative: true,
         serverCallsAllowed: false,
         pythonRuntime: false,
@@ -243,6 +248,42 @@ describe('BrowserNativeLogicBridge', () => {
     expect(invalid).toMatchObject({
       valid: false,
       metadata: { serverCallsAllowed: false, pythonRuntime: false },
+    });
+  });
+
+  it('exposes top-level tdfol_grammar_bridge.py functional helpers without runtime fallback', () => {
+    const controlled = parseTdfolGrammarBridgeInput('Eventually Alice may file appeal');
+    const direct = parseTdfolGrammarBridgeInput({
+      source: 'P(FileAppeal(Alice))',
+      inputKind: 'tdfol',
+    });
+    const invalid = validateTdfolGrammarBridgeInput('Alice might file appeal');
+
+    expect(controlled).toMatchObject({
+      status: 'success',
+      inputKind: 'controlled_english',
+      formulaText: 'P(◊(File_appeal(alice)))',
+      metadata: {
+        sourcePythonModule: 'logic/integration/tdfol_grammar_bridge.py',
+        legacySourcePythonModules: ['logic/integration/bridges/tdfol_grammar_bridge.py'],
+        serverCallsAllowed: false,
+        pythonRuntime: false,
+      },
+      grammarTrace: ['controlled_english:normalize', 'temporal:eventually', 'modal:permission'],
+    });
+    expect(direct).toMatchObject({
+      status: 'success',
+      formulaText: 'P(FileAppeal(Alice))',
+      grammarTrace: ['tdfol:parser'],
+    });
+    expect(invalid).toMatchObject({
+      valid: false,
+      metadata: {
+        sourcePythonModule: 'logic/integration/tdfol_grammar_bridge.py',
+        serverCallsAllowed: false,
+        pythonRuntime: false,
+        failClosed: true,
+      },
     });
   });
 
