@@ -94,12 +94,12 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-05-04T05:19:35.807410Z
+Last updated: 2026-05-04T05:26:53.104645Z
 
-- Latest target: `Task checkbox-327: Add generated blocked-cascade daemon-repair coverage for tranche 21 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.`
+- Latest target: `Task checkbox-334: Add generated blocked-cascade daemon-repair coverage for tranche 23 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.`
 - Latest result: `llm`
 - Latest summary: LLM proposal failed.
-- Counts: `{"blocked": 83, "complete": 73, "in_progress": 0, "needed": 3}`
+- Counts: `{"blocked": 90, "complete": 73, "in_progress": 0, "needed": 4}`
 
 <!-- ppd-daemon-task-board:end -->
 ## Built-In Supervisor Repair Notes
@@ -640,12 +640,57 @@ Last updated: 2026-05-04T05:19:35.807410Z
 ## Built-In Blocked Cascade Recovery Tranche 21
 
 - [!] Task checkbox-326: Add generated blocked-cascade daemon-repair coverage for tranche 21 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
-- [~] Task checkbox-327: Add generated blocked-cascade daemon-repair coverage for tranche 21 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
-- [ ] Task checkbox-328: Add generated blocked-cascade daemon-repair coverage for tranche 21 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
-- [ ] Task checkbox-329: Add generated blocked-cascade daemon-repair coverage for tranche 21 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [!] Task checkbox-327: Add generated blocked-cascade daemon-repair coverage for tranche 21 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [!] Task checkbox-328: Add generated blocked-cascade daemon-repair coverage for tranche 21 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [!] Task checkbox-329: Add generated blocked-cascade daemon-repair coverage for tranche 21 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
 ## Built-In Supervisor Repair Notes
 
 - Appended deterministic blocked-cascade recovery tasks because all selectable work was blocked. The supervisor avoided the LLM repair path and created daemon-repair tasks that can run independently before blocked domain work is retried.
 ## Built-In Supervisor Repair Notes
 
 - Parked repeated LLM parse/runtime loop for `Add generated blocked-cascade daemon-repair coverage for tranche 21 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
+## Built-In Supervisor Repair Notes
+
+- Parked repeated LLM parse/runtime loop for `Add generated blocked-cascade daemon-repair coverage for tranche 21 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
+## Built-In Supervisor Repair Notes
+
+- Parked repeated LLM parse/runtime loop for `Add generated blocked-cascade daemon-repair coverage for tranche 21 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
+## Built-In Supervisor Repair Notes
+
+- Parked repeated LLM parse/runtime loop for `Add generated blocked-cascade daemon-repair coverage for tranche 21 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
+
+## Built-In Blocked Cascade Recovery Tranche 22
+
+- [!] Task checkbox-330: Add generated blocked-cascade daemon-repair coverage for tranche 22 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [!] Task checkbox-331: Add generated blocked-cascade daemon-repair coverage for tranche 22 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [!] Task checkbox-332: Add generated blocked-cascade daemon-repair coverage for tranche 22 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [!] Task checkbox-333: Add generated blocked-cascade daemon-repair coverage for tranche 22 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+## Built-In Supervisor Repair Notes
+
+- Appended deterministic blocked-cascade recovery tasks because all selectable work was blocked. The supervisor avoided the LLM repair path and created daemon-repair tasks that can run independently before blocked domain work is retried.
+## Built-In Supervisor Repair Notes
+
+- Parked repeated LLM parse/runtime loop for `Add generated blocked-cascade daemon-repair coverage for tranche 22 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
+## Built-In Supervisor Repair Notes
+
+- Parked repeated LLM parse/runtime loop for `Add generated blocked-cascade daemon-repair coverage for tranche 22 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
+## Built-In Supervisor Repair Notes
+
+- Parked repeated LLM parse/runtime loop for `Add generated blocked-cascade daemon-repair coverage for tranche 22 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
+## Built-In Supervisor Repair Notes
+
+- Parked repeated LLM parse/runtime loop for `Add generated blocked-cascade daemon-repair coverage for tranche 22 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
+
+## Built-In Blocked Cascade Recovery Tranche 23
+
+- [!] Task checkbox-334: Add generated blocked-cascade daemon-repair coverage for tranche 23 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [~] Task checkbox-335: Add generated blocked-cascade daemon-repair coverage for tranche 23 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [ ] Task checkbox-336: Add generated blocked-cascade daemon-repair coverage for tranche 23 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+- [ ] Task checkbox-337: Add generated blocked-cascade daemon-repair coverage for tranche 23 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+## Built-In Supervisor Repair Notes
+
+- Appended deterministic blocked-cascade recovery tasks because all selectable work was blocked. The supervisor avoided the LLM repair path and created daemon-repair tasks that can run independently before blocked domain work is retried.
+## Built-In Supervisor Repair Notes
+
+- Parked repeated LLM parse/runtime loop for `Add generated blocked-cascade daemon-repair coverage for tranche 23 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
+
