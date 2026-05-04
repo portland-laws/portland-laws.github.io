@@ -1,8 +1,10 @@
 import {
   analyze_neurosymbolic,
   analyze_neurosymbolic_graphrag,
+  create_browser_native_embedding_prover,
   create_browser_native_neurosymbolic_integration,
   create_browser_native_neurosymbolic_graphrag,
+  prove_embedding,
   query_neurosymbolic_graphrag,
   reason_neurosymbolic,
 } from './neurosymbolic';
@@ -127,5 +129,59 @@ describe('browser-native neurosymbolic GraphRAG parity', () => {
       pythonRuntimeAllowed: false,
       metadata: { sourcePythonModule: 'logic/integration/neurosymbolic_graphrag.py' },
     });
+  });
+});
+
+describe('browser-native neurosymbolic embedding prover parity', () => {
+  it('proves by deterministic local embedding similarity without runtime fallbacks', () => {
+    const prover = create_browser_native_embedding_prover();
+    const result = prover.prove(
+      [
+        { id: 'rent-duty', text: 'The tenant must pay rent before the first day of each month.' },
+        'The landlord may enter the unit after notice to inspect repairs.',
+      ],
+      'Tenant rent must be paid monthly.',
+      { threshold: 0.5, topK: 2 },
+    );
+
+    expect(prover.metadata).toMatchObject({
+      sourcePythonModule: 'logic/integration/symbolic/neurosymbolic/embedding_prover.py',
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      embeddingRuntime: 'deterministic-local-token-vector',
+    });
+    expect(result).toMatchObject({
+      status: 'proved',
+      success: true,
+      runtime: 'browser-native',
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      metadata: {
+        sourcePythonModule: 'logic/integration/symbolic/neurosymbolic/embedding_prover.py',
+      },
+    });
+    expect(result.matchedPremises[0].premiseId).toBe('rent-duty');
+    expect(result.bestSimilarity).toBeGreaterThanOrEqual(0.5);
+  });
+
+  it('fails closed for missing inputs and reports below-threshold matches', () => {
+    expect(prove_embedding([], 'Tenant pays rent.')).toMatchObject({
+      status: 'validation_failed',
+      success: false,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+    });
+
+    const result = prove_embedding(
+      ['The agency shall publish permit rules.'],
+      'Tenant pays rent.',
+      {
+        threshold: 0.95,
+      },
+    );
+
+    expect(result).toMatchObject({ status: 'not_proved', success: false });
+    expect(result.issues).toContain('embedding similarity did not meet proof threshold');
+    expect(result.matchedPremises).toHaveLength(1);
   });
 });

@@ -1811,3 +1811,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T142159Z-ported-proof_execution_engine_utils.py-browser-native-utility-parity..json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T142159Z-ported-proof_execution_engine_utils.py-browser-native-utility-parity..diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T142159Z-ported-proof_execution_engine_utils.py-browser-native-utility-parity..stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 14:26:39 UTC
+
+- Target: `Task checkbox-392: Port remaining Python logic module `logic/integration/symbolic/neurosymbolic/embedding_prover.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported symbolic neurosymbolic embedding prover parity through a deterministic browser-native TypeScript adapter.
+- Impact: src/lib/logic/integration/neurosymbolic.ts now exposes embedding_prover.py metadata, Python-compatible aliases, deterministic token-vector proof scoring, threshold handling, and fail-closed validation with no server or Python runtime dependency. src/lib/logic/integration/neurosymbolic.test.ts directly validates proved, not_proved, and validation_failed paths, and the ledger marks checkbox-392 complete.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/neurosymbolic.test.ts`, `src/lib/logic/integration/neurosymbolic.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T142639Z-ported-symbolic-neurosymbolic-embedding-prover-parity-through-a-deterministic-br.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T142639Z-ported-symbolic-neurosymbolic-embedding-prover-parity-through-a-deterministic-br.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T142639Z-ported-symbolic-neurosymbolic-embedding-prover-parity-through-a-deterministic-br.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

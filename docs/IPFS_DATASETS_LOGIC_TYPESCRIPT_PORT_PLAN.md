@@ -902,7 +902,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/integration/reasoning/proof_execution_engine.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/reasoning/proof_execution_engine_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/reasoning/proof_execution_engine_utils.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/integration/symbolic/neurosymbolic/embedding_prover.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/integration/symbolic/neurosymbolic/embedding_prover.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/symbolic/neurosymbolic/hybrid_confidence.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/symbolic/neurosymbolic/reasoning_coordinator.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/symbolic/neurosymbolic_api.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 14:21:59 UTC
+Last updated: 2026-05-04 14:26:39 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-392: Port remaining Python logic module 'logic/integration/symbolic/neurosymbolic/embedding_prover.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-393: Port remaining Python logic module 'logic/integration/symbolic/neurosymbolic/hybrid_confidence.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1366,8 +1366,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-388: Port remaining Python logic module 'logic/integration/reasoning/logic_verification_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-389: Port remaining Python logic module 'logic/integration/reasoning/proof_execution_engine.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-390: Port remaining Python logic module 'logic/integration/reasoning/proof_execution_engine_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-391: Port remaining Python logic module 'logic/integration/reasoning/proof_execution_engine_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-392: Port remaining Python logic module 'logic/integration/symbolic/neurosymbolic/embedding_prover.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-391: Port remaining Python logic module 'logic/integration/reasoning/proof_execution_engine_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-392: Port remaining Python logic module 'logic/integration/symbolic/neurosymbolic/embedding_prover.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-393: Port remaining Python logic module 'logic/integration/symbolic/neurosymbolic/hybrid_confidence.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-394: Port remaining Python logic module 'logic/integration/symbolic/neurosymbolic/reasoning_coordinator.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-395: Port remaining Python logic module 'logic/integration/symbolic/neurosymbolic_api.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-391: Port remaining Python logic module 'logic/integration/reasoning/proof_execution_engine_utils.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-392: Port remaining Python logic module 'logic/integration/symbolic/neurosymbolic/embedding_prover.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported proof_execution_engine_utils.py browser-native utility parity.
-- Impact: Adds deterministic TypeScript proof execution utility exports for statement normalization, runtime bridge detection, request validation, stable cache keys, and result summarization. Existing integration Jest coverage now exercises the utility surface, and the port ledger marks checkbox-391 complete.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/logicVerification.test.ts`, `src/lib/logic/integration/proofExecutionEngine.ts`
+- Summary: Ported symbolic neurosymbolic embedding prover parity through a deterministic browser-native TypeScript adapter.
+- Impact: src/lib/logic/integration/neurosymbolic.ts now exposes embedding_prover.py metadata, Python-compatible aliases, deterministic token-vector proof scoring, threshold handling, and fail-closed validation with no server or Python runtime dependency. src/lib/logic/integration/neurosymbolic.test.ts directly validates proved, not_proved, and validation_failed paths, and the ledger marks checkbox-392 complete.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/neurosymbolic.test.ts`, `src/lib/logic/integration/neurosymbolic.ts`
 
 ### Blocked Backlog
 

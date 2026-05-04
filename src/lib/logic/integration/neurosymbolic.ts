@@ -75,6 +75,37 @@ export type NeuroSymbolicGraphRagResult = Omit<NeuroSymbolicResult, 'metadata'> 
   readonly graphEdges: readonly NeuroSymbolicGraphEdge[];
   readonly retrievalTrace: readonly NeuroSymbolicReasoningStep[];
 };
+export type EmbeddingProverStatus = 'proved' | 'not_proved' | 'validation_failed';
+export type EmbeddingProverPremise =
+  | string
+  | { readonly id?: string; readonly text: string; readonly weight?: number };
+export interface EmbeddingProverMatch {
+  readonly premiseId: string;
+  readonly premise: string;
+  readonly similarity: number;
+  readonly weight: number;
+}
+export interface EmbeddingProverOptions {
+  readonly threshold?: number;
+  readonly topK?: number;
+}
+export interface EmbeddingProverResult {
+  readonly status: EmbeddingProverStatus;
+  readonly success: boolean;
+  readonly runtime: 'browser-native';
+  readonly wasmCompatible: true;
+  readonly serverCallsAllowed: false;
+  readonly pythonRuntimeAllowed: false;
+  readonly sourceText: string;
+  readonly theorem: string;
+  readonly threshold: number;
+  readonly confidence: number;
+  readonly bestSimilarity: number;
+  readonly matchedPremises: readonly EmbeddingProverMatch[];
+  readonly proofSteps: readonly NeuroSymbolicReasoningStep[];
+  readonly issues: readonly string[];
+  readonly metadata: typeof EMBEDDING_PROVER_METADATA;
+}
 export const NEUROSYMBOLIC_METADATA = {
   sourcePythonModule: 'logic/integration/neurosymbolic.py',
   browserNative: true,
@@ -95,6 +126,16 @@ export const NEUROSYMBOLIC_GRAPHRAG_METADATA = {
   neuralRuntime: 'deterministic-local-adapter',
   runtimeDependencies: [],
   parity: ['local_graph_construction', 'symbolic_rag_retrieval', 'fail_closed_reasoning'],
+} as const;
+export const EMBEDDING_PROVER_METADATA = {
+  sourcePythonModule: 'logic/integration/symbolic/neurosymbolic/embedding_prover.py',
+  browserNative: true,
+  wasmCompatible: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  embeddingRuntime: 'deterministic-local-token-vector',
+  runtimeDependencies: [],
+  parity: ['local_embedding_projection', 'cosine_similarity_proof', 'fail_closed_reasoning'],
 } as const;
 const INTENTS: readonly [NeuroSymbolicIntent, RegExp, string][] = [
   ['prohibition', /\b(shall not|must not|may not|prohibited from|forbidden to)\b/i, 'F'],
@@ -256,6 +297,44 @@ export const queryNeuroSymbolicGraphRag = (
   new BrowserNativeNeuroSymbolicGraphRag().query(text, query, options);
 export const analyze_neurosymbolic_graphrag = analyzeNeuroSymbolicGraphRag;
 export const query_neurosymbolic_graphrag = queryNeuroSymbolicGraphRag;
+export const proveEmbedding = (
+  premises: readonly EmbeddingProverPremise[],
+  theorem: string,
+  options: EmbeddingProverOptions = {},
+): EmbeddingProverResult => {
+  const normalizedPremises = normalizeEmbeddingPremises(premises);
+  const normalizedTheorem = typeof theorem === 'string' ? theorem.replace(/\s+/g, ' ').trim() : '';
+  const threshold = clampThreshold(options.threshold ?? 0.62);
+  if (normalizedPremises.length === 0 || normalizedTheorem.length < 3) {
+    return closedEmbeddingProver(normalizedPremises, normalizedTheorem, threshold);
+  }
+  const theoremVector = embedText(normalizedTheorem);
+  const scored = normalizedPremises
+    .map((premise) => ({
+      ...premise,
+      similarity: Number(
+        (cosineSimilarity(embedText(premise.text), theoremVector) * premise.weight).toFixed(3),
+      ),
+    }))
+    .sort((left, right) => right.similarity - left.similarity || left.index - right.index);
+  const matchedPremises = scored
+    .filter((premise, index) => premise.similarity >= threshold || index === 0)
+    .slice(0, Math.max(1, Math.floor(options.topK ?? 3)))
+    .map(({ id, text, similarity, weight }) => ({
+      premiseId: id,
+      premise: text,
+      similarity,
+      weight,
+    }));
+  const bestSimilarity = matchedPremises[0]?.similarity ?? 0;
+  const proved = bestSimilarity >= threshold;
+  return embeddingResult(normalizedPremises, normalizedTheorem, threshold, matchedPremises, proved);
+};
+export const create_browser_native_embedding_prover = () => ({
+  metadata: EMBEDDING_PROVER_METADATA,
+  prove: proveEmbedding,
+});
+export const prove_embedding = proveEmbedding;
 function extractSignals(sentence: string): readonly NeuroSymbolicSignal[] {
   const matched = INTENTS.filter(([, pattern]) => pattern.test(sentence));
   const intents: readonly [NeuroSymbolicIntent, RegExp, string][] =
@@ -388,6 +467,64 @@ function terms(text: string): readonly string[] {
       .filter((term) => term.length > 2),
   );
 }
+function normalizeEmbeddingPremises(
+  premises: readonly EmbeddingProverPremise[],
+): readonly {
+  readonly id: string;
+  readonly index: number;
+  readonly text: string;
+  readonly weight: number;
+}[] {
+  return premises
+    .map((premise, index) => {
+      const text =
+        typeof premise === 'string'
+          ? premise.replace(/\s+/g, ' ').trim()
+          : premise.text.replace(/\s+/g, ' ').trim();
+      const weight = typeof premise === 'string' ? 1 : Math.max(0, premise.weight ?? 1);
+      return {
+        id:
+          typeof premise === 'string'
+            ? `premise-${index + 1}`
+            : (premise.id ?? `premise-${index + 1}`),
+        index,
+        text,
+        weight,
+      };
+    })
+    .filter((premise) => premise.text.length >= 3 && premise.weight > 0);
+}
+function embedText(text: string): readonly number[] {
+  const vector = Array.from({ length: 16 }, () => 0);
+  for (const term of terms(text)) {
+    const slot = hashTerm(term) % vector.length;
+    vector[slot] += 1 + Math.min(0.4, term.length / 20);
+  }
+  return vector;
+}
+function hashTerm(term: string): number {
+  let value = 2166136261;
+  for (let index = 0; index < term.length; index += 1) {
+    value ^= term.charCodeAt(index);
+    value = Math.imul(value, 16777619);
+  }
+  return value >>> 0;
+}
+function cosineSimilarity(left: readonly number[], right: readonly number[]): number {
+  let dot = 0;
+  let leftNorm = 0;
+  let rightNorm = 0;
+  for (let index = 0; index < left.length; index += 1) {
+    dot += left[index] * right[index];
+    leftNorm += left[index] * left[index];
+    rightNorm += right[index] * right[index];
+  }
+  return leftNorm === 0 || rightNorm === 0 ? 0 : dot / (Math.sqrt(leftNorm) * Math.sqrt(rightNorm));
+}
+function clampThreshold(value: number): number {
+  if (!Number.isFinite(value)) return 0.62;
+  return Number(Math.min(0.99, Math.max(0.01, value)).toFixed(3));
+}
 function score(
   signals: readonly NeuroSymbolicSignal[],
   proofStatus: NeuroSymbolicResult['proofStatus'],
@@ -440,5 +577,49 @@ function closedGraphRag(
     graphNodes: [],
     graphEdges: [],
     retrievalTrace: [],
+  };
+}
+function closedEmbeddingProver(
+  premises: readonly { readonly text: string }[],
+  theorem: string,
+  threshold: number,
+): EmbeddingProverResult {
+  return embeddingResult(premises, theorem, threshold, [], false, [
+    'premises and theorem are required',
+  ]);
+}
+function embeddingResult(
+  premises: readonly { readonly text: string }[],
+  theorem: string,
+  threshold: number,
+  matchedPremises: readonly EmbeddingProverMatch[],
+  proved: boolean,
+  issues: readonly string[] = proved ? [] : ['embedding similarity did not meet proof threshold'],
+): EmbeddingProverResult {
+  const bestSimilarity = matchedPremises[0]?.similarity ?? 0;
+  return {
+    status:
+      issues[0] === 'premises and theorem are required'
+        ? 'validation_failed'
+        : proved
+          ? 'proved'
+          : 'not_proved',
+    success: proved,
+    runtime: 'browser-native',
+    wasmCompatible: true,
+    serverCallsAllowed: false,
+    pythonRuntimeAllowed: false,
+    sourceText: premises.map((premise) => premise.text).join('\n'),
+    theorem,
+    threshold,
+    confidence: Number(Math.min(0.99, bestSimilarity + (proved ? 0.08 : 0)).toFixed(3)),
+    bestSimilarity,
+    matchedPremises,
+    proofSteps: matchedPremises.map((match) => ({
+      kind: 'query_match' as const,
+      detail: `${match.premiseId}:${match.similarity}`,
+    })),
+    issues,
+    metadata: EMBEDDING_PROVER_METADATA,
   };
 }
