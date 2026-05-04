@@ -3,9 +3,18 @@ import type { ProofResult } from '../types';
 import type { TdfolFormula } from './ast';
 import { formatTdfolFormula } from './formatter';
 import type { TdfolKnowledgeBase } from './prover';
-import { proveTdfolWithStrategySelection, TdfolForwardChainingStrategy, type TdfolProverStrategy } from './strategies';
+import {
+  proveTdfolWithStrategySelection,
+  TdfolForwardChainingStrategy,
+  type TdfolProverStrategy,
+} from './strategies';
 
-export type TdfolProvingStrategy = 'forward' | 'backward' | 'bidirectional' | 'modal_tableaux' | 'auto';
+export type TdfolProvingStrategy =
+  | 'forward'
+  | 'backward'
+  | 'bidirectional'
+  | 'modal_tableaux'
+  | 'auto';
 export type TdfolFormulaType = 'temporal' | 'deontic' | 'propositional' | 'modal';
 
 export interface TdfolOptimizationStatsSnapshot {
@@ -13,6 +22,8 @@ export interface TdfolOptimizationStatsSnapshot {
   cacheMisses: number;
   zkpVerifications: number;
   indexedLookups: number;
+  indexedCandidates: number;
+  indexedPrunes: number;
   parallelSearches: number;
   strategySwitches: number;
   totalProofs: number;
@@ -20,11 +31,29 @@ export interface TdfolOptimizationStatsSnapshot {
   cacheHitRate: number;
 }
 
+export const TDFOL_OPTIMIZATION_METADATA = {
+  sourcePythonModule: 'logic/TDFOL/tdfol_optimization.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeRequired: false,
+  parity: [
+    'indexed_knowledge_base',
+    'cache_aware_proving',
+    'strategy_heuristics',
+    'relevance_pruning',
+    'optimization_stats',
+    'zkp_fail_closed_accounting',
+    'parallel_search_accounting',
+  ] as Array<string>,
+} as const;
+
 export class TdfolOptimizationStats {
   cacheHits = 0;
   cacheMisses = 0;
   zkpVerifications = 0;
   indexedLookups = 0;
+  indexedCandidates = 0;
+  indexedPrunes = 0;
   parallelSearches = 0;
   strategySwitches = 0;
   totalProofs = 0;
@@ -37,7 +66,8 @@ export class TdfolOptimizationStats {
 
   recordProof(timeMs: number): void {
     this.totalProofs += 1;
-    this.avgProofTimeMs = (this.avgProofTimeMs * (this.totalProofs - 1) + timeMs) / this.totalProofs;
+    this.avgProofTimeMs =
+      (this.avgProofTimeMs * (this.totalProofs - 1) + timeMs) / this.totalProofs;
   }
 
   snapshot(): TdfolOptimizationStatsSnapshot {
@@ -46,6 +76,8 @@ export class TdfolOptimizationStats {
       cacheMisses: this.cacheMisses,
       zkpVerifications: this.zkpVerifications,
       indexedLookups: this.indexedLookups,
+      indexedCandidates: this.indexedCandidates,
+      indexedPrunes: this.indexedPrunes,
       parallelSearches: this.parallelSearches,
       strategySwitches: this.strategySwitches,
       totalProofs: this.totalProofs,
@@ -55,7 +87,7 @@ export class TdfolOptimizationStats {
   }
 
   toString(): string {
-    return `OptimizationStats(cache_hits=${this.cacheHits}, cache_misses=${this.cacheMisses}, hit_rate=${(this.cacheHitRate * 100).toFixed(1)}%, indexed_lookups=${this.indexedLookups}, strategy_switches=${this.strategySwitches}, total_proofs=${this.totalProofs}, avg_time=${this.avgProofTimeMs.toFixed(2)}ms)`;
+    return `OptimizationStats(cache_hits=${this.cacheHits}, cache_misses=${this.cacheMisses}, hit_rate=${(this.cacheHitRate * 100).toFixed(1)}%, indexed_lookups=${this.indexedLookups}, indexed_candidates=${this.indexedCandidates}, indexed_prunes=${this.indexedPrunes}, strategy_switches=${this.strategySwitches}, total_proofs=${this.totalProofs}, avg_time=${this.avgProofTimeMs.toFixed(2)}ms)`;
   }
 }
 
@@ -109,6 +141,10 @@ export class TdfolIndexedKnowledgeBase {
     return this.fromKeys(this.predicateIndex.get(predicate) ?? new Set());
   }
 
+  getRelevantFormulas(goal: TdfolFormula): TdfolFormula[] {
+    return this.fromKeys(this.getRelevantFormulaKeys(goal));
+  }
+
   size(): number {
     return this.formulas.size;
   }
@@ -157,6 +193,49 @@ export class TdfolIndexedKnowledgeBase {
     return [...operators].sort();
   }
 
+  private getRelevantFormulaKeys(goal: TdfolFormula): Set<string> {
+    const keys = new Set<string>();
+    const goalPredicates = new Set(this.extractPredicates(goal));
+    const pendingPredicates = [...goalPredicates];
+
+    for (const type of this.getFormulaTypes(goal)) {
+      if (type === 'propositional') {
+        continue;
+      }
+      for (const key of this.typeSet(type)) {
+        keys.add(key);
+      }
+    }
+    for (const operator of this.extractOperators(goal)) {
+      for (const key of this.operatorIndex.get(operator) ?? []) {
+        keys.add(key);
+      }
+    }
+
+    while (pendingPredicates.length > 0) {
+      const predicate = pendingPredicates.pop();
+      if (!predicate) {
+        continue;
+      }
+      for (const key of this.predicateIndex.get(predicate) ?? []) {
+        if (keys.has(key)) {
+          continue;
+        }
+        keys.add(key);
+        const formula = this.formulas.get(key);
+        if (formula?.kind === 'binary' && formula.operator === 'IMPLIES') {
+          for (const premisePredicate of this.extractPredicates(formula.left)) {
+            if (!goalPredicates.has(premisePredicate)) {
+              goalPredicates.add(premisePredicate);
+              pendingPredicates.push(premisePredicate);
+            }
+          }
+        }
+      }
+    }
+    return keys.size > 0 ? keys : new Set(this.formulas.keys());
+  }
+
   private typeSet(type: TdfolFormulaType): Set<string> {
     switch (type) {
       case 'temporal':
@@ -171,7 +250,9 @@ export class TdfolIndexedKnowledgeBase {
   }
 
   private fromKeys(keys: Set<string>): TdfolFormula[] {
-    return [...keys].map((key) => this.formulas.get(key)).filter((formula): formula is TdfolFormula => Boolean(formula));
+    return [...keys]
+      .map((key) => this.formulas.get(key))
+      .filter((formula): formula is TdfolFormula => Boolean(formula));
   }
 }
 
@@ -206,7 +287,11 @@ export class TdfolOptimizedProver {
     this.defaultStrategy = options.strategy ?? 'auto';
     this.strategies = options.strategies ?? [new TdfolForwardChainingStrategy()];
     this.cache = this.enableCache
-      ? options.cache ?? new ProofCache<ProofResult>({ maxSize: options.cacheMaxSize ?? 10000, ttlMs: options.cacheTtlMs ?? 60 * 60 * 1000 })
+      ? (options.cache ??
+        new ProofCache<ProofResult>({
+          maxSize: options.cacheMaxSize ?? 10000,
+          ttlMs: options.cacheTtlMs ?? 60 * 60 * 1000,
+        }))
       : undefined;
   }
 
@@ -219,7 +304,11 @@ export class TdfolOptimizedProver {
     const cacheKeyStrategy = strategy === 'auto' ? this.selectStrategy(formula) : strategy;
 
     if (this.cache) {
-      const cached = this.cache.get(formatTdfolFormula(formula), this.kbFormulaStrings(), cacheKeyStrategy);
+      const cached = this.cache.get(
+        formatTdfolFormula(formula),
+        this.kbFormulaStrings(),
+        cacheKeyStrategy,
+      );
       if (cached) {
         this.stats.cacheHits += 1;
         this.stats.recordProof(nowMs() - start);
@@ -282,23 +371,42 @@ export class TdfolOptimizedProver {
     this.stats.cacheMisses = 0;
     this.stats.zkpVerifications = 0;
     this.stats.indexedLookups = 0;
+    this.stats.indexedCandidates = 0;
+    this.stats.indexedPrunes = 0;
     this.stats.parallelSearches = 0;
     this.stats.strategySwitches = 0;
     this.stats.totalProofs = 0;
     this.stats.avgProofTimeMs = 0;
   }
 
-  private proveIndexed(formula: TdfolFormula, strategy: TdfolProvingStrategy, timeoutMs?: number): ProofResult {
+  private proveIndexed(
+    formula: TdfolFormula,
+    strategy: TdfolProvingStrategy,
+    timeoutMs?: number,
+  ): ProofResult {
     this.stats.indexedLookups += 1;
     if (this.workers > 1) {
       this.stats.parallelSearches += 1;
     }
 
-    return proveTdfolWithStrategySelection(formula, this.kb, {
-      strategies: this.strategies,
-      preferLowCost: strategy === 'backward' || strategy === 'bidirectional',
-      timeoutMs,
-    });
+    const candidateAxioms = this.indexedKb.getRelevantFormulas(formula);
+    this.stats.indexedCandidates += candidateAxioms.length;
+    if (candidateAxioms.length > 0 && candidateAxioms.length < this.indexedKb.size()) {
+      this.stats.indexedPrunes += this.indexedKb.size() - candidateAxioms.length;
+    }
+
+    return proveTdfolWithStrategySelection(
+      formula,
+      {
+        axioms: candidateAxioms.length > 0 ? candidateAxioms : this.kb.axioms,
+        theorems: this.kb.theorems,
+      },
+      {
+        strategies: this.strategies,
+        preferLowCost: strategy === 'backward' || strategy === 'bidirectional',
+        timeoutMs,
+      },
+    );
   }
 
   private kbFormulaStrings(): string[] {
@@ -306,7 +414,10 @@ export class TdfolOptimizedProver {
   }
 }
 
-export function createTdfolOptimizedProver(kb: TdfolKnowledgeBase, options: TdfolOptimizedProverOptions = {}): TdfolOptimizedProver {
+export function createTdfolOptimizedProver(
+  kb: TdfolKnowledgeBase,
+  options: TdfolOptimizedProverOptions = {},
+): TdfolOptimizedProver {
   return new TdfolOptimizedProver(kb, options);
 }
 
@@ -349,5 +460,7 @@ function addToIndex<Key>(index: Map<Key, Set<string>>, key: Key, formulaKey: str
 }
 
 function nowMs(): number {
-  return typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
+  return typeof performance !== 'undefined' && typeof performance.now === 'function'
+    ? performance.now()
+    : Date.now();
 }
