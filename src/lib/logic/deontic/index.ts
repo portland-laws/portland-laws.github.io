@@ -8,4 +8,5 @@ export * from './ir';
 export * from './knowledgeBase';
 export * from './metrics';
 export * from './parser';
+export * from './proverSyntax';
 export * from './supportMap';
