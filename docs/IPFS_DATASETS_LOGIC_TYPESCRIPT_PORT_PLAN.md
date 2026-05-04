@@ -849,7 +849,7 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/fol/utils/predicate_extractor.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/base_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/integration/bridges/base_prover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/integration/bridges/external_provers.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [x] Port remaining Python logic module `logic/integration/bridges/external_provers.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/bridges/prover_installer.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/bridges/symbolic_fol_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/integration/bridges/tdfol_cec_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-04 10:38:20 UTC
+Last updated: 2026-05-04 10:42:26 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-339: Port remaining Python logic module 'logic/integration/bridges/external_provers.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-340: Port remaining Python logic module 'logic/integration/bridges/prover_installer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1313,8 +1313,8 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-335: Port remaining Python logic module 'logic/fol/utils/nlp_predicate_extractor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-336: Port remaining Python logic module 'logic/fol/utils/predicate_extractor.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-337: Port remaining Python logic module 'logic/integration/base_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
-- [x] `Task checkbox-338: Port remaining Python logic module 'logic/integration/bridges/base_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
-- [ ] `Task checkbox-339: Port remaining Python logic module 'logic/integration/bridges/external_provers.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [x] `Task checkbox-338: Port remaining Python logic module 'logic/integration/bridges/base_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
+- [x] `Task checkbox-339: Port remaining Python logic module 'logic/integration/bridges/external_provers.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - validated by latest daemon round
 - [ ] `Task checkbox-340: Port remaining Python logic module 'logic/integration/bridges/prover_installer.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-341: Port remaining Python logic module 'logic/integration/bridges/symbolic_fol_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-342: Port remaining Python logic module 'logic/integration/bridges/tdfol_cec_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,11 +1430,11 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-338: Port remaining Python logic module 'logic/integration/bridges/base_prover_bridge.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-339: Port remaining Python logic module 'logic/integration/bridges/external_provers.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `valid`
-- Summary: Ported the nested integration bridges base prover bridge to the browser-native adapter bridge contract.
-- Impact: The TypeScript logic integration layer now exposes source-module-specific metadata and a fail-closed local adapter wrapper for logic/integration/bridges/base_prover_bridge.py, with Jest coverage proving request normalization, local DCEC adapter execution, and no Python/server/runtime fallback flags.
-- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/baseProverBridge.ts`, `src/lib/logic/integration/bridge.test.ts`
+- Summary: Ported integration/bridges/external_provers.py as a browser-native TypeScript external prover facade.
+- Impact: The new integration bridge exposes local TypeScript/WASM-compatible prover selection for auto, local, E prover, CVC5, Z3, Lean, and SymbolicAI routes while fail-closing unavailable Coq and Vampire bridge names without Python, subprocess, RPC, filesystem, or server fallback. Focused Jest coverage validates named Z3 routing, metadata constraints, DCEC auto support, and unavailable-prover failure behavior.
+- Accepted changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/externalProversBridge.ts`, `src/lib/logic/integration/index.ts`
 
 ### Blocked Backlog
 

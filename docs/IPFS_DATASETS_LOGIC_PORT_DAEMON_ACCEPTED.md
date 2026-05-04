@@ -1334,3 +1334,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T103820Z-ported-the-nested-integration-bridges-base-prover-bridge-to-the-browser-native-a.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T103820Z-ported-the-nested-integration-bridges-base-prover-bridge-to-the-browser-native-a.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T103820Z-ported-the-nested-integration-bridges-base-prover-bridge-to-the-browser-native-a.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 10:42:26 UTC
+
+- Target: `Task checkbox-339: Port remaining Python logic module `logic/integration/bridges/external_provers.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported integration/bridges/external_provers.py as a browser-native TypeScript external prover facade.
+- Impact: The new integration bridge exposes local TypeScript/WASM-compatible prover selection for auto, local, E prover, CVC5, Z3, Lean, and SymbolicAI routes while fail-closing unavailable Coq and Vampire bridge names without Python, subprocess, RPC, filesystem, or server fallback. Focused Jest coverage validates named Z3 routing, metadata constraints, DCEC auto support, and unavailable-prover failure behavior.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/externalProversBridge.ts`, `src/lib/logic/integration/index.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T104226Z-ported-integration-bridges-external_provers.py-as-a-browser-native-typescript-ex.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T104226Z-ported-integration-bridges-external_provers.py-as-a-browser-native-typescript-ex.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T104226Z-ported-integration-bridges-external_provers.py-as-a-browser-native-typescript-ex.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

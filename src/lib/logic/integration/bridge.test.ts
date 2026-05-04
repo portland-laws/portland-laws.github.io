@@ -7,6 +7,7 @@ import {
   createBrowserNativeCvc5ProverBridge,
   type BrowserNativeCvc5ProofResult,
 } from './cvc5ProverBridge';
+import { createBrowserNativeExternalProversBridge } from './externalProversBridge';
 import {
   createBrowserNativeLeanProverBridge,
   type BrowserNativeLeanProofResult,
@@ -539,6 +540,53 @@ describe('BrowserNativeLogicBridge', () => {
     expect(() => bridge.prove({ logic: 'dcec', theorem: 'p', axioms: [], maxSteps: 0 })).toThrow(
       'Invalid browser-native proof request: maxSteps must be positive',
     );
+  });
+
+  it('ports integration/bridges/external_provers.py as a browser-native prover facade', () => {
+    const bridge = createBrowserNativeExternalProversBridge();
+    const result = bridge.prove({
+      logic: 'tdfol',
+      theorem: 'Resident(Ada)',
+      axioms: ['Resident(Ada)'],
+      prover: 'z3',
+    }) as BrowserNativeZ3ProofResult;
+
+    expect(bridge.metadata).toMatchObject({
+      sourcePythonModule: 'logic/integration/bridges/external_provers.py',
+      runtime: 'typescript-wasm-browser',
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+      subprocessAllowed: false,
+      rpcAllowed: false,
+      filesystemAllowed: false,
+      failClosed: true,
+    });
+    expect(result).toMatchObject({
+      status: 'proved',
+      theorem: 'Resident(Ada)',
+      method: 'integration-external-provers:z3:z3-compatible:tdfol-forward-chaining',
+    });
+    expect(result.z3.serverCallsAllowed).toBe(false);
+    expect(bridge.supports('auto', 'dcec')).toBe(true);
+    expect(bridge.supports('lean', 'cec')).toBe(false);
+  });
+
+  it('fails closed for external_provers.py bridge names without local WASM adapters', () => {
+    const bridge = createBrowserNativeExternalProversBridge();
+
+    expect(bridge.getProverInfo('coq')).toMatchObject({
+      name: 'coq',
+      available: false,
+      requiresExternalProver: false,
+    });
+    expect(() =>
+      bridge.prove({
+        logic: 'tdfol',
+        theorem: 'Resident(Ada)',
+        axioms: ['Resident(Ada)'],
+        prover: 'coq',
+      }),
+    ).toThrow('no Python, subprocess, RPC, or server fallback is available');
   });
 
   it('returns explicit unsupported conversion results for missing local routes', () => {
