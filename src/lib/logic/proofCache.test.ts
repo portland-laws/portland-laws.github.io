@@ -2,8 +2,10 @@ import {
   COMMON_PROOF_CACHE_METADATA,
   EXTERNAL_PROVER_PROOF_CACHE_METADATA,
   INTEGRATION_CACHING_PROOF_CACHE_METADATA,
+  INTEGRATION_PROOF_CACHE_METADATA,
   IPFS_PROOF_CACHE_METADATA,
   IntegrationCachingProofCache,
+  IntegrationProofCache,
   IpfsProofCache,
   type BrowserNativeIpfsProofTransport,
   type IpfsProofCacheEntry,
@@ -212,6 +214,55 @@ describe('ProofCache', () => {
         'ttl_lru_statistics',
       ]),
     );
+  });
+
+  it('declares the browser-native integration proof_cache.py parity contract', () => {
+    expect(INTEGRATION_PROOF_CACHE_METADATA).toMatchObject({
+      sourcePythonModule: 'logic/integration/proof_cache.py',
+      browserNative: true,
+      runtimeDependencies: [],
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+    });
+    expect(INTEGRATION_PROOF_CACHE_METADATA.parity).toContain('integration_scoped_keys');
+  });
+
+  it('keys integration proof_cache.py entries by bridge, proof type, verifier, session, and metadata', () => {
+    let now = 100;
+    const cache = new IntegrationProofCache<{ status: string }>({ ttlMs: 10, now: () => now });
+    const query = {
+      formula: 'P -> Q',
+      axioms: ['B', 'A'],
+      integrationName: 'logic-verification',
+      bridgeName: 'tdfol-cec',
+      proofType: 'entailment',
+      verifierName: 'browser-forward-chain',
+      sessionId: 'matter-7',
+      options: { maxDepth: 4 },
+      metadata: { corpusCid: 'bafy-docs' },
+    };
+
+    const cid = cache.set(query, { status: 'proved' });
+
+    expect(cid).toBe(cache.computeCid({ ...query, axioms: ['A', 'B'] }));
+    expect(cache.get({ ...query, axioms: ['A', 'B'] })).toEqual({ status: 'proved' });
+    expect(cache.get({ ...query, verifierName: 'external-z3' })).toBeUndefined();
+    expect(cache.get({ ...query, sessionId: 'matter-8' })).toBeUndefined();
+    expect(cache.snapshot()[0]).toMatchObject({
+      formulaString: 'P -> Q',
+      axiomStrings: ['A', 'B'],
+      proverName: 'logic-verification:tdfol-cec:entailment:browser-forward-chain',
+      proverConfig: {
+        metadata: { corpusCid: 'bafy-docs' },
+        options: { maxDepth: 4 },
+        sessionId: 'matter-7',
+      },
+      hitCount: 1,
+    });
+
+    now = 120;
+    expect(cache.get(query)).toBeUndefined();
+    expect(cache.getStats()).toMatchObject({ hits: 1, misses: 3, sets: 1, cacheSize: 0 });
   });
 
   it('keys integration proof cache entries by normalized query scope', () => {

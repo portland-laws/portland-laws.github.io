@@ -1694,3 +1694,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T132746Z-ported-logic-integration-nl_ucan_policy_compiler.py-as-a-browser-native-nl-to-uc.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T132746Z-ported-logic-integration-nl_ucan_policy_compiler.py-as-a-browser-native-nl-to-uc.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T132746Z-ported-logic-integration-nl_ucan_policy_compiler.py-as-a-browser-native-nl-to-uc.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 13:30:53 UTC
+
+- Target: `Task checkbox-379: Port remaining Python logic module `logic/integration/proof_cache.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported logic/integration/proof_cache.py as a browser-native integration proof cache facade.
+- Impact: src/lib/logic/proofCache.ts now exposes IntegrationProofCache and metadata for deterministic integration-scoped proof caching without server, Python, filesystem, subprocess, or RPC fallbacks. src/lib/logic/proofCache.test.ts validates the browser-native contract, scoped content IDs, local lookup, TTL expiry, and cache statistics. The TypeScript port ledger marks checkbox-379 complete.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/proofCache.test.ts`, `src/lib/logic/proofCache.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T133053Z-ported-logic-integration-proof_cache.py-as-a-browser-native-integration-proof-ca.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T133053Z-ported-logic-integration-proof_cache.py-as-a-browser-native-integration-proof-ca.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T133053Z-ported-logic-integration-proof_cache.py-as-a-browser-native-integration-proof-ca.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

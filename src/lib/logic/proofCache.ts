@@ -123,6 +123,18 @@ export interface IntegrationCachingProofCacheQuery {
   context?: Record<string, unknown>;
 }
 
+export interface IntegrationProofCacheQuery {
+  formula: unknown;
+  axioms?: Array<unknown>;
+  integrationName?: string;
+  bridgeName?: string;
+  proofType?: string;
+  verifierName?: string;
+  sessionId?: string;
+  options?: Record<string, unknown>;
+  metadata?: Record<string, unknown>;
+}
+
 export const COMMON_PROOF_CACHE_METADATA = {
   sourcePythonModule: 'logic/common/proof_cache.py',
   browserNative: true,
@@ -184,6 +196,21 @@ export const INTEGRATION_CACHING_PROOF_CACHE_METADATA = {
     'prover_config_sensitive_lookup',
     'context_sensitive_lookup',
     'ttl_lru_statistics',
+    'invalidation_and_snapshot_introspection',
+  ] as Array<string>,
+} as const;
+
+export const INTEGRATION_PROOF_CACHE_METADATA = {
+  sourcePythonModule: 'logic/integration/proof_cache.py',
+  browserNative: true,
+  runtimeDependencies: [] as Array<string>,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  parity: [
+    'integration_scoped_keys',
+    'bridge_and_proof_type_sensitive_lookup',
+    'session_option_metadata_sensitive_lookup',
+    'order_insensitive_axiom_keys',
     'invalidation_and_snapshot_introspection',
   ] as Array<string>,
 } as const;
@@ -528,6 +555,59 @@ export class IntegrationCachingProofCache<Result = unknown> {
   }
 }
 
+export class IntegrationProofCache<Result = unknown> {
+  private readonly cache: ProofCache<Result>;
+
+  constructor(options: ProofCacheOptions = {}) {
+    this.cache = new ProofCache<Result>(options);
+  }
+
+  computeCid(query: IntegrationProofCacheQuery): string {
+    return this.cache.computeCid(
+      toIntegrationProofModuleCacheQuery(normalizeIntegrationProofModuleQuery(query)),
+    );
+  }
+
+  set(query: IntegrationProofCacheQuery, result: Result): string {
+    const normalized = normalizeIntegrationProofModuleQuery(query);
+    return this.cache.set(
+      normalized.formula,
+      result,
+      normalized.axioms,
+      integrationProofModuleProverName(normalized),
+      integrationProofModuleConfig(normalized),
+    );
+  }
+
+  get(query: IntegrationProofCacheQuery): Result | undefined {
+    const normalized = normalizeIntegrationProofModuleQuery(query);
+    return this.cache.get(
+      normalized.formula,
+      normalized.axioms,
+      integrationProofModuleProverName(normalized),
+      integrationProofModuleConfig(normalized),
+    );
+  }
+
+  invalidate(query: IntegrationProofCacheQuery): boolean {
+    const normalized = normalizeIntegrationProofModuleQuery(query);
+    return this.cache.invalidate(
+      normalized.formula,
+      normalized.axioms,
+      integrationProofModuleProverName(normalized),
+      integrationProofModuleConfig(normalized),
+    );
+  }
+
+  snapshot(): Array<ProofCacheSnapshotEntry<Result>> {
+    return this.cache.snapshot();
+  }
+
+  getStats(): ProofCacheStats {
+    return this.cache.getStats();
+  }
+}
+
 let globalProofCache: ProofCache | undefined;
 
 export function getGlobalProofCache(): ProofCache {
@@ -640,6 +720,52 @@ function integrationProofConfig(
   return {
     context: query.context,
     proverConfig: query.proverConfig,
+  };
+}
+
+function normalizeIntegrationProofModuleQuery(
+  query: IntegrationProofCacheQuery,
+): Required<IntegrationProofCacheQuery> & { formula: string; axioms: Array<string> } {
+  const formula = String(query.formula).trim();
+  if (formula.length === 0)
+    throw new Error('Integration proof cache requires a non-empty formula.');
+  return {
+    formula,
+    axioms: normalizeAxiomStrings(query.axioms),
+    integrationName: query.integrationName ?? 'logic-integration',
+    bridgeName: query.bridgeName ?? 'unknown',
+    proofType: query.proofType ?? 'proof',
+    verifierName: query.verifierName ?? 'unknown',
+    sessionId: query.sessionId ?? 'default',
+    options: query.options ?? {},
+    metadata: query.metadata ?? {},
+  };
+}
+
+function toIntegrationProofModuleCacheQuery(
+  query: Required<IntegrationProofCacheQuery> & { formula: string; axioms: Array<string> },
+): ProofCacheQuery {
+  return {
+    formula: query.formula,
+    axioms: query.axioms,
+    proverName: integrationProofModuleProverName(query),
+    proverConfig: integrationProofModuleConfig(query),
+  };
+}
+
+function integrationProofModuleProverName(
+  query: Required<IntegrationProofCacheQuery> & { formula: string; axioms: Array<string> },
+): string {
+  return `${query.integrationName}:${query.bridgeName}:${query.proofType}:${query.verifierName}`;
+}
+
+function integrationProofModuleConfig(
+  query: Required<IntegrationProofCacheQuery> & { formula: string; axioms: Array<string> },
+): Record<string, unknown> {
+  return {
+    metadata: query.metadata,
+    options: query.options,
+    sessionId: query.sessionId,
   };
 }
 
