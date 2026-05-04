@@ -1,6 +1,19 @@
-import type { TdfolBinaryFormula, TdfolDeonticFormula, TdfolFormula, TdfolTemporalFormula, TdfolUnaryFormula } from './ast';
+import { substituteFormula } from './ast';
+import type {
+  TdfolBinaryFormula,
+  TdfolDeonticFormula,
+  TdfolFormula,
+  TdfolQuantifiedFormula,
+  TdfolTemporalFormula,
+  TdfolTerm,
+  TdfolUnaryFormula,
+} from './ast';
 import { formatTdfolFormula } from './formatter';
-import type { TdfolModalLogicType, TdfolTableauxBranchLike, TdfolTableauxWorldLike } from './countermodels';
+import type {
+  TdfolModalLogicType,
+  TdfolTableauxBranchLike,
+  TdfolTableauxWorldLike,
+} from './countermodels';
 
 export interface TdfolTableauxResult {
   isValid: boolean;
@@ -117,7 +130,8 @@ export class TdfolTableauxBranch implements TdfolTableauxBranchLike {
   copy(): TdfolTableauxBranch {
     const branch = new TdfolTableauxBranch();
     for (const [id, world] of this.worlds.entries()) branch.worlds.set(id, world.copy());
-    for (const [id, targets] of this.accessibility.entries()) branch.accessibility.set(id, new Set(targets));
+    for (const [id, targets] of this.accessibility.entries())
+      branch.accessibility.set(id, new Set(targets));
     branch.currentWorld = this.currentWorld;
     branch.isClosed = this.isClosed;
     branch.nextWorldId = this.nextWorldId;
@@ -126,7 +140,10 @@ export class TdfolTableauxBranch implements TdfolTableauxBranchLike {
     return branch;
   }
 
-  private copyHistoryFrom(source: Map<number, Map<string, TdfolFormula>>, target: Map<number, Map<string, TdfolFormula>>): void {
+  private copyHistoryFrom(
+    source: Map<number, Map<string, TdfolFormula>>,
+    target: Map<number, Map<string, TdfolFormula>>,
+  ): void {
     for (const [worldId, formulas] of source.entries()) {
       target.set(worldId, new Map(formulas));
     }
@@ -170,7 +187,12 @@ export class TdfolModalTableaux {
       branches = nextBranches;
       const closedCount = branches.filter((branch) => branch.isClosed).length;
       if (closedCount === branches.length) {
-        return { isValid: true, closedBranches: closedCount, totalBranches: branches.length, proofSteps };
+        return {
+          isValid: true,
+          closedBranches: closedCount,
+          totalBranches: branches.length,
+          proofSteps,
+        };
       }
       if (!branches.some((branch) => !branch.isClosed && this.canExpand(branch))) {
         break;
@@ -197,16 +219,21 @@ export class TdfolModalTableaux {
     return false;
   }
 
-  private expandBranch(branch: TdfolTableauxBranch, proofSteps: string[]): TdfolTableauxBranch[] | undefined {
+  private expandBranch(
+    branch: TdfolTableauxBranch,
+    proofSteps: string[],
+  ): TdfolTableauxBranch[] | undefined {
     this.closeContradictoryWorlds(branch, proofSteps);
     if (branch.isClosed) return [branch];
 
     for (const [worldId, world] of branch.worlds.entries()) {
       for (const formula of [...world.positive.values()]) {
-        if (needsExpansion(formula)) return this.expandFormula(branch, worldId, formula, false, proofSteps);
+        if (needsExpansion(formula))
+          return this.expandFormula(branch, worldId, formula, false, proofSteps);
       }
       for (const formula of [...world.negative.values()]) {
-        if (needsExpansion(formula)) return this.expandFormula(branch, worldId, formula, true, proofSteps);
+        if (needsExpansion(formula))
+          return this.expandFormula(branch, worldId, formula, true, proofSteps);
       }
     }
     return undefined;
@@ -224,10 +251,16 @@ export class TdfolModalTableaux {
     world.removeFormula(formula, negated);
 
     let branches: TdfolTableauxBranch[];
-    if (formula.kind === 'binary') branches = this.expandBinary(branch, worldId, formula, negated, proofSteps);
-    else if (formula.kind === 'unary') branches = this.expandUnary(branch, worldId, formula, negated, proofSteps);
-    else if (formula.kind === 'temporal') branches = this.expandTemporal(branch, worldId, formula, negated, proofSteps);
-    else if (formula.kind === 'deontic') branches = this.expandDeontic(branch, worldId, formula, negated, proofSteps);
+    if (formula.kind === 'binary')
+      branches = this.expandBinary(branch, worldId, formula, negated, proofSteps);
+    else if (formula.kind === 'unary')
+      branches = this.expandUnary(branch, worldId, formula, negated, proofSteps);
+    else if (formula.kind === 'quantified')
+      branches = this.expandQuantified(branch, worldId, formula, negated, proofSteps);
+    else if (formula.kind === 'temporal')
+      branches = this.expandTemporal(branch, worldId, formula, negated, proofSteps);
+    else if (formula.kind === 'deontic')
+      branches = this.expandDeontic(branch, worldId, formula, negated, proofSteps);
     else {
       world.addFormula(formula, negated);
       branches = [branch];
@@ -256,12 +289,30 @@ export class TdfolModalTableaux {
         proofSteps.push(`AND expansion at world ${worldId}`);
         return [branch];
       }
-      return this.split(branch, worldId, formula.left, true, formula.right, true, `Negated AND split at world ${worldId}`, proofSteps);
+      return this.split(
+        branch,
+        worldId,
+        formula.left,
+        true,
+        formula.right,
+        true,
+        `Negated AND split at world ${worldId}`,
+        proofSteps,
+      );
     }
 
     if (formula.operator === 'OR') {
       if (!negated) {
-        return this.split(branch, worldId, formula.left, false, formula.right, false, `OR split at world ${worldId}`, proofSteps);
+        return this.split(
+          branch,
+          worldId,
+          formula.left,
+          false,
+          formula.right,
+          false,
+          `OR split at world ${worldId}`,
+          proofSteps,
+        );
       }
       world.addFormula(formula.left, true);
       world.addFormula(formula.right, true);
@@ -271,7 +322,16 @@ export class TdfolModalTableaux {
 
     if (formula.operator === 'IMPLIES') {
       if (!negated) {
-        return this.split(branch, worldId, formula.left, true, formula.right, false, `IMPLIES split at world ${worldId}`, proofSteps);
+        return this.split(
+          branch,
+          worldId,
+          formula.left,
+          true,
+          formula.right,
+          false,
+          `IMPLIES split at world ${worldId}`,
+          proofSteps,
+        );
       }
       world.addFormula(formula.left);
       world.addFormula(formula.right, true);
@@ -281,20 +341,72 @@ export class TdfolModalTableaux {
 
     if (formula.operator === 'IFF') {
       if (!negated) {
-        world.addFormula({ kind: 'binary', operator: 'IMPLIES', left: formula.left, right: formula.right });
-        world.addFormula({ kind: 'binary', operator: 'IMPLIES', left: formula.right, right: formula.left });
+        world.addFormula({
+          kind: 'binary',
+          operator: 'IMPLIES',
+          left: formula.left,
+          right: formula.right,
+        });
+        world.addFormula({
+          kind: 'binary',
+          operator: 'IMPLIES',
+          left: formula.right,
+          right: formula.left,
+        });
         proofSteps.push(`IFF expansion at world ${worldId}`);
         return [branch];
       }
-      return this.split(branch, worldId, { kind: 'binary', operator: 'IMPLIES', left: formula.left, right: formula.right }, true, { kind: 'binary', operator: 'IMPLIES', left: formula.right, right: formula.left }, true, `Negated IFF split at world ${worldId}`, proofSteps);
+      return this.split(
+        branch,
+        worldId,
+        { kind: 'binary', operator: 'IMPLIES', left: formula.left, right: formula.right },
+        true,
+        { kind: 'binary', operator: 'IMPLIES', left: formula.right, right: formula.left },
+        true,
+        `Negated IFF split at world ${worldId}`,
+        proofSteps,
+      );
     }
 
     return [branch];
   }
 
-  private expandUnary(branch: TdfolTableauxBranch, worldId: number, formula: TdfolUnaryFormula, negated: boolean, proofSteps: string[]): TdfolTableauxBranch[] {
+  private expandUnary(
+    branch: TdfolTableauxBranch,
+    worldId: number,
+    formula: TdfolUnaryFormula,
+    negated: boolean,
+    proofSteps: string[],
+  ): TdfolTableauxBranch[] {
     branch.worlds.get(worldId)?.addFormula(formula.formula, !negated);
     proofSteps.push(`Double negation at world ${worldId}`);
+    return [branch];
+  }
+
+  private expandQuantified(
+    branch: TdfolTableauxBranch,
+    worldId: number,
+    formula: TdfolQuantifiedFormula,
+    negated: boolean,
+    proofSteps: string[],
+  ): TdfolTableauxBranch[] {
+    const world = branch.worlds.get(worldId);
+    if (!world) return [branch];
+
+    const constants = collectBranchConstants(branch);
+    const witness =
+      formula.quantifier === 'FORALL'
+        ? negated
+          ? makeWitness(formula, worldId)
+          : (constants[0] ?? makeGammaConstant(formula))
+        : negated
+          ? (constants[0] ?? makeGammaConstant(formula))
+          : makeWitness(formula, worldId);
+    const instantiated = substituteFormula(formula.formula, formula.variable.name, witness);
+    world.addFormula(instantiated, negated);
+    proofSteps.push(
+      `${formula.quantifier} instantiation at world ${worldId} with ${formatTermKey(witness)}`,
+    );
     return [branch];
   }
 
@@ -336,7 +448,8 @@ export class TdfolModalTableaux {
         return [branch];
       }
       branch.rememberNegDiamond(worldId, formula.formula);
-      for (const target of branch.getAccessibleWorlds(worldId)) branch.worlds.get(target)?.addFormula(formula.formula, true);
+      for (const target of branch.getAccessibleWorlds(worldId))
+        branch.worlds.get(target)?.addFormula(formula.formula, true);
       proofSteps.push(`Negated DIAMOND expansion at world ${worldId}`);
       return [branch];
     }
@@ -352,13 +465,31 @@ export class TdfolModalTableaux {
     proofSteps: string[],
   ): TdfolTableauxBranch[] {
     if (formula.operator === 'OBLIGATION') {
-      return this.expandTemporal(branch, worldId, { kind: 'temporal', operator: 'ALWAYS', formula: formula.formula }, negated, proofSteps);
+      return this.expandTemporal(
+        branch,
+        worldId,
+        { kind: 'temporal', operator: 'ALWAYS', formula: formula.formula },
+        negated,
+        proofSteps,
+      );
     }
     if (formula.operator === 'PERMISSION') {
-      return this.expandTemporal(branch, worldId, { kind: 'temporal', operator: 'EVENTUALLY', formula: formula.formula }, negated, proofSteps);
+      return this.expandTemporal(
+        branch,
+        worldId,
+        { kind: 'temporal', operator: 'EVENTUALLY', formula: formula.formula },
+        negated,
+        proofSteps,
+      );
     }
     if (formula.operator === 'PROHIBITION') {
-      return this.expandTemporal(branch, worldId, { kind: 'temporal', operator: 'ALWAYS', formula: formula.formula }, !negated, proofSteps);
+      return this.expandTemporal(
+        branch,
+        worldId,
+        { kind: 'temporal', operator: 'ALWAYS', formula: formula.formula },
+        !negated,
+        proofSteps,
+      );
     }
     return [branch];
   }
@@ -381,7 +512,10 @@ export class TdfolModalTableaux {
     return [leftBranch, rightBranch];
   }
 
-  private createAccessibleWorld(branch: TdfolTableauxBranch, fromWorld: number): TdfolTableauxWorld {
+  private createAccessibleWorld(
+    branch: TdfolTableauxBranch,
+    fromWorld: number,
+  ): TdfolTableauxWorld {
     if (branch.worlds.size >= this.maxWorlds) {
       throw new Error(`Modal tableaux world budget exceeded (${this.maxWorlds})`);
     }
@@ -391,16 +525,22 @@ export class TdfolModalTableaux {
     return world;
   }
 
-  private propagateModalHistories(branch: TdfolTableauxBranch, sourceWorld: number, targetWorld: TdfolTableauxWorld): void {
+  private propagateModalHistories(
+    branch: TdfolTableauxBranch,
+    sourceWorld: number,
+    targetWorld: TdfolTableauxWorld,
+  ): void {
     for (const body of this.getPropagatedBoxes(branch, sourceWorld)) targetWorld.addFormula(body);
-    for (const body of this.getPropagatedNegDiamonds(branch, sourceWorld)) targetWorld.addFormula(body, true);
+    for (const body of this.getPropagatedNegDiamonds(branch, sourceWorld))
+      targetWorld.addFormula(body, true);
   }
 
   private getPropagatedBoxes(branch: TdfolTableauxBranch, worldId: number): TdfolFormula[] {
     const formulas = new Map<string, TdfolFormula>();
     for (const body of branch.getBoxHistory(worldId)) formulas.set(formulaKey(body), body);
     for (const formula of branch.worlds.get(worldId)?.formulas ?? []) {
-      if (formula.kind === 'temporal' && formula.operator === 'ALWAYS') formulas.set(formulaKey(formula.formula), formula.formula);
+      if (formula.kind === 'temporal' && formula.operator === 'ALWAYS')
+        formulas.set(formulaKey(formula.formula), formula.formula);
     }
     if (this.logicType === 'S4' || this.logicType === 'S5') {
       for (const ancestor of this.getAncestorWorlds(branch, worldId)) {
@@ -415,7 +555,8 @@ export class TdfolModalTableaux {
     for (const body of branch.getNegDiamondHistory(worldId)) formulas.set(formulaKey(body), body);
     if (this.logicType === 'S4' || this.logicType === 'S5') {
       for (const ancestor of this.getAncestorWorlds(branch, worldId)) {
-        for (const body of branch.getNegDiamondHistory(ancestor)) formulas.set(formulaKey(body), body);
+        for (const body of branch.getNegDiamondHistory(ancestor))
+          formulas.set(formulaKey(body), body);
       }
     }
     return [...formulas.values()];
@@ -467,20 +608,87 @@ export class TdfolModalTableaux {
   }
 }
 
-export function proveTdfolModalFormula(formula: TdfolFormula, logicType: TdfolModalLogicType = 'K'): TdfolTableauxResult {
+export function proveTdfolModalFormula(
+  formula: TdfolFormula,
+  logicType: TdfolModalLogicType = 'K',
+): TdfolTableauxResult {
   return new TdfolModalTableaux({ logicType }).prove(formula);
 }
 
-function rememberFormula(history: Map<number, Map<string, TdfolFormula>>, worldId: number, formula: TdfolFormula): void {
+function rememberFormula(
+  history: Map<number, Map<string, TdfolFormula>>,
+  worldId: number,
+  formula: TdfolFormula,
+): void {
   const formulas = history.get(worldId) ?? new Map<string, TdfolFormula>();
   formulas.set(formulaKey(formula), formula);
   history.set(worldId, formulas);
 }
 
 function needsExpansion(formula: TdfolFormula): boolean {
-  return formula.kind === 'unary' || formula.kind === 'binary' || formula.kind === 'temporal' || formula.kind === 'deontic';
+  return (
+    formula.kind === 'unary' ||
+    formula.kind === 'binary' ||
+    formula.kind === 'quantified' ||
+    formula.kind === 'temporal' ||
+    formula.kind === 'deontic'
+  );
 }
 
 function formulaKey(formula: TdfolFormula): string {
   return formatTdfolFormula(formula);
+}
+
+function collectBranchConstants(branch: TdfolTableauxBranch): TdfolTerm[] {
+  const constants = new Map<string, TdfolTerm>();
+  for (const world of branch.worlds.values()) {
+    for (const formula of [...world.positive.values(), ...world.negative.values()]) {
+      collectFormulaConstants(formula, constants);
+    }
+  }
+  return [...constants.values()];
+}
+
+function collectFormulaConstants(formula: TdfolFormula, constants: Map<string, TdfolTerm>): void {
+  if (formula.kind === 'predicate') {
+    for (const term of formula.args) collectTermConstants(term, constants);
+  } else if (
+    formula.kind === 'unary' ||
+    formula.kind === 'deontic' ||
+    formula.kind === 'temporal'
+  ) {
+    collectFormulaConstants(formula.formula, constants);
+  } else if (formula.kind === 'binary') {
+    collectFormulaConstants(formula.left, constants);
+    collectFormulaConstants(formula.right, constants);
+  } else if (formula.kind === 'quantified') {
+    collectFormulaConstants(formula.formula, constants);
+  }
+}
+
+function collectTermConstants(term: TdfolTerm, constants: Map<string, TdfolTerm>): void {
+  if (term.kind === 'constant') {
+    constants.set(formatTermKey(term), term);
+  } else if (term.kind === 'function') {
+    for (const arg of term.args) collectTermConstants(arg, constants);
+  }
+}
+
+function makeGammaConstant(formula: TdfolQuantifiedFormula): TdfolTerm {
+  return { kind: 'constant', name: `gamma_${formula.variable.name}`, sort: formula.variable.sort };
+}
+
+function makeWitness(formula: TdfolQuantifiedFormula, worldId: number): TdfolTerm {
+  return {
+    kind: 'constant',
+    name: `skolem_w${worldId}_${formula.variable.name}`,
+    sort: formula.variable.sort,
+  };
+}
+
+function formatTermKey(term: TdfolTerm): string {
+  if (term.kind === 'function') {
+    return `${term.name}(${term.args.map(formatTermKey).join(',')})`;
+  }
+  return term.name;
 }

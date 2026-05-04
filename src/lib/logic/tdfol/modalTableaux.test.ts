@@ -1,6 +1,11 @@
 import { extractTdfolCountermodel } from './countermodels';
 import { parseTdfolFormula } from './parser';
-import { proveTdfolModalFormula, TdfolModalTableaux, TdfolTableauxBranch, TdfolTableauxWorld } from './modalTableaux';
+import {
+  proveTdfolModalFormula,
+  TdfolModalTableaux,
+  TdfolTableauxBranch,
+  TdfolTableauxWorld,
+} from './modalTableaux';
 
 describe('TDFOL modal tableaux', () => {
   it('closes direct contradictions in negated validity checks', () => {
@@ -31,6 +36,27 @@ describe('TDFOL modal tableaux', () => {
     expect(countermodel.kripke.worlds.has(0)).toBe(true);
     expect(countermodel.kripke.getAccessibleWorlds(0).size).toBe(0);
     expect(countermodel.explanation[0]).toContain('is not K-valid');
+  });
+
+  it('instantiates universal formulas against branch constants', () => {
+    const result = proveTdfolModalFormula(
+      parseTdfolFormula('(forall x. Pred(x)) -> Pred(Alice)'),
+      'K',
+    );
+
+    expect(result.isValid).toBe(true);
+    expect(result.proofSteps).toContain('FORALL instantiation at world 0 with Alice');
+    expect(result.proofSteps.some((step) => step.includes('contradiction at world 0'))).toBe(true);
+  });
+
+  it('instantiates negated existential formulas against branch constants', () => {
+    const result = proveTdfolModalFormula(
+      parseTdfolFormula('Pred(Alice) -> exists x. Pred(x)'),
+      'K',
+    );
+
+    expect(result.isValid).toBe(true);
+    expect(result.proofSteps).toContain('EXISTS instantiation at world 0 with Alice');
   });
 
   it('expands diamonds by creating accessible worlds', () => {
