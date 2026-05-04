@@ -8,7 +8,8 @@ import type { TdfolFormula } from '../tdfol/ast';
 import { tdfolToCecExpression } from '../tdfol/strategies';
 
 export const TDFOL_SHADOW_PROVER_BRIDGE_METADATA = {
-  sourcePythonModule: 'logic/integration/bridges/tdfol_shadowprover_bridge.py',
+  sourcePythonModule: 'logic/integration/tdfol_shadowprover_bridge.py',
+  legacySourcePythonModules: ['logic/integration/bridges/tdfol_shadowprover_bridge.py'],
   browserNative: true,
   runtime: 'typescript-wasm-browser',
   serverCallsAllowed: false,
@@ -40,6 +41,7 @@ export interface TdfolShadowProverBridgeProofRequest {
 
 export interface TdfolShadowProverBridgeProofResult extends ProofResult {
   sourcePythonModule: typeof TDFOL_SHADOW_PROVER_BRIDGE_METADATA.sourcePythonModule;
+  legacySourcePythonModules: typeof TDFOL_SHADOW_PROVER_BRIDGE_METADATA.legacySourcePythonModules;
   browserNative: true;
   serverCallsAllowed: false;
   pythonRuntime: false;
@@ -127,11 +129,17 @@ export class BrowserNativeTdfolShadowProverBridge {
     return this.prove({ theorem, axioms, logic });
   }
 
-  validate(input: TdfolShadowProverBridgeInput) {
+  validate(input: TdfolShadowProverBridgeInput): {
+    valid: boolean;
+    errors: Array<string>;
+    warnings: Array<string>;
+    metadata: typeof TDFOL_SHADOW_PROVER_BRIDGE_METADATA;
+  } {
     const result = this.convert(input);
     return {
       valid: result.status === 'success',
       errors: result.error ? [result.error] : [],
+      warnings: result.warnings,
       metadata: this.metadata,
     };
   }
@@ -142,6 +150,28 @@ export function createBrowserNativeTdfolShadowProverBridge(
   defaultLogic: CecShadowModalLogic = 'K',
 ): BrowserNativeTdfolShadowProverBridge {
   return new BrowserNativeTdfolShadowProverBridge(options, defaultLogic);
+}
+
+export function convertTdfolToShadowProver(
+  input: TdfolShadowProverBridgeInput,
+): TdfolShadowProverBridgeConversion {
+  return createBrowserNativeTdfolShadowProverBridge().convert(input);
+}
+
+export function proveTdfolWithShadowProver(
+  request: TdfolShadowProverBridgeProofRequest,
+  options: CecShadowProverOptions = {},
+): TdfolShadowProverBridgeProofResult {
+  return createBrowserNativeTdfolShadowProverBridge(options, request.logic ?? 'K').prove(request);
+}
+
+export function validateTdfolShadowProverBridgeInput(input: TdfolShadowProverBridgeInput): {
+  valid: boolean;
+  errors: Array<string>;
+  warnings: Array<string>;
+  metadata: typeof TDFOL_SHADOW_PROVER_BRIDGE_METADATA;
+} {
+  return createBrowserNativeTdfolShadowProverBridge().validate(input);
 }
 
 function conversion(
@@ -164,6 +194,7 @@ function proofResult(result: ShadowResultFields): TdfolShadowProverBridgeProofRe
   return {
     ...result,
     sourcePythonModule: TDFOL_SHADOW_PROVER_BRIDGE_METADATA.sourcePythonModule,
+    legacySourcePythonModules: TDFOL_SHADOW_PROVER_BRIDGE_METADATA.legacySourcePythonModules,
     browserNative: true,
     serverCallsAllowed: false,
     pythonRuntime: false,

@@ -1910,3 +1910,12 @@ New accepted daemon rounds append the target task, impact statement, changed fil
 - Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T145614Z-ported-the-top-level-tdfol-grammar-bridge-contract-to-browser-native-typescript-.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T145614Z-ported-the-top-level-tdfol-grammar-bridge-contract-to-browser-native-typescript-.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T145614Z-ported-the-top-level-tdfol-grammar-bridge-contract-to-browser-native-typescript-.stat.txt`
 - Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
 
+## 2026-05-04 14:58:33 UTC
+
+- Target: `Task checkbox-403: Port remaining Python logic module `logic/integration/tdfol_shadowprover_bridge.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Summary: Ported the top-level TDFOL ShadowProver bridge contract to browser-native TypeScript helpers.
+- Impact: The TDFOL ShadowProver bridge now reports the selected top-level Python module path, preserves the prior bridges path as legacy metadata, exposes conversion/proof/validation helper functions for browser callers, and validates those paths through the existing Jest integration suite without server, Python, filesystem, subprocess, or RPC fallback.
+- Changed files: `docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`, `src/lib/logic/integration/bridge.test.ts`, `src/lib/logic/integration/tdfolShadowProverBridge.ts`
+- Evidence: `ipfs_datasets_py/.daemon/accepted-work/20260504T145833Z-ported-the-top-level-tdfol-shadowprover-bridge-contract-to-browser-native-typesc.json`, `ipfs_datasets_py/.daemon/accepted-work/20260504T145833Z-ported-the-top-level-tdfol-shadowprover-bridge-contract-to-browser-native-typesc.diff`, `ipfs_datasets_py/.daemon/accepted-work/20260504T145833Z-ported-the-top-level-tdfol-shadowprover-bridge-contract-to-browser-native-typesc.stat.txt`
+- Validation: `npx tsc --noEmit` -> `0`, `npm run validate:logic-port` -> `0`
+

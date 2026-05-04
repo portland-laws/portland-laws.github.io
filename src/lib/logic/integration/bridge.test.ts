@@ -40,7 +40,12 @@ import {
   parseTdfolGrammarBridgeInput,
   validateTdfolGrammarBridgeInput,
 } from './tdfolGrammarBridge';
-import { createBrowserNativeTdfolShadowProverBridge } from './tdfolShadowProverBridge';
+import {
+  convertTdfolToShadowProver,
+  createBrowserNativeTdfolShadowProverBridge,
+  proveTdfolWithShadowProver,
+  validateTdfolShadowProverBridgeInput,
+} from './tdfolShadowProverBridge';
 import {
   createBrowserNativeZ3ProverBridge,
   type BrowserNativeZ3ProofResult,
@@ -306,7 +311,8 @@ describe('BrowserNativeLogicBridge', () => {
       source: '□(O(Comply(Ada)))',
       shadowFormula: '(always (O (Comply Ada)))',
       metadata: {
-        sourcePythonModule: 'logic/integration/bridges/tdfol_shadowprover_bridge.py',
+        sourcePythonModule: 'logic/integration/tdfol_shadowprover_bridge.py',
+        legacySourcePythonModules: ['logic/integration/bridges/tdfol_shadowprover_bridge.py'],
         browserNative: true,
         serverCallsAllowed: false,
         pythonRuntime: false,
@@ -320,7 +326,8 @@ describe('BrowserNativeLogicBridge', () => {
       cecTheorem: '(Resident Ada)',
       shadowLogic: 'K',
       shadowProofStatus: 'success',
-      sourcePythonModule: 'logic/integration/bridges/tdfol_shadowprover_bridge.py',
+      sourcePythonModule: 'logic/integration/tdfol_shadowprover_bridge.py',
+      legacySourcePythonModules: ['logic/integration/bridges/tdfol_shadowprover_bridge.py'],
       browserNative: true,
       serverCallsAllowed: false,
       pythonRuntime: false,
@@ -330,6 +337,63 @@ describe('BrowserNativeLogicBridge', () => {
       method: 'tdfol_shadowprover_bridge:fail_closed',
       shadowLogic: 'LP',
       shadowProofStatus: 'error',
+      serverCallsAllowed: false,
+      pythonRuntime: false,
+    });
+  });
+
+  it('exposes top-level tdfol_shadowprover_bridge.py helpers without external fallbacks', () => {
+    const converted = convertTdfolToShadowProver('P(Inspect(Ada))');
+    const validation = validateTdfolShadowProverBridgeInput('P(Inspect(Ada))');
+    const invalid = validateTdfolShadowProverBridgeInput('always(');
+    const result = proveTdfolWithShadowProver({
+      theorem: 'P(Inspect(Ada))',
+      axioms: ['P(Inspect(Ada))'],
+      logic: 'S4',
+    });
+
+    expect(converted).toMatchObject({
+      status: 'success',
+      shadowFormula: '(P (Inspect Ada))',
+      metadata: {
+        sourcePythonModule: 'logic/integration/tdfol_shadowprover_bridge.py',
+        legacySourcePythonModules: ['logic/integration/bridges/tdfol_shadowprover_bridge.py'],
+        serverCallsAllowed: false,
+        pythonRuntime: false,
+        failClosed: true,
+      },
+    });
+    expect(validation).toMatchObject({
+      valid: true,
+      errors: [],
+      warnings: [],
+      metadata: {
+        sourcePythonModule: 'logic/integration/tdfol_shadowprover_bridge.py',
+        serverCallsAllowed: false,
+        pythonRuntime: false,
+      },
+    });
+    expect(invalid).toMatchObject({
+      valid: false,
+      metadata: {
+        sourcePythonModule: 'logic/integration/tdfol_shadowprover_bridge.py',
+        serverCallsAllowed: false,
+        pythonRuntime: false,
+        failClosed: true,
+      },
+    });
+    expect(invalid.warnings).toContain(
+      'TDFOL ShadowProver bridge failed closed without external fallback.',
+    );
+    expect(result).toMatchObject({
+      status: 'proved',
+      method: 'tdfol_shadowprover_bridge:direct-assumption',
+      cecTheorem: '(P (Inspect Ada))',
+      shadowLogic: 'S4',
+      shadowProofStatus: 'success',
+      sourcePythonModule: 'logic/integration/tdfol_shadowprover_bridge.py',
+      legacySourcePythonModules: ['logic/integration/bridges/tdfol_shadowprover_bridge.py'],
+      browserNative: true,
       serverCallsAllowed: false,
       pythonRuntime: false,
     });
