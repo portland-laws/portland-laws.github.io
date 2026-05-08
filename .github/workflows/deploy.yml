@@ -44,22 +44,22 @@ jobs:
           enablement: true
       - name: Validate OpenRouter proxy config
         run: |
-          if [ -z "$VITE_OPENROUTER_BASE_URL" ]; then
-            echo "::error::Missing GitHub Actions repository variable VITE_OPENROUTER_BASE_URL. Set it to https://<your-vercel-app>.vercel.app/api/openrouter before deploying GitHub Pages."
-            exit 1
+          if [ -n "$VITE_OPENROUTER_BASE_URL" ]; then
+            case "$VITE_OPENROUTER_BASE_URL" in
+              *openrouter.ai*)
+                echo "::error::VITE_OPENROUTER_BASE_URL must point to the serverless proxy, not directly to OpenRouter."
+                exit 1
+                ;;
+            esac
+          else
+            echo "::notice::VITE_OPENROUTER_BASE_URL is not set; building with OpenRouter fallback disabled."
           fi
-          case "$VITE_OPENROUTER_BASE_URL" in
-            *openrouter.ai*)
-              echo "::error::VITE_OPENROUTER_BASE_URL must point to the serverless proxy, not directly to OpenRouter."
-              exit 1
-              ;;
-          esac
         env:
           VITE_OPENROUTER_BASE_URL: ${{ vars.VITE_OPENROUTER_BASE_URL }}
       - name: Build
         run: npx vite build
         env:
-          VITE_OPENROUTER_ENABLED: "true"
+          VITE_OPENROUTER_ENABLED: ${{ vars.VITE_OPENROUTER_BASE_URL != '' && 'true' || 'false' }}
           VITE_OPENROUTER_BASE_URL: ${{ vars.VITE_OPENROUTER_BASE_URL }}
           VITE_OPENROUTER_DEFAULT_MODEL: liquid/lfm-2.5-1.2b-instruct:free
           VITE_OPENROUTER_THINKING_MODEL: liquid/lfm-2.5-1.2b-thinking:free
