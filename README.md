@@ -145,7 +145,7 @@ Recommended setup:
 
 For the GitHub Pages workflow, add `VITE_OPENROUTER_BASE_URL` as a GitHub repository variable under
 **Settings → Secrets and variables → Actions → Variables**. The deploy workflow injects that value at build time.
-If this variable is missing, the deploy workflow fails rather than publishing a bundle that cannot use cloud fallback.
+If this variable is missing, deploy still succeeds and the app builds with OpenRouter cloud fallback disabled.
 
 For quick testing on an already-deployed static bundle, you can temporarily set the proxy URL in browser devtools and reload:
 
