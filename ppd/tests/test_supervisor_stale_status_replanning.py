@@ -11,6 +11,7 @@ from ppd.daemon.ppd_supervisor import (
     SupervisorConfig,
     append_jsonl,
     build_supervisor_prompt,
+    builtin_blocked_cascade_replenish_task_board,
     builtin_dead_worker_task_board,
     builtin_repair_task_board,
     builtin_stalled_worker_task_board,
@@ -277,6 +278,28 @@ class SupervisorStaleStatusReplanningTest(unittest.TestCase):
         self.assertEqual("reconcile_dead_worker_with_recent_failures_and_restart", decision.action)
         self.assertFalse(decision.should_invoke_codex)
         self.assertTrue(decision.should_restart_daemon)
+
+    def test_blocked_cascade_appends_deterministic_repair_tasks_without_llm(self) -> None:
+        with tempfile.TemporaryDirectory() as tempdir:
+            repo = Path(tempdir)
+            board_path = repo / "ppd" / "daemon" / "task-board.md"
+            board_path.parent.mkdir(parents=True)
+            board = (
+                "- [!] Task checkbox-178: Blocked domain task.\n"
+                "- [!] Task checkbox-182: Blocked daemon diagnostics task.\n"
+            )
+            board_path.write_text(board, encoding="utf-8")
+
+            decision = diagnose(SupervisorConfig(repo_root=repo, pid_file=Path("ppd/daemon/missing.pid")))
+            repaired, labels = builtin_blocked_cascade_replenish_task_board(board)
+
+        self.assertEqual("reconcile_blocked_cascade_and_restart", decision.action)
+        self.assertFalse(decision.should_invoke_codex)
+        self.assertTrue(decision.should_restart_daemon)
+        self.assertEqual(("checkbox-183", "checkbox-184", "checkbox-185", "checkbox-186"), labels)
+        self.assertIn("Built-In Blocked Cascade Recovery Tranche", repaired)
+        self.assertIn("blocked-cascade recovery coverage", repaired)
+        self.assertIn("- [!] Task checkbox-178: Blocked domain task.", repaired)
 
 
 if __name__ == "__main__":

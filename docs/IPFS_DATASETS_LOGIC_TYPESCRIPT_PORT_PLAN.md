@@ -717,12 +717,12 @@ These tasks were added automatically after the daemon found no eligible unchecke
 - [x] Port remaining Python logic module `logic/CEC/native/dcec_core.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [x] Port remaining Python logic module `logic/CEC/native/dcec_english_grammar.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [!] Port remaining Python logic module `logic/CEC/native/dcec_integration.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/dcec_namespace.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/dcec_parsing.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/dcec_prototypes.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/dcec_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/enhanced_grammar_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
-- [ ] Port remaining Python logic module `logic/CEC/native/error_handling.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/dcec_namespace.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/dcec_parsing.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/dcec_prototypes.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/dcec_types.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/enhanced_grammar_parser.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
+- [!] Port remaining Python logic module `logic/CEC/native/error_handling.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/event_calculus.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/exceptions.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
 - [ ] Port remaining Python logic module `logic/CEC/native/grammar_engine.py` to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.
@@ -966,11 +966,11 @@ These tasks were added automatically after the daemon found no eligible unchecke
 <!-- logic-port-daemon-task-board:start -->
 ## Daemon Task Board
 
-Last updated: 2026-05-03 06:31:43 UTC
+Last updated: 2026-05-03 10:48:02 UTC
 
 Selection policy: choose the first needed or in-progress port-plan checkbox; if none remain, revisit blocked checkboxes with `fewest-failures` strategy because blocked-task revisit mode is enabled.
 
-Current target: `Task checkbox-207: Port remaining Python logic module 'logic/CEC/native/dcec_namespace.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+Current target: `Task checkbox-213: Port remaining Python logic module 'logic/CEC/native/event_calculus.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 
 Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failing.
 
@@ -1182,13 +1182,13 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 - [x] `Task checkbox-204: Port remaining Python logic module 'logic/CEC/native/dcec_core.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [x] `Task checkbox-205: Port remaining Python logic module 'logic/CEC/native/dcec_english_grammar.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - complete
 - [!] `Task checkbox-206: Port remaining Python logic module 'logic/CEC/native/dcec_integration.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
-- [!] `Task checkbox-207: Port remaining Python logic module 'logic/CEC/native/dcec_namespace.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - latest daemon round failed validation or preflight
-- [ ] `Task checkbox-208: Port remaining Python logic module 'logic/CEC/native/dcec_parsing.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
-- [ ] `Task checkbox-209: Port remaining Python logic module 'logic/CEC/native/dcec_prototypes.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
-- [ ] `Task checkbox-210: Port remaining Python logic module 'logic/CEC/native/dcec_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
-- [ ] `Task checkbox-211: Port remaining Python logic module 'logic/CEC/native/enhanced_grammar_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
-- [ ] `Task checkbox-212: Port remaining Python logic module 'logic/CEC/native/error_handling.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
-- [ ] `Task checkbox-213: Port remaining Python logic module 'logic/CEC/native/event_calculus.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
+- [!] `Task checkbox-207: Port remaining Python logic module 'logic/CEC/native/dcec_namespace.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [!] `Task checkbox-208: Port remaining Python logic module 'logic/CEC/native/dcec_parsing.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [!] `Task checkbox-209: Port remaining Python logic module 'logic/CEC/native/dcec_prototypes.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [!] `Task checkbox-210: Port remaining Python logic module 'logic/CEC/native/dcec_types.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [!] `Task checkbox-211: Port remaining Python logic module 'logic/CEC/native/enhanced_grammar_parser.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [!] `Task checkbox-212: Port remaining Python logic module 'logic/CEC/native/error_handling.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - blocked
+- [!] `Task checkbox-213: Port remaining Python logic module 'logic/CEC/native/event_calculus.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - latest daemon round failed validation or preflight
 - [ ] `Task checkbox-214: Port remaining Python logic module 'logic/CEC/native/exceptions.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-215: Port remaining Python logic module 'logic/CEC/native/grammar_engine.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
 - [ ] `Task checkbox-216: Port remaining Python logic module 'logic/CEC/native/grammar_loader.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.` - needed
@@ -1430,83 +1430,449 @@ Legend: `[ ]` needed, `[~]` in progress, `[x]` complete, `[!]` blocked or failin
 
 ### Latest Round
 
-- Target: `Task checkbox-207: Port remaining Python logic module 'logic/CEC/native/dcec_namespace.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
+- Target: `Task checkbox-213: Port remaining Python logic module 'logic/CEC/native/event_calculus.py' to browser-native TypeScript/WASM, including focused validation tests and no server or Python runtime dependency.`
 - Result: `needs follow-up`
-- Summary: Add browser-native DCEC namespace validation parity
-- Impact: The DCEC namespace source now implements deterministic TypeScript validation for Python-style namespace symbols, sort references, predicate arity lookups, duplicate labels, and container bookkeeping. The matching Jest test file exercises the new runtime validation paths used by the TypeScript logic-port validation suite.
+- Summary: Add browser-native Python-style Event Calculus surface aliases
+- Impact: src/lib/logic/cec/eventCalculus.ts exposes Python-compatible Event, Fluent, TimePoint constructors plus snake_case EventCalculus methods while preserving existing camelCase exports. src/lib/logic/cec/eventCalculus.test.ts validates Python-module-shaped event_calculus workflows directly in the Jest logic-port suite without Python, server, filesystem, subprocess, RPC, or Node-only runtime dependencies.
 - Errors: Preflight repair still produced rejected TypeScript replacements:
 Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/cec/dcecNamespace.ts(230,44): error TS1005: ')' expected.
-../../..src/lib/logic/cec/dcecNamespace.ts(230,53): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/cec/eventCalculus.ts(55,3): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/cec/eventCalculus.ts(131,33): error TS1005: ';' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(131,35): error TS1005: ';' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(135,25): error TS1005: ';' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(143,26): error TS1005: ',' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(143,50): error TS1005: ';' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(144,12): error TS1005: ':' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(144,38): error TS1005: ',' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(147,21): error TS1005: ',' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(147,54): error TS1005: ',' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(147,78): error TS1005: ';' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(148,11): error TS1005: ':' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(148,43): error TS1005: ',' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(149,11): error TS1005: ':' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(149,18): error TS1005: ',' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(149,34): error TS1005: '(' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(149,37): error TS1109: Expression expected.
+../../..src/lib/logic/cec/eventCalculus.ts(149,38): error TS1005: ':' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(150,9): error TS1005: ',' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(150,38): error TS1005: ',' expected.
 
 Replacement diagnostic context:
-src/lib/logic/cec/dcecNamespace.ts:230:44 TS1005: ')' expected.
-  228: 
-  229:   private validateArity(arity: number, operation: string): void {
-> 230:     if (!Number.isInteger(arity) || arity  MAX_ARITY) {
-  231:       throw new DcecNamespaceError(`Invalid arity ${arity}`, {
-  232:         operation,; Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
-../../..src/lib/logic/cec/dcecNamespace.ts(229,44): error TS1005: ')' expected.
-../../..src/lib/logic/cec/dcecNamespace.ts(229,53): error TS1128: Declaration or statement expected.
+src/lib/logic/cec/eventCalculus.ts:55:3 TS1128: Declaration or statement expected.
+  53:   lessThan(other: CecTimePoint | number): boolean {
+  54:     return this.value ();
+> 55:   private readonly initiationRules = new Set();
+  56:   private readonly terminationRules = new Set();
+  57:   private readonly releaseRules = new Set();
+
+src/lib/logic/cec/eventCalculus.ts:131:33 TS1005: ';' expected.
+  129:     const normalizedTime = normalizeTime(time);
+  130:     return this.eventEntries().some(({ event, time: eventTime }) => {
+> 131:       return eventTime = endTime) return false;
+  132: 
+  133:     const target = toFluentTerm(fluent);
+
+src/lib/logic/cec/eventCalculus.ts:135:25 TS1005: ';' expected.
+  133:     const target = toFluentTerm(fluent);
+  134:     return this.eventEntries().some(({ event, time }) => {
+> 135:       return startTime  {
+  136:     const normalizedTime = normalizeTime(time);
+  137:     return Array.from(this.knownFluentKeys())
+
+src/lib/logic/cec/eventCalculus.ts:143:26 TS1005: ',' expected.
+  141:   }
+  142: 
+> 143:   get_all_fluents_at(time: CecTimePoint | number): Array<unknown> {
+  144:     return this.getAllFluentsAt(time);
+  145:   }
+
+src/lib/logic/cec/eventCalculus.ts:144:12 TS1005: ':' expected.
+  142: 
+  143:   get_all_fluents_at(time: CecTimePoint | number): Array<unknown> {
+> 144:     return this.getAllFluentsAt(time);
+  145:   }
+  146: 
+
+src/lib/logic/cec/eventCalculus.ts:147:21 TS1005: ',' expected.
+  145:   }
+  146: 
+> 147:   getTimeline(fluent: CecFluentTerm | string, maxTime: CecTimePoint | number): Array<unknown> {
+  148:     const endTime = normalizeTime(maxTime);
+  149:     const entries: Array<string> = [];
+
+src/lib/logic/cec/eventCalculus.ts:148:11 TS1005: ':' expected.
+  146: 
+  147:   getTimeline(fluent: CecFluentTerm | string, maxTime: CecTimePoint | number): Array<unknown> {
+> 148:     const endTime = normalizeTime(maxTime);
+  149:     const entries: Array<string> = [];
+  150:     let previous: boolean | undefined;
+
+src/lib/logic/cec/eventCalculus.ts:149:11 TS1005: ':' expected.
+  147:   getTimeline(fluent: CecFluentTerm | string, maxTime: CecTimePoint | number): Array<unknown> {
+  148:     const endTime = normalizeTime(maxTime);
+> 149:     const entries: Array<string> = [];
+  150:     let previous: boolean | undefined;
+  151: 
+
+src/lib/logic/cec/eventCalculus.ts:150:9 TS1005: ',' expected.
+  148:     const endTime = normalizeTime(maxTime);
+  149:     const entries: Array<string> = [];
+> 150:     let previous: boolean | undefined;
+  151: 
+  152:     for (let time = 0; time  {
+
+src/lib/logic/cec/eventCalculus.ts:152:14 TS1005: ',' expected.
+  150:     let previous: boolean | undefined;
+  151: 
+> 152:     for (let time = 0; time  {
+  153:     return this.getTimeline(fluent, maxTime);
+  154:   }
+
+src/lib/logic/cec/eventCalculus.ts:156:22 TS1005: ',' expected.
+  154:   }
+  155: 
+> 156:   loadFact(expression: CecExpression): boolean {
+  157:     if (expression.kind !== 'application') return false;
+  158:     const predicate = normalizePredicate(expression.name);
+
+src/lib/logic/cec/eventCalculus.ts:182:23 TS1005: ',' expected.
+  180:   }
+  181: 
+> 182:   load_fact(expression: CecExpression): boolean {
+  183:     return this.loadFact(expression);
+  184:   }
+
+src/lib/logic/cec/eventCalculus.ts:186:31 TS1005: ',' expected.
+  184:   }
+  185: 
+> 186:   evaluatePredicate(expression: CecExpression): boolean | undefined {
+  187:     if (expression.kind !== 'application') return undefined;
+  188:     const predicate = normalizePredicate(expression.name);
+
+src/lib/logic/cec/eventCalculus.ts:202:32 TS1005: ',' expected.
+  200:   }
+  201: 
+> 202:   evaluate_predicate(expression: CecExpression): boolean | undefined {
+  203:     return this.evaluatePredicate(expression);
+  204:   }
+
+src/lib/logic/cec/eventCalculus.ts:206:10 TS1005: ';' expected.
+  204:   }
+  205: 
+> 206:   clear(): void {
+  207:     this.eventOccurrences.clear();
+  208:     this.initiationRules.clear();
+
+src/lib/logic/cec/eventCalculus.ts:207:9 TS1005: ':' expected.
+  205: 
+  206:   clear(): void {
+> 207:     this.eventOccurrences.clear();
+  208:     this.initiationRules.clear();
+  209:     this.terminationRules.clear();
+
+src/lib/logic/cec/eventCalculus.ts:208:9 TS1005: ':' expected.
+  206:   clear(): void {
+  207:     this.eventOccurrences.clear();
+> 208:     this.initiationRules.clear();
+  209:     this.terminationRules.clear();
+  210:     this.releaseRules.clear();
+
+src/lib/logic/cec/eventCalculus.ts:209:9 TS1005: ':' expected.
+  207:     this.eventOccurrences.clear();
+  208:     this.initiationRules.clear();
+> 209:     this.terminationRules.clear();
+  210:     this.releaseRules.clear();
+  211:     this.initiallyTrue.clear();
+
+src/lib/logic/cec/eventCalculus.ts:210:9 TS1005: ':' expected.
+  208:     this.initiationRules.clear();
+  209:     this.terminationRules.clear();
+> 210:     this.releaseRules.clear();
+  211:     this.initiallyTrue.clear();
+  212:     this.clearCache();
+
+src/lib/logic/cec/eventCalculus.ts:211:9 TS1005: ':' expected.
+  209:     this.terminationRules.clear();
+  210:     this.releaseRules.clear();
+> 211:     this.initiallyTrue.clear();
+  212:     this.clearCache();
+  213:   }
+
+src/lib/logic/cec/eventCalculus.ts:212:9 TS1005: ':' expected.
+  210:     this.releaseRules.clear();
+  211:     this.initiallyTrue.clear();
+> 212:     this.clearCache();
+  213:   }
+  214: 
+
+src/lib/logic/cec/eventCalculus.ts:215:18 TS1005: ';' expected.
+  213:   }
+  214: 
+> 215:   getStatistics(): CecEventCalculusStats {
+  216:     return {
+  217:       eventOccurrences: this.eventOccurrences.size,
+
+src/lib/logic/cec/eventCalculus.ts:226:19 TS1005: ';' expected.
+  224:   }
+  225: 
+> 226:   get_statistics(): CecEventCalculusStats {
+  227:     return this.getStatistics();
+  228:   }
+
+src/lib/logic/cec/eventCalculus.ts:230:3 TS1128: Declaration or statement expected.
+  228:   }
+  229: 
+> 230:   private computeHoldsAt(fluent: CecFluentTerm, time: number): boolean {
+  231:     if (this.releasedAt(fluent, tim; Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree:
+../../..src/lib/logic/cec/eventCalculus.ts(55,3): error TS1128: Declaration or statement expected.
+../../..src/lib/logic/cec/eventCalculus.ts(145,18): error TS1005: ')' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(146,25): error TS1005: ';' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(153,26): error TS1005: ',' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(153,50): error TS1005: ';' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(154,12): error TS1005: ':' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(154,38): error TS1005: ',' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(157,21): error TS1005: ',' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(157,54): error TS1005: ',' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(157,78): error TS1005: ';' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(158,11): error TS1005: ':' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(158,43): error TS1005: ',' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(159,11): error TS1005: ':' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(159,18): error TS1005: ',' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(159,34): error TS1005: '(' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(159,37): error TS1109: Expression expected.
+../../..src/lib/logic/cec/eventCalculus.ts(159,38): error TS1005: ':' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(160,9): error TS1005: ',' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(160,38): error TS1005: ',' expected.
+../../..src/lib/logic/cec/eventCalculus.ts(161,14): error TS1005: ',' expected.
 
 Replacement diagnostic context:
-src/lib/logic/cec/dcecNamespace.ts:229:44 TS1005: ')' expected.
-  227: 
-  228:   private validateArity(arity: number, operation: string): void {
-> 229:     if (!Number.isInteger(arity) || arity  MAX_ARITY) {
-  230:       throw new DcecNamespaceError(`Invalid arity ${arity}`, {
-  231:         operation,
+src/lib/logic/cec/eventCalculus.ts:55:3 TS1128: Declaration or statement expected.
+  53:   lessThan(other: CecTimePoint | number): boolean {
+  54:     return this.value ();
+> 55:   private readonly initiationRules = new Set();
+  56:   private readonly terminationRules = new Set();
+  57:   private readonly releaseRules = new Set();
+
+src/lib/logic/cec/eventCalculus.ts:145:18 TS1005: ')' expected.
+  143:     const startTime = normalizeTime(start);
+  144:     const endTime = normalizeTime(end);
+> 145:     if (endTime  {
+  146:       return startTime  {
+  147:     const normalizedTime = normalizeTime(time);
+
+src/lib/logic/cec/eventCalculus.ts:146:25 TS1005: ';' expected.
+  144:     const endTime = normalizeTime(end);
+  145:     if (endTime  {
+> 146:       return startTime  {
+  147:     const normalizedTime = normalizeTime(time);
+  148:     return Array.from(this.knownFluentKeys())
+
+src/lib/logic/cec/eventCalculus.ts:153:26 TS1005: ',' expected.
+  151:   }
+  152: 
+> 153:   get_all_fluents_at(time: CecTimePoint | number): Array<unknown> {
+  154:     return this.getAllFluentsAt(time);
+  155:   }
+
+src/lib/logic/cec/eventCalculus.ts:154:12 TS1005: ':' expected.
+  152: 
+  153:   get_all_fluents_at(time: CecTimePoint | number): Array<unknown> {
+> 154:     return this.getAllFluentsAt(time);
+  155:   }
+  156: 
+
+src/lib/logic/cec/eventCalculus.ts:157:21 TS1005: ',' expected.
+  155:   }
+  156: 
+> 157:   getTimeline(fluent: CecFluentTerm | string, maxTime: CecTimePoint | number): Array<unknown> {
+  158:     const endTime = normalizeTime(maxTime);
+  159:     const entries: Array<string> = [];
+
+src/lib/logic/cec/eventCalculus.ts:158:11 TS1005: ':' expected.
+  156: 
+  157:   getTimeline(fluent: CecFluentTerm | string, maxTime: CecTimePoint | number): Array<unknown> {
+> 158:     const endTime = normalizeTime(maxTime);
+  159:     const entries: Array<string> = [];
+  160:     let previous: boolean | undefined;
+
+src/lib/logic/cec/eventCalculus.ts:159:11 TS1005: ':' expected.
+  157:   getTimeline(fluent: CecFluentTerm | string, maxTime: CecTimePoint | number): Array<unknown> {
+  158:     const endTime = normalizeTime(maxTime);
+> 159:     const entries: Array<string> = [];
+  160:     let previous: boolean | undefined;
+  161:     for (let time = 0; time  {
+
+src/lib/logic/cec/eventCalculus.ts:160:9 TS1005: ',' expected.
+  158:     const endTime = normalizeTime(maxTime);
+  159:     const entries: Array<string> = [];
+> 160:     let previous: boolean | undefined;
+  161:     for (let time = 0; time  {
+  162:     return this.getTimeline(fluent, maxTime);
+
+src/lib/logic/cec/eventCalculus.ts:161:14 TS1005: ',' expected.
+  159:     const entries: Array<string> = [];
+  160:     let previous: boolean | undefined;
+> 161:     for (let time = 0; time  {
+  162:     return this.getTimeline(fluent, maxTime);
+  163:   }
+
+src/lib/logic/cec/eventCalculus.ts:162:12 TS1005: ':' expected.
+  160:     let previous: boolean | undefined;
+  161:     for (let time = 0; time  {
+> 162:     return this.getTimeline(fluent, maxTime);
+  163:   }
+  164: 
+
+src/lib/logic/cec/eventCalculus.ts:165:22 TS1005: ',' expected.
+  163:   }
+  164: 
+> 165:   loadFact(expression: CecExpression): boolean {
+  166:     if (expression.kind !== 'application') return false;
+  167:     const predicate = normalizePredicate(expression.name);
+
+src/lib/logic/cec/eventCalculus.ts:190:23 TS1005: ',' expected.
+  188:   }
+  189: 
+> 190:   load_fact(expression: CecExpression): boolean {
+  191:     return this.loadFact(expression);
+  192:   }
+
+src/lib/logic/cec/eventCalculus.ts:194:31 TS1005: ',' expected.
+  192:   }
+  193: 
+> 194:   evaluatePredicate(expression: CecExpression): boolean | undefined {
+  195:     if (expression.kind !== 'application') return undefined;
+  196:     const predicate = normalizePredicate(expression.name);
+
+src/lib/logic/cec/eventCalculus.ts:208:32 TS1005: ',' expected.
+  206:   }
+  207: 
+> 208:   evaluate_predicate(expression: CecExpression): boolean | undefined {
+  209:     return this.evaluatePredicate(expression);
+  210:   }
+
+src/lib/logic/cec/eventCalculus.ts:212:10 TS1005: ';' expected.
+  210:   }
+  211: 
+> 212:   clear(): void {
+  213:     this.eventOccurrences.clear();
+  214:     this.initiationRules.clear();
+
+src/lib/logic/cec/eventCalculus.ts:213:9 TS1005: ':' expected.
+  211: 
+  212:   clear(): void {
+> 213:     this.eventOccurrences.clear();
+  214:     this.initiationRules.clear();
+  215:     this.terminationRules.clear();
+
+src/lib/logic/cec/eventCalculus.ts:214:9 TS1005: ':' expected.
+  212:   clear(): void {
+  213:     this.eventOccurrences.clear();
+> 214:     this.initiationRules.clear();
+  215:     this.terminationRules.clear();
+  216:     this.releaseRules.clear();
+
+src/lib/logic/cec/eventCalculus.ts:215:9 TS1005: ':' expected.
+  213:     this.eventOccurrences.clear();
+  214:     this.initiationRules.clear();
+> 215:     this.terminationRules.clear();
+  216:     this.releaseRules.clear();
+  217:     this.initiallyTrue.clear();
+
+src/lib/logic/cec/eventCalculus.ts:216:9 TS1005: ':' expected.
+  214:     this.initiationRules.clear();
+  215:     this.terminationRules.clear();
+> 216:     this.releaseRules.clear();
+  217:     this.initiallyTrue.clear();
+  218:     this.clearCache();
+
+src/lib/logic/cec/eventCalculus.ts:217:9 TS1005: ':' expected.
+  215:     this.terminationRules.clear();
+  216:     this.releaseRules.clear();
+> 217:     this.initiallyTrue.clear();
+  218:     this.clearCache();
+  219:   }
+
+src/lib/logic/cec/eventCalculus.ts:218:9 TS1005: ':' expected.
+  216:     this.releaseRules.clear();
+  217:     this.initiallyTrue.clear();
+> 218:     this.clearCache();
+  219:   }
+  220: 
+
+src/lib/logic/cec/eventCalculus.ts:221:18 TS1005: ';' expected.
+  219:   }
+  220: 
+> 221:   getStatistics(): CecEventCalculusStats {
+  222:     return {
+  223:       eventOccurrences: this.eventOccurrences.size,
+
+src/lib/logic/cec/eventCalculus.ts:232:19 TS1005: ';' expected.
+  230:   }
+  231: 
+> 232:   get_statistics(): CecEventCalculusStats {
+  233:     retu
 - Failure kind: `typescript_quality`
 
 ### Blocked Backlog
 
 - `Task checkbox-106: Browser-native ZKP acceleration and parallel proof search parity.`
   - Failures since success: `5`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"daemon_exception": 3, "parse": 2}`
   - Latest failure kind: `daemon_exception`
   - Latest errors: llm_router could not generate with model='gpt-5.5' provider='auto'. Configure the provider credentials or pass --provider. Original error: copilot CLI binary not found on PATH (required for session/tracing flags). Install the GitHub Copilot...
 - `Task checkbox-107: Complete modal tableaux and countermodel generation/visualization parity.`
   - Failures since success: `3`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"daemon_exception": 3}`
   - Latest failure kind: `daemon_exception`
   - Latest errors: llm_router could not generate with model='gpt-5.5' provider='auto'. Configure the provider credentials or pass --provider. Original error: copilot CLI binary not found on PATH (required for session/tracing flags). Install the GitHub Copilot...
 - `Task checkbox-111: Complete TDFOL security validator parity.`
   - Failures since success: `3`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"daemon_exception": 3}`
   - Latest failure kind: `daemon_exception`
   - Latest errors: llm_router could not generate with model='gpt-5.5' provider='auto'. Configure the provider credentials or pass --provider. Original error: copilot CLI binary not found on PATH (required for session/tracing flags). Install the GitHub Copilot...
 - `Task checkbox-174: Port 'ml_confidence.py' to local browser inference or an equivalent deterministic TypeScript model.`
   - Failures since success: `3`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"typescript_quality": 3}`
   - Latest failure kind: `typescript_quality`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/mlConfidence.ts(13,14): error TS2314: Generic type 'Record' requires 2 type argument(...
 - `Task checkbox-175: Add local model artifact loading, caching, versioning, and unload controls.`
   - Failures since success: `3`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"typescript_quality": 3}`
   - Latest failure kind: `typescript_quality`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/modelArtifacts.ts(185,42): error TS1005: ')' expected. ../../..src/lib/logic/modelArt...
 - `Task checkbox-177: Remove 'nlpUnavailable' and 'mlUnavailable' capability flags once browser-native parity is implemented.`
   - Failures since success: `3`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"typescript_quality": 3}`
   - Latest failure kind: `typescript_quality`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/fol/parser.ts(164,20): error TS1005: ')' expected. ../../..src/lib/logic/fol/parser.t...
 - `Task checkbox-181: Port EVM/public-input/vk-registry helpers using browser-compatible crypto and chain libraries.`
   - Failures since success: `3`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"typescript_quality": 3}`
   - Latest failure kind: `typescript_quality`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/zkp/evmVkRegistry.ts(91,41): error TS2314: Generic type 'Promise<T>' requires 1 type...
 - `Task checkbox-190: Add richer developer-panel integration for live UI inspection.`
   - Failures since success: `3`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"typescript_quality": 3}`
   - Latest failure kind: `typescript_quality`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/developerPanel.ts(181,23): error TS1005: ';' expected. ../../..src/lib/logic/develope...
 - `Task checkbox-193: Add CLI/devtools command adapter parity for 'logic/cli.py'.`
   - Failures since success: `3`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"typescript_quality": 3}`
   - Latest failure kind: `typescript_quality`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/cliCommandAdapter.ts(125,61): error TS1005: ';' expected. ../../..src/lib/logic/cliCo...
 - `Task checkbox-194: Port IPFS/IPLD proof cache semantics to browser-native storage/IPFS clients where possible.`
   - Failures since success: `3`
+  - Autonomous revisit: `skipped; task failure budget exhausted`
   - Failure kinds: `{"typescript_quality": 3}`
   - Latest failure kind: `typescript_quality`
   - Latest errors: Rejected proposal because TypeScript replacement preflight found parser or generic/type-quality errors before touching the worktree: ../../..src/lib/logic/proofCache.ts(50,17): error TS1005: ';' expected. ../../..src/lib/logic/proofCache.ts...

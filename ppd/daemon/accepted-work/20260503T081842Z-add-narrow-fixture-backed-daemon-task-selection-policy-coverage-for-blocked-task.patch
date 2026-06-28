@@ -1,0 +1,359 @@
+--- a/ppd/daemon/task_selection_policy.py
++++ b/ppd/daemon/task_selection_policy.py
+@@ -0,0 +1,193 @@
++"""Deterministic PP&D daemon task-selection helpers.
++
++This module is intentionally small and fixture-friendly. It models only the
++blocked-task selection rule used by supervisor repair tests: blocked work is not
++eligible again until a newer non-blocked daemon repair task has been accepted or
++a human explicitly reopens that blocked task.
++"""
++
++from __future__ import annotations
++
++from dataclasses import dataclass
++from datetime import datetime, timezone
++from typing import Iterable, Mapping, Optional, Sequence
++
++
++BLOCKED_STATUS = "blocked"
++COMPLETE_STATUS = "complete"
++OPEN_STATUS = "open"
++REPAIR_KIND = "daemon_repair"
++DOMAIN_KIND = "domain"
++
++
++@dataclass(frozen=True)
++class TaskSelectionRecord:
++    """Minimal task state needed by PP&D daemon selection tests."""
++
++    task_id: str
++    title: str
++    status: str
++    kind: str
++    created_order: int
++    blocked_at: Optional[str] = None
++    reopened_by_human_at: Optional[str] = None
++
++    @property
++    def is_complete(self) -> bool:
++        return self.status == COMPLETE_STATUS
++
++    @property
++    def is_blocked(self) -> bool:
++        return self.status == BLOCKED_STATUS
++
++    @property
++    def is_repair(self) -> bool:
++        return self.kind == REPAIR_KIND
++
++    @property
++    def is_open(self) -> bool:
++        return self.status == OPEN_STATUS
++
++
++@dataclass(frozen=True)
++class AcceptedRepairRecord:
++    """Accepted daemon repair evidence relevant to blocked-task retry gates."""
++
++    task_id: str
++    accepted_at: str
++    kind: str = REPAIR_KIND
++
++    @property
++    def is_non_blocked_repair(self) -> bool:
++        return self.kind == REPAIR_KIND
++
++
++def select_next_task(
++    tasks: Sequence[TaskSelectionRecord],
++    accepted_repairs: Sequence[AcceptedRepairRecord] = (),
++) -> Optional[TaskSelectionRecord]:
++    """Select the next eligible PP&D task.
++
++    Selection prefers the newest open daemon-repair task. Blocked tasks are
++    skipped unless a newer accepted non-blocked repair exists after the task was
++    blocked or a human explicitly reopened the task.
++    """
++
++    eligible = [task for task in tasks if _is_selectable(task, accepted_repairs)]
++    if not eligible:
++        return None
++    eligible.sort(key=_selection_key, reverse=True)
++    return eligible[0]
++
++
++def skipped_blocked_task_ids(
++    tasks: Iterable[TaskSelectionRecord],
++    accepted_repairs: Sequence[AcceptedRepairRecord] = (),
++) -> tuple[str, ...]:
++    """Return blocked task ids that the selector must skip in this cycle."""
++
++    skipped: list[str] = []
++    for task in tasks:
++        if task.is_blocked and not _blocked_task_reopened(task, accepted_repairs):
++            skipped.append(task.task_id)
++    return tuple(skipped)
++
++
++def tasks_from_fixture(data: Mapping[str, object]) -> tuple[TaskSelectionRecord, ...]:
++    """Build task records from a committed JSON fixture."""
++
++    raw_tasks = data.get("tasks", ())
++    if not isinstance(raw_tasks, list):
++        raise ValueError("fixture tasks must be a list")
++
++    tasks: list[TaskSelectionRecord] = []
++    for index, raw_task in enumerate(raw_tasks):
++        if not isinstance(raw_task, Mapping):
++            raise ValueError("each fixture task must be an object")
++        tasks.append(
++            TaskSelectionRecord(
++                task_id=str(raw_task.get("task_id", "")),
++                title=str(raw_task.get("title", "")),
++                status=str(raw_task.get("status", OPEN_STATUS)),
++                kind=str(raw_task.get("kind", DOMAIN_KIND)),
++                created_order=int(raw_task.get("created_order", index)),
++                blocked_at=_optional_string(raw_task.get("blocked_at")),
++                reopened_by_human_at=_optional_string(raw_task.get("reopened_by_human_at")),
++            )
++        )
++    return tuple(tasks)
++
++
++def accepted_repairs_from_fixture(data: Mapping[str, object]) -> tuple[AcceptedRepairRecord, ...]:
++    """Build accepted repair records from a committed JSON fixture."""
++
++    raw_repairs = data.get("accepted_repairs", ())
++    if not isinstance(raw_repairs, list):
++        raise ValueError("fixture accepted_repairs must be a list")
++
++    repairs: list[AcceptedRepairRecord] = []
++    for raw_repair in raw_repairs:
++        if not isinstance(raw_repair, Mapping):
++            raise ValueError("each accepted repair fixture entry must be an object")
++        repairs.append(
++            AcceptedRepairRecord(
++                task_id=str(raw_repair.get("task_id", "")),
++                accepted_at=str(raw_repair.get("accepted_at", "")),
++                kind=str(raw_repair.get("kind", REPAIR_KIND)),
++            )
++        )
++    return tuple(repairs)
++
++
++def _is_selectable(
++    task: TaskSelectionRecord,
++    accepted_repairs: Sequence[AcceptedRepairRecord],
++) -> bool:
++    if task.is_complete:
++        return False
++    if task.is_open:
++        return True
++    if task.is_blocked:
++        return _blocked_task_reopened(task, accepted_repairs)
++    return False
++
++
++def _blocked_task_reopened(
++    task: TaskSelectionRecord,
++    accepted_repairs: Sequence[AcceptedRepairRecord],
++) -> bool:
++    if task.reopened_by_human_at:
++        return True
++    if not task.blocked_at:
++        return False
++
++    blocked_at = _parse_timestamp(task.blocked_at)
++    for repair in accepted_repairs:
++        if repair.is_non_blocked_repair and _parse_timestamp(repair.accepted_at) > blocked_at:
++            return True
++    return False
++
++
++def _selection_key(task: TaskSelectionRecord) -> tuple[int, int, int]:
++    repair_rank = 1 if task.is_open and task.is_repair else 0
++    open_rank = 1 if task.is_open else 0
++    return (repair_rank, open_rank, task.created_order)
++
++
++def _optional_string(value: object) -> Optional[str]:
++    if value is None:
++        return None
++    text = str(value)
++    return text if text else None
++
++
++def _parse_timestamp(value: str) -> datetime:
++    text = value.strip()
++    if not text:
++        raise ValueError("timestamp is required")
++    if text.endswith("Z"):
++        text = text[:-1] + "+00:00"
++    parsed = datetime.fromisoformat(text)
++    if parsed.tzinfo is None:
++        return parsed.replace(tzinfo=timezone.utc)
++    return parsed.astimezone(timezone.utc)
+--- a/ppd/tests/fixtures/daemon/task_selection_blocked_until_repair_or_reopen.json
++++ b/ppd/tests/fixtures/daemon/task_selection_blocked_until_repair_or_reopen.json
+@@ -0,0 +1,47 @@
++{
++  "schema_version": 1,
++  "description": "Blocked PP&D daemon tasks remain skipped until a newer non-blocked daemon repair is accepted or a human explicitly reopens the blocked task.",
++  "tasks": [
++    {
++      "task_id": "checkbox-178",
++      "title": "Blocked domain draft-readiness task",
++      "status": "blocked",
++      "kind": "domain",
++      "created_order": 178,
++      "blocked_at": "2026-05-03T06:30:00Z"
++    },
++    {
++      "task_id": "checkbox-182",
++      "title": "Blocked daemon diagnostics task",
++      "status": "blocked",
++      "kind": "daemon_repair",
++      "created_order": 182,
++      "blocked_at": "2026-05-03T07:00:00Z"
++    },
++    {
++      "task_id": "checkbox-190",
++      "title": "Current non-blocked daemon selection coverage task",
++      "status": "open",
++      "kind": "daemon_repair",
++      "created_order": 190
++    },
++    {
++      "task_id": "checkbox-191",
++      "title": "Recovery-note compaction coverage",
++      "status": "open",
++      "kind": "daemon_repair",
++      "created_order": 191
++    }
++  ],
++  "accepted_repairs": [
++    {
++      "task_id": "checkbox-188",
++      "kind": "daemon_repair",
++      "accepted_at": "2026-05-03T08:00:00Z"
++    }
++  ],
++  "human_reopen": {
++    "task_id": "checkbox-182",
++    "reopened_by_human_at": "2026-05-03T08:20:00Z"
++  }
++}
+--- a/ppd/tests/test_daemon_task_selection_policy.py
++++ b/ppd/tests/test_daemon_task_selection_policy.py
+@@ -0,0 +1,110 @@
++from __future__ import annotations
++
++import json
++import unittest
++from dataclasses import replace
++from pathlib import Path
++
++from ppd.daemon.task_selection_policy import (
++    AcceptedRepairRecord,
++    TaskSelectionRecord,
++    accepted_repairs_from_fixture,
++    select_next_task,
++    skipped_blocked_task_ids,
++    tasks_from_fixture,
++)
++
++
++FIXTURE_PATH = Path(__file__).parent / "fixtures" / "daemon" / "task_selection_blocked_until_repair_or_reopen.json"
++
++
++class DaemonTaskSelectionPolicyTest(unittest.TestCase):
++    def load_fixture(self) -> dict[str, object]:
++        with FIXTURE_PATH.open("r", encoding="utf-8") as handle:
++            data = json.load(handle)
++        self.assertEqual(data["schema_version"], 1)
++        return data
++
++    def test_blocked_tasks_are_skipped_when_no_new_repair_was_accepted(self) -> None:
++        tasks = (
++            TaskSelectionRecord(
++                task_id="checkbox-178",
++                title="blocked domain work",
++                status="blocked",
++                kind="domain",
++                created_order=178,
++                blocked_at="2026-05-03T08:00:00Z",
++            ),
++            TaskSelectionRecord(
++                task_id="checkbox-190",
++                title="new daemon repair coverage",
++                status="open",
++                kind="daemon_repair",
++                created_order=190,
++            ),
++        )
++        repairs = (
++            AcceptedRepairRecord(
++                task_id="checkbox-188",
++                kind="daemon_repair",
++                accepted_at="2026-05-03T07:59:00Z",
++            ),
++        )
++
++        selected = select_next_task(tasks, repairs)
++
++        self.assertIsNotNone(selected)
++        self.assertEqual(selected.task_id, "checkbox-190")
++        self.assertEqual(skipped_blocked_task_ids(tasks, repairs), ("checkbox-178",))
++
++    def test_fixture_prefers_newest_non_blocked_repair_before_blocked_work(self) -> None:
++        data = self.load_fixture()
++        tasks = tasks_from_fixture(data)
++        repairs = accepted_repairs_from_fixture(data)
++
++        selected = select_next_task(tasks, repairs)
++
++        self.assertIsNotNone(selected)
++        self.assertEqual(selected.task_id, "checkbox-191")
++        self.assertEqual(skipped_blocked_task_ids(tasks, repairs), ())
++
++    def test_blocked_task_can_be_selected_after_new_repair_acceptance_when_no_open_repair_remains(self) -> None:
++        tasks = (
++            TaskSelectionRecord(
++                task_id="checkbox-178",
++                title="blocked domain work",
++                status="blocked",
++                kind="domain",
++                created_order=178,
++                blocked_at="2026-05-03T08:00:00Z",
++            ),
++        )
++        repairs = (
++            AcceptedRepairRecord(
++                task_id="checkbox-190",
++                kind="daemon_repair",
++                accepted_at="2026-05-03T08:30:00Z",
++            ),
++        )
++
++        selected = select_next_task(tasks, repairs)
++
++        self.assertIsNotNone(selected)
++        self.assertEqual(selected.task_id, "checkbox-178")
++        self.assertEqual(skipped_blocked_task_ids(tasks, repairs), ())
++
++    def test_human_reopen_makes_specific_blocked_task_selectable(self) -> None:
++        data = self.load_fixture()
++        tasks = tuple(task for task in tasks_from_fixture(data) if task.task_id == "checkbox-182")
++        self.assertEqual(len(tasks), 1)
++        reopened_task = replace(tasks[0], reopened_by_human_at="2026-05-03T08:20:00Z")
++
++        selected = select_next_task((reopened_task,), ())
++
++        self.assertIsNotNone(selected)
++        self.assertEqual(selected.task_id, "checkbox-182")
++        self.assertEqual(skipped_blocked_task_ids((reopened_task,), ()), ())
++
++
++if __name__ == "__main__":
++    unittest.main()

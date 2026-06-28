@@ -1,0 +1,54 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,8 +1,8 @@
+ {
+-  "createdAt": "2026-05-03T08:21:47.445916Z",
++  "createdAt": "2026-05-03T09:14:52.641934Z",
+   "decision": {
+     "action": "repair_daemon_programming",
+-    "reason": "2 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
++    "reason": "3 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
+     "severity": "warning"
+   },
+   "failedAgenticRepair": {
+@@ -13,7 +13,7 @@
+       "Validation failed; file edits were rolled back."
+     ],
+     "failureKind": "validation",
+-    "summary": "Tighten PP&D supervisor repair guidance for repeated syntax-preflight rollbacks.",
++    "summary": "Add a narrow supervisor repair guide for repeated syntax-preflight rollbacks.",
+     "validationResults": [
+       {
+         "command": [
+@@ -23,7 +23,7 @@
+         ],
+         "returncode": 0,
+         "stderr": "",
+-        "stdout": "{ \"ok\": true, \"task_count\": 21 }"
++        "stdout": "{ \"ok\": true, \"task_count\": 24 }"
+       },
+       {
+         "command": [
+@@ -37,7 +37,7 @@
+           "test_*.py"
+         ],
+         "returncode": 1,
+-        "stderr": ".......................................................................................................................................................................................................................................................................................................................................................................................................................ss..............sss.............................................................................................................................................................................................................................FF................................................................ ====================================================================== FAIL: test_guide_requires_small_syntax_valid_retries (test_supervisor_repair_guide.SupervisorRepairGuideTest.test_g...",
++        "stderr": "...........................................................................................................................................................................................................................................................................................................................................................................................................................ss..............sss............................................................................................................................................................................................................................FFF................................................................ ====================================================================== FAIL: test_guide_keeps_repair_separate_from_domain_implementation (test_supervisor_repair_guide.SupervisorRepai...",
+         "stdout": ""
+       },
+       {
+@@ -69,11 +69,9 @@
+   ],
+   "schemaVersion": 1,
+   "taskBoardRepair": {
+-    "parkedRepeatedSyntaxLoopTasks": [
+-      "Add supervisor recovery-note compaction coverage proving repeated repair notes are summarized before future prompt construction so task-board context stays bounded."
+-    ],
++    "parkedRepeatedSyntaxLoopTasks": [],
+     "replenishedGoalTaskLabels": [],
+     "supersededTaskBoardOnlyLabels": [],
+-    "taskBoardUpdated": true
++    "taskBoardUpdated": false
+   }
+ }

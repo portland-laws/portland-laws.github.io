@@ -764,6 +764,37 @@ def should_blocked_tasks_interrupt(blocked_count: int, selectable_count: int, th
     return blocked_count >= threshold and selectable_count == 0
 
 
+def has_blocked_recovery_cascade(tasks: list[Task], *, blocked_threshold: int = 2) -> bool:
+    blocked = [task for task in tasks if task.status == "blocked"]
+    selectable = [task for task in tasks if task.status in {"needed", "in-progress"}]
+    return len(blocked) >= blocked_threshold and not selectable
+
+
+def builtin_blocked_cascade_replenish_task_board(markdown: str) -> tuple[str, tuple[str, ...]]:
+    """Append deterministic daemon-repair tasks when all selectable work is blocked."""
+
+    if "## Built-In Blocked Cascade Recovery Tranche" in markdown:
+        return markdown, ()
+    start = next_checkbox_number(markdown)
+    templates = [
+        "Add supervisor blocked-cascade recovery coverage proving a board with only blocked domain/recovery tasks gets deterministic daemon-repair tasks without invoking the LLM repair path.",
+        "Add daemon blocked-task prompt-budget fixture coverage proving repeated llm_router exits summarize the target, compact errors, and next daemon-repair hint without retrying blocked domain work.",
+        "Add daemon task-selection coverage proving blocked tasks are skipped until a new non-blocked repair task is accepted or a human explicitly reopens the blocked task.",
+        "Add supervisor recovery-note compaction coverage proving repeated repair notes are summarized before future prompt construction so task-board context stays bounded.",
+    ]
+    labels = tuple(f"checkbox-{start + offset}" for offset in range(len(templates)))
+    lines = ["", "## Built-In Blocked Cascade Recovery Tranche", ""]
+    for offset, text in enumerate(templates):
+        lines.append(f"- [ ] Task checkbox-{start + offset}: {text}")
+    note = (
+        "\n"
+        "## Built-In Supervisor Repair Notes\n\n"
+        "- Appended deterministic blocked-cascade recovery tasks because all selectable work was blocked. "
+        "The supervisor avoided the LLM repair path and created daemon-repair tasks that can run independently before blocked domain work is retried.\n"
+    )
+    return markdown.rstrip() + "\n" + "\n".join(lines) + note, labels
+
+
 def title_from_task_label(label: str) -> str:
     """Return the innermost checkbox task title from a daemon target label."""
 
@@ -939,6 +970,17 @@ def diagnose(config: SupervisorConfig, *, now: Optional[datetime] = None) -> Sup
             reason=(
                 "checkbox-133 returned repeated no-file task-board proposals even though accepted "
                 "checkbox-109/130/131/132 evidence is sufficient; apply deterministic task-board-only supersession repair"
+            ),
+            severity="warning",
+            should_restart_daemon=True,
+        )
+
+    if has_blocked_recovery_cascade(tasks):
+        return SupervisorDecision(
+            action="reconcile_blocked_cascade_and_restart",
+            reason=(
+                "all selectable PP&D tasks are blocked after repeated daemon recovery attempts; "
+                "append deterministic daemon-repair tasks before retrying blocked domain work"
             ),
             severity="warning",
             should_restart_daemon=True,
@@ -1426,6 +1468,45 @@ def invoke_stalled_worker_repair(config: SupervisorConfig, decision: SupervisorD
     return proposal
 
 
+def invoke_blocked_cascade_repair(config: SupervisorConfig, decision: SupervisorDecision) -> Proposal:
+    board_path = config.resolve(config.task_board)
+    board = read_text(board_path) if board_path.exists() else ""
+    repaired_board, labels = builtin_blocked_cascade_replenish_task_board(board)
+    payload = {
+        "schemaVersion": 1,
+        "createdAt": utc_now(),
+        "repairKind": "blocked_cascade_replenishment",
+        "decision": {
+            "action": decision.action,
+            "reason": decision.reason,
+            "severity": decision.severity,
+        },
+        "replenishedTaskLabels": list(labels),
+    }
+    files = [
+        {
+            "path": "ppd/daemon/builtin-repair-status.json",
+            "content": json.dumps(payload, indent=2, sort_keys=True) + "\n",
+        }
+    ]
+    if repaired_board != board:
+        files.append({"path": "ppd/daemon/task-board.md", "content": repaired_board})
+    proposal = Proposal(
+        summary="Append deterministic blocked-cascade daemon repair tasks.",
+        impact=(
+            "The supervisor can recover when every selectable task is blocked by appending narrow daemon-repair work, "
+            "validating it, and restarting without invoking the LLM repair path."
+        ),
+        files=files,
+    )
+    proposal.target_task = f"Built-in supervisor fallback: {decision.reason}"
+    proposal.dry_run = not config.apply
+    if config.apply:
+        return apply_files_with_validation(proposal, supervisor_daemon_config(config))
+    proposal.validation_results = run_validation(supervisor_daemon_config(config))
+    return proposal
+
+
 def invoke_codex_repair(config: SupervisorConfig, decision: SupervisorDecision) -> Proposal:
     if config.apply:
         run_control(config, "stop")
@@ -1494,6 +1575,12 @@ def run_once(config: SupervisorConfig) -> SupervisorDecision:
         if config.restart_daemon:
             run_control(config, "stop")
         proposal = invoke_stalled_worker_repair(config, decision)
+        if config.restart_daemon:
+            run_control(config, "start")
+    elif decision.action == "reconcile_blocked_cascade_and_restart" and config.apply:
+        if config.restart_daemon:
+            run_control(config, "stop")
+        proposal = invoke_blocked_cascade_repair(config, decision)
         if config.restart_daemon:
             run_control(config, "start")
     elif decision.action == "reconcile_dead_worker_and_restart" and config.apply:

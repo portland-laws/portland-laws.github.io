@@ -1,0 +1,127 @@
+--- a/ppd/tests/fixtures/daemon/blocked_task_prompt_budget.json
++++ b/ppd/tests/fixtures/daemon/blocked_task_prompt_budget.json
+@@ -0,0 +1,51 @@
++{
++  "schema_version": 1,
++  "case_id": "blocked-task-prompt-budget-repeated-llm-router-exits",
++  "target_task": {
++    "checkbox_id": "checkbox-178",
++    "title": "Add a fixture-only DevHub draft-readiness decision matrix plus focused validation",
++    "task_kind": "domain",
++    "blocked": true,
++    "blocked_reason": "repeated syntax_preflight rollbacks",
++    "retry_allowed": false
++  },
++  "llm_router_exits": [
++    {
++      "attempt": 1,
++      "failure_kind": "llm_router_exit",
++      "compact_error_summary": "router exited before returning JSON after syntax-preflight recovery prompt",
++      "raw_response_persisted": false
++    },
++    {
++      "attempt": 2,
++      "failure_kind": "llm_router_exit",
++      "compact_error_summary": "router exited again while target remained blocked; no domain retry was attempted",
++      "raw_response_persisted": false
++    },
++    {
++      "attempt": 3,
++      "failure_kind": "llm_router_exit",
++      "compact_error_summary": "third router exit compacted to bounded diagnostic fields for repair selection",
++      "raw_response_persisted": false
++    }
++  ],
++  "prompt_budget_summary": {
++    "max_compact_error_summary_chars": 120,
++    "max_next_action_hint_chars": 180,
++    "target_summary": "checkbox-178 is blocked after repeated syntax_preflight failures; do not retry DevHub domain implementation until daemon repair is accepted.",
++    "next_action_hint": "Select or append a narrow ppd/daemon repair task that improves prompt scoping, diagnostics, or blocked-task selection before reopening checkbox-178.",
++    "omitted_context": [
++      "raw llm responses",
++      "private DevHub session data",
++      "browser traces",
++      "raw crawl output",
++      "downloaded documents"
++    ]
++  },
++  "selection_decision": {
++    "blocked_domain_retry_attempted": false,
++    "selected_task_kind": "daemon_repair",
++    "selected_checkbox_id": "checkbox-189",
++    "reason": "blocked target remains parked until a non-blocked daemon repair is accepted or a human explicitly reopens it"
++  }
++}
+--- a/ppd/tests/test_daemon_blocked_task_prompt_budget.py
++++ b/ppd/tests/test_daemon_blocked_task_prompt_budget.py
+@@ -0,0 +1,70 @@
++"""Fixture coverage for blocked-task prompt-budget compaction.
++
++This test is intentionally fixture-only. It proves the daemon prompt context can
++represent repeated llm_router exits without persisting raw responses or retrying
++blocked PP&D domain work.
++"""
++
++from __future__ import annotations
++
++import json
++import unittest
++from pathlib import Path
++from typing import Any
++
++
++FIXTURE_PATH = Path(__file__).parent / "fixtures" / "daemon" / "blocked_task_prompt_budget.json"
++
++
++class BlockedTaskPromptBudgetFixtureTest(unittest.TestCase):
++    def setUp(self) -> None:
++        with FIXTURE_PATH.open("r", encoding="utf-8") as fixture_file:
++            self.fixture: dict[str, Any] = json.load(fixture_file)
++
++    def test_repeated_router_exits_are_compacted_without_raw_responses(self) -> None:
++        exits = self.fixture["llm_router_exits"]
++        budget = self.fixture["prompt_budget_summary"]
++
++        self.assertGreaterEqual(len(exits), 2)
++        for expected_attempt, exit_record in enumerate(exits, start=1):
++            self.assertEqual(exit_record["attempt"], expected_attempt)
++            self.assertEqual(exit_record["failure_kind"], "llm_router_exit")
++            self.assertLessEqual(
++                len(exit_record["compact_error_summary"]),
++                budget["max_compact_error_summary_chars"],
++            )
++            self.assertIs(exit_record["raw_response_persisted"], False)
++            self.assertNotIn("raw_response", exit_record)
++            self.assertNotIn("response_body", exit_record)
++
++    def test_target_and_next_daemon_repair_hint_fit_prompt_budget(self) -> None:
++        target = self.fixture["target_task"]
++        budget = self.fixture["prompt_budget_summary"]
++
++        self.assertEqual(target["checkbox_id"], "checkbox-178")
++        self.assertEqual(target["task_kind"], "domain")
++        self.assertIs(target["blocked"], True)
++        self.assertIs(target["retry_allowed"], False)
++        self.assertIn(target["checkbox_id"], budget["target_summary"])
++        self.assertIn("daemon repair", budget["next_action_hint"])
++        self.assertLessEqual(
++            len(budget["next_action_hint"]),
++            budget["max_next_action_hint_chars"],
++        )
++
++    def test_blocked_domain_work_is_not_retried(self) -> None:
++        decision = self.fixture["selection_decision"]
++        omitted_context = set(self.fixture["prompt_budget_summary"]["omitted_context"])
++
++        self.assertIs(decision["blocked_domain_retry_attempted"], False)
++        self.assertEqual(decision["selected_task_kind"], "daemon_repair")
++        self.assertEqual(decision["selected_checkbox_id"], "checkbox-189")
++        self.assertIn("raw llm responses", omitted_context)
++        self.assertIn("private DevHub session data", omitted_context)
++        self.assertIn("browser traces", omitted_context)
++        self.assertIn("raw crawl output", omitted_context)
++        self.assertIn("downloaded documents", omitted_context)
++
++
++if __name__ == "__main__":
++    unittest.main()

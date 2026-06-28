@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/daemon/blocked_task_prompt_budget.json",
+    "ppd/tests/test_daemon_blocked_task_prompt_budget.py"
+  ],
+  "created_at": "2026-05-03T08:16:20.075947Z",
+  "impact": "This gives the PP&D daemon deterministic coverage that blocked task prompt context is compacted into target, error summaries, and daemon-repair guidance while blocked domain work remains skipped.",
+  "summary": "Add fixture-only blocked-task prompt-budget coverage for repeated llm_router exits.",
+  "target_task": "Task checkbox-189: Add daemon blocked-task prompt-budget fixture coverage proving repeated llm_router exits summarize the target, compact errors, and next daemon-repair hint without retrying blocked domain work.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 21 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "...................................................................................................................................................................................................................................................................................................................................................................................................................ss..............sss............................................................................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 709 tests in 0.118s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

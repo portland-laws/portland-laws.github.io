@@ -1,0 +1,47 @@
+{
+  "changed_files": [
+    "ppd/tests/fixtures/blocked_cascade_recovery/task_board.md",
+    "ppd/tests/test_supervisor_blocked_cascade_recovery.py"
+  ],
+  "created_at": "2026-05-03T08:15:27.411933Z",
+  "impact": "Provides a narrow regression test fixture proving that a task board containing only blocked domain/recovery work can still produce deterministic daemon-repair tasks while guarding against accidental use of the LLM repair path.",
+  "summary": "Add blocked-cascade supervisor recovery coverage for deterministic daemon repair without LLM invocation.",
+  "target_task": "Task checkbox-188: Add supervisor blocked-cascade recovery coverage proving a board with only blocked domain/recovery tasks gets deterministic daemon-repair tasks without invoking the LLM repair path.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 21 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "................................................................................................................................................................................................................................................................................................................................................................................................................ss..............sss............................................................................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 706 tests in 0.119s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

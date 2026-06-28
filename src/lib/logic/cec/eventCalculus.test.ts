@@ -1,6 +1,10 @@
 import {
   CecEventCalculus,
   CecTimePoint,
+  Event,
+  EventCalculus,
+  Fluent,
+  TimePoint,
   createCecEventTerm,
   createCecFluentTerm,
 } from './eventCalculus';
@@ -107,5 +111,32 @@ describe('CEC event calculus', () => {
       initiationRules: 0,
       cachedHoldsAtQueries: 0,
     });
+  });
+
+  it('exposes browser-native Python event_calculus aliases without runtime services', () => {
+    const ec = new EventCalculus();
+    const openDoor = new Event('open', ['front_door']);
+    const doorOpen = new Fluent('open', ['front_door']);
+    const time = new TimePoint(2);
+
+    ec.add_initiation_rule(openDoor, doorOpen);
+    ec.record_event(openDoor, time);
+
+    expect(String(openDoor)).toBe('open(front_door)');
+    expect(String(new Event('transfer', ['alice', 'bob']))).toBe('transfer(alice, bob)');
+    expect(time.lessThan(new TimePoint(3))).toBe(true);
+    expect(time.lessThanOrEqual(2)).toBe(true);
+    expect(time.greaterThan(1)).toBe(true);
+    expect(time.greaterThanOrEqual(new TimePoint(2))).toBe(true);
+    expect(time.equals(2)).toBe(true);
+    expect(ec.happens(openDoor, 2)).toBe(true);
+    expect(ec.holds_at(doorOpen, 3)).toBe(true);
+    expect(ec.get_all_fluents_at(3).has(doorOpen)).toBe(false);
+    expect([...ec.get_all_fluents_at(3)].map(String)).toEqual(['open(front_door)']);
+    expect(ec.get_timeline(doorOpen, 3)).toEqual([
+      [0, false],
+      [3, true],
+    ]);
+    expect(ec.get_statistics()).toMatchObject({ eventOccurrences: 1, initiationRules: 1 });
   });
 });
