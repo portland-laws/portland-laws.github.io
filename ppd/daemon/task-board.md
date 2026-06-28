@@ -59,18 +59,18 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 ## Blocked Cascade Recovery Tranche 15
 
 - [!] Task checkbox-195: Replace or add only `ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md` with parser-failure recovery rules that name the recent malformed Python fragments, require syntax-valid one-file retries, and keep repair separate from PP&D domain implementation.
-- [~] Task checkbox-196: Add one daemon-only parser-clean diagnostic helper or unittest that converts repeated non-JSON LLM output into target_task, failure_kind, compact_raw_response_summary, and next_action_hint without storing the full raw response.
-- [ ] Task checkbox-197: Add one daemon-only retry-scope helper or unittest proving a blocked-only board selects a new unchecked daemon-repair task before revisiting checkbox-178, checkbox-182, checkbox-186, checkbox-187, checkbox-191, checkbox-193, or checkbox-194.
+- [!] Task checkbox-196: Add one daemon-only parser-clean diagnostic helper or unittest that converts repeated non-JSON LLM output into target_task, failure_kind, compact_raw_response_summary, and next_action_hint without storing the full raw response.
+- [!] Task checkbox-197: Add one daemon-only retry-scope helper or unittest proving a blocked-only board selects a new unchecked daemon-repair task before revisiting checkbox-178, checkbox-182, checkbox-186, checkbox-187, checkbox-191, checkbox-193, or checkbox-194.
 
 
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-06-28T15:56:56.094960Z
+Last updated: 2026-06-28T16:24:50.663160Z
 
 - Latest target: `Task checkbox-196: Add one daemon-only parser-clean diagnostic helper or unittest that converts repeated non-JSON LLM output into target_task, failure_kind, compact_raw_response_summary, and next_action_hint without storing the full raw response.`
 - Latest result: `validation`
-- Latest summary: Add focused parser-clean diagnostic unittest coverage for checkbox-196.
-- Counts: `{"blocked": 8, "complete": 17, "in_progress": 0, "needed": 2}`
+- Latest summary: Add daemon-only parser-clean diagnostics for repeated non-JSON LLM output without retaining raw responses.
+- Counts: `{"blocked": 10, "complete": 17, "in_progress": 0, "needed": 0}`
 
 <!-- ppd-daemon-task-board:end -->
