@@ -66,11 +66,11 @@ This board is the controlling backlog for the isolated PP&D daemon. The daemon s
 <!-- ppd-daemon-task-board:start -->
 ## Generated Status
 
-Last updated: 2026-06-28T16:24:50.663160Z
+Last updated: 2026-06-28T17:39:26.243743Z
 
 - Latest target: `Task checkbox-196: Add one daemon-only parser-clean diagnostic helper or unittest that converts repeated non-JSON LLM output into target_task, failure_kind, compact_raw_response_summary, and next_action_hint without storing the full raw response.`
 - Latest result: `validation`
-- Latest summary: Add daemon-only parser-clean diagnostics for repeated non-JSON LLM output without retaining raw responses.
+- Latest summary: Adds a daemon-only parser-clean diagnostic helper and focused unittest for repeated non-JSON LLM output.
 - Counts: `{"blocked": 10, "complete": 17, "in_progress": 0, "needed": 0}`
 
 <!-- ppd-daemon-task-board:end -->
