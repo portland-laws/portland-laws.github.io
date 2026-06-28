@@ -1,0 +1,22 @@
+{
+  "plan_id": "public-recrawl-execution-rehearsal-2026-05-28",
+  "mode": "fixture_first_rehearsal",
+  "live_crawl_enabled": false,
+  "sources": [
+    {
+      "source_id": "ppd-devhub-application-guide",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "rehearsal_action": "metadata_only_recrawl"
+    },
+    {
+      "source_id": "ppd-spp-file-naming-standards",
+      "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+      "rehearsal_action": "metadata_only_recrawl"
+    },
+    {
+      "source_id": "ppd-devhub-faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "rehearsal_action": "metadata_only_recrawl"
+    }
+  ]
+}

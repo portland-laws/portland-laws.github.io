@@ -1,0 +1,177 @@
+{
+  "packet_version": "devhub-read-only-preflight-packet-v6",
+  "packet_id": "fixture-first-attended-devhub-read-only-preflight-v6",
+  "fixture_first": true,
+  "devhub_opened": false,
+  "auth_state_stored": false,
+  "purpose": "Define an attended DevHub read-only preflight packet from committed guardrail API compatibility v6 fixtures and synthetic DevHub surface fixtures only, without live DevHub access.",
+  "source_fixtures": [
+    {
+      "fixture_id": "agent-guardrail-api-compat-v6-expected",
+      "source_type": "agent_guardrail_api_compat_v6",
+      "fixture_path": "ppd/tests/fixtures/agent_guardrail_api_compat_v6/agent_guardrail_api_compat_v6_expected.json",
+      "live_fetch_performed": false,
+      "contains_private_values": false,
+      "consumed_for": "guardrail response compatibility and exact offline validation command expectations"
+    },
+    {
+      "fixture_id": "inactive-devhub-surface-fixtures-v1",
+      "source_type": "synthetic_devhub_surface_fixture",
+      "fixture_path": "ppd/tests/fixtures/devhub_inactive_patch_preview_v2/inactive_devhub_surface_fixtures.json",
+      "live_fetch_performed": false,
+      "contains_private_values": false,
+      "consumed_for": "synthetic DevHub surface categories, selectors, validation-message classes, and read-only stop reasons"
+    }
+  ],
+  "manual_login_handoff_prerequisites": [
+    {
+      "prerequisite_id": "user-owned-account-attendance",
+      "requirement": "Any later DevHub observation requires a visible, attended browser controlled by the user for a user-owned account.",
+      "packet_action": "document_prerequisite_only"
+    },
+    {
+      "prerequisite_id": "manual-auth-prompts-only",
+      "requirement": "The user must manually complete sign-in, MFA, CAPTCHA, security prompts, account recovery, or access troubleshooting if those paths appear.",
+      "packet_action": "refuse_automation"
+    },
+    {
+      "prerequisite_id": "read-only-scope-confirmed-before-capture",
+      "requirement": "The operator must confirm the surface is read-only before any future accessible-structure capture begins.",
+      "packet_action": "require_operator_check"
+    }
+  ],
+  "allowed_read_only_page_categories": [
+    "devhub_home",
+    "my_permits_and_requests",
+    "permit_or_request_detail",
+    "status_messages",
+    "fee_notice_review",
+    "correction_request_review",
+    "attachment_list_review",
+    "inspection_results_review"
+  ],
+  "refused_paths": [
+    {
+      "topic": "captcha",
+      "disposition": "refuse_and_manual_handoff",
+      "automated": false,
+      "reason": "CAPTCHA handling is a user-only access prompt."
+    },
+    {
+      "topic": "mfa",
+      "disposition": "refuse_and_manual_handoff",
+      "automated": false,
+      "reason": "MFA and security prompts must be completed manually by the user."
+    },
+    {
+      "topic": "account_creation",
+      "disposition": "refuse_and_manual_handoff",
+      "automated": false,
+      "reason": "Account creation and registration paths are outside this read-only preflight packet."
+    },
+    {
+      "topic": "submission_upload_certification_payment_scheduling",
+      "disposition": "refuse_and_manual_handoff",
+      "automated": false,
+      "reason": "Official actions are consequential and excluded from read-only preflight."
+    }
+  ],
+  "redaction_requirements": [
+    {
+      "redaction_id": "replace-account-scoped-values",
+      "requirement": "Replace names, addresses, permit numbers, application numbers, emails, phone numbers, account identifiers, and visible private values with typed synthetic placeholders."
+    },
+    {
+      "redaction_id": "redact-document-and-attachment-metadata",
+      "requirement": "Do not capture file names, document titles, thumbnails, links, downloaded files, or attachment metadata from account-scoped pages."
+    },
+    {
+      "redaction_id": "metadata-only-accessible-structure",
+      "requirement": "Capture only accessible roles, labels, landmarks, headings, validation-message categories, and read-only stop reasons as synthetic metadata."
+    }
+  ],
+  "accessible_structure_capture_fields": [
+    "synthetic_surface_id",
+    "synthetic_page_category",
+    "synthetic_heading_text",
+    "synthetic_landmark_role",
+    "synthetic_region_label",
+    "synthetic_control_role",
+    "synthetic_accessible_name",
+    "synthetic_status_message_category",
+    "synthetic_validation_message_category",
+    "synthetic_read_only_stop_reason",
+    "synthetic_review_placeholder_id"
+  ],
+  "private_artifact_exclusions": [
+    "credentials",
+    "cookies",
+    "auth_state",
+    "session_state",
+    "screenshots",
+    "traces",
+    "har_files",
+    "private_documents",
+    "downloaded_documents",
+    "raw_page_values",
+    "local_private_paths",
+    "payment_details"
+  ],
+  "timeout_abort_criteria": [
+    {
+      "criterion_id": "manual-login-handoff-timeout",
+      "abort_when": "The user has not reached a read-only account page within the operator-approved window.",
+      "action": "abort_without_artifact_capture"
+    },
+    {
+      "criterion_id": "unexpected-editable-or-official-control",
+      "abort_when": "The next visible path requires filling, upload, submission, certification, payment, scheduling, cancellation, or account creation.",
+      "action": "abort_without_artifact_capture"
+    },
+    {
+      "criterion_id": "private-document-or-download-prompt",
+      "abort_when": "A page requires opening, downloading, or reading private documents or attachments.",
+      "action": "abort_without_artifact_capture"
+    }
+  ],
+  "post_capture_review_placeholders": [
+    {
+      "placeholder_id": "review-redaction-completeness",
+      "status": "placeholder_only",
+      "contains_captured_devhub_data": false,
+      "placeholder": "Reviewer confirms synthetic accessible-structure rows contain no private values or browser artifacts."
+    },
+    {
+      "placeholder_id": "review-read-only-category-fit",
+      "status": "placeholder_only",
+      "contains_captured_devhub_data": false,
+      "placeholder": "Reviewer confirms each future captured row maps to an allowed read-only page category."
+    },
+    {
+      "placeholder_id": "review-refusal-and-abort-events",
+      "status": "placeholder_only",
+      "contains_captured_devhub_data": false,
+      "placeholder": "Reviewer confirms refused CAPTCHA, MFA, account-creation, upload, submit, certify, payment, and scheduling paths were not automated."
+    }
+  ],
+  "no_effect_policy": {
+    "opens_devhub": false,
+    "stores_auth_state": false,
+    "creates_traces": false,
+    "creates_screenshots": false,
+    "creates_har_files": false,
+    "reads_private_documents": false,
+    "uploads": false,
+    "submits": false,
+    "certifies": false,
+    "pays": false,
+    "schedules": false,
+    "creates_accounts": false,
+    "makes_legal_or_permitting_guarantees": false
+  },
+  "validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/agent_readiness/devhub_read_only_preflight_packet_v6.py", "ppd/tests/test_devhub_read_only_preflight_packet_v6.py"],
+    ["python3", "-m", "unittest", "ppd.tests.test_devhub_read_only_preflight_packet_v6"],
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

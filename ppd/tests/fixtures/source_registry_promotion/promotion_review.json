@@ -1,0 +1,75 @@
+{
+  "review_id": "promotion-review-2026-05-28-fixture",
+  "generated_at": "2026-05-28T00:00:00Z",
+  "source_registry_version": "fixture-source-registry-2026-05-28",
+  "candidate_metadata_diffs": [
+    {
+      "source_id": "ppd-devhub-faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "metadata_field_diffs": [
+        {
+          "field": "recrawl_evidence_hash",
+          "before": "sha256:old-faq-fixture",
+          "after": "sha256:new-faq-fixture",
+          "reason": "Public recrawl fixture observed metadata hash change for review rehearsal."
+        },
+        {
+          "field": "reviewed_public_anchor_count",
+          "before": 18,
+          "after": 19,
+          "reason": "Promotion review fixture recorded one additional public link anchor for downstream review."
+        }
+      ]
+    },
+    {
+      "source_id": "ppd-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "metadata_field_diffs": [
+        {
+          "field": "recrawl_evidence_hash",
+          "before": "sha256:old-submit-plans-fixture",
+          "after": "sha256:new-submit-plans-fixture",
+          "reason": "Public recrawl fixture observed metadata hash change for single PDF guidance review."
+        }
+      ]
+    }
+  ],
+  "reviewer_acknowledgements": [
+    {
+      "reviewer_role": "source-registry reviewer",
+      "acknowledged_at": "2026-05-28T00:05:00Z",
+      "acknowledged_scope": "metadata-only promotion rehearsal",
+      "notes": "Confirmed fixture packet does not edit live registry records."
+    },
+    {
+      "reviewer_role": "public-recrawl operator",
+      "acknowledged_at": "2026-05-28T00:06:00Z",
+      "acknowledged_scope": "operator checklist rehearsal",
+      "notes": "Confirmed checklist evidence is metadata-only and excludes raw crawl output."
+    }
+  ],
+  "rollback_checkpoints": [
+    {
+      "checkpoint_id": "rollback-registry-snapshot",
+      "description": "Confirm current source registry snapshot identifier is recorded before any future promotion.",
+      "required_before_promotion": true
+    },
+    {
+      "checkpoint_id": "rollback-guardrail-bundle-cache",
+      "description": "Confirm affected guardrail bundle cache keys can be invalidated or restored.",
+      "required_before_promotion": true
+    }
+  ],
+  "downstream_invalidation_notes": [
+    {
+      "consumer": "requirement extraction index",
+      "invalidation_scope": "requirements derived from ppd-devhub-faq and ppd-submit-plans-online",
+      "recommended_action": "queue fixture validation before any live extraction refresh"
+    },
+    {
+      "consumer": "guardrail bundle compiler",
+      "invalidation_scope": "bundles citing DevHub FAQ or Submit Plans Online guidance",
+      "recommended_action": "mark affected bundles for review-only recompilation rehearsal"
+    }
+  ]
+}

@@ -1,0 +1,84 @@
+{
+  "fixture_id": "may8_official_source_anchor_contracts",
+  "fixture_date": "2026-05-08",
+  "jurisdiction": "portland_or_ppd",
+  "purpose": "Public extraction contracts for May 8 official source anchors.",
+  "sources": [
+    {
+      "source_id": "ppd_building_permit_process_html",
+      "source_type": "html",
+      "official_url": "https://www.portland.gov/ppd/permits/building-permits",
+      "retrieved_anchor_date": "2026-05-08",
+      "expected_contract": {
+        "heading_hierarchy": [
+          {"level": 1, "text": "Building permits"},
+          {"level": 2, "text": "Apply for a building permit"},
+          {"level": 3, "text": "Before you apply"},
+          {"level": 3, "text": "Submit plans and documents"},
+          {"level": 3, "text": "Respond to checksheets"},
+          {"level": 2, "text": "Get permit help"}
+        ],
+        "ordered_steps": [
+          {"position": 1, "text": "Gather project information and required forms."},
+          {"position": 2, "text": "Prepare plans and supporting documents."},
+          {"position": 3, "text": "Submit the application through the public permit intake channel."},
+          {"position": 4, "text": "Track review status and respond to reviewer requests."},
+          {"position": 5, "text": "Pay fees and receive issued permit documents."}
+        ],
+        "tables": [
+          {
+            "caption": "Common building permit application materials",
+            "headers": ["Material", "When required", "Public source anchor"],
+            "rows": [
+              ["Building permit application", "All building permit applications", "application-form"],
+              ["Site plan", "Projects changing site layout or exterior work", "site-plan"],
+              ["Construction plans", "New construction, alterations, or additions", "construction-plans"]
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "source_id": "ppd_devhub_help_html",
+      "source_type": "html",
+      "official_url": "https://www.portland.gov/ppd/devhub",
+      "retrieved_anchor_date": "2026-05-08",
+      "expected_contract": {
+        "heading_hierarchy": [
+          {"level": 1, "text": "DevHub"},
+          {"level": 2, "text": "Apply online"},
+          {"level": 2, "text": "Manage permits"},
+          {"level": 2, "text": "Get help with DevHub"}
+        ],
+        "ordered_steps": [
+          {"position": 1, "text": "Open the public DevHub entry point."},
+          {"position": 2, "text": "Choose the public permit or record workflow."},
+          {"position": 3, "text": "Review displayed requirements before continuing."}
+        ],
+        "tables": []
+      }
+    },
+    {
+      "source_id": "building_permit_application_pdf",
+      "source_type": "pdf",
+      "official_url": "https://www.portland.gov/ppd/documents/building-permit-application/download",
+      "retrieved_anchor_date": "2026-05-08",
+      "expected_contract": {
+        "pdf_page_anchors": [
+          {"page": 1, "anchor_id": "applicant_information", "label": "Applicant information"},
+          {"page": 1, "anchor_id": "project_information", "label": "Project information"},
+          {"page": 2, "anchor_id": "contractor_information", "label": "Contractor information"},
+          {"page": 2, "anchor_id": "signature_certification", "label": "Signature and certification"}
+        ],
+        "public_form_field_manifest": [
+          {"name": "applicant_name", "field_type": "text", "required": true, "page": 1},
+          {"name": "applicant_email", "field_type": "email", "required": true, "page": 1},
+          {"name": "site_address", "field_type": "text", "required": true, "page": 1},
+          {"name": "project_description", "field_type": "textarea", "required": true, "page": 1},
+          {"name": "contractor_ccb_number", "field_type": "text", "required": false, "page": 2},
+          {"name": "signature_date", "field_type": "date", "required": true, "page": 2}
+        ]
+      }
+    }
+  ]
+}

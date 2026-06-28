@@ -1,0 +1,14 @@
+Implemented the ambiguity-policy gap for `deontic -> conditional_normative` adaptive conflicts.
+
+- Updated [`compiler.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T053630Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T053630Z-codex-packet-000009-20260518_060259/ipfs_datasets_py/logic/modal/compiler.py:552) to include `conditional_normative` in `deontic` adaptive `target_specs` when `has_condition_or_exception_scope` is present.
+- Added regression test [`test_modal_codec.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T053630Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T053630Z-codex-packet-000009-20260518_060259/tests/unit_tests/logic/modal/test_modal_codec.py:466) asserting:
+  - `adaptive_family_margin_low` is emitted for `["deontic", "conditional_normative"]`
+  - `explicit_ambiguity_type == "adaptive_deontic_conditional_normative_outvoted_margin_low"`
+  - corresponding explicit ambiguity record is present.
+
+Validation run:
+- `pytest` target run was blocked by an existing repo setup issue: `NameError: __path__ is not defined` at `__init__.py:11` (pre-existing, unrelated to this patch).
+- Direct runtime verification with `python3` confirmed the new path emits:
+  - `adaptive_count 1`
+  - `explicit adaptive_deontic_conditional_normative_outvoted_margin_low`
+  - `has_explicit True`

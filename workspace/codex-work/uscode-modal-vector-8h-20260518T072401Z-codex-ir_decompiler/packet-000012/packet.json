@@ -1,0 +1,352 @@
+{
+  "claimed_at": "2026-05-18T08:21:15+00:00",
+  "codex_apply_mode": "apply_to_main",
+  "codex_exec": {
+    "command": [
+      "codex",
+      "exec",
+      "--cd",
+      "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000012-20260518_082114",
+      "--sandbox",
+      "danger-full-access",
+      "--output-last-message",
+      "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/packet-000012/codex-last-message.md",
+      "--model",
+      "gpt-5.3-codex",
+      "-"
+    ],
+    "duration_seconds": 375.297,
+    "exit_code": 0,
+    "last_message_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/packet-000012/codex-last-message.md",
+    "prompt_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/packet-000012/CODEX_PROMPT.md",
+    "sandbox": "danger-full-access",
+    "status": "succeeded",
+    "stderr_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/packet-000012/codex-stderr.log",
+    "stdout_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/packet-000012/codex-stdout.log"
+  },
+  "main_apply_check": {
+    "exit_code": 0,
+    "stderr_tail": "",
+    "stdout_tail": ""
+  },
+  "main_apply_ignored_artifact_paths": [],
+  "main_apply_result": {
+    "exit_code": 0,
+    "stderr_tail": "",
+    "stdout_tail": ""
+  },
+  "main_apply_status": "applied",
+  "main_apply_target_files": [
+    "ipfs_datasets_py/logic/modal/codec.py",
+    "ipfs_datasets_py/logic/modal/decompiler.py",
+    "tests/unit_tests/logic/modal/test_modal_codec.py"
+  ],
+  "main_apply_target_repo_root": "/home/barberb/portland-laws.github.io/ipfs_datasets_py",
+  "main_apply_untracked_paths": [],
+  "main_apply_validation": {
+    "commands": [
+      {
+        "command": [
+          "/usr/bin/python3",
+          "-m",
+          "pytest",
+          "-q",
+          "tests/unit/optimizers/logic_theorem_optimizer/test_modal_todo_daemon.py",
+          "tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py",
+          "tests/unit_tests/logic/modal/test_modal_codec.py"
+        ],
+        "duration_seconds": 5.81,
+        "exit_code": 0,
+        "status": "passed",
+        "stderr_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/packet-000012/main-apply-validation-1.stderr.log",
+        "stdout_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/packet-000012/main-apply-validation-1.stdout.log"
+      }
+    ],
+    "status": "passed"
+  },
+  "main_commit": {
+    "exit_code": 0,
+    "status": "committed",
+    "stderr_tail": "",
+    "stdout_tail": "[main 87fb5193] Apply Codex legal IR packet packet-000012\n 3 files changed, 203 insertions(+), 8 deletions(-)\n"
+  },
+  "packet_id": "packet-000012",
+  "packet_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/packet-000012/packet.json",
+  "patch_error": null,
+  "patch_path": null,
+  "patch_status": "applied_to_main",
+  "program_synthesis_scopes": [
+    "ir_decompiler"
+  ],
+  "queue_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-8h-20260518T072401Z-autoencoder.jsonl",
+  "queue_run_id": "uscode-modal-vector-8h-20260518T072401Z-autoencoder",
+  "repo_root": "/home/barberb/portland-laws.github.io",
+  "run_id": "uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler",
+  "semantic_bundle_keys": [
+    "{\"action\":\"refine_typed_ir_or_decompiler_slots\",\"family_pairs\":[],\"program_synthesis_scope\":\"ir_decompiler\",\"target_component\":\"modal.ir_decompiler\"}"
+  ],
+  "source_repo_root": "/home/barberb/portland-laws.github.io/ipfs_datasets_py",
+  "suggested_target_files": [
+    "ipfs_datasets_py/logic/modal/codec.py",
+    "ipfs_datasets_py/logic/modal/decompiler.py",
+    "ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_ir.py"
+  ],
+  "task_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/packet-000012/CODEX_TASK.md",
+  "task_source": "autoencoder_supervisor_program_synthesis_queue",
+  "todo_list_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/packet-000012/TODO_LIST.jsonl",
+  "todo_markdown_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/packet-000012/TODO_LIST.md",
+  "todos": [
+    {
+      "action": "refine_typed_ir_or_decompiler_slots",
+      "citations": [
+        "2 U.S.C. 31a-2b",
+        "7 U.S.C. 7913",
+        "15 U.S.C. 828",
+        "15 U.S.C. 2501"
+      ],
+      "claimed_at": "2026-05-18T08:21:14+00:00",
+      "claimed_by": "codex-ir_decompiler",
+      "completed_at": null,
+      "created_at": "2026-05-18T08:16:12+00:00",
+      "loss_name": "autoencoder_residual_cluster",
+      "loss_value": 0.670641596281,
+      "metadata": {
+        "dedupe_signature": "{\"action\":\"refine_typed_ir_or_decompiler_slots\",\"sample_ids\":[\"us-code-15-2501-eb4a7816e81bb710\",\"us-code-15-828-103d21b6b8cb41ed\",\"us-code-2-31a-2b-a99b26c5ad622cfe\",\"us-code-7-7913-1aaa3fd59c5ff146\"],\"target_component\":\"modal.ir_decompiler\"}",
+        "execution_target": "codex_program_repair",
+        "hint_evidence": [
+          {
+            "cosine_similarity": -0.623262487429,
+            "hint_id": "modal-synthesis-0020a018b16352a1",
+            "priority": 0.759308336573,
+            "reconstruction_loss": 0.759308336573,
+            "sample_id": "us-code-7-7913-1aaa3fd59c5ff146"
+          },
+          {
+            "cosine_similarity": -0.810590272843,
+            "hint_id": "modal-synthesis-2f33b6fd8eaace9b",
+            "priority": 0.919041520622,
+            "reconstruction_loss": 0.919041520622,
+            "sample_id": "us-code-2-31a-2b-a99b26c5ad622cfe"
+          },
+          {
+            "cosine_similarity": 0.129992978253,
+            "hint_id": "modal-synthesis-83a1c13f4087d049",
+            "priority": 0.38076657625,
+            "reconstruction_loss": 0.38076657625,
+            "sample_id": "us-code-15-2501-eb4a7816e81bb710"
+          },
+          {
+            "cosine_similarity": 0.146502464405,
+            "hint_id": "modal-synthesis-f26d01f713015be0",
+            "priority": 0.623449951677,
+            "reconstruction_loss": 0.623449951677,
+            "sample_id": "us-code-15-828-103d21b6b8cb41ed"
+          }
+        ],
+        "hint_ids": [
+          "modal-synthesis-0020a018b16352a1",
+          "modal-synthesis-2f33b6fd8eaace9b",
+          "modal-synthesis-83a1c13f4087d049",
+          "modal-synthesis-f26d01f713015be0"
+        ],
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "program_synthesis_scope": "ir_decompiler",
+        "semantic_bundle_key": "{\"action\":\"refine_typed_ir_or_decompiler_slots\",\"family_pairs\":[],\"program_synthesis_scope\":\"ir_decompiler\",\"target_component\":\"modal.ir_decompiler\"}",
+        "source": "modal_program_synthesis_todo_generator_v1",
+        "support_count": 4,
+        "target_component": "modal.ir_decompiler",
+        "vector_bundle_anchor_id": "program-a5ee428cc25dcab7",
+        "vector_bundle_backend": "embeddings_router",
+        "vector_bundle_index_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-8h-20260518T072401Z-autoencoder.codex-task-vectors.json",
+        "vector_bundle_similarity": 1.0
+      },
+      "objective": "Embedding residuals point to information not well represented by the typed IR/decompiler.",
+      "priority": 71.06416,
+      "sample_ids": [
+        "us-code-2-31a-2b-a99b26c5ad622cfe",
+        "us-code-7-7913-1aaa3fd59c5ff146",
+        "us-code-15-828-103d21b6b8cb41ed",
+        "us-code-15-2501-eb4a7816e81bb710"
+      ],
+      "status": "claimed",
+      "todo_id": "program-a5ee428cc25dcab7"
+    },
+    {
+      "action": "refine_typed_ir_or_decompiler_slots",
+      "citations": [
+        "20 U.S.C. 107e",
+        "15 U.S.C. 657j",
+        "42 U.S.C. 9859c.",
+        "26 U.S.C. 6050K"
+      ],
+      "claimed_at": "2026-05-18T08:21:14+00:00",
+      "claimed_by": "codex-ir_decompiler",
+      "completed_at": null,
+      "created_at": "2026-05-18T07:42:27+00:00",
+      "loss_name": "autoencoder_residual_cluster",
+      "loss_value": 0.378149379464,
+      "metadata": {
+        "dedupe_signature": "{\"action\":\"refine_typed_ir_or_decompiler_slots\",\"sample_ids\":[\"us-code-15-657j-e294377a6f05ac13\",\"us-code-20-107e-19233e1a57def2b1\",\"us-code-26-6050K-56a1d5c4fe56333e\",\"us-code-42-9859c.-fad0b07ea51f0884\"],\"target_component\":\"modal.ir_decompiler\"}",
+        "execution_target": "codex_program_repair",
+        "hint_evidence": [
+          {
+            "cosine_similarity": 0.244026934086,
+            "hint_id": "modal-synthesis-2cb3b198b09f075e",
+            "priority": 0.475941523936,
+            "reconstruction_loss": 0.475941523936,
+            "sample_id": "us-code-20-107e-19233e1a57def2b1"
+          },
+          {
+            "cosine_similarity": 0.075834096804,
+            "hint_id": "modal-synthesis-42790dd7a272c4e5",
+            "priority": 0.265186189274,
+            "reconstruction_loss": 0.265186189274,
+            "sample_id": "us-code-26-6050K-56a1d5c4fe56333e"
+          },
+          {
+            "cosine_similarity": 0.073927575852,
+            "hint_id": "modal-synthesis-5ff892c611a1e1d1",
+            "priority": 0.360615913058,
+            "reconstruction_loss": 0.360615913058,
+            "sample_id": "us-code-42-9859c.-fad0b07ea51f0884"
+          },
+          {
+            "cosine_similarity": 0.125281249312,
+            "hint_id": "modal-synthesis-e94fb51fb1e40285",
+            "priority": 0.410853891586,
+            "reconstruction_loss": 0.410853891586,
+            "sample_id": "us-code-15-657j-e294377a6f05ac13"
+          }
+        ],
+        "hint_ids": [
+          "modal-synthesis-2cb3b198b09f075e",
+          "modal-synthesis-42790dd7a272c4e5",
+          "modal-synthesis-5ff892c611a1e1d1",
+          "modal-synthesis-e94fb51fb1e40285"
+        ],
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "program_synthesis_scope": "ir_decompiler",
+        "semantic_bundle_key": "{\"action\":\"refine_typed_ir_or_decompiler_slots\",\"family_pairs\":[],\"program_synthesis_scope\":\"ir_decompiler\",\"target_component\":\"modal.ir_decompiler\"}",
+        "source": "modal_program_synthesis_todo_generator_v1",
+        "support_count": 4,
+        "target_component": "modal.ir_decompiler",
+        "vector_bundle_anchor_id": "program-a5ee428cc25dcab7",
+        "vector_bundle_backend": "embeddings_router",
+        "vector_bundle_index_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-8h-20260518T072401Z-autoencoder.codex-task-vectors.json",
+        "vector_bundle_similarity": 0.994568
+      },
+      "objective": "Embedding residuals point to information not well represented by the typed IR/decompiler.",
+      "priority": 41.814938,
+      "sample_ids": [
+        "us-code-20-107e-19233e1a57def2b1",
+        "us-code-15-657j-e294377a6f05ac13",
+        "us-code-42-9859c.-fad0b07ea51f0884",
+        "us-code-26-6050K-56a1d5c4fe56333e"
+      ],
+      "status": "claimed",
+      "todo_id": "program-3e52dea1109b2095"
+    },
+    {
+      "action": "refine_typed_ir_or_decompiler_slots",
+      "citations": [
+        "12 U.S.C. 4712",
+        "22 U.S.C. 8531",
+        "8 U.S.C. 1535",
+        "7 U.S.C. 518b"
+      ],
+      "claimed_at": "2026-05-18T08:21:14+00:00",
+      "claimed_by": "codex-ir_decompiler",
+      "completed_at": null,
+      "created_at": "2026-05-18T07:43:14+00:00",
+      "loss_name": "autoencoder_residual_cluster",
+      "loss_value": 0.480152886734,
+      "metadata": {
+        "dedupe_signature": "{\"action\":\"refine_typed_ir_or_decompiler_slots\",\"sample_ids\":[\"us-code-12-4712-617af0840f42a51f\",\"us-code-22-8531-63f348cd55efab76\",\"us-code-7-518b-429aff14e8db1068\",\"us-code-8-1535-ab9da61d11ff19b2\"],\"target_component\":\"modal.ir_decompiler\"}",
+        "execution_target": "codex_program_repair",
+        "hint_evidence": [
+          {
+            "cosine_similarity": -0.080216945513,
+            "hint_id": "modal-synthesis-046ccbe0c6ddc0b9",
+            "priority": 0.439415729232,
+            "reconstruction_loss": 0.439415729232,
+            "sample_id": "us-code-22-8531-63f348cd55efab76"
+          },
+          {
+            "cosine_similarity": -0.892975106008,
+            "hint_id": "modal-synthesis-7193b2acc9911b5d",
+            "priority": 0.849499525127,
+            "reconstruction_loss": 0.849499525127,
+            "sample_id": "us-code-12-4712-617af0840f42a51f"
+          },
+          {
+            "cosine_similarity": 0.029946293324,
+            "hint_id": "modal-synthesis-adc44c562919ef41",
+            "priority": 0.400142211084,
+            "reconstruction_loss": 0.400142211084,
+            "sample_id": "us-code-8-1535-ab9da61d11ff19b2"
+          },
+          {
+            "cosine_similarity": 0.083833112865,
+            "hint_id": "modal-synthesis-b98f3253f7d9290a",
+            "priority": 0.231554081492,
+            "reconstruction_loss": 0.231554081492,
+            "sample_id": "us-code-7-518b-429aff14e8db1068"
+          }
+        ],
+        "hint_ids": [
+          "modal-synthesis-046ccbe0c6ddc0b9",
+          "modal-synthesis-7193b2acc9911b5d",
+          "modal-synthesis-adc44c562919ef41",
+          "modal-synthesis-b98f3253f7d9290a"
+        ],
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "program_synthesis_scope": "ir_decompiler",
+        "semantic_bundle_key": "{\"action\":\"refine_typed_ir_or_decompiler_slots\",\"family_pairs\":[],\"program_synthesis_scope\":\"ir_decompiler\",\"target_component\":\"modal.ir_decompiler\"}",
+        "source": "modal_program_synthesis_todo_generator_v1",
+        "support_count": 4,
+        "target_component": "modal.ir_decompiler",
+        "vector_bundle_anchor_id": "program-a5ee428cc25dcab7",
+        "vector_bundle_backend": "embeddings_router",
+        "vector_bundle_index_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-8h-20260518T072401Z-autoencoder.codex-task-vectors.json",
+        "vector_bundle_similarity": 0.994403
+      },
+      "objective": "Embedding residuals point to information not well represented by the typed IR/decompiler.",
+      "priority": 52.015289,
+      "sample_ids": [
+        "us-code-12-4712-617af0840f42a51f",
+        "us-code-22-8531-63f348cd55efab76",
+        "us-code-8-1535-ab9da61d11ff19b2",
+        "us-code-7-518b-429aff14e8db1068"
+      ],
+      "status": "claimed",
+      "todo_id": "program-d8caf43103250e50"
+    }
+  ],
+  "vector_bundle_anchor_ids": [
+    "program-a5ee428cc25dcab7"
+  ],
+  "vector_claim_report": {
+    "anchor_id": "program-a5ee428cc25dcab7",
+    "backend": "embeddings_router",
+    "candidate_count": 136,
+    "fallback_reason": "",
+    "indexed_count": 570,
+    "min_similarity": 0.72,
+    "mode": "vector",
+    "path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-8h-20260518T072401Z-autoencoder.codex-task-vectors.json",
+    "provider": "local_adapter",
+    "refreshed_count": 3,
+    "selected_count": 3,
+    "selected_ids": [
+      "program-a5ee428cc25dcab7",
+      "program-3e52dea1109b2095",
+      "program-d8caf43103250e50"
+    ]
+  },
+  "worker_id": "codex-ir_decompiler",
+  "worktree_error": null,
+  "worktree_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000012-20260518_082114"
+}

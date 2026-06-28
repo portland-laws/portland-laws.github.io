@@ -1,0 +1,97 @@
+{
+  "requirement_nodes": [
+    {
+      "requirement_id": "REQ-004-HUMAN-REVIEW",
+      "source_evidence_ids": ["EV-004"],
+      "requirement_type": "action_gate",
+      "subject": "applicant",
+      "action": "certify",
+      "object": "permit application acknowledgement",
+      "conditions": [],
+      "deadline_or_temporal_scope": null,
+      "permit_types": ["building"],
+      "process_stage": "acknowledgement/certification review",
+      "confidence": 0.92,
+      "human_review_status": "required",
+      "formalization_status": "formalized",
+      "source_id": "SRC-DEVHUB-GUIDE",
+      "source_freshness_status": "current"
+    },
+    {
+      "requirement_id": "REQ-002-OCR-STALE",
+      "source_evidence_ids": ["EV-002"],
+      "requirement_type": "document_requirement",
+      "subject": "applicant",
+      "action": "upload",
+      "object": "supporting calculation PDF",
+      "conditions": ["when plan review is required"],
+      "deadline_or_temporal_scope": null,
+      "permit_types": ["building"],
+      "process_stage": "upload staging",
+      "confidence": 0.86,
+      "human_review_status": "approved",
+      "formalization_status": "formalized",
+      "source_id": "SRC-STALE-FEE-GUIDE",
+      "source_freshness_status": "stale",
+      "evidence_records": [
+        {
+          "evidence_id": "EV-002",
+          "source_id": "SRC-STALE-FEE-GUIDE",
+          "extraction_method": "ocr",
+          "freshness_status": "stale"
+        }
+      ]
+    },
+    {
+      "requirement_id": "REQ-005-PROMOTABLE",
+      "source_evidence_ids": ["EV-005"],
+      "requirement_type": "precondition",
+      "subject": "agent",
+      "action": "check",
+      "object": "known case facts before drafting",
+      "conditions": [],
+      "deadline_or_temporal_scope": null,
+      "permit_types": ["building"],
+      "process_stage": "eligibility screening",
+      "confidence": 0.94,
+      "human_review_status": "approved",
+      "formalization_status": "formalized",
+      "source_id": "SRC-CURRENT-GUIDE",
+      "source_freshness_status": "current"
+    },
+    {
+      "requirement_id": "REQ-001-LOW-CONFIDENCE",
+      "source_evidence_ids": ["EV-001"],
+      "requirement_type": "obligation",
+      "subject": "applicant",
+      "action": "prepare",
+      "object": "single PDF drawing plan set",
+      "conditions": ["when plans are required"],
+      "deadline_or_temporal_scope": null,
+      "permit_types": ["building"],
+      "process_stage": "document preparation",
+      "confidence": 0.41,
+      "human_review_status": "approved",
+      "formalization_status": "formalized",
+      "source_id": "SRC-CURRENT-GUIDE",
+      "source_freshness_status": "current"
+    },
+    {
+      "requirement_id": "REQ-003-MISSING-FORMALIZATION",
+      "source_evidence_ids": ["EV-003"],
+      "requirement_type": "fee_trigger",
+      "subject": "applicant",
+      "action": "pay",
+      "object": "permit fees",
+      "conditions": ["after fees are assessed"],
+      "deadline_or_temporal_scope": null,
+      "permit_types": ["building"],
+      "process_stage": "fee payment",
+      "confidence": 0.89,
+      "human_review_status": "approved",
+      "formalization_status": "draft",
+      "source_id": "SRC-CURRENT-GUIDE",
+      "source_freshness_status": "current"
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,38 +1,50 @@
+ {
+-  "createdAt": "2026-05-03T15:38:36.472673Z",
++  "createdAt": "2026-05-03T15:41:21.185995Z",
+   "decision": {
+-    "action": "invoke_codex",
+-    "reason": "4 consecutive daemon rounds failed without an accepted patch",
++    "action": "repair_daemon_programming",
++    "reason": "2 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
+     "severity": "warning"
+   },
+   "failedAgenticRepair": {
+     "changedFiles": [
+-      "ppd/daemon/llm_failure_diagnostics.py",
+-      "ppd/tests/test_llm_failure_diagnostics.py"
++      "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+     ],
+     "errors": [
+-      "Syntax preflight failed; file edits were rolled back. python3 -m py_compile ppd/daemon/llm_failure_diagnostics.py: File \"/home/barberb/portland-laws.github.io/ppd/daemon/llm_failure_diagnostics.py\", line 32 text = re.sub(r\" str: ^ SyntaxError: unterminated string literal (detected at line 32) Next worker attempt should be smaller: replace only the syntactically failing file plus its narrow fixture/test if needed; run py_compile for each changed Python file or strict tsc for each changed TypeScript file mentally before returning JSON; do not add new contracts, fixtures, and broad tests in the same proposal until the parser-clean core file is valid."
++      "Validation failed; file edits were rolled back."
+     ],
+-    "failureKind": "syntax_preflight",
+-    "summary": "Add a parser-clean PP&D daemon diagnostic helper for repeated non-JSON LLM responses.",
++    "failureKind": "validation",
++    "summary": "Tighten PP&D supervisor repair guidance for repeated parser and compile failures.",
+     "validationResults": [
+       {
+         "command": [
+           "python3",
+-          "-m",
+-          "py_compile",
+-          "ppd/daemon/llm_failure_diagnostics.py"
++          "ppd/daemon/ppd_daemon.py",
++          "--self-test"
+         ],
+-        "returncode": 1,
+-        "stderr": "File \"/home/barberb/portland-laws.github.io/ppd/daemon/llm_failure_diagnostics.py\", line 32 text = re.sub(r\" str: ^ SyntaxError: unterminated string literal (detected at line 32)",
+-        "stdout": ""
++        "returncode": 0,
++        "stderr": "",
++        "stdout": "{ \"ok\": true, \"task_count\": 40 }"
+       },
+       {
+         "command": [
+           "python3",
+           "-m",
+-          "py_compile",
+-          "ppd/tests/test_llm_failure_diagnostics.py"
++          "unittest",
++          "discover",
++          "-s",
++          "ppd/tests",
++          "-p",
++          "test_*.py"
++        ],
++        "returncode": 1,
++        "stderr": "........................................................................................................................................................................................................................................................................................................................................................................................................................................ss................sss............................................................................................................................................................................................................................FFF.................................................................. ====================================================================== FAIL: test_guide_keeps_repair_separate_from_domain_implementation (test_supervisor_repair_guid...",
++        "stdout": ""
++      },
++      {
++        "command": [
++          "bash",
++          "-lc",
++          "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+         ],
+         "returncode": 0,
+         "stderr": "",

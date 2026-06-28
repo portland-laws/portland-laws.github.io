@@ -1,0 +1,122 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,39 +1,17 @@
+ {
+-  "createdAt": "2026-05-04T07:21:28.416987Z",
++  "createdAt": "2026-05-05T01:29:35.176915Z",
+   "decision": {
+-    "action": "reconcile_repeated_llm_loop_and_restart",
+-    "reason": "4 recent durable LLM parse/runtime diagnostics were recorded for the same task before the daemon exited; park the looping task and restart on the next independent task without invoking the LLM repair path",
+-    "severity": "warning"
++    "action": "recover_termination_storm_and_restart",
++    "reason": "termination storm circuit breaker has quarantined generated work; append vetted non-generated recovery tasks and restart the daemon instead of refreshing the breaker",
++    "severity": "critical"
+   },
+-  "failedAgenticRepair": {
+-    "changedFiles": [],
+-    "errors": [],
+-    "failureKind": "llm",
+-    "summary": "Repeated LLM parse/runtime diagnostic loop detected.",
+-    "validationResults": []
+-  },
+-  "fallbackActions": [
+-    "preserve failed repair diagnostics without accepting the invalid patch",
+-    "run full PP&D daemon validation before restarting unattended worker attempts",
+-    "restart the worker with PPD_LLM_BACKEND=llm_router after fallback validation passes",
+-    "keep future retry scope narrow and fixture-first"
++  "recoveryPolicy": "append_vetted_non_generated_recovery_tasks_after_quarantine",
++  "recoveryTaskLabels": [
++    "checkbox-446",
++    "checkbox-447",
++    "checkbox-448",
++    "checkbox-449"
+   ],
+-  "llmBackend": "llm_router",
+-  "repairKind": "builtin_supervisor_fallback",
+-  "safetyBoundaries": [
+-    "no private DevHub session artifacts",
+-    "no raw crawl output",
+-    "no downloaded documents",
+-    "no browser traces or screenshots",
+-    "no consequential DevHub actions"
+-  ],
+-  "schemaVersion": 1,
+-  "taskBoardRepair": {
+-    "parkedRepeatedSyntaxLoopTasks": [
+-      "Add generated blocked-cascade daemon-repair coverage for tranche 50 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates."
+-    ],
+-    "replenishedGoalTaskLabels": [],
+-    "supersededTaskBoardOnlyLabels": [],
+-    "taskBoardUpdated": true
+-  }
++  "repairKind": "termination_storm_recovery_tranche",
++  "schemaVersion": 1
+ }
+--- a/ppd/daemon/supervisor-circuit-breaker.json
++++ b/ppd/daemon/supervisor-circuit-breaker.json
+@@ -1,12 +1,17 @@
+ {
+-  "createdAt": "2026-05-05T01:15:24.836897Z",
++  "createdAt": "2026-05-05T01:29:35.176915Z",
+   "decision": {
+-    "action": "enter_termination_storm_circuit_breaker",
+-    "reason": "16 recent llm_router termination diagnostics across 1 target(s) indicate a systemic termination storm; pause worker restarts and task-board growth until daemon/supervisor resource policy is hardened",
++    "action": "recover_termination_storm_and_restart",
++    "reason": "termination storm circuit breaker has quarantined generated work; append vetted non-generated recovery tasks and restart the daemon instead of refreshing the breaker",
+     "severity": "critical"
+   },
+-  "operatorAction": "The supervisor paused daemon restarts because repeated llm_router terminations were systemic. Harden resource limits or deterministic task handling before resuming.",
+-  "quarantinedGeneratedTaskLabels": [],
+-  "repairKind": "termination_storm_circuit_breaker",
++  "operatorAction": "The supervisor converted the termination-storm pause into vetted non-generated recovery work. The daemon may resume on those tasks, while generated blocked-cascade tasks remain blocked.",
++  "recoveryTaskLabels": [
++    "checkbox-446",
++    "checkbox-447",
++    "checkbox-448",
++    "checkbox-449"
++  ],
++  "repairKind": "termination_storm_recovered",
+   "schemaVersion": 1
+ }
+--- a/ppd/daemon/status.json
++++ b/ppd/daemon/status.json
+@@ -1,11 +1,16 @@
+ {
+-  "active_state": "paused_by_supervisor_circuit_breaker",
+-  "active_state_started_at": "2026-05-05T01:15:24.836897Z",
+-  "active_target_task": "Task checkbox-443: Add generated blocked-cascade daemon-repair coverage for tranche 50 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.",
+-  "previous_state": "paused_by_supervisor_circuit_breaker",
++  "active_state": "ready_after_supervisor_circuit_breaker_recovery",
++  "active_state_started_at": "2026-05-05T01:29:35.176915Z",
++  "active_target_task": "",
++  "recovery_task_labels": [
++    "checkbox-446",
++    "checkbox-447",
++    "checkbox-448",
++    "checkbox-449"
++  ],
+   "schemaVersion": 1,
+-  "state": "paused_by_supervisor_circuit_breaker",
+-  "supervisor_action": "enter_termination_storm_circuit_breaker",
+-  "supervisor_reason": "16 recent llm_router termination diagnostics across 1 target(s) indicate a systemic termination storm; pause worker restarts and task-board growth until daemon/supervisor resource policy is hardened",
+-  "updated_at": "2026-05-05T01:15:24.836897Z"
++  "state": "ready_after_supervisor_circuit_breaker_recovery",
++  "supervisor_action": "recover_termination_storm_and_restart",
++  "supervisor_reason": "termination storm circuit breaker has quarantined generated work; append vetted non-generated recovery tasks and restart the daemon instead of refreshing the breaker",
++  "updated_at": "2026-05-05T01:29:35.176915Z"
+ }
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -1289,3 +1289,12 @@
+ 
+ - Parked open generated blocked-cascade daemon-repair tasks after a systemic termination storm. The supervisor will not grow generated fallback tranches again until the resource policy is hardened or a vetted human-authored task is reopened.
+ 
++## Built-In Circuit Breaker Recovery Tranche
++
++- [ ] Task checkbox-446: Add supervisor circuit-breaker recovery coverage proving expired termination storms append vetted non-generated recovery tasks and restart without reopening generated blocked-cascade work.
++- [ ] Task checkbox-447: Add daemon circuit-breaker resume coverage proving blocked generated cascade tasks stay skipped while a fresh vetted recovery task is selected first.
++- [ ] Task checkbox-448: Add PP&D supervisor operations documentation for persistent user-unit recovery, explicit daemon resume gates, and no live DevHub or official-action side effects.
++- [ ] Task checkbox-449: Add a fixture-only circuit-breaker status scenario proving paused daemon state records quarantine, restart eligibility, and source-safe recovery boundaries before autonomous work resumes.
++## Built-In Circuit Breaker Recovery Notes
++
++- Appended vetted non-generated recovery tasks after generated blocked-cascade work was quarantined. These tasks keep recovery inside PP&D daemon/supervisor fixtures, lifecycle handling, and documentation; they do not authorize live DevHub actions, uploads, submissions, payments, or real PDF filling.

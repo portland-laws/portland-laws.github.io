@@ -1,0 +1,33 @@
+{
+  "manifest_id": "archive-manifest-ppd-devhub-faqs-2026-05-08",
+  "source_id": "ppd-devhub-faqs",
+  "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+  "requested_url": "https://www.portland.gov/ppd/devhub-faqs",
+  "redirect_chain": [],
+  "http_status": 200,
+  "content_type": "text/html; charset=utf-8",
+  "content_hash": "sha256:2a3f7f9d2bc9d8e482a28dc0e38b7d69e75c403ab9b52dbef6fdf12ad3b42e0d",
+  "capture_started_at": "2026-05-08T16:20:00Z",
+  "capture_finished_at": "2026-05-08T16:20:03Z",
+  "processor_name": "ipfs_datasets_py.web_archive",
+  "processor_version": "fixture-only",
+  "archive_artifact_ref": "urn:ppd:public-processor-metadata:ppd-devhub-faqs:2026-05-08",
+  "normalized_document_id": "ppd-doc-devhub-faqs-2026-05-08",
+  "no_raw_body_persisted": true,
+  "metadata": {
+    "owning_surface": "public_ppd_website",
+    "privacy_classification": "public",
+    "robots_policy": "fixture-assumed-allowed",
+    "source_type": "devhub_public"
+  },
+  "citation_spans": [
+    {
+      "source_id": "ppd-devhub-faqs",
+      "normalized_document_id": "ppd-doc-devhub-faqs-2026-05-08",
+      "section": "Services available in DevHub",
+      "start_char": 128,
+      "end_char": 214,
+      "content_hash": "sha256:2a3f7f9d2bc9d8e482a28dc0e38b7d69e75c403ab9b52dbef6fdf12ad3b42e0d"
+    }
+  ]
+}

@@ -1,0 +1,116 @@
+[
+  {
+    "synthetic": true,
+    "dry_run": true,
+    "dry_run_plan_ref": {
+      "plan_id": "public-refresh-dry-run-execution-plan-v6-fixture",
+      "schema_version": "ppd.public_refresh_dry_run_execution_plan.v6"
+    },
+    "source_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools#overview",
+    "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+    "source_group": "ppd_public_html",
+    "http_metadata": {
+      "status_code": null,
+      "content_type": null,
+      "etag": null,
+      "last_modified": null,
+      "redirect_chain": []
+    },
+    "content_hash": {
+      "algorithm": "sha256",
+      "value": null,
+      "placeholder": true
+    },
+    "processor_handoff_id": "ppd-refresh-v6-6c1e53711d964b43",
+    "skipped_reason": "synthetic_dry_run_no_fetch",
+    "no_raw_body_asserted": true,
+    "no_raw_body_persisted": false,
+    "citation_refresh_candidates": [
+      {
+        "citation_id": "ppd-online-tools-overview",
+        "reason": "public_guidance_refresh"
+      }
+    ],
+    "freshness_status_delta": {
+      "previous_status": "fresh",
+      "current_status": "synthetic_dry_run_unverified",
+      "changed": true
+    }
+  },
+  {
+    "synthetic": true,
+    "dry_run": true,
+    "dry_run_plan_ref": {
+      "plan_id": "public-refresh-dry-run-execution-plan-v6-fixture",
+      "schema_version": "ppd.public_refresh_dry_run_execution_plan.v6"
+    },
+    "source_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+    "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+    "source_group": "ppd_public_pdf",
+    "http_metadata": {
+      "status_code": null,
+      "content_type": "application/pdf",
+      "etag": null,
+      "last_modified": null,
+      "redirect_chain": []
+    },
+    "content_hash": {
+      "algorithm": "sha256",
+      "value": null,
+      "placeholder": true
+    },
+    "processor_handoff_id": "ppd-refresh-v6-3449871c275e7455",
+    "skipped_reason": "raw_download_not_permitted",
+    "no_raw_body_asserted": true,
+    "no_raw_body_persisted": false,
+    "citation_refresh_candidates": [
+      {
+        "citation_id": "ppd-fee-payment-guide",
+        "reason": "payment_guardrail_source_refresh"
+      }
+    ],
+    "freshness_status_delta": {
+      "previous_status": "unknown",
+      "current_status": "synthetic_dry_run_unverified",
+      "changed": true
+    }
+  },
+  {
+    "synthetic": true,
+    "dry_run": true,
+    "dry_run_plan_ref": {
+      "plan_id": "public-refresh-dry-run-execution-plan-v6-fixture",
+      "schema_version": "ppd.public_refresh_dry_run_execution_plan.v6"
+    },
+    "source_url": "https://devhub.portlandoregon.gov/",
+    "canonical_url": "https://devhub.portlandoregon.gov/",
+    "source_group": "devhub_public_help",
+    "http_metadata": {
+      "status_code": null,
+      "content_type": null,
+      "etag": null,
+      "last_modified": null,
+      "redirect_chain": []
+    },
+    "content_hash": {
+      "algorithm": "sha256",
+      "value": null,
+      "placeholder": true
+    },
+    "processor_handoff_id": "ppd-refresh-v6-fb24be54c9e32cd1",
+    "skipped_reason": "synthetic_dry_run_no_fetch",
+    "no_raw_body_asserted": true,
+    "no_raw_body_persisted": false,
+    "citation_refresh_candidates": [
+      {
+        "citation_id": "devhub-public-portal",
+        "reason": "devhub_public_help_refresh"
+      }
+    ],
+    "freshness_status_delta": {
+      "previous_status": "stale",
+      "current_status": "synthetic_dry_run_unverified",
+      "changed": true
+    }
+  }
+]

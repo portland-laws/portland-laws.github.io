@@ -1,0 +1,93 @@
+{
+  "blocked_blocker_codes": [
+    "citation_integrity",
+    "source_freshness",
+    "requirement_review_queue",
+    "devhub_surface_drift",
+    "unsupported_paths",
+    "consequential_action_blockers"
+  ],
+  "blocked_candidates": [
+    {
+      "kind": "ProcessModel",
+      "process_id": "process-standard-trade-fixture",
+      "promotable": true,
+      "citation_integrity": {
+        "status": "unresolved",
+        "missing_citations": ["req-electrical-license-source"]
+      },
+      "source_freshness": {
+        "status": "stale",
+        "stale_sources": ["devhub-faq"]
+      },
+      "requirement_review_queue": {
+        "pending_count": 2,
+        "pending": ["req-fee-trigger", "req-upload-stage"]
+      },
+      "devhub_surface_drift": {
+        "status": "drifted",
+        "drifted_surfaces": ["surface-permit-type-selection"]
+      },
+      "unsupported_paths": {
+        "status": "unresolved",
+        "unresolved": ["trade-permit-with-plan-review"]
+      },
+      "consequential_action_blockers": {
+        "status": "open",
+        "actions": ["submit_permit_request", "purchase_trade_permit"]
+      }
+    },
+    {
+      "kind": "GuardrailBundle",
+      "guardrail_bundle_id": "guardrail-standard-trade-fixture",
+      "process_id": "process-standard-trade-fixture",
+      "validation_status": "requested_promotable",
+      "promotable": true,
+      "citation_integrity": {
+        "status": "invalid",
+        "broken_citation_spans": ["span-payment-final-submit"]
+      },
+      "source_freshness": {
+        "expired_sources": ["fee-payment-guide"]
+      },
+      "requirement_review_queue": {
+        "status": "pending"
+      },
+      "devhub_surface_drift": {
+        "selector_mismatches": ["fee-payment-review-submit-button"]
+      },
+      "unsupported_paths": {
+        "missing_manual_handoff": ["captcha-or-mfa"]
+      },
+      "consequential_action_blockers": {
+        "missing_gates": ["certify_acknowledgement", "submit_payment"]
+      }
+    }
+  ],
+  "resolved_candidates": [
+    {
+      "kind": "ProcessModel",
+      "process_id": "process-standard-trade-resolved-fixture",
+      "promotable": true,
+      "citation_integrity": {"status": "valid"},
+      "source_freshness": {"status": "fresh"},
+      "requirement_review_queue": {"pending_count": 0, "pending": []},
+      "devhub_surface_drift": {"status": "none"},
+      "unsupported_paths": {"status": "resolved", "unresolved": []},
+      "consequential_action_blockers": {"status": "resolved", "actions": []}
+    },
+    {
+      "kind": "GuardrailBundle",
+      "guardrail_bundle_id": "guardrail-standard-trade-resolved-fixture",
+      "process_id": "process-standard-trade-resolved-fixture",
+      "validation_status": "passed",
+      "promotable": true,
+      "citation_integrity": {"status": "verified"},
+      "source_freshness": {"status": "current"},
+      "requirement_review_queue": {"status": "clear", "pending_count": 0},
+      "devhub_surface_drift": {"status": "cleared"},
+      "unsupported_paths": {"status": "resolved"},
+      "consequential_action_blockers": {"status": "resolved"}
+    }
+  ]
+}

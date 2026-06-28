@@ -1,0 +1,23 @@
+{
+  "digest_id": "source-freshness-drift-2026-05-28",
+  "generated_from_plan_id": "public-recrawl-execution-rehearsal-2026-05-28",
+  "changed_sources": [
+    {
+      "source_id": "ppd-devhub-application-guide",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "freshness_status": "changed",
+      "change_kinds": [
+        "changed_devhub_action_guidance"
+      ]
+    },
+    {
+      "source_id": "ppd-spp-file-naming-standards",
+      "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+      "freshness_status": "changed",
+      "change_kinds": [
+        "changed_required_document",
+        "changed_file_rule"
+      ]
+    }
+  ]
+}

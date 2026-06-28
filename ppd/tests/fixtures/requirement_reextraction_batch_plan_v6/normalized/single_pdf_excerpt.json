@@ -1,0 +1,11 @@
+{
+  "fixture_document_id": "fixture-doc-single-pdf-v6",
+  "title": "Submit Plans Online fixture excerpt",
+  "source_type": "public_html_normalized_fixture",
+  "sections": [
+    {
+      "section_id": "single-pdf-guidance",
+      "text": "Fixture excerpt for Single PDF process guidance. Drawing plans are represented as one plan-set fixture, while applications, calculations, and other supporting documents are represented as separate PDF fixture references. Reviewer comparison must preserve old and new requirement placeholders until cited spans are checked."
+    }
+  ]
+}

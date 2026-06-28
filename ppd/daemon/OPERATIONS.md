@@ -11,10 +11,20 @@ Expected local runtime files include:
 - `ppd/daemon/status.json`
 - `ppd/daemon/progress.json`
 - `ppd/daemon/ppd-daemon.pid`
+- `ppd/daemon/ppd-daemon.child.pid`
+- `ppd/daemon/ppd-daemon-lifecycle.jsonl`
 - `ppd/daemon/ppd-daemon.log`
 - append-only accepted-work records under `ppd/daemon/accepted-work/`
 
 These runtime files are operational evidence, not source fixtures. They must not contain private DevHub credentials, authentication state, trace archives, downloaded documents, raw crawl output, payment data, or user-specific permit data.
+
+## Ephemeral Worktrees
+
+Candidate daemon proposals are validated in isolated ephemeral PP&D worktrees under `ppd/daemon/worktrees/`. The daemon copies the PP&D workspace and plan document into the ephemeral tree, exposes required read-only processor-suite metadata, materializes candidate file replacements there, runs syntax preflight and full validation there, and promotes files back to the real repository only after validation passes.
+
+Accepted-work and failed-work artifacts now persist ephemeral workspace manifests plus compact audit diffs. They do not apply `.patch` files, and new daemon rounds should not create `.patch` artifacts. Failed candidate worktrees are removed after diagnostics are persisted. On later starts, the daemon and supervisor sweep stale marked worktrees left by interrupted runs.
+
+When full validation fails after syntax preflight passes, the controlled daemon start path enables one repair pass inside the same temporary worktree. The repair pass must return complete file replacements, rerun syntax preflight and validation in the isolated tree, and promote nothing unless the repaired candidate passes.
 
 ## Start
 
@@ -26,6 +36,8 @@ bash ppd/daemon/control.sh start
 
 Starting the daemon should create or update the local PID, status, progress, and log files under `ppd/daemon/`. The daemon should work one task-board item at a time and validate changes before accepting them.
 
+The control wrapper starts a small watchdog process. When user systemd is available, `control.sh` runs the watchdog as a transient `ppd-daemon.service` unit with `Restart=on-failure`; otherwise it falls back to a detached `setsid` launch. The main PID file points to the watchdog, while `ppd-daemon.child.pid` points to the current Python worker. If the Python worker exits because the interpreter is terminated or a signal is delivered, the watchdog records the exit in `ppd-daemon-lifecycle.jsonl` and starts a fresh worker after a short backoff. If the worker exits cleanly because no eligible tasks remain, the watchdog records `watchdog_clean_exit`, removes PID files, and leaves replenishment to the supervisor. The watchdog ignores incidental `TERM`, `INT`, or `HUP` signals unless the control script first creates the matching `.stop` sentinel, which lets lifecycle logs distinguish an intentional operator stop from an environmental signal.
+
 Before accepting any generated work, the daemon is expected to run deterministic PP&D validation only. The current validation path must remain fixture-based and must not crawl live public sites, open DevHub, authenticate, submit, upload, pay, cancel, certify, or schedule inspections.
 
 ## Stop
@@ -36,7 +48,7 @@ Stop the daemon from the repository root:
 bash ppd/daemon/control.sh stop
 ```
 
-Stopping should terminate the local daemon process identified by the PP&D daemon PID file. It should not delete accepted-work records or failed-patch records. If a task was in progress, inspect `ppd/daemon/status.json`, `ppd/daemon/progress.json`, and `ppd/daemon/ppd-daemon.log` before restarting.
+Stopping should terminate the local daemon process identified by the PP&D daemon PID file plus any captured descendant process groups, including detached `llm_router` or Codex children created by the active task. It also sweeps orphaned PP&D `llm_router` children whose daemon parent has already exited before removing the PID file. It should not delete accepted-work records or failed-patch records. If a task was in progress, inspect `ppd/daemon/status.json`, `ppd/daemon/progress.json`, and `ppd/daemon/ppd-daemon.log` before restarting.
 
 ## Status
 
@@ -52,7 +64,7 @@ The structured status file is `ppd/daemon/status.json`. It is intended for quick
 
 ## Supervisor
 
-The supervisor watches the daemon heartbeat, task-board blockage, and repeated failure streaks. It can restart the daemon when the worker is down, and it can invoke Codex for a narrow, validated patch to `ppd/daemon/` or daemon tests when the worker is stuck or its own programming needs improvement.
+The supervisor watches the daemon heartbeat, task-board blockage, lifecycle signals, and repeated failure streaks. It can restart the daemon when the worker is down, and it can invoke Codex for a narrow, validated file-replacement proposal to `ppd/daemon/` or daemon tests when the worker is stuck or its own programming needs improvement.
 
 Run one supervised repair cycle:
 
@@ -73,7 +85,9 @@ bash ppd/daemon/control.sh supervisor-status
 bash ppd/daemon/control.sh supervisor-stop
 ```
 
-Supervisor state is written to `ppd/daemon/supervisor-status.json` and `ppd/daemon/supervisor-actions.jsonl`. These are runtime files and must not contain private DevHub data or raw crawl artifacts.
+Supervisor state is written to `ppd/daemon/supervisor-status.json` and `ppd/daemon/supervisor-actions.jsonl`. These are runtime files and must not contain private DevHub data or raw crawl artifacts. `supervisor-stop` uses the same process-family shutdown path as daemon stop so a repair-time LLM child is not left running after an operator stop or supervisor restart.
+
+Like the daemon, the continuous supervisor is launched under the watchdog, preferably through transient user unit `ppd-supervisor.service` with `Restart=always`. `ppd-supervisor.pid` identifies the supervisor watchdog, `ppd-supervisor.child.pid` identifies the current Python supervisor process, and `ppd-supervisor-lifecycle.jsonl` records child exits and restarts. If the supervisor Python process dies, the watchdog should restart it so daemon health checks continue; if the watchdog itself exits unexpectedly, user systemd should restart the watchdog unit.
 
 ## Progress
 
@@ -111,11 +125,11 @@ The repair goal should be narrow:
 
 For the next worker attempt after syntax rollback, the prompt should steer toward the smallest syntactically valid change that advances the task. If the failed proposal touched three or more files, the retry should usually touch fewer files. If the failure was a Python parser error, the worker should avoid clever inline comprehensions, generated code strings, or language-mixed syntax and should favor plain Python functions with explicit conditionals. If the failure was a TypeScript parser error, the worker should avoid broad contract rewrites and first add a minimal typecheckable fixture or test harness.
 
-A syntax rollback should not be treated the same as an assertion failure. Assertion failures can indicate a contract mismatch. Syntax and compile failures indicate the daemon accepted an invalid proposal shape too late, so repair guidance should push validation earlier and keep the next generated patch smaller.
+A syntax rollback should not be treated the same as an assertion failure. Assertion failures can indicate a contract mismatch. Syntax and compile failures indicate the daemon accepted an invalid proposal shape too late, so repair guidance should push validation earlier and keep the next generated file replacements smaller.
 
 ## Failed Work
 
-Failed patches are recorded under `ppd/daemon/failed-patches/` when validation fails or the daemon cannot safely apply a generated change. Failed records should classify the failure and preserve enough context to diagnose it without storing private or raw crawl artifacts.
+Failed ephemeral workspaces are recorded under `ppd/daemon/failed-patches/` when validation fails or the daemon cannot safely apply a generated change. The historical directory name is retained for compatibility, but new artifacts should be `.json`, `.workspace.json`, `.diff.txt`, and `.stat.txt`, not `.patch`. Failed records should classify the failure and preserve enough context to diagnose it without storing private or raw crawl artifacts.
 
 A blocked task should be marked explicitly rather than repeatedly retried without new evidence. If the failed-patch manifest shows parser or compile errors for the same task twice in a row, supervisor repair should happen before another worker attempt on that task.
 
@@ -141,8 +155,8 @@ Before restarting after a stop, failure, or interrupted run:
 
 1. Check `ppd/daemon/status.json` for the last task and result.
 2. Check `ppd/daemon/progress.json` for the last phase and heartbeat.
-3. Check `ppd/daemon/ppd-daemon.log` for validation or patch errors.
-4. Confirm any failed patch under `ppd/daemon/failed-patches/` does not contain private data.
+3. Check `ppd/daemon/ppd-daemon.log` for validation or file-replacement errors.
+4. Confirm any failed workspace artifact under `ppd/daemon/failed-patches/` does not contain private data.
 5. Run `python3 ppd/daemon/ppd_daemon.py --self-test` before starting unattended operation.
 6. If the last two rollbacks were syntax or compile failures, run a supervisor repair cycle before restarting unattended worker attempts.
 

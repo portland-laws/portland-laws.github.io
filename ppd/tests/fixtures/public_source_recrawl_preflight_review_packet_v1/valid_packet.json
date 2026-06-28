@@ -1,0 +1,78 @@
+{
+  "packet_version": "public_source_recrawl_preflight_review_packet_v1",
+  "packet_id": "public-recrawl-preflight-review-20260601-fixture",
+  "summary": "Offline-only review packet for public PP&D source refresh candidates.",
+  "seed_review_references": [
+    "PP&D plan official source anchors verified 2026-05-08",
+    "public refresh seed review queue placeholder"
+  ],
+  "official_source_anchor_placeholder": "Reviewer must confirm each candidate remains one of the official public source anchors or a linked PP&D public reference.",
+  "request_method_expectations": "Synthetic request rows are GET-only and include no body.",
+  "rate_limit_notes": "Any later approved run must use conservative PP&D-local pacing and stop on policy or robots uncertainty.",
+  "metadata_only_archive_manifest_expectations": "Archive manifest rows may contain URL, status placeholder, content type placeholder, hash placeholder, processor reference, and normalized document placeholder only.",
+  "skip_reason_expectations": "Skipped rows must use explicit reason codes such as outside allowlist, unsupported scheme, policy hold, robots hold, private-auth boundary, size hold, or unsupported content type.",
+  "freshness_monitor_update_placeholder": "Freshness monitor update is deferred pending reviewer approval.",
+  "reviewer_routing": "public-refresh-reviewer-primary",
+  "rollback_notes": "Rejecting this packet leaves existing public corpus, prompts, guardrails, release state, and scheduler state unchanged.",
+  "candidate_preflight_rows": [
+    {
+      "source_id": "ppd-online-permitting-tools",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "official_anchor_citation": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "official_source_anchor_placeholder": "Reviewer must confirm this URL is still the PP&D online permitting tools overview before any processor handoff.",
+      "seed_review_references": [
+        "PP&D plan official source anchors verified 2026-05-08"
+      ],
+      "allow_reason": "official public PP&D guide on allowlisted host",
+      "robots_decision_placeholder": "Reviewer must record robots result before processor handoff.",
+      "allowlist_decision_placeholder": "Reviewer must record host allowlist and PP&D policy decision before processor handoff.",
+      "canonical_url_expectation": "Canonical URL remains the public Portland.gov PP&D online permitting tools overview.",
+      "request_method": "GET",
+      "rate_limit_note": "Later approved metadata capture must use one-at-a-time conservative pacing and stop on errors.",
+      "raw_body_persistence_exclusion_check": "Source bodies are not retained in committed artifacts.",
+      "download_exclusion_check": "Document retrieval is out of scope for this preflight packet.",
+      "metadata_only_capture": true,
+      "metadata_only_capture_placeholder": "Capture URL, status placeholder, hash placeholder, MIME placeholder, and citation metadata only.",
+      "metadata_only_archive_manifest": true,
+      "metadata_only_archive_manifest_expectation": "Archive manifest placeholder excludes source body content and local artifact paths.",
+      "no_raw_body_persisted": true,
+      "live_network_invoked": false,
+      "raw_download_invoked": false,
+      "processor_suite_adapter_ref": "ppd.processor_suite.public_metadata_archive_adapter",
+      "skip_reason_expectation": "If held, row must record a public preflight skip reason before removal from the candidate queue.",
+      "freshness_monitor_update_placeholder": "Freshness monitor update is deferred until reviewer approval.",
+      "reviewer_hold_placeholder": "Reviewer hold disposition placeholder.",
+      "reviewer_approval_placeholder": "Reviewer approval disposition placeholder.",
+      "reviewer_routing": "public-refresh-reviewer-primary",
+      "rollback_note": "Rejecting this row leaves current public source records unchanged.",
+      "processor_handoff_dry_run_prerequisites": [
+        "allowlist decision recorded",
+        "robots decision recorded",
+        "metadata-only adapter selected"
+      ],
+      "validation_commands": [
+        ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+      ]
+    }
+  ],
+  "synthetic_request_rows": [
+    {
+      "source_id": "ppd-online-permitting-tools",
+      "synthetic_request_id": "synthetic-ppd-online-tools-get",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "method": "GET",
+      "rate_limit_note": "Synthetic row documents conservative pacing only; no network request is made by this fixture.",
+      "synthetic_only": true,
+      "network_invoked": false,
+      "body_included": false,
+      "request_metadata_placeholder": "Offline request metadata shape only."
+    }
+  ],
+  "active_artifact_mutation": false,
+  "active_prompt_mutation": false,
+  "active_release_state_mutation": false,
+  "active_guardrail_mutation": false,
+  "validation_commands": [
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

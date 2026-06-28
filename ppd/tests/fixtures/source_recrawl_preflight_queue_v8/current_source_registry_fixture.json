@@ -1,0 +1,46 @@
+{
+  "registry_id": "current-public-source-registry-fixture-001",
+  "sources": [
+    {
+      "source_id": "portland_public_bds",
+      "source_name": "City of Portland BDS public pages",
+      "enabled": true,
+      "public_source": true,
+      "allowed_hosts": [
+        "www.portland.gov",
+        "portland.gov"
+      ],
+      "candidate_urls": [
+        "https://www.portland.gov/bds/permits",
+        "https://WWW.PORTLAND.GOV:443/bds/permits/",
+        "ftp://www.portland.gov/bds/private"
+      ]
+    },
+    {
+      "source_id": "portland_maps_public_permits",
+      "source_name": "Portland Maps public permits",
+      "enabled": true,
+      "public_source": true,
+      "allowed_hosts": [
+        "www.portlandmaps.com",
+        "portlandmaps.com"
+      ],
+      "candidate_urls": [
+        "https://www.portlandmaps.com/permits/?propertyid=fixture",
+        "https://example.com/not-allowed"
+      ]
+    },
+    {
+      "source_id": "private_devhub_source",
+      "source_name": "Private DevHub source excluded from public preflight",
+      "enabled": true,
+      "public_source": false,
+      "allowed_hosts": [
+        "devhub.portlandoregon.gov"
+      ],
+      "candidate_urls": [
+        "https://devhub.portlandoregon.gov/private"
+      ]
+    }
+  ]
+}

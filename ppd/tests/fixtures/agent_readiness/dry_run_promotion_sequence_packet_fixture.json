@@ -1,0 +1,187 @@
+{
+  "packet_type": "ppd.dry_run_promotion_sequence_packet.v1",
+  "packet_id": "dry-run-sequence-fixture",
+  "fixture_only": true,
+  "source_packet_type": "ppd.offline_release_decision_packet.v1",
+  "source_packet_id": "offline-release-decision-fixture",
+  "source_readiness_packet_id": "offline-release-readiness-fixture",
+  "sequence_status": "ready_for_operator_review",
+  "recommendation_decisions": [
+    "candidate_ready_for_operator_review"
+  ],
+  "prerequisite_validation_evidence": [
+    {
+      "prerequisite_id": "offline-decision-packet-validated",
+      "status": "satisfied",
+      "summary": "Source decision packet passed offline release decision validation.",
+      "source_packet_id": "offline-release-decision-fixture",
+      "evidence_ids": [
+        "evidence-offline-decision",
+        "evidence-validation-command",
+        "evidence-rollback-checkpoint",
+        "evidence-operator-signoff-request"
+      ]
+    },
+    {
+      "prerequisite_id": "validation-command-results-reviewed",
+      "status": "satisfied",
+      "summary": "All cited validation command results are passing in this committed fixture.",
+      "validation_command_ref_ids": [
+        "self-test-command"
+      ],
+      "failed_validation_command_ref_ids": [],
+      "evidence_ids": [
+        "evidence-validation-command"
+      ]
+    },
+    {
+      "prerequisite_id": "operator-signoffs-identified",
+      "status": "pending_operator_review",
+      "summary": "Reviewer owner is identified, but this fixture does not promote state.",
+      "reviewer_owners": [
+        {
+          "owner_id": "ppd-release-operator",
+          "role": "ppd_release_operator"
+        }
+      ],
+      "evidence_ids": [
+        "evidence-operator-signoff-request"
+      ]
+    },
+    {
+      "prerequisite_id": "rollback-checkpoints-present",
+      "status": "satisfied",
+      "summary": "Rollback checkpoints are available before any reviewer go claim.",
+      "checkpoint_ids": [
+        "rollback-fixture-candidate"
+      ],
+      "evidence_ids": [
+        "evidence-rollback-checkpoint"
+      ]
+    }
+  ],
+  "affected_artifact_ids": [
+    "candidate-guardrail-export-fixture",
+    "candidate-process-model-fixture"
+  ],
+  "reviewer_owners": [
+    {
+      "owner_id": "ppd-release-operator",
+      "role": "ppd_release_operator",
+      "signoff_request_id": "operator-signoff-request-fixture",
+      "required_before": "any_release_promotion_or_operator_go_claim",
+      "source_evidence_ids": [
+        "evidence-operator-signoff-request"
+      ]
+    }
+  ],
+  "ordered_synthetic_promotion_steps": [
+    {
+      "sequence": 1,
+      "step_id": "load-offline-decision-packet",
+      "description": "Load the cited offline decision packet as read-only fixture input.",
+      "status": "ready_for_review",
+      "synthetic_only": true,
+      "writes_active_state": false,
+      "prerequisite_evidence_ids": [
+        "evidence-offline-decision",
+        "evidence-validation-command",
+        "evidence-rollback-checkpoint",
+        "evidence-operator-signoff-request"
+      ],
+      "affected_artifact_ids": [
+        "candidate-guardrail-export-fixture",
+        "candidate-process-model-fixture"
+      ],
+      "reviewer_owner": "ppd-release-operator",
+      "abort_condition_ids": [
+        "abort-on-active-state-write-request",
+        "abort-on-missing-operator-signoff"
+      ],
+      "rollback_action_id": "stop-before-active-state"
+    },
+    {
+      "sequence": 2,
+      "step_id": "stage-synthetic-promotion-order",
+      "description": "Create ordered dry-run promotion steps without writing active PP&D state.",
+      "status": "ready_for_review",
+      "synthetic_only": true,
+      "writes_active_state": false,
+      "prerequisite_evidence_ids": [
+        "evidence-offline-decision",
+        "evidence-validation-command",
+        "evidence-rollback-checkpoint",
+        "evidence-operator-signoff-request"
+      ],
+      "affected_artifact_ids": [
+        "candidate-guardrail-export-fixture",
+        "candidate-process-model-fixture"
+      ],
+      "reviewer_owner": "ppd-release-operator",
+      "abort_condition_ids": [
+        "abort-on-active-state-write-request",
+        "abort-on-missing-operator-signoff"
+      ],
+      "rollback_action_id": "discard-synthetic-sequence"
+    }
+  ],
+  "rollback_order": [
+    {
+      "sequence": 1,
+      "rollback_id": "stop-before-active-state",
+      "rollback_action": "Abort before any active PP&D write boundary is reached.",
+      "affected_artifact_ids": [
+        "candidate-guardrail-export-fixture",
+        "candidate-process-model-fixture"
+      ],
+      "evidence_ids": [
+        "evidence-offline-decision",
+        "evidence-validation-command",
+        "evidence-rollback-checkpoint",
+        "evidence-operator-signoff-request"
+      ],
+      "writes_active_state": false
+    },
+    {
+      "sequence": 2,
+      "rollback_id": "discard-synthetic-sequence",
+      "rollback_action": "Discard synthetic promotion steps and retain source packets unchanged.",
+      "affected_artifact_ids": [
+        "candidate-guardrail-export-fixture",
+        "candidate-process-model-fixture"
+      ],
+      "evidence_ids": [
+        "evidence-offline-decision",
+        "evidence-validation-command",
+        "evidence-rollback-checkpoint",
+        "evidence-operator-signoff-request"
+      ],
+      "writes_active_state": false
+    }
+  ],
+  "abort_conditions": [
+    {
+      "condition_id": "abort-on-active-state-write-request",
+      "severity": "blocking",
+      "abort_when": "Any step proposes writing active PP&D registries, manifests, requirements, process models, guardrails, source indexes, or agent consumer state.",
+      "owner": "ppd-release-operator"
+    },
+    {
+      "condition_id": "abort-on-missing-operator-signoff",
+      "severity": "blocking",
+      "abort_when": "A required reviewer owner is absent or has not completed attended review.",
+      "owner": "ppd-release-operator"
+    }
+  ],
+  "active_state_effects": {
+    "writes_active_registries": false,
+    "writes_active_manifests": false,
+    "writes_active_requirements": false,
+    "writes_active_process_models": false,
+    "writes_active_guardrails": false,
+    "writes_source_indexes": false,
+    "writes_agent_consumer_state": false,
+    "promotes_release": false,
+    "uses_live_network": false
+  }
+}

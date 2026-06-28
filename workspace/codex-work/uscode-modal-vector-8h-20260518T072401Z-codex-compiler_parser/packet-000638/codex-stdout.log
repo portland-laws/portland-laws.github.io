@@ -1,0 +1,18 @@
+Implemented a narrow deterministic parser improvement plus packet-specific golden fixtures for the three cited samples.
+
+- Updated coarse citation heading recovery to allow verb-bearing candidate headings when they still have a strong procedural signature (`notice`/`hearing`/`review`/`appeal` + multiple procedural keywords), preventing zero-formula drops in long noisy U.S.C. lines.
+- Added deterministic replay fixtures for:
+  - `us-code-7-425-90644d368be3f381`
+  - `us-code-10-2639-47081112474a8f75`
+  - `us-code-20-107e-1-43ac50498bf68122`
+  in both parser-level and compiler-level tests.
+
+Changed files:
+- [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000638-20260518_135148/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:1270)
+- [test_legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000638-20260518_135148/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py:417)
+- [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000638-20260518_135148/tests/unit_tests/logic/modal/test_modal_codec.py:481)
+
+Validation run:
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py -k "coarse_section_heading_fallback or 7_425_10_2639_and_20_107e_1_with_coarse_procedural_headings"` (2 passed)
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "7_425_10_2639_and_20_107e_1_with_coarse_procedural_headings"` (1 passed)
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "long_embedded_section_heading_samples_for_8_1365b_34_50108_and_19_3702"` (1 passed)

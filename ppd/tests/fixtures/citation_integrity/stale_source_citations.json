@@ -1,0 +1,15 @@
+{
+  "requirements": [
+    {
+      "requirement_id": "req-stale-source",
+      "requirement_type": "precondition",
+      "source_evidence_ids": [
+        {
+          "citation_id": "cite-stale-source",
+          "source_id": "ppd-source-not-in-registry",
+          "span_id": "span-apply-start"
+        }
+      ]
+    }
+  ]
+}

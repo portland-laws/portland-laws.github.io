@@ -1,0 +1,14 @@
+{
+  "fixture_id": "synthetic-process-model-missing-coverage",
+  "process_models": [
+    {
+      "process_id": "building-plan-review",
+      "permit_type": "building_plan_review",
+      "scope": "Synthetic building permit request requiring plan review.",
+      "required_documents": [],
+      "file_rules": [],
+      "fee_triggers": [],
+      "unsupported_paths": []
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+Implemented a generalized IR/decompiler slot refinement for citation structure and suffix morphology, and kept codec/decompiler parity.
+
+- Added typed citation title slots in decompiler + triples path (`citation_title_number`, plus `citation_title_*` token/stem family) in:
+  - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000030-20260518_102136/ipfs_datasets_py/logic/modal/decompiler.py:1293)
+  - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000030-20260518_102136/ipfs_datasets_py/logic/modal/codec.py:1173)
+
+- Added suffix morphology slots for citation/source-id section components:
+  - `*_suffix_char_count`
+  - `*_suffix_char_count_positioned`
+  - `*_suffix_profile` (`single|repeat|mixed`)
+  - positioned + primary + terminal variants
+  - Implemented via new helper `_suffix_profile(...)` in both paths:
+    - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000030-20260518_102136/ipfs_datasets_py/logic/modal/decompiler.py:1245)
+    - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000030-20260518_102136/ipfs_datasets_py/logic/modal/codec.py:1703)
+
+- Extended regression coverage for decoded slot maps and emitted triples in:
+  - [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000030-20260518_102136/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:96)
+
+Tests run:
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py` (8 passed)
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "citation_section or source_id_section"` (1 passed, 74 deselected)

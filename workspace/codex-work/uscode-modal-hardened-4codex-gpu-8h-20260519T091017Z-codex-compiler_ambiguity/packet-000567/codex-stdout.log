@@ -1,0 +1,10 @@
+Implemented the compiler ambiguity policy update by adding the missing self-pair to the bundle and tightening tests around it.
+
+- Added `conditional_normative->conditional_normative` to `COMPILER_AMBIGUITY_POLICY_FAMILY_PAIRS` in [modal_registry.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_ambiguity/worktrees/agent-codex-compiler_ambiguity-packet-000567-20260519_163406/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py#L186).
+- Updated registry tests to assert this pair is in the compiler ambiguity bundle and in directional targets at [test_modal_registry.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_ambiguity/worktrees/agent-codex-compiler_ambiguity-packet-000567-20260519_163406/tests/unit/optimizers/logic_theorem_optimizer/test_modal_registry.py#L310).
+- Updated compiler ambiguity test to assert conditional self-pair now carries compiler bundle metadata at [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_ambiguity/worktrees/agent-codex-compiler_ambiguity-packet-000567-20260519_163406/tests/unit_tests/logic/modal/test_modal_codec.py#L2457).
+
+Validation run:
+
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_modal_registry.py -k "compiler_ambiguity_policy_pair_helper_matches_declared_bundle or compiler_ambiguity_policy_targets_are_ordered_and_directional"` passed.
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "marks_conditional_self_pair_as_compiler_required_policy or compiled_primary_policy_pairs_cover_compiler_ambiguity_bundle"` passed.

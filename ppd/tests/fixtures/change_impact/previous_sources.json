@@ -1,0 +1,34 @@
+[
+  {
+    "source_id": "ppd-devhub-faq",
+    "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+    "content_hash": "sha256:111111",
+    "normalized_document_id": "doc-devhub-faq",
+    "requirement_ids": [
+      "req-corrections-upload",
+      "req-fee-payment"
+    ],
+    "guardrail_bundle_ids": [
+      "guard-devhub-actions",
+      "guard-fee-payment"
+    ],
+    "semantic_signatures": [
+      "action:pay-fees"
+    ]
+  },
+  {
+    "source_id": "ppd-submit-plans-online",
+    "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+    "content_hash": "sha256:333333",
+    "normalized_document_id": "doc-submit-plans-online",
+    "requirement_ids": [
+      "req-single-pdf-process"
+    ],
+    "guardrail_bundle_ids": [
+      "guard-document-prep"
+    ],
+    "semantic_signatures": [
+      "document:single-pdf-process"
+    ]
+  }
+]

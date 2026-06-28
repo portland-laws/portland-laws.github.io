@@ -1,0 +1,146 @@
+{
+  "packet_type": "regenerated_requirement_candidate",
+  "candidate_id": "regenerated-requirements-single-pdf-20260528",
+  "candidate_status": "draft_requires_human_review",
+  "candidate_mode": "fixture_first_review_only",
+  "does_not_replace_active_bundle": true,
+  "affected_process_ids": [
+    "process-single-pdf-submission"
+  ],
+  "affected_guardrail_bundle_ids": [
+    "guardrail-bundle-single-pdf-active"
+  ],
+  "active_process_model_ref": {
+    "process_model_id": "process-single-pdf-submission",
+    "revision": "active-2026-05-20"
+  },
+  "requirement_diffs": [
+    {
+      "diff_id": "diff-obligation-property-lookup",
+      "old_requirement_id": "req-property-lookup-v1",
+      "new_requirement_id": "req-property-lookup-v2",
+      "impact_kind": "obligation",
+      "summary": "Regenerated obligation clarifies that property information must be checked before application data entry.",
+      "citations": [
+        {
+          "url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+          "source_type": "public_html",
+          "privacy_classification": "public",
+          "captured_at": "2026-05-20"
+        }
+      ],
+      "impact_hints": {
+        "process_stage_ids": [
+          "property_lookup",
+          "application_data_entry"
+        ],
+        "user_fact_ids": [
+          "site_address",
+          "property_owner_name"
+        ],
+        "reviewer_prompt": "Confirm whether the process model should require property lookup facts before application data entry."
+      }
+    },
+    {
+      "diff_id": "diff-file-rule-single-pdf",
+      "old_requirement_id": "req-single-pdf-files-v1",
+      "new_requirement_id": "req-single-pdf-files-v2",
+      "impact_kind": "file_rule",
+      "summary": "Regenerated file rule keeps drawing plans together and supporting documents separate.",
+      "citations": [
+        {
+          "url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+          "source_type": "public_html",
+          "privacy_classification": "public",
+          "captured_at": "2026-05-20"
+        }
+      ],
+      "impact_hints": {
+        "process_stage_ids": [
+          "document_preparation",
+          "upload_staging"
+        ],
+        "required_document_ids": [
+          "drawing_plan_single_pdf",
+          "supporting_documents_separate_pdfs"
+        ],
+        "reviewer_prompt": "Review whether required document labels and upload staging notes match the regenerated single PDF file rule."
+      }
+    },
+    {
+      "diff_id": "diff-deadline-corrections",
+      "old_requirement_id": "req-corrections-deadline-v1",
+      "new_requirement_id": "req-corrections-deadline-v2",
+      "impact_kind": "deadline",
+      "summary": "Regenerated deadline candidate changes the review prompt for correction response timing.",
+      "citations": [
+        {
+          "url": "https://www.portland.gov/ppd/devhub-faqs",
+          "source_type": "public_html",
+          "privacy_classification": "public",
+          "captured_at": "2026-05-20"
+        }
+      ],
+      "impact_hints": {
+        "process_stage_ids": [
+          "corrections_checksheets",
+          "plan_review"
+        ],
+        "user_fact_ids": [
+          "checksheets_received_date"
+        ],
+        "reviewer_prompt": "Verify deadline language before any process model uses correction response timing."
+      }
+    },
+    {
+      "diff_id": "diff-fee-payment-gate",
+      "old_requirement_id": "req-fee-payment-v1",
+      "new_requirement_id": "req-fee-payment-v2",
+      "impact_kind": "fee",
+      "summary": "Regenerated fee candidate affects when payment review appears in the process model.",
+      "citations": [
+        {
+          "url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+          "source_type": "public_pdf",
+          "privacy_classification": "public",
+          "captured_at": "2026-05-20"
+        }
+      ],
+      "impact_hints": {
+        "process_stage_ids": [
+          "fee_payment"
+        ],
+        "user_fact_ids": [
+          "fee_notice_received"
+        ],
+        "reviewer_prompt": "Confirm fee trigger wording and keep payment actions under exact-confirmation guardrails."
+      }
+    },
+    {
+      "diff_id": "diff-action-gate-submit",
+      "old_requirement_id": "req-submit-action-gate-v1",
+      "new_requirement_id": "req-submit-action-gate-v2",
+      "impact_kind": "action_gate",
+      "summary": "Regenerated action gate keeps submission blocked until attended exact confirmation.",
+      "citations": [
+        {
+          "url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+          "source_type": "public_html",
+          "privacy_classification": "public",
+          "captured_at": "2026-05-20"
+        }
+      ],
+      "impact_hints": {
+        "process_stage_ids": [
+          "acknowledgment_certification_review",
+          "submission"
+        ],
+        "unsupported_path_ids": [
+          "unattended_certification",
+          "unattended_submission"
+        ],
+        "reviewer_prompt": "Check that the process model blocks unattended certification and submission after this action gate change."
+      }
+    }
+  ]
+}

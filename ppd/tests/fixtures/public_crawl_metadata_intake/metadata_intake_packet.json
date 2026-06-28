@@ -1,0 +1,148 @@
+{
+  "packet_type": "ppd.public_crawl_metadata_intake_packet.v1",
+  "packet_id": "fixture-public-crawl-metadata-intake-001",
+  "fixture_first": true,
+  "dry_run_only": true,
+  "metadata_only": true,
+  "live_network_invoked": false,
+  "processor_invoked": false,
+  "real_crawl_performed": false,
+  "real_download_performed": false,
+  "promotion_manifest_id": "fixture-public-crawl-dry-run-promotion-001",
+  "synthetic_operator_acknowledgement": {
+    "operator_id": "synthetic-operator-fixture",
+    "acknowledged_at": "2026-05-28T00:00:00Z",
+    "acknowledged_fixture_only_dry_run": true,
+    "acknowledged_no_live_authority": true,
+    "acknowledgement_text": "Synthetic fixture acknowledgement for metadata intake validation only."
+  },
+  "selected_allowlisted_targets": [
+    {
+      "source_id": "ppd-landing",
+      "canonical_url": "https://www.portland.gov/ppd",
+      "expected_archive_manifest_id": "archive-manifest-expected-ppd-landing",
+      "prerequisite_evidence_ids": [
+        "evidence:ppd-landing:robots-policy-prerequisite"
+      ],
+      "no_raw_body_attestation_id": "attest:no-raw-body:ppd-landing",
+      "selected_for_metadata_intake": true
+    },
+    {
+      "source_id": "ppd-apply-permits",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "expected_archive_manifest_id": "archive-manifest-expected-ppd-apply-permits",
+      "prerequisite_evidence_ids": [
+        "evidence:ppd-apply-permits:robots-policy-prerequisite"
+      ],
+      "no_raw_body_attestation_id": "attest:no-raw-body:ppd-apply-permits",
+      "selected_for_metadata_intake": true
+    }
+  ],
+  "skipped_targets": [
+    {
+      "source_id": "devhub-public-portal",
+      "canonical_url": "https://devhub.portlandoregon.gov",
+      "skipped_reason": "operator_not_selected_for_fixture_intake",
+      "real_crawl_performed": false,
+      "real_download_performed": false
+    }
+  ],
+  "prerequisite_evidence": [
+    {
+      "evidence_id": "evidence:ppd-landing:robots-policy-prerequisite",
+      "source_id": "ppd-landing",
+      "robots_status": "allowed",
+      "policy_status": "approved",
+      "required_before_live_run": true
+    },
+    {
+      "evidence_id": "evidence:ppd-apply-permits:robots-policy-prerequisite",
+      "source_id": "ppd-apply-permits",
+      "robots_status": "allowed",
+      "policy_status": "approved",
+      "required_before_live_run": true
+    },
+    {
+      "evidence_id": "evidence:devhub-public-portal:robots-policy-prerequisite",
+      "source_id": "devhub-public-portal",
+      "robots_status": "allowed",
+      "policy_status": "approved",
+      "required_before_live_run": true
+    }
+  ],
+  "prerequisite_evidence_ids": [
+    "evidence:ppd-landing:robots-policy-prerequisite",
+    "evidence:ppd-apply-permits:robots-policy-prerequisite",
+    "evidence:devhub-public-portal:robots-policy-prerequisite"
+  ],
+  "abort_decisions": [
+    {
+      "condition_id": "private_or_authenticated_url",
+      "decision": "abort_if_triggered",
+      "abort_before_live_run": true,
+      "operator_override_allowed": false
+    },
+    {
+      "condition_id": "non_allowlisted_host",
+      "decision": "abort_if_triggered",
+      "abort_before_live_run": true,
+      "operator_override_allowed": false
+    },
+    {
+      "condition_id": "raw_body_or_download_requested",
+      "decision": "abort_if_triggered",
+      "abort_before_live_run": true,
+      "operator_override_allowed": false
+    },
+    {
+      "condition_id": "robots_or_policy_missing",
+      "decision": "abort_if_triggered",
+      "abort_before_live_run": true,
+      "operator_override_allowed": false
+    },
+    {
+      "condition_id": "live_network_execution_requested",
+      "decision": "abort_if_triggered",
+      "abort_before_live_run": true,
+      "operator_override_allowed": false
+    },
+    {
+      "condition_id": "processor_handoff_intent_missing",
+      "decision": "abort_if_triggered",
+      "abort_before_live_run": true,
+      "operator_override_allowed": false
+    },
+    {
+      "condition_id": "real_crawl_or_download_claimed",
+      "decision": "abort_if_triggered",
+      "abort_before_live_run": true,
+      "operator_override_allowed": false
+    }
+  ],
+  "expected_archive_manifest_ids": [
+    "archive-manifest-expected-ppd-landing",
+    "archive-manifest-expected-ppd-apply-permits"
+  ],
+  "no_raw_body_attestations": [
+    {
+      "attestation_id": "attest:no-raw-body:ppd-landing",
+      "source_id": "ppd-landing",
+      "expected_archive_manifest_id": "archive-manifest-expected-ppd-landing",
+      "no_raw_body_persisted": true,
+      "raw_body_persisted": false,
+      "downloaded_documents": false,
+      "live_network_invoked": false,
+      "processor_invoked": false
+    },
+    {
+      "attestation_id": "attest:no-raw-body:ppd-apply-permits",
+      "source_id": "ppd-apply-permits",
+      "expected_archive_manifest_id": "archive-manifest-expected-ppd-apply-permits",
+      "no_raw_body_persisted": true,
+      "raw_body_persisted": false,
+      "downloaded_documents": false,
+      "live_network_invoked": false,
+      "processor_invoked": false
+    }
+  ]
+}

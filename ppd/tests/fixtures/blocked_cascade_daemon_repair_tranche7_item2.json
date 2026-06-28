@@ -1,0 +1,66 @@
+{
+  "generated_for": "checkbox-271",
+  "tranche": 7,
+  "item": 2,
+  "blocked_work": {
+    "id": "ppd-devhub-cascade-refresh",
+    "state": "parked",
+    "blocked_by": "daemon-repair:ppd-devhub-session-repair",
+    "blocked_at": "2026-05-08T10:00:00Z"
+  },
+  "cases": [
+    {
+      "name": "no_repair_record_keeps_work_parked",
+      "repair_tasks": [],
+      "expected_state": "parked"
+    },
+    {
+      "name": "stale_valid_repair_keeps_work_parked",
+      "repair_tasks": [
+        {
+          "kind": "daemon-repair",
+          "target": "ppd-devhub-session-repair",
+          "status": "validated",
+          "validated_at": "2026-05-08T09:59:59Z"
+        }
+      ],
+      "expected_state": "parked"
+    },
+    {
+      "name": "fresh_failed_repair_keeps_work_parked",
+      "repair_tasks": [
+        {
+          "kind": "daemon-repair",
+          "target": "ppd-devhub-session-repair",
+          "status": "failed",
+          "validated_at": "2026-05-08T10:05:00Z"
+        }
+      ],
+      "expected_state": "parked"
+    },
+    {
+      "name": "fresh_unrelated_repair_keeps_work_parked",
+      "repair_tasks": [
+        {
+          "kind": "daemon-repair",
+          "target": "unrelated-daemon-repair",
+          "status": "validated",
+          "validated_at": "2026-05-08T10:05:00Z"
+        }
+      ],
+      "expected_state": "parked"
+    },
+    {
+      "name": "fresh_valid_matching_repair_unparks_work",
+      "repair_tasks": [
+        {
+          "kind": "daemon-repair",
+          "target": "ppd-devhub-session-repair",
+          "status": "validated",
+          "validated_at": "2026-05-08T10:05:00Z"
+        }
+      ],
+      "expected_state": "ready"
+    }
+  ]
+}

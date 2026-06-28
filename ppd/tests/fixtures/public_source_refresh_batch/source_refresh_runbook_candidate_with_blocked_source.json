@@ -1,0 +1,60 @@
+{
+  "packet_type": "source_refresh_runbook_candidate",
+  "packet_version": "1.1",
+  "reviewer_owner_fields": {
+    "primary_reviewer": "ppd_public_sources_reviewer",
+    "backup_reviewer": "ppd_guardrails_reviewer",
+    "review_queue": "source-refresh-metadata-only"
+  },
+  "abort_criteria": [
+    "abort if any source is outside the PP&D public source allowlist",
+    "abort if robots or policy evidence is missing for any source",
+    "abort if rate-limit window evidence is missing for any source",
+    "abort if a candidate requires private or authenticated access, downloads, processors, schedule mutation, registry mutation, or raw body persistence",
+    "abort if expected deltas include anything other than metadata-only review fields"
+  ],
+  "candidate_sources": [
+    {
+      "source_id": "ppd-online-tools-overview",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "source_type": "public_html",
+      "owning_surface": "ppd_public_guidance",
+      "refresh_reason": "daily DevHub and online tools guidance freshness review",
+      "processor_policy": "metadata_only_no_processor",
+      "rate_limit_window": {
+        "window": "metadata-only review; no live request window opened",
+        "max_requests_per_window": 0,
+        "evidence_ref": "rate-limit-evidence:metadata-only:2026-05-08"
+      },
+      "robots_policy": {
+        "decision": "allowed_by_fixture_preflight",
+        "evidence_ref": "robots-evidence:www.portland.gov:2026-05-08"
+      },
+      "policy_evidence": {
+        "decision": "public_first_party_guidance",
+        "evidence_ref": "policy-evidence:official-source-anchor:online-permitting-tools"
+      }
+    },
+    {
+      "source_id": "outside-vendor-example",
+      "canonical_url": "https://example.com/vendor-brochure",
+      "source_type": "external_reference",
+      "owning_surface": "unsupported_external_vendor",
+      "refresh_reason": "negative fixture proving allowlist rejection",
+      "processor_policy": "metadata_only_no_processor",
+      "rate_limit_window": {
+        "window": "metadata-only review; outside allowlist so no live request window opened",
+        "max_requests_per_window": 0,
+        "evidence_ref": "rate-limit-evidence:outside-allowlist-negative-fixture"
+      },
+      "robots_policy": {
+        "decision": "not_evaluated_outside_allowlist",
+        "evidence_ref": "robots-evidence:blocked-before-live-check"
+      },
+      "policy_evidence": {
+        "decision": "blocked_outside_first_party_scope",
+        "evidence_ref": "policy-evidence:outside-allowlist-negative-fixture"
+      }
+    }
+  ]
+}

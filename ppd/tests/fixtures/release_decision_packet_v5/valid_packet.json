@@ -1,0 +1,207 @@
+{
+  "packet_type": "ppd.release_decision_packet.v5",
+  "packet_version": "v5",
+  "mode": "fixture_first_release_decision_v5",
+  "fixture_first": true,
+  "inactive_candidate_fixture_only": true,
+  "manual_reviewer_decision_required": true,
+  "unresolved_holds_review_required": true,
+  "source_freshness_clearance_required": true,
+  "agent_api_compatibility_review_required": true,
+  "rollback_owner_assignment_required": true,
+  "post_decision_smoke_replay_required": true,
+  "agent_notification_notes_required": true,
+  "active_guardrail_mutation": false,
+  "active_guardrail_bundle_mutation": false,
+  "active_prompt_mutation": false,
+  "active_process_model_mutation": false,
+  "active_requirement_mutation": false,
+  "active_source_mutation": false,
+  "active_devhub_surface_mutation": false,
+  "active_release_state_mutation": false,
+  "active_mutation": false,
+  "guardrails_changed": false,
+  "guardrail_bundles_changed": false,
+  "promotion_executed": false,
+  "activation_executed": false,
+  "opens_devhub": false,
+  "reads_private_documents": false,
+  "uploads": false,
+  "submits": false,
+  "certifies": false,
+  "pays": false,
+  "schedules": false,
+  "legal_or_permitting_guarantee": false,
+  "source_fixture_refs": [
+    {
+      "fixture_role": "inactive_guardrail_promotion_candidate_v5",
+      "path": "ppd/tests/fixtures/inactive_guardrail_bundle_promotion_candidate_v5/valid_packet.json"
+    }
+  ],
+  "consumes_only": {
+    "inactive_guardrail_promotion_candidate_v5_fixtures": true,
+    "candidate_packet_type": "ppd.inactive_guardrail_promotion_candidate.v5"
+  },
+  "reviewer_go_no_go_recommendation": [
+    {
+      "recommendation_id": "reviewer-release-decision-v5",
+      "recommendation": "NO_GO",
+      "activation_allowed": false,
+      "manual_reviewer_final_decision_required": true,
+      "candidate_count": 3,
+      "unresolved_hold_count": 3,
+      "pending_source_freshness_count": 3,
+      "basis": "Inactive candidate fixture still carries holds, source freshness clearance requirements, and manual review placeholders."
+    }
+  ],
+  "unresolved_hold_inventory": [
+    {
+      "hold_id": "hold::missing-info-draft-only",
+      "candidate_id": "inactive-promotion-v5::missing-info-draft-only",
+      "hold_status": "unresolved_pending_manual_review",
+      "promotion_blocked": true,
+      "reviewer_disposition": "hold_until_resolved",
+      "stale_evidence_block": false,
+      "conflicting_evidence_block": false,
+      "refused_actions_present": false
+    },
+    {
+      "hold_id": "hold::stale-and-conflicting-evidence",
+      "candidate_id": "inactive-promotion-v5::stale-and-conflicting-evidence",
+      "hold_status": "unresolved_pending_manual_review",
+      "promotion_blocked": true,
+      "reviewer_disposition": "hold_until_resolved",
+      "stale_evidence_block": true,
+      "conflicting_evidence_block": true,
+      "refused_actions_present": false
+    },
+    {
+      "hold_id": "hold::confirmation-and-refusals",
+      "candidate_id": "inactive-promotion-v5::confirmation-and-refusals",
+      "hold_status": "unresolved_pending_manual_review",
+      "promotion_blocked": true,
+      "reviewer_disposition": "hold_until_resolved",
+      "stale_evidence_block": false,
+      "conflicting_evidence_block": false,
+      "refused_actions_present": true
+    }
+  ],
+  "source_freshness_clearance_status": [
+    {
+      "clearance_id": "freshness::missing-info-draft-only",
+      "candidate_id": "inactive-promotion-v5::missing-info-draft-only",
+      "clearance_status": "pending_public_source_freshness_review",
+      "all_citations_have_fresh_source_review": false,
+      "stale_or_conflicting_evidence_resolved": false,
+      "activation_allowed": false
+    },
+    {
+      "clearance_id": "freshness::stale-and-conflicting-evidence",
+      "candidate_id": "inactive-promotion-v5::stale-and-conflicting-evidence",
+      "clearance_status": "pending_public_source_freshness_review",
+      "all_citations_have_fresh_source_review": false,
+      "stale_or_conflicting_evidence_resolved": false,
+      "activation_allowed": false
+    },
+    {
+      "clearance_id": "freshness::confirmation-and-refusals",
+      "candidate_id": "inactive-promotion-v5::confirmation-and-refusals",
+      "clearance_status": "pending_public_source_freshness_review",
+      "all_citations_have_fresh_source_review": false,
+      "stale_or_conflicting_evidence_resolved": false,
+      "activation_allowed": false
+    }
+  ],
+  "agent_api_compatibility_caveats": [
+    {
+      "caveat_id": "agent-api-caveat::inactive-promotion-v5::missing-info-draft-only",
+      "candidate_id": "inactive-promotion-v5::missing-info-draft-only",
+      "compatibility_status": "caveat_pending_agent_consumer_review",
+      "requires_manual_review": true,
+      "note": "Agent consumers must treat this decision packet as inactive fixture data and continue blocking activation paths."
+    },
+    {
+      "caveat_id": "agent-api-caveat::inactive-promotion-v5::stale-and-conflicting-evidence",
+      "candidate_id": "inactive-promotion-v5::stale-and-conflicting-evidence",
+      "compatibility_status": "caveat_pending_agent_consumer_review",
+      "requires_manual_review": true,
+      "note": "Agent consumers must treat this decision packet as inactive fixture data and continue blocking activation paths."
+    },
+    {
+      "caveat_id": "agent-api-caveat::inactive-promotion-v5::confirmation-and-refusals",
+      "candidate_id": "inactive-promotion-v5::confirmation-and-refusals",
+      "compatibility_status": "caveat_pending_agent_consumer_review",
+      "requires_manual_review": true,
+      "note": "Agent consumers must treat this decision packet as inactive fixture data and continue blocking activation paths."
+    }
+  ],
+  "rollback_owner_placeholders": [
+    {
+      "rollback_owner_placeholder_id": "owner::rollback::missing-info-draft-only",
+      "checkpoint_id": "rollback::missing-info-draft-only",
+      "candidate_id": "inactive-promotion-v5::missing-info-draft-only",
+      "owner": "",
+      "owner_assignment_status": "pending_manual_assignment",
+      "rollback_target": "discard_inactive_candidate_only",
+      "active_state_changed": false
+    },
+    {
+      "rollback_owner_placeholder_id": "owner::rollback::stale-and-conflicting-evidence",
+      "checkpoint_id": "rollback::stale-and-conflicting-evidence",
+      "candidate_id": "inactive-promotion-v5::stale-and-conflicting-evidence",
+      "owner": "",
+      "owner_assignment_status": "pending_manual_assignment",
+      "rollback_target": "discard_inactive_candidate_only",
+      "active_state_changed": false
+    },
+    {
+      "rollback_owner_placeholder_id": "owner::rollback::confirmation-and-refusals",
+      "checkpoint_id": "rollback::confirmation-and-refusals",
+      "candidate_id": "inactive-promotion-v5::confirmation-and-refusals",
+      "owner": "",
+      "owner_assignment_status": "pending_manual_assignment",
+      "rollback_target": "discard_inactive_candidate_only",
+      "active_state_changed": false
+    }
+  ],
+  "post_decision_smoke_replay_plan": [
+    {
+      "smoke_replay_step_id": "post-decision-smoke-v5::go-no-go-outcome",
+      "expected_outcome": "NO_GO",
+      "activation_allowed": false,
+      "command": ["python3", "-m", "unittest", "ppd.tests.test_release_decision_packet_v5"]
+    },
+    {
+      "smoke_replay_step_id": "post-decision-smoke-v5::daemon-self-test",
+      "expected_outcome": "offline_validation_only",
+      "activation_allowed": false,
+      "command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+    }
+  ],
+  "agent_notification_notes": [
+    {
+      "note_id": "notify::missing-info-draft-only",
+      "candidate_id": "inactive-promotion-v5::missing-info-draft-only",
+      "notification_status": "draft_note_only",
+      "message": "Release decision packet v5 is fixture-only; reviewers must resolve holds and freshness caveats before any separate activation review."
+    },
+    {
+      "note_id": "notify::stale-and-conflicting-evidence",
+      "candidate_id": "inactive-promotion-v5::stale-and-conflicting-evidence",
+      "notification_status": "draft_note_only",
+      "message": "Release decision packet v5 is fixture-only; reviewers must resolve holds and freshness caveats before any separate activation review."
+    },
+    {
+      "note_id": "notify::confirmation-and-refusals",
+      "candidate_id": "inactive-promotion-v5::confirmation-and-refusals",
+      "notification_status": "draft_note_only",
+      "message": "Release decision packet v5 is fixture-only; reviewers must resolve holds and freshness caveats before any separate activation review."
+    }
+  ],
+  "offline_validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/agent_readiness/release_decision_packet_v5.py"],
+    ["python3", "-m", "unittest", "ppd.tests.test_release_decision_packet_v5"],
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ],
+  "validation_commands": [["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]]
+}

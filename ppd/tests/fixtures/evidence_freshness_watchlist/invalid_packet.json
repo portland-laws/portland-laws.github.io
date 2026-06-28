@@ -1,0 +1,36 @@
+{
+  "packet_id": "freshness-watchlist-invalid",
+  "citations": [
+    {"id": "src-portland-permits", "url": "https://www.portland.gov/ppd/permits"}
+  ],
+  "source_refs": ["src-portland-permits", "src-uncited"],
+  "requirement_refs": ["req-uncited"],
+  "guardrail_refs": ["guardrail-uncited"],
+  "offline_review_triggers": [],
+  "reviewers": [
+    {"role": "missing owner"}
+  ],
+  "evidence": [
+    {
+      "label": "Non-allowlisted URL",
+      "url": "https://example.com/ppd/permits"
+    },
+    {
+      "label": "Authenticated URL",
+      "url": "https://www.portland.gov/ppd/permits?token=secret"
+    },
+    {
+      "label": "Raw body reference",
+      "raw_body": "raw crawl output",
+      "archive_url": "https://www.portland.gov/archive/ppd"
+    }
+  ],
+  "notes": "This packet claims a live crawl ran and guarantees permit approval.",
+  "live_crawl": true,
+  "processor_executed": true,
+  "registry_mutation": true,
+  "requirement_mutation": true,
+  "guardrail_mutation": true,
+  "schedule_mutation": true,
+  "release_state_mutation": true
+}

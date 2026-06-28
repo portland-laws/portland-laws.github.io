@@ -1,0 +1,37 @@
+{
+  "artifact_kind": "ephemeral-workspace",
+  "changed_files": [
+    "ppd/tests/fixtures/tranche2_evidence_continuation.json",
+    "ppd/tests/test_tranche2_evidence_continuation.py"
+  ],
+  "created_at": "2026-05-05T01:41:44.575028Z",
+  "promoted_to_main_worktree": true,
+  "reason": "",
+  "schema_version": 1,
+  "summary": "Adds deterministic tranche 2 evidence-continuation coverage with a committed fixture and syntax-valid Python test.",
+  "target_task": "Task checkbox-225: Add autonomous platform continuation coverage for tranche 2 proving whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs stay connected through source evidence IDs.",
+  "transport": "ephemeral_worktree",
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ],
+    [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "ppd/tests",
+      "-p",
+      "test_*.py"
+    ],
+    [
+      "bash",
+      "-lc",
+      "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+    ]
+  ],
+  "validation_passed": true
+}

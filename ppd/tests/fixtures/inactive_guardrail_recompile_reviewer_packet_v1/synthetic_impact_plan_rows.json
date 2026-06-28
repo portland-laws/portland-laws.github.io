@@ -1,0 +1,63 @@
+[
+  {
+    "row_id": "synthetic-impact-001",
+    "source_type": "synthetic_inactive_guardrail_recompile_impact_plan",
+    "guardrail_bundle_id": "inactive-bundle-building-permit-draft-v0",
+    "process_id": "building-permit-application",
+    "inactive_guardrail_id": "inactive-guardrail-draft-upload-gate",
+    "source_evidence_ids": [
+      "synthetic-source-submit-plans-online",
+      "synthetic-source-devhub-application-guide"
+    ],
+    "predicate_changes": [
+      "Require explicit human review before treating upload staging as reversible draft work.",
+      "Keep certification and final upload predicates outside approval routing."
+    ],
+    "explanation_template_changes": [
+      "Explain that inactive review packets do not promote active DevHub upload guardrails."
+    ],
+    "stale_source_dependencies": [],
+    "reviewer_recommendation": "approve",
+    "rollback_note": "Discard reviewer packet rows; no guardrail bundle state is mutated."
+  },
+  {
+    "row_id": "synthetic-impact-002",
+    "source_type": "synthetic_inactive_guardrail_recompile_impact_plan",
+    "guardrail_bundle_id": "inactive-bundle-fee-payment-v0",
+    "process_id": "fee-payment-review",
+    "inactive_guardrail_id": "inactive-guardrail-payment-submit-stop",
+    "source_evidence_ids": [
+      "synthetic-source-fee-payment-guide"
+    ],
+    "predicate_changes": [
+      "Block final payment submission from any unattended route."
+    ],
+    "explanation_template_changes": [
+      "Tell reviewer that payment-detail entry and submit-payment remain consequential official actions."
+    ],
+    "stale_source_dependencies": [
+      "synthetic-source-fee-payment-guide"
+    ],
+    "reviewer_recommendation": "approve",
+    "rollback_note": "Remove the held reviewer packet entry after fee-payment source freshness is resolved."
+  },
+  {
+    "row_id": "synthetic-impact-003",
+    "source_type": "synthetic_inactive_guardrail_recompile_impact_plan",
+    "guardrail_bundle_id": "inactive-bundle-inspection-scheduling-v0",
+    "process_id": "inspection-scheduling",
+    "inactive_guardrail_id": "inactive-guardrail-schedule-inspection-stop",
+    "source_evidence_ids": [
+      "synthetic-source-devhub-faq"
+    ],
+    "predicate_changes": [
+      "Reject inactive predicate wording that could classify inspection scheduling as reversible."
+    ],
+    "explanation_template_changes": [
+      "Explain that scheduling remains an attended, exact-confirmation workflow."
+    ],
+    "stale_source_dependencies": [],
+    "reviewer_recommendation": "reject",
+    "rollback_note": "Leave existing inactive scheduling guardrail untouched and discard this proposed recompile impact row."
+  }
+]

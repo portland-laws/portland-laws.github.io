@@ -1,0 +1,77 @@
+{
+  "schema_name": "devhub_read_only_observation_intake",
+  "schema_version": 3,
+  "authorization_checklist_reference": "devhub-read-only-observation-authorization-checklist-v1#fixture-authorized-offline-review",
+  "surface": {
+    "title": "DevHub read-only status review fixture",
+    "page_heading": "My Permits and Requests",
+    "url_pattern": "https://devhub.portlandoregon.gov/**/requests/**"
+  },
+  "accessible_landmarks": [
+    {
+      "landmark_id": "main-status-region",
+      "label": "Main permit status review region"
+    }
+  ],
+  "read_only_actions": [
+    {
+      "action_id": "review-status-summary",
+      "label": "Review status summary",
+      "action_class": "read_only"
+    }
+  ],
+  "redacted_observation_rows": [
+    {
+      "row_id": "status-summary-row",
+      "placeholder": "[REDACTED_STATUS_SUMMARY_ROW]"
+    }
+  ],
+  "validation_message_placeholders": [
+    {
+      "message_id": "no-change-message-placeholder",
+      "placeholder": "[VALIDATION_MESSAGE_PLACEHOLDER]"
+    }
+  ],
+  "upload_controls": [
+    {
+      "control_id": "attachment-list-control-reference",
+      "evidence_label": "Upload control observed only as a non-action evidence label"
+    }
+  ],
+  "non_action_upload_control_evidence_labels": [
+    "Upload control observed only as read-only evidence; no file selection or transfer occurred"
+  ],
+  "state_transition_placeholders": [
+    {
+      "transition_id": "status-to-detail-placeholder",
+      "placeholder": "[STATE_TRANSITION_PLACEHOLDER]"
+    }
+  ],
+  "selector_confidence_notes": [
+    {
+      "selector_id": "main-status-region",
+      "confidence": "medium",
+      "note": "Offline fixture selector note requires reviewer confirmation before promotion"
+    }
+  ],
+  "source_evidence_placeholders": [
+    {
+      "source_id": "devhub-read-only-fixture-source",
+      "placeholder": "[SOURCE_EVIDENCE_PLACEHOLDER]"
+    }
+  ],
+  "reviewer_holds": [
+    {
+      "hold_id": "human-review-before-promotion",
+      "reason": "Fixture remains inactive until a reviewer confirms redaction and source evidence"
+    }
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ],
+  "active_mutation": false
+}

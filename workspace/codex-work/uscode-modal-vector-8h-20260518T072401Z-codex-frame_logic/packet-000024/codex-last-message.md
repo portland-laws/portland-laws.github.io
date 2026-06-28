@@ -1,0 +1,12 @@
+Implemented a deterministic frame-term audit fix focused on cue features.
+
+- Updated cue parsing in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000024-20260518_095322/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py#L154) and [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000024-20260518_095322/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py#L507):
+  - `cue:frame:<value>` (legacy form) is now treated as frame-linked instead of ignored.
+  - Added a deterministic alias for the stopword-only frame cue `is a` -> `isa`, so it survives ontology-term normalization.
+- Added/updated unit coverage in [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000024-20260518_095322/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py#L331), including legacy cue handling and feature-key classification assertions.
+
+Tests run:
+
+1. `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py` (29 passed)
+2. `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py` (3 passed)
+3. `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k 'frame_ontology_term or frame_decoder_audit_features or frame_terms_when_metadata'` (5 passed, 67 deselected)

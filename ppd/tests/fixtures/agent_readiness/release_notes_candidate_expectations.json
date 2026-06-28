@@ -1,0 +1,20 @@
+{
+  "publication_policy": {
+    "fixtures_only": true,
+    "publishes_release_notes": false,
+    "changes_active_artifacts": false,
+    "writes_active_state": false,
+    "promotes_release": false,
+    "uses_live_network": false,
+    "invokes_devhub": false,
+    "invokes_agents": false,
+    "invokes_crawlers": false,
+    "invokes_processors": false,
+    "reads_private_case_files": false
+  },
+  "required_change_note_ids": [
+    "change-note-release-decision",
+    "change-note-dry-run-sequence",
+    "change-note-smoke-plan"
+  ]
+}

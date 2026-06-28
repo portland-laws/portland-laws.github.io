@@ -1,0 +1,89 @@
+{
+  "manifest_id": "ppd-public-crawl-dry-run-promotion-20260528",
+  "mode": "fixture_first_public_crawl_dry_run_promotion",
+  "source_plan": {
+    "artifact_id": "public-recrawl-execution-rehearsal-plan-20260528",
+    "fixture_reference": "ppd/tests/fixtures/public_recrawl_execution_rehearsal_plan.json",
+    "consumed_as": "operator-reviewed dry-run execution plan"
+  },
+  "offline_release_candidate_bundle": {
+    "bundle_id": "offline-release-candidate-bundle-20260528",
+    "fixture_reference": "ppd/tests/fixtures/offline_release_candidate_bundle.json",
+    "consumed_as": "frozen fixture bundle for promotion rehearsal"
+  },
+  "allowlisted_public_metadata_targets": [
+    {
+      "target_id": "portland-code-title-33-metadata",
+      "label": "Portland Zoning Code Title 33 public metadata",
+      "public_metadata_url": "https://www.portland.gov/code/33",
+      "metadata_only": true,
+      "allowlist_basis": "Public City of Portland code landing page metadata only; no authenticated access and no document body fetch.",
+      "expected_processor_handoff_id": "handoff-public-metadata-index"
+    },
+    {
+      "target_id": "portland-code-title-18-metadata",
+      "label": "Portland Noise Control Code Title 18 public metadata",
+      "public_metadata_url": "https://www.portland.gov/code/18",
+      "metadata_only": true,
+      "allowlist_basis": "Public City of Portland code landing page metadata only; no authenticated access and no document body fetch.",
+      "expected_processor_handoff_id": "handoff-public-metadata-index"
+    }
+  ],
+  "robots_policy_prerequisites": [
+    {
+      "evidence_id": "robots-policy-title-33-20260528",
+      "target_id": "portland-code-title-33-metadata",
+      "robots_txt_reviewed": true,
+      "policy_reviewed": true,
+      "evidence_reference": "public recrawl execution rehearsal plan robots/policy checklist entry title-33",
+      "approved_for_dry_run": true
+    },
+    {
+      "evidence_id": "robots-policy-title-18-20260528",
+      "target_id": "portland-code-title-18-metadata",
+      "robots_txt_reviewed": true,
+      "policy_reviewed": true,
+      "evidence_reference": "public recrawl execution rehearsal plan robots/policy checklist entry title-18",
+      "approved_for_dry_run": true
+    }
+  ],
+  "processor_handoffs": [
+    {
+      "handoff_id": "handoff-public-metadata-index",
+      "processor": "ppd-public-metadata-indexer",
+      "input_descriptor": "fixture metadata records: target_id, label, public_metadata_url, policy evidence id, expected archive manifest id",
+      "output_descriptor": "metadata-only archive manifest candidate descriptors",
+      "raw_body_allowed": false
+    }
+  ],
+  "rate_limit_notes": {
+    "live_fetches_performed": 0,
+    "dry_run_minimum_delay_seconds": 30,
+    "operator_note": "No URLs are fetched by this manifest. If promoted later, preserve conservative per-host pacing and stop on any robots or policy mismatch."
+  },
+  "expected_archive_manifest_ids": [
+    "archive-manifest-public-metadata-title-33-20260528",
+    "archive-manifest-public-metadata-title-18-20260528"
+  ],
+  "operator_abort_conditions": [
+    {
+      "condition_id": "robots-or-policy-evidence-missing",
+      "description": "Abort if robots.txt or public policy evidence is missing, stale, or inconsistent with the rehearsal plan.",
+      "operator_action": "Stop promotion and refresh prerequisite evidence before any crawl scheduling."
+    },
+    {
+      "condition_id": "target-not-allowlisted",
+      "description": "Abort if any target is outside the committed public metadata allowlist.",
+      "operator_action": "Reject the manifest and require an explicit fixture update with review."
+    },
+    {
+      "condition_id": "raw-body-requested",
+      "description": "Abort if any processor handoff requests raw body content, downloaded documents, traces, or authenticated state.",
+      "operator_action": "Remove the handoff from promotion and keep the run offline."
+    }
+  ],
+  "raw_body_persistence": {
+    "allowed": false,
+    "reason": "metadata-only dry run; raw response bodies are not fetched or persisted"
+  }
+}

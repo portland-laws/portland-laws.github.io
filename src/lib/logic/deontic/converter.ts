@@ -15,7 +15,13 @@ import {
 
 export type DeonticOutputFormat = 'json' | 'formula' | 'prolog' | 'tptp';
 export type DeonticJurisdiction = 'us' | 'eu' | 'uk' | 'international' | 'general';
-export type DeonticDocumentType = 'statute' | 'regulation' | 'contract' | 'policy' | 'agreement' | 'general';
+export type DeonticDocumentType =
+  | 'statute'
+  | 'regulation'
+  | 'contract'
+  | 'policy'
+  | 'agreement'
+  | 'general';
 
 export interface DeonticFormula {
   operator: DeonticOperator;
@@ -45,7 +51,14 @@ export interface DeonticConverterOptions {
 }
 
 const JURISDICTIONS: DeonticJurisdiction[] = ['us', 'eu', 'uk', 'international', 'general'];
-const DOCUMENT_TYPES: DeonticDocumentType[] = ['statute', 'regulation', 'contract', 'policy', 'agreement', 'general'];
+const DOCUMENT_TYPES: DeonticDocumentType[] = [
+  'statute',
+  'regulation',
+  'contract',
+  'policy',
+  'agreement',
+  'general',
+];
 
 export class DeonticConverter extends LogicConverter<string, DeonticFormula> {
   readonly useIpfs: boolean;
@@ -136,14 +149,18 @@ export class DeonticConverter extends LogicConverter<string, DeonticFormula> {
     };
   }
 
-  protected override getConfidence(output: DeonticFormula, _input: string, options: ConvertOptions): number {
+  protected override getConfidence(
+    output: DeonticFormula,
+    _input: string,
+    options: ConvertOptions,
+  ): number {
     return typeof options.confidence === 'number' ? options.confidence : output.confidence;
   }
 
   protected override getWarnings(output: DeonticFormula): string[] {
     return [
       ...(output.elements.length > 0 ? [] : ['No normative indicators were detected']),
-      ...(this.useMl && getLogicRuntimeCapabilities().deontic.mlUnavailable
+      ...(this.useMl && !getLogicRuntimeCapabilities().deontic.browserNativeMlConfidence
         ? ['Browser-native ML confidence is not yet complete.']
         : []),
     ];

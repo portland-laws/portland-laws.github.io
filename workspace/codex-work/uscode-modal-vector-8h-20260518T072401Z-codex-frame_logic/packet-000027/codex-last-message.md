@@ -1,0 +1,11 @@
+Implemented a deterministic frame-logic audit expansion so frame-scoped family features are now treated as ontology-term signals (not ignored).
+
+Updated code:
+- Added support for selected-frame-scoped family feature prefixes in [_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000027-20260518_101843/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:116) and extraction logic in [_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000027-20260518_101843/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:538).
+- Updated and extended unit coverage for this behavior in [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000027-20260518_101843/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:363) and [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000027-20260518_101843/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:624).
+- Added optimizer-level metadata test in [test_flogic_optimizer.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000027-20260518_101843/tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py:119).
+
+Validation run:
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py` (34 passed)
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py` (4 passed)
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "frame_decoder_audit_features_use_canonical_feature_parser or emits_frame_ontology_term_triples"` (2 passed)

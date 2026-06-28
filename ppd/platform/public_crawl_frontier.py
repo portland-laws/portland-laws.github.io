@@ -1,0 +1,18 @@
+"""Deterministic PP&D contract for public_crawl_frontier.
+
+This module is source-backed evidence for a reopened comprehensive PP&D goal
+task. It is intentionally side-effect-free and does not perform live DevHub,
+official action, upload, payment, or real PDF filling work.
+"""
+
+from __future__ import annotations
+
+import json
+from typing import Any
+
+
+CONTRACT_JSON = '{\n  "capability": "public_crawl_frontier",\n  "defaultMode": "fixture_only",\n  "exactConfirmationBeforeOfficialAction": true,\n  "fallbackKind": "public_crawl_frontier",\n  "liveCrawlAllowedByDefault": false,\n  "officialDevhubActionAllowedByDefault": false,\n  "privateArtifactPersistence": "forbidden",\n  "requiredOutputs": [\n    "frontier_contract",\n    "skip_reason_schema",\n    "metadata_manifest_contract"\n  ],\n  "requiresHumanAttendanceBeforeBrowserUse": true,\n  "schemaVersion": 1,\n  "surfaces": [\n    "portland_gov_allowlist",\n    "devhub_public_allowlist",\n    "robots_preflight"\n  ]\n}'
+
+
+def contract() -> dict[str, Any]:
+    return json.loads(CONTRACT_JSON)

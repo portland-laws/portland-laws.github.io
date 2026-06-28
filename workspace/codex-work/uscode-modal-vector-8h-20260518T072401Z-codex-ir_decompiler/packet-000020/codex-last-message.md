@@ -1,0 +1,20 @@
+Implemented a deterministic decompiler/IR slot refinement for fallback formulas by adding a new `fallback_surface_text` extraction path and mirroring it into F-logic triples.
+
+- Added fallback surface extraction in decompiler:
+  - Uses existing `section_heading_tail` when available.
+  - Otherwise derives text from formula provenance span, strips leading section refs like `§`, `Sec.`, `Section`, trims trailing punctuation, and bounds token length.
+  - Emits `fallback_surface_text` plus typed slot variants (`*_token_count`, `*_token_prefix`, etc.).
+  - See [decompiler.py:185](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000020-20260518_090936/ipfs_datasets_py/logic/modal/decompiler.py:185), [decompiler.py:555](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000020-20260518_090936/ipfs_datasets_py/logic/modal/decompiler.py:555), [decompiler.py:616](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000020-20260518_090936/ipfs_datasets_py/logic/modal/decompiler.py:616).
+
+- Mirrored the same signal into triples:
+  - Emits `fallback_surface_text` triple and typed predicate variants for parity with slot extraction.
+  - See [codec.py:867](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000020-20260518_090936/ipfs_datasets_py/logic/modal/codec.py:867), [codec.py:1314](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000020-20260518_090936/ipfs_datasets_py/logic/modal/codec.py:1314).
+
+- Added/updated tests:
+  - Extended heading-tail slot test to assert `fallback_surface_text`.
+  - Added a new test for `uscode_heading_without_section_reference_v1` to verify this new slot and triple path.
+  - See [test_modal_codec.py:2722](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000020-20260518_090936/tests/unit_tests/logic/modal/test_modal_codec.py:2722), [test_modal_codec.py:2769](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000020-20260518_090936/tests/unit_tests/logic/modal/test_modal_codec.py:2769).
+
+Tests run:
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py::test_modal_decompiler_and_triples_surface_section_heading_tail_slots tests/unit_tests/logic/modal/test_modal_codec.py::test_modal_decompiler_and_triples_surface_fallback_text_for_heading_without_section_reference`
+- Result: `2 passed`.

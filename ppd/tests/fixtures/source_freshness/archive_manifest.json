@@ -1,0 +1,58 @@
+{
+  "manifests": [
+    {
+      "manifest_id": "manifest-online-tools-20260511",
+      "source_id": "ppd_online_tools",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "requested_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "redirect_chain": [],
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "content_hash": "sha256:online-tools-current",
+      "capture_started_at": "2026-05-11T10:00:00Z",
+      "capture_finished_at": "2026-05-11T10:00:03Z",
+      "processor_name": "fixture-processor",
+      "processor_version": "0.0.fixture",
+      "archive_artifact_ref": "fixture://source-freshness/online-tools",
+      "normalized_document_id": "doc-online-tools",
+      "skipped_reason": null,
+      "no_raw_body_persisted": true
+    },
+    {
+      "manifest_id": "manifest-devhub-faq-20260430",
+      "source_id": "ppd_devhub_faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "requested_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "redirect_chain": [],
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "content_hash": "sha256:devhub-faq-current",
+      "capture_started_at": "2026-04-30T16:30:00Z",
+      "capture_finished_at": "2026-04-30T16:30:02Z",
+      "processor_name": "fixture-processor",
+      "processor_version": "0.0.fixture",
+      "archive_artifact_ref": "fixture://source-freshness/devhub-faq",
+      "normalized_document_id": "doc-devhub-faq",
+      "skipped_reason": null,
+      "no_raw_body_persisted": true
+    },
+    {
+      "manifest_id": "manifest-fee-payment-20260511",
+      "source_id": "ppd_fee_payment_guide",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "requested_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "redirect_chain": [],
+      "http_status": 200,
+      "content_type": "application/pdf",
+      "content_hash": "sha256:fee-payment-current",
+      "capture_started_at": "2026-05-11T08:15:00Z",
+      "capture_finished_at": "2026-05-11T08:15:05Z",
+      "processor_name": "fixture-processor",
+      "processor_version": "0.0.fixture",
+      "archive_artifact_ref": "fixture://source-freshness/fee-payment-guide",
+      "normalized_document_id": "doc-fee-payment-guide",
+      "skipped_reason": null,
+      "no_raw_body_persisted": true
+    }
+  ]
+}

@@ -1,0 +1,77 @@
+{
+  "as_of": "2026-05-12T00:00:00Z",
+  "sources": [
+    {
+      "source_id": "ppd_online_tools",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "source_type": "public_html",
+      "owning_surface": "ppd_public_guidance",
+      "allowlist_policy": "allowed",
+      "robots_policy": "allowed",
+      "crawl_frequency": "daily",
+      "processor_policy": "metadata_and_normalized_text_only",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-11T10:00:00Z",
+      "freshness_status": "fresh",
+      "expected_content_hash": "sha256:online-tools-current"
+    },
+    {
+      "source_id": "ppd_devhub_faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "source_type": "public_html",
+      "owning_surface": "devhub_public_guidance",
+      "allowlist_policy": "allowed",
+      "robots_policy": "allowed",
+      "crawl_frequency": "daily",
+      "processor_policy": "metadata_and_normalized_text_only",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-04-30T16:30:00Z",
+      "freshness_status": "fresh",
+      "expected_content_hash": "sha256:devhub-faq-current"
+    },
+    {
+      "source_id": "ppd_file_naming_standards",
+      "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+      "source_type": "public_html",
+      "owning_surface": "ppd_public_guidance",
+      "allowlist_policy": "allowed",
+      "robots_policy": "allowed",
+      "crawl_frequency": "weekly",
+      "processor_policy": "metadata_and_normalized_text_only",
+      "privacy_classification": "public",
+      "last_seen_at": null,
+      "freshness_status": "missing",
+      "expected_content_hash": "sha256:file-naming-current"
+    },
+    {
+      "source_id": "ppd_fee_payment_guide",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "source_type": "public_pdf",
+      "owning_surface": "fee_payment_guidance",
+      "allowlist_policy": "allowed",
+      "robots_policy": "allowed",
+      "crawl_frequency": "daily",
+      "processor_policy": "metadata_and_normalized_text_only",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-11T08:15:00Z",
+      "freshness_status": "fresh",
+      "expected_content_hash": "sha256:fee-payment-previous"
+    },
+    {
+      "source_id": "portlandmaps_property_reference",
+      "canonical_url": "https://www.portlandmaps.com",
+      "source_type": "external_reference",
+      "owning_surface": "public_property_reference",
+      "allowlist_policy": "allowed_when_linked_from_ppd_guidance",
+      "robots_policy": "deferred_pending_review",
+      "crawl_frequency": "deferred",
+      "processor_policy": "metadata_only_after_policy_review",
+      "privacy_classification": "public_reference",
+      "last_seen_at": "2026-05-01T00:00:00Z",
+      "freshness_status": "intentionally_deferred",
+      "expected_content_hash": null,
+      "deferred_until": "2026-06-01T00:00:00Z",
+      "deferred_reason": "Policy review required before automated Portland Maps recrawl."
+    }
+  ]
+}

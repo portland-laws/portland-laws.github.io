@@ -1,0 +1,14 @@
+Implemented a focused frame-logic audit improvement: citation/source-id strings inside `modal_ir.metadata["frame_ontology_terms"]` now produce canonical ontology coordinate terms (for example `42_6932`, `25_564m`) instead of being dropped.
+
+**Changes**
+- Updated metadata term extraction in [`codec.py`]/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000042-20260518_125051/ipfs_datasets_py/logic/modal/codec.py:2314 to route metadata values through a new helper that:
+  - keeps existing normalization behavior
+  - additionally detects USC citation strings and `us-code-...` source IDs
+  - emits numeric-aware coordinate ontology terms for frame-term audit
+- Added `_frame_ontology_metadata_terms(...)` in [`codec.py`]/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000042-20260518_125051/ipfs_datasets_py/logic/modal/codec.py:2352.
+- Added regression test [`test_modal_codec_audits_citation_coordinates_from_frame_term_metadata`]/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000042-20260518_125051/tests/unit_tests/logic/modal/test_modal_codec.py:4096.
+
+**Validation**
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k 'frame_terms_when_metadata_contains_structured_entries or audits_citation_coordinates_from_frame_term_metadata or frame_terms_when_metadata_contains_weight_maps or frame_terms_when_metadata_is_partial or filters_non_informative_frame_ontology_terms'` passed.
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py -k 'source_id_citation_canonical or section_trailing_punctuation or frame_family_signals or selected_frame_family_signals'` passed.
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py tests/unit_tests/logic/modal/test_modal_codec.py -k 'frame_ontology or frame_logic or frame-term or frame_decoder_audit_features'` passed.

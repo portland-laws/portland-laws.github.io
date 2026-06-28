@@ -1,0 +1,61 @@
+{
+  "queue_version": 6,
+  "queue_id": "stale-citation-remediation-v6-fixture",
+  "result_intake_refs": [
+    {
+      "intake_ref": "intake:fixture:2026-05-08:devhub-faq",
+      "source_id": "source:ppd-devhub-faq",
+      "result_id": "result:fixture:devhub-faq:normalized"
+    }
+  ],
+  "cited_requirement_evidence_rows": [
+    {
+      "requirement_id": "requirement:devhub-account-scoped-services",
+      "evidence_id": "evidence:devhub-faq:account-services",
+      "citation_id": "citation:devhub-faq:account-services",
+      "source_hash": "sha256:previous-public-normalized-text-hash"
+    }
+  ],
+  "unaffected_citation_rows": [
+    {
+      "citation_id": "citation:devhub-signin:credentials-required",
+      "source_id": "source:ppd-devhub-sign-guide",
+      "source_hash": "sha256:unchanged-public-normalized-text-hash",
+      "unchanged_reason": "fixture records unchanged citation evidence without live recrawl claims"
+    }
+  ],
+  "changed_source_hash_placeholders": [
+    {
+      "source_id": "source:ppd-devhub-faq",
+      "previous_source_hash": "sha256:previous-public-normalized-text-hash",
+      "changed_source_hash_placeholder": "placeholder:pending-reviewed-public-hash",
+      "affected_requirement_ids": [
+        "requirement:devhub-account-scoped-services"
+      ]
+    }
+  ],
+  "human_review_hold_rows": [
+    {
+      "hold_id": "hold:stale-citation-remediation:fixture",
+      "reason": "changed citation evidence must be reviewed before guardrail publication",
+      "status": "pending_human_review"
+    }
+  ],
+  "downstream_guardrail_bundle_impact_placeholders": [
+    {
+      "guardrail_bundle_id": "guardrail-bundle:devhub-account-workflows",
+      "impact_placeholder": "placeholder:pending-human-reviewed-impact",
+      "status": "pending_impact_assessment"
+    }
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ],
+  "notes": [
+    "fixture-only metadata; no live crawl, no private session state, and no official action claims"
+  ]
+}

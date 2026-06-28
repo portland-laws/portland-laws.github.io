@@ -1,0 +1,17 @@
+Implemented a focused frame-logic term-audit upgrade across codec + selector + F-logic metadata.
+
+- Expanded frame-linked feature/predicate alias coverage and made feature-prefix parsing case-insensitive in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000012-20260518_081716/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:53) and [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000012-20260518_081716/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:348).
+- Made modal codec metadata term extraction robust to mapping-shaped term payloads (keys and values), so weighted term maps are auditable in [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000012-20260518_081716/ipfs_datasets_py/logic/modal/codec.py:1095).
+- Added source-level audit metadata breakdown (`from_feature_keys`, `from_triples`) in [flogic_optimizer.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000012-20260518_081716/ipfs_datasets_py/optimizers/logic/flogic_optimizer.py:191).
+
+Added/updated tests:
+
+- [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000012-20260518_081716/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:204)
+- [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000012-20260518_081716/tests/unit_tests/logic/modal/test_modal_codec.py:2118)
+- [test_flogic_integration.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000012-20260518_081716/tests/unit/logic/test_flogic_integration.py:432)
+
+Validation run:
+
+- `pytest ...` is currently blocked by an existing repo issue: `__init__.py:11 NameError: __path__ is not defined`.
+- Passed targeted smoke checks via `python3` assertions for the new alias handling + metadata-map extraction + F-logic metadata breakdown.
+- Passed syntax check: `python3 -m compileall` on all changed modules/tests.

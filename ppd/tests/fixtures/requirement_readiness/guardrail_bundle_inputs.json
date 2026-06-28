@@ -1,0 +1,63 @@
+{
+  "guardrail_bundle_id": "bundle.requirement-readiness.fixture",
+  "source_evidence": [
+    {
+      "evidence_id": "evidence.single_pdf.current",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "freshness_status": "fresh"
+    },
+    {
+      "evidence_id": "evidence.stale.application_guide",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "freshness_status": "stale"
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "policy.ready.single_pdf_upload",
+      "source_evidence_ids": ["evidence.single_pdf.current"],
+      "requirement_type": "document_requirement",
+      "freshness_status": "fresh",
+      "support_status": "supported",
+      "human_review_status": "approved",
+      "formalization_status": "ready"
+    },
+    {
+      "requirement_id": "policy.stale.source",
+      "source_evidence_ids": ["evidence.single_pdf.current"],
+      "requirement_type": "document_requirement",
+      "freshness_status": "stale",
+      "support_status": "supported",
+      "human_review_status": "approved",
+      "formalization_status": "ready"
+    },
+    {
+      "requirement_id": "policy.unsupported.path",
+      "source_evidence_ids": ["evidence.single_pdf.current"],
+      "requirement_type": "action_gate",
+      "freshness_status": "fresh",
+      "support_status": "unsupported",
+      "human_review_status": "approved",
+      "formalization_status": "ready",
+      "unsupported_path": true
+    },
+    {
+      "requirement_id": "policy.unreviewed.certification",
+      "source_evidence_ids": ["evidence.single_pdf.current"],
+      "requirement_type": "action_gate",
+      "freshness_status": "fresh",
+      "support_status": "supported",
+      "human_review_status": "machine_extracted",
+      "formalization_status": "ready"
+    },
+    {
+      "requirement_id": "policy.unfresh.evidence",
+      "source_evidence_ids": ["evidence.stale.application_guide"],
+      "requirement_type": "precondition",
+      "freshness_status": "fresh",
+      "support_status": "supported",
+      "human_review_status": "approved",
+      "formalization_status": "ready"
+    }
+  ]
+}

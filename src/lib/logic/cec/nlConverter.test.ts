@@ -2,14 +2,29 @@ import {
   DcecNaturalLanguageConverter,
   DcecPatternMatcher,
   DcecProofCache,
+  NaturalLanguageConverter,
+  PatternMatcher,
+  compileDcecGrammarNlPolicy,
+  compileDcecNlToPolicy,
   compileDcecPolicyText,
   createEnhancedDcecNlConverter,
+  create_enhanced_nl_converter,
   detectDcecPolicyLanguage,
+  getDcecGrammarNlPolicyCompilerCapabilities,
+  getDcecNlToPolicyCompilerCapabilities,
   linearizeDcecWithGrammar,
+  linearize_with_grammar,
   parseDcecWithGrammar,
+  parse_with_grammar,
   proveDcecFormula,
 } from './nlConverter';
+import {
+  CecLanguageDetector,
+  detect_language,
+  getCecLanguageDetectorCapabilities,
+} from './languageDetector';
 import { DcecNamespace } from './dcecNamespace';
+import { getSpanishParserCapabilities, parseSpanishDcec, parse_spanish } from './spanishParser';
 
 describe('DCEC natural language converter parity helpers', () => {
   it('converts deontic patterns with prohibition ordered before obligation', () => {
@@ -51,6 +66,31 @@ describe('DCEC natural language converter parity helpers', () => {
     expect(converter.convertToDcec('not tenant may enter').dcec_formula?.toString()).toBe(
       '¬(P(enter(tenant:Agent)))',
     );
+  });
+
+  it('ports spanish_parser.py through browser-native deterministic DCEC patterns', () => {
+    expect(getSpanishParserCapabilities()).toMatchObject({
+      browserNative: true,
+      pythonRuntime: false,
+      serverRuntime: false,
+      pythonModule: 'logic/CEC/nl/spanish_parser.py',
+    });
+    expect(parseSpanishDcec('El inquilino debe pagar la renta.')).toMatchObject({
+      ok: true,
+      success: true,
+      english_text: 'tenant must pay rent',
+      dcec: 'O(pay_rent(tenant:Agent))',
+      parse_method: 'browser_native_spanish_parser',
+    });
+    expect(
+      parse_spanish('Si el inquilino debe pagar la renta entonces el arrendador puede entrar.')
+        .dcec,
+    ).toBe('(O(pay_rent(tenant:Agent)) → P(enter(landlord:Agent)))');
+    expect(parseSpanishDcec('   ')).toMatchObject({
+      ok: false,
+      fail_closed_reason: 'empty_input',
+      browser_native: true,
+    });
   });
 
   it('falls back to simple atomic predicates and reuses namespace symbols', () => {
@@ -104,11 +144,28 @@ describe('DCEC natural language converter parity helpers', () => {
   it('keeps enhanced grammar hooks local and dependency-free', () => {
     const converter = createEnhancedDcecNlConverter(true);
 
-    expect(converter.useGrammar).toBe(false);
-    expect(parseDcecWithGrammar('tenant must pay')).toBeUndefined();
+    expect(converter.useGrammar).toBe(true);
+    expect(converter.grammar?.browser_native).toBe(true);
+    expect(parseDcecWithGrammar('tenant must pay')?.toString()).toBe('O(pay(tenant:Agent))');
+    expect(linearizeDcecWithGrammar(converter.convertToDcec('tenant must pay').dcec_formula!)).toBe(
+      'must pay',
+    );
+  });
+
+  it('exposes Python-compatible nl_converter names without runtime bridges', () => {
+    const converter = new NaturalLanguageConverter();
+    const matcher = new PatternMatcher(new DcecNamespace());
+    const enhanced = create_enhanced_nl_converter(true);
+
+    expect(converter.convert_to_dcec('tenant may enter').dcec_formula?.toString()).toBe(
+      'P(enter(tenant:Agent))',
+    );
+    expect(converter.convert_from_dcec(matcher.convert('tenant must repair'))).toBe('must repair');
+    expect(enhanced.useGrammar).toBe(true);
+    expect(parse_with_grammar('next tenant must pay')?.toString()).toBe('X(O(pay(tenant:Agent)))');
     expect(
-      linearizeDcecWithGrammar(converter.convertToDcec('tenant must pay').dcec_formula!),
-    ).toBeUndefined();
+      linearize_with_grammar(converter.convertToDcec('tenant must not smoke').dcec_formula!),
+    ).toBe('must not smoke');
   });
 
   it('detects policy language with browser-native keyword profiles', () => {
@@ -123,6 +180,31 @@ describe('DCEC natural language converter parity helpers', () => {
     expect(spanish.scores.es).toBeGreaterThan(spanish.scores.en);
   });
 
+  it('ports language_detector.py as a browser-native deterministic detector', () => {
+    const detector = new CecLanguageDetector();
+    const english = detector.detect_language('The tenant shall maintain the policy.');
+    const portuguese = detect_language('O inquilino deve pagar a politica.');
+    const unknown = detector.detect('4815162342');
+
+    expect(getCecLanguageDetectorCapabilities()).toMatchObject({
+      browserNative: true,
+      pythonRuntime: false,
+      serverRuntime: false,
+      pythonModule: 'logic/CEC/nl/language_detector.py',
+    });
+    expect(english.language).toBe('en');
+    expect(english.browser_native).toBe(true);
+    expect(english.python_module).toBe('logic/CEC/nl/language_detector.py');
+    expect(portuguese.language).toBe('pt');
+    expect(portuguese.scores.pt).toBeGreaterThan(portuguese.scores.en);
+    expect(unknown).toMatchObject({
+      language: 'unknown',
+      confidence: 0,
+      matched_terms: [],
+      browser_native: true,
+    });
+  });
+
   it('compiles English policy text to DCEC metadata without server fallbacks', () => {
     const result = compileDcecPolicyText('The tenant shall maintain smoke alarms.');
 
@@ -132,6 +214,84 @@ describe('DCEC natural language converter parity helpers', () => {
     expect(result.language_detection.language).toBe('en');
     expect(result.normalized_policy_text).toBe('the tenant shall maintain smoke alarms');
     expect(result.policy_formula_text).toBe('O(maintain_smoke_alarms(tenant:Agent))');
+  });
+
+  it('ports grammar_nl_policy_compiler.py as a browser-native grammar policy facade', () => {
+    const capabilities = getDcecGrammarNlPolicyCompilerCapabilities();
+    const result = compileDcecGrammarNlPolicy(
+      'Policy 1: The tenant shall maintain smoke alarms. Rule 2: landlord must not enter.',
+    );
+    const rejected = compileDcecGrammarNlPolicy('tenant shall pay rent', { maxInputLength: 10 });
+
+    expect(capabilities).toEqual({
+      browserNative: true,
+      pythonRuntime: false,
+      serverRuntime: false,
+      filesystem: false,
+      subprocess: false,
+      rpc: false,
+      wasmCompatible: true,
+      wasmRequired: false,
+      implementation: 'deterministic-typescript',
+      pythonModule: 'logic/CEC/nl/grammar_nl_policy_compiler.py',
+    });
+    expect(result.ok).toBe(true);
+    expect(result.parse_method).toBe('browser_native_grammar_policy_compiler');
+    expect(result.metadata).toEqual({
+      sourcePythonModule: 'logic/CEC/nl/grammar_nl_policy_compiler.py',
+      runtime: 'browser-native-typescript',
+      implementation: 'deterministic-grammar-nl-policy-compiler',
+    });
+    expect(result.policy_formula_texts).toEqual([
+      'O[tenant:Agent](maintain_smoke_alarms(tenant:Agent))',
+      'F[landlord:Agent](enter(landlord:Agent))',
+    ]);
+    expect(result.rules.map((rule) => rule.normalized_text)).toEqual([
+      'tenant shall maintain smoke alarms',
+      'landlord must not enter',
+    ]);
+    expect(rejected).toMatchObject({
+      ok: false,
+      fail_closed_reason: 'input_too_long',
+      browser_native: true,
+    });
+  });
+
+  it('ports nl_to_policy_compiler.py as browser-native policy rule output', () => {
+    const capabilities = getDcecNlToPolicyCompilerCapabilities();
+    const result = compileDcecNlToPolicy(
+      'Policy 1: The tenant shall maintain smoke alarms. Rule 2: landlord may inspect alarms.',
+    );
+    const withoutLabels = compileDcecNlToPolicy('tenant must pay rent', { includeLabels: false });
+
+    expect(capabilities).toMatchObject({
+      browserNative: true,
+      pythonRuntime: false,
+      serverRuntime: false,
+      filesystem: false,
+      subprocess: false,
+      rpc: false,
+      pythonModule: 'logic/CEC/nl/nl_to_policy_compiler.py',
+    });
+    expect(result).toMatchObject({
+      ok: true,
+      success: true,
+      parse_method: 'browser_native_nl_to_policy_compiler',
+      browser_native: true,
+      metadata: {
+        sourcePythonModule: 'logic/CEC/nl/nl_to_policy_compiler.py',
+        runtime: 'browser-native-typescript',
+        implementation: 'deterministic-nl-to-policy-compiler',
+      },
+    });
+    expect(result.policy_formula).toBe(
+      'O[tenant:Agent](maintain_smoke_alarms(tenant:Agent))\nP[landlord:Agent](inspect_alarms(landlord:Agent))',
+    );
+    expect(result.policy_rules.map((rule) => rule.label)).toEqual([
+      'obligation:tenant_maintain_smoke_alarms',
+      'permission:landlord_inspect_alarms',
+    ]);
+    expect(withoutLabels.policy_rules[0].label).toBeUndefined();
   });
 
   it('fails closed for non-English policy text instead of calling external NLP', () => {

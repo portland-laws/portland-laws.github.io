@@ -1,0 +1,124 @@
+{
+  "packet_type": "source_registry_promotion_rehearsal",
+  "packet_version": "1.0",
+  "generated_at": "2026-05-28T00:00:00Z",
+  "consumes": {
+    "promotion_review_id": "promotion-review-2026-05-28-fixture",
+    "source_registry_version": "fixture-source-registry-2026-05-28",
+    "operator_checklist_id": "public-recrawl-checklist-2026-05-28-fixture",
+    "public_recrawl_run_id": "public-recrawl-fixture-run-2026-05-28"
+  },
+  "input_artifact_links": {
+    "promotion_review_id": "promotion-review-2026-05-28-fixture",
+    "promotion_review_kind": "source_registry_promotion_review",
+    "operator_checklist_id": "public-recrawl-checklist-2026-05-28-fixture",
+    "operator_checklist_kind": "public_recrawl_operator_checklist"
+  },
+  "safety": {
+    "fixture_first": true,
+    "metadata_only": true,
+    "live_source_records_edited": false,
+    "raw_crawl_output_included": false,
+    "authenticated_state_included": false
+  },
+  "public_recrawl_operator_checklist": {
+    "checklist_id": "public-recrawl-checklist-2026-05-28-fixture",
+    "public_recrawl_run_id": "public-recrawl-fixture-run-2026-05-28",
+    "operator": "fixture-operator",
+    "completed_items": [
+      {
+        "item_id": "robots-policy-reviewed",
+        "status": "complete",
+        "evidence": "Fixture confirms only public allowlisted PP&D URLs were rehearsed."
+      },
+      {
+        "item_id": "raw-body-persistence-disabled",
+        "status": "complete",
+        "evidence": "Fixture records hashes and metadata only; no raw body output is included."
+      },
+      {
+        "item_id": "auth-boundary-confirmed",
+        "status": "complete",
+        "evidence": "Fixture excludes credentials, cookies, browser state, screenshots, traces, and private values."
+      }
+    ]
+  },
+  "metadata_only_field_diffs": [
+    {
+      "source_id": "ppd-devhub-faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "metadata_field_diffs": [
+        {
+          "field": "recrawl_evidence_hash",
+          "before": "sha256:old-faq-fixture",
+          "after": "sha256:new-faq-fixture",
+          "reason": "Public recrawl fixture observed metadata hash change for review rehearsal."
+        },
+        {
+          "field": "reviewed_public_anchor_count",
+          "before": 18,
+          "after": 19,
+          "reason": "Promotion review fixture recorded one additional public link anchor for downstream review."
+        }
+      ]
+    },
+    {
+      "source_id": "ppd-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "metadata_field_diffs": [
+        {
+          "field": "recrawl_evidence_hash",
+          "before": "sha256:old-submit-plans-fixture",
+          "after": "sha256:new-submit-plans-fixture",
+          "reason": "Public recrawl fixture observed metadata hash change for single PDF guidance review."
+        }
+      ]
+    }
+  ],
+  "reviewer_acknowledgements": [
+    {
+      "reviewer_role": "source-registry reviewer",
+      "acknowledged_at": "2026-05-28T00:05:00Z",
+      "acknowledged_scope": "metadata-only promotion rehearsal",
+      "notes": "Confirmed fixture packet does not edit live registry records."
+    },
+    {
+      "reviewer_role": "public-recrawl operator",
+      "acknowledged_at": "2026-05-28T00:06:00Z",
+      "acknowledged_scope": "operator checklist rehearsal",
+      "notes": "Confirmed checklist evidence is metadata-only and excludes raw crawl output."
+    }
+  ],
+  "rollback_checkpoints": [
+    {
+      "checkpoint_id": "rollback-registry-snapshot",
+      "description": "Confirm current source registry snapshot identifier is recorded before any future promotion.",
+      "required_before_promotion": true
+    },
+    {
+      "checkpoint_id": "rollback-guardrail-bundle-cache",
+      "description": "Confirm affected guardrail bundle cache keys can be invalidated or restored.",
+      "required_before_promotion": true
+    }
+  ],
+  "downstream_invalidation_notes": [
+    {
+      "consumer": "requirement extraction index",
+      "invalidation_scope": "requirements derived from ppd-devhub-faq and ppd-submit-plans-online",
+      "recommended_action": "queue fixture validation before any live extraction refresh"
+    },
+    {
+      "consumer": "guardrail bundle compiler",
+      "invalidation_scope": "bundles citing DevHub FAQ or Submit Plans Online guidance",
+      "recommended_action": "mark affected bundles for review-only recompilation rehearsal"
+    }
+  ],
+  "release_blockers": [],
+  "unresolved_blockers": [],
+  "promotion_decision": {
+    "enabled": false,
+    "decision": "rehearsal_only_defer_promotion",
+    "requires_human_enablement": true,
+    "reason": "Fixture rehearsal packets must not promote or edit live source registry records."
+  }
+}

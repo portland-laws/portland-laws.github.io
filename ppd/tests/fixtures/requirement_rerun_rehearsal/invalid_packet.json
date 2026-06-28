@@ -1,0 +1,68 @@
+{
+  "packet_id": "rerun-rehearsal-invalid-001",
+  "extraction_mode": "live",
+  "active_requirement_mutation": true,
+  "write_to_registry": true,
+  "known_source_ids": [
+    "src-public"
+  ],
+  "known_document_ids": [
+    "doc-public"
+  ],
+  "known_requirement_ids": [
+    "req-known"
+  ],
+  "known_evidence_ids": [
+    "ev-known"
+  ],
+  "sources": [
+    {
+      "source_id": "src-private",
+      "source_type": "devhub_authenticated",
+      "canonical_url": "https://devhub.portlandoregon.gov/my-permits"
+    }
+  ],
+  "documents": [
+    {
+      "document_id": "doc-public",
+      "source_id": "src-public",
+      "downloaded_document_ref": "downloads/devhub-guide.pdf"
+    }
+  ],
+  "requirement_deltas": [
+    {
+      "requirement_id": "req-missing",
+      "change_type": "add",
+      "source_id": "src-missing",
+      "document_id": "doc-missing",
+      "reviewer_owner": ""
+    },
+    {
+      "requirement_id": "req-known",
+      "change_type": "modify",
+      "source_id": "src-public",
+      "document_id": "doc-public",
+      "citations": [
+        {
+          "evidence_id": "ev-missing",
+          "source_id": "src-missing",
+          "document_id": "doc-missing"
+        }
+      ],
+      "formalization_status": "formalized",
+      "raw_source_text": "Raw page text must not be committed into rehearsal packets.",
+      "live_extraction": true
+    }
+  ],
+  "formalized_requirements": [
+    {
+      "requirement_id": "req-known"
+    }
+  ],
+  "stale_candidates": [
+    {
+      "requirement_id": "req-known",
+      "freshness_status": "stale"
+    }
+  ]
+}

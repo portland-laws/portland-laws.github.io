@@ -1,0 +1,120 @@
+{
+  "fixture_id": "citation-drift-review-packet-fixture",
+  "source_change_id": "source-change-20260528-public-guidance",
+  "previous_normalized_documents": [
+    {
+      "document_id": "doc-single-pdf-guidance-v1",
+      "source_id": "SRC-SINGLE-PDF",
+      "archive_artifact_ref": "archive:public-ppd-single-pdf-guidance-v1",
+      "content_hash": "sha256-prev-single-pdf",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "citation_spans": [
+        {
+          "evidence_id": "EV-UNCHANGED-SINGLE-PDF",
+          "span_id": "span-single-pdf-package",
+          "section_id": "single-pdf-process",
+          "locator": "h2#single-pdf-process p:nth-of-type(1)",
+          "text_hash": "sha256-text-single-pdf-unchanged",
+          "quote": "Drawing plans are submitted together in one PDF."
+        },
+        {
+          "evidence_id": "EV-MOVED-UPLOAD",
+          "span_id": "span-upload-supporting-docs",
+          "section_id": "upload-documents",
+          "locator": "h2#upload-documents li:nth-of-type(2)",
+          "text_hash": "sha256-text-upload-same",
+          "quote": "Upload applications and calculations as separate PDFs."
+        },
+        {
+          "evidence_id": "EV-STALE-FILE-RULE",
+          "span_id": "span-file-rule",
+          "section_id": "file-preparation",
+          "locator": "h2#file-preparation li:nth-of-type(1)",
+          "text_hash": "sha256-text-file-rule-old",
+          "quote": "Name each plan file with the project address first."
+        },
+        {
+          "evidence_id": "EV-MISSING-DEADLINE",
+          "span_id": "span-deadline",
+          "section_id": "response-deadlines",
+          "locator": "h2#response-deadlines p:nth-of-type(1)",
+          "text_hash": "sha256-text-deadline-old",
+          "quote": "Respond to checksheet items by the listed date."
+        }
+      ]
+    }
+  ],
+  "changed_normalized_documents": [
+    {
+      "document_id": "doc-single-pdf-guidance-v2",
+      "source_id": "SRC-SINGLE-PDF",
+      "archive_artifact_ref": "archive:public-ppd-single-pdf-guidance-v2",
+      "content_hash": "sha256-current-single-pdf",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "citation_spans": [
+        {
+          "evidence_id": "EV-UNCHANGED-SINGLE-PDF",
+          "span_id": "span-single-pdf-package",
+          "section_id": "single-pdf-process",
+          "locator": "h2#single-pdf-process p:nth-of-type(1)",
+          "text_hash": "sha256-text-single-pdf-unchanged",
+          "quote": "Drawing plans are submitted together in one PDF."
+        },
+        {
+          "evidence_id": "EV-MOVED-UPLOAD",
+          "span_id": "span-upload-supporting-docs",
+          "section_id": "supporting-documents",
+          "locator": "h2#supporting-documents li:nth-of-type(1)",
+          "text_hash": "sha256-text-upload-same",
+          "quote": "Upload applications and calculations as separate PDFs."
+        },
+        {
+          "evidence_id": "EV-STALE-FILE-RULE",
+          "span_id": "span-file-rule",
+          "section_id": "file-preparation",
+          "locator": "h2#file-preparation li:nth-of-type(1)",
+          "text_hash": "sha256-text-file-rule-current",
+          "quote": "Name each plan file with the permit number and document type."
+        }
+      ]
+    }
+  ],
+  "requirement_nodes": [
+    {
+      "requirement_id": "REQ-SINGLE-PDF-PACKAGE",
+      "requirement_type": "document_requirement",
+      "subject": "applicant",
+      "action": "prepare",
+      "object": "single PDF plan package",
+      "source_evidence_ids": ["EV-UNCHANGED-SINGLE-PDF"],
+      "human_review_status": "reviewed"
+    },
+    {
+      "requirement_id": "REQ-SUPPORTING-DOC-UPLOAD",
+      "requirement_type": "document_requirement",
+      "subject": "applicant",
+      "action": "upload",
+      "object": "supporting document PDFs",
+      "source_evidence_ids": ["EV-MOVED-UPLOAD"],
+      "human_review_status": "reviewed"
+    },
+    {
+      "requirement_id": "REQ-FILE-NAMING",
+      "requirement_type": "obligation",
+      "subject": "applicant",
+      "action": "name",
+      "object": "permit files",
+      "source_evidence_ids": ["EV-STALE-FILE-RULE"],
+      "human_review_status": "reviewed"
+    },
+    {
+      "requirement_id": "REQ-CHECKSHEET-DEADLINE",
+      "requirement_type": "deadline",
+      "subject": "applicant",
+      "action": "respond",
+      "object": "checksheets",
+      "source_evidence_ids": ["EV-MISSING-DEADLINE"],
+      "human_review_status": "reviewed"
+    }
+  ]
+}

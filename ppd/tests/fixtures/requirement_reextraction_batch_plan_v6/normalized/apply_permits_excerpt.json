@@ -1,0 +1,11 @@
+{
+  "fixture_document_id": "fixture-doc-apply-permits-v6",
+  "title": "Apply for permits fixture excerpt",
+  "source_type": "public_html_normalized_fixture",
+  "sections": [
+    {
+      "section_id": "apply-permit-overview",
+      "text": "Fixture excerpt for permit application paths. This committed text is not a live crawl and contains no raw page body. It is only a normalized public-source excerpt for offline requirement re-extraction tests."
+    }
+  ]
+}

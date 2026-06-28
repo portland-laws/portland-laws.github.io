@@ -1,0 +1,184 @@
+{
+  "packet_type": "process_model_impact_candidate",
+  "candidate_id": "process-model-impact-single-pdf-20260528",
+  "candidate_status": "draft_requires_human_review",
+  "candidate_mode": "fixture_first_review_only",
+  "source_regenerated_requirement_candidate_id": "regenerated-requirements-single-pdf-20260528",
+  "input_requirement_diff_ids": [
+    "diff-action-gate-submit",
+    "diff-fee-payment-gate",
+    "diff-file-rule-single-pdf",
+    "diff-obligation-property-lookup"
+  ],
+  "affected_process_model_ids": [
+    "process-single-pdf-submission"
+  ],
+  "does_not_replace_active_process_models": true,
+  "active_process_model_mutated": false,
+  "promotion": {
+    "target": "candidate",
+    "promote_to_active": false
+  },
+  "affected_process_stages": [
+    {
+      "process_model_id": "process-single-pdf-submission",
+      "stage_id": "property_lookup",
+      "impact_kinds": [
+        "obligation"
+      ],
+      "source_requirement_diff_ids": [
+        "diff-obligation-property-lookup"
+      ]
+    },
+    {
+      "process_model_id": "process-single-pdf-submission",
+      "stage_id": "document_preparation",
+      "impact_kinds": [
+        "file_rule"
+      ],
+      "source_requirement_diff_ids": [
+        "diff-file-rule-single-pdf"
+      ]
+    },
+    {
+      "process_model_id": "process-single-pdf-submission",
+      "stage_id": "upload_staging",
+      "impact_kinds": [
+        "file_rule"
+      ],
+      "source_requirement_diff_ids": [
+        "diff-file-rule-single-pdf"
+      ]
+    },
+    {
+      "process_model_id": "process-single-pdf-submission",
+      "stage_id": "fee_payment",
+      "impact_kinds": [
+        "fee"
+      ],
+      "source_requirement_diff_ids": [
+        "diff-fee-payment-gate"
+      ]
+    },
+    {
+      "process_model_id": "process-single-pdf-submission",
+      "stage_id": "acknowledgment_certification_review",
+      "impact_kinds": [
+        "action_gate"
+      ],
+      "source_requirement_diff_ids": [
+        "diff-action-gate-submit"
+      ]
+    },
+    {
+      "process_model_id": "process-single-pdf-submission",
+      "stage_id": "submission",
+      "impact_kinds": [
+        "action_gate"
+      ],
+      "source_requirement_diff_ids": [
+        "diff-action-gate-submit"
+      ]
+    }
+  ],
+  "affected_user_facts": [
+    {
+      "process_model_id": "process-single-pdf-submission",
+      "user_fact_id": "site_address",
+      "impact_kinds": [
+        "obligation"
+      ],
+      "source_requirement_diff_ids": [
+        "diff-obligation-property-lookup"
+      ]
+    },
+    {
+      "process_model_id": "process-single-pdf-submission",
+      "user_fact_id": "fee_notice_received",
+      "impact_kinds": [
+        "fee"
+      ],
+      "source_requirement_diff_ids": [
+        "diff-fee-payment-gate"
+      ]
+    }
+  ],
+  "affected_required_documents": [
+    {
+      "process_model_id": "process-single-pdf-submission",
+      "required_document_id": "drawing_plan_single_pdf",
+      "impact_kinds": [
+        "file_rule"
+      ],
+      "source_requirement_diff_ids": [
+        "diff-file-rule-single-pdf"
+      ]
+    },
+    {
+      "process_model_id": "process-single-pdf-submission",
+      "required_document_id": "supporting_documents_separate_pdfs",
+      "impact_kinds": [
+        "file_rule"
+      ],
+      "source_requirement_diff_ids": [
+        "diff-file-rule-single-pdf"
+      ]
+    }
+  ],
+  "affected_unsupported_paths": [
+    {
+      "process_model_id": "process-single-pdf-submission",
+      "unsupported_path_id": "unattended_certification",
+      "impact_kinds": [
+        "action_gate"
+      ],
+      "source_requirement_diff_ids": [
+        "diff-action-gate-submit"
+      ]
+    },
+    {
+      "process_model_id": "process-single-pdf-submission",
+      "unsupported_path_id": "unattended_submission",
+      "impact_kinds": [
+        "action_gate"
+      ],
+      "source_requirement_diff_ids": [
+        "diff-action-gate-submit"
+      ]
+    }
+  ],
+  "reviewer_prompts": [
+    {
+      "prompt_id": "review-process-model-impact-diff-obligation-property-lookup",
+      "source_requirement_diff_id": "diff-obligation-property-lookup",
+      "impact_kind": "obligation",
+      "prompt": "Confirm property lookup fact impacts before data entry guardrails are changed.",
+      "blocks_process_model_promotion": true,
+      "status": "unresolved"
+    },
+    {
+      "prompt_id": "review-process-model-impact-diff-file-rule-single-pdf",
+      "source_requirement_diff_id": "diff-file-rule-single-pdf",
+      "impact_kind": "file_rule",
+      "prompt": "Confirm single PDF file rule impacts before upload staging guardrails are changed.",
+      "blocks_process_model_promotion": true,
+      "status": "unresolved"
+    },
+    {
+      "prompt_id": "review-process-model-impact-diff-fee-payment-gate",
+      "source_requirement_diff_id": "diff-fee-payment-gate",
+      "impact_kind": "fee",
+      "prompt": "Confirm fee-payment gate impacts before payment guardrails are changed.",
+      "blocks_process_model_promotion": true,
+      "status": "unresolved"
+    },
+    {
+      "prompt_id": "review-process-model-impact-diff-action-gate-submit",
+      "source_requirement_diff_id": "diff-action-gate-submit",
+      "impact_kind": "action_gate",
+      "prompt": "Confirm exact-confirmation and refusal coverage before submission guardrails are changed.",
+      "blocks_process_model_promotion": true,
+      "status": "unresolved"
+    }
+  ]
+}

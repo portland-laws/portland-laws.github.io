@@ -1,0 +1,142 @@
+{
+  "packet_id": "fixture-first-release-acceptance-review-packet",
+  "source_registry_schedule_update_candidate": {
+    "packet_id": "source-registry-schedule-update-candidate-fixture",
+    "source_evidence_ids": [
+      "source_registry_schedule_update_candidate#affected_source_ids",
+      "source_registry_schedule_update_candidate#abort_criteria"
+    ],
+    "reviewer_owners": {
+      "primary_reviewer": "ppd-source-registry-reviewer",
+      "backup_reviewer": "ppd-source-registry-backup",
+      "review_queue": "ppd-source-refresh-review"
+    },
+    "open_blockers": [
+      {
+        "blocker_id": "blocker-source-schedule-signoff",
+        "summary": "Source registry schedule changes require reviewer approval before release acceptance.",
+        "disposition": "open_pending_source_registry_reviewer",
+        "source_evidence_ids": ["source_registry_schedule_update_candidate#reviewer_owners"]
+      }
+    ],
+    "mutate_registry": false,
+    "mutate_schedule": false
+  },
+  "requirement_rerun_work_queue_packet": {
+    "packet_id": "requirement-rerun-work-queue-fixture",
+    "source_evidence_ids": [
+      "requirement_rerun_work_queue#cited_requirement_ids",
+      "requirement_rerun_work_queue#ordered_rerun_steps"
+    ],
+    "reviewer_owner_fields": {
+      "reviewer_owner": "ppd-requirement-reviewer",
+      "escalation_owner": "ppd-freshness-reviewer",
+      "guardrail_owner": "ppd-guardrail-reviewer"
+    },
+    "cited_requirement_ids": ["REQ-DEVHUB-UPLOAD-001"],
+    "affected_process_refs": ["process-single-pdf-submittal"],
+    "affected_guardrail_refs": ["guardrail-devhub-consequential-actions"],
+    "attestations": {
+      "no_live_extraction": true,
+      "no_requirement_record_mutation": true
+    }
+  },
+  "process_model_impact_review_packet": {
+    "packet_id": "process-model-impact-review-fixture",
+    "source_evidence_ids": [
+      "process_model_impact_review#process_stage_impacts",
+      "process_model_impact_review#blocked_action_carryovers"
+    ],
+    "reviewer_owner_fields": {
+      "process_model_reviewer": "ppd-process-model-reviewer",
+      "guardrail_reviewer": "ppd-guardrail-reviewer"
+    },
+    "blocked_action_carryovers": [
+      {
+        "blocker_id": "blocked-action-upload-submit",
+        "summary": "Upload and submit actions remain blocked until exact user confirmation.",
+        "disposition": "carried_forward_to_release_acceptance",
+        "source_evidence_ids": ["process_model_impact_review#blocked_action_carryovers"]
+      }
+    ],
+    "mutates_process_models": false,
+    "mutates_guardrails": false
+  },
+  "devhub_surface_registry_reviewer_approval_packet": {
+    "packet_id": "devhub-surface-registry-reviewer-approval-fixture",
+    "source_evidence_ids": [
+      "devhub_surface_registry_reviewer_approval#selector_delta_approval_items",
+      "devhub_surface_registry_reviewer_approval#redaction_attestations"
+    ],
+    "reviewer_signoff_slots": [
+      {
+        "owner": "ppd-devhub-surface-reviewer",
+        "status": "pending",
+        "citations": ["devhub_surface_registry_reviewer_approval#reviewer_signoff_slots"]
+      }
+    ],
+    "manual_handoff_carryovers": [
+      {
+        "blocker_id": "manual-handoff-devhub-official-actions",
+        "summary": "Consequential DevHub controls remain manual handoff only.",
+        "disposition": "carried_forward_to_release_acceptance",
+        "source_evidence_ids": ["devhub_surface_registry_reviewer_approval#manual_handoff_carryovers"]
+      }
+    ],
+    "writes_surface_registry": false,
+    "mutates_active_surface_registry": false
+  },
+  "agent_prompt_regression_dry_run_packet": {
+    "packet_id": "agent-prompt-regression-dry-run-fixture",
+    "source_evidence_ids": [
+      "agent_prompt_regression_dry_run#prompt_refusal_scenarios",
+      "agent_prompt_regression_dry_run#rerun_command_expectations"
+    ],
+    "reviewer_owner_fields": {
+      "reviewer_owner": "ppd-agent-prompt-reviewer",
+      "release_owner": "ppd-release-acceptance-owner"
+    },
+    "validation_rerun_expectations": [
+      {
+        "validation_id": "agent-prompt-regression-fixture-rerun",
+        "command": ["python3", "-m", "unittest", "ppd.tests.test_agent_prompt_regression_dry_run_packet"],
+        "source_evidence_ids": ["agent_prompt_regression_dry_run#rerun_command_expectations"]
+      }
+    ],
+    "mutates_prompts": false,
+    "mutates_release_state": false
+  },
+  "release_rollback_drill_outcome_review_packet": {
+    "packet_id": "ppd-fixture-release-rollback-drill-outcome-review-2026-05-29",
+    "source_evidence_ids": [
+      "release_rollback_drill_outcome_review#simulated_rollback_observations",
+      "release_rollback_drill_outcome_review#affected_artifact_references"
+    ],
+    "reviewer_owner_fields": {
+      "review_owner": "ppd-release-review-owner",
+      "rollback_decision_reviewer": "ppd-rollback-drill-reviewer",
+      "follow_up_owner": "ppd-release-follow-up-owner"
+    },
+    "follow_up_work_items": [
+      {
+        "blocker_id": "follow-up-rollback-threshold-name-check",
+        "owner": "ppd-monitoring-reviewer",
+        "description": "Confirm rollback threshold names before release acceptance.",
+        "disposition": "open_pending_monitoring_reviewer",
+        "source_evidence_ids": ["release_rollback_drill_outcome_review#decision_thresholds"]
+      }
+    ],
+    "attestations": {
+      "no_active_rollback_executed": true,
+      "no_publication_performed": true,
+      "no_registry_mutation": true,
+      "no_manifest_mutation": true,
+      "no_requirements_mutation": true,
+      "no_process_model_mutation": true,
+      "no_guardrail_mutation": true,
+      "no_release_notes_mutation": true,
+      "no_schedule_mutation": true,
+      "no_agent_state_mutation": true
+    }
+  }
+}

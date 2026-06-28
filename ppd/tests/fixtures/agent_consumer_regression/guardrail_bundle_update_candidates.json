@@ -1,0 +1,75 @@
+{
+  "fixture_id": "guardrail-bundle-update-candidates-20260529",
+  "candidates": [
+    {
+      "candidate_id": "candidate-read-status-001",
+      "guardrail_bundle_id": "gb-devhub-status-review-v2",
+      "process_id": "devhub-status-review",
+      "source_evidence_ids": [
+        "ppd-devhub-faq-status",
+        "ppd-online-tools-devhub"
+      ],
+      "exact_confirmation_predicates": [
+        "no official changes during status review"
+      ],
+      "refused_action_predicates": [
+        "submit permit request",
+        "pay fees",
+        "schedule inspection"
+      ]
+    },
+    {
+      "candidate_id": "candidate-draft-application-001",
+      "guardrail_bundle_id": "gb-devhub-reversible-draft-v3",
+      "process_id": "devhub-application-draft",
+      "source_evidence_ids": [
+        "ppd-submit-permit-application-guide",
+        "ppd-single-pdf-process"
+      ],
+      "exact_confirmation_predicates": [
+        "certify acknowledgement",
+        "submit permit request",
+        "upload official attachment"
+      ],
+      "refused_action_predicates": [
+        "submit permit request",
+        "certify acknowledgement"
+      ]
+    },
+    {
+      "candidate_id": "candidate-corrections-001",
+      "guardrail_bundle_id": "gb-devhub-corrections-v1",
+      "process_id": "devhub-correction-upload",
+      "source_evidence_ids": [
+        "ppd-upload-corrections-guide",
+        "ppd-devhub-faq-corrections"
+      ],
+      "exact_confirmation_predicates": [
+        "upload correction to official record",
+        "confirm review group status"
+      ],
+      "refused_action_predicates": [
+        "upload correction to official record",
+        "submit corrected plans"
+      ]
+    },
+    {
+      "candidate_id": "candidate-payment-submit-001",
+      "guardrail_bundle_id": "gb-devhub-payment-v1",
+      "process_id": "devhub-fee-payment",
+      "source_evidence_ids": [
+        "ppd-how-pay-fees",
+        "ppd-devhub-faq-fees"
+      ],
+      "exact_confirmation_predicates": [
+        "enter payment details",
+        "submit payment"
+      ],
+      "refused_action_predicates": [
+        "enter payment details",
+        "submit payment",
+        "purchase permit"
+      ]
+    }
+  ]
+}

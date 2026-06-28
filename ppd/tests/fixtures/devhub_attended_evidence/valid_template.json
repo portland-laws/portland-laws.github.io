@@ -1,0 +1,35 @@
+{
+  "template_kind": "devhub_attended_pilot_evidence_template",
+  "attended_user_login_only": true,
+  "claims_login_was_automated": false,
+  "stores_private_values": false,
+  "redaction_attestation_present": true,
+  "post_action_hardening_notes": "Operator confirms the browser was closed, no session artifacts were persisted, and only redacted category evidence remains.",
+  "stored_browser_artifacts": {
+    "auth_state": false,
+    "browser_trace": false,
+    "cookies": false,
+    "downloaded_documents": false,
+    "har_files": false,
+    "local_storage": false,
+    "raw_authenticated_text": false,
+    "raw_dom": false,
+    "screenshots": false,
+    "session_storage": false,
+    "storage_state": false
+  },
+  "automation_boundaries": {
+    "automated_login": false,
+    "captcha_automation": false,
+    "consequential_control_activation": false,
+    "credential_capture": false,
+    "mfa_automation": false
+  },
+  "evidence_fields": [
+    "redacted_surface_id",
+    "redacted_status_category",
+    "redacted_operator_note",
+    "manual_handoff_event_id",
+    "post_action_hardening_note_id"
+  ]
+}

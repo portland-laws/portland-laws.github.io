@@ -1,0 +1,153 @@
+{
+  "claimed_at": "2026-05-16T15:49:32+00:00",
+  "packet_id": "packet-000027",
+  "patch_error": "No changes found in worktree: /home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-20260516T154900Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-smoke-20260516T154900Z-codex-packet-000027-20260516_154931",
+  "patch_path": null,
+  "patch_status": "awaiting_codex_changes",
+  "queue_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-smoke-20260516T154900Z-autoencoder.jsonl",
+  "queue_run_id": "uscode-modal-smoke-20260516T154900Z-autoencoder",
+  "run_id": "uscode-modal-smoke-20260516T154900Z-codex",
+  "suggested_target_files": [
+    "ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py",
+    "ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py",
+    "ipfs_datasets_py/logic/modal/compiler.py",
+    "ipfs_datasets_py/logic/modal/codec.py",
+    "ipfs_datasets_py/optimizers/logic/flogic_optimizer.py",
+    "ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py"
+  ],
+  "task_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-20260516T154900Z-codex/packet-000027/CODEX_TASK.md",
+  "task_source": "autoencoder_supervisor_program_synthesis_queue",
+  "todo_list_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-20260516T154900Z-codex/packet-000027/TODO_LIST.jsonl",
+  "todo_markdown_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-20260516T154900Z-codex/packet-000027/TODO_LIST.md",
+  "todos": [
+    {
+      "action": "add_deterministic_parser_rule",
+      "citations": [
+        "51 U.S.C. 20161."
+      ],
+      "claimed_at": "2026-05-16T15:49:31+00:00",
+      "claimed_by": "codex-program-synthesis-uscode-modal-smoke-20260516T154900Z-codex",
+      "completed_at": null,
+      "created_at": "2026-05-16T15:49:28+00:00",
+      "loss_name": "parser_formula_count",
+      "loss_value": 1.0,
+      "metadata": {
+        "execution_target": "codex_program_repair",
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "selected_frame": "administrative_notice_hearing",
+        "source": "modal_loss_todo_generator_v1"
+      },
+      "objective": "Create a golden parser case for legal text that produced no modal formulas.",
+      "priority": 103.268014,
+      "sample_ids": [
+        "us-code-51-20161.-90f4bf0dfa214e7d"
+      ],
+      "status": "claimed",
+      "todo_id": "55f58a011c9f9564"
+    },
+    {
+      "action": "add_deterministic_parser_rule",
+      "citations": [
+        "51 U.S.C. 20161."
+      ],
+      "claimed_at": "2026-05-16T15:49:31+00:00",
+      "claimed_by": "codex-program-synthesis-uscode-modal-smoke-20260516T154900Z-codex",
+      "completed_at": null,
+      "created_at": "2026-05-16T15:49:28+00:00",
+      "loss_name": "symbolic_validity_penalty",
+      "loss_value": 0.5,
+      "metadata": {
+        "execution_target": "codex_program_repair",
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "selected_frame": "administrative_notice_hearing",
+        "source": "modal_loss_todo_generator_v1"
+      },
+      "objective": "Add a deterministic parser rule or fixture for legal text that failed symbolic validation.",
+      "priority": 53.268014,
+      "sample_ids": [
+        "us-code-51-20161.-90f4bf0dfa214e7d"
+      ],
+      "status": "claimed",
+      "todo_id": "5b07b6e9d8a61503"
+    },
+    {
+      "action": "add_deterministic_parser_rule",
+      "citations": [
+        "19 U.S.C. 3911"
+      ],
+      "claimed_at": "2026-05-16T15:49:31+00:00",
+      "claimed_by": "codex-program-synthesis-uscode-modal-smoke-20260516T154900Z-codex",
+      "completed_at": null,
+      "created_at": "2026-05-16T15:49:28+00:00",
+      "loss_name": "symbolic_validity_penalty",
+      "loss_value": 0.5,
+      "metadata": {
+        "execution_target": "codex_program_repair",
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "selected_frame": "administrative_notice_hearing",
+        "source": "modal_loss_todo_generator_v1"
+      },
+      "objective": "Add a deterministic parser rule or fixture for legal text that failed symbolic validation.",
+      "priority": 53.268014,
+      "sample_ids": [
+        "us-code-19-3911-46b2d5dc09c76062"
+      ],
+      "status": "claimed",
+      "todo_id": "f23478c315132c04"
+    },
+    {
+      "action": "audit_frame_logic_terms",
+      "citations": [
+        "19 U.S.C. 3911",
+        "51 U.S.C. 20161."
+      ],
+      "claimed_at": "2026-05-16T15:49:31+00:00",
+      "claimed_by": "codex-program-synthesis-uscode-modal-smoke-20260516T154900Z-codex",
+      "completed_at": null,
+      "created_at": "2026-05-16T15:49:28+00:00",
+      "loss_name": "autoencoder_residual_cluster",
+      "loss_value": 0.503480153398,
+      "metadata": {
+        "execution_target": "codex_program_repair",
+        "hint_evidence": [
+          {
+            "hint_id": "modal-synthesis-ac43939cd52467ca",
+            "priority": 0.592912505891,
+            "sample_id": "us-code-19-3911-46b2d5dc09c76062"
+          },
+          {
+            "frame_features": [
+              "flogic:candidate_ontology_frame:administrative_notice_hearing"
+            ],
+            "hint_id": "modal-synthesis-adba09b7caf5e452",
+            "priority": 0.414047800905,
+            "sample_id": "us-code-51-20161.-90f4bf0dfa214e7d"
+          }
+        ],
+        "hint_ids": [
+          "modal-synthesis-ac43939cd52467ca",
+          "modal-synthesis-adba09b7caf5e452"
+        ],
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "source": "modal_program_synthesis_todo_generator_v1",
+        "support_count": 2,
+        "target_component": "modal.frame_logic"
+      },
+      "objective": "Frame-linked features influenced reconstruction or family scoring and should be audited as ontology terms.",
+      "priority": 52.348015,
+      "sample_ids": [
+        "us-code-19-3911-46b2d5dc09c76062",
+        "us-code-51-20161.-90f4bf0dfa214e7d"
+      ],
+      "status": "claimed",
+      "todo_id": "program-9cc69a60a23817b8"
+    }
+  ],
+  "worker_id": "codex-program-synthesis-uscode-modal-smoke-20260516T154900Z-codex",
+  "worktree_error": null,
+  "worktree_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-20260516T154900Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-smoke-20260516T154900Z-codex-packet-000027-20260516_154931"
+}

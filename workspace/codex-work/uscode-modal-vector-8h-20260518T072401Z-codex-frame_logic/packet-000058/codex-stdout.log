@@ -1,0 +1,18 @@
+Implemented a generalized frame-logic audit improvement so nested hint/metadata payloads contribute deterministic ontology terms.
+
+**What changed**
+- Added a nested-value extractor for frame-linked feature keys in [frame_bm25_selector.py:589](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000058-20260518_151215/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:589) and [frame_bm25_selector.py:611](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000058-20260518_151215/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:611).  
+  It recursively reads mappings/sequences, keeps deterministic caps, and extracts only frame-relevant keys (including bare `us-code-*` sample/source IDs). Export updated at [frame_bm25_selector.py:1303](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000058-20260518_151215/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:1303).
+
+- Updated F-logic optimizer preprocessing to handle structured `frame_feature_keys` entries (dict/list evidence) instead of stringifying them, at [flogic_optimizer.py:197](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000058-20260518_151215/ipfs_datasets_py/optimizers/logic/flogic_optimizer.py:197) with helper at [flogic_optimizer.py:385](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000058-20260518_151215/ipfs_datasets_py/optimizers/logic/flogic_optimizer.py:385).
+
+- Wired codec audit feature collection to include compact metadata evidence (`document_id`, `sample_id(s)`, `source_id(s)`, `hint_evidence`) via the same deterministic extractor at [codec.py:3797](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000058-20260518_151215/ipfs_datasets_py/logic/modal/codec.py:3797) and [codec.py:3833](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000058-20260518_151215/ipfs_datasets_py/logic/modal/codec.py:3833).
+
+**Tests added**
+- Nested hint-evidence extraction coverage: [test_frame_bm25_selector.py:1406](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000058-20260518_151215/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:1406)
+- Structured evidence in optimizer evaluate path: [test_flogic_optimizer.py:496](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000058-20260518_151215/tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py:496)
+
+**Validation run**
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py` (67 passed)
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py` (16 passed)
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_modal_autoencoder_loop_contract.py` (1 passed)

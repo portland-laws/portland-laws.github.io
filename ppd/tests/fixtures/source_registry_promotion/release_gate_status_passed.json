@@ -1,0 +1,18 @@
+{
+  "packet_type": "public_source_registry_release_gate_status",
+  "packet_id": "artifact:ppd:release-gate-status:2026-05-28",
+  "status": "passed",
+  "fixture_first": true,
+  "crawl_ran": false,
+  "live_registry_mutated": false,
+  "gates": [
+    {
+      "gate_id": "PPD-GATE-no-live-mutation",
+      "status": "passed"
+    },
+    {
+      "gate_id": "PPD-GATE-fixture-only",
+      "status": "passed"
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "plan_id": "devhub-draft-fill-fixture-001",
+  "case_id": "fixture-case-detached-adu-001",
+  "process_id": "detached-adu-permit-request",
+  "action": {
+    "action_type": "devhub_field_fill",
+    "surface_id": "devhub-permit-request-draft",
+    "executor": "planning_fixture_only",
+    "reversible": true,
+    "requires_attendance": true,
+    "blocked_before_preview": true
+  },
+  "attendance": {
+    "mode": "attended_user_session",
+    "user_present": true,
+    "attendant_role": "permit_applicant_or_authorized_agent"
+  },
+  "preview": {
+    "preview_id": "preview-fixture-001",
+    "rendered": true,
+    "acknowledged_by_user": true,
+    "acknowledged_at": "2026-05-14T00:00:00Z"
+  },
+  "source_evidence": [
+    {
+      "evidence_id": "src-devhub-apply-guide-request-type",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "title": "DevHub permit application guide",
+      "claim": "DevHub permit requests use request types and application data entry before upload or submission steps."
+    },
+    {
+      "evidence_id": "src-ppd-submit-plans-online-separate-pdfs",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "title": "Submit Plans Online / Single PDF Process",
+      "claim": "Applications, calculations, and supporting documents are separate PDFs from drawing plans."
+    }
+  ],
+  "user_case_facts": [
+    {
+      "fact_id": "fact-project-address",
+      "label": "Project address",
+      "value": "1234 SE Fixture Ave, Portland, OR 97214",
+      "provided_by": "user"
+    },
+    {
+      "fact_id": "fact-request-type",
+      "label": "Permit request type",
+      "value": "Detached ADU",
+      "provided_by": "user"
+    },
+    {
+      "fact_id": "fact-plan-format",
+      "label": "Plan format",
+      "value": "Plans prepared as one drawing PDF with supporting documents as separate PDFs",
+      "provided_by": "user"
+    }
+  ],
+  "fields": [
+    {
+      "field_id": "project_address",
+      "label": "Project address",
+      "fill_action": "set_draft_value",
+      "value": "1234 SE Fixture Ave, Portland, OR 97214",
+      "source_evidence_ids": ["src-devhub-apply-guide-request-type"],
+      "user_case_fact_ids": ["fact-project-address"],
+      "reversible": true
+    },
+    {
+      "field_id": "permit_request_type",
+      "label": "Request type",
+      "fill_action": "set_draft_value",
+      "value": "Detached ADU",
+      "source_evidence_ids": ["src-devhub-apply-guide-request-type"],
+      "user_case_fact_ids": ["fact-request-type"],
+      "reversible": true
+    },
+    {
+      "field_id": "plan_document_format_note",
+      "label": "Plan document format note",
+      "fill_action": "set_draft_value",
+      "value": "Plans prepared as one drawing PDF with supporting documents as separate PDFs",
+      "source_evidence_ids": ["src-ppd-submit-plans-online-separate-pdfs"],
+      "user_case_fact_ids": ["fact-plan-format"],
+      "reversible": true
+    }
+  ],
+  "explicitly_blocked_actions": [
+    "certify",
+    "payment",
+    "schedule_inspection",
+    "submit",
+    "upload"
+  ]
+}

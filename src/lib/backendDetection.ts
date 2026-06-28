@@ -584,7 +584,7 @@ export class BackendDetector {
       }
 
       // Import transformers env and try to enable WebGPU
-      const { env } = await import('@xenova/transformers');
+      const { env } = await import('@huggingface/transformers');
       
       // Configure WebGPU backend for transformers.js
       try {

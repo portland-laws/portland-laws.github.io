@@ -1,0 +1,226 @@
+{
+  "fixture_id": "devhub-attended-dry-run-redacted-001",
+  "fixture_kind": "synthetic_redacted_transcript",
+  "source": "fixture-only; no live DevHub session, auth state, trace, screenshot, HAR, crawl output, downloaded document, or private page value",
+  "privacy_policy": {
+    "private_page_values_stored": false,
+    "allowed_value_markers": ["[REDACTED]", "[NOT_STORED]", "[USER_PRESENT]", "[MANUAL]"]
+  },
+  "steps": [
+    {
+      "step_id": "s001",
+      "timestamp": "2026-05-14T00:00:00Z",
+      "actor": "attended_worker",
+      "intent": "open_devhub_attended_dry_run",
+      "surface": "DevHub public portal",
+      "control_label": "Open DevHub",
+      "classification_hint": "attended_preflight",
+      "requires_attendance": true,
+      "requires_exact_confirmation": false,
+      "expected_event_type": "devhub_attended_preflight",
+      "stored_page_values": {},
+      "redaction_note": "No browser state or private page content captured."
+    },
+    {
+      "step_id": "s002",
+      "timestamp": "2026-05-14T00:01:00Z",
+      "actor": "user",
+      "intent": "complete_login",
+      "surface": "PortlandOregon.gov sign-in",
+      "control_label": "Sign In/Register",
+      "classification_hint": "manual_handoff",
+      "requires_attendance": true,
+      "requires_exact_confirmation": false,
+      "expected_event_type": "manual_handoff",
+      "stored_page_values": {},
+      "redaction_note": "Credentials, MFA, CAPTCHA, cookies, and auth state are not recorded."
+    },
+    {
+      "step_id": "s003",
+      "timestamp": "2026-05-14T00:02:00Z",
+      "actor": "attended_worker",
+      "intent": "review_my_permits",
+      "surface": "My Permits & Requests",
+      "control_label": "Review permit list",
+      "classification_hint": "read_only_review",
+      "requires_attendance": true,
+      "requires_exact_confirmation": false,
+      "expected_event_type": "devhub_attempted_action",
+      "stored_page_values": {
+        "permit_numbers": "[NOT_STORED]",
+        "status_text": "[NOT_STORED]"
+      },
+      "redaction_note": "Read-only review records only action metadata, not permit numbers or private status text."
+    },
+    {
+      "step_id": "s004",
+      "timestamp": "2026-05-14T00:03:00Z",
+      "actor": "attended_worker",
+      "intent": "review_fee_notice",
+      "surface": "Fee notice review",
+      "control_label": "Review fees due",
+      "classification_hint": "read_only_review",
+      "requires_attendance": true,
+      "requires_exact_confirmation": false,
+      "expected_event_type": "devhub_attempted_action",
+      "stored_page_values": {
+        "fee_amount": "[NOT_STORED]",
+        "invoice_number": "[NOT_STORED]"
+      },
+      "redaction_note": "Financial page values are not stored."
+    },
+    {
+      "step_id": "s005",
+      "timestamp": "2026-05-14T00:04:00Z",
+      "actor": "attended_worker",
+      "intent": "draft_address_search",
+      "surface": "Application draft",
+      "control_label": "Property search field",
+      "classification_hint": "reversible_draft",
+      "requires_attendance": true,
+      "requires_exact_confirmation": false,
+      "expected_event_type": "reversible_draft_plan",
+      "stored_page_values": {
+        "address_query": "[REDACTED]"
+      },
+      "redaction_note": "Draft field value is redacted and not persisted."
+    },
+    {
+      "step_id": "s006",
+      "timestamp": "2026-05-14T00:05:00Z",
+      "actor": "attended_worker",
+      "intent": "draft_permit_type_selection",
+      "surface": "Application draft",
+      "control_label": "Permit type selector",
+      "classification_hint": "reversible_draft",
+      "requires_attendance": true,
+      "requires_exact_confirmation": false,
+      "expected_event_type": "reversible_draft_plan",
+      "stored_page_values": {
+        "selected_permit_type": "[REDACTED]"
+      },
+      "redaction_note": "Only the safe classification is validated; selected private account-scoped value is redacted."
+    },
+    {
+      "step_id": "s007",
+      "timestamp": "2026-05-14T00:06:00Z",
+      "actor": "attended_worker",
+      "intent": "checkpoint_before_save_draft",
+      "surface": "Application draft",
+      "control_label": "Save for Later",
+      "classification_hint": "exact_confirmation_checkpoint",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true,
+      "confirmation_phrase": "Save this draft only; do not submit, certify, upload, schedule, cancel, or pay.",
+      "expected_event_type": "exact_confirmation_checkpoint",
+      "stored_page_values": {},
+      "redaction_note": "Checkpoint text is synthetic and contains no private values."
+    },
+    {
+      "step_id": "s008",
+      "timestamp": "2026-05-14T00:07:00Z",
+      "actor": "attended_worker",
+      "intent": "post_save_review",
+      "surface": "Application draft",
+      "control_label": "Review saved draft state",
+      "classification_hint": "post_action_hardening_review",
+      "requires_attendance": true,
+      "requires_exact_confirmation": false,
+      "expected_event_type": "post_action_hardening_review",
+      "stored_page_values": {
+        "draft_id": "[NOT_STORED]"
+      },
+      "redaction_note": "Completion evidence excludes private draft identifiers."
+    },
+    {
+      "step_id": "s009",
+      "timestamp": "2026-05-14T00:08:00Z",
+      "actor": "user",
+      "intent": "captcha_presented",
+      "surface": "PortlandOregon.gov sign-in",
+      "control_label": "CAPTCHA challenge",
+      "classification_hint": "manual_handoff",
+      "requires_attendance": true,
+      "requires_exact_confirmation": false,
+      "expected_event_type": "manual_handoff",
+      "stored_page_values": {},
+      "redaction_note": "CAPTCHA is a manual handoff; no challenge content captured."
+    },
+    {
+      "step_id": "s010",
+      "timestamp": "2026-05-14T00:09:00Z",
+      "actor": "attended_worker",
+      "intent": "attempt_submit_permit_request",
+      "surface": "Application review",
+      "control_label": "Submit Permit Request",
+      "classification_hint": "blocked_official_control",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true,
+      "expected_event_type": "refused_action",
+      "stored_page_values": {},
+      "redaction_note": "Official submission is blocked from automation."
+    },
+    {
+      "step_id": "s011",
+      "timestamp": "2026-05-14T00:10:00Z",
+      "actor": "attended_worker",
+      "intent": "attempt_certify_acknowledgement",
+      "surface": "Acknowledgement review",
+      "control_label": "I certify",
+      "classification_hint": "blocked_official_control",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true,
+      "expected_event_type": "refused_action",
+      "stored_page_values": {},
+      "redaction_note": "Certification is consequential and must not be automated."
+    },
+    {
+      "step_id": "s012",
+      "timestamp": "2026-05-14T00:11:00Z",
+      "actor": "attended_worker",
+      "intent": "attempt_upload_correction",
+      "surface": "Corrections upload",
+      "control_label": "Upload Correction",
+      "classification_hint": "blocked_official_control",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true,
+      "expected_event_type": "refused_action",
+      "stored_page_values": {
+        "local_file_path": "[NOT_STORED]"
+      },
+      "redaction_note": "Official upload and local private paths are not stored."
+    },
+    {
+      "step_id": "s013",
+      "timestamp": "2026-05-14T00:12:00Z",
+      "actor": "attended_worker",
+      "intent": "attempt_schedule_inspection",
+      "surface": "Inspection scheduling",
+      "control_label": "Schedule Inspection",
+      "classification_hint": "blocked_official_control",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true,
+      "expected_event_type": "refused_action",
+      "stored_page_values": {
+        "inspection_date": "[NOT_STORED]"
+      },
+      "redaction_note": "Scheduling official inspections is blocked."
+    },
+    {
+      "step_id": "s014",
+      "timestamp": "2026-05-14T00:13:00Z",
+      "actor": "attended_worker",
+      "intent": "attempt_submit_payment",
+      "surface": "Fee payment",
+      "control_label": "Submit Payment",
+      "classification_hint": "blocked_official_control",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true,
+      "expected_event_type": "refused_action",
+      "stored_page_values": {
+        "payment_details": "[NOT_STORED]"
+      },
+      "redaction_note": "Payment details and final payment execution are blocked."
+    }
+  ]
+}

@@ -1,0 +1,27 @@
+Implemented a deterministic slot refinement for `modal.ir_decompiler` that adds composite section-shape features and alignment checks, then validated it with focused tests.
+
+**What changed**
+- Added composite typed slots combining title + section structure (signature/profile), for both citation and source-id paths:
+  - `*_section_profile_signature`
+  - `*_title_section_signature`
+  - `*_title_section_profile`
+  - plus normalized variants  
+  in [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000074-20260518_144901/ipfs_datasets_py/logic/modal/decompiler.py:2414) and [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000074-20260518_144901/ipfs_datasets_py/logic/modal/codec.py:3076).
+- Emitted these composites from citation/source-id extraction paths:
+  - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000074-20260518_144901/ipfs_datasets_py/logic/modal/decompiler.py:1114)
+  - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000074-20260518_144901/ipfs_datasets_py/logic/modal/decompiler.py:2351)
+  - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000074-20260518_144901/ipfs_datasets_py/logic/modal/codec.py:1437)
+  - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000074-20260518_144901/ipfs_datasets_py/logic/modal/codec.py:1553)
+- Added provenance alignment pair/match/presence slots for the new composite structures:
+  - section signature/profile and title-section signature/profile pairs in:
+  - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000074-20260518_144901/ipfs_datasets_py/logic/modal/decompiler.py:1294)
+  - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000074-20260518_144901/ipfs_datasets_py/logic/modal/codec.py:1720)
+
+**Tests added**
+- New regression coverage for decode/triple emission of these slots:
+  - [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000074-20260518_144901/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:3313)
+  - [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000074-20260518_144901/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:3371)
+
+**Validation run**
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py`
+- Result: `46 passed`

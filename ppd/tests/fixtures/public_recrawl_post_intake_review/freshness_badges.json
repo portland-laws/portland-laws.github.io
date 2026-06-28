@@ -1,0 +1,34 @@
+{
+  "packet_id": "source-evidence-freshness-badges-2026-05-29-fixture",
+  "generated_at": "2026-05-29T00:00:00Z",
+  "badges": [
+    {
+      "badge_id": "badge-devhub-faq-fresh",
+      "source_id": "ppd-devhub-faq",
+      "status": "fresh",
+      "observed_at": "2026-05-29T00:00:00Z",
+      "source_evidence_ids": ["evidence-devhub-faq-heading"]
+    },
+    {
+      "badge_id": "badge-fee-payment-conflicting",
+      "source_id": "ppd-fee-payment-guide",
+      "status": "conflicting",
+      "observed_at": "2026-05-29T00:00:00Z",
+      "source_evidence_ids": ["evidence-fee-payment-final-submit"]
+    },
+    {
+      "badge_id": "badge-submit-plans-stale",
+      "source_id": "ppd-submit-plans-online",
+      "status": "stale",
+      "observed_at": "2026-05-22T00:00:00Z",
+      "source_evidence_ids": ["evidence-single-pdf-rule"]
+    },
+    {
+      "badge_id": "badge-new-public-example-fresh",
+      "source_id": "ppd-new-public-example",
+      "status": "fresh",
+      "observed_at": "2026-05-29T00:00:00Z",
+      "source_evidence_ids": ["evidence-new-public-example"]
+    }
+  ]
+}

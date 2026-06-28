@@ -1,0 +1,238 @@
+diff --git a/ipfs_datasets_py/logic/modal/codec.py b/ipfs_datasets_py/logic/modal/codec.py
+index 2043f980..b07717ea 100644
+--- a/ipfs_datasets_py/logic/modal/codec.py
++++ b/ipfs_datasets_py/logic/modal/codec.py
+@@ -1273,15 +1273,20 @@ def _citation_components(citation: str) -> List[tuple[str, str]]:
+         if raw_section:
+             components.append(("citation_section_raw", raw_section))
+         components.append(("citation_section_normalized", section))
++        components.append(
++            (
++                "citation_section_has_trailing_punct",
++                "true" if section_trailing_punct else "false",
++            )
++        )
++        components.append(
++            (
++                "citation_section_trailing_punct_count",
++                str(len(section_trailing_punct)),
++            )
++        )
+         if section_trailing_punct:
+             components.append(("citation_section_trailing_punct", section_trailing_punct))
+-            components.append(("citation_section_has_trailing_punct", "true"))
+-            components.append(
+-                (
+-                    "citation_section_trailing_punct_count",
+-                    str(len(section_trailing_punct)),
+-                )
+-            )
+         components.extend(_citation_section_components(section))
+         components.extend(
+             _typed_identifier_components(
+@@ -1342,15 +1347,20 @@ def _source_id_components(source_id: str) -> List[tuple[str, str]]:
+         components.append(("source_id_section_raw", section))
+     if normalized_section:
+         components.append(("source_id_section_normalized", normalized_section))
++    components.append(
++        (
++            "source_id_section_has_trailing_punct",
++            "true" if section_trailing_punct else "false",
++        )
++    )
++    components.append(
++        (
++            "source_id_section_trailing_punct_count",
++            str(len(section_trailing_punct)),
++        )
++    )
+     if section_trailing_punct:
+         components.append(("source_id_section_trailing_punct", section_trailing_punct))
+-        components.append(("source_id_section_has_trailing_punct", "true"))
+-        components.append(
+-            (
+-                "source_id_section_trailing_punct_count",
+-                str(len(section_trailing_punct)),
+-            )
+-        )
+     source_id_canonical = _canonical_usc_citation(title, section_for_components)
+     if source_id_canonical:
+         components.append(("source_id_citation_canonical", source_id_canonical))
+@@ -1883,6 +1893,7 @@ def _numeric_signature_components(
+     zero_digit_count = cleaned.count("0")
+     trailing_zero_count = len(cleaned) - len(cleaned.rstrip("0"))
+     return [
++        (f"{slot_prefix}_digit_count", str(len(cleaned))),
+         (f"{slot_prefix}_parity", parity),
+         (f"{slot_prefix}_leading_digit", cleaned[0]),
+         (f"{slot_prefix}_trailing_two_digits", trailing_two_digits),
+diff --git a/ipfs_datasets_py/logic/modal/decompiler.py b/ipfs_datasets_py/logic/modal/decompiler.py
+index 185a223c..19f4ac69 100644
+--- a/ipfs_datasets_py/logic/modal/decompiler.py
++++ b/ipfs_datasets_py/logic/modal/decompiler.py
+@@ -874,15 +874,20 @@ def _source_id_slots(source_id: str) -> List[Tuple[str, str]]:
+         slots.append(("source_id_section_raw", section))
+     if normalized_section:
+         slots.append(("source_id_section_normalized", normalized_section))
++    slots.append(
++        (
++            "source_id_section_has_trailing_punct",
++            "true" if section_trailing_punct else "false",
++        )
++    )
++    slots.append(
++        (
++            "source_id_section_trailing_punct_count",
++            str(len(section_trailing_punct)),
++        )
++    )
+     if section_trailing_punct:
+         slots.append(("source_id_section_trailing_punct", section_trailing_punct))
+-        slots.append(("source_id_section_has_trailing_punct", "true"))
+-        slots.append(
+-            (
+-                "source_id_section_trailing_punct_count",
+-                str(len(section_trailing_punct)),
+-            )
+-        )
+     section_for_slots = normalized_section or section
+     source_id_canonical = _canonical_usc_citation(title, section_for_slots)
+     if source_id_canonical:
+@@ -1422,15 +1427,20 @@ def _citation_slots(citation: str) -> List[Tuple[str, str]]:
+         if raw_section:
+             slots.append(("citation_section_raw", raw_section))
+         slots.append(("citation_section_normalized", section))
++        slots.append(
++            (
++                "citation_section_has_trailing_punct",
++                "true" if section_trailing_punct else "false",
++            )
++        )
++        slots.append(
++            (
++                "citation_section_trailing_punct_count",
++                str(len(section_trailing_punct)),
++            )
++        )
+         if section_trailing_punct:
+             slots.append(("citation_section_trailing_punct", section_trailing_punct))
+-            slots.append(("citation_section_has_trailing_punct", "true"))
+-            slots.append(
+-                (
+-                    "citation_section_trailing_punct_count",
+-                    str(len(section_trailing_punct)),
+-                )
+-            )
+         slots.extend(_citation_section_slots(section))
+         slots.extend(
+             _typed_identifier_slots(
+@@ -1903,6 +1913,7 @@ def _numeric_signature_slots(
+     zero_digit_count = cleaned.count("0")
+     trailing_zero_count = len(cleaned) - len(cleaned.rstrip("0"))
+     return [
++        (f"{slot_prefix}_digit_count", str(len(cleaned))),
+         (f"{slot_prefix}_parity", parity),
+         (f"{slot_prefix}_leading_digit", cleaned[0]),
+         (f"{slot_prefix}_trailing_two_digits", trailing_two_digits),
+diff --git a/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py b/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py
+index 0c13e9ae..4bf6892a 100644
+--- a/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py
++++ b/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py
+@@ -406,6 +406,8 @@ def test_decode_modal_ir_document_emits_positional_citation_slots() -> None:
+     assert slot_map["citation_section_delimiter_distinct_count"] == ["1"]
+     assert slot_map["citation_title_section_key"] == ["21:360bbb-0"]
+     assert slot_map["citation_title_section_key_normalized"] == ["21:360bbb-0"]
++    assert slot_map["citation_section_has_trailing_punct"] == ["false"]
++    assert slot_map["citation_section_trailing_punct_count"] == ["0"]
+ 
+     assert slot_map["source_id_section_component_positioned"] == ["1:360bbb", "2:0"]
+     assert slot_map["source_id_section_has_mixed_token"] == ["true"]
+@@ -466,6 +468,8 @@ def test_decode_modal_ir_document_emits_positional_citation_slots() -> None:
+     assert slot_map["source_id_section_delimiter_distinct_count"] == ["1"]
+     assert slot_map["source_id_title_section_key"] == ["21:360bbb-0"]
+     assert slot_map["source_id_title_section_key_normalized"] == ["21:360bbb-0"]
++    assert slot_map["source_id_section_has_trailing_punct"] == ["false"]
++    assert slot_map["source_id_section_trailing_punct_count"] == ["0"]
+ 
+ 
+ def test_modal_ir_to_flogic_triples_emits_positional_citation_components() -> None:
+@@ -540,6 +544,8 @@ def test_modal_ir_to_flogic_triples_emits_positional_citation_components() -> No
+     assert objects("citation_section_delimiter_distinct_count") == ["1"]
+     assert objects("citation_title_section_key") == ["21:360bbb-0"]
+     assert objects("citation_title_section_key_normalized") == ["21:360bbb-0"]
++    assert objects("citation_section_has_trailing_punct") == ["false"]
++    assert objects("citation_section_trailing_punct_count") == ["0"]
+ 
+     assert objects("source_id_section_component_positioned") == ["1:360bbb", "2:0"]
+     assert objects("source_id_section_has_mixed_token") == ["true"]
+@@ -600,6 +606,8 @@ def test_modal_ir_to_flogic_triples_emits_positional_citation_components() -> No
+     assert objects("source_id_section_delimiter_distinct_count") == ["1"]
+     assert objects("source_id_title_section_key") == ["21:360bbb-0"]
+     assert objects("source_id_title_section_key_normalized") == ["21:360bbb-0"]
++    assert objects("source_id_section_has_trailing_punct") == ["false"]
++    assert objects("source_id_section_trailing_punct_count") == ["0"]
+ 
+ 
+ def test_decode_modal_ir_document_emits_single_component_section_role_slots() -> None:
+@@ -1461,12 +1469,14 @@ def test_decode_modal_ir_document_emits_numeric_signature_slots() -> None:
+     )
+ 
+     assert slot_map["citation_title_number_parity"] == ["even"]
++    assert slot_map["citation_title_number_digit_count"] == ["2"]
+     assert slot_map["citation_title_number_leading_digit"] == ["4"]
+     assert slot_map["citation_title_number_trailing_two_digits"] == ["42"]
+     assert slot_map["citation_title_number_zero_digit_count"] == ["0"]
+     assert slot_map["citation_title_number_has_zero_digit"] == ["false"]
+     assert slot_map["citation_title_number_trailing_zero_count"] == ["0"]
+     assert slot_map["source_id_title_number_parity"] == ["even"]
++    assert slot_map["source_id_title_number_digit_count"] == ["2"]
+     assert slot_map["source_id_title_number_leading_digit"] == ["4"]
+     assert slot_map["source_id_title_number_trailing_two_digits"] == ["42"]
+     assert slot_map["source_id_title_number_zero_digit_count"] == ["0"]
+@@ -1604,12 +1614,14 @@ def test_modal_ir_to_flogic_triples_emits_numeric_signature_slots() -> None:
+         ]
+ 
+     assert objects("citation_title_number_parity") == ["even"]
++    assert objects("citation_title_number_digit_count") == ["2"]
+     assert objects("citation_title_number_leading_digit") == ["4"]
+     assert objects("citation_title_number_trailing_two_digits") == ["42"]
+     assert objects("citation_title_number_zero_digit_count") == ["0"]
+     assert objects("citation_title_number_has_zero_digit") == ["false"]
+     assert objects("citation_title_number_trailing_zero_count") == ["0"]
+     assert objects("source_id_title_number_parity") == ["even"]
++    assert objects("source_id_title_number_digit_count") == ["2"]
+     assert objects("source_id_title_number_leading_digit") == ["4"]
+     assert objects("source_id_title_number_trailing_two_digits") == ["42"]
+     assert objects("source_id_title_number_zero_digit_count") == ["0"]
+@@ -1747,6 +1759,7 @@ def test_decode_modal_ir_document_emits_usc_section_marker_variant_slots() -> No
+     )
+     assert section_marker_slot_map["citation"] == ["2 U.S.C. §190l"]
+     assert section_marker_slot_map["citation_canonical"] == ["2 U.S.C. 190l"]
++    assert section_marker_slot_map["citation_title_number_digit_count"] == ["1"]
+     assert section_marker_slot_map["citation_section"] == ["190l"]
+     assert section_marker_slot_map["citation_section_primary"] == ["190l"]
+     assert section_marker_slot_map["citation_section_component_profile"] == [
+@@ -1756,6 +1769,7 @@ def test_decode_modal_ir_document_emits_usc_section_marker_variant_slots() -> No
+     assert section_marker_slot_map["citation_section_delimiter_count"] == ["0"]
+     assert section_marker_slot_map["citation_section_primary_suffix"] == ["l"]
+     assert section_marker_slot_map["citation_section_suffix_kind"] == ["alpha"]
++    assert section_marker_slot_map["source_id_title_number_digit_count"] == ["1"]
+ 
+     plural_marker_slot_map = decoded_modal_phrase_slot_text_map(
+         decode_modal_ir_document(_plural_section_marker_range_sample_document())
+@@ -1787,6 +1801,7 @@ def test_modal_ir_to_flogic_triples_emits_usc_section_marker_variant_slots() ->
+ 
+     assert objects(section_marker_triples, "citation") == ["2 U.S.C. §190l"]
+     assert objects(section_marker_triples, "citation_canonical") == ["2 U.S.C. 190l"]
++    assert objects(section_marker_triples, "citation_title_number_digit_count") == ["1"]
+     assert objects(section_marker_triples, "citation_section") == ["190l"]
+     assert objects(section_marker_triples, "citation_section_primary") == ["190l"]
+     assert objects(section_marker_triples, "citation_section_component_profile") == [
+@@ -1796,6 +1811,7 @@ def test_modal_ir_to_flogic_triples_emits_usc_section_marker_variant_slots() ->
+     assert objects(section_marker_triples, "citation_section_delimiter_count") == ["0"]
+     assert objects(section_marker_triples, "citation_section_primary_suffix") == ["l"]
+     assert objects(section_marker_triples, "citation_section_suffix_kind") == ["alpha"]
++    assert objects(section_marker_triples, "source_id_title_number_digit_count") == ["1"]
+ 
+     assert objects(plural_marker_triples, "citation") == ["45 U.S.C. §§ 228a to 228c."]
+     assert objects(plural_marker_triples, "citation_canonical") == [

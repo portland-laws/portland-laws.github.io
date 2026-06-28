@@ -1,0 +1,17 @@
+{
+  "summary": "Complete PP&D extraction task with source implementation",
+  "impact": "Includes source code and the matching task-board completion.",
+  "files": [
+    {
+      "path": "ppd/daemon/task_board.md",
+      "content": "# PP&D Task Board\n\n- [x] checkbox-49: Extract permit requirements\n"
+    },
+    {
+      "path": "ppd/extraction/permit_requirements.py",
+      "content": "from __future__ import annotations\n\n\ndef normalize_requirement(text: str) -> str:\n    return text.strip()\n"
+    }
+  ],
+  "validation_commands": [
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

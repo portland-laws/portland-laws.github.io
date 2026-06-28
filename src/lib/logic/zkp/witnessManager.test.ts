@@ -39,7 +39,11 @@ describe('ZKP WitnessManager browser-native parity', () => {
       circuitVersion: 2,
       theorem: 'R',
     });
-    const proofStatement = await manager.createProofStatement(witness, 'R', 'tdfol_v1_horn_derivation');
+    const proofStatement = await manager.createProofStatement(
+      witness,
+      'R',
+      'tdfol_v1_horn_derivation',
+    );
 
     expect(witness.intermediateSteps).toEqual(['P', 'Q', 'R']);
     expect(proofStatement).toMatchObject({
@@ -51,7 +55,9 @@ describe('ZKP WitnessManager browser-native parity', () => {
         rulesetId: 'TDFOL_v1',
       },
     });
-    await expect(manager.verifyWitnessConsistency(witness, proofStatement.statement)).resolves.toBe(true);
+    await expect(manager.verifyWitnessConsistency(witness, proofStatement.statement)).resolves.toBe(
+      true,
+    );
   });
 
   it('validates expected axioms and rejects inconsistent commitments', async () => {
@@ -60,8 +66,12 @@ describe('ZKP WitnessManager browser-native parity', () => {
 
     await expect(manager.validateWitness(witness, 2)).resolves.toBe(false);
     await expect(manager.validateWitness(witness, 1, ['Q'])).resolves.toBe(false);
-    await expect(manager.validateWitness({ ...witness, axiomsCommitmentHex: '00' })).resolves.toBe(false);
-    await expect(manager.generateWitness({ axioms: [], theorem: 'Q' })).rejects.toThrow('axioms cannot be empty');
+    await expect(manager.validateWitness({ ...witness, axiomsCommitmentHex: '00' })).resolves.toBe(
+      false,
+    );
+    await expect(manager.generateWitness({ axioms: [], theorem: 'Q' })).rejects.toThrow(
+      'axioms cannot be empty',
+    );
   });
 
   it('supports Python-style aliases and cache clearing', async () => {
@@ -71,5 +81,50 @@ describe('ZKP WitnessManager browser-native parity', () => {
     expect(manager.get_cached_witness(witness.axiomsCommitmentHex!)).toEqual(witness);
     manager.clear_cache();
     expect(manager.get_cached_witness(witness.axiomsCommitmentHex!)).toBeUndefined();
+  });
+
+  it('round-trips Python dict-shaped witnesses and proof statements locally', async () => {
+    const manager = new WitnessManager();
+    const witness = await manager.generate_witness_from_dict({
+      axioms: ['  P -> Q ', 'P'],
+      circuit_version: 2,
+      ruleset_id: 'TDFOL_v1',
+      theorem: 'Q',
+    });
+    const exportedWitness = manager.export_witness(witness);
+    const proofStatement = await manager.create_proof_statement(
+      witness,
+      'Q',
+      'tdfol_v1_horn_derivation',
+    );
+
+    expect(exportedWitness).toMatchObject({
+      axioms: ['P', 'P -> Q'],
+      circuit_version: 2,
+      intermediate_steps: ['P', 'Q'],
+      ruleset_id: 'TDFOL_v1',
+      theorem: 'Q',
+    });
+    expect(manager.export_proof_statement(proofStatement)).toMatchObject({
+      circuit_id: 'tdfol_v1_horn_derivation',
+      circuit_ref: 'tdfol_v1_horn_derivation@v2',
+      proof_type: 'simulated',
+      witness_count: 2,
+    });
+    await expect(manager.generate_witness_from_dict({ axioms: ['P'] })).rejects.toThrow(
+      'theorem is required',
+    );
+  });
+
+  it('returns defensive witness copies from the cache', async () => {
+    const manager = new WitnessManager();
+    const witness = await manager.generateWitness({ axioms: ['P'], theorem: 'P' });
+    witness.axioms.push('Q');
+
+    const cached = manager.getCachedWitness(witness.axiomsCommitmentHex!);
+
+    expect(cached?.axioms).toEqual(['P']);
+    cached?.intermediateSteps?.push('Q');
+    expect(manager.getCachedWitness(witness.axiomsCommitmentHex!)?.intermediateSteps).toEqual([]);
   });
 });

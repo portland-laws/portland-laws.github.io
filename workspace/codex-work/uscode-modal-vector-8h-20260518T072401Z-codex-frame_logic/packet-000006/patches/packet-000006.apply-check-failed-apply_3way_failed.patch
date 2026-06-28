@@ -1,0 +1,558 @@
+diff --git a/ipfs_datasets_py/logic/modal/codec.py b/ipfs_datasets_py/logic/modal/codec.py
+index a3620a86..279fa528 100644
+--- a/ipfs_datasets_py/logic/modal/codec.py
++++ b/ipfs_datasets_py/logic/modal/codec.py
+@@ -379,6 +379,13 @@ class DeterministicModalLogicCodec:
+             frame_id = candidate.get("frame_id")
+             if frame_id:
+                 features.append(f"frame-candidate:{frame_id}")
++            frame_terms = _frame_candidate_ontology_terms(candidate)
++            for term in frame_terms:
++                features.append(f"frame-term:{term}")
++                if frame_id:
++                    features.append(f"frame-term:{frame_id}:{term}")
++                    if frame_id == codec_result.selected_frame:
++                        features.append(f"selected-frame-term:{term}")
+         for triple in codec_result.kg_triples:
+             predicate = triple.get("predicate", "")
+             obj = triple.get("object", "")
+@@ -426,11 +433,26 @@ class DeterministicModalLogicCodec:
+             )
+             for selection in frame_selections
+         ]
++        frame_logic_terms_by_frame = {
++            selection.frame.frame_id: sorted(
++                {value for value in selection.matched_terms if value}
++            )
++            for selection in frame_selections
++        }
++        frame_logic_audited_terms = sorted(
++            {
++                term
++                for terms in frame_logic_terms_by_frame.values()
++                for term in terms
++            }
++        )
+         metadata = {
+             **modal_ir.metadata,
+             "deterministic_parser": parser_name,
+             "encoder_decoder": "deterministic_modal_logic_codec_v1",
+             "frame_selector": "bm25_v1",
++            "frame_logic_audited_terms": frame_logic_audited_terms,
++            "frame_logic_terms_by_frame": frame_logic_terms_by_frame,
+             "llm_call_count": 0,
+             "modal_family_counts": encoding.modal_family_counts(),
+             "selected_frame": selected_frame,
+@@ -501,96 +523,53 @@ def modal_ir_to_flogic_triples(
+     """Project modal IR into simple F-logic-style triples."""
+     if modal_ir.frame_logic.triples:
+         return modal_ir.frame_logic.to_triples()
+-    triples: List[Dict[str, str]] = [
+-        {"subject": modal_ir.document_id, "predicate": "type", "object": "legal_modal_document"},
+-        {"subject": modal_ir.document_id, "predicate": "source", "object": modal_ir.source},
+-    ]
+-    if selected_frame:
++
++    triples: List[Dict[str, str]] = []
++    seen: set[tuple[str, str, str]] = set()
++
++    def add_triple(subject: str, predicate: str, obj: str) -> None:
++        key = (subject, predicate, obj)
++        if key in seen:
++            return
++        seen.add(key)
+         triples.append(
+             {
+-                "subject": modal_ir.document_id,
+-                "predicate": "selected_ontology_frame",
+-                "object": selected_frame,
++                "subject": subject,
++                "predicate": predicate,
++                "object": obj,
+             }
+         )
++
++    add_triple(modal_ir.document_id, "type", "legal_modal_document")
++    add_triple(modal_ir.document_id, "source", modal_ir.source)
++    if selected_frame:
++        add_triple(modal_ir.document_id, "selected_ontology_frame", selected_frame)
+     for frame in modal_ir.frame_candidates:
+-        triples.append(
+-            {
+-                "subject": modal_ir.document_id,
+-                "predicate": "candidate_ontology_frame",
+-                "object": frame.frame_id,
+-            }
++        add_triple(
++            modal_ir.document_id,
++            "candidate_ontology_frame",
++            frame.frame_id,
+         )
++        for term in sorted({value for value in frame.matched_terms if value}):
++            add_triple(frame.frame_id, "ontology_term", term)
++            if selected_frame and frame.frame_id == selected_frame:
++                add_triple(modal_ir.document_id, "selected_ontology_term", term)
+     for formula in modal_ir.formulas:
+-        triples.extend(
+-            [
+-                {
+-                    "subject": formula.formula_id,
+-                    "predicate": "belongs_to_document",
+-                    "object": modal_ir.document_id,
+-                },
+-                {
+-                    "subject": formula.formula_id,
+-                    "predicate": "modal_family",
+-                    "object": formula.operator.family,
+-                },
+-                {
+-                    "subject": formula.formula_id,
+-                    "predicate": "modal_system",
+-                    "object": formula.operator.system,
+-                },
+-                {
+-                    "subject": formula.formula_id,
+-                    "predicate": "modal_operator",
+-                    "object": formula.operator.symbol,
+-                },
+-                {
+-                    "subject": formula.formula_id,
+-                    "predicate": "predicate",
+-                    "object": formula.predicate.name,
+-                },
+-            ]
+-        )
++        add_triple(formula.formula_id, "belongs_to_document", modal_ir.document_id)
++        add_triple(formula.formula_id, "modal_family", formula.operator.family)
++        add_triple(formula.formula_id, "modal_system", formula.operator.system)
++        add_triple(formula.formula_id, "modal_operator", formula.operator.symbol)
++        add_triple(formula.formula_id, "predicate", formula.predicate.name)
+         if formula.predicate.role:
+-            triples.append(
+-                {
+-                    "subject": formula.formula_id,
+-                    "predicate": "predicate_role",
+-                    "object": formula.predicate.role,
+-                }
+-            )
++            add_triple(formula.formula_id, "predicate_role", formula.predicate.role)
+         for condition in sorted({value for value in formula.conditions if value}):
+-            triples.append(
+-                {
+-                    "subject": formula.formula_id,
+-                    "predicate": "condition",
+-                    "object": condition,
+-                }
+-            )
++            add_triple(formula.formula_id, "condition", condition)
+         for exception in sorted({value for value in formula.exceptions if value}):
+-            triples.append(
+-                {
+-                    "subject": formula.formula_id,
+-                    "predicate": "exception",
+-                    "object": exception,
+-                }
+-            )
++            add_triple(formula.formula_id, "exception", exception)
+         if formula.provenance.citation:
+-            triples.append(
+-                {
+-                    "subject": formula.formula_id,
+-                    "predicate": "citation",
+-                    "object": formula.provenance.citation,
+-                }
+-            )
++            add_triple(formula.formula_id, "citation", formula.provenance.citation)
+         if selected_frame:
+-            triples.append(
+-                {
+-                    "subject": formula.formula_id,
+-                    "predicate": "interpreted_in_frame",
+-                    "object": selected_frame,
+-                }
+-            )
++            add_triple(formula.formula_id, "interpreted_in_frame", selected_frame)
+     return triples
+ 
+ 
+@@ -624,6 +603,17 @@ def _softmax(logits: Mapping[str, float]) -> Dict[str, float]:
+     return {name: exponentials[name] / total for name in sorted(exponentials)}
+ 
+ 
++def _frame_candidate_ontology_terms(candidate: Mapping[str, Any]) -> List[str]:
++    raw = candidate.get("matched_terms", [])
++    if isinstance(raw, str):
++        values: Iterable[str] = [raw]
++    elif isinstance(raw, Sequence):
++        values = [str(item) for item in raw if item]
++    else:
++        values = []
++    return sorted({str(value).strip().lower() for value in values if str(value).strip()})
++
++
+ def _flogic_result_to_dict(result: Optional[FLogicOptimizerResult]) -> Optional[Dict[str, Any]]:
+     if result is None:
+         return None
+diff --git a/ipfs_datasets_py/optimizers/logic/flogic_optimizer.py b/ipfs_datasets_py/optimizers/logic/flogic_optimizer.py
+index 4532f276..2c7d0d69 100644
+--- a/ipfs_datasets_py/optimizers/logic/flogic_optimizer.py
++++ b/ipfs_datasets_py/optimizers/logic/flogic_optimizer.py
+@@ -261,36 +261,60 @@ class FLogicSemanticOptimizer:
+         ergo = self._get_ergo()
+         violations: List[OntologyViolation] = []
+ 
+-        # Group triples by subject to build frames
+-        subject_map: Dict[str, Dict[str, str]] = {}
++        # Group triples by subject and predicate so repeated predicates are
++        # represented as set-valued frame methods rather than overwritten.
++        subject_map: Dict[str, Dict[str, List[str]]] = {}
+         for triple in kg_triples:
+-            subj = triple.get("subject", "")
+-            pred = triple.get("predicate", "")
+-            obj = triple.get("object", "")
++            subj = str(triple.get("subject", "")).strip()
++            pred = str(triple.get("predicate", "")).strip()
++            obj = str(triple.get("object", "")).strip()
+             if not subj:
+                 continue
+-            if subj not in subject_map:
+-                subject_map[subj] = {}
+-            subject_map[subj][pred] = obj
++            if not pred:
++                violations.append(
++                    OntologyViolation(
++                        frame_id=subj,
++                        constraint="non_empty_predicate",
++                        details=f"Triple ({subj!r}, '', {obj!r}) has empty predicate",
++                    )
++                )
++                continue
++            if not obj:
++                violations.append(
++                    OntologyViolation(
++                        frame_id=subj,
++                        constraint="non_empty_object",
++                        details=f"Triple ({subj!r}, {pred!r}, '') has empty object",
++                    )
++                )
++                continue
++            subject_map.setdefault(subj, {}).setdefault(pred, []).append(obj)
+ 
+-        # Add frames to ergo and query for known constraint violations
++        # Add frames to ergo using scalar + set-valued methods.
+         for subj, methods in subject_map.items():
+-            frame = FLogicFrame(object_id=subj, scalar_methods=methods)
++            scalar_methods: Dict[str, Any] = {}
++            set_methods: Dict[str, List[Any]] = {}
++            isa: Optional[str] = None
++            for pred, objects in sorted(methods.items()):
++                unique_objects = _unique_preserve_order(objects)
++                if pred == "type" and unique_objects:
++                    isa = unique_objects[0]
++                    if len(unique_objects) > 1:
++                        set_methods[pred] = unique_objects[1:]
++                    continue
++                if len(unique_objects) == 1:
++                    scalar_methods[pred] = unique_objects[0]
++                elif unique_objects:
++                    set_methods[pred] = unique_objects
++            frame = FLogicFrame(
++                object_id=subj,
++                scalar_methods=scalar_methods,
++                set_methods=set_methods,
++                isa=isa,
++            )
+             ergo.add_frame(frame)
+ 
+-        # In simulation mode we trust the F-logic types; no violations raised
+-        # unless a method key is blank (structural sanity check only)
+-        for subj, methods in subject_map.items():
+-            for pred, obj in methods.items():
+-                if not pred:
+-                    violations.append(
+-                        OntologyViolation(
+-                            frame_id=subj,
+-                            constraint="non_empty_predicate",
+-                            details=f"Triple ({subj!r}, '', {obj!r}) has empty predicate",
+-                        )
+-                    )
+-
++        # In simulation mode we trust the F-logic types after structural checks.
+         return violations
+ 
+ 
+@@ -313,6 +337,17 @@ def _cosine_similarity(a: List[float], b: List[float]) -> float:
+     return dot / (norm_a * norm_b)
+ 
+ 
++def _unique_preserve_order(values: Sequence[str]) -> List[str]:
++    seen: set[str] = set()
++    result: List[str] = []
++    for value in values:
++        if value in seen:
++            continue
++        seen.add(value)
++        result.append(value)
++    return result
++
++
+ __all__ = [
+     "FLogicSemanticOptimizer",
+     "FLogicOptimizerConfig",
+diff --git a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py
+index 378e7322..fba594d8 100644
+--- a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py
++++ b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py
+@@ -35,6 +35,8 @@ class FrameSelection:
+     score: float
+     matched_terms: List[str]
+     explanation: str
++    lexical_matches: List[str] = field(default_factory=list)
++    ontology_terms: List[str] = field(default_factory=list)
+ 
+     def to_dict(self) -> Dict[str, object]:
+         return {
+@@ -42,7 +44,9 @@ class FrameSelection:
+             "explanation": self.explanation,
+             "frame_id": self.frame.frame_id,
+             "label": self.frame.label,
++            "lexical_matches": list(self.lexical_matches),
+             "matched_terms": list(self.matched_terms),
++            "ontology_terms": list(self.ontology_terms),
+             "score": self.score,
+         }
+ 
+@@ -61,6 +65,10 @@ class BM25FrameSelector:
+         self.k1 = k1
+         self.b = b
+         self._documents = [self._tokenize(frame.document_text()) for frame in self.frames]
++        self._ontology_terms = {
++            frame.frame_id: self._extract_ontology_terms(frame)
++            for frame in self.frames
++        }
+         self._avgdl = sum(len(document) for document in self._documents) / len(self._documents) if self._documents else 0.0
+         self._doc_freq = self._build_doc_freq(self._documents)
+ 
+@@ -74,11 +82,14 @@ class BM25FrameSelector:
+         """Rank frame candidates for text."""
+         query_tokens = self._tokenize(text)
+         query_terms = sorted(set(query_tokens))
++        query_term_set = set(query_terms)
+         results: List[FrameSelection] = []
+         for frame, document in zip(self.frames, self._documents):
+             if domain is not None and frame.domain != domain:
+                 continue
+-            matched_terms = sorted(set(query_terms) & set(document))
++            ontology_terms = self._ontology_terms.get(frame.frame_id, [])
++            lexical_matches = sorted(query_term_set & set(document))
++            matched_terms = sorted(query_term_set & set(ontology_terms))
+             score = self._score(query_terms, document)
+             if matched_terms:
+                 score += 0.05 * len(matched_terms)
+@@ -87,7 +98,14 @@ class BM25FrameSelector:
+                     frame=frame,
+                     score=round(score, 6),
+                     matched_terms=matched_terms,
+-                    explanation=self._explain(frame, matched_terms, score),
++                    explanation=self._explain(
++                        frame,
++                        matched_terms,
++                        lexical_matches,
++                        score,
++                    ),
++                    lexical_matches=lexical_matches,
++                    ontology_terms=list(ontology_terms),
+                 )
+             )
+         results.sort(key=lambda result: (-result.score, result.frame.frame_id))
+@@ -109,14 +127,37 @@ class BM25FrameSelector:
+             total += idf * ((freq * (self.k1 + 1)) / denominator)
+         return total
+ 
+-    def _explain(self, frame: FrameCandidate, matched_terms: Sequence[str], score: float) -> str:
++    def _explain(
++        self,
++        frame: FrameCandidate,
++        matched_terms: Sequence[str],
++        lexical_matches: Sequence[str],
++        score: float,
++    ) -> str:
+         if matched_terms:
+-            return f"Frame {frame.frame_id} matched {', '.join(matched_terms)} with BM25 score {score:.3f}."
++            return (
++                f"Frame {frame.frame_id} matched ontology terms "
++                f"{', '.join(matched_terms)} with BM25 score {score:.3f}."
++            )
++        if lexical_matches:
++            return (
++                f"Frame {frame.frame_id} had lexical overlap "
++                f"{', '.join(lexical_matches)} but no ontology-term matches; "
++                f"BM25 score {score:.3f}."
++            )
+         return f"Frame {frame.frame_id} had no lexical query matches; BM25 score {score:.3f}."
+ 
+     def _tokenize(self, text: str) -> List[str]:
+         return [token.lower() for token in _TOKEN_RE.findall(text)]
+ 
++    def _extract_ontology_terms(self, frame: FrameCandidate) -> List[str]:
++        terms: List[str] = []
++        for value in frame.terms:
++            for token in self._tokenize(str(value)):
++                if token not in terms:
++                    terms.append(token)
++        return terms
++
+     def _build_doc_freq(self, documents: Sequence[Sequence[str]]) -> Dict[str, int]:
+         frequencies: Dict[str, int] = {}
+         for document in documents:
+diff --git a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_frame_logic_term_audit.py b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_frame_logic_term_audit.py
+new file mode 100644
+index 00000000..9f308f54
+--- /dev/null
++++ b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_frame_logic_term_audit.py
+@@ -0,0 +1,145 @@
++"""Tests for deterministic frame-logic term auditing and projection."""
++
++from ipfs_datasets_py.logic.modal.codec import modal_ir_to_flogic_triples
++from ipfs_datasets_py.optimizers.logic.flogic_optimizer import (
++    FLogicOptimizerConfig,
++    FLogicSemanticOptimizer,
++)
++from ipfs_datasets_py.optimizers.logic_theorem_optimizer.frame_bm25_selector import (
++    BM25FrameSelector,
++    FrameCandidate,
++)
++from ipfs_datasets_py.optimizers.logic_theorem_optimizer.modal_ir import (
++    ModalIRDocument,
++    ModalIRFrame,
++)
++
++
++class _FakeErgo:
++    def __init__(self) -> None:
++        self.frames = []
++
++    def add_frame(self, frame) -> None:
++        self.frames.append(frame)
++
++
++def test_bm25_selector_exposes_ontology_term_matches() -> None:
++    selector = BM25FrameSelector(
++        [
++            FrameCandidate(
++                frame_id="administrative_notice_hearing",
++                label="Administrative notice and hearing",
++                description="Agency notice, finding, hearing rights, final order.",
++                terms=("notice", "hearing"),
++                domain="administrative",
++            )
++        ]
++    )
++
++    selection = selector.rank("Agency rights include notice", top_k=1)[0]
++
++    assert selection.matched_terms == ["notice"]
++    assert "agency" in selection.lexical_matches
++    assert set(selection.ontology_terms) == {"notice", "hearing"}
++
++
++def test_modal_ir_to_flogic_triples_emits_ontology_terms() -> None:
++    modal_ir = ModalIRDocument(
++        document_id="doc-1",
++        source="us_code",
++        normalized_text="agency must provide notice and hearing",
++        frame_candidates=[
++            ModalIRFrame(
++                frame_id="administrative_notice_hearing",
++                score=1.0,
++                matched_terms=["notice", "hearing", "notice"],
++            )
++        ],
++    )
++
++    triples = modal_ir_to_flogic_triples(
++        modal_ir,
++        selected_frame="administrative_notice_hearing",
++    )
++
++    assert {
++        "subject": "administrative_notice_hearing",
++        "predicate": "ontology_term",
++        "object": "notice",
++    } in triples
++    assert {
++        "subject": "administrative_notice_hearing",
++        "predicate": "ontology_term",
++        "object": "hearing",
++    } in triples
++    assert {
++        "subject": "doc-1",
++        "predicate": "selected_ontology_term",
++        "object": "notice",
++    } in triples
++    assert sum(
++        1
++        for triple in triples
++        if triple["subject"] == "doc-1"
++        and triple["predicate"] == "selected_ontology_term"
++        and triple["object"] == "notice"
++    ) == 1
++
++
++def test_flogic_consistency_keeps_repeated_predicates_as_set_methods() -> None:
++    optimizer = FLogicSemanticOptimizer(
++        FLogicOptimizerConfig(check_ontology_consistency=True)
++    )
++    fake_ergo = _FakeErgo()
++    optimizer._get_ergo = lambda: fake_ergo  # type: ignore[method-assign]
++
++    violations = optimizer._check_flogic_consistency(
++        [
++            {
++                "subject": "doc-1",
++                "predicate": "type",
++                "object": "legal_modal_document",
++            },
++            {
++                "subject": "doc-1",
++                "predicate": "candidate_ontology_frame",
++                "object": "frame_a",
++            },
++            {
++                "subject": "doc-1",
++                "predicate": "candidate_ontology_frame",
++                "object": "frame_b",
++            },
++            {
++                "subject": "doc-1",
++                "predicate": "candidate_ontology_frame",
++                "object": "frame_a",
++            },
++        ]
++    )
++
++    assert violations == []
++    assert len(fake_ergo.frames) == 1
++    frame = fake_ergo.frames[0]
++    assert frame.isa == "legal_modal_document"
++    assert frame.set_methods["candidate_ontology_frame"] == ["frame_a", "frame_b"]
++
++
++def test_flogic_consistency_reports_empty_predicate_and_object() -> None:
++    optimizer = FLogicSemanticOptimizer(
++        FLogicOptimizerConfig(check_ontology_consistency=True)
++    )
++    fake_ergo = _FakeErgo()
++    optimizer._get_ergo = lambda: fake_ergo  # type: ignore[method-assign]
++
++    violations = optimizer._check_flogic_consistency(
++        [
++            {"subject": "doc-1", "predicate": "", "object": "x"},
++            {"subject": "doc-1", "predicate": "p", "object": ""},
++        ]
++    )
++
++    assert {violation.constraint for violation in violations} == {
++        "non_empty_object",
++        "non_empty_predicate",
++    }

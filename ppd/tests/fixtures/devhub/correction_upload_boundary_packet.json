@@ -1,0 +1,156 @@
+{
+  "packet_id": "synthetic-correction-upload-boundary-001",
+  "case_id": "SYN-CHKSHT-2026-001",
+  "workflow": {
+    "surface": "DevHub correction upload",
+    "mode": "fixture_only",
+    "authenticated_automation": false,
+    "contains_private_values": false,
+    "live_crawl_or_upload_attempted": false
+  },
+  "synthetic_checksheet": {
+    "permit_request_id": "SYNTHETIC-26-000000-REV-01",
+    "checksheet_label": "Synthetic life-safety checksheet response",
+    "review_group": "Life Safety Review",
+    "review_items": [
+      {
+        "checksheet_item_id": "LS-01",
+        "requested_correction": "Revise the egress plan note to identify the exit access route.",
+        "local_response_document": "SYN_LS-01_Response.pdf",
+        "local_status": "ready_for_user_review"
+      },
+      {
+        "checksheet_item_id": "LS-02",
+        "requested_correction": "Provide a corrected door hardware schedule sheet.",
+        "local_response_document": "SYN_LS-02_Door_Hardware.pdf",
+        "local_status": "ready_for_user_review"
+      }
+    ]
+  },
+  "boundaries": [
+    {
+      "kind": "read_only_correction_review",
+      "decision": "allowed_local_only",
+      "agent_may": [
+        "summarize the synthetic checksheet text",
+        "compare requested correction labels to local response document names",
+        "prepare questions for the user before DevHub attendance"
+      ],
+      "agent_must_not": [
+        "open or use a private authenticated DevHub session in this fixture",
+        "claim the official correction was accepted or uploaded"
+      ],
+      "manual_handoff_required": false,
+      "citation_ids": ["devhub-faq-corrections", "upload-corrections-guide"]
+    },
+    {
+      "kind": "local_document_checklist_preview",
+      "decision": "allowed_local_only",
+      "agent_may": [
+        "render a local checklist preview from fixture metadata",
+        "flag missing synthetic response documents",
+        "remind the user to verify file names and document grouping before official upload"
+      ],
+      "agent_must_not": [
+        "attach files to the official record",
+        "store private file paths in committed artifacts"
+      ],
+      "manual_handoff_required": false,
+      "citation_ids": ["single-pdf-guidance", "file-naming-guidance"]
+    },
+    {
+      "kind": "official_correction_upload",
+      "decision": "blocked_requires_attended_user",
+      "blocked_reason": "Uploading corrections changes the official permit record and requires an authenticated account-scoped DevHub workflow.",
+      "agent_may": [
+        "tell the user which synthetic documents appear ready for manual upload",
+        "provide a handoff checklist for the attended DevHub session"
+      ],
+      "agent_must_not": [
+        "click an Upload, Add Attachment, Submit, or equivalent DevHub control",
+        "bypass login, MFA, CAPTCHA, or account boundaries"
+      ],
+      "manual_handoff_required": true,
+      "citation_ids": ["devhub-faq-corrections", "upload-corrections-guide"]
+    },
+    {
+      "kind": "certification_or_submission",
+      "decision": "blocked_requires_attended_user",
+      "blocked_reason": "Certification, acknowledgement, and submission are consequential official actions that require the user's exact action-specific confirmation and attendance.",
+      "agent_may": [
+        "explain the certification boundary before the user acts",
+        "prepare a non-submitting review checklist"
+      ],
+      "agent_must_not": [
+        "certify an acknowledgement",
+        "submit a correction package",
+        "represent that the user has approved exact official action unless recorded separately outside this fixture"
+      ],
+      "manual_handoff_required": true,
+      "citation_ids": ["devhub-application-guide", "upload-corrections-guide"]
+    }
+  ],
+  "manual_handoff": {
+    "title": "Manual DevHub correction upload handoff",
+    "text": "The agent can review this checksheet packet and local checklist, but the user must sign in to DevHub, select the permit or application, upload any correction documents, review acknowledgements, and perform any certification or submission steps manually. The agent may remain read-only and may not click upload, certify, submit, or final action controls.",
+    "agent_may_click_upload": false,
+    "agent_may_certify_or_submit": false,
+    "requires_user_attendance": true,
+    "requires_exact_confirmation_before_official_action": true
+  },
+  "next_safe_actions": [
+    {
+      "action_id": "review-checksheet-locally",
+      "label": "Review the synthetic checksheet items and user questions locally.",
+      "requires_devhub_login": false,
+      "changes_official_record": false,
+      "citation_ids": ["devhub-faq-corrections"]
+    },
+    {
+      "action_id": "preview-local-document-checklist",
+      "label": "Preview whether each synthetic correction item has a matching local response document label.",
+      "requires_devhub_login": false,
+      "changes_official_record": false,
+      "citation_ids": ["single-pdf-guidance", "file-naming-guidance"]
+    },
+    {
+      "action_id": "prepare-attended-handoff",
+      "label": "Prepare handoff text for the user to complete the official DevHub upload and any certification or submission manually.",
+      "requires_devhub_login": false,
+      "changes_official_record": false,
+      "citation_ids": ["upload-corrections-guide", "devhub-application-guide"]
+    }
+  ],
+  "source_evidence": [
+    {
+      "citation_id": "devhub-faq-corrections",
+      "title": "DevHub FAQs",
+      "url": "https://www.portland.gov/ppd/devhub-faqs",
+      "supports": "DevHub includes account-scoped services such as uploading corrections and checking requests."
+    },
+    {
+      "citation_id": "upload-corrections-guide",
+      "title": "Upload corrections in DevHub",
+      "url": "https://www.portland.gov/ppd/devhub-guide-upload-corrections",
+      "supports": "Correction upload is an authenticated DevHub workflow tied to a permit or application and review-group status."
+    },
+    {
+      "citation_id": "single-pdf-guidance",
+      "title": "Submit Plans Online / Single PDF Process",
+      "url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "supports": "Plans, applications, calculations, and supporting documents have document grouping expectations before upload."
+    },
+    {
+      "citation_id": "file-naming-guidance",
+      "title": "File naming standards and preparing PDFs",
+      "url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+      "supports": "Local checklist preview can verify PDF preparation and naming expectations before official upload."
+    },
+    {
+      "citation_id": "devhub-application-guide",
+      "title": "DevHub permit application guide",
+      "url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "supports": "DevHub workflows can include required uploads, acknowledgements, certification, and post-submission status tracking."
+    }
+  ]
+}

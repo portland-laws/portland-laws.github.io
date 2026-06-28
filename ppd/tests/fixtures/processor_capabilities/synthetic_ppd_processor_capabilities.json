@@ -1,0 +1,88 @@
+{
+  "fixture_name": "synthetic_ppd_processor_capabilities",
+  "fixture_version": "2026-05-15",
+  "adapter_name": "ppd.synthetic_processor_capability_adapter",
+  "purpose": "Synthetic record of PP&D processor capabilities planned for ipfs_datasets_py handoff.",
+  "constraints": {
+    "imports_network_processors": false,
+    "writes_raw_archives": false,
+    "deterministic": true
+  },
+  "capture_types": [
+    "html",
+    "pdf",
+    "warc",
+    "metadata"
+  ],
+  "capabilities": [
+    {
+      "capture_type": "html",
+      "processor_family": "ipfs_datasets_py.web_html_processors",
+      "capabilities": [
+        "public_url_fetch_metadata",
+        "html_dom_text_extraction",
+        "link_and_heading_extraction",
+        "content_hashing"
+      ],
+      "ppd_records": [
+        "SourceRegistry",
+        "ArchiveManifest",
+        "DocumentRecord"
+      ],
+      "raw_archive_written": false,
+      "imports_network_processor": false,
+      "notes": "Records intended public HTML processing only; live fetch and raw body persistence stay outside this fixture."
+    },
+    {
+      "capture_type": "pdf",
+      "processor_family": "ipfs_datasets_py.pdf_processors",
+      "capabilities": [
+        "pdf_text_extraction",
+        "pdf_page_anchors",
+        "pdf_form_field_inventory",
+        "content_hashing"
+      ],
+      "ppd_records": [
+        "ArchiveManifest",
+        "DocumentRecord",
+        "RequirementNode"
+      ],
+      "raw_archive_written": false,
+      "imports_network_processor": false,
+      "notes": "Records intended PDF extraction and form inventory capabilities without downloading or committing PDF bytes."
+    },
+    {
+      "capture_type": "warc",
+      "processor_family": "ipfs_datasets_py.web_archive_processors",
+      "capabilities": [
+        "warc_manifest_projection",
+        "redirect_chain_capture",
+        "response_header_capture",
+        "archive_artifact_reference"
+      ],
+      "ppd_records": [
+        "ArchiveManifest"
+      ],
+      "raw_archive_written": false,
+      "imports_network_processor": false,
+      "notes": "Records the manifest fields expected from a WARC-capable capture while explicitly avoiding raw archive output."
+    },
+    {
+      "capture_type": "metadata",
+      "processor_family": "ipfs_datasets_py.metadata_processors",
+      "capabilities": [
+        "processor_name_version_capture",
+        "mime_type_classification",
+        "freshness_signal_capture",
+        "privacy_and_policy_flags"
+      ],
+      "ppd_records": [
+        "SourceRegistry",
+        "ArchiveManifest"
+      ],
+      "raw_archive_written": false,
+      "imports_network_processor": false,
+      "notes": "Records deterministic metadata capture fields used by PP&D freshness and policy checks."
+    }
+  ]
+}

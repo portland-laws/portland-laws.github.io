@@ -1,0 +1,19 @@
+{
+  "packet_id": "fixture-release-consumer-handoff-v1",
+  "packet_type": "release_consumer_handoff",
+  "reviewer_owner": "ppd-release-reviewer",
+  "citations": [
+    {
+      "citation_id": "release-consumer-handoff:scope-owner-acceptance",
+      "title": "Release consumer handoff scope, owner, and acceptance evidence",
+      "owner": "ppd-release-reviewer"
+    }
+  ],
+  "handoff_items": [
+    {
+      "item_id": "consumer-scope",
+      "status": "ready_for_review",
+      "evidence_citation_id": "release-consumer-handoff:scope-owner-acceptance"
+    }
+  ]
+}

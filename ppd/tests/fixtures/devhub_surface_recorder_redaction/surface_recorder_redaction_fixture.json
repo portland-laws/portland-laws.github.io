@@ -1,0 +1,149 @@
+{
+  "fixture_id": "devhub_surface_recorder_redaction_v1",
+  "description": "Synthetic DevHub surface-recorder fixture for validating that accessibility structure metadata is retained while private recorder artifacts are rejected.",
+  "surface": {
+    "name": "DevHub synthetic permit search",
+    "url": "https://devhub.portland.gov/synthetic/permits",
+    "captured_from": "synthetic-fixture"
+  },
+  "allowed_accessibility_metadata": {
+    "page": {
+      "url": "https://devhub.portland.gov/synthetic/permits",
+      "title": "Development Hub PDX - Permit Search",
+      "lang": "en"
+    },
+    "nodes": [
+      {
+        "role": "main",
+        "name": "Permit search",
+        "depth": 0,
+        "path": ["document", "main"]
+      },
+      {
+        "role": "heading",
+        "name": "Search permits",
+        "level": 1,
+        "depth": 1,
+        "path": ["document", "main", "heading"]
+      },
+      {
+        "role": "searchbox",
+        "name": "Permit number",
+        "depth": 1,
+        "states": ["focusable"],
+        "path": ["document", "main", "form", "searchbox"]
+      },
+      {
+        "role": "button",
+        "name": "Search",
+        "depth": 1,
+        "states": ["focusable"],
+        "path": ["document", "main", "form", "button"]
+      },
+      {
+        "role": "navigation",
+        "name": "Permit sections",
+        "depth": 1,
+        "path": ["document", "navigation"]
+      }
+    ]
+  },
+  "redaction_policy": {
+    "allow": [
+      "accessibility roles",
+      "accessible names for public controls",
+      "heading levels",
+      "tree depth",
+      "state flags",
+      "synthetic public DevHub URLs"
+    ],
+    "reject": [
+      "screenshots",
+      "browser traces",
+      "HAR data",
+      "auth state",
+      "cookies",
+      "credentials",
+      "private values",
+      "local private paths"
+    ]
+  },
+  "negative_samples": [
+    {
+      "expected_reason": "screenshots",
+      "payload": {
+        "artifact_type": "screenshot",
+        "mime_type": "image/png",
+        "bytes_ref": "synthetic-image-bytes-redacted"
+      }
+    },
+    {
+      "expected_reason": "browser_traces",
+      "payload": {
+        "artifact_type": "playwright_trace",
+        "trace_archive_name": "synthetic-trace.zip"
+      }
+    },
+    {
+      "expected_reason": "har_data",
+      "payload": {
+        "artifact_type": "network_har",
+        "har": {
+          "log": {
+            "entries": []
+          }
+        }
+      }
+    },
+    {
+      "expected_reason": "auth_state",
+      "payload": {
+        "artifact_type": "browser_auth_state",
+        "storage_state": {
+          "origins": [
+            {
+              "origin": "https://devhub.portland.gov",
+              "localStorage": []
+            }
+          ]
+        }
+      }
+    },
+    {
+      "expected_reason": "cookies",
+      "payload": {
+        "artifact_type": "browser_cookies",
+        "cookies": [
+          {
+            "name": "synthetic_session_marker",
+            "domain": ".portland.gov"
+          }
+        ]
+      }
+    },
+    {
+      "expected_reason": "credentials",
+      "payload": {
+        "artifact_type": "credential_bundle",
+        "authorization_header": "Bearer SYNTHETIC_TOKEN_PLACEHOLDER"
+      }
+    },
+    {
+      "expected_reason": "private_values",
+      "payload": {
+        "artifact_type": "form_private_values",
+        "private_value_fields": [
+          "applicant_email",
+          "phone_number"
+        ]
+      }
+    },
+    {
+      "expected_reason": "local_private_paths",
+      "payload": {
+        "artifact_type": "local_private_path",
+        "path": "/home/example/.config/browser/Default/Cookies"
+      }
+    }
+  ]
+}

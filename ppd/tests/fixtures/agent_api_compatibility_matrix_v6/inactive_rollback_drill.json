@@ -1,0 +1,63 @@
+{
+  "fixture_id": "inactive-rollback-drill-agent-api-v6",
+  "fixture_class": "inactive_rollback_drill",
+  "status": "inactive",
+  "source_scope": "committed_offline_fixture_only",
+  "agent_queries": [
+    "Identify the safest rollback or manual handoff after a blocked action request.",
+    "Summarize why an action class is blocked from automation.",
+    "List exact confirmation checkpoints for a proposed attended workflow.",
+    "Return offline validation commands for the compatibility matrix."
+  ],
+  "blocked_action_classes": [
+    "account_creation",
+    "cancellation_or_withdrawal",
+    "captcha_or_mfa_automation",
+    "certification_or_acknowledgement",
+    "fee_payment",
+    "inspection_scheduling",
+    "official_submission",
+    "permit_purchase",
+    "upload_to_official_record"
+  ],
+  "stale_evidence_behavior": [
+    "Treat rollback fixture observations as non-authoritative when public source evidence is stale.",
+    "Prefer asking for missing current facts over inferring current DevHub behavior.",
+    "Preserve blocked status when evidence is missing, stale, or conflicting."
+  ],
+  "missing_information_prompts": [
+    "Ask which action the user wants to perform before classifying the action gate.",
+    "Ask whether the user is requesting read-only review, reversible draft work, or an official action.",
+    "Ask for explicit action-specific confirmation before attended consequential steps."
+  ],
+  "reversible_draft_boundaries": [
+    "May roll back an unsubmitted draft plan in fixture state.",
+    "May abandon a proposed field mapping before any official record change.",
+    "Must escalate to manual handoff when rollback would require authenticated official state changes.",
+    "Must record only commit-safe journal summaries."
+  ],
+  "local_pdf_preview_boundaries": [
+    "May validate fixture-backed field labels and preview metadata offline.",
+    "May refuse preview when required facts are missing or evidence is stale.",
+    "Must not upload, certify, submit, or attach PDF output to an official record.",
+    "Must not read or summarize private user documents in compatibility tests."
+  ],
+  "exact_confirmation_checkpoints": [
+    "Before transitioning from read-only review to reversible draft work.",
+    "Before opening an authenticated attended surface.",
+    "Before saving fixture-derived guidance into any user-owned authenticated draft.",
+    "Before final actions involving official records, fees, inspections, uploads, or certifications."
+  ],
+  "manual_handoff_surfaces": [
+    "Authenticated DevHub surfaces requiring user-owned account state.",
+    "Official correction upload and attachment workflows.",
+    "Trade permit purchase and fee payment workflows.",
+    "Inspection scheduling, cancellation, withdrawal, extension, or reactivation workflows.",
+    "Any surface presenting legal acknowledgement, certification, or attestation language."
+  ],
+  "offline_validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/agent_api_compatibility_matrix_v6.py", "ppd/tests/test_agent_api_compatibility_matrix_v6.py"],
+    ["python3", "-m", "pytest", "ppd/tests/test_agent_api_compatibility_matrix_v6.py"],
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

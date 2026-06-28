@@ -1,0 +1,137 @@
+{
+  "packet_type": "ppd.inactive_process_model_delta_assembly_plan.v1",
+  "packet_version": "v1",
+  "fixture_first": true,
+  "assembly_mode": "inactive_process_model_delta_patch_placeholders_only",
+  "candidate_input_policy": "synthetic_requirement_reextraction_candidate_queue_rows_only",
+  "active_process_model_promotion": false,
+  "active_process_model_mutation": false,
+  "active_guardrail_mutation": false,
+  "active_requirement_mutation": false,
+  "active_source_registry_mutation": false,
+  "active_release_state_mutation": false,
+  "portal_opened": false,
+  "private_artifacts_stored": false,
+  "official_actions_performed": false,
+  "synthetic_requirement_reextraction_candidate_queue_rows": [
+    {
+      "candidate_row_id": "synthetic-reextract-row-delta-v1-001",
+      "queue_source": "synthetic_requirement_reextraction_candidate_queue",
+      "requirement_candidate_id": "synthetic-requirement-candidate-delta-v1-001",
+      "candidate_requirement_type": "document_requirement",
+      "candidate_subject": "building plan review intake candidate",
+      "candidate_action": "flag possible plan document dependency",
+      "candidate_object": "offline placeholder for plan set and application document requirements",
+      "candidate_process_stage": "document preparation",
+      "synthetic_evidence_refs": ["synthetic:reextract-delta-v1:doc-prep-001"],
+      "status": "synthetic_candidate_for_delta_assembly"
+    },
+    {
+      "candidate_row_id": "synthetic-reextract-row-delta-v1-002",
+      "queue_source": "synthetic_requirement_reextraction_candidate_queue",
+      "requirement_candidate_id": "synthetic-requirement-candidate-delta-v1-002",
+      "candidate_requirement_type": "precondition",
+      "candidate_subject": "permit path eligibility candidate",
+      "candidate_action": "flag user fact needed before path selection",
+      "candidate_object": "offline placeholder for project scope and property facts",
+      "candidate_process_stage": "eligibility screening",
+      "synthetic_evidence_refs": ["fixture-source:reextract-delta-v1:eligibility-002"],
+      "status": "synthetic_candidate_for_delta_assembly"
+    }
+  ],
+  "affected_process_stage_mappings": [
+    {
+      "stage_mapping_id": "stage-impact-delta-v1-001",
+      "candidate_row_ref": "synthetic-reextract-row-delta-v1-001",
+      "process_stage": "document preparation",
+      "impact_summary": "Add an inactive placeholder indicating that document preparation may need refreshed document rows before any release decision.",
+      "status": "inactive_stage_impact_placeholder"
+    },
+    {
+      "stage_mapping_id": "stage-impact-delta-v1-002",
+      "candidate_row_ref": "synthetic-reextract-row-delta-v1-002",
+      "process_stage": "eligibility screening",
+      "impact_summary": "Add an inactive placeholder indicating that eligibility screening may need refreshed user fact rows before path selection.",
+      "status": "inactive_stage_impact_placeholder"
+    }
+  ],
+  "required_user_fact_impact_mappings": [
+    {
+      "fact_impact_id": "fact-impact-delta-v1-001",
+      "candidate_row_ref": "synthetic-reextract-row-delta-v1-002",
+      "fact_label": "project scope summary candidate",
+      "impact_summary": "Reviewer should decide whether the inactive model needs a user fact for project scope before permit path selection.",
+      "status": "inactive_user_fact_impact_placeholder"
+    }
+  ],
+  "required_document_impact_mappings": [
+    {
+      "document_impact_id": "document-impact-delta-v1-001",
+      "candidate_row_ref": "synthetic-reextract-row-delta-v1-001",
+      "document_label": "plan set candidate",
+      "impact_summary": "Reviewer should decide whether the inactive model needs a refreshed plan set requirement placeholder.",
+      "status": "inactive_document_impact_placeholder"
+    }
+  ],
+  "unsupported_path_notes": [
+    {
+      "unsupported_path_note_id": "unsupported-note-delta-v1-001",
+      "candidate_row_ref": "synthetic-reextract-row-delta-v1-002",
+      "path_label": "unverified permit path coverage",
+      "note": "Do not infer that the candidate rows cover every permit path or every account-scoped workflow.",
+      "required_followup": "Reviewer must attach refreshed public evidence before any active model change is considered.",
+      "status": "inactive_note_only"
+    }
+  ],
+  "reviewer_holds": [
+    {
+      "reviewer_hold_id": "reviewer-hold-delta-v1-001",
+      "candidate_row_ref": "synthetic-reextract-row-delta-v1-001",
+      "hold_reason": "Synthetic document dependency requires human review and refreshed public evidence.",
+      "release_condition": "Reviewer approves the placeholder mapping and offline validation passes.",
+      "status": "hold_active"
+    },
+    {
+      "reviewer_hold_id": "reviewer-hold-delta-v1-002",
+      "candidate_row_ref": "synthetic-reextract-row-delta-v1-002",
+      "hold_reason": "Synthetic user-fact dependency requires human review and refreshed public evidence.",
+      "release_condition": "Reviewer approves the placeholder mapping and offline validation passes.",
+      "status": "hold_active"
+    }
+  ],
+  "rollback_notes": [
+    {
+      "rollback_note_id": "rollback-note-delta-v1-001",
+      "candidate_row_ref": "synthetic-reextract-row-delta-v1-001",
+      "rollback_summary": "Remove the inactive document placeholder packet if reviewer evidence rejects the candidate dependency.",
+      "verification_note": "Confirm the inactive placeholder remains absent from active process-model exports.",
+      "status": "rollback_note_only"
+    },
+    {
+      "rollback_note_id": "rollback-note-delta-v1-002",
+      "candidate_row_ref": "synthetic-reextract-row-delta-v1-002",
+      "rollback_summary": "Remove the inactive user-fact placeholder packet if reviewer evidence rejects the candidate dependency.",
+      "verification_note": "Confirm the inactive placeholder remains absent from active guardrail exports.",
+      "status": "rollback_note_only"
+    }
+  ],
+  "inactive_process_model_patch_placeholders": [
+    {
+      "patch_placeholder_id": "inactive-process-model-delta-placeholder-v1-001",
+      "process_id": "candidate-building-plan-review-process-delta-v1",
+      "permit_type": "building permit with plan review",
+      "scope": "offline inactive delta placeholder assembled from synthetic candidate queue rows only",
+      "candidate_row_refs": ["synthetic-reextract-row-delta-v1-001", "synthetic-reextract-row-delta-v1-002"],
+      "affected_stage_refs": ["stage-impact-delta-v1-001", "stage-impact-delta-v1-002"],
+      "required_user_fact_impact_refs": ["fact-impact-delta-v1-001"],
+      "required_document_impact_refs": ["document-impact-delta-v1-001"],
+      "unsupported_path_note_refs": ["unsupported-note-delta-v1-001"],
+      "reviewer_hold_refs": ["reviewer-hold-delta-v1-001", "reviewer-hold-delta-v1-002"],
+      "rollback_note_refs": ["rollback-note-delta-v1-001", "rollback-note-delta-v1-002"],
+      "status": "inactive_patch_placeholder_only",
+      "promotion_blockers": ["synthetic queue input only", "reviewer holds unresolved", "refreshed public evidence missing", "active process-model and guardrail changes out of scope"],
+      "validation_commands": [["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]]
+    }
+  ],
+  "validation_commands": [["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]]
+}

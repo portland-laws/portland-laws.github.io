@@ -1,0 +1,41 @@
+{
+  "manifest_version": "devhub-recorder-manifest/v1",
+  "recorded_at": "2026-05-12T00:00:00Z",
+  "recorder": {
+    "mode": "manifest_only",
+    "playwright_launched": false,
+    "auth_state_saved": false,
+    "artifacts_saved": false
+  },
+  "privacy": {
+    "classification": "metadata_only",
+    "private_values_persisted": false,
+    "redaction_policy": "labels-and-selectors-only"
+  },
+  "surface": {
+    "surface_id": "devhub-home-redacted",
+    "auth_scope": "authenticated_attended",
+    "url_pattern": "https://devhub.portlandoregon.gov/**",
+    "page_heading": "DevHub",
+    "accessible_landmarks": [
+      "main",
+      "navigation"
+    ],
+    "actions": [
+      {
+        "action_id": "view-permits",
+        "label": "My Permits & Requests",
+        "kind": "link",
+        "consequence": "read_only"
+      }
+    ],
+    "fields": [
+      {
+        "field_id": "permit-search",
+        "label": "Search",
+        "control": "textbox",
+        "value": "[REDACTED]"
+      }
+    ]
+  }
+}

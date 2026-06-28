@@ -1,0 +1,45 @@
+{
+  "valid_public_preflight": {
+    "target_urls": [
+      "https://www.portland.gov/ppd",
+      "https://www.portland.gov/ppd/how-use-online-permitting-tools"
+    ],
+    "policy_evidence": {
+      "robots": "robots checked from public metadata fixture on 2026-05-29",
+      "policy": "host appears in PP&D public source allowlist"
+    },
+    "rate_limit": {
+      "requests": 1,
+      "per_seconds": 10,
+      "window": "one request per host every ten seconds"
+    },
+    "reviewer_checkpoints": [
+      "review allowlist and robots evidence before processor handoff",
+      "review skipped URL reasons before activation"
+    ],
+    "abort_escalation": {
+      "abort": "abort if robots, allowlist, or privacy classification is ambiguous",
+      "escalation": "escalate to a human reviewer before any crawl execution"
+    },
+    "active_schedule": false,
+    "registry_mutation": false,
+    "live_fetch_enabled": false,
+    "processor_execution_enabled": false
+  },
+  "invalid_private_mutating_candidate": {
+    "target_urls": [
+      "https://example.com/ppd",
+      "https://devhub.portlandoregon.gov/my-permits?token=secret",
+      "https://www.portland.gov/ppd/documents/how-pay-fees/download"
+    ],
+    "notes": "Run processor with live fetch now and save archive_artifact_ref plus raw_body for later review.",
+    "rate_limit": {},
+    "reviewer_checkpoints": [],
+    "abort_notes": "",
+    "escalation_notes": "",
+    "active_schedule": true,
+    "registry_mutation": true,
+    "live_fetch_enabled": true,
+    "processor_execution_enabled": true
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "packet_id": "freshness-review-20260528-fixture",
+  "evidence_ids": [
+    "freshness-packet-approved-2026-05-28"
+  ],
+  "sources": [
+    {
+      "source_id": "ppd-online-tools",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "owning_surface": "ppd_public_guidance",
+      "freshness_status": "stale",
+      "allowlisted": true,
+      "robots_policy": "allowed",
+      "robots_policy_evidence_ids": [
+        "robots-portland-gov-2026-05-08"
+      ],
+      "source_evidence_ids": [
+        "freshness-online-tools-2026-05-28"
+      ],
+      "privacy_classification": "public",
+      "minimum_pause_seconds": 5
+    },
+    {
+      "source_id": "portlandmaps-public-reference",
+      "canonical_url": "https://www.portlandmaps.com",
+      "owning_surface": "public_property_reference",
+      "freshness_status": "due",
+      "allowlisted": true,
+      "robots_policy": "allowed",
+      "robots_policy_evidence_ids": [
+        "robots-portlandmaps-2026-05-08"
+      ],
+      "source_evidence_ids": [
+        "freshness-portlandmaps-2026-05-28"
+      ],
+      "privacy_classification": "public",
+      "minimum_pause_seconds": 10
+    }
+  ]
+}

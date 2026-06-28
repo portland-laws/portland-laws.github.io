@@ -1,0 +1,61 @@
+{
+  "process_model": {
+    "process_id": "residential-building-permit-demo",
+    "permit_type": "residential building permit",
+    "required_user_facts": [
+      {
+        "fact_id": "project_address",
+        "label": "project address",
+        "question": "What is the project address for the permit?",
+        "answer_type": "postal_address",
+        "requirement_ids": ["req-address"]
+      },
+      {
+        "fact_id": "scope_of_work",
+        "label": "scope of work",
+        "question": "What work will the permit cover?",
+        "answer_type": "short_text",
+        "requirement_ids": ["req-scope"]
+      }
+    ]
+  },
+  "user_gap_analysis": {
+    "case_id": "case-001",
+    "process_id": "residential-building-permit-demo",
+    "known_facts": {
+      "applicant_name": "Example Applicant"
+    },
+    "missing_facts": [
+      "project_address",
+      {
+        "fact_id": "scope_of_work",
+        "reason": "Needed to select the correct local draft fields."
+      }
+    ],
+    "missing_documents": [
+      {
+        "document_id": "site_plan_pdf",
+        "label": "site plan PDF",
+        "requirement_ids": ["req-site-plan"]
+      }
+    ],
+    "stale_evidence": [
+      {
+        "evidence_id": "owner_name",
+        "label": "property owner name",
+        "reason": "The current owner value is older than the accepted freshness window."
+      }
+    ],
+    "conflicting_evidence": [
+      {
+        "evidence_id": "tax_lot",
+        "label": "tax lot",
+        "question": "Which tax lot should be used for this case?"
+      }
+    ],
+    "blocked_actions": [
+      "Do not open DevHub for this planning task.",
+      "Do not submit, certify, upload, schedule, cancel, or pay fees."
+    ]
+  }
+}

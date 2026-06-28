@@ -1,0 +1,104 @@
+{
+  "guardrail_consumer_contract_audit": {
+    "packet_id": "guardrail-consumer-contract-audit-20260528-fixture",
+    "packet_type": "guardrail_consumer_contract_audit",
+    "remaining_blockers": [
+      {
+        "id": "guardrail-consumer-contract-missing-action-gate",
+        "summary": "Consumer contract audit has not cited every consequential DevHub action gate.",
+        "reason": "missing cited action gate coverage",
+        "reviewer_owner": "guardrail-contract-reviewer",
+        "citations": [
+          "plan:Non-Negotiable Boundaries",
+          "plan:GuardrailBundle.exact_confirmation_predicates"
+        ]
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "guardrail-consumer-contract-disabled-live-attestation-required",
+        "summary": "Readiness release must carry an explicit disabled-live-action attestation.",
+        "severity": "high",
+        "status": "open",
+        "reviewer_owner": "guardrail-contract-reviewer",
+        "citations": [
+          "plan:Authenticated DevHub Automation Plan",
+          "plan:ActionJournal.refused action"
+        ]
+      }
+    ],
+    "stale_evidence": [
+      {
+        "evidence_id": "guardrail-consumer-contract-source-freshness-20260508",
+        "reason": "Official source anchors were last verified on 2026-05-08 and require acknowledgement before release readiness is claimed.",
+        "citations": [
+          "plan:Last verified against official public sources: 2026-05-08"
+        ]
+      }
+    ]
+  },
+  "post_release_audit_findings": {
+    "packet_id": "post-release-audit-findings-20260528-fixture",
+    "packet_type": "post_release_audit_findings",
+    "findings": [
+      {
+        "finding_id": "post-release-audit-no-owner-routing",
+        "summary": "Post-release audit findings need reviewer-owner routing before any release enablement.",
+        "severity": "critical",
+        "status": "open",
+        "reviewer_owner": "post-release-audit-reviewer",
+        "citations": [
+          "plan:Change reports should include affected guardrail bundle IDs",
+          "plan:completion evidence"
+        ]
+      },
+      {
+        "finding_id": "post-release-audit-private-artifact-check",
+        "summary": "Release packet must attest that no private DevHub session files, traces, HAR files, screenshots, or downloaded documents were created.",
+        "severity": "high",
+        "status": "open",
+        "reviewer_owner": "privacy-reviewer",
+        "citations": [
+          "plan:Non-Negotiable Boundaries",
+          "plan:ActionJournal commit-safe journal event types"
+        ]
+      }
+    ],
+    "stale_evidence": [
+      {
+        "evidence_id": "post-release-audit-open-findings-snapshot",
+        "reason": "Open findings are fixture snapshots and must not be treated as live audit closure.",
+        "citations": [
+          "fixture:post-release-audit-findings-20260528-fixture"
+        ]
+      }
+    ]
+  },
+  "safe_next_action_user_handoff_checklist": {
+    "packet_id": "safe-next-action-user-handoff-checklist-20260528-fixture",
+    "packet_type": "safe_next_action_user_handoff_checklist",
+    "items": [
+      {
+        "check_id": "handoff-exact-confirmation-copy-missing",
+        "summary": "User handoff checklist still needs exact-confirmation copy for consequential DevHub actions.",
+        "state": "missing",
+        "requires_user_attendance": true,
+        "reviewer_owner": "user-handoff-reviewer",
+        "citations": [
+          "plan:Consequential official",
+          "plan:required_confirmations"
+        ]
+      },
+      {
+        "check_id": "handoff-next-safe-action-offline-only",
+        "summary": "Next safe action must remain offline fixture validation until stale evidence and owner routing are resolved.",
+        "state": "blocked",
+        "requires_user_attendance": false,
+        "reviewer_owner": "daemon-supervisor",
+        "citations": [
+          "plan:Prefer deterministic fixtures and validation before any live crawl or authenticated automation"
+        ]
+      }
+    ]
+  }
+}

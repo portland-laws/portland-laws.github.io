@@ -1,0 +1,52 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,23 +1,16 @@
+ {
+-  "createdAt": "2026-05-04T04:46:34.465139Z",
++  "createdAt": "2026-05-04T04:46:51.480649Z",
+   "decision": {
+-    "action": "reconcile_dead_worker_with_recent_failures_and_restart",
+-    "reason": "daemon process is not running but status is still calling_llm on Task checkbox-297: Add generated blocked-cascade daemon-repair coverage for tranche 13 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates., and 2 recent failure diagnostic(s) already exist for that target; park the task before restart instead of resetting it into another immediate retry",
++    "action": "reconcile_blocked_cascade_and_restart",
++    "reason": "all selectable PP&D tasks are blocked after repeated daemon recovery attempts; append deterministic daemon-repair tasks before retrying blocked domain work",
+     "severity": "warning"
+   },
+-  "parkedStalledTaskLabels": [
+-    "Add generated blocked-cascade daemon-repair coverage for tranche 13 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates."
++  "repairKind": "blocked_cascade_replenishment",
++  "replenishedTaskLabels": [
++    "checkbox-298",
++    "checkbox-299",
++    "checkbox-300",
++    "checkbox-301"
+   ],
+-  "repairKind": "stalled_worker_task_parked",
+-  "replenishedExecutionTaskLabels": [],
+-  "schemaVersion": 1,
+-  "statusBeforeRepair": {
+-    "active_state": "calling_llm",
+-    "active_state_started_at": "2026-05-04T04:46:19.031168Z",
+-    "active_target_task": "Task checkbox-297: Add generated blocked-cascade daemon-repair coverage for tranche 13 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.",
+-    "pid": 1437571,
+-    "state": "calling_llm",
+-    "target_task": "Task checkbox-297: Add generated blocked-cascade daemon-repair coverage for tranche 13 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.",
+-    "updated_at": "2026-05-04T04:46:19.031178Z"
+-  }
++  "schemaVersion": 1
+ }
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -479,3 +479,13 @@
+ ## Built-In Supervisor Repair Notes
+ 
+ - Parked stalled worker task `Add generated blocked-cascade daemon-repair coverage for tranche 13 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` after it exceeded the active-state timeout. The supervisor restarted the daemon on the next independent selectable task instead of reselecting the same stalled work.
++
++## Built-In Blocked Cascade Recovery Tranche 14
++
++- [ ] Task checkbox-298: Add generated blocked-cascade daemon-repair coverage for tranche 14 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
++- [ ] Task checkbox-299: Add generated blocked-cascade daemon-repair coverage for tranche 14 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
++- [ ] Task checkbox-300: Add generated blocked-cascade daemon-repair coverage for tranche 14 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
++- [ ] Task checkbox-301: Add generated blocked-cascade daemon-repair coverage for tranche 14 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
++## Built-In Supervisor Repair Notes
++
++- Appended deterministic blocked-cascade recovery tasks because all selectable work was blocked. The supervisor avoided the LLM repair path and created daemon-repair tasks that can run independently before blocked domain work is retried.

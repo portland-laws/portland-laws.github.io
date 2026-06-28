@@ -1,0 +1,69 @@
+{
+  "packet_type": "ppd.synthetic_guardrail_reviewer_packet.v1",
+  "packet_id": "synthetic-reviewer-packet-approved-rows-v1",
+  "reviewer_rows": [
+    {
+      "row_id": "synthetic-review-row-single-pdf-001",
+      "synthetic_reviewer_packet_row": true,
+      "reviewer_disposition": "approved",
+      "approved_for": "inactive_guardrail_bundle_promotion_candidate_v1",
+      "guardrail_bundle_id": "single-pdf-process-inactive-bundle-v1",
+      "process_id": "single_pdf_process",
+      "source_evidence_ids": [
+        "placeholder-source-submit-plans-online",
+        "placeholder-source-file-naming-standards"
+      ],
+      "citations": [
+        "synthetic-reviewer-packet-approved-rows-v1#single-pdf-001"
+      ],
+      "predicate_inventory": {
+        "deterministic": [
+          {
+            "predicate_id": "plans_combined_single_pdf",
+            "description": "Plans are represented as one combined plan PDF placeholder before any candidate activation review."
+          }
+        ],
+        "deontic": [
+          {
+            "predicate_id": "supporting_documents_separate_pdf_obligation",
+            "description": "Supporting document placeholders remain separate from the plan PDF placeholder."
+          }
+        ],
+        "temporal": [
+          {
+            "predicate_id": "freshness_review_before_promotion",
+            "description": "Source freshness review must precede any later manual promotion decision."
+          }
+        ]
+      },
+      "gate_inventory": {
+        "reversible": [
+          {
+            "gate_id": "local_pdf_preview_only",
+            "description": "Local preview planning remains reversible and candidate-only."
+          }
+        ],
+        "refused": [
+          {
+            "gate_id": "official_upload_refused",
+            "description": "Official upload actions remain refused by this inactive candidate."
+          }
+        ],
+        "exact_confirmation": [
+          {
+            "gate_id": "manual_release_confirmation_required",
+            "description": "Manual release review and exact confirmation are required before any later activation path."
+          }
+        ]
+      },
+      "agent_facing_explanations": [
+        {
+          "audience": "agent",
+          "template": "This inactive candidate can explain missing single PDF preparation evidence, but it cannot activate a guardrail or perform an official action."
+        }
+      ],
+      "release_blocker_note": "Manual source-evidence, predicate, gate, explanation, and rollback review must pass before release consideration.",
+      "rollback_note": "Discard the inactive candidate metadata and rebuild from approved synthetic reviewer rows if review fails."
+    }
+  ]
+}

@@ -1,0 +1,69 @@
+{
+  "citation_impact_queue_rows": [
+    {
+      "synthetic_citation_impact_queue_row": true,
+      "row_id": "citation-row-001",
+      "source_id": "ppd-source-devhub-faq-public",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "metadata_dry_run_reference_id": "metadata-dry-run-ref-001",
+      "manifest_id": "manifest-devhub-faq-public-001",
+      "document_id": "document-devhub-faq-public-001",
+      "citation_span_ids": ["span-devhub-faq-001"],
+      "affected_requirement_ids": ["requirement-devhub-account-service-review"],
+      "affected_process_model_ids": ["process-devhub-account-setup"],
+      "affected_guardrail_bundle_ids": ["guardrail-devhub-attended-login"],
+      "refresh_signal": "stale_source",
+      "stale_source_hold_impact": "Keep affected DevHub account-service guidance on stale-source hold until a human reviewer confirms the refreshed public citation span.",
+      "human_review_route": "public-source-refresh-reviewer",
+      "rollback_note": "Discard the fixture handoff candidate and retain the prior active citation span if reviewer confirmation fails.",
+      "live_crawl": false,
+      "live_extraction": false,
+      "document_download": false,
+      "raw_output_stored": false,
+      "devhub_opened": false,
+      "release_activation": false,
+      "official_action_completed": false,
+      "active_mutation": false,
+      "active_requirement_mutation": false,
+      "active_process_model_mutation": false,
+      "active_guardrail_mutation": false
+    }
+  ],
+  "public_refresh_preflight_checklist_rows": [
+    {
+      "synthetic_public_refresh_preflight_checklist_row": true,
+      "row_id": "preflight-row-001",
+      "source_id": "ppd-source-devhub-faq-public",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "official_anchor_citation": "https://www.portland.gov/ppd/devhub-faqs",
+      "seed_review_references": [
+        "PP&D plan official source anchors verified 2026-05-08",
+        "public refresh preflight checklist fixture row"
+      ],
+      "metadata_only_capture": true,
+      "metadata_only_archive_manifest": true,
+      "metadata_only_archive_manifest_expectation": "Archive manifest placeholder includes URL, status placeholder, content type placeholder, hash placeholder, processor reference, and normalized document placeholder only.",
+      "no_raw_body_persisted": true,
+      "skip_reason_expectation": "If held, record a public preflight skip reason before removing the candidate from the review queue.",
+      "reviewer_routing": "public-refresh-reviewer-primary",
+      "owner": "public-refresh-reviewer-primary",
+      "dependency_after": [
+        "confirm official public anchor",
+        "confirm allowlist and robots placeholders",
+        "confirm metadata-only manifest scope"
+      ],
+      "rollback_note": "Rejecting this preflight row leaves current public source records, guardrails, release state, and scheduler state unchanged.",
+      "live_crawl": false,
+      "live_extraction": false,
+      "document_download": false,
+      "raw_output_stored": false,
+      "devhub_opened": false,
+      "release_activation": false,
+      "official_action_completed": false,
+      "active_mutation": false,
+      "active_requirement_mutation": false,
+      "active_process_model_mutation": false,
+      "active_guardrail_mutation": false
+    }
+  ]
+}

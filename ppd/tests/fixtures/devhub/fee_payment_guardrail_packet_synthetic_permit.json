@@ -1,0 +1,158 @@
+{
+  "packet_id": "synthetic-devhub-fee-payment-guardrail-packet-v1",
+  "source_mode": "synthetic_fixture_only",
+  "live_devhub_session": false,
+  "auth_state_saved": false,
+  "privacy_note": "No credentials, browser state, private page text, payment details, private project values, or downloaded artifacts are stored in this committed fixture.",
+  "synthetic_workflow": {
+    "workflow_id": "synthetic-residential-trade-fee-review",
+    "permit_type": "Synthetic residential trade permit with plan review",
+    "stage": "fee payment",
+    "surface": "DevHub fee notice review"
+  },
+  "source_evidence_ids": [
+    "ppd-plan-devhub-fee-payment-guide",
+    "ppd-plan-online-permitting-tools",
+    "synthetic-devhub-fee-notice-surface"
+  ],
+  "fee_triggers": [
+    {
+      "trigger": "A submitted synthetic permit workflow has reached a fee notice stage where a balance summary can be reviewed before any financial step.",
+      "source_evidence_ids": [
+        "ppd-plan-devhub-fee-payment-guide",
+        "synthetic-devhub-fee-notice-surface"
+      ]
+    }
+  ],
+  "guardrail_sections": [
+    {
+      "section_id": "fee_trigger_explanation",
+      "title": "Fee trigger explanation",
+      "guardrail": "Explain why fees may now be due using cited public guidance and synthetic surface evidence only.",
+      "allowed_autonomous": true,
+      "requires_manual_handoff": false,
+      "requires_exact_confirmation": false,
+      "blocked_action_ids": [],
+      "source_evidence_ids": [
+        "ppd-plan-devhub-fee-payment-guide",
+        "synthetic-devhub-fee-notice-surface"
+      ]
+    },
+    {
+      "section_id": "fee_notice_read_only_review",
+      "title": "Fee notice read-only review",
+      "guardrail": "The agent may summarize visible fee categories, due-date labels, and redacted amount summary structure without entering any financial workflow.",
+      "allowed_autonomous": true,
+      "requires_manual_handoff": false,
+      "requires_exact_confirmation": false,
+      "blocked_action_ids": [],
+      "source_evidence_ids": [
+        "synthetic-devhub-fee-notice-surface"
+      ]
+    },
+    {
+      "section_id": "blocked_payment_detail_entry",
+      "title": "Blocked payment-detail entry",
+      "guardrail": "The agent must stop before any field that collects a payment instrument, billing identity, or authorization value.",
+      "allowed_autonomous": false,
+      "requires_manual_handoff": true,
+      "requires_exact_confirmation": true,
+      "blocked_action_ids": [
+        "payment_detail_entry"
+      ],
+      "source_evidence_ids": [
+        "ppd-plan-devhub-fee-payment-guide"
+      ]
+    },
+    {
+      "section_id": "blocked_final_payment_execution",
+      "title": "Blocked final payment execution",
+      "guardrail": "The agent must not activate the final financial control or represent that the synthetic workflow has been paid.",
+      "allowed_autonomous": false,
+      "requires_manual_handoff": true,
+      "requires_exact_confirmation": true,
+      "blocked_action_ids": [
+        "final_payment_execution"
+      ],
+      "source_evidence_ids": [
+        "ppd-plan-devhub-fee-payment-guide"
+      ]
+    },
+    {
+      "section_id": "exact_confirmation_language",
+      "title": "Exact-confirmation language",
+      "guardrail": "Before the user personally performs either blocked financial step, show: I am present in my own DevHub account, I understand this is a City of Portland financial action, and I will personally perform the payment step. This language records a handoff requirement only and does not authorize agent execution.",
+      "allowed_autonomous": false,
+      "requires_manual_handoff": true,
+      "requires_exact_confirmation": true,
+      "blocked_action_ids": [
+        "payment_detail_entry",
+        "final_payment_execution"
+      ],
+      "source_evidence_ids": [
+        "ppd-plan-devhub-fee-payment-guide",
+        "ppd-plan-online-permitting-tools"
+      ]
+    },
+    {
+      "section_id": "next_safe_alternatives",
+      "title": "Next safe alternatives",
+      "guardrail": "Offer only read-only review, source citation, missing-information questions, and manual handoff preparation as safe alternatives.",
+      "allowed_autonomous": true,
+      "requires_manual_handoff": false,
+      "requires_exact_confirmation": false,
+      "blocked_action_ids": [],
+      "source_evidence_ids": [
+        "ppd-plan-online-permitting-tools",
+        "synthetic-devhub-fee-notice-surface"
+      ]
+    }
+  ],
+  "next_safe_actions": [
+    {
+      "action_id": "summarize_fee_notice_structure",
+      "label": "Summarize fee notice structure",
+      "kind": "read_only_review"
+    },
+    {
+      "action_id": "prepare_manual_handoff_note",
+      "label": "Prepare manual handoff note",
+      "kind": "manual_handoff_preparation"
+    }
+  ],
+  "next_safe_alternatives": [
+    {
+      "alternative_id": "summarize_fee_notice_structure",
+      "description": "Summarize redacted fee categories and due-date labels from the synthetic notice structure.",
+      "allowed_autonomous": true,
+      "official_action": false,
+      "financial_action": false,
+      "requires_exact_confirmation": false,
+      "source_evidence_ids": [
+        "synthetic-devhub-fee-notice-surface"
+      ]
+    },
+    {
+      "alternative_id": "cite_fee_payment_guidance",
+      "description": "Explain the public guidance basis for stopping before financial controls.",
+      "allowed_autonomous": true,
+      "official_action": false,
+      "financial_action": false,
+      "requires_exact_confirmation": false,
+      "source_evidence_ids": [
+        "ppd-plan-devhub-fee-payment-guide"
+      ]
+    },
+    {
+      "alternative_id": "prepare_manual_handoff_note",
+      "description": "Prepare a redacted note telling the user what they must review and perform themselves in DevHub.",
+      "allowed_autonomous": true,
+      "official_action": false,
+      "financial_action": false,
+      "requires_exact_confirmation": false,
+      "source_evidence_ids": [
+        "ppd-plan-online-permitting-tools"
+      ]
+    }
+  ]
+}

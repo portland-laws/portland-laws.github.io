@@ -1,0 +1,71 @@
+{
+  "packet_id": "devhub-redaction-review-readonly-001",
+  "packet_kind": "devhub_read_only_redaction_review",
+  "reviewer_notes": [
+    "Fixture contains structural UI labels only.",
+    "Record identifiers were omitted before committing the fixture."
+  ],
+  "abort_prompts": [
+    "Stop if the page requests certification, payment, upload, scheduling, cancellation, or submission.",
+    "Stop if DevHub displays MFA, CAPTCHA, password, or account security prompts."
+  ],
+  "attestations": {
+    "no_auth_state": true,
+    "no_screenshots": true,
+    "no_traces_or_har": true,
+    "no_raw_authenticated_values": true
+  },
+  "pages": [
+    {
+      "page_id": "readonly-home",
+      "auth_scope": "authenticated_read_only",
+      "redaction_status": "approved_redacted",
+      "url": "https://devhub.portlandoregon.gov/dashboard",
+      "visible_headings": ["DevHub Home", "My Permits and Requests"],
+      "accessible_landmarks": ["banner", "navigation", "main"],
+      "validation_message_labels": ["No validation messages visible"],
+      "reviewer_notes": ["Home observation includes only headings and landmark labels."],
+      "abort_prompts": ["Do not open account settings or credential management."],
+      "attestations": {
+        "no_auth_state": true,
+        "no_screenshots": true,
+        "no_traces_or_har": true,
+        "no_raw_authenticated_values": true
+      }
+    },
+    {
+      "page_id": "readonly-permit-details",
+      "auth_scope": "authenticated_read_only",
+      "redaction_status": "approved_redacted",
+      "url": "https://devhub.portlandoregon.gov/permits/24-123456-000-00/details?tab=status",
+      "visible_headings": ["Permit Details", "Status", "Attachments"],
+      "accessible_landmarks": ["banner", "navigation", "main", "contentinfo"],
+      "validation_message_labels": ["Read-only status review"],
+      "reviewer_notes": ["Synthetic route pattern must remove the permit identifier and query string."],
+      "abort_prompts": ["Do not upload corrections or submit official responses from this observation."],
+      "attestations": {
+        "no_auth_state": true,
+        "no_screenshots": true,
+        "no_traces_or_har": true,
+        "no_raw_authenticated_values": true
+      }
+    },
+    {
+      "page_id": "readonly-fee-notice",
+      "auth_scope": "authenticated_read_only",
+      "redaction_status": "approved_redacted",
+      "url": "https://devhub.portlandoregon.gov/fees/FEE-REDACTED-001",
+      "visible_headings": ["Fee Notice", "Amount Due", "Payment History"],
+      "accessible_landmarks": ["banner", "navigation", "main"],
+      "validation_message_labels": ["Payment action unavailable in read-only observation"],
+      "reviewer_notes": ["Fee labels are structural only; no amounts, invoices, or receipt values are stored."],
+      "abort_prompts": ["Do not enter payment details or submit payment."],
+      "attestations": {
+        "no_auth_state": true,
+        "no_screenshots": true,
+        "no_traces_or_har": true,
+        "no_raw_authenticated_values": true
+      }
+    }
+  ]
+}

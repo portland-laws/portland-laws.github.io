@@ -1,0 +1,40 @@
+{
+  "packet_id": "devhub-surface-review-invalid-fixture",
+  "surface_id": "devhub-payment-review",
+  "surface_registry_mutation_enabled": true,
+  "live_browser_execution": true,
+  "selector_deltas": [
+    {
+      "selector": "button.submit-payment",
+      "change": "approve submit payment button"
+    }
+  ],
+  "controls": [
+    {
+      "name": "submit payment",
+      "classification": "financial",
+      "enabled": true
+    }
+  ],
+  "reviewer_signoffs": [],
+  "redaction_attestation": {
+    "private_values_removed": false,
+    "browser_artifacts_removed": false
+  },
+  "rollback_notes": "",
+  "observed_values": {
+    "authorization": "Bearer raw-authenticated-token",
+    "session_cookie": "devhub_session=private",
+    "field_value": "private permit value"
+  },
+  "artifacts": {
+    "screenshot_path": "/home/user/devhub/screenshots/payment.png",
+    "trace_path": "/Users/reviewer/devhub/trace.zip",
+    "har_path": "C:\\Users\\reviewer\\DevHub\\payment.har",
+    "storage_state": "auth/devhub-storage-state.json",
+    "local_private_path": "~/Downloads/private-devhub-output.json"
+  },
+  "mutation": {
+    "enabled": true
+  }
+}

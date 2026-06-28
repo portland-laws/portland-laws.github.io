@@ -1,0 +1,95 @@
+{
+  "fixture_kind": "synthetic_crawl_promotion_audit",
+  "source_registry": [
+    {
+      "source_id": "synthetic-permit-index",
+      "name": "Synthetic Permit Index",
+      "status": "active",
+      "public_source": true,
+      "synthetic": true
+    },
+    {
+      "source_id": "synthetic-raw-document-risk",
+      "name": "Synthetic Raw Document Risk",
+      "status": "active",
+      "public_source": true,
+      "synthetic": true
+    }
+  ],
+  "discovery_decisions": [
+    {
+      "source_id": "synthetic-permit-index",
+      "decision": "promote",
+      "fixture_only": true
+    },
+    {
+      "source_id": "synthetic-raw-document-risk",
+      "decision": "promote",
+      "fixture_only": true
+    }
+  ],
+  "dry_run_crawl_plans": [
+    {
+      "source_id": "synthetic-permit-index",
+      "mode": "dry_run",
+      "would_fetch_public_url": true,
+      "live_fetch_performed": false
+    },
+    {
+      "source_id": "synthetic-raw-document-risk",
+      "mode": "dry_run",
+      "would_fetch_public_url": true,
+      "live_fetch_performed": false
+    }
+  ],
+  "robots_preflight": [
+    {
+      "source_id": "synthetic-permit-index",
+      "robots_allowed": true,
+      "preflight_status": "passed"
+    },
+    {
+      "source_id": "synthetic-raw-document-risk",
+      "robots_allowed": true,
+      "preflight_status": "passed"
+    }
+  ],
+  "processor_choices": [
+    {
+      "source_id": "synthetic-permit-index",
+      "capability": "html_metadata",
+      "selected": true
+    },
+    {
+      "source_id": "synthetic-raw-document-risk",
+      "capability": "pdf_metadata",
+      "selected": true
+    }
+  ],
+  "rate_limit_buckets": [
+    {
+      "source_id": "synthetic-permit-index",
+      "bucket_id": "synthetic-public-low-rate",
+      "eligible_for_public_fetch": true
+    },
+    {
+      "source_id": "synthetic-raw-document-risk",
+      "bucket_id": "synthetic-public-low-rate",
+      "eligible_for_public_fetch": true
+    }
+  ],
+  "output_policies": [
+    {
+      "source_id": "synthetic-permit-index",
+      "metadata_only": true,
+      "store_raw_document": false,
+      "emit_public_fetch": true
+    },
+    {
+      "source_id": "synthetic-raw-document-risk",
+      "metadata_only": false,
+      "store_raw_document": true,
+      "emit_public_fetch": true
+    }
+  ]
+}

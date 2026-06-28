@@ -1,0 +1,52 @@
+{
+  "version": 6,
+  "freshness_watchlist_refs": [
+    "ppd/tests/fixtures/public_refresh_authorization_v6/watchlist.json"
+  ],
+  "smoke_replay_refs": [
+    "ppd/tests/fixtures/public_refresh_authorization_v6/smoke_replay.json"
+  ],
+  "live_crawl_deferral_criteria": [
+    "Use deterministic fixtures before any network activity.",
+    "Defer live crawl unless a reviewer approves a bounded source group."
+  ],
+  "allowlisted_source_groups": [
+    "portland_public_permitting_indexes",
+    "portland_public_code_pages"
+  ],
+  "robots_policy_preflight_checklist_rows": [
+    "Confirm robots handling for each source group.",
+    "Confirm public-policy limits before fetching."
+  ],
+  "no_raw_body_persistence_reminders": [
+    "Persist normalized metadata only.",
+    "Do not commit raw response bodies or downloaded documents."
+  ],
+  "processor_handoff_manifest_expectations": [
+    "Manifest lists fixture ids, normalized output ids, and validation status.",
+    "Manifest excludes private session state and raw crawl bodies."
+  ],
+  "reviewer_authorization_placeholders": [
+    "reviewer_name_tbd",
+    "review_timestamp_tbd",
+    "approved_scope_tbd"
+  ],
+  "abort_thresholds": {
+    "unexpected_status_count": 1,
+    "robots_or_policy_block_count": 1,
+    "private_or_auth_prompt_count": 1
+  },
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ],
+  "claims_live_crawl_execution": false,
+  "has_downloaded_or_raw_crawl_artifacts": false,
+  "has_private_session_or_auth_artifacts": false,
+  "claims_official_action_completion": false,
+  "claims_legal_or_permitting_guarantees": false,
+  "has_active_mutation_flags": false
+}

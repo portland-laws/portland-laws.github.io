@@ -1,0 +1,254 @@
+{
+  "agent_readiness_examples": {
+    "packet_type": "ppd.agent_readiness_contract_examples.v1",
+    "fixture_first": true,
+    "synthetic": true,
+    "llm_called": false,
+    "devhub_called": false,
+    "live_services_called": false,
+    "metadata_only": true,
+    "source_registry_promotion_id": "promotion:source-registry:ppd-fixture",
+    "guardrail_promotion_id": "promotion:guardrail:single-pdf-fixture",
+    "case_id": "case:synthetic-single-pdf",
+    "process_id": "process:single-pdf-permit-request",
+    "response_order": [
+      "missing_fact_prompt",
+      "stale_evidence_warning",
+      "allowed_local_preview",
+      "refused_consequential_action",
+      "manual_handoff_response"
+    ],
+    "api_examples": [
+      {
+        "response_id": "example:missing-fact-prompt",
+        "response_type": "missing_fact_prompt",
+        "status": "needs_user_input",
+        "agent_message": "Ask for the missing fixture facts before preparing a permit draft.",
+        "llm_called": false,
+        "devhub_called": false,
+        "prompt_fields": [
+          {
+            "field_id": "property-address",
+            "label": "Project property address",
+            "reason": "Required to select the correct PP&D permit process."
+          }
+        ],
+        "citations": [
+          {
+            "evidence_id": "evidence:apply-permits",
+            "title": "Apply for permits",
+            "canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+            "source_type": "public_html",
+            "last_verified_at": "2026-05-08T00:00:00Z",
+            "freshness_status": "current",
+            "review_status": "reviewed_promotable",
+            "no_raw_body_persisted": true
+          }
+        ]
+      },
+      {
+        "response_id": "example:stale-evidence-warning",
+        "response_type": "stale_evidence_warning",
+        "status": "blocked_until_refresh",
+        "agent_message": "Refresh stale public guidance metadata before relying on this requirement.",
+        "llm_called": false,
+        "devhub_called": false,
+        "stale_evidence_ids": [
+          "evidence:devhub-faq-stale"
+        ],
+        "citations": [
+          {
+            "evidence_id": "evidence:devhub-faq-stale",
+            "title": "DevHub FAQs",
+            "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+            "source_type": "devhub_public",
+            "last_verified_at": "2026-04-01T00:00:00Z",
+            "freshness_status": "stale",
+            "review_status": "reviewed_promotable",
+            "no_raw_body_persisted": true
+          }
+        ]
+      },
+      {
+        "response_id": "example:allowed-local-preview",
+        "response_type": "allowed_local_preview",
+        "status": "local_preview_allowed",
+        "agent_message": "Prepare a metadata-only local preview without touching official DevHub state.",
+        "llm_called": false,
+        "devhub_called": false,
+        "allowed_actions": [
+          {
+            "action_id": "action:local-pdf-preview",
+            "classification": "local_preview",
+            "allowed": true,
+            "devhub_called": false
+          }
+        ],
+        "citations": [
+          {
+            "evidence_id": "evidence:single-pdf-process",
+            "title": "Submit plans online",
+            "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+            "source_type": "public_html",
+            "last_verified_at": "2026-05-08T00:00:00Z",
+            "freshness_status": "current",
+            "review_status": "reviewed_promotable",
+            "no_raw_body_persisted": true
+          }
+        ]
+      },
+      {
+        "response_id": "example:refused-consequential-action",
+        "response_type": "refused_consequential_action",
+        "status": "refused",
+        "agent_message": "Refuse final official actions unless the user is present and controls the exact action.",
+        "llm_called": false,
+        "devhub_called": false,
+        "refused_actions": [
+          {
+            "action_id": "action:submit-permit-request",
+            "classification": "submission",
+            "status": "refused",
+            "requires_exact_confirmation": true,
+            "requires_manual_handoff": true
+          }
+        ],
+        "citations": [
+          {
+            "evidence_id": "evidence:devhub-submit-guide",
+            "title": "DevHub permit application guide",
+            "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+            "source_type": "devhub_public",
+            "last_verified_at": "2026-05-08T00:00:00Z",
+            "freshness_status": "current",
+            "review_status": "reviewed_promotable",
+            "no_raw_body_persisted": true
+          }
+        ]
+      },
+      {
+        "response_id": "example:manual-handoff-response",
+        "response_type": "manual_handoff_response",
+        "status": "manual_handoff_required",
+        "agent_message": "Pause automation and hand the browser step to the user for account security prompts.",
+        "llm_called": false,
+        "devhub_called": false,
+        "manual_handoff_actions": [
+          {
+            "action_id": "action:mfa-prompt",
+            "classification": "mfa",
+            "requires_user_attendance": true,
+            "automation_paused": true
+          }
+        ],
+        "citations": [
+          {
+            "evidence_id": "evidence:devhub-sign-in-guide",
+            "title": "DevHub account and sign-in guide",
+            "canonical_url": "https://www.portland.gov/ppd/devhub-sign-guide",
+            "source_type": "devhub_public",
+            "last_verified_at": "2026-05-08T00:00:00Z",
+            "freshness_status": "current",
+            "review_status": "reviewed_promotable",
+            "no_raw_body_persisted": true
+          }
+        ]
+      }
+    ]
+  },
+  "synthetic_guardrail_api_requests": [
+    {
+      "request_id": "guardrail-request:missing-facts",
+      "request_type": "missing_facts",
+      "synthetic": true,
+      "metadata_only": true,
+      "llm_called": false,
+      "devhub_called": false,
+      "live_services_called": false,
+      "case_id": "case:synthetic-single-pdf",
+      "process_id": "process:single-pdf-permit-request",
+      "missing_facts": [
+        "property-address"
+      ],
+      "source_evidence_ids": [
+        "evidence:apply-permits"
+      ],
+      "expected_decision": "ask_missing_facts"
+    },
+    {
+      "request_id": "guardrail-request:stale-evidence",
+      "request_type": "stale_evidence",
+      "synthetic": true,
+      "metadata_only": true,
+      "llm_called": false,
+      "devhub_called": false,
+      "live_services_called": false,
+      "case_id": "case:synthetic-single-pdf",
+      "process_id": "process:single-pdf-permit-request",
+      "stale_evidence_ids": [
+        "evidence:devhub-faq-stale"
+      ],
+      "source_evidence_ids": [
+        "evidence:devhub-faq-stale"
+      ],
+      "expected_decision": "blocked_until_refresh"
+    },
+    {
+      "request_id": "guardrail-request:local-preview",
+      "request_type": "local_preview",
+      "synthetic": true,
+      "metadata_only": true,
+      "llm_called": false,
+      "devhub_called": false,
+      "live_services_called": false,
+      "case_id": "case:synthetic-single-pdf",
+      "process_id": "process:single-pdf-permit-request",
+      "requested_action": {
+        "action_id": "action:local-pdf-preview",
+        "classification": "local_preview"
+      },
+      "source_evidence_ids": [
+        "evidence:single-pdf-process"
+      ],
+      "expected_decision": "allowed_local_preview"
+    },
+    {
+      "request_id": "guardrail-request:consequential-action",
+      "request_type": "consequential_action",
+      "synthetic": true,
+      "metadata_only": true,
+      "llm_called": false,
+      "devhub_called": false,
+      "live_services_called": false,
+      "case_id": "case:synthetic-single-pdf",
+      "process_id": "process:single-pdf-permit-request",
+      "requested_action": {
+        "action_id": "action:submit-permit-request",
+        "classification": "submission"
+      },
+      "source_evidence_ids": [
+        "evidence:devhub-submit-guide"
+      ],
+      "expected_decision": "refused"
+    },
+    {
+      "request_id": "guardrail-request:manual-handoff",
+      "request_type": "manual_handoff",
+      "synthetic": true,
+      "metadata_only": true,
+      "llm_called": false,
+      "devhub_called": false,
+      "live_services_called": false,
+      "case_id": "case:synthetic-single-pdf",
+      "process_id": "process:single-pdf-permit-request",
+      "requested_action": {
+        "action_id": "action:mfa-prompt",
+        "classification": "mfa"
+      },
+      "source_evidence_ids": [
+        "evidence:devhub-sign-in-guide"
+      ],
+      "expected_decision": "manual_handoff"
+    }
+  ]
+}

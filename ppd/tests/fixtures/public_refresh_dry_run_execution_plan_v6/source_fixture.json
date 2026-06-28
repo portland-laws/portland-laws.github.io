@@ -1,0 +1,5 @@
+{
+  "fixture_version": "public-refresh-dry-run-execution-plan-source-fixture-v6",
+  "fixture_first": true,
+  "public_refresh_authorization_packet_v6_fixture": "ppd/tests/fixtures/public_refresh_authorization_packet_v6/source_fixture.json"
+}

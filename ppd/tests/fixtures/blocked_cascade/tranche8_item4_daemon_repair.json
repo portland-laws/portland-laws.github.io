@@ -1,0 +1,34 @@
+{
+  "scenario": "tranche8_item4_blocked_cascade_daemon_repair",
+  "blocked_work": [
+    {
+      "id": "ppd-tranche8-item4-crawl-normalization",
+      "blocked_at": "2026-05-08T08:00:00Z",
+      "blocked_by": "daemon-runtime-regression",
+      "status": "blocked"
+    }
+  ],
+  "repair_tasks": [
+    {
+      "id": "repair-stale-validated-before-block",
+      "kind": "daemon-repair",
+      "created_at": "2026-05-08T07:55:00Z",
+      "validated_at": "2026-05-08T07:59:00Z",
+      "status": "validated"
+    },
+    {
+      "id": "repair-fresh-unvalidated-after-block",
+      "kind": "daemon-repair",
+      "created_at": "2026-05-08T08:05:00Z",
+      "validated_at": null,
+      "status": "pending-validation"
+    },
+    {
+      "id": "repair-fresh-validated-after-block",
+      "kind": "daemon-repair",
+      "created_at": "2026-05-08T08:10:00Z",
+      "validated_at": "2026-05-08T08:12:00Z",
+      "status": "validated"
+    }
+  ]
+}

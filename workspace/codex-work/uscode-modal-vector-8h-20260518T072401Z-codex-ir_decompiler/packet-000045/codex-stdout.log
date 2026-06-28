@@ -1,0 +1,16 @@
+Implemented a focused decompiler slot refinement for citation-only documents.
+
+**What changed**
+- Added metadata-citation slot emission in decompile path:
+  - `decode_modal_ir_document` now includes document-level citation-derived phrases via `_document_citation_phrases`.
+  - `_document_citation_phrases` emits `citation` + typed `citation_*` slots from `document.metadata["citation"]`, and skips duplicates when the same citation is already present on formula provenance.
+  - File: [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000045-20260518_114634/ipfs_datasets_py/logic/modal/decompiler.py#L183), [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000045-20260518_114634/ipfs_datasets_py/logic/modal/decompiler.py#L711)
+
+- Added regression test for no-formula U.S.C. range citation coverage (`45 U.S.C. 431 to 447.`):
+  - Verifies decompiler surfaces `citation_section_range`, start/end, connector, and profile from metadata-only citation.
+  - File: [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000045-20260518_114634/tests/unit_tests/logic/modal/test_modal_codec.py#L2804)
+
+**Validation**
+- Ran:
+  - `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "metadata_citation_slots_without_formulas or recovers_condition_exception_and_citation_slots or expand_alphanumeric_citation_section_slots"`
+- Result: `3 passed, 80 deselected`

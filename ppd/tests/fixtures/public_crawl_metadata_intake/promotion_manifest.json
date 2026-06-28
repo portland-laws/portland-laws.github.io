@@ -1,0 +1,121 @@
+{
+  "manifest_type": "ppd.public_crawl_dry_run_promotion_manifest.v1",
+  "manifest_id": "fixture-public-crawl-dry-run-promotion-001",
+  "fixture_first": true,
+  "dry_run_only": true,
+  "metadata_only": true,
+  "no_raw_body_persistence": true,
+  "live_network_invoked": false,
+  "processor_invoked": false,
+  "ready_for_live_execution": false,
+  "real_crawl_performed": false,
+  "real_download_performed": false,
+  "promotion_targets": [
+    {
+      "source_id": "ppd-landing",
+      "canonical_url": "https://www.portland.gov/ppd",
+      "selected_for_promotion": true,
+      "dry_run_only": true,
+      "no_raw_body_persistence": true,
+      "real_crawl_performed": false,
+      "real_download_performed": false
+    },
+    {
+      "source_id": "ppd-apply-permits",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "selected_for_promotion": true,
+      "dry_run_only": true,
+      "no_raw_body_persistence": true,
+      "real_crawl_performed": false,
+      "real_download_performed": false
+    },
+    {
+      "source_id": "devhub-public-portal",
+      "canonical_url": "https://devhub.portlandoregon.gov",
+      "selected_for_promotion": true,
+      "dry_run_only": true,
+      "no_raw_body_persistence": true,
+      "real_crawl_performed": false,
+      "real_download_performed": false
+    }
+  ],
+  "robots_policy_prerequisites": [
+    {
+      "evidence_id": "evidence:ppd-landing:robots-policy-prerequisite",
+      "source_id": "ppd-landing",
+      "robots_status": "allowed",
+      "policy_status": "approved",
+      "required_before_live_run": true
+    },
+    {
+      "evidence_id": "evidence:ppd-apply-permits:robots-policy-prerequisite",
+      "source_id": "ppd-apply-permits",
+      "robots_status": "allowed",
+      "policy_status": "approved",
+      "required_before_live_run": true
+    },
+    {
+      "evidence_id": "evidence:devhub-public-portal:robots-policy-prerequisite",
+      "source_id": "devhub-public-portal",
+      "robots_status": "allowed",
+      "policy_status": "approved",
+      "required_before_live_run": true
+    }
+  ],
+  "processor_handoff_intent": [
+    {
+      "source_id": "ppd-landing",
+      "intent": "deferred_metadata_handoff",
+      "processor_invoked": false,
+      "network_invoked": false,
+      "raw_body_persistence": false,
+      "expected_archive_manifest_id": "archive-manifest-expected-ppd-landing"
+    },
+    {
+      "source_id": "ppd-apply-permits",
+      "intent": "deferred_metadata_handoff",
+      "processor_invoked": false,
+      "network_invoked": false,
+      "raw_body_persistence": false,
+      "expected_archive_manifest_id": "archive-manifest-expected-ppd-apply-permits"
+    },
+    {
+      "source_id": "devhub-public-portal",
+      "intent": "deferred_metadata_handoff",
+      "processor_invoked": false,
+      "network_invoked": false,
+      "raw_body_persistence": false,
+      "expected_archive_manifest_id": "archive-manifest-expected-devhub-public-portal"
+    }
+  ],
+  "abort_conditions": [
+    {
+      "condition_id": "private_or_authenticated_url",
+      "abort_when": "Target resolves to an authenticated or private path."
+    },
+    {
+      "condition_id": "non_allowlisted_host",
+      "abort_when": "Target host is not on the PP&D public crawl allowlist."
+    },
+    {
+      "condition_id": "raw_body_or_download_requested",
+      "abort_when": "The run requests raw body persistence or document download."
+    },
+    {
+      "condition_id": "robots_or_policy_missing",
+      "abort_when": "Robots or local PP&D policy prerequisite evidence is missing."
+    },
+    {
+      "condition_id": "live_network_execution_requested",
+      "abort_when": "The fixture dry run is asked to fetch URLs."
+    },
+    {
+      "condition_id": "processor_handoff_intent_missing",
+      "abort_when": "A target lacks deferred metadata handoff intent."
+    },
+    {
+      "condition_id": "real_crawl_or_download_claimed",
+      "abort_when": "A fixture claims that a real crawl or download occurred."
+    }
+  ]
+}

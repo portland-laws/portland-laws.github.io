@@ -1,0 +1,18 @@
+{
+  "packet_id": "post-release-monitoring-plan-fixture-001",
+  "packet_type": "post_release_monitoring_plan",
+  "active_promotion_state": "inactive",
+  "mutates_active_targets": [],
+  "monitoring_summary": "Post-release monitoring plan defines fixture-backed checks, owners, thresholds, and escalation paths.",
+  "citations": [
+    "monitoring:plan-summary"
+  ],
+  "monitoring_no_go_thresholds": [
+    {
+      "description": "Do not promote if monitoring owners or escalation contacts are absent.",
+      "citations": [
+        "monitoring:owners-required"
+      ]
+    }
+  ]
+}

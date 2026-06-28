@@ -1,0 +1,18 @@
+Implemented a narrow `ir_decompiler` slot refinement: numeric section numbers now emit coarse magnitude buckets in both decoded slots and F-logic triples.
+
+**Changes**
+- Added new numeric signature slots in decompiler:
+  - `*_digit_count_bucket` (e.g., `3_digit`, `4_digit`, `5_digit`)
+  - `*_magnitude_bucket` (`lt_1k`, `1k_to_9k`, `10k_to_99k`, `100k_to_999k`, `1m_plus`)
+  - Code: [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000061-20260518_131943/ipfs_datasets_py/logic/modal/decompiler.py:2204)
+
+- Mirrored the same logic in triple emission path so typed IR/triples stay aligned with decompiler slots.
+  - Code: [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000061-20260518_131943/ipfs_datasets_py/logic/modal/codec.py:2167)
+
+- Added regression coverage on TODO-cluster-like sections (`665.`, `2146.`, `15113.`), asserting parity between decoded slots and triple predicates for the new buckets.
+  - Tests: [test_modal_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000061-20260518_131943/tests/unit/optimizers/logic_theorem_optimizer/test_modal_ir_decompiler_slots.py:96)
+
+**Validation**
+- Ran:
+  - `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_modal_ir_decompiler_slots.py ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py`
+- Result: `39 passed`

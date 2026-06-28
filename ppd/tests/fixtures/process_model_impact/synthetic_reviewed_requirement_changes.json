@@ -1,0 +1,142 @@
+{
+  "packet_id": "process-model-impact-synthetic-residential-alteration-v1",
+  "generated_at": "2026-05-28T00:00:00Z",
+  "process_id": "synthetic-residential-alteration-impact-model",
+  "permit_type": "synthetic residential building permit with plan review",
+  "scope": "Synthetic fixture mapping reviewed public PP&D requirement changes into one permit process model without enabling official DevHub actions.",
+  "guardrail_bundle_id": "guardrail-bundle-synthetic-residential-alteration-impact-v1",
+  "source_evidence": [
+    {
+      "evidence_id": "src-apply-permits-public-guide",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "title": "Apply for permits",
+      "freshness_status": "fixture_current"
+    },
+    {
+      "evidence_id": "src-devhub-submit-application-guide",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "title": "DevHub permit application guide",
+      "freshness_status": "fixture_current"
+    },
+    {
+      "evidence_id": "src-single-pdf-process",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "title": "Submit Plans Online / Single PDF Process",
+      "freshness_status": "fixture_current"
+    },
+    {
+      "evidence_id": "src-file-naming-standards",
+      "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+      "title": "File naming standards and PDF preparation",
+      "freshness_status": "fixture_current"
+    },
+    {
+      "evidence_id": "src-devhub-faq-services",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "title": "DevHub FAQs",
+      "freshness_status": "fixture_current"
+    }
+  ],
+  "reviewed_requirement_changes": [
+    {
+      "change_id": "chg-property-address-required",
+      "requirement_id": "req-property-address-before-devhub-draft",
+      "change_type": "added_required_fact",
+      "requirement_type": "precondition",
+      "process_stage": "property lookup",
+      "summary": "A property address or other public property lookup reference is required before selecting the synthetic permit type.",
+      "human_review_status": "reviewed",
+      "formalization_status": "ready_for_fixture_impact_packet",
+      "source_evidence_ids": ["src-apply-permits-public-guide", "src-devhub-submit-application-guide"],
+      "conditions": {
+        "required_user_fact": "property_address_or_public_property_reference",
+        "fact_label": "Property address or public property reference",
+        "devhub_surface_refs": ["devhub-property-search", "devhub-application-start"],
+        "guardrail_blocked_actions": ["submission", "payment", "upload", "scheduling", "cancellation"]
+      }
+    },
+    {
+      "change_id": "chg-project-scope-required",
+      "requirement_id": "req-project-scope-before-document-preparation",
+      "change_type": "added_required_fact",
+      "requirement_type": "precondition",
+      "process_stage": "eligibility screening",
+      "summary": "The agent must identify the synthetic residential alteration scope before deciding which documents are required.",
+      "human_review_status": "reviewed",
+      "formalization_status": "ready_for_fixture_impact_packet",
+      "source_evidence_ids": ["src-apply-permits-public-guide"],
+      "conditions": {
+        "required_user_fact": "residential_alteration_scope",
+        "fact_label": "Residential alteration scope",
+        "devhub_surface_refs": ["devhub-application-questionnaire"],
+        "guardrail_blocked_actions": ["submission", "upload"]
+      }
+    },
+    {
+      "change_id": "chg-single-pdf-drawing-set-required",
+      "requirement_id": "req-single-pdf-drawing-set-required",
+      "change_type": "changed_document_requirement",
+      "requirement_type": "document_requirement",
+      "process_stage": "document preparation",
+      "summary": "Drawing plans belong in one combined PDF while applications, calculations, and supporting documents remain separate PDFs.",
+      "human_review_status": "reviewed",
+      "formalization_status": "ready_for_fixture_impact_packet",
+      "source_evidence_ids": ["src-single-pdf-process", "src-file-naming-standards"],
+      "conditions": {
+        "required_document": "combined_drawing_plan_pdf",
+        "document_label": "Combined drawing plan PDF",
+        "devhub_surface_refs": ["devhub-upload-staging", "devhub-attachment-list"],
+        "unsupported_path": "Do not split drawing sheets into multiple plan PDFs for this synthetic process model.",
+        "guardrail_blocked_actions": ["upload", "submission"]
+      }
+    },
+    {
+      "change_id": "chg-supporting-documents-separate-required",
+      "requirement_id": "req-supporting-documents-separate-pdfs",
+      "change_type": "changed_document_requirement",
+      "requirement_type": "document_requirement",
+      "process_stage": "document preparation",
+      "summary": "Applications, calculations, and other supporting materials are modeled as separate supporting PDFs.",
+      "human_review_status": "reviewed",
+      "formalization_status": "ready_for_fixture_impact_packet",
+      "source_evidence_ids": ["src-single-pdf-process", "src-file-naming-standards"],
+      "conditions": {
+        "required_document": "separate_supporting_document_pdfs",
+        "document_label": "Separate supporting document PDFs",
+        "devhub_surface_refs": ["devhub-upload-staging", "devhub-attachment-list"],
+        "guardrail_blocked_actions": ["upload", "submission"]
+      }
+    },
+    {
+      "change_id": "chg-devhub-service-boundaries",
+      "requirement_id": "req-devhub-consequential-actions-blocked",
+      "change_type": "added_guardrail_blocker",
+      "requirement_type": "action_gate",
+      "process_stage": "acknowledgement/certification review",
+      "summary": "The impact packet may reference DevHub surfaces but must refuse certification, official upload, submission, fee payment, inspection scheduling, and cancellation paths.",
+      "human_review_status": "reviewed",
+      "formalization_status": "ready_for_fixture_impact_packet",
+      "source_evidence_ids": ["src-devhub-submit-application-guide", "src-devhub-faq-services"],
+      "conditions": {
+        "unsupported_path": "Consequential DevHub workflows require attended handoff and exact confirmation outside this fixture-first packet.",
+        "devhub_surface_refs": ["devhub-submit-application", "devhub-fee-payment", "devhub-inspection-scheduling", "devhub-cancellation-or-withdrawal"],
+        "guardrail_blocked_actions": ["submission", "payment", "upload", "scheduling", "cancellation"]
+      }
+    },
+    {
+      "change_id": "chg-unreviewed-note-ignored",
+      "requirement_id": "req-draft-unreviewed-impact-note",
+      "change_type": "draft_note",
+      "requirement_type": "permission",
+      "process_stage": "application data entry",
+      "summary": "This draft note is intentionally ignored because it has not been reviewed.",
+      "human_review_status": "draft",
+      "formalization_status": "not_ready",
+      "source_evidence_ids": ["src-devhub-submit-application-guide"],
+      "conditions": {
+        "required_user_fact": "ignored_draft_fact",
+        "devhub_surface_refs": ["devhub-draft-only"]
+      }
+    }
+  ]
+}

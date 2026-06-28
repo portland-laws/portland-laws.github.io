@@ -1,0 +1,14 @@
+Implemented a generalized `ir_decompiler` refinement for U.S.C. section-heading fallbacks by surfacing heading tail semantics as typed slots/triples.
+
+- Added deterministic extraction of `section_heading_tail` (text immediately following a `uscode_section_heading_v1` span) in [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000014-20260518_083454/ipfs_datasets_py/logic/modal/decompiler.py), including typed variants:
+  - `section_heading_tail_token_count`
+  - `section_heading_tail_token_prefix`
+  - `section_heading_tail_token_suffix`
+  - `section_heading_tail_token`
+  - `section_heading_tail_stem`
+- Added matching F-logic triple emission in [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000014-20260518_083454/ipfs_datasets_py/logic/modal/codec.py) so IR/decompiler and graph features stay aligned.
+- Added regression coverage in [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000014-20260518_083454/tests/unit_tests/logic/modal/test_modal_codec.py) via `test_modal_decompiler_and_triples_surface_section_heading_tail_slots`.
+
+Validation run:
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py`
+- Result: `63 passed`

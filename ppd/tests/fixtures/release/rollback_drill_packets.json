@@ -1,0 +1,39 @@
+{
+  "valid": {
+    "packet_id": "rollback-drill-20260529-fixture",
+    "mode": "simulation_only",
+    "claims": [
+      {
+        "text": "The drill verifies that the previous cited manifest remains available for a simulated rollback decision.",
+        "citations": ["release-manifest-fixture#sha256"],
+        "affected_artifact_refs": [
+          {"artifact_id": "ppd-release-manifest", "ref": "release-manifest-fixture#sha256"}
+        ]
+      }
+    ],
+    "reviewer_owners": [
+      {"role": "release reviewer", "owner": "ppd-release-review"}
+    ],
+    "smoke_test_rerun_checklist": [
+      {"id": "smoke-rerun-1", "description": "Rerun daemon self-test smoke check before any release decision."}
+    ],
+    "controls": [
+      {"id": "submit-release", "action": "submit release", "enabled": false}
+    ],
+    "mutation_enabled": false
+  },
+  "invalid": {
+    "packet_id": "rollback-drill-invalid-fixture",
+    "claims": [
+      {"text": "Rollback was completed and the permitting outcome will be approved."}
+    ],
+    "controls": [
+      {"id": "upload-correction", "action": "upload correction", "enabled": true}
+    ],
+    "session_trace": "trace.zip",
+    "raw_reference": "raw_crawl/downloads/page.warc.gz",
+    "local_note_path": "/home/example/private-note.txt",
+    "write_enabled": true,
+    "published": true
+  }
+}

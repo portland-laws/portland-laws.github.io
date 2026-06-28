@@ -1,0 +1,15 @@
+Implemented a targeted ambiguity-policy update for `modal.compiler.ambiguity`.
+
+- Updated adaptive ambiguity evaluation to treat compiled IR families as deterministic evidence, not just lexical signals or cue-share counts.  
+  - Call site now passes `modal_ir` into adaptive ambiguity evaluation: [compiler.py:399](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T053630Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T053630Z-codex-packet-000010-20260518_060625/ipfs_datasets_py/logic/modal/compiler.py:399)
+  - Adaptive method now checks `target_family in compiled_modal_families` as an additional trigger and records this in metadata: [compiler.py:526](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T053630Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T053630Z-codex-packet-000010-20260518_060625/ipfs_datasets_py/logic/modal/compiler.py:526)
+
+- Added regression coverage to ensure explicit adaptive ambiguity is surfaced when lexical signals are absent but compiled IR carries the competing family:  
+  - New test: [test_modal_codec.py:360](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T053630Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T053630Z-codex-packet-000010-20260518_060625/tests/unit_tests/logic/modal/test_modal_codec.py:360)
+  - Added required imports for synthetic IR/encoding fixtures: [test_modal_codec.py:29](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T053630Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T053630Z-codex-packet-000010-20260518_060625/tests/unit_tests/logic/modal/test_modal_codec.py:29)
+
+Validation run:
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "adaptive_family_margin or compiled_family_as_adaptive_ambiguity_signal"`  
+  - Blocked by pre-existing repo bootstrap issue: `NameError: __path__ is not defined` from repo-root `__init__.py`.
+- `python3 -m compileall ipfs_datasets_py/logic/modal/compiler.py tests/unit_tests/logic/modal/test_modal_codec.py` succeeded.
+- Direct runtime sanity check of `_adaptive_family_margin_ambiguities(...)` confirmed expected explicit outputs for `["temporal","deontic"]` with `has_compiled_target_family_formula=True`.

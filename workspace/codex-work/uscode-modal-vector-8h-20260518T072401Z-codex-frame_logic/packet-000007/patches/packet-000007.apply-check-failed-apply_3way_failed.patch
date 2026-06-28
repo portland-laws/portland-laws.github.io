@@ -1,0 +1,447 @@
+diff --git a/ipfs_datasets_py/logic/modal/codec.py b/ipfs_datasets_py/logic/modal/codec.py
+index 3a600d7c..a7398e81 100644
+--- a/ipfs_datasets_py/logic/modal/codec.py
++++ b/ipfs_datasets_py/logic/modal/codec.py
+@@ -10,6 +10,7 @@ F-logic is used as a consistency check over the intermediate representation.
+ from __future__ import annotations
+ 
+ import math
++import re
+ from dataclasses import asdict, dataclass, field, replace
+ from typing import Any, Dict, Iterable, List, Mapping, Optional, Sequence
+ 
+@@ -61,6 +62,24 @@ from .kg_bridge import (
+ )
+ 
+ 
++_ONTOLOGY_TERM_RE = re.compile(r"[A-Za-z][A-Za-z0-9']*")
++_ONTOLOGY_TERM_STOPWORDS = {
++    "a",
++    "an",
++    "and",
++    "by",
++    "for",
++    "from",
++    "in",
++    "of",
++    "on",
++    "or",
++    "the",
++    "to",
++    "with",
++}
++
++
+ @dataclass(frozen=True)
+ class ModalLogicCodecConfig:
+     """Configuration for the deterministic modal logic codec."""
+@@ -379,6 +398,8 @@ class DeterministicModalLogicCodec:
+             frame_id = candidate.get("frame_id")
+             if frame_id:
+                 features.append(f"frame-candidate:{frame_id}")
++            for term in _frame_candidate_terms_from_dict(candidate):
++                features.append(f"flogic:frame_term:{term}")
+         for triple in codec_result.kg_triples:
+             predicate = triple.get("predicate", "")
+             obj = triple.get("object", "")
+@@ -521,6 +542,14 @@ def modal_ir_to_flogic_triples(
+                 "object": frame.frame_id,
+             }
+         )
++    for term in _modal_ir_frame_terms(modal_ir, selected_frame=selected_frame):
++        triples.append(
++            {
++                "subject": modal_ir.document_id,
++                "predicate": "frame_term",
++                "object": term,
++            }
++        )
+     for formula in modal_ir.formulas:
+         triples.extend(
+             [
+@@ -695,6 +724,42 @@ def _typed_argument_key_value(argument: str) -> tuple[str, str] | None:
+     return key, value
+ 
+ 
++def _frame_candidate_terms_from_dict(candidate: Mapping[str, Any]) -> List[str]:
++    terms: List[str] = []
++    frame_id = candidate.get("frame_id")
++    terms.extend(_tokenize_ontology_value(frame_id))
++    for key in ("matched_terms", "ontology_terms"):
++        values = candidate.get(key)
++        if not isinstance(values, (list, tuple, set)):
++            continue
++        for value in values:
++            terms.extend(_tokenize_ontology_value(value))
++    return _unique_preserve_order(terms)
++
++
++def _modal_ir_frame_terms(
++    modal_ir: ModalIRDocument,
++    *,
++    selected_frame: Optional[str],
++) -> List[str]:
++    terms: List[str] = []
++    terms.extend(_tokenize_ontology_value(selected_frame))
++    for frame in modal_ir.frame_candidates:
++        terms.extend(_tokenize_ontology_value(frame.frame_id))
++        for value in frame.matched_terms:
++            terms.extend(_tokenize_ontology_value(value))
++    return _unique_preserve_order(terms)
++
++
++def _tokenize_ontology_value(value: Any) -> List[str]:
++    text = str(value or "").replace("_", " ").replace("-", " ")
++    return [
++        token.lower()
++        for token in _ONTOLOGY_TERM_RE.findall(text)
++        if len(token) > 1 and token.lower() not in _ONTOLOGY_TERM_STOPWORDS
++    ]
++
++
+ def _flogic_result_to_dict(result: Optional[FLogicOptimizerResult]) -> Optional[Dict[str, Any]]:
+     if result is None:
+         return None
+diff --git a/ipfs_datasets_py/optimizers/logic/flogic_optimizer.py b/ipfs_datasets_py/optimizers/logic/flogic_optimizer.py
+index 4532f276..2c1b9811 100644
+--- a/ipfs_datasets_py/optimizers/logic/flogic_optimizer.py
++++ b/ipfs_datasets_py/optimizers/logic/flogic_optimizer.py
+@@ -42,11 +42,35 @@ from __future__ import annotations
+ 
+ import logging
+ import math
++import re
+ from dataclasses import dataclass, field
+ from typing import Any, Dict, List, Optional, Sequence
+ 
+ logger = logging.getLogger(__name__)
+ 
++_FRAME_TERM_PREDICATES = {
++    "candidate_ontology_frame",
++    "frame_term",
++    "interpreted_in_frame",
++    "selected_ontology_frame",
++}
++_FRAME_TERM_RE = re.compile(r"[A-Za-z][A-Za-z0-9']*")
++_FRAME_TERM_STOPWORDS = {
++    "a",
++    "an",
++    "and",
++    "by",
++    "for",
++    "from",
++    "in",
++    "of",
++    "on",
++    "or",
++    "the",
++    "to",
++    "with",
++}
++
+ 
+ # ---------------------------------------------------------------------------
+ # Configuration
+@@ -174,10 +198,22 @@ class FLogicSemanticOptimizer:
+         )
+         violations: List[OntologyViolation] = []
+         ontology_consistent = True
++        frame_logic_terms: List[str] = []
+ 
+         if self.config.check_ontology_consistency and kg_triples:
+             violations = self._check_flogic_consistency(kg_triples)
+             ontology_consistent = len(violations) == 0
++        if kg_triples:
++            frame_logic_terms = _audit_frame_logic_terms(kg_triples)
++
++        metadata: Dict[str, Any] = {
++            "source_text": source_text,
++            "decoded_text": decoded_text,
++            "kg_triple_count": len(kg_triples or []),
++            "threshold": self.config.similarity_threshold,
++        }
++        if frame_logic_terms:
++            metadata["frame_logic_terms"] = frame_logic_terms
+ 
+         passed = (
+             similarity >= self.config.similarity_threshold and ontology_consistent
+@@ -188,11 +224,7 @@ class FLogicSemanticOptimizer:
+             passed=passed,
+             ontology_consistent=ontology_consistent,
+             violations=violations,
+-            metadata={
+-                "source_text": source_text,
+-                "decoded_text": decoded_text,
+-                "threshold": self.config.similarity_threshold,
+-            },
++            metadata=metadata,
+         )
+ 
+     def add_ontology_class(
+@@ -313,6 +345,37 @@ def _cosine_similarity(a: List[float], b: List[float]) -> float:
+     return dot / (norm_a * norm_b)
+ 
+ 
++def _audit_frame_logic_terms(kg_triples: Sequence[Dict[str, str]]) -> List[str]:
++    terms: List[str] = []
++    for triple in kg_triples:
++        predicate = str(triple.get("predicate", "")).strip()
++        obj = str(triple.get("object", "")).strip()
++        if not obj or predicate not in _FRAME_TERM_PREDICATES:
++            continue
++        terms.extend(_tokenize_frame_term(obj))
++    return _unique_preserve_order(terms)
++
++
++def _tokenize_frame_term(value: str) -> List[str]:
++    text = str(value or "").replace("_", " ").replace("-", " ")
++    return [
++        token.lower()
++        for token in _FRAME_TERM_RE.findall(text)
++        if len(token) > 1 and token.lower() not in _FRAME_TERM_STOPWORDS
++    ]
++
++
++def _unique_preserve_order(values: Sequence[str]) -> List[str]:
++    seen: set[str] = set()
++    result: List[str] = []
++    for value in values:
++        if not value or value in seen:
++            continue
++        seen.add(value)
++        result.append(value)
++    return result
++
++
+ __all__ = [
+     "FLogicSemanticOptimizer",
+     "FLogicOptimizerConfig",
+diff --git a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py
+index 378e7322..83d36177 100644
+--- a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py
++++ b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py
+@@ -9,6 +9,22 @@ from typing import Dict, Iterable, List, Mapping, Sequence
+ 
+ 
+ _TOKEN_RE = re.compile(r"[A-Za-z][A-Za-z0-9_'-]*")
++_MAX_SELECTION_ONTOLOGY_TERMS = 24
++_ONTOLOGY_TERM_STOPWORDS = {
++    "a",
++    "an",
++    "and",
++    "by",
++    "for",
++    "from",
++    "in",
++    "of",
++    "on",
++    "or",
++    "the",
++    "to",
++    "with",
++}
+ 
+ 
+ @dataclass(frozen=True)
+@@ -26,6 +42,21 @@ class FrameCandidate:
+         """Return lexical text indexed by BM25."""
+         return " ".join([self.label, self.description, *self.terms, self.domain])
+ 
++    def ontology_terms(self) -> List[str]:
++        """Return canonical ontology terms used for deterministic diagnostics."""
++        pieces: List[str] = [
++            self.frame_id.replace("_", " ").replace("-", " "),
++            self.label,
++            self.description,
++            self.domain,
++            *self.terms,
++        ]
++        return _unique_preserve_order(
++            token
++            for piece in pieces
++            for token in _tokenize_ontology_text(piece)
++        )
++
+ 
+ @dataclass(frozen=True)
+ class FrameSelection:
+@@ -35,6 +66,7 @@ class FrameSelection:
+     score: float
+     matched_terms: List[str]
+     explanation: str
++    ontology_terms: List[str] = field(default_factory=list)
+ 
+     def to_dict(self) -> Dict[str, object]:
+         return {
+@@ -43,6 +75,7 @@ class FrameSelection:
+             "frame_id": self.frame.frame_id,
+             "label": self.frame.label,
+             "matched_terms": list(self.matched_terms),
++            "ontology_terms": list(self.ontology_terms),
+             "score": self.score,
+         }
+ 
+@@ -82,11 +115,13 @@ class BM25FrameSelector:
+             score = self._score(query_terms, document)
+             if matched_terms:
+                 score += 0.05 * len(matched_terms)
++            ontology_terms = _selection_ontology_terms(frame, matched_terms)
+             results.append(
+                 FrameSelection(
+                     frame=frame,
+                     score=round(score, 6),
+                     matched_terms=matched_terms,
++                    ontology_terms=ontology_terms,
+                     explanation=self._explain(frame, matched_terms, score),
+                 )
+             )
+@@ -115,7 +150,7 @@ class BM25FrameSelector:
+         return f"Frame {frame.frame_id} had no lexical query matches; BM25 score {score:.3f}."
+ 
+     def _tokenize(self, text: str) -> List[str]:
+-        return [token.lower() for token in _TOKEN_RE.findall(text)]
++        return _tokenize_text(text)
+ 
+     def _build_doc_freq(self, documents: Sequence[Sequence[str]]) -> Dict[str, int]:
+         frequencies: Dict[str, int] = {}
+@@ -125,6 +160,43 @@ class BM25FrameSelector:
+         return frequencies
+ 
+ 
++def _selection_ontology_terms(
++    frame: FrameCandidate,
++    matched_terms: Sequence[str],
++) -> List[str]:
++    matched = [
++        token
++        for value in matched_terms
++        for token in _tokenize_ontology_text(value)
++    ]
++    terms = _unique_preserve_order([*matched, *frame.ontology_terms()])
++    return terms[:_MAX_SELECTION_ONTOLOGY_TERMS]
++
++
++def _tokenize_text(text: str) -> List[str]:
++    return [token.lower() for token in _TOKEN_RE.findall(str(text or ""))]
++
++
++def _tokenize_ontology_text(text: str) -> List[str]:
++    return [
++        token
++        for token in _tokenize_text(text)
++        if len(token) > 1 and token not in _ONTOLOGY_TERM_STOPWORDS
++    ]
++
++
++def _unique_preserve_order(values: Iterable[str]) -> List[str]:
++    seen: set[str] = set()
++    result: List[str] = []
++    for value in values:
++        cleaned = str(value or "").strip().lower()
++        if not cleaned or cleaned in seen:
++            continue
++        seen.add(cleaned)
++        result.append(cleaned)
++    return result
++
++
+ DEFAULT_LEGAL_FRAME_FIXTURE: tuple[FrameCandidate, ...] = (
+     FrameCandidate(
+         frame_id="housing_voucher_benefits",
+diff --git a/tests/unit/logic/test_flogic_integration.py b/tests/unit/logic/test_flogic_integration.py
+index 6be2bba9..11468b92 100644
+--- a/tests/unit/logic/test_flogic_integration.py
++++ b/tests/unit/logic/test_flogic_integration.py
+@@ -401,3 +401,32 @@ class TestFLogicSemanticOptimizer:
+         assert result.metadata["source_text"] == "hello"
+         assert result.metadata["decoded_text"] == "world"
+         assert "threshold" in result.metadata
++
++    def test_result_metadata_includes_frame_logic_terms(self):
++        opt = self._optimizer()
++        emb = [1.0, 0.0]
++        result = opt.evaluate(
++            "hello",
++            "world",
++            emb,
++            emb,
++            kg_triples=[
++                {
++                    "subject": "doc-1",
++                    "predicate": "selected_ontology_frame",
++                    "object": "administrative_notice_hearing",
++                },
++                {
++                    "subject": "doc-1",
++                    "predicate": "frame_term",
++                    "object": "agency",
++                },
++            ],
++        )
++        assert result.metadata["kg_triple_count"] == 2
++        assert result.metadata["frame_logic_terms"] == [
++            "administrative",
++            "notice",
++            "hearing",
++            "agency",
++        ]
+diff --git a/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py b/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py
+index 90bcc990..c23290e7 100644
+--- a/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py
++++ b/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py
+@@ -16,6 +16,7 @@ def test_bm25_selector_ranks_housing_frame_for_voucher_text() -> None:
+ 
+     assert results[0].frame.frame_id == "housing_voucher_benefits"
+     assert {"housing", "voucher", "agency"}.issubset(set(results[0].matched_terms))
++    assert {"housing", "voucher", "benefits"}.issubset(set(results[0].ontology_terms))
+     assert "BM25 score" in results[0].explanation
+ 
+ 
+@@ -50,6 +51,18 @@ def test_bm25_selector_tie_breaks_by_frame_id() -> None:
+     assert [result.frame.frame_id for result in results] == ["a_frame", "b_frame"]
+ 
+ 
++def test_bm25_selection_dict_includes_deterministic_ontology_terms() -> None:
++    selector = BM25FrameSelector(DEFAULT_LEGAL_FRAME_FIXTURE)
++
++    result = selector.rank("The agency must provide notice and hearing.", top_k=1)[0]
++    payload = result.to_dict()
++
++    assert payload["ontology_terms"]
++    assert "administrative" in payload["ontology_terms"]
++    assert "notice" in payload["ontology_terms"]
++    assert "agency" in payload["matched_terms"]
++
++
+ def test_bm25_selector_top_k_zero_returns_empty_list() -> None:
+     selector = BM25FrameSelector(DEFAULT_LEGAL_FRAME_FIXTURE)
+ 
+diff --git a/tests/unit_tests/logic/modal/test_modal_codec.py b/tests/unit_tests/logic/modal/test_modal_codec.py
+index 0d7ab94f..c22921cc 100644
+--- a/tests/unit_tests/logic/modal/test_modal_codec.py
++++ b/tests/unit_tests/logic/modal/test_modal_codec.py
+@@ -72,6 +72,7 @@ def test_modal_codec_encodes_all_modal_families_with_frame_logic() -> None:
+     assert result.flogic_result.ontology_consistent is True
+     assert result.kg_triples
+     assert all(triple["predicate"] for triple in result.kg_triples)
++    assert any(triple["predicate"] == "frame_term" for triple in result.kg_triples)
+     assert result.modal_ir.frame_logic.triples
+     assert result.modal_ir.frame_logic.to_triples() == result.kg_triples
+     assert result.modal_ir.frame_logic.selected_frame == result.selected_frame
+@@ -80,6 +81,8 @@ def test_modal_codec_encodes_all_modal_families_with_frame_logic() -> None:
+     assert result.modal_ir.metadata["flogic_triple_count"] == len(result.kg_triples)
+     assert result.modal_ir.metadata["flogic_triples"] == result.kg_triples
+     assert result.flogic_ontology.frames
++    assert "frame_logic_terms" in result.flogic_result.metadata
++    assert "administrative" in result.flogic_result.metadata["frame_logic_terms"]
+     assert result.neo4j_graph_data.metadata["neo4j_compatible"] is True
+     assert result.neo4j_graph_data.node_count > 0
+     assert result.neo4j_graph_data.relationship_count == len(result.kg_triples)
+@@ -1660,6 +1663,7 @@ def test_modal_codec_supports_autoencoder_feature_codec_protocol() -> None:
+     feature_keys = codec.feature_keys_for_sample(sample)
+     assert "frame:administrative_notice_hearing" in feature_keys
+     assert any(feature.startswith("flogic:modal_family:") for feature in feature_keys)
++    assert any(feature.startswith("flogic:frame_term:") for feature in feature_keys)
+ 
+ 
+ def test_autoencoder_introspection_guides_typed_synthesis_hints() -> None:

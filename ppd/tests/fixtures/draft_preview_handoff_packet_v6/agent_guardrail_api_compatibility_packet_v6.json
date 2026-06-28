@@ -1,0 +1,39 @@
+{
+  "packet_type": "agent_guardrail_api_compatibility_packet",
+  "packet_version": "v6",
+  "case_id": "case-fixture-109",
+  "process_id": "ppd-building-permit-draft-preview-fixture",
+  "draft_fields": [
+    {
+      "field_id": "project_address",
+      "label": "Project address",
+      "draft_value": "123 Fixture Ave, Portland, OR 97201",
+      "value_source": "fixture_redacted_user_fact",
+      "user_fact_provenance": [
+        "user_supplied_address",
+        "public_property_reference_if_user_confirms"
+      ],
+      "blocked_if_missing_provenance": true
+    },
+    {
+      "field_id": "work_description",
+      "label": "Work description",
+      "draft_value": "Fixture-only reversible preview of proposed residential alteration description.",
+      "value_source": "fixture_redacted_user_fact",
+      "user_fact_provenance": [
+        "user_supplied_scope_summary"
+      ],
+      "blocked_if_missing_provenance": true
+    },
+    {
+      "field_id": "applicant_email",
+      "label": "Applicant email",
+      "draft_value": "applicant@example.invalid",
+      "value_source": "fixture_redacted_user_fact",
+      "user_fact_provenance": [
+        "user_supplied_contact_fact"
+      ],
+      "blocked_if_missing_provenance": true
+    }
+  ]
+}

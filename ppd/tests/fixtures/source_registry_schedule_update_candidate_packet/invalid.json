@@ -1,0 +1,21 @@
+{
+  "packet_type": "ppd_source_registry_schedule_update_candidate_packet",
+  "packet_version": "1.0",
+  "affected_source_ids": [],
+  "source_adjustments": [
+    {
+      "canonical_url": "https://example.com/private/login",
+      "source_type": "devhub_authenticated",
+      "privacy_classification": "authenticated",
+      "proposed_schedule": "active_update",
+      "raw_body_ref": "local/raw/devhub.html",
+      "archive_artifact_ref": "warc://private-session",
+      "download_ref": "private-download.pdf",
+      "live_crawl_completed": true,
+      "execute_processors": true,
+      "active_registry_mutation": true,
+      "active_schedule_mutation": true,
+      "review_note": "This permit will be approved after the schedule update."
+    }
+  ]
+}

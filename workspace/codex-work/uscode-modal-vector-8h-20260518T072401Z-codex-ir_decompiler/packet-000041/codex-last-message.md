@@ -1,0 +1,21 @@
+Implemented a generalized decompiler/IR slot refinement for U.S.C. section punctuation presence.
+
+- Added deterministic negative slots when trailing punctuation is absent in decompiler slot extraction:
+  - [decompiler.py:834](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000041-20260518_112445/ipfs_datasets_py/logic/modal/decompiler.py:834)
+  - [decompiler.py:1366](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000041-20260518_112445/ipfs_datasets_py/logic/modal/decompiler.py:1366)
+  - Now emits `*_section_has_trailing_punct=false` and `*_section_trailing_punct_count=0` when no trailing punctuation exists.
+
+- Kept codec triple projection in parity with decompiler:
+  - [codec.py:1212](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000041-20260518_112445/ipfs_datasets_py/logic/modal/codec.py:1212)
+  - [codec.py:1283](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000041-20260518_112445/ipfs_datasets_py/logic/modal/codec.py:1283)
+
+- Added regression assertions for the new negative slots:
+  - [test_ir_decompiler_slots.py:222](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000041-20260518_112445/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:222)
+  - [test_ir_decompiler_slots.py:269](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000041-20260518_112445/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:269)
+  - [test_ir_decompiler_slots.py:330](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000041-20260518_112445/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:330)
+  - [test_ir_decompiler_slots.py:377](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000041-20260518_112445/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:377)
+
+Validation run:
+
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py` (18 passed)
+- `pytest -q ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py` (9 passed)

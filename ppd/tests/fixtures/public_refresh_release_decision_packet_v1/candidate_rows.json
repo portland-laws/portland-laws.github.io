@@ -1,0 +1,47 @@
+{
+  "candidate_rows": [
+    {
+      "candidate_id": "public-refresh-candidate-proceed-001",
+      "synthetic": true,
+      "inactive": true,
+      "requested_decision": "proceed",
+      "source_fixture_ref": "ppd/tests/fixtures/public_refresh_release_decision_packet_v1/candidate_rows.json",
+      "reviewer_owner": "public-refresh-reviewer",
+      "validation_evidence_refs": [
+        "fixture:evidence:proceed:py-compile",
+        "fixture:evidence:proceed:self-test"
+      ],
+      "unresolved_reviewer_blockers": [],
+      "stale_source_detected": false
+    },
+    {
+      "candidate_id": "public-refresh-candidate-hold-002",
+      "synthetic": true,
+      "inactive": true,
+      "requested_decision": "proceed",
+      "source_fixture_ref": "ppd/tests/fixtures/public_refresh_release_decision_packet_v1/candidate_rows.json",
+      "reviewer_owner": "freshness-reviewer",
+      "validation_evidence_refs": [
+        "fixture:evidence:hold:stale-source-watch"
+      ],
+      "unresolved_reviewer_blockers": [
+        "reviewer-blocker:source-freshness-not-reconciled",
+        "reviewer-blocker:operator-signoff-placeholder-empty"
+      ],
+      "stale_source_detected": true
+    },
+    {
+      "candidate_id": "public-refresh-candidate-skip-003",
+      "synthetic": true,
+      "inactive": true,
+      "requested_decision": "skip",
+      "source_fixture_ref": "ppd/tests/fixtures/public_refresh_release_decision_packet_v1/candidate_rows.json",
+      "reviewer_owner": "release-supervisor",
+      "validation_evidence_refs": [
+        "fixture:evidence:skip:not-in-release-scope"
+      ],
+      "unresolved_reviewer_blockers": [],
+      "stale_source_detected": false
+    }
+  ]
+}

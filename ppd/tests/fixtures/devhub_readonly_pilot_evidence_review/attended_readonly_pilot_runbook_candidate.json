@@ -1,0 +1,40 @@
+{
+  "runbook_candidate_id": "runbook-devhub-readonly-pilot-001",
+  "pilot_id": "devhub-readonly-pilot-fixture-001",
+  "mode": "attended_read_only",
+  "allowed_actions": [
+    "review-home-heading",
+    "review-my-permits-link",
+    "review-permit-status-summary",
+    "review-attachment-list"
+  ],
+  "prohibited_artifacts": [
+    "auth_state",
+    "screenshots",
+    "traces",
+    "har_files",
+    "raw_authenticated_values"
+  ],
+  "manual_handoff_checkpoints": [
+    {
+      "checkpoint_id": "handoff-login-complete",
+      "trigger": "authenticated_home_detected",
+      "required_operator_action": "Confirm the user completed login manually and no credentials or session state were stored."
+    },
+    {
+      "checkpoint_id": "handoff-before-non-readonly-action",
+      "trigger": "non_readonly_action_detected",
+      "required_operator_action": "Stop automation and ask the operator for explicit attended confirmation."
+    }
+  ],
+  "surfaces": [
+    {
+      "surface_id": "devhub-home-readonly",
+      "registry_candidate_ref": "surface-registry-candidate/devhub-home-readonly"
+    },
+    {
+      "surface_id": "devhub-permit-detail-readonly",
+      "registry_candidate_ref": "surface-registry-candidate/devhub-permit-detail-readonly"
+    }
+  ]
+}

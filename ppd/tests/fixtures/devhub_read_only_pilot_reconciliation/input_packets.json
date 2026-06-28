@@ -1,0 +1,198 @@
+{
+  "operator_transcript_packet": {
+    "packet_id": "devhub-attended-readonly-pilot-operator-transcript-synthetic-v1",
+    "packet_type": "devhub_attended_readonly_pilot_operator_transcript_packet",
+    "mode": "fixture_first_attended_readonly_simulation",
+    "reviewer_owner_fields": {
+      "reviewer": "devhub_pilot_reviewer",
+      "owner": "devhub_pilot_operator",
+      "approval_required_before_live_use": true
+    },
+    "ordered_operator_observations": [
+      {
+        "sequence": 1,
+        "kind": "manual_user_attendance_checkpoint",
+        "checkpoint_id": "manual-attendance-before-login",
+        "requires_live_user_presence": true,
+        "simulated_only": true
+      },
+      {
+        "sequence": 2,
+        "kind": "redacted_page_state_summary",
+        "page_state_id": "devhub-dashboard-readonly-state",
+        "surface_id": "devhub-dashboard-readonly",
+        "redacted_summary": "[REDACTED_HEADING:dashboard] and [REDACTED_LABEL:permit-list] were observed only as synthetic read-only metadata.",
+        "redactions_applied": [
+          "heading_tokenized",
+          "labels_tokenized",
+          "record_identifiers_omitted"
+        ],
+        "contains_private_devhub_data": false,
+        "simulated_only": true
+      },
+      {
+        "sequence": 3,
+        "kind": "selector_confidence_confirmation",
+        "selector_id": "devhub-dashboard-readonly-landmark",
+        "surface_id": "devhub-dashboard-readonly",
+        "confidence": "medium",
+        "basis": "Synthetic transcript cites only redacted landmark categories and requires live verification before use.",
+        "requires_live_verification_before_use": true,
+        "citations": [
+          "devhub-dashboard-readonly-state"
+        ],
+        "simulated_only": true
+      }
+    ],
+    "guardrail_attestations": {
+      "no_browser_launched": true,
+      "no_auth_state_created_or_read": true,
+      "no_private_devhub_data_read": true,
+      "no_screenshots_captured": true,
+      "no_traces_captured": true,
+      "no_downloads_created": true,
+      "no_official_action_taken": true
+    },
+    "prohibited_artifacts": {
+      "browser_sessions": [],
+      "auth_state_files": [],
+      "screenshots": [],
+      "traces": [],
+      "raw_crawl_outputs": [],
+      "downloaded_documents": [],
+      "har_files": []
+    }
+  },
+  "surface_registry_reviewer_approval_packet": {
+    "packet_id": "devhub-surface-registry-reviewer-approval-synthetic-v1",
+    "packet_type": "ppd.devhub_surface_registry_reviewer_approval_packet.v1",
+    "mode": "fixture_first_devhub_surface_registry_reviewer_approval",
+    "fixture_first": true,
+    "launches_devhub": false,
+    "launches_playwright": false,
+    "stores_browser_artifacts": false,
+    "writes_surface_registry": false,
+    "mutates_active_surface_registry": false,
+    "selector_delta_approval_items": [
+      {
+        "selector_delta_id": "selector-delta-approval-devhub-dashboard-readonly-1",
+        "surface_id": "devhub-dashboard-readonly",
+        "approval_status": "pending_reviewer_approval",
+        "approval_effect": "reviewer_packet_only_no_promotion",
+        "candidate_selector_confidence": "medium",
+        "required_active_registry_confidence": "attended_review_required",
+        "route_delta_count": 1,
+        "heading_delta_count": 1,
+        "action_delta_count": 0,
+        "active_registry_mutation": false,
+        "citations": [
+          "surface-registry-promotion-candidate-synthetic-v1",
+          "surface-drift-comparison-synthetic-v1"
+        ]
+      }
+    ],
+    "reviewer_signoff_slots": [
+      {
+        "owner": "surface_registry_owner",
+        "reviewer": "surface_registry_reviewer",
+        "scope": "review synthetic observed dashboard surface delta",
+        "status": "pending",
+        "citations": [
+          "selector-delta-approval-devhub-dashboard-readonly-1"
+        ]
+      }
+    ],
+    "manual_handoff_carryovers": [
+      {
+        "surface_id": "devhub-dashboard-readonly",
+        "status": "carried_forward",
+        "reason": "Live DevHub verification remains attended and no active registry promotion is authorized by the fixture packet.",
+        "citations": [
+          "devhub-read-only-pilot-evidence-review-synthetic-v1"
+        ]
+      }
+    ],
+    "redaction_attestations": [
+      {
+        "attestation_id": "redaction-attestation-1",
+        "accepted": true,
+        "citations": [
+          "devhub-read-only-pilot-evidence-review-synthetic-v1"
+        ]
+      }
+    ],
+    "rollback_notes": [
+      {
+        "note_id": "rollback-note-1",
+        "active_rollback_executed": false,
+        "citations": [
+          "surface-drift-comparison-synthetic-v1"
+        ]
+      }
+    ],
+    "no_active_surface_registry_mutation_attestations": {
+      "active_surface_registry_not_mutated": true,
+      "active_surface_map_not_replaced": true,
+      "selector_confidence_not_upgraded": true,
+      "no_devhub_browser_launched": true,
+      "no_auth_state_or_browser_artifacts_stored": true,
+      "no_consequential_controls_enabled": true,
+      "review_packet_only_no_promotion": true
+    }
+  },
+  "observation_redaction_review_packet": {
+    "packet_id": "devhub-read-only-observation-redaction-review-synthetic-v1",
+    "packet_type": "ppd.devhub.read_only_observation_redaction_review.v1",
+    "mode": "fixture_first_devhub_read_only_observation_redaction_review",
+    "fixture_first": true,
+    "offline_only": true,
+    "synthetic_only": true,
+    "launches_browser": false,
+    "launches_devhub": false,
+    "launches_playwright": false,
+    "network_requests_made": false,
+    "stores_browser_artifacts": false,
+    "stores_private_artifacts": false,
+    "stores_downloads": false,
+    "redaction_rules": [
+      {
+        "rule_id": "redact-heading-and-labels",
+        "target": "page headings, labels, landmarks, timestamps, and record-status labels must remain tokenized before reconciliation",
+        "owner": "devhub_redaction_reviewer",
+        "citations": [
+          "read-only-redaction-review-rule-1"
+        ]
+      }
+    ],
+    "abort_prompts": [
+      {
+        "prompt_id": "abort-private-artifact",
+        "prompt": "Abort reconciliation if screenshots, traces, HAR files, auth state, private local paths, raw authenticated page values, uploads, submissions, certifications, payments, scheduling, or cancellation controls appear in the packet.",
+        "owner_id": "devhub_pilot_operator",
+        "citations": [
+          "read-only-redaction-review-abort-1"
+        ]
+      }
+    ],
+    "reviewer_owners": [
+      {
+        "owner_id": "devhub_redaction_owner",
+        "reviewer_id": "devhub_redaction_reviewer",
+        "responsibility": "approve redaction follow-ups before any attended pilot rerun",
+        "citations": [
+          "read-only-redaction-review-owner-1"
+        ]
+      }
+    ],
+    "private_artifact_prohibitions": [
+      {
+        "prohibition_id": "no-browser-artifacts",
+        "prohibition": "Do not store screenshots, traces, HAR data, auth state, raw authenticated values, downloaded documents, or private local paths in reconciliation packets.",
+        "owner_id": "devhub_redaction_owner",
+        "citations": [
+          "read-only-redaction-review-prohibition-1"
+        ]
+      }
+    ]
+  }
+}

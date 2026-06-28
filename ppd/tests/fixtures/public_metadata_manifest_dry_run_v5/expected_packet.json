@@ -1,0 +1,175 @@
+{
+  "dry_run_version": "public-metadata-manifest-dry-run-v5",
+  "mode": "fixture-first-offline-public-metadata-manifest-dry-run",
+  "input_packet_version": "public-refresh-preflight-packet-v5",
+  "offline_only": true,
+  "source_fixture_policy": {
+    "accepted_input": "public refresh preflight packet v5 fixture only",
+    "live_crawl_permitted": false,
+    "document_download_permitted": false,
+    "raw_body_storage_permitted": false,
+    "devhub_access_permitted": false,
+    "legal_or_permitting_guarantees_permitted": false
+  },
+  "selected_public_sources": [
+    {
+      "seed_id": "seed-permit-applications-index-metadata",
+      "source_registry_placeholder_id": "src-placeholder-permit-applications-index",
+      "source_registry_ref": "source-registry-placeholder://portland-ppd/permit-applications-index",
+      "owning_surface": "public_ppd_forms_index",
+      "selection_state": "selected_for_synthetic_archive_manifest_row",
+      "processor_handoff_state": "metadata_manifest_candidate_ready",
+      "reviewer_hold": false,
+      "skipped_reason": "not_skipped",
+      "crawl_frequency_label": "weekly"
+    },
+    {
+      "seed_id": "seed-file-standards-review-hold",
+      "source_registry_placeholder_id": "src-placeholder-file-standards",
+      "source_registry_ref": "source-registry-placeholder://portland-ppd/file-standards",
+      "owning_surface": "public_ppd_file_guidance",
+      "selection_state": "selected_for_synthetic_archive_manifest_row",
+      "processor_handoff_state": "blocked_by_skip_or_reviewer_hold",
+      "reviewer_hold": true,
+      "skipped_reason": "robots_or_policy_disallowed",
+      "crawl_frequency_label": "skip_until_review"
+    }
+  ],
+  "synthetic_archive_manifest_rows": [
+    {
+      "manifest_id": "archive-manifest-dry-run-v5:seed-permit-applications-index-metadata",
+      "source_id": "public-source-placeholder:seed-permit-applications-index-metadata",
+      "source_registry_placeholder_id": "src-placeholder-permit-applications-index",
+      "source_registry_ref": "source-registry-placeholder://portland-ppd/permit-applications-index",
+      "canonical_url": "placeholder:canonical-url:seed-permit-applications-index-metadata",
+      "requested_url": "placeholder:requested-url:seed-permit-applications-index-metadata",
+      "redirect_chain": [
+        {
+          "from": "placeholder:requested-url:seed-permit-applications-index-metadata",
+          "to": "placeholder:canonical-url:seed-permit-applications-index-metadata",
+          "status": "placeholder:not-requested"
+        }
+      ],
+      "http_status": "placeholder:not-requested",
+      "content_type": "placeholder:not-fetched",
+      "content_hash": "placeholder:not-computed-no-body",
+      "capture_started_at": "placeholder:not-captured-offline-dry-run",
+      "capture_finished_at": "placeholder:not-captured-offline-dry-run",
+      "processor_name": "placeholder:processor-not-invoked",
+      "processor_version": "placeholder:processor-not-invoked",
+      "archive_artifact_ref": "placeholder:no-archive-artifact-created",
+      "normalized_document_id": "normalized-document-placeholder:seed-permit-applications-index-metadata",
+      "normalized_document_ref": {
+        "document_id": "normalized-document-placeholder:seed-permit-applications-index-metadata",
+        "document_ref": "normalized-document-placeholder://public-refresh/seed-permit-applications-index-metadata",
+        "normalization_state": "placeholder:not-normalized-offline-dry-run"
+      },
+      "skipped_reason": "not_skipped",
+      "no_raw_body_persisted": true,
+      "reviewer_hold": false,
+      "rollback_note": "Remove this candidate from the metadata-only seed draft if reviewer evidence is incomplete."
+    },
+    {
+      "manifest_id": "archive-manifest-dry-run-v5:seed-file-standards-review-hold",
+      "source_id": "public-source-placeholder:seed-file-standards-review-hold",
+      "source_registry_placeholder_id": "src-placeholder-file-standards",
+      "source_registry_ref": "source-registry-placeholder://portland-ppd/file-standards",
+      "canonical_url": "placeholder:canonical-url:seed-file-standards-review-hold",
+      "requested_url": "placeholder:requested-url:seed-file-standards-review-hold",
+      "redirect_chain": [
+        {
+          "from": "placeholder:requested-url:seed-file-standards-review-hold",
+          "to": "placeholder:canonical-url:seed-file-standards-review-hold",
+          "status": "placeholder:not-requested"
+        }
+      ],
+      "http_status": "placeholder:skipped-before-request",
+      "content_type": "placeholder:not-fetched",
+      "content_hash": "placeholder:not-computed-skipped-or-held",
+      "capture_started_at": "placeholder:not-captured-offline-dry-run",
+      "capture_finished_at": "placeholder:not-captured-offline-dry-run",
+      "processor_name": "placeholder:processor-not-invoked",
+      "processor_version": "placeholder:processor-not-invoked",
+      "archive_artifact_ref": "placeholder:no-archive-artifact-created",
+      "normalized_document_id": "normalized-document-placeholder:seed-file-standards-review-hold",
+      "normalized_document_ref": {
+        "document_id": "normalized-document-placeholder:seed-file-standards-review-hold",
+        "document_ref": "normalized-document-placeholder://public-refresh/seed-file-standards-review-hold",
+        "normalization_state": "placeholder:not-normalized-offline-dry-run"
+      },
+      "skipped_reason": "robots_or_policy_disallowed",
+      "no_raw_body_persisted": true,
+      "reviewer_hold": true,
+      "rollback_note": "Keep this candidate out of the refresh manifest until the stale-source hold is cleared."
+    }
+  ],
+  "redirect_chain_placeholder_policy": "placeholder:not-requested for every row; no network redirects observed",
+  "http_status_placeholder_policy": "placeholder:not-requested or placeholder:skipped-before-request only",
+  "content_hash_placeholder_policy": "placeholder:not-computed-no-body or placeholder:not-computed-skipped-or-held only",
+  "processor_placeholder_policy": "processor name and version remain placeholder:processor-not-invoked",
+  "skipped_reasons": [
+    {
+      "seed_id": "seed-file-standards-review-hold",
+      "skipped_reason": "robots_or_policy_disallowed",
+      "processor_handoff_state": "blocked_by_skip_or_reviewer_hold",
+      "reviewer_hold": "true"
+    }
+  ],
+  "no_raw_body_flags": [
+    {
+      "manifest_id": "archive-manifest-dry-run-v5:seed-permit-applications-index-metadata",
+      "no_raw_body_persisted": true
+    },
+    {
+      "manifest_id": "archive-manifest-dry-run-v5:seed-file-standards-review-hold",
+      "no_raw_body_persisted": true
+    }
+  ],
+  "reviewer_holds": {
+    "mapping": {
+      "hold-none": "no stale-source guardrail hold applies to this candidate",
+      "hold-file-standards-review": "candidate remains reviewer-held until stale file-standard evidence is reconciled"
+    },
+    "candidate_holds": [
+      {
+        "seed_id": "seed-file-standards-review-hold",
+        "stale_source_hold_key": "hold-file-standards-review",
+        "hold_disposition": "candidate remains reviewer-held until stale file-standard evidence is reconciled",
+        "reviewer_route": "PPD stale source hold review"
+      }
+    ],
+    "routing": {
+      "queue": "PPD public refresh seed review",
+      "reviewer_role": "public source freshness reviewer",
+      "routing_note": "offline fixture review only; future network access requires separate preflight"
+    }
+  },
+  "rollback_notes": {
+    "packet_level": "Drop the proposed seed from the next metadata-only manifest draft and keep prior public corpus pointers unchanged.",
+    "candidate_level": [
+      {
+        "seed_id": "seed-permit-applications-index-metadata",
+        "rollback_note": "Remove this candidate from the metadata-only seed draft if reviewer evidence is incomplete."
+      },
+      {
+        "seed_id": "seed-file-standards-review-hold",
+        "rollback_note": "Keep this candidate out of the refresh manifest until the stale-source hold is cleared."
+      }
+    ]
+  },
+  "prohibited_actions": [
+    "live_crawl",
+    "download_document",
+    "store_raw_body",
+    "open_devhub",
+    "persist_private_session",
+    "promote_archive_manifest",
+    "legal_or_permitting_guarantee"
+  ],
+  "validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/public_refresh/public_metadata_manifest_dry_run_v5.py"],
+    ["python3", "-m", "py_compile", "ppd/tests/test_public_metadata_manifest_dry_run_v5.py"],
+    ["python3", "-m", "pytest", "ppd/tests/test_public_metadata_manifest_dry_run_v5.py"],
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

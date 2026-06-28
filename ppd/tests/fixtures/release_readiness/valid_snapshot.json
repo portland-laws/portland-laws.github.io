@@ -1,0 +1,53 @@
+{
+  "release_status": "candidate",
+  "prerequisite_packets": [
+    {
+      "name": "public source registry",
+      "link": "ppd/tests/fixtures/release_readiness/source_registry_packet.json"
+    },
+    {
+      "name": "guardrail bundle",
+      "source_link": "ppd/tests/fixtures/release_readiness/guardrail_packet.json"
+    }
+  ],
+  "readiness_claims": [
+    {
+      "claim": "Public crawl remains disabled for release validation.",
+      "source_evidence_ids": ["fixture-public-crawl-disabled"]
+    },
+    {
+      "claim": "Consequential DevHub actions require manual handoff.",
+      "citations": ["fixture-devhub-manual-handoff"]
+    }
+  ],
+  "capabilities": {
+    "public_metadata_validation": {
+      "enabled": true
+    },
+    "live_crawl": {
+      "enabled": false
+    },
+    "devhub": {
+      "enabled": false
+    },
+    "payment": {
+      "enabled": false
+    },
+    "upload": {
+      "enabled": false
+    },
+    "submission": {
+      "enabled": false
+    },
+    "scheduling": {
+      "enabled": false
+    },
+    "cancellation": {
+      "enabled": false
+    },
+    "certification": {
+      "enabled": false
+    }
+  },
+  "unresolved_blockers": []
+}

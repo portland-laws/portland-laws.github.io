@@ -1,0 +1,14 @@
+Added deterministic regression fixtures for the three claimed symbolic-validity TODO citations (`16 U.S.C. 6410`, `16 U.S.C. 47a`, `7 U.S.C. 614`) so parser/compiler behavior is now explicitly covered.
+
+Updated files:
+- [test_legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000019-20260518_090609/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py)
+- [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000019-20260518_090609/tests/unit_tests/logic/modal/test_modal_codec.py)
+
+What was added:
+- New fixture texts for those citations.
+- New parser regression test asserting each sample compiles to at least one formula with citation provenance.
+- New compiler regression test (both `regex` and `spacy` backends) asserting no `missing_modal_formula` ambiguity for the same samples.
+
+Targeted tests run:
+- `python3 -m pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py -k "replays_symbolic_validity_samples_for_16_6410_16_47a_and_7_614"` (passed)
+- `python3 -m pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "replays_symbolic_validity_samples_for_16_6410_16_47a_and_7_614"` (passed)

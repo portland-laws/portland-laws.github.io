@@ -1,0 +1,34 @@
+{
+  "packet_id": "fixture-read-only-rejected",
+  "mode": "attended_read_only",
+  "prerequisite_links": [],
+  "readiness_claims": [
+    {
+      "claim": "Ready because Playwright executed the live browser flow and clicked in DevHub."
+    }
+  ],
+  "artifacts": {
+    "screenshot_path": "private/devhub/screenshot.png",
+    "trace_path": "private/devhub/trace.zip",
+    "har_path": "private/devhub/session.har",
+    "storage_state": "private/devhub/storage_state.json",
+    "session_file": "private/devhub/devhub-session.json"
+  },
+  "automation_notes": [
+    "Automate CAPTCHA if shown.",
+    "Complete MFA one-time code prompt.",
+    "Create account when missing."
+  ],
+  "controls": [
+    {
+      "label": "Submit application",
+      "kind": "consequential_official",
+      "enabled": true
+    },
+    {
+      "label": "Pay fees",
+      "kind": "financial",
+      "disabled": false
+    }
+  ]
+}

@@ -1,0 +1,141 @@
+{
+  "packet_id": "requirement-rerun-review-2026-05-29-fixture",
+  "generated_at": "2026-05-29T00:00:00Z",
+  "process_model_id": "residential-building-permit-draft",
+  "reviewer_owners": [
+    "ppd-requirements-reviewer",
+    "ppd-process-model-reviewer"
+  ],
+  "dispositions": [
+    {
+      "disposition_id": "disp-stage-document-prep",
+      "requirement_id": "req-single-pdf-stage",
+      "status": "accepted",
+      "reviewer_owner": "ppd-process-model-reviewer",
+      "rollback_note": "Remove the document-preparation stage proposal if the cited Single PDF guidance is superseded.",
+      "source_evidence_ids": ["src-submit-plans-online-single-pdf"],
+      "proposed_change": {
+        "diff_type": "stage",
+        "operation": "add",
+        "target_id": "stage-document-preparation-single-pdf",
+        "current": null,
+        "proposed": {
+          "stage_id": "document-preparation",
+          "label": "document preparation",
+          "precedes": "upload staging",
+          "requires_human_review_status": "proposed"
+        }
+      }
+    },
+    {
+      "disposition_id": "disp-required-fact-license-profile",
+      "requirement_id": "req-license-profile-affects-fixtures",
+      "status": "accepted",
+      "reviewer_owner": "ppd-requirements-reviewer",
+      "rollback_note": "Remove the contractor-license required fact until a later rerun confirms the trade permit fixture dependency.",
+      "source_evidence_ids": ["src-standard-trade-license-profile"],
+      "proposed_change": {
+        "diff_type": "required_fact",
+        "operation": "add",
+        "target_id": "fact-contractor-license-profile-status",
+        "current": null,
+        "proposed": {
+          "fact_id": "contractor_license_profile_status",
+          "question": "Is the relevant contractor license associated with the user's DevHub profile?",
+          "required_before_stage": "eligibility screening"
+        }
+      }
+    },
+    {
+      "disposition_id": "disp-document-rule-single-pdf",
+      "requirement_id": "req-single-pdf-document-rule",
+      "status": "accepted",
+      "reviewer_owner": "ppd-process-model-reviewer",
+      "rollback_note": "Remove this document-rule proposal if the Single PDF process no longer applies to this permit family.",
+      "source_evidence_ids": ["src-submit-plans-online-single-pdf"],
+      "proposed_change": {
+        "diff_type": "document_rule",
+        "operation": "add",
+        "target_id": "document-rule-drawings-one-pdf",
+        "current": null,
+        "proposed": {
+          "rule_id": "drawings_combined_one_pdf",
+          "document_kind": "drawing_plans",
+          "rule": "Drawing plans are prepared together in one PDF, while applications and supporting documents remain separate PDFs."
+        }
+      }
+    },
+    {
+      "disposition_id": "disp-deadline-review-window",
+      "requirement_id": "req-prescreen-intake-window",
+      "status": "accepted",
+      "reviewer_owner": "ppd-requirements-reviewer",
+      "rollback_note": "Remove the proposed deadline if the cited intake review timing is not confirmed in the next public-source rerun.",
+      "source_evidence_ids": ["src-devhub-submit-application-guide"],
+      "proposed_change": {
+        "diff_type": "deadline",
+        "operation": "add",
+        "target_id": "deadline-prescreen-intake-review",
+        "current": null,
+        "proposed": {
+          "deadline_id": "prescreen_intake_review_window",
+          "stage": "prescreen/intake",
+          "temporal_scope": "after application request submission",
+          "human_review_status": "proposed"
+        }
+      }
+    },
+    {
+      "disposition_id": "disp-exception-email-only-path",
+      "requirement_id": "req-not-all-permits-devhub",
+      "status": "accepted",
+      "reviewer_owner": "ppd-process-model-reviewer",
+      "rollback_note": "Remove the exception if future official guidance states this permit type is fully available in DevHub.",
+      "source_evidence_ids": ["src-apply-permits-email-paths"],
+      "proposed_change": {
+        "diff_type": "exception",
+        "operation": "add",
+        "target_id": "exception-email-or-manual-path-required",
+        "current": null,
+        "proposed": {
+          "exception_id": "email_or_manual_path_required",
+          "condition": "Official guidance routes the selected permit type outside DevHub.",
+          "effect": "manual handoff"
+        }
+      }
+    },
+    {
+      "disposition_id": "disp-unsupported-final-submit",
+      "requirement_id": "req-final-submit-consequential",
+      "status": "unsupported",
+      "reviewer_owner": "ppd-guardrail-reviewer",
+      "rollback_note": "Keep final submission outside proposed process automation; no rollback touches active process state.",
+      "source_evidence_ids": ["src-devhub-submit-application-guide"],
+      "proposed_change": {
+        "diff_type": "unsupported_path",
+        "operation": "record",
+        "target_id": "unsupported-automated-final-submission",
+        "current": null,
+        "proposed": {
+          "unsupported_path_id": "automated_final_submission",
+          "reason": "Final submission and certification are consequential official actions requiring user attendance and exact confirmation."
+        }
+      }
+    },
+    {
+      "disposition_id": "disp-rejected-fee-change",
+      "requirement_id": "req-fee-change-unconfirmed",
+      "status": "rejected",
+      "reviewer_owner": "ppd-requirements-reviewer",
+      "source_evidence_ids": ["src-fee-payment-guide"],
+      "proposed_change": {
+        "diff_type": "deadline",
+        "operation": "add",
+        "target_id": "deadline-unconfirmed-fee-payment",
+        "proposed": {
+          "deadline_id": "unconfirmed_fee_payment"
+        }
+      }
+    }
+  ]
+}

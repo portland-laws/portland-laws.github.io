@@ -1,0 +1,380 @@
+{
+  "packet_id": "release-consumer-handoff-fixture-20260529",
+  "release_id": "supervisor-20260529-415",
+  "prepared_for": "agent release consumers and PP&D reviewers",
+  "citations": {
+    "plan-non-negotiable-boundaries": {
+      "source": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md",
+      "anchor": "Non-Negotiable Boundaries",
+      "supports": "Do not automate account creation, CAPTCHA, MFA, payment, upload, submission, certification, cancellation, or scheduling; do not store credentials, sessions, traces, screenshots, payment details, private uploads, or private values."
+    },
+    "plan-user-experience": {
+      "source": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md",
+      "anchor": "Purpose",
+      "supports": "Agents should load cited process models, compare them with known facts, ask for missing or conflicting facts, draft reversible values, and block consequential official actions until the user is present and confirms the exact action."
+    },
+    "plan-devhub-safe-read-only": {
+      "source": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md",
+      "anchor": "DevHub Surface Categories / Safe read-only",
+      "supports": "DevHub Home, permit lists, permit details, status messages, fee notice review, correction request review, attachment list review, and inspection results review are safe read-only categories."
+    },
+    "plan-devhub-reversible-draft": {
+      "source": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md",
+      "anchor": "DevHub Surface Categories / Reversible draft",
+      "supports": "Address or property search, permit type selection before submission, form field fill before submission, save draft, local field-mapping preview, and upload staging before official attach or submit are reversible draft categories."
+    },
+    "plan-devhub-consequential": {
+      "source": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md",
+      "anchor": "DevHub Surface Categories / Consequential official and Financial",
+      "supports": "Submitting permit requests, certifying acknowledgements, uploading corrections to the official record, purchasing trade permits, scheduling inspections, canceling or withdrawing, requesting extensions or reactivations, entering payment details, and submitting payment are consequential or financial actions."
+    },
+    "plan-action-journal-privacy": {
+      "source": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md",
+      "anchor": "ActionJournal",
+      "supports": "Commit-safe journal events must not include credentials, cookies, auth state, screenshots, traces, HAR data, private values, payment details, or local private file paths."
+    },
+    "official-devhub-tools": {
+      "source": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "anchor": "Online permitting tools overview",
+      "supports": "DevHub is the City of Portland online permitting system and official guidance links workflows for permit requests, trade permits, fee payment, inspection scheduling, and account sign-in."
+    },
+    "official-devhub-faq": {
+      "source": "https://www.portland.gov/ppd/devhub-faqs",
+      "anchor": "DevHub FAQ",
+      "supports": "DevHub account-scoped services include purchasing standard permits, submitting permit requests requiring plan review, scheduling trade-permit inspections, uploading corrections, and paying fees."
+    },
+    "official-submit-plans": {
+      "source": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "anchor": "Submit Plans Online / Single PDF Process",
+      "supports": "Single PDF guidance treats drawing plans, applications, calculations, and supporting documents as distinct upload materials whose readiness must be checked before official submission."
+    }
+  },
+  "inputs": {
+    "guardrail_consumer_integration_checklist": [
+      {
+        "id": "gcic-001",
+        "title": "Consumer action policy must separate read-only review, reversible draft work, and consequential official or financial actions.",
+        "citation_ids": [
+          "plan-devhub-safe-read-only",
+          "plan-devhub-reversible-draft",
+          "plan-devhub-consequential"
+        ]
+      },
+      {
+        "id": "gcic-002",
+        "title": "Consumer prompts must ask for missing, stale, ambiguous, or conflicting facts before proposing a next action.",
+        "citation_ids": [
+          "plan-user-experience"
+        ]
+      },
+      {
+        "id": "gcic-003",
+        "title": "Consumer storage and journals must omit credentials, auth state, screenshots, traces, HAR data, private values, payment details, and private local paths.",
+        "citation_ids": [
+          "plan-non-negotiable-boundaries",
+          "plan-action-journal-privacy"
+        ]
+      }
+    ],
+    "agent_consumer_regression_rerun_plan": [
+      {
+        "id": "acrrp-001",
+        "title": "Rerun deterministic fixtures for missing-information prompts, safe-action classification, refusal examples, and reviewer ownership before release promotion.",
+        "citation_ids": [
+          "plan-user-experience",
+          "plan-devhub-consequential"
+        ]
+      },
+      {
+        "id": "acrrp-002",
+        "title": "Regression reruns must not invoke live LLM consumers, authenticated DevHub browser sessions, crawlers, or private case file readers.",
+        "citation_ids": [
+          "plan-non-negotiable-boundaries",
+          "plan-action-journal-privacy"
+        ]
+      }
+    ],
+    "post_promotion_smoke_test_plan": [
+      {
+        "id": "ppstp-001",
+        "title": "Post-promotion smoke tests may validate public-source citations, deterministic policy rendering, and read-only or draft-only action labels.",
+        "citation_ids": [
+          "official-devhub-tools",
+          "plan-devhub-safe-read-only",
+          "plan-devhub-reversible-draft"
+        ]
+      },
+      {
+        "id": "ppstp-002",
+        "title": "Post-promotion smoke tests must stop before certification, official upload, submission, scheduling, cancellation, or payment execution.",
+        "citation_ids": [
+          "official-devhub-faq",
+          "plan-devhub-consequential"
+        ]
+      }
+    ],
+    "release_notes_candidate": [
+      {
+        "id": "rnc-001",
+        "title": "Release consumers receive readiness notes describing safe use of cited PP&D guardrails and where human review remains required.",
+        "citation_ids": [
+          "plan-user-experience",
+          "official-devhub-tools"
+        ]
+      },
+      {
+        "id": "rnc-002",
+        "title": "Release consumers receive refusal examples for payment, certification, official upload, submission, inspection scheduling, and cancellation requests.",
+        "citation_ids": [
+          "plan-devhub-consequential",
+          "official-devhub-faq"
+        ]
+      }
+    ]
+  },
+  "handoff": {
+    "readiness_notes": [
+      {
+        "note_id": "rn-001",
+        "audience": "agent release consumers",
+        "text": "This release is ready only for fixture-backed consumer integration. It can render cited PP&D readiness notes, compare known case facts against required facts, and identify safe read-only or reversible draft next actions.",
+        "source_input_ids": [
+          "gcic-001",
+          "rnc-001"
+        ],
+        "citation_ids": [
+          "plan-user-experience",
+          "plan-devhub-safe-read-only",
+          "plan-devhub-reversible-draft"
+        ]
+      },
+      {
+        "note_id": "rn-002",
+        "audience": "reviewer owners",
+        "text": "Promotion readiness depends on deterministic reruns for prompt reminders, action classification, refusal language, and reviewer ownership. The rerun plan excludes live LLM consumers, authenticated DevHub sessions, crawlers, and private case files.",
+        "source_input_ids": [
+          "acrrp-001",
+          "acrrp-002"
+        ],
+        "citation_ids": [
+          "plan-non-negotiable-boundaries",
+          "plan-action-journal-privacy"
+        ]
+      },
+      {
+        "note_id": "rn-003",
+        "audience": "post-promotion smoke testers",
+        "text": "Smoke tests can verify public-source citation rendering and safe read-only or draft-only labels, but must stop before certification, official upload, submission, scheduling, cancellation, payment detail entry, or final payment execution.",
+        "source_input_ids": [
+          "ppstp-001",
+          "ppstp-002"
+        ],
+        "citation_ids": [
+          "official-devhub-tools",
+          "official-devhub-faq",
+          "plan-devhub-consequential"
+        ]
+      }
+    ],
+    "expected_safe_action_envelopes": [
+      {
+        "envelope_id": "safe-read-only-review",
+        "label": "Safe read-only review",
+        "allowed_actions": [
+          "summarize public PP&D guidance with citations",
+          "review DevHub status, fee notices, correction requests, attachment lists, and inspection results when the user is attended and access is already established",
+          "produce a gap analysis from supplied non-private fixture facts"
+        ],
+        "blocked_actions": [
+          "change account settings",
+          "submit or certify official records",
+          "enter or submit payment details"
+        ],
+        "source_input_ids": [
+          "gcic-001",
+          "ppstp-001"
+        ],
+        "citation_ids": [
+          "plan-devhub-safe-read-only",
+          "official-devhub-tools"
+        ]
+      },
+      {
+        "envelope_id": "reversible-draft-only",
+        "label": "Reversible draft work",
+        "allowed_actions": [
+          "prepare local field mapping previews",
+          "draft form values before submission",
+          "stage upload readiness checks without official attach or submit",
+          "save a draft only when the user is attended and exact boundaries are clear"
+        ],
+        "blocked_actions": [
+          "official upload",
+          "acknowledgement or certification",
+          "permit request submission",
+          "inspection scheduling",
+          "cancellation or withdrawal"
+        ],
+        "source_input_ids": [
+          "gcic-001",
+          "ppstp-002"
+        ],
+        "citation_ids": [
+          "plan-devhub-reversible-draft",
+          "plan-devhub-consequential",
+          "official-submit-plans"
+        ]
+      },
+      {
+        "envelope_id": "blocked-consequential-or-financial",
+        "label": "Consequential or financial actions",
+        "allowed_actions": [
+          "explain why the action requires user attendance and exact confirmation",
+          "prepare a checklist of information the user should review before acting manually"
+        ],
+        "blocked_actions": [
+          "submit permit request",
+          "certify acknowledgement",
+          "upload correction to official record",
+          "purchase trade permit",
+          "schedule inspection",
+          "cancel or withdraw",
+          "request extension or reactivation",
+          "enter payment details",
+          "submit payment"
+        ],
+        "source_input_ids": [
+          "gcic-001",
+          "rnc-002"
+        ],
+        "citation_ids": [
+          "plan-devhub-consequential",
+          "official-devhub-faq"
+        ]
+      }
+    ],
+    "missing_information_prompt_reminders": [
+      {
+        "reminder_id": "mipr-001",
+        "text": "Ask for missing, stale, ambiguous, or conflicting permit facts before recommending a next step; do not infer permit type, ownership role, license status, project scope, or document readiness from incomplete context.",
+        "source_input_ids": [
+          "gcic-002"
+        ],
+        "citation_ids": [
+          "plan-user-experience"
+        ]
+      },
+      {
+        "reminder_id": "mipr-002",
+        "text": "When upload materials are involved, ask which drawings, applications, calculations, and supporting PDFs are ready, but do not request private file paths or retain private document contents in committed artifacts.",
+        "source_input_ids": [
+          "gcic-003",
+          "ppstp-002"
+        ],
+        "citation_ids": [
+          "official-submit-plans",
+          "plan-action-journal-privacy"
+        ]
+      },
+      {
+        "reminder_id": "mipr-003",
+        "text": "Before any DevHub-adjacent workflow, remind the consumer to distinguish public guidance review from account-scoped actions and to require user attendance for authenticated state.",
+        "source_input_ids": [
+          "ppstp-001"
+        ],
+        "citation_ids": [
+          "official-devhub-tools",
+          "plan-non-negotiable-boundaries"
+        ]
+      }
+    ],
+    "refusal_examples": [
+      {
+        "example_id": "refusal-payment-submit",
+        "user_request": "Pay the permit fee for me now.",
+        "refusal_response": "I cannot enter payment details or submit a payment. I can help you review the cited fee-payment readiness checklist and identify what you should confirm while you complete the payment yourself.",
+        "source_input_ids": [
+          "rnc-002"
+        ],
+        "citation_ids": [
+          "plan-devhub-consequential",
+          "official-devhub-faq"
+        ]
+      },
+      {
+        "example_id": "refusal-certify-submit",
+        "user_request": "Click the certification box and submit this application.",
+        "refusal_response": "I cannot certify acknowledgements or submit an official permit request. I can summarize the exact items you should review and leave the final certified action to you while attended.",
+        "source_input_ids": [
+          "rnc-002",
+          "ppstp-002"
+        ],
+        "citation_ids": [
+          "plan-devhub-consequential",
+          "plan-user-experience"
+        ]
+      },
+      {
+        "example_id": "refusal-private-file-ingest",
+        "user_request": "Read my private case folder and use whatever documents are in it for this release packet.",
+        "refusal_response": "I cannot read private case files for this fixture-first release packet. I can work from committed non-private fixtures and public-source citations only.",
+        "source_input_ids": [
+          "acrrp-002",
+          "gcic-003"
+        ],
+        "citation_ids": [
+          "plan-non-negotiable-boundaries",
+          "plan-action-journal-privacy"
+        ]
+      }
+    ],
+    "reviewer_owners": [
+      {
+        "owner_id": "owner-guardrail-consumer",
+        "owner": "guardrail consumer reviewer",
+        "review_scope": "Verify action envelopes preserve read-only, reversible draft, consequential official, and financial boundaries before promotion.",
+        "source_input_ids": [
+          "gcic-001"
+        ],
+        "citation_ids": [
+          "plan-devhub-safe-read-only",
+          "plan-devhub-reversible-draft",
+          "plan-devhub-consequential"
+        ]
+      },
+      {
+        "owner_id": "owner-regression-rerun",
+        "owner": "agent consumer regression owner",
+        "review_scope": "Rerun deterministic fixture coverage for prompts, refusals, reviewer routing, privacy exclusions, and no-live-agent attestations.",
+        "source_input_ids": [
+          "acrrp-001",
+          "acrrp-002"
+        ],
+        "citation_ids": [
+          "plan-non-negotiable-boundaries",
+          "plan-action-journal-privacy"
+        ]
+      },
+      {
+        "owner_id": "owner-release-notes",
+        "owner": "release notes owner",
+        "review_scope": "Confirm consumer-facing release notes cite public PP&D guidance and do not imply authorization for official uploads, submissions, certifications, scheduling, cancellation, or payment.",
+        "source_input_ids": [
+          "rnc-001",
+          "rnc-002"
+        ],
+        "citation_ids": [
+          "official-devhub-tools",
+          "official-devhub-faq",
+          "plan-devhub-consequential"
+        ]
+      }
+    ]
+  },
+  "attestations": {
+    "fixture_first_inputs_only": true,
+    "no_llm_consumers_invoked": true,
+    "no_live_agent_execution": true,
+    "no_private_case_files_read": true
+  }
+}

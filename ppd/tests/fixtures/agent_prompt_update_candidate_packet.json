@@ -1,0 +1,78 @@
+{
+  "packet_id": "agent_prompt_update_candidate_packet_fixture_first_v1",
+  "packet_kind": "fixture_first_agent_prompt_update_candidate",
+  "source_packet_ids": [
+    "agent_consumer_feedback_triage_packet",
+    "guardrail_explanation_regression_packet",
+    "missing_information_prompt_corpus"
+  ],
+  "reviewer_owner_fields": {
+    "review_owner": "ppd_policy_review",
+    "engineering_owner": "ppd_guardrails",
+    "release_owner": "ppd_release_manager",
+    "requires_human_review": true
+  },
+  "citations": [
+    {
+      "citation_id": "triage-001",
+      "source_packet_id": "agent_consumer_feedback_triage_packet",
+      "claim": "Consumers need refusals to explain the specific PP&D automation boundary that applies."
+    },
+    {
+      "citation_id": "guardrail-001",
+      "source_packet_id": "guardrail_explanation_regression_packet",
+      "claim": "Refusal wording must preserve prohibitions on CAPTCHA, MFA, payment, submission, upload, and certification actions."
+    },
+    {
+      "citation_id": "missing-info-001",
+      "source_packet_id": "missing_information_prompt_corpus",
+      "claim": "Missing-information prompts should ask for public, non-secret inputs and offer fixture-only next steps."
+    }
+  ],
+  "proposed_prompt_wording_changes": [
+    {
+      "change_id": "prompt-boundary-001",
+      "status": "candidate_only",
+      "proposed_wording": "Use committed PP&D fixtures and public documentation references first. Do not invoke live agent consumers, read private case files, or mutate prompt or release state while preparing review packets.",
+      "citation_ids": ["triage-001", "guardrail-001"]
+    },
+    {
+      "change_id": "prompt-missing-info-001",
+      "status": "candidate_only",
+      "proposed_wording": "When required information is missing, ask only for the narrow public or user-provided fields needed to continue, and describe the fixture-based validation that can run before any authenticated or live automation.",
+      "citation_ids": ["missing-info-001"]
+    }
+  ],
+  "proposed_refusal_wording_changes": [
+    {
+      "change_id": "refusal-live-action-001",
+      "status": "candidate_only",
+      "proposed_wording": "I cannot perform live PP&D actions such as CAPTCHA, MFA, payment, submission, upload, certification, cancellation, or account creation. I can prepare fixture-backed review material and validation expectations instead.",
+      "citation_ids": ["guardrail-001"]
+    }
+  ],
+  "regression_rerun_expectations": [
+    {
+      "expectation_id": "rerun-guardrail-explanations",
+      "must_pass": true,
+      "description": "Re-run guardrail explanation regressions against the candidate wording and verify each refusal names the prohibited live action boundary."
+    },
+    {
+      "expectation_id": "rerun-missing-info-prompts",
+      "must_pass": true,
+      "description": "Re-run missing-information prompt corpus checks and verify prompts request only public or user-provided fields."
+    },
+    {
+      "expectation_id": "rerun-consumer-feedback-triage",
+      "must_pass": true,
+      "description": "Re-run consumer feedback triage packet checks and verify every proposed change has at least one citation."
+    }
+  ],
+  "attestations": {
+    "live_agent_invoked": false,
+    "llm_consumer_invoked": false,
+    "private_case_files_read": false,
+    "prompt_state_mutated": false,
+    "release_state_mutated": false
+  }
+}

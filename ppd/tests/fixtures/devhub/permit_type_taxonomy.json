@@ -1,0 +1,46 @@
+{
+  "fixture_id": "ppd-devhub-permit-type-taxonomy-2026-05-15",
+  "source_basis": "Narrow deterministic fixture derived from PP&D plan source facts; not a live crawl or authenticated DevHub capture.",
+  "permit_types": [
+    {
+      "permit_type_id": "standard_trade_permit",
+      "label": "Standard trade permit",
+      "category": "devhub_supported",
+      "routing": "attended_devhub_draft",
+      "browser_automation_allowed": true,
+      "source_hint": "DevHub FAQ and online permitting tools guidance identify standard trade permits as DevHub-supported account workflows."
+    },
+    {
+      "permit_type_id": "building_permit_with_plan_review",
+      "label": "Building permit request with plan review",
+      "category": "devhub_supported",
+      "routing": "attended_devhub_draft",
+      "browser_automation_allowed": true,
+      "source_hint": "DevHub permit application guidance lists building permit application flows, with submission and certification still exact-confirmation gated."
+    },
+    {
+      "permit_type_id": "permit_type_not_available_in_devhub",
+      "label": "Permit type not available in DevHub",
+      "category": "devhub_unsupported",
+      "routing": "manual_handoff",
+      "browser_automation_allowed": false,
+      "source_hint": "PP&D plan source facts state some permit types must be submitted by email or other paths, so DevHub coverage must not be assumed."
+    },
+    {
+      "permit_type_id": "email_only_special_review",
+      "label": "Email-only special review path",
+      "category": "email_manual",
+      "routing": "manual_handoff",
+      "browser_automation_allowed": false,
+      "source_hint": "Manual/email submission paths require human routing outside attended DevHub browser automation."
+    },
+    {
+      "permit_type_id": "portland_maps_property_reference",
+      "label": "Portland Maps public property reference",
+      "category": "public_reference_only",
+      "routing": "manual_handoff",
+      "browser_automation_allowed": false,
+      "source_hint": "Portland Maps is a public reference surface linked from PP&D guidance, not a DevHub permit application automation path."
+    }
+  ]
+}

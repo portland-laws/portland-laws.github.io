@@ -1,0 +1,173 @@
+diff --git a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py
+index 65432c01..3fb88836 100644
+--- a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py
++++ b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py
+@@ -298,7 +298,16 @@ class LegalModalParser:
+         )
+         if fallback_formula is not None:
+             return fallback_formula
+-        return self._uscode_section_heading_fallback_formula(
++        fallback_formula = self._uscode_section_heading_fallback_formula(
++            resolved_document_id=document_id,
++            normalized_text=normalized,
++            citation=citation,
++            segments=candidate_segments,
++            start_index=start_index,
++        )
++        if fallback_formula is not None:
++            return fallback_formula
++        return self._uscode_no_cue_citation_fallback_formula(
+             resolved_document_id=document_id,
+             normalized_text=normalized,
+             citation=citation,
+@@ -1071,6 +1080,83 @@ class LegalModalParser:
+             role="clause",
+         )
+ 
++    def _uscode_no_cue_citation_fallback_formula(
++        self,
++        *,
++        resolved_document_id: str,
++        normalized_text: str,
++        citation: Optional[str],
++        segments: Sequence[LegalSegment],
++        start_index: int,
++    ) -> Optional[ModalIRFormula]:
++        """Last-resort frame formula for U.S.C. citations with no extracted modal cues."""
++        if not normalized_text.strip():
++            return None
++        if not self._is_uscode_citation(citation):
++            return None
++        if self.extract_cues(normalized_text):
++            return None
++
++        candidate_segment: Optional[LegalSegment] = None
++        for segment in segments:
++            token_count = len(_TOKEN_RE.findall(segment.text))
++            if token_count >= 2:
++                candidate_segment = segment
++                break
++        if candidate_segment is None and segments:
++            candidate_segment = segments[0]
++        if candidate_segment is None:
++            return None
++
++        candidate_text = self.normalize_text(candidate_segment.text)
++        token_matches = list(_TOKEN_RE.finditer(candidate_text))
++        if not token_matches:
++            return None
++        if len(token_matches) > _USCODE_SECTION_HEADING_SHORT_MAX_TOKENS:
++            cutoff = token_matches[_USCODE_SECTION_HEADING_SHORT_MAX_TOKENS - 1].end()
++            candidate_text = self.normalize_text(candidate_text[:cutoff])
++        if not candidate_text:
++            return None
++
++        candidate_end_char = candidate_segment.start_char + len(candidate_text)
++        profile = self.registry.get_profile(ModalLogicFamily.FRAME)
++        if not profile.operators:
++            return None
++        operator = profile.operators[0]
++        predicate = self._predicate_from_segment(
++            candidate_text,
++            "__uscode_no_cue_citation_fallback__",
++        )
++        conditions, exceptions = self._conditions_and_exceptions_from_segment(
++            candidate_text
++        )
++        return ModalIRFormula(
++            formula_id=f"{resolved_document_id}:f{start_index:04d}",
++            operator=ModalIROperator(
++                family=profile.family.value,
++                system=profile.system.value,
++                symbol=operator.symbol,
++                label=operator.aliases[0] if operator.aliases else operator.symbol,
++            ),
++            predicate=ModalIRPredicate(
++                name=predicate,
++                arguments=[],
++                role="frame",
++            ),
++            provenance=ModalIRProvenance(
++                source_id=resolved_document_id,
++                start_char=candidate_segment.start_char,
++                end_char=candidate_end_char,
++                citation=citation,
++            ),
++            conditions=conditions,
++            exceptions=exceptions,
++            metadata={
++                "cue": "__uscode_no_cue_citation_fallback__",
++                "fallback_rule": "uscode_no_cue_citation_v1",
++            },
++        )
++
+ 
+ __all__ = [
+     "LegalModalParser",
+diff --git a/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py b/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py
+index 62b7d5bb..25514cd4 100644
+--- a/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py
++++ b/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py
+@@ -213,6 +213,18 @@ _USCODE_19_3702_SYMBOLIC_VALIDITY_TEXT = (
+     "schedule registry digest table profile catalog narrative appendix mapping index "
+     "ledger coordination protocol record workflow archive taxonomy matrix"
+ )
++_USCODE_14_1155_TODO_TEXT = (
++    "U S C Title 14 chapter reference criminal penalty ledger catalog digest archive "
++    "registry supplement schedule narrative matrix annex glossary"
++)
++_USCODE_7_2110_TODO_TEXT = (
++    "U S C Title 7 chapter reference administrative notice hearing record catalog "
++    "digest annex supplement schedule registry matrix archive narrative glossary"
++)
++_USCODE_7_2611_TODO_TEXT = (
++    "U S C Title 7 chapter reference agricultural hearing docket transcript archive "
++    "digest index narrative glossary register supplement matrix"
++)
+ _USCODE_25_422_HEADING_ONLY_TEXT = "Housing voucher benefits and utility allowances."
+ _USCODE_48_1572_HEADING_ONLY_TEXT = "Administrative notice and hearing."
+ _USCODE_42_6323_HEADING_ONLY_TEXT = "Notice and hearing requirements."
+@@ -965,6 +977,43 @@ def test_parser_replays_symbolic_validity_todo_samples_with_coarse_section_headi
+         assert fallback.provenance.citation == citation
+ 
+ 
++def test_parser_replays_symbolic_validity_todo_samples_for_14_1155_7_2110_and_7_2611() -> None:
++    parser = LegalModalParser()
++    cases = [
++        (
++            "us-code-14-1155-e938dff6f2f5890b",
++            "14 U.S.C. 1155",
++            _USCODE_14_1155_TODO_TEXT,
++        ),
++        (
++            "us-code-7-2110-14b22fe93d7e45d7",
++            "7 U.S.C. 2110",
++            _USCODE_7_2110_TODO_TEXT,
++        ),
++        (
++            "us-code-7-2611-3091131587c51778",
++            "7 U.S.C. 2611",
++            _USCODE_7_2611_TODO_TEXT,
++        ),
++    ]
++
++    for document_id, citation, text in cases:
++        document = parser.parse(
++            text,
++            document_id=document_id,
++            source="us_code",
++            citation=citation,
++        )
++
++        assert document.document_id == document_id
++        assert document.formulas
++        fallback = document.formulas[-1]
++        assert fallback.operator.family == "frame"
++        assert fallback.metadata["cue"] == "__uscode_no_cue_citation_fallback__"
++        assert fallback.metadata["fallback_rule"] == "uscode_no_cue_citation_v1"
++        assert fallback.provenance.citation == citation
++
++
+ def test_logic_extractor_uses_deterministic_modal_parser_without_llm() -> None:
+     class FailingBackend:
+         def generate(self, request):  # pragma: no cover - should never be called

@@ -1,0 +1,225 @@
+{
+  "packet_id": "ppd-release-gate-status-synthetic-v1",
+  "packet_type": "ppd.release_gate_status_packet.v1",
+  "release_status": "blocked_metadata_only_candidate",
+  "fixture_first": true,
+  "metadata_only": true,
+  "generated_from_fixtures": true,
+  "production_readiness": false,
+  "live_capabilities_enabled": false,
+  "prerequisite_packet_links": [
+    {
+      "area": "source_registry_rehearsal",
+      "packet_id": "source-registry-rehearsal-fixture-v1",
+      "path": "ppd/tests/fixtures/release_gate_status/status_packet.json",
+      "kind": "validation_fixture",
+      "evidence_ids": ["ev-source-registry-fixture"]
+    },
+    {
+      "area": "guardrail_activation_rehearsal",
+      "packet_id": "guardrail-activation-rehearsal-fixture-v1",
+      "path": "ppd/tests/fixtures/release_gate_status/status_packet.json",
+      "kind": "validation_fixture",
+      "evidence_ids": ["ev-guardrail-activation-fixture"]
+    },
+    {
+      "area": "agent_api_conformance",
+      "packet_id": "agent-api-conformance-matrix-fixture-v1",
+      "path": "ppd/tests/fixtures/release_gate_status/status_packet.json",
+      "kind": "validation_fixture",
+      "evidence_ids": ["ev-agent-api-conformance"]
+    },
+    {
+      "area": "devhub_pilot_result_intake_readiness",
+      "packet_id": "devhub-read-only-pilot-result-intake-synthetic-v1",
+      "path": "ppd/tests/fixtures/release_gate_status/status_packet.json",
+      "kind": "validation_fixture",
+      "evidence_ids": ["ev-devhub-pilot-intake-template"]
+    }
+  ],
+  "source_rehearsals": {
+    "source_registry_rehearsal": {
+      "packet_id": "source-registry-rehearsal-fixture-v1",
+      "status": "fixture_validated",
+      "summary": "Registry rehearsal validates official PP&D seed metadata, allowlist decisions, freshness labels, and no raw body persistence claims from committed fixtures only.",
+      "evidence_ids": ["ev-source-registry-fixture", "ev-source-registry-no-raw-body"],
+      "promotes_production_readiness": false
+    },
+    "guardrail_activation_rehearsal": {
+      "packet_id": "guardrail-activation-rehearsal-fixture-v1",
+      "status": "review_required",
+      "summary": "Guardrail activation rehearsal maps blocked consequential actions and exact-confirmation checkpoints, but activation remains a fixture exercise pending reviewer approval.",
+      "evidence_ids": ["ev-guardrail-activation-fixture", "ev-consequential-actions-blocked"],
+      "promotes_production_readiness": false
+    },
+    "agent_api_conformance": {
+      "packet_id": "agent-api-conformance-matrix-fixture-v1",
+      "status": "metadata_only_ready",
+      "summary": "Agent API conformance is limited to deterministic response-shape, citation, refusal, and reviewer-prompt checks against synthetic fixtures.",
+      "evidence_ids": ["ev-agent-api-conformance", "ev-agent-api-citation-checks"],
+      "promotes_production_readiness": false
+    },
+    "devhub_pilot_result_intake_readiness": {
+      "packet_id": "devhub-read-only-pilot-result-intake-synthetic-v1",
+      "status": "blocked_open",
+      "summary": "DevHub pilot result intake packet is ready for redacted attended-result review, but no live authenticated workflow or official action is enabled by this gate.",
+      "evidence_ids": ["ev-devhub-pilot-intake-template", "ev-devhub-official-actions-refused"],
+      "promotes_production_readiness": false
+    }
+  },
+  "open_blockers": [
+    {
+      "blocker_id": "block-source-registry-live-reconciliation",
+      "area": "source_registry_rehearsal",
+      "status": "open",
+      "reason": "Reviewer must compare the fixture registry rehearsal against current official-source metadata before any live crawl path can be considered.",
+      "evidence_ids": ["ev-source-registry-fixture"]
+    },
+    {
+      "blocker_id": "block-guardrail-activation-review",
+      "area": "guardrail_activation_rehearsal",
+      "status": "open",
+      "reason": "Reviewer must confirm the rehearsal blocks submission, certification, upload, payment, scheduling, cancellation, and account changes before activation can advance.",
+      "evidence_ids": ["ev-guardrail-activation-fixture", "ev-consequential-actions-blocked"]
+    },
+    {
+      "blocker_id": "block-agent-api-reviewer-signoff",
+      "area": "agent_api_conformance",
+      "status": "open",
+      "reason": "Reviewer must approve the conformance matrix prompts and refusal responses before any agent-facing release claim can be made.",
+      "evidence_ids": ["ev-agent-api-conformance"]
+    },
+    {
+      "blocker_id": "block-devhub-pilot-intake-review",
+      "area": "devhub_pilot_result_intake_readiness",
+      "status": "open",
+      "reason": "Reviewer must verify that pilot result intake accepts only redacted metadata categories and rejects private values or official action completion claims.",
+      "evidence_ids": ["ev-devhub-pilot-intake-template", "ev-devhub-official-actions-refused"]
+    }
+  ],
+  "allowed_metadata_only_next_steps": [
+    {
+      "step_id": "review-source-registry-rehearsal-metadata",
+      "action_scope": "metadata_only",
+      "live_capability_enabled": false,
+      "description": "Review fixture registry IDs, canonical URLs, freshness statuses, and no-raw-body attestations.",
+      "evidence_ids": ["ev-source-registry-fixture", "ev-source-registry-no-raw-body"]
+    },
+    {
+      "step_id": "compare-guardrail-rehearsal-outcomes",
+      "action_scope": "metadata_only",
+      "live_capability_enabled": false,
+      "description": "Compare synthetic guardrail decisions with required PP&D blocked-action categories and exact-confirmation requirements.",
+      "evidence_ids": ["ev-guardrail-activation-fixture", "ev-consequential-actions-blocked"]
+    },
+    {
+      "step_id": "review-agent-api-conformance-matrix",
+      "action_scope": "metadata_only",
+      "live_capability_enabled": false,
+      "description": "Review deterministic agent API response shapes, citation requirements, refusal labels, and reviewer prompt coverage.",
+      "evidence_ids": ["ev-agent-api-conformance", "ev-agent-api-citation-checks"]
+    },
+    {
+      "step_id": "prepare-devhub-pilot-result-intake-review",
+      "action_scope": "metadata_only",
+      "live_capability_enabled": false,
+      "description": "Prepare reviewer intake questions for redacted attended-pilot metadata without keeping browser state or private field values.",
+      "evidence_ids": ["ev-devhub-pilot-intake-template"]
+    }
+  ],
+  "disabled_live_capabilities": [
+    {
+      "capability_id": "live_public_crawl",
+      "enabled": false,
+      "status": "disabled",
+      "reason": "Only committed source-registry fixtures are in scope for this gate.",
+      "evidence_ids": ["ev-source-registry-fixture"]
+    },
+    {
+      "capability_id": "authenticated_devhub_browser",
+      "enabled": false,
+      "status": "manual_handoff_only",
+      "reason": "Authenticated DevHub review remains attended and cannot be started by this packet.",
+      "evidence_ids": ["ev-devhub-pilot-intake-template", "ev-devhub-official-actions-refused"]
+    },
+    {
+      "capability_id": "official_upload",
+      "enabled": false,
+      "status": "refused",
+      "reason": "Official upload is consequential and remains blocked.",
+      "evidence_ids": ["ev-consequential-actions-blocked"]
+    },
+    {
+      "capability_id": "permit_submission",
+      "enabled": false,
+      "status": "refused",
+      "reason": "Permit submission is consequential and remains blocked.",
+      "evidence_ids": ["ev-consequential-actions-blocked"]
+    },
+    {
+      "capability_id": "certification",
+      "enabled": false,
+      "status": "refused",
+      "reason": "Certification and acknowledgement remain blocked pending explicit attended confirmation.",
+      "evidence_ids": ["ev-consequential-actions-blocked"]
+    },
+    {
+      "capability_id": "fee_payment",
+      "enabled": false,
+      "status": "refused",
+      "reason": "Financial workflows remain blocked.",
+      "evidence_ids": ["ev-consequential-actions-blocked"]
+    },
+    {
+      "capability_id": "inspection_scheduling",
+      "enabled": false,
+      "status": "refused",
+      "reason": "Inspection scheduling changes official state and remains blocked.",
+      "evidence_ids": ["ev-consequential-actions-blocked"]
+    },
+    {
+      "capability_id": "cancellation_or_withdrawal",
+      "enabled": false,
+      "status": "refused",
+      "reason": "Cancellation and withdrawal are official actions and remain blocked.",
+      "evidence_ids": ["ev-consequential-actions-blocked"]
+    },
+    {
+      "capability_id": "raw_document_download_persistence",
+      "enabled": false,
+      "status": "disabled",
+      "reason": "Committed artifacts must use normalized metadata and citations, not raw downloaded bodies.",
+      "evidence_ids": ["ev-source-registry-no-raw-body"]
+    }
+  ],
+  "required_reviewer_prompts": [
+    {
+      "prompt_id": "prompt-source-registry-currentness",
+      "reviewer_role": "PPD source reviewer",
+      "question": "Do the fixture registry records cite official PP&D anchors and preserve no-raw-body metadata-only boundaries?",
+      "required_before": "source registry rehearsal can move beyond fixture review",
+      "evidence_ids": ["ev-source-registry-fixture", "ev-source-registry-no-raw-body"]
+    },
+    {
+      "prompt_id": "prompt-guardrail-stop-actions",
+      "reviewer_role": "PPD guardrail reviewer",
+      "question": "Does the guardrail rehearsal block upload, submission, certification, payment, scheduling, cancellation, and account-change paths?",
+      "required_before": "guardrail activation rehearsal can be treated as reviewed",
+      "evidence_ids": ["ev-guardrail-activation-fixture", "ev-consequential-actions-blocked"]
+    },
+    {
+      "prompt_id": "prompt-agent-api-conformance",
+      "reviewer_role": "Agent API reviewer",
+      "question": "Do the conformance fixtures return cited answers, safe missing-information prompts, and refusals for consequential actions?",
+      "required_before": "agent API conformance can be accepted for metadata-only use",
+      "evidence_ids": ["ev-agent-api-conformance", "ev-agent-api-citation-checks"]
+    },
+    {
+      "prompt_id": "prompt-devhub-pilot-intake-redaction",
+      "reviewer_role": "DevHub pilot reviewer",
+      "question": "Does the pilot result intake accept only redacted headings, labels, categories, journal IDs, abort notes, and hardening notes?",
+      "required_before": "DevHub pilot result intake can receive attended read-only review metadata",
+      "evidence_ids": ["ev-devhub-pilot-intake-template", "ev-devhub-official-actions-refused"]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+Implemented a targeted compiler-ambiguity hardening for `frame -> {deontic, epistemic, temporal}` policy emission.
+
+- Updated [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_ambiguity/worktrees/agent-codex-compiler_ambiguity-packet-000564-20260519_160937/ipfs_datasets_py/logic/modal/compiler.py:790) to canonicalize family tokens before adaptive policy matching, share lookup, and compiled-family comparisons.
+- Added [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_ambiguity/worktrees/agent-codex-compiler_ambiguity-packet-000564-20260519_160937/ipfs_datasets_py/logic/modal/compiler.py:1124) helper `_canonicalized_family_shares` so non-canonical keys like `ModalLogicFamily.FRAME` still map to `frame`.
+- Added regression coverage in [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_ambiguity/worktrees/agent-codex-compiler_ambiguity-packet-000564-20260519_160937/tests/unit_tests/logic/modal/test_modal_codec.py:7974) for explicit ambiguities and priority values on:
+  - `frame->deontic` (`-0.999908575942`, `1.149908575942`)
+  - `frame->epistemic` (`-0.631226929562`, `0.781226929562`)
+  - `frame->temporal` (`-0.998544042424`, `1.148544042424`)
+
+Tests run (all passed):
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k 'canonicalizes_frame_family_tokens_for_priority_policy_margins or emits_adaptive_priority_metadata_for_frame_deontic_policy_margin or emits_priority_alias_for_temporal_signal_free_policy_pairs or recurrent_policy_pairs'`
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k 'adaptive and frame and (priority or recurrent_policy_pairs)'`

@@ -1,0 +1,51 @@
+{
+  "rehearsal_version": "post-activation-monitoring-rehearsal-v4",
+  "fixture_first": true,
+  "raw_body": null,
+  "source_observations": [
+    {
+      "source_id": "ppd-devhub-faq-placeholder",
+      "stale_source_hold": true,
+      "changed_requirement_risk": "high",
+      "skipped_source_reasons": [
+        "stale_source_hold",
+        "changed_requirement_risk",
+        "private_or_authenticated"
+      ],
+      "reviewer_routing": "devhub-public-guidance-reviewer",
+      "rollback_notes": "Keep the DevHub FAQ placeholder active and route any changed account, payment, correction upload, or inspection language to offline reviewer triage before a future public refresh."
+    },
+    {
+      "source_id": "ppd-submit-plans-online-placeholder",
+      "stale_source_hold": true,
+      "changed_requirement_risk": "medium",
+      "skipped_source_reasons": [
+        "stale_source_hold",
+        "changed_requirement_risk"
+      ],
+      "reviewer_routing": "public-content-reviewer",
+      "rollback_notes": "Keep the submit-plans placeholder active if offline validation finds changed single PDF or separate upload guidance."
+    },
+    {
+      "source_id": "ppd-fee-payment-guide-placeholder",
+      "stale_source_hold": true,
+      "changed_requirement_risk": "medium",
+      "skipped_source_reasons": [
+        "raw_download_not_permitted",
+        "changed_requirement_risk"
+      ],
+      "reviewer_routing": "forms-and-pdf-reviewer",
+      "rollback_notes": "Do not download the fee guide during seed creation; keep the placeholder and require offline reviewer approval before any later PDF refresh."
+    },
+    {
+      "source_id": "ppd-forms-index-placeholder",
+      "stale_source_hold": false,
+      "changed_requirement_risk": "low",
+      "skipped_source_reasons": [
+        "unsupported_content_type"
+      ],
+      "reviewer_routing": "forms-and-pdf-reviewer",
+      "rollback_notes": "Keep the forms index placeholder if a future refresh cannot classify linked forms without downloading documents."
+    }
+  ]
+}

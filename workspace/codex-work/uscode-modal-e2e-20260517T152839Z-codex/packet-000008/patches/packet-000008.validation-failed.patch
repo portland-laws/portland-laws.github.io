@@ -1,0 +1,83 @@
+diff --git a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py
+index 22549004..2421d857 100644
+--- a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py
++++ b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py
+@@ -5,7 +5,7 @@ from __future__ import annotations
+ import hashlib
+ import re
+ from dataclasses import dataclass
+-from typing import Iterable, List, Optional
++from typing import Iterable, List, Optional, Sequence
+ 
+ from .modal_ir import (
+     ModalIRDocument,
+@@ -115,6 +115,10 @@ class LegalModalParser:
+         resolved_document_id = document_id or self._document_id(normalized)
+         segments = self.segment(normalized)
+         cues = self.extract_cues(normalized)
++        if not cues and normalized:
++            fallback_cue = self._fallback_cue(segments, citation=citation)
++            if fallback_cue is not None:
++                cues = [fallback_cue]
+         formulas: List[ModalIRFormula] = []
+ 
+         for index, cue in enumerate(cues, start=1):
+@@ -165,6 +169,31 @@ class LegalModalParser:
+             },
+         )
+ 
++    def _fallback_cue(
++        self,
++        segments: Sequence[LegalSegment],
++        *,
++        citation: Optional[str],
++    ) -> Optional[ModalCueSpan]:
++        if not segments:
++            return None
++        if not citation:
++            return None
++        if "u.s.c." not in citation.lower():
++            return None
++        frame_profile = self.registry.get_profile(ModalLogicFamily.FRAME)
++        if not frame_profile.operators:
++            return None
++        segment = segments[0]
++        return ModalCueSpan(
++            family=frame_profile.family,
++            profile=frame_profile,
++            operator=frame_profile.operators[0],
++            cue="__uscode_heading_fallback__",
++            start_char=segment.start_char,
++            end_char=segment.end_char,
++        )
++
+     def _classify_segment_role(self, text: str) -> str:
+         lowered = text.lower()
+         if lowered.startswith(("if ", "unless ", "except ", "provided that ", "subject to ")):
+diff --git a/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py b/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py
+index dec9e0cd..c0a8489a 100644
+--- a/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py
++++ b/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py
+@@ -80,6 +80,22 @@ def test_parser_document_id_is_deterministic_from_normalized_text() -> None:
+     assert first.to_json() == second.to_json()
+ 
+ 
++def test_parser_emits_uscode_fallback_formula_when_no_modal_cues_match() -> None:
++    parser = LegalModalParser()
++
++    document = parser.parse(
++        "Criminal justice assistance and coordination.",
++        citation="42 U.S.C. 3731.",
++        source="us_code",
++    )
++
++    assert document.formulas
++    fallback = document.formulas[0]
++    assert fallback.operator.family == "frame"
++    assert fallback.metadata["cue"] == "__uscode_heading_fallback__"
++    assert fallback.predicate.name.startswith("criminal_justice_assistance")
++
++
+ def test_logic_extractor_uses_deterministic_modal_parser_without_llm() -> None:
+     class FailingBackend:
+         def generate(self, request):  # pragma: no cover - should never be called

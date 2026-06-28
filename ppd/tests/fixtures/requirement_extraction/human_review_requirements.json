@@ -1,0 +1,156 @@
+{
+  "fixture_id": "ppd-requirement-human-review-20260514-031",
+  "description": "Deterministic requirement extraction review cases that must be escalated before formalization.",
+  "review_policy": {
+    "human_review_status": "needs_human_review",
+    "formalization_status": "blocked_pending_review",
+    "required_reason_codes": [
+      "low_confidence",
+      "ocr_derived",
+      "stale_source",
+      "conflicting_evidence",
+      "unsupported_path"
+    ]
+  },
+  "requirements": [
+    {
+      "requirement_id": "review-low-confidence-window-egress",
+      "source_evidence_ids": ["evidence-window-egress-handout-page-4"],
+      "requirement_type": "document_requirement",
+      "subject": "applicant",
+      "action": "provide",
+      "object": "window egress detail sheet",
+      "conditions": ["residential alteration", "bedroom window replacement"],
+      "deadline_or_temporal_scope": null,
+      "permit_types": ["residential building permit"],
+      "process_stage": "document preparation",
+      "confidence": 0.42,
+      "human_review_status": "needs_human_review",
+      "formalization_status": "blocked_pending_review",
+      "review_reasons": [
+        {
+          "code": "low_confidence",
+          "message": "Extractor confidence is below the threshold for formal requirement creation."
+        }
+      ],
+      "extraction_metadata": {
+        "extraction_method": "html_section_parser",
+        "review_reason_codes": ["low_confidence"],
+        "source_updated_at": "2026-05-01",
+        "observed_at": "2026-05-14"
+      }
+    },
+    {
+      "requirement_id": "review-ocr-site-plan-scale",
+      "source_evidence_ids": ["evidence-site-plan-pdf-page-2-ocr"],
+      "requirement_type": "document_requirement",
+      "subject": "applicant",
+      "action": "submit",
+      "object": "site plan drawn to scale",
+      "conditions": ["new single-family residence", "detached accessory dwelling unit"],
+      "deadline_or_temporal_scope": "before application intake",
+      "permit_types": ["new single-family residence", "detached ADU"],
+      "process_stage": "upload staging",
+      "confidence": 0.71,
+      "human_review_status": "needs_human_review",
+      "formalization_status": "blocked_pending_review",
+      "review_reasons": [
+        {
+          "code": "ocr_derived",
+          "message": "The requirement text came from OCR output and must be checked against the source PDF before formalization."
+        }
+      ],
+      "extraction_metadata": {
+        "extraction_method": "pdf_ocr",
+        "review_reason_codes": ["ocr_derived"],
+        "source_updated_at": "2026-04-22",
+        "observed_at": "2026-05-14"
+      }
+    },
+    {
+      "requirement_id": "review-stale-fee-trigger",
+      "source_evidence_ids": ["evidence-fee-guide-2024-page-1"],
+      "requirement_type": "fee_trigger",
+      "subject": "applicant",
+      "action": "pay",
+      "object": "intake fee",
+      "conditions": ["permit request requires plan review"],
+      "deadline_or_temporal_scope": "at intake or when invoiced",
+      "permit_types": ["building permit", "trade permit with plan review"],
+      "process_stage": "fee payment",
+      "confidence": 0.88,
+      "human_review_status": "needs_human_review",
+      "formalization_status": "blocked_pending_review",
+      "review_reasons": [
+        {
+          "code": "stale_source",
+          "message": "The cited source is outside the freshness window for fee-related requirements."
+        }
+      ],
+      "extraction_metadata": {
+        "extraction_method": "pdf_text",
+        "review_reason_codes": ["stale_source"],
+        "source_updated_at": "2024-07-01",
+        "observed_at": "2026-05-14",
+        "freshness_window_days": 180
+      }
+    },
+    {
+      "requirement_id": "review-conflicting-plan-upload-count",
+      "source_evidence_ids": [
+        "evidence-submit-plans-online-single-pdf",
+        "evidence-devhub-guide-multiple-upload-slots"
+      ],
+      "requirement_type": "document_requirement",
+      "subject": "applicant",
+      "action": "upload",
+      "object": "plan set PDF",
+      "conditions": ["permit request requires plan review"],
+      "deadline_or_temporal_scope": "before submission",
+      "permit_types": ["building permit", "trade permit with plan review"],
+      "process_stage": "upload staging",
+      "confidence": 0.79,
+      "human_review_status": "needs_human_review",
+      "formalization_status": "blocked_pending_review",
+      "review_reasons": [
+        {
+          "code": "conflicting_evidence",
+          "message": "Two cited sources appear to disagree about whether plans must be a single PDF or separated into multiple upload slots."
+        }
+      ],
+      "extraction_metadata": {
+        "extraction_method": "cross_document_extractor",
+        "review_reason_codes": ["conflicting_evidence"],
+        "source_updated_at": "2026-05-08",
+        "observed_at": "2026-05-14"
+      }
+    },
+    {
+      "requirement_id": "review-unsupported-email-only-demolition-path",
+      "source_evidence_ids": ["evidence-demolition-handout-email-submittal"],
+      "requirement_type": "action_gate",
+      "subject": "agent",
+      "action": "do_not_route_to_devhub",
+      "object": "email-only demolition intake path",
+      "conditions": ["permit path is not supported by current DevHub automation surface map"],
+      "deadline_or_temporal_scope": null,
+      "permit_types": ["demolition permit"],
+      "process_stage": "permit type selection",
+      "confidence": 0.83,
+      "human_review_status": "needs_human_review",
+      "formalization_status": "blocked_pending_review",
+      "review_reasons": [
+        {
+          "code": "unsupported_path",
+          "message": "The requirement points to a non-DevHub or otherwise unsupported workflow path and must be reviewed before a process model is generated."
+        }
+      ],
+      "extraction_metadata": {
+        "extraction_method": "html_linked_path_classifier",
+        "review_reason_codes": ["unsupported_path"],
+        "source_updated_at": "2026-05-06",
+        "observed_at": "2026-05-14"
+      }
+    }
+  ]
+}

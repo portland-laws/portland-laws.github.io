@@ -1,0 +1,71 @@
+{
+  "packet_id": "synthetic-extraction-quality-review-001",
+  "fixture_only": true,
+  "documentRecords": [
+    {
+      "document_id": "synthetic-html-single-pdf-guide",
+      "document_type": "html",
+      "synthetic": true,
+      "title": "Synthetic Submit Plans Online Guide",
+      "extractionConfidence": 0.91,
+      "humanReviewStatus": "fixture_reviewed",
+      "headings": [
+        {"sourceOrder": 1, "text": "Prepare files"},
+        {"sourceOrder": 2, "text": "Upload plans"},
+        {"sourceOrder": 3, "text": "Respond to checksheets"}
+      ],
+      "tables": [
+        {
+          "headers": ["Document", "Rule"],
+          "rows": [["Plans", "One combined PDF"], ["Calculations", "Separate PDF"]],
+          "citation_spans": [{"source_id": "synthetic-html-single-pdf-guide", "start": 10, "end": 36, "excerpt": "Plans must remain together in one PDF."}]
+        }
+      ],
+      "feeTriggers": ["Plan review fees may be invoiced after intake."],
+      "deadlines": ["Corrections are due by the review cycle date shown in the notice."],
+      "citation_spans": [{"source_id": "synthetic-html-single-pdf-guide", "start": 1, "end": 9, "excerpt": "Synthetic heading and table extraction sample."}]
+    },
+    {
+      "document_id": "synthetic-pdf-file-standards",
+      "document_type": "pdf",
+      "synthetic": true,
+      "title": "Synthetic File Naming Standards PDF",
+      "extractionConfidence": 0.88,
+      "humanReviewStatus": "fixture_reviewed",
+      "headings": [
+        {"sourceOrder": 1, "text": "File naming"},
+        {"sourceOrder": 2, "text": "PDF preparation"}
+      ],
+      "tables": [
+        {
+          "headers": ["File type", "Naming pattern"],
+          "rows": [["Plan set", "PermitNumber_Plans.pdf"], ["Structural calculations", "PermitNumber_Calcs.pdf"]],
+          "citation_spans": [{"source_id": "synthetic-pdf-file-standards", "start": 20, "end": 59, "excerpt": "Use descriptive names for each uploaded PDF."}]
+        }
+      ],
+      "fileRules": ["Plan drawings are grouped into one PDF.", "Supporting calculations are uploaded separately."],
+      "feeTriggers": ["Additional review fees may be triggered by resubmittal."],
+      "deadlines": ["Resubmittals must follow the correction notice timeline."],
+      "citation_spans": [{"source_id": "synthetic-pdf-file-standards", "start": 1, "end": 19, "excerpt": "Synthetic PDF extraction sample."}]
+    },
+    {
+      "document_id": "synthetic-form-permit-application",
+      "document_type": "form",
+      "synthetic": true,
+      "title": "Synthetic Permit Application Form",
+      "extractionConfidence": 0.62,
+      "humanReviewStatus": "needs_human_review",
+      "reviewQueue": "fixture-low-confidence-routing",
+      "headings": [
+        {"sourceOrder": 1, "text": "Applicant information"},
+        {"sourceOrder": 2, "text": "Project information"},
+        {"sourceOrder": 3, "text": "Acknowledgement"}
+      ],
+      "fileRules": ["Attach plans as PDF files only."],
+      "certificationLanguage": ["Applicant acknowledges that submitted information is accurate to the best of their knowledge."],
+      "feeTriggers": ["Application intake may create a fee balance."],
+      "deadlines": ["Incomplete applications must be corrected before intake can continue."],
+      "citation_spans": [{"source_id": "synthetic-form-permit-application", "start": 1, "end": 31, "excerpt": "Synthetic form extraction sample."}]
+    }
+  ]
+}

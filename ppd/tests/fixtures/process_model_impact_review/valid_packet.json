@@ -1,0 +1,52 @@
+{
+  "packet_id": "impact-review-valid-001",
+  "affected_process_ids": [
+    "process-building-permit-intake"
+  ],
+  "affected_guardrail_ids": [
+    "guardrail-submit-block",
+    "guardrail-payment-block"
+  ],
+  "blocked_action_carryovers": [
+    {
+      "action_id": "submit-permit-request",
+      "reason": "official submission requires user attendance and exact confirmation"
+    },
+    {
+      "action_id": "submit-payment",
+      "reason": "financial actions remain blocked"
+    }
+  ],
+  "reviewer_owners": [
+    "ppd-process-reviewer"
+  ],
+  "process_stage_impact_claims": [
+    {
+      "claim_id": "claim-upload-staging-impact",
+      "process_stage": "upload staging",
+      "impact": "Source guidance affects reversible draft upload staging only.",
+      "source_evidence_ids": [
+        "src-submit-plans-online-20260508"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "control_id": "draft-field-preview",
+      "category": "reversible",
+      "enabled": true
+    },
+    {
+      "control_id": "official-submit",
+      "category": "consequential",
+      "enabled": false
+    }
+  ],
+  "mutation_flags": {
+    "process": false,
+    "guardrail": false,
+    "prompt": false,
+    "release_state": false
+  },
+  "notes": "Deterministic offline review only; no live execution was performed."
+}

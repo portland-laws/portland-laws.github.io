@@ -1,0 +1,114 @@
+{
+  "inputs": {
+    "public_source_registry_promotion_decision": {
+      "packet_id": "source-registry-promotion-decision-2026-05-28",
+      "decision_link_id": "decision-link.source-registry-promotion.2026-05-28",
+      "fixture_path": "ppd/tests/fixtures/post_decision_release_readiness_digest/input_packets.json",
+      "metadata_only": true,
+      "decision": "approved_for_promotion",
+      "readiness_claims": [
+        {
+          "claim_id": "claim.source-registry.metadata-only-promotion",
+          "claim": "Source registry promotion is approved only as a metadata decision while live writes remain blocked.",
+          "citation_ids": ["citation.source-registry.promotion-decision"]
+        }
+      ],
+      "remaining_blockers": [
+        {
+          "blocker_id": "source-registry.live-write-not-approved",
+          "status": "blocked",
+          "summary": "Promotion is approved as a metadata decision only; live SourceRegistry writes still require attended release approval."
+        }
+      ],
+      "rollback_notes": [
+        {
+          "note_id": "rollback.source-registry-candidate-only",
+          "note": "Discard staged candidate metadata; no production registry rollback is required."
+        }
+      ]
+    },
+    "guardrail_activation_decision": {
+      "packet_id": "guardrail-activation-decision-2026-05-28",
+      "decision_link_id": "decision-link.guardrail-activation.2026-05-28",
+      "fixture_path": "ppd/tests/fixtures/post_decision_release_readiness_digest/input_packets.json",
+      "metadata_only": true,
+      "decision_status": "deferred",
+      "live_enforcement_enabled": false,
+      "readiness_claims": [
+        {
+          "claim_id": "claim.guardrails.activation-deferred",
+          "claim": "Guardrail activation remains deferred and live enforcement is disabled.",
+          "citation_ids": ["citation.guardrails.activation-decision"]
+        }
+      ],
+      "remaining_blockers": [
+        {
+          "blocker_id": "guardrails.live-enforcement-disabled",
+          "status": "blocked",
+          "summary": "Guardrail activation decision keeps live enforcement disabled until reviewer signoff."
+        }
+      ],
+      "rollback_notes": [
+        {
+          "note_id": "rollback.keep-active-bundle",
+          "note": "Keep active guardrail bundles unchanged."
+        }
+      ]
+    },
+    "source_freshness_drift_digest": {
+      "packet_id": "source-freshness-drift-digest-2026-05-28",
+      "fixture_path": "ppd/tests/fixtures/post_decision_release_readiness_digest/input_packets.json",
+      "metadata_only": true,
+      "readiness_claims": [
+        {
+          "claim_id": "claim.source-freshness.drift-linked",
+          "claim": "Freshness drift is linked to affected requirements and guardrail bundles, with review still pending.",
+          "citation_ids": ["citation.devhub-faq.metadata"]
+        }
+      ],
+      "changed_source_claims": [
+        {
+          "source_id": "ppd.devhub-faq",
+          "changed": true,
+          "citation_ids": ["citation.devhub-faq.metadata"],
+          "affected_requirement_ids": ["requirement.devhub.read-only-review"],
+          "affected_guardrail_bundle_ids": ["guardrail.devhub.read-only"]
+        }
+      ],
+      "remaining_blockers": [
+        {
+          "blocker_id": "freshness.drift-review-pending",
+          "status": "pending",
+          "summary": "Freshness drift has affected requirement and guardrail links, but reviewer acknowledgement is still pending."
+        }
+      ]
+    },
+    "devhub_read_only_pilot_readiness_reconciliation": {
+      "packet_id": "devhub-read-only-pilot-readiness-reconciliation-2026-05-28",
+      "reconciliation_link_id": "reconciliation-link.devhub-read-only-pilot.2026-05-28",
+      "fixture_path": "ppd/tests/fixtures/post_decision_release_readiness_digest/input_packets.json",
+      "metadata_only": true,
+      "pilot_status": "offline_ready_attended_required",
+      "readiness_claims": [
+        {
+          "claim_id": "claim.devhub.read-only-pilot-deferred",
+          "claim": "DevHub read-only pilot readiness is reconciled only for offline review and remains attended-session gated.",
+          "citation_ids": ["citation.devhub.reconciliation"]
+        }
+      ],
+      "remaining_blockers": [
+        {
+          "blocker_id": "devhub.attended-session-required",
+          "status": "blocked",
+          "summary": "Authenticated DevHub read-only pilot remains deferred until a user-attended session is explicitly approved."
+        }
+      ],
+      "rollback_notes": [
+        {
+          "note_id": "rollback.no-devhub-session-artifacts",
+          "note": "No browser state, screenshots, traces, HAR files, credentials, or private page values were created."
+        }
+      ]
+    }
+  }
+}

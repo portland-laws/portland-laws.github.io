@@ -1,0 +1,18 @@
+{
+  "sources": [
+    {
+      "source_id": "ppd_public_permit_search",
+      "public_url": "https://www.portland.gov/ppd/permits",
+      "next_refresh_after": "2026-06-15",
+      "stale_days": 17,
+      "citation_state": "current"
+    },
+    {
+      "source_id": "ppd_public_zoning_code",
+      "public_url": "https://www.portland.gov/code/33",
+      "next_refresh_after": "2026-06-08",
+      "stale_days": 45,
+      "citation_state": "needs_owner_review"
+    }
+  ]
+}

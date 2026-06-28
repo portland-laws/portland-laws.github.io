@@ -1,0 +1,36 @@
+{
+  "digest_id": "drift-digest-invalid-001",
+  "provenance": {
+    "generated_by": "deterministic_fixture",
+    "live_network_run": true
+  },
+  "source_references": [
+    {
+      "source_id": "devhub-private-case",
+      "source_type": "devhub_authenticated",
+      "canonical_url": "private://devhub/session/case/123",
+      "reference_type": "normalized_document"
+    },
+    {
+      "source_id": "downloaded-fee-guide",
+      "source_type": "public_pdf",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "reference_type": "downloaded_document",
+      "downloaded_document_path": "/tmp/ppd/how-pay-fees.pdf"
+    }
+  ],
+  "changed_source_claims": [
+    {
+      "claim_id": "claim-uncited-change",
+      "changed": true,
+      "source_id": "devhub-private-case"
+    }
+  ],
+  "freshness_entries": [
+    {
+      "source_id": "ppd-devhub-faq",
+      "observed_freshness_status": "stale",
+      "freshness_status": "current"
+    }
+  ]
+}

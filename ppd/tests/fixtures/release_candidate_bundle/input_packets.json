@@ -1,0 +1,97 @@
+{
+  "inputs": {
+    "post_decision_release_readiness_digest": {
+      "packet_id": "ppd-post-decision-release-readiness-2026-05-28",
+      "fixture_path": "ppd/tests/fixtures/post_decision_release_readiness_digest/input_packets.json",
+      "metadata_only": true,
+      "decision_link_id": "decision.post_decision_digest.blocked",
+      "remaining_blockers": [
+        {
+          "blocker_id": "digest.blocker.live_actions_deferred",
+          "status": "blocked",
+          "summary": "Live and authenticated capabilities remain deferred."
+        }
+      ],
+      "rollback_references": [
+        {
+          "rollback_id": "rollback.post_decision_digest.discard_candidate_digest",
+          "source_packet_id": "ppd-post-decision-release-readiness-2026-05-28",
+          "summary": "Discard the post-decision digest reference and keep prior reviewed packets."
+        }
+      ]
+    },
+    "public_recrawl_rehearsal_plan": {
+      "packet_id": "public-recrawl-rehearsal-plan-2026-05-28",
+      "fixture_path": "ppd/tests/fixtures/public_recrawl_rehearsal/safe_operator_checklist_packet.json",
+      "metadata_only": true,
+      "rehearsal_link_id": "rehearsal.public_recrawl.metadata_only",
+      "robots_prerequisites_confirmed": true,
+      "policy_prerequisites_confirmed": true,
+      "live_network_execution": false,
+      "authenticated_automation": false,
+      "rollback_references": [
+        {
+          "rollback_id": "rollback.public_recrawl_plan.discard_rehearsal",
+          "source_packet_id": "public-recrawl-rehearsal-plan-2026-05-28",
+          "summary": "Discard the rehearsal plan; no crawl output or archive cleanup exists."
+        }
+      ]
+    },
+    "regenerated_requirement_candidate": {
+      "packet_id": "regenerated-requirement-candidate-2026-05-28",
+      "fixture_path": "ppd/tests/fixtures/refreshed_requirement_packet/changed_synthetic_records_packet.json",
+      "metadata_only": true,
+      "candidate_link_id": "candidate.regenerated_requirement.review_only",
+      "candidate_status": "draft_review_only",
+      "source_evidence_ids": [
+        "src.apply-permits.changed-requirement",
+        "src.single-pdf.changed-file-rule"
+      ],
+      "rollback_references": [
+        {
+          "rollback_id": "rollback.regenerated_requirement.discard_candidate",
+          "source_packet_id": "regenerated-requirement-candidate-2026-05-28",
+          "summary": "Discard regenerated requirement candidate metadata and retain current reviewed requirements."
+        }
+      ]
+    },
+    "guardrail_recompilation_rehearsal_packet": {
+      "packet_id": "guardrail-recompilation-rehearsal-2026-05-28",
+      "fixture_path": "ppd/tests/fixtures/guardrail_recompilation_rehearsal/process_model_impact_candidate.json",
+      "metadata_only": true,
+      "rehearsal_link_id": "rehearsal.guardrail_recompilation.disabled",
+      "rehearsal_mode": "fixture_first_disabled_review_only",
+      "activation_state": {
+        "disabled": true,
+        "activation_enabled": false,
+        "promotion_target": "none"
+      },
+      "rollback_references": [
+        {
+          "rollback_ref_id": "rollback.guardrail.active_bundle.retain",
+          "source_packet_id": "guardrail-recompilation-rehearsal-2026-05-28",
+          "restore_action": "retain_active_bundle_and_discard_rehearsal_candidate"
+        }
+      ]
+    },
+    "agent_regression_matrix": {
+      "packet_id": "agent-regression-matrix-2026-05-28",
+      "fixture_path": "ppd/tests/fixtures/agent_rehearsal_regression_matrix/regenerated_requirement_guardrail_rehearsal.json",
+      "metadata_only": true,
+      "matrix_link_id": "matrix.agent_regression.fixture_only",
+      "execution_boundaries": {
+        "calls_llm": false,
+        "launches_devhub": false,
+        "reads_private_files": false,
+        "uses_authenticated_session": false
+      },
+      "rollback_references": [
+        {
+          "rollback_id": "rollback.agent_regression_matrix.discard_candidate_reference",
+          "source_packet_id": "agent-regression-matrix-2026-05-28",
+          "summary": "Discard regression matrix candidate reference; no runtime execution artifacts exist."
+        }
+      ]
+    }
+  }
+}

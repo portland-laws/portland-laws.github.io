@@ -1,0 +1,90 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,16 +1,77 @@
+ {
+-  "createdAt": "2026-05-03T16:24:06.831524Z",
++  "createdAt": "2026-05-03T16:25:06.861577Z",
+   "decision": {
+-    "action": "reconcile_blocked_cascade_and_restart",
+-    "reason": "all selectable PP&D tasks are blocked after repeated daemon recovery attempts; append deterministic daemon-repair tasks before retrying blocked domain work",
++    "action": "repair_daemon_programming",
++    "reason": "6 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
+     "severity": "warning"
+   },
+-  "repairKind": "blocked_cascade_replenishment",
+-  "replenishedTaskLabels": [
+-    "checkbox-215",
+-    "checkbox-216",
+-    "checkbox-217",
+-    "checkbox-218"
++  "failedAgenticRepair": {
++    "changedFiles": [
++      "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
++    ],
++    "errors": [
++      "Validation failed; file edits were rolled back."
++    ],
++    "failureKind": "validation",
++    "summary": "Tighten PP&D supervisor parser-failure recovery guidance in the daemon repair guide.",
++    "validationResults": [
++      {
++        "command": [
++          "python3",
++          "ppd/daemon/ppd_daemon.py",
++          "--self-test"
++        ],
++        "returncode": 0,
++        "stderr": "",
++        "stdout": "{ \"ok\": true, \"task_count\": 48 }"
++      },
++      {
++        "command": [
++          "python3",
++          "-m",
++          "unittest",
++          "discover",
++          "-s",
++          "ppd/tests",
++          "-p",
++          "test_*.py"
++        ],
++        "returncode": 1,
++        "stderr": ".............................................................................................................................................................................................................................................................................................................................................................................................................................................ss................sss.............................................................................................................................................................................................................................F................................................................... ====================================================================== FAIL: test_guide_requires_small_syntax_valid_retries (test_supervisor_repair_guide.Superv...",
++        "stdout": ""
++      },
++      {
++        "command": [
++          "bash",
++          "-lc",
++          "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
++        ],
++        "returncode": 0,
++        "stderr": "",
++        "stdout": ""
++      }
++    ]
++  },
++  "fallbackActions": [
++    "preserve failed repair diagnostics without accepting the invalid patch",
++    "run full PP&D daemon validation before restarting unattended worker attempts",
++    "restart the worker with PPD_LLM_BACKEND=llm_router after fallback validation passes",
++    "keep future retry scope narrow and fixture-first"
+   ],
+-  "schemaVersion": 1
++  "llmBackend": "llm_router",
++  "repairKind": "builtin_supervisor_fallback",
++  "safetyBoundaries": [
++    "no private DevHub session artifacts",
++    "no raw crawl output",
++    "no downloaded documents",
++    "no browser traces or screenshots",
++    "no consequential DevHub actions"
++  ],
++  "schemaVersion": 1,
++  "taskBoardRepair": {
++    "parkedRepeatedSyntaxLoopTasks": [],
++    "replenishedGoalTaskLabels": [],
++    "supersededTaskBoardOnlyLabels": [],
++    "taskBoardUpdated": false
++  }
+ }

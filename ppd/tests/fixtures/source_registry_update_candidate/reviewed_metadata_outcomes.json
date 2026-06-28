@@ -1,0 +1,74 @@
+{
+  "fixture_id": "source-registry-update-candidate-fixture-001",
+  "review_status": "reviewed",
+  "current_source_registry": [
+    {
+      "source_id": "src-devhub-submit-permit-application-guide",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "source_type": "public_html",
+      "last_seen_at": "2026-05-20T10:00:00Z",
+      "freshness_status": "stale",
+      "content_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "skipped_reason": null
+    },
+    {
+      "source_id": "src-ppd-forms-index",
+      "canonical_url": "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications",
+      "source_type": "public_html",
+      "last_seen_at": "2026-05-20T10:05:00Z",
+      "freshness_status": "current",
+      "content_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "skipped_reason": null
+    }
+  ],
+  "reviewed_recrawl_outcomes": [
+    {
+      "source_id": "src-devhub-submit-permit-application-guide",
+      "prior_registry_id": "src-devhub-submit-permit-application-guide",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "human_review_status": "reviewed",
+      "last_seen_at": "2026-05-28T08:00:00Z",
+      "freshness_status": "metadata_changed",
+      "content_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "skipped_reason": null,
+      "review_evidence_id": "review-devhub-submit-guide-20260528",
+      "downstream_invalidation_links": {
+        "requirement_ids": [
+          "req-devhub-certification-gate",
+          "req-devhub-dynamic-questions",
+          "req-devhub-required-uploads"
+        ],
+        "process_model_ids": [
+          "process-devhub-permit-application",
+          "process-trade-with-plan-review"
+        ],
+        "guardrail_bundle_ids": [
+          "guardrail-devhub-application-draft",
+          "guardrail-official-submission-confirmation"
+        ],
+        "agent_readiness_checklist_item_ids": [
+          "agent-ready-action-gates-current",
+          "agent-ready-required-documents-current",
+          "agent-ready-source-freshness-current"
+        ]
+      }
+    },
+    {
+      "source_id": "src-ppd-forms-index",
+      "prior_registry_id": "src-ppd-forms-index",
+      "canonical_url": "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications",
+      "human_review_status": "reviewed",
+      "last_seen_at": "2026-05-28T08:02:00Z",
+      "freshness_status": "unchanged",
+      "content_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "skipped_reason": null,
+      "review_evidence_id": "review-forms-index-20260528",
+      "downstream_invalidation_links": {
+        "requirement_ids": [],
+        "process_model_ids": [],
+        "guardrail_bundle_ids": [],
+        "agent_readiness_checklist_item_ids": []
+      }
+    }
+  ]
+}

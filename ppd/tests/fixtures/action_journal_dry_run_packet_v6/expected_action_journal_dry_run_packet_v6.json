@@ -1,0 +1,338 @@
+{
+  "packet_type": "fixture_first_action_journal_dry_run_packet_v6",
+  "version": 6,
+  "fixture_first": true,
+  "commit_safe": true,
+  "consumes_only": [
+    "fixture_first_user_gap_analysis_packet_v6",
+    "guarded_draft_preview_handoff_packet_v6"
+  ],
+  "source_packet_refs": [
+    {
+      "packet_type": "fixture_first_user_gap_analysis_packet_v6",
+      "version": 6,
+      "source_packet_types": [
+        "agent_guardrail_api_compatibility_packet_v6",
+        "guarded_draft_preview_handoff_packet_v6",
+        "local_pdf_draft_preview_packet_v6"
+      ]
+    },
+    {
+      "packet_type": "guarded_draft_preview_handoff_packet_v6",
+      "version": 6
+    }
+  ],
+  "event_rows": [
+    {
+      "row_id": "aj-v6-001",
+      "event_type": "reversible_draft_plan",
+      "source_packet_types": [
+        "fixture_first_user_gap_analysis_packet_v6",
+        "guarded_draft_preview_handoff_packet_v6"
+      ],
+      "source_evidence_ids": [
+        "gap::synthetic_case_fact_inventory",
+        "gap::missing_fact_rows"
+      ],
+      "redacted_summary": "Record a reversible draft plan using fact identifiers only; known fact ids are site_address, project_scope; unresolved fact ids are contractor_license_number, owner_signature_date.",
+      "redaction_policy_refs": [
+        "redaction::action-journal-dry-run-v6"
+      ],
+      "retention_refs": [
+        "retention::committed-fixture-metadata-only"
+      ],
+      "commit_safe_reason": "The row stores identifiers and review status only, not user-supplied values.",
+      "offline_validation_commands": [
+        [
+          "python3",
+          "ppd/daemon/ppd_daemon.py",
+          "--self-test"
+        ]
+      ]
+    },
+    {
+      "row_id": "aj-v6-002",
+      "event_type": "local_pdf_preview",
+      "source_packet_types": [
+        "fixture_first_user_gap_analysis_packet_v6",
+        "guarded_draft_preview_handoff_packet_v6"
+      ],
+      "source_evidence_ids": [
+        "gap::source_packet_types",
+        "gap::missing_document_labels"
+      ],
+      "redacted_summary": "Record the local PDF preview as placeholder-only metadata for 2 missing document labels.",
+      "redaction_policy_refs": [
+        "redaction::action-journal-dry-run-v6"
+      ],
+      "retention_refs": [
+        "retention::committed-fixture-metadata-only"
+      ],
+      "commit_safe_reason": "The row records no document bytes, no PDF writes, and no local private file paths.",
+      "offline_validation_commands": [
+        [
+          "python3",
+          "ppd/daemon/ppd_daemon.py",
+          "--self-test"
+        ]
+      ]
+    },
+    {
+      "row_id": "aj-v6-003",
+      "event_type": "refused_action",
+      "source_packet_types": [
+        "fixture_first_user_gap_analysis_packet_v6",
+        "guarded_draft_preview_handoff_packet_v6"
+      ],
+      "source_evidence_ids": [
+        "gap::blocked_action_rows"
+      ],
+      "redacted_summary": "Refuse blocked action identifiers from the user gap analysis packet: read_private_documents, open_devhub, upload, submit, certify, pay, schedule, legal_or_permitting_guarantee.",
+      "redaction_policy_refs": [
+        "redaction::action-journal-dry-run-v6"
+      ],
+      "retention_refs": [
+        "retention::committed-fixture-metadata-only"
+      ],
+      "commit_safe_reason": "The row records refusal categories only and makes no official-action completion claim.",
+      "offline_validation_commands": [
+        [
+          "python3",
+          "ppd/daemon/ppd_daemon.py",
+          "--self-test"
+        ]
+      ]
+    },
+    {
+      "row_id": "aj-v6-004",
+      "event_type": "manual_handoff",
+      "source_packet_types": [
+        "fixture_first_user_gap_analysis_packet_v6",
+        "guarded_draft_preview_handoff_packet_v6"
+      ],
+      "source_evidence_ids": [
+        "gap::manual_handoff_notes",
+        "handoff::manual_handoff_notes"
+      ],
+      "redacted_summary": "Record manual handoff as note counts only: user gap notes 2, guarded handoff notes 1.",
+      "redaction_policy_refs": [
+        "redaction::action-journal-dry-run-v6"
+      ],
+      "retention_refs": [
+        "retention::committed-fixture-metadata-only"
+      ],
+      "commit_safe_reason": "The row avoids copying private values and sends consequential work to attended review.",
+      "offline_validation_commands": [
+        [
+          "python3",
+          "ppd/daemon/ppd_daemon.py",
+          "--self-test"
+        ]
+      ]
+    },
+    {
+      "row_id": "aj-v6-005",
+      "event_type": "exact_confirmation_checkpoint",
+      "source_packet_types": [
+        "fixture_first_user_gap_analysis_packet_v6",
+        "guarded_draft_preview_handoff_packet_v6"
+      ],
+      "source_evidence_ids": [
+        "handoff::required_facts",
+        "gap::blocked_action_rows"
+      ],
+      "redacted_summary": "Require action-specific attended confirmation before upload, submission, payment, certification, scheduling, cancellation, or official change checkpoints.",
+      "redaction_policy_refs": [
+        "redaction::action-journal-dry-run-v6"
+      ],
+      "retention_refs": [
+        "retention::committed-fixture-metadata-only"
+      ],
+      "commit_safe_reason": "The row is a checkpoint reminder only and does not instruct an automated final action.",
+      "offline_validation_commands": [
+        [
+          "python3",
+          "ppd/daemon/ppd_daemon.py",
+          "--self-test"
+        ]
+      ]
+    },
+    {
+      "row_id": "aj-v6-006",
+      "event_type": "completion_evidence_placeholder",
+      "source_packet_types": [
+        "fixture_first_user_gap_analysis_packet_v6",
+        "guarded_draft_preview_handoff_packet_v6"
+      ],
+      "source_evidence_ids": [
+        "gap::citation_payloads"
+      ],
+      "redacted_summary": "Create completion-evidence placeholders for citation ids: cite-guarded-001, cite-guarded-002, cite-local-pdf-001.",
+      "redaction_policy_refs": [
+        "redaction::action-journal-dry-run-v6"
+      ],
+      "retention_refs": [
+        "retention::committed-fixture-metadata-only"
+      ],
+      "commit_safe_reason": "The row names evidence slots for later review and does not assert official completion.",
+      "offline_validation_commands": [
+        [
+          "python3",
+          "ppd/daemon/ppd_daemon.py",
+          "--self-test"
+        ]
+      ]
+    },
+    {
+      "row_id": "aj-v6-007",
+      "event_type": "redaction_policy",
+      "source_packet_types": [
+        "fixture_first_user_gap_analysis_packet_v6",
+        "guarded_draft_preview_handoff_packet_v6"
+      ],
+      "source_evidence_ids": [
+        "policy::commit_safe_action_journal_v6"
+      ],
+      "redacted_summary": "Apply redaction policy for credentials, cookies, auth state, screenshots, traces, HAR data, private values, payment details, local private file paths, and official completion claims.",
+      "redaction_policy_refs": [
+        "redaction::action-journal-dry-run-v6"
+      ],
+      "retention_refs": [
+        "retention::committed-fixture-metadata-only"
+      ],
+      "commit_safe_reason": "The row stores policy labels only and validates absence attestations.",
+      "offline_validation_commands": [
+        [
+          "python3",
+          "ppd/daemon/ppd_daemon.py",
+          "--self-test"
+        ]
+      ]
+    },
+    {
+      "row_id": "aj-v6-008",
+      "event_type": "retention_note",
+      "source_packet_types": [
+        "fixture_first_user_gap_analysis_packet_v6",
+        "guarded_draft_preview_handoff_packet_v6"
+      ],
+      "source_evidence_ids": [
+        "policy::fixture_retention_v6"
+      ],
+      "redacted_summary": "Retain committed fixture metadata and discard browser artifacts, raw private material, payment material, and local private file references.",
+      "redaction_policy_refs": [
+        "redaction::action-journal-dry-run-v6"
+      ],
+      "retention_refs": [
+        "retention::committed-fixture-metadata-only"
+      ],
+      "commit_safe_reason": "The row records retention intent without retaining prohibited artifacts.",
+      "offline_validation_commands": [
+        [
+          "python3",
+          "ppd/daemon/ppd_daemon.py",
+          "--self-test"
+        ]
+      ]
+    },
+    {
+      "row_id": "aj-v6-009",
+      "event_type": "offline_validation_commands",
+      "source_packet_types": [
+        "fixture_first_user_gap_analysis_packet_v6",
+        "guarded_draft_preview_handoff_packet_v6"
+      ],
+      "source_evidence_ids": [
+        "policy::offline_validation_v6"
+      ],
+      "redacted_summary": "Record the exact offline validation command list only.",
+      "redaction_policy_refs": [
+        "redaction::action-journal-dry-run-v6"
+      ],
+      "retention_refs": [
+        "retention::committed-fixture-metadata-only"
+      ],
+      "commit_safe_reason": "The command list is deterministic and contains no live crawl, browser, upload, payment, or private-file operation.",
+      "offline_validation_commands": [
+        [
+          "python3",
+          "ppd/daemon/ppd_daemon.py",
+          "--self-test"
+        ]
+      ]
+    }
+  ],
+  "redaction_policy": {
+    "policy_id": "redaction::action-journal-dry-run-v6",
+    "excluded_material": [
+      "credentials",
+      "cookies",
+      "auth_state",
+      "screenshots",
+      "traces",
+      "har_data",
+      "private_values",
+      "payment_details",
+      "local_private_file_paths",
+      "official_action_completion_claims"
+    ],
+    "allowed_material": [
+      "packet_type",
+      "version",
+      "fact_ids",
+      "citation_ids",
+      "blocked_action_ids",
+      "redacted_summaries",
+      "offline_validation_commands"
+    ]
+  },
+  "retention_notes": [
+    {
+      "note_id": "retention::committed-fixture-metadata-only",
+      "note": "Commit fixture-derived metadata and deterministic validation commands only."
+    },
+    {
+      "note_id": "retention::discard-prohibited-artifacts",
+      "note": "Do not retain browser artifacts, raw private material, payment material, local private file references, or official-action completion claims."
+    }
+  ],
+  "no_effect_flags": {
+    "auth_state_stored": false,
+    "certification_performed": false,
+    "cookies_stored": false,
+    "credentials_stored": false,
+    "devhub_opened": false,
+    "har_data_stored": false,
+    "local_private_file_paths_stored": false,
+    "official_action_completed": false,
+    "payment_details_stored": false,
+    "payment_performed": false,
+    "pdf_written": false,
+    "private_values_stored": false,
+    "scheduling_performed": false,
+    "screenshots_stored": false,
+    "submission_performed": false,
+    "traces_stored": false,
+    "upload_performed": false
+  },
+  "attestations": {
+    "no_auth_state": true,
+    "no_cookies": true,
+    "no_credentials": true,
+    "no_har_data": true,
+    "no_local_private_file_paths": true,
+    "no_official_action_completion_claims": true,
+    "no_payment_details": true,
+    "no_private_values": true,
+    "no_screenshots": true,
+    "no_traces": true,
+    "offline_fixture_only": true
+  },
+  "offline_validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ]
+}

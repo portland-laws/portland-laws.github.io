@@ -1,0 +1,60 @@
+{
+  "schema_version": 7,
+  "fixture_type": "post_promotion_smoke_replay_plan_v7",
+  "source_phase": "post-promotion smoke replay plan",
+  "supported_agent_queries": [
+    {
+      "query_id": "query.citation_explain",
+      "agent_query": "Explain which cited public PP&D guidance supports a missing-information prompt.",
+      "support_status": "supported",
+      "evidence_sources": ["public_citation_spans", "fixture_requirement_nodes"]
+    },
+    {
+      "query_id": "query.gap_analysis",
+      "agent_query": "List missing user facts, stale evidence, and conflicting evidence before drafting.",
+      "support_status": "supported",
+      "evidence_sources": ["fixture_user_gap_analysis", "fixture_process_model"]
+    },
+    {
+      "query_id": "query.safe_next_actions",
+      "agent_query": "Summarize safe read-only or reversible next actions without opening DevHub.",
+      "support_status": "supported",
+      "evidence_sources": ["fixture_action_policy", "fixture_smoke_replay_steps"]
+    },
+    {
+      "query_id": "query.local_pdf_preview",
+      "agent_query": "Describe local PDF preview boundaries for draft field mapping.",
+      "support_status": "supported",
+      "evidence_sources": ["fixture_pdf_preview_policy"]
+    }
+  ],
+  "blocked_action_classes": [
+    "activate_guardrails",
+    "open_devhub",
+    "crawl_live_sites",
+    "read_private_documents",
+    "upload_documents",
+    "submit_application",
+    "certify_acknowledgement",
+    "enter_or_submit_payment",
+    "schedule_or_cancel_inspection",
+    "make_legal_or_permitting_guarantee"
+  ],
+  "missing_information_prompts": [
+    {
+      "prompt_id": "missing.property_identifier",
+      "reason": "A property address or public property identifier is required before matching a permit process.",
+      "allowed_agent_behavior": "Ask the user for the missing fact; do not query private records."
+    },
+    {
+      "prompt_id": "missing.contractor_license_context",
+      "reason": "Fixture evidence indicates license-related context can change available trade-permit options.",
+      "allowed_agent_behavior": "Ask whether contractor or owner-applicant facts are known before drafting."
+    },
+    {
+      "prompt_id": "missing.document_readiness",
+      "reason": "Required document labels are known from fixture evidence, but the user's document set is not provided.",
+      "allowed_agent_behavior": "Ask for document availability or names without reading private documents."
+    }
+  ]
+}

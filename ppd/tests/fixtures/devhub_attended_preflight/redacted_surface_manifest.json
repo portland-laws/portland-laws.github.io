@@ -1,0 +1,8 @@
+{
+  "surface_id": "devhub_public_entry_preflight_fixture",
+  "auth_scope": "attended_user_owned_session",
+  "page_heading": "DevHub",
+  "requires_attendance": true,
+  "requires_exact_confirmation": false,
+  "redaction_policy": "no credentials, cookies, browser state, screenshots, traces, HAR files, downloads, private values, or raw authenticated page content"
+}

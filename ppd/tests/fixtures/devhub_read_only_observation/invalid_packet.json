@@ -1,0 +1,24 @@
+{
+  "packet_type": "devhub_read_only_observation_checklist",
+  "mode": "invalid_fixture",
+  "automated_login": true,
+  "mfa_code": "123456",
+  "captcha_solution": "bypass",
+  "account_creation": "created account during setup",
+  "credential_prompt": "entered credentials",
+  "private_field_values": {
+    "Applicant phone": "503-555-0100"
+  },
+  "screenshot_path": "artifacts/devhub.png",
+  "trace_path": "trace.zip",
+  "har_path": "network.har",
+  "cookies": [{"name": "session", "value": "secret"}],
+  "auth_state": "storage-state.json",
+  "controls": [
+    {"label": "Submit application", "role": "button"},
+    {"label": "Pay fee", "role": "button"}
+  ],
+  "claims": [
+    "This was a live authenticated capture from my account."
+  ]
+}

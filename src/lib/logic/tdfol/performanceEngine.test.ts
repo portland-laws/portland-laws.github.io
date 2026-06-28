@@ -1,5 +1,9 @@
 import { TdfolMetricsCollector } from './performanceMetrics';
-import { createTdfolPerformanceEngine, TdfolPerformanceEngine } from './performanceEngine';
+import {
+  createTdfolPerformanceEngine,
+  TDFOL_PERFORMANCE_ENGINE_METADATA,
+  TdfolPerformanceEngine,
+} from './performanceEngine';
 
 describe('TdfolPerformanceEngine', () => {
   it('profiles proving operations and records dashboard metrics', () => {
@@ -31,7 +35,9 @@ describe('TdfolPerformanceEngine', () => {
     const prometheusExport = engine.exportStatistics('prometheus');
 
     expect(dashboard.success).toBe(true);
-    expect(dashboard.htmlString).toContain('<script type="application/json" id="tdfol-performance-data">');
+    expect(dashboard.htmlString).toContain(
+      '<script type="application/json" id="tdfol-performance-data">',
+    );
     expect(dashboard.summary.totalProofs).toBe(1);
     expect(String(jsonExport.json_string)).toContain('"dashboard_stats"');
     expect(String(prometheusExport.prometheus_metrics)).toContain('tdfol_total_proofs 1');
@@ -80,7 +86,48 @@ describe('TdfolPerformanceEngine', () => {
 
     engine.profileOperation({ formula: 'Pred(x) -> Pred(x)', runs: 1, strategy: 'forward' });
     expect(engine.getProfilerReport()).toMatchObject({ historyCount: 1 });
-    expect(engine.resetMetrics()).toEqual({ success: true, clearedProofMetrics: 1, clearedProfilingRuns: 1 });
+    expect(engine.resetMetrics()).toEqual({
+      success: true,
+      clearedProofMetrics: 1,
+      clearedProfilingRuns: 1,
+    });
     expect(engine.getMetrics().metadata.dashboardProofsRecorded).toBe(0);
+  });
+
+  it('exposes tdfol_performance_engine.py metadata and Python-compatible aliases', () => {
+    const engine = new TdfolPerformanceEngine(new TdfolMetricsCollector());
+    const profile = engine.profile_operation({
+      formula: 'Pred(x) -> Pred(x)',
+      runs: 1,
+      strategy: 'forward',
+      kbFormulas: ['Pred(x)'],
+    });
+    const dashboard = engine.generate_dashboard({ includeProfiling: true });
+    const statistics = engine.export_statistics('json', true);
+
+    expect(TDFOL_PERFORMANCE_ENGINE_METADATA).toMatchObject({
+      sourcePythonModule: 'logic/TDFOL/tdfol_performance_engine.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntimeRequired: false,
+    });
+    expect(TDFOL_PERFORMANCE_ENGINE_METADATA.parity).toContain('regression_checks');
+    expect(profile.metadata.latestStatus).toBeDefined();
+    expect(engine.get_metrics().metadata.dashboardProofsRecorded).toBe(1);
+    expect(engine.get_dashboard_statistics().totalProofs).toBe(1);
+    expect(dashboard.profilingHistory).toHaveLength(1);
+    expect(statistics.metadata).toBe(TDFOL_PERFORMANCE_ENGINE_METADATA);
+    expect(engine.get_profiler_report()).toMatchObject({ historyCount: 1 });
+    expect(engine.check_regression({ 'tdfol.profile.forward': 1000 })).toMatchObject({
+      regressionsFound: false,
+    });
+    expect(
+      engine.compare_strategies({
+        formula: 'Pred(x) -> Pred(x)',
+        strategies: ['forward'],
+        runsPerStrategy: 1,
+      }),
+    ).toMatchObject({ strategiesCompared: 1 });
+    expect(engine.reset_metrics()).toMatchObject({ success: true });
   });
 });

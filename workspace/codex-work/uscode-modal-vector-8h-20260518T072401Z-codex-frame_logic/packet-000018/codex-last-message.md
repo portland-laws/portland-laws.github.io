@@ -1,0 +1,20 @@
+Implemented a deterministic frame-term audit expansion for `frame_logic` by widening contextual F-logic term capture and validating it with focused tests.
+
+- Updated contextual predicate coverage in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000018-20260518_090552/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:53):
+  - Added plain contextual predicates like `condition`, `exception`, `predicate_argument`, `predicate_token`, `modal_cue`, `modal_operator_label`, etc.
+- Updated triple-based extraction in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000018-20260518_090552/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:303):
+  - `frame_ontology_terms_from_triples(...)` now accepts either canonical frame predicates or contextual F-logic predicates before normalization.
+
+Added/updated tests:
+
+- [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000018-20260518_090552/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:206)
+  - New coverage for contextual triple predicates.
+  - New coverage for plain contextual `flogic:*` feature keys.
+  - Extended `is_frame_ontology_feature_key(...)` assertions.
+- [test_flogic_integration.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000018-20260518_090552/tests/unit/logic/test_flogic_integration.py:544)
+  - New metadata test proving contextual triple terms are surfaced in optimizer audit fields.
+
+Validation run:
+
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py tests/unit/logic/test_flogic_integration.py -k "frame_ontology or contextual_flogic_terms"`
+- Result: `25 passed, 37 deselected`.

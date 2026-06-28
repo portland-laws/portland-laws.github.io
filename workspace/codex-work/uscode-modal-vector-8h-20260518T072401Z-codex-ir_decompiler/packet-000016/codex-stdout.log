@@ -1,0 +1,17 @@
+Implemented a deterministic `source_id` slot/triple refinement for `modal.ir_decompiler` scope.
+
+**What changed**
+- Added provenance-only decompiler slot emission for canonical `us-code-*` identifiers (scheme/title/section/digest + typed section/title components), and normalized trailing section punctuation.
+- Wired equivalent `source_id_*` emission into `modal_ir_to_flogic_triples` so decompiler slots and triples remain aligned.
+- Added a focused regression test covering numeric-with-trailing-punctuation and alphanumeric sections from `source_id`.
+
+**Files**
+- [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000016-20260518_084645/ipfs_datasets_py/logic/modal/decompiler.py:149)
+- [decompiler.py helpers](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000016-20260518_084645/ipfs_datasets_py/logic/modal/decompiler.py:574)
+- [codec.py formula triple emission](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000016-20260518_084645/ipfs_datasets_py/logic/modal/codec.py:729)
+- [codec.py source_id component parser](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000016-20260518_084645/ipfs_datasets_py/logic/modal/codec.py:1100)
+- [new test](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000016-20260518_084645/tests/unit_tests/logic/modal/test_modal_codec.py:2110)
+
+**Validation run**
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py::test_modal_decompiler_and_triples_expand_alphanumeric_citation_section_slots tests/unit_tests/logic/modal/test_modal_codec.py::test_modal_decompiler_and_triples_surface_uscode_source_id_slots tests/unit_tests/logic/modal/test_modal_codec.py::test_modal_decompiler_and_triples_include_statutory_scope_reference_slots`
+- Result: `3 passed`

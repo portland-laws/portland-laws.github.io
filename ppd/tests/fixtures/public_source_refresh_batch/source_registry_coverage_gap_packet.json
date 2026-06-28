@@ -1,0 +1,33 @@
+{
+  "packet_type": "source_registry_coverage_gap_packet",
+  "packet_version": "1.0",
+  "coverage_gaps": [
+    {
+      "source_id": "ppd-online-tools-overview",
+      "missing_metadata_fields": [
+        "crawl_frequency",
+        "processor_policy",
+        "freshness_status"
+      ],
+      "review_note": "Online permitting tools overview is a high-change public guidance source."
+    },
+    {
+      "source_id": "ppd-devhub-faqs",
+      "missing_metadata_fields": [
+        "crawl_frequency",
+        "privacy_classification",
+        "freshness_status"
+      ],
+      "review_note": "DevHub FAQ describes account-scoped services but remains public guidance."
+    },
+    {
+      "source_id": "ppd-submit-plans-online",
+      "missing_metadata_fields": [
+        "crawl_frequency",
+        "processor_policy",
+        "freshness_status"
+      ],
+      "review_note": "Single PDF process guidance affects document preparation guardrails."
+    }
+  ]
+}

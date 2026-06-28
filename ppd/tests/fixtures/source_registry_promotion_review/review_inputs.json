@@ -1,0 +1,15 @@
+{
+  "fixture_id": "source-registry-promotion-review-inputs-001",
+  "release_readiness_snapshot_fixture": "ppd/tests/fixtures/readiness/reconciliation_packet.json",
+  "source_registry_update_candidate_fixture": "ppd/tests/fixtures/source_registry_update_candidate/reviewed_metadata_outcomes.json",
+  "generated_at": "2026-05-28T10:00:00Z",
+  "expected_review_mode": "promotion_review_only",
+  "expected_production_promotion_enabled": false,
+  "expected_live_registry_records_edited": false,
+  "expected_unresolved_blockers": [
+    "agent-regression-fixture-only",
+    "guardrail-audit-stale",
+    "pilot-evidence-template-only",
+    "registry-candidate-not-promoted"
+  ]
+}

@@ -1,0 +1,208 @@
+{
+  "fixture_id": "agent-readiness-contract-examples-v1",
+  "case_id": "case-synthetic-agent-readiness-contract",
+  "reviewed_source_registry_promotion": {
+    "promotion_id": "source-registry-promotion-agent-examples-v1",
+    "review_status": "reviewed_promotable",
+    "llm_called": false,
+    "devhub_called": false,
+    "no_raw_body_persisted": true,
+    "source_evidence": [
+      {
+        "evidence_id": "ev-devhub-submit-guide-current",
+        "source_type": "public_html",
+        "title": "DevHub permit application guide",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+        "last_verified_at": "2026-05-08T00:00:00Z",
+        "freshness_status": "current",
+        "review_status": "reviewed_promotable",
+        "no_raw_body_persisted": true
+      },
+      {
+        "evidence_id": "ev-submit-plans-current",
+        "source_type": "public_html",
+        "title": "Submit Plans Online / Single PDF Process",
+        "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+        "last_verified_at": "2026-05-08T00:00:00Z",
+        "freshness_status": "current",
+        "review_status": "reviewed_promotable",
+        "no_raw_body_persisted": true
+      },
+      {
+        "evidence_id": "ev-devhub-sign-guide-current",
+        "source_type": "public_html",
+        "title": "DevHub account and sign-in guide",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-sign-guide",
+        "last_verified_at": "2026-05-08T00:00:00Z",
+        "freshness_status": "current",
+        "review_status": "reviewed_promotable",
+        "no_raw_body_persisted": true
+      },
+      {
+        "evidence_id": "ev-fee-payment-current",
+        "source_type": "public_pdf",
+        "title": "How to pay fees",
+        "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+        "last_verified_at": "2026-05-08T00:00:00Z",
+        "freshness_status": "current",
+        "review_status": "reviewed_promotable",
+        "no_raw_body_persisted": true
+      },
+      {
+        "evidence_id": "ev-file-standards-stale",
+        "source_type": "public_html",
+        "title": "File naming standards and PDF preparation",
+        "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+        "last_verified_at": "2026-01-15T00:00:00Z",
+        "freshness_status": "stale",
+        "review_status": "reviewed_promotable",
+        "no_raw_body_persisted": true
+      }
+    ]
+  },
+  "reviewed_guardrail_promotion": {
+    "promotion_id": "guardrail-promotion-agent-examples-v1",
+    "review_status": "reviewed_promotable",
+    "guardrail_bundle_id": "guardrail-agent-readiness-examples-v1",
+    "process_id": "ppd-single-pdf-plan-review-v1",
+    "llm_called": false,
+    "devhub_called": false,
+    "reviewed_response_types": [
+      "missing_fact_prompt",
+      "stale_evidence_warning",
+      "allowed_local_preview",
+      "refused_consequential_action",
+      "manual_handoff_response"
+    ]
+  },
+  "synthetic_api_examples": [
+    {
+      "response_id": "example:missing-fact-prompt",
+      "response_type": "missing_fact_prompt",
+      "status": "needs_user_input",
+      "agent_message": "Ask for the synthetic project scope summary and plan-set metadata before preparing a local draft.",
+      "prompt_fields": [
+        {
+          "fact_id": "project_scope_summary",
+          "presence": "missing",
+          "question": "What is the short project scope summary for this permit request?"
+        },
+        {
+          "fact_id": "single_pdf_plan_set_metadata",
+          "presence": "missing",
+          "question": "Do you have a single PDF plan set ready for local checklist review?"
+        }
+      ],
+      "source_evidence_ids": [
+        "ev-devhub-submit-guide-current",
+        "ev-submit-plans-current"
+      ]
+    },
+    {
+      "response_id": "example:stale-evidence-warning",
+      "response_type": "stale_evidence_warning",
+      "status": "blocked_until_refresh",
+      "agent_message": "Warn that the file-preparation guidance is stale and block draft readiness until the source registry is refreshed.",
+      "stale_evidence_ids": [
+        "ev-file-standards-stale"
+      ],
+      "blocked_actions": [
+        {
+          "action_id": "prepare-file-name-readiness-answer",
+          "classification": "local_preview",
+          "reason": "The cited file-standard source is stale in the fixture."
+        }
+      ],
+      "source_evidence_ids": [
+        "ev-file-standards-stale"
+      ]
+    },
+    {
+      "response_id": "example:allowed-local-preview",
+      "response_type": "allowed_local_preview",
+      "status": "allowed_metadata_only",
+      "agent_message": "Allow a local preview of the checklist and field mapping without signing in, uploading, certifying, submitting, scheduling, canceling, or paying.",
+      "allowed_actions": [
+        {
+          "action_id": "render-local-upload-staging-preview",
+          "classification": "local_preview",
+          "allowed": true,
+          "devhub_called": false
+        },
+        {
+          "action_id": "prepare-local-field-map",
+          "classification": "reversible_draft",
+          "allowed": true,
+          "devhub_called": false
+        }
+      ],
+      "next_safe_actions": [
+        "render-local-upload-staging-preview",
+        "prepare-local-field-map"
+      ],
+      "source_evidence_ids": [
+        "ev-submit-plans-current",
+        "ev-devhub-submit-guide-current"
+      ]
+    },
+    {
+      "response_id": "example:refused-consequential-action",
+      "response_type": "refused_consequential_action",
+      "status": "refused",
+      "agent_message": "Refuse consequential PP&D actions and offer only a local preview or attended handoff.",
+      "refused_actions": [
+        {
+          "action_id": "submit-permit-request",
+          "classification": "submission",
+          "status": "refused",
+          "requires_manual_handoff": true,
+          "requires_exact_confirmation": true
+        },
+        {
+          "action_id": "upload-plans-to-official-record",
+          "classification": "upload_to_official_record",
+          "status": "refused",
+          "requires_manual_handoff": true,
+          "requires_exact_confirmation": true
+        },
+        {
+          "action_id": "pay-review-fees",
+          "classification": "payment",
+          "status": "refused",
+          "requires_manual_handoff": true,
+          "requires_exact_confirmation": true
+        }
+      ],
+      "source_evidence_ids": [
+        "ev-devhub-submit-guide-current",
+        "ev-submit-plans-current",
+        "ev-fee-payment-current"
+      ]
+    },
+    {
+      "response_id": "example:manual-handoff-response",
+      "response_type": "manual_handoff_response",
+      "status": "handoff_required",
+      "agent_message": "Pause automation and tell the user that login, MFA, certification, official upload, submission, and payment steps require attended user control.",
+      "manual_handoff_actions": [
+        {
+          "action_id": "complete-devhub-login",
+          "classification": "authentication",
+          "requires_user_attendance": true,
+          "automation_paused": true
+        },
+        {
+          "action_id": "confirm-official-submit-or-payment",
+          "classification": "certification",
+          "requires_user_attendance": true,
+          "automation_paused": true
+        }
+      ],
+      "source_evidence_ids": [
+        "ev-devhub-sign-guide-current",
+        "ev-devhub-submit-guide-current",
+        "ev-fee-payment-current"
+      ]
+    }
+  ]
+}

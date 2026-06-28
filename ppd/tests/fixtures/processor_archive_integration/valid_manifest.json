@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "manifestKind": "processor_archive_integration_validation",
+  "manifestId": "ppd-processor-archive-integration-validation-2026-06-01",
+  "formalLogicExtractionReady": true,
+  "formalLogicHandoffId": "logic-handoff-doc-ppd-bureau-landing-page--doc-ppd-online-permitting-tools",
+  "networkAccess": false,
+  "processorInvoked": false,
+  "documentsDownloaded": false,
+  "downloadedDocumentsIncluded": false,
+  "rawBodiesIncluded": false,
+  "rawCrawlOutputIncluded": false,
+  "privateDevhubDataIncluded": false,
+  "archivedPublicSources": [
+    {
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "canonicalDocumentId": "doc-ppd-bureau-landing-page",
+      "archiveArtifactRef": "metadata_only_archive_manifests/archive-ppd-bureau-landing-page.json",
+      "contentHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "processorInput": {
+        "operation": "capture_url_metadata_only",
+        "metadataOnly": true,
+        "persistRawBody": false,
+        "downloadDocuments": false
+      },
+      "citations": [
+        {
+          "title": "Portland Permitting & Development",
+          "url": "https://www.portland.gov/ppd",
+          "evidenceId": "src-ppd-bureau-landing-page",
+          "locator": "public PP&D source registry anchor"
+        }
+      ]
+    },
+    {
+      "sourceUrl": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "canonicalDocumentId": "doc-ppd-online-permitting-tools",
+      "archiveArtifactRef": "metadata_only_archive_manifests/archive-ppd-online-permitting-tools.json",
+      "contentHash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "processorInput": {
+        "operation": "capture_url_metadata_only",
+        "metadataOnly": true,
+        "persistRawBody": false,
+        "downloadDocuments": false
+      },
+      "citations": [
+        {
+          "title": "How to use online permitting tools",
+          "url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+          "evidenceId": "src-ppd-online-permitting-tools",
+          "locator": "public DevHub guidance page anchor"
+        }
+      ]
+    }
+  ]
+}

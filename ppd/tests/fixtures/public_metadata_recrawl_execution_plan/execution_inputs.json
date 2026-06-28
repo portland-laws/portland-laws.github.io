@@ -1,0 +1,58 @@
+{
+  "generatedAt": "2026-05-28T20:10:00Z",
+  "reviewedRecrawlBatch": {
+    "batchId": "reviewed-public-recrawl-2026-05-28-001",
+    "reviewedAt": "2026-05-28T20:05:00Z",
+    "reviewer": "ppd-fixture-review",
+    "reviewStatus": "approved_for_metadata_only_processor_handoff",
+    "documents": [
+      {
+        "sourceId": "ppd-submit-plans-online",
+        "requestedUrl": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+        "canonicalUrl": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+        "title": "Submit Plans Online / Single PDF Process",
+        "documentType": "public_html",
+        "language": "en",
+        "contentType": "text/html; charset=utf-8",
+        "httpStatus": 200,
+        "redirectChain": [
+          "https://www.portland.gov/ppd/get-permit/submit-plans-online"
+        ],
+        "contentHash": "sha256:34c967c7a8ed7460fd2d5cf65e8a5e9b1b5f26bff5ec82a8c38f3b8d546b7901",
+        "normalizedDocumentId": "doc-ppd-submit-plans-online"
+      }
+    ]
+  },
+  "implementationReadinessPacket": {
+    "schema_version": 1,
+    "execution_mode": "dry_run_only",
+    "url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+    "urls": [
+      "https://www.portland.gov/ppd/get-permit/submit-plans-online"
+    ],
+    "source_anchors": [
+      {
+        "source_id": "ppd-submit-plans-online",
+        "url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+        "observed_at": "2026-05-28T20:00:00Z",
+        "evidence_kind": "public_source_anchor"
+      }
+    ],
+    "robots_status": "allowed",
+    "policy_status": "approved",
+    "rate_limit": {
+      "requests_per_minute": 6,
+      "min_delay_seconds": 10
+    },
+    "planned_outputs": [
+      {
+        "artifact_id": "public-metadata-recrawl-execution-plan-20260528",
+        "artifact_type": "metadata_only_execution_plan",
+        "metadata_only": true,
+        "no_raw_body_persisted": true,
+        "contains_downloaded_documents": false,
+        "contains_browser_artifacts": false
+      }
+    ]
+  }
+}

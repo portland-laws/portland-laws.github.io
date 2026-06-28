@@ -1,0 +1,35 @@
+{
+  "fixture_id": "guardrail-consumer-offline-smoke-test-plan-expectations-2026-05-28",
+  "scenario_categories": [
+    "missing_facts",
+    "stale_evidence",
+    "local_pdf_preview",
+    "devhub_read_only_review",
+    "manual_handoffs",
+    "refused_consequential_actions"
+  ],
+  "prohibited_operations": [
+    "call_llm",
+    "invoke_guardrail_consumer",
+    "launch_devhub",
+    "fetch_url",
+    "read_private_file",
+    "change_guardrail_bundle",
+    "perform_consequential_action"
+  ],
+  "required_source_packets": [
+    "release_blocker_reconciliation",
+    "consumer_contract_audit"
+  ],
+  "required_plan_flags": {
+    "fixture_first": true,
+    "metadata_only": true,
+    "execution_mode": "offline_fixture_only",
+    "llm_called": false,
+    "consumers_invoked": false,
+    "devhub_launched": false,
+    "urls_fetched": false,
+    "private_files_read": false,
+    "active_guardrail_bundles_changed": false
+  }
+}

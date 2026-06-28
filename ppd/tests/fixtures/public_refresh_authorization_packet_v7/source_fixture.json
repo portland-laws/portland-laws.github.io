@@ -1,0 +1,6 @@
+{
+  "fixture_version": "public-refresh-authorization-source-fixture-v7",
+  "fixture_first": true,
+  "public_source_registry_fixture": "ppd/tests/fixtures/public_source_freshness_watchlist_v6/committed_public_source_registry_v6.json",
+  "prior_refresh_fixture": "ppd/tests/fixtures/public_source_freshness_watchlist_v6/prior_refresh_fixture_references_v6.json"
+}

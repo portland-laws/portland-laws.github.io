@@ -1,0 +1,42 @@
+{
+  "index_id": "source-to-requirement-dependency-index-2026-05-28",
+  "sources": {
+    "ppd-devhub-application-guide": {
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "requirement_ids": [
+        "req-devhub-dynamic-questions",
+        "req-devhub-acknowledgement-gate"
+      ],
+      "process_model_ids": [
+        "process-building-permit-plan-review"
+      ],
+      "guardrail_bundle_ids": [
+        "guardrail-building-permit-plan-review"
+      ],
+      "human_review_owners": [
+        "requirements-counsel",
+        "devhub-workflow-review"
+      ],
+      "required_synthetic_fixtures": []
+    },
+    "ppd-spp-file-naming-standards": {
+      "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+      "requirement_ids": [
+        "req-spp-file-naming",
+        "req-single-pdf-file-composition"
+      ],
+      "process_model_ids": [
+        "process-submit-plans-online"
+      ],
+      "guardrail_bundle_ids": [
+        "guardrail-submit-plans-online"
+      ],
+      "human_review_owners": [
+        "document-intake-review"
+      ],
+      "required_synthetic_fixtures": [
+        "ppd/tests/fixtures/requirement_regeneration_queue/spp_file_naming_guardrail_fixture.json"
+      ]
+    }
+  }
+}

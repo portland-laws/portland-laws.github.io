@@ -1,0 +1,26 @@
+{
+  "packet_id": "impact-review-invalid-001",
+  "process_stage_impact_claims": [
+    {
+      "claim_id": "uncited-stage-claim",
+      "process_stage": "submission",
+      "impact": "This stage will be approved after submission."
+    }
+  ],
+  "private_case_facts": {
+    "applicant_name": "Example Applicant",
+    "email": "applicant@example.test"
+  },
+  "live_devhub_execution": true,
+  "controls": [
+    {
+      "control_id": "official-submit",
+      "category": "consequential",
+      "enabled": true
+    }
+  ],
+  "mutation_flags": {
+    "process": true
+  },
+  "active_guardrail_mutation": true
+}

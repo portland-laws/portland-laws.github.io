@@ -1,0 +1,58 @@
+{
+  "official_source_anchors": [
+    {"canonical_url": "https://www.portland.gov/ppd"},
+    {"canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools"},
+    {"canonical_url": "https://devhub.portlandoregon.gov"},
+    {"canonical_url": "https://www.portland.gov/ppd/devhub-faqs"},
+    {"canonical_url": "https://www.portland.gov/ppd/devhub-sign-guide"},
+    {"canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits"},
+    {"canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application"},
+    {"canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online"},
+    {"canonical_url": "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications"},
+    {"canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs"},
+    {"canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download"},
+    {"canonical_url": "https://www.portlandmaps.com"}
+  ],
+  "public_source_recrawl_dry_run_command_plan": {
+    "mode": "public_source_recrawl_dry_run_command_plan",
+    "dry_run": true,
+    "targets": [
+      {"url": "https://www.portland.gov/ppd"},
+      {"url": "https://www.portland.gov/ppd/how-use-online-permitting-tools"},
+      {"url": "https://devhub.portlandoregon.gov"},
+      {"url": "https://www.portland.gov/ppd/devhub-faqs"}
+    ],
+    "robots_txt_evidence": "robots-policy-evidence-public-source-recrawl-dry-run",
+    "policy_evidence": "policy-evidence-public-metadata-only-no-raw-body",
+    "rate_limit_notes": "Dry-run plan only; any later live run must use one request at a time with backoff on 429 or 5xx.",
+    "abort_conditions": [
+      "robots disallow",
+      "authentication required",
+      "unexpected raw download requirement",
+      "private or account-scoped URL discovered"
+    ],
+    "skipped_source_reasons": [
+      {"skip_id": "skip-outside-allowlist", "url": "https://example.com/portland-permit-copy", "reason": "outside_allowlist", "cited_policy_evidence_id": "policy-public-host-allowlist"},
+      {"skip_id": "skip-unsupported-scheme", "url": "ftp://www.portland.gov/ppd/archive", "reason": "unsupported_scheme", "cited_policy_evidence_id": "policy-https-only"},
+      {"skip_id": "skip-private-authenticated", "url": "https://devhub.portlandoregon.gov/private/account", "reason": "private_authenticated", "cited_policy_evidence_id": "policy-no-authenticated-devhub-scrape"},
+      {"skip_id": "skip-robots-policy", "url": "https://www.portland.gov/ppd/admin", "reason": "disallowed_by_robots_or_policy", "cited_policy_evidence_id": "policy-robots-preflight-required"},
+      {"skip_id": "skip-raw-download", "url": "https://www.portland.gov/ppd/documents/example-large-plan/download", "reason": "raw_download_not_permitted", "cited_policy_evidence_id": "policy-no-raw-body-persistence"},
+      {"skip_id": "skip-too-large", "url": "https://www.portland.gov/ppd/documents/example-plan-set/download", "reason": "too_large", "cited_policy_evidence_id": "policy-size-cap-before-download"},
+      {"skip_id": "skip-unsupported-content-type", "url": "https://www.portland.gov/ppd/media/example-video", "reason": "unsupported_content_type", "cited_policy_evidence_id": "policy-supported-public-html-pdf-form-only"}
+    ]
+  },
+  "source_evidence_freshness_badges": [
+    {"badge_id": "badge-ppd-public-landing", "canonical_url": "https://www.portland.gov/ppd", "source_id": "ppd-public-landing", "evidence_id": "evidence-ppd-public-landing-2026-05-08", "freshness_status": "verified_current", "reviewer_owner": "ppd-public-source-reviewer"},
+    {"badge_id": "badge-ppd-online-permitting-tools", "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools", "source_id": "ppd-online-permitting-tools", "evidence_id": "evidence-ppd-online-permitting-tools-2026-05-08", "freshness_status": "verified_current", "reviewer_owner": "ppd-devhub-guidance-reviewer"},
+    {"badge_id": "badge-devhub-public-portal", "canonical_url": "https://devhub.portlandoregon.gov", "source_id": "devhub-public-portal", "evidence_id": "evidence-devhub-public-portal-2026-05-08", "freshness_status": "verified_current", "reviewer_owner": "ppd-devhub-guidance-reviewer"},
+    {"badge_id": "badge-ppd-devhub-faq", "canonical_url": "https://www.portland.gov/ppd/devhub-faqs", "source_id": "ppd-devhub-faq", "evidence_id": "evidence-ppd-devhub-faq-2026-05-08", "freshness_status": "verified_current", "reviewer_owner": "ppd-devhub-guidance-reviewer"},
+    {"badge_id": "badge-ppd-devhub-sign-guide", "canonical_url": "https://www.portland.gov/ppd/devhub-sign-guide", "source_id": "ppd-devhub-sign-guide", "evidence_id": "evidence-ppd-devhub-sign-guide-2026-05-08", "freshness_status": "fixture_seed_pending_first_crawl", "stale_note": "Account and sign-in guide is not included in the dry-run target set yet.", "reviewer_owner": "ppd-devhub-guidance-reviewer"},
+    {"badge_id": "badge-ppd-apply-permits", "canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits", "source_id": "ppd-apply-permits", "evidence_id": "evidence-ppd-apply-permits-2026-05-08", "freshness_status": "fixture_seed_pending_first_crawl", "stale_note": "Apply-permits anchor needs reviewer scheduling before registry promotion.", "reviewer_owner": "ppd-permit-process-reviewer"},
+    {"badge_id": "badge-ppd-devhub-submit-permit-application-guide", "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application", "source_id": "ppd-devhub-submit-permit-application-guide", "evidence_id": "evidence-ppd-devhub-submit-permit-application-guide-2026-05-08", "freshness_status": "fixture_seed_pending_first_crawl", "stale_note": "Submit-permit application guide requires dry-run targeting before coverage is complete.", "reviewer_owner": "ppd-devhub-guidance-reviewer"},
+    {"badge_id": "badge-ppd-submit-plans-online-single-pdf", "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online", "source_id": "ppd-submit-plans-online-single-pdf", "evidence_id": "evidence-ppd-submit-plans-online-single-pdf-2026-05-08", "freshness_status": "fixture_seed_pending_first_crawl", "stale_note": "Single PDF guidance remains outside the current dry-run target set.", "reviewer_owner": "ppd-document-preparation-reviewer"},
+    {"badge_id": "badge-ppd-permit-applications-forms-index", "canonical_url": "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications", "source_id": "ppd-permit-applications-forms-index", "evidence_id": "evidence-ppd-permit-applications-forms-index-2026-05-08", "freshness_status": "fixture_seed_pending_first_crawl", "stale_note": "Forms index must be reviewed before any registry update candidate is promoted.", "reviewer_owner": "ppd-forms-reviewer"},
+    {"badge_id": "badge-ppd-spp-file-naming-standards", "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs", "source_id": "ppd-spp-file-naming-standards", "evidence_id": "evidence-ppd-spp-file-naming-standards-2026-05-08", "freshness_status": "fixture_seed_pending_first_crawl", "stale_note": "File naming standards need dry-run inclusion before freshness can be considered current.", "reviewer_owner": "ppd-document-preparation-reviewer"},
+    {"badge_id": "badge-ppd-how-pay-fees-pdf", "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download", "source_id": "ppd-how-pay-fees-pdf", "evidence_id": "evidence-ppd-how-pay-fees-pdf-2026-05-08", "freshness_status": "fixture_seed_pending_first_crawl", "stale_note": "Fee payment PDF is financial guidance and remains review-gated.", "reviewer_owner": "ppd-financial-action-reviewer"},
+    {"badge_id": "badge-portlandmaps-public-reference", "canonical_url": "https://www.portlandmaps.com", "source_id": "portlandmaps-public-reference", "evidence_id": "evidence-portlandmaps-public-reference-2026-05-08", "freshness_status": "fixture_seed_pending_first_crawl", "stale_note": "Portland Maps should only be recrawled when linked from PP&D public guidance.", "reviewer_owner": "ppd-public-reference-reviewer"}
+  ]
+}

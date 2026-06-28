@@ -1,0 +1,82 @@
+{
+  "claimed_at": "2026-05-18T06:19:17+00:00",
+  "packet_id": "packet-000012",
+  "patch_error": "No changes found in worktree: /home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T053630Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T053630Z-codex-packet-000012-20260518_061916",
+  "patch_path": null,
+  "patch_status": "awaiting_codex_changes",
+  "program_synthesis_scopes": [
+    "compiler_ambiguity"
+  ],
+  "queue_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-hour-20260518T053630Z-autoencoder.jsonl",
+  "queue_run_id": "uscode-modal-hour-20260518T053630Z-autoencoder",
+  "repo_root": "/home/barberb/portland-laws.github.io",
+  "run_id": "uscode-modal-hour-20260518T053630Z-codex",
+  "source_repo_root": "/home/barberb/portland-laws.github.io/ipfs_datasets_py",
+  "suggested_target_files": [
+    "ipfs_datasets_py/logic/modal/compiler.py",
+    "ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py",
+    "ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py"
+  ],
+  "task_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T053630Z-codex/packet-000012/CODEX_TASK.md",
+  "task_source": "autoencoder_supervisor_program_synthesis_queue",
+  "todo_list_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T053630Z-codex/packet-000012/TODO_LIST.jsonl",
+  "todo_markdown_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T053630Z-codex/packet-000012/TODO_LIST.md",
+  "todos": [
+    {
+      "action": "add_or_review_modal_ambiguity_policy",
+      "citations": [
+        "43 U.S.C. 1335.",
+        "16 U.S.C. 3842"
+      ],
+      "claimed_at": "2026-05-18T06:19:16+00:00",
+      "claimed_by": "codex-program-synthesis-uscode-modal-hour-20260518T053630Z-codex",
+      "completed_at": null,
+      "created_at": "2026-05-18T05:43:43+00:00",
+      "loss_name": "autoencoder_residual_cluster",
+      "loss_value": 1.129541165839,
+      "metadata": {
+        "dedupe_signature": "{\"action\":\"add_or_review_modal_ambiguity_policy\",\"sample_ids\":[\"us-code-16-3842-4c0591a248672769\",\"us-code-43-1335.-22f73ba5c02be7a4\"],\"target_component\":\"modal.compiler.ambiguity\"}",
+        "execution_target": "codex_program_repair",
+        "hint_evidence": [
+          {
+            "family_margin": -0.964027580037,
+            "hint_id": "modal-synthesis-497cfaf668734508",
+            "predicted_family": "deontic",
+            "priority": 1.114027580037,
+            "sample_id": "us-code-16-3842-4c0591a248672769",
+            "target_family": "temporal"
+          },
+          {
+            "family_margin": -0.995054751641,
+            "hint_id": "modal-synthesis-7f9b89e717c3fe98",
+            "predicted_family": "temporal",
+            "priority": 1.145054751641,
+            "sample_id": "us-code-43-1335.-22f73ba5c02be7a4",
+            "target_family": "deontic"
+          }
+        ],
+        "hint_ids": [
+          "modal-synthesis-497cfaf668734508",
+          "modal-synthesis-7f9b89e717c3fe98"
+        ],
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "program_synthesis_scope": "compiler_ambiguity",
+        "source": "modal_program_synthesis_todo_generator_v1",
+        "support_count": 2,
+        "target_component": "modal.compiler.ambiguity"
+      },
+      "objective": "The adaptive family margin is small, so the compiler should expose an explicit ambiguity.",
+      "priority": 114.954117,
+      "sample_ids": [
+        "us-code-43-1335.-22f73ba5c02be7a4",
+        "us-code-16-3842-4c0591a248672769"
+      ],
+      "status": "claimed",
+      "todo_id": "program-b354f763b428daf8"
+    }
+  ],
+  "worker_id": "codex-program-synthesis-uscode-modal-hour-20260518T053630Z-codex",
+  "worktree_error": null,
+  "worktree_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T053630Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T053630Z-codex-packet-000012-20260518_061916"
+}

@@ -1,0 +1,19 @@
+Implemented a narrow IR/decompiler slot refinement that surfaces typed argument/fallback semantics in both decompiled slots and F-logic triples.
+
+- Added new provenance-only decompiler slots for:
+  - per-argument and typed argument slots (`argument`, `argument_<key>`)
+  - fallback metadata slots (`fallback_rule`, `status_keyword`)
+  in [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000006-20260518_072441/ipfs_datasets_py/logic/modal/decompiler.py:166) and helper parsing in [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000006-20260518_072441/ipfs_datasets_py/logic/modal/decompiler.py:453).
+- Extended IR→F-logic projection to emit additional deterministic triples:
+  - `modal_cue`
+  - `predicate_argument`
+  - `predicate_argument_<key>`
+  - `fallback_rule`
+  - `status_keyword`
+  in [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000006-20260518_072441/ipfs_datasets_py/logic/modal/codec.py:554) with helpers in [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000006-20260518_072441/ipfs_datasets_py/logic/modal/codec.py:679).
+- Added focused tests for these new slots/triples in [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000006-20260518_072441/tests/unit_tests/logic/modal/test_modal_codec.py:1525).
+
+Verification run:
+- `pytest ... test_modal_codec.py -k ...` currently errors before tests due existing repo bootstrap issue: `NameError: __path__ is not defined` in top-level `__init__.py`.
+- Syntax check passed: `python3 -m compileall -q ...`
+- Direct runtime assertions for new behavior passed (`ok`) via a small `python3` script.

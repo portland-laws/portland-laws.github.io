@@ -1,0 +1,19 @@
+{
+  "fixture_type": "ppd.downstream_requirement_reextraction_queue_v7.fixture_refs",
+  "source_freshness_diff_fixture_refs": {
+    "handoff_manifest": "../source_freshness_diff_v7/processor_handoff_manifest_v7.json",
+    "prior_metadata": "../source_freshness_diff_v7/prior_metadata_v7.json",
+    "current_metadata": "../source_freshness_diff_v7/current_metadata_v7.json"
+  },
+  "live_crawl_executed": false,
+  "raw_artifacts_downloaded": false,
+  "devhub_opened": false,
+  "private_documents_read": false,
+  "uploads_performed": false,
+  "submissions_performed": false,
+  "certifications_performed": false,
+  "payments_performed": false,
+  "scheduling_performed": false,
+  "legal_or_permitting_guarantees_made": false,
+  "active_mutation": false
+}

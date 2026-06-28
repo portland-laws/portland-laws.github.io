@@ -1,0 +1,15 @@
+Implemented a deterministic frame-ontology audit compatibility improvement for legacy bare contextual feature keys.
+
+- Added support for non-namespaced contextual predicates in the frame feature parser (for example `condition:*`, `citation_section_*:*`, `source_id_section_*:*`) so they are audited as ontology terms with contextual priority: [frame_bm25_selector.py:742](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000037-20260518_115303/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:742)
+
+- Added regression coverage for term extraction and key detection on legacy bare contextual features:
+  - [test_frame_bm25_selector.py:656](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000037-20260518_115303/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:656)
+  - [test_frame_bm25_selector.py:922](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000037-20260518_115303/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:922)
+
+- Added optimizer-level metadata regression ensuring these legacy keys flow into `frame_audit_feature_keys` and `frame_ontology_terms`:
+  - [test_flogic_optimizer.py:247](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000037-20260518_115303/tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py:247)
+
+Tests run:
+
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py` (57 passed)
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k 'frame_ontology or frame_ontology_audit or frame_decoder_audit_features or synthesis_hints'` (6 passed)

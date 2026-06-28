@@ -1,0 +1,52 @@
+{
+  "inactive_process_model_delta_plan_rows": [
+    {
+      "row_type": "inactive_process_model_delta_plan_row",
+      "row_id": "pm-delta-001",
+      "synthetic": true,
+      "state": "inactive",
+      "process_model_id": "public-refresh-intake",
+      "permit_type": "synthetic-building-permit",
+      "missing_fact_ids": ["fact-property-work-scope", "fact-contractor-license-status"],
+      "missing_document_ids": ["doc-single-pdf-plan-set"],
+      "stale_evidence_ids": ["evidence-old-upload-guidance"],
+      "conflicting_evidence_ids": ["evidence-conflicting-file-rule"],
+      "source_evidence_placeholder_ids": ["src-placeholder-intake-001", "src-placeholder-intake-002"]
+    },
+    {
+      "row_type": "inactive_process_model_delta_plan_row",
+      "row_id": "pm-delta-002",
+      "synthetic": true,
+      "state": "inactive",
+      "process_model_id": "public-refresh-corrections",
+      "permit_type": "synthetic-correction-response",
+      "missing_fact_ids": ["fact-review-group-status"],
+      "missing_document_ids": ["doc-correction-response-pdf"],
+      "stale_evidence_ids": ["evidence-old-correction-upload-note"],
+      "conflicting_evidence_ids": ["evidence-conflicting-review-status"],
+      "source_evidence_placeholder_ids": ["src-placeholder-corrections-001", "src-placeholder-corrections-002"]
+    }
+  ],
+  "inactive_guardrail_recompile_plan_rows": [
+    {
+      "row_type": "inactive_guardrail_recompile_plan_row",
+      "row_id": "gr-recompile-001",
+      "synthetic": true,
+      "state": "inactive",
+      "process_model_id": "public-refresh-intake",
+      "guardrail_bundle_id": "inactive-gr-public-refresh-intake",
+      "blocked_action_classes": ["upload", "submit", "certify", "pay", "schedule", "cancel"],
+      "source_evidence_placeholder_ids": ["src-placeholder-guardrail-intake-001"]
+    },
+    {
+      "row_type": "inactive_guardrail_recompile_plan_row",
+      "row_id": "gr-recompile-002",
+      "synthetic": true,
+      "state": "inactive",
+      "process_model_id": "public-refresh-corrections",
+      "guardrail_bundle_id": "inactive-gr-public-refresh-corrections",
+      "blocked_action_classes": ["upload", "submit", "certify", "pay", "schedule", "cancel"],
+      "source_evidence_placeholder_ids": ["src-placeholder-guardrail-corrections-001"]
+    }
+  ]
+}

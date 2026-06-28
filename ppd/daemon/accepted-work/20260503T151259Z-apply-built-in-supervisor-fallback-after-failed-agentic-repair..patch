@@ -1,0 +1,99 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,29 +1,54 @@
+ {
+-  "createdAt": "2026-05-03T15:04:26.875371Z",
++  "createdAt": "2026-05-03T15:12:57.957336Z",
+   "decision": {
+     "action": "repair_daemon_programming",
+-    "reason": "3 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
++    "reason": "2 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
+     "severity": "warning"
+   },
+   "failedAgenticRepair": {
+     "changedFiles": [
+-      "ppd/daemon/syntax_preflight_hint.py"
++      "ppd/daemon/syntax_preflight.py",
++      "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+     ],
+     "errors": [
+-      "Syntax preflight failed; file edits were rolled back. python3 -m py_compile ppd/daemon/syntax_preflight_hint.py: ppd/daemon/syntax_preflight_hint.py:62: malformed Python expression; use explicit operators such as `is None`, `is not None`, `isinstance(...)`, or a normal return expression. Do not place TypeScript-style type fragments inside Python control-flow or return statements. Next worker attempt should be smaller: replace only the syntactically failing file plus its narrow fixture/test if needed; run py_compile for each changed Python file or strict tsc for each changed TypeScript file mentally before returning JSON; do not add new contracts, fixtures, and broad tests in the same proposa..."
++      "Validation failed; file edits were rolled back."
+     ],
+-    "failureKind": "syntax_preflight",
+-    "summary": "Add a narrow syntax-preflight prompt guard for repeated checkbox-178 parser failures plus focused unittest coverage.",
++    "failureKind": "validation",
++    "summary": "Tighten PP&D syntax preflight retry guidance for repeated parser failures.",
+     "validationResults": [
+       {
+         "command": [
+           "python3",
++          "ppd/daemon/ppd_daemon.py",
++          "--self-test"
++        ],
++        "returncode": 0,
++        "stderr": "",
++        "stdout": "{ \"ok\": true, \"task_count\": 40 }"
++      },
++      {
++        "command": [
++          "python3",
+           "-m",
+-          "py_compile",
+-          "ppd/daemon/syntax_preflight_hint.py"
++          "unittest",
++          "discover",
++          "-s",
++          "ppd/tests",
++          "-p",
++          "test_*.py"
+         ],
+         "returncode": 1,
+-        "stderr": "ppd/daemon/syntax_preflight_hint.py:62: malformed Python expression; use explicit operators such as `is None`, `is not None`, `isinstance(...)`, or a normal return expression. Do not place TypeScript-style type fragments inside Python control-flow or return statements.",
++        "stderr": "........................................................................................................................................................................................................................................................................................................................................................................................................................................ss................sss............................................................................................................................................................................................................................FFF.................................................................. ====================================================================== FAIL: test_guide_keeps_repair_separate_from_domain_implementation (test_supervisor_repair_guid...",
++        "stdout": ""
++      },
++      {
++        "command": [
++          "bash",
++          "-lc",
++          "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
++        ],
++        "returncode": 0,
++        "stderr": "",
+         "stdout": ""
+       }
+     ]
+@@ -45,9 +70,11 @@
+   ],
+   "schemaVersion": 1,
+   "taskBoardRepair": {
+-    "parkedRepeatedSyntaxLoopTasks": [],
++    "parkedRepeatedSyntaxLoopTasks": [
++      "Add one daemon-only parser-clean unittest proving a blocked-only board with stale `calling_llm` for checkbox-178 produces a new unchecked daemon-repair task and does not reopen checkbox-178, checkbox-182, checkbox-186, checkbox-187, checkbox-191, checkbox-193, checkbox-194, checkbox-195, checkbox-197, checkbox-198, or checkbox-203."
++    ],
+     "replenishedGoalTaskLabels": [],
+     "supersededTaskBoardOnlyLabels": [],
+-    "taskBoardUpdated": false
++    "taskBoardUpdated": true
+   }
+ }
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -78,7 +78,7 @@
+ 
+ ## Blocked Cascade Recovery Tranche 19
+ 
+-- [~] Task checkbox-208: Add one daemon-only parser-clean unittest proving a blocked-only board with stale `calling_llm` for checkbox-178 produces a new unchecked daemon-repair task and does not reopen checkbox-178, checkbox-182, checkbox-186, checkbox-187, checkbox-191, checkbox-193, checkbox-194, checkbox-195, checkbox-197, checkbox-198, or checkbox-203.
++- [!] Task checkbox-208: Add one daemon-only parser-clean unittest proving a blocked-only board with stale `calling_llm` for checkbox-178 produces a new unchecked daemon-repair task and does not reopen checkbox-178, checkbox-182, checkbox-186, checkbox-187, checkbox-191, checkbox-193, checkbox-194, checkbox-195, checkbox-197, checkbox-198, or checkbox-203.
+ - [ ] Task checkbox-209: Add one narrow daemon helper or unittest proving repeated non-JSON LLM responses are persisted as compact diagnostics with target_task, failure_kind, compact_raw_response_summary, and next_action_hint while capping response text and excluding private artifact markers.
+ - [ ] Task checkbox-210: Add one parser-clean daemon prompt-scope unittest proving that after two syntax_preflight failures for checkbox-178, a retry prompt permits exactly one parser-bearing file or one daemon repair file and rejects source-plus-fixture-plus-test bundles before any DevHub domain retry.
+ 
+@@ -105,3 +105,7 @@
+ - Counts: `{"blocked": 11, "complete": 26, "in_progress": 0, "needed": 3}`
+ 
+ <!-- ppd-daemon-task-board:end -->
++## Built-In Supervisor Repair Notes
++
++- Parked repeated syntax-preflight loop for `Add one daemon-only parser-clean unittest proving a blocked-only board with stale `calling_llm` for checkbox-178 produces a new unchecked daemon-repair task and does not reopen checkbox-178, checkbox-182, checkbox-186, checkbox-187, checkbox-191, checkbox-193, checkbox-194, checkbox-195, checkbox-197, checkbox-198, or checkbox-203.` so the daemon can continue with independent selectable work. The task should be resumed only after a narrow syntax-valid fixture/test repair is available.
++

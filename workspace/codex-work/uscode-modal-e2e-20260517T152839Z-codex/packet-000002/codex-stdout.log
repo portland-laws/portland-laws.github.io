@@ -1,0 +1,13 @@
+Implemented the ambiguity-policy update to surface an explicit family-margin ambiguity in the deterministic compiler.
+
+- Added `modal_primary_family_margin` config to control thresholding for primary-family ambiguity at [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000002-20260517_153732/ipfs_datasets_py/logic/modal/compiler.py#L50).
+- Updated compilation flow to evaluate family ambiguity with both encoding and compiled IR at [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000002-20260517_153732/ipfs_datasets_py/logic/modal/compiler.py#L149).
+- Added new ambiguity type `low_primary_modal_family_margin` when the primary compiled family has low/negative margin vs competing cue evidence, with explicit `family_margin` metadata at [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000002-20260517_153732/ipfs_datasets_py/logic/modal/compiler.py#L246).
+- Added `family_margin` metadata to the existing `close_modal_family_shares` ambiguity for consistent downstream interpretation at [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000002-20260517_153732/ipfs_datasets_py/logic/modal/compiler.py#L315).
+- Added a regression test for an outvoted-primary-family scenario at [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000002-20260517_153732/tests/unit_tests/logic/modal/test_modal_codec.py#L194).
+
+Validation run:
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "..."`
+  - Blocked by existing repo issue: `NameError: __path__ is not defined` in `__init__.py:11` during setup/collection.
+- `python3 -m py_compile ...` on edited files passed.
+- Direct runtime sanity check confirmed new ambiguity emits with negative margin in the targeted case.

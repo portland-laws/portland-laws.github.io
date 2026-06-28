@@ -1,0 +1,42 @@
+{
+  "codex_claimed_total": 2,
+  "codex_exec_mode": "codex_cli",
+  "codex_execution_count": 2,
+  "codex_execution_failure_count": 2,
+  "codex_packet_count": 2,
+  "codex_patch_count": 0,
+  "codex_program_synthesis_execution_mode": "codex_cli_executor",
+  "codex_worktree_count": 2,
+  "cycles": 2,
+  "elapsed_seconds": 244.198,
+  "final": true,
+  "finished_at": "2026-05-17T14:50:15+00:00",
+  "latest_queue_counts": {
+    "failed_validation": 25,
+    "pending": 176
+  },
+  "latest_role_queue_counts": {
+    "autoencoder_sgd": {
+      "failed_validation": 23,
+      "pending": 115
+    },
+    "program_synthesis": {
+      "failed_validation": 2,
+      "pending": 61
+    }
+  },
+  "latest_stop_reason": "signal_15",
+  "log_path": "/home/barberb/portland-laws.github.io/workspace/test-logs/uscode-modal-supervised-fixed-20260517T144605Z-codex.jsonl",
+  "loop_role": "codex",
+  "program_synthesis_claimed": 0,
+  "program_synthesis_completed": 0,
+  "program_synthesis_pending": 61,
+  "queue_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-supervised-fixed-20260517T144605Z-autoencoder.jsonl",
+  "queue_run_id": "uscode-modal-supervised-fixed-20260517T144605Z-autoencoder",
+  "run_id": "uscode-modal-supervised-fixed-20260517T144605Z-codex",
+  "started_at": "2026-05-17T14:46:11+00:00",
+  "stopped_by_signal": 15,
+  "updated_at": "2026-05-17T14:50:15+00:00",
+  "work_dir": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-supervised-fixed-20260517T144605Z-codex",
+  "worker_id": "codex-program-synthesis-uscode-modal-supervised-fixed-20260517T144605Z-codex"
+}

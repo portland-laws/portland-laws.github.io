@@ -1,0 +1,58 @@
+{
+  "fixture_id": "synthetic-archive-manifest-delta-001",
+  "generated_at": "2026-05-28T00:00:00Z",
+  "expected": [
+    {
+      "url": "https://example.test/ppd/archive/lu-24-100001.pdf",
+      "status_code": 200,
+      "content_hash": "sha256:aaa111",
+      "document_ref": "LU 24-100001 DZM",
+      "skipped_reason": null
+    },
+    {
+      "url": "https://example.test/ppd/archive/lu-24-100002.pdf",
+      "status_code": 200,
+      "content_hash": "sha256:bbb222",
+      "document_ref": "LU_24-100002 DZM",
+      "skipped_reason": null
+    },
+    {
+      "url": "https://example.test/ppd/archive/lu-24-100003.pdf",
+      "status_code": 404,
+      "content_hash": null,
+      "document_ref": "LU 24-100003 DZM",
+      "skipped_reason": "not_found"
+    }
+  ],
+  "observed": [
+    {
+      "url": "https://example.test/ppd/archive/lu-24-100001.pdf",
+      "status_code": 200,
+      "content_hash": "sha256:aaa111",
+      "document_ref": " lu 24-100001 dzm ",
+      "skipped_reason": null
+    },
+    {
+      "url": "https://example.test/ppd/archive/lu-24-100002.pdf",
+      "status_code": 200,
+      "content_hash": "sha256:changed222",
+      "document_ref": "LU 24-100002 DZM",
+      "skipped_reason": null
+    },
+    {
+      "url": "https://example.test/ppd/archive/lu-24-100004.pdf",
+      "status_code": 503,
+      "content_hash": null,
+      "document_ref": "LU 24-100004 DZM",
+      "skipped_reason": "temporary_unavailable"
+    }
+  ],
+  "previous_sources": {
+    "ppd-archive-search": "2026-05-20T10:00:00Z",
+    "ppd-detail-pages": "2026-05-20T10:05:00Z"
+  },
+  "current_sources": {
+    "ppd-archive-search": "2026-05-28T08:00:00Z",
+    "ppd-detail-pages": "2026-05-20T10:05:00Z"
+  }
+}

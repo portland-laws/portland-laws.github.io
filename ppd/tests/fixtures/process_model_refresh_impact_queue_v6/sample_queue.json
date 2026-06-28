@@ -1,0 +1,105 @@
+{
+  "queue_version": "process_model_refresh_impact_queue_v6",
+  "generated_at": "2026-06-01T00:00:00Z",
+  "items": [
+    {
+      "refresh_impact_id": "impact-building-intake-001",
+      "process_id": "building-permit-intake",
+      "permit_type": "building",
+      "bundle_candidate_id": "guardrail-building-intake-candidate-v6",
+      "current_guardrail_bundle_id": "guardrail-building-intake-current-v5",
+      "rollback_baseline_bundle_id": "guardrail-building-intake-current-v5",
+      "source_evidence_ids": [
+        "evidence-devhub-guide-application",
+        "evidence-submit-plans-single-pdf"
+      ],
+      "source_evidence_carry_forward": [
+        {
+          "evidence_id": "evidence-devhub-guide-application",
+          "source_id": "source-devhub-guide-submit-permit-application",
+          "carry_forward_status": "pending_reviewer_check",
+          "reason": "process model references unchanged public guide fixture"
+        },
+        {
+          "evidence_id": "evidence-submit-plans-single-pdf",
+          "source_id": "source-submit-plans-online",
+          "carry_forward_status": "pending_reviewer_check",
+          "reason": "single PDF rule carried forward for inactive candidate review"
+        }
+      ],
+      "deterministic_predicates": [
+        {
+          "predicate_id": "predicate-building-upload-stops-before-official-submit",
+          "inputs": [
+            "action_type",
+            "user_exact_confirmation"
+          ],
+          "expected_result": "block_without_attended_exact_confirmation"
+        }
+      ],
+      "exact_confirmation_action_ids": [
+        "action-certify-acknowledgement",
+        "action-submit-permit-request"
+      ],
+      "refused_action_ids": [
+        "action-pay-fee",
+        "action-upload-to-official-record"
+      ],
+      "stale_evidence": [],
+      "reviewer_roles": [
+        "ppd_guardrail_reviewer",
+        "source_evidence_reviewer"
+      ]
+    },
+    {
+      "refresh_impact_id": "impact-trade-payment-002",
+      "process_id": "standard-trade-permit",
+      "permit_type": "trade",
+      "bundle_candidate_id": "guardrail-trade-candidate-v6",
+      "current_guardrail_bundle_id": "guardrail-trade-current-v5",
+      "rollback_baseline_bundle_id": "guardrail-trade-current-v5",
+      "source_evidence_ids": [
+        "evidence-standard-trade-guide",
+        "evidence-fee-payment-guide"
+      ],
+      "source_evidence_carry_forward": [
+        {
+          "evidence_id": "evidence-standard-trade-guide",
+          "source_id": "source-standard-trade-guide",
+          "carry_forward_status": "pending_reviewer_check",
+          "reason": "trade fixture staged without live DevHub access"
+        },
+        {
+          "evidence_id": "evidence-fee-payment-guide",
+          "source_id": "source-fee-payment-guide",
+          "carry_forward_status": "pending_reviewer_check",
+          "reason": "stale payment guide evidence carried forward only for stop gate review"
+        }
+      ],
+      "deterministic_predicates": [
+        {
+          "predicate_id": "predicate-payment-actions-remain-refused",
+          "inputs": [
+            "action_type",
+            "payment_detail_present"
+          ],
+          "expected_result": "refuse_payment_execution"
+        }
+      ],
+      "exact_confirmation_action_ids": [
+        "action-purchase-trade-permit"
+      ],
+      "refused_action_ids": [
+        "action-enter-payment-details",
+        "action-final-submit-payment"
+      ],
+      "stale_evidence": [
+        "evidence-fee-payment-guide"
+      ],
+      "reviewer_roles": [
+        "ppd_guardrail_reviewer",
+        "fee_workflow_reviewer"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,139 @@
+{
+  "packet_type": "fixture_first_release_rollback_drill_outcome_review",
+  "packet_id": "ppd-fixture-release-rollback-drill-outcome-review-2026-05-29",
+  "mode": "simulated_fixture_only",
+  "generated_at": "2026-05-29T00:00:00Z",
+  "source_packets": [
+    {
+      "source_id": "release_rollback_drill_packet",
+      "fixture_reference": "ppd/tests/fixtures/release/release_rollback_drill_packet.json",
+      "consumed_for": [
+        "rollback trigger rehearsal",
+        "artifact impact mapping",
+        "operator decision log"
+      ]
+    },
+    {
+      "source_id": "post_promotion_smoke_test_plan",
+      "fixture_reference": "ppd/tests/fixtures/release/post_promotion_smoke_test_plan.json",
+      "consumed_for": [
+        "post-promotion health gates",
+        "user-visible workflow checks",
+        "release verification thresholds"
+      ]
+    },
+    {
+      "source_id": "post_release_monitoring_plan",
+      "fixture_reference": "ppd/tests/fixtures/release/post_release_monitoring_plan.json",
+      "consumed_for": [
+        "monitoring window expectations",
+        "alert thresholds",
+        "rollback watch criteria"
+      ]
+    }
+  ],
+  "simulated_rollback_observations": [
+    {
+      "observation_id": "obs-001",
+      "citation": "release_rollback_drill_packet#rollback_trigger_rehearsal",
+      "finding": "Simulated rollback trigger was recognized after the fixture marked release health as degraded.",
+      "outcome": "rollback-ready",
+      "evidence_kind": "fixture_observation"
+    },
+    {
+      "observation_id": "obs-002",
+      "citation": "post_promotion_smoke_test_plan#critical-path-smoke-gates",
+      "finding": "Critical-path smoke checks remained the first decision gate before any simulated rollback recommendation.",
+      "outcome": "gate-respected",
+      "evidence_kind": "fixture_observation"
+    },
+    {
+      "observation_id": "obs-003",
+      "citation": "post_release_monitoring_plan#rollback-watch-window",
+      "finding": "Monitoring criteria required sustained threshold breach before escalation from watch state to rollback recommendation.",
+      "outcome": "threshold-governed",
+      "evidence_kind": "fixture_observation"
+    }
+  ],
+  "decision_thresholds": [
+    {
+      "threshold_id": "threshold-smoke-critical-failure",
+      "citation": "post_promotion_smoke_test_plan#critical-path-smoke-gates",
+      "condition": "Any critical smoke-test gate fails in the simulated post-promotion window.",
+      "decision": "block-publication-and-open-rollback-review",
+      "severity": "high"
+    },
+    {
+      "threshold_id": "threshold-monitoring-sustained-breach",
+      "citation": "post_release_monitoring_plan#rollback-watch-window",
+      "condition": "Release monitoring fixtures show sustained breach for the configured rollback watch interval.",
+      "decision": "recommend-simulated-rollback",
+      "severity": "high"
+    },
+    {
+      "threshold_id": "threshold-artifact-integrity-gap",
+      "citation": "release_rollback_drill_packet#affected_artifacts",
+      "condition": "Any affected artifact reference is missing owner review or restore expectation.",
+      "decision": "hold-release-review-open",
+      "severity": "medium"
+    }
+  ],
+  "affected_artifact_references": [
+    {
+      "artifact_id": "artifact-release-packet",
+      "citation": "release_rollback_drill_packet#release_packet",
+      "artifact_reference": "fixture://release/rollback-drill/release-packet",
+      "expected_action": "review-only",
+      "mutation_allowed": false
+    },
+    {
+      "artifact_id": "artifact-smoke-plan",
+      "citation": "post_promotion_smoke_test_plan#smoke_plan",
+      "artifact_reference": "fixture://release/post-promotion/smoke-test-plan",
+      "expected_action": "review-only",
+      "mutation_allowed": false
+    },
+    {
+      "artifact_id": "artifact-monitoring-plan",
+      "citation": "post_release_monitoring_plan#monitoring_plan",
+      "artifact_reference": "fixture://release/post-release/monitoring-plan",
+      "expected_action": "review-only",
+      "mutation_allowed": false
+    }
+  ],
+  "reviewer_owner_fields": {
+    "review_owner": "ppd-release-review-owner",
+    "rollback_decision_reviewer": "ppd-rollback-drill-reviewer",
+    "smoke_test_reviewer": "ppd-smoke-test-reviewer",
+    "monitoring_reviewer": "ppd-monitoring-reviewer",
+    "follow_up_owner": "ppd-release-follow-up-owner"
+  },
+  "follow_up_work_items": [
+    {
+      "work_item_id": "follow-up-001",
+      "owner": "ppd-release-follow-up-owner",
+      "source_observation": "obs-001",
+      "description": "Add reviewer sign-off evidence to the next simulated rollback drill packet fixture.",
+      "status": "open"
+    },
+    {
+      "work_item_id": "follow-up-002",
+      "owner": "ppd-monitoring-reviewer",
+      "source_observation": "obs-003",
+      "description": "Confirm monitoring-window threshold names remain aligned with the post-release monitoring plan fixture.",
+      "status": "open"
+    }
+  ],
+  "attestations": {
+    "no_active_rollback_executed": true,
+    "no_publication_performed": true,
+    "no_registry_mutation": true,
+    "no_manifest_mutation": true,
+    "no_requirements_mutation": true,
+    "no_process_model_mutation": true,
+    "no_guardrail_mutation": true,
+    "no_release_notes_mutation": true,
+    "no_schedule_mutation": true,
+    "no_agent_state_mutation": true
+  }
+}

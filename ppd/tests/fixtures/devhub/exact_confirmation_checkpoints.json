@@ -1,0 +1,232 @@
+{
+  "fixture_version": "2026-05-14",
+  "purpose": "Deterministic exact-confirmation checkpoints for consequential PP&D DevHub boundaries. These fixtures describe guardrails only and do not authorize automation of official actions.",
+  "checkpoints": [
+    {
+      "checkpoint_id": "devhub-acknowledgement-certification-exact-confirmation",
+      "boundary": "acknowledgement_certification",
+      "display_name": "Acknowledgement and certification",
+      "consequence": "The user may be certifying that application information is true, complete, and ready for official PP&D review.",
+      "allowed_before_confirmation": [
+        "review_acknowledgement_text",
+        "summarize_certification_requirements",
+        "prepare_questions_for_user",
+        "manual_handoff"
+      ],
+      "blocked_without_confirmation": [
+        "check_certification_box",
+        "click_i_agree",
+        "click_acknowledge",
+        "click_certify",
+        "advance_past_certification"
+      ],
+      "confirmation_prompt": "Review the acknowledgement or certification language in DevHub. To proceed yourself, type exactly: CONFIRM CERTIFICATION REVIEWED",
+      "required_confirmation_text": "CONFIRM CERTIFICATION REVIEWED",
+      "manual_handoff": true,
+      "prohibited_automation": [
+        "certify_acknowledgement",
+        "accept_legal_attestation",
+        "submit_certification_response"
+      ],
+      "fixture_kind": "exact_confirmation_checkpoint",
+      "source_basis": [
+        "PP&D DevHub permit application guidance describes acknowledgement/certification review as part of authenticated application workflows.",
+        "PP&D guardrail plan classifies certification and acknowledgement as consequential official actions requiring exact confirmation."
+      ]
+    },
+    {
+      "checkpoint_id": "devhub-official-upload-exact-confirmation",
+      "boundary": "official_upload",
+      "display_name": "Official upload or correction attachment",
+      "consequence": "A file may become part of the official permit or correction record and may trigger PP&D review activity.",
+      "allowed_before_confirmation": [
+        "validate_local_file_rules",
+        "stage_upload_mapping",
+        "summarize_file_names",
+        "review_upload_control",
+        "manual_handoff"
+      ],
+      "blocked_without_confirmation": [
+        "click_upload",
+        "click_attach",
+        "click_submit_corrections",
+        "drop_file_on_official_control",
+        "confirm_upload"
+      ],
+      "confirmation_prompt": "Review the exact file list and destination in DevHub. To proceed yourself, type exactly: CONFIRM OFFICIAL UPLOAD",
+      "required_confirmation_text": "CONFIRM OFFICIAL UPLOAD",
+      "manual_handoff": true,
+      "prohibited_automation": [
+        "perform_official_upload",
+        "attach_file_to_record",
+        "submit_correction_upload"
+      ],
+      "fixture_kind": "exact_confirmation_checkpoint",
+      "source_basis": [
+        "PP&D single PDF and file preparation guidance distinguishes required application, plan, calculation, and supporting-document uploads.",
+        "PP&D upload-corrections guidance treats correction uploads as authenticated DevHub workflow steps tied to permit or application records."
+      ]
+    },
+    {
+      "checkpoint_id": "devhub-submission-exact-confirmation",
+      "boundary": "submission",
+      "display_name": "Permit request submission",
+      "consequence": "The application may be officially submitted to PP&D, starting intake, review, status tracking, or fee workflows.",
+      "allowed_before_confirmation": [
+        "review_application_summary",
+        "identify_missing_required_fields",
+        "prepare_draft_values",
+        "save_draft_when_available",
+        "manual_handoff"
+      ],
+      "blocked_without_confirmation": [
+        "click_submit",
+        "click_submit_application",
+        "click_finish",
+        "confirm_submission",
+        "finalize_request"
+      ],
+      "confirmation_prompt": "Review the application summary and any warnings in DevHub. To proceed yourself, type exactly: CONFIRM PERMIT SUBMISSION",
+      "required_confirmation_text": "CONFIRM PERMIT SUBMISSION",
+      "manual_handoff": true,
+      "prohibited_automation": [
+        "submit_permit_request",
+        "finalize_application",
+        "purchase_trade_permit"
+      ],
+      "fixture_kind": "exact_confirmation_checkpoint",
+      "source_basis": [
+        "PP&D DevHub permit application guidance describes save-for-later behavior, required uploads, acknowledgement/certification, and post-submission status tracking.",
+        "PP&D guardrail plan classifies permit submission and trade permit purchase as consequential official actions."
+      ]
+    },
+    {
+      "checkpoint_id": "devhub-scheduling-exact-confirmation",
+      "boundary": "scheduling",
+      "display_name": "Inspection scheduling",
+      "consequence": "An inspection appointment or request may be created or changed on the official permit record.",
+      "allowed_before_confirmation": [
+        "review_available_inspection_options",
+        "summarize_selected_date_window",
+        "check_required_contact_facts",
+        "manual_handoff"
+      ],
+      "blocked_without_confirmation": [
+        "click_schedule",
+        "click_request_inspection",
+        "confirm_inspection_time",
+        "submit_inspection_request",
+        "reschedule_inspection"
+      ],
+      "confirmation_prompt": "Review the inspection type, permit, contact details, and requested date in DevHub. To proceed yourself, type exactly: CONFIRM INSPECTION SCHEDULING",
+      "required_confirmation_text": "CONFIRM INSPECTION SCHEDULING",
+      "manual_handoff": true,
+      "prohibited_automation": [
+        "schedule_inspection",
+        "reschedule_inspection",
+        "submit_inspection_request"
+      ],
+      "fixture_kind": "exact_confirmation_checkpoint",
+      "source_basis": [
+        "PP&D online permitting tools and DevHub FAQ identify inspection scheduling as an authenticated account-scoped DevHub service.",
+        "PP&D guardrail plan classifies scheduling inspections as consequential official workflow activity."
+      ]
+    },
+    {
+      "checkpoint_id": "devhub-cancellation-exact-confirmation",
+      "boundary": "cancellation",
+      "display_name": "Cancellation, withdrawal, or void request",
+      "consequence": "The user may cancel, withdraw, void, or otherwise end an official request, permit, inspection, or workflow item.",
+      "allowed_before_confirmation": [
+        "review_current_status",
+        "summarize_cancellation_consequence",
+        "prepare_manual_handoff_notes",
+        "manual_handoff"
+      ],
+      "blocked_without_confirmation": [
+        "click_cancel",
+        "click_withdraw",
+        "click_void",
+        "confirm_cancellation",
+        "submit_withdrawal"
+      ],
+      "confirmation_prompt": "Review the record and cancellation or withdrawal consequence in DevHub. To proceed yourself, type exactly: CONFIRM CANCELLATION REQUEST",
+      "required_confirmation_text": "CONFIRM CANCELLATION REQUEST",
+      "manual_handoff": true,
+      "prohibited_automation": [
+        "cancel_request",
+        "withdraw_application",
+        "void_permit_or_inspection"
+      ],
+      "fixture_kind": "exact_confirmation_checkpoint",
+      "source_basis": [
+        "PP&D guardrail plan classifies cancel, withdraw, and official change actions as consequential and attended.",
+        "Authenticated DevHub workflow state changes are account-scoped and must not be executed without user attendance and exact confirmation."
+      ]
+    },
+    {
+      "checkpoint_id": "devhub-extension-reactivation-exact-confirmation",
+      "boundary": "extension_reactivation",
+      "display_name": "Extension or reactivation request",
+      "consequence": "The user may request an official deadline extension, permit reactivation, or status change that affects review or permit validity.",
+      "allowed_before_confirmation": [
+        "review_expiration_or_status_dates",
+        "summarize_known_deadlines",
+        "identify_missing_supporting_facts",
+        "manual_handoff"
+      ],
+      "blocked_without_confirmation": [
+        "click_request_extension",
+        "click_reactivate",
+        "submit_extension_request",
+        "submit_reactivation_request",
+        "confirm_status_change"
+      ],
+      "confirmation_prompt": "Review the deadline, status, and requested extension or reactivation in DevHub. To proceed yourself, type exactly: CONFIRM EXTENSION OR REACTIVATION",
+      "required_confirmation_text": "CONFIRM EXTENSION OR REACTIVATION",
+      "manual_handoff": true,
+      "prohibited_automation": [
+        "request_extension",
+        "request_reactivation",
+        "submit_status_change"
+      ],
+      "fixture_kind": "exact_confirmation_checkpoint",
+      "source_basis": [
+        "PP&D process stages include cancellation, expiration, extension, and reactivation as closeout or lifecycle boundaries.",
+        "PP&D guardrail plan requires exact confirmation before consequential official status changes."
+      ]
+    },
+    {
+      "checkpoint_id": "devhub-payment-exact-confirmation",
+      "boundary": "payment",
+      "display_name": "Fee payment boundary",
+      "consequence": "The user may enter financial details, authorize charges, submit payment, or create a financial record.",
+      "allowed_before_confirmation": [
+        "review_fee_notice",
+        "summarize_fee_amounts",
+        "identify_payment_deadline",
+        "manual_handoff"
+      ],
+      "blocked_without_confirmation": [
+        "enter_payment_details",
+        "click_pay",
+        "click_submit_payment",
+        "save_payment_method",
+        "confirm_payment"
+      ],
+      "confirmation_prompt": "Review the fee notice, amount, and payment page in DevHub. To proceed yourself, type exactly: CONFIRM PAYMENT STEP",
+      "required_confirmation_text": "CONFIRM PAYMENT STEP",
+      "manual_handoff": true,
+      "prohibited_automation": [
+        "enter_payment_details",
+        "submit_payment",
+        "save_payment_receipt_after_payment_execution"
+      ],
+      "fixture_kind": "exact_confirmation_checkpoint",
+      "source_basis": [
+        "PP&D fee payment guidance describes payment-detail entry and final submit-payment actions as financial workflow steps.",
+        "PP&D guardrail plan prohibits automating payment-detail entry or final payment execution."
+      ]
+    }
+  ]
+}

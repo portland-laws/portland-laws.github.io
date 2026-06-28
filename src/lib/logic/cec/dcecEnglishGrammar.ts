@@ -26,6 +26,7 @@ import {
   CecGrammarRule,
   CecLexicalEntry,
 } from './grammarEngine';
+import { createDomainVocabulary, normalizeDomainPredicate } from './domainVocabulary';
 
 export interface DcecEnglishSemanticRecord {
   type: string;
@@ -71,6 +72,7 @@ type DcecEnglishSemanticValue = DcecEnglishSemanticRecord | string | number | bo
 const COMMON_AGENTS = ['jack', 'robot', 'alice', 'bob', 'system'];
 const COMMON_ACTIONS = ['laugh', 'sleep', 'run', 'eat', 'walk', 'talk', 'work'];
 const COMMON_FLUENTS = ['happy', 'sad', 'hungry', 'tired', 'sick', 'angry'];
+const DOMAIN_VOCABULARY = createDomainVocabulary();
 const DEFAULT_NATIVE_MAX_INPUT_LENGTH = 4096;
 const NATIVE_GRAMMAR_METADATA = {
   sourcePythonModule: 'logic/CEC/native/dcec_english_grammar.py',
@@ -303,7 +305,7 @@ export class DcecEnglishGrammar {
     this.addWords(['then'], 'Conj', { type: 'then' });
     this.addWords(['not'], 'Adv', { type: 'not', connective: DcecLogicalConnective.NOT });
 
-    this.addWords(['must', 'obligated', 'should', 'required'], 'V', {
+    this.addWords(['must', 'shall', 'obligated', 'should', 'required'], 'V', {
       type: 'deontic',
       operator: 'obligated',
     });
@@ -328,11 +330,11 @@ export class DcecEnglishGrammar {
     this.addWords(['is', 'are', 'was', 'were', 'be', 'been', 'being'], 'V', { type: 'auxiliary' });
     this.addWords(['to', 'the', 'a', 'an'], 'Det', { type: 'determiner' });
 
-    for (const agent of COMMON_AGENTS)
+    for (const agent of [...COMMON_AGENTS, ...DOMAIN_VOCABULARY.agents])
       this.addWords([agent], 'Agent', { type: 'agent', name: agent });
-    for (const action of COMMON_ACTIONS)
+    for (const action of [...COMMON_ACTIONS, ...DOMAIN_VOCABULARY.actions])
       this.addWords([action], 'ActionType', { type: 'action', name: action });
-    for (const fluent of COMMON_FLUENTS)
+    for (const fluent of [...COMMON_FLUENTS, ...DOMAIN_VOCABULARY.fluents])
       this.addWords([fluent], 'Fluent', { type: 'fluent', name: fluent });
   }
 
@@ -438,17 +440,25 @@ export class DcecEnglishGrammar {
     }
 
     const deontic = normalized.match(
-      /^(\w+) (must|should|may|forbidden|prohibited|permitted|allowed)(?: to)? (.+)$/,
+      /^(\w+) (must|shall|should|may|forbidden|prohibited|permitted|allowed)(?: to)? (.+)$/,
     );
     if (deontic) {
       const op = normalizeDeontic(deontic[2]);
-      return op
-        ? new DcecDeonticFormula(
-            op,
-            this.atomic(deontic[3], deontic[1]),
-            this.agentTerm(deontic[1]),
-          )
-        : undefined;
+      if (!op) return undefined;
+      const actionText = deontic[3].trim();
+      const effectiveOperator =
+        op === DcecDeonticOperator.OBLIGATION && actionText.startsWith('not ')
+          ? DcecDeonticOperator.PROHIBITION
+          : op;
+      const effectiveAction =
+        effectiveOperator === DcecDeonticOperator.PROHIBITION && actionText.startsWith('not ')
+          ? actionText.slice(4)
+          : actionText;
+      return new DcecDeonticFormula(
+        effectiveOperator,
+        this.atomic(effectiveAction, deontic[1]),
+        this.agentTerm(deontic[1]),
+      );
     }
 
     const action = normalized.match(/^(\w+) (.+)$/);
@@ -465,7 +475,7 @@ export class DcecEnglishGrammar {
   }
 
   private atomic(predicateName: string, agentName: string): DcecAtomicFormula {
-    const normalizedPredicate = predicateName.trim().replace(/\s+/g, '_');
+    const normalizedPredicate = normalizeDomainPredicate(predicateName, DOMAIN_VOCABULARY);
     return new DcecAtomicFormula(this.predicate(normalizedPredicate, 1), [
       this.agentTerm(agentName),
     ]);
@@ -623,7 +633,7 @@ function normalizeDeontic(value: unknown): DcecDeonticOperatorValue | undefined 
   const raw = String(value).toLowerCase();
   if (
     value === DcecDeonticOperator.OBLIGATION ||
-    ['obligated', 'must', 'should', 'required'].includes(raw)
+    ['obligated', 'must', 'shall', 'should', 'required'].includes(raw)
   )
     return DcecDeonticOperator.OBLIGATION;
   if (value === DcecDeonticOperator.PERMISSION || ['permitted', 'may', 'allowed'].includes(raw))

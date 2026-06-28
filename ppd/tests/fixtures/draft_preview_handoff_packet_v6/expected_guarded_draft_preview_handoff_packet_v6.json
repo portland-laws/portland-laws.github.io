@@ -1,0 +1,215 @@
+{
+  "packet_type": "guarded_draft_preview_handoff_packet",
+  "packet_version": "v6",
+  "mode": "fixture_first_offline_only",
+  "consumes_only": [
+    "agent_guardrail_api_compatibility_packet:v6",
+    "attended_devhub_read_only_preflight_packet:v6"
+  ],
+  "case_id": "case-fixture-109",
+  "process_id": "ppd-building-permit-draft-preview-fixture",
+  "surface_id": "devhub-read-only-fixture-application-start",
+  "reversible_draft_preview_rows": [
+    {
+      "field_id": "applicant_email",
+      "label": "Applicant email",
+      "draft_value": "applicant@example.invalid",
+      "value_source": "fixture_redacted_user_fact",
+      "reversible_only": true,
+      "may_autofill_devhub": false,
+      "requires_user_fact_provenance": true,
+      "user_fact_provenance": [
+        "user_supplied_contact_fact"
+      ],
+      "selector": "input[name='ApplicantEmail']",
+      "selector_confidence": "low",
+      "selector_confidence_caveats": [
+        "Email field may be account-derived; do not overwrite without user review."
+      ],
+      "blocked_if_missing_provenance": true,
+      "manual_review_required": true
+    },
+    {
+      "field_id": "project_address",
+      "label": "Project address",
+      "draft_value": "123 Fixture Ave, Portland, OR 97201",
+      "value_source": "fixture_redacted_user_fact",
+      "reversible_only": true,
+      "may_autofill_devhub": false,
+      "requires_user_fact_provenance": true,
+      "user_fact_provenance": [
+        "user_supplied_address",
+        "public_property_reference_if_user_confirms"
+      ],
+      "selector": "input[name='ProjectAddress']",
+      "selector_confidence": "medium",
+      "selector_confidence_caveats": [
+        "Selector observed in read-only fixture only; verify visible label during attended session."
+      ],
+      "blocked_if_missing_provenance": true,
+      "manual_review_required": true
+    },
+    {
+      "field_id": "work_description",
+      "label": "Describe the work",
+      "draft_value": "Fixture-only reversible preview of proposed residential alteration description.",
+      "value_source": "fixture_redacted_user_fact",
+      "reversible_only": true,
+      "may_autofill_devhub": false,
+      "requires_user_fact_provenance": true,
+      "user_fact_provenance": [
+        "user_supplied_scope_summary"
+      ],
+      "selector": "textarea[name='WorkDescription']",
+      "selector_confidence": "high",
+      "selector_confidence_caveats": [],
+      "blocked_if_missing_provenance": true,
+      "manual_review_required": false
+    }
+  ],
+  "user_fact_provenance_requirements": [
+    {
+      "field_id": "applicant_email",
+      "required": true,
+      "accepted_sources": [
+        "user_supplied_contact_fact"
+      ],
+      "missing_fact_behavior": "ask_user_before_preview_or_leave_blank"
+    },
+    {
+      "field_id": "project_address",
+      "required": true,
+      "accepted_sources": [
+        "user_supplied_address",
+        "public_property_reference_if_user_confirms"
+      ],
+      "missing_fact_behavior": "ask_user_before_preview_or_leave_blank"
+    },
+    {
+      "field_id": "work_description",
+      "required": true,
+      "accepted_sources": [
+        "user_supplied_scope_summary"
+      ],
+      "missing_fact_behavior": "ask_user_before_preview_or_leave_blank"
+    }
+  ],
+  "selector_confidence_caveats": [
+    {
+      "field_id": "project_address",
+      "selector_confidence": "medium",
+      "caveats": [
+        "Selector observed in read-only fixture only; verify visible label during attended session."
+      ]
+    },
+    {
+      "field_id": "applicant_email",
+      "selector_confidence": "low",
+      "caveats": [
+        "Email field may be account-derived; do not overwrite without user review."
+      ]
+    }
+  ],
+  "stop_gates": [
+    {
+      "gate_id": "upload_stop_gate",
+      "blocked_actions": [
+        "upload",
+        "replace_upload",
+        "remove_uploaded_file"
+      ],
+      "required_checkpoint": "User-attended exact confirmation is required before any upload-related action."
+    },
+    {
+      "gate_id": "submission_stop_gate",
+      "blocked_actions": [
+        "submit",
+        "final_submit",
+        "send_application"
+      ],
+      "required_checkpoint": "User-attended exact confirmation is required before any submission action."
+    },
+    {
+      "gate_id": "payment_stop_gate",
+      "blocked_actions": [
+        "enter_payment_details",
+        "submit_payment",
+        "authorize_payment"
+      ],
+      "required_checkpoint": "User-attended exact confirmation is required before any payment action."
+    },
+    {
+      "gate_id": "certification_stop_gate",
+      "blocked_actions": [
+        "certify",
+        "acknowledge",
+        "sign",
+        "attest"
+      ],
+      "required_checkpoint": "User-attended exact confirmation is required before any certification, acknowledgement, signature, or attestation."
+    }
+  ],
+  "local_pdf_preview_boundaries": {
+    "allowed": [
+      "render local draft preview from redacted fixture values",
+      "show field labels, proposed values, provenance, and caveats",
+      "export no official filing artifact"
+    ],
+    "disallowed": [
+      "open DevHub",
+      "read private documents",
+      "download official records",
+      "upload files",
+      "submit applications",
+      "certify statements",
+      "pay fees",
+      "schedule inspections",
+      "make legal or permitting guarantees"
+    ]
+  },
+  "exact_confirmation_checkpoint_reminders": [
+    {
+      "checkpoint_id": "before_devhub_use",
+      "reminder": "Confirm the exact attended action and visible target before using DevHub."
+    },
+    {
+      "checkpoint_id": "before_consequential_action",
+      "reminder": "Stop before upload, submission, payment, certification, scheduling, cancellation, or official change."
+    },
+    {
+      "checkpoint_id": "before_user_statement",
+      "reminder": "Do not certify or guarantee facts; require the user to review and confirm their own statements."
+    }
+  ],
+  "manual_handoff_notes": [
+    "Use this packet as a local draft preview checklist only.",
+    "Carry forward field labels, proposed values, provenance needs, and selector caveats for attended review.",
+    "Leave any unsupported, stale, conflicting, or unproven value blank and ask the user for the missing fact.",
+    "Escalate to manual PP&D/DevHub review for any upload, submission, payment, certification, scheduling, cancellation, or official status change."
+  ],
+  "offline_validation_commands": [
+    [
+      "python3",
+      "-m",
+      "py_compile",
+      "ppd/devhub/draft_preview_handoff_packet_v6.py",
+      "ppd/tests/test_draft_preview_handoff_packet_v6.py"
+    ],
+    [
+      "python3",
+      "-m",
+      "unittest",
+      "ppd.tests.test_draft_preview_handoff_packet_v6"
+    ],
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ],
+  "refusals": [
+    "No DevHub access is performed by this packet.",
+    "No private documents are read by this packet.",
+    "No uploads, submissions, certifications, payments, scheduling, or guarantees are performed by this packet."
+  ]
+}

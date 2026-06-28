@@ -1,4 +1,27 @@
-import { createGroth16Adapter, isGroth16Proof, proveGroth16, verifyGroth16Proof } from './groth16';
+import { webcrypto } from 'node:crypto';
+import { TextDecoder, TextEncoder } from 'node:util';
+
+import {
+  GROTH16_FFI_BACKEND_METADATA,
+  createGroth16Adapter,
+  createGroth16FfiBackend,
+  isGroth16Proof,
+  proveGroth16,
+  verifyGroth16Proof,
+} from './groth16';
+
+Object.defineProperty(globalThis, 'crypto', {
+  value: webcrypto,
+  configurable: true,
+});
+Object.defineProperty(globalThis, 'TextEncoder', {
+  value: TextEncoder,
+  configurable: true,
+});
+Object.defineProperty(globalThis, 'TextDecoder', {
+  value: TextDecoder,
+  configurable: true,
+});
 
 const proof = {
   pi_a: ['1', '2', '1'],
@@ -81,5 +104,52 @@ describe('Groth16 browser-native adapter', () => {
       proof,
       publicSignals: ['11'],
     });
+  });
+
+  it('ports groth16_ffi.py as an injected browser-native WASM backend', async () => {
+    const backend = createGroth16FfiBackend({
+      backend: {
+        prove: async (artifacts, input) => ({
+          ok: true,
+          proof,
+          publicSignals: [String(input.theorem), String(artifacts.wasm)],
+        }),
+        verify: async (key, publicSignals, candidateProof) =>
+          key === verificationKey &&
+          publicSignals[0] === 'Q' &&
+          publicSignals[1] === 'ffi.wasm' &&
+          JSON.stringify(candidateProof) === JSON.stringify(proof),
+      },
+      provingArtifacts: { wasm: 'ffi.wasm', zkey: 'ffi.zkey' },
+      verificationKey,
+    });
+
+    const generated = await backend.generateProof('Q', ['P', 'P -> Q']);
+
+    expect(GROTH16_FFI_BACKEND_METADATA).toEqual({
+      backendId: 'groth16_ffi',
+      browserNative: true,
+      proofSystem: 'Groth16',
+      pythonRuntimeAllowed: false,
+      requiresInjectedWasmBackend: true,
+      serverCallsAllowed: false,
+      sourcePythonModule: 'logic/zkp/backends/groth16_ffi.py',
+    });
+    expect(generated.metadata).toMatchObject({
+      backend: 'groth16_ffi',
+      browser_native: true,
+      groth16_proof: proof,
+      source_python_module: 'logic/zkp/backends/groth16_ffi.py',
+    });
+    expect(generated.publicInputs.groth16_public_signals).toEqual(['Q', 'ffi.wasm']);
+    await expect(backend.verifyProof(generated)).resolves.toBe(true);
+  });
+
+  it('fails closed when the groth16_ffi local WASM backend is absent', async () => {
+    const backend = createGroth16FfiBackend();
+
+    await expect(backend.generateProof('Q', ['P'])).rejects.toThrow(
+      'groth16_proving_backend_unavailable',
+    );
   });
 });

@@ -1,0 +1,87 @@
+{
+  "queue_id": "pm-refresh-impact-v7-fixture-invalid",
+  "queue_version": "process_model_refresh_impact_queue_v7",
+  "requirement_node_candidate_set_refs": [
+    {
+      "candidate_set_id": "rn-candidates-building-alteration-2026-05-08",
+      "requirement_ids": [
+        "req-document-single-pdf"
+      ],
+      "source_evidence_ids": [
+        "src-submit-plans-online"
+      ]
+    }
+  ],
+  "affected_process_model_rows": [
+    {
+      "process_id": "pm-building-alteration",
+      "permit_type": "building alteration",
+      "guardrail_bundle_id": "gb-building-alteration-v1"
+    }
+  ],
+  "eligibility_impact_placeholders": [
+    {
+      "placeholder_id": "eligibility-impact-review-needed"
+    }
+  ],
+  "document_impact_placeholders": [
+    {
+      "placeholder_id": "document-impact-single-pdf"
+    }
+  ],
+  "fee_impact_placeholders": [
+    {
+      "placeholder_id": "fee-impact-payment-gate"
+    }
+  ],
+  "deadline_impact_placeholders": [
+    {
+      "placeholder_id": "deadline-impact-staleness-check"
+    }
+  ],
+  "stage_impact_placeholders": [
+    {
+      "placeholder_id": "stage-impact-upload-staging"
+    }
+  ],
+  "unsupported_path_carry_forward_notes": [
+    {
+      "text": "Carry forward unsupported-path review."
+    }
+  ],
+  "guardrail_bundle_recompile_suggestions": [
+    {
+      "suggestion": "Recompile only after review."
+    }
+  ],
+  "stale_evidence_holds": [
+    {
+      "hold_reason": "Requires freshness check."
+    }
+  ],
+  "reviewer_signoff_placeholders": [
+    {
+      "signoff_status": "pending"
+    }
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ],
+  "active_guardrail_mutation": true,
+  "live_crawl_executed": true,
+  "raw_crawl_artifacts": [
+    "raw-html-body"
+  ],
+  "session": {
+    "storage_state": "private-auth-state"
+  },
+  "official_action_completed": true,
+  "legal_review_note": "This permit is guaranteed approval and will be approved.",
+  "notes": [
+    "The queue executed live crawl and actively mutated guardrails."
+  ]
+}

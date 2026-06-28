@@ -1,11 +1,37 @@
 import type { ProofResult } from '../types';
 import { parseTdfolFormula } from './parser';
 import type { TdfolKnowledgeBase } from './prover';
-import { calculateStats, getGlobalTdfolMetricsCollector, type TdfolMetricsCollector, type TdfolStatisticalSummary } from './performanceMetrics';
-import { TdfolForwardChainingStrategy, TdfolModalTableauxStrategy, TdfolStrategySelector, type TdfolProverStrategy } from './strategies';
+import {
+  calculateStats,
+  getGlobalTdfolMetricsCollector,
+  type TdfolMetricsCollector,
+  type TdfolStatisticalSummary,
+} from './performanceMetrics';
+import {
+  TdfolForwardChainingStrategy,
+  TdfolModalTableauxStrategy,
+  TdfolStrategySelector,
+  type TdfolProverStrategy,
+} from './strategies';
 
 export type TdfolPerformanceStrategyName = 'auto' | 'forward' | 'modal';
 export type TdfolStatisticsFormat = 'json' | 'prometheus';
+
+export const TDFOL_PERFORMANCE_ENGINE_METADATA = {
+  sourcePythonModule: 'logic/TDFOL/tdfol_performance_engine.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeRequired: false,
+  parity: [
+    'metrics_aggregation',
+    'profile_operation',
+    'dashboard_html_export',
+    'statistics_export',
+    'strategy_comparison',
+    'regression_checks',
+    'reset',
+  ],
+} as const;
 
 export interface TdfolProfileOperationOptions {
   formula: string;
@@ -88,11 +114,14 @@ export class TdfolPerformanceEngine {
       dashboardStats: this.getDashboardStatistics(),
       collectorStats,
       collectorSummary: {
-        timingOperations: Object.keys((collectorStats.timing as Record<string, unknown>) ?? {}).length,
-        memoryOperations: Object.keys((collectorStats.memory as Record<string, unknown>) ?? {}).length,
+        timingOperations: Object.keys((collectorStats.timing as Record<string, unknown>) ?? {})
+          .length,
+        memoryOperations: Object.keys((collectorStats.memory as Record<string, unknown>) ?? {})
+          .length,
         counters: Object.keys((collectorStats.counters as Record<string, unknown>) ?? {}).length,
         gauges: Object.keys((collectorStats.gauges as Record<string, unknown>) ?? {}).length,
-        histograms: Object.keys((collectorStats.histograms as Record<string, unknown>) ?? {}).length,
+        histograms: Object.keys((collectorStats.histograms as Record<string, unknown>) ?? {})
+          .length,
       },
       metadata: {
         dashboardProofsRecorded: this.proofMetrics.length,
@@ -100,6 +129,10 @@ export class TdfolPerformanceEngine {
         collectorUptimeSeconds: this.getUptime(),
       },
     };
+  }
+
+  get_metrics(): TdfolPerformanceEngineMetrics {
+    return this.getMetrics();
   }
 
   profileOperation(options: TdfolProfileOperationOptions): TdfolProfileResult {
@@ -117,8 +150,17 @@ export class TdfolPerformanceEngine {
       const durationMs = nowMs() - startedAt;
       durations.push(durationMs);
       statuses.push(result.status);
-      this.collector.recordTiming(`tdfol.profile.${strategyName}`, durationMs, { formula: options.formula, run: index + 1 });
-      this.proofMetrics.push({ formula: options.formula, strategy: strategyName, status: result.status, timeMs: durationMs, timestamp: Date.now() });
+      this.collector.recordTiming(`tdfol.profile.${strategyName}`, durationMs, {
+        formula: options.formula,
+        run: index + 1,
+      });
+      this.proofMetrics.push({
+        formula: options.formula,
+        strategy: strategyName,
+        status: result.status,
+        timeMs: durationMs,
+        timestamp: Date.now(),
+      });
     }
 
     const stats = calculateStats(durations);
@@ -151,19 +193,46 @@ export class TdfolPerformanceEngine {
     return profile;
   }
 
-  generateDashboard(options: { includeProfiling?: boolean } = {}): { success: true; htmlString: string; metricsCount: number; summary: ReturnType<TdfolPerformanceEngine['getDashboardStatistics']>; profilingHistory?: TdfolProfileResult[] } {
+  profile_operation(options: TdfolProfileOperationOptions): TdfolProfileResult {
+    return this.profileOperation(options);
+  }
+
+  generateDashboard(options: { includeProfiling?: boolean } = {}): {
+    success: true;
+    htmlString: string;
+    metricsCount: number;
+    summary: ReturnType<TdfolPerformanceEngine['getDashboardStatistics']>;
+    profilingHistory?: TdfolProfileResult[];
+  } {
     const summary = this.getDashboardStatistics();
     return {
       success: true,
-      htmlString: this.toHtmlString(summary, options.includeProfiling ? this.profilingHistory.slice(-10) : []),
+      htmlString: this.toHtmlString(
+        summary,
+        options.includeProfiling ? this.profilingHistory.slice(-10) : [],
+      ),
       metricsCount: this.proofMetrics.length,
       summary,
       profilingHistory: options.includeProfiling ? this.profilingHistory.slice(-10) : undefined,
     };
   }
 
-  exportStatistics(format: TdfolStatisticsFormat = 'json', includeRawData = false): Record<string, unknown> {
+  generate_dashboard(options: { includeProfiling?: boolean } = {}): {
+    success: true;
+    htmlString: string;
+    metricsCount: number;
+    summary: ReturnType<TdfolPerformanceEngine['getDashboardStatistics']>;
+    profilingHistory?: TdfolProfileResult[];
+  } {
+    return this.generateDashboard(options);
+  }
+
+  exportStatistics(
+    format: TdfolStatisticsFormat = 'json',
+    includeRawData = false,
+  ): Record<string, unknown> {
     const exportData: Record<string, unknown> = {
+      metadata: TDFOL_PERFORMANCE_ENGINE_METADATA,
       timestamp: this.startedAt,
       uptime_seconds: this.getUptime(),
       dashboard_stats: this.getDashboardStatistics(),
@@ -176,14 +245,32 @@ export class TdfolPerformanceEngine {
     if (format === 'json') {
       exportData.json_string = JSON.stringify(exportData, null, 2);
     } else {
-      exportData.prometheus_metrics = this.toPrometheus(exportData.dashboard_stats as Record<string, unknown>);
+      exportData.prometheus_metrics = this.toPrometheus(
+        exportData.dashboard_stats as Record<string, unknown>,
+      );
     }
     return exportData;
   }
 
-  getProfilerReport(): { warning?: string; suggestion?: string; latestRun?: TdfolProfileResult; historyCount: number } {
+  export_statistics(
+    format: TdfolStatisticsFormat = 'json',
+    includeRawData = false,
+  ): Record<string, unknown> {
+    return this.exportStatistics(format, includeRawData);
+  }
+
+  getProfilerReport(): {
+    warning?: string;
+    suggestion?: string;
+    latestRun?: TdfolProfileResult;
+    historyCount: number;
+  } {
     if (this.profilingHistory.length === 0) {
-      return { warning: 'No profiling data available', suggestion: 'Run profileOperation first', historyCount: 0 };
+      return {
+        warning: 'No profiling data available',
+        suggestion: 'Run profileOperation first',
+        historyCount: 0,
+      };
     }
     return {
       latestRun: this.profilingHistory[this.profilingHistory.length - 1],
@@ -191,7 +278,21 @@ export class TdfolPerformanceEngine {
     };
   }
 
-  compareStrategies(options: Omit<TdfolProfileOperationOptions, 'strategy'> & { strategies?: TdfolPerformanceStrategyName[]; runsPerStrategy?: number }): Record<string, unknown> {
+  get_profiler_report(): {
+    warning?: string;
+    suggestion?: string;
+    latestRun?: TdfolProfileResult;
+    historyCount: number;
+  } {
+    return this.getProfilerReport();
+  }
+
+  compareStrategies(
+    options: Omit<TdfolProfileOperationOptions, 'strategy'> & {
+      strategies?: TdfolPerformanceStrategyName[];
+      runsPerStrategy?: number;
+    },
+  ): Record<string, unknown> {
     const strategies = options.strategies ?? ['forward', 'modal'];
     const results: Record<string, TdfolProfileResult['timing']> = {};
     for (const strategy of strategies) {
@@ -204,9 +305,16 @@ export class TdfolPerformanceEngine {
     }
 
     const entries = Object.entries(results);
-    const best = entries.reduce((currentBest, candidate) => candidate[1].meanTimeMs < currentBest[1].meanTimeMs ? candidate : currentBest);
-    const worst = entries.reduce((currentWorst, candidate) => candidate[1].meanTimeMs > currentWorst[1].meanTimeMs ? candidate : currentWorst);
-    const speedup = worst[1].meanTimeMs === 0 ? 1 : worst[1].meanTimeMs / Math.max(best[1].meanTimeMs, Number.EPSILON);
+    const best = entries.reduce((currentBest, candidate) =>
+      candidate[1].meanTimeMs < currentBest[1].meanTimeMs ? candidate : currentBest,
+    );
+    const worst = entries.reduce((currentWorst, candidate) =>
+      candidate[1].meanTimeMs > currentWorst[1].meanTimeMs ? candidate : currentWorst,
+    );
+    const speedup =
+      worst[1].meanTimeMs === 0
+        ? 1
+        : worst[1].meanTimeMs / Math.max(best[1].meanTimeMs, Number.EPSILON);
     return {
       formula: options.formula,
       strategiesCompared: entries.length,
@@ -219,21 +327,39 @@ export class TdfolPerformanceEngine {
     };
   }
 
-  checkRegression(baseline: Record<string, number>, thresholdPercent = 10): Record<string, unknown> {
+  compare_strategies(
+    options: Omit<TdfolProfileOperationOptions, 'strategy'> & {
+      strategies?: TdfolPerformanceStrategyName[];
+      runsPerStrategy?: number;
+    },
+  ): Record<string, unknown> {
+    return this.compareStrategies(options);
+  }
+
+  checkRegression(
+    baseline: Record<string, number>,
+    thresholdPercent = 10,
+  ): Record<string, unknown> {
     const currentStats = this.collector.getStatistics();
     const timings = currentStats.timing as Record<string, TdfolStatisticalSummary | undefined>;
     const regressions = Object.entries(baseline).flatMap(([metric, baselineValue]) => {
       const currentValue = timings[metric]?.mean;
-      if (currentValue === undefined || currentValue <= baselineValue * (1 + thresholdPercent / 100)) return [];
+      if (
+        currentValue === undefined ||
+        currentValue <= baselineValue * (1 + thresholdPercent / 100)
+      )
+        return [];
       const regressionPercent = ((currentValue - baselineValue) / baselineValue) * 100;
-      return [{
-        metric,
-        baseline: baselineValue,
-        current: currentValue,
-        regressionPercent,
-        thresholdPercent,
-        severity: regressionPercent > 20 ? 'critical' : 'warning',
-      }];
+      return [
+        {
+          metric,
+          baseline: baselineValue,
+          current: currentValue,
+          regressionPercent,
+          thresholdPercent,
+          severity: regressionPercent > 20 ? 'critical' : 'warning',
+        },
+      ];
     });
     return {
       regressionsFound: regressions.length > 0,
@@ -246,6 +372,13 @@ export class TdfolPerformanceEngine {
     };
   }
 
+  check_regression(
+    baseline: Record<string, number>,
+    thresholdPercent = 10,
+  ): Record<string, unknown> {
+    return this.checkRegression(baseline, thresholdPercent);
+  }
+
   resetMetrics(): { success: true; clearedProofMetrics: number; clearedProfilingRuns: number } {
     const clearedProofMetrics = this.proofMetrics.length;
     const clearedProfilingRuns = this.profilingHistory.length;
@@ -253,6 +386,10 @@ export class TdfolPerformanceEngine {
     this.profilingHistory.length = 0;
     this.collector.reset();
     return { success: true, clearedProofMetrics, clearedProfilingRuns };
+  }
+
+  reset_metrics(): { success: true; clearedProofMetrics: number; clearedProfilingRuns: number } {
+    return this.resetMetrics();
   }
 
   getDashboardStatistics(): {
@@ -277,7 +414,13 @@ export class TdfolPerformanceEngine {
     };
   }
 
-  private createStrategies(strategy: TdfolPerformanceStrategyName): TdfolProverStrategy[] | undefined {
+  get_dashboard_statistics(): ReturnType<TdfolPerformanceEngine['getDashboardStatistics']> {
+    return this.getDashboardStatistics();
+  }
+
+  private createStrategies(
+    strategy: TdfolPerformanceStrategyName,
+  ): TdfolProverStrategy[] | undefined {
     if (strategy === 'forward') return [new TdfolForwardChainingStrategy()];
     if (strategy === 'modal') return [new TdfolModalTableauxStrategy()];
     return undefined;
@@ -287,7 +430,10 @@ export class TdfolPerformanceEngine {
     return (Date.now() - this.startedAt) / 1000;
   }
 
-  private toHtmlString(summary: ReturnType<TdfolPerformanceEngine['getDashboardStatistics']>, history: TdfolProfileResult[]): string {
+  private toHtmlString(
+    summary: ReturnType<TdfolPerformanceEngine['getDashboardStatistics']>,
+    history: TdfolProfileResult[],
+  ): string {
     return `<!doctype html><html lang="en"><head><meta charset="utf-8"><title>TDFOL Performance</title></head><body><h1>TDFOL Performance</h1><script type="application/json" id="tdfol-performance-data">${escapeHtml(JSON.stringify({ summary, history }))}</script><p>Total proofs: ${summary.totalProofs}</p><p>Success rate: ${(summary.successRate * 100).toFixed(1)}%</p><p>Average time: ${summary.avgProofTimeMs.toFixed(3)}ms</p></body></html>`;
   }
 
@@ -301,25 +447,42 @@ export class TdfolPerformanceEngine {
   }
 }
 
-export function createTdfolPerformanceEngine(collector?: TdfolMetricsCollector): TdfolPerformanceEngine {
+export function createTdfolPerformanceEngine(
+  collector?: TdfolMetricsCollector,
+): TdfolPerformanceEngine {
   return new TdfolPerformanceEngine(collector);
 }
 
-function identifyTimingBottlenecks(operation: string, stats: TdfolStatisticalSummary): TdfolPerformanceBottleneck[] {
+function identifyTimingBottlenecks(
+  operation: string,
+  stats: TdfolStatisticalSummary,
+): TdfolPerformanceBottleneck[] {
   if (stats.mean <= 1) return [];
-  const severity = stats.mean > 1000 ? 'critical' : stats.mean > 100 ? 'high' : stats.mean > 10 ? 'medium' : 'low';
-  return [{
-    operation,
-    timeMs: stats.mean,
-    severity,
-    recommendation: severity === 'low' ? 'Monitor if this appears in hot paths' : 'Inspect formula complexity, cacheability, and strategy selection',
-  }];
+  const severity =
+    stats.mean > 1000 ? 'critical' : stats.mean > 100 ? 'high' : stats.mean > 10 ? 'medium' : 'low';
+  return [
+    {
+      operation,
+      timeMs: stats.mean,
+      severity,
+      recommendation:
+        severity === 'low'
+          ? 'Monitor if this appears in hot paths'
+          : 'Inspect formula complexity, cacheability, and strategy selection',
+    },
+  ];
 }
 
 function nowMs(): number {
-  return typeof performance !== 'undefined' && typeof performance.now === 'function' ? performance.now() : Date.now();
+  return typeof performance !== 'undefined' && typeof performance.now === 'function'
+    ? performance.now()
+    : Date.now();
 }
 
 function escapeHtml(value: string): string {
-  return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
 }

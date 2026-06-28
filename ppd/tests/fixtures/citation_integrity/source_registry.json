@@ -1,0 +1,20 @@
+{
+  "sources": [
+    {
+      "source_id": "ppd-public-devhub-guide",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "source_type": "public_html",
+      "owning_surface": "portland.gov",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-08T00:00:00Z"
+    },
+    {
+      "source_id": "ppd-private-devhub-case",
+      "canonical_url": "https://devhub.portlandoregon.gov/private/case/example",
+      "source_type": "devhub_authenticated",
+      "owning_surface": "devhub",
+      "privacy_classification": "private_authenticated",
+      "last_seen_at": "2026-05-08T00:00:00Z"
+    }
+  ]
+}

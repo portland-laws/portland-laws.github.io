@@ -53,6 +53,44 @@ export class BatchResult<Result = unknown> {
       errors_count: this.errors.length,
     };
   }
+
+  toJson(indent = 2): string {
+    return JSON.stringify(this.toDict(), null, indent);
+  }
+
+  toCsv(): string {
+    return batchResultToCsv(this);
+  }
+}
+
+export type BatchResultExportFormat = 'dict' | 'json' | 'csv';
+
+export interface BatchResultExportOptions {
+  jsonIndent?: number;
+}
+
+export function exportBatchResult<Result>(
+  result: BatchResult<Result>,
+  format: BatchResultExportFormat,
+  options: BatchResultExportOptions = {},
+): Record<string, unknown> | string {
+  if (format === 'dict') return result.toDict();
+  if (format === 'json') return result.toJson(options.jsonIndent);
+  return result.toCsv();
+}
+
+export function batchResultToCsv<Result>(result: BatchResult<Result>): string {
+  const dict = result.toDict();
+  const rows = [['metric', 'value']];
+  for (const [metric, value] of Object.entries(dict)) {
+    rows.push([metric, String(value)]);
+  }
+  return rows.map((row) => row.map(escapeCsvCell).join(',')).join('\n');
+}
+
+function escapeCsvCell(value: string): string {
+  if (!/[",\n\r]/.test(value)) return value;
+  return `"${value.replace(/"/g, '""')}"`;
 }
 
 export interface BatchProcessorOptions {
@@ -69,7 +107,10 @@ export interface BatchProgressEvent {
   phase: 'start' | 'success' | 'error' | 'complete';
 }
 
-export type BatchProcessFunction<Item, Result> = (item: Item, index: number) => Result | Promise<Result>;
+export type BatchProcessFunction<Item, Result> = (
+  item: Item,
+  index: number,
+) => Result | Promise<Result>;
 
 export class BatchProcessor {
   readonly maxConcurrency: number;
@@ -106,9 +147,15 @@ export class BatchProcessor {
   private async mapWithConcurrency<Item, Result>(
     items: Item[],
     processFunc: BatchProcessFunction<Item, Result>,
-  ): Promise<Array<{ success: true; result: Result; index: number } | { success: false; error: string; index: number }>> {
+  ): Promise<
+    Array<
+      | { success: true; result: Result; index: number }
+      | { success: false; error: string; index: number }
+    >
+  > {
     const outputs = new Array<
-      { success: true; result: Result; index: number } | { success: false; error: string; index: number }
+      | { success: true; result: Result; index: number }
+      | { success: false; error: string; index: number }
     >(items.length);
     let nextIndex = 0;
 
@@ -124,7 +171,8 @@ export class BatchProcessor {
             result: await processFunc(items[index], index),
             index,
           };
-          if (this.showProgress) this.onProgress?.({ index, total: items.length, phase: 'success' });
+          if (this.showProgress)
+            this.onProgress?.({ index, total: items.length, phase: 'success' });
         } catch (error) {
           outputs[index] = {
             success: false,
@@ -137,13 +185,17 @@ export class BatchProcessor {
     });
 
     await Promise.all(workers);
-    if (this.showProgress) this.onProgress?.({ index: items.length, total: items.length, phase: 'complete' });
+    if (this.showProgress)
+      this.onProgress?.({ index: items.length, total: items.length, phase: 'complete' });
     return outputs;
   }
 
   private collectResults<Result>(
     totalItems: number,
-    settled: Array<{ success: true; result: Result; index: number } | { success: false; error: string; index: number }>,
+    settled: Array<
+      | { success: true; result: Result; index: number }
+      | { success: false; error: string; index: number }
+    >,
     startTime: number,
   ): BatchResult<Result> {
     const results: Result[] = [];
@@ -211,9 +263,10 @@ export class ProofBatchProcessor {
     useCache = true,
   ): Promise<BatchResult<ProofResult>> {
     return this.processor.processBatchAsync(formulas, async (formula) => {
-      const request = typeof formula === 'string'
-        ? { logic: normalizeProofLogic(prover), theorem: formula, axioms: [formula] }
-        : formula;
+      const request =
+        typeof formula === 'string'
+          ? { logic: normalizeProofLogic(prover), theorem: formula, axioms: [formula] }
+          : formula;
       const result = this.bridge.prove(request);
       return {
         ...result,
@@ -261,12 +314,16 @@ export class ChunkedBatchProcessor {
       const chunk = items.slice(offset, offset + this.chunkSize);
       const chunkIndex = Math.floor(offset / this.chunkSize);
       this.onChunkStart?.(chunkIndex + 1, totalChunks);
-      const chunkResult = await this.processor.processBatchAsync(chunk, (item, index) => processFunc(item, offset + index));
+      const chunkResult = await this.processor.processBatchAsync(chunk, (item, index) =>
+        processFunc(item, offset + index),
+      );
       totalResults.push(...chunkResult.results);
-      totalErrors.push(...chunkResult.errors.map((error) => ({
-        ...error,
-        index: error.index === undefined ? undefined : error.index + offset,
-      })));
+      totalErrors.push(
+        ...chunkResult.errors.map((error) => ({
+          ...error,
+          index: error.index === undefined ? undefined : error.index + offset,
+        })),
+      );
       successful += chunkResult.successful;
       failed += chunkResult.failed;
     }

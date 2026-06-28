@@ -1,8 +1,9 @@
 export type ConfidenceScore = number;
 export type ComplexityScore = number;
 
-export type LogicOperator = 'AND' | 'OR' | 'NOT' | 'IMPLIES' | 'IFF' | 'XOR';
-export type Quantifier = 'FORALL' | 'EXISTS';
+export type CommonLogicOperator = 'AND' | 'OR' | 'NOT' | 'IMPLIES' | 'IFF' | 'EXISTS' | 'FORALL';
+export type LogicOperator = CommonLogicOperator | 'XOR';
+export type Quantifier = 'FORALL' | 'EXISTS' | 'UNIVERSAL' | 'EXISTENTIAL';
 export type FormulaType =
   | 'first_order_logic'
   | 'modal_logic'
@@ -13,19 +14,42 @@ export type FormulaType =
   | 'quantified'
   | 'propositional';
 
+export const COMMON_TYPES_PORT_METADATA = {
+  sourcePythonModule: 'logic/types/common_types.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  runtimeDependencies: [],
+} as const;
+
 export const LOGIC_OPERATOR_SYMBOLS: Record<LogicOperator, string> = {
   AND: '∧',
   OR: '∨',
   NOT: '¬',
   IMPLIES: '→',
   IFF: '↔',
+  EXISTS: '∃',
+  FORALL: '∀',
   XOR: '⊕',
 };
 
 export const QUANTIFIER_SYMBOLS: Record<Quantifier, string> = {
   FORALL: '∀',
   EXISTS: '∃',
+  UNIVERSAL: '∀',
+  EXISTENTIAL: '∃',
 };
+
+export const FORMULA_TYPE_VALUES = {
+  FOL: 'first_order_logic',
+  MODAL: 'modal_logic',
+  TEMPORAL: 'temporal_logic',
+  DEONTIC: 'deontic_logic',
+  MIXED: 'mixed_logic',
+  ARITHMETIC: 'arithmetic',
+  QUANTIFIED: 'quantified',
+  PROPOSITIONAL: 'propositional',
+} as const satisfies Record<string, FormulaType>;
 
 export interface ComplexityMetrics {
   quantifierDepth: number;
@@ -81,6 +105,11 @@ export interface FormulaLike {
   getComplexity?(): ComplexityMetrics;
 }
 
+export interface PythonFormulaProtocol {
+  to_string(): string;
+  get_complexity(): ComplexityMetrics;
+}
+
 export interface FormulaProtocol {
   toString(): string;
   getComplexity(): ComplexityMetrics;
@@ -91,11 +120,76 @@ export interface ProverProtocol {
   getName(): string;
 }
 
+export interface PythonProverProtocol {
+  prove(formula: string, timeout?: number): ProofResult;
+  get_name(): string;
+}
+
 export interface ConverterProtocol {
   convert(formula: string, sourceFormat: string, targetFormat: string): string;
 }
 
-export type ProofStatus = 'proved' | 'disproved' | 'unknown' | 'timeout' | 'error';
+export interface PythonConverterProtocol {
+  convert(formula: string, source_format: string, target_format: string): string;
+}
+
+export function isCommonLogicOperator(value: unknown): value is CommonLogicOperator {
+  return (
+    typeof value === 'string' &&
+    ['AND', 'OR', 'NOT', 'IMPLIES', 'IFF', 'EXISTS', 'FORALL'].includes(value)
+  );
+}
+
+export function isQuantifier(value: unknown): value is Quantifier {
+  return (
+    typeof value === 'string' && ['FORALL', 'EXISTS', 'UNIVERSAL', 'EXISTENTIAL'].includes(value)
+  );
+}
+
+export function isFormulaType(value: unknown): value is FormulaType {
+  return (
+    typeof value === 'string' && Object.values(FORMULA_TYPE_VALUES).includes(value as FormulaType)
+  );
+}
+
+export function getLogicOperatorSymbol(operator: LogicOperator): string {
+  return LOGIC_OPERATOR_SYMBOLS[operator];
+}
+
+export function getQuantifierSymbol(quantifier: Quantifier): string {
+  return QUANTIFIER_SYMBOLS[quantifier];
+}
+
+export function formulaProtocolToString(formula: FormulaProtocol | PythonFormulaProtocol): string {
+  if ('to_string' in formula) return formula.to_string();
+  return formula.toString();
+}
+
+export function formulaProtocolComplexity(
+  formula: FormulaProtocol | PythonFormulaProtocol,
+): ComplexityMetrics {
+  if ('get_complexity' in formula) return formula.get_complexity();
+  return formula.getComplexity();
+}
+
+export type ProofStatus = 'proved' | 'disproved' | 'unknown' | 'timeout' | 'error' | 'unprovable';
+
+export const PROOF_TYPES_PORT_METADATA = {
+  sourcePythonModule: 'logic/types/proof_types.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  runtimeDependencies: [],
+} as const;
+
+export const PROOF_STATUS_VALUES: Record<string, ProofStatus> = {
+  PROVED: 'proved',
+  DISPROVED: 'disproved',
+  UNKNOWN: 'unknown',
+  TIMEOUT: 'timeout',
+  ERROR: 'error',
+  UNPROVABLE: 'unprovable',
+} as const;
 
 export interface ProofStep {
   id: string;
@@ -103,15 +197,119 @@ export interface ProofStep {
   premises: string[];
   conclusion: string;
   explanation?: string;
+  formula?: string;
+  justification?: string;
+  ruleName?: string;
 }
 
 export interface ProofResult {
   status: ProofStatus;
   theorem: string;
   steps: ProofStep[];
+  formula?: string;
+  proofSteps?: ProofStep[];
   method?: string;
   timeMs?: number;
+  time_ms?: number;
   error?: string;
+  message?: string;
+}
+
+export function isProofStatus(value: unknown): value is ProofStatus {
+  return (
+    typeof value === 'string' && Object.values(PROOF_STATUS_VALUES).includes(value as ProofStatus)
+  );
+}
+
+export function proofStepFromDict(value: unknown, index = 0): ProofStep {
+  const record = isRecord(value) ? value : {};
+  const formula = stringifyProofFormula(record.formula ?? record.conclusion);
+  const justification = stringField(record, 'justification', stringField(record, 'explanation'));
+  const ruleName = stringField(record, 'rule_name', stringField(record, 'ruleName'));
+  return {
+    id: stringField(record, 'id', `step-${index + 1}`),
+    rule: stringField(record, 'rule', ruleName),
+    premises: arrayField(record, 'premises').map(stringifyProofFormula),
+    conclusion: stringField(record, 'conclusion', formula),
+    explanation: stringField(record, 'explanation', justification) || undefined,
+    formula,
+    justification,
+    ruleName: ruleName || undefined,
+  };
+}
+
+export function proofStepToDict(step: ProofStep): Record<string, unknown> {
+  return {
+    formula: step.formula ?? step.conclusion,
+    justification: step.justification ?? step.explanation ?? '',
+    rule_name: step.ruleName ?? step.rule,
+    premises: step.premises.map((premise) => String(premise)),
+  };
+}
+
+export function proofResultFromDict(value: unknown): ProofResult {
+  const record = isRecord(value) ? value : {};
+  const status = isProofStatus(record.status) ? record.status : 'unknown';
+  const proofSteps = arrayField(record, 'proof_steps');
+  const rawSteps = proofSteps.length > 0 ? proofSteps : arrayField(record, 'steps');
+  const steps = rawSteps.map((step, index) => proofStepFromDict(step, index));
+  const formula = stringifyProofFormula(record.formula ?? record.theorem);
+  const message = stringField(record, 'message', stringField(record, 'error'));
+  const timeMs = numberField(record, 'time_ms', numberField(record, 'timeMs'));
+  return {
+    status,
+    theorem: stringField(record, 'theorem', formula),
+    formula,
+    steps,
+    proofSteps: steps,
+    method: stringField(record, 'method', 'unknown'),
+    timeMs,
+    time_ms: timeMs,
+    error: status === 'error' ? message : undefined,
+    message,
+  };
+}
+
+export function proofResultToDict(result: ProofResult): Record<string, unknown> {
+  return {
+    status: result.status,
+    formula: result.formula ?? result.theorem,
+    proof_steps: (result.proofSteps ?? result.steps).map(proofStepToDict),
+    time_ms: result.time_ms ?? result.timeMs ?? 0,
+    method: result.method ?? 'unknown',
+    message: result.message ?? result.error ?? '',
+  };
+}
+
+export function isProofResultConclusive(result: ProofResult): boolean {
+  return result.status === 'proved' || result.status === 'disproved';
+}
+
+export function validateProofTypesPort(value: unknown): LogicValidationResult & {
+  metadata: typeof PROOF_TYPES_PORT_METADATA;
+} {
+  const issues: Array<LogicValidationIssue> = [];
+  const record = isRecord(value) ? value : {};
+  if (!isRecord(value)) issues.push({ severity: 'error', message: 'expected_object' });
+  if ('status' in record && !isProofStatus(record.status)) {
+    issues.push({ severity: 'error', field: 'status', message: 'unknown proof status' });
+  }
+  if ('proof_steps' in record && !Array.isArray(record.proof_steps)) {
+    issues.push({ severity: 'error', field: 'proof_steps', message: 'expected proof step array' });
+  }
+  if (record.server_calls_allowed === true)
+    issues.push({
+      severity: 'error',
+      field: 'server_calls_allowed',
+      message: 'server calls are forbidden',
+    });
+  if (record.python_runtime_allowed === true)
+    issues.push({
+      severity: 'error',
+      field: 'python_runtime_allowed',
+      message: 'Python runtime is forbidden',
+    });
+  return { valid: issues.length === 0, issues, metadata: PROOF_TYPES_PORT_METADATA };
 }
 
 export interface LogicValidationIssue {
@@ -131,8 +329,21 @@ export interface ParsePosition {
   column: number;
 }
 
-export type BridgeCapability = 'bidirectional' | 'incremental' | 'rule_extraction' | 'optimization' | 'parallel';
+export type BridgeCapability =
+  | 'bidirectional'
+  | 'incremental'
+  | 'rule_extraction'
+  | 'optimization'
+  | 'parallel';
 export type BridgeConversionStatus = 'success' | 'partial' | 'failed' | 'unsupported';
+
+export const BRIDGE_TYPES_PORT_METADATA = {
+  sourcePythonModule: 'logic/types/bridge_types.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  runtimeDependencies: [],
+} as const;
 
 export const BRIDGE_CAPABILITIES = {
   BIDIRECTIONAL_CONVERSION: 'bidirectional',
@@ -175,6 +386,34 @@ export class BridgeMetadata {
   }
 }
 
+export function isBridgeCapability(value: unknown): value is BridgeCapability {
+  return (
+    typeof value === 'string' &&
+    Object.values(BRIDGE_CAPABILITIES).includes(value as BridgeCapability)
+  );
+}
+
+export function isBridgeConversionStatus(value: unknown): value is BridgeConversionStatus {
+  return (
+    typeof value === 'string' &&
+    Object.values(BRIDGE_CONVERSION_STATUSES).includes(value as BridgeConversionStatus)
+  );
+}
+
+export function bridgeMetadataFromDict(value: Record<string, unknown>): BridgeMetadata {
+  const capabilities = Array.isArray(value.capabilities)
+    ? value.capabilities.filter(isBridgeCapability)
+    : [];
+  return new BridgeMetadata(
+    stringField(value, 'name'),
+    stringField(value, 'version'),
+    stringField(value, 'target_system', stringField(value, 'targetSystem')),
+    capabilities,
+    booleanField(value, 'requires_external_prover', booleanField(value, 'requiresExternalProver')),
+    stringField(value, 'description'),
+  );
+}
+
 export class LogicBridgeConversionResult {
   constructor(
     readonly status: BridgeConversionStatus,
@@ -209,6 +448,25 @@ export class LogicBridgeConversionResult {
   }
 }
 
+export function bridgeConversionResultFromDict(
+  value: Record<string, unknown>,
+): LogicBridgeConversionResult {
+  const status = isBridgeConversionStatus(value.status) ? value.status : 'failed';
+  const warnings = Array.isArray(value.warnings)
+    ? value.warnings.filter((item) => typeof item === 'string')
+    : [];
+  return new LogicBridgeConversionResult(
+    status,
+    stringField(value, 'source_formula', stringField(value, 'sourceFormula')),
+    stringField(value, 'target_formula', stringField(value, 'targetFormula')),
+    stringField(value, 'source_format', stringField(value, 'sourceFormat')),
+    stringField(value, 'target_format', stringField(value, 'targetFormat')),
+    numberField(value, 'confidence', status === 'success' ? 1 : 0),
+    warnings,
+    recordField(value, 'metadata'),
+  );
+}
+
 export class BridgeConfig {
   constructor(
     readonly name: string,
@@ -237,6 +495,18 @@ export class BridgeConfig {
   }
 }
 
+export function bridgeConfigFromDict(value: Record<string, unknown>): BridgeConfig {
+  return new BridgeConfig(
+    stringField(value, 'name'),
+    stringField(value, 'target_system', stringField(value, 'targetSystem')),
+    numberField(value, 'timeout', 30),
+    numberField(value, 'max_retries', numberField(value, 'maxRetries', 3)),
+    booleanField(value, 'enable_caching', booleanField(value, 'enableCaching', true)),
+    numberField(value, 'cache_ttl', numberField(value, 'cacheTtl', 3600)),
+    recordField(value, 'custom_settings', recordField(value, 'customSettings')),
+  );
+}
+
 export class ProverRecommendation {
   constructor(
     readonly proverName: string,
@@ -259,8 +529,100 @@ export class ProverRecommendation {
   }
 }
 
-export type FolOutputFormatType = 'prolog' | 'tptp' | 'json' | 'defeasible' | 'smtlib' | 'natural_language';
-export type PredicateCategoryType = 'entity' | 'action' | 'relation' | 'property' | 'temporal' | 'modal' | 'unknown';
+export function proverRecommendationFromDict(value: Record<string, unknown>): ProverRecommendation {
+  const reasons = Array.isArray(value.reasons)
+    ? value.reasons.filter((item) => typeof item === 'string')
+    : [];
+  return new ProverRecommendation(
+    stringField(value, 'prover_name', stringField(value, 'proverName')),
+    numberField(value, 'confidence', 0),
+    reasons,
+    optionalNumberField(value, 'estimated_time', optionalNumberField(value, 'estimatedTime')),
+  );
+}
+
+export function validateBridgeTypesPort(value: unknown) {
+  const issues: Array<LogicValidationIssue> = [];
+  if (!isRecord(value)) {
+    issues.push({ severity: 'error', message: 'expected_object' });
+    return { valid: false, issues, metadata: BRIDGE_TYPES_PORT_METADATA };
+  }
+
+  if ('capabilities' in value) {
+    const capabilities = value.capabilities;
+    if (!Array.isArray(capabilities) || capabilities.some((item) => !isBridgeCapability(item))) {
+      issues.push({
+        severity: 'error',
+        field: 'capabilities',
+        message: 'expected_bridge_capability_array',
+      });
+    }
+  }
+  if ('status' in value && !isBridgeConversionStatus(value.status)) {
+    issues.push({
+      severity: 'error',
+      field: 'status',
+      message: 'expected_bridge_conversion_status',
+    });
+  }
+  if ('server_calls_allowed' in value && value.server_calls_allowed !== false) {
+    issues.push({
+      severity: 'error',
+      field: 'server_calls_allowed',
+      message: 'server_calls_not_allowed',
+    });
+  }
+  if ('python_runtime_allowed' in value && value.python_runtime_allowed !== false) {
+    issues.push({
+      severity: 'error',
+      field: 'python_runtime_allowed',
+      message: 'python_runtime_not_allowed',
+    });
+  }
+  return { valid: issues.length === 0, issues, metadata: BRIDGE_TYPES_PORT_METADATA };
+}
+
+export type FolOutputFormatType =
+  | 'prolog'
+  | 'tptp'
+  | 'json'
+  | 'defeasible'
+  | 'smtlib'
+  | 'natural_language';
+export type PredicateCategoryType =
+  | 'entity'
+  | 'action'
+  | 'relation'
+  | 'property'
+  | 'temporal'
+  | 'modal'
+  | 'unknown';
+
+export const FOL_TYPES_PORT_METADATA = {
+  sourcePythonModule: 'logic/types/fol_types.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  runtimeDependencies: [],
+} as const;
+
+const FOL_OUTPUT_FORMAT_VALUES: Array<FolOutputFormatType> = [
+  'prolog',
+  'tptp',
+  'json',
+  'defeasible',
+  'smtlib',
+  'natural_language',
+];
+const PREDICATE_CATEGORY_VALUES: Array<PredicateCategoryType> = [
+  'entity',
+  'action',
+  'relation',
+  'property',
+  'temporal',
+  'modal',
+  'unknown',
+];
 
 export class PredicateType {
   constructor(
@@ -273,6 +635,15 @@ export class PredicateType {
   toString(): string {
     if (this.arity === 0) return this.name;
     return `${this.name}(${Array.from({ length: this.arity }, (_, index) => `x${index}`).join(', ')})`;
+  }
+
+  toDict(): Record<string, unknown> {
+    return {
+      name: this.name,
+      arity: this.arity,
+      category: this.category,
+      definition: this.definition,
+    };
   }
 }
 
@@ -295,6 +666,19 @@ export class FOLFormulaType {
   hasQuantifiers(): boolean {
     return this.quantifiers.length > 0;
   }
+
+  toDict(): Record<string, unknown> {
+    return {
+      formula_string: this.formulaString,
+      predicates: this.predicates.map((predicate) => predicate.toDict()),
+      quantifiers: [...this.quantifiers],
+      operators: [...this.operators],
+      variables: [...this.variables],
+      complexity: this.complexity ? complexityMetricsToDict(this.complexity) : undefined,
+      confidence: this.confidence,
+      metadata: { ...this.metadata },
+    };
+  }
 }
 
 export class FOLConversionResultType {
@@ -311,6 +695,18 @@ export class FOLConversionResultType {
   isHighConfidence(threshold = 0.7): boolean {
     return this.confidence >= threshold;
   }
+
+  toDict(): Record<string, unknown> {
+    return {
+      source_text: this.sourceText,
+      fol_formula: this.folFormula.toDict(),
+      output_format: this.outputFormat,
+      formatted_output: this.formattedOutput,
+      confidence: this.confidence,
+      warnings: [...this.warnings],
+      metadata: { ...this.metadata },
+    };
+  }
 }
 
 export class PredicateExtractionType {
@@ -324,6 +720,117 @@ export class PredicateExtractionType {
   getAllPredicates(): PredicateType[] {
     return Object.values(this.predicatesByCategory).flatMap((predicates) => predicates ?? []);
   }
+
+  toDict(): Record<string, unknown> {
+    const predicatesByCategory: Record<string, Array<Record<string, unknown>>> = {};
+    for (const [category, predicates] of Object.entries(this.predicatesByCategory)) {
+      predicatesByCategory[category] = (predicates ?? []).map((predicate) => predicate.toDict());
+    }
+    return {
+      text: this.text,
+      predicates_by_category: predicatesByCategory,
+      total_predicates: this.totalPredicates,
+      confidence: this.confidence,
+    };
+  }
+}
+
+export function predicateTypeFromDict(value: unknown): PredicateType {
+  const record = isRecord(value) ? value : {};
+  const definition = stringField(record, 'definition');
+  return new PredicateType(
+    stringField(record, 'name', 'UnknownPredicate'),
+    Math.max(0, Math.trunc(numberField(record, 'arity', 0))),
+    predicateCategoryFromUnknown(record.category),
+    definition === '' ? undefined : definition,
+  );
+}
+
+export function folFormulaTypeFromDict(value: unknown): FOLFormulaType {
+  const record = isRecord(value) ? value : {};
+  return new FOLFormulaType(
+    stringField(record, 'formula_string', stringField(record, 'formulaString')),
+    arrayField(record, 'predicates').map((predicate) => predicateTypeFromDict(predicate)),
+    stringArrayField(record, 'quantifiers').filter(isQuantifier),
+    stringArrayField(record, 'operators').filter(isLogicOperator),
+    stringArrayField(record, 'variables'),
+    complexityMetricsFromUnknown(record.complexity),
+    numberField(record, 'confidence', 1),
+    recordField(record, 'metadata'),
+  );
+}
+
+export function folConversionResultTypeFromDict(value: unknown): FOLConversionResultType {
+  const record = isRecord(value) ? value : {};
+  return new FOLConversionResultType(
+    stringField(record, 'source_text', stringField(record, 'sourceText')),
+    folFormulaTypeFromDict(record.fol_formula ?? record.folFormula),
+    folOutputFormatFromUnknown(record.output_format ?? record.outputFormat),
+    stringField(record, 'formatted_output', stringField(record, 'formattedOutput')),
+    numberField(record, 'confidence', 1),
+    stringArrayField(record, 'warnings'),
+    recordField(record, 'metadata'),
+  );
+}
+
+export function predicateExtractionTypeFromDict(value: unknown): PredicateExtractionType {
+  const record = isRecord(value) ? value : {};
+  const rawCategories = recordField(
+    record,
+    'predicates_by_category',
+    recordField(record, 'predicatesByCategory'),
+  );
+  const predicatesByCategory: Partial<Record<PredicateCategoryType, Array<PredicateType>>> = {};
+  for (const [category, predicates] of Object.entries(rawCategories)) {
+    const normalizedCategory = predicateCategoryFromUnknown(category);
+    predicatesByCategory[normalizedCategory] = Array.isArray(predicates)
+      ? predicates.map((predicate) => predicateTypeFromDict(predicate))
+      : [];
+  }
+  return new PredicateExtractionType(
+    stringField(record, 'text'),
+    predicatesByCategory,
+    Math.max(
+      0,
+      Math.trunc(numberField(record, 'total_predicates', numberField(record, 'totalPredicates'))),
+    ),
+    numberField(record, 'confidence', 1),
+  );
+}
+
+export function validateFolTypesPort(value: unknown): LogicValidationResult & {
+  metadata: typeof FOL_TYPES_PORT_METADATA;
+} {
+  const issues: Array<LogicValidationIssue> = [];
+  const record = isRecord(value) ? value : {};
+  if (!isRecord(value)) issues.push({ severity: 'error', message: 'expected_object' });
+  if (record.server_calls_allowed === true)
+    issues.push({
+      severity: 'error',
+      field: 'server_calls_allowed',
+      message: 'server calls are forbidden',
+    });
+  if (record.python_runtime_allowed === true)
+    issues.push({
+      severity: 'error',
+      field: 'python_runtime_allowed',
+      message: 'Python runtime is forbidden',
+    });
+  if (
+    'output_format' in record &&
+    !FOL_OUTPUT_FORMAT_VALUES.includes(record.output_format as FolOutputFormatType)
+  )
+    issues.push({
+      severity: 'error',
+      field: 'output_format',
+      message: 'unknown FOL output format',
+    });
+  if (
+    'category' in record &&
+    !PREDICATE_CATEGORY_VALUES.includes(record.category as PredicateCategoryType)
+  )
+    issues.push({ severity: 'error', field: 'category', message: 'unknown predicate category' });
+  return { valid: issues.length === 0, issues, metadata: FOL_TYPES_PORT_METADATA };
 }
 
 export type LogicTranslationTarget =
@@ -338,6 +845,28 @@ export type LogicTranslationTarget =
   | 'agda'
   | 'hol'
   | 'pvs';
+
+export const TRANSLATION_TYPES_PORT_METADATA = {
+  sourcePythonModule: 'logic/types/translation_types.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  runtimeDependencies: [],
+} as const;
+
+export const LOGIC_TRANSLATION_TARGET_VALUES = {
+  LEAN: 'lean',
+  COQ: 'coq',
+  ISABELLE: 'isabelle',
+  SMT_LIB: 'smt-lib',
+  TPTP: 'tptp',
+  Z3: 'z3',
+  VAMPIRE: 'vampire',
+  E_PROVER: 'eprover',
+  AGDA: 'agda',
+  HOL: 'hol',
+  PVS: 'pvs',
+} as const satisfies Record<string, LogicTranslationTarget>;
 
 export class TranslationResultType {
   constructor(
@@ -365,6 +894,28 @@ export class TranslationResultType {
   }
 }
 
+export function isLogicTranslationTarget(value: unknown): value is LogicTranslationTarget {
+  return (
+    typeof value === 'string' &&
+    Object.values(LOGIC_TRANSLATION_TARGET_VALUES).includes(value as LogicTranslationTarget)
+  );
+}
+
+export function translationResultTypeFromDict(value: unknown): TranslationResultType {
+  const record = isRecord(value) ? value : {};
+  const target = isLogicTranslationTarget(record.target) ? record.target : 'tptp';
+  return new TranslationResultType(
+    target,
+    stringField(record, 'translated_formula', stringField(record, 'translatedFormula')),
+    booleanField(record, 'success'),
+    numberField(record, 'confidence', 1),
+    stringArrayField(record, 'errors'),
+    stringArrayField(record, 'warnings'),
+    recordField(record, 'metadata'),
+    stringArrayField(record, 'dependencies'),
+  );
+}
+
 export class AbstractLogicFormulaType {
   constructor(
     readonly formulaType: string,
@@ -387,4 +938,162 @@ export class AbstractLogicFormulaType {
       source_formula_id: this.sourceFormulaId,
     };
   }
+}
+
+export function abstractLogicFormulaTypeFromDict(value: unknown): AbstractLogicFormulaType {
+  const record = isRecord(value) ? value : {};
+  return new AbstractLogicFormulaType(
+    stringField(record, 'formula_type', stringField(record, 'formulaType')),
+    stringArrayField(record, 'operators'),
+    arrayField(record, 'variables').map(tuple2FromUnknown),
+    arrayField(record, 'quantifiers').map(tuple3FromUnknown),
+    stringArrayField(record, 'propositions'),
+    recordField(record, 'logical_structure', recordField(record, 'logicalStructure')),
+    sourceFormulaIdFromUnknown(record),
+  );
+}
+
+export function validateTranslationTypesPort(value: unknown): LogicValidationResult & {
+  metadata: typeof TRANSLATION_TYPES_PORT_METADATA;
+} {
+  const issues: Array<LogicValidationIssue> = [];
+  const record = isRecord(value) ? value : {};
+  if (!isRecord(value)) issues.push({ severity: 'error', message: 'expected_object' });
+  if (record.server_calls_allowed === true)
+    issues.push({
+      severity: 'error',
+      field: 'server_calls_allowed',
+      message: 'server calls are forbidden',
+    });
+  if (record.python_runtime_allowed === true)
+    issues.push({
+      severity: 'error',
+      field: 'python_runtime_allowed',
+      message: 'Python runtime is forbidden',
+    });
+  if ('target' in record && !isLogicTranslationTarget(record.target)) {
+    issues.push({
+      severity: 'error',
+      field: 'target',
+      message: 'unknown translation target',
+    });
+  }
+  if ('translated_formula' in record && typeof record.translated_formula !== 'string') {
+    issues.push({
+      severity: 'error',
+      field: 'translated_formula',
+      message: 'expected string translated formula',
+    });
+  }
+  if ('success' in record && typeof record.success !== 'boolean') {
+    issues.push({ severity: 'error', field: 'success', message: 'expected boolean success' });
+  }
+  return { valid: issues.length === 0, issues, metadata: TRANSLATION_TYPES_PORT_METADATA };
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
+function recordField(
+  value: Record<string, unknown>,
+  key: string,
+  defaultValue: Record<string, unknown> = {},
+): Record<string, unknown> {
+  const field = value[key];
+  return isRecord(field) ? { ...field } : defaultValue;
+}
+
+function stringField(value: Record<string, unknown>, key: string, defaultValue = ''): string {
+  const field = value[key];
+  return typeof field === 'string' ? field : defaultValue;
+}
+
+function numberField(value: Record<string, unknown>, key: string, defaultValue = 0): number {
+  const field = value[key];
+  return typeof field === 'number' && Number.isFinite(field) ? field : defaultValue;
+}
+
+function optionalNumberField(
+  value: Record<string, unknown>,
+  key: string,
+  defaultValue?: number,
+): number | undefined {
+  const field = value[key];
+  return typeof field === 'number' && Number.isFinite(field) ? field : defaultValue;
+}
+
+function booleanField(value: Record<string, unknown>, key: string, defaultValue = false): boolean {
+  const field = value[key];
+  return typeof field === 'boolean' ? field : defaultValue;
+}
+
+function arrayField(value: Record<string, unknown>, key: string): Array<unknown> {
+  const field = value[key];
+  return Array.isArray(field) ? [...field] : [];
+}
+
+function stringArrayField(value: Record<string, unknown>, key: string): Array<string> {
+  return arrayField(value, key).filter((item): item is string => typeof item === 'string');
+}
+
+function stringifyProofFormula(value: unknown): string {
+  if (typeof value === 'string') return value;
+  if (value && typeof value === 'object' && 'toString' in value) return String(value);
+  return '';
+}
+
+function isLogicOperator(value: string): value is LogicOperator {
+  return isCommonLogicOperator(value) || value === 'XOR';
+}
+
+function predicateCategoryFromUnknown(value: unknown): PredicateCategoryType {
+  return typeof value === 'string' &&
+    PREDICATE_CATEGORY_VALUES.includes(value as PredicateCategoryType)
+    ? (value as PredicateCategoryType)
+    : 'unknown';
+}
+
+function folOutputFormatFromUnknown(value: unknown): FolOutputFormatType {
+  return typeof value === 'string' &&
+    FOL_OUTPUT_FORMAT_VALUES.includes(value as FolOutputFormatType)
+    ? (value as FolOutputFormatType)
+    : 'json';
+}
+
+function complexityMetricsFromUnknown(value: unknown): ComplexityMetrics | undefined {
+  if (!isRecord(value)) return undefined;
+  return createComplexityMetrics({
+    quantifierDepth: numberField(value, 'quantifier_depth', numberField(value, 'quantifierDepth')),
+    nestingLevel: numberField(value, 'nesting_level', numberField(value, 'nestingLevel')),
+    operatorCount: numberField(value, 'operator_count', numberField(value, 'operatorCount')),
+    variableCount: numberField(value, 'variable_count', numberField(value, 'variableCount')),
+    predicateCount: numberField(value, 'predicate_count', numberField(value, 'predicateCount')),
+    complexityScore: numberField(value, 'complexity_score', numberField(value, 'complexityScore')),
+  });
+}
+
+function tuple2FromUnknown(value: unknown): [string, string] {
+  if (!Array.isArray(value)) return ['', ''];
+  return [String(value[0] ?? ''), String(value[1] ?? '')];
+}
+
+function tuple3FromUnknown(value: unknown): [string, string, string] {
+  if (!Array.isArray(value)) return ['', '', ''];
+  return [String(value[0] ?? ''), String(value[1] ?? ''), String(value[2] ?? '')];
+}
+
+function sourceFormulaIdFromUnknown(record: Record<string, unknown>): string | undefined {
+  const direct = stringField(record, 'source_formula_id', stringField(record, 'sourceFormulaId'));
+  if (direct !== '') return direct;
+  const sourceFormula = record.source_formula ?? record.sourceFormula;
+  if (isRecord(sourceFormula)) {
+    const formulaId = stringField(
+      sourceFormula,
+      'formula_id',
+      stringField(sourceFormula, 'formulaId'),
+    );
+    return formulaId === '' ? undefined : formulaId;
+  }
+  return undefined;
 }

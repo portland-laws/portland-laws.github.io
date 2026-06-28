@@ -1,0 +1,42 @@
+{
+  "attestations": {
+    "active_surface_map_mutation": false,
+    "auth_or_session_artifact_stored": false,
+    "devhub_opened": false,
+    "form_fill_performed": false,
+    "official_action_performed": false,
+    "payment_or_scheduling_action_performed": false,
+    "private_value_stored": false,
+    "raw_devhub_output_stored": false,
+    "screenshot_trace_or_har_stored": false,
+    "upload_or_submission_action_performed": false
+  },
+  "fixture_only": true,
+  "packet_version": "synthetic_devhub_agent_requests_v3",
+  "requests": [
+    {
+      "known_information": [],
+      "request_id": "synthetic-request-status",
+      "requested_action_ids": [
+        "review_status",
+        "complete_record"
+      ],
+      "surface_id": "devhub-permit-detail"
+    },
+    {
+      "known_information": [
+        "permit_number"
+      ],
+      "request_id": "synthetic-request-correction",
+      "requested_action_ids": [
+        "review_notice",
+        "attach_record_material"
+      ],
+      "surface_id": "devhub-correction-detail"
+    }
+  ],
+  "source_fixture_refs": [
+    "ppd/tests/fixtures/devhub_read_only_agent_impact_replay_v3/synthetic_agent_requests_v3.json"
+  ],
+  "synthetic_only": true
+}

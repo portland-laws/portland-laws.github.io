@@ -1,0 +1,12 @@
+{
+  "action_id": "review-permit-status",
+  "action_label": "Review permit status messages",
+  "action_kind": "safe_read_only",
+  "requested_effect": "preview",
+  "surface_id": "devhub-permit-detail",
+  "source_evidence_ids": [
+    "ppd-devhub-faq-account-services"
+  ],
+  "facts_complete": true,
+  "documents_complete": true
+}

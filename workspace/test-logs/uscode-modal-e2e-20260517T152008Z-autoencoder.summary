@@ -1,0 +1,51 @@
+{
+  "best_validation_ce": 0.5471552719381995,
+  "best_validation_cosine": 0.4612294533825851,
+  "best_validation_ir_ce": 0.547155272,
+  "best_validation_ir_cosine": 0.461229453,
+  "best_validation_ir_reconstruction": 0.212986786,
+  "best_validation_ir_text_reconstruction": 0.0,
+  "best_validation_reconstruction": 0.21298678557203124,
+  "codex_program_synthesis_execution_mode": "queued_for_external_codex_worker",
+  "cycles": 89,
+  "dataset_id": "justicedao/ipfs_uscode",
+  "final": false,
+  "latest_queue_counts": {
+    "claimed": 2,
+    "failed_validation": 89,
+    "pending": 1423
+  },
+  "latest_role_queue_counts": {
+    "autoencoder_sgd": {
+      "failed_validation": 89,
+      "pending": 979
+    },
+    "program_synthesis": {
+      "claimed": 2,
+      "pending": 444
+    }
+  },
+  "latest_stop_reason": "no_validated_improvement",
+  "laws_path": "uscode_parquet/laws.parquet",
+  "log_path": "/home/barberb/portland-laws.github.io/workspace/test-logs/uscode-modal-e2e-20260517T152008Z-autoencoder.jsonl",
+  "loop_role": "autoencoder",
+  "metric_failures": 0,
+  "optimizer_policy": "autoencoder_sgd_with_codex_program_synthesis_backlog",
+  "program_synthesis_claimed": 2,
+  "program_synthesis_completed": 0,
+  "program_synthesis_pending": 444,
+  "program_synthesis_pending_cap": 512,
+  "program_synthesis_seeded": 298,
+  "queue_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-e2e-20260517T152008Z-autoencoder.jsonl",
+  "queue_run_id": "uscode-modal-e2e-20260517T152008Z-autoencoder",
+  "run_id": "uscode-modal-e2e-20260517T152008Z-autoencoder",
+  "seed": 211949159076651,
+  "started_at": "2026-05-17T15:20:09+00:00",
+  "state_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-e2e-20260517T152008Z-autoencoder.state.json",
+  "test_failures": 7,
+  "train_ce_improved_cycles": 0,
+  "train_cosine_improved_cycles": 0,
+  "updated_at": "2026-05-17T15:26:18+00:00",
+  "validation_ce_improved_cycles": 0,
+  "validation_cosine_improved_cycles": 0
+}

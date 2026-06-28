@@ -1,0 +1,17 @@
+Implemented a deterministic `modal.ir_decompiler` slot refinement focused on citation/source-id section morphology and numeric relations.
+
+**Changes**
+- Added aggregate section slots in both decode and triple paths:
+  - `*_section_component_profile` (`single_numeric`, `single_alphanumeric`, `compound_numeric`, `compound_alphanumeric`, `compound_mixed`, `range`)
+  - `*_section_primary_terminal_number_relation` (`equal`, `ascending`, `descending`)
+  - `*_section_primary_terminal_number_span` (absolute numeric difference)
+- Kept existing slot behavior intact; this is additive.
+- Updated both mirrored implementations:
+  - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000038-20260518_110611/ipfs_datasets_py/logic/modal/decompiler.py:1400)
+  - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000038-20260518_110611/ipfs_datasets_py/logic/modal/codec.py:1362)
+- Added regression coverage for decode + F-logic triples:
+  - [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000038-20260518_110611/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:753)
+
+**Validation**
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py` → 16 passed
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py` → 79 passed

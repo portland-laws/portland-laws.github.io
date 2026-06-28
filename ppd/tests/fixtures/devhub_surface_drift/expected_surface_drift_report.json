@@ -1,0 +1,70 @@
+{
+  "changed_headings": [
+    {
+      "surface_id": "devhub_home",
+      "item": "page_heading",
+      "expected": "DevHub Home",
+      "observed": "DevHub Dashboard",
+      "details": ""
+    }
+  ],
+  "missing_labels": [
+    {
+      "surface_id": "devhub_home",
+      "item": "Project address",
+      "expected": "present",
+      "observed": "missing",
+      "details": ""
+    }
+  ],
+  "selector_confidence_drops": [
+    {
+      "surface_id": "devhub_home",
+      "item": "#project-address",
+      "expected": 0.92,
+      "observed": 0.7,
+      "details": "confidence dropped by 0.22"
+    },
+    {
+      "surface_id": "permit_detail",
+      "item": "[data-testid='review-group']",
+      "expected": 0.91,
+      "observed": 0.71,
+      "details": "confidence dropped by 0.20"
+    }
+  ],
+  "new_upload_controls": [
+    {
+      "surface_id": "permit_detail",
+      "item": "Upload correction documents",
+      "expected": "absent from committed surface map",
+      "observed": "upload control present",
+      "details": ""
+    }
+  ],
+  "new_payment_controls": [
+    {
+      "surface_id": "permit_detail",
+      "item": "Pay fees",
+      "expected": "absent from committed surface map",
+      "observed": "payment control present",
+      "details": ""
+    }
+  ],
+  "newly_consequential_buttons": [
+    {
+      "surface_id": "permit_detail",
+      "item": "Pay fees",
+      "expected": "not consequential in committed surface map",
+      "observed": "consequential button present",
+      "details": ""
+    },
+    {
+      "surface_id": "permit_detail",
+      "item": "Submit application",
+      "expected": "not consequential in committed surface map",
+      "observed": "consequential button present",
+      "details": ""
+    }
+  ]
+}

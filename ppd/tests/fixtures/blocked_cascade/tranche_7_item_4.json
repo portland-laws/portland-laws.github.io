@@ -1,0 +1,30 @@
+{
+  "case_id": "checkbox-273-tranche-7-item-4",
+  "blocked_work": {
+    "id": "ppd-devhub-crawl-normalization",
+    "status": "blocked",
+    "blocked_at": "2026-05-08T10:00:00Z",
+    "requires_repair_task": "daemon-repair-2026-05-08-004"
+  },
+  "repair_attempts": [
+    {
+      "id": "daemon-repair-2026-05-08-003",
+      "submitted_at": "2026-05-08T09:55:00Z",
+      "validated_at": "2026-05-08T09:58:00Z",
+      "validation": "passed"
+    },
+    {
+      "id": "daemon-repair-2026-05-08-004",
+      "submitted_at": "2026-05-08T10:05:00Z",
+      "validated_at": "2026-05-08T10:06:00Z",
+      "validation": "failed"
+    },
+    {
+      "id": "daemon-repair-2026-05-08-004",
+      "submitted_at": "2026-05-08T10:10:00Z",
+      "validated_at": "2026-05-08T10:11:00Z",
+      "validation": "passed"
+    }
+  ],
+  "expected_parked_after_attempts": [true, true, false]
+}

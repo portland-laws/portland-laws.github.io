@@ -1,0 +1,107 @@
+{
+  "case_id": "fixture-mixed-gap-case",
+  "user_fact_values_not_to_guess": [
+    "123 Example Ave",
+    "E-12345",
+    "$75,000",
+    "Owner Authorization 2024.pdf"
+  ],
+  "gap_analysis": {
+    "missing_facts": [
+      {
+        "gap_id": "gap-property-address-from-application-guide",
+        "fact_id": "property_address",
+        "label": "property address",
+        "process_stage": "pre-application research",
+        "source_evidence_ids": ["src-ppd-apply-permits"],
+        "candidate_value": "123 Example Ave"
+      },
+      {
+        "gap_id": "gap-property-address-from-maps",
+        "fact_id": "property_address",
+        "label": "property address",
+        "process_stage": "pre-application research",
+        "source_evidence_ids": ["src-portlandmaps-property-lookup"],
+        "candidate_value": "123 Example Ave"
+      }
+    ],
+    "license_gaps": [
+      {
+        "gap_id": "gap-electrical-license-profile",
+        "license_id": "electrical_contractor_license",
+        "label": "electrical contractor license on the DevHub profile",
+        "process_stage": "eligibility screening",
+        "source_evidence_ids": ["src-standard-trade-permit-guide"],
+        "candidate_value": "E-12345"
+      },
+      {
+        "gap_id": "gap-electrical-license-fixtures",
+        "license_id": "electrical_contractor_license",
+        "label": "electrical contractor license on the DevHub profile",
+        "process_stage": "eligibility screening",
+        "source_evidence_ids": ["src-devhub-fixture-options-guide", "src-standard-trade-permit-guide"],
+        "candidate_value": "E-12345"
+      }
+    ],
+    "required_documents": [
+      {
+        "gap_id": "gap-site-plan-checklist",
+        "document_id": "site_plan",
+        "label": "site plan PDF",
+        "process_stage": "document preparation",
+        "source_evidence_ids": ["src-single-pdf-guidance"]
+      },
+      {
+        "gap_id": "gap-site-plan-submittal",
+        "document_id": "site_plan",
+        "label": "site plan PDF",
+        "process_stage": "document preparation",
+        "source_evidence_ids": ["src-building-permit-submittal-checklist"]
+      }
+    ],
+    "file_preparation_rules": [
+      {
+        "gap_id": "gap-drawings-single-pdf",
+        "rule_id": "drawings_single_pdf",
+        "label": "drawing plans combined into one PDF",
+        "process_stage": "document preparation",
+        "source_evidence_ids": ["src-file-naming-standards"]
+      },
+      {
+        "gap_id": "gap-drawings-single-pdf-guide",
+        "rule_id": "drawings_single_pdf",
+        "label": "drawing plans combined into one PDF",
+        "process_stage": "document preparation",
+        "source_evidence_ids": ["src-single-pdf-guidance"]
+      }
+    ],
+    "conflicting_evidence": [
+      {
+        "gap_id": "gap-project-valuation-conflict",
+        "fact_id": "project_valuation",
+        "label": "project valuation",
+        "process_stage": "application data entry",
+        "source_evidence_ids": ["src-user-intake", "src-estimate-upload"],
+        "candidate_values": ["$75,000", "$57,000"]
+      }
+    ],
+    "stale_evidence": [
+      {
+        "gap_id": "gap-owner-authorization-stale",
+        "fact_id": "owner_authorization",
+        "label": "owner authorization document",
+        "process_stage": "upload staging",
+        "source_evidence_ids": ["src-upload-corrections-guide", "src-user-document-inventory"],
+        "candidate_value": "Owner Authorization 2024.pdf"
+      },
+      {
+        "gap_id": "gap-owner-authorization-stale-duplicate",
+        "fact_id": "owner_authorization",
+        "label": "owner authorization document",
+        "process_stage": "upload staging",
+        "source_evidence_ids": ["src-user-document-inventory"],
+        "candidate_value": "Owner Authorization 2024.pdf"
+      }
+    ]
+  }
+}

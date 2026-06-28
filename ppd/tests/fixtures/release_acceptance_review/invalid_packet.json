@@ -1,0 +1,44 @@
+{
+  "packet_id": "release-review-invalid-fixture",
+  "checklist_items": [
+    {
+      "id": "missing-citation",
+      "status": "accepted"
+    }
+  ],
+  "blockers": [
+    {
+      "id": "unresolved-safety-risk",
+      "status": "open"
+    }
+  ],
+  "reviewers": [
+    {
+      "role": "reviewer"
+    }
+  ],
+  "validation_rerun_expectations": [
+    {
+      "command": "python3 ppd/daemon/ppd_daemon.py --self-test"
+    }
+  ],
+  "artifacts": [
+    "playwright/.auth/devhub-session.json",
+    "public/raw-crawl/downloads/page.warc.gz"
+  ],
+  "claims": [
+    "Published live to the public site.",
+    "Permit will be approved after this packet."
+  ],
+  "consequential_controls": [
+    {
+      "name": "submit",
+      "classification": "consequential",
+      "enabled": true
+    }
+  ],
+  "artifact_mutation_flags": {
+    "mutate_artifacts": true,
+    "crawl_live": true
+  }
+}

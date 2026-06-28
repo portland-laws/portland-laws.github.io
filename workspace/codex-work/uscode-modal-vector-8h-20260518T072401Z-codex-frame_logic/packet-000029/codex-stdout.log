@@ -1,0 +1,13 @@
+Implemented a narrow frame-logic audit expansion: `source_id_citation*` signals are now treated as contextual frame-ontology inputs, so citation-derived source-id features that influenced reconstruction/family behavior are included in ontology term audits.
+
+**Code Changes**
+- Added `source_id_citation` to contextual predicate prefixes in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000029-20260518_103153/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:77).
+- Added focused unit coverage for this path in:
+  - [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000029-20260518_103153/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:498)
+  - [test_flogic_optimizer.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000029-20260518_103153/tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py:185)
+  - [package test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000029-20260518_103153/ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:118)
+
+**Validation**
+- Ran:
+  - `IPFS_DATASETS_PY_MINIMAL_IMPORTS=1 pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py`
+- Result: `53 passed`

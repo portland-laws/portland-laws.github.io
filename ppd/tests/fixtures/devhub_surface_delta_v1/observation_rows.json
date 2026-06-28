@@ -1,0 +1,37 @@
+[
+  {
+    "row_id": "obs-001",
+    "source_kind": "synthetic_observation",
+    "surface_key": "devhub.permit_status.read_only",
+    "observed_label": "Permit Status",
+    "selector": "[data-testid='permit-status']",
+    "selector_hits": 1,
+    "action_text": "View permit status",
+    "requires_login": false
+  },
+  {
+    "row_id": "obs-002",
+    "source_kind": "synthetic_observation",
+    "surface_key": "devhub.inspection.schedule",
+    "observed_label": "Schedule Inspection",
+    "selector": "button.schedule-inspection",
+    "selector_hits": 1,
+    "action_text": "Schedule inspection",
+    "requires_login": true,
+    "requires_attendance": true,
+    "exact_confirmation_text": "I certify that I am authorized to schedule this inspection.",
+    "unsupported_reason": "inspection scheduling is outside read-only scope",
+    "reviewer_hold_reason": "contains future action path"
+  },
+  {
+    "row_id": "obs-003",
+    "source_kind": "synthetic_observation",
+    "surface_key": "devhub.account.profile",
+    "observed_label": "Applicant Email",
+    "selector": ".profile-email",
+    "selector_hits": 2,
+    "action_text": "View applicant email",
+    "contains_private_value": true,
+    "private_field_names": ["email"]
+  }
+]

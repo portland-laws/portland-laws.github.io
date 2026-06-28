@@ -1,0 +1,161 @@
+{
+  "cases": [
+    {
+      "name": "safe_reversible_draft",
+      "bundle": {
+        "guardrail_bundle_id": "gb-safe-draft",
+        "process_id": "ppd-demo-process",
+        "source_evidence_ids": ["src-ppd-apply", "src-ppd-single-pdf"],
+        "deterministic_predicates": {
+          "private_value_fields": [],
+          "evidence_freshness": {
+            "src-ppd-apply": "current",
+            "src-ppd-single-pdf": "verified"
+          }
+        },
+        "validation_status": "validated"
+      },
+      "plan": {
+        "cited_evidence_ids": ["src-ppd-apply", "src-ppd-single-pdf"],
+        "private_value_fields": [],
+        "proposed_actions": [
+          {"action_id": "compare-public-checklist", "kind": "analysis"},
+          {"action_id": "draft-local-pdf-preview", "kind": "draft"}
+        ]
+      }
+    },
+    {
+      "name": "missing_citation",
+      "bundle": {
+        "guardrail_bundle_id": "gb-missing-citation",
+        "process_id": "ppd-demo-process",
+        "source_evidence_ids": ["src-ppd-apply", "src-ppd-single-pdf"],
+        "deterministic_predicates": {
+          "private_value_fields": [],
+          "evidence_freshness": {
+            "src-ppd-apply": "current",
+            "src-ppd-single-pdf": "current"
+          }
+        },
+        "validation_status": "validated"
+      },
+      "plan": {
+        "cited_evidence_ids": ["src-ppd-apply"],
+        "private_value_fields": [],
+        "proposed_actions": [
+          {"action_id": "draft-local-summary", "kind": "draft"}
+        ]
+      }
+    },
+    {
+      "name": "stale_evidence",
+      "bundle": {
+        "guardrail_bundle_id": "gb-stale-evidence",
+        "process_id": "ppd-demo-process",
+        "source_evidence_ids": ["src-ppd-apply"],
+        "deterministic_predicates": {
+          "private_value_fields": [],
+          "evidence_freshness": {
+            "src-ppd-apply": "stale"
+          }
+        },
+        "validation_status": "validated"
+      },
+      "plan": {
+        "cited_evidence_ids": ["src-ppd-apply"],
+        "private_value_fields": [],
+        "proposed_actions": [
+          {"action_id": "draft-local-summary", "kind": "draft"}
+        ]
+      }
+    },
+    {
+      "name": "private_value_required",
+      "bundle": {
+        "guardrail_bundle_id": "gb-private-values",
+        "process_id": "ppd-demo-process",
+        "source_evidence_ids": ["src-ppd-apply"],
+        "deterministic_predicates": {
+          "private_value_fields": ["owner_legal_name", "site_address"],
+          "evidence_freshness": {
+            "src-ppd-apply": "current"
+          }
+        },
+        "validation_status": "validated"
+      },
+      "plan": {
+        "cited_evidence_ids": ["src-ppd-apply"],
+        "private_value_fields": [],
+        "proposed_actions": [
+          {"action_id": "draft-local-form-values", "kind": "draft"}
+        ]
+      }
+    },
+    {
+      "name": "consequential_action",
+      "bundle": {
+        "guardrail_bundle_id": "gb-consequential-action",
+        "process_id": "ppd-demo-process",
+        "source_evidence_ids": ["src-devhub-guide"],
+        "deterministic_predicates": {
+          "private_value_fields": [],
+          "evidence_freshness": {
+            "src-devhub-guide": "current"
+          }
+        },
+        "validation_status": "validated"
+      },
+      "plan": {
+        "cited_evidence_ids": ["src-devhub-guide"],
+        "private_value_fields": [],
+        "proposed_actions": [
+          {"action_id": "upload-corrections", "kind": "upload"}
+        ]
+      }
+    },
+    {
+      "name": "financial_action",
+      "bundle": {
+        "guardrail_bundle_id": "gb-financial-action",
+        "process_id": "ppd-demo-process",
+        "source_evidence_ids": ["src-fee-payment-guide"],
+        "deterministic_predicates": {
+          "private_value_fields": [],
+          "evidence_freshness": {
+            "src-fee-payment-guide": "current"
+          }
+        },
+        "validation_status": "validated"
+      },
+      "plan": {
+        "cited_evidence_ids": ["src-fee-payment-guide"],
+        "private_value_fields": [],
+        "proposed_actions": [
+          {"action_id": "submit-payment", "kind": "payment"}
+        ]
+      }
+    },
+    {
+      "name": "unvalidated_bundle",
+      "bundle": {
+        "guardrail_bundle_id": "gb-unvalidated",
+        "process_id": "ppd-demo-process",
+        "source_evidence_ids": ["src-ppd-apply"],
+        "deterministic_predicates": {
+          "private_value_fields": [],
+          "evidence_freshness": {
+            "src-ppd-apply": "current"
+          }
+        },
+        "validation_status": "draft"
+      },
+      "plan": {
+        "cited_evidence_ids": ["src-ppd-apply"],
+        "private_value_fields": [],
+        "proposed_actions": [
+          {"action_id": "draft-local-summary", "kind": "draft"}
+        ]
+      }
+    }
+  ]
+}

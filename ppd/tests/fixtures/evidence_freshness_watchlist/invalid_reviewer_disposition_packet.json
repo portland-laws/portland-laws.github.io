@@ -1,0 +1,28 @@
+{
+  "packet_type": "evidence_freshness_watchlist_reviewer_disposition",
+  "reviewer": {},
+  "consumed_packet_refs": [],
+  "offline_validation_commands": [],
+  "decisions": [
+    {
+      "decision": "remove_watchlist_entry",
+      "rationale": "Permit will be approved because the reviewer ran processor execution during a live crawl."
+    }
+  ],
+  "source_urls": [
+    "https://example.com/private/archive.zip",
+    "https://devhub.portlandoregon.gov/login?session=abc123"
+  ],
+  "raw_body": "downloaded raw response body",
+  "private_artifacts": {
+    "cookie": "sessionid=secret",
+    "trace": "trace.zip"
+  },
+  "mutation_flags": {
+    "active_registry_mutation": true,
+    "active_requirement_mutation": true,
+    "active_guardrail_mutation": true,
+    "active_schedule_mutation": true,
+    "active_release_state_mutation": true
+  }
+}

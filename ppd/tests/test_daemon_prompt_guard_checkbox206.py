@@ -1,0 +1,77 @@
+"""Prompt-guard coverage for checkbox-206.
+
+This test keeps the recovery rule fixture local and parser-clean. It documents the
+minimum prompt text required after repeated syntax_preflight failures on
+checkbox-178, without touching DevHub implementation files or domain fixtures.
+"""
+
+from __future__ import annotations
+
+import unittest
+
+
+CHECKBOX_178_FAILURE_HISTORY = (
+    {
+        "target_task": "checkbox-178",
+        "failure_kind": "syntax_preflight",
+        "summary": "Malformed Python expression in draft-readiness retry.",
+    },
+    {
+        "target_task": "checkbox-178",
+        "failure_kind": "syntax_preflight",
+        "summary": "py_compile failed before full validation.",
+    },
+)
+
+
+PROMPT_AFTER_TWO_SYNTAX_PREFLIGHT_FAILURES = "\n".join(
+    (
+        "Task checkbox-178 has failed syntax_preflight twice.",
+        "The next proposal must explicitly forbid source-plus-fixture-plus-test bundles.",
+        "Do not return a source-plus-fixture-plus-test bundle for this retry.",
+        "Recommend a one-file parser-clean repair before any PP&D domain implementation retry.",
+        "Allowed shape: replace exactly one syntactically failing parser-bearing file,",
+        "or replace exactly one daemon repair file under ppd/daemon/.",
+    )
+)
+
+
+def count_syntax_preflight_failures(history: tuple[dict[str, str], ...], target_task: str) -> int:
+    """Count compact failure records for one task without regex or broad parsing."""
+    count = 0
+    for item in history:
+        if item.get("target_task") == target_task and item.get("failure_kind") == "syntax_preflight":
+            count += 1
+    return count
+
+
+class Checkbox206PromptGuardTest(unittest.TestCase):
+    def test_two_checkbox178_syntax_failures_trigger_bundle_ban_and_one_file_repair(self) -> None:
+        failure_count = count_syntax_preflight_failures(
+            CHECKBOX_178_FAILURE_HISTORY,
+            "checkbox-178",
+        )
+
+        self.assertEqual(failure_count, 2)
+        self.assertIn(
+            "forbid source-plus-fixture-plus-test bundles",
+            PROMPT_AFTER_TWO_SYNTAX_PREFLIGHT_FAILURES,
+        )
+        self.assertIn(
+            "Do not return a source-plus-fixture-plus-test bundle",
+            PROMPT_AFTER_TWO_SYNTAX_PREFLIGHT_FAILURES,
+        )
+        self.assertIn(
+            "Recommend a one-file parser-clean repair",
+            PROMPT_AFTER_TWO_SYNTAX_PREFLIGHT_FAILURES,
+        )
+        self.assertIn(
+            "replace exactly one syntactically failing parser-bearing file",
+            PROMPT_AFTER_TWO_SYNTAX_PREFLIGHT_FAILURES,
+        )
+        self.assertNotIn("ppd/devhub/", PROMPT_AFTER_TWO_SYNTAX_PREFLIGHT_FAILURES)
+        self.assertNotIn("public/corpus/portland-or/current/", PROMPT_AFTER_TWO_SYNTAX_PREFLIGHT_FAILURES)
+
+
+if __name__ == "__main__":
+    unittest.main()

@@ -1,0 +1,64 @@
+{
+  "candidate_version": "process-model-impact-candidate-v5",
+  "requirement_queue_refs": [
+    "queue:ppd-requirements:residential-alteration:2026-06-01"
+  ],
+  "inactive_process_model_delta_rows": [
+    {
+      "process_id": "residential-alteration",
+      "delta_id": "delta:residential-alteration:documents:v5",
+      "active": false,
+      "status": "inactive",
+      "operation": "stage_inactive_delta",
+      "summary": "Stage cited document, file-rule, eligibility, fact, fee, and deadline deltas for reviewer evaluation."
+    }
+  ],
+  "eligibility_deltas": [
+    {
+      "requirement_id": "eligibility:residential-alteration:owner-or-contractor",
+      "source_evidence_ids": ["source:ppd:apply-permits"]
+    }
+  ],
+  "fact_deltas": [
+    {
+      "fact_id": "fact:property-address",
+      "reason": "Required before permit path selection."
+    }
+  ],
+  "document_deltas": [
+    {
+      "document_id": "document:plans-single-pdf",
+      "reason": "Plans may be required and must stay source-cited."
+    }
+  ],
+  "file_rule_deltas": [
+    {
+      "rule_id": "file-rule:single-pdf-process",
+      "reason": "Plan drawings, applications, calculations, and supporting documents must be classified separately."
+    }
+  ],
+  "fee_caveats": [
+    "Fee triggers are estimates only until source-cited PP&D fee review; payment workflows remain attended and exact-confirmation gated."
+  ],
+  "deadline_caveats": [
+    "Deadlines and review periods require current source evidence and reviewer confirmation before being shown as case-specific guidance."
+  ],
+  "unsupported_path_handling": [
+    "When a permit type is not supported by DevHub or requires email/manual intake, block automation and route to a manual handoff note."
+  ],
+  "devhub_reference_caveats": [
+    "DevHub references are public or redacted surface descriptions only; no credentials, session state, screenshots, traces, HAR files, private values, uploads, submissions, scheduling, cancellation, certification, or payment artifacts are included."
+  ],
+  "reviewer_holds": [
+    "Human review required before activating any ProcessModel delta row.",
+    "Human review required before relying on DevHub surface references for a user case."
+  ],
+  "rollback_notes": [
+    "Reject the inactive delta rows and leave the active ProcessModel unchanged if validation fails or source evidence is stale."
+  ],
+  "validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/process_model_impact_candidate_v5.py"],
+    ["python3", "-m", "pytest", "ppd/tests/test_process_model_impact_candidate_v5.py"],
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

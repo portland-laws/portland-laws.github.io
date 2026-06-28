@@ -1,0 +1,126 @@
+{
+  "packet_id": "fixture-requirement-regeneration-dry-run-work-order-input-001",
+  "public_source_change_impact_triage_packet": {
+    "packet_id": "public-source-change-impact-triage-fixture-001",
+    "packet_type": "public_source_change_impact_triage",
+    "mode": "fixture_first_offline",
+    "network_actions_performed": false,
+    "active_guardrail_bundles_mutated": false,
+    "monitoring_schedule_mutated": false,
+    "impact_records": [
+      {
+        "source_id": "src-devhub-submit-guide",
+        "cited_source_ids": [
+          "ev-devhub-submit-guide-acknowledgement",
+          "ev-devhub-submit-guide-steps",
+          "src-devhub-submit-guide"
+        ],
+        "affected_requirement_ids": [
+          "req-exact-confirmation-for-certification",
+          "req-upload-staging-before-submit"
+        ],
+        "affected_process_ids": [
+          "process-building-permit-application"
+        ],
+        "affected_guardrail_bundle_ids": [
+          "guardrail-building-permit-application"
+        ],
+        "reviewer_owners": [
+          "ppd-public-source-reviewer"
+        ],
+        "stale_source_acknowledgements": [
+          "src-devhub-submit-guide:ppd-public-source-reviewer:source review is older than the monitoring cadence for DevHub submission guidance"
+        ],
+        "offline_triage_decision": "offline_review_required_before_guardrail_update",
+        "decision_reasons": [
+          "requirements_affected",
+          "guardrail_bundles_affected_without_mutation"
+        ]
+      },
+      {
+        "source_id": "src-single-pdf-guidance",
+        "cited_source_ids": [
+          "ev-single-pdf-plan-set",
+          "src-single-pdf-guidance"
+        ],
+        "affected_requirement_ids": [
+          "req-plan-set-single-pdf"
+        ],
+        "affected_process_ids": [
+          "process-document-preparation"
+        ],
+        "affected_guardrail_bundle_ids": [
+          "guardrail-document-preparation"
+        ],
+        "reviewer_owners": [
+          "ppd-document-reviewer"
+        ],
+        "stale_source_acknowledgements": [],
+        "offline_triage_decision": "offline_triage_required",
+        "decision_reasons": [
+          "requirements_affected"
+        ]
+      }
+    ]
+  },
+  "requirement_regeneration_promotion_decision_packet": {
+    "packet_id": "requirement-regeneration-promotion-decision-fixture-001",
+    "packet_type": "requirement_regeneration_promotion_decision_packet",
+    "packet_mode": "fixture_first_metadata_only",
+    "blocked_downstream_activation": true,
+    "activation_allowed": false,
+    "active_requirement_mutated": false,
+    "active_process_model_mutated": false,
+    "active_guardrail_bundle_mutated": false,
+    "reviewer_selected_decisions": [
+      {
+        "decision_id": "decision.promote.metadata-only.upload-staging",
+        "target_id": "req-upload-staging-before-submit",
+        "target_type": "requirement_diff",
+        "reviewer_selected_decision": "promote",
+        "final_decision": "promote_candidate_metadata_only",
+        "blocked_downstream_activation": true,
+        "activation_allowed": false,
+        "mutates_active_artifacts": false,
+        "metadata_only": true
+      },
+      {
+        "decision_id": "decision.defer.certification-confirmation",
+        "target_id": "req-exact-confirmation-for-certification",
+        "target_type": "requirement_diff",
+        "reviewer_selected_decision": "defer",
+        "final_decision": "defer",
+        "blocked_downstream_activation": true,
+        "activation_allowed": false,
+        "mutates_active_artifacts": false,
+        "metadata_only": true
+      }
+    ],
+    "citation_refresh_scope": [
+      {
+        "source_id": "req-upload-staging-before-submit",
+        "scope_id": "ev-devhub-submit-guide-steps",
+        "refresh_required_before_activation": true
+      }
+    ],
+    "rollback_notes": [
+      {
+        "rollback_note_id": "rollback.guardrail-building-permit-application.rev-2026-05-08",
+        "active_guardrail_bundle_id": "guardrail-building-permit-application",
+        "active_guardrail_bundle_revision": "rev.2026-05-08",
+        "restore_action": "retain_active_bundle_and_discard_rehearsal_candidate",
+        "activation_blocked": true
+      }
+    ],
+    "execution_boundaries": {
+      "calls_llm": false,
+      "launches_devhub": false,
+      "uses_authenticated_session": false,
+      "reads_private_files": false,
+      "writes_private_artifacts": false,
+      "mutates_active_requirements": false,
+      "mutates_active_process_models": false,
+      "mutates_active_guardrail_bundles": false
+    }
+  }
+}

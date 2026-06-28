@@ -1,0 +1,51 @@
+{
+  "description": "Generated tranche 2 item 1 fixture: blocked PP&D work remains parked until a fresh daemon repair task validates.",
+  "cases": {
+    "stale_and_unvalidated_repairs": {
+      "previous_validated_repair_ids": ["daemon-repair-2026-05-08T12-00-00Z"],
+      "blocked_work": {
+        "work_id": "checkbox-250-blocked-ppd-work",
+        "state": "blocked",
+        "blocked_by": "daemon-repair",
+        "blocked_at": "2026-05-08T12:30:00Z"
+      },
+      "repair_tasks": [
+        {
+          "task_id": "daemon-repair-2026-05-08T12-00-00Z",
+          "validates": "daemon-repair",
+          "state": "validated",
+          "validated_at": "2026-05-08T12:00:00Z"
+        },
+        {
+          "task_id": "daemon-repair-2026-05-08T12-45-00Z",
+          "validates": "daemon-repair",
+          "state": "pending",
+          "validated_at": null
+        }
+      ]
+    },
+    "fresh_validated_repair": {
+      "previous_validated_repair_ids": ["daemon-repair-2026-05-08T12-00-00Z"],
+      "blocked_work": {
+        "work_id": "checkbox-250-blocked-ppd-work",
+        "state": "blocked",
+        "blocked_by": "daemon-repair",
+        "blocked_at": "2026-05-08T12:30:00Z"
+      },
+      "repair_tasks": [
+        {
+          "task_id": "daemon-repair-2026-05-08T12-00-00Z",
+          "validates": "daemon-repair",
+          "state": "validated",
+          "validated_at": "2026-05-08T12:00:00Z"
+        },
+        {
+          "task_id": "daemon-repair-2026-05-08T13-10-00Z",
+          "validates": "daemon-repair",
+          "state": "validated",
+          "validated_at": "2026-05-08T13:10:00Z"
+        }
+      ]
+    }
+  }
+}

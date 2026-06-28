@@ -1,0 +1,54 @@
+{
+  "packet_version": "requirement-reextraction-work-packet-v8",
+  "reextraction_queue_ref": "ppd-reextraction-queue:v8:fixture",
+  "normalized_document_record_refs": [
+    "document-record:ppd-devhub-guide-submit-permit-application"
+  ],
+  "source_scoped_extraction_work_items": [
+    {
+      "source_id": "source:portland-gov-ppd-devhub-guide-submit-permit-application",
+      "normalized_document_record_ref": "document-record:ppd-devhub-guide-submit-permit-application",
+      "extraction_work_item_id": "extract:devhub-guide:acknowledgement-review",
+      "citation_span_inputs": [
+        {
+          "citation_span_id": "span:devhub-guide:acknowledgement-review:1",
+          "document_section": "Review acknowledgement before submitting",
+          "start_offset": 120,
+          "end_offset": 260
+        }
+      ],
+      "requirement_type_expectations": [
+        "action_gate",
+        "precondition"
+      ],
+      "confidence_placeholder": "pending_reextraction",
+      "human_review_placeholder": "pending"
+    }
+  ],
+  "unsupported_path_notes": [
+    {
+      "candidate_path": "email-only permit path",
+      "reason": "Outside deterministic DevHub re-extraction fixture scope"
+    }
+  ],
+  "skipped_candidate_rows": [
+    {
+      "candidate_id": "candidate:outside-allowlist",
+      "reason": "outside allowlist"
+    }
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "-m",
+      "py_compile",
+      "ppd/extraction/requirement_reextraction_work_packet_v8.py"
+    ],
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ],
+  "mutation_enabled": false
+}

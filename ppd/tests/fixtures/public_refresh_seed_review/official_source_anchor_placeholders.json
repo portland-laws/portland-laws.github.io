@@ -1,0 +1,26 @@
+[
+  {
+    "anchor_id": "anchor-bds-fees",
+    "agency": "Portland Permitting & Development placeholder",
+    "official_placeholder": "official://portland-ppd/source-anchor/bds-fees",
+    "devhub_open_required": false,
+    "auth_required": false,
+    "document_download_required": false
+  },
+  {
+    "anchor_id": "anchor-bps-land-use",
+    "agency": "Portland Permitting & Development placeholder",
+    "official_placeholder": "official://portland-ppd/source-anchor/land-use-notices",
+    "devhub_open_required": false,
+    "auth_required": false,
+    "document_download_required": false
+  },
+  {
+    "anchor_id": "anchor-appeals",
+    "agency": "Portland Permitting & Development placeholder",
+    "official_placeholder": "official://portland-ppd/source-anchor/appeals",
+    "devhub_open_required": false,
+    "auth_required": false,
+    "document_download_required": false
+  }
+]

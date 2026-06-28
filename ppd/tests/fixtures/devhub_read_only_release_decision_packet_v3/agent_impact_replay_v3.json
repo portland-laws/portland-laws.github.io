@@ -1,0 +1,117 @@
+{
+  "packet_version": "devhub_read_only_agent_impact_replay_v3",
+  "fixture_only": true,
+  "read_only": true,
+  "consumes": {
+    "surface_delta_reviewer_packet": "devhub_read_only_surface_map_delta_reviewer_packet_v3",
+    "synthetic_agent_requests": "synthetic_devhub_agent_requests_v3"
+  },
+  "source_fixture_refs": [
+    "ppd/tests/fixtures/devhub_read_only_agent_impact_replay_v3/inactive_surface_map_delta_reviewer_packet_v3.json",
+    "ppd/tests/fixtures/devhub_read_only_agent_impact_replay_v3/synthetic_agent_requests_v3.json"
+  ],
+  "affected_safe_read_only_actions": [
+    {
+      "request_id": "synthetic-request-status-review",
+      "surface_id": "devhub-permit-detail-read-only",
+      "surface_delta_id": "inactive-delta-permit-detail-read-only",
+      "action_id": "review_status",
+      "action_label": "Review permit status text",
+      "impact": "allowed_read_only_replay",
+      "summary": "Offline replay may summarize this read-only action path without opening DevHub.",
+      "devhub_opened": false
+    },
+    {
+      "request_id": "synthetic-request-notice-review",
+      "surface_id": "devhub-notice-read-only",
+      "surface_delta_id": "inactive-delta-notice-read-only",
+      "action_id": "review_notice",
+      "action_label": "Review correction notice text",
+      "impact": "allowed_read_only_replay",
+      "summary": "Offline replay may summarize this read-only notice path without opening DevHub.",
+      "devhub_opened": false
+    }
+  ],
+  "blocked_consequential_actions": [
+    {
+      "request_id": "synthetic-request-status-review",
+      "surface_id": "devhub-permit-detail-read-only",
+      "surface_delta_id": "inactive-delta-permit-detail-read-only",
+      "action_id": "complete_record",
+      "action_label": "Complete official record step",
+      "impact": "blocked_consequential_action",
+      "summary": "Replay blocks this consequential action and requires manual handoff before any attended step.",
+      "requires_manual_handoff": true
+    },
+    {
+      "request_id": "synthetic-request-notice-review",
+      "surface_id": "devhub-notice-read-only",
+      "surface_delta_id": "inactive-delta-notice-read-only",
+      "action_id": "attach_record_material",
+      "action_label": "Attach official record material",
+      "impact": "blocked_consequential_action",
+      "summary": "Replay blocks this consequential record action and requires manual handoff before any attended step.",
+      "requires_manual_handoff": true
+    }
+  ],
+  "missing_information_prompts": [
+    {
+      "request_id": "synthetic-request-status-review",
+      "surface_id": "devhub-permit-detail-read-only",
+      "surface_delta_id": "inactive-delta-permit-detail-read-only",
+      "action_id": "review_status",
+      "missing_information_key": "permit_number",
+      "prompt": "Ask the user for permit_number before relying on this DevHub action path."
+    },
+    {
+      "request_id": "synthetic-request-notice-review",
+      "surface_id": "devhub-notice-read-only",
+      "surface_delta_id": "inactive-delta-notice-read-only",
+      "action_id": "review_notice",
+      "missing_information_key": "review_group",
+      "prompt": "Ask the user for review_group before relying on this DevHub action path."
+    }
+  ],
+  "manual_handoff_reminders": [
+    {
+      "surface_delta_id": "inactive-delta-permit-detail-read-only",
+      "surface_id": "devhub-permit-detail-read-only",
+      "reminder": "Manual handoff remains required before any attended DevHub step."
+    },
+    {
+      "surface_delta_id": "inactive-delta-notice-read-only",
+      "surface_id": "devhub-notice-read-only",
+      "reminder": "Manual handoff remains required before any attended DevHub notice step."
+    }
+  ],
+  "rollback_notes": [
+    {
+      "surface_delta_id": "inactive-delta-permit-detail-read-only",
+      "surface_id": "devhub-permit-detail-read-only",
+      "rollback_note": "Discard this replay and leave active surface maps unchanged."
+    },
+    {
+      "surface_delta_id": "inactive-delta-notice-read-only",
+      "surface_id": "devhub-notice-read-only",
+      "rollback_note": "Discard this notice replay and leave active surface maps unchanged."
+    }
+  ],
+  "attestations": {
+    "active_surface_map_mutation": false,
+    "devhub_opened": false,
+    "auth_or_session_artifact_stored": false,
+    "screenshot_trace_or_har_stored": false,
+    "private_value_stored": false,
+    "raw_devhub_output_stored": false,
+    "form_fill_performed": false,
+    "upload_or_submission_action_performed": false,
+    "payment_or_scheduling_action_performed": false,
+    "official_action_performed": false
+  },
+  "validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/agent_readiness/devhub_read_only_agent_impact_replay_v3.py"],
+    ["python3", "-m", "py_compile", "ppd/tests/test_devhub_read_only_agent_impact_replay_v3.py"],
+    ["python3", "-m", "pytest", "ppd/tests/test_devhub_read_only_agent_impact_replay_v3.py"],
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

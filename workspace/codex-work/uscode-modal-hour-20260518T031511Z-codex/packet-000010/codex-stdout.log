@@ -1,0 +1,12 @@
+Implemented a narrow ambiguity-policy refinement for the modal compiler.
+
+- Added explicit adaptive ambiguity subtype metadata in [`compiler.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T031511Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T031511Z-codex-packet-000010-20260518_040133/ipfs_datasets_py/logic/modal/compiler.py:575):
+  - `adaptive_margin_direction` (`outvoted`/`contested`)
+  - `explicit_ambiguity_type` (deterministic string like `adaptive_temporal_deontic_outvoted_margin_low`)
+- Added helper `_adaptive_margin_explicit_type(...)` in [`compiler.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T031511Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T031511Z-codex-packet-000010-20260518_040133/ipfs_datasets_py/logic/modal/compiler.py:607).
+- Updated adaptive ambiguity tests in [`test_modal_codec.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T031511Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T031511Z-codex-packet-000010-20260518_040133/tests/unit_tests/logic/modal/test_modal_codec.py:286) and [`test_modal_codec.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T031511Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T031511Z-codex-packet-000010-20260518_040133/tests/unit_tests/logic/modal/test_modal_codec.py:359) to assert the new explicit metadata for temporal→conditional_normative, temporal→deontic, temporal→frame, and deontic→frame cases.
+
+Validation run:
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "adaptive_family_margin or under_this_section_as_deontic_frame_adaptive_signal"` failed due pre-existing bootstrap bug at [`__init__.py:11`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T031511Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T031511Z-codex-packet-000010-20260518_040133/__init__.py:11) (`NameError: __path__`).
+- `python3 -m py_compile` on both edited files passed.
+- Direct `python3` assertion check of new adaptive metadata paths passed (`ok`).

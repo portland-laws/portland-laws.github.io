@@ -1,0 +1,18 @@
+Implemented a deterministic slot refinement for modal IR/decompiler numeric section features, scoped to `ir_decompiler`.
+
+- Added new numeric neighborhood slots in decompiler emission (`_numeric_signature_slots`):
+  - `*_prefix_two_digits`
+  - `*_prefix_three_digits`
+  - `*_hundreds_block`
+  - `*_thousands_block`
+  - See [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000064-20260518_133955/ipfs_datasets_py/logic/modal/decompiler.py:2287).
+
+- Mirrored the same fields in triple projection (`_numeric_signature_components`) so typed IR triples and decompiler slot maps stay aligned.
+  - See [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000064-20260518_133955/ipfs_datasets_py/logic/modal/codec.py:2224).
+
+- Added a regression test covering TODO-cluster-style citations (`363`, `2143`, `31109.`, `1300d-2`) and asserting both slot-map and triple outputs for the new predicates.
+  - See [test_modal_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000064-20260518_133955/tests/unit/optimizers/logic_theorem_optimizer/test_modal_ir_decompiler_slots.py:202).
+
+Validation run:
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_modal_ir_decompiler_slots.py ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py` (45 passed)
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k frame_semantic_slot_features` (1 passed)

@@ -1,0 +1,80 @@
+{
+  "manifest_id": "synthetic-redacted-devhub-recorder-fixture",
+  "recording_policy": "synthetic_redacted_fixture",
+  "source": "hand-authored fixture for deterministic surface drift validation",
+  "surfaces": [
+    {
+      "surface_id": "devhub_home",
+      "url_pattern": "https://devhub.portlandoregon.gov/redacted/home",
+      "page_heading": "DevHub Dashboard",
+      "accessible_landmarks": [
+        {"label": "Main navigation"},
+        {"label": "My Permits and Requests"}
+      ],
+      "observed_labels": [
+        "Main navigation",
+        "My Permits and Requests",
+        "Search permits",
+        "Start permit request",
+        "Search by permit number"
+      ],
+      "fields": [
+        {"label": "Search by permit number", "selector": "#permit-search"}
+      ],
+      "buttons": [
+        {"label": "Search permits", "classification": "safe_read_only"},
+        {"label": "Start permit request", "classification": "reversible_draft"}
+      ],
+      "upload_controls": [],
+      "payment_controls": [],
+      "selector_confidence": {
+        "#permit-search": 0.95,
+        "#project-address": 0.7,
+        "button:has-text('Start permit request')": 0.89
+      }
+    },
+    {
+      "surface_id": "permit_detail",
+      "url_pattern": "https://devhub.portlandoregon.gov/redacted/permits/REDACTED",
+      "page_heading": "Permit Details",
+      "accessible_landmarks": [
+        {"label": "Permit summary"},
+        {"label": "Review status"}
+      ],
+      "observed_labels": [
+        "Permit summary",
+        "Review status",
+        "View fees",
+        "Save draft",
+        "Permit number",
+        "Review group",
+        "Supporting documents list",
+        "Upload correction documents",
+        "Pay fees",
+        "Submit application"
+      ],
+      "fields": [
+        {"label": "Permit number", "selector": "[data-testid='permit-number']"},
+        {"label": "Review group", "selector": "[data-testid='review-group']"}
+      ],
+      "buttons": [
+        {"label": "View fees", "classification": "safe_read_only"},
+        {"label": "Save draft", "classification": "reversible_draft"},
+        {"label": "Submit application", "classification": "consequential_official"},
+        {"label": "Pay fees", "classification": "financial"}
+      ],
+      "upload_controls": [
+        {"label": "Supporting documents list", "selector": "[data-testid='document-list']"},
+        {"label": "Upload correction documents", "selector": "[data-testid='upload-corrections']"}
+      ],
+      "payment_controls": [
+        {"label": "Pay fees", "selector": "[data-testid='pay-fees']"}
+      ],
+      "selector_confidence": {
+        "[data-testid='permit-number']": 0.94,
+        "[data-testid='review-group']": 0.71,
+        "[data-testid='document-list']": 0.87
+      }
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "action_id": "click-submit-button",
+  "action_label": "Click Submit in DevHub",
+  "action_kind": "consequential_official",
+  "requested_effect": "execute",
+  "surface_id": "devhub-application-review",
+  "source_evidence_ids": [
+    "ppd-devhub-guide-submit-permit-application"
+  ],
+  "browser_action_planned": true,
+  "writes_official_record": true,
+  "involves_submission": true
+}

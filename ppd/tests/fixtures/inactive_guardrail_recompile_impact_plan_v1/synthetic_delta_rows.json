@@ -1,0 +1,46 @@
+{
+  "packet_type": "ppd.synthetic_inactive_process_model_delta_assembly_rows.v1",
+  "fixture_id": "synthetic-inactive-guardrail-recompile-impact-plan-v1-rows",
+  "fixture_first": true,
+  "input_kind": "synthetic_inactive_process_model_delta_assembly_rows_only",
+  "active_guardrails_recompiled": false,
+  "active_guardrails_promoted": false,
+  "active_guardrail_mutation": false,
+  "active_process_model_mutation": false,
+  "active_requirement_mutation": false,
+  "active_release_state_mutation": false,
+  "live_crawl_performed": false,
+  "devhub_opened": false,
+  "private_artifacts_stored": false,
+  "official_actions_performed": false,
+  "synthetic_inactive_process_model_delta_assembly_rows": [
+    {
+      "row_id": "synthetic-delta-row-guardrail-impact-001",
+      "process_id": "candidate-building-plan-review-process-delta-v1",
+      "permit_type": "building permit with plan review",
+      "process_stage": "document preparation",
+      "inactive_guardrail_bundle_id": "inactive-guardrail-bundle-building-plan-review-v1",
+      "delta_kind": "document_dependency_guardrail_impact",
+      "synthetic_evidence_refs": ["synthetic:inactive-process-model-delta:document-preparation-001"],
+      "affected_predicate_keys": ["has_required_plan_set", "single_pdf_preparation_checked"],
+      "impact_notes": [
+        "Map document-preparation delta to inactive deterministic and reversible draft predicates.",
+        "Keep official upload and submission actions refused until reviewer evidence exists."
+      ]
+    },
+    {
+      "row_id": "synthetic-delta-row-guardrail-impact-002",
+      "process_id": "candidate-building-plan-review-process-delta-v1",
+      "permit_type": "building permit with plan review",
+      "process_stage": "acknowledgement/certification review",
+      "inactive_guardrail_bundle_id": "inactive-guardrail-bundle-building-plan-review-v1",
+      "delta_kind": "certification_checkpoint_guardrail_impact",
+      "synthetic_evidence_refs": ["fixture-source:inactive-process-model-delta:certification-review-002"],
+      "affected_predicate_keys": ["requires_exact_certification_confirmation", "refuse_broad_official_action_request"],
+      "impact_notes": [
+        "Map certification checkpoint delta to exact-confirmation and deontic impacts.",
+        "Agent explanation must identify reviewer hold and offline-only status."
+      ]
+    }
+  ]
+}

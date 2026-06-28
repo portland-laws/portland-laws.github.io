@@ -1,0 +1,83 @@
+{
+  "plan_id": "fixture-public-crawl-batch-plan-20260512",
+  "sources": [
+    {
+      "source_id": "ppd_public_landing",
+      "canonical_url": "https://www.portland.gov/ppd?utm_source=newsletter#overview",
+      "source_type": "public_html",
+      "owning_surface": "ppd_public_website",
+      "allowlist_policy": "allow",
+      "robots_policy": "allow",
+      "crawl_frequency": "daily",
+      "processor_policy": "metadata_and_normalized_text_only",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-08T00:00:00Z",
+      "freshness_status": "seed"
+    },
+    {
+      "source_id": "ppd_devhub_portal_public",
+      "canonical_url": "https://devhub.portlandoregon.gov/",
+      "source_type": "devhub_public",
+      "owning_surface": "devhub_public_portal",
+      "allowlist_policy": "allow",
+      "robots_policy": "allow",
+      "crawl_frequency": "daily",
+      "processor_policy": "metadata_and_normalized_text_only",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-08T00:00:00Z",
+      "freshness_status": "seed"
+    },
+    {
+      "source_id": "ppd_fee_payment_pdf",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download?utm_campaign=permit-help",
+      "source_type": "public_pdf",
+      "owning_surface": "ppd_public_documents",
+      "allowlist_policy": "allow",
+      "robots_policy": "allow",
+      "crawl_frequency": "weekly",
+      "processor_policy": "metadata_and_normalized_text_only",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-08T00:00:00Z",
+      "freshness_status": "seed"
+    },
+    {
+      "source_id": "external_untrusted_vendor",
+      "canonical_url": "https://example.com/ppd-copy",
+      "source_type": "external_reference",
+      "owning_surface": "external_reference",
+      "allowlist_policy": "allow",
+      "robots_policy": "allow",
+      "crawl_frequency": "manual",
+      "processor_policy": "metadata_only",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-08T00:00:00Z",
+      "freshness_status": "seed"
+    },
+    {
+      "source_id": "devhub_authenticated_home",
+      "canonical_url": "https://devhub.portlandoregon.gov/secure/home",
+      "source_type": "devhub_authenticated",
+      "owning_surface": "devhub_authenticated",
+      "allowlist_policy": "allow",
+      "robots_policy": "allow",
+      "crawl_frequency": "never",
+      "processor_policy": "none",
+      "privacy_classification": "private",
+      "last_seen_at": "2026-05-08T00:00:00Z",
+      "freshness_status": "blocked"
+    },
+    {
+      "source_id": "robots_blocked_public_page",
+      "canonical_url": "https://www.portland.gov/ppd/internal-search-results",
+      "source_type": "public_html",
+      "owning_surface": "ppd_public_website",
+      "allowlist_policy": "allow",
+      "robots_policy": "disallow",
+      "crawl_frequency": "manual",
+      "processor_policy": "metadata_only",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-08T00:00:00Z",
+      "freshness_status": "blocked"
+    }
+  ]
+}

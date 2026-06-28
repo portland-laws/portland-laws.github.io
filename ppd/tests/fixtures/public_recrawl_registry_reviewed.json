@@ -1,0 +1,50 @@
+[
+  {
+    "source_id": "ppd-permit-search-public",
+    "url": "https://www.portland.gov/ppd/permits/permit-search",
+    "reviewed": true,
+    "public_source": true,
+    "cadence": "daily",
+    "rate_limit_bucket": "portland-gov-public-low",
+    "robots_policy_evidence": "fixture:robots-reviewed-2026-05-08",
+    "processor_contract": "ppd.contracts.documents:MetadataOnlyPublicRecord",
+    "metadata_output_location": "ppd/output/metadata/public-recrawl/portland-gov/",
+    "dry_run_execution_window": "2026-06-01T09:00:00Z/2026-06-01T09:15:00Z"
+  },
+  {
+    "source_id": "ppd-inspections-public",
+    "url": "https://www.portland.gov/ppd/inspections",
+    "reviewed": true,
+    "public_source": true,
+    "cadence": "daily",
+    "rate_limit_bucket": "portland-gov-public-low",
+    "robots_policy_evidence": "fixture:robots-reviewed-2026-05-08",
+    "processor_contract": "ppd.contracts.documents:MetadataOnlyPublicRecord",
+    "metadata_output_location": "ppd/output/metadata/public-recrawl/portland-gov/",
+    "dry_run_execution_window": "2026-06-01T09:00:00Z/2026-06-01T09:15:00Z"
+  },
+  {
+    "source_id": "ppd-code-guide-public",
+    "url": "https://www.portland.gov/ppd/code-guide",
+    "reviewed": true,
+    "public_source": true,
+    "cadence": "weekly",
+    "rate_limit_bucket": "portland-gov-public-low",
+    "robots_policy_evidence": "fixture:robots-reviewed-2026-05-08",
+    "processor_contract": "ppd.contracts.documents:MetadataOnlyPublicRecord",
+    "metadata_output_location": "ppd/output/metadata/public-recrawl/portland-gov/",
+    "dry_run_execution_window": "2026-06-03T09:00:00Z/2026-06-03T09:15:00Z"
+  },
+  {
+    "source_id": "ppd-unreviewed-example",
+    "url": "https://www.portland.gov/ppd/example",
+    "reviewed": false,
+    "public_source": true,
+    "cadence": "daily",
+    "rate_limit_bucket": "portland-gov-public-low",
+    "robots_policy_evidence": "fixture:not-reviewed",
+    "processor_contract": "ppd.contracts.documents:MetadataOnlyPublicRecord",
+    "metadata_output_location": "ppd/output/metadata/public-recrawl/portland-gov/",
+    "dry_run_execution_window": "2026-06-01T09:00:00Z/2026-06-01T09:15:00Z"
+  }
+]

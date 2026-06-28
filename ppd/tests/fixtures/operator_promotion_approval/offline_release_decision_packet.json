@@ -1,0 +1,28 @@
+{
+  "packet_id": "offline-release-decision-fixture-001",
+  "packet_type": "offline_release_decision_packet",
+  "active_promotion_state": "inactive",
+  "mutates_active_targets": [],
+  "decision_summary": "Offline release decision is eligible for human approval review after fixture validation.",
+  "citations": [
+    "offline-decision:summary",
+    "offline-decision:scope"
+  ],
+  "no_go_carryovers": [
+    {
+      "description": "Do not promote if fixture validation is missing or stale.",
+      "citations": [
+        "offline-decision:no-go-validation"
+      ]
+    }
+  ],
+  "rollback_refs": [
+    {
+      "reference_id": "rollback-offline-decision-001",
+      "summary": "Use the approved offline rollback checklist before any operator promotion.",
+      "citations": [
+        "offline-decision:rollback"
+      ]
+    }
+  ]
+}

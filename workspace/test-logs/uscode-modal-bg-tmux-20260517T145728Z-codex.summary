@@ -1,0 +1,46 @@
+{
+  "codex_claimed_total": 5,
+  "codex_exec_mode": "codex_cli",
+  "codex_execution_count": 5,
+  "codex_execution_failure_count": 1,
+  "codex_packet_count": 5,
+  "codex_patch_count": 4,
+  "codex_program_synthesis_execution_mode": "codex_cli_executor",
+  "codex_worktree_count": 5,
+  "cycles": 5,
+  "elapsed_seconds": 1319.033,
+  "final": true,
+  "finished_at": "2026-05-17T15:19:38+00:00",
+  "latest_queue_counts": {
+    "claimed": 2,
+    "completed": 2,
+    "failed_validation": 90,
+    "pending": 1382
+  },
+  "latest_role_queue_counts": {
+    "autoencoder_sgd": {
+      "failed_validation": 89,
+      "pending": 979
+    },
+    "program_synthesis": {
+      "claimed": 2,
+      "completed": 2,
+      "failed_validation": 1,
+      "pending": 403
+    }
+  },
+  "latest_stop_reason": "signal_2",
+  "log_path": "/home/barberb/portland-laws.github.io/workspace/test-logs/uscode-modal-bg-tmux-20260517T145728Z-codex.jsonl",
+  "loop_role": "codex",
+  "program_synthesis_claimed": 2,
+  "program_synthesis_completed": 2,
+  "program_synthesis_pending": 403,
+  "queue_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-bg-tmux-20260517T145728Z-autoencoder.jsonl",
+  "queue_run_id": "uscode-modal-bg-tmux-20260517T145728Z-autoencoder",
+  "run_id": "uscode-modal-bg-tmux-20260517T145728Z-codex",
+  "started_at": "2026-05-17T14:57:39+00:00",
+  "stopped_by_signal": 2,
+  "updated_at": "2026-05-17T15:19:38+00:00",
+  "work_dir": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-bg-tmux-20260517T145728Z-codex",
+  "worker_id": "codex-program-synthesis-uscode-modal-bg-tmux-20260517T145728Z-codex"
+}

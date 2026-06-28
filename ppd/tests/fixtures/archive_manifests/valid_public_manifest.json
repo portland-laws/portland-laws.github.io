@@ -1,0 +1,18 @@
+{
+  "manifest_id": "manifest-portland-ppd-public-001",
+  "source_id": "source-portland-ppd-public-001",
+  "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+  "requested_url": "https://www.portland.gov/ppd/devhub-faqs",
+  "redirect_chain": [],
+  "http_status": 200,
+  "content_type": "text/html; charset=utf-8",
+  "content_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+  "capture_started_at": "2026-05-14T00:00:00Z",
+  "capture_finished_at": "2026-05-14T00:00:01Z",
+  "processor_name": "ipfs_datasets_py.web_archive",
+  "processor_version": "deterministic-test",
+  "archive_artifact_ref": "metadata-only:test-public-001",
+  "normalized_document_id": "doc-portland-ppd-public-001",
+  "skipped_reason": null,
+  "no_raw_body_persisted": true
+}

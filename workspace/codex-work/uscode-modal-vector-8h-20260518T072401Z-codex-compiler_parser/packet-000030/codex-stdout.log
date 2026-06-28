@@ -1,0 +1,9 @@
+Implemented a deterministic parser improvement for bare U.S.C. section markers and added replay coverage for the three TODO sample IDs.
+
+- Updated [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000030-20260518_105131/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:735) to detect bare reference segments like `§16988.` and merge them with the following heading segment when appropriate, so fallback no longer anchors to an empty/unnamed predicate span.
+- Added parser replay fixtures/tests for `us-code-19-2372a-db684d3dbf8260c1`, `us-code-42-665.-09a84f3d930035b6`, and `us-code-42-16988.-04cba655455e764a` in [test_legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000030-20260518_105131/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py:658).
+- Added equivalent spaCy compiler replay coverage in [test_spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000030-20260518_105131/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py:301).
+
+Validation run:
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py`  
+- Result: `45 passed`

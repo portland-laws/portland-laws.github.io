@@ -1,0 +1,82 @@
+[
+  {
+    "row_kind": "synthetic_stale_readiness_reviewer_disposition",
+    "requirement_id": "REQ-DEVHUB-PUBLIC-ACCOUNT-001",
+    "source_id": "SRC-DEVHUB-SIGNIN-GUIDE",
+    "source_evidence_ids": ["EVID-DEVHUB-SIGNIN-ACCOUNT-001"],
+    "reviewer_disposition": "stale_requires_reextraction",
+    "citation_placeholder_needs": ["refresh account sign-in citation span before updating requirement text"],
+    "extraction_confidence_notes": ["prior extraction confidence was medium because DevHub wording was summarized"],
+    "blocked_stale_source_dependencies": ["source freshness must be reviewed before requirement mutation"],
+    "human_review_routing": {
+      "review_queue": "public_guidance_requirement_review",
+      "reason": "public sign-in guidance changed after the prior extraction fixture",
+      "requires_human_before_requirement_mutation": true
+    },
+    "stale_reason": "public account guidance fixture is stale and requires cited offline review"
+  },
+  {
+    "row_kind": "synthetic_stale_readiness_reviewer_disposition",
+    "requirement_id": "REQ-SINGLE-PDF-002",
+    "source_id": "SRC-SINGLE-PDF-GUIDANCE",
+    "source_evidence_ids": ["EVID-SINGLE-PDF-UPLOAD-002"],
+    "reviewer_disposition": "citation_placeholder_required",
+    "citation_placeholder_needs": ["refresh single PDF process citation span before updating requirement text"],
+    "extraction_confidence_notes": ["prior extraction confidence depends on file-preparation wording"],
+    "blocked_stale_source_dependencies": ["single PDF guidance freshness must be resolved before promotion"],
+    "human_review_routing": {
+      "review_queue": "public_guidance_requirement_review",
+      "reason": "citation placeholder must be filled from a public normalized fixture",
+      "requires_human_before_requirement_mutation": true
+    },
+    "stale_reason": "citation span was intentionally left as an offline placeholder"
+  },
+  {
+    "row_kind": "synthetic_stale_readiness_reviewer_disposition",
+    "requirement_id": "REQ-FEE-PAYMENT-003",
+    "source_id": "SRC-FEE-PAYMENT-GUIDE",
+    "source_evidence_ids": ["EVID-FEE-PAYMENT-GATE-003"],
+    "reviewer_disposition": "blocked_stale_source_dependency",
+    "citation_placeholder_needs": ["refresh fee payment citation span before updating action-gate requirement"],
+    "extraction_confidence_notes": ["prior extraction confidence is low until fee-payment wording is reviewed by a human"],
+    "blocked_stale_source_dependencies": ["fee payment public placeholder has no current verified hash in fixture"],
+    "human_review_routing": {
+      "review_queue": "financial_action_gate_review",
+      "reason": "fee payment guidance is a financial-action gate and requires human review",
+      "requires_human_before_requirement_mutation": true
+    },
+    "stale_reason": "financial workflow guidance must remain blocked until public source freshness is resolved"
+  },
+  {
+    "row_kind": "synthetic_stale_readiness_reviewer_disposition",
+    "requirement_id": "REQ-SOURCELESS-004",
+    "source_id": "SRC-DEVHUB-FAQ",
+    "source_evidence_ids": [],
+    "reviewer_disposition": "stale_requires_reextraction",
+    "citation_placeholder_needs": ["refresh DevHub FAQ citation span before updating requirement text"],
+    "extraction_confidence_notes": ["prior extraction confidence cannot be reused without source evidence"],
+    "blocked_stale_source_dependencies": ["source evidence ID is absent"],
+    "human_review_routing": {
+      "review_queue": "public_guidance_requirement_review",
+      "reason": "row demonstrates source-backed fail-closed behavior",
+      "requires_human_before_requirement_mutation": true
+    },
+    "stale_reason": "synthetic row has no source evidence and must not queue"
+  },
+  {
+    "row_kind": "synthetic_stale_readiness_reviewer_disposition",
+    "requirement_id": "REQ-UNCHANGED-005",
+    "source_id": "SRC-DEVHUB-FAQ",
+    "source_evidence_ids": ["EVID-DEVHUB-FAQ-005"],
+    "reviewer_disposition": "unchanged",
+    "citation_placeholder_needs": ["no citation refresh needed for unchanged fixture row"],
+    "extraction_confidence_notes": ["prior extraction confidence remains unchanged in fixture"],
+    "blocked_stale_source_dependencies": ["no stale dependency is queued for unchanged row"],
+    "human_review_routing": {
+      "review_queue": "public_guidance_requirement_review",
+      "reason": "row demonstrates non-queueable reviewer disposition behavior",
+      "requires_human_before_requirement_mutation": true
+    },
+    "stale_reason": "unchanged disposition should not create a candidate"
+  }
+]

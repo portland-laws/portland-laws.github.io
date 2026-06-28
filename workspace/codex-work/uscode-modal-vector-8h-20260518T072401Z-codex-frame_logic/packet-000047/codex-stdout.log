@@ -1,0 +1,17 @@
+Implemented a deterministic frame-term audit prioritization improvement to keep semantic frame/context terms from being crowded out by structural contextual signals when term caps are hit.
+
+Changes made:
+- Updated contextual term priority handling in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000047-20260518_133851/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py):
+  - Added a new intermediate priority level for structural contextual terms.
+  - Added deterministic structural predicate suffix classification (e.g. `*_count`, `*_match`, `*_pair`, `*_shape`, `*_signature`, etc.).
+  - Applied contextual priority resolution in both triple-based and feature-key-based term extraction.
+  - Kept direct frame ontology terms highest priority.
+  - Kept low-signal contextual tokens (`true`, `false`, `odd`, `even`, `equal`) deprioritized under cap pressure.
+- Added regression tests in [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000047-20260518_133851/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py):
+  - Verifies structural contextual terms are deprioritized vs semantic contextual terms when `max_terms` is exceeded.
+  - Covers both feature-key and triple extraction paths.
+
+Validation run:
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py -q` → `55 passed`
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k 'frame_ontology or frame_decoder_audit or audit_frame_logic_terms' -q` → `7 passed, 85 deselected`
+- `pytest -q ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py -q` → `12 passed`

@@ -1,0 +1,15 @@
+{
+  "action_id": "submit-permit-request",
+  "action_label": "Submit permit request",
+  "action_kind": "consequential_official",
+  "requested_effect": "preview",
+  "surface_id": "devhub-application-review",
+  "source_evidence_ids": [
+    "ppd-devhub-guide-submit-permit-application"
+  ],
+  "facts_complete": true,
+  "documents_complete": true,
+  "writes_official_record": true,
+  "involves_submission": true,
+  "required_confirmation": "Submit permit request to Portland Permitting & Development"
+}

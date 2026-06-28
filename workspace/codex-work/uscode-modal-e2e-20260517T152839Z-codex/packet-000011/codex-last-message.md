@@ -1,0 +1,19 @@
+Implemented a narrow deterministic parser fallback plus a golden regression case for the claimed sample `us-code-42-5668.-a3bbd3be7319f8a1`.
+
+**Changes**
+- Added a U.S.-Code-specific codification fallback rule in [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000011-20260517_163636/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:32) and [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000011-20260517_163636/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:160).
+- The fallback only triggers when:
+  1. citation is U.S. Code text,
+  2. no normal modal cues were found,
+  3. segment text matches codification/reclassification signals.
+- It emits a deterministic `frame` formula with cue `__uscode_codification_fallback__` and rule tag `uscode_codification_transfer_heading_v1` in [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000011-20260517_163636/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:239).
+- Added a golden parser regression test tied to the exact failing sample (42 U.S.C. 5668.) in [test_legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000011-20260517_163636/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py:86).
+
+**Validation**
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py`  
+  Failed before test execution due pre-existing repo bootstrap issue: `__init__.py` uses `__path__` when undefined.
+- `python3 -m py_compile ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py` passed.
+- Direct runtime smoke checks passed:
+  - `us-code-42-5668.-a3bbd3be7319f8a1` now produces `formula_count=1`.
+  - Fallback metadata includes cue `__uscode_codification_fallback__`.
+  - Existing generic text `"This section contains definitions and background."` still yields `formula_count=0` (no broad fallback regression).

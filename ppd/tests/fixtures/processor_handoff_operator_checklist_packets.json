@@ -1,0 +1,54 @@
+{
+  "readiness_packet": {
+    "packet_id": "processor-handoff-readiness-2026-05-28-fixture",
+    "prerequisite_links": [
+      {
+        "source_id": "ppd-bureau-landing",
+        "url": "https://www.portland.gov/ppd"
+      }
+    ],
+    "targets": [
+      {
+        "source_id": "devhub-faqs",
+        "url": "https://www.portland.gov/ppd/devhub-faqs"
+      },
+      {
+        "source_id": "submit-plans-online",
+        "url": "https://www.portland.gov/ppd/get-permit/submit-plans-online"
+      }
+    ],
+    "skipped_targets": [
+      {
+        "source_id": "devhub-private-permit-dashboard",
+        "url": "https://devhub.portlandoregon.gov/permits/private-dashboard",
+        "skipped_reason": "private authenticated account surface; do not include in public processor handoff"
+      },
+      {
+        "source_id": "fee-payment-download",
+        "url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+        "skipped_reason": "direct download target held until metadata-only processor runner confirms no raw body persistence"
+      }
+    ],
+    "attestations": {
+      "no_raw_body_persisted": true,
+      "public_metadata_only": true
+    }
+  },
+  "freshness_review_packet": {
+    "packet_id": "public-source-freshness-review-2026-05-28-fixture",
+    "reviewed_sources": [
+      {
+        "source_id": "devhub-faqs",
+        "url": "https://www.portland.gov/ppd/devhub-faqs",
+        "freshness_status": "fresh",
+        "reviewed_at": "2026-05-28T00:00:00Z"
+      },
+      {
+        "source_id": "submit-plans-online",
+        "url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+        "freshness_status": "fresh",
+        "reviewed_at": "2026-05-28T00:00:00Z"
+      }
+    ]
+  }
+}

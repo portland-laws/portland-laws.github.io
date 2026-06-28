@@ -1,0 +1,14 @@
+{
+  "process_model_impact_references": [],
+  "guardrail_bundle_deltas": [{"entity": "GuardrailBundle", "status": "active", "active": true}],
+  "predicate_deltas": [],
+  "temporal_rule_deltas": [],
+  "reversible_action_handling": [],
+  "exact_confirmation_gates": [],
+  "refused_action_gates": [],
+  "stale_evidence_blocks": [],
+  "explanation_templates": [],
+  "reviewer_holds": [],
+  "rollback_notes": [],
+  "validation_commands": []
+}

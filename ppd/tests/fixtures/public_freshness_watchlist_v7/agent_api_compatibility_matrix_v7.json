@@ -1,0 +1,16 @@
+{
+  "fixture_id": "agent_api_compatibility_matrix_v7",
+  "version": 7,
+  "sources": [
+    {
+      "source_id": "portland_maps_public_permits",
+      "agent_api_compatible": true,
+      "compatibility_notes": "Public fixture path only; no DevHub session or private document access."
+    },
+    {
+      "source_id": "portland_permitting_public_forms",
+      "agent_api_compatible": true,
+      "compatibility_notes": "Public fixture path only; raw artifact download is outside this handoff."
+    }
+  ]
+}

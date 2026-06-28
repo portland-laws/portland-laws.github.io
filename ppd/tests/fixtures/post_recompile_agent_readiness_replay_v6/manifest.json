@@ -1,0 +1,23 @@
+{
+  "replay": "post_recompile_agent_readiness_replay_v6",
+  "version": 6,
+  "fixture_contract": "guardrail recompile reviewer packet v6 plus inactive guardrail staging fixtures only",
+  "fixtures": [
+    {
+      "file": "reviewer_packet_permit_application_v6.json",
+      "kind": "guardrail_recompile_reviewer_packet_v6"
+    },
+    {
+      "file": "reviewer_packet_payment_v6.json",
+      "kind": "guardrail_recompile_reviewer_packet_v6"
+    },
+    {
+      "file": "inactive_guardrail_staging_agent_responses_v6.json",
+      "kind": "inactive_guardrail_staging_agent_responses_v6"
+    }
+  ],
+  "offline_validation_commands": [
+    "python3 -m unittest ppd.tests.test_post_recompile_agent_readiness_replay_v6",
+    "python3 -m ppd.agent_readiness.post_recompile_agent_readiness_replay_v6 --fixtures-only"
+  ]
+}

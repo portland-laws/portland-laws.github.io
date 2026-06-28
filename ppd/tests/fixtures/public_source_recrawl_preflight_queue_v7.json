@@ -1,0 +1,61 @@
+{
+  "schema_version": "public_source_recrawl_preflight_queue_v7",
+  "generated_at": "2026-06-02T00:00:00Z",
+  "fixture_scope": "public PP&D recrawl preflight metadata only; no raw page or document bodies",
+  "entries": [
+    {
+      "source_id": "ppd-online-tools-overview",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "source_type": "public_html",
+      "owning_surface": "public_ppd_website",
+      "title": "Online permitting tools overview",
+      "content_type": "text/html",
+      "allowlist_policy": "allowed_public_portland_gov",
+      "robots_policy": "preflight_allowed_fixture",
+      "processor_policy": "metadata_placeholder_only",
+      "preflight_decision": "handoff_ready",
+      "expected_processor": "ipfs_datasets_py.public_html_archive_processor",
+      "document_type": "public_html"
+    },
+    {
+      "source_id": "ppd-fee-payment-guide-download",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "source_type": "public_pdf",
+      "owning_surface": "public_ppd_website",
+      "title": "How to pay fees guide",
+      "content_type": "application/pdf",
+      "allowlist_policy": "allowed_public_portland_gov",
+      "robots_policy": "preflight_allowed_fixture",
+      "processor_policy": "metadata_placeholder_only",
+      "preflight_decision": "handoff_ready",
+      "expected_processor": "ipfs_datasets_py.public_pdf_archive_processor",
+      "document_type": "public_pdf"
+    },
+    {
+      "source_id": "devhub-private-application-placeholder",
+      "canonical_url": "https://devhub.portlandoregon.gov/Permit/Application",
+      "source_type": "devhub_authenticated",
+      "owning_surface": "devhub_authenticated",
+      "title": "Authenticated DevHub application path",
+      "content_type": "text/html",
+      "allowlist_policy": "blocked_authenticated_surface",
+      "robots_policy": "not_evaluated_authenticated_private_path",
+      "processor_policy": "do_not_handoff_to_public_processor",
+      "preflight_decision": "skipped",
+      "skip_reason": "private_authenticated_devhub_path"
+    },
+    {
+      "source_id": "external-example-skip",
+      "canonical_url": "https://example.com/not-a-portland-source",
+      "source_type": "external_reference",
+      "owning_surface": "external",
+      "title": "Outside allowlist example",
+      "content_type": "text/html",
+      "allowlist_policy": "outside_public_source_allowlist",
+      "robots_policy": "not_evaluated_outside_allowlist",
+      "processor_policy": "do_not_handoff_to_public_processor",
+      "preflight_decision": "skipped",
+      "skip_reason": "outside_allowlist"
+    }
+  ]
+}

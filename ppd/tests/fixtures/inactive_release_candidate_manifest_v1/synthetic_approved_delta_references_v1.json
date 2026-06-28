@@ -1,0 +1,88 @@
+{
+  "packet_type": "ppd.synthetic_approved_delta_references.v1",
+  "manifest_id": "inactive-release-candidate-manifest-20260531-1011-fixture-v1",
+  "source_delta_refs": [
+    {
+      "delta_id": "source-delta-synthetic-approved-devhub-application-guide",
+      "approval_status": "approved_for_inactive_release_candidate_manifest_v1",
+      "source_evidence_ids": [
+        "ev:ppd-fixture:source-devhub-application-guide:sha256:1111111111111111111111111111111111111111111111111111111111111111"
+      ],
+      "summary": "Synthetic approved public source delta reference for DevHub application guidance metadata."
+    }
+  ],
+  "requirement_delta_refs": [
+    {
+      "delta_id": "requirement-delta-synthetic-approved-save-draft-precondition",
+      "approval_status": "approved_for_inactive_release_candidate_manifest_v1",
+      "source_evidence_ids": [
+        "ev:ppd-fixture:requirement-save-draft-precondition:sha256:2222222222222222222222222222222222222222222222222222222222222222"
+      ],
+      "summary": "Synthetic approved requirement delta reference for reversible draft preparation preconditions."
+    }
+  ],
+  "process_delta_refs": [
+    {
+      "delta_id": "process-delta-synthetic-approved-upload-staging-stage",
+      "approval_status": "approved_for_inactive_release_candidate_manifest_v1",
+      "source_evidence_ids": [
+        "ev:ppd-fixture:process-upload-staging-stage:sha256:3333333333333333333333333333333333333333333333333333333333333333"
+      ],
+      "summary": "Synthetic approved process delta reference for inactive upload-staging review stage metadata."
+    }
+  ],
+  "guardrail_delta_refs": [
+    {
+      "delta_id": "guardrail-delta-synthetic-approved-exact-confirmation-gate",
+      "approval_status": "approved_for_inactive_release_candidate_manifest_v1",
+      "source_evidence_ids": [
+        "ev:ppd-fixture:guardrail-exact-confirmation-gate:sha256:4444444444444444444444444444444444444444444444444444444444444444"
+      ],
+      "summary": "Synthetic approved guardrail delta reference requiring manual review before consequential workflow steps."
+    }
+  ],
+  "agent_gap_analysis_delta_refs": [
+    {
+      "delta_id": "agent-gap-delta-synthetic-approved-missing-license-fact",
+      "approval_status": "approved_for_inactive_release_candidate_manifest_v1",
+      "source_evidence_ids": [
+        "ev:ppd-fixture:agent-gap-missing-license-fact:sha256:5555555555555555555555555555555555555555555555555555555555555555"
+      ],
+      "summary": "Synthetic approved agent gap-analysis delta reference for missing contractor-license facts before draft readiness."
+    }
+  ],
+  "migration_notes": [
+    {
+      "note_id": "migration-note-fixture-first-inactive-only",
+      "applies_to_delta_ids": [
+        "source-delta-synthetic-approved-devhub-application-guide",
+        "requirement-delta-synthetic-approved-save-draft-precondition",
+        "process-delta-synthetic-approved-upload-staging-stage",
+        "guardrail-delta-synthetic-approved-exact-confirmation-gate",
+        "agent-gap-delta-synthetic-approved-missing-license-fact"
+      ],
+      "source_evidence_ids": [
+        "ev:ppd-fixture:source-devhub-application-guide:sha256:1111111111111111111111111111111111111111111111111111111111111111",
+        "ev:ppd-fixture:guardrail-exact-confirmation-gate:sha256:4444444444444444444444444444444444444444444444444444444444444444"
+      ],
+      "note": "Keep all referenced deltas inactive and review-only until a separate human release review approves a future activation packet."
+    }
+  ],
+  "rollback_notes": [
+    {
+      "note_id": "rollback-note-discard-inactive-candidate-only",
+      "applies_to_delta_ids": [
+        "source-delta-synthetic-approved-devhub-application-guide",
+        "requirement-delta-synthetic-approved-save-draft-precondition",
+        "process-delta-synthetic-approved-upload-staging-stage",
+        "guardrail-delta-synthetic-approved-exact-confirmation-gate",
+        "agent-gap-delta-synthetic-approved-missing-license-fact"
+      ],
+      "source_evidence_ids": [
+        "ev:ppd-fixture:process-upload-staging-stage:sha256:3333333333333333333333333333333333333333333333333333333333333333",
+        "ev:ppd-fixture:agent-gap-missing-license-fact:sha256:5555555555555555555555555555555555555555555555555555555555555555"
+      ],
+      "note": "Rollback for this packet is limited to disregarding the inactive candidate manifest because no active artifact is changed."
+    }
+  ]
+}

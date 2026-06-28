@@ -1,0 +1,82 @@
+{
+  "fixture_id": "devhub-payment-action-gates-20260514",
+  "description": "Deterministic payment action-gate descriptors with no payment details, credentials, session state, traces, screenshots, or private DevHub output.",
+  "cases": [
+    {
+      "name": "read only fee notice review",
+      "action": {
+        "action_id": "review_fee_notice",
+        "label": "Review fees due",
+        "kind": "read_only",
+        "text": "Fee notice and balance due summary"
+      },
+      "expected_category": "fee_notice_review",
+      "expected_gate": "safe_read_only",
+      "expected_allowed": true
+    },
+    {
+      "name": "open payment surface handoff",
+      "action": {
+        "action_id": "open_payment_page",
+        "label": "Pay fees",
+        "kind": "navigation",
+        "text": "Open payment page"
+      },
+      "expected_category": "open_payment_surface",
+      "expected_gate": "manual_handoff",
+      "expected_allowed": false
+    },
+    {
+      "name": "payment field entry refused",
+      "action": {
+        "action_id": "enter_card_fields",
+        "label": "Enter card information",
+        "kind": "form_fill",
+        "fields": [
+          {"name": "cardNumber", "label": "Credit card number"},
+          {"name": "securityCode", "label": "CVV"},
+          {"name": "expiration", "label": "Expiration"}
+        ]
+      },
+      "expected_category": "payment_detail_entry",
+      "expected_gate": "refused",
+      "expected_allowed": false
+    },
+    {
+      "name": "payment submission refused",
+      "action": {
+        "action_id": "submit_payment",
+        "label": "Submit payment",
+        "kind": "click",
+        "text": "Authorize payment and pay now"
+      },
+      "expected_category": "submit_payment",
+      "expected_gate": "refused",
+      "expected_allowed": false
+    },
+    {
+      "name": "receipt save manual handoff",
+      "action": {
+        "action_id": "download_receipt",
+        "label": "Download receipt",
+        "kind": "download",
+        "text": "Payment receipt"
+      },
+      "expected_category": "save_payment_receipt",
+      "expected_gate": "manual_handoff",
+      "expected_allowed": false
+    },
+    {
+      "name": "workflow completion claim refused",
+      "action": {
+        "action_id": "mark_payment_done",
+        "label": "Mark payment complete",
+        "kind": "state_update",
+        "text": "Payment complete and workflow complete"
+      },
+      "expected_category": "complete_payment_workflow",
+      "expected_gate": "refused",
+      "expected_allowed": false
+    }
+  ]
+}

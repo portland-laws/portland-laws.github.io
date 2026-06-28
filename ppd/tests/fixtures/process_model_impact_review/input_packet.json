@@ -1,0 +1,117 @@
+{
+  "review_id": "impact-review-fixture-001",
+  "generated_at": "2026-05-29T00:00:00Z",
+  "reviewer_owner_fields": {
+    "default_owner": "ppd_process_model_reviewer",
+    "stage_owners": {
+      "document preparation": "document_requirements_reviewer",
+      "upload staging": "devhub_upload_guardrail_reviewer"
+    }
+  },
+  "requirement_rerun_work_queue_packet": {
+    "packet_id": "requirement-rerun-work-queue-fixture-001",
+    "work_items": [
+      {
+        "requirement_id": "REQ-SPP-FILE-001",
+        "stage": "document preparation",
+        "source_citations": [
+          "official-source:spp-file-naming-standards-preparing-pdfs#single-pdf-process"
+        ]
+      },
+      {
+        "requirement_id": "REQ-DEVHUB-UPLOAD-001",
+        "stage": "upload staging",
+        "source_citations": [
+          "official-source:devhub-guide-submit-permit-application#upload-documents"
+        ]
+      }
+    ]
+  },
+  "process_model_update_candidate": {
+    "candidate_id": "process-model-update-candidate-fixture-001",
+    "process_id": "building-permit-plan-review",
+    "permit_type": "building permit with plan review",
+    "affected_processes": [
+      {
+        "process_id": "building-permit-plan-review",
+        "permit_type": "building permit with plan review",
+        "candidate_disposition": "review_only"
+      }
+    ],
+    "active_process_model_changed": false,
+    "prompt_changed": false,
+    "release_state_changed": false,
+    "stage_impacts": [
+      {
+        "stage": "document preparation",
+        "impact_type": "required_document_rule_review",
+        "note": "Candidate requires reviewer confirmation that drawing plans remain represented as one combined PDF while applications, calculations, and supporting material remain separate uploads.",
+        "requirement_ids": ["REQ-SPP-FILE-001"],
+        "source_citations": [
+          "official-source:spp-file-naming-standards-preparing-pdfs#single-pdf-process"
+        ]
+      },
+      {
+        "stage": "upload staging",
+        "impact_type": "consequential_action_boundary_review",
+        "note": "Candidate keeps official attachment and upload actions outside autonomous execution and preserves a reversible staging-only interpretation.",
+        "requirement_ids": ["REQ-DEVHUB-UPLOAD-001"],
+        "source_citations": [
+          "official-source:devhub-guide-submit-permit-application#upload-documents"
+        ]
+      }
+    ],
+    "missing_fact_prompt_implications": [
+      {
+        "fact_key": "plans_combined_into_single_pdf",
+        "prompt_implication": "Ask whether the drawing set has been combined into one PDF before treating document preparation as ready.",
+        "affected_stages": ["document preparation", "upload staging"],
+        "source_citations": [
+          "official-source:spp-file-naming-standards-preparing-pdfs#single-pdf-process"
+        ]
+      },
+      {
+        "fact_key": "supporting_documents_separated_by_type",
+        "prompt_implication": "Ask for confirmation that applications, calculations, and supporting documents are separated from the plan PDF before upload staging.",
+        "affected_stages": ["document preparation", "upload staging"],
+        "source_citations": [
+          "official-source:spp-file-naming-standards-preparing-pdfs#supporting-documents"
+        ]
+      }
+    ],
+    "blocked_action_carryovers": [
+      {
+        "stage": "upload staging",
+        "action": "upload documents to official DevHub record",
+        "reason": "Official upload changes an account-scoped permitting record and requires attended exact confirmation.",
+        "source_citations": [
+          "official-source:devhub-guide-submit-permit-application#upload-documents"
+        ]
+      }
+    ]
+  },
+  "guardrail_recompilation_rehearsal_packet": {
+    "packet_id": "guardrail-recompilation-rehearsal-fixture-001",
+    "guardrail_bundle_id": "guardrail-building-permit-plan-review",
+    "guardrail_bundle_changed": false,
+    "wrote_guardrail_bundle": false,
+    "refused_action_predicates": [
+      {
+        "stage": "acknowledgement/certification review",
+        "action": "certify permit application acknowledgement",
+        "reason": "Certification is a consequential official action that requires user attendance and action-specific confirmation.",
+        "source_citations": [
+          "official-source:devhub-guide-submit-permit-application#acknowledgement"
+        ]
+      },
+      {
+        "stage": "submission",
+        "action": "submit permit request",
+        "reason": "Submission is a consequential official action and remains blocked outside attended confirmation.",
+        "source_citations": [
+          "official-source:devhub-guide-submit-permit-application#submit-application"
+        ]
+      }
+    ]
+  }
+}

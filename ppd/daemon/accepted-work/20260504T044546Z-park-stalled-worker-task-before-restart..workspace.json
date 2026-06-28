@@ -1,0 +1,37 @@
+{
+  "artifact_kind": "ephemeral-workspace",
+  "changed_files": [
+    "ppd/daemon/builtin-repair-status.json",
+    "ppd/daemon/task-board.md"
+  ],
+  "created_at": "2026-05-04T04:45:46.001800Z",
+  "promoted_to_main_worktree": true,
+  "reason": "",
+  "schema_version": 1,
+  "summary": "Park stalled worker task before restart.",
+  "target_task": "Built-in supervisor fallback: daemon process is not running but status is still calling_llm on Task checkbox-296: Add generated blocked-cascade daemon-repair coverage for tranche 13 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates., and 2 recent failure diagnostic(s) already exist for that target; park the task before restart instead of resetting it into another immediate retry",
+  "transport": "ephemeral_worktree",
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ],
+    [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "ppd/tests",
+      "-p",
+      "test_*.py"
+    ],
+    [
+      "bash",
+      "-lc",
+      "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+    ]
+  ],
+  "validation_passed": true
+}

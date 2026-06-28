@@ -1,0 +1,41 @@
+{
+  "fixture_kind": "synthetic_pdf_form",
+  "document_id": "synthetic-ppd-permit-draft",
+  "description": "Synthetic PP&D draft preview fixture. Not an official City of Portland form.",
+  "fields": [
+    {
+      "name": "project_address",
+      "type": "text",
+      "required": true,
+      "draftable": true
+    },
+    {
+      "name": "permit_type",
+      "type": "choice",
+      "required": true,
+      "draftable": true,
+      "options": [
+        "Residential Alteration",
+        "Commercial Alteration"
+      ]
+    },
+    {
+      "name": "owner_occupied",
+      "type": "checkbox",
+      "required": false,
+      "draftable": true
+    },
+    {
+      "name": "work_start_date",
+      "type": "date",
+      "required": false,
+      "draftable": true
+    },
+    {
+      "name": "applicant_signature",
+      "type": "text",
+      "required": false,
+      "draftable": false
+    }
+  ]
+}

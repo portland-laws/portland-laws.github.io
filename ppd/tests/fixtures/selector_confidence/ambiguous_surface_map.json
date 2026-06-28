@@ -1,0 +1,14 @@
+{
+  "labels": [
+    "Project name",
+    "Project Name"
+  ],
+  "headings": [
+    "Permit draft",
+    "Permit Draft"
+  ],
+  "route_evidence": [
+    "/permits/draft",
+    "/permits/draft"
+  ]
+}

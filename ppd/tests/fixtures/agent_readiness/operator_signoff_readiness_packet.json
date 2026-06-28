@@ -1,0 +1,62 @@
+{
+  "packet_type": "ppd.operator_signoff_implementation_readiness.v1",
+  "readiness_status": "implementation_ready",
+  "ledger_links": [
+    {
+      "ledger_id": "ppd-daemon-accepted-work",
+      "ledger_ref": "accepted-work/20260528T222000Z-operator-signoff-readiness.patch"
+    },
+    {
+      "ledger_id": "ppd-validation-ledger",
+      "entry_id": "validation-operator-signoff-20260528T222000Z"
+    }
+  ],
+  "reviewer_signoffs": [
+    {
+      "reviewer_id": "operator-ppd-supervisor",
+      "reviewer_role": "implementation_readiness_reviewer",
+      "signed_at": "2026-05-28T22:20:00Z"
+    }
+  ],
+  "blockers": [
+    {
+      "blocker_id": "raw-crawl-output-boundary",
+      "status": "resolved",
+      "resolution_summary": "Only metadata fixture references are included."
+    }
+  ],
+  "prerequisite_packets": [
+    {
+      "packet_id": "agent-readiness-validation",
+      "version": "2026-05-28.1",
+      "expected_version": "2026-05-28.1",
+      "freshness_status": "current",
+      "is_current": true
+    },
+    {
+      "packet_id": "crawl-promotion-audit",
+      "version": "2026-05-28.2",
+      "expected_version": "2026-05-28.2",
+      "freshness_status": "validated",
+      "is_current": true
+    }
+  ],
+  "artifact_manifest": {
+    "metadata_only": true,
+    "public_fixture_refs": [
+      "ppd/tests/fixtures/agent_readiness/operator_signoff_readiness_packet.json"
+    ],
+    "no_private_or_session_artifacts": true,
+    "no_raw_crawl_output_refs": true
+  },
+  "production_promotion": {
+    "enabled": true,
+    "target": "production",
+    "signed_approval": {
+      "explicit_signed_approval": true,
+      "approval_id": "approval-operator-signoff-20260528T222000Z",
+      "reviewer_id": "operator-ppd-supervisor",
+      "signed_at": "2026-05-28T22:20:00Z"
+    }
+  }
+}

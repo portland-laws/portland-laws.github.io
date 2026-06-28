@@ -1,0 +1,81 @@
+{
+  "case_id": "synthetic-case-single-pdf-001",
+  "process_id": "process-single-pdf-plan-review-fixture",
+  "public_source_packet": {
+    "packet_id": "public-source-packet-single-pdf-001",
+    "fixture_first": true,
+    "live_services_called": false,
+    "official_readiness": false,
+    "status": "committed_source_metadata_ready",
+    "source_evidence_ids": ["ev-ppd-submit-plans-online", "ev-ppd-file-naming"]
+  },
+  "extraction_packet": {
+    "packet_id": "extraction-packet-single-pdf-001",
+    "fixture_first": true,
+    "live_services_called": false,
+    "official_readiness": false,
+    "status": "fixture_extraction_validated",
+    "source_evidence_ids": ["ev-ppd-submit-plans-online"]
+  },
+  "process_model_packet": {
+    "packet_id": "process-model-packet-single-pdf-001",
+    "fixture_first": true,
+    "live_services_called": false,
+    "official_readiness": false,
+    "status": "fixture_process_model_ready",
+    "source_evidence_ids": ["ev-ppd-submit-plans-online", "ev-ppd-devhub-application-guide"]
+  },
+  "guardrail_packet": {
+    "packet_id": "guardrail-packet-single-pdf-001",
+    "fixture_first": true,
+    "live_services_called": false,
+    "official_readiness": false,
+    "status": "fixture_guardrails_compiled",
+    "source_evidence_ids": ["ev-ppd-devhub-application-guide", "ev-ppd-fee-payment"]
+  },
+  "user_gap_packet": {
+    "packet_id": "user-gap-packet-single-pdf-001",
+    "fixture_first": true,
+    "live_services_called": false,
+    "official_readiness": false,
+    "status": "missing_confirmation",
+    "blocking_reasons": ["owner_or_authorized_applicant_confirmation_missing"],
+    "source_evidence_ids": ["ev-ppd-devhub-application-guide"]
+  },
+  "local_preview_packet": {
+    "packet_id": "local-preview-packet-single-pdf-001",
+    "fixture_first": true,
+    "live_services_called": false,
+    "official_readiness": false,
+    "status": "metadata_only_preview_ready",
+    "source_evidence_ids": ["ev-ppd-file-naming"]
+  },
+  "devhub_preflight_packet": {
+    "packet_id": "devhub-preflight-packet-single-pdf-001",
+    "fixture_first": true,
+    "live_services_called": false,
+    "official_readiness": false,
+    "status": "attended_only_for_official_actions",
+    "requires_manual_handoff": true,
+    "requires_exact_confirmation": true,
+    "source_evidence_ids": ["ev-ppd-devhub-application-guide"]
+  },
+  "journal_packet": {
+    "packet_id": "journal-packet-single-pdf-001",
+    "fixture_first": true,
+    "live_services_called": false,
+    "official_readiness": false,
+    "status": "fixture_checkpoints_recorded",
+    "requires_exact_confirmation": true,
+    "source_evidence_ids": ["ev-ppd-devhub-application-guide", "ev-ppd-fee-payment"]
+  },
+  "post_action_packet": {
+    "packet_id": "post-action-packet-single-pdf-001",
+    "fixture_first": true,
+    "live_services_called": false,
+    "official_readiness": false,
+    "status": "no_official_action_taken",
+    "requires_manual_handoff": true,
+    "source_evidence_ids": ["ev-ppd-devhub-application-guide"]
+  }
+}

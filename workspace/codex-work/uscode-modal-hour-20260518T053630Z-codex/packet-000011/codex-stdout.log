@@ -1,0 +1,21 @@
+Implemented a narrow ambiguity-policy update for the compiler’s adaptive family margin path.
+
+**Changes**
+- Updated adaptive ambiguity gating in [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T053630Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T053630Z-codex-packet-000011-20260518_061317/ipfs_datasets_py/logic/modal/compiler.py:595):
+  - Keeps existing lexical/share/compiled-signal behavior.
+  - Adds a signal-free fallback policy for two high-risk pairs:
+    - `temporal -> deontic`
+    - `deontic -> conditional_normative`
+- Added explicit metadata so ambiguity provenance is auditable in [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T053630Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T053630Z-codex-packet-000011-20260518_061317/ipfs_datasets_py/logic/modal/compiler.py:623):
+  - `has_target_signal_evidence`
+  - `signal_free_pair_policy_applied`
+- Added helper method for the pair policy in [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T053630Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T053630Z-codex-packet-000011-20260518_061317/ipfs_datasets_py/logic/modal/compiler.py:700).
+
+- Added focused unit tests for the new fallback behavior:
+  - [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T053630Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T053630Z-codex-packet-000011-20260518_061317/tests/unit_tests/logic/modal/test_modal_codec.py:468)
+  - [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T053630Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T053630Z-codex-packet-000011-20260518_061317/tests/unit_tests/logic/modal/test_modal_codec.py:554)
+
+**Validation**
+- `pytest ... -k signal_free_pair_policy` fails in this repo due an existing test bootstrap issue: `NameError: __path__ is not defined` from root `__init__.py`.
+- `python3 -m py_compile` on edited files passed.
+- Manual `python3` checks of `_adaptive_family_margin_ambiguities` for both target pairs passed.

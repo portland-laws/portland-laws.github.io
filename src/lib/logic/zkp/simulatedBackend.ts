@@ -1,4 +1,5 @@
 import { axiomsCommitmentHex, normalizeProofText, theoremHashHex } from './canonicalization';
+import type { BrowserNativeZkpBackendProtocol } from './backendProtocol';
 
 const SIMULATED_MAGIC = new Uint8Array([0x53, 0x49, 0x4d, 0x5a, 0x4b, 0x50, 0x00, 0x01]);
 
@@ -31,7 +32,10 @@ export class ZKPProof {
     timestamp: number;
     sizeBytes?: number;
   }) {
-    this.proofData = input.proofData instanceof Uint8Array ? new Uint8Array(input.proofData) : new Uint8Array(input.proofData);
+    this.proofData =
+      input.proofData instanceof Uint8Array
+        ? new Uint8Array(input.proofData)
+        : new Uint8Array(input.proofData);
     this.publicInputs = { ...input.publicInputs };
     this.metadata = { ...input.metadata };
     this.timestamp = input.timestamp;
@@ -53,6 +57,22 @@ export class ZKPProof {
   }
 
   static fromDict(data: ZKPProofDict): ZKPProof {
+    if (!data || typeof data !== 'object') {
+      throw new ZKPError('ZKPProof dictionary must be an object');
+    }
+    if (
+      !data.public_inputs ||
+      typeof data.public_inputs !== 'object' ||
+      Array.isArray(data.public_inputs)
+    ) {
+      throw new ZKPError('public_inputs must be an object');
+    }
+    if (!data.metadata || typeof data.metadata !== 'object' || Array.isArray(data.metadata)) {
+      throw new ZKPError('metadata must be an object');
+    }
+    if (!Number.isFinite(data.timestamp)) {
+      throw new ZKPError('timestamp must be a finite number');
+    }
     return new ZKPProof({
       metadata: data.metadata,
       proofData: hexToBytes(data.proof_data),
@@ -69,9 +89,13 @@ export class ZKPProof {
 
 export type SimulatedZKPProof = ZKPProof;
 
-export interface ZKBackend {
+export interface ZKBackend extends BrowserNativeZkpBackendProtocol {
   backendId: string;
-  generateProof(theorem: string, privateAxioms: string[], metadata?: Record<string, unknown>): Promise<ZKPProof>;
+  generateProof(
+    theorem: string,
+    privateAxioms: Array<string>,
+    metadata?: Record<string, unknown>,
+  ): Promise<ZKPProof>;
   verifyProof(proof: ZKPProof): Promise<boolean>;
 }
 
@@ -141,7 +165,12 @@ export class SimulatedBackend implements ZKBackend {
 
     const circuitHash = await this.hashCircuit(theorem, privateAxioms);
     const witness = await this.computeWitness(privateAxioms);
-    const proofData = await this.simulateGroth16Proof(circuitHash, witness, theorem);
+    const proofParts = await this.simulateGroth16Proof(
+      circuitHash,
+      witness,
+      theorem,
+      metadata.seed,
+    );
     const circuitVersion = Number(metadata.circuit_version ?? 1);
     const rulesetId = String(metadata.ruleset_id ?? 'TDFOL_v1');
 
@@ -150,21 +179,29 @@ export class SimulatedBackend implements ZKBackend {
         ...metadata,
         num_axioms: privateAxioms.length,
         proof_system: 'Groth16 (simulated)',
-        simulated_proof_layout: metadata.simulated_proof_layout ?? this.simulatedProofLayoutMetadata(),
+        simulated_proof_layout:
+          metadata.simulated_proof_layout ?? this.simulatedProofLayoutMetadata(),
       },
-      proofData,
+      proofData: proofParts.proofData,
       publicInputs: {
         axioms_commitment: await axiomsCommitmentHex(privateAxioms),
+        circuit_hash: bytesToHex(circuitHash),
         circuit_version: circuitVersion,
+        proof_hash: bytesToHex(proofParts.proofHash),
         ruleset_id: rulesetId,
         theorem,
         theorem_hash: await theoremHashHex(theorem),
+        witness_commitment: bytesToHex(witness),
       },
       timestamp: Date.now() / 1000,
     });
   }
 
-  generate_proof(theorem: string, privateAxioms: string[], metadata: Record<string, unknown> = {}): Promise<ZKPProof> {
+  generate_proof(
+    theorem: string,
+    privateAxioms: string[],
+    metadata: Record<string, unknown> = {},
+  ): Promise<ZKPProof> {
     return this.generateProof(theorem, privateAxioms, metadata);
   }
 
@@ -182,13 +219,22 @@ export class SimulatedBackend implements ZKBackend {
         return false;
       }
 
-      if (proof.proofData.byteLength < 100 || proof.proofData.byteLength > 300) {
+      if (proof.proofData.byteLength !== 160 || proof.sizeBytes !== proof.proofData.byteLength) {
         return false;
       }
-      if (proof.proofData.byteLength >= 8 && bytesToHex(proof.proofData.slice(0, 8)) !== bytesToHex(SIMULATED_MAGIC)) {
+      if (bytesToHex(proof.proofData.slice(0, 8)) !== bytesToHex(SIMULATED_MAGIC)) {
         return false;
       }
-      if (!Object.prototype.hasOwnProperty.call(proof.metadata, 'proof_system')) {
+      if (proof.metadata.proof_system !== 'Groth16 (simulated)') {
+        return false;
+      }
+      if (!this.proofSegmentMatches(proof, 'proof_hash', 8, 40)) {
+        return false;
+      }
+      if (!this.proofSegmentMatches(proof, 'circuit_hash', 40, 72)) {
+        return false;
+      }
+      if (!this.proofSegmentMatches(proof, 'witness_commitment', 72, 104)) {
         return false;
       }
       return true;
@@ -215,12 +261,32 @@ export class SimulatedBackend implements ZKBackend {
     return sha256Bytes(stableJsonStringify(axioms.map(normalizeProofText)));
   }
 
-  private async simulateGroth16Proof(circuitHash: Uint8Array, witness: Uint8Array, theorem: string): Promise<Uint8Array> {
+  private async simulateGroth16Proof(
+    circuitHash: Uint8Array,
+    witness: Uint8Array,
+    theorem: string,
+    seed: unknown,
+  ): Promise<{ proofData: Uint8Array; proofHash: Uint8Array }> {
     const theoremBytes = new TextEncoder().encode(normalizeProofText(theorem));
     const proofHash = await sha256Bytes(concatBytes(circuitHash, witness, theoremBytes));
-    const padding = new Uint8Array(56);
-    globalThis.crypto.getRandomValues(padding);
-    return concatBytes(SIMULATED_MAGIC, proofHash, circuitHash, witness, padding);
+    const padding =
+      typeof seed === 'string' && seed !== ''
+        ? await deterministicBytes(`SIMZKP/1:${seed}:${bytesToHex(proofHash)}`, 56)
+        : randomBytes(56);
+    return {
+      proofData: concatBytes(SIMULATED_MAGIC, proofHash, circuitHash, witness, padding),
+      proofHash,
+    };
+  }
+
+  private proofSegmentMatches(proof: ZKPProof, key: string, start: number, end: number): boolean {
+    const expected = proof.publicInputs[key];
+    if (expected === undefined) {
+      return true;
+    }
+    return (
+      typeof expected === 'string' && expected === bytesToHex(proof.proofData.slice(start, end))
+    );
   }
 }
 
@@ -250,7 +316,9 @@ export function getBackend(backend = 'simulated'): ZKBackend {
   if (normalized === 'groth16' || normalized === 'g16') {
     throw new ZKPError('Groth16 backend is not yet ported to browser-native WASM.');
   }
-  throw new ZKPError(`Unknown ZKP backend: ${JSON.stringify(backend)}. Available backends: 'simulated', 'groth16'`);
+  throw new ZKPError(
+    `Unknown ZKP backend: ${JSON.stringify(backend)}. Available backends: 'simulated', 'groth16'`,
+  );
 }
 
 export function get_backend(backend = 'simulated'): ZKBackend {
@@ -323,6 +391,25 @@ function concatBytes(...chunks: Uint8Array[]): Uint8Array {
     offset += chunk.byteLength;
   }
   return output;
+}
+
+function randomBytes(length: number): Uint8Array {
+  const bytes = new Uint8Array(length);
+  globalThis.crypto.getRandomValues(bytes);
+  return bytes;
+}
+
+async function deterministicBytes(seed: string, length: number): Promise<Uint8Array> {
+  const chunks: Uint8Array[] = [];
+  let totalLength = 0;
+  let counter = 0;
+  while (totalLength < length) {
+    const chunk = await sha256Bytes(`${seed}:${counter}`);
+    chunks.push(chunk);
+    totalLength += chunk.byteLength;
+    counter += 1;
+  }
+  return concatBytes(...chunks).slice(0, length);
 }
 
 function stableJsonStringify(value: unknown): string {

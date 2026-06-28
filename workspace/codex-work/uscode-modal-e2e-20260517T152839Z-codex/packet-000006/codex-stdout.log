@@ -1,0 +1,13 @@
+Implemented a narrow deterministic ambiguity-policy update for `modal.compiler.ambiguity`:
+
+- Added a new explicit ambiguity path when a non-temporal top family outvotes temporal interpretation despite temporal-scope markers: `temporal_scope_family_outvoted`, with explicit `predicted_family`, `target_family`, `family_margin`, and lexical signals metadata in [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000006-20260517_160106/ipfs_datasets_py/logic/modal/compiler.py#L526).
+- Expanded deterministic ambiguity signals by:
+  - broadening condition-scope prefixes (`before`, `upon`)
+  - adding temporal scope token detection
+  - exporting `has_temporal_scope`
+  in [spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000006-20260517_160106/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py#L30) and [spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000006-20260517_160106/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py#L493).
+- Added focused tests for both new behaviors in [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000006-20260517_160106/tests/unit_tests/logic/modal/test_modal_codec.py#L313).
+
+Validation run:
+- `pytest` subset attempt hit a pre-existing repo bootstrap issue (`__init__.py` uses `__path__` when imported as a module), so collection failed before test execution.
+- Ran a direct `python3` smoke check for the two new ambiguity paths; assertions passed (`ok`).

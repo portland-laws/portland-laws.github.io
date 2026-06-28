@@ -7,7 +7,7 @@ describe('FOLConverter', () => {
     const result = converter.convert('All tenants are residents');
 
     expect(result).toMatchObject({
-      status: 'partial',
+      status: 'success',
       success: true,
       confidence: expect.any(Number),
     });
@@ -19,16 +19,22 @@ describe('FOLConverter', () => {
         { name: 'Residents', arity: 1 },
       ],
     });
-    expect(result.warnings).toEqual([
-      'Browser-native NLP extraction is not yet complete; regex extraction was used.',
-    ]);
+    expect(result.warnings).toEqual([]);
     expect(result.metadata).toMatchObject({
       ipfs_enabled: false,
       predicates_count: 2,
       quantifiers_count: 1,
       extracted_predicates: expect.any(Object),
       extracted_relations: [{ type: 'universal', subject: 'tenants', predicate: 'residents' }],
+      browser_native_nlp: true,
+      browser_native_nlp_predicate_candidates: ['tenants', 'residents'],
       browser_native_ml_confidence: true,
+    });
+    expect(result.metadata.browser_native_nlp_extraction).toMatchObject({
+      provider: 'deterministic-token-classifier',
+      serverCallsAllowed: false,
+      pythonSpacy: false,
+      fallback: 'none',
     });
   });
 
@@ -61,7 +67,7 @@ describe('FOLConverter', () => {
     const converter = new FOLConverter();
 
     expect(converter.toFol('If tenant then resident')).toBe('∀x (Tenant(x) → Resident(x))');
-    expect(converter.convert('Some tenants are residents').status).toBe('partial');
+    expect(converter.convert('Some tenants are residents').status).toBe('success');
     expect(converter.convert('Some tenants are residents').status).toBe('cached');
     expect(
       converter.convertBatch(['All humans are mortal', 'If tenant then resident']),

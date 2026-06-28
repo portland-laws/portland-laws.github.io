@@ -1,0 +1,55 @@
+{
+  "packet_id": "fixture-valid-guardrail-consumer-contract-audit",
+  "source_evidence_ids": ["ppd-devhub-faq-2026-05-08"],
+  "contract_gaps": [
+    {
+      "gap_id": "missing-license-fact",
+      "summary": "Contractor license status must be known before standard trade fixture options are treated as available.",
+      "source_evidence_ids": ["ppd-standard-trade-guide-2026-05-08"]
+    }
+  ],
+  "current_claims": [
+    {
+      "claim_id": "devhub-is-online-permitting-system",
+      "status": "current",
+      "freshness_status": "fresh",
+      "source_evidence_ids": ["ppd-online-tools-2026-05-08"]
+    },
+    {
+      "claim_id": "older-page-needs-recheck-before-use",
+      "status": "current",
+      "freshness_status": "stale",
+      "staleness_acknowledged": true,
+      "source_evidence_ids": ["ppd-devhub-guide-2025-01-10"]
+    }
+  ],
+  "blocked_actions": [
+    {
+      "action_id": "submit_application",
+      "classification": "blocked",
+      "manual_handoff_expectation": "User must be present and confirm the exact official submission action."
+    }
+  ],
+  "next_safe_actions": [
+    {
+      "action_id": "draft_application_values",
+      "classification": "draft",
+      "source_evidence_ids": ["ppd-devhub-guide-2026-05-08"]
+    }
+  ],
+  "controls": [
+    {
+      "control_id": "submit_application",
+      "action_type": "submission",
+      "enabled": false,
+      "manual_handoff_expectation": "Final submission remains attended and confirmation gated."
+    }
+  ],
+  "execution_claims": [
+    {
+      "claim_id": "fixture-only",
+      "executor": "deterministic_fixture",
+      "mode": "offline"
+    }
+  ]
+}

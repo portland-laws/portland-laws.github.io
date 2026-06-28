@@ -1,6 +1,14 @@
 import { normalizePredicateName } from '../normalization';
 import { getLogicRuntimeCapabilities } from '../runtimeCapabilities';
 import { predictMLConfidence } from '../mlConfidence';
+import { buildDeonticFormula } from './formulaBuilder';
+
+export {
+  buildDeonticAtomicPredicate,
+  buildDeonticFormula,
+  buildDeonticFormulaParts,
+  formatTemporalPredicate,
+} from './formulaBuilder';
 
 export type DeonticOperator = 'O' | 'P' | 'F';
 export type DeonticNormType = 'obligation' | 'permission' | 'prohibition';
@@ -12,6 +20,9 @@ export interface TemporalConstraint {
 
 export interface NormativeElement {
   text: string;
+  sentenceIndex: number;
+  startOffset: number;
+  endOffset: number;
   normType: DeonticNormType;
   deonticOperator: DeonticOperator;
   matchedIndicator: string;
@@ -29,13 +40,64 @@ export interface DeonticConversionResult {
   formulas: string[];
   confidence: number;
   warnings: string[];
+  metadata: {
+    sourceLength: number;
+    sentenceCount: number;
+    elementCount: number;
+    normCounts: Record<DeonticNormType, number>;
+    browserNative: true;
+    pythonRuntime: false;
+  };
   capabilities: {
+    browserNativeMlConfidence: boolean;
+    localModelArtifactLoading: boolean;
     mlUnavailable: boolean;
     serverCallsAllowed: false;
   };
 }
 
-const INDICATORS: Array<{ normType: DeonticNormType; deonticOperator: DeonticOperator; phrases: string[] }> = [
+export interface DeonticParserOptions {
+  includeObligations?: boolean;
+  includePermissions?: boolean;
+  includeProhibitions?: boolean;
+  minConfidence?: number;
+}
+
+export interface DeonticParsedNorm {
+  text: string;
+  norm_type: DeonticNormType;
+  deontic_operator: DeonticOperator;
+  indicator: string;
+  subjects: string[];
+  actions: string[];
+  conditions: string[];
+  exceptions: string[];
+  temporal_constraints: TemporalConstraint[];
+  confidence: number;
+  sentence_index: number;
+  start_offset: number;
+  end_offset: number;
+}
+
+export interface DeonticParserResult {
+  success: boolean;
+  norms: DeonticParsedNorm[];
+  obligations: DeonticParsedNorm[];
+  permissions: DeonticParsedNorm[];
+  prohibitions: DeonticParsedNorm[];
+  formulas: string[];
+  metadata: DeonticConversionResult['metadata'] & {
+    parser: 'browser-native-deontic-parser';
+    pythonRuntime: false;
+    serverCallsAllowed: false;
+  };
+}
+
+const INDICATORS: Array<{
+  normType: DeonticNormType;
+  deonticOperator: DeonticOperator;
+  phrases: string[];
+}> = [
   {
     normType: 'prohibition',
     deonticOperator: 'F',
@@ -54,17 +116,34 @@ const INDICATORS: Array<{ normType: DeonticNormType; deonticOperator: DeonticOpe
 ];
 
 export function extractNormativeElements(text: string): NormativeElement[] {
-  return text
-    .split(/[.!?]+/)
-    .map((sentence) => sentence.trim())
-    .filter(Boolean)
-    .map(analyzeNormativeSentence)
-    .filter((element): element is NormativeElement => Boolean(element));
+  const elements: NormativeElement[] = [];
+  const sentencePattern = /[^.!?]+/g;
+  let sentenceIndex = 0;
+  for (const match of text.matchAll(sentencePattern)) {
+    const rawSentence = match[0];
+    const trimmed = rawSentence.trim();
+    if (trimmed.length === 0) {
+      continue;
+    }
+    const leadingWhitespace = rawSentence.length - rawSentence.trimStart().length;
+    const startOffset = (match.index ?? 0) + leadingWhitespace;
+    const analyzed = analyzeNormativeSentence(trimmed, {
+      sentenceIndex,
+      startOffset,
+      endOffset: startOffset + trimmed.length,
+    });
+    if (analyzed) {
+      elements.push(analyzed);
+    }
+    sentenceIndex += 1;
+  }
+  return elements;
 }
 
 export function convertLegalTextToDeontic(text: string): DeonticConversionResult {
   const elements = extractNormativeElements(text);
-  const formulas = elements.map(buildDeonticFormula);
+  const formulas = elements.map((element) => buildDeonticFormula(element));
+  const capabilities = getLogicRuntimeCapabilities().deontic;
   const confidence =
     elements.length > 0
       ? elements.reduce((total, element) => total + element.confidence, 0) / elements.length
@@ -77,19 +156,89 @@ export function convertLegalTextToDeontic(text: string): DeonticConversionResult
     confidence,
     warnings: [
       ...(elements.length > 0 ? [] : ['No normative indicators were detected']),
-      ...(getLogicRuntimeCapabilities().deontic.mlUnavailable ? ['Browser-native ML confidence is not yet available.'] : []),
+      ...(!capabilities.browserNativeMlConfidence
+        ? ['Browser-native ML confidence is not yet available.']
+        : []),
     ],
+    metadata: buildConversionMetadata(text, elements),
     capabilities: {
-      mlUnavailable: getLogicRuntimeCapabilities().deontic.mlUnavailable,
+      browserNativeMlConfidence: capabilities.browserNativeMlConfidence,
+      localModelArtifactLoading: capabilities.localModelArtifactLoading,
+      mlUnavailable: false,
       serverCallsAllowed: false,
     },
   };
 }
 
-export function analyzeNormativeSentence(sentence: string): NormativeElement | null {
+export function parseDeonticText(
+  text: string,
+  options: DeonticParserOptions = {},
+): DeonticParserResult {
+  const minConfidence = options.minConfidence ?? 0;
+  const elements = extractNormativeElements(text).filter(
+    (element) => includesNormType(element.normType, options) && element.confidence >= minConfidence,
+  );
+  const norms = elements.map(toParsedNorm);
+  return {
+    success: norms.length > 0,
+    norms,
+    obligations: norms.filter((norm) => norm.norm_type === 'obligation'),
+    permissions: norms.filter((norm) => norm.norm_type === 'permission'),
+    prohibitions: norms.filter((norm) => norm.norm_type === 'prohibition'),
+    formulas: elements.map((element) => buildDeonticFormula(element)),
+    metadata: {
+      ...buildConversionMetadata(text, elements),
+      parser: 'browser-native-deontic-parser',
+      pythonRuntime: false,
+      serverCallsAllowed: false,
+    },
+  };
+}
+
+export function extractObligations(text: string): DeonticParsedNorm[] {
+  return parseDeonticText(text, {
+    includePermissions: false,
+    includeProhibitions: false,
+  }).obligations;
+}
+
+export function extractPermissions(text: string): DeonticParsedNorm[] {
+  return parseDeonticText(text, {
+    includeObligations: false,
+    includeProhibitions: false,
+  }).permissions;
+}
+
+export function extractProhibitions(text: string): DeonticParsedNorm[] {
+  return parseDeonticText(text, {
+    includeObligations: false,
+    includePermissions: false,
+  }).prohibitions;
+}
+
+export const legalTextToDeontic = convertLegalTextToDeontic;
+export const legal_text_to_deontic = convertLegalTextToDeontic;
+export const extract_normative_elements = extractNormativeElements;
+export const parse_deontic_text = parseDeonticText;
+export const parseDeontic = parseDeonticText;
+export const parse_deontic = parseDeonticText;
+export const extract_obligations = extractObligations;
+export const extract_permissions = extractPermissions;
+export const extract_prohibitions = extractProhibitions;
+
+export interface NormativeSentenceLocation {
+  sentenceIndex?: number;
+  startOffset?: number;
+  endOffset?: number;
+}
+
+export function analyzeNormativeSentence(
+  sentence: string,
+  location: NormativeSentenceLocation = {},
+): NormativeElement | null {
   const lower = sentence.toLowerCase();
   for (const indicator of INDICATORS) {
-    const phrase = indicator.phrases.find((candidate) => lower.includes(candidate));
+    const phrase = indicator.phrases.find((candidate) => hasIndicatorPhrase(lower, candidate));
     if (!phrase) {
       continue;
     }
@@ -102,6 +251,9 @@ export function analyzeNormativeSentence(sentence: string): NormativeElement | n
 
     return {
       text: sentence,
+      sentenceIndex: location.sentenceIndex ?? 0,
+      startOffset: location.startOffset ?? 0,
+      endOffset: location.endOffset ?? sentence.length,
       normType: indicator.normType,
       deonticOperator: indicator.deonticOperator,
       matchedIndicator: phrase,
@@ -110,23 +262,76 @@ export function analyzeNormativeSentence(sentence: string): NormativeElement | n
       conditions,
       exceptions,
       temporalConstraints,
-      confidence: scoreConfidence(sentence, subjects, actions, conditions, exceptions, temporalConstraints),
+      confidence: scoreConfidence(
+        sentence,
+        subjects,
+        actions,
+        conditions,
+        exceptions,
+        temporalConstraints,
+      ),
     };
   }
   return null;
 }
 
-export function buildDeonticFormula(element: NormativeElement): string {
-  const operator = element.deonticOperator;
-  const subject = toPascalPredicate(element.subjects[0] || 'Agent');
-  const action = toPascalPredicate(element.actions[0] || 'Action');
+function hasIndicatorPhrase(lowerSentence: string, phrase: string): boolean {
+  const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
+  return new RegExp(`\\b${escaped}\\b`, 'i').test(lowerSentence);
+}
 
-  if (element.conditions.length > 0) {
-    const condition = toPascalPredicate(element.conditions[0]);
-    return `${operator}(∀x (${subject}(x) ∧ ${condition}(x) → ${action}(x)))`;
+function includesNormType(normType: DeonticNormType, options: DeonticParserOptions): boolean {
+  if (normType === 'obligation') {
+    return options.includeObligations ?? true;
   }
+  if (normType === 'permission') {
+    return options.includePermissions ?? true;
+  }
+  return options.includeProhibitions ?? true;
+}
 
-  return `${operator}(∀x (${subject}(x) → ${action}(x)))`;
+function toParsedNorm(element: NormativeElement): DeonticParsedNorm {
+  return {
+    text: element.text,
+    norm_type: element.normType,
+    deontic_operator: element.deonticOperator,
+    indicator: element.matchedIndicator,
+    subjects: element.subjects,
+    actions: element.actions,
+    conditions: element.conditions,
+    exceptions: element.exceptions,
+    temporal_constraints: element.temporalConstraints,
+    confidence: element.confidence,
+    sentence_index: element.sentenceIndex,
+    start_offset: element.startOffset,
+    end_offset: element.endOffset,
+  };
+}
+
+function buildConversionMetadata(
+  text: string,
+  elements: NormativeElement[],
+): DeonticConversionResult['metadata'] {
+  const normCounts: Record<DeonticNormType, number> = {
+    obligation: 0,
+    permission: 0,
+    prohibition: 0,
+  };
+  for (const element of elements) {
+    normCounts[element.normType] += 1;
+  }
+  return {
+    sourceLength: text.length,
+    sentenceCount: countSentences(text),
+    elementCount: elements.length,
+    normCounts,
+    browserNative: true,
+    pythonRuntime: false,
+  };
+}
+
+function countSentences(text: string): number {
+  return [...text.matchAll(/[^.!?]+/g)].filter((match) => match[0].trim().length > 0).length;
 }
 
 export function extractLegalSubjects(sentence: string): string[] {
@@ -152,7 +357,8 @@ export function extractLegalActions(sentence: string): string[] {
   for (const match of lower.matchAll(modal)) {
     actions.add(cleanAction(match[1]));
   }
-  const prohibited = /(?:prohibited from|forbidden to|required to|permitted to|allowed to)\s+(.+?)(?:\s+(?:by|before|after|until|unless|except|when|if)|$)/g;
+  const prohibited =
+    /(?:prohibited from|forbidden to|required to|permitted to|allowed to)\s+(.+?)(?:\s+(?:by|before|after|until|unless|except|when|if)|$)/g;
   for (const match of lower.matchAll(prohibited)) {
     actions.add(cleanAction(match[1]));
   }
@@ -201,7 +407,10 @@ function extractPatternGroups(sentence: string, patterns: RegExp[]): string[] {
 }
 
 function cleanAction(value: string): string {
-  return value.replace(/\s+/g, ' ').replace(/[.;:]$/g, '').trim();
+  return value
+    .replace(/\s+/g, ' ')
+    .replace(/[.;:]$/g, '')
+    .trim();
 }
 
 function toPascalPredicate(value: string): string {
@@ -223,7 +432,11 @@ function scoreConfidence(
   const predicates = {
     nouns: subjects.map(toPascalPredicate),
     verbs: actions.map(toPascalPredicate),
-    adjectives: [...conditions, ...exceptions, ...temporalConstraints.map((constraint) => constraint.value)].map(toPascalPredicate),
+    adjectives: [
+      ...conditions,
+      ...exceptions,
+      ...temporalConstraints.map((constraint) => constraint.value),
+    ].map(toPascalPredicate),
   };
   const quantifiers = subjects.length > 0 ? ['∀'] : [];
   const operators = [
@@ -231,10 +444,25 @@ function scoreConfidence(
     ...(exceptions.length > 0 ? ['¬'] : []),
     ...(actions.length > 1 ? Array(actions.length - 1).fill('∧') : []),
   ];
-  return Math.min(0.95, 0.35 + predictMLConfidence(sentence, buildConfidenceFormula(subjects, actions, conditions), predicates, quantifiers, operators) * 0.6);
+  return Math.min(
+    0.95,
+    0.35 +
+      predictMLConfidence(
+        sentence,
+        buildConfidenceFormula(subjects, actions, conditions),
+        predicates,
+        quantifiers,
+        operators,
+      ) *
+        0.6,
+  );
 }
 
-function buildConfidenceFormula(subjects: string[], actions: string[], conditions: string[]): string {
+function buildConfidenceFormula(
+  subjects: string[],
+  actions: string[],
+  conditions: string[],
+): string {
   const subject = toPascalPredicate(subjects[0] || 'Agent');
   const action = toPascalPredicate(actions[0] || 'Action');
   if (conditions.length > 0) {

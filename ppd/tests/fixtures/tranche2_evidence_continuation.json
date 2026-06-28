@@ -1,0 +1,113 @@
+{
+  "source_evidence_ids": [
+    "evidence:ppd-home:2026-05-01",
+    "evidence:permit-applications-index:2026-05-01",
+    "evidence:devhub-faq:2026-05-01",
+    "evidence:single-pdf-process:2026-05-01"
+  ],
+  "expected_shared_source_evidence_ids": [
+    "evidence:permit-applications-index:2026-05-01"
+  ],
+  "stages": {
+    "whole_site_archival": {
+      "source_evidence_ids": [
+        "evidence:ppd-home:2026-05-01",
+        "evidence:permit-applications-index:2026-05-01"
+      ],
+      "outputs": [
+        {
+          "kind": "archive_manifest",
+          "id": "archive:ppd-public-seed-plan",
+          "document_ids": [
+            "document:permit-applications-index"
+          ],
+          "source_evidence_ids": [
+            "evidence:ppd-home:2026-05-01",
+            "evidence:permit-applications-index:2026-05-01"
+          ]
+        },
+        {
+          "kind": "normalized_document_record",
+          "id": "normalized:permit-applications-index",
+          "document_ids": [
+            "document:permit-applications-index"
+          ],
+          "source_evidence_ids": [
+            "evidence:permit-applications-index:2026-05-01"
+          ]
+        }
+      ]
+    },
+    "playwright_draft_automation": {
+      "input_document_ids": [
+        "document:permit-applications-index"
+      ],
+      "source_evidence_ids": [
+        "evidence:permit-applications-index:2026-05-01",
+        "evidence:devhub-faq:2026-05-01"
+      ],
+      "outputs": [
+        {
+          "kind": "draft_step_schema",
+          "id": "devhub-draft:permit-request-plan-review",
+          "source_evidence_ids": [
+            "evidence:permit-applications-index:2026-05-01",
+            "evidence:devhub-faq:2026-05-01"
+          ],
+          "guarded_actions": [
+            "draft_field_fill",
+            "manual_login_handoff",
+            "pause_before_submission"
+          ]
+        }
+      ]
+    },
+    "pdf_field_filling": {
+      "input_document_ids": [
+        "document:permit-applications-index"
+      ],
+      "source_evidence_ids": [
+        "evidence:permit-applications-index:2026-05-01",
+        "evidence:single-pdf-process:2026-05-01"
+      ],
+      "outputs": [
+        {
+          "kind": "pdf_draft_field_map",
+          "id": "pdf-draft:building-permit-application-preview",
+          "source_evidence_ids": [
+            "evidence:permit-applications-index:2026-05-01",
+            "evidence:single-pdf-process:2026-05-01"
+          ],
+          "preview_only": true
+        }
+      ]
+    },
+    "formal_logic_outputs": {
+      "input_document_ids": [
+        "document:permit-applications-index"
+      ],
+      "source_evidence_ids": [
+        "evidence:permit-applications-index:2026-05-01",
+        "evidence:devhub-faq:2026-05-01",
+        "evidence:single-pdf-process:2026-05-01"
+      ],
+      "outputs": [
+        {
+          "kind": "guardrail_batch",
+          "id": "logic:permit-request-draft-guardrails",
+          "source_evidence_ids": [
+            "evidence:permit-applications-index:2026-05-01",
+            "evidence:devhub-faq:2026-05-01",
+            "evidence:single-pdf-process:2026-05-01"
+          ],
+          "predicates": [
+            "requires_source_evidence",
+            "draft_fill_is_reversible",
+            "exact_confirmation_required_before_official_action",
+            "refuse_payment_submission_without_manual_handoff"
+          ]
+        }
+      ]
+    }
+  }
+}

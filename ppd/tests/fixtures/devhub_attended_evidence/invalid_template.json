@@ -1,0 +1,28 @@
+{
+  "template_kind": "devhub_attended_pilot_evidence_template",
+  "attended_user_login_only": false,
+  "claims_login_was_automated": true,
+  "stores_private_values": true,
+  "redaction_attestation_present": false,
+  "post_action_hardening_notes": "",
+  "stored_browser_artifacts": {
+    "auth_state": true,
+    "browser_trace": true,
+    "cookies": true,
+    "downloaded_documents": true,
+    "har_files": true,
+    "local_storage": true,
+    "raw_authenticated_text": true,
+    "raw_dom": true,
+    "screenshots": true,
+    "session_storage": true,
+    "storage_state": true
+  },
+  "automation_boundaries": {
+    "automated_login": true,
+    "captcha_automation": true,
+    "consequential_control_activation": true,
+    "credential_capture": true,
+    "mfa_automation": true
+  }
+}

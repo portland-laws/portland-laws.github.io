@@ -1,0 +1,27 @@
+{
+  "schema_version": "release-decision-packet-v5",
+  "inactive_promotion_candidate_references": [
+    "candidate:ppd-release-2026-06-01:inactive"
+  ],
+  "go_no_go_recommendation": "no-go until human release owner signs the packet",
+  "unresolved_hold_inventory": [
+    "hold:manual-review-required"
+  ],
+  "source_freshness_clearance_status": "cleared against committed fixture timestamps only",
+  "agent_api_compatibility_caveats": [
+    "Agent API compatibility must be rechecked before any future release window."
+  ],
+  "rollback_owner_placeholders": [
+    "rollback-owner-tbd"
+  ],
+  "post_decision_smoke_replay_plan": [
+    "Replay deterministic smoke fixtures after the decision is recorded."
+  ],
+  "agent_notification_notes": [
+    "Notify agents that this packet is inactive and informational only."
+  ],
+  "validation_commands": [
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ],
+  "dry_run": true
+}

@@ -1,0 +1,14 @@
+Implemented a deterministic high-signal frame-term audit layer without changing existing raw term extraction behavior.
+
+- Added reusable high-signal filtering helpers in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000043-20260518_125805/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:514) and exported them in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000043-20260518_125805/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:996).
+- Extended optimizer metadata to include high-signal term views (`overall`, `from_feature_keys`, `from_triples`) in [flogic_optimizer.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000043-20260518_125805/ipfs_datasets_py/optimizers/logic/flogic_optimizer.py:224).
+- Added codec-level frame audit metadata fields for high-signal terms in [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000043-20260518_125805/ipfs_datasets_py/logic/modal/codec.py:476).
+- Added tests for selector helpers, optimizer metadata, and codec metadata:
+  - [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000043-20260518_125805/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:1064)
+  - [test_flogic_optimizer.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000043-20260518_125805/tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py:365)
+  - [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000043-20260518_125805/tests/unit_tests/logic/modal/test_modal_codec.py:4357)
+
+Tests run:
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py` (52 passed)
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py` (12 passed)
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "frame_ontology_audit"` (3 passed)

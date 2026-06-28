@@ -1,0 +1,49 @@
+[
+  {
+    "source_id": "ppd-devhub-faq",
+    "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+    "content_hash": "sha256:222222",
+    "normalized_document_id": "doc-devhub-faq",
+    "requirement_ids": [
+      "req-corrections-upload",
+      "req-fee-payment"
+    ],
+    "guardrail_bundle_ids": [
+      "guard-devhub-actions",
+      "guard-fee-payment"
+    ],
+    "semantic_signatures": [
+      "action:upload-corrections"
+    ]
+  },
+  {
+    "source_id": "ppd-file-standards",
+    "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+    "content_hash": "sha256:444444",
+    "normalized_document_id": "doc-file-standards",
+    "requirement_ids": [
+      "req-file-naming"
+    ],
+    "guardrail_bundle_ids": [
+      "guard-document-prep"
+    ],
+    "semantic_signatures": [
+      "document:file-name-rule"
+    ]
+  },
+  {
+    "source_id": "ppd-submit-plans-online",
+    "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+    "content_hash": "sha256:333333",
+    "normalized_document_id": "doc-submit-plans-online",
+    "requirement_ids": [
+      "req-single-pdf-process"
+    ],
+    "guardrail_bundle_ids": [
+      "guard-document-prep"
+    ],
+    "semantic_signatures": [
+      "document:single-pdf-process"
+    ]
+  }
+]

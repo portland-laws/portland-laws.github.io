@@ -1,0 +1,47 @@
+{
+  "synthetic_normalized_document_extraction_readiness_rows": [
+    {
+      "synthetic_normalized_document_extraction_readiness_row": true,
+      "row_id": "row-devhub-faq-requirement-001",
+      "readiness_packet_ref": "normalized-extraction-readiness::ppd-devhub-faq",
+      "normalized_document_id_placeholder": "pending-normalized-document-ppd-devhub-faq",
+      "source_id": "ppd-devhub-faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "candidate_requirement_id": "pending-requirement-devhub-account-service-review",
+      "candidate_requirement_type": "precondition",
+      "candidate_requirement_action": "review account-scoped DevHub service availability before drafting online permitting steps",
+      "candidate_requirement_object": "DevHub account service guidance",
+      "affected_process_model_ids": [
+        "process-devhub-account-setup",
+        "process-online-permit-application"
+      ],
+      "affected_guardrail_bundle_ids": [
+        "guardrail-devhub-attended-login",
+        "guardrail-online-permit-application"
+      ],
+      "source_evidence_placeholder_mappings": [
+        {
+          "source_evidence_id_placeholder": "placeholder:evidence-devhub-faq-account-services",
+          "citation_span_placeholder": "placeholder:span-devhub-faq-account-services"
+        }
+      ],
+      "human_review_status": "needs_human_review",
+      "formalization_hold": "hold_until_source_evidence_reviewed",
+      "stale_evidence": true,
+      "conflicting_evidence": false,
+      "rollback_note": "Discard this fixture candidate if reviewer rejects the normalized extraction readiness row or source freshness changes before promotion.",
+      "reviewer_note": "Synthetic readiness row only; reviewer must confirm requirement text and evidence placeholders before any active update.",
+      "live_extraction": false,
+      "live_crawl": false,
+      "document_download": false,
+      "raw_output_stored": false,
+      "devhub_opened": false,
+      "active_requirement_mutation": false,
+      "active_process_model_mutation": false,
+      "active_guardrail_mutation": false,
+      "active_mutation": false,
+      "official_action_completed": false,
+      "legal_or_permitting_guarantee": false
+    }
+  ]
+}

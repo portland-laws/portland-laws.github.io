@@ -1,0 +1,183 @@
+diff --git a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py
+index 70a3fb97..291376fa 100644
+--- a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py
++++ b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py
+@@ -43,6 +43,10 @@ _USCODE_EDITORIAL_STATUS_HINT_RE = re.compile(
+     r"\b(?:repealed|omitted|reserved|vacant|renumbered|terminated)\b",
+     re.IGNORECASE,
+ )
++_USCODE_EDITORIAL_STATUS_PREFIX_RE = re.compile(
++    r"^(?:repealed|omitted|reserved|vacant|renumbered|terminated)\b",
++    re.IGNORECASE,
++)
+ _USCODE_CITATION_SECTION_RE = re.compile(
+     r"\bU\.S\.C\.\s*([0-9A-Za-z.\-]+)\b",
+     re.IGNORECASE,
+@@ -594,7 +598,7 @@ class LegalModalParser:
+             return True
+         if self._starts_with_citation_section_reference(normalized, citation_section):
+             return True
+-        if normalized.startswith("repealed") or normalized.startswith("omitted") or normalized.startswith("reserved"):
++        if _USCODE_EDITORIAL_STATUS_PREFIX_RE.match(normalized):
+             previous = self.normalize_text(previous_segment_text).lower()
+             if self._contains_citation_section_reference(previous, citation_section):
+                 return True
+diff --git a/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py b/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py
+index 22714f81..89fe2e9f 100644
+--- a/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py
++++ b/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py
+@@ -194,6 +194,47 @@ def test_parser_replays_editorial_status_zero_formula_sample_for_18_3008() -> No
+     assert fallback.provenance.citation == "18 U.S.C. 3008"
+ 
+ 
++def test_parser_replays_short_editorial_status_zero_formula_cases() -> None:
++    parser = LegalModalParser()
++    cases = [
++        (
++            "us-code-15-8563-3b998304c368f8a4",
++            "15 U.S.C. 8563",
++            "\u00a78563. Renumbered.",
++            "renumbered",
++        ),
++        (
++            "us-code-2-74b-55df9e8ab40ae3a5",
++            "2 U.S.C. 74b",
++            "\u00a774b. Terminated.",
++            "terminated",
++        ),
++        (
++            "us-code-42-11924.-096a2b2493c6c5cf",
++            "42 U.S.C. 11924.",
++            "\u00a711924. Vacant.",
++            "vacant",
++        ),
++    ]
++
++    for document_id, citation, text, status_keyword in cases:
++        document = parser.parse(
++            text,
++            document_id=document_id,
++            source="us_code",
++            citation=citation,
++        )
++
++        assert document.document_id == document_id
++        assert document.formulas
++        fallback = document.formulas[-1]
++        assert fallback.operator.family == "frame"
++        assert fallback.metadata["cue"] == "__uscode_editorial_status_fallback__"
++        assert fallback.metadata["fallback_rule"] == "uscode_editorial_status_heading_v1"
++        assert fallback.metadata["status_keyword"] == status_keyword
++        assert fallback.provenance.citation == citation
++
++
+ def test_parser_replays_uscode_declarative_statement_zero_formula_cases() -> None:
+     parser = LegalModalParser()
+     cases = [
+diff --git a/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py b/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py
+index 512f7eee..4b4a091a 100644
+--- a/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py
++++ b/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py
+@@ -92,6 +92,48 @@ def test_spacy_compiler_replays_uscode_editorial_status_zero_formula_cases() ->
+         assert fallback.provenance.citation == citation
+ 
+ 
++def test_spacy_compiler_replays_short_editorial_status_zero_formula_cases() -> None:
++    encoder = SpaCyLegalEncoder(model_name="definitely_missing_legal_model")
++    compiler = SpaCyModalIRCompiler()
++    cases = [
++        (
++            "us-code-15-8563-3b998304c368f8a4",
++            "15 U.S.C. 8563",
++            "\u00a78563. Renumbered.",
++            "renumbered",
++        ),
++        (
++            "us-code-2-74b-55df9e8ab40ae3a5",
++            "2 U.S.C. 74b",
++            "\u00a774b. Terminated.",
++            "terminated",
++        ),
++        (
++            "us-code-42-11924.-096a2b2493c6c5cf",
++            "42 U.S.C. 11924.",
++            "\u00a711924. Vacant.",
++            "vacant",
++        ),
++    ]
++
++    for document_id, citation, text, status_keyword in cases:
++        encoding = encoder.encode(
++            text,
++            document_id=document_id,
++            citation=citation,
++            source="us_code",
++        )
++        modal_ir = compiler.compile(encoding)
++
++        assert modal_ir.formulas
++        fallback = modal_ir.formulas[-1]
++        assert fallback.operator.family == "frame"
++        assert fallback.metadata["cue"] == "__uscode_editorial_status_fallback__"
++        assert fallback.metadata["fallback_rule"] == "uscode_editorial_status_heading_v1"
++        assert fallback.metadata["status_keyword"] == status_keyword
++        assert fallback.provenance.citation == citation
++
++
+ def test_spacy_compiler_replays_uscode_declarative_statement_zero_formula_cases() -> None:
+     encoder = SpaCyLegalEncoder(model_name="definitely_missing_legal_model")
+     compiler = SpaCyModalIRCompiler()
+diff --git a/tests/unit_tests/logic/modal/test_modal_codec.py b/tests/unit_tests/logic/modal/test_modal_codec.py
+index 44312826..0a4ea5f6 100644
+--- a/tests/unit_tests/logic/modal/test_modal_codec.py
++++ b/tests/unit_tests/logic/modal/test_modal_codec.py
+@@ -263,6 +263,49 @@ def test_modal_compiler_spacy_replays_editorial_status_zero_formula_samples() ->
+         assert fallback.provenance.citation == citation
+ 
+ 
++def test_modal_compiler_regex_replays_short_editorial_status_zero_formula_samples() -> None:
++    compiler = DeterministicModalCompiler(ModalCompilerConfig(parser_backend="regex"))
++    cases = [
++        (
++            "us-code-15-8563-3b998304c368f8a4",
++            "15 U.S.C. 8563",
++            "\u00a78563. Renumbered.",
++            "renumbered",
++        ),
++        (
++            "us-code-2-74b-55df9e8ab40ae3a5",
++            "2 U.S.C. 74b",
++            "\u00a774b. Terminated.",
++            "terminated",
++        ),
++        (
++            "us-code-42-11924.-096a2b2493c6c5cf",
++            "42 U.S.C. 11924.",
++            "\u00a711924. Vacant.",
++            "vacant",
++        ),
++    ]
++
++    for document_id, citation, text, status_keyword in cases:
++        compiled = compiler.compile(
++            text,
++            document_id=document_id,
++            citation=citation,
++            source="us_code",
++        )
++
++        assert compiled.modal_ir.formulas
++        assert all(
++            ambiguity.ambiguity_type != "missing_modal_formula"
++            for ambiguity in compiled.ambiguities
++        )
++        fallback = compiled.modal_ir.formulas[-1]
++        assert fallback.operator.family == "frame"
++        assert fallback.metadata["fallback_rule"] == "uscode_editorial_status_heading_v1"
++        assert fallback.metadata["status_keyword"] == status_keyword
++        assert fallback.provenance.citation == citation
++
++
+ def test_modal_compiler_surfaces_modal_family_ambiguity_when_cues_overlap() -> None:
+     frame_selector = BM25FrameSelector(
+         (

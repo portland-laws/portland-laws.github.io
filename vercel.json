@@ -1,5 +1,10 @@
 {
   "framework": "vite",
+  "functions": {
+    "api/openrouter/chat/completions.js": {
+      "maxDuration": 30
+    }
+  },
   "rewrites": [
     {
       "source": "/ai-town/:match*",

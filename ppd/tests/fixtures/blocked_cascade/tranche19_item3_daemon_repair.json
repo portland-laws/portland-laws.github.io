@@ -1,0 +1,35 @@
+{
+  "tranche": 19,
+  "item": 3,
+  "blocked_work_id": "ppd-blocked-cascade-tranche19-item3",
+  "events": [
+    {
+      "id": "repair-before-block",
+      "kind": "daemon_repair",
+      "status": "validated",
+      "created_at": "2026-05-08T09:00:00Z",
+      "validates": ["daemon-ledger-integrity"]
+    },
+    {
+      "id": "blocked-work",
+      "kind": "ppd_work",
+      "status": "blocked",
+      "created_at": "2026-05-08T10:00:00Z",
+      "blocked_reason": "daemon-repair-required"
+    },
+    {
+      "id": "repair-after-block-unvalidated",
+      "kind": "daemon_repair",
+      "status": "pending",
+      "created_at": "2026-05-08T10:05:00Z",
+      "validates": []
+    },
+    {
+      "id": "repair-after-block-validated",
+      "kind": "daemon_repair",
+      "status": "validated",
+      "created_at": "2026-05-08T10:10:00Z",
+      "validates": ["blocked-cascade"]
+    }
+  ]
+}

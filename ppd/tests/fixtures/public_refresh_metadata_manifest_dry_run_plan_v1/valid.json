@@ -1,0 +1,110 @@
+{
+  "schema_version": "public-refresh-metadata-manifest-dry-run-plan.v1",
+  "plan_id": "public-refresh-metadata-manifest-dry-run-20260601",
+  "mode": "dry_run_only",
+  "preflight_checklist_references": [
+    "robots and allowlist policy checked before processor handoff",
+    "public-only Portland.gov and DevHub public portal references only",
+    "no raw body persistence and no authenticated DevHub state"
+  ],
+  "source_registry_placeholder_rows": [
+    {
+      "source_id": "ppd-public-tools",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "source_type": "public_html",
+      "owning_surface": "ppd_public_website",
+      "allowlist_policy": "portland-gov-public-only",
+      "robots_policy": "preflight-required",
+      "crawl_frequency": "weekly",
+      "processor_policy": "metadata-manifest-dry-run-only",
+      "privacy_classification": "public",
+      "last_seen_at": "placeholder-not-captured-in-dry-run",
+      "freshness_status": "placeholder-pending-public-refresh"
+    }
+  ],
+  "archive_manifest_placeholder_rows": [
+    {
+      "manifest_id": "archive-placeholder-ppd-public-tools",
+      "source_id": "ppd-public-tools",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "requested_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "redirect_chain": [
+        "placeholder-no-network-request-in-dry-run"
+      ],
+      "http_status": "placeholder-not-requested",
+      "content_type": "text/html; expected public page",
+      "content_hash": "placeholder-hash-not-computed-without-capture",
+      "capture_started_at": "placeholder-not-captured-in-dry-run",
+      "capture_finished_at": "placeholder-not-captured-in-dry-run",
+      "processor_name": "ipfs_datasets_py processor suite placeholder",
+      "processor_version": "placeholder-not-invoked",
+      "archive_artifact_ref": "metadata-only-placeholder",
+      "normalized_document_id": "placeholder-normalized-document-id",
+      "skipped_reason": "dry-run-plan-only",
+      "no_raw_body_persisted": true
+    }
+  ],
+  "redirect_chain_placeholders": [
+    {
+      "source_id": "ppd-public-tools",
+      "policy": "record redirect URLs only after public preflight; dry run stores placeholder"
+    }
+  ],
+  "http_status_placeholders": [
+    {
+      "source_id": "ppd-public-tools",
+      "policy": "record status code only after public preflight; dry run stores placeholder"
+    }
+  ],
+  "content_type_expectations": [
+    {
+      "source_id": "ppd-public-tools",
+      "expected_content_type": "text/html",
+      "on_mismatch": "hold for reviewer before extraction"
+    }
+  ],
+  "content_hash_placeholder_policy": {
+    "algorithm": "sha256",
+    "dry_run_value": "placeholder-hash-not-computed-without-capture",
+    "raw_body_persistence": false,
+    "review_required_before_hash_promotion": true
+  },
+  "freshness_status_impacts": [
+    {
+      "freshness_status": "placeholder-pending-public-refresh",
+      "impact": "require reviewer confirmation before replacing any active metadata manifest"
+    }
+  ],
+  "skipped_reason_handling": [
+    {
+      "skipped_reason": "dry-run-plan-only",
+      "required_action": "do not treat placeholder rows as captured public evidence"
+    }
+  ],
+  "reviewer_holds": [
+    "hold on robots or allowlist uncertainty",
+    "hold on content-type mismatch",
+    "hold before any source or archive manifest promotion"
+  ],
+  "rollback_notes": [
+    "dry run writes no active source registry, archive manifest, current corpus, or public artifact",
+    "discard generated metadata-only placeholder plan if validation fails"
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ],
+  "execution_flags": {
+    "live_crawl": false,
+    "mutate": false,
+    "promote_source_registry": false,
+    "promote_archive_manifest": false,
+    "write_current_corpus": false,
+    "submit": false,
+    "upload": false,
+    "publish": false
+  }
+}

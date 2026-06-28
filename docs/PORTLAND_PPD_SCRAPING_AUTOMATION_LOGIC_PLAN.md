@@ -1,406 +1,567 @@
-# Portland Permitting & Development Scraping, Automation, and Logic Guardrails Plan
+# Portland PP&D Scraping, DevHub Automation, and Formal Guardrails Plan
 
-## Summary
+Status: implementation plan and daemon handoff
+Last verified against official public sources: 2026-05-08
+Primary workspace: `ppd/`
 
-Build a compliant data and automation pipeline for Portland Permitting & Development (PP&D) and Development Hub PDX (DevHub) that can:
+## Purpose
 
-- Crawl public PP&D guidance, forms, permit-type pages, process pages, checklists, FAQs, and linked PDF artifacts.
-- Automate authenticated DevHub workflows with explicit user authorization, controlled credentials, and auditable browser sessions.
-- Convert scraped public guidance and observed authenticated workflow states into structured process models.
-- Extract legal, procedural, and logical requirements into formal guardrails that LLM agents can use when helping users complete permitting processes.
-- Identify only the missing user-specific facts, files, licenses, signatures, payments, acknowledgments, or decisions needed to complete a process.
+Build a compliant, source-grounded implementation for Portland Permitting & Development (PP&D) that can:
 
-The implementation should extend the existing Portland legal corpus direction in this repository: source-grounded retrieval, citations, knowledge graph artifacts, and browser-native/formal logic proof exploration.
+- Archive and normalize the public PP&D website, forms, PDFs, permit guides, and DevHub help material.
+- Support attended DevHub login and browser automation for user-owned sessions.
+- Extract legal, procedural, document, fee, deadline, and UI-action requirements from public sources and observed DevHub workflows.
+- Compile those requirements into formal guardrails that LLM agents can use before asking a user for missing facts or proposing a next action.
+- Let agents autonomously assist with safe read-only and reversible draft work while stopping before consequential actions until the user is present, informed, and has confirmed the exact action.
 
-## Current Source Landscape
+The intended user experience is not "the agent guesses how permitting works." The intended experience is:
 
-Primary public sources to treat as authoritative starting points:
+1. The agent loads a cited PP&D process model.
+2. The agent compares that model to the user's document store and known case facts.
+3. The agent asks only for missing, stale, ambiguous, or conflicting facts.
+4. The agent drafts reversible form/PDF values when the facts are sufficient.
+5. The agent blocks or escalates any official action that requires attendance, certification, upload, submission, scheduling, cancellation, or payment.
 
-- PP&D landing and public guidance under `https://www.portland.gov/ppd`.
-- Public applications and forms, including the "Permits and Inspections Applications" index.
-- DevHub public portal at `https://devhub.portlandoregon.gov`.
-- DevHub sign-in and account guidance on Portland.gov.
-- DevHub FAQ and process guides on Portland.gov.
-- Permit submission, plan upload, correction upload, payment, inspection, extension, and cancellation guidance pages.
-- Linked PDFs, image-guided how-tos, handouts, and checklist documents.
+## Official Source Anchors
 
-Important current facts verified on May 1, 2026:
+The first crawl and source registry should start from these official public entry points:
 
-- DevHub is Portland's online permitting system.
+- PP&D bureau landing page: `https://www.portland.gov/ppd`
+- Online permitting tools overview: `https://www.portland.gov/ppd/how-use-online-permitting-tools`
+- DevHub public portal: `https://devhub.portlandoregon.gov`
+- DevHub FAQ: `https://www.portland.gov/ppd/devhub-faqs`
+- DevHub account and sign-in guide: `https://www.portland.gov/ppd/devhub-sign-guide`
+- Apply for permits: `https://www.portland.gov/ppd/get-permit/apply-permits`
+- DevHub permit application guide: `https://www.portland.gov/ppd/devhub-guide-submit-permit-application`
+- Submit Plans Online / Single PDF Process: `https://www.portland.gov/ppd/get-permit/submit-plans-online`
+- Permit applications and forms index: `https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications`
+- File naming standards and PDF preparation: `https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs`
+- Fee payment guide: `https://www.portland.gov/ppd/documents/how-pay-fees/download`
+- Portland Maps public references where linked from PP&D guidance: `https://www.portlandmaps.com`
+
+Source facts verified on 2026-05-08:
+
+- PP&D manages building permits, land use, inspections, code enforcement, and public works permits.
+- DevHub is the City of Portland's online permitting system.
+- DevHub supports account-based workflows including applying for permits, paying fees, scheduling inspections, uploading corrections, and checking requests.
 - DevHub uses PortlandOregon.gov credentials for authenticated online permitting services.
-- Public DevHub FAQ lists service categories including permit purchase, permit requests requiring plan review, inspection scheduling for online trade permits, correction uploads, and fee payments.
-- DevHub application guidance lists permit request types including building permits, new single-family residence and detached ADU permits, solar permits, FCC wireless applications, demolition permits, trade permits, trade permits with plan review, sign permits, and Urban Forestry permits.
-- Public guidance says some projects use a Single PDF Process, where drawing plans are one searchable PDF and applications/calculations/supporting documents are separate PDFs.
+- Official guidance distinguishes permit requests requiring plan review from standard trade permits that may be purchased through DevHub.
+- The DevHub permit application guide lists building, new single-family residence and detached ADU, solar, FCC wireless, demolition, trade, trade-with-plan-review, sign, and Urban Forestry request types.
+- Permit applications can include dynamic questions, save-for-later behavior, required uploads, acknowledgement/certification, and post-submission status tracking.
+- Some permit types must be submitted by email or other paths, so DevHub cannot be assumed to cover every permit.
+- Single PDF guidance requires drawing plans together in one PDF, with applications, calculations, and other supporting documents uploaded as separate PDFs.
+- Fee payment is a financial workflow and includes payment detail entry and a final submit-payment action. These actions require separate guardrails.
 
-## Guiding Principles
+Verification notes from official pages:
 
-- Compliance first: respect robots directives, published terms, rate limits, access controls, copyright constraints, and public-record/privacy boundaries.
-- Public crawl before logged-in automation: extract as much as possible from public Portland.gov pages, PDFs, forms, and DevHub help content before touching authenticated workflows.
-- Human authorization for user accounts: never log in, submit, pay, sign, certify, cancel, or upload on behalf of a user unless that action is explicitly authorized and the action is recorded.
-- No bypassing controls: do not evade CAPTCHA, MFA, bot protections, paywalls, rate limits, access restrictions, or account boundaries.
-- Preserve provenance: every extracted rule, checklist item, process state, and formal guardrail must point back to source URLs, document versions, captured timestamps, and page/PDF anchors when available.
-- Separate legal requirements from operational UI behavior: code/legal obligations, submittal requirements, file-format rules, and DevHub click paths are related but not the same artifact.
-- Fail closed: an agent should ask for clarification or route to a human when requirements conflict, evidence is stale, a workflow changes, or an irreversible action is about to occur.
+- The PP&D landing page identifies PP&D's scope and links first-party entry points for permit need checks, building permit guidance, permit applications, status checks, fee payment, inspections, codes, and related PP&D programs.
+- The online permitting tools page identifies DevHub as the City of Portland's online permitting system and links step-by-step guides for permit requests, standard trade permits, tree permits, solar permits, fee payment, inspection scheduling, and account/sign-in workflows.
+- The DevHub account/sign-in guide states that a DevHub user account with PortlandOregon.gov credentials is required for online permitting services, and its steps include going to DevHub, selecting Sign In/Register, and using the PortlandOregon.gov sign-in flow.
+- The DevHub FAQ lists account-scoped services including purchasing standard permits not requiring plan review, submitting permit requests requiring plan review, scheduling trade-permit inspections, uploading corrections, and paying fees.
+- The standard trade permit guide notes that contractor license data on the DevHub profile can affect available fixture options, so agent gap analysis must check license-related facts before assuming a draft is ready.
+- The upload-corrections guide treats correction upload as an authenticated DevHub workflow with permit/Application number or IVR lookup and review-group status checks, so uploads remain consequential and exact-confirmation gated.
 
-## Target Architecture
+## Non-Negotiable Boundaries
 
-```text
-Public source discovery
-  -> ipfs_datasets_py processor archival suite
-  -> crawler frontier
-  -> page/PDF/form/archive extractor
-  -> normalized document store
-  -> citation and version index
-  -> process/requirement extraction
-  -> formal logic guardrails
-  -> agent planning and validation
-
-Authenticated DevHub automation
-  -> Playwright user-approved browser session
-  -> state and form schema recorder
-  -> guarded form-drafting scaffold
-  -> account-scoped artifact store
-  -> process-state model
-  -> missing-information detector
-  -> guarded action executor
-```
+- Respect robots directives, allowlists, terms, authentication boundaries, rate limits, copyright constraints, and privacy limits.
+- Do not bypass MFA, CAPTCHA, bot defenses, access controls, paywalls, account boundaries, or rate limits.
+- Do not store credentials, session state, screenshots, traces, HAR files, payment details, private uploads, local private file paths, or raw authenticated page values in committed artifacts.
+- Do not automate account creation, password recovery, MFA enrollment, CAPTCHA, payment-detail entry, or final payment execution.
+- Do not upload, submit, certify, cancel, schedule inspections, or make official changes without explicit user attendance and action-specific confirmation.
+- Do not mark a workflow step complete merely because Playwright clicked or filled something. Completion requires post-action review, source-backed evidence, and user-visible outcome confirmation.
+- Public crawls may store metadata manifests, normalized public text, checksums, and citations. Raw body persistence must be explicitly justified and kept out of git.
+- Authenticated DevHub automation is account-scoped user assistance, not bulk scraping of private data.
 
 ## Repository Boundary
 
-All PP&D implementation work should live under a top-level `ppd/` directory. The existing Portland legal corpus, browser logic port, and `ipfs_datasets_py` daemon artifacts should remain reusable references, not active write targets for this project.
+All implementation should live in `ppd/` unless a small root-level integration hook is explicitly required.
 
-The PP&D crawler and archive layer should reuse the existing website archival and processor suite in the `ipfs_datasets_py` submodule as a read-only dependency. The relevant submodule capabilities live under `ipfs_datasets_py/ipfs_datasets_py/processors/`, including:
+Use the existing `ipfs_datasets_py` submodule as a dependency, especially its processor and web archival capabilities. PP&D code should wrap those processors through local policy adapters rather than rewriting archival, WARC, PDF, GraphRAG, serialization, or dataset tooling.
 
-- `web_archiving/` for web archive capture, archive utilities, and simple crawl primitives.
-- `legal_scrapers/parallel_web_archiver.py`, `legal_scrapers/url_archive_cache.py`, and related legal/web archive helpers.
-- `adapters/web_archive_adapter.py` and `adapters/specialized_scraper_adapter.py` for processor integration boundaries.
-- `advanced_graphrag_website_processor.py`, `website_graphrag_processor.py`, and GraphRAG processors for archive-to-retrieval and archive-to-knowledge-graph workflows.
-- PDF, multimedia, file-conversion, batch, and serialization processors that can normalize linked public documents after the archive layer captures them.
+Allowed write areas:
 
-PP&D code should wrap these processors through a PP&D-local adapter contract rather than forking or rewriting the processor suite. The adapter should preserve PP&D allowlist, robots, no-persist, and redaction policy decisions before invoking any archival processor.
+- `docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md`
+- `ppd/`
+- future root-level config only if needed to run PP&D validation
 
-The only planned exceptions are:
-
-- `docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md`: this plan.
-- future root-level package or CI wiring only when needed to invoke `ppd/` commands from the repository root.
-- read-only imports from existing TypeScript logic modules after an explicit compatibility layer is added.
-
-No PP&D daemon run should write into:
+Disallowed default write areas:
 
 - `src/lib/logic/`
 - `public/corpus/portland-or/current/`
 - `ipfs_datasets_py/.daemon/`
-- existing TypeScript-port daemon ledgers.
+- private DevHub/session/browser artifacts
+- raw downloaded public or private data unless ignored and explicitly part of a local run
 
-## PP&D Directory Layout
+## Target Architecture
+
+```text
+Official public source seeds
+  -> PP&D allowlist / robots / policy preflight
+  -> ipfs_datasets_py processor archival suite
+  -> archive manifests and normalized document records
+  -> HTML / PDF / form extraction
+  -> source index and source freshness monitor
+  -> requirement extraction
+  -> permit process models
+  -> formal guardrail compiler
+  -> agent-facing missing-information and action-validation APIs
+
+Attended DevHub browser session
+  -> manual login handoff
+  -> Playwright state recorder
+  -> redacted form and action manifests
+  -> reversible draft-fill executor
+  -> exact-confirmation checkpoints
+  -> attended worker journal
+  -> post-action hardening review
+```
+
+## PP&D Package Layout
+
+The current implementation should align with the Python-first `ppd/` package already present in this repository:
 
 ```text
 ppd/
-  README.md
-  daemon/
-    ppd_daemon.ts
-    task-board.md
-    accepted-work/
-    failed-patches/
-    status.json
-    progress.json
-  crawler/
-    seeds.ts
-    allowlist.ts
-    robots.ts
-    fetcher.ts
-    processorArchiveAdapter.ts
-    extractHtml.ts
-    extractPdf.ts
-  devhub/
-    session.ts
-    playwrightSession.ts
-    recorder.ts
-    formDraftingScaffold.ts
-    actionClassifier.ts
-    selectors.ts
-  extraction/
-    processExtractor.ts
-    requirementExtractor.ts
-    sourceDiff.ts
-  logic/
-    predicates.ts
-    deonticRules.ts
-    guardrailCompiler.ts
-    supportMap.ts
-  data/
-    raw/
-    normalized/
-    private/
-    manifests/
-  tests/
+  contracts/       source, process, archive, PDF, DevHub, and requirement contracts
+  crawler/         public crawl frontier, live dry-run, processor handoff
+  daemon/          task board, supervisor, deterministic fallback, operations
+  devhub/          Playwright, attended worker, action classification, guardrails
+  extraction/      public HTML/PDF requirement extraction and freshness reports
+  logic/           guardrail compiler and process dependency graph
+  pdf/             local PDF draft-fill utilities
+  platform/        side-effect-free platform capability contracts
+  processor_suite/ processor integration plans
+  surfaces/        surface registry and action policy
+  tests/           committed fixtures and validation tests
 ```
 
-`ppd/.gitignore` should keep private DevHub artifacts, live crawl output, session state, traces, daemon status files, and failed patches out of version control. Curated public fixtures can still be committed under `ppd/tests/` when they are redacted and small.
+## Core Data Products
 
-## Daemon Reuse Plan
+### SourceRegistry
 
-Reuse the prior TypeScript-port daemon pattern, but fork the operating model into a PP&D-specific daemon instead of sharing the existing daemon state.
+Fields:
 
-Reusable patterns:
+- `source_id`
+- `canonical_url`
+- `source_type`: public_html, public_pdf, public_form, devhub_public, devhub_authenticated, external_reference
+- `owning_surface`
+- `allowlist_policy`
+- `robots_policy`
+- `crawl_frequency`
+- `processor_policy`
+- `privacy_classification`
+- `last_seen_at`
+- `freshness_status`
 
-- Markdown task board as the controlling backlog.
-- One narrow task per daemon cycle.
-- Validation before accepting changes.
-- Append-only accepted-work ledger.
-- Failed patch capture with failure kind.
-- Status and progress JSON files for long-running operation.
-- Heartbeat while waiting on model, browser, crawler, or validation steps.
-- Rollback-on-validation-failure behavior.
-- Explicit blocked-task handling rather than spinning on the same failure.
+### ArchiveManifest
 
-PP&D-specific differences:
+Fields:
 
-- The task board lives in `ppd/daemon/task-board.md`, not in the TypeScript logic port plan.
-- Accepted artifacts live in `ppd/daemon/accepted-work/`.
-- Failed patches live in `ppd/daemon/failed-patches/`.
-- Status and progress files live in `ppd/daemon/`.
-- The daemon allowlist initially permits edits only under `ppd/` and this PP&D plan document.
-- The validation command set is PP&D-specific:
-  - TypeScript typecheck for `ppd/` code when added.
-  - crawler dry-run against a tiny public seed set.
-  - extraction fixture tests.
-  - DevHub recorder tests using mocked or manually captured fixtures only.
-  - guardrail compiler tests.
-- Authenticated DevHub automation is never run unattended by the daemon unless a user-owned session has been explicitly authorized for that cycle.
+- `manifest_id`
+- `source_id`
+- `canonical_url`
+- `requested_url`
+- `redirect_chain`
+- `http_status`
+- `content_type`
+- `content_hash`
+- `capture_started_at`
+- `capture_finished_at`
+- `processor_name`
+- `processor_version`
+- `archive_artifact_ref`
+- `normalized_document_id`
+- `skipped_reason`
+- `no_raw_body_persisted`
 
-The first PP&D daemon milestone should be documentation-only and fixture-only:
+### DocumentRecord
 
-1. Create `ppd/daemon/task-board.md`.
-2. Add a small seed manifest for public PP&D pages.
-3. Add extraction fixtures from public HTML/PDF samples.
-4. Add validation commands that operate only on fixtures.
-5. Only then add live public crawl dry-runs.
+Fields:
 
-## Data Stores
+- `document_id`
+- `source_id`
+- `title`
+- `document_type`
+- `language`
+- `sections`
+- `tables`
+- `links`
+- `pdf_pages`
+- `form_fields`
+- `citation_spans`
+- `content_hash`
+- `extraction_confidence`
 
-- `processor_archive_manifests`: PP&D-local manifests that reference `ipfs_datasets_py` processor/archive outputs by content hash, source URL, canonical URL, capture timestamp, processor name/version, and policy decision. These manifests should not contain raw response bodies.
-- `raw_public_documents`: immutable HTML, PDF, image-alt text, downloaded form metadata, headers, crawl timestamp, checksum, and source URL, preferably captured through the `ipfs_datasets_py` processor archival suite and represented in PP&D through manifests and normalized fixtures.
-- `normalized_documents`: markdown/text extraction, sections, tables, links, page numbers, form fields, and document type.
-- `source_index`: canonical URL, redirects, title, bureau, page type, last-seen timestamp, etag/last-modified when present, content hash, and crawl status.
-- `permit_processes`: permit type, scope, eligibility, required inputs, required documents, fees, review stages, correction stages, inspections, expiration/reactivation/cancellation/refund paths.
-- `devhub_workflow_snapshots`: authenticated screen states, labels, fields, validation messages, options, dependencies, and navigation edges, with private user values redacted by default.
-- `formal_requirements`: normalized obligations, prohibitions, permissions, preconditions, exceptions, deadlines, temporal constraints, and citation links.
-- `agent_guardrails`: executable checks that gate LLM-agent actions, prompts, and missing-information requests.
-- `user_case_state`: account-scoped project facts, uploaded-file inventory, draft/submitted status, payments, messages, checksheets, and outstanding tasks.
+### RequirementNode
 
-## Public Crawling Plan
-
-### Phase 1: Discovery
-
-- Seed the crawler with:
-  - `https://www.portland.gov/ppd`
-  - PP&D residential permitting pages.
-  - PP&D commercial permitting pages.
-  - PP&D applications/forms/handouts pages.
-  - DevHub FAQ and quick guides.
-  - DevHub public landing page.
-  - Portland Maps permit/case search references where relevant.
-- Discover links using structured HTML parsing.
-- Track content type: HTML, PDF, image, downloadable document, external site, mailto, phone, and portal action.
-- Keep a domain allowlist initially limited to:
-  - `www.portland.gov`
-  - `devhub.portlandoregon.gov`
-  - `www.portlandoregon.gov`
-  - `www.portlandmaps.com` only for public permit/case/property references.
-- Store skipped URLs with reason codes.
-- Route archival capture through a PP&D adapter over `ipfs_datasets_py/ipfs_datasets_py/processors` once a URL has passed allowlist, robots, timeout, content-type, and no-persist preflight.
-- Treat PP&D-native crawler code as policy and orchestration glue. Do not duplicate robust archive, processor, GraphRAG, PDF, or serialization functionality that already exists in the submodule.
-
-### Phase 2: Extraction
-
-- HTML:
-  - Extract title, breadcrumbs, headings, body text, tables, ordered steps, callouts, contact details, links, downloadable documents, modified dates if exposed, and image alt/caption text.
-  - Preserve heading hierarchy and list ordering because process pages encode requirements through sequence.
-- PDFs:
-  - Extract text with page numbers.
-  - Extract form fields when PDFs are fillable.
-  - OCR only when text extraction fails.
-  - Detect checkboxes, required-data labels, signature blocks, fee tables, and document expiration language.
-- Images:
-  - Prefer alt text and captions first.
-  - Use OCR only for instructional screenshots when legally and technically appropriate.
-- Forms:
-  - Identify required fields, enumerated options, conditional sections, signatures, attestations, and instructions.
-
-### Phase 3: Change Monitoring
-
-- Use content hashes and HTTP caching headers when available.
-- Recrawl high-change pages daily or weekly:
-  - DevHub FAQ and how-to guides.
-  - Permit application pages.
-  - fee/payment pages.
-  - temporary exemption/suspension pages.
-- Recrawl low-change PDFs monthly unless linked page changed.
-- Generate change reports:
-  - new/removed permit types.
-  - changed submittal requirements.
-  - changed deadlines or expiration rules.
-  - changed fees/payment instructions.
-  - changed authenticated workflow guidance.
-
-## Authenticated DevHub Automation Plan
-
-### Scope
-
-Authenticated automation should support account-scoped user assistance, not bulk scraping of private data.
-
-Initial supported actions:
-
-- Sign in with explicit user-provided credentials or delegated browser session.
-- Capture available DevHub navigation and workflow states for the signed-in user.
-- Resume saved drafts.
-- Inspect "My Permits & Requests" state.
-- Identify missing required fields and files before submission.
-- Prepare uploads and form entries for user review.
-- Stop before irreversible actions unless the user has explicitly approved that exact action.
-
-Later supported actions:
-
-- Submit an application after final user confirmation.
-- Upload corrections after user confirmation.
-- Schedule inspections where permitted.
-- Pay fees only with explicit, high-friction confirmation and payment-specific safeguards.
-
-### Session Strategy
-
-- Use Playwright browser automation for DevHub because workflow state is dynamic and authenticated.
-- Store authentication state separately from scraped public data.
-- Prefer short-lived encrypted session storage over storing credentials.
-- Support a "bring your own browser" mode where the user logs in manually and automation attaches only after authentication.
-- Mask or redact PII and project-sensitive values in logs, screenshots, traces, and fixtures.
-- Record selectors semantically:
-  - accessible name.
-  - label text.
-  - role.
-  - nearby heading.
-  - stable URL/state.
-  - fallback CSS/XPath only as a last resort.
-
-### Playwright Form-Drafting Scaffold
-
-Future AI agents should use Playwright only inside a guarded drafting workflow:
-
-- Start from a user-approved browser session. The preferred mode is manual login, then attach/continue after the user is authenticated.
-- Read workflow state, labels, accessible names, validation messages, upload controls, and visible options before proposing any field changes.
-- Draft reversible field entries only when the missing-information detector has source-backed user facts or the user has supplied values in the current interaction.
-- Keep field-value fixtures redacted. Test Playwright code against mocked DevHub pages or synthetic fixtures, not real user account pages.
-- Support dry-run and "preview changes" modes that show planned field edits before interacting with a page.
-- Stop before official upload, certification, submission, payment, cancellation, inspection scheduling, or any action classified as consequential/financial unless the user explicitly confirms the exact action in that session.
-- Never automate CAPTCHA, MFA, account creation, password recovery, payment entry, or bypass controls.
-- Record an audit event for every proposed and executed browser action, including the selector basis, process requirement, user confirmation state, and whether the action was read-only, draft-edit, consequential, or financial.
-
-### Login Workflow
-
-- Navigate to DevHub public portal.
-- Follow the official Sign In/Register path to PortlandOregon.gov authentication.
-- Allow manual MFA/CAPTCHA/user-verification steps if presented.
-- Confirm successful session by detecting signed-in DevHub home, account menu, or user-specific navigation.
-- Do not automate password recovery, MFA enrollment, or account creation beyond documenting the user-visible steps unless separately authorized.
-
-### Workflow Recorder
-
-For each authenticated DevHub workflow, record:
-
-- Page/state identifier.
-- URL and redirect chain.
-- Available actions.
-- Form fields, labels, descriptions, validation messages, and required markers.
-- Select/dropdown options.
-- Conditional questions and trigger dependencies.
-- Save/continue/back/submit button states.
-- Timeout behavior and save-for-later behavior.
-- Upload controls, accepted file types, file-size hints, and file naming rules.
-- Acknowledgment/certification text, stored as citation-backed legal/action gates.
-
-### Guarded Action Executor
-
-Before any action, the executor must classify it:
-
-- Safe read-only: navigate, inspect, download own documents, summarize status.
-- Reversible draft edit: fill field, save draft, attach file before final submission.
-- Potentially consequential: submit application, upload official correction, schedule inspection, cancel request, certify statement.
-- Financial: pay fees or enter payment details.
-
-Potentially consequential and financial actions require:
-
-- explicit user instruction for that exact action.
-- a summarized action preview.
-- source-backed explanation of the consequence.
-- confirmation checkpoint.
-- durable audit event.
-
-## Process Model
-
-Each PP&D process should compile into a normalized process graph:
-
-```text
-Process
-  id
-  permit_type
-  authority_sources[]
-  eligibility_rules[]
-  required_user_facts[]
-  required_documents[]
-  file_rules[]
-  fees[]
-  stages[]
-  deadlines[]
-  exceptions[]
-  external_dependencies[]
-  irreversible_actions[]
-```
-
-Stages should include:
-
-- pre-application research.
-- account setup.
-- property lookup.
-- permit/request type selection.
-- eligibility screening.
-- document preparation.
-- application data entry.
-- upload.
-- acknowledgment/certification.
-- submission.
-- prescreen/intake.
-- fee payment.
-- plan review.
-- corrections/checksheets.
-- approval/issuance.
-- inspections.
-- closeout, cancellation, expiration, extension, or reactivation.
-
-## Requirement Extraction
-
-Extract requirements at four levels:
-
-- Legal requirements: code-based obligations, prohibitions, permissions, exceptions, deadlines, and authority.
-- Submittal requirements: forms, plans, calculations, reports, signatures, licenses, property data, project descriptions, and file standards.
-- Workflow requirements: DevHub account, field completion, save behavior, upload order, correction upload path, and status tracking.
-- Agent-operation requirements: when to ask the user, when to refuse, when to escalate to PP&D, and when to stop for confirmation.
-
-Each requirement should include:
+Fields:
 
 - `requirement_id`
-- `type`: obligation, prohibition, permission, precondition, exception, deadline, dependency, action_gate
-- `subject`: applicant, property owner, contractor, permit technician, reviewer, agent, system
+- `source_evidence_ids`
+- `requirement_type`: obligation, prohibition, permission, precondition, exception, deadline, fee_trigger, license_requirement, document_requirement, action_gate
+- `subject`
 - `action`
 - `object`
 - `conditions`
 - `deadline_or_temporal_scope`
-- `evidence`
+- `permit_types`
+- `process_stage`
 - `confidence`
+- `human_review_status`
 - `formalization_status`
 
-## Formal Logic Guardrails
+### ProcessModel
 
-Use a layered representation so guardrails are practical before full theorem-prover parity is complete:
+Fields:
+
+- `process_id`
+- `permit_type`
+- `scope`
+- `eligibility_rules`
+- `required_user_facts`
+- `required_documents`
+- `file_rules`
+- `fees`
+- `stages`
+- `deadlines`
+- `exceptions`
+- `unsupported_paths`
+- `devhub_surface_refs`
+- `guardrail_bundle_id`
+
+Standard process stages:
+
+- pre-application research
+- account setup or manual login
+- property lookup
+- permit type selection
+- eligibility screening
+- document preparation
+- application data entry
+- upload staging
+- acknowledgement/certification review
+- submission
+- prescreen/intake
+- fee payment
+- plan review
+- corrections/checksheets
+- approval/issuance
+- inspections
+- closeout, cancellation, expiration, extension, or reactivation
+
+### DevHubSurfaceMap
+
+Fields:
+
+- `surface_id`
+- `auth_scope`
+- `url_pattern`
+- `page_heading`
+- `accessible_landmarks`
+- `actions`
+- `fields`
+- `validation_messages`
+- `upload_controls`
+- `state_transitions`
+- `redaction_policy`
+- `selector_confidence`
+- `requires_attendance`
+- `requires_exact_confirmation`
+
+### UserGapAnalysis
+
+Fields:
+
+- `case_id`
+- `process_id`
+- `known_facts`
+- `matched_documents`
+- `missing_facts`
+- `missing_documents`
+- `stale_evidence`
+- `conflicting_evidence`
+- `required_confirmations`
+- `blocked_actions`
+- `next_safe_actions`
+
+### GuardrailBundle
+
+Fields:
+
+- `guardrail_bundle_id`
+- `process_id`
+- `source_evidence_ids`
+- `deterministic_predicates`
+- `deontic_rules`
+- `temporal_rules`
+- `reversible_action_predicates`
+- `exact_confirmation_predicates`
+- `refused_action_predicates`
+- `explanation_templates`
+- `validation_status`
+
+### ActionJournal
+
+Commit-safe journal event types:
+
+- public crawl preflight
+- public crawl metadata capture
+- requirement extraction
+- user gap analysis
+- reversible draft plan
+- local PDF preview
+- DevHub attended preflight
+- DevHub attempted action
+- post-action hardening review
+- exact-confirmation checkpoint
+- manual handoff
+- refused action
+- completion evidence
+
+Journal events must not include credentials, cookies, auth state, screenshots, traces, HAR data, private values, payment details, or local private file paths.
+
+## Public Website Archival Plan
+
+### Phase 1: Source Discovery
+
+- Seed from the official source anchors above.
+- Parse links from Portland.gov PP&D pages using structured HTML parsing.
+- Record every discovered URL with canonicalization, source page, link text, content type if known, and allow/skip decision.
+- Keep the initial host allowlist narrow:
+  - `www.portland.gov`
+  - `devhub.portlandoregon.gov`
+  - `www.portlandoregon.gov`
+  - `www.portlandmaps.com` only for public property/permit references linked from official guidance
+- Store skipped URLs with reason codes:
+  - outside allowlist
+  - unsupported scheme
+  - private/authenticated
+  - disallowed by robots or policy
+  - raw download not permitted
+  - too large
+  - unsupported content type
+
+### Phase 2: Processor Handoff
+
+- Run PP&D-local policy preflight before invoking `ipfs_datasets_py`.
+- Delegate robust web archival and extraction primitives to the processor suite.
+- Preserve processor outputs through PP&D-local manifests, not by committing raw archives.
+- Capture:
+  - URL
+  - redirect chain
+  - response metadata
+  - content hash
+  - MIME type
+  - processor name/version
+  - source freshness metadata
+  - normalized document reference
+
+### Phase 3: HTML Extraction
+
+Extract:
+
+- title
+- breadcrumbs
+- headings and hierarchy
+- body text
+- ordered/unordered steps
+- callouts and warnings
+- tables
+- contact blocks
+- service hours
+- "on this page" structure
+- related links
+- downloadable documents
+- image alt text and captions
+- visible updated/published dates when present
+
+Preserve order. Many PP&D pages encode requirements through sequence.
+
+### Phase 4: PDF and Form Extraction
+
+Extract:
+
+- text with page anchors
+- tables and fee schedules
+- checklist items
+- required document labels
+- signature and certification blocks
+- fillable PDF field names and types
+- checkbox/radio options
+- date/deadline language
+- file preparation instructions
+
+Use OCR only when text extraction fails or when official screenshots contain necessary instructions. Mark OCR-derived content with confidence and human-review status.
+
+### Phase 5: Change Monitoring
+
+Recrawl schedule:
+
+- DevHub FAQ, online tool guides, submit-permit guide, fee/payment guide: daily or every few days.
+- Permit-type pages, forms index, file standards, Single PDF guidance: weekly.
+- Low-change handouts and archived PDFs: monthly unless linked pages changed.
+
+Change reports should include:
+
+- changed source hash
+- added or removed permit type
+- changed required document
+- changed upload or file naming rule
+- changed fee/payment instruction
+- changed deadline or expiration rule
+- changed DevHub action guidance
+- affected requirement IDs
+- affected guardrail bundle IDs
+
+## Authenticated DevHub Automation Plan
+
+### Session Model
+
+The default login flow is attended:
+
+1. Open DevHub in a user-visible Playwright browser.
+2. User selects Sign In/Register and completes PortlandOregon.gov login manually.
+3. User completes MFA/CAPTCHA/security prompts manually if presented.
+4. Worker confirms authenticated DevHub Home or equivalent account-scoped state.
+5. Worker records only redacted state metadata and accessible UI structure.
+
+Credential rules:
+
+- The worker must not ask for or store passwords.
+- The worker must not automate password recovery.
+- The worker must not create accounts unless a separate human-run playbook is written.
+- Browser state must be short-lived and ignored by git.
+
+### DevHub Surface Categories
+
+Safe read-only:
+
+- DevHub Home
+- My Permits & Requests
+- permit details
+- status messages
+- fee notice review
+- correction request review
+- attachment list review
+- inspection results review
+
+Reversible draft:
+
+- address/property search
+- permit type selection before submission
+- form field fill before submission
+- save draft
+- local preview of field mapping
+- upload staging before official attach/submit
+
+Consequential official:
+
+- submit permit request
+- certify acknowledgement
+- upload correction to official record
+- purchase trade permit
+- schedule inspection
+- cancel or withdraw
+- request extension/reactivation
+- change account/security settings
+
+Financial:
+
+- enter payment details
+- submit payment
+- save payment receipt
+
+Unsupported/manual handoff:
+
+- MFA
+- CAPTCHA
+- account creation
+- password recovery
+- final payment execution
+- any workflow with unclear consequence
+
+### Playwright Recorder
+
+For each DevHub page or state, record:
+
+- page title and visible heading
+- URL pattern and route evidence
+- accessible roles and names
+- stable labels
+- nearby headings
+- validation messages
+- required markers
+- dropdown options
+- conditional question triggers
+- upload controls and file hints
+- save/back/continue/submit button states
+- timeout/save-for-later messages
+- official action text and acknowledgement language
+
+Fixtures should use mocked or synthetic pages unless a user explicitly authorizes a live attended capture. Live captures must be redacted before any fixture is committed.
+
+### Guarded Action Executor
+
+Before any Playwright action:
+
+1. Classify the action.
+2. Validate the action against the surface registry.
+3. Require source evidence IDs.
+4. Require user case facts for every filled value.
+5. Require selector confidence.
+6. Produce a preview.
+7. Require attendance for DevHub actions.
+8. Require exact confirmation for consequential actions.
+9. Produce a commit-safe journal event.
+10. Pause for post-action hardening after any live attempt.
+
+Completion rule:
+
+- `ready_to_attempt` means preflight passed.
+- `attempted_review_required` means a live attempt happened and must be reviewed.
+- `complete` requires user-visible outcome review, no private artifact leak, and completion evidence.
+
+## Local PDF Draft-Fill Plan
+
+Local PDF support is allowed earlier than live DevHub official uploads because it is reversible and user-controlled.
+
+Required behavior:
+
+- Build public form-field manifests from official public PDFs.
+- Map fields to redacted user facts and requirement IDs.
+- Generate local draft previews only in user-controlled output paths.
+- Do not upload or submit generated PDFs.
+- Do not persist private source documents in git.
+- Preserve an audit event with field IDs, requirement IDs, redacted fact IDs, and output classification.
+
+Acceptance fixtures:
+
+- fillable public form field manifest
+- redacted user facts
+- generated local draft preview metadata
+- privacy validator proving no private values are committed
+
+## Requirement Extraction Plan
+
+Extract four layers of requirements:
+
+- Legal and policy requirements: obligations, prohibitions, permissions, exceptions, deadlines, authority.
+- Submittal requirements: applications, plans, calculations, reports, signatures, licenses, property data, project descriptions, file standards.
+- Workflow requirements: account, fields, save behavior, upload order, correction path, status tracking, fee review, payment sequence.
+- Agent-operation requirements: when to ask the user, when to refuse, when to escalate, when to require attendance, when to require exact confirmation.
+
+Extraction pipeline:
+
+1. Normalize source text with citation spans.
+2. Identify candidate requirements from headings, imperative language, checklists, tables, warnings, forms, and PDFs.
+3. Link each candidate to permit type and stage.
+4. Classify the candidate requirement type.
+5. Extract conditions and exceptions.
+6. Attach source evidence IDs.
+7. Mark confidence and human-review status.
+8. Compile validated candidates into process models and guardrail bundles.
+
+## Formal Logic Guardrail Plan
 
 ### Layer 1: Deterministic Predicates
 
@@ -416,6 +577,8 @@ plans_are_single_pdf(project)
 requires_plan_review(permit_type)
 license_active(contractor_license)
 acknowledgment_reviewed(user, acknowledgment_id)
+user_present(session)
+exact_confirmation(action_id)
 ```
 
 ### Layer 2: Deontic Rules
@@ -425,7 +588,9 @@ Examples:
 ```text
 OBLIGATED(applicant, upload(application_pdf), before(submit_request))
 OBLIGATED(applicant, upload(single_drawing_plan_pdf), if(single_pdf_process_applies))
-PROHIBITED(agent, submit_application, unless(explicit_user_confirmation(submit_application)))
+PROHIBITED(agent, submit_application, unless(exact_confirmation(submit_application)))
+PROHIBITED(agent, enter_payment_details, always)
+PERMITTED(agent, fill_reversible_draft_field, if(user_present(session) and source_fact_available(field)))
 PERMITTED(applicant, save_for_later, if(devhub_save_available))
 ```
 
@@ -435,291 +600,257 @@ Examples:
 
 ```text
 before(prepare_documents, submit_request)
+before(review_acknowledgement, certify_submission)
 after(prescreen_acceptance, pay_intake_fees)
 until(all_required_fields_complete, prohibit(submit_application))
-if(inactivity_exceeds_policy_window, draft_may_be_deleted)
+after(live_attempt, require(post_action_hardening_review))
 ```
 
-### Layer 4: Proof and Explanation Artifacts
+### Layer 4: Agent Action Gates
 
-- Compile extracted rules to the repository's existing logic artifact conventions where possible:
-  - TDFOL/deontic formulas.
-  - CEC/DCEC process events.
-  - F-logic frames for permit/process ontology.
-  - support maps tying each formal rule to source text.
-- Store explanation text for agent-facing and user-facing forms.
-- Mark generated proof artifacts as machine-derived until validated.
+Examples:
+
+```text
+block(action) if source_evidence_stale(requirement)
+block(action) if user_fact_conflict(requirement)
+block(action) if action_class(action, consequential) and not exact_confirmation(action)
+block(action) if action_class(action, financial)
+ask_user(question) if missing_required_fact(requirement)
+manual_handoff(action) if unsupported_surface(action)
+```
+
+The first production target should be deterministic predicates plus deontic and temporal guardrails. Full theorem-prover integration can follow after extracted rules have stable source evidence and test coverage.
 
 ## Agent Assistance Loop
 
-The agent should operate as a missing-information resolver:
+1. User states a project goal.
+2. Agent selects candidate process models.
+3. Agent shows source-backed scope assumptions.
+4. Agent reads known user facts and document-store metadata.
+5. Agent runs gap analysis.
+6. Agent asks only for missing or conflicting facts.
+7. Agent prepares reversible draft values or local PDF previews.
+8. Agent validates next action through the guardrail bundle.
+9. Agent pauses for attendance and exact confirmation when required.
+10. Agent produces a review packet:
+    - known facts
+    - missing facts
+    - required documents
+    - source citations
+    - proposed next safe action
+    - blocked actions and reasons
 
-1. User states the project goal.
-2. Agent retrieves relevant PP&D process model and source-backed requirements.
-3. Agent compares known user document-store facts against required facts and documents.
-4. Agent asks only for missing or ambiguous facts.
-5. Agent checks eligibility, exceptions, and workflow prerequisites.
-6. Agent prepares a draft application plan and file checklist.
-7. Agent optionally drives DevHub draft entry under user-approved browser automation.
-8. Agent pauses before submission, certification, payment, cancellation, or official upload.
-9. Agent records final state, sources used, unresolved issues, and recommended next action.
+## Todo-Daemon Handoff Epics
 
-## Missing-Information Detection
+The PP&D todo daemon should work in tranches that are broad enough to produce meaningful artifacts but small enough to validate.
 
-The user's document store should be queried for:
+### Epic 1: Source Registry and Surface Taxonomy
 
-- property address and property ID.
-- owner/applicant/contractor identity.
-- contractor CCB/BCD/license numbers where required.
-- project description and scope.
-- occupancy/use details.
-- valuation.
-- existing permit/case numbers.
-- plan PDFs.
-- calculations and reports.
-- forms and signatures.
-- prior PP&D correspondence.
-- checksheets and correction responses.
-- payment/fee notices.
+Deliver:
 
-The detector should output:
+- official source seed manifest
+- surface categories
+- allowlist and skip reasons
+- source freshness policy
+- test fixtures for official source anchors
 
-- available evidence.
-- missing fields.
-- conflicting facts.
-- stale documents.
-- uncertain matches.
-- facts that require user certification.
+### Epic 2: Public Crawl Frontier and Processor Integration
 
-## Data Contracts
+Deliver:
 
-### `ScrapedDocument`
+- bounded public crawl frontier
+- robots and allowlist preflight
+- processor archival adapter
+- archive manifest contract
+- no-raw-body persistence validation
 
-```ts
-interface ScrapedDocument {
-  id: string;
-  sourceUrl: string;
-  canonicalUrl: string;
-  contentType: "html" | "pdf" | "image" | "form" | "other";
-  title: string;
-  fetchedAt: string;
-  contentHash: string;
-  text: string;
-  links: SourceLink[];
-  extractedFields?: ExtractedField[];
-  pageAnchors?: PageAnchor[];
-}
-```
+### Epic 3: Public Document and PDF Extraction
 
-### `PermitProcess`
+Deliver:
 
-```ts
-interface PermitProcess {
-  id: string;
-  name: string;
-  permitTypes: string[];
-  sourceIds: string[];
-  stages: ProcessStage[];
-  requiredFacts: RequiredFact[];
-  requiredDocuments: RequiredDocument[];
-  actionGates: ActionGate[];
-  formalRequirements: FormalRequirement[];
-}
-```
+- HTML extraction contract
+- PDF text and page-anchor extraction
+- fillable field manifest extraction
+- Single PDF and file-standard requirement extraction
+- fixture coverage for representative pages and PDFs
 
-### `FormalRequirement`
+### Epic 4: Process and Requirement Schemas
 
-```ts
-interface FormalRequirement {
-  id: string;
-  kind: "obligation" | "prohibition" | "permission" | "precondition" | "exception" | "deadline";
-  naturalLanguage: string;
-  formula?: string;
-  logicSystem?: "predicate" | "deontic" | "tdfol" | "cec" | "flogic";
-  evidence: EvidenceRef[];
-  confidence: number;
-  validationStatus: "draft" | "machine_checked" | "human_reviewed" | "retired";
-}
-```
+Deliver:
 
-### `DevHubWorkflowState`
+- requirement node schema
+- permit process schema
+- stage dependency graph
+- source evidence model
+- residential, commercial, trade, solar, demolition, sign, Urban Forestry, correction, inspection, and fee examples
 
-```ts
-interface DevHubWorkflowState {
-  id: string;
-  workflow: string;
-  urlPattern: string;
-  heading: string;
-  fields: WorkflowField[];
-  actions: WorkflowAction[];
-  validationMessages: string[];
-  nextStates: string[];
-  capturedAt: string;
-}
-```
+### Epic 5: Formal Guardrail Compiler
 
-## Implementation Phases
+Deliver:
 
-### Phase 1: Governance and Source Inventory
+- deterministic predicate compiler
+- deontic rule compiler
+- temporal rule compiler
+- action gate compiler
+- explanation support map
+- validation tests for blocked and allowed actions
 
-- Create source allowlist and crawl policy.
-- Check robots and terms for every domain before crawling.
-- Define private-data redaction policy.
-- Define user-consent and audit requirements for DevHub automation.
-- Build initial source inventory from PP&D public pages and DevHub guides.
+### Epic 6: DevHub Attended Login and Recorder
 
-### Phase 2: Public Crawler MVP
+Deliver:
 
-- Implement deterministic PP&D policy/preflight wrappers for Portland.gov PP&D pages.
-- Add an adapter that invokes the `ipfs_datasets_py` processor archival suite for public page/PDF capture only after PP&D policy checks pass.
-- Add PDF processing through existing processor capabilities where possible before adding PP&D-specific extractors.
-- Normalize documents to markdown/text with provenance.
-- Generate crawl manifest and content hashes.
-- Add rate limits, retries, and skip reasons.
-- Validate extraction on a small sample of permit pages and application PDFs.
+- Playwright manual-login handoff
+- authenticated state detector
+- redacted surface recorder
+- selector confidence model
+- mocked DevHub fixtures
+- privacy validator
 
-### Phase 3: Process and Requirement Extraction
+### Epic 7: Reversible Draft Automation
 
-- Add extraction prompts/rules for:
-  - permit type.
-  - eligibility.
-  - required forms.
-  - required documents.
-  - deadlines.
-  - fees.
-  - review stages.
-  - inspections.
-  - exceptions.
-- Build human-reviewable JSON artifacts.
-- Add source-backed diff reports when public pages change.
+Deliver:
 
-### Phase 4: Authenticated DevHub Recorder
+- field mapping from user facts to DevHub draft fields
+- dry-run preview
+- reversible fill executor
+- save-for-later boundary
+- attended worker journal
+- post-action review states
 
-- Implement Playwright session bootstrap.
-- Support manual login and saved browser state.
-- Record workflow states without submitting anything.
-- Capture field schemas, options, validation messages, and navigation edges.
-- Redact PII in traces and screenshots.
-- Produce repeatable fixtures from a test account or synthetic account only when authorized.
-- Add a Playwright form-drafting scaffold that can fill reversible draft fields in mocked fixtures, but only emits action plans for live DevHub until confirmation-gate tests are complete.
-- Add tests proving the scaffold refuses upload, submit, certify, pay, cancel, schedule inspection, MFA, CAPTCHA, account creation, and password recovery routes without exact user authorization.
+### Epic 8: Local PDF Draft Fill
 
-### Phase 5: Guardrail Compiler
+Deliver:
 
-- Convert extracted requirements into deterministic predicates and deontic rules.
-- Attach evidence references to every formal requirement.
-- Add consistency checks:
-  - missing citation.
-  - conflicting deadline.
-  - conflicting required document.
-  - unsupported action gate.
-  - stale source.
-- Export guardrails for LLM-agent runtime.
+- public PDF field manifests
+- user fact mapping
+- local preview generation
+- output path policy
+- no-upload/no-submit guardrails
 
-### Phase 6: Agent Integration
+### Epic 9: User Document Gap Analysis
 
-- Add a planning API:
-  - `loadPermitProcess(goal)`
-  - `compareUserFacts(process, documentStore)`
-  - `listMissingRequirements(caseState)`
-  - `validateNextAction(caseState, action)`
-  - `explainBlockedAction(caseState, action)`
-- Add an autonomous-assistance loop that stays citation-grounded.
-- Require confirmation gates for consequential actions.
-- Add UI or CLI review screens for application readiness.
+Deliver:
 
-### Phase 7: Continuous Maintenance
+- user fact inventory model
+- user document metadata model
+- missing fact detector
+- stale/conflicting evidence detector
+- review packet generator
 
-- Schedule public recrawls.
-- Run source diff checks.
-- Recompile process models and guardrails.
-- Flag affected agent workflows when requirements change.
-- Keep a human-review queue for changed legal/process requirements.
+### Epic 10: Official Action and Payment Guardrails
 
-## Testing Plan
+Deliver:
 
-- Crawler tests:
-  - URL canonicalization.
-  - allowlist enforcement.
-  - robots/terms gate handling.
-  - HTML extraction.
-  - PDF extraction with page references.
-  - content hashing and recrawl diffs.
-- Requirement extraction tests:
-  - known permit pages produce expected required documents.
-  - checklist PDFs produce expected checkbox requirements.
-  - citations survive normalization.
-  - contradictory extracted rules are flagged.
-- DevHub automation tests:
-  - login flow can pause for manual authentication.
-  - Playwright fixtures can discover fields by accessible name, label text, role, nearby heading, and stable URL/state.
-  - form-drafting scaffold can prepare reversible draft entries from redacted fixture facts.
-  - scaffold refuses consequential and financial actions without exact confirmation.
-  - mocked pages cover upload controls, validation messages, disabled submit states, save-for-later, and draft-resume navigation.
-  - selectors use accessible roles/names where possible.
-  - recorder captures fields without submitting.
-  - PII redaction works in traces and logs.
-  - irreversible buttons are blocked without explicit confirmation.
-- Guardrail tests:
-  - missing required document blocks submission.
-  - missing acknowledgment blocks submission.
-  - payment action requires payment-specific confirmation.
-  - stale source blocks autonomous confidence.
-  - unsupported process asks for human assistance.
-- End-to-end tests:
-  - residential project goal -> process model -> missing facts -> draft checklist.
-  - trade permit goal -> license prerequisite check -> DevHub draft readiness.
-  - correction upload goal -> checksheet requirements -> upload confirmation gate.
+- action classifier
+- exact confirmation checkpoints
+- official upload/submission/certification blockers
+- payment review and payment execution blockers
+- manual handoff workflows
 
-## Security and Privacy
+### Epic 11: Operations and Supervision
 
-- Encrypt stored session state and never commit it.
-- Keep account-scoped DevHub artifacts outside public static assets.
-- Redact names, emails, phone numbers, addresses, permit numbers, payment details, and uploaded filenames unless needed for the active user case.
-- Use separate storage namespaces for public corpus and private user case data.
-- Log agent actions with timestamp, action type, user instruction, confirmation state, and result.
-- Do not store payment card or bank details.
-- Use least-privilege service accounts only where the City explicitly permits them.
+Deliver:
 
-## Risks and Mitigations
+- daemon task-board tranches
+- supervisor idle recovery
+- orphan child cleanup
+- validation commands
+- live-run playbooks
+- source recrawl cadence
+- production readiness checklist
 
-- Site structure changes: prefer semantic extraction, record source diffs, and run Playwright smoke tests.
-- Auth flow changes: support manual login and fail closed.
-- Legal requirement ambiguity: keep human-review status and cite source text.
-- Private data leakage: default redaction, encryption, and storage separation.
-- Over-automation: classify actions and require confirmation for consequential steps.
-- Stale guidance: source timestamps, recrawl schedules, and stale-evidence guardrails.
-- PDF extraction errors: page-level citations, OCR confidence, and human-review queues.
-- Conflicting public sources: detect conflicts and route to PP&D or human review.
+## Validation Strategy
 
-## Acceptance Criteria
+Every tranche should include at least one validation command. Recommended validation layers:
 
-- Public crawler produces a reproducible manifest of PP&D pages and documents with source URLs, hashes, and normalized text.
-- At least one residential, one commercial, one trade, and one correction workflow are represented as process models.
-- Every generated requirement has evidence and validation status.
-- Authenticated DevHub recorder can capture workflow state without submitting or paying.
-- Guardrail compiler blocks at least:
-  - missing required fields.
-  - missing required documents.
-  - missing explicit acknowledgment.
-  - submission without confirmation.
-  - payment without payment-specific confirmation.
-- Agent loop can summarize known facts, missing gaps, and next safe action with citations.
-- Changed source pages trigger a diff report and mark affected guardrails for review.
+- `python3 -m py_compile` for touched Python files.
+- PP&D fixture validation: `PYTHONPATH=ipfs_datasets_py python3 ppd/tests/validate_ppd.py`.
+- Focused unit tests for changed modules.
+- Privacy scan for forbidden paths and markers.
+- Fixture-only Playwright tests for DevHub state recording.
+- No-live-network default tests.
+- Explicit live public dry-run only when the command includes a live flag.
+- No authenticated live test unless a user explicitly attends the browser session.
+
+## Production Readiness Gates
+
+Do not call the system production-ready until all gates pass:
+
+- Public source registry includes all official seed anchors and a documented recrawl policy.
+- Public crawl produces archive manifests without committing raw bodies.
+- Requirement nodes cite source evidence and have confidence/human-review status.
+- Process models exist for representative residential, commercial, trade, correction, inspection, and fee workflows.
+- Formal guardrails block missing required fields, missing documents, stale evidence, submission without confirmation, official upload without confirmation, and payment execution.
+- DevHub recorder can run in attended/manual-login mode without credential capture.
+- Playwright actions are classified and journaled.
+- Local PDF draft fill creates previews only and never uploads/submits.
+- Agent review packets explain known facts, missing gaps, blocked actions, and source citations.
+- Private/session artifacts are ignored and absent from git.
+- Supervisor and daemon recover from no-eligible-task, validation-failure, and orphan-child states.
+
+## Ordered Delivery Waves
+
+Use these waves to keep implementation narrow, source-backed, and daemon-friendly:
+
+1. **Public source inventory and archival handoff**: finalize the official seed set, robots/allowlist policy, crawl batches, and `ipfs_datasets_py` processor manifests before deeper extraction work.
+2. **Requirement and process normalization**: extract HTML/PDF requirements into permit-family process models, stage graphs, citation spans, deadlines, fees, document rules, and exceptions.
+3. **Attended DevHub automation**: ship only manual-login, redacted recording, reversible draft-fill, and save-for-later support before any consequential workflow checkpoints.
+4. **User document-store gap analysis**: compare known user facts/documents against requirement bundles so agents ask only for missing, stale, ambiguous, or conflicting inputs.
+5. **Formal guardrail compilation and agent APIs**: compile reviewed requirements into predicates, deontic rules, temporal gates, exact-confirmation blockers, and agent-facing explain/validate/review-packet APIs.
+6. **Operations and continuous supervision**: keep the PP&D daemon/supervisor fed with human-authored tranches, deterministic validation, live-run playbooks, and recrawl/freshness monitoring.
+
+## Operator Todo List
+
+Use this ordered todo list for human planning, backlog seeding, or manual execution:
+
+1. Build the official PP&D/DevHub source map, including permit-family grouping, allowlist scope, recrawl cadence, and skip-reason policy.
+2. Define crawl batches and processor-suite handoff contracts so every fetched page or PDF yields manifest metadata, hashes, normalized document IDs, and source evidence IDs without committing raw bodies.
+3. Extract public HTML, PDFs, and fillable-form metadata into normalized requirement candidates with page anchors, citation spans, confidence markers, and human-review status.
+4. Assemble permit-family process models for residential, commercial, trade, solar, demolition, sign, Urban Forestry, inspections, corrections, fees, cancellations, and extension/reactivation flows.
+5. Build the attended DevHub login/session handoff so users authenticate manually while the worker records only redacted route, heading, field, and validation-state evidence.
+6. Build reversible draft automation for DevHub and local PDF previews, including field manifests, fact-to-field mapping, save-for-later boundaries, and post-action review states.
+7. Build the user document-store reconciliation layer that maps known documents/facts to process requirements, identifies missing or stale facts, and emits review packets instead of guessing.
+8. Compile reviewed requirement nodes into deterministic predicates, deontic rules, temporal ordering rules, and exact-confirmation/payment/manual-handoff stop gates.
+9. Expose agent-facing APIs that load process models, compare user facts, explain missing requirements, preview safe next actions, and block unsupported or consequential actions.
+10. Add source-freshness monitoring, contradiction detection, privacy validation, and no-private-artifact enforcement before any production or semi-automated use.
+11. Add bounded live public crawl playbooks and attended DevHub playbooks so operators know when the system may move from fixtures to explicitly authorized real sessions.
+12. Keep the daemon/supervisor backlog replenished with narrow, source-backed tranches until every permit-family workflow and guardrail bundle has acceptance coverage.
+
+## Daemon/Supervisor Wiring
+
+The PP&D execution path is already wired around this plan document and the isolated PP&D task board:
+
+- Plan source of truth for daemon prompts: `docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md`
+- Backlog source of truth for daemon work selection: `ppd/daemon/task-board.md`
+- Shared execution engine: `ipfs_datasets_py.optimizers.todo_daemon`
+- PP&D wrappers: `ppd/daemon/ppd_daemon.py` and `ppd/daemon/ppd_supervisor.py`
+
+Recommended operator flow:
+
+1. Update this plan with the current wave ordering and guardrail policy.
+2. Append a human-authored tranche of unchecked tasks to `ppd/daemon/task-board.md`.
+3. Run `bash ppd/daemon/control.sh doctor` after backlog changes if the supervisor needs one repair/replanning pass.
+4. Run `bash ppd/daemon/control.sh supervisor-start` for continuous replenishment or `bash ppd/daemon/control.sh start` for a single daemon worker loop.
+5. Keep live crawl and authenticated DevHub actions behind explicit flags, user attendance, exact confirmation, and privacy validation.
 
 ## Open Questions
 
-- What formal logic formats should be treated as the first production target for PP&D workflows: deterministic predicates plus deontic rules, or full TDFOL/CEC from the beginning?
-- Will the project maintain a DevHub test account, or should all authenticated automation initially run only in user-owned manual-login sessions?
+- Which permit categories are V1 priority: residential building, standard trade, solar, demolition, signs, Urban Forestry, correction uploads, inspections, or fees?
+- Should private user case state be local-only, or will an encrypted backend exist?
 - Which user document stores need first-class connectors?
-- Should private user case state stay local-only, or is an encrypted backend planned?
-- Which PP&D permit categories are highest priority for V1?
+- Will there be a dedicated DevHub test account, or only user-owned attended sessions?
+- Which formal logic output should be the first stable interchange format for downstream agents?
 
-## Source References
+## References
 
+- PP&D bureau landing page: https://www.portland.gov/ppd
+- Online permitting tools overview: https://www.portland.gov/ppd/how-use-online-permitting-tools
 - DevHub public portal: https://devhub.portlandoregon.gov
-- DevHub sign-in guide: https://www.portland.gov/ppd/devhub-sign-guide
 - DevHub FAQ: https://www.portland.gov/ppd/devhub-faqs
+- DevHub account and sign-in guide: https://www.portland.gov/ppd/devhub-sign-guide
+- Apply for permits: https://www.portland.gov/ppd/get-permit/apply-permits
 - DevHub permit application guide: https://www.portland.gov/ppd/devhub-guide-submit-permit-application
-- Submit plans online / Single PDF Process: https://www.portland.gov/ppd/get-permit/submit-plans-online
-- PP&D permits and inspections applications: https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications
+- Submit Plans Online / Single PDF Process: https://www.portland.gov/ppd/get-permit/submit-plans-online
+- Permit applications and inspections applications: https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications
+- File naming standards and preparing PDFs: https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs
+- Fee payment guide: https://www.portland.gov/ppd/documents/how-pay-fees/download

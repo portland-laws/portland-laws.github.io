@@ -1,0 +1,25 @@
+--- a/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
++++ b/ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md
+@@ -13,9 +13,22 @@
+ - `if len(text) dict[str, str]`
+ - `if _checkbox_178_syntax_preflight_count(history) RetryScopeDecision`
+ - `if _checkbox_178_syntax_preflight_count(history) None`
++- `self.assertTrue(set(field_fill["sourceEvidenceIds"]) None`
+ - unmatched closing braces such as a bare `}` in a Python unittest file
+ 
+ These are not business-rule failures. They are syntax and code-generation failures. A retry should repair daemon supervision or add a very small validation guardrail before the worker attempts another DevHub, crawler, extraction, logic, contract, or fixture bundle.
++
++## Current Tranche 2 Parser Recovery
++
++The checkbox-225 rollback failed during Python syntax preflight in `ppd/tests/test_autonomous_platform_tranche2_source_evidence.py`. The malformed line used a TypeScript-style missing operator inside `self.assertTrue(...)`.
++
++The next cycle for checkbox-225 must not regenerate a broad source-evidence fixture plus test bundle. It should do exactly one of these parser-recovery actions:
++
++- Replace only `ppd/tests/test_autonomous_platform_tranche2_source_evidence.py` with a syntax-valid unittest that can compile on its own.
++- Replace only one daemon repair file under `ppd/daemon/` that makes future parser-loop retries smaller.
++- Replace only this guide if no code change is needed to steer the next prompt.
++
++A parser-recovery prompt for checkbox-225 should say that every Python assertion must use a complete boolean expression, such as `is None`, `is not None`, `==`, `!=`, `in`, `issubset(...)`, or `isinstance(...)`. It should also require mentally running `python3 -m py_compile ppd/tests/test_autonomous_platform_tranche2_source_evidence.py` before returning JSON.
+ 
+ ## Parser Failure Escalation
+ 

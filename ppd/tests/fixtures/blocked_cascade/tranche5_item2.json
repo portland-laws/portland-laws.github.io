@@ -1,0 +1,30 @@
+{
+  "blocked_task": {
+    "id": "checkbox-263",
+    "tranche": 5,
+    "item": 2,
+    "blocked_at": "2026-05-08T10:00:00Z",
+    "state": "parked",
+    "reason": "blocked-cascade-daemon-repair-required"
+  },
+  "repair_attempts": [
+    {
+      "id": "repair-old-valid",
+      "kind": "daemon-repair",
+      "created_at": "2026-05-08T09:59:00Z",
+      "validated": true
+    },
+    {
+      "id": "repair-fresh-invalid",
+      "kind": "daemon-repair",
+      "created_at": "2026-05-08T10:01:00Z",
+      "validated": false
+    },
+    {
+      "id": "repair-fresh-valid",
+      "kind": "daemon-repair",
+      "created_at": "2026-05-08T10:02:00Z",
+      "validated": true
+    }
+  ]
+}

@@ -1,0 +1,48 @@
+{
+  "packet_id": "post-recrawl-review-20260528-fixture",
+  "review_type": "post_recrawl_metadata_review",
+  "changed_sources": [
+    {
+      "source_id": "src-ppd-devhub-faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "old_hash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "new_hash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "content_hash_changed": true,
+      "evidence_kind": "public_metadata"
+    }
+  ],
+  "skipped_sources": [
+    {
+      "source_id": "src-devhub-account-dashboard",
+      "canonical_url": "https://devhub.portlandoregon.gov/",
+      "skipped_reason": "private_authenticated"
+    }
+  ],
+  "downstream_invalidations": [
+    {
+      "source_id": "src-ppd-devhub-faq",
+      "affected_requirement_ids": [
+        "req-devhub-upload-corrections"
+      ],
+      "affected_guardrail_bundle_ids": [
+        "guardrail-devhub-actions"
+      ]
+    }
+  ],
+  "review_decisions": [
+    {
+      "action": "request_human_review",
+      "status": "pending",
+      "notes": "Changed public metadata invalidates downstream artifacts until reviewed."
+    }
+  ],
+  "evidence": [
+    {
+      "source_id": "src-ppd-devhub-faq",
+      "source_type": "public_html",
+      "privacy_classification": "public",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "manifest_id": "manifest-devhub-faq-20260528"
+    }
+  ]
+}

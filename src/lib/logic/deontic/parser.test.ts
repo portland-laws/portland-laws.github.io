@@ -3,7 +3,14 @@ import {
   buildDeonticFormula,
   convertLegalTextToDeontic,
   extractNormativeElements,
+  extractObligations,
+  extractPermissions,
+  extractProhibitions,
   extractTemporalConstraints,
+  formatTemporalPredicate,
+  legal_text_to_deontic,
+  parse_deontic_text,
+  parseDeonticText,
 } from './parser';
 
 describe('deontic parser utilities', () => {
@@ -18,7 +25,9 @@ describe('deontic parser utilities', () => {
       deonticOperator: 'P',
       matchedIndicator: 'may',
     });
-    expect(analyzeNormativeSentence('The employer shall not retaliate against workers')).toMatchObject({
+    expect(
+      analyzeNormativeSentence('The employer shall not retaliate against workers'),
+    ).toMatchObject({
       normType: 'prohibition',
       deonticOperator: 'F',
       matchedIndicator: 'shall not',
@@ -49,6 +58,25 @@ describe('deontic parser utilities', () => {
     expect(buildDeonticFormula(element)).toContain('Tenant(x)');
   });
 
+  it('builds formulas with conditions, exceptions, and temporal constraints without server dependencies', () => {
+    const element = analyzeNormativeSentence(
+      'The applicant must file a notice within 10 days if the permit is denied, unless the Director extends the period',
+    );
+    if (!element) {
+      throw new Error('Expected normative element');
+    }
+
+    expect(buildDeonticFormula(element)).toBe(
+      'O(∀x (Applicant(x) ∧ ThePermitIsDenied(x) ∧ ¬TheDirectorExtendsThePeriod(x) ∧ Within(x, P10Days) → FileANotice(x)))',
+    );
+  });
+
+  it('formats browser-native temporal predicates for formula-builder parity', () => {
+    expect(formatTemporalPredicate({ type: 'period', value: 'monthly' }, 'party')).toBe(
+      'Periodic(party, Monthly)',
+    );
+  });
+
   it('extracts multiple normative elements from text', () => {
     const elements = extractNormativeElements(
       'The tenant must pay rent. The landlord may enter for repairs. The tenant shall not block access.',
@@ -59,6 +87,11 @@ describe('deontic parser utilities', () => {
       'permission',
       'prohibition',
     ]);
+    expect(elements.map((element) => element.sentenceIndex)).toEqual([0, 1, 2]);
+    expect(elements[1]).toMatchObject({
+      startOffset: 26,
+      endOffset: 60,
+    });
   });
 
   it('converts legal text through a browser facade', () => {
@@ -73,7 +106,76 @@ describe('deontic parser utilities', () => {
       },
     });
     expect(result.warnings).toEqual([]);
+    expect(result.metadata).toEqual({
+      sourceLength: 40,
+      sentenceCount: 1,
+      elementCount: 1,
+      normCounts: {
+        obligation: 0,
+        permission: 1,
+        prohibition: 0,
+      },
+      browserNative: true,
+      pythonRuntime: false,
+    });
     expect(result.formulas[0]).toContain('P(∀x');
+  });
+
+  it('exposes Python module style legal_text_to_deontic alias without runtime bridges', () => {
+    const result = legal_text_to_deontic(
+      'Owners shall repair sidewalks. Owners may request a variance.',
+    );
+
+    expect(result.success).toBe(true);
+    expect(result.metadata.normCounts).toEqual({
+      obligation: 1,
+      permission: 1,
+      prohibition: 0,
+    });
+    expect(result.capabilities.serverCallsAllowed).toBe(false);
+  });
+
+  it('exposes a browser-native deontic_parser.py style structured parse facade', () => {
+    const result = parse_deontic_text(
+      'Owners shall repair sidewalks. Owners may request a variance. Owners shall not block inspections.',
+    );
+
+    expect(result).toMatchObject({
+      success: true,
+      metadata: {
+        parser: 'browser-native-deontic-parser',
+        pythonRuntime: false,
+        serverCallsAllowed: false,
+        elementCount: 3,
+      },
+    });
+    expect(result.norms.map((norm) => norm.norm_type)).toEqual([
+      'obligation',
+      'permission',
+      'prohibition',
+    ]);
+    expect(result.norms[2]).toMatchObject({
+      deontic_operator: 'F',
+      indicator: 'shall not',
+      sentence_index: 2,
+    });
+    expect(result.formulas[0]).toContain('O(∀x');
+  });
+
+  it('filters obligations, permissions, and prohibitions through Python-compatible helpers', () => {
+    const text =
+      'The tenant must pay rent. The landlord may enter for repairs. The tenant must not block access.';
+
+    expect(extractObligations(text).map((norm) => norm.indicator)).toEqual(['must']);
+    expect(extractPermissions(text).map((norm) => norm.indicator)).toEqual(['may']);
+    expect(extractProhibitions(text).map((norm) => norm.indicator)).toEqual(['must not']);
+    expect(
+      parseDeonticText(text, { includeObligations: false }).norms.map((norm) => norm.norm_type),
+    ).toEqual(['permission', 'prohibition']);
+  });
+
+  it('uses word-bounded indicators to avoid false positive can matches', () => {
+    expect(analyzeNormativeSentence('A vacancy notice describes the office')).toBeNull();
   });
 
   it('returns a warning when no normative language is detected', () => {
@@ -85,7 +187,9 @@ describe('deontic parser utilities', () => {
   });
 
   it('extracts temporal periods and durations', () => {
-    expect(extractTemporalConstraints('Reports are due monthly and must be kept for 3 years')).toEqual([
+    expect(
+      extractTemporalConstraints('Reports are due monthly and must be kept for 3 years'),
+    ).toEqual([
       { type: 'duration', value: '3 years' },
       { type: 'period', value: 'monthly' },
     ]);

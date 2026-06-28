@@ -1,0 +1,42 @@
+{
+  "source_refresh_runbook_candidate": {
+    "runbook_id": "fixture-first-source-refresh-candidate-20260529-schedule-update",
+    "status": "candidate",
+    "mode": "metadata-only",
+    "target_urls": [
+      "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications"
+    ],
+    "policy_evidence": {
+      "robots": "robots policy evidence fixture reviewed for public PP&D metadata-only refresh planning",
+      "policy": "targets are PP&D public allowlisted source fixtures"
+    },
+    "rate_limit": {
+      "requests": 1,
+      "per_seconds": 10,
+      "window": "one metadata review candidate per host every ten seconds before any future live execution"
+    },
+    "reviewer_checkpoints": [
+      "review affected source ids before accepting proposed cadence changes",
+      "review robots and allowlist evidence before any future live recrawl plan",
+      "review no mutation attestations before schedule promotion"
+    ],
+    "abort_escalation": {
+      "abort": "abort if the schedule candidate requires live fetch, processor invocation, registry mutation, or schedule mutation",
+      "escalation": "escalate to the PP&D source freshness reviewer before promotion"
+    },
+    "abort_conditions": [
+      "missing_required_fixture",
+      "missing_or_ambiguous_policy_evidence",
+      "authentication_or_captcha_required",
+      "schedule_mutation_required",
+      "registry_mutation_required",
+      "processor_invocation_required",
+      "reviewer_checkpoint_not_approved"
+    ],
+    "active_schedule": false,
+    "registry_mutation": false,
+    "live_fetch_enabled": false,
+    "processor_execution_enabled": false
+  }
+}

@@ -1,0 +1,136 @@
+{
+  "packet_id": "next-release-integration-rehearsal-v1",
+  "packet_version": "1.0",
+  "generated_from": "committed synthetic PP&D fixtures only",
+  "candidates": [
+    {
+      "candidate_id": "synthetic-freshness-requirements-ready",
+      "title": "Current public guide freshness plus extracted upload-staging requirements",
+      "synthetic_source_freshness_delta": {
+        "status": "current",
+        "source_ids": ["ppd-public-guide-fixture", "single-pdf-process-fixture"],
+        "freshness_delta": "synthetic metadata reports no stale source evidence",
+        "blocking_issues": [],
+        "review_items": []
+      },
+      "requirement_extraction_delta": {
+        "all_required_requirements_extracted": true,
+        "requirement_ids": ["req-document-separate-pdfs", "req-upload-staging-only", "req-certification-gate"],
+        "blocking_issues": [],
+        "review_items": []
+      },
+      "process_dependency_delta": {
+        "all_required_dependencies_satisfied": true,
+        "dependency_order": [
+          "source freshness fixture accepted",
+          "requirement extraction fixture accepted",
+          "process dependency fixture accepted",
+          "guardrail impact fixture accepted",
+          "agent gap-analysis fixture accepted"
+        ],
+        "blocking_issues": [],
+        "review_items": []
+      },
+      "guardrail_impact_delta": {
+        "impact": "reversible draft and upload-staging checks remain allowed while certification, upload, and submission stay gated",
+        "consequential_actions": ["certification", "upload", "submission"],
+        "active_mutation_requested": false,
+        "blocking_issues": [],
+        "review_items": []
+      },
+      "agent_gap_analysis_delta": {
+        "agent_gap_delta_resolved": true,
+        "closed_gaps": ["document category labels", "file separation evidence"],
+        "remaining_gaps": [],
+        "blocking_issues": [],
+        "review_items": []
+      }
+    },
+    {
+      "candidate_id": "correction-upload-review-held",
+      "title": "Correction upload workflow needs reviewer-held DevHub action classification",
+      "synthetic_source_freshness_delta": {
+        "status": "current",
+        "source_ids": ["devhub-corrections-fixture"],
+        "freshness_delta": "synthetic correction guidance remains current",
+        "blocking_issues": [],
+        "review_items": []
+      },
+      "requirement_extraction_delta": {
+        "all_required_requirements_extracted": true,
+        "requirement_ids": ["req-correction-review-group-check", "req-permit-number-lookup"],
+        "blocking_issues": [],
+        "review_items": []
+      },
+      "process_dependency_delta": {
+        "all_required_dependencies_satisfied": false,
+        "dependency_order": [
+          "source freshness fixture accepted",
+          "requirement extraction fixture accepted",
+          "manual reviewer confirms correction process dependency",
+          "guardrail impact fixture accepted",
+          "agent gap-analysis fixture rerun"
+        ],
+        "blocking_issues": [],
+        "review_items": ["correction upload depends on authenticated account-scoped status evidence that is not present in fixture-only rehearsal"]
+      },
+      "guardrail_impact_delta": {
+        "impact": "upload remains consequential and exact-confirmation gated",
+        "consequential_actions": ["upload", "submission"],
+        "active_mutation_requested": false,
+        "blocking_issues": [],
+        "review_items": ["reviewer must verify that draft-only assistance cannot cross into upload execution"]
+      },
+      "agent_gap_analysis_delta": {
+        "agent_gap_delta_resolved": false,
+        "closed_gaps": ["correction document category labels"],
+        "remaining_gaps": ["account-scoped review group status"],
+        "blocking_issues": [],
+        "review_items": ["held until a synthetic account-scoped status fixture is added without private values"]
+      }
+    },
+    {
+      "candidate_id": "payment-execution-rejected",
+      "title": "Fee payment execution is outside release rehearsal boundaries",
+      "synthetic_source_freshness_delta": {
+        "status": "current",
+        "source_ids": ["fee-payment-guide-fixture"],
+        "freshness_delta": "synthetic fee-payment guidance exists but cannot authorize execution",
+        "blocking_issues": [],
+        "review_items": []
+      },
+      "requirement_extraction_delta": {
+        "all_required_requirements_extracted": true,
+        "requirement_ids": ["req-payment-detail-entry-gated", "req-final-payment-submit-refused"],
+        "blocking_issues": [],
+        "review_items": []
+      },
+      "process_dependency_delta": {
+        "all_required_dependencies_satisfied": false,
+        "dependency_order": [
+          "source freshness fixture accepted",
+          "requirement extraction fixture accepted",
+          "reject payment execution before process dependency acceptance",
+          "preserve guardrail refusal",
+          "agent gap-analysis records blocked action"
+        ],
+        "blocking_issues": ["payment execution cannot be rehearsed as a releasable automation path"],
+        "review_items": []
+      },
+      "guardrail_impact_delta": {
+        "impact": "payment-detail entry and final payment submission remain refused for autonomous automation",
+        "consequential_actions": ["payment_execution"],
+        "active_mutation_requested": true,
+        "blocking_issues": ["active payment mutation requested"],
+        "review_items": []
+      },
+      "agent_gap_analysis_delta": {
+        "agent_gap_delta_resolved": false,
+        "closed_gaps": [],
+        "remaining_gaps": ["user-attended payment confirmation", "private payment details intentionally absent"],
+        "blocking_issues": ["private payment details are not allowed in committed fixtures"],
+        "review_items": []
+      }
+    }
+  ]
+}

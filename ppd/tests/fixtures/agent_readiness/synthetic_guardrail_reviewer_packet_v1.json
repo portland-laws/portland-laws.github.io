@@ -1,0 +1,68 @@
+{
+  "packet_type": "ppd.synthetic_guardrail_reviewer_packet.v1",
+  "packet_id": "synthetic-guardrail-reviewer-packet-v1-fixture",
+  "reviewer_rows": [
+    {
+      "row_id": "synthetic-review-row-001",
+      "synthetic_reviewer_packet_row": true,
+      "reviewer_disposition": "approved",
+      "approved_for": "inactive_guardrail_bundle_promotion_candidate_v1",
+      "guardrail_bundle_id": "guardrail-bundle-single-pdf-process-fixture",
+      "process_id": "process-single-pdf-fixture",
+      "citations": [
+        "fixture-citation-single-pdf-001"
+      ],
+      "source_evidence_ids": [
+        "source-evidence-placeholder-single-pdf-001"
+      ],
+      "predicate_inventory": {
+        "deterministic": [
+          {
+            "predicate_id": "predicate-deterministic-fixture-001",
+            "description": "Fixture predicate requiring source-backed process selection before draft guidance."
+          }
+        ],
+        "deontic": [
+          {
+            "predicate_id": "predicate-deontic-fixture-001",
+            "description": "Fixture predicate reminding agents that official actions remain blocked."
+          }
+        ],
+        "temporal": [
+          {
+            "predicate_id": "predicate-temporal-fixture-001",
+            "description": "Fixture predicate requiring stale evidence review before release."
+          }
+        ]
+      },
+      "gate_inventory": {
+        "reversible": [
+          {
+            "gate_id": "gate-reversible-fixture-001",
+            "description": "Fixture gate allowing metadata-only draft planning."
+          }
+        ],
+        "refused": [
+          {
+            "gate_id": "gate-refused-fixture-001",
+            "description": "Fixture gate refusing consequential official actions."
+          }
+        ],
+        "exact_confirmation": [
+          {
+            "gate_id": "gate-exact-confirmation-fixture-001",
+            "description": "Fixture gate requiring exact user confirmation before attended checkpoints."
+          }
+        ]
+      },
+      "agent_facing_explanations": [
+        {
+          "audience": "agent",
+          "template": "Fixture explanation for an inactive candidate that remains pending manual review."
+        }
+      ],
+      "release_blocker_note": "Fixture release blocker requiring manual review before any release decision.",
+      "rollback_note": "Fixture rollback note discarding inactive candidate metadata only."
+    }
+  ]
+}

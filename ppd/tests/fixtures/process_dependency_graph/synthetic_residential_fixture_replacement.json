@@ -1,0 +1,234 @@
+{
+  "fixture_id": "synthetic_residential_fixture_replacement_dependency_graph_v1",
+  "fixture_kind": "process_dependency_graph",
+  "is_synthetic": true,
+  "source_policy": {
+    "live_crawl_required": false,
+    "authenticated_devhub_required": false,
+    "contains_private_values": false,
+    "contains_raw_downloads": false
+  },
+  "process": {
+    "process_id": "synthetic_residential_fixture_replacement",
+    "permit_type": "synthetic residential plumbing fixture replacement",
+    "scope": "Replace one existing residential plumbing fixture without structural work, exterior work, plan review, or utility service changes.",
+    "stage_order": [
+      "pre-application research",
+      "account setup or manual login",
+      "property lookup",
+      "permit type selection",
+      "eligibility screening",
+      "document preparation",
+      "application data entry",
+      "acknowledgement/certification review",
+      "submission",
+      "fee payment",
+      "inspections",
+      "closeout"
+    ]
+  },
+  "nodes": [
+    {
+      "id": "fact_property_address",
+      "kind": "required_fact",
+      "label": "Project site address",
+      "stage": "property lookup",
+      "required": true,
+      "reason": "The process cannot select or validate a property without a site address."
+    },
+    {
+      "id": "fact_owner_authorization",
+      "kind": "required_fact",
+      "label": "Owner or authorized applicant confirmation",
+      "stage": "eligibility screening",
+      "required": true,
+      "reason": "The applicant must be able to confirm authority before certification or submission."
+    },
+    {
+      "id": "fact_existing_fixture_same_location",
+      "kind": "required_fact",
+      "label": "Existing fixture remains in the same location",
+      "stage": "eligibility screening",
+      "required": true,
+      "reason": "The synthetic process is limited to like-for-like replacement."
+    },
+    {
+      "id": "fact_no_plan_review_scope",
+      "kind": "required_fact",
+      "label": "No plan review scope is included",
+      "stage": "eligibility screening",
+      "required": true,
+      "reason": "The narrow workflow is unsupported if structural, exterior, or service changes are present."
+    },
+    {
+      "id": "doc_fixture_cut_sheet",
+      "kind": "required_document",
+      "label": "Fixture cut sheet PDF",
+      "stage": "document preparation",
+      "required": true,
+      "file_rules": {
+        "allowed_mime_types": ["application/pdf"],
+        "private_file_paths_allowed": false,
+        "raw_document_committed": false
+      }
+    },
+    {
+      "id": "doc_owner_authorization",
+      "kind": "required_document",
+      "label": "Owner authorization PDF when applicant is not owner",
+      "stage": "document preparation",
+      "required_when": "fact_owner_authorization indicates applicant is not the property owner",
+      "file_rules": {
+        "allowed_mime_types": ["application/pdf"],
+        "private_file_paths_allowed": false,
+        "raw_document_committed": false
+      }
+    },
+    {
+      "id": "deadline_draft_review_window",
+      "kind": "deadline",
+      "label": "Review draft facts and staged documents before submission",
+      "stage": "acknowledgement/certification review",
+      "temporal_scope": "Before any DevHub submission action is taken",
+      "blocks_if_missed": ["gate_submit_application"]
+    },
+    {
+      "id": "deadline_fee_payment_after_assessment",
+      "kind": "deadline",
+      "label": "Fee payment is only considered after an assessed fee notice is visible",
+      "stage": "fee payment",
+      "temporal_scope": "After DevHub or PP&D presents an assessed fee notice",
+      "blocks_if_missed": ["gate_submit_payment"]
+    },
+    {
+      "id": "fee_trigger_application_ready",
+      "kind": "fee_trigger",
+      "label": "Application or permit fee may be triggered after submission readiness",
+      "stage": "submission",
+      "trigger_condition": "All required facts and documents are present and the user confirms the exact submission action.",
+      "financial_action_required": false
+    },
+    {
+      "id": "fee_trigger_payment_notice",
+      "kind": "fee_trigger",
+      "label": "Payment workflow may be triggered by an assessed fee notice",
+      "stage": "fee payment",
+      "trigger_condition": "A fee notice is visible in the attended DevHub session.",
+      "financial_action_required": true
+    },
+    {
+      "id": "exception_owner_doc_not_needed",
+      "kind": "exception",
+      "label": "Owner authorization document not needed for owner applicant",
+      "stage": "document preparation",
+      "condition": "Applicant is the property owner and can attest to that fact.",
+      "waives": ["doc_owner_authorization"]
+    },
+    {
+      "id": "unsupported_plan_review_required",
+      "kind": "unsupported_path",
+      "label": "Plan review, structural, exterior, or service-change work",
+      "stage": "eligibility screening",
+      "condition": "Project includes structural changes, exterior work, plan review scope, new service, or relocation beyond fixture replacement.",
+      "handoff": "Stop this synthetic workflow and require a different source-backed process model."
+    },
+    {
+      "id": "unsupported_unclear_devhub_consequence",
+      "kind": "unsupported_path",
+      "label": "Unclear DevHub consequence",
+      "stage": "application data entry",
+      "condition": "A DevHub action has unclear legal, financial, upload, certification, or submission consequence.",
+      "handoff": "Manual human review required before action."
+    },
+    {
+      "id": "gate_attended_login",
+      "kind": "devhub_action_gate",
+      "label": "Attended DevHub login",
+      "stage": "account setup or manual login",
+      "action_class": "manual_handoff",
+      "requires_attendance": true,
+      "requires_exact_confirmation": false,
+      "automation_policy": "Do not automate account creation, credentials, MFA, CAPTCHA, or password recovery."
+    },
+    {
+      "id": "gate_draft_fill",
+      "kind": "devhub_action_gate",
+      "label": "Draft-fill reversible application fields",
+      "stage": "application data entry",
+      "action_class": "reversible_draft",
+      "requires_attendance": false,
+      "requires_exact_confirmation": false,
+      "automation_policy": "May draft-fill only after required facts are present; do not submit."
+    },
+    {
+      "id": "gate_submit_application",
+      "kind": "devhub_action_gate",
+      "label": "Submit or certify application",
+      "stage": "submission",
+      "action_class": "consequential_official",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true,
+      "automation_policy": "Block automation until the user is present and confirms the exact official action."
+    },
+    {
+      "id": "gate_submit_payment",
+      "kind": "devhub_action_gate",
+      "label": "Enter payment details or submit payment",
+      "stage": "fee payment",
+      "action_class": "financial",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true,
+      "automation_policy": "Do not enter payment details or submit payment without attended exact confirmation."
+    },
+    {
+      "id": "gate_schedule_inspection",
+      "kind": "devhub_action_gate",
+      "label": "Schedule inspection",
+      "stage": "inspections",
+      "action_class": "consequential_official",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true,
+      "automation_policy": "Treat inspection scheduling as an official action requiring attended confirmation."
+    }
+  ],
+  "edges": [
+    {"from": "fact_property_address", "to": "gate_draft_fill", "relationship": "required_before"},
+    {"from": "fact_owner_authorization", "to": "gate_draft_fill", "relationship": "required_before"},
+    {"from": "fact_existing_fixture_same_location", "to": "gate_draft_fill", "relationship": "required_before"},
+    {"from": "fact_no_plan_review_scope", "to": "gate_draft_fill", "relationship": "required_before"},
+    {"from": "doc_fixture_cut_sheet", "to": "gate_submit_application", "relationship": "required_before"},
+    {"from": "doc_owner_authorization", "to": "gate_submit_application", "relationship": "conditionally_required_before"},
+    {"from": "exception_owner_doc_not_needed", "to": "doc_owner_authorization", "relationship": "waives_when_condition_true"},
+    {"from": "unsupported_plan_review_required", "to": "gate_draft_fill", "relationship": "blocks"},
+    {"from": "unsupported_unclear_devhub_consequence", "to": "gate_submit_application", "relationship": "blocks"},
+    {"from": "gate_attended_login", "to": "gate_draft_fill", "relationship": "precedes"},
+    {"from": "gate_draft_fill", "to": "deadline_draft_review_window", "relationship": "precedes"},
+    {"from": "deadline_draft_review_window", "to": "gate_submit_application", "relationship": "required_before"},
+    {"from": "gate_submit_application", "to": "fee_trigger_application_ready", "relationship": "may_trigger"},
+    {"from": "fee_trigger_application_ready", "to": "fee_trigger_payment_notice", "relationship": "precedes"},
+    {"from": "fee_trigger_payment_notice", "to": "deadline_fee_payment_after_assessment", "relationship": "starts_temporal_scope"},
+    {"from": "deadline_fee_payment_after_assessment", "to": "gate_submit_payment", "relationship": "required_before"},
+    {"from": "gate_submit_payment", "to": "gate_schedule_inspection", "relationship": "precedes_when_required"}
+  ],
+  "expected_guardrail_outcomes": [
+    {
+      "case": "missing_required_fact",
+      "known_node_ids": ["fact_property_address", "fact_owner_authorization"],
+      "blocked_gate_ids": ["gate_draft_fill", "gate_submit_application"],
+      "next_safe_actions": ["Ask for missing eligibility facts."]
+    },
+    {
+      "case": "owner_applicant_ready_for_draft",
+      "known_node_ids": ["fact_property_address", "fact_owner_authorization", "fact_existing_fixture_same_location", "fact_no_plan_review_scope", "exception_owner_doc_not_needed", "doc_fixture_cut_sheet"],
+      "allowed_gate_ids": ["gate_draft_fill"],
+      "blocked_gate_ids": ["gate_submit_application", "gate_submit_payment", "gate_schedule_inspection"],
+      "next_safe_actions": ["Prepare reversible draft values for attended review."]
+    },
+    {
+      "case": "unsupported_scope",
+      "known_node_ids": ["fact_property_address", "unsupported_plan_review_required"],
+      "blocked_gate_ids": ["gate_draft_fill", "gate_submit_application", "gate_submit_payment", "gate_schedule_inspection"],
+      "next_safe_actions": ["Stop and require a different source-backed process model."]
+    }
+  ]
+}

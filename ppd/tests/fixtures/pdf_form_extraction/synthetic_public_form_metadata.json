@@ -1,0 +1,188 @@
+{
+  "fixture_id": "synthetic_public_form_metadata_v1",
+  "fixture_type": "normalized_pdf_form_extraction",
+  "source": {
+    "source_id": "synthetic_ppd_public_form_001",
+    "canonical_url": "https://www.portland.gov/ppd/documents/synthetic-public-form-fixture/download",
+    "source_type": "public_form",
+    "owning_surface": "ppd_public_forms",
+    "privacy_classification": "public_synthetic",
+    "no_pdf_binary_stored": true,
+    "raw_body_persisted": false
+  },
+  "document": {
+    "document_id": "doc_synthetic_ppd_public_form_001",
+    "title": "Synthetic PP&D Permit Intake Form Fixture",
+    "document_type": "public_fillable_pdf_form",
+    "language": "en",
+    "content_hash": "sha256:synthetic-fixture-no-binary",
+    "extraction_confidence": 0.97
+  },
+  "page_anchors": [
+    {
+      "page_number": 1,
+      "anchor_id": "page-1-intake-summary",
+      "heading": "Permit Intake Summary",
+      "text_spans": [
+        {
+          "span_id": "span-001",
+          "text": "Complete all required applicant and project fields before submitting this form with supporting documents.",
+          "source_method": "embedded_text",
+          "confidence": 0.99
+        }
+      ]
+    },
+    {
+      "page_number": 2,
+      "anchor_id": "page-2-document-checklist",
+      "heading": "Required Documents Checklist",
+      "text_spans": [
+        {
+          "span_id": "span-002",
+          "text": "Plans, calculations, and supporting documents must be prepared as separate PDF files as directed by PP&D guidance.",
+          "source_method": "embedded_text",
+          "confidence": 0.98
+        }
+      ]
+    },
+    {
+      "page_number": 3,
+      "anchor_id": "page-3-certification",
+      "heading": "Applicant Certification",
+      "text_spans": [
+        {
+          "span_id": "span-003",
+          "text": "Signature certifies that the information provided is accurate to the best of the applicant's knowledge.",
+          "source_method": "ocr",
+          "confidence": 0.91
+        }
+      ]
+    }
+  ],
+  "checklist_items": [
+    {
+      "item_id": "checklist-site-plan",
+      "page_anchor_id": "page-2-document-checklist",
+      "label": "Site plan PDF",
+      "required": true,
+      "normalized_requirement_type": "document_requirement"
+    },
+    {
+      "item_id": "checklist-structural-calculations",
+      "page_anchor_id": "page-2-document-checklist",
+      "label": "Structural calculations PDF when required by scope",
+      "required": false,
+      "condition": "Required when structural work is proposed.",
+      "normalized_requirement_type": "conditional_document_requirement"
+    },
+    {
+      "item_id": "checklist-owner-authorization",
+      "page_anchor_id": "page-2-document-checklist",
+      "label": "Owner authorization form",
+      "required": true,
+      "normalized_requirement_type": "document_requirement"
+    }
+  ],
+  "fillable_fields": [
+    {
+      "field_name": "applicant.full_name",
+      "field_type": "text",
+      "page_anchor_id": "page-1-intake-summary",
+      "required": true,
+      "export_name": "ApplicantFullName"
+    },
+    {
+      "field_name": "project.site_address",
+      "field_type": "text",
+      "page_anchor_id": "page-1-intake-summary",
+      "required": true,
+      "export_name": "ProjectSiteAddress"
+    },
+    {
+      "field_name": "project.work_type",
+      "field_type": "radio",
+      "page_anchor_id": "page-1-intake-summary",
+      "required": true,
+      "options": [
+        "new_construction",
+        "alteration",
+        "demolition",
+        "trade_permit"
+      ],
+      "export_name": "ProjectWorkType"
+    },
+    {
+      "field_name": "documents.site_plan_attached",
+      "field_type": "checkbox",
+      "page_anchor_id": "page-2-document-checklist",
+      "required": true,
+      "export_name": "SitePlanAttached"
+    },
+    {
+      "field_name": "certification.applicant_signature",
+      "field_type": "signature",
+      "page_anchor_id": "page-3-certification",
+      "required": true,
+      "export_name": "ApplicantSignature"
+    },
+    {
+      "field_name": "certification.signature_date",
+      "field_type": "date",
+      "page_anchor_id": "page-3-certification",
+      "required": true,
+      "export_name": "SignatureDate"
+    }
+  ],
+  "signature_and_certification_blocks": [
+    {
+      "block_id": "certification-applicant",
+      "page_anchor_id": "page-3-certification",
+      "block_type": "applicant_certification",
+      "requires_signature": true,
+      "requires_date": true,
+      "certification_text": "I certify that the information provided is accurate and that required documents are included for review.",
+      "guardrail": "Do not certify or submit without explicit user attendance and action-specific confirmation."
+    }
+  ],
+  "file_preparation_instructions": [
+    {
+      "instruction_id": "prep-single-plan-set",
+      "page_anchor_id": "page-2-document-checklist",
+      "instruction_type": "pdf_preparation",
+      "text": "Combine drawing sheets into one plan set PDF; keep applications, calculations, and supporting documents as separate PDF files.",
+      "normalized_rule": "plans_one_pdf_supporting_documents_separate_pdfs"
+    },
+    {
+      "instruction_id": "prep-searchable-pdf",
+      "page_anchor_id": "page-2-document-checklist",
+      "instruction_type": "pdf_quality",
+      "text": "Use searchable PDF text when available and avoid scanned images unless no source document exists.",
+      "normalized_rule": "prefer_searchable_pdf_text"
+    },
+    {
+      "instruction_id": "prep-filename-standard",
+      "page_anchor_id": "page-2-document-checklist",
+      "instruction_type": "file_naming",
+      "text": "Name files with a clear document type and project address before upload staging.",
+      "normalized_rule": "descriptive_document_type_and_address_filename"
+    }
+  ],
+  "ocr_confidence_flags": [
+    {
+      "flag_id": "ocr-certification-text",
+      "page_anchor_id": "page-3-certification",
+      "derived_from_ocr": true,
+      "confidence": 0.91,
+      "human_review_status": "review_recommended",
+      "reason": "Certification block was represented as flattened scanned text in the synthetic fixture."
+    },
+    {
+      "flag_id": "embedded-page-1-text",
+      "page_anchor_id": "page-1-intake-summary",
+      "derived_from_ocr": false,
+      "confidence": 0.99,
+      "human_review_status": "not_required",
+      "reason": "Page text was extracted from embedded PDF text layer metadata."
+    }
+  ]
+}

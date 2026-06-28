@@ -1,0 +1,59 @@
+{
+  "registry_version": "current-public-source-registry-placeholders-v1",
+  "generated_from": "committed_placeholder_fixture",
+  "raw_body": null,
+  "sources": [
+    {
+      "source_id": "ppd-devhub-faq-placeholder",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "source_type": "devhub_public",
+      "owning_surface": "public_guidance",
+      "allowlist_policy": "portland_gov_public_only",
+      "robots_policy": "respect_robots_before_any_future_fetch",
+      "crawl_frequency": "daily",
+      "processor_policy": "metadata_and_normalized_text_only",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-08T00:00:00Z",
+      "freshness_status": "stale"
+    },
+    {
+      "source_id": "ppd-submit-plans-online-placeholder",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "source_type": "public_html",
+      "owning_surface": "public_guidance",
+      "allowlist_policy": "portland_gov_public_only",
+      "robots_policy": "respect_robots_before_any_future_fetch",
+      "crawl_frequency": "weekly",
+      "processor_policy": "metadata_and_normalized_text_only",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-08T00:00:00Z",
+      "freshness_status": "stale"
+    },
+    {
+      "source_id": "ppd-fee-payment-guide-placeholder",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "source_type": "public_pdf",
+      "owning_surface": "public_pdf_guidance",
+      "allowlist_policy": "portland_gov_public_only",
+      "robots_policy": "respect_robots_before_any_future_fetch",
+      "crawl_frequency": "every_few_days",
+      "processor_policy": "metadata_and_normalized_text_only_no_raw_body",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-08T00:00:00Z",
+      "freshness_status": "stale"
+    },
+    {
+      "source_id": "ppd-forms-index-placeholder",
+      "canonical_url": "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications",
+      "source_type": "public_form",
+      "owning_surface": "public_forms_index",
+      "allowlist_policy": "portland_gov_public_only",
+      "robots_policy": "respect_robots_before_any_future_fetch",
+      "crawl_frequency": "weekly",
+      "processor_policy": "metadata_and_normalized_text_only_no_downloads",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-08T00:00:00Z",
+      "freshness_status": "current_placeholder"
+    }
+  ]
+}

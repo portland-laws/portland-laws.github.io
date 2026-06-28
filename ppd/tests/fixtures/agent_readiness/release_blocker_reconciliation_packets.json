@@ -1,0 +1,78 @@
+{
+  "valid": {
+    "packet_type": "ppd.agent_readiness_release_blocker_reconciliation.v1",
+    "release_status": "blocked",
+    "normalized_source_evidence": [
+      {
+        "evidence_id": "ppd-devhub-guide",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+        "freshness_status": "current",
+        "last_verified_at": "2026-05-08T00:00:00Z",
+        "citation_spans": [{"start": 10, "end": 80}]
+      }
+    ],
+    "prerequisites": [
+      {
+        "prerequisite_id": "manual-handoff-gate",
+        "status": "required",
+        "source_evidence_ids": ["ppd-devhub-guide"]
+      }
+    ],
+    "release_blockers": [
+      {
+        "blocker_id": "official-submission-blocked",
+        "status": "open",
+        "prerequisite_links": ["manual-handoff-gate"],
+        "source_evidence_ids": ["ppd-devhub-guide"],
+        "summary": "Official DevHub submission remains manual-handoff gated."
+      }
+    ],
+    "stale_current_acknowledged": true,
+    "controls": [
+      {
+        "control_id": "submit-permit",
+        "control_type": "submission",
+        "enabled": false
+      }
+    ],
+    "execution_mode": "metadata_only"
+  },
+  "invalid": {
+    "packet_type": "ppd.agent_readiness_release_blocker_reconciliation.v1",
+    "release_status": "production_ready",
+    "normalized_source_evidence": [
+      {
+        "evidence_id": "stale-devhub-guide",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+        "freshness_status": "current",
+        "last_verified_at": "2026-01-01T00:00:00Z"
+      }
+    ],
+    "stale_source_ids": ["stale-devhub-guide"],
+    "prerequisites": [
+      {
+        "prerequisite_id": "manual-handoff-gate",
+        "source_evidence_ids": ["stale-devhub-guide"]
+      }
+    ],
+    "release_blockers": [
+      {
+        "blocker_id": "uncited-open-blocker",
+        "status": "open",
+        "summary": "This blocker has no prerequisite links or citations."
+      }
+    ],
+    "session_state": "private-browser-state",
+    "local_path": "/home/example/.devhub/session.json",
+    "raw_crawl_ref": "archive://raw-crawl/example.warc.gz",
+    "outcome_claim": "The permit will be approved.",
+    "execution_claim": "Ran DevHub live network execution.",
+    "controls": [
+      {
+        "control_id": "submit-permit",
+        "control_type": "submission",
+        "enabled": true
+      }
+    ]
+  }
+}

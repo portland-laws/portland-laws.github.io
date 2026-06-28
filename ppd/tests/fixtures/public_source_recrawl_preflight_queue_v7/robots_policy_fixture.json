@@ -1,0 +1,55 @@
+{
+  "fixture_version": "committed-robots-policy-fixture-v7",
+  "fixture_first": true,
+  "live_robots_fetch_performed": false,
+  "hosts": {
+    "www.portland.gov": {
+      "robots_txt_url": "https://www.portland.gov/robots.txt",
+      "default_decision": "allowed",
+      "crawl_delay_seconds": 2,
+      "disallowed_path_prefixes": [
+        "/ppd/documents/how-pay-fees/download"
+      ],
+      "policy_evidence": "committed offline robots-policy fixture for public recrawl preflight queue v7"
+    },
+    "devhub.portlandoregon.gov": {
+      "robots_txt_url": "https://devhub.portlandoregon.gov/robots.txt",
+      "default_decision": "allowed",
+      "crawl_delay_seconds": 5,
+      "disallowed_path_prefixes": [
+        "/login",
+        "/signin",
+        "/register",
+        "/account",
+        "/dashboard",
+        "/payment",
+        "/upload",
+        "/submit"
+      ],
+      "policy_evidence": "committed offline robots-policy fixture; public landing metadata only"
+    },
+    "www.portlandoregon.gov": {
+      "robots_txt_url": "https://www.portlandoregon.gov/robots.txt",
+      "default_decision": "allowed",
+      "crawl_delay_seconds": 5,
+      "disallowed_path_prefixes": [
+        "/login",
+        "/signin",
+        "/account",
+        "/password"
+      ],
+      "policy_evidence": "committed offline robots-policy fixture; public reference metadata only"
+    },
+    "www.portlandmaps.com": {
+      "robots_txt_url": "https://www.portlandmaps.com/robots.txt",
+      "default_decision": "allowed",
+      "crawl_delay_seconds": 10,
+      "disallowed_path_prefixes": [
+        "/login",
+        "/account",
+        "/payment"
+      ],
+      "policy_evidence": "committed offline robots-policy fixture; no bulk enumeration"
+    }
+  }
+}

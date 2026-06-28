@@ -1,11 +1,6 @@
 // Web Worker for Client-side LLM processing to prevent blocking the main thread
-import { pipeline, env } from '@xenova/transformers';
 import { suppressWebGPUWarnings } from '../lib/warningSuppressionUtils';
 import { SUPPORTED_MODELS } from '../lib/llmConfig';
-
-// Configure transformers.js for web worker environment with optimizations
-env.allowLocalModels = false;
-env.useBrowserCache = true;
 
 // Use centralized model configuration
 const supportedModels = SUPPORTED_MODELS;
@@ -16,15 +11,29 @@ let isInitializing = false; // Add lock to prevent simultaneous initializations
 let currentModelName = '';
 let webGPUSupported = false;
 let simdSupported = false;
+let transformersPromise: Promise<{ pipeline: any; env: any }> | null = null;
+const progressMilestones = new Map<string, number>();
 
 // Global WebGPU detection cache to prevent repeated adapter requests
 let webGPUDetectionCache: { result: boolean; timestamp: number; } | null = null;
 const WEBGPU_CACHE_DURATION = 5 * 60 * 1000; // 5 minutes cache duration
 
+async function getTransformers() {
+  if (!transformersPromise) {
+    transformersPromise = (async () => {
+      const transformers = await import('@huggingface/transformers');
+      transformers.env.allowLocalModels = false;
+      transformers.env.useBrowserCache = true;
+      return { pipeline: transformers.pipeline, env: transformers.env };
+    })();
+  }
+  return transformersPromise;
+}
+
 // Worker message types
 interface WorkerRequest {
   id: string;
-  type: 'initialize' | 'generate' | 'getCapabilities' | 'switchModel';
+  type: 'initialize' | 'generate' | 'probe' | 'getCapabilities' | 'switchModel';
   data: any;
 }
 
@@ -33,6 +42,48 @@ interface WorkerResponse {
   success: boolean;
   data?: any;
   error?: string;
+}
+
+function emitDiagnostic(event: string, data: Record<string, unknown> = {}, requestId?: string) {
+  const payload = {
+    event,
+    timestamp: new Date().toISOString(),
+    modelName: currentModelName || data.modelName,
+    requestId,
+    ...data,
+  };
+  console.log(`[Worker][LLM] ${event}`, payload);
+  self.postMessage({ id: `diag_${Date.now()}_${Math.random().toString(36).slice(2)}`, success: true, data: { diagnostic: payload } });
+}
+
+function emitProgress(info: any, requestId?: string) {
+  const payload = {
+    requestId,
+    status: info?.status,
+    name: info?.name,
+    file: info?.file,
+    progress: info?.progress,
+    loaded: info?.loaded,
+    total: info?.total,
+  };
+  const progressKey = `${requestId || 'global'}:${payload.file || payload.name || payload.status || 'unknown'}`;
+
+  if (payload.status === 'progress' || payload.status === 'progress_total') {
+    const progress = Number(payload.progress || 0);
+    const milestone = Math.min(100, Math.floor(progress / 5) * 5);
+    const lastMilestone = progressMilestones.get(progressKey);
+    if (lastMilestone === milestone && progress < 100) {
+      return;
+    }
+    progressMilestones.set(progressKey, milestone);
+    console.log(`[Worker][LLM] download ${payload.file || payload.name || 'total'}: ${progress.toFixed(1)}%`);
+  } else {
+    console.log(`[Worker][LLM] ${payload.status}`, payload);
+    if (payload.status === 'done' && payload.file) {
+      progressMilestones.delete(progressKey);
+    }
+  }
+  self.postMessage({ id: `progress_${Date.now()}_${Math.random().toString(36).slice(2)}`, success: true, data: { progress: payload } });
 }
 
 // Detect backend capabilities in worker
@@ -116,6 +167,7 @@ async function testWebGPUSupport(): Promise<boolean> {
 
 // Configure transformers.js environment for optimal performance
 async function configureEnvironment(modelName: string) {
+  const { env } = await getTransformers();
   const modelConfig = supportedModels[modelName as keyof typeof SUPPORTED_MODELS];
   if (!modelConfig) {
     throw new Error(`Unsupported model: ${modelName}`);
@@ -166,7 +218,7 @@ async function configureEnvironment(modelName: string) {
           (env.backends as any).webgpu.enabled = true;
           console.log('[Worker] WebGPU backend enabled');
         } else {
-          console.log('[Worker] WebGPU not available in this Transformers.js version');
+          console.log('[Worker] WebGPU backend flag not exposed; continuing with device="webgpu"');
         }
       } catch (e) {
         console.log('[Worker] WebGPU configuration not available');
@@ -215,7 +267,7 @@ async function configureEnvironment(modelName: string) {
 }
 
 // Initialize the LLM model with optimizations
-async function initializeLLM(modelName: string = 'Xenova/distilgpt2'): Promise<void> {
+async function initializeLLM(modelName: string = 'LiquidAI/LFM2.5-1.2B-Instruct-ONNX', requestId?: string): Promise<void> {
   if (isInitialized && textGenerator && currentModelName === modelName) {
     return;
   }
@@ -235,15 +287,24 @@ async function initializeLLM(modelName: string = 'Xenova/distilgpt2'): Promise<v
   try {
     // Clear previous model if switching
     if (textGenerator && currentModelName !== modelName) {
+      textGenerator.dispose?.();
       textGenerator = null;
       isInitialized = false;
     }
 
+    const { pipeline, env } = await getTransformers();
+    emitDiagnostic('initialize:start', { modelName }, requestId);
     await detectCapabilities();
     await configureEnvironment(modelName);
     
     const modelConfig = supportedModels[modelName as keyof typeof SUPPORTED_MODELS];
-    console.log(`[Worker] Initializing ${modelConfig?.name || modelName}...`);
+    emitDiagnostic('initialize:capabilities', {
+      modelName,
+      webGPU: webGPUSupported,
+      simd: simdSupported,
+      modelConfig,
+      transformersVersion: (env as any).version,
+    }, requestId);
     
     // Check hardware compatibility
     if (modelConfig?.requiresWebGPU && !webGPUSupported) {
@@ -252,6 +313,7 @@ async function initializeLLM(modelName: string = 'Xenova/distilgpt2'): Promise<v
 
     // Initialize with optimized configuration
     const pipelineOptions: any = {
+      progress_callback: (info: any) => emitProgress(info, requestId),
       // Configure session options to optimize for large models
       session_options: {
         // Suppress ONNX Runtime warnings about unused initializers  
@@ -275,14 +337,10 @@ async function initializeLLM(modelName: string = 'Xenova/distilgpt2'): Promise<v
     };
     
     // Use quantization for smaller models or when WebGPU is not available
-    if (modelConfig?.quantized || !webGPUSupported) {
-      pipelineOptions.quantized = true;
-    }
-
     // Set device preference with better error handling and large model optimizations
     if (modelConfig?.requiresWebGPU && webGPUSupported) {
       pipelineOptions.device = 'webgpu';
-      pipelineOptions.dtype = 'fp16'; // Use FP16 for WebGPU to save memory
+      pipelineOptions.dtype = (modelConfig as any)?.preferredDtype || 'q4'; // Quantized WebGPU path keeps browser memory pressure manageable.
       
       // Additional WebGPU optimizations for large models
       pipelineOptions.webgpu_options = {
@@ -294,6 +352,7 @@ async function initializeLLM(modelName: string = 'Xenova/distilgpt2'): Promise<v
       };
     } else {
       pipelineOptions.device = 'wasm';
+      pipelineOptions.dtype = modelConfig?.quantized ? 'q8' : undefined;
       
       // WASM optimizations for large models  
       pipelineOptions.wasm_options = {
@@ -303,12 +362,25 @@ async function initializeLLM(modelName: string = 'Xenova/distilgpt2'): Promise<v
     }
 
     try {
+      emitDiagnostic('pipeline:create', {
+        modelName,
+        device: pipelineOptions.device,
+        dtype: pipelineOptions.dtype,
+      }, requestId);
       textGenerator = await pipeline('text-generation', modelName, pipelineOptions);
       isInitialized = true;
       currentModelName = modelName;
-      console.log(`[Worker] ${modelConfig?.name || modelName} initialized successfully`);
+      emitDiagnostic('initialize:success', {
+        modelName,
+        device: pipelineOptions.device,
+        dtype: pipelineOptions.dtype,
+      }, requestId);
     } catch (pipelineError) {
-      console.warn(`[Worker] Pipeline creation failed, attempting fallback:`, pipelineError);
+      emitDiagnostic('pipeline:create_failed', {
+        modelName,
+        device: pipelineOptions.device,
+        error: pipelineError instanceof Error ? pipelineError.message : String(pipelineError),
+      }, requestId);
       
       // If WebGPU pipeline fails, try WASM fallback
       if (pipelineOptions.device === 'webgpu') {
@@ -316,15 +388,19 @@ async function initializeLLM(modelName: string = 'Xenova/distilgpt2'): Promise<v
         const fallbackOptions = {
           ...pipelineOptions,
           device: 'wasm',
-          quantized: true, // Use quantization for WASM fallback
+          dtype: 'q8',
         };
-        delete fallbackOptions.dtype; // Remove WebGPU-specific options
+        delete fallbackOptions.webgpu_options;
         
         try {
           textGenerator = await pipeline('text-generation', modelName, fallbackOptions);
           isInitialized = true;
           currentModelName = modelName;
-          console.log(`[Worker] ${modelConfig?.name || modelName} initialized successfully with WASM fallback`);
+          emitDiagnostic('initialize:success_wasm_fallback', {
+            modelName,
+            device: fallbackOptions.device,
+            dtype: fallbackOptions.dtype,
+          }, requestId);
         } catch (fallbackError) {
           console.error('[Worker] WASM fallback also failed:', fallbackError);
           throw fallbackError;
@@ -336,12 +412,23 @@ async function initializeLLM(modelName: string = 'Xenova/distilgpt2'): Promise<v
     
   } catch (error) {
     console.error(`[Worker] Failed to initialize ${modelName}:`, error);
+    const modelConfig = supportedModels[modelName as keyof typeof SUPPORTED_MODELS];
+
+    // WebGPU-targeted Liquid models should fall through to the cloud fallback layer,
+    // not silently become a tiny local GPT-2 model.
+    if (modelConfig?.requiresWebGPU) {
+      emitDiagnostic('initialize:failed_no_local_fallback', {
+        modelName,
+        error: error instanceof Error ? error.message : String(error),
+      }, requestId);
+      throw error;
+    }
     
     // Fallback to smaller model if initialization fails
     if (modelName !== 'Xenova/distilgpt2') {
       console.log('[Worker] Falling back to DistilGPT-2...');
       isInitializing = false; // Reset lock before recursive call
-      return initializeLLM('Xenova/distilgpt2');
+      return initializeLLM('Xenova/distilgpt2', requestId);
     }
     
     throw error;
@@ -351,42 +438,48 @@ async function initializeLLM(modelName: string = 'Xenova/distilgpt2'): Promise<v
 }
 
 // Generate text using the LLM with model-specific optimizations
-async function generateText(prompt: string, maxTokens: number = 50): Promise<string> {
+async function generateText(prompt: string, maxTokens: number = 50, requestId?: string): Promise<string> {
   if (!textGenerator || !isInitialized) {
     throw new Error('LLM not initialized');
   }
 
   try {
     const modelConfig = supportedModels[currentModelName as keyof typeof SUPPORTED_MODELS];
-    const isInstructModel = currentModelName.includes('Instruct') || 
+    const isInstructModel = currentModelName.includes('Instruct') ||
+                           currentModelName.includes('Thinking') ||
                            modelConfig?.type === 'instruct';
     
     // Format prompt appropriately for instruction models
-    let formattedPrompt = prompt;
+    let formattedPrompt: string | Array<{ role: string; content: string }> = prompt;
     
     if (isInstructModel) {
-      // Handle different instruction model formats
-      if (currentModelName.includes('qwen3') || currentModelName.includes('deepseek')) {
-        // Use a more generic instruction format for WebML community models
-        formattedPrompt = `<|im_start|>user\n${prompt}<|im_end|>\n<|im_start|>assistant\n`;
-      } else {
-        // Use Llama format for Llama models
-        formattedPrompt = `<|start_header_id|>user<|end_header_id|>\n\n${prompt}<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n`;
-      }
+      formattedPrompt = [
+        { role: 'system', content: 'You are a concise, helpful assistant.' },
+        { role: 'user', content: prompt },
+      ];
     }
 
     // Model-specific generation parameters
     const generationConfig: any = {
       max_new_tokens: maxTokens,
       do_sample: true,
-      pad_token_id: isInstructModel ? 128001 : 50256, // Llama vs GPT-2 pad tokens
     };
+    const padTokenId = (modelConfig as any)?.padTokenId;
+    if (padTokenId !== undefined) {
+      generationConfig.pad_token_id = padTokenId;
+    } else if (!isInstructModel) {
+      generationConfig.pad_token_id = 50256;
+    } else if (currentModelName.includes('Llama')) {
+      generationConfig.pad_token_id = 128001;
+    }
 
     // Configure generation parameters based on model type
     if (isInstructModel) {
-      // Optimized settings for Llama Instruct models
-      generationConfig.temperature = 0.6;
-      generationConfig.top_p = 0.9;
+      // Optimized settings for instruction-tuned models
+      generationConfig.temperature = 0.1;
+      if (currentModelName.includes('Thinking')) {
+        generationConfig.top_p = 0.1;
+      }
       generationConfig.repetition_penalty = 1.05;
       generationConfig.top_k = 50;
     } else {
@@ -401,29 +494,91 @@ async function generateText(prompt: string, maxTokens: number = 50): Promise<str
       generationConfig.use_cache = true; // Enable KV cache for better performance
     }
 
-    const result = await textGenerator(formattedPrompt, generationConfig);
+    emitDiagnostic('generate:start', {
+      modelName: currentModelName,
+      promptLength: prompt.length,
+      maxTokens,
+      isInstructModel,
+      webGPU: webGPUSupported,
+      device: modelConfig?.requiresWebGPU && webGPUSupported ? 'webgpu' : 'wasm',
+      stopTokens: (modelConfig as any)?.stopTokens,
+    }, requestId);
+
+    const result = await textGenerator(formattedPrompt as any, generationConfig);
 
     // Extract and clean generated text
-    const fullText = Array.isArray(result) ? result[0].generated_text : result.generated_text;
-    let newText = fullText.slice(formattedPrompt.length).trim();
+    let newText = extractGeneratedText(result, formattedPrompt);
     
     // Clean up instruction model responses
-    if (isInstructModel) {
-      if (currentModelName.includes('qwen3') || currentModelName.includes('deepseek')) {
-        newText = newText.split('<|im_end|>')[0].trim();
-      } else {
-        newText = newText.split('<|eot_id|>')[0].trim();
-      }
+    newText = newText
+      .trim();
+    for (const token of ((modelConfig as any)?.stopTokens || ['<|im_end|>', '<|eot_id|>'])) {
+      newText = newText.split(token)[0].trim();
     }
     
     // Remove potential repetition or incomplete sentences for better quality
     newText = cleanGeneratedText(newText);
     
+    emitDiagnostic('generate:success', {
+      modelName: currentModelName,
+      outputLength: newText.length,
+    }, requestId);
+
     return newText;
   } catch (error) {
     console.error('[Worker] Text generation failed:', error);
+    emitDiagnostic('generate:failed', {
+      modelName: currentModelName,
+      promptLength: prompt.length,
+      maxTokens,
+      error: error instanceof Error ? error.message : String(error),
+    }, requestId);
     throw error;
   }
+}
+
+async function probeLocalInference(maxTokens = 8, requestId?: string): Promise<{ ok: boolean; text: string; durationMs: number }> {
+  const startedAt = performance.now();
+  emitDiagnostic('probe:start', {
+    modelName: currentModelName,
+    initialized: isInitialized,
+    webGPU: webGPUSupported,
+  }, requestId);
+
+  const text = await generateText(
+    'Answer with exactly one short sentence: local inference is working.',
+    maxTokens,
+    requestId,
+  );
+  const durationMs = Math.round(performance.now() - startedAt);
+
+  if (!text || text.trim().length < 2) {
+    throw new Error('Local inference probe returned empty output.');
+  }
+
+  emitDiagnostic('probe:success', {
+    modelName: currentModelName,
+    outputLength: text.length,
+    durationMs,
+  }, requestId);
+
+  return { ok: true, text, durationMs };
+}
+
+function extractGeneratedText(result: any, formattedPrompt: string | Array<{ role: string; content: string }>): string {
+  const first = Array.isArray(result) ? result[0] : result;
+  const generated = first?.generated_text;
+
+  if (Array.isArray(generated)) {
+    const lastMessage = generated[generated.length - 1];
+    return String(lastMessage?.content || '').trim();
+  }
+
+  const fullText = String(generated || '');
+  if (typeof formattedPrompt === 'string' && fullText.startsWith(formattedPrompt)) {
+    return fullText.slice(formattedPrompt.length).trim();
+  }
+  return fullText.trim();
 }
 
 // Clean and optimize generated text
@@ -453,7 +608,7 @@ function cleanGeneratedText(text: string): string {
 }
 
 // Handle model switching
-async function switchModel(modelName: string): Promise<void> {
+async function switchModel(modelName: string, requestId?: string): Promise<void> {
   if (!(modelName in supportedModels)) {
     throw new Error(`Unsupported model: ${modelName}`);
   }
@@ -464,12 +619,13 @@ async function switchModel(modelName: string): Promise<void> {
 
   // Clear current model
   if (textGenerator) {
+    textGenerator.dispose?.();
     textGenerator = null;
     isInitialized = false;
   }
 
   // Initialize new model
-  await initializeLLM(modelName);
+  await initializeLLM(modelName, requestId);
 }
 
 // Handle messages from the main thread with enhanced functionality
@@ -481,7 +637,7 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
     
     switch (type) {
       case 'initialize':
-        await initializeLLM(data.modelName);
+        await initializeLLM(data.modelName, id);
         responseData = { 
           status: 'initialized', 
           modelName: currentModelName,
@@ -490,11 +646,15 @@ self.onmessage = async (event: MessageEvent<WorkerRequest>) => {
         break;
         
       case 'generate':
-        responseData = { text: await generateText(data.prompt, data.maxTokens) };
+        responseData = { text: await generateText(data.prompt, data.maxTokens, id) };
+        break;
+
+      case 'probe':
+        responseData = await probeLocalInference(data.maxTokens, id);
         break;
 
       case 'switchModel':
-        await switchModel(data.modelName);
+        await switchModel(data.modelName, id);
         responseData = { 
           status: 'switched', 
           modelName: currentModelName,

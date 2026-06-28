@@ -76,6 +76,54 @@ describe('CEC context manager', () => {
     expect(manager.getContextState().getEntity('t3')?.entityType).toBe('time');
   });
 
+  it('captures bindings and temporal scopes in restorable context snapshots', () => {
+    const manager = new CecContextManager();
+    manager.processUtterance('The tenant receives the notice.');
+    manager.bindEntity('actor', 'tenant');
+    manager.pushTemporalScope('appeal window', 1, ['tenant', 'notice']);
+    const snapshot = manager.snapshot();
+
+    manager.processUtterance('Bob checks the permit.');
+    manager.closeTemporalScope('appeal window', 2);
+    manager.rollback(snapshot);
+
+    expect(manager.resolveReference('actor')?.name).toBe('tenant');
+    expect(manager.resolveReference('bob')).toBeUndefined();
+    expect(manager.getTemporalScopes()).toEqual([
+      { label: 'appeal window', start: 1, entityNames: ['notice', 'tenant'] },
+    ]);
+    expect(manager.snapshot()).toEqual(snapshot);
+  });
+
+  it('merges context snapshots deterministically without losing bindings or temporal scopes', () => {
+    const base = new CecContextManager();
+    base.processUtterance('Alice opens the door.');
+
+    const branch = new CecContextManager();
+    branch.processUtterance('The tenant receives the notice.');
+    branch.bindEntity('respondent', 'tenant');
+    branch.pushTemporalScope('notice period', 1, ['notice', 'tenant']);
+
+    base.mergeSnapshot(branch.snapshot());
+
+    expect(base.getActiveEntities().map((entity) => entity.name)).toEqual([
+      'alice',
+      'door',
+      'notice',
+      'tenant',
+    ]);
+    expect(base.resolveReference('respondent')?.name).toBe('tenant');
+    expect(base.getTemporalScopes()).toEqual([
+      { label: 'notice period', start: 1, entityNames: ['notice', 'tenant'] },
+    ]);
+    expect(base.snapshot().entities.map((entity) => entity.name)).toEqual([
+      'alice',
+      'door',
+      'notice',
+      'tenant',
+    ]);
+  });
+
   it('segments discourse and scores coherence with Python-style heuristics', () => {
     const analyzer = new CecDiscourseAnalyzer();
     const utterances = [
@@ -89,7 +137,49 @@ describe('CEC context manager', () => {
       ['Alice opens the door', 'Alice closes the door'],
       ['However Bob checks the permit', 'Bob files the permit'],
     ]);
-    expect(analyzer.analyzeCoherence(['permit notice', 'permit appeal', 'appeal notice'])).toBeCloseTo(1 / 3);
+    expect(
+      analyzer.analyzeCoherence(['permit notice', 'permit appeal', 'appeal notice']),
+    ).toBeCloseTo(1 / 3);
+  });
+
+  it('returns a bounded context window with salience-ranked active entities', () => {
+    const manager = new CecContextManager();
+    manager.processUtterance('Alice opens the door.');
+    manager.processUtterance('The tenant receives the notice.');
+    manager.processUtterance('The tenant checks the permit.');
+    manager.pushTemporalScope('review window', 2, ['tenant', 'notice']);
+    manager.pushTemporalScope('old window', 1, ['alice']);
+    manager.closeTemporalScope('old window', 3);
+
+    const window = manager.getContextWindow({ windowSize: 2, entityTypes: ['agent', 'object'] });
+
+    expect(window.position).toBe(3);
+    expect(window.utterances).toEqual([
+      'The tenant receives the notice.',
+      'The tenant checks the permit.',
+    ]);
+    expect(
+      window.entities.map((entity) => [entity.name, entity.salienceAt(window.position)]),
+    ).toEqual([
+      ['tenant', 2],
+      ['permit', 1],
+      ['notice', 1 / 1.5],
+    ]);
+    expect(window.temporalScopes).toEqual([
+      { label: 'review window', start: 2, entityNames: ['notice', 'tenant'] },
+    ]);
+    expect(window.focus?.name).toBe('permit');
+  });
+
+  it('validates context window and salience inputs fail closed', () => {
+    const manager = new CecContextManager();
+    const entity = new CecContextEntity('permit', 'object');
+
+    expect(() => manager.getContextWindow({ windowSize: -1 })).toThrow(
+      'window size must be a non-negative integer',
+    );
+    expect(() => entity.salienceAt(-1)).toThrow('salience position');
+    expect(() => entity.salienceAt(1, -0.25)).toThrow('salience decay');
   });
 
   it('resets context and validates entity mention positions', () => {
@@ -100,6 +190,8 @@ describe('CEC context manager', () => {
     expect(manager.getActiveEntities()).toEqual([]);
     expect(manager.getDiscourseHistory()).toEqual([]);
     expect(() => new CecContextEntity('', 'agent')).toThrow('cannot be empty');
-    expect(() => new CecContextEntity('alice', 'agent').addMention(-1)).toThrow('non-negative integer');
+    expect(() => new CecContextEntity('alice', 'agent').addMention(-1)).toThrow(
+      'non-negative integer',
+    );
   });
 });

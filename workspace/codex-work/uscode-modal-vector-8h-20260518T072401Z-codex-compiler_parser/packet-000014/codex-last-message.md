@@ -1,0 +1,17 @@
+Implemented a deterministic parser hardening plus golden fixtures for the three claimed TODO samples.
+
+- Added a parser rule to ignore `may` when it is a calendar month literal (`May <day>, <year>`), preventing false deontic cues:
+  - [legal_modal_parser.py:106](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000014-20260518_082012/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:106)
+  - [spacy_modal_codec.py:409](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000014-20260518_082012/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py:409)
+
+- Added deterministic golden parser/compiler fixtures for the “no modal formula” legal texts and symbolic-validity case:
+  - [test_legal_modal_parser.py:17](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000014-20260518_082012/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py:17)
+  - [test_legal_modal_parser.py:437](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000014-20260518_082012/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py:437)
+  - [test_spacy_modal_codec.py:56](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000014-20260518_082012/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py:56)
+  - [test_modal_codec.py:312](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000014-20260518_082012/tests/unit_tests/logic/modal/test_modal_codec.py:312)
+  - [test_modal_codec.py:348](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000014-20260518_082012/tests/unit_tests/logic/modal/test_modal_codec.py:348)
+
+Validation run:
+
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py tests/unit_tests/logic/modal/test_modal_codec.py`
+- Result: `90 passed`

@@ -1,0 +1,83 @@
+{
+  "fixture_id": "file-naming-single-pdf-source-evidence-freshness",
+  "description": "Deterministic fixture proving document-preparation recommendations are blocked when PP&D file naming or Single PDF source evidence is stale or missing.",
+  "cases": [
+    {
+      "case_id": "fresh-file-naming-and-single-pdf-evidence",
+      "as_of": "2026-05-14",
+      "max_age_days": 45,
+      "required_rules": ["file_naming", "single_pdf"],
+      "source_evidence": [
+        {
+          "evidence_id": "ppd-file-naming-2026-05-08",
+          "source_name": "PP&D File Naming Standards and Preparing PDFs",
+          "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+          "captured_at": "2026-05-08",
+          "supports_rules": ["file_naming"]
+        },
+        {
+          "evidence_id": "ppd-single-pdf-2026-05-08",
+          "source_name": "PP&D Submit Plans Online Single PDF Process",
+          "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+          "captured_at": "2026-05-08",
+          "supports_rules": ["single_pdf"]
+        }
+      ],
+      "expected_ready": true,
+      "expected_status": "ready",
+      "expected_rule_statuses": {
+        "file_naming": "fresh",
+        "single_pdf": "fresh"
+      }
+    },
+    {
+      "case_id": "stale-file-naming-evidence-blocks-readiness",
+      "as_of": "2026-05-14",
+      "max_age_days": 45,
+      "required_rules": ["file_naming", "single_pdf"],
+      "source_evidence": [
+        {
+          "evidence_id": "ppd-file-naming-2026-02-01",
+          "source_name": "PP&D File Naming Standards and Preparing PDFs",
+          "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+          "captured_at": "2026-02-01",
+          "supports_rules": ["file_naming"]
+        },
+        {
+          "evidence_id": "ppd-single-pdf-2026-05-08",
+          "source_name": "PP&D Submit Plans Online Single PDF Process",
+          "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+          "captured_at": "2026-05-08",
+          "supports_rules": ["single_pdf"]
+        }
+      ],
+      "expected_ready": false,
+      "expected_status": "blocked_by_source_evidence",
+      "expected_rule_statuses": {
+        "file_naming": "stale",
+        "single_pdf": "fresh"
+      }
+    },
+    {
+      "case_id": "missing-single-pdf-evidence-blocks-readiness",
+      "as_of": "2026-05-14",
+      "max_age_days": 45,
+      "required_rules": ["file_naming", "single_pdf"],
+      "source_evidence": [
+        {
+          "evidence_id": "ppd-file-naming-2026-05-08",
+          "source_name": "PP&D File Naming Standards and Preparing PDFs",
+          "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+          "captured_at": "2026-05-08",
+          "supports_rules": ["file_naming"]
+        }
+      ],
+      "expected_ready": false,
+      "expected_status": "blocked_by_source_evidence",
+      "expected_rule_statuses": {
+        "file_naming": "fresh",
+        "single_pdf": "missing"
+      }
+    }
+  ]
+}

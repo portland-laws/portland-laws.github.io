@@ -1,0 +1,19 @@
+{
+  "packet_type": "public_source_registry_promotion_rehearsal",
+  "packet_id": "artifact:ppd:promotion-rehearsal:2026-05-28",
+  "status": "completed",
+  "registry_version": "fixture-public-source-registry-2026-05",
+  "fixture_first": true,
+  "crawl_ran": false,
+  "live_registry_mutated": false,
+  "candidate_sources": [
+    {
+      "source_id": "portland-devhub-permits",
+      "metadata_only_artifact_id": "artifact:ppd:registry:devhub-permits:metadata-review"
+    },
+    {
+      "source_id": "portland-zoning-code",
+      "metadata_only_artifact_id": "artifact:ppd:registry:zoning-code:metadata-review"
+    }
+  ]
+}

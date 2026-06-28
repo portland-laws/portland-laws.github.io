@@ -1,0 +1,35 @@
+{
+  "manifest_id": "archive-manifest-leaky-fixture",
+  "source_id": "ppd-devhub-private-fixture",
+  "canonical_url": "https://devhub.portlandoregon.gov/fixture",
+  "requested_url": "https://devhub.portlandoregon.gov/fixture",
+  "redirect_chain": [],
+  "http_status": 200,
+  "content_type": "text/html; charset=utf-8",
+  "content_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "capture_started_at": "2026-05-08T16:30:00Z",
+  "capture_finished_at": "2026-05-08T16:30:01Z",
+  "processor_name": "fixture-only-leaky-processor",
+  "processor_version": "fixture-only",
+  "archive_artifact_ref": "urn:ppd:fixture:leaky-manifest",
+  "normalized_document_id": "ppd-doc-leaky-fixture",
+  "no_raw_body_persisted": false,
+  "raw_body": "FIXTURE_ONLY_FORBIDDEN_RAW_CRAWL_BODY_SENTINEL",
+  "private_devhub_value": "FIXTURE_ONLY_FORBIDDEN_PRIVATE_DEVHUB_VALUE_SENTINEL",
+  "screenshot_artifact": "FIXTURE_ONLY_FORBIDDEN_SCREENSHOT_SENTINEL",
+  "playwright_trace": "FIXTURE_ONLY_FORBIDDEN_TRACE_SENTINEL",
+  "har_data": "FIXTURE_ONLY_FORBIDDEN_HAR_SENTINEL",
+  "auth_state": "FIXTURE_ONLY_FORBIDDEN_AUTH_STATE_SENTINEL",
+  "session_cookie": "FIXTURE_ONLY_FORBIDDEN_COOKIE_SENTINEL",
+  "local_private_path": "FIXTURE_ONLY_FORBIDDEN_LOCAL_PRIVATE_PATH_SENTINEL",
+  "citation_spans": [
+    {
+      "source_id": "ppd-devhub-private-fixture",
+      "normalized_document_id": "ppd-doc-leaky-fixture",
+      "section": "Rejected fixture",
+      "start_char": 0,
+      "end_char": 24,
+      "content_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  ]
+}

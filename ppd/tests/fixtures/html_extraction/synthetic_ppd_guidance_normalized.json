@@ -1,0 +1,475 @@
+{
+  "fixture_id": "synthetic_ppd_guidance_page_v1",
+  "canonical_url": "https://www.portland.gov/ppd/synthetic-guidance-fixture",
+  "source_type": "public_html",
+  "document_id": "ppd-synthetic-guidance-fixture",
+  "title": "Apply for a Synthetic Residential Permit",
+  "language": "en",
+  "updated_dates": [
+    {
+      "label": "Updated",
+      "date": "2026-05-08",
+      "text": "Updated May 8, 2026"
+    },
+    {
+      "label": "Published",
+      "date": "2026-04-30",
+      "text": "Published April 30, 2026"
+    }
+  ],
+  "breadcrumbs": [
+    {
+      "text": "Home",
+      "url": "https://www.portland.gov/"
+    },
+    {
+      "text": "Portland Permitting & Development",
+      "url": "https://www.portland.gov/ppd"
+    },
+    {
+      "text": "Get a Permit",
+      "url": "https://www.portland.gov/ppd/get-permit"
+    },
+    {
+      "text": "Apply for a Synthetic Residential Permit",
+      "url": "https://www.portland.gov/ppd/synthetic-guidance-fixture"
+    }
+  ],
+  "source_order": [
+    {
+      "order": 1,
+      "kind": "title",
+      "id": "title-main",
+      "text": "Apply for a Synthetic Residential Permit",
+      "citation_spans": [
+        {
+          "citation_id": "cite-001",
+          "source_order": 1,
+          "start": 0,
+          "end": 41,
+          "text": "Apply for a Synthetic Residential Permit"
+        }
+      ]
+    },
+    {
+      "order": 2,
+      "kind": "breadcrumbs",
+      "id": "breadcrumbs-primary",
+      "items": [
+        "Home",
+        "Portland Permitting & Development",
+        "Get a Permit",
+        "Apply for a Synthetic Residential Permit"
+      ],
+      "citation_spans": [
+        {
+          "citation_id": "cite-002",
+          "source_order": 2,
+          "start": 0,
+          "end": 108,
+          "text": "Home > Portland Permitting & Development > Get a Permit > Apply for a Synthetic Residential Permit"
+        }
+      ]
+    },
+    {
+      "order": 3,
+      "kind": "updated_date",
+      "id": "updated-date",
+      "label": "Updated",
+      "date": "2026-05-08",
+      "text": "Updated May 8, 2026",
+      "citation_spans": [
+        {
+          "citation_id": "cite-003",
+          "source_order": 3,
+          "start": 0,
+          "end": 19,
+          "text": "Updated May 8, 2026"
+        }
+      ]
+    },
+    {
+      "order": 4,
+      "kind": "heading",
+      "id": "heading-before-you-start",
+      "level": 2,
+      "text": "Before you start",
+      "citation_spans": [
+        {
+          "citation_id": "cite-004",
+          "source_order": 4,
+          "start": 0,
+          "end": 16,
+          "text": "Before you start"
+        }
+      ]
+    },
+    {
+      "order": 5,
+      "kind": "paragraph",
+      "id": "intro-summary",
+      "text": "Use this synthetic guidance page to test PP&D HTML extraction without contacting a public website.",
+      "citation_spans": [
+        {
+          "citation_id": "cite-005",
+          "source_order": 5,
+          "start": 0,
+          "end": 90,
+          "text": "Use this synthetic guidance page to test PP&D HTML extraction without contacting a public website."
+        }
+      ]
+    },
+    {
+      "order": 6,
+      "kind": "warning",
+      "id": "warning-confirm-before-submission",
+      "severity": "warning",
+      "heading": "Do not submit until you are ready",
+      "text": "Submitting an application is an official action. Review every permit detail with the applicant before selecting a final submit button.",
+      "citation_spans": [
+        {
+          "citation_id": "cite-006",
+          "source_order": 6,
+          "start": 0,
+          "end": 34,
+          "text": "Do not submit until you are ready"
+        },
+        {
+          "citation_id": "cite-007",
+          "source_order": 7,
+          "start": 35,
+          "end": 157,
+          "text": "Submitting an application is an official action. Review every permit detail with the applicant before selecting a final submit button."
+        }
+      ]
+    },
+    {
+      "order": 7,
+      "kind": "heading",
+      "id": "heading-steps",
+      "level": 2,
+      "text": "Steps to prepare your request",
+      "citation_spans": [
+        {
+          "citation_id": "cite-008",
+          "source_order": 8,
+          "start": 0,
+          "end": 29,
+          "text": "Steps to prepare your request"
+        }
+      ]
+    },
+    {
+      "order": 8,
+      "kind": "ordered_steps",
+      "id": "ordered-steps-prepare-request",
+      "items": [
+        {
+          "number": 1,
+          "text": "Confirm the property address and permit type."
+        },
+        {
+          "number": 2,
+          "text": "Prepare one drawing plan PDF and separate supporting documents."
+        },
+        {
+          "number": 3,
+          "text": "Review required acknowledgements before any official submission."
+        }
+      ],
+      "citation_spans": [
+        {
+          "citation_id": "cite-009",
+          "source_order": 9,
+          "start": 0,
+          "end": 45,
+          "text": "Confirm the property address and permit type."
+        },
+        {
+          "citation_id": "cite-010",
+          "source_order": 10,
+          "start": 46,
+          "end": 109,
+          "text": "Prepare one drawing plan PDF and separate supporting documents."
+        },
+        {
+          "citation_id": "cite-011",
+          "source_order": 11,
+          "start": 110,
+          "end": 171,
+          "text": "Review required acknowledgements before any official submission."
+        }
+      ]
+    },
+    {
+      "order": 9,
+      "kind": "heading",
+      "id": "heading-document-table",
+      "level": 2,
+      "text": "Documents to include",
+      "citation_spans": [
+        {
+          "citation_id": "cite-012",
+          "source_order": 12,
+          "start": 0,
+          "end": 20,
+          "text": "Documents to include"
+        }
+      ]
+    },
+    {
+      "order": 10,
+      "kind": "table",
+      "id": "table-required-documents",
+      "caption": "Synthetic required documents",
+      "headers": [
+        "Document",
+        "When required",
+        "Upload note"
+      ],
+      "rows": [
+        [
+          "Site plan",
+          "Always",
+          "Include in the drawing plan PDF"
+        ],
+        [
+          "Energy form",
+          "When energy code review applies",
+          "Upload as a separate PDF"
+        ]
+      ],
+      "citation_spans": [
+        {
+          "citation_id": "cite-013",
+          "source_order": 13,
+          "start": 0,
+          "end": 28,
+          "text": "Synthetic required documents"
+        },
+        {
+          "citation_id": "cite-014",
+          "source_order": 14,
+          "start": 29,
+          "end": 96,
+          "text": "Site plan | Always | Include in the drawing plan PDF"
+        },
+        {
+          "citation_id": "cite-015",
+          "source_order": 15,
+          "start": 97,
+          "end": 181,
+          "text": "Energy form | When energy code review applies | Upload as a separate PDF"
+        }
+      ]
+    },
+    {
+      "order": 11,
+      "kind": "contact",
+      "id": "contact-permit-help",
+      "name": "PP&D Permit Help",
+      "methods": [
+        {
+          "type": "phone",
+          "value": "503-823-7300"
+        },
+        {
+          "type": "email",
+          "value": "ppdpermits@example.invalid"
+        }
+      ],
+      "hours": "Monday through Friday, 8 a.m. to 5 p.m.",
+      "citation_spans": [
+        {
+          "citation_id": "cite-016",
+          "source_order": 16,
+          "start": 0,
+          "end": 16,
+          "text": "PP&D Permit Help"
+        },
+        {
+          "citation_id": "cite-017",
+          "source_order": 17,
+          "start": 17,
+          "end": 29,
+          "text": "503-823-7300"
+        },
+        {
+          "citation_id": "cite-018",
+          "source_order": 18,
+          "start": 30,
+          "end": 75,
+          "text": "Monday through Friday, 8 a.m. to 5 p.m."
+        }
+      ]
+    },
+    {
+      "order": 12,
+      "kind": "related_links",
+      "id": "related-links",
+      "heading": "Related links",
+      "links": [
+        {
+          "text": "DevHub public portal",
+          "url": "https://devhub.portlandoregon.gov"
+        },
+        {
+          "text": "Apply for permits",
+          "url": "https://www.portland.gov/ppd/get-permit/apply-permits"
+        }
+      ],
+      "citation_spans": [
+        {
+          "citation_id": "cite-019",
+          "source_order": 19,
+          "start": 0,
+          "end": 13,
+          "text": "Related links"
+        },
+        {
+          "citation_id": "cite-020",
+          "source_order": 20,
+          "start": 14,
+          "end": 34,
+          "text": "DevHub public portal"
+        },
+        {
+          "citation_id": "cite-021",
+          "source_order": 21,
+          "start": 35,
+          "end": 52,
+          "text": "Apply for permits"
+        }
+      ]
+    }
+  ],
+  "citation_spans": [
+    {
+      "citation_id": "cite-001",
+      "source_order": 1,
+      "block_id": "title-main",
+      "text": "Apply for a Synthetic Residential Permit"
+    },
+    {
+      "citation_id": "cite-002",
+      "source_order": 2,
+      "block_id": "breadcrumbs-primary",
+      "text": "Home > Portland Permitting & Development > Get a Permit > Apply for a Synthetic Residential Permit"
+    },
+    {
+      "citation_id": "cite-003",
+      "source_order": 3,
+      "block_id": "updated-date",
+      "text": "Updated May 8, 2026"
+    },
+    {
+      "citation_id": "cite-004",
+      "source_order": 4,
+      "block_id": "heading-before-you-start",
+      "text": "Before you start"
+    },
+    {
+      "citation_id": "cite-005",
+      "source_order": 5,
+      "block_id": "intro-summary",
+      "text": "Use this synthetic guidance page to test PP&D HTML extraction without contacting a public website."
+    },
+    {
+      "citation_id": "cite-006",
+      "source_order": 6,
+      "block_id": "warning-confirm-before-submission",
+      "text": "Do not submit until you are ready"
+    },
+    {
+      "citation_id": "cite-007",
+      "source_order": 7,
+      "block_id": "warning-confirm-before-submission",
+      "text": "Submitting an application is an official action. Review every permit detail with the applicant before selecting a final submit button."
+    },
+    {
+      "citation_id": "cite-008",
+      "source_order": 8,
+      "block_id": "heading-steps",
+      "text": "Steps to prepare your request"
+    },
+    {
+      "citation_id": "cite-009",
+      "source_order": 9,
+      "block_id": "ordered-steps-prepare-request",
+      "text": "Confirm the property address and permit type."
+    },
+    {
+      "citation_id": "cite-010",
+      "source_order": 10,
+      "block_id": "ordered-steps-prepare-request",
+      "text": "Prepare one drawing plan PDF and separate supporting documents."
+    },
+    {
+      "citation_id": "cite-011",
+      "source_order": 11,
+      "block_id": "ordered-steps-prepare-request",
+      "text": "Review required acknowledgements before any official submission."
+    },
+    {
+      "citation_id": "cite-012",
+      "source_order": 12,
+      "block_id": "heading-document-table",
+      "text": "Documents to include"
+    },
+    {
+      "citation_id": "cite-013",
+      "source_order": 13,
+      "block_id": "table-required-documents",
+      "text": "Synthetic required documents"
+    },
+    {
+      "citation_id": "cite-014",
+      "source_order": 14,
+      "block_id": "table-required-documents",
+      "text": "Site plan | Always | Include in the drawing plan PDF"
+    },
+    {
+      "citation_id": "cite-015",
+      "source_order": 15,
+      "block_id": "table-required-documents",
+      "text": "Energy form | When energy code review applies | Upload as a separate PDF"
+    },
+    {
+      "citation_id": "cite-016",
+      "source_order": 16,
+      "block_id": "contact-permit-help",
+      "text": "PP&D Permit Help"
+    },
+    {
+      "citation_id": "cite-017",
+      "source_order": 17,
+      "block_id": "contact-permit-help",
+      "text": "503-823-7300"
+    },
+    {
+      "citation_id": "cite-018",
+      "source_order": 18,
+      "block_id": "contact-permit-help",
+      "text": "Monday through Friday, 8 a.m. to 5 p.m."
+    },
+    {
+      "citation_id": "cite-019",
+      "source_order": 19,
+      "block_id": "related-links",
+      "text": "Related links"
+    },
+    {
+      "citation_id": "cite-020",
+      "source_order": 20,
+      "block_id": "related-links",
+      "text": "DevHub public portal"
+    },
+    {
+      "citation_id": "cite-021",
+      "source_order": 21,
+      "block_id": "related-links",
+      "text": "Apply for permits"
+    }
+  ],
+  "extraction_confidence": "fixture"
+}

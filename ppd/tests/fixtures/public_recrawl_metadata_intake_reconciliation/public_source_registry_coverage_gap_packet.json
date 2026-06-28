@@ -1,0 +1,99 @@
+{
+  "schemaVersion": 1,
+  "packetType": "ppd_public_source_registry_coverage_gap_packet",
+  "sourceMode": "fixture_first_no_crawl_no_registry_mutation",
+  "generatedAt": "2026-05-29T00:00:00Z",
+  "fixtureFirst": true,
+  "metadataOnly": true,
+  "liveCrawlingUsed": false,
+  "documentsDownloaded": false,
+  "activeSourceRegistryMutated": false,
+  "rawBodiesPersisted": false,
+  "inputArtifacts": {
+    "officialAnchorCount": 3,
+    "dryRunTargetCount": 2,
+    "freshnessBadgeCount": 2,
+    "dryRunMode": "public_source_recrawl_dry_run_command_plan"
+  },
+  "coverageSummary": {
+    "officialAnchorCount": 3,
+    "citedCoveredAnchorCount": 2,
+    "missingAnchorCount": 1,
+    "skippedSourceReasonCount": 1,
+    "staleSourceNoteCount": 1,
+    "reviewerOwnerAssignmentCount": 3
+  },
+  "citedCoveredAnchors": [
+    {
+      "canonical_url": "https://www.portland.gov/ppd",
+      "source_id": "source-portland-ppd",
+      "dry_run_target_present": true,
+      "source_evidence_ids": ["evidence-portland-ppd-landing"],
+      "freshness_badge_id": "badge-source-portland-ppd",
+      "freshness_status": "verified_current",
+      "reviewer_owner": "ppd-source-reviewer"
+    },
+    {
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "source_id": "source-devhub-faqs",
+      "dry_run_target_present": true,
+      "source_evidence_ids": ["evidence-devhub-faqs"],
+      "freshness_badge_id": "badge-source-devhub-faqs",
+      "freshness_status": "stale",
+      "reviewer_owner": "ppd-devhub-reviewer"
+    }
+  ],
+  "missingAnchors": [
+    {
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "source_id": "source-apply-permits",
+      "missing_reason": "not_targeted_by_recrawl_dry_run_plan",
+      "source_evidence_ids": [],
+      "reviewer_owner": "ppd-source-reviewer"
+    }
+  ],
+  "skippedSourceReasons": [
+    {
+      "skip_id": "skip-private-devhub-example",
+      "url": "https://devhub.portlandoregon.gov/private-example",
+      "reason": "private_authenticated",
+      "cited_policy_evidence_id": "policy-public-crawl-preflight",
+      "raw_body_stored": false
+    }
+  ],
+  "staleSourceNotes": [
+    {
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "source_id": "source-devhub-faqs",
+      "freshness_status": "stale",
+      "stale_note": "Reviewer must refresh the DevHub FAQ freshness badge before promotion.",
+      "source_evidence_ids": ["evidence-devhub-faqs"],
+      "reviewer_owner": "ppd-devhub-reviewer"
+    }
+  ],
+  "reviewerOwnerAssignments": [
+    {
+      "canonical_url": "https://www.portland.gov/ppd",
+      "source_id": "source-portland-ppd",
+      "reviewer_owner": "ppd-source-reviewer",
+      "assignment_basis": "source_evidence_freshness_badge"
+    },
+    {
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "source_id": "source-devhub-faqs",
+      "reviewer_owner": "ppd-devhub-reviewer",
+      "assignment_basis": "source_evidence_freshness_badge"
+    },
+    {
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "source_id": "source-apply-permits",
+      "reviewer_owner": "ppd-source-reviewer",
+      "assignment_basis": "missing_freshness_badge_default_owner"
+    }
+  ],
+  "sourceRegistryMutation": {
+    "activeRegistryMutated": false,
+    "registryEditStatus": "not_applied",
+    "requiresSeparatePromotionPacket": true
+  }
+}

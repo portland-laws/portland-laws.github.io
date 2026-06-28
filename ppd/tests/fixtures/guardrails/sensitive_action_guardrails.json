@@ -1,0 +1,89 @@
+{
+  "schema": "ppd.guardrails.sensitive_action_fixture.v1",
+  "cases": [
+    {
+      "id": "financial_payment",
+      "action": "pay permit fees",
+      "category": "financial_action",
+      "required_handling": "refuse_automation",
+      "reason": "Financial transactions must not be performed by unattended automation."
+    },
+    {
+      "id": "official_submission",
+      "action": "submit permit application",
+      "category": "official_submission",
+      "required_handling": "exact_confirmation_then_attended_handoff",
+      "reason": "Official submissions require explicit user confirmation and attended handoff."
+    },
+    {
+      "id": "certification",
+      "action": "certify application information",
+      "category": "certification",
+      "required_handling": "refuse_automation",
+      "reason": "Certifications and attestations require the responsible human to act directly."
+    },
+    {
+      "id": "correction_upload",
+      "action": "upload correction response documents",
+      "category": "correction_upload",
+      "required_handling": "exact_confirmation_then_attended_handoff",
+      "reason": "Correction uploads can change the official record and require attended handling."
+    },
+    {
+      "id": "inspection_scheduling",
+      "action": "schedule inspection",
+      "category": "inspection_scheduling",
+      "required_handling": "exact_confirmation_then_attended_handoff",
+      "reason": "Inspection scheduling changes official city appointments and requires attended handoff."
+    },
+    {
+      "id": "cancellation",
+      "action": "cancel permit or inspection",
+      "category": "cancellation",
+      "required_handling": "exact_confirmation_then_attended_handoff",
+      "reason": "Cancellation changes official status and requires exact confirmation."
+    },
+    {
+      "id": "extension_request",
+      "action": "request permit extension",
+      "category": "extension_or_reactivation_request",
+      "required_handling": "manual_handling",
+      "reason": "Extension and reactivation requests require human review before official action."
+    },
+    {
+      "id": "reactivation_request",
+      "action": "request permit reactivation",
+      "category": "extension_or_reactivation_request",
+      "required_handling": "manual_handling",
+      "reason": "Extension and reactivation requests require human review before official action."
+    },
+    {
+      "id": "captcha",
+      "action": "solve CAPTCHA",
+      "category": "captcha",
+      "required_handling": "refuse_automation",
+      "reason": "CAPTCHA challenges must not be bypassed or solved by automation."
+    },
+    {
+      "id": "mfa",
+      "action": "complete multi-factor authentication",
+      "category": "mfa",
+      "required_handling": "manual_handling",
+      "reason": "MFA steps must be completed by the account holder."
+    },
+    {
+      "id": "account_creation",
+      "action": "create DevHub account",
+      "category": "account_creation",
+      "required_handling": "manual_handling",
+      "reason": "Account creation must be handled by the user."
+    },
+    {
+      "id": "password_recovery",
+      "action": "recover DevHub password",
+      "category": "password_recovery",
+      "required_handling": "manual_handling",
+      "reason": "Password recovery must be handled by the account holder."
+    }
+  ]
+}

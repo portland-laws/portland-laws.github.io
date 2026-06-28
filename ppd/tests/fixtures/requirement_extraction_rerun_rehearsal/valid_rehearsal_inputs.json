@@ -1,0 +1,156 @@
+{
+  "generated_at": "2026-05-29T00:00:00Z",
+  "public_recrawl_post_intake_review_packet": {
+    "packet_type": "public_recrawl_post_intake_review",
+    "packet_id": "post-intake-review-fixture-001",
+    "generated_at": "2026-05-29T00:00:00Z",
+    "side_effect_policy": {
+      "fetch_urls": false,
+      "invoke_processors": false,
+      "write_archive_artifacts": false,
+      "source_registry_mutation": false,
+      "archive_manifest_mutation": false,
+      "source": "fixture_or_precomputed_metadata_only"
+    },
+    "known_source_ids": [
+      "src-submit-plans-online",
+      "src-devhub-guide-submit-application"
+    ],
+    "source_evidence_catalog": [
+      "ev-submit-plans-single-pdf-001",
+      "ev-devhub-save-later-001"
+    ],
+    "source_level_triage_decisions": [
+      {
+        "source_id": "src-submit-plans-online",
+        "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+        "decision": "changed",
+        "review_required": true,
+        "reviewer_owner": "public-recrawl-reviewer",
+        "source_evidence_ids": [
+          "ev-submit-plans-single-pdf-001"
+        ]
+      },
+      {
+        "source_id": "src-devhub-guide-submit-application",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+        "decision": "new",
+        "review_required": true,
+        "reviewer_owner": "devhub-guidance-reviewer",
+        "source_evidence_ids": [
+          "ev-devhub-save-later-001"
+        ]
+      }
+    ],
+    "changed_source_reviewer_queues": {
+      "urgent_review": [
+        "src-submit-plans-online"
+      ],
+      "changed_source_review": [
+        "src-submit-plans-online",
+        "src-devhub-guide-submit-application"
+      ],
+      "freshness_monitor": []
+    },
+    "changed_source_reviewer_queue_owners": {
+      "urgent_review": {
+        "src-submit-plans-online": "public-recrawl-reviewer"
+      },
+      "changed_source_review": {
+        "src-submit-plans-online": "public-recrawl-reviewer",
+        "src-devhub-guide-submit-application": "devhub-guidance-reviewer"
+      },
+      "freshness_monitor": {}
+    },
+    "freshness_badge_reconciliation_notes": [
+      {
+        "source_id": "src-submit-plans-online",
+        "note": "changed fixture source requires reviewer disposition before extraction rerun"
+      }
+    ],
+    "promotion_blockers": [
+      {
+        "source_id": "src-submit-plans-online",
+        "blocker_type": "changed_source_review_required",
+        "reviewer_owner": "public-recrawl-reviewer"
+      }
+    ],
+    "operator_abort_recommendations": [
+      {
+        "abort_id": "abort-live-fetch",
+        "reason": "fixture packet forbids live fetch and processor invocation"
+      }
+    ]
+  },
+  "requirement_human_review_queue_packet": {
+    "packet_type": "requirement_extraction_human_review_queue",
+    "packet_id": "requirement-review-queue-fixture-001",
+    "live_extraction": false,
+    "requirement_candidates": [
+      {
+        "candidate_id": "cand-single-pdf-upload-rule",
+        "requirement_type": "document_requirement",
+        "subject": "permit applicant",
+        "action": "prepare",
+        "object": "drawing plans as one PDF",
+        "source_ids": [
+          "src-submit-plans-online"
+        ],
+        "source_evidence_ids": [
+          "ev-submit-plans-single-pdf-001"
+        ],
+        "reviewer_owner": "requirements-intake-reviewer",
+        "human_review_status": "needs_review",
+        "formalization_status": "candidate_only",
+        "active_requirement_mutation": false
+      },
+      {
+        "candidate_id": "cand-devhub-save-later",
+        "requirement_type": "permission",
+        "subject": "DevHub user",
+        "action": "save",
+        "object": "draft permit application for later completion",
+        "source_ids": [
+          "src-devhub-guide-submit-application"
+        ],
+        "source_evidence_ids": [
+          "ev-devhub-save-later-001"
+        ],
+        "reviewer_owner": "devhub-guidance-reviewer",
+        "human_review_status": "needs_review",
+        "formalization_status": "candidate_only",
+        "active_requirement_mutation": false
+      }
+    ]
+  },
+  "synthetic_public_document_records": [
+    {
+      "document_id": "doc-submit-plans-online-fixture",
+      "source_id": "src-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "title": "Submit Plans Online fixture record",
+      "document_type": "public_html",
+      "citation_spans": [
+        {
+          "source_evidence_id": "ev-submit-plans-single-pdf-001",
+          "section_id": "plans-upload"
+        }
+      ],
+      "content_hash": "sha256:fixture-submit-plans"
+    },
+    {
+      "document_id": "doc-devhub-guide-fixture",
+      "source_id": "src-devhub-guide-submit-application",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "title": "DevHub submit permit application fixture record",
+      "document_type": "public_html",
+      "citation_spans": [
+        {
+          "source_evidence_id": "ev-devhub-save-later-001",
+          "section_id": "save-for-later"
+        }
+      ],
+      "content_hash": "sha256:fixture-devhub-guide"
+    }
+  ]
+}

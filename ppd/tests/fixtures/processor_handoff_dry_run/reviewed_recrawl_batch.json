@@ -1,0 +1,23 @@
+{
+  "batchId": "reviewed-public-recrawl-2026-05-28-001",
+  "reviewedAt": "2026-05-28T20:05:00Z",
+  "reviewer": "ppd-fixture-review",
+  "reviewStatus": "approved_for_metadata_only_processor_handoff",
+  "documents": [
+    {
+      "sourceId": "ppd-submit-plans-online",
+      "requestedUrl": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "canonicalUrl": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "title": "Submit Plans Online / Single PDF Process",
+      "documentType": "public_html",
+      "language": "en",
+      "contentType": "text/html; charset=utf-8",
+      "httpStatus": 200,
+      "redirectChain": [
+        "https://www.portland.gov/ppd/get-permit/submit-plans-online"
+      ],
+      "contentHash": "sha256:34c967c7a8ed7460fd2d5cf65e8a5e9b1b5f26bff5ec82a8c38f3b8d546b7901",
+      "normalizedDocumentId": "doc-ppd-submit-plans-online"
+    }
+  ]
+}

@@ -1,5 +1,15 @@
 export type CircuitState = 'closed' | 'open' | 'half_open';
 
+export const LLM_CIRCUIT_BREAKER_METADATA = {
+  sourcePythonModule: 'logic/security/llm_circuit_breaker.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  storage: 'memory',
+  supportsAsyncCalls: true,
+  supportsFallback: true,
+} as const;
+
 export interface CircuitBreakerStats {
   name: string;
   state: CircuitState;
@@ -64,7 +74,9 @@ export class CircuitBreakerMetrics {
   }
 
   getAverageLatency(): number {
-    return this.latencies.length === 0 ? 0 : this.latencies.reduce((total, value) => total + value, 0) / this.latencies.length;
+    return this.latencies.length === 0
+      ? 0
+      : this.latencies.reduce((total, value) => total + value, 0) / this.latencies.length;
   }
 
   clone(): CircuitBreakerMetrics {
@@ -75,7 +87,10 @@ export class CircuitBreakerMetrics {
 }
 
 export class CircuitBreakerOpenError extends Error {
-  constructor(message = 'Circuit breaker is OPEN', readonly breaker?: LLMCircuitBreaker) {
+  constructor(
+    message = 'Circuit breaker is OPEN',
+    readonly breaker?: LLMCircuitBreaker,
+  ) {
     super(message);
     this.name = 'CircuitBreakerOpenError';
   }
@@ -87,18 +102,21 @@ export class LLMCircuitBreaker {
   readonly successThreshold: number;
   readonly name: string;
   readonly fallback?: () => unknown;
+  readonly metadata = LLM_CIRCUIT_BREAKER_METADATA;
   private currentState: CircuitState = 'closed';
   private lastStateChange: number;
   private currentMetrics = new CircuitBreakerMetrics();
 
-  constructor(options: {
-    failureThreshold?: number;
-    timeoutSeconds?: number;
-    successThreshold?: number;
-    fallback?: () => unknown;
-    name?: string;
-    now?: () => number;
-  } = {}) {
+  constructor(
+    options: {
+      failureThreshold?: number;
+      timeoutSeconds?: number;
+      successThreshold?: number;
+      fallback?: () => unknown;
+      name?: string;
+      now?: () => number;
+    } = {},
+  ) {
     this.failureThreshold = options.failureThreshold ?? 5;
     this.timeoutSeconds = options.timeoutSeconds ?? 60;
     this.successThreshold = options.successThreshold ?? 2;
@@ -146,8 +164,40 @@ export class LLMCircuitBreaker {
     }
   }
 
-  protected<TArgs extends unknown[], TResult>(fn: (...args: TArgs) => TResult): (...args: TArgs) => TResult {
+  async callAsync<TResult>(fn: () => Promise<TResult>): Promise<TResult> {
+    const state = this.refreshState();
+    if (state === 'open') {
+      if (this.fallback) return this.fallback() as TResult;
+      throw new CircuitBreakerOpenError(`Circuit breaker '${this.name}' is OPEN`, this);
+    }
+
+    const start = this.now();
+    try {
+      const result = await fn();
+      this.recordSuccess(this.now() - start);
+      return result;
+    } catch (error) {
+      this.recordFailure();
+      throw error;
+    }
+  }
+
+  wrap<TArgs extends Array<unknown>, TResult>(
+    fn: (...args: TArgs) => TResult,
+  ): (...args: TArgs) => TResult {
     return (...args: TArgs) => this.call(() => fn(...args));
+  }
+
+  protected<TArgs extends Array<unknown>, TResult>(
+    fn: (...args: TArgs) => TResult,
+  ): (...args: TArgs) => TResult {
+    return this.wrap(fn);
+  }
+
+  wrapAsync<TArgs extends Array<unknown>, TResult>(
+    fn: (...args: TArgs) => Promise<TResult>,
+  ): (...args: TArgs) => Promise<TResult> {
+    return (...args: TArgs) => this.callAsync(() => fn(...args));
   }
 
   reset(): void {
@@ -198,14 +248,20 @@ export class LLMCircuitBreaker {
 
   private recordSuccess(latencySeconds: number): void {
     this.currentMetrics.recordSuccess(latencySeconds, this.now());
-    if (this.currentState === 'half_open' && this.currentMetrics.consecutiveSuccesses >= this.successThreshold) {
+    if (
+      this.currentState === 'half_open' &&
+      this.currentMetrics.consecutiveSuccesses >= this.successThreshold
+    ) {
       this.transitionTo('closed');
     }
   }
 
   private recordFailure(): void {
     this.currentMetrics.recordFailure(this.now());
-    if (this.currentState === 'closed' && this.currentMetrics.consecutiveFailures >= this.failureThreshold) {
+    if (
+      this.currentState === 'closed' &&
+      this.currentMetrics.consecutiveFailures >= this.failureThreshold
+    ) {
       this.transitionTo('open');
     } else if (this.currentState === 'half_open') {
       this.transitionTo('open');
@@ -223,7 +279,10 @@ export class LLMCircuitBreaker {
 
 const globalBreakers = new Map<string, LLMCircuitBreaker>();
 
-export function getCircuitBreaker(name: string, options: ConstructorParameters<typeof LLMCircuitBreaker>[0] = {}): LLMCircuitBreaker {
+export function getCircuitBreaker(
+  name: string,
+  options: ConstructorParameters<typeof LLMCircuitBreaker>[0] = {},
+): LLMCircuitBreaker {
   if (!globalBreakers.has(name)) {
     globalBreakers.set(name, new LLMCircuitBreaker({ ...options, name }));
   }
@@ -236,5 +295,23 @@ export function resetAllCircuitBreakers(): number {
 }
 
 export function getAllCircuitBreakerStats(): Record<string, CircuitBreakerStats> {
-  return Object.fromEntries([...globalBreakers.entries()].map(([name, breaker]) => [name, breaker.getStats()]));
+  return Object.fromEntries(
+    [...globalBreakers.entries()].map(([name, breaker]) => [name, breaker.getStats()]),
+  );
+}
+
+export function withCircuitBreaker<TResult>(
+  name: string,
+  fn: () => TResult,
+  options: ConstructorParameters<typeof LLMCircuitBreaker>[0] = {},
+): TResult {
+  return getCircuitBreaker(name, options).call(fn);
+}
+
+export function withCircuitBreakerAsync<TResult>(
+  name: string,
+  fn: () => Promise<TResult>,
+  options: ConstructorParameters<typeof LLMCircuitBreaker>[0] = {},
+): Promise<TResult> {
+  return getCircuitBreaker(name, options).callAsync(fn);
 }

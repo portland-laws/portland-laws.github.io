@@ -1,0 +1,126 @@
+{
+  "fixture_id": "action-journal-redacted-committed-events-v1",
+  "description": "Commit-safe ActionJournal events with sensitive DevHub automation material represented only by redaction categories.",
+  "events": [
+    {
+      "event_id": "journal-event-001",
+      "committed_at": "2026-05-12T00:00:00Z",
+      "event_type": "DevHub attended preflight",
+      "action_class": "attended_readiness_check",
+      "source_evidence_ids": [
+        "ppd-devhub-sign-guide",
+        "ppd-devhub-faqs"
+      ],
+      "completion_evidence": {
+        "evidence_id": "completion-evidence-001",
+        "evidence_type": "attended_preflight_review",
+        "observed_result": "User-visible DevHub sign-in handoff checkpoint recorded with private browser state omitted.",
+        "source_evidence_ids": [
+          "ppd-devhub-sign-guide"
+        ]
+      },
+      "public_context": {
+        "surface_id": "devhub-attended-login",
+        "requires_attendance": true,
+        "requires_exact_confirmation": false,
+        "notes": "The committed journal keeps only public source anchors and workflow classification."
+      },
+      "redactions": [
+        {
+          "category": "credentials",
+          "replacement": "[REDACTED:CREDENTIALS]"
+        },
+        {
+          "category": "cookies",
+          "replacement": "[REDACTED:COOKIES]"
+        },
+        {
+          "category": "auth_state",
+          "replacement": "[REDACTED:AUTH_STATE]"
+        }
+      ]
+    },
+    {
+      "event_id": "journal-event-002",
+      "committed_at": "2026-05-12T00:01:00Z",
+      "event_type": "DevHub attempted action",
+      "action_class": "reversible_draft_fill",
+      "source_evidence_ids": [
+        "ppd-devhub-guide-submit-permit-application",
+        "ppd-submit-plans-online"
+      ],
+      "completion_evidence": {
+        "evidence_id": "completion-evidence-002",
+        "evidence_type": "draft_checkpoint_visible",
+        "observed_result": "Reversible draft checkpoint was visible to the attended user before any submission, upload, certification, scheduling, or payment action.",
+        "source_evidence_ids": [
+          "ppd-devhub-guide-submit-permit-application"
+        ]
+      },
+      "public_context": {
+        "surface_id": "devhub-permit-application-draft",
+        "permit_stage": "application data entry",
+        "requires_attendance": true,
+        "requires_exact_confirmation": false,
+        "notes": "Private form values, local document paths, and browser artifacts are not committed."
+      },
+      "redactions": [
+        {
+          "category": "screenshots",
+          "replacement": "[REDACTED:SCREENSHOTS]"
+        },
+        {
+          "category": "traces",
+          "replacement": "[REDACTED:TRACES]"
+        },
+        {
+          "category": "har_data",
+          "replacement": "[REDACTED:HAR_DATA]"
+        },
+        {
+          "category": "private_values",
+          "replacement": "[REDACTED:PRIVATE_VALUES]"
+        },
+        {
+          "category": "local_private_file_paths",
+          "replacement": "[REDACTED:LOCAL_PRIVATE_FILE_PATHS]"
+        }
+      ]
+    },
+    {
+      "event_id": "journal-event-003",
+      "committed_at": "2026-05-12T00:02:00Z",
+      "event_type": "completion evidence",
+      "action_class": "post_action_hardening_review",
+      "source_evidence_ids": [
+        "ppd-how-pay-fees",
+        "ppd-devhub-faqs"
+      ],
+      "completion_evidence": {
+        "evidence_id": "completion-evidence-003",
+        "evidence_type": "sensitive_workflow_block_confirmed",
+        "observed_result": "Payment, upload, submission, certification, cancellation, and scheduling actions remained blocked pending attended exact confirmation.",
+        "source_evidence_ids": [
+          "ppd-how-pay-fees",
+          "ppd-devhub-faqs"
+        ]
+      },
+      "public_context": {
+        "surface_id": "devhub-post-action-review",
+        "requires_attendance": true,
+        "requires_exact_confirmation": true,
+        "notes": "Payment details and consequential-action inputs are represented only by redaction categories and action policy metadata."
+      },
+      "redactions": [
+        {
+          "category": "payment_details",
+          "replacement": "[REDACTED:PAYMENT_DETAILS]"
+        },
+        {
+          "category": "private_values",
+          "replacement": "[REDACTED:PRIVATE_VALUES]"
+        }
+      ]
+    }
+  ]
+}

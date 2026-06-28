@@ -1,0 +1,20 @@
+Implemented one generalized slot refinement for the IR/decompiler citation lane: trailing punctuation is now represented explicitly in both positive and negative cases.
+
+**Changes**
+- Added explicit negative slots when trailing punctuation is absent:
+  - `citation_section_has_trailing_punct = "false"`
+  - `citation_section_trailing_punct_count = "0"`
+  - `source_id_section_has_trailing_punct = "false"`
+  - `source_id_section_trailing_punct_count = "0"`
+- Added trailing punctuation kind slot when present:
+  - `*_section_trailing_punct_kind` with deterministic values: `dot`, `colon`, `semicolon`, `other`.
+- Kept decompiler slot emission and codec triple projection aligned.
+
+Updated files:
+- [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000044-20260518_114141/ipfs_datasets_py/logic/modal/decompiler.py)
+- [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000044-20260518_114141/ipfs_datasets_py/logic/modal/codec.py)
+- [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000044-20260518_114141/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py)
+
+**Tests**
+- Ran: `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py -q`
+- Result: `21 passed`

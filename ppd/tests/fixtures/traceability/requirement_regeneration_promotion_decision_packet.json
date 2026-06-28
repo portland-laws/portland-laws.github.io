@@ -1,0 +1,29 @@
+{
+  "packet_id": "requirement-promotion-fixture-20260528",
+  "requirements": [
+    {
+      "requirement_id": "REQ-DEVHUB-ACCOUNT-SERVICES",
+      "source_evidence_ids": ["SRC-PPD-ONLINE-TOOLS"],
+      "promotion_decision": "promote",
+      "reviewer_owner": "ppd-requirements-reviewer"
+    },
+    {
+      "requirement_id": "REQ-FEE-PAYMENT-BLOCKED",
+      "source_evidence_ids": ["SRC-PPD-FEE-PAYMENT-GUIDE"],
+      "promotion_decision": "promote",
+      "reviewer_owner": "ppd-requirements-reviewer"
+    },
+    {
+      "requirement_id": "REQ-MISSING-SOURCE-TRACE",
+      "source_evidence_ids": ["SRC-PPD-NOT-IN-FRESHNESS-PACKET"],
+      "promotion_decision": "promote",
+      "reviewer_owner": "ppd-gap-reviewer"
+    },
+    {
+      "requirement_id": "REQ-NOT-PROMOTED",
+      "source_evidence_ids": ["SRC-PPD-ONLINE-TOOLS"],
+      "promotion_decision": "hold",
+      "reviewer_owner": "ppd-requirements-reviewer"
+    }
+  ]
+}

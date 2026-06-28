@@ -1,0 +1,10 @@
+{
+  "plan_id": "smoke-replay-public-fixture-001",
+  "mode": "fixture-only",
+  "inputs": [
+    "ppd/tests/fixtures/rollback_drill_packet_v6/valid_inactive_packet.json"
+  ],
+  "expected_outputs": [
+    "validation produces no issues for the committed inactive packet fixture"
+  ]
+}

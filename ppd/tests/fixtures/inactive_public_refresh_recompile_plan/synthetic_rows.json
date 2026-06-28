@@ -1,0 +1,28 @@
+{
+  "process_model_delta_plan_rows": [
+    {
+      "row_id": "delta-001",
+      "process_model_id": "public-refresh-intake",
+      "delta_kind": "predicate_placeholder_refresh",
+      "changed_predicates": ["public_refresh_required", "exact_confirmation_text_matches_fixture"]
+    },
+    {
+      "row_id": "delta-002",
+      "process_model_id": "public-refresh-review",
+      "delta_kind": "refused_action_predicate_refresh",
+      "changed_predicates": ["live_public_refresh_action_refused"]
+    }
+  ],
+  "requirement_reextraction_queue_rows": [
+    {
+      "row_id": "queue-001",
+      "requirement_id": "req-public-refresh-notice",
+      "queue_reason": "synthetic_notice_reextract"
+    },
+    {
+      "row_id": "queue-002",
+      "requirement_id": "req-public-refresh-confirmation",
+      "queue_reason": "synthetic_confirmation_reextract"
+    }
+  ]
+}

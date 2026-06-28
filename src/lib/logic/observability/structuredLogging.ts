@@ -1,5 +1,26 @@
 export const LOG_SCHEMA_VERSION = '1.0.0';
 
+export interface StructuredLoggingMetadata {
+  sourcePythonModule: 'logic/observability/structured_logging.py';
+  browserNative: true;
+  serverCallsAllowed: false;
+  pythonRuntimeAllowed: false;
+  sink: 'in-memory';
+}
+
+export interface ParsedJsonLogLines {
+  records: Array<LogRecord>;
+  rejected_lines: Array<{ line: string; reason: string }>;
+}
+
+export const STRUCTURED_LOGGING_METADATA: StructuredLoggingMetadata = {
+  sourcePythonModule: 'logic/observability/structured_logging.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  sink: 'in-memory',
+};
+
 export const LogField = {
   TIMESTAMP: 'timestamp',
   SCHEMA_VERSION: 'schema_version',
@@ -50,6 +71,7 @@ export const EventType = {
 
 export type LogLevel = 'DEBUG' | 'INFO' | 'WARNING' | 'ERROR';
 export type LogRecord = Record<string, unknown>;
+export type StructuredLogSink = (record: LogRecord) => void;
 
 let currentContext: Record<string, unknown> = {};
 
@@ -90,25 +112,62 @@ export function clearContext(): void {
   currentContext = {};
 }
 
+export function getStructuredLoggingMetadata(): StructuredLoggingMetadata {
+  return { ...STRUCTURED_LOGGING_METADATA };
+}
+
+export function normalizeLogLevel(level: string): LogLevel {
+  const normalized = level.trim().toUpperCase();
+  if (normalized === 'WARN') return 'WARNING';
+  if (
+    normalized === 'DEBUG' ||
+    normalized === 'INFO' ||
+    normalized === 'WARNING' ||
+    normalized === 'ERROR'
+  ) {
+    return normalized;
+  }
+  return 'INFO';
+}
+
+export function serializeJsonLogLine(record: LogRecord): string {
+  return JSON.stringify(record);
+}
+
 export class StructuredLogger {
   readonly records: LogRecord[] = [];
 
   constructor(
     readonly name: string,
     private readonly now = () => new Date().toISOString(),
+    private readonly sink?: StructuredLogSink,
   ) {}
 
   log(level: LogLevel, message: string, extra: Record<string, unknown> = {}): LogRecord {
     const record: LogRecord = {
       [LogField.TIMESTAMP]: this.now(),
       [LogField.SCHEMA_VERSION]: LOG_SCHEMA_VERSION,
-      [LogField.LEVEL]: level,
+      [LogField.LEVEL]: normalizeLogLevel(level),
       [LogField.LOGGER_NAME]: this.name,
       [LogField.MESSAGE]: message,
       ...getCurrentContext(),
       ...extra,
     };
     this.records.push(record);
+    try {
+      this.sink?.(record);
+    } catch (error) {
+      this.records.push({
+        [LogField.TIMESTAMP]: this.now(),
+        [LogField.SCHEMA_VERSION]: LOG_SCHEMA_VERSION,
+        [LogField.LEVEL]: 'ERROR',
+        [LogField.LOGGER_NAME]: this.name,
+        [LogField.MESSAGE]: 'Structured log sink failed closed',
+        [LogField.EVENT_TYPE]: EventType.ERROR_OCCURRED,
+        [LogField.ERROR_TYPE]: error instanceof Error ? error.name : 'Error',
+        [LogField.ERROR_MESSAGE]: error instanceof Error ? error.message : String(error),
+      });
+    }
     return record;
   }
 
@@ -129,7 +188,16 @@ export class StructuredLogger {
   }
 
   toJsonLines(): string {
-    return this.records.map((record) => JSON.stringify(record)).join('\n');
+    return this.records.map((record) => serializeJsonLogLine(record)).join('\n');
+  }
+
+  exportSnapshot(exportedAt: string | number = this.now()): Record<string, unknown> {
+    return {
+      exported_at: exportedAt,
+      metadata: getStructuredLoggingMetadata(),
+      logger: this.name,
+      records: this.records.map((record) => ({ ...record })),
+    };
   }
 }
 
@@ -140,11 +208,20 @@ export function getLogger(name: string): StructuredLogger {
   return loggers.get(name)!;
 }
 
-export function logEvent(eventType: string, logger = getLogger('root'), level: LogLevel = 'INFO', extra: Record<string, unknown> = {}): LogRecord {
+export function logEvent(
+  eventType: string,
+  logger = getLogger('root'),
+  level: LogLevel = 'INFO',
+  extra: Record<string, unknown> = {},
+): LogRecord {
   return logger.log(level, `Event: ${eventType}`, { ...extra, [LogField.EVENT_TYPE]: eventType });
 }
 
-export function logError(error: Error, logger = getLogger('root'), extra: Record<string, unknown> = {}): LogRecord {
+export function logError(
+  error: Error,
+  logger = getLogger('root'),
+  extra: Record<string, unknown> = {},
+): LogRecord {
   return logger.error(`Error: ${error.name}: ${error.message}`, {
     ...extra,
     [LogField.EVENT_TYPE]: EventType.ERROR_OCCURRED,
@@ -154,7 +231,12 @@ export function logError(error: Error, logger = getLogger('root'), extra: Record
   });
 }
 
-export function logPerformance(operation: string, durationMs: number, logger = getLogger('root'), extra: Record<string, unknown> = {}): LogRecord {
+export function logPerformance(
+  operation: string,
+  durationMs: number,
+  logger = getLogger('root'),
+  extra: Record<string, unknown> = {},
+): LogRecord {
   return logger.info(`Performance: ${operation} completed in ${durationMs.toFixed(2)}ms`, {
     ...extra,
     [LogField.EVENT_TYPE]: 'performance.measured',
@@ -168,7 +250,12 @@ export function logMcpTool(
   status: 'invoked' | 'completed' | 'failed',
   options: { durationMs?: number; logger?: StructuredLogger; extra?: Record<string, unknown> } = {},
 ): LogRecord {
-  const eventType = status === 'invoked' ? EventType.TOOL_INVOKED : status === 'completed' ? EventType.TOOL_COMPLETED : EventType.TOOL_FAILED;
+  const eventType =
+    status === 'invoked'
+      ? EventType.TOOL_INVOKED
+      : status === 'completed'
+        ? EventType.TOOL_COMPLETED
+        : EventType.TOOL_FAILED;
   return (options.logger ?? getLogger('root')).info(`Tool ${toolName} ${status}`, {
     ...(options.extra ?? {}),
     [LogField.TOOL_NAME]: toolName,
@@ -191,14 +278,24 @@ export function filterLogs(
 }
 
 export function parseJsonLogLines(text: string): LogRecord[] {
-  return text
-    .split(/\r?\n/)
-    .filter(Boolean)
-    .flatMap((line) => {
-      try {
-        return [JSON.parse(line) as LogRecord];
-      } catch {
-        return [];
+  return parseJsonLogLinesDetailed(text).records;
+}
+
+export function parseJsonLogLinesDetailed(text: string): ParsedJsonLogLines {
+  const records: Array<LogRecord> = [];
+  const rejected_lines: Array<{ line: string; reason: string }> = [];
+  for (const line of text.split(/\r?\n/)) {
+    if (line.length === 0) continue;
+    try {
+      const parsed = JSON.parse(line) as unknown;
+      if (parsed && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        records.push(parsed as LogRecord);
+      } else {
+        rejected_lines.push({ line, reason: 'not an object record' });
       }
-    });
+    } catch (error) {
+      rejected_lines.push({ line, reason: error instanceof Error ? error.message : String(error) });
+    }
+  }
+  return { records, rejected_lines };
 }

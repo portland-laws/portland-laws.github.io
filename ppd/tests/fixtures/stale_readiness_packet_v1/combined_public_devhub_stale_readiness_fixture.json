@@ -1,0 +1,118 @@
+{
+  "fixture_id": "combined-public-devhub-stale-readiness-fixture-v1",
+  "packet_id": "fixture-combined-public-devhub-stale-readiness-20260601",
+  "live_crawl_performed": false,
+  "devhub_opened": false,
+  "auth_state_stored": false,
+  "private_files_stored": false,
+  "form_filling_performed": false,
+  "upload_performed": false,
+  "submission_performed": false,
+  "certification_performed": false,
+  "payment_performed": false,
+  "inspection_scheduling_performed": false,
+  "release_promotion_performed": false,
+  "active_prompt_mutated": false,
+  "active_guardrail_mutated": false,
+  "active_process_model_mutated": false,
+  "active_requirement_mutated": false,
+  "active_contract_mutated": false,
+  "active_source_mutated": false,
+  "active_archive_mutated": false,
+  "active_document_mutated": false,
+  "active_devhub_surface_mutated": false,
+  "active_crawler_mutated": false,
+  "active_release_mutated": false,
+  "active_daemon_state_mutated": false,
+  "synthetic_public_monitoring_outcomes": [
+    {
+      "source_id": "public-synthetic-index-pass",
+      "canonical_url": "https://www.portland.gov/ppd",
+      "outcome": "current",
+      "summary": "Synthetic monitor saw no public source freshness hold in the committed fixture."
+    },
+    {
+      "source_id": "public-devhub-faq-stale",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "outcome": "stale",
+      "summary": "Synthetic monitor marks DevHub FAQ evidence stale pending reviewer disposition."
+    },
+    {
+      "source_id": "public-payment-guide-failed",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "outcome": "failed",
+      "summary": "Synthetic monitor cannot reconcile payment guide freshness from offline fixtures."
+    }
+  ],
+  "stale_source_agent_holds": [
+    {
+      "hold_id": "hold-devhub-faq-agent-caution",
+      "target_id": "public-devhub-faq-stale",
+      "hold_status": "active",
+      "blocked_agent_actions": [
+        "do_not_present_devhub_faq_as_current",
+        "do_not_recompile_guardrails_from_stale_faq"
+      ]
+    }
+  ],
+  "devhub_read_only_surface_deltas": [
+    {
+      "surface_id": "public-synthetic-index-pass",
+      "delta_status": "unchanged",
+      "read_only": true,
+      "summary": "No read-only DevHub surface delta is attached to this public index fixture row."
+    },
+    {
+      "surface_id": "public-devhub-faq-stale",
+      "delta_status": "changed",
+      "read_only": true,
+      "summary": "Read-only DevHub help-surface labels are synthetically changed and need review."
+    },
+    {
+      "surface_id": "public-payment-guide-failed",
+      "delta_status": "broken",
+      "read_only": true,
+      "summary": "Read-only payment-help surface fixture is broken, so readiness must be rejected."
+    }
+  ],
+  "devhub_agent_impacts": [
+    {
+      "impact_id": "impact-public-index-none",
+      "target_id": "public-synthetic-index-pass",
+      "impact_level": "none",
+      "affected_agents": [
+        "source_freshness_monitor"
+      ]
+    },
+    {
+      "impact_id": "impact-devhub-faq-limited",
+      "target_id": "public-devhub-faq-stale",
+      "impact_level": "limited",
+      "affected_agents": [
+        "missing_information_agent",
+        "safe_next_action_agent"
+      ]
+    },
+    {
+      "impact_id": "impact-payment-guide-blocking",
+      "target_id": "public-payment-guide-failed",
+      "impact_level": "blocking",
+      "affected_agents": [
+        "fee_payment_guardrail_agent",
+        "release_readiness_agent"
+      ]
+    }
+  ],
+  "dependency_edges": [
+    {
+      "before": "public-synthetic-index-pass",
+      "after": "public-devhub-faq-stale",
+      "reason": "Public index freshness must be reconciled before DevHub FAQ stale-source holds are reviewed."
+    },
+    {
+      "before": "public-devhub-faq-stale",
+      "after": "public-payment-guide-failed",
+      "reason": "Payment-guide rejection is reviewed after stale DevHub FAQ holds because it blocks release readiness."
+    }
+  ]
+}

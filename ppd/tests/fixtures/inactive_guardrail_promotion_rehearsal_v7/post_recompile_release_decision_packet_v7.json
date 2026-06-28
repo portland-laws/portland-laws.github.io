@@ -1,0 +1,179 @@
+{
+  "packet_type": "ppd.post_recompile_release_decision_packet.v7",
+  "packet_version": "v7",
+  "mode": "fixture_first_post_recompile_release_decision_v7",
+  "fixture_first": true,
+  "post_recompile_replay_fixture_only": true,
+  "manual_reviewer_decision_required": true,
+  "unresolved_holds_review_required": true,
+  "citation_continuity_review_required": true,
+  "agent_compatibility_review_required": true,
+  "inactive_guardrail_promotion_eligibility_review_required": true,
+  "rollback_owner_assignment_required": true,
+  "monitoring_handoff_required": true,
+  "reviewer_signoff_required": true,
+  "active_guardrail_mutation": false,
+  "active_guardrail_bundle_mutation": false,
+  "active_prompt_mutation": false,
+  "active_process_model_mutation": false,
+  "active_requirement_mutation": false,
+  "active_source_mutation": false,
+  "active_devhub_surface_mutation": false,
+  "active_release_state_mutation": false,
+  "active_mutation": false,
+  "guardrails_changed": false,
+  "guardrail_bundles_changed": false,
+  "promotion_executed": false,
+  "activation_executed": false,
+  "opens_devhub": false,
+  "crawls_live_sites": false,
+  "reads_private_documents": false,
+  "uploads": false,
+  "submits": false,
+  "certifies": false,
+  "pays": false,
+  "schedules": false,
+  "legal_or_permitting_guarantee": false,
+  "source_fixture_refs": [
+    {
+      "fixture_role": "post_recompile_agent_readiness_replay_v7",
+      "path": "ppd/tests/fixtures/post_recompile_release_decision_packet_v7/post_recompile_agent_readiness_replay_v7_fixture.json",
+      "replay": "post_recompile_agent_readiness_replay_v7"
+    }
+  ],
+  "consumes_only": {
+    "post_recompile_agent_readiness_replay_v7_fixtures": true,
+    "replay": "post_recompile_agent_readiness_replay_v7"
+  },
+  "overall_recommendation": "NO_GO",
+  "go_no_go_rows": [
+    {
+      "row_id": "go-no-go::stale_evidence",
+      "scenario": "stale_evidence",
+      "source_fixture": "post_recompile_agent_readiness_replay_v7",
+      "response_type": "hold",
+      "evidence_status": "stale_fixture_review_required",
+      "recommendation": "NO_GO",
+      "activation_allowed": false,
+      "manual_reviewer_decision_required": true,
+      "basis": "Replay case requires manual reviewer disposition before any separate promotion review."
+    },
+    {
+      "row_id": "go-no-go::missing_information",
+      "scenario": "missing_information",
+      "source_fixture": "post_recompile_agent_readiness_replay_v7",
+      "response_type": "missing_information_request",
+      "evidence_status": "fixture_continuity_review_required",
+      "recommendation": "NO_GO",
+      "activation_allowed": false,
+      "manual_reviewer_decision_required": true,
+      "basis": "Replay case requires manual reviewer disposition before any separate promotion review."
+    }
+  ],
+  "unresolved_hold_inventory": [
+    {
+      "hold_id": "hold::stale_evidence",
+      "scenario": "stale_evidence",
+      "hold_status": "unresolved_pending_manual_review",
+      "promotion_blocked": true,
+      "reviewer_disposition": "hold_until_replay_case_is_resolved_or_accepted",
+      "evidence_status": "stale_fixture_review_required",
+      "response_type": "hold",
+      "source_fixture": "post_recompile_agent_readiness_replay_v7"
+    }
+  ],
+  "citation_continuity_summaries": [
+    {
+      "citation_summary_id": "citation-continuity::post-recompile-replay-v7",
+      "source_replay": "post_recompile_agent_readiness_replay_v7",
+      "case_count": 2,
+      "evidence_statuses": [
+        "fixture_continuity_review_required",
+        "stale_fixture_review_required"
+      ],
+      "continuity_status": "fixture_replay_continuity_only_pending_public_source_review",
+      "requires_manual_review": true,
+      "note": "This packet summarizes fixture evidence status only and leaves public citation review to a separate reviewer step."
+    }
+  ],
+  "agent_compatibility_notes": [
+    {
+      "compatibility_note_id": "agent-compatibility::post-recompile-replay-v7",
+      "source_replay": "post_recompile_agent_readiness_replay_v7",
+      "response_types_seen": [
+        "hold",
+        "missing_information_request"
+      ],
+      "requires_manual_review": true,
+      "activation_allowed": false,
+      "note": "Agent consumers must treat these rows as inactive offline fixture outputs until a separate reviewed promotion packet exists."
+    }
+  ],
+  "inactive_guardrail_promotion_eligibility_placeholders": [
+    {
+      "eligibility_placeholder_id": "inactive-promotion-eligibility::reviewer-disposition-v7",
+      "recommendation": "NO_GO",
+      "eligibility_status": "placeholder_pending_manual_reviewer_disposition",
+      "activation_allowed": false,
+      "promotion_executed": false,
+      "required_next_review": "Resolve holds, citation continuity, agent compatibility, rollback owners, monitoring handoff, and reviewer signoff before any separate promotion review."
+    }
+  ],
+  "rollback_owner_placeholders": [
+    {
+      "rollback_owner_placeholder_id": "rollback-owner::post-recompile-release-v7",
+      "owner": "",
+      "owner_assignment_status": "pending_manual_assignment",
+      "rollback_target": "discard_fixture_first_release_decision_packet_only",
+      "active_state_changed": false,
+      "note": "This fixture changes no active PP&D artifact."
+    }
+  ],
+  "monitoring_handoff_reminders": [
+    {
+      "monitoring_reminder_id": "monitoring-handoff::post-recompile-release-v7",
+      "handoff_required": true,
+      "handoff_status": "draft_reminder_only",
+      "activation_allowed": false,
+      "reminder": "Prepare offline monitoring notes for reviewer follow-up using only fixture evidence."
+    }
+  ],
+  "reviewer_signoff_placeholders": [
+    {
+      "reviewer_signoff_placeholder_id": "reviewer-signoff::post-recompile-release-v7",
+      "recommendation": "NO_GO",
+      "signoff_required": true,
+      "signoff_status": "pending_manual_reviewer_signoff",
+      "reviewer": "",
+      "decision_record": "",
+      "activation_allowed": false,
+      "note": "A reviewer must record an offline decision before any separate promotion process can be considered."
+    }
+  ],
+  "offline_validation_commands": [
+    [
+      "python3",
+      "-m",
+      "py_compile",
+      "ppd/agent_readiness/post_recompile_release_decision_packet_v7.py"
+    ],
+    [
+      "python3",
+      "-m",
+      "unittest",
+      "ppd.tests.test_post_recompile_release_decision_packet_v7"
+    ],
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ]
+}

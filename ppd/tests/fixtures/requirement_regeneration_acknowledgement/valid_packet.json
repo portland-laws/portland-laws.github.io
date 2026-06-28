@@ -1,0 +1,36 @@
+{
+  "packet_id": "synthetic-reviewer-ack-001",
+  "regeneration_run_id": "synthetic-regeneration-20260528",
+  "queue_links": [
+    {
+      "queue_id": "review-queue-synthetic-001",
+      "label": "Synthetic reviewer queue item",
+      "href": "https://www.portland.gov/ppd"
+    }
+  ],
+  "affected_source_decisions": [
+    {
+      "source_id": "ppd-devhub-faq-public",
+      "decision": "accepted",
+      "freshness_status": "current",
+      "reviewer_acknowledged_stale_source": false,
+      "citations": [
+        {
+          "source_id": "ppd-devhub-faq-public",
+          "evidence_id": "normalized-public-evidence-001",
+          "normalized_excerpt": "DevHub guidance identifies account-scoped permitting services."
+        }
+      ]
+    }
+  ],
+  "synthetic_fixture_requirements": [
+    {
+      "fixture_id": "synthetic-requirement-devhub-safe-readonly",
+      "assertion": "Regenerated requirements must keep public source citations and avoid downstream activation."
+    }
+  ],
+  "reviewer": {
+    "reviewer_id": "synthetic-reviewer",
+    "acknowledged_at": "2026-05-28T00:00:00Z"
+  }
+}

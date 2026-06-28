@@ -1,0 +1,148 @@
+{
+  "packet_id": "devhub-attended-pilot-synthetic-readonly-review-v1",
+  "mode": "fixture_first",
+  "live_automation_allowed": false,
+  "playwright_launch_allowed": false,
+  "browser_artifacts_allowed": false,
+  "synthetic_account_review": {
+    "account_kind": "synthetic",
+    "access_level": "read_only",
+    "review_count": 1,
+    "stores_private_values": false,
+    "purpose": "Confirm that the attended DevHub pilot can review one synthetic read-only account surface map without creating browser artifacts."
+  },
+  "manual_login_handoff": {
+    "required": true,
+    "operator_present": true,
+    "steps": [
+      "user opens DevHub and completes PortlandOregon.gov login manually",
+      "operator confirms the visible account is the designated synthetic read-only pilot account",
+      "agent observes only the allowed read-only surfaces after handoff"
+    ],
+    "blocked_steps": [
+      "agent does not enter credentials, solve MFA, or persist session state",
+      "agent does not create accounts, recover passwords, or change profile settings"
+    ]
+  },
+  "allowed_observation_scope": {
+    "read_only_only": true,
+    "allowed": [
+      "page headings and accessible landmarks",
+      "navigation labels needed to identify DevHub surfaces",
+      "synthetic permit record metadata and status labels",
+      "operator-visible validation banners that do not contain private values"
+    ],
+    "prohibited": [
+      "captcha or mfa handling",
+      "account creation or password recovery",
+      "payment workflows and payment detail entry",
+      "submit, certify, acknowledgement, or final filing actions",
+      "upload workflows or downloaded documents",
+      "schedule or cancel inspection actions"
+    ]
+  },
+  "redaction_checks": {
+    "before_journal_write": true,
+    "must_exclude": [
+      "credential values and password fields",
+      "cookie values and auth state",
+      "screenshot, trace, or har files",
+      "raw private value text from authenticated pages",
+      "payment detail values",
+      "local private file path strings"
+    ],
+    "allowed_commit_safe_fields": [
+      "synthetic labels, stable surface ids, timestamps, and operator-visible decision codes",
+      "redacted journal event type and stop reason codes"
+    ]
+  },
+  "surface_map_expectations": {
+    "expected_surfaces": [
+      "authenticated_landing",
+      "account_summary",
+      "readonly_record_list",
+      "readonly_record_detail"
+    ],
+    "requires_selector_capture": false,
+    "requires_screenshot_capture": false,
+    "requires_raw_dom_capture": false,
+    "expected_fields": [
+      "surface_id",
+      "auth_scope",
+      "page_heading",
+      "accessible_landmarks",
+      "read_only_actions",
+      "redaction_policy",
+      "requires_attendance",
+      "requires_exact_confirmation"
+    ]
+  },
+  "timeout_handling": {
+    "timeout_seconds": 900,
+    "on_timeout": "stop_and_write_redacted_timeout_event",
+    "may_retry_without_operator": false,
+    "journal_reason_code": "devhub_attended_pilot_timeout"
+  },
+  "manual_stop_conditions": {
+    "conditions": [
+      "captcha or mfa challenge appears",
+      "payment page, payment prompt, or payment detail field appears",
+      "submit, certify, acknowledgement, or final filing control appears",
+      "upload control, downloaded document, schedule control, or cancel control appears",
+      "account creation or password recovery prompt appears",
+      "unexpected private account data appears outside the synthetic review"
+    ],
+    "on_stop": "refuse_action_and_record_redacted_journal_event"
+  },
+  "journal_event_templates": {
+    "DevHub attended preflight": {
+      "event_type": "DevHub attended preflight",
+      "commit_safe": true,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "fields": [
+        "packet_id",
+        "synthetic_review_id",
+        "operator_attendance_confirmed",
+        "allowed_scope_version",
+        "redaction_policy_version"
+      ]
+    },
+    "manual handoff": {
+      "event_type": "manual handoff",
+      "commit_safe": true,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "fields": [
+        "packet_id",
+        "handoff_reason",
+        "operator_presence_required",
+        "blocked_agent_steps"
+      ]
+    },
+    "refused action": {
+      "event_type": "refused action",
+      "commit_safe": true,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "fields": [
+        "packet_id",
+        "refusal_reason_code",
+        "surface_id",
+        "manual_stop_condition"
+      ]
+    },
+    "post-action hardening review": {
+      "event_type": "post-action hardening review",
+      "commit_safe": true,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "fields": [
+        "packet_id",
+        "observed_surface_ids",
+        "redaction_checks_passed",
+        "browser_artifacts_created"
+      ]
+    }
+  }
+}

@@ -1,0 +1,78 @@
+{
+  "handoff_version": "public_freshness_watchlist_v6",
+  "mode": "fixture_first_offline_only",
+  "consumed_fixture_references": {
+    "current_source_registry": "fixture:current_source_registry.json",
+    "re_extraction": "fixture:re_extraction.json",
+    "guardrail_recompile": "fixture:guardrail_recompile.json",
+    "inactive_activation_rehearsal": "fixture:inactive_activation_rehearsal.json",
+    "smoke_replay": "fixture:smoke_replay.json",
+    "rollback_drill": "fixture:rollback_drill.json",
+    "agent_compatibility": "fixture:agent_compatibility.json"
+  },
+  "next_refresh_watch_rows": [
+    {
+      "source_id": "ppd_public_permit_search",
+      "public_url": "https://www.portland.gov/ppd/permits",
+      "next_refresh_after": "2026-06-15",
+      "stale_days": 17,
+      "citation_state": "current",
+      "automation_hold": false,
+      "hold_reasons": []
+    },
+    {
+      "source_id": "ppd_public_zoning_code",
+      "public_url": "https://www.portland.gov/code/33",
+      "next_refresh_after": "2026-06-08",
+      "stale_days": 45,
+      "citation_state": "needs_owner_review",
+      "automation_hold": true,
+      "hold_reasons": [
+        "re_extraction_not_passed"
+      ]
+    }
+  ],
+  "stale_source_risk_notes": [
+    {
+      "source_id": "ppd_public_zoning_code",
+      "risk_note": "Public source fixture is 45 days old; refresh review remains fixture-only until holds clear."
+    }
+  ],
+  "citation_repair_owner_placeholders": [
+    {
+      "source_id": "ppd_public_zoning_code",
+      "owner_placeholder": "citation_repair_owner_tbd",
+      "reason": "needs_owner_review"
+    }
+  ],
+  "guarded_automation_hold_conditions": [
+    "all_source_fixture_replays_must_pass",
+    "no_live_crawl_or_authenticated_automation_in_this_handoff"
+  ],
+  "offline_validation_commands": [
+    [
+      "python3",
+      "-m",
+      "py_compile",
+      "ppd/public_freshness_watchlist_handoff_v6.py"
+    ],
+    [
+      "python3",
+      "-m",
+      "pytest",
+      "ppd/tests/test_public_freshness_watchlist_handoff_v6.py"
+    ]
+  ],
+  "excluded_actions": [
+    "live_crawl",
+    "raw_artifact_download",
+    "devhub_open",
+    "private_document_read",
+    "upload",
+    "submit",
+    "certify",
+    "pay",
+    "schedule",
+    "legal_or_permitting_guarantee"
+  ]
+}

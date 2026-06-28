@@ -19,6 +19,16 @@ const jestConfig: JestConfigWithTsJest = {
     '!src/main.tsx',
     '!src/index.css'
   ],
+  modulePathIgnorePatterns: [
+    '<rootDir>/ipfs_datasets_py/.daemon/',
+    '<rootDir>/ipfs_datasets_py/artifacts/',
+    '<rootDir>/artifacts/'
+  ],
+  watchPathIgnorePatterns: [
+    '<rootDir>/ipfs_datasets_py/.daemon/',
+    '<rootDir>/ipfs_datasets_py/artifacts/',
+    '<rootDir>/artifacts/'
+  ],
   testMatch: [
     '<rootDir>/src/**/__tests__/**/*.{ts,tsx}',
     '<rootDir>/src/**/*.{test,spec}.{ts,tsx}'

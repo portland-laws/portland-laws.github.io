@@ -1,0 +1,80 @@
+{
+  "fixture_id": "devhub_fee_payment_action_gate_v1",
+  "source_scope": "deterministic synthetic DevHub fee payment action-gate fixture",
+  "privacy_note": "No credentials, session state, screenshots, traces, HAR data, private permit values, or payment details are present in this fixture.",
+  "actions": [
+    {
+      "action_id": "fee_notice_review",
+      "surface": "devhub_fee_notice",
+      "stage": "fee payment",
+      "label": "Review fee notice",
+      "description": "Open and read the fee notice, amount due summary, line items, and payment instructions as evidence.",
+      "classification": "read_only_evidence",
+      "allowed_autonomous": true,
+      "requires_manual_handoff": false,
+      "requires_exact_confirmation": false,
+      "permitted_observation": [
+        "fee notice title",
+        "fee line item labels",
+        "amount due summary",
+        "due date or payment instruction text"
+      ],
+      "prohibited_automation": []
+    },
+    {
+      "action_id": "payment_detail_entry",
+      "surface": "devhub_payment_form",
+      "stage": "fee payment",
+      "label": "Enter payment details",
+      "description": "Type card, bank, billing, or other payment instrument details into the payment form.",
+      "classification": "financial_action",
+      "allowed_autonomous": false,
+      "requires_manual_handoff": true,
+      "requires_exact_confirmation": true,
+      "permitted_observation": [],
+      "prohibited_automation": [
+        "typing payment card data",
+        "typing bank account data",
+        "typing billing verification data",
+        "using stored private payment values"
+      ],
+      "handoff_reason": "Payment-detail entry is a financial action and must be performed by the attended user."
+    },
+    {
+      "action_id": "save_payment_information",
+      "surface": "devhub_payment_form",
+      "stage": "fee payment",
+      "label": "Save payment information",
+      "description": "Enable or submit an option that stores payment information for future use.",
+      "classification": "consequential_action",
+      "allowed_autonomous": false,
+      "requires_manual_handoff": true,
+      "requires_exact_confirmation": true,
+      "permitted_observation": [],
+      "prohibited_automation": [
+        "selecting save-payment checkbox",
+        "saving a payment profile",
+        "changing stored payment preferences"
+      ],
+      "handoff_reason": "Saving payment information changes future account state and requires attended exact confirmation."
+    },
+    {
+      "action_id": "final_payment_submission",
+      "surface": "devhub_payment_review",
+      "stage": "fee payment",
+      "label": "Submit payment",
+      "description": "Click the final control that authorizes or submits payment for assessed fees.",
+      "classification": "financial_action",
+      "allowed_autonomous": false,
+      "requires_manual_handoff": true,
+      "requires_exact_confirmation": true,
+      "permitted_observation": [],
+      "prohibited_automation": [
+        "clicking submit payment",
+        "authorizing a charge",
+        "confirming final payment submission"
+      ],
+      "handoff_reason": "Final payment submission authorizes a financial transaction and requires attended exact confirmation."
+    }
+  ]
+}

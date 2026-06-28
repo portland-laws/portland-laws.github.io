@@ -1,0 +1,241 @@
+{
+  "fixture_id": "synthetic-ppd-readiness-minimal-v1",
+  "sources": [
+    {
+      "source_id": "src-ppd-apply-permits",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "source_type": "public_html",
+      "owning_surface": "ppd_public_site",
+      "allowlist_policy": "allowlisted",
+      "robots_policy": "fixture_not_live_crawled",
+      "crawl_frequency": "synthetic_fixture_only",
+      "processor_policy": "metadata_only_fixture",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-08",
+      "freshness_status": "synthetic_current"
+    },
+    {
+      "source_id": "src-ppd-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "source_type": "public_html",
+      "owning_surface": "ppd_public_site",
+      "allowlist_policy": "allowlisted",
+      "robots_policy": "fixture_not_live_crawled",
+      "crawl_frequency": "synthetic_fixture_only",
+      "processor_policy": "metadata_only_fixture",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-08",
+      "freshness_status": "synthetic_current"
+    }
+  ],
+  "archive_manifests": [
+    {
+      "manifest_id": "manifest-apply-permits",
+      "source_id": "src-ppd-apply-permits",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "requested_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "redirect_chain": [],
+      "http_status": 200,
+      "content_type": "text/html",
+      "content_hash": "synthetic-sha256-apply-permits",
+      "capture_started_at": "2026-05-08T00:00:00Z",
+      "capture_finished_at": "2026-05-08T00:00:00Z",
+      "processor_name": "synthetic_fixture",
+      "processor_version": "1",
+      "archive_artifact_ref": "fixture-metadata-only",
+      "normalized_document_id": "doc-apply-permits",
+      "skipped_reason": null,
+      "no_raw_body_persisted": true
+    },
+    {
+      "manifest_id": "manifest-submit-plans-online",
+      "source_id": "src-ppd-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "requested_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "redirect_chain": [],
+      "http_status": 200,
+      "content_type": "text/html",
+      "content_hash": "synthetic-sha256-submit-plans-online",
+      "capture_started_at": "2026-05-08T00:00:00Z",
+      "capture_finished_at": "2026-05-08T00:00:00Z",
+      "processor_name": "synthetic_fixture",
+      "processor_version": "1",
+      "archive_artifact_ref": "fixture-metadata-only",
+      "normalized_document_id": "doc-submit-plans-online",
+      "skipped_reason": null,
+      "no_raw_body_persisted": true
+    }
+  ],
+  "documents": [
+    {
+      "document_id": "doc-apply-permits",
+      "source_id": "src-ppd-apply-permits",
+      "title": "Apply for permits synthetic fixture",
+      "document_type": "public_html",
+      "language": "en",
+      "sections": [
+        {
+          "section_id": "apply-overview",
+          "heading": "Apply for permits",
+          "text": "Synthetic fixture states that permit paths must be checked before assuming DevHub support."
+        }
+      ],
+      "tables": [],
+      "links": [],
+      "pdf_pages": [],
+      "form_fields": [],
+      "citation_spans": [
+        {
+          "citation_id": "cite-apply-devhub-check",
+          "section_id": "apply-overview",
+          "text": "permit paths must be checked before assuming DevHub support"
+        }
+      ],
+      "content_hash": "synthetic-sha256-doc-apply-permits",
+      "extraction_confidence": 1.0
+    },
+    {
+      "document_id": "doc-submit-plans-online",
+      "source_id": "src-ppd-submit-plans-online",
+      "title": "Submit plans online synthetic fixture",
+      "document_type": "public_html",
+      "language": "en",
+      "sections": [
+        {
+          "section_id": "single-pdf-process",
+          "heading": "Single PDF process",
+          "text": "Synthetic fixture states that drawing plans are prepared as one PDF while supporting documents remain separate PDFs."
+        }
+      ],
+      "tables": [],
+      "links": [],
+      "pdf_pages": [],
+      "form_fields": [],
+      "citation_spans": [
+        {
+          "citation_id": "cite-single-pdf-rule",
+          "section_id": "single-pdf-process",
+          "text": "drawing plans are prepared as one PDF while supporting documents remain separate PDFs"
+        }
+      ],
+      "content_hash": "synthetic-sha256-doc-submit-plans-online",
+      "extraction_confidence": 1.0
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "req-check-supported-path",
+      "source_evidence_ids": [
+        "doc-apply-permits"
+      ],
+      "requirement_type": "precondition",
+      "subject": "agent",
+      "action": "check",
+      "object": "whether the permit path is supported by DevHub before drafting a workflow",
+      "conditions": [
+        "before recommending an online permit application path"
+      ],
+      "deadline_or_temporal_scope": null,
+      "permit_types": [
+        "synthetic_building_permit"
+      ],
+      "process_stage": "eligibility screening",
+      "confidence": 1.0,
+      "human_review_status": "synthetic_reviewed",
+      "formalization_status": "synthetic_formalized"
+    },
+    {
+      "requirement_id": "req-single-pdf-drawings",
+      "source_evidence_ids": [
+        "doc-submit-plans-online"
+      ],
+      "requirement_type": "document_requirement",
+      "subject": "applicant",
+      "action": "prepare",
+      "object": "drawing plans as one PDF with supporting documents as separate PDFs",
+      "conditions": [
+        "when plan upload preparation is required"
+      ],
+      "deadline_or_temporal_scope": null,
+      "permit_types": [
+        "synthetic_building_permit"
+      ],
+      "process_stage": "document preparation",
+      "confidence": 1.0,
+      "human_review_status": "synthetic_reviewed",
+      "formalization_status": "synthetic_formalized"
+    }
+  ],
+  "process_models": [
+    {
+      "process_id": "process-synthetic-building-permit",
+      "permit_type": "synthetic_building_permit",
+      "scope": "Committed synthetic fixture for readiness helper validation only.",
+      "eligibility_rules": [
+        "req-check-supported-path"
+      ],
+      "required_user_facts": [
+        "property_address",
+        "permit_work_scope"
+      ],
+      "required_documents": [
+        "req-single-pdf-drawings"
+      ],
+      "file_rules": [
+        "req-single-pdf-drawings"
+      ],
+      "fees": [],
+      "stages": [
+        "eligibility screening",
+        "document preparation",
+        "application data entry",
+        "upload staging",
+        "acknowledgement/certification review",
+        "submission"
+      ],
+      "deadlines": [],
+      "exceptions": [],
+      "unsupported_paths": [],
+      "devhub_surface_refs": [],
+      "guardrail_bundle_id": "guardrail-synthetic-building-permit",
+      "requirement_ids": [
+        "req-check-supported-path",
+        "req-single-pdf-drawings"
+      ]
+    }
+  ],
+  "guardrail_bundles": [
+    {
+      "guardrail_bundle_id": "guardrail-synthetic-building-permit",
+      "process_id": "process-synthetic-building-permit",
+      "source_evidence_ids": [
+        "doc-apply-permits",
+        "doc-submit-plans-online"
+      ],
+      "deterministic_predicates": [
+        "known_property_address_required",
+        "known_permit_work_scope_required"
+      ],
+      "deontic_rules": [
+        "must_check_supported_path_before_devhub_recommendation",
+        "must_keep_supporting_documents_separate_from_drawing_plan_pdf"
+      ],
+      "temporal_rules": [],
+      "reversible_action_predicates": [
+        "may_prepare_local_draft_field_mapping"
+      ],
+      "exact_confirmation_predicates": [
+        "requires_exact_confirmation_before_submission"
+      ],
+      "refused_action_predicates": [
+        "refuse_unattended_submission",
+        "refuse_unattended_certification",
+        "refuse_unattended_payment"
+      ],
+      "explanation_templates": [
+        "Synthetic readiness fixture blocks consequential actions and allows local draft preparation only."
+      ],
+      "validation_status": "validated"
+    }
+  ]
+}

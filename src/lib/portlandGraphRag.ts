@@ -11,6 +11,7 @@ import {
   buildLogicEvidenceForSearchResults,
   type LogicEvidenceItem,
 } from './portlandLogic';
+import { LLM_CONFIG } from './llmConfig';
 
 export interface GraphRagAnswer {
   question: string;
@@ -18,6 +19,8 @@ export interface GraphRagAnswer {
   evidence: GraphRagEvidence;
   logicEvidence: LogicEvidenceItem[];
   usedLocalModel: boolean;
+  generationSource: 'local' | 'cloud' | 'retrieved';
+  generationWarning?: string;
 }
 
 export async function answerWithGraphRag(
@@ -48,6 +51,8 @@ export async function answerWithGraphRag(
       evidence,
       logicEvidence,
       usedLocalModel: false,
+      generationSource: 'retrieved',
+      generationWarning: 'No relevant local corpus evidence was found, so no generation was attempted.',
     };
   }
 
@@ -61,30 +66,46 @@ export async function answerWithGraphRag(
         evidence,
         logicEvidence,
         usedLocalModel: false,
+        generationSource: 'retrieved',
+        generationWarning: 'Local LLM generation was disabled for this browser session.',
       };
     }
 
     const { clientLLMWorkerService } = await import('./clientLLMWorkerService');
-    const rawAnswer = await clientLLMWorkerService.generateText(prompt, 220);
+    const rawAnswer = await clientLLMWorkerService.generateText(prompt, 96);
+    const modelSource = clientLLMWorkerService.getLastGenerationSource();
     const candidateAnswer = cleanModelAnswer(rawAnswer);
-    const answer = isGroundedAnswer(candidateAnswer)
+    const answerIsGrounded = isGroundedAnswer(candidateAnswer);
+    const answer = answerIsGrounded
       ? candidateAnswer
       : buildEvidenceSummary(evidence.sections);
+
+    const generationSource: 'local' | 'cloud' | 'retrieved' = answerIsGrounded
+      ? (modelSource === 'cloud' ? 'cloud' : 'local')
+      : 'retrieved';
+
     return {
       question: trimmedQuestion,
       answer,
       evidence,
       logicEvidence,
-      usedLocalModel: answer === candidateAnswer,
+      usedLocalModel: generationSource === 'local',
+      generationSource,
+      generationWarning: answerIsGrounded
+        ? undefined
+        : 'The model response was not sufficiently citation-grounded, so the app returned retrieved evidence instead.',
     };
   } catch (error) {
-    console.warn('Local GraphRAG generation failed, using evidence summary', error);
+    const generationWarning = error instanceof Error ? error.message : String(error);
+    console.warn('GraphRAG generation failed, using evidence summary', error);
     return {
       question: trimmedQuestion,
-      answer: buildEvidenceSummary(evidence.sections),
+      answer: `${buildEvidenceSummary(evidence.sections)}\n\nGeneration status: ${generationWarning}`,
       evidence,
       logicEvidence,
       usedLocalModel: false,
+      generationSource: 'retrieved',
+      generationWarning,
     };
   }
 }
@@ -104,34 +125,31 @@ function buildGraphRagPrompt(
 ) {
   const logicByCid = new Map(logicEvidence.map((item) => [item.ipfs_cid, item]));
   const sectionEvidence = evidence.sections
+    .slice(0, sectionScoped ? 3 : 3)
     .map((result, index) => {
       const section = result.section;
       const citation = result.citation || section.identifier;
       const logic = logicByCid.get(result.ipfs_cid);
       const logicBlock = logic
-        ? `
-Generated logic metadata:
-- Norm: ${logic.normType} (${logic.normOperator})
-- Temporal scope: ${logic.temporalScope}
-- Parse status: ${logic.parseStatus}
-- Certificate: ${logic.certificateStatus}
-- Caveat: ${logic.caveats[0] || 'Machine-generated candidate formalization.'}`
-        : '\nGenerated logic metadata: unavailable for this evidence item.';
+        ? `\nLogic: ${logic.normType} ${logic.normOperator}; ${logic.parseStatus}; ${logic.certificateStatus}.`
+        : '';
+      const excerptLimit = index === 0 && sectionScoped ? 700 : 420;
+      const excerptSource = index === 0 && sectionScoped
+        ? section.text
+        : result.snippet || section.text;
       return `[${index + 1}] ${citation}
 Title: ${section.title}
 Source: ${section.source_url}
-${index === 0 && sectionScoped ? 'Full selected section text' : 'Excerpt'}: ${cleanCorpusExcerpt(index === 0 && sectionScoped ? section.text.slice(0, 5000) : result.snippet || section.text.slice(0, 900))}${logicBlock}`;
+Excerpt: ${truncateText(cleanCorpusExcerpt(excerptSource), excerptLimit)}${logicBlock}`;
     })
     .join('\n\n');
   const graphContext = buildGraphContext(evidence.entities, evidence.relationships);
 
-  return `You answer simple questions about the Portland City Code using only the evidence below.
+  const prompt = `You answer questions about Portland City Code using only the evidence below.
 This is legal information, not legal advice.
-Generated logic metadata is machine-created support material, not the official law text.
 ${sectionScoped ? 'The first evidence item is the selected statute the user is reading. Use it as the primary context before relying on related statutes.' : 'The evidence was retrieved from the full local corpus for the user question.'}
-If the evidence does not answer the question, say that the local corpus evidence is insufficient.
-Keep the answer concise.
-Every factual sentence must cite at least one evidence number like [1] or [2].
+If the evidence is insufficient, say so. Keep the answer under 5 sentences.
+Every factual sentence must cite an evidence number like [1] or [2].
 
 Question: ${question}
 
@@ -142,16 +160,18 @@ Knowledge graph context:
 ${graphContext}
 
 Answer:`;
+
+  return truncateGraphRagPrompt(prompt);
 }
 
 function buildGraphContext(entities: CorpusEntity[], relationships: CorpusRelationship[]) {
   const entityLabels = new Map(entities.map((entity) => [entity.id, `${entity.label} (${formatGraphType(entity.type)})`]));
   const entityLines = entities
-    .slice(0, 16)
+    .slice(0, 6)
     .map((entity) => `- ${entityLabels.get(entity.id)}`)
     .join('\n') || '- None retrieved.';
   const relationshipLines = relationships
-    .slice(0, 16)
+    .slice(0, 6)
     .map((relationship) => {
       const source = entityLabels.get(relationship.source) || relationship.source;
       const target = entityLabels.get(relationship.target) || relationship.target;
@@ -199,4 +219,27 @@ function cleanCorpusExcerpt(excerpt: string) {
     .replace(/(^|\.\.\.|\s)Label:\s*City code section\s*/gi, '$1')
     .replace(/(^|\.\.\.|\s)Label:\s*/gi, '$1')
     .trim();
+}
+
+function truncateText(text: string, maxChars: number) {
+  if (text.length <= maxChars) {
+    return text;
+  }
+  return `${text.slice(0, maxChars).replace(/\s+\S*$/, '').trim()} ...`;
+}
+
+function truncateGraphRagPrompt(prompt: string) {
+  if (prompt.length <= LLM_CONFIG.LOCAL_MAX_PROMPT_CHARS) {
+    return prompt;
+  }
+
+  const answerMarker = '\n\nAnswer:';
+  const answerIndex = prompt.lastIndexOf(answerMarker);
+  if (answerIndex === -1) {
+    return truncateText(prompt, LLM_CONFIG.LOCAL_MAX_PROMPT_CHARS);
+  }
+
+  const reservedTail = prompt.slice(answerIndex);
+  const headBudget = Math.max(1200, LLM_CONFIG.LOCAL_MAX_PROMPT_CHARS - reservedTail.length);
+  return `${truncateText(prompt.slice(0, answerIndex), headBudget)}${reservedTail}`;
 }

@@ -1,0 +1,82 @@
+{
+  "fixture_name": "playwright_draft_fill_refusal_plan",
+  "version": 1,
+  "mode": "draft_fill",
+  "default_policy": "refuse",
+  "description": "Deterministic negative-control plan for PP&D Playwright draft-fill guardrails.",
+  "steps": [
+    {
+      "id": "low-confidence-selector",
+      "kind": "selector",
+      "selector": "input[name='maybePermitId']",
+      "confidence": 0.41,
+      "requested_action": "fill",
+      "default_decision": "refuse",
+      "reason": "Selector confidence is below the required threshold."
+    },
+    {
+      "id": "upload-document",
+      "kind": "upload",
+      "selector": "input[type='file']",
+      "requested_action": "upload",
+      "default_decision": "refuse",
+      "reason": "Uploads are never performed by default."
+    },
+    {
+      "id": "submit-application",
+      "kind": "submission",
+      "selector": "button[type='submit']",
+      "requested_action": "click",
+      "default_decision": "refuse",
+      "reason": "Application submission requires explicit human approval outside draft-fill mode."
+    },
+    {
+      "id": "payment-checkout",
+      "kind": "payment",
+      "selector": "button[data-action='pay-now']",
+      "requested_action": "click",
+      "default_decision": "refuse",
+      "reason": "Payment actions are never automated."
+    },
+    {
+      "id": "certify-accuracy",
+      "kind": "certification",
+      "selector": "input[name='certifyAccuracy']",
+      "requested_action": "check",
+      "default_decision": "refuse",
+      "reason": "Certifications and attestations require a person."
+    },
+    {
+      "id": "cancel-permit",
+      "kind": "cancellation",
+      "selector": "button[data-action='cancel-permit']",
+      "requested_action": "click",
+      "default_decision": "refuse",
+      "reason": "Cancellation is destructive and must remain refused by default."
+    },
+    {
+      "id": "mfa-code",
+      "kind": "mfa",
+      "selector": "input[name='verificationCode']",
+      "requested_action": "fill",
+      "default_decision": "refuse",
+      "reason": "MFA challenges are never automated."
+    },
+    {
+      "id": "captcha-response",
+      "kind": "captcha",
+      "selector": "iframe[title='reCAPTCHA']",
+      "requested_action": "solve",
+      "default_decision": "refuse",
+      "reason": "CAPTCHA solving is never automated."
+    },
+    {
+      "id": "schedule-inspection",
+      "kind": "inspection_scheduling",
+      "selector": "button[data-action='schedule-inspection']",
+      "requested_action": "click",
+      "default_decision": "refuse",
+      "reason": "Inspection scheduling changes real-world appointments and must be refused by default."
+    }
+  ]
+}

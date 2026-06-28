@@ -1,0 +1,55 @@
+--- a/ppd/tests/test_checkbox_199_blocked_selection_plain.py
++++ b/ppd/tests/test_checkbox_199_blocked_selection_plain.py
+@@ -0,0 +1,52 @@
++"""Regression coverage for blocked-only daemon repair task selection.
++
++This test intentionally uses plain task-board strings and the daemon's existing
++parser. It does not define custom regular expressions, so it cannot repeat the
++named-group syntax failures that blocked earlier attempts.
++"""
++
++from __future__ import annotations
++
++import unittest
++
++from ppd.daemon.ppd_daemon import parse_tasks, select_task
++
++
++class Checkbox199BlockedSelectionPlainTest(unittest.TestCase):
++    def test_fresh_daemon_repair_task_is_selected_after_blocked_tasks(self) -> None:
++        blocked_ids = (178, 182, 186, 187, 191, 193, 194, 195, 197)
++        lines = [
++            "# PP&D Daemon Task Board",
++            "",
++            "## Blocked Work",
++        ]
++        for checkbox_id in blocked_ids:
++            lines.append(
++                "- [!] Task checkbox-{}: Blocked parser-clean recovery task.".format(
++                    checkbox_id
++                )
++            )
++        lines.extend(
++            [
++                "",
++                "## Fresh Repair Work",
++                "- [ ] Task checkbox-199: Add one daemon-only blocked-selection unittest using plain string parsing.",
++            ]
++        )
++        board = "\n".join(lines) + "\n"
++
++        tasks = parse_tasks(board)
++        selected = select_task(tasks)
++
++        self.assertIsNotNone(selected)
++        assert selected is not None
++        self.assertEqual(199, selected.checkbox_id)
++        self.assertEqual("needed", selected.status)
++        self.assertNotIn(selected.checkbox_id, blocked_ids)
++        for task in tasks:
++            if task.checkbox_id in blocked_ids:
++                self.assertEqual("blocked", task.status)
++
++
++if __name__ == "__main__":
++    unittest.main()

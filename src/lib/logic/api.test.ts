@@ -6,6 +6,7 @@ import {
   convertTextToFol,
   createLogicApi,
   evaluateNlPolicy,
+  handleLogicApiServerRequest,
   proveLogic,
   resetGlobalLogicApi,
 } from './api';
@@ -66,7 +67,7 @@ describe('browser-native logic public API facade', () => {
       success: true,
       capabilities: { serverCallsAllowed: false, ucanSigningAvailable: false },
     });
-    expect(compiled.policyFormula).toContain('P(');
+    expect(compiled.policyFormula).toContain('P[tenants:Agent]');
     expect(evaluation).toMatchObject({
       tool: 'use-community-room',
       actor: 'did:example:tenant',
@@ -90,8 +91,71 @@ describe('browser-native logic public API facade', () => {
     api.convertLegalTextToDeontic('Employers shall not retaliate.');
     api.convertLogic('Resident(Ada)', 'tdfol', 'json');
 
-    expect(api.monitor.getOperationSummary('api.convert_text_to_fol')).toMatchObject({ total_count: 1 });
-    expect(api.monitor.getOperationSummary('api.convert_legal_text_to_deontic')).toMatchObject({ total_count: 1 });
+    expect(api.monitor.getOperationSummary('api.convert_text_to_fol')).toMatchObject({
+      total_count: 1,
+    });
+    expect(api.monitor.getOperationSummary('api.convert_legal_text_to_deontic')).toMatchObject({
+      total_count: 1,
+    });
     expect(api.monitor.getOperationSummary('api.convert_logic')).toMatchObject({ total_count: 1 });
+  });
+
+  it('handles api_server-style requests locally without HTTP, Python, or server fallbacks', async () => {
+    const health = await handleLogicApiServerRequest({ method: 'GET', path: '/health' });
+    const converted = await handleLogicApiServerRequest({
+      method: 'POST',
+      path: '/convert',
+      body: {
+        source: 'All tenants are residents',
+        source_format: 'natural_language',
+        target_format: 'fol',
+      },
+    });
+    const proof = await handleLogicApiServerRequest({
+      method: 'POST',
+      path: '/prove',
+      body: {
+        logic: 'cec',
+        theorem: '(subject_to ada code)',
+        axioms: ['(subject_to ada code)'],
+      },
+    });
+    const malformed = await handleLogicApiServerRequest({
+      method: 'POST',
+      path: '/convert',
+      body: { source: 'All tenants are residents' },
+    });
+
+    expect(health.body).toMatchObject({
+      status: 'ok',
+      server_runtime: false,
+      python_runtime: false,
+      server_calls_allowed: false,
+    });
+    expect(health.headers).toMatchObject({ 'x-logic-runtime': 'browser-native-typescript-wasm' });
+    expect(converted).toMatchObject({
+      ok: true,
+      status: 200,
+      body: {
+        status: 'partial',
+        target_formula: '∀x (Tenants(x) → Residents(x))',
+        browser_native_api_server: true,
+      },
+    });
+    expect(proof).toMatchObject({
+      ok: true,
+      status: 200,
+      body: {
+        status: 'proved',
+        method: 'bridge:cec-forward-chaining',
+        browser_native_api_server: true,
+        server_calls_allowed: false,
+      },
+    });
+    expect(malformed).toMatchObject({
+      ok: false,
+      status: 400,
+      body: { server_runtime: false, python_runtime: false },
+    });
   });
 });

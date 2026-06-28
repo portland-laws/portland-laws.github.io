@@ -1,0 +1,111 @@
+{
+  "schema_version": "devhub_read_only_observation_intake_schema_v3",
+  "intake_id": "synthetic-devhub-observation-intake-v3-redaction-acceptance",
+  "synthetic_fixture_only": true,
+  "fixture_mode": "synthetic_observation_intake_rows",
+  "authorization_checklist_reference": "ppd-readonly-checklist-v2",
+  "surface": {
+    "title": "Synthetic DevHub permit overview",
+    "page_heading": "Permit overview",
+    "url_pattern": "https://devhub.portlandoregon.gov/permits/{permit_id}/summary"
+  },
+  "accessible_landmarks": [
+    {
+      "label": "Main permit overview region",
+      "role": "main"
+    }
+  ],
+  "read_only_actions": [
+    {
+      "label": "View permit summary",
+      "action_type": "observe_label"
+    }
+  ],
+  "redacted_observation_rows": [
+    {
+      "order": 1,
+      "row_id": "row-applicant-label",
+      "label": "Applicant",
+      "placeholder": "redacted applicant label placeholder",
+      "observed_field_class": "applicant_name",
+      "redaction": "omit_private_value",
+      "route_pattern": "https://devhub.portlandoregon.gov/permits/123456/summary",
+      "selector_ref": "main.heading.applicant",
+      "selector_confidence": 0.9
+    },
+    {
+      "order": 2,
+      "row_id": "row-permit-status-label",
+      "label": "Permit status",
+      "placeholder": "synthetic status label placeholder",
+      "observed_field_class": "public_label",
+      "redaction": "public_label",
+      "route_pattern": "https://devhub.portlandoregon.gov/permits/{permit_id}/summary",
+      "selector_ref": "main.status.permit",
+      "selector_confidence": 0.82
+    },
+    {
+      "order": 3,
+      "row_id": "row-fee-notice-label",
+      "label": "Fee notice",
+      "placeholder": "synthetic fee notice placeholder",
+      "observed_field_class": "financial",
+      "redaction": "label_only",
+      "route_pattern": "https://devhub.portlandoregon.gov/permits/:permit_id/fees",
+      "selector_ref": "aside.notice.fees",
+      "selector_confidence": 0.78
+    }
+  ],
+  "validation_message_placeholders": [
+    {
+      "message_id": "required-field-placeholder",
+      "placeholder": "synthetic validation label placeholder"
+    }
+  ],
+  "non_action_upload_control_evidence_labels": [
+    "Attachment list label observed as non-action text"
+  ],
+  "upload_controls": [
+    {
+      "control_id": "attachment-list-readonly",
+      "evidence_label": "Attachment list non-action evidence label"
+    }
+  ],
+  "state_transition_placeholders": [
+    {
+      "transition_id": "summary-to-detail-readonly",
+      "placeholder": "synthetic read-only navigation placeholder"
+    }
+  ],
+  "selector_confidence_notes": [
+    {
+      "note_id": "selector-note-main-region",
+      "summary": "Selectors are synthetic labels for offline confidence review only."
+    }
+  ],
+  "source_evidence_placeholders": [
+    {
+      "source_id": "fixture-source-devhub-intake-v3",
+      "placeholder": "synthetic source evidence placeholder"
+    }
+  ],
+  "reviewer_holds": [
+    {
+      "hold_id": "manual-review-before-promotion",
+      "reason": "Fixture evidence requires reviewer approval before any promotion."
+    }
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "-m",
+      "py_compile",
+      "ppd/devhub/read_only_observation_intake_schema_v3.py"
+    ],
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ]
+}

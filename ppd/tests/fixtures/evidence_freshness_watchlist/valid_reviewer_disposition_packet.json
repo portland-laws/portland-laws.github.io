@@ -1,0 +1,35 @@
+{
+  "packet_type": "evidence_freshness_watchlist_reviewer_disposition",
+  "reviewer": {
+    "owner": "ppd-offline-reviewer"
+  },
+  "consumed_packet_refs": [
+    "packet:fixture:evidence-freshness-watchlist:2026-05-29"
+  ],
+  "offline_validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ],
+  "decisions": [
+    {
+      "decision": "keep_watchlist_entry",
+      "rationale": "Fixture evidence remains stale pending a later offline packet refresh.",
+      "citations": [
+        "packet:fixture:evidence-freshness-watchlist:2026-05-29#entry-1"
+      ]
+    }
+  ],
+  "public_source_urls": [
+    "https://www.portland.gov/bds"
+  ],
+  "mutation_flags": {
+    "active_registry_mutation": false,
+    "active_requirement_mutation": false,
+    "active_guardrail_mutation": false,
+    "active_schedule_mutation": false,
+    "active_release_state_mutation": false
+  }
+}

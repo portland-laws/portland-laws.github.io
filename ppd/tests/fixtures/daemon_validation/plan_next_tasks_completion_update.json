@@ -1,0 +1,16 @@
+{
+  "summary": "Supervisor plan_next_tasks completion update",
+  "impact": "This fixture must be rejected because plan_next_tasks cannot mark domain work complete.",
+  "plan_next_tasks": [
+    "Mark requirement extraction complete"
+  ],
+  "files": [
+    {
+      "path": "ppd/daemon/task_board.md",
+      "content": "# PP&D Task Board\n\nplan_next_tasks:\n- [x] Mark requirement extraction complete\n"
+    }
+  ],
+  "validation_commands": [
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

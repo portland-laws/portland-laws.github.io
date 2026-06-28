@@ -1,0 +1,147 @@
+{
+  "source_id": "ppd_public_apply_permits_fixture",
+  "canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+  "invalidation_reason": "source_content_hash_changed_after_public_recrawl",
+  "old_content_hash": "sha256:old-apply-permits-synthetic-fixture",
+  "new_content_hash": "sha256:new-apply-permits-synthetic-fixture",
+  "production_guardrail_bundle_id": "guardrail_bundle_ppd_apply_permits_current",
+  "confidence_threshold": 0.85,
+  "old_synthetic_citation_spans": [
+    {
+      "span_id": "old-obligation-001",
+      "requirement_type": "obligation",
+      "subject": "applicant",
+      "action": "review",
+      "object": "permit application instructions",
+      "text": "Applicants must review the permit application instructions before starting a permit request.",
+      "conditions": ["before application data entry"],
+      "confidence": 0.93
+    },
+    {
+      "span_id": "old-document-001",
+      "requirement_type": "document_requirement",
+      "subject": "applicant",
+      "action": "upload",
+      "object": "site plan PDF",
+      "text": "A site plan PDF is required when plans are part of the permit request.",
+      "conditions": ["permit request includes plans"],
+      "document_name": "site plan PDF",
+      "confidence": 0.91
+    },
+    {
+      "span_id": "old-deadline-001",
+      "requirement_type": "deadline",
+      "subject": "applicant",
+      "action": "respond",
+      "object": "intake checksheet",
+      "text": "Applicants should respond to an intake checksheet within 30 days.",
+      "deadline_or_temporal_scope": "within 30 days",
+      "confidence": 0.78
+    },
+    {
+      "span_id": "old-fee-001",
+      "requirement_type": "fee_trigger",
+      "subject": "applicant",
+      "action": "pay",
+      "object": "intake fee",
+      "text": "An intake fee may be due after the permit request is received.",
+      "conditions": ["after permit request is received"],
+      "fee_amount": "varies by permit type",
+      "confidence": 0.9
+    },
+    {
+      "span_id": "old-action-gate-001",
+      "requirement_type": "action_gate",
+      "subject": "agent",
+      "action": "submit",
+      "object": "permit application",
+      "text": "Submission requires applicant acknowledgement and confirmation.",
+      "action_gate": "exact_confirmation_required",
+      "confidence": 0.94
+    },
+    {
+      "span_id": "old-document-removed-001",
+      "requirement_type": "document_requirement",
+      "subject": "applicant",
+      "action": "upload",
+      "object": "neighborhood notice form",
+      "text": "A neighborhood notice form is required for this synthetic permit path.",
+      "document_name": "neighborhood notice form",
+      "confidence": 0.86
+    }
+  ],
+  "new_synthetic_citation_spans": [
+    {
+      "span_id": "new-obligation-001",
+      "requirement_type": "obligation",
+      "subject": "applicant",
+      "action": "review",
+      "object": "permit application instructions",
+      "text": "Applicants must review the permit application instructions before starting a permit request.",
+      "conditions": ["before application data entry"],
+      "confidence": 0.94
+    },
+    {
+      "span_id": "new-obligation-added-001",
+      "requirement_type": "obligation",
+      "subject": "applicant",
+      "action": "verify",
+      "object": "property information",
+      "text": "Applicants must verify property information before selecting a permit type.",
+      "conditions": ["before permit type selection"],
+      "confidence": 0.88
+    },
+    {
+      "span_id": "new-document-001",
+      "requirement_type": "document_requirement",
+      "subject": "applicant",
+      "action": "upload",
+      "object": "site plan PDF",
+      "text": "A combined site plan PDF is required when plans are part of the permit request.",
+      "conditions": ["permit request includes plans"],
+      "document_name": "combined site plan PDF",
+      "confidence": 0.82
+    },
+    {
+      "span_id": "new-deadline-001",
+      "requirement_type": "deadline",
+      "subject": "applicant",
+      "action": "respond",
+      "object": "intake checksheet",
+      "text": "Applicants should respond to an intake checksheet within 14 days.",
+      "deadline_or_temporal_scope": "within 14 days",
+      "confidence": 0.77
+    },
+    {
+      "span_id": "new-fee-001",
+      "requirement_type": "fee_trigger",
+      "subject": "applicant",
+      "action": "pay",
+      "object": "intake fee",
+      "text": "An intake fee may be due after the permit request is accepted for intake.",
+      "conditions": ["after permit request is accepted for intake"],
+      "fee_amount": "varies by permit type",
+      "confidence": 0.89
+    },
+    {
+      "span_id": "new-action-gate-001",
+      "requirement_type": "action_gate",
+      "subject": "agent",
+      "action": "submit",
+      "object": "permit application",
+      "text": "Submission requires applicant acknowledgement and explicit confirmation.",
+      "action_gate": "exact_confirmation_required",
+      "confidence": 0.92
+    },
+    {
+      "span_id": "new-action-gate-added-001",
+      "requirement_type": "action_gate",
+      "subject": "agent",
+      "action": "upload",
+      "object": "correction documents",
+      "text": "Correction document upload requires attended user confirmation.",
+      "action_gate": "attended_confirmation_required",
+      "confidence": 0.8
+    }
+  ]
+}

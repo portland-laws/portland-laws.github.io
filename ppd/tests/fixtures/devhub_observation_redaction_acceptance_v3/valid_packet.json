@@ -1,0 +1,85 @@
+{
+  "packet_version": "devhub_read_only_observation_redaction_acceptance_v3",
+  "packet_id": "fixture-devhub-read-only-redaction-v3-valid",
+  "observation_intake_references": [
+    {
+      "reference_id": "intake-public-guide-001",
+      "source_kind": "public_guidance",
+      "description": "Read-only observation fixture derived from public PP&D DevHub guidance labels only."
+    }
+  ],
+  "redaction_coverage_checks": [
+    {
+      "check_id": "coverage-001",
+      "scope": "visible labels and structural landmarks",
+      "result": "passed",
+      "notes": "No account identifiers, private values, document names, or user-entered values are retained."
+    }
+  ],
+  "private_value_omission_evidence": [
+    {
+      "evidence_id": "omission-001",
+      "omitted_categories": [
+        "account identifiers",
+        "user-entered values",
+        "permit numbers",
+        "addresses",
+        "document names"
+      ],
+      "replacement_policy": "Use stable synthetic labels in committed fixtures."
+    }
+  ],
+  "route_pattern_normalization_checks": [
+    {
+      "check_id": "route-pattern-001",
+      "raw_route_policy": "No raw authenticated route is stored.",
+      "normalized_pattern": "/permits/{request_id}/overview",
+      "result": "passed"
+    }
+  ],
+  "selector_evidence_confidence_summaries": [
+    {
+      "selector_group": "primary navigation landmarks",
+      "confidence": "medium",
+      "basis": "Public guidance labels and synthetic fixture structure only.",
+      "review_required_before_live_use": true
+    }
+  ],
+  "unsupported_manual_handoff_reminders": [
+    {
+      "reminder_id": "manual-handoff-001",
+      "condition": "Any page requiring credentials, MFA, CAPTCHA, payment, certification, submission, scheduling, cancellation, or upload.",
+      "required_response": "Stop automation and hand control to the attended user."
+    }
+  ],
+  "fixture_promotion_holds": [
+    {
+      "hold_id": "promotion-hold-001",
+      "reason": "Synthetic fixture cannot be promoted to a live-observation fixture until independent privacy review passes."
+    }
+  ],
+  "reviewer_routing": [
+    {
+      "reviewer_role": "PPD automation reviewer",
+      "routing_reason": "Verify read-only scope, redaction completeness, and fixture promotion hold status."
+    }
+  ],
+  "rollback_notes": [
+    {
+      "note_id": "rollback-001",
+      "note": "Remove the generated fixture and dependent selector summary if any retained value is later found to be account-scoped or private."
+    }
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ],
+  "read_only_controls": {
+    "mutation_enabled": false,
+    "writes_enabled": false,
+    "allows_mutation": false
+  }
+}

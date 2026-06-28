@@ -1,0 +1,33 @@
+{
+  "public_crawl_metadata_dry_run": {
+    "source_id": "fixture:public-crawl-metadata-dry-run:2026-05-28",
+    "ready_for_intake": true,
+    "warnings": [
+      "Live crawl remains disabled; only dry-run metadata is cited."
+    ]
+  },
+  "requirement_regeneration_promotion_decision": {
+    "source_id": "fixture:requirement-regeneration-promotion-decision:2026-05-28",
+    "promote": false,
+    "remaining_blockers": [
+      "Promotion requires human review of regenerated requirement diffs."
+    ],
+    "escalation_prompts": [
+      "Should regenerated requirements stay fixture-only until PP&D confirms the source citation set?"
+    ]
+  },
+  "devhub_surface_registry_update_candidate": {
+    "source_id": "fixture:devhub-surface-registry-update-candidate:2026-05-28",
+    "candidate_ready": true,
+    "escalation_prompts": [
+      "Who owns approval for moving the DevHub registry candidate from fixture to live verification?"
+    ]
+  },
+  "agent_handoff_transcript_expectation_matrix": {
+    "source_id": "fixture:agent-handoff-transcript-expectation-matrix:2026-05-28",
+    "expectations_satisfied": false,
+    "unmet_expectations": [
+      "Future handoff must cite rollback references and disabled live actions."
+    ]
+  }
+}

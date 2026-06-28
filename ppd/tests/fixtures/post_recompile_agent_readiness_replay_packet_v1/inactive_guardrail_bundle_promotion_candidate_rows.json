@@ -1,0 +1,26 @@
+{
+  "rows": [
+    {
+      "row_type": "inactive_guardrail_bundle_promotion_candidate",
+      "row_id": "synthetic-candidate-row-001",
+      "candidate_label": "Synthetic inactive guardrail bundle promotion candidate for residential permit intake prompts",
+      "synthetic": true,
+      "candidate_state": "inactive",
+      "citation_placeholder_ids": [
+        "citation-placeholder-residential-intake-001",
+        "citation-placeholder-residential-intake-002"
+      ]
+    },
+    {
+      "row_type": "inactive_guardrail_bundle_promotion_candidate",
+      "row_id": "synthetic-candidate-row-002",
+      "candidate_label": "Synthetic inactive guardrail bundle promotion candidate for DevHub consequential action blocking",
+      "synthetic": true,
+      "candidate_state": "inactive",
+      "citation_placeholder_ids": [
+        "citation-placeholder-devhub-action-001",
+        "citation-placeholder-devhub-action-002"
+      ]
+    }
+  ]
+}

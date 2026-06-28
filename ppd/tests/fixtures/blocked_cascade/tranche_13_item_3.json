@@ -1,0 +1,27 @@
+{
+  "blocked_work": {
+    "id": "ppd-work-tranche-13-item-3",
+    "blocked_by": "daemon-repair-tranche-13-item-3",
+    "blocked_at_generation": 42
+  },
+  "repairs": [
+    {
+      "id": "daemon-repair-tranche-13-item-3-stale",
+      "target": "daemon-repair-tranche-13-item-3",
+      "issued_at_generation": 42,
+      "validated": true
+    },
+    {
+      "id": "daemon-repair-tranche-13-item-3-failed",
+      "target": "daemon-repair-tranche-13-item-3",
+      "issued_at_generation": 43,
+      "validated": false
+    },
+    {
+      "id": "daemon-repair-tranche-13-item-3-fresh",
+      "target": "daemon-repair-tranche-13-item-3",
+      "issued_at_generation": 44,
+      "validated": true
+    }
+  ]
+}

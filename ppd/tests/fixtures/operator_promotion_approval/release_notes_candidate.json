@@ -1,0 +1,18 @@
+{
+  "packet_id": "release-notes-candidate-fixture-001",
+  "packet_type": "release_notes_candidate",
+  "active_promotion_state": "inactive",
+  "mutates_active_targets": [],
+  "candidate_summary": "Release notes candidate describes operator promotion scope for review and is not an active release note.",
+  "citations": [
+    "release-notes:candidate-summary"
+  ],
+  "promotion_blockers": [
+    {
+      "description": "Do not publish release notes until reviewer signoff slots are complete.",
+      "citations": [
+        "release-notes:signoff-required"
+      ]
+    }
+  ]
+}

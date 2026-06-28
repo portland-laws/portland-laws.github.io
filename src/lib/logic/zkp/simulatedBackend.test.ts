@@ -10,6 +10,13 @@ import {
   getBackend,
   listBackends,
 } from './simulatedBackend';
+import {
+  BACKEND_PROTOCOL_METADATA,
+  assertBackendProtocol,
+  backendSatisfiesProtocol,
+  describeBackendProtocol,
+  validateBackendProtocol,
+} from './backendProtocol';
 
 Object.defineProperty(globalThis, 'crypto', {
   value: webcrypto,
@@ -57,6 +64,9 @@ describe('browser-native simulated ZKP backend', () => {
       ruleset_id: 'TDFOL_v1',
       theorem: 'Q',
     });
+    expect(proof.publicInputs.proof_hash).toBe(proof.toDict().proof_data.slice(16, 80));
+    expect(proof.publicInputs.circuit_hash).toBe(proof.toDict().proof_data.slice(80, 144));
+    expect(proof.publicInputs.witness_commitment).toBe(proof.toDict().proof_data.slice(144, 208));
     expect(proof.metadata).toMatchObject({
       num_axioms: 2,
       proof_system: 'Groth16 (simulated)',
@@ -87,9 +97,45 @@ describe('browser-native simulated ZKP backend', () => {
       publicInputs: proof.publicInputs,
       timestamp: proof.timestamp,
     });
+    const tamperedData = new Uint8Array(proof.proofData);
+    tamperedData[8] ^= 0xff;
+    const tamperedSegmentProof = new ZKPProof({
+      metadata: proof.metadata,
+      proofData: tamperedData,
+      publicInputs: proof.publicInputs,
+      timestamp: proof.timestamp,
+    });
+    const wrongSizeProof = new ZKPProof({
+      metadata: proof.metadata,
+      proofData: proof.proofData,
+      publicInputs: proof.publicInputs,
+      sizeBytes: proof.proofData.byteLength + 1,
+      timestamp: proof.timestamp,
+    });
 
     await expect(backend.verifyProof(wrongHashProof)).resolves.toBe(false);
     await expect(backend.verifyProof(missingSystemProof)).resolves.toBe(false);
+    await expect(backend.verifyProof(tamperedSegmentProof)).resolves.toBe(false);
+    await expect(backend.verifyProof(wrongSizeProof)).resolves.toBe(false);
+  });
+
+  it('supports Python-style aliases and seeded deterministic browser proofs', async () => {
+    const backend = new SimulatedBackend();
+    const first = await backend.generate_proof('Q', ['P'], { seed: 'fixture-seed' });
+    const second = await backend.generateProof('Q', ['P'], { seed: 'fixture-seed' });
+
+    expect(first.to_dict().proof_data).toBe(second.toDict().proof_data);
+    expect(first.publicInputs).toEqual(second.publicInputs);
+    await expect(backend.verify_proof(ZKPProof.from_dict(first.to_dict()))).resolves.toBe(true);
+    expect(() =>
+      ZKPProof.fromDict({
+        metadata: {},
+        proof_data: '00',
+        public_inputs: [],
+        size_bytes: 1,
+        timestamp: 1,
+      } as unknown as Parameters<typeof ZKPProof.fromDict>[0]),
+    ).toThrow('public_inputs');
   });
 
   it('exposes browser-native backend registry semantics', () => {
@@ -104,5 +150,33 @@ describe('browser-native simulated ZKP backend', () => {
     expect(backendIsAvailable('groth16')).toBe(false);
     expect(() => getBackend('unknown')).toThrow('Unknown ZKP backend');
     expect(() => getBackend('groth16')).toThrow('browser-native WASM');
+  });
+
+  it('ports the Python backend_protocol contract as a fail-closed browser-native validator', () => {
+    const backend = new SimulatedBackend();
+
+    expect(BACKEND_PROTOCOL_METADATA).toEqual({
+      browserNative: true,
+      pythonRuntimeAllowed: false,
+      requiredMethods: ['generateProof', 'verifyProof'],
+      serverCallsAllowed: false,
+      sourcePythonModule: 'logic/zkp/backends/backend_protocol.py',
+    });
+    expect(backendSatisfiesProtocol(backend)).toBe(true);
+    expect(validateBackendProtocol(backend)).toMatchObject({
+      backendId: 'simulated',
+      errors: [],
+      ok: true,
+    });
+    expect(
+      describeBackendProtocol({ backend_id: 'legacy', generateProof: async () => undefined }),
+    ).toMatchObject({
+      backendId: 'legacy',
+      errors: ['verifyProof must be a function'],
+      ok: false,
+    });
+    expect(() =>
+      assertBackendProtocol({ backendId: 'broken', verifyProof: async () => false }),
+    ).toThrow('generateProof must be a function');
   });
 });

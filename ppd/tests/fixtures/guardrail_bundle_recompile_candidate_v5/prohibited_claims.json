@@ -1,0 +1,27 @@
+{
+  "process_model_impact_references": ["ppd-process-model:guardrail-bundle-impact:v5"],
+  "guardrail_bundle_deltas": [
+    {"entity": "GuardrailBundle", "status": "inactive", "active": false}
+  ],
+  "predicate_deltas": [
+    {"kind": "deterministic"},
+    {"kind": "deontic"}
+  ],
+  "temporal_rule_deltas": [{"name": "stale_evidence_after_days"}],
+  "reversible_action_handling": [{"action": "draft_note"}],
+  "exact_confirmation_gates": [{"phrase": "CONFIRM"}],
+  "refused_action_gates": [
+    {"kind": "consequential"},
+    {"kind": "financial"}
+  ],
+  "stale_evidence_blocks": [{"source": "permit status"}],
+  "explanation_templates": [{"name": "refusal"}],
+  "reviewer_holds": [{"reason": "review required"}],
+  "rollback_notes": ["discard inactive candidate"],
+  "validation_commands": [["python3", "-m", "pytest"]],
+  "guardrail_mutation_claims": [{"target": "guardrail", "active": true}],
+  "artifacts": [{"path": "ipfs_datasets_py/.daemon/devhub_session.json"}],
+  "official_action_completion_claims": [{"action": "submitted permit application"}],
+  "notes": "This includes a legal guarantee that the permit will be approved.",
+  "flags": {"active_mutation": true}
+}

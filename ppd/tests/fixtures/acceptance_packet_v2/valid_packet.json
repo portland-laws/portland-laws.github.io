@@ -1,0 +1,39 @@
+{
+  "packet_version": 2,
+  "source_kind": "public_pdf_or_form",
+  "page_anchors": [
+    {"page": 1, "anchor": "Submittal requirements"}
+  ],
+  "extraction_confidence": [
+    {"field": "checklist_rows", "confidence": 0.98}
+  ],
+  "checklist_rows": [
+    {"label": "Complete application form", "page": 1}
+  ],
+  "required_document_rows": [
+    {"document": "Site plan", "page": 2}
+  ],
+  "expected_certification_block_labels": [
+    "Applicant signature",
+    "Owner certification"
+  ],
+  "certification_block_labels": [
+    "Applicant signature",
+    "Owner certification"
+  ],
+  "fillable_field_metadata": [
+    {"name": "applicant_name", "type": "text", "required": true}
+  ],
+  "deadline_rows": [
+    {"label": "Response deadline", "value": "30 days"}
+  ],
+  "file_preparation_rows": [
+    {"label": "Flatten PDF before upload"}
+  ],
+  "ocr_review_holds": [
+    {"page": 3, "reason": "low contrast table requires human review"}
+  ],
+  "validation_commands": [
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

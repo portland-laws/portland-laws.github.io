@@ -1,0 +1,14 @@
+{
+  "version": "post-promotion-smoke-replay-plan-v7",
+  "dry_run": false,
+  "notes": [
+    "Production promotion completed successfully.",
+    "Ran live crawl against DevHub.",
+    "Saved cookies and auth state for replay.",
+    "Submitted the permit and paid the fee.",
+    "Permit approval is guaranteed."
+  ],
+  "mutation_controls": {
+    "active_mutation": true
+  }
+}

@@ -1,0 +1,227 @@
+{
+  "claimed_at": "2026-05-16T15:49:27+00:00",
+  "packet_id": "packet-000025",
+  "patch_error": "No changes found in worktree: /home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-20260516T154900Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-smoke-20260516T154900Z-codex-packet-000025-20260516_154926",
+  "patch_path": null,
+  "patch_status": "awaiting_codex_changes",
+  "queue_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-smoke-20260516T154900Z-autoencoder.jsonl",
+  "queue_run_id": "uscode-modal-smoke-20260516T154900Z-autoencoder",
+  "run_id": "uscode-modal-smoke-20260516T154900Z-codex",
+  "suggested_target_files": [
+    "ipfs_datasets_py/logic/modal/compiler.py",
+    "ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py",
+    "ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py",
+    "ipfs_datasets_py/logic/modal/codec.py",
+    "ipfs_datasets_py/optimizers/logic/flogic_optimizer.py",
+    "ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py",
+    "ipfs_datasets_py/logic/modal/decompiler.py",
+    "ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_ir.py"
+  ],
+  "task_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-20260516T154900Z-codex/packet-000025/CODEX_TASK.md",
+  "task_source": "autoencoder_supervisor_program_synthesis_queue",
+  "todo_list_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-20260516T154900Z-codex/packet-000025/TODO_LIST.jsonl",
+  "todo_markdown_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-20260516T154900Z-codex/packet-000025/TODO_LIST.md",
+  "todos": [
+    {
+      "action": "add_or_review_modal_ambiguity_policy",
+      "citations": [
+        "42 U.S.C. 299b",
+        "18 U.S.C. 3013"
+      ],
+      "claimed_at": "2026-05-16T15:49:26+00:00",
+      "claimed_by": "codex-program-synthesis-uscode-modal-smoke-20260516T154900Z-codex",
+      "completed_at": null,
+      "created_at": "2026-05-16T15:49:24+00:00",
+      "loss_name": "autoencoder_residual_cluster",
+      "loss_value": 0.97230403357,
+      "metadata": {
+        "execution_target": "codex_program_repair",
+        "hint_evidence": [
+          {
+            "family_margin": -0.654174848239,
+            "hint_id": "modal-synthesis-b0d926c3e310b5ad",
+            "predicted_family": "conditional_normative",
+            "priority": 0.804174848239,
+            "sample_id": "us-code-18-3013-7473c2b440770471",
+            "target_family": "deontic"
+          },
+          {
+            "family_margin": -0.990433218902,
+            "hint_id": "modal-synthesis-bbdcb9bb8552f433",
+            "predicted_family": "temporal",
+            "priority": 1.140433218902,
+            "sample_id": "us-code-42-299b-eda60092171769d9",
+            "target_family": "frame"
+          }
+        ],
+        "hint_ids": [
+          "modal-synthesis-b0d926c3e310b5ad",
+          "modal-synthesis-bbdcb9bb8552f433"
+        ],
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "source": "modal_program_synthesis_todo_generator_v1",
+        "support_count": 2,
+        "target_component": "modal.compiler.ambiguity"
+      },
+      "objective": "The adaptive family margin is small, so the compiler should expose an explicit ambiguity.",
+      "priority": 99.230403,
+      "sample_ids": [
+        "us-code-42-299b-eda60092171769d9",
+        "us-code-18-3013-7473c2b440770471"
+      ],
+      "status": "claimed",
+      "todo_id": "program-957c34463225bbb8"
+    },
+    {
+      "action": "refine_modal_family_cue_rules",
+      "citations": [
+        "42 U.S.C. 299b",
+        "18 U.S.C. 3013"
+      ],
+      "claimed_at": "2026-05-16T15:49:26+00:00",
+      "claimed_by": "codex-program-synthesis-uscode-modal-smoke-20260516T154900Z-codex",
+      "completed_at": null,
+      "created_at": "2026-05-16T15:49:24+00:00",
+      "loss_name": "autoencoder_residual_cluster",
+      "loss_value": 0.948353056146,
+      "metadata": {
+        "execution_target": "codex_program_repair",
+        "hint_evidence": [
+          {
+            "family_margin": -0.654174848239,
+            "hint_id": "modal-synthesis-586b2a1f928fd38b",
+            "predicted_family": "conditional_normative",
+            "priority": 0.897610094808,
+            "sample_id": "us-code-18-3013-7473c2b440770471",
+            "target_family": "deontic",
+            "target_probability": 0.102389905192
+          },
+          {
+            "family_margin": -0.990433218902,
+            "hint_id": "modal-synthesis-97818b52e4c94d64",
+            "predicted_family": "temporal",
+            "priority": 0.999096017484,
+            "sample_id": "us-code-42-299b-eda60092171769d9",
+            "target_family": "frame",
+            "target_probability": 0.000903982516
+          }
+        ],
+        "hint_ids": [
+          "modal-synthesis-586b2a1f928fd38b",
+          "modal-synthesis-97818b52e4c94d64"
+        ],
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "source": "modal_program_synthesis_todo_generator_v1",
+        "support_count": 2,
+        "target_component": "modal.compiler.registry"
+      },
+      "objective": "Adaptive family evidence disagrees with, or is weak for, the typed modal family.",
+      "priority": 96.835306,
+      "sample_ids": [
+        "us-code-42-299b-eda60092171769d9",
+        "us-code-18-3013-7473c2b440770471"
+      ],
+      "status": "claimed",
+      "todo_id": "program-a109045024d63b07"
+    },
+    {
+      "action": "audit_frame_logic_terms",
+      "citations": [
+        "18 U.S.C. 3013",
+        "42 U.S.C. 299b"
+      ],
+      "claimed_at": "2026-05-16T15:49:26+00:00",
+      "claimed_by": "codex-program-synthesis-uscode-modal-smoke-20260516T154900Z-codex",
+      "completed_at": null,
+      "created_at": "2026-05-16T15:49:24+00:00",
+      "loss_name": "autoencoder_residual_cluster",
+      "loss_value": 0.362079756278,
+      "metadata": {
+        "execution_target": "codex_program_repair",
+        "hint_evidence": [
+          {
+            "hint_id": "modal-synthesis-b4f0684f235beec6",
+            "priority": 0.5203984572,
+            "sample_id": "us-code-18-3013-7473c2b440770471"
+          },
+          {
+            "hint_id": "modal-synthesis-d4ebf802975a4d94",
+            "priority": 0.203761055357,
+            "sample_id": "us-code-42-299b-eda60092171769d9"
+          }
+        ],
+        "hint_ids": [
+          "modal-synthesis-b4f0684f235beec6",
+          "modal-synthesis-d4ebf802975a4d94"
+        ],
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "source": "modal_program_synthesis_todo_generator_v1",
+        "support_count": 2,
+        "target_component": "modal.frame_logic"
+      },
+      "objective": "Frame-linked features influenced reconstruction or family scoring and should be audited as ontology terms.",
+      "priority": 38.207976,
+      "sample_ids": [
+        "us-code-18-3013-7473c2b440770471",
+        "us-code-42-299b-eda60092171769d9"
+      ],
+      "status": "claimed",
+      "todo_id": "program-3b1317be205b7a2c"
+    },
+    {
+      "action": "refine_typed_ir_or_decompiler_slots",
+      "citations": [
+        "18 U.S.C. 3013",
+        "42 U.S.C. 299b"
+      ],
+      "claimed_at": "2026-05-16T15:49:26+00:00",
+      "claimed_by": "codex-program-synthesis-uscode-modal-smoke-20260516T154900Z-codex",
+      "completed_at": null,
+      "created_at": "2026-05-16T15:49:24+00:00",
+      "loss_name": "autoencoder_residual_cluster",
+      "loss_value": 0.362079756278,
+      "metadata": {
+        "execution_target": "codex_program_repair",
+        "hint_evidence": [
+          {
+            "cosine_similarity": 0.303698358893,
+            "hint_id": "modal-synthesis-92ac8b5b47c4f1c4",
+            "priority": 0.203761055357,
+            "reconstruction_loss": 0.203761055357,
+            "sample_id": "us-code-42-299b-eda60092171769d9"
+          },
+          {
+            "cosine_similarity": -0.318405199588,
+            "hint_id": "modal-synthesis-b4b9432aee9f6aae",
+            "priority": 0.5203984572,
+            "reconstruction_loss": 0.5203984572,
+            "sample_id": "us-code-18-3013-7473c2b440770471"
+          }
+        ],
+        "hint_ids": [
+          "modal-synthesis-92ac8b5b47c4f1c4",
+          "modal-synthesis-b4b9432aee9f6aae"
+        ],
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "source": "modal_program_synthesis_todo_generator_v1",
+        "support_count": 2,
+        "target_component": "modal.ir_decompiler"
+      },
+      "objective": "Embedding residuals point to information not well represented by the typed IR/decompiler.",
+      "priority": 38.207976,
+      "sample_ids": [
+        "us-code-18-3013-7473c2b440770471",
+        "us-code-42-299b-eda60092171769d9"
+      ],
+      "status": "claimed",
+      "todo_id": "program-751d235d993c73cc"
+    }
+  ],
+  "worker_id": "codex-program-synthesis-uscode-modal-smoke-20260516T154900Z-codex",
+  "worktree_error": null,
+  "worktree_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-20260516T154900Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-smoke-20260516T154900Z-codex-packet-000025-20260516_154926"
+}

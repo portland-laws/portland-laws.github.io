@@ -1,0 +1,93 @@
+{
+  "plan_id": "post_promotion_smoke_replay_plan_v7",
+  "version": 7,
+  "mode": "fixture_first_offline_only",
+  "source_fixture_set": "inactive_guardrail_promotion_rehearsal_v7",
+  "source_fixture_state": "inactive",
+  "prohibited_actions": [
+    "activate_guardrails",
+    "open_devhub",
+    "crawl_live_sites",
+    "read_private_documents",
+    "upload",
+    "submit",
+    "certify",
+    "pay",
+    "schedule",
+    "make_legal_or_permitting_guarantees"
+  ],
+  "runtime_expectations": {
+    "network_access": false,
+    "authenticated_sessions": false,
+    "devhub_access": false,
+    "live_crawl": false,
+    "document_downloads": false,
+    "side_effects": false
+  },
+  "smoke_scenario_rows": [
+    {
+      "scenario_id": "missing_information",
+      "source_fixture": "inactive_guardrail_promotion_rehearsal_v7/missing_information.json",
+      "expected_replay_observation": "row remains blocked until the missing required field is represented by fixture data",
+      "allowed_action": "observe_only"
+    },
+    {
+      "scenario_id": "stale_evidence",
+      "source_fixture": "inactive_guardrail_promotion_rehearsal_v7/stale_evidence.json",
+      "expected_replay_observation": "row reports stale evidence and refuses promotion from expired fixture timestamps",
+      "allowed_action": "observe_only"
+    },
+    {
+      "scenario_id": "reversible_draft",
+      "source_fixture": "inactive_guardrail_promotion_rehearsal_v7/reversible_draft.json",
+      "expected_replay_observation": "row permits draft-only replay and records reversibility before any irreversible action",
+      "allowed_action": "draft_only"
+    },
+    {
+      "scenario_id": "local_pdf_preview",
+      "source_fixture": "inactive_guardrail_promotion_rehearsal_v7/local_pdf_preview.json",
+      "expected_replay_observation": "row uses local preview fixture metadata only and performs no download or upload",
+      "allowed_action": "preview_only"
+    },
+    {
+      "scenario_id": "exact_confirmation",
+      "source_fixture": "inactive_guardrail_promotion_rehearsal_v7/exact_confirmation.json",
+      "expected_replay_observation": "row requires exact fixture confirmation text before any promotion rehearsal can continue",
+      "allowed_action": "observe_only"
+    },
+    {
+      "scenario_id": "refused_consequential_action",
+      "source_fixture": "inactive_guardrail_promotion_rehearsal_v7/refused_consequential_action.json",
+      "expected_replay_observation": "row refuses submission, certification, cancellation, scheduling, or account-impacting actions",
+      "allowed_action": "refuse"
+    },
+    {
+      "scenario_id": "refused_financial_action",
+      "source_fixture": "inactive_guardrail_promotion_rehearsal_v7/refused_financial_action.json",
+      "expected_replay_observation": "row refuses payment, fee authorization, stored-payment changes, or financial commitments",
+      "allowed_action": "refuse"
+    },
+    {
+      "scenario_id": "manual_handoff",
+      "source_fixture": "inactive_guardrail_promotion_rehearsal_v7/manual_handoff.json",
+      "expected_replay_observation": "row records manual handoff reason without opening DevHub or creating private session artifacts",
+      "allowed_action": "handoff_only"
+    },
+    {
+      "scenario_id": "rollback_trigger_observations",
+      "source_fixture": "inactive_guardrail_promotion_rehearsal_v7/rollback_trigger_observations.json",
+      "expected_replay_observation": "row lists rollback triggers observed from fixtures without activating rollback automation",
+      "allowed_action": "observe_only"
+    },
+    {
+      "scenario_id": "monitoring_expectations",
+      "source_fixture": "inactive_guardrail_promotion_rehearsal_v7/monitoring_expectations.json",
+      "expected_replay_observation": "row assembles expected counters, alerts, and review notes from fixtures only",
+      "allowed_action": "observe_only"
+    }
+  ],
+  "offline_validation_commands": [
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
+    ["python3", "-m", "json.tool", "ppd/tests/fixtures/guardrail_promotion_rehearsal_v7/post_promotion_smoke_replay_plan_v7.json"]
+  ]
+}

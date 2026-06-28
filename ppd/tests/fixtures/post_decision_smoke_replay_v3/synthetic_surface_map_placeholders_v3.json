@@ -1,0 +1,30 @@
+{
+  "schema": "ppd_synthetic_surface_map_placeholders_v3",
+  "mode": "synthetic_placeholder_only",
+  "routes": [
+    {
+      "id": "devhub-permit-status-readonly",
+      "label": "Permit status placeholder",
+      "method": "GET",
+      "path_template": "/devhub/readonly/permits/{permit_id}/status",
+      "read_only": true,
+      "synthetic": true
+    },
+    {
+      "id": "devhub-review-comments-readonly",
+      "label": "Review comments placeholder",
+      "method": "GET",
+      "path_template": "/devhub/readonly/permits/{permit_id}/reviews",
+      "read_only": true,
+      "synthetic": true
+    },
+    {
+      "id": "devhub-fees-readonly",
+      "label": "Fee summary placeholder",
+      "method": "GET",
+      "path_template": "/devhub/readonly/permits/{permit_id}/fees",
+      "read_only": true,
+      "synthetic": true
+    }
+  ]
+}

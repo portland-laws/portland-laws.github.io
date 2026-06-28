@@ -1,0 +1,91 @@
+diff --git a/ipfs_datasets_py/logic/modal/codec.py b/ipfs_datasets_py/logic/modal/codec.py
+index c9ada4db..c1a14d4e 100644
+--- a/ipfs_datasets_py/logic/modal/codec.py
++++ b/ipfs_datasets_py/logic/modal/codec.py
+@@ -1218,6 +1218,9 @@ def _citation_components(citation: str) -> List[tuple[str, str]]:
+                     str(len(section_trailing_punct)),
+                 )
+             )
++        else:
++            components.append(("citation_section_has_trailing_punct", "false"))
++            components.append(("citation_section_trailing_punct_count", "0"))
+         components.extend(_citation_section_components(section))
+         components.extend(
+             _typed_identifier_components(
+@@ -1286,6 +1289,9 @@ def _source_id_components(source_id: str) -> List[tuple[str, str]]:
+                 str(len(section_trailing_punct)),
+             )
+         )
++    else:
++        components.append(("source_id_section_has_trailing_punct", "false"))
++        components.append(("source_id_section_trailing_punct_count", "0"))
+     source_id_canonical = _canonical_usc_citation(title, section_for_components)
+     if source_id_canonical:
+         components.append(("source_id_citation_canonical", source_id_canonical))
+diff --git a/ipfs_datasets_py/logic/modal/decompiler.py b/ipfs_datasets_py/logic/modal/decompiler.py
+index 7540fb92..660fd7e9 100644
+--- a/ipfs_datasets_py/logic/modal/decompiler.py
++++ b/ipfs_datasets_py/logic/modal/decompiler.py
+@@ -840,6 +840,9 @@ def _source_id_slots(source_id: str) -> List[Tuple[str, str]]:
+                 str(len(section_trailing_punct)),
+             )
+         )
++    else:
++        slots.append(("source_id_section_has_trailing_punct", "false"))
++        slots.append(("source_id_section_trailing_punct_count", "0"))
+     section_for_slots = normalized_section or section
+     source_id_canonical = _canonical_usc_citation(title, section_for_slots)
+     if source_id_canonical:
+@@ -1369,6 +1372,9 @@ def _citation_slots(citation: str) -> List[Tuple[str, str]]:
+                     str(len(section_trailing_punct)),
+                 )
+             )
++        else:
++            slots.append(("citation_section_has_trailing_punct", "false"))
++            slots.append(("citation_section_trailing_punct_count", "0"))
+         slots.extend(_citation_section_slots(section))
+         slots.extend(
+             _typed_identifier_slots(
+diff --git a/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py b/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py
+index c2b63117..441d26d0 100644
+--- a/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py
++++ b/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py
+@@ -750,6 +750,38 @@ def test_modal_ir_to_flogic_triples_emit_trailing_punct_presence_slots() -> None
+     assert objects("source_id_section_terminal_has_suffix") == ["false"]
+ 
+ 
++def test_decode_modal_ir_document_emits_trailing_punct_absence_slots() -> None:
++    decoded = decode_modal_ir_document(_sample_document())
++    slot_map = decoded_modal_phrase_slot_text_map(decoded)
++
++    assert slot_map["citation_section_has_trailing_punct"] == ["false"]
++    assert slot_map["citation_section_trailing_punct_count"] == ["0"]
++    assert "citation_section_trailing_punct" not in slot_map
++
++    assert slot_map["source_id_section_has_trailing_punct"] == ["false"]
++    assert slot_map["source_id_section_trailing_punct_count"] == ["0"]
++    assert "source_id_section_trailing_punct" not in slot_map
++
++
++def test_modal_ir_to_flogic_triples_emit_trailing_punct_absence_slots() -> None:
++    triples = modal_ir_to_flogic_triples(_sample_document())
++
++    def objects(predicate: str) -> list[str]:
++        return [
++            triple["object"]
++            for triple in triples
++            if triple.get("predicate") == predicate
++        ]
++
++    assert objects("citation_section_has_trailing_punct") == ["false"]
++    assert objects("citation_section_trailing_punct_count") == ["0"]
++    assert objects("citation_section_trailing_punct") == []
++
++    assert objects("source_id_section_has_trailing_punct") == ["false"]
++    assert objects("source_id_section_trailing_punct_count") == ["0"]
++    assert objects("source_id_section_trailing_punct") == []
++
++
+ def test_decode_modal_ir_document_emits_section_profile_and_number_relation_slots() -> None:
+     mixed_slot_map = decoded_modal_phrase_slot_text_map(
+         decode_modal_ir_document(_sample_document())

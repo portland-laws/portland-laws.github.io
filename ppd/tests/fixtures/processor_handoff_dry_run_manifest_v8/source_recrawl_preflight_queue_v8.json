@@ -1,0 +1,123 @@
+{
+  "queue_version": "v8",
+  "authorization_reference": "ppd-public-recrawl-preflight-authorization-2026-06-02",
+  "source_registry_references": [
+    {
+      "source_id": "ppd-landing-page",
+      "canonical_url": "https://www.portland.gov/ppd",
+      "registry_status": "referenced_before_recrawl"
+    },
+    {
+      "source_id": "ppd-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "registry_status": "referenced_before_recrawl"
+    }
+  ],
+  "ordered_public_source_candidates": [
+    {
+      "order": 1,
+      "source_id": "ppd-landing-page",
+      "url": "https://www.portland.gov/ppd",
+      "source_type": "public_html"
+    },
+    {
+      "order": 2,
+      "source_id": "ppd-submit-plans-online",
+      "url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "source_type": "public_html"
+    }
+  ],
+  "canonical_url_checks": [
+    {
+      "source_id": "ppd-landing-page",
+      "input_url": "https://www.portland.gov/ppd",
+      "canonical_url": "https://www.portland.gov/ppd",
+      "status": "placeholder_pending_preflight_resolution"
+    },
+    {
+      "source_id": "ppd-submit-plans-online",
+      "input_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "status": "placeholder_pending_preflight_resolution"
+    }
+  ],
+  "allowlist_decisions": [
+    {
+      "source_id": "ppd-landing-page",
+      "host": "www.portland.gov",
+      "decision": "allowlisted_public_official_source"
+    },
+    {
+      "source_id": "ppd-submit-plans-online",
+      "host": "www.portland.gov",
+      "decision": "allowlisted_public_official_source"
+    }
+  ],
+  "robots_policy_decision_placeholders": [
+    {
+      "source_id": "ppd-landing-page",
+      "robots_decision": "placeholder_required_before_fetch",
+      "policy_decision": "placeholder_required_before_fetch"
+    },
+    {
+      "source_id": "ppd-submit-plans-online",
+      "robots_decision": "placeholder_required_before_fetch",
+      "policy_decision": "placeholder_required_before_fetch"
+    }
+  ],
+  "skipped_url_reason_rows": [
+    {
+      "reason_code": "disallowed_by_robots_or_policy",
+      "example_url": "https://www.portland.gov/ppd/private-policy-placeholder"
+    },
+    {
+      "reason_code": "outside_allowlist",
+      "example_url": "https://example.invalid/outside-allowlist"
+    },
+    {
+      "reason_code": "private_authenticated",
+      "example_url": "https://devhub.portlandoregon.gov/private-placeholder"
+    },
+    {
+      "reason_code": "raw_download_not_permitted",
+      "example_url": "https://www.portland.gov/ppd/documents/raw-download-placeholder"
+    },
+    {
+      "reason_code": "too_large",
+      "example_url": "https://www.portland.gov/ppd/documents/too-large-placeholder"
+    },
+    {
+      "reason_code": "unsupported_content_type",
+      "example_url": "https://www.portland.gov/ppd/downloads/archive-placeholder.zip"
+    },
+    {
+      "reason_code": "unsupported_scheme",
+      "example_url": "mailto:ppd@example.invalid"
+    }
+  ],
+  "processor_handoff_eligibility_flags": {
+    "authorization_reference_present": true,
+    "source_registry_references_present": true,
+    "ordered_public_source_candidates_present": true,
+    "canonical_url_checks_present": true,
+    "allowlist_decisions_present": true,
+    "robots_policy_placeholders_present": true,
+    "skipped_url_reason_rows_present": true,
+    "no_live_crawl_execution_claims": true,
+    "no_downloaded_or_raw_crawl_artifacts": true,
+    "no_private_session_auth_artifacts": true,
+    "no_official_action_completion_claims": true,
+    "no_legal_or_permitting_guarantees": true,
+    "active_mutation_flags_disabled": true,
+    "eligible_for_processor_handoff": false
+  },
+  "validation_commands": [
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ],
+  "live_crawl_execution_claims": [],
+  "downloaded_or_raw_crawl_artifacts": [],
+  "private_session_auth_artifacts": [],
+  "official_action_completion_claims": [],
+  "legal_or_permitting_guarantees": [],
+  "active_mutation_flags": []
+}

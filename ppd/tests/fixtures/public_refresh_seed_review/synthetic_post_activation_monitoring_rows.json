@@ -1,0 +1,53 @@
+[
+  {
+    "seed_id": "seed-permit-center-fee-schedule",
+    "title": "Permit Center fee schedule metadata seed",
+    "public_url_placeholder": "placeholder://public/permit-center-fee-schedule",
+    "official_source_anchor_id": "anchor-bds-fees",
+    "monitoring_plan_reference": "post-activation-monitoring-plan-v1#probe-permit-center-fees",
+    "observed_days_stale": 42,
+    "citation_spans_due": 3,
+    "robots_profile": "known_allow_placeholder",
+    "allowlist_status": "approved_placeholder",
+    "metadata_only_archive_delta": "add one metadata-only manifest entry and one source-anchor reference; no document bytes",
+    "stale_source_guardrail": "clear",
+    "release_gate_state": "metadata_only_ready",
+    "last_success_days": 44,
+    "failures_7d": 1,
+    "public_interest_score": 8
+  },
+  {
+    "seed_id": "seed-land-use-notices-index",
+    "title": "Land use notices index metadata seed",
+    "public_url_placeholder": "placeholder://public/land-use-notices-index",
+    "official_source_anchor_id": "anchor-bps-land-use",
+    "monitoring_plan_reference": "post-activation-monitoring-plan-v1#probe-land-use-notices",
+    "observed_days_stale": 60,
+    "citation_spans_due": 1,
+    "robots_profile": "needs_human_placeholder",
+    "allowlist_status": "pending_placeholder",
+    "metadata_only_archive_delta": "stage manifest placeholder only until robots and allowlist preflight is reviewed",
+    "stale_source_guardrail": "clear",
+    "release_gate_state": "metadata_only_ready",
+    "last_success_days": 61,
+    "failures_7d": 2,
+    "public_interest_score": 9
+  },
+  {
+    "seed_id": "seed-appeals-summaries",
+    "title": "Appeals summaries metadata seed",
+    "public_url_placeholder": "placeholder://public/appeals-summaries",
+    "official_source_anchor_id": "anchor-appeals",
+    "monitoring_plan_reference": "post-activation-monitoring-plan-v1#probe-appeals-summaries",
+    "observed_days_stale": 55,
+    "citation_spans_due": 4,
+    "robots_profile": "known_allow_placeholder",
+    "allowlist_status": "approved_placeholder",
+    "metadata_only_archive_delta": "hold manifest change; stale-source guardrail requires human review first",
+    "stale_source_guardrail": "hold",
+    "release_gate_state": "metadata_only_hold",
+    "last_success_days": 70,
+    "failures_7d": 3,
+    "public_interest_score": 7
+  }
+]

@@ -1,0 +1,111 @@
+{
+  "packet_type": "ppd.next_release_integration_rehearsal_packet.v1",
+  "packet_version": "v1",
+  "mode": "offline_fixture_integration_rehearsal_only",
+  "source_freshness_references": [
+    {
+      "reference_id": "source-freshness-delta-20260531",
+      "fixture_ref": "ppd/tests/fixtures/source_freshness/synthetic_delta.json",
+      "source_evidence_ids": ["src-freshness-public-guidance"]
+    }
+  ],
+  "requirement_delta_references": [
+    {
+      "reference_id": "requirement-delta-20260531",
+      "fixture_ref": "ppd/tests/fixtures/requirements/synthetic_delta.json",
+      "source_evidence_ids": ["src-requirement-extraction"]
+    }
+  ],
+  "process_delta_references": [
+    {
+      "reference_id": "process-delta-20260531",
+      "fixture_ref": "ppd/tests/fixtures/process_model/synthetic_delta.json",
+      "source_evidence_ids": ["src-process-dependency"]
+    }
+  ],
+  "guardrail_delta_references": [
+    {
+      "reference_id": "guardrail-delta-20260531",
+      "fixture_ref": "ppd/tests/fixtures/guardrails/synthetic_delta.json",
+      "source_evidence_ids": ["src-guardrail-impact"]
+    }
+  ],
+  "gap_analysis_delta_references": [
+    {
+      "reference_id": "gap-analysis-delta-20260531",
+      "fixture_ref": "ppd/tests/fixtures/gap_analysis/synthetic_delta.json",
+      "source_evidence_ids": ["src-agent-gap-analysis"]
+    }
+  ],
+  "dependency_ordering": [
+    {
+      "order": 1,
+      "dependency_id": "source-freshness-delta-20260531",
+      "before": ["requirement-delta-20260531"]
+    },
+    {
+      "order": 2,
+      "dependency_id": "requirement-delta-20260531",
+      "before": ["process-delta-20260531", "guardrail-delta-20260531"]
+    },
+    {
+      "order": 3,
+      "dependency_id": "gap-analysis-delta-20260531",
+      "before": ["release-scenario-review"]
+    }
+  ],
+  "release_scenarios": [
+    {
+      "scenario": "release-ready",
+      "recommendation": "ready for human review of offline evidence only",
+      "depends_on": ["source-freshness-delta-20260531", "requirement-delta-20260531", "process-delta-20260531", "guardrail-delta-20260531", "gap-analysis-delta-20260531"]
+    },
+    {
+      "scenario": "release-held",
+      "recommendation": "hold when any cited delta remains unresolved",
+      "depends_on": ["source-freshness-delta-20260531", "gap-analysis-delta-20260531"]
+    },
+    {
+      "scenario": "release-rejected",
+      "recommendation": "reject when cited safety deltas conflict",
+      "depends_on": ["requirement-delta-20260531", "guardrail-delta-20260531"]
+    }
+  ],
+  "rollback_notes": [
+    {
+      "note_id": "rollback-offline-discard-only",
+      "note": "Discarding this committed rehearsal packet is sufficient because it records no state-changing operation.",
+      "source_evidence_ids": ["src-release-boundary"]
+    }
+  ],
+  "reviewer_dispositions": [
+    {
+      "reviewer_id": "source-reviewer",
+      "disposition": "reviewed-offline-fixture",
+      "source_evidence_ids": ["src-reviewer-disposition"]
+    },
+    {
+      "reviewer_id": "guardrail-reviewer",
+      "disposition": "reviewed-offline-fixture",
+      "source_evidence_ids": ["src-reviewer-disposition"]
+    }
+  ],
+  "validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/next_release_integration_rehearsal_packet_v1.py"],
+    ["python3", "-m", "unittest", "ppd.tests.test_next_release_integration_rehearsal_packet_v1"],
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ],
+  "active_source_mutation": false,
+  "active_archive_mutation": false,
+  "active_document_mutation": false,
+  "active_requirement_mutation": false,
+  "active_process_mutation": false,
+  "active_guardrail_mutation": false,
+  "active_gap_analysis_mutation": false,
+  "active_prompt_mutation": false,
+  "active_contract_mutation": false,
+  "active_devhub_surface_mutation": false,
+  "active_crawler_mutation": false,
+  "active_release_state_mutation": false,
+  "active_daemon_state_mutation": false
+}

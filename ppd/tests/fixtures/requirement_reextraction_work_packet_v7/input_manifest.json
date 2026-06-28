@@ -1,0 +1,7 @@
+{
+  "fixture_id": "requirement-reextraction-work-packet-v7-input-manifest",
+  "fixture_refs": {
+    "downstream_queue_v7": "downstream_queue_v7.json",
+    "synthetic_normalized_documents": "synthetic_normalized_documents.json"
+  }
+}

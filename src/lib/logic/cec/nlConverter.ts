@@ -19,6 +19,8 @@ import {
   DcecTemporalOperator,
   DcecTemporalOperatorValue,
 } from './dcecTypes';
+import { createDcecEnglishGrammar } from './dcecEnglishGrammar';
+import type { DcecNativeEnglishGrammarOptions } from './dcecEnglishGrammar';
 
 export interface DcecNlConversionResult {
   english_text: string;
@@ -60,6 +62,44 @@ export interface DcecPolicyCompilationResult extends DcecNlConversionResult {
   browser_native: true;
 }
 
+export interface DcecNlToPolicyCompilerOptions extends DcecNativeEnglishGrammarOptions {
+  includeLabels?: boolean;
+}
+
+export interface DcecNlToPolicyRule {
+  index: number;
+  source_text: string;
+  normalized_text: string;
+  dcec: string;
+  policy_formula: string;
+  label?: string;
+}
+
+export interface DcecNlToPolicyCompilerResult {
+  ok: boolean;
+  success: boolean;
+  input: string;
+  normalized_policy_text: string;
+  policy_rules: DcecNlToPolicyRule[];
+  policy_formula: string;
+  policy_formula_texts: string[];
+  errors: string[];
+  fail_closed_reason?: string;
+  parse_method: 'browser_native_nl_to_policy_compiler';
+  browser_native: true;
+  metadata: {
+    sourcePythonModule: 'logic/CEC/nl/nl_to_policy_compiler.py';
+    runtime: 'browser-native-typescript';
+    implementation: 'deterministic-nl-to-policy-compiler';
+  };
+}
+
+export interface DcecGrammarAdapter {
+  parse_to_dcec(text: string): DcecFormula | undefined;
+  formula_to_english(formula: DcecFormula): string | undefined;
+  browser_native: true;
+}
+
 export type DcecProofStrategy =
   | 'direct'
   | 'advanced_inference'
@@ -86,7 +126,7 @@ export interface DcecProofResult {
 }
 
 export class DcecProofCache {
-  private readonly entries = new Map();
+  private readonly entries = new Map<string, DcecProofResult>();
 
   get(key: string): DcecProofResult | undefined {
     const cached = this.entries.get(key);
@@ -152,7 +192,6 @@ const POLICY_LANGUAGE_PROFILES: DcecLanguageProfile[] = [
     policyTerms: ['muss', 'darf', 'verboten'],
   },
 ];
-
 export class DcecPatternMatcher {
   readonly namespace: DcecNamespace;
   readonly deonticPatterns: DeonticPattern[];
@@ -277,7 +316,7 @@ export class DcecNaturalLanguageConverter {
   readonly proofCache = new DcecProofCache();
   private initialized = true;
   useGrammar = false;
-  grammar: unknown = undefined;
+  grammar: DcecGrammarAdapter | undefined = undefined;
 
   constructor(namespace = new DcecNamespace()) {
     this.namespace = namespace;
@@ -287,6 +326,10 @@ export class DcecNaturalLanguageConverter {
   initialize(): boolean {
     this.initialized = true;
     return this.initialized;
+  }
+
+  get conversion_history(): DcecNlConversionResult[] {
+    return this.conversionHistory;
   }
 
   convertToDcec(text: string): DcecNlConversionResult {
@@ -312,6 +355,10 @@ export class DcecNaturalLanguageConverter {
       this.conversionHistory.push(result);
       return result;
     }
+  }
+
+  convert_to_dcec(text: string): DcecNlConversionResult {
+    return this.convertToDcec(text);
   }
 
   compilePolicyText(text: string): DcecPolicyCompilationResult {
@@ -369,6 +416,10 @@ export class DcecNaturalLanguageConverter {
     return formula.toString();
   }
 
+  convert_from_dcec(formula: DcecFormula): string {
+    return this.convertFromDcec(formula);
+  }
+
   getConversionStatistics(): DcecConversionStatistics {
     if (this.conversionHistory.length === 0) return { total_conversions: 0 };
     const successful = this.conversionHistory.filter((result) => result.success).length;
@@ -381,6 +432,10 @@ export class DcecNaturalLanguageConverter {
         this.conversionHistory.reduce((sum, result) => sum + result.confidence, 0) /
         this.conversionHistory.length,
     };
+  }
+
+  get_conversion_statistics(): DcecConversionStatistics {
+    return this.getConversionStatistics();
   }
 
   toString(): string {
@@ -472,6 +527,175 @@ export function compileDcecPolicyText(
     confidence: Math.min(1, (conversion.confidence + languageDetection.confidence) / 2),
     policy_formula_text: conversion.dcec_formula?.toString(),
     fail_closed_reason: conversion.success ? undefined : 'policy_parse_failed',
+  };
+}
+
+export function getDcecGrammarNlPolicyCompilerCapabilities() {
+  return {
+    browserNative: true,
+    pythonRuntime: false,
+    serverRuntime: false,
+    filesystem: false,
+    subprocess: false,
+    rpc: false,
+    wasmCompatible: true,
+    wasmRequired: false,
+    implementation: 'deterministic-typescript',
+    pythonModule: 'logic/CEC/nl/grammar_nl_policy_compiler.py',
+  } as const;
+}
+
+export function compileDcecGrammarNlPolicy(
+  text: string,
+  options: DcecNativeEnglishGrammarOptions = {},
+) {
+  const input = typeof text === 'string' ? text : '';
+  const normalizedPolicyText = normalizePolicyText(input);
+  const baseResult = {
+    input,
+    normalized_policy_text: normalizedPolicyText,
+    parse_method: 'browser_native_grammar_policy_compiler' as const,
+    browser_native: true as const,
+    metadata: {
+      sourcePythonModule: 'logic/CEC/nl/grammar_nl_policy_compiler.py',
+      runtime: 'browser-native-typescript',
+      implementation: 'deterministic-grammar-nl-policy-compiler',
+    } as const,
+  };
+
+  if (!normalizedPolicyText) {
+    return {
+      ...baseResult,
+      ok: false,
+      success: false,
+      rules: [],
+      formulas: [],
+      policy_formula_texts: [],
+      errors: ['Policy text is empty.'],
+      fail_closed_reason: 'empty_policy_text',
+    };
+  }
+
+  if (
+    options.maxInputLength !== undefined &&
+    normalizedPolicyText.length > options.maxInputLength
+  ) {
+    return {
+      ...baseResult,
+      ok: false,
+      success: false,
+      rules: [],
+      formulas: [],
+      policy_formula_texts: [],
+      errors: [`Policy text exceeds maximum length of ${options.maxInputLength} characters.`],
+      fail_closed_reason: 'input_too_long',
+    };
+  }
+
+  const grammar = createDcecEnglishGrammar();
+  const rules: Array<{
+    readonly dcec: string;
+    readonly normalized_text: string;
+    readonly [key: string]: unknown;
+  }> = [];
+  const formulas: Array<DcecFormula> = [];
+  const errors: string[] = [];
+  const clauses = splitGrammarPolicyClauses(input);
+
+  clauses.forEach((clause, index) => {
+    const normalizedClause = normalizeGrammarPolicyClause(clause);
+    const parsed = grammar.parseNativeEnglishGrammar(normalizedClause, options);
+    if (!parsed.ok || !parsed.formula || !parsed.dcec) {
+      errors.push(
+        `Rule ${index + 1} failed: ${parsed.errors.join('; ') || 'Unable to parse policy rule.'}`,
+      );
+      return;
+    }
+    rules.push({
+      index: index + 1,
+      source_text: clause.trim(),
+      normalized_text: normalizedClause,
+      dcec: parsed.dcec,
+      semantic: parsed.semantic,
+    });
+    formulas.push(parsed.formula);
+  });
+
+  if (errors.length > 0 || rules.length === 0) {
+    return {
+      ...baseResult,
+      ok: false,
+      success: false,
+      rules,
+      formulas,
+      policy_formula_texts: rules.map((rule) => rule.dcec),
+      errors: errors.length > 0 ? errors : ['No policy rules were parsed.'],
+      fail_closed_reason: 'policy_parse_failed',
+    };
+  }
+
+  return {
+    ...baseResult,
+    ok: true,
+    success: true,
+    rules,
+    formulas,
+    policy_formula_texts: rules.map((rule) => rule.dcec),
+    errors: [],
+  };
+}
+
+export function getDcecNlToPolicyCompilerCapabilities() {
+  return {
+    browserNative: true,
+    pythonRuntime: false,
+    serverRuntime: false,
+    filesystem: false,
+    subprocess: false,
+    rpc: false,
+    wasmCompatible: true,
+    wasmRequired: false,
+    implementation: 'deterministic-typescript',
+    pythonModule: 'logic/CEC/nl/nl_to_policy_compiler.py',
+  } as const;
+}
+
+export function compileDcecNlToPolicy(
+  text: string,
+  options: DcecNlToPolicyCompilerOptions = {},
+): DcecNlToPolicyCompilerResult {
+  const grammarResult = compileDcecGrammarNlPolicy(text, options);
+  const policyRules: DcecNlToPolicyRule[] = grammarResult.rules.map((rule) => {
+    const normalized = String(rule.normalized_text);
+    return {
+      index: Number(rule.index),
+      source_text: String(rule.source_text),
+      normalized_text: normalized,
+      dcec: rule.dcec,
+      policy_formula: rule.dcec,
+      label: options.includeLabels === false ? undefined : policyRuleLabel(normalized, rule.dcec),
+    };
+  });
+  const policyFormula = policyRules.map((rule) => rule.policy_formula).join('\n');
+
+  return {
+    ok: grammarResult.ok,
+    success: grammarResult.success,
+    input: grammarResult.input,
+    normalized_policy_text: grammarResult.normalized_policy_text,
+    policy_rules: policyRules,
+    policy_formula: policyFormula,
+    policy_formula_texts: policyRules.map((rule) => rule.policy_formula),
+    errors: [...grammarResult.errors],
+    fail_closed_reason:
+      'fail_closed_reason' in grammarResult ? grammarResult.fail_closed_reason : undefined,
+    parse_method: 'browser_native_nl_to_policy_compiler',
+    browser_native: true,
+    metadata: {
+      sourcePythonModule: 'logic/CEC/nl/nl_to_policy_compiler.py',
+      runtime: 'browser-native-typescript',
+      implementation: 'deterministic-nl-to-policy-compiler',
+    },
   };
 }
 
@@ -605,8 +829,8 @@ function temporalLiftProof(
 }
 
 function findContradiction(formulas: DcecFormula[]): string | undefined {
-  const obligations = new Set();
-  const prohibitions = new Set();
+  const obligations = new Set<string>();
+  const prohibitions = new Set<string>();
   for (const formula of formulas) {
     if (!(formula instanceof DcecDeonticFormula)) continue;
     const inner = formula.formula.toString();
@@ -653,24 +877,70 @@ function proofCacheKey(
 
 export function createEnhancedDcecNlConverter(useGrammar = true): DcecNaturalLanguageConverter {
   const converter = new DcecNaturalLanguageConverter();
-  converter.useGrammar = false;
-  converter.grammar = undefined;
   if (useGrammar) {
+    converter.grammar = createBrowserNativeDcecGrammar(converter);
+    converter.useGrammar = true;
+  } else {
+    converter.grammar = undefined;
     converter.useGrammar = false;
   }
   return converter;
 }
 
-export function parseDcecWithGrammar(_text: string): DcecFormula | undefined {
-  return undefined;
+export function parseDcecWithGrammar(text: string): DcecFormula | undefined {
+  return createBrowserNativeDcecGrammar().parse_to_dcec(text);
 }
 
-export function linearizeDcecWithGrammar(_formula: DcecFormula): string | undefined {
-  return undefined;
+export function linearizeDcecWithGrammar(formula: DcecFormula): string | undefined {
+  return createBrowserNativeDcecGrammar().formula_to_english(formula);
+}
+
+export function createBrowserNativeDcecGrammar(
+  converter = new DcecNaturalLanguageConverter(),
+): DcecGrammarAdapter {
+  return {
+    browser_native: true,
+    parse_to_dcec(text: string): DcecFormula | undefined {
+      const result = converter.convertToDcec(text);
+      return result.success ? result.dcec_formula : undefined;
+    },
+    formula_to_english(formula: DcecFormula): string | undefined {
+      return converter.convertFromDcec(formula);
+    },
+  };
 }
 
 function normalizeEnglish(text: string): string {
   return normalizePolicyText(text);
+}
+
+function splitGrammarPolicyClauses(text: string): string[] {
+  return text
+    .split(/[\n.;]+/u)
+    .map((part) => part.trim())
+    .filter((part) => part.length > 0);
+}
+
+function normalizeGrammarPolicyClause(text: string): string {
+  return normalizePolicyText(text)
+    .replace(/^(?:policy|rule|requirement)(?:\s+\d+)?\s+/u, '')
+    .replace(/^(?:the|a|an)\s+/u, '');
+}
+
+function policyRuleLabel(normalizedText: string, formulaText: string): string {
+  const modality = formulaText.startsWith('O[')
+    ? 'obligation'
+    : formulaText.startsWith('P[')
+      ? 'permission'
+      : formulaText.startsWith('F[')
+        ? 'prohibition'
+        : 'policy';
+  const action = normalizedText
+    .replace(/\b(?:the|a|an)\b/gu, '')
+    .replace(/\b(?:must not|shall not|may not|must|shall|should|may|can)\b/gu, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+  return action ? `${modality}:${action.replace(/\s+/g, '_')}` : modality;
 }
 
 function normalizePolicyText(text: string): string {
@@ -690,3 +960,9 @@ function containsLanguageTerm(text: string, term: string): boolean {
 function escapeRegExp(text: string): string {
   return text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
+
+export const NaturalLanguageConverter = DcecNaturalLanguageConverter;
+export const PatternMatcher = DcecPatternMatcher;
+export const create_enhanced_nl_converter = createEnhancedDcecNlConverter;
+export const parse_with_grammar = parseDcecWithGrammar;
+export const linearize_with_grammar = linearizeDcecWithGrammar;

@@ -1,0 +1,289 @@
+{
+  "packet_id": "devhub-read-only-readiness-decision-synthetic-v1",
+  "packet_type": "ppd.devhub.read_only_readiness_decision_packet.v1",
+  "mode": "fixture_first_attended_devhub_read_only_readiness_decision",
+  "fixture_first": true,
+  "offline_only": true,
+  "llm_invoked": false,
+  "launches_devhub": false,
+  "launches_playwright": false,
+  "network_requests_made": false,
+  "reads_private_files": false,
+  "stores_private_artifacts": false,
+  "decision": "read_only_attended_pilot_ready_after_manual_login_prerequisites",
+  "source_packets": {
+    "devhub_read_only_pilot_operator_checklist": {
+      "packet_id": "devhub-observation-checklist-synthetic-v1",
+      "packet_type": "devhub_read_only_observation_checklist_packet",
+      "consumed": true,
+      "citations": [
+        "ev-heading-dashboard",
+        "ev-status-review",
+        "ev-attachments-list",
+        "ev-fee-notice",
+        "ev-correction-request",
+        "ev-inspection-result"
+      ]
+    },
+    "devhub_surface_registry_update_candidate": {
+      "packet_id": "devhub-surface-registry-update-candidate-synthetic-v1",
+      "packet_type": "ppd.devhub_surface_registry_update_candidate.v1",
+      "consumed": true,
+      "citations": [
+        "devhub-surface-registry-update-candidate-synthetic-v1",
+        "devhub_home_redacted",
+        "devhub_permit_detail_redacted"
+      ]
+    },
+    "post_release_audit_findings_packet": {
+      "packet_type": "ppd.post_release_audit_findings.v1",
+      "release_status": "blocked_until_manual_review",
+      "consumed": true,
+      "citations": [
+        "ev-payment-guide",
+        "ev-devhub-guide"
+      ]
+    }
+  },
+  "cited_manual_login_prerequisites": [
+    {
+      "prerequisite_id": "manual-login-user-present",
+      "description": "The user must remain present before any future attended DevHub observation begins.",
+      "manual_only": true,
+      "browser_launch_allowed_by_packet": false,
+      "citations": ["ev-heading-dashboard", "ev-status-review", "devhub-surface-registry-update-candidate-synthetic-v1"]
+    },
+    {
+      "prerequisite_id": "manual-login-portlandoregon-credentials",
+      "description": "The user manually completes PortlandOregon.gov sign-in, MFA, CAPTCHA, and account prompts if a future attended pilot is separately approved.",
+      "manual_only": true,
+      "credential_storage_allowed": false,
+      "citations": ["ev-heading-dashboard", "ev-status-review", "devhub-surface-registry-update-candidate-synthetic-v1"]
+    },
+    {
+      "prerequisite_id": "manual-login-read-only-mode-confirmed",
+      "description": "The operator confirms the session is limited to redacted read-only labels before observing any authenticated surface.",
+      "manual_only": true,
+      "official_action_allowed": false,
+      "citations": ["ev-heading-dashboard", "ev-status-review", "devhub-surface-registry-update-candidate-synthetic-v1"]
+    }
+  ],
+  "read_only_scope_limits": [
+    {
+      "scope_id": "devhub_home_and_dashboard_labels",
+      "description": "Home, dashboard, and permits navigation labels only.",
+      "read_only": true,
+      "redacted_metadata_only": true,
+      "official_action_allowed": false,
+      "citations": ["ev-heading-dashboard"]
+    },
+    {
+      "scope_id": "permit_status_messages",
+      "description": "Generic permit status labels only; redact identifiers and private values.",
+      "read_only": true,
+      "redacted_metadata_only": true,
+      "official_action_allowed": false,
+      "citations": ["ev-status-review"]
+    },
+    {
+      "scope_id": "attachment_list_review",
+      "description": "Attachment list and column labels only; do not open, preview, download, or name private documents.",
+      "read_only": true,
+      "redacted_metadata_only": true,
+      "official_action_allowed": false,
+      "citations": ["ev-attachments-list"]
+    },
+    {
+      "scope_id": "fee_notice_review",
+      "description": "Fee notice labels only; do not enter checkout or store payment data.",
+      "read_only": true,
+      "redacted_metadata_only": true,
+      "official_action_allowed": false,
+      "citations": ["ev-fee-notice"]
+    },
+    {
+      "scope_id": "correction_request_review",
+      "description": "Correction request labels and generic categories only; do not record private message bodies.",
+      "read_only": true,
+      "redacted_metadata_only": true,
+      "official_action_allowed": false,
+      "citations": ["ev-correction-request"]
+    },
+    {
+      "scope_id": "inspection_result_review",
+      "description": "Inspection result labels only; do not schedule, reschedule, or cancel inspections.",
+      "read_only": true,
+      "redacted_metadata_only": true,
+      "official_action_allowed": false,
+      "citations": ["ev-inspection-result"]
+    }
+  ],
+  "reviewer_owners": [
+    {
+      "owner_id": "devhub_pilot_operator",
+      "reviewer_role": "DevHub read-only pilot operator",
+      "owns": "manual login attendance, stop-condition enforcement, and redacted note discipline",
+      "requires_reviewer": true,
+      "citations": ["devhub-surface-registry-update-candidate-synthetic-v1", "devhub_home_redacted"]
+    },
+    {
+      "owner_id": "devhub_surface_reviewer",
+      "reviewer_role": "DevHub surface registry reviewer",
+      "owns": "candidate surface metadata and selector-confidence deferral",
+      "requires_reviewer": true,
+      "citations": ["devhub-surface-registry-update-candidate-synthetic-v1", "devhub_home_redacted", "devhub_permit_detail_redacted"]
+    },
+    {
+      "owner_id": "ppd_guardrail_reviewer",
+      "reviewer_role": "PP&D guardrail reviewer",
+      "owns": "consequential-action blocks and exact-confirmation gates",
+      "requires_reviewer": true,
+      "citations": ["ev-payment-guide", "ev-devhub-guide"]
+    },
+    {
+      "owner_id": "post_release_audit_reviewer",
+      "reviewer_role": "Post-release audit reviewer",
+      "owns": "audit finding closure before any production-readiness claim",
+      "requires_reviewer": true,
+      "citations": ["ev-payment-guide", "ev-devhub-guide"]
+    }
+  ],
+  "abort_conditions": [
+    {
+      "abort_id": "abort-01",
+      "condition": "A login, MFA, CAPTCHA, account recovery, or credential prompt appears.",
+      "operator_result": "Stop observation, discard non-redacted notes, and record only a manual handoff reason.",
+      "citations": ["ev-heading-dashboard", "ev-status-review"]
+    },
+    {
+      "abort_id": "abort-02",
+      "condition": "The user is not present or asks the observer to stop.",
+      "operator_result": "Stop observation, discard non-redacted notes, and record only a manual handoff reason.",
+      "citations": ["ev-heading-dashboard", "ev-status-review"]
+    },
+    {
+      "abort_id": "abort-03",
+      "condition": "The page exposes private values that cannot be reduced to labels before recording.",
+      "operator_result": "Stop observation, discard non-redacted notes, and record only a manual handoff reason.",
+      "citations": ["ev-heading-dashboard", "ev-status-review"]
+    },
+    {
+      "abort_id": "abort-04",
+      "condition": "A document preview, download, message body, attachment body, or raw file content would need to be opened.",
+      "operator_result": "Stop observation, discard non-redacted notes, and record only a manual handoff reason.",
+      "citations": ["ev-heading-dashboard", "ev-status-review"]
+    },
+    {
+      "abort_id": "abort-05",
+      "condition": "A payment, checkout, card entry, invoice payment, or receipt screen appears.",
+      "operator_result": "Stop observation, discard non-redacted notes, and record only a manual handoff reason.",
+      "citations": ["ev-heading-dashboard", "ev-status-review"]
+    },
+    {
+      "abort_id": "abort-06",
+      "condition": "An upload, resubmit, submit, certify, acknowledge, withdraw, cancel, schedule, or reschedule control is the next step.",
+      "operator_result": "Stop observation, discard non-redacted notes, and record only a manual handoff reason.",
+      "citations": ["ev-heading-dashboard", "ev-status-review"]
+    },
+    {
+      "abort_id": "abort-07",
+      "condition": "The observer would need screenshots, traces, HAR data, cookies, auth state, storage state, or browser session files to continue.",
+      "operator_result": "Stop observation, discard non-redacted notes, and record only a manual handoff reason.",
+      "citations": ["ev-heading-dashboard", "ev-status-review"]
+    }
+  ],
+  "private_artifact_prohibitions": [
+    {
+      "prohibition_id": "private-artifact-prohibition-01",
+      "prohibition": "Do not store screenshots.",
+      "commit_safe": true,
+      "citations": ["ev-heading-dashboard", "ev-status-review"]
+    },
+    {
+      "prohibition_id": "private-artifact-prohibition-02",
+      "prohibition": "Do not store Playwright or browser traces.",
+      "commit_safe": true,
+      "citations": ["ev-heading-dashboard", "ev-status-review"]
+    },
+    {
+      "prohibition_id": "private-artifact-prohibition-03",
+      "prohibition": "Do not store HAR data.",
+      "commit_safe": true,
+      "citations": ["ev-heading-dashboard", "ev-status-review"]
+    },
+    {
+      "prohibition_id": "private-artifact-prohibition-04",
+      "prohibition": "Do not store cookies.",
+      "commit_safe": true,
+      "citations": ["ev-heading-dashboard", "ev-status-review"]
+    },
+    {
+      "prohibition_id": "private-artifact-prohibition-05",
+      "prohibition": "Do not store auth state, browser storage state, or credentials.",
+      "commit_safe": true,
+      "citations": ["ev-heading-dashboard", "ev-status-review"]
+    },
+    {
+      "prohibition_id": "private-artifact-prohibition-06",
+      "prohibition": "Do not store raw authenticated HTML, downloaded documents, payment data, or private DevHub values.",
+      "commit_safe": true,
+      "citations": ["ev-heading-dashboard", "ev-status-review"]
+    }
+  ],
+  "explicit_deferrals": [
+    {
+      "action_id": "uploads",
+      "description": "official uploads and correction uploads",
+      "deferred": true,
+      "allowed": false,
+      "requires_future_attended_confirmation": true,
+      "deferral_reason": "Consequential DevHub action remains outside the read-only readiness decision packet.",
+      "citations": ["ev-payment-guide", "ev-devhub-guide", "devhub-surface-registry-update-candidate-synthetic-v1", "devhub_home_redacted"]
+    },
+    {
+      "action_id": "submissions",
+      "description": "permit request submissions",
+      "deferred": true,
+      "allowed": false,
+      "requires_future_attended_confirmation": true,
+      "deferral_reason": "Consequential DevHub action remains outside the read-only readiness decision packet.",
+      "citations": ["ev-payment-guide", "ev-devhub-guide", "devhub-surface-registry-update-candidate-synthetic-v1", "devhub_home_redacted"]
+    },
+    {
+      "action_id": "payments",
+      "description": "fee payment and checkout workflows",
+      "deferred": true,
+      "allowed": false,
+      "requires_future_attended_confirmation": true,
+      "deferral_reason": "Consequential DevHub action remains outside the read-only readiness decision packet.",
+      "citations": ["ev-payment-guide", "ev-devhub-guide", "devhub-surface-registry-update-candidate-synthetic-v1", "devhub_home_redacted"]
+    },
+    {
+      "action_id": "certifications",
+      "description": "acknowledgement and certification controls",
+      "deferred": true,
+      "allowed": false,
+      "requires_future_attended_confirmation": true,
+      "deferral_reason": "Consequential DevHub action remains outside the read-only readiness decision packet.",
+      "citations": ["ev-payment-guide", "ev-devhub-guide", "devhub-surface-registry-update-candidate-synthetic-v1", "devhub_home_redacted"]
+    },
+    {
+      "action_id": "cancellations",
+      "description": "withdrawal, cancellation, extension, and reactivation controls",
+      "deferred": true,
+      "allowed": false,
+      "requires_future_attended_confirmation": true,
+      "deferral_reason": "Consequential DevHub action remains outside the read-only readiness decision packet.",
+      "citations": ["ev-payment-guide", "ev-devhub-guide", "devhub-surface-registry-update-candidate-synthetic-v1", "devhub_home_redacted"]
+    },
+    {
+      "action_id": "inspection_scheduling",
+      "description": "inspection scheduling, rescheduling, and cancellation controls",
+      "deferred": true,
+      "allowed": false,
+      "requires_future_attended_confirmation": true,
+      "deferral_reason": "Consequential DevHub action remains outside the read-only readiness decision packet.",
+      "citations": ["ev-payment-guide", "ev-devhub-guide", "devhub-surface-registry-update-candidate-synthetic-v1", "devhub_home_redacted"]
+    }
+  ]
+}

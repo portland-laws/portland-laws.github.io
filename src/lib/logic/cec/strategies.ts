@@ -14,11 +14,36 @@ export type CecStrategyType =
   | 'hybrid'
   | 'auto';
 
+export type CecProofStrategyAlias =
+  | CecStrategyType
+  | 'forward'
+  | 'cached'
+  | 'backward'
+  | 'bi'
+  | 'adaptive';
+
 export interface CecStrategyInfo {
   name: string;
   type: CecStrategyType;
   priority: number;
   cost?: number;
+}
+
+export interface CecProofStrategyCandidate extends CecStrategyInfo {
+  canHandle: boolean;
+  selected: boolean;
+  reason: string;
+}
+
+export interface CecProofStrategyPlan {
+  selectedType: CecStrategyType;
+  selectedName: string;
+  preferLowCost: boolean;
+  candidates: CecProofStrategyCandidate[];
+}
+
+export interface CecProofStrategyRunResult extends ProofResult {
+  strategyPlan: CecProofStrategyPlan;
 }
 
 export interface CecProverStrategy {
@@ -67,8 +92,18 @@ export class CecBackwardChainingStrategy implements CecProverStrategy {
     const proof = proveBackwardGoal(theorem, allKnown, maxSteps, new Set());
 
     return proof
-      ? { status: 'proved', theorem: formatCec(theorem), steps: proof, method: 'cec-backward-chaining' }
-      : { status: 'unknown', theorem: formatCec(theorem), steps: [], method: 'cec-backward-chaining' };
+      ? {
+          status: 'proved',
+          theorem: formatCec(theorem),
+          steps: proof,
+          method: 'cec-backward-chaining',
+        }
+      : {
+          status: 'unknown',
+          theorem: formatCec(theorem),
+          steps: [],
+          method: 'cec-backward-chaining',
+        };
   }
 
   getPriority(): number {
@@ -192,7 +227,11 @@ export class CecStrategySelector {
     );
   }
 
-  selectStrategy(theorem: CecExpression, kb: CecKnowledgeBase, preferLowCost = false): CecProverStrategy {
+  selectStrategy(
+    theorem: CecExpression,
+    kb: CecKnowledgeBase,
+    preferLowCost = false,
+  ): CecProverStrategy {
     if (this.strategies.length === 0) {
       throw new Error('No CEC strategies available for selection');
     }
@@ -225,6 +264,53 @@ export class CecStrategySelector {
   }
 }
 
+export function buildCecProofStrategyPlan(
+  theorem: CecExpression,
+  kb: CecKnowledgeBase,
+  options: CecStrategySelectorOptions & { preferLowCost?: boolean } = {},
+): CecProofStrategyPlan {
+  const strategies = [...(options.strategies ?? createDefaultCecStrategies())].sort(
+    (left, right) => right.getPriority() - left.getPriority(),
+  );
+  if (strategies.length === 0) {
+    throw new Error('No CEC strategies available for planning');
+  }
+
+  const candidates = strategies.map((strategy) => {
+    const canHandle = strategy.canHandle(theorem, kb);
+    return {
+      name: strategy.name,
+      type: strategy.strategyType,
+      priority: strategy.getPriority(),
+      cost: strategy.estimateCost(theorem, kb),
+      canHandle,
+      selected: false,
+      reason: canHandle
+        ? 'strategy accepted theorem and knowledge base'
+        : 'strategy declined theorem or knowledge base',
+    };
+  });
+  const applicable = candidates.filter((candidate) => candidate.canHandle);
+  const ranked = applicable.length > 0 ? applicable : candidates;
+  const selected = options.preferLowCost
+    ? ranked.reduce((best, candidate) => (candidate.cost < best.cost ? candidate : best))
+    : ranked[0];
+
+  return {
+    selectedType: selected.type,
+    selectedName: selected.name,
+    preferLowCost: options.preferLowCost ?? false,
+    candidates: candidates.map((candidate) => ({
+      ...candidate,
+      selected: candidate.name === selected.name && candidate.type === selected.type,
+      reason:
+        candidate.name === selected.name && candidate.type === selected.type
+          ? selectionReason(candidate, options.preferLowCost ?? false)
+          : candidate.reason,
+    })),
+  };
+}
+
 export function createDefaultCecStrategies(): CecProverStrategy[] {
   return [
     new CecCachedForwardStrategy(),
@@ -235,13 +321,38 @@ export function createDefaultCecStrategies(): CecProverStrategy[] {
   ];
 }
 
-export function getCecStrategy(strategyType: CecStrategyType, options: CecCachedForwardStrategyOptions = {}): CecProverStrategy {
-  if (strategyType === 'forward_chaining') return new CecForwardChainingStrategy();
-  if (strategyType === 'cached_forward') return new CecCachedForwardStrategy(options);
-  if (strategyType === 'backward_chaining') return new CecBackwardChainingStrategy();
-  if (strategyType === 'bidirectional') return new CecBidirectionalStrategy();
-  if (strategyType === 'hybrid' || strategyType === 'auto') return new CecHybridStrategy();
+export function getCecStrategy(
+  strategyType: CecProofStrategyAlias,
+  options: CecCachedForwardStrategyOptions = {},
+): CecProverStrategy {
+  const normalized = normalizeCecProofStrategyType(strategyType);
+  if (normalized === 'forward_chaining') return new CecForwardChainingStrategy();
+  if (normalized === 'cached_forward') return new CecCachedForwardStrategy(options);
+  if (normalized === 'backward_chaining') return new CecBackwardChainingStrategy();
+  if (normalized === 'bidirectional') return new CecBidirectionalStrategy();
+  if (normalized === 'hybrid' || normalized === 'auto') return new CecHybridStrategy();
   throw new Error(`Unknown CEC strategy type: ${strategyType}`);
+}
+
+export function normalizeCecProofStrategyType(
+  strategyType: CecProofStrategyAlias,
+): CecStrategyType {
+  if (strategyType === 'forward') return 'forward_chaining';
+  if (strategyType === 'cached') return 'cached_forward';
+  if (strategyType === 'backward') return 'backward_chaining';
+  if (strategyType === 'bi') return 'bidirectional';
+  if (strategyType === 'adaptive') return 'hybrid';
+  if (
+    strategyType === 'forward_chaining' ||
+    strategyType === 'cached_forward' ||
+    strategyType === 'backward_chaining' ||
+    strategyType === 'bidirectional' ||
+    strategyType === 'hybrid' ||
+    strategyType === 'auto'
+  ) {
+    return strategyType;
+  }
+  throw new Error(`Unsupported CEC proof strategy: ${strategyType}`);
 }
 
 export function proveCecWithStrategySelection(
@@ -249,7 +360,30 @@ export function proveCecWithStrategySelection(
   kb: CecKnowledgeBase,
   options: CecProverOptions & { strategies?: CecProverStrategy[]; preferLowCost?: boolean } = {},
 ): ProofResult {
-  return new CecStrategySelector({ strategies: options.strategies }).proveWithSelectedStrategy(theorem, kb, options);
+  return new CecStrategySelector({ strategies: options.strategies }).proveWithSelectedStrategy(
+    theorem,
+    kb,
+    options,
+  );
+}
+
+export function runCecProofStrategy(
+  strategyType: CecProofStrategyAlias,
+  theorem: CecExpression,
+  kb: CecKnowledgeBase,
+  options: CecProverOptions & CecCachedForwardStrategyOptions = {},
+): CecProofStrategyRunResult {
+  const strategy = getCecStrategy(strategyType, options);
+  const plan = buildCecProofStrategyPlan(theorem, kb, { strategies: [strategy] });
+  const result = strategy.prove(theorem, kb, options);
+  return { ...result, strategyPlan: plan };
+}
+
+function selectionReason(candidate: CecProofStrategyCandidate, preferLowCost: boolean): string {
+  if (!candidate.canHandle) return 'fallback selected after all strategies declined';
+  return preferLowCost
+    ? 'selected lowest estimated browser-native proof cost'
+    : 'selected highest-priority browser-native proof strategy';
 }
 
 function proveBackwardGoal(
@@ -282,7 +416,9 @@ function proveBackwardGoal(
     }
   }
 
-  for (const implication of known.filter((candidate): candidate is CecBinaryExpression => isBinary(candidate, 'implies'))) {
+  for (const implication of known.filter((candidate): candidate is CecBinaryExpression =>
+    isBinary(candidate, 'implies'),
+  )) {
     if (!cecExpressionEquals(implication.right, goal)) continue;
     const substeps = proveBackwardGoal(implication.left, known, maxSteps, visited);
     if (!substeps) continue;
@@ -301,7 +437,10 @@ function proveBackwardGoal(
   return undefined;
 }
 
-function isBinary(expression: CecExpression, operator: CecBinaryExpression['operator']): expression is CecBinaryExpression {
+function isBinary(
+  expression: CecExpression,
+  operator: CecBinaryExpression['operator'],
+): expression is CecBinaryExpression {
   return expression.kind === 'binary' && expression.operator === operator;
 }
 

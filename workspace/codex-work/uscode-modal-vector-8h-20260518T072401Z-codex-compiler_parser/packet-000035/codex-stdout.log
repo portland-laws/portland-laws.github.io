@@ -1,0 +1,13 @@
+Implemented a narrow deterministic parser improvement plus golden regressions for all three TODO samples.
+
+- Updated heading-only fallback logic to allow article-prefixed legal headings (`The ...`) when they clearly represent notice/hearing headings, while still blocking definition-like patterns (`The term ...`): [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000035-20260518_113446/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py#L89), [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000035-20260518_113446/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py#L1005).
+- Added parser golden fixtures for:
+  - `us-code-2-88b-5-94883a45ddc4a6db`
+  - `us-code-42-18431.-b72b735d11b81b90`
+  - `us-code-42-12313.-c1053dbe1a049f60`
+  in [test_legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000035-20260518_113446/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py#L296) and [test_legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000035-20260518_113446/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py#L1147).
+- Added matching spaCy compiler regression fixtures in [test_spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000035-20260518_113446/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py#L131) and [test_spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000035-20260518_113446/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py#L611).
+
+Validation run:
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py -k "2_88b_5_42_18431_and_42_12313 or symbolic_validity_todo_samples_for_2_5602_5_5348_and_42_15251"` -> 2 passed.
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py -k "2_88b_5_42_18431_and_42_12313 or symbolic_validity_todo_samples_for_2_5602_5_5348_and_42_15251"` -> 2 passed.

@@ -1,0 +1,294 @@
+{
+  "schema_version": "2026-05-14.next_safe_action.v1",
+  "fixture_id": "next-safe-action-guardrail-matrix-001",
+  "generated_for": "task-checkbox-33-supervisor-20260514-034",
+  "case_id": "fixture-case-adu-alteration-001",
+  "process_id": "residential-alteration-with-plan-review",
+  "source_evidence_ids": [
+    "ppd-devhub-application-guide",
+    "ppd-submit-plans-online",
+    "ppd-devhub-faq",
+    "ppd-fee-payment-guide"
+  ],
+  "user_gap_analysis": {
+    "known_facts": [
+      {
+        "fact_id": "property_address",
+        "label": "Project property address",
+        "status": "known",
+        "value_class": "user_supplied_case_fact"
+      },
+      {
+        "fact_id": "permit_intent",
+        "label": "Residential alteration requiring plan review",
+        "status": "known",
+        "value_class": "user_supplied_case_fact"
+      }
+    ],
+    "matched_documents": [
+      {
+        "document_id": "floor_plan_pdf",
+        "label": "Floor plan PDF",
+        "status": "matched",
+        "checks": ["pdf", "plan_document"]
+      }
+    ],
+    "missing_facts": [
+      {
+        "fact_id": "contractor_license_context",
+        "label": "Contractor license and owner/applicant role",
+        "blocks": ["trade_fixture_selection", "application_ready_to_submit"]
+      },
+      {
+        "fact_id": "scope_square_footage",
+        "label": "Affected project area",
+        "blocks": ["fee_estimate", "required_upload_set_complete"]
+      }
+    ],
+    "missing_documents": [
+      {
+        "document_id": "structural_calculations_pdf",
+        "label": "Structural calculations PDF when required by scope",
+        "blocks": ["official_upload", "submission"]
+      }
+    ],
+    "stale_evidence": [
+      {
+        "evidence_id": "prior_fee_amount",
+        "label": "Previously observed fee amount",
+        "reason": "fee amounts must be reviewed in the current DevHub account session before payment"
+      }
+    ],
+    "conflicting_evidence": [
+      {
+        "conflict_id": "applicant_role_conflict",
+        "labels": ["owner_applicant", "contractor_applicant"],
+        "resolution_required_before": ["certification", "submission"]
+      }
+    ],
+    "required_confirmations": [
+      {
+        "confirmation_id": "exact_submit_confirmation",
+        "label": "User must confirm the exact official submission action while present",
+        "applies_to": ["submit_permit_request", "certify_acknowledgement"]
+      }
+    ],
+    "blocked_actions": [
+      "certify_acknowledgement",
+      "submit_permit_request",
+      "enter_payment_details",
+      "submit_payment",
+      "official_upload_corrections"
+    ]
+  },
+  "process_dependency_graph_state": {
+    "graph_id": "residential-alteration-devhub-plan-review-fixture",
+    "nodes": [
+      {
+        "node_id": "review_public_guidance",
+        "stage": "pre-application research",
+        "state": "satisfied"
+      },
+      {
+        "node_id": "attended_login",
+        "stage": "account setup or manual login",
+        "state": "requires_manual_handoff"
+      },
+      {
+        "node_id": "property_lookup",
+        "stage": "property lookup",
+        "state": "eligible_for_read_only"
+      },
+      {
+        "node_id": "draft_application_fields",
+        "stage": "application data entry",
+        "state": "eligible_for_reversible_draft"
+      },
+      {
+        "node_id": "upload_staging",
+        "stage": "upload staging",
+        "state": "blocked_by_missing_document"
+      },
+      {
+        "node_id": "certification_review",
+        "stage": "acknowledgement/certification review",
+        "state": "requires_exact_confirmation"
+      },
+      {
+        "node_id": "submission",
+        "stage": "submission",
+        "state": "consequential_official_action"
+      },
+      {
+        "node_id": "fee_payment",
+        "stage": "fee payment",
+        "state": "financial_action"
+      }
+    ],
+    "edges": [
+      {
+        "from": "review_public_guidance",
+        "to": "property_lookup",
+        "dependency": "source_model_loaded"
+      },
+      {
+        "from": "property_lookup",
+        "to": "draft_application_fields",
+        "dependency": "property_address_known"
+      },
+      {
+        "from": "draft_application_fields",
+        "to": "upload_staging",
+        "dependency": "required_documents_available"
+      },
+      {
+        "from": "upload_staging",
+        "to": "certification_review",
+        "dependency": "all_required_uploads_staged_and_reviewed"
+      },
+      {
+        "from": "certification_review",
+        "to": "submission",
+        "dependency": "user_present_exact_confirmation"
+      },
+      {
+        "from": "submission",
+        "to": "fee_payment",
+        "dependency": "official_fee_notice_available"
+      }
+    ]
+  },
+  "action_classification": {
+    "actions": [
+      {
+        "action_id": "review_permit_status",
+        "label": "Review current permit status and messages",
+        "surface": "DevHub permit details",
+        "class": "safe_read_only",
+        "side_effect": "none"
+      },
+      {
+        "action_id": "draft_application_fields",
+        "label": "Fill known application fields without submitting",
+        "surface": "DevHub permit application draft",
+        "class": "reversible_draft",
+        "side_effect": "local_or_saved_draft_only"
+      },
+      {
+        "action_id": "attended_login",
+        "label": "Ask user to complete PortlandOregon.gov login, MFA, or CAPTCHA manually",
+        "surface": "DevHub sign-in",
+        "class": "manual_handoff",
+        "side_effect": "user_attended_authentication"
+      },
+      {
+        "action_id": "submit_permit_request",
+        "label": "Submit permit request to PP&D",
+        "surface": "DevHub application submission",
+        "class": "consequential_official",
+        "side_effect": "official_record_change"
+      },
+      {
+        "action_id": "submit_payment",
+        "label": "Submit fee payment",
+        "surface": "DevHub payment workflow",
+        "class": "financial",
+        "side_effect": "financial_transaction"
+      }
+    ]
+  },
+  "guardrail_bundle_results": {
+    "guardrail_bundle_id": "guardrail-residential-alteration-devhub-v1",
+    "validation_status": "fixture_validated",
+    "deterministic_predicates": [
+      {
+        "predicate_id": "known_property_address_required",
+        "result": "pass",
+        "evidence": ["property_address"]
+      },
+      {
+        "predicate_id": "required_documents_complete",
+        "result": "fail",
+        "evidence": ["structural_calculations_pdf"]
+      },
+      {
+        "predicate_id": "applicant_role_unambiguous",
+        "result": "fail",
+        "evidence": ["applicant_role_conflict"]
+      }
+    ],
+    "reversible_action_predicates": [
+      {
+        "predicate_id": "draft_fields_only_before_submit",
+        "result": "pass",
+        "allows": ["draft_application_fields"]
+      }
+    ],
+    "exact_confirmation_predicates": [
+      {
+        "predicate_id": "official_submission_requires_user_present_confirmation",
+        "result": "required",
+        "gates": ["certify_acknowledgement", "submit_permit_request"]
+      }
+    ],
+    "refused_action_predicates": [
+      {
+        "predicate_id": "no_automated_payment_execution",
+        "result": "refuse",
+        "gates": ["enter_payment_details", "submit_payment"]
+      },
+      {
+        "predicate_id": "no_unattended_official_submission",
+        "result": "refuse",
+        "gates": ["submit_permit_request"]
+      }
+    ]
+  },
+  "next_safe_action_recommendations": [
+    {
+      "recommendation_id": "rec-read-only-status-review",
+      "action_id": "review_permit_status",
+      "recommendation": "read-only",
+      "allowed": true,
+      "reason": "The action only reviews account-scoped status and messages and does not change the official record.",
+      "required_before_action": ["attended_login_if_not_already_authenticated"],
+      "must_not_do": ["download_private_documents_to_committed_fixtures", "change_status", "submit"]
+    },
+    {
+      "recommendation_id": "rec-reversible-draft-fields",
+      "action_id": "draft_application_fields",
+      "recommendation": "reversible-draft",
+      "allowed": true,
+      "reason": "Known facts are sufficient to prepare a draft, but missing and conflicting facts prevent submission readiness.",
+      "required_before_action": ["show_field_mapping_preview", "avoid_certification_controls", "avoid_submit_controls"],
+      "must_not_do": ["certify", "submit", "upload_to_official_record", "pay"]
+    },
+    {
+      "recommendation_id": "rec-manual-handoff-login",
+      "action_id": "attended_login",
+      "recommendation": "manual-handoff",
+      "allowed": true,
+      "reason": "Authentication, MFA, and CAPTCHA are user-attended boundaries and must be completed manually by the user.",
+      "required_before_action": ["open_user_visible_browser", "pause_for_user_login"],
+      "must_not_do": ["ask_for_password", "store_credentials", "bypass_mfa", "solve_captcha"]
+    },
+    {
+      "recommendation_id": "rec-refuse-submit-payment",
+      "action_id": "submit_payment",
+      "recommendation": "refused-action",
+      "allowed": false,
+      "reason": "Submitting payment is a financial action and cannot be automated by the agent.",
+      "required_before_action": [],
+      "must_not_do": ["enter_payment_details", "submit_payment", "save_payment_method"]
+    },
+    {
+      "recommendation_id": "rec-refuse-unattended-submission",
+      "action_id": "submit_permit_request",
+      "recommendation": "refused-action",
+      "allowed": false,
+      "reason": "The official submission would change the permit record and is blocked by missing documents, conflicting applicant role evidence, and exact-confirmation requirements.",
+      "required_before_action": ["resolve_missing_documents", "resolve_applicant_role_conflict", "obtain_user_present_exact_confirmation"],
+      "must_not_do": ["certify", "submit", "click_final_submit"]
+    }
+  ]
+}

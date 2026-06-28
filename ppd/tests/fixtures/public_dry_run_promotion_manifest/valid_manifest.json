@@ -1,0 +1,97 @@
+{
+  "manifest_type": "ppd.public_crawl_dry_run_promotion_manifest.v1",
+  "manifest_id": "fixture-public-dry-run-promotion-2026-05-28",
+  "fixture_first": true,
+  "dry_run_only": true,
+  "metadata_only": true,
+  "no_raw_body_persistence": true,
+  "live_network_invoked": false,
+  "processor_invoked": false,
+  "ready_for_live_execution": false,
+  "real_crawl_performed": false,
+  "real_download_performed": false,
+  "promotion_targets": [
+    {
+      "source_id": "ppd-online-tools",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "selected_for_promotion": true,
+      "dry_run_only": true,
+      "no_raw_body_persistence": true,
+      "real_crawl_performed": false,
+      "real_download_performed": false
+    },
+    {
+      "source_id": "devhub-public-portal",
+      "canonical_url": "https://devhub.portlandoregon.gov/",
+      "selected_for_promotion": true,
+      "dry_run_only": true,
+      "no_raw_body_persistence": true,
+      "real_crawl_performed": false,
+      "real_download_performed": false
+    }
+  ],
+  "robots_policy_prerequisites": [
+    {
+      "source_id": "ppd-online-tools",
+      "robots_status": "allowed",
+      "policy_status": "approved",
+      "required_before_live_run": true
+    },
+    {
+      "source_id": "devhub-public-portal",
+      "robots_status": "allowed",
+      "policy_status": "approved",
+      "required_before_live_run": true
+    }
+  ],
+  "processor_handoff_intent": [
+    {
+      "source_id": "ppd-online-tools",
+      "intent": "deferred_metadata_handoff",
+      "processor_family": "ipfs_datasets_py.web_archive",
+      "expected_archive_manifest_id": "archive-manifest.ppd-online-tools.20260528T000000Z",
+      "processor_invoked": false,
+      "network_invoked": false,
+      "raw_body_persistence": false
+    },
+    {
+      "source_id": "devhub-public-portal",
+      "intent": "deferred_metadata_handoff",
+      "processor_family": "ipfs_datasets_py.web_archive",
+      "expected_archive_manifest_id": "archive-manifest.devhub-public-portal.20260528T000000Z",
+      "processor_invoked": false,
+      "network_invoked": false,
+      "raw_body_persistence": false
+    }
+  ],
+  "abort_conditions": [
+    {
+      "condition_id": "private_or_authenticated_url",
+      "abort_when": "any target URL contains credentials, authentication query material, or an authenticated/private path"
+    },
+    {
+      "condition_id": "non_allowlisted_host",
+      "abort_when": "any target host is outside the PP&D public crawl host allowlist"
+    },
+    {
+      "condition_id": "raw_body_or_download_requested",
+      "abort_when": "any manifest field requests raw body persistence, downloaded documents, WARC/HAR/traces, screenshots, or archive paths"
+    },
+    {
+      "condition_id": "robots_or_policy_missing",
+      "abort_when": "robots.txt or PP&D public crawl policy approval is missing before a live run"
+    },
+    {
+      "condition_id": "live_network_execution_requested",
+      "abort_when": "the dry-run promotion claims live network, browser, processor, crawl, or download execution"
+    },
+    {
+      "condition_id": "processor_handoff_intent_missing",
+      "abort_when": "a selected target lacks deferred metadata-only processor handoff intent"
+    },
+    {
+      "condition_id": "real_crawl_or_download_claimed",
+      "abort_when": "the manifest claims that a real crawl or document download was performed"
+    }
+  ]
+}

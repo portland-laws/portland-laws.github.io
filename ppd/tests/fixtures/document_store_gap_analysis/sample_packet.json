@@ -1,0 +1,53 @@
+{
+  "packet_id": "fixture-gap-review",
+  "required_facts": [
+    "permit_number",
+    "site_address",
+    "zoning_overlay",
+    "intake_status"
+  ],
+  "required_documents": [
+    "permit-summary",
+    "zoning-map",
+    "intake-checklist"
+  ],
+  "known_facts": [
+    {
+      "key": "permit_number",
+      "value": "2026-001234-000-00-CO",
+      "document_ids": ["permit-summary"]
+    },
+    {
+      "key": "site_address",
+      "value": "1120 SW 5th Ave",
+      "document_ids": ["permit-summary", "zoning-map"]
+    },
+    {
+      "key": "site_address",
+      "value": "1120 SW Fifth Ave",
+      "document_ids": ["legacy-address-note"]
+    }
+  ],
+  "documents": [
+    {
+      "id": "permit-summary",
+      "title": "Permit Summary",
+      "facts": ["permit_number", "site_address"],
+      "observed_at": "2026-05-01",
+      "stale_after_days": 30
+    },
+    {
+      "id": "zoning-map",
+      "title": "Zoning Map Evidence",
+      "facts": ["site_address"],
+      "observed_at": "2026-01-01",
+      "stale_after_days": 30
+    }
+  ],
+  "blocked_actions": [
+    {
+      "action": "submit_application",
+      "reason": "Requires authenticated user confirmation"
+    }
+  ]
+}

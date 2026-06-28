@@ -1,0 +1,19 @@
+Implemented a deterministic `status_keyword` slot refinement for modal fallback cases, focused on `ir_decompiler` behavior and slot/triple parity.
+
+- Updated [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000021-20260518_091706/ipfs_datasets_py/logic/modal/decompiler.py#L43):
+  - Added fallback status keyword derivation for `uscode_transferred_heading_v1`, `uscode_codification_transfer_heading_v1`, and editorial-status rules.
+  - Emits `status_keyword` + typed status slots even when parser metadata omits explicit `status_keyword`.
+
+- Updated [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000021-20260518_091706/ipfs_datasets_py/logic/modal/codec.py#L172):
+  - Added matching deterministic status keyword derivation in triple emission path.
+  - Keeps decompiler slots and `modal_ir_to_flogic_triples` aligned.
+
+- Added regression coverage in [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000021-20260518_091706/tests/unit_tests/logic/modal/test_modal_codec.py#L2709):
+  - New test verifies transferred-heading fallback now surfaces `status_keyword=transferred` in both decoded slots and triples.
+
+Tests run:
+
+1. `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "transferred_status_keyword_slot or editorial_fallback_slots or handles_transferred_heading_for_uscode_15_688"`  
+   Result: `3 passed`
+2. `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "decompiler_and_triples_surface or decompiler_and_triples_include_statutory_scope_reference_slots or decompiler_and_triples_expand_alphanumeric_citation_section_slots or decompiler_and_triples_surface_uscode_source_id_slots"`  
+   Result: `8 passed`

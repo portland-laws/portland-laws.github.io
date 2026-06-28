@@ -1,0 +1,80 @@
+{
+  "case_store": {
+    "case_id": "fixture-case-001",
+    "permit_type": "Residential alteration",
+    "site_address": "1122 SE Fixture St",
+    "prompts": [
+      {
+        "id": "owner_authorization",
+        "status": "ambiguous",
+        "prompt": "Confirm whether owner authorization is required for this fixture case.",
+        "evidence": [
+          "Applicant role and owner role differ in fixture case store."
+        ]
+      },
+      {
+        "id": "contact_phone",
+        "status": "ok",
+        "prompt": "Contact phone is present."
+      }
+    ]
+  },
+  "process_bundle": {
+    "process_id": "residential-alteration-fixture",
+    "required_documents": [],
+    "milestones": [
+      "intake",
+      "review"
+    ]
+  },
+  "document_compliance": {
+    "documents": [
+      {
+        "id": "site-plan",
+        "name": "Site plan",
+        "status": "missing",
+        "evidence": [
+          "Required by process bundle but absent from fixture document set."
+        ]
+      },
+      {
+        "id": "floor-plan",
+        "name": "Floor plan",
+        "status": "ok"
+      }
+    ]
+  },
+  "source_freshness": {
+    "sources": [
+      {
+        "id": "residential-permit-fees",
+        "label": "Residential permit fees",
+        "status": "stale",
+        "checked_at": "2026-01-01",
+        "evidence": [
+          "Fixture source is older than the allowed freshness window."
+        ]
+      },
+      {
+        "id": "permit-center-hours",
+        "label": "Permit center hours",
+        "status": "fresh"
+      }
+    ]
+  },
+  "citation_integrity": {
+    "citations": [
+      {
+        "claim_id": "tree-plan-code",
+        "status": "conflicting",
+        "evidence": [
+          "Two fixture citations point to different PP&D pages for the same tree plan requirement."
+        ]
+      },
+      {
+        "claim_id": "intake-step",
+        "status": "ok"
+      }
+    ]
+  }
+}

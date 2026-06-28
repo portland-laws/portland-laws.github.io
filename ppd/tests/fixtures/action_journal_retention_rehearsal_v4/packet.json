@@ -1,0 +1,122 @@
+{
+  "packet_version": "fixture-first-action-journal-retention-rehearsal-v4",
+  "packet_id": "fixture-first-action-journal-retention-rehearsal-v4-from-agent-api-compat-v4",
+  "fixture_first": true,
+  "source_fixtures_only": true,
+  "live_crawl_performed": false,
+  "browser_opened": false,
+  "browser_artifacts_stored": false,
+  "private_files_read": false,
+  "official_action_attempted": false,
+  "active_journal_mutated": false,
+  "source_fixture_refs": ["ppd/tests/fixtures/agent_api_compat_rehearsal_v4_valid.json"],
+  "exact_offline_validation_commands": [["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]],
+  "consumed_agent_api_compatibility_rehearsal_v4": {
+    "version": "agent_api_compatibility_rehearsal_v4",
+    "monitoring_rehearsal_references": [{"id": "monitoring-rehearsal-001", "source": "deterministic local PP&D rehearsal fixture"}],
+    "synthetic_agent_request_fixtures": [{"id": "request-001", "user_request": "Summarize permit status from supplied public evidence only.", "live_automation": false}],
+    "expected_api_response_rows": [{"request_id": "request-001", "status": "draft_only", "requires_manual_review": true}],
+    "response_scenarios": [
+      {"kind": "missing_fact", "expected_response": "Ask for the missing fact and do not infer it."},
+      {"kind": "stale_evidence", "expected_response": "State that the evidence is stale and request refreshed public evidence."},
+      {"kind": "reversible_draft_only", "expected_response": "Return a draft-only answer that can be revised or discarded."},
+      {"kind": "manual_handoff", "expected_response": "Route official decisions and ambiguous permit actions to a human reviewer."},
+      {"kind": "refusal_explanation", "expected_response": "Explain that the agent cannot perform restricted official, payment, or account actions."}
+    ],
+    "source_citation_payloads": [{"row_id": "request-001", "citations": [{"label": "PP&D public evidence fixture", "url": "https://www.portland.gov/ppd"}]}],
+    "validation_commands": [["python3", "-m", "pytest", "ppd/tests/test_agent_api_compat_rehearsal_v4.py"]],
+    "safety": {"draft_only": true, "live_submit": false, "mutates_live_systems": false, "autonomous_official_action": false, "legal_guarantee": false, "permitting_guarantee": false}
+  },
+  "journal_event_examples": [
+    {
+      "event_id": "retention-v4-001",
+      "event_type": "public_crawl_preflight",
+      "compat_fixture_refs": ["ppd/tests/fixtures/agent_api_compat_rehearsal_v4_valid.json"],
+      "example_status": "placeholder_only",
+      "retention_label": "commit_safe_public_preflight_90d",
+      "redaction_evidence": {"redacted_examples": {"preflight_url_example": "[REDACTED:synthetic_public_url]", "policy_hash_example": "[REDACTED:synthetic_policy_hash]"}, "restricted_material_absent": true, "offline_validation_only": true, "compat_fixture_only": true, "checks": ["metadata-placeholder", "no-live-request", "no-body-retention"]},
+      "commit_safe_reason": "Public crawl preflight example is assembled from the compatibility fixture and keeps only a placeholder decision summary.",
+      "exact_offline_validation_commands": [["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]]
+    },
+    {
+      "event_id": "retention-v4-002",
+      "event_type": "requirement_extraction",
+      "compat_fixture_refs": ["ppd/tests/fixtures/agent_api_compat_rehearsal_v4_valid.json"],
+      "example_status": "placeholder_only",
+      "retention_label": "commit_safe_requirement_summary_180d",
+      "redaction_evidence": {"redacted_examples": {"requirement_text_example": "[REDACTED:synthetic_requirement]", "citation_span_example": "[REDACTED:synthetic_span]"}, "restricted_material_absent": true, "offline_validation_only": true, "compat_fixture_only": true, "checks": ["summary-only", "citation-label-only", "no-source-body"]},
+      "commit_safe_reason": "Requirement extraction example records a synthetic summary placeholder derived from expected API response handling.",
+      "exact_offline_validation_commands": [["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]]
+    },
+    {
+      "event_id": "retention-v4-003",
+      "event_type": "gap_analysis",
+      "compat_fixture_refs": ["ppd/tests/fixtures/agent_api_compat_rehearsal_v4_valid.json"],
+      "example_status": "placeholder_only",
+      "retention_label": "commit_safe_gap_summary_180d",
+      "redaction_evidence": {"redacted_examples": {"missing_fact_example": "[REDACTED:synthetic_missing_fact]", "blocked_action_example": "[REDACTED:synthetic_blocked_action]"}, "restricted_material_absent": true, "offline_validation_only": true, "compat_fixture_only": true, "checks": ["missing-fact-category", "no-case-fact-values", "manual-review-flag"]},
+      "commit_safe_reason": "Gap analysis example uses compatibility fixture response scenarios and keeps categories instead of user-specific facts.",
+      "exact_offline_validation_commands": [["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]]
+    },
+    {
+      "event_id": "retention-v4-004",
+      "event_type": "reversible_draft_plan",
+      "compat_fixture_refs": ["ppd/tests/fixtures/agent_api_compat_rehearsal_v4_valid.json"],
+      "example_status": "draft_only",
+      "retention_label": "commit_safe_reversible_draft_summary_90d",
+      "redaction_evidence": {"redacted_examples": {"draft_step_example": "[REDACTED:synthetic_draft_step]", "draft_input_example": "[REDACTED:synthetic_draft_input]"}, "restricted_material_absent": true, "offline_validation_only": true, "compat_fixture_only": true, "checks": ["draft-only", "discardable", "no-official-record-change"]},
+      "commit_safe_reason": "Reversible draft plan example is limited to discardable planning represented by the reversible draft response scenario.",
+      "exact_offline_validation_commands": [["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]]
+    },
+    {
+      "event_id": "retention-v4-005",
+      "event_type": "exact_confirmation_checkpoint",
+      "compat_fixture_refs": ["ppd/tests/fixtures/agent_api_compat_rehearsal_v4_valid.json"],
+      "example_status": "blocked",
+      "retention_label": "commit_safe_confirmation_checkpoint_90d",
+      "redaction_evidence": {"redacted_examples": {"confirmation_prompt_example": "[REDACTED:synthetic_confirmation_prompt]", "action_label_example": "[REDACTED:synthetic_action_label]"}, "restricted_material_absent": true, "offline_validation_only": true, "compat_fixture_only": true, "checks": ["checkpoint-only", "exact-confirmation-required", "no-action-taken"]},
+      "commit_safe_reason": "Exact-confirmation checkpoint example demonstrates the stop point before any consequential action.",
+      "exact_offline_validation_commands": [["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]]
+    },
+    {
+      "event_id": "retention-v4-006",
+      "event_type": "manual_handoff",
+      "compat_fixture_refs": ["ppd/tests/fixtures/agent_api_compat_rehearsal_v4_valid.json"],
+      "example_status": "blocked",
+      "retention_label": "commit_safe_manual_handoff_90d",
+      "redaction_evidence": {"redacted_examples": {"handoff_reason_example": "[REDACTED:synthetic_handoff_reason]", "review_queue_example": "[REDACTED:synthetic_review_queue]"}, "restricted_material_absent": true, "offline_validation_only": true, "compat_fixture_only": true, "checks": ["manual-review", "ambiguous-action-routed", "no-attended-workflow-started"]},
+      "commit_safe_reason": "Manual handoff example follows the compatibility fixture manual handoff response handling.",
+      "exact_offline_validation_commands": [["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]]
+    },
+    {
+      "event_id": "retention-v4-007",
+      "event_type": "refused_action",
+      "compat_fixture_refs": ["ppd/tests/fixtures/agent_api_compat_rehearsal_v4_valid.json"],
+      "example_status": "blocked",
+      "retention_label": "commit_safe_refusal_summary_180d",
+      "redaction_evidence": {"redacted_examples": {"refusal_reason_example": "[REDACTED:synthetic_refusal_reason]", "restricted_step_example": "[REDACTED:synthetic_restricted_step]"}, "restricted_material_absent": true, "offline_validation_only": true, "compat_fixture_only": true, "checks": ["refusal-explanation", "restricted-action-blocked", "no-guarantee"]},
+      "commit_safe_reason": "Refused action example records only a synthetic refusal summary for restricted official, financial, or account actions.",
+      "exact_offline_validation_commands": [["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]]
+    },
+    {
+      "event_id": "retention-v4-008",
+      "event_type": "rollback_trigger",
+      "compat_fixture_refs": ["ppd/tests/fixtures/agent_api_compat_rehearsal_v4_valid.json"],
+      "example_status": "placeholder_only",
+      "retention_label": "commit_safe_rollback_trigger_180d",
+      "redaction_evidence": {"redacted_examples": {"trigger_condition_example": "[REDACTED:synthetic_trigger]", "remediation_example": "[REDACTED:synthetic_remediation]"}, "restricted_material_absent": true, "offline_validation_only": true, "compat_fixture_only": true, "checks": ["fixture-regression-trigger", "inactive-only", "no-state-change"]},
+      "commit_safe_reason": "Rollback trigger example documents an offline compatibility regression trigger without changing journal state.",
+      "exact_offline_validation_commands": [["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]]
+    },
+    {
+      "event_id": "retention-v4-009",
+      "event_type": "completion_evidence_placeholder",
+      "compat_fixture_refs": ["ppd/tests/fixtures/agent_api_compat_rehearsal_v4_valid.json"],
+      "example_status": "placeholder_only",
+      "retention_label": "commit_safe_completion_placeholder_180d",
+      "redaction_evidence": {"redacted_examples": {"evidence_summary_example": "[REDACTED:synthetic_evidence]", "command_example": "[REDACTED:offline_command_ref]"}, "restricted_material_absent": true, "offline_validation_only": true, "compat_fixture_only": true, "checks": ["placeholder-only", "self-test-command-only", "no-artifact-retention"]},
+      "commit_safe_reason": "Completion evidence placeholder keeps only offline validation evidence and fixture completion status.",
+      "exact_offline_validation_commands": [["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]]
+    }
+  ]
+}

@@ -1,0 +1,54 @@
+{
+  "candidate_rows": [
+    {
+      "candidate_id": "inactive-001",
+      "ordinance_id": "190001",
+      "dependency_ids": [],
+      "guardrail_status": "pass",
+      "human_reviewer_route": "ppd-release-review",
+      "release_blockers": [],
+      "rollback_notes": ["No production state changed; discard packet if later evidence conflicts."]
+    },
+    {
+      "candidate_id": "inactive-002",
+      "ordinance_id": "190002",
+      "dependency_ids": ["inactive-001"],
+      "guardrail_status": "pass",
+      "human_reviewer_route": "ppd-smoke-review",
+      "release_blockers": [],
+      "rollback_notes": []
+    },
+    {
+      "candidate_id": "inactive-003",
+      "ordinance_id": "190003",
+      "dependency_ids": ["inactive-001"],
+      "guardrail_status": "fail",
+      "human_reviewer_route": "ppd-legal-review",
+      "release_blockers": ["synthetic inactive guardrail mismatch"],
+      "rollback_notes": ["Reject packet; no release artifact was promoted."]
+    }
+  ],
+  "readiness_rows": [
+    {
+      "candidate_id": "inactive-001",
+      "agent": "post-recompile-agent-a",
+      "replay_status": "pass",
+      "smoke_replay_required": false,
+      "smoke_replay": ""
+    },
+    {
+      "candidate_id": "inactive-002",
+      "agent": "post-recompile-agent-b",
+      "replay_status": "pass",
+      "smoke_replay_required": true,
+      "smoke_replay": "rerun inactive release smoke replay for ordinance 190002"
+    },
+    {
+      "candidate_id": "inactive-003",
+      "agent": "post-recompile-agent-c",
+      "replay_status": "pass",
+      "smoke_replay_required": false,
+      "smoke_replay": ""
+    }
+  ]
+}

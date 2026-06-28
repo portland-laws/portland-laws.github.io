@@ -1,0 +1,13 @@
+Implemented one generalized parser improvement in the `compiler_parser` lane plus packet-specific regressions.
+
+- Updated [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000036-20260518_114249/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:799):
+  - In U.S.C. section-heading fallback, sparse section-marker candidates (like `§3110.`) now try to merge with the immediate heading-like neighbor segment before predicate extraction.
+  - Added helper [`_extend_sparse_uscode_heading_segment`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000036-20260518_114249/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:855) with conservative guards (citation-anchored, token-poor candidate, heading-like neighbor, size limits).
+
+- Added fixtures and regression coverage in [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000036-20260518_114249/tests/unit_tests/logic/modal/test_modal_codec.py:463) and [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000036-20260518_114249/tests/unit_tests/logic/modal/test_modal_codec.py:1286):
+  - New sparse-heading fixtures for `42 U.S.C. 1395w`, `5 U.S.C. 3110`, `16 U.S.C. 2204`.
+  - New test asserts deterministic fallback formula exists and predicate is meaningful (not `unnamed_predicate`) for both `regex` and `spacy` backends.
+
+Tests run:
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py::test_modal_compiler_replays_sparse_heading_segments_for_42_1395w_5_3110_and_16_2204` passed.
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py::test_modal_compiler_replays_sec_prefixed_heading_samples_with_usc_citation_variants tests/unit_tests/logic/modal/test_modal_codec.py::test_modal_compiler_replays_long_embedded_section_heading_samples_for_8_1365b_34_50108_and_19_3702` passed.

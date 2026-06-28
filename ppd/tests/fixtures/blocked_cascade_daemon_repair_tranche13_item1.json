@@ -1,0 +1,63 @@
+{
+  "blocked_work": {
+    "id": "ppd-tranche-13-item-1",
+    "state": "parked",
+    "blocked_at": "2026-05-08T00:00:00Z",
+    "blocked_reason": "daemon-cascade"
+  },
+  "scenarios": [
+    {
+      "name": "no_repair_task",
+      "repair_tasks": [],
+      "expected_state": "parked"
+    },
+    {
+      "name": "stale_validated_repair_task",
+      "repair_tasks": [
+        {
+          "id": "repair-before-block",
+          "kind": "daemon-repair",
+          "state": "validated",
+          "created_at": "2026-05-07T23:59:59Z"
+        }
+      ],
+      "expected_state": "parked"
+    },
+    {
+      "name": "fresh_unvalidated_repair_task",
+      "repair_tasks": [
+        {
+          "id": "repair-after-block-unvalidated",
+          "kind": "daemon-repair",
+          "state": "pending",
+          "created_at": "2026-05-08T00:00:01Z"
+        }
+      ],
+      "expected_state": "parked"
+    },
+    {
+      "name": "fresh_validated_non_repair_task",
+      "repair_tasks": [
+        {
+          "id": "non-repair-after-block",
+          "kind": "crawl-validation",
+          "state": "validated",
+          "created_at": "2026-05-08T00:00:01Z"
+        }
+      ],
+      "expected_state": "parked"
+    },
+    {
+      "name": "fresh_validated_daemon_repair_task",
+      "repair_tasks": [
+        {
+          "id": "repair-after-block-validated",
+          "kind": "daemon-repair",
+          "state": "validated",
+          "created_at": "2026-05-08T00:00:01Z"
+        }
+      ],
+      "expected_state": "ready"
+    }
+  ]
+}

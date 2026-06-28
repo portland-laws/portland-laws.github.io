@@ -1,0 +1,68 @@
+{
+  "valid_packet": {
+    "packet_version": "requirement_extraction_delta_packet_v1",
+    "packet_id": "offline-delta-fixture-v1",
+    "candidate_rows": {
+      "add": [
+        {
+          "requirement_id": "REQ-ADD-001",
+          "summary": "Add source-backed upload staging requirement for offline review.",
+          "source_evidence_ids": ["EVID-001"],
+          "confidence_id": "CONF-001",
+          "human_review_status": "pending_review",
+          "stale_evidence_impact_id": "STALE-001"
+        }
+      ],
+      "change": [
+        {
+          "requirement_id": "REQ-CHANGE-001",
+          "summary": "Change wording for offline missing-information prompt.",
+          "source_evidence_ids": ["EVID-002"],
+          "confidence_id": "CONF-002",
+          "human_review_status": "pending_review",
+          "stale_evidence_impact_id": "STALE-002"
+        }
+      ],
+      "remove": [
+        {
+          "requirement_id": "REQ-REMOVE-001",
+          "summary": "Remove stale unsupported draft-only instruction.",
+          "source_evidence_ids": ["EVID-003"],
+          "confidence_id": "CONF-003",
+          "human_review_status": "pending_review",
+          "stale_evidence_impact_id": "STALE-003"
+        }
+      ]
+    },
+    "source_evidence_refs": [
+      {
+        "evidence_id": "EVID-001",
+        "citation": "https://www.portland.gov/ppd/get-permit/submit-plans-online#offline-fixture",
+        "review_note": "Public guidance fixture reference only."
+      },
+      {
+        "evidence_id": "EVID-002",
+        "citation": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application#offline-fixture",
+        "review_note": "Public guidance fixture reference only."
+      },
+      {
+        "evidence_id": "EVID-003",
+        "citation": "https://www.portland.gov/ppd/devhub-faqs#offline-fixture",
+        "review_note": "Public guidance fixture reference only."
+      }
+    ],
+    "confidence_rows": [
+      {"confidence_id": "CONF-001", "confidence": 0.84, "basis": "deterministic fixture extraction"},
+      {"confidence_id": "CONF-002", "confidence": 0.81, "basis": "deterministic fixture extraction"},
+      {"confidence_id": "CONF-003", "confidence": 0.79, "basis": "deterministic fixture extraction"}
+    ],
+    "human_review_status": "pending_review",
+    "stale_evidence_impact_rows": [
+      {"impact_id": "STALE-001", "impact": "requires reviewer confirmation before promotion"},
+      {"impact_id": "STALE-002", "impact": "requires reviewer confirmation before promotion"},
+      {"impact_id": "STALE-003", "impact": "requires reviewer confirmation before promotion"}
+    ],
+    "validation_commands": [["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]],
+    "mutation_policy": "offline_review_only"
+  }
+}

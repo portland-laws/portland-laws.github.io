@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/SUPERVISOR_REPAIR_GUIDE.md"
+  ],
+  "created_at": "2026-05-03T15:44:06.257137Z",
+  "impact": "This makes daemon recovery deterministic after repeated SyntaxError, py_compile, TS1005, TS1109, or TS1128 failures by forcing a parser-clean, one-file retry path before broader DevHub, crawler, fixture, or contract work can resume.",
+  "summary": "Tighten PP&D supervisor repair guidance for repeated parser and compile rollbacks.",
+  "target_task": "Supervisor repair: 4 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 40 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "........................................................................................................................................................................................................................................................................................................................................................................................................................................ss................sss................................................................................................................................................................................................................................................................................................. ---------------------------------------------------------------------- Ran 734 tests in 0.117s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

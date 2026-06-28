@@ -118,8 +118,13 @@ export class FOLConverter extends LogicConverter<string, FolFormula> {
         quantifiers_count: parsed.quantifiers.length,
         extracted_predicates: extractedPredicates,
         extracted_relations: relations,
+        browser_native_nlp_extraction: parsed.nlp,
+        browser_native_nlp_predicate_candidates: parsed.nlp.predicateCandidates,
         variables: extractVariables(extractedPredicates),
-        formatted: formatFol(parsed.formula, this.outputFormat === 'formula' ? 'symbolic' : this.outputFormat),
+        formatted: formatFol(
+          parsed.formula,
+          this.outputFormat === 'formula' ? 'symbolic' : this.outputFormat,
+        ),
         output_format: this.outputFormat,
       },
       toString() {
@@ -128,17 +133,24 @@ export class FOLConverter extends LogicConverter<string, FolFormula> {
     };
   }
 
-  protected override getConfidence(output: FolFormula, _input: string, options: ConvertOptions): number {
+  protected override getConfidence(
+    output: FolFormula,
+    _input: string,
+    options: ConvertOptions,
+  ): number {
     return typeof options.confidence === 'number' ? options.confidence : output.confidence;
   }
 
-  protected override getWarnings(_output: FolFormula, _input: string, _options: ConvertOptions): string[] {
+  protected override getWarnings(
+    _output: FolFormula,
+    _input: string,
+    _options: ConvertOptions,
+  ): string[] {
     const capabilities = getLogicRuntimeCapabilities().fol;
     return [
-      ...(this.useNlp && capabilities.nlpUnavailable
-        ? ['Browser-native NLP extraction is not yet complete; regex extraction was used.']
+      ...(this.useMl && !capabilities.browserNativeMlConfidence
+        ? ['Browser-native ML confidence is not yet complete.']
         : []),
-      ...(this.useMl && capabilities.mlUnavailable ? ['Browser-native ML confidence is not yet complete.'] : []),
     ];
   }
 
@@ -202,5 +214,7 @@ export function extractFolQuantifiersAndOperators(text: string): {
 }
 
 function extractPredicateNames(formula: string): string[] {
-  return [...new Set([...formula.matchAll(/\b([A-Z][A-Za-z0-9_]*)\s*\(/g)].map((match) => match[1]))];
+  return [
+    ...new Set([...formula.matchAll(/\b([A-Z][A-Za-z0-9_]*)\s*\(/g)].map((match) => match[1])),
+  ];
 }

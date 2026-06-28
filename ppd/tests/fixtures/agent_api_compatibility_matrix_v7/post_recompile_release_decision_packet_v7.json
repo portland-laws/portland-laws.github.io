@@ -1,0 +1,103 @@
+{
+  "schema_version": 7,
+  "fixture_type": "post_recompile_release_decision_packet_v7",
+  "source_phase": "post-recompile release decision packet",
+  "blocked_action_classes": [
+    "finalize_official_action",
+    "bypass_captcha_mfa_or_access_control",
+    "create_account",
+    "password_recovery",
+    "store_credentials_or_auth_state",
+    "persist_private_devhub_artifacts",
+    "download_or_commit_private_documents"
+  ],
+  "citation_explanation_behavior": {
+    "status": "supported_with_fixture_citations_only",
+    "must_include": [
+      "source identifier",
+      "requirement or policy identifier",
+      "why the cited evidence supports the prompt or block"
+    ],
+    "must_not_include": [
+      "uncited legal advice",
+      "guarantees of permit eligibility or approval",
+      "claims based on live DevHub state"
+    ]
+  },
+  "stale_evidence_holds": [
+    {
+      "hold_id": "stale.source_hash_changed",
+      "trigger": "Fixture freshness status indicates a changed public source hash.",
+      "agent_response": "Hold consequential recommendations and request updated public evidence validation."
+    },
+    {
+      "hold_id": "stale.devhub_surface_unverified",
+      "trigger": "Fixture surface map has not been revalidated after a release decision.",
+      "agent_response": "Limit output to read-only explanation and manual handoff."
+    }
+  ],
+  "reversible_draft_and_preview_boundaries": {
+    "reversible_draft": [
+      "Prepare draft field mappings from known facts.",
+      "Describe save-for-later or draft-only behavior as requiring user attendance when DevHub is involved.",
+      "Stop before upload, certification, submission, payment, scheduling, cancellation, or official state change."
+    ],
+    "local_pdf_preview": [
+      "Generate local preview descriptions from fixture field mappings only.",
+      "Do not read private local files unless the user provides them in a separate attended flow.",
+      "Do not represent a local preview as an official PP&D submission."
+    ]
+  },
+  "exact_confirmation_checkpoints": [
+    {
+      "checkpoint_id": "confirm.upload",
+      "action_class": "upload_documents",
+      "required_confirmation": "Exact user confirmation naming the document, destination, and permit or request context."
+    },
+    {
+      "checkpoint_id": "confirm.submit",
+      "action_class": "submit_application",
+      "required_confirmation": "Exact user confirmation naming the application and final submit action."
+    },
+    {
+      "checkpoint_id": "confirm.certify",
+      "action_class": "certify_acknowledgement",
+      "required_confirmation": "Exact user confirmation of the certification text and action."
+    },
+    {
+      "checkpoint_id": "confirm.payment",
+      "action_class": "enter_or_submit_payment",
+      "required_confirmation": "Exact user confirmation of fee amount, payment target, and final payment action."
+    },
+    {
+      "checkpoint_id": "confirm.schedule_or_cancel",
+      "action_class": "schedule_or_cancel_inspection",
+      "required_confirmation": "Exact user confirmation of inspection type, date or cancellation target, and official action."
+    }
+  ],
+  "manual_handoff_surfaces": [
+    "DevHub login, MFA, CAPTCHA, and account recovery",
+    "official upload, submit, certify, payment, scheduling, cancellation, and correction workflows",
+    "ambiguous, conflicting, stale, or uncited requirement evidence",
+    "permit paths that official guidance says may use email or non-DevHub handling"
+  ],
+  "rollback_visibility": {
+    "status": "visible_for_reversible_drafts_only",
+    "agent_may_show": [
+      "draft field values",
+      "local preview mapping",
+      "steps needed to discard or revise a draft"
+    ],
+    "agent_must_not_claim": [
+      "rollback of an official submission",
+      "rollback of a payment",
+      "rollback of uploaded corrections",
+      "rollback of inspection scheduling or cancellation"
+    ]
+  },
+  "offline_validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/agent_api_compatibility_matrix_v7.py", "ppd/tests/test_agent_api_compatibility_matrix_v7.py"],
+    ["python3", "-m", "pytest", "ppd/tests/test_agent_api_compatibility_matrix_v7.py"],
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

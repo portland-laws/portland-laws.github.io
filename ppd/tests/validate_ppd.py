@@ -228,6 +228,76 @@ def validate_source_index_fixtures() -> None:
         fail(f"{fixture_path.relative_to(ROOT)} must include at least one skipped crawl status record")
 
 
+def validate_crawl_campaign_brief() -> None:
+    sys.path.insert(0, str(ROOT))
+
+    from ppd.crawler.crawl_campaign_brief import campaign_batch_summary, load_campaign_brief, validate_campaign_brief
+
+    brief_path = PPD_ROOT / "crawl_campaigns" / "portland_ppd_campaign_brief.json"
+    if not brief_path.exists():
+        fail("crawl campaign brief is required at ppd/crawl_campaigns/portland_ppd_campaign_brief.json")
+
+    brief = load_campaign_brief(brief_path)
+    errors = validate_campaign_brief(brief)
+    if errors:
+        fail(f"{brief_path.relative_to(ROOT)} campaign brief is invalid: {errors}")
+
+    summary = campaign_batch_summary(brief)
+    if summary["batch_count"] < 3:
+        fail(f"{brief_path.relative_to(ROOT)} must define at least three permit-family batches")
+    if summary["public_html_seed_count"] < summary["batch_count"]:
+        fail(f"{brief_path.relative_to(ROOT)} must define at least one public_html_seed per batch on average")
+
+
+def validate_devhub_attended_login_contract() -> None:
+    sys.path.insert(0, str(ROOT))
+
+    from ppd.contracts.devhub_attended_login import AttendedDevHubLoginContract, DevHubLoginState
+
+    fixture_root = PPD_ROOT / "tests" / "fixtures" / "devhub_attended_login"
+    manual_fixture = fixture_root / "manual_sign_in.html"
+    save_resume_fixture = fixture_root / "save_resume.html"
+    if not manual_fixture.exists() or not save_resume_fixture.exists():
+        fail("devhub attended-login fixtures must exist under ppd/tests/fixtures/devhub_attended_login/")
+
+    contract = AttendedDevHubLoginContract()
+    manual_html = manual_fixture.read_text(encoding="utf-8")
+    save_resume_html = save_resume_fixture.read_text(encoding="utf-8")
+
+    manual_state = contract.state_from_observation(
+        "https://www.portlandoregon.gov/DevHub/Account/Login",
+        manual_html,
+        200,
+    )
+    if manual_state is not DevHubLoginState.MANUAL_SIGN_IN_REQUIRED:
+        fail("manual_sign_in fixture must classify as MANUAL_SIGN_IN_REQUIRED")
+
+    save_resume_state = contract.state_from_observation(
+        "https://www.portlandoregon.gov/DevHub/Permits/Draft?id=123",
+        save_resume_html,
+        200,
+    )
+    if save_resume_state is not DevHubLoginState.SAVE_RESUME_READY:
+        fail("save_resume fixture must classify as SAVE_RESUME_READY")
+    if not contract.can_save_resume(save_resume_state):
+        fail("save_resume fixture must allow can_save_resume")
+
+    blocked_snapshot = contract.redacted_route_snapshot("https://example.com/login?token=abc")
+    if blocked_snapshot.state is not DevHubLoginState.BLOCKED:
+        fail("external routes must be blocked in attended login contract")
+    if blocked_snapshot.url != "blocked://external-route":
+        fail("external route snapshots must not preserve raw URL details")
+
+    redacted_snapshot = contract.redacted_route_snapshot(
+        "https://www.portlandoregon.gov/DevHub/Callback?code=abc123&recordId=RSW-1#token=hidden",
+        method="post",
+        html_text=save_resume_html,
+        status_code=200,
+    )
+    if "REDACTED" not in redacted_snapshot.url or "#token=" in redacted_snapshot.url:
+        fail("attended login route snapshots must redact sensitive query data and drop fragments")
+
+
 def validate_contract_schemas() -> None:
     sys.path.insert(0, str(ROOT))
 
@@ -409,6 +479,8 @@ def main() -> int:
     checks = (
         validate_fixture_files,
         validate_source_index_fixtures,
+        validate_crawl_campaign_brief,
+        validate_devhub_attended_login_contract,
         validate_contract_schemas,
         validate_daemon_self_test,
         validate_private_data_ignore_coverage,

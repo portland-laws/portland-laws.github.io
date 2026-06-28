@@ -1,0 +1,36 @@
+{
+  "packet_id": "synthetic-combined-public-devhub-stale-readiness-rows-v1",
+  "fixture_only": true,
+  "rows": [
+    {
+      "row_id": "synthetic-public-index-current",
+      "recommendation": "proceed",
+      "owner": "public-source-owner",
+      "reviewer": "automation-reviewer",
+      "dependency_order": "1-public-fixture-current",
+      "rollback_note": "Remove the proceed disposition row and keep the fixture source set unchanged.",
+      "rationale": "Synthetic public and DevHub readiness rows are current enough for reviewer proceed disposition."
+    },
+    {
+      "row_id": "synthetic-devhub-help-stale",
+      "recommendation": "hold",
+      "owner": "source-freshness-owner",
+      "reviewer": "stale-source-reviewer",
+      "dependency_order": "2-stale-source-hold-review",
+      "stale_source_hold_reasons": [
+        "synthetic DevHub help evidence is stale pending reviewer reconciliation"
+      ],
+      "rollback_note": "Keep the stale-source hold active in fixture review and do not alter active guidance.",
+      "rationale": "Reviewer hold is required because the synthetic combined row carries a stale-source readiness signal."
+    },
+    {
+      "row_id": "synthetic-payment-guide-blocked",
+      "recommendation": "reject",
+      "owner": "agent-safety-owner",
+      "reviewer": "agent-safety-reviewer",
+      "dependency_order": "3-blocking-fixture-rejection",
+      "rollback_note": "Remove the rejected inactive packet from the reviewer queue without changing daemon state.",
+      "rationale": "Reviewer reject is required for a synthetic combined row that blocks stale-readiness acceptance."
+    }
+  ]
+}

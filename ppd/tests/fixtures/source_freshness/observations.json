@@ -1,0 +1,22 @@
+{
+  "sources": [
+    {
+      "source_id": "permit-search",
+      "citation_id": "ppd:citation:permit-search",
+      "last_seen_at": "2026-05-10T00:00:00Z",
+      "guardrail_bundle_ids": ["permits", "intake"]
+    },
+    {
+      "source_id": "appeals-board",
+      "citation_id": "ppd:citation:appeals-board",
+      "last_seen_at": "2026-03-01T00:00:00Z",
+      "guardrail_bundle_ids": ["appeals"]
+    },
+    {
+      "source_id": "inspection-manual",
+      "citation_id": "ppd:citation:inspection-manual",
+      "last_seen_at": null,
+      "guardrail_bundle_ids": ["inspections"]
+    }
+  ]
+}

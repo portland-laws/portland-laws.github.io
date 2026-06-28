@@ -1,0 +1,65 @@
+{
+  "packet_id": "rerun-rehearsal-valid-001",
+  "extraction_mode": "fixture_rehearsal",
+  "reviewer_owner": "ppd-requirements-review",
+  "known_source_ids": [
+    "src-ppd-devhub-guide"
+  ],
+  "known_document_ids": [
+    "doc-ppd-devhub-guide"
+  ],
+  "known_requirement_ids": [
+    "req-devhub-uploads-review-gate"
+  ],
+  "known_evidence_ids": [
+    "ev-devhub-guide-step-7"
+  ],
+  "sources": [
+    {
+      "source_id": "src-ppd-devhub-guide",
+      "source_type": "public_html",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application"
+    }
+  ],
+  "documents": [
+    {
+      "document_id": "doc-ppd-devhub-guide",
+      "source_id": "src-ppd-devhub-guide",
+      "title": "DevHub guide to submit a permit application"
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "ev-devhub-guide-step-7",
+      "source_id": "src-ppd-devhub-guide",
+      "document_id": "doc-ppd-devhub-guide",
+      "section_anchor": "step-7"
+    }
+  ],
+  "requirement_deltas": [
+    {
+      "requirement_id": "req-devhub-uploads-review-gate",
+      "change_type": "clarify",
+      "source_id": "src-ppd-devhub-guide",
+      "document_id": "doc-ppd-devhub-guide",
+      "source_evidence_ids": [
+        "ev-devhub-guide-step-7"
+      ],
+      "reviewer_owner": "ppd-requirements-review",
+      "formalization_status": "candidate"
+    }
+  ],
+  "formalized_requirements": [
+    {
+      "requirement_id": "req-devhub-uploads-review-gate",
+      "human_review_status": "reviewed"
+    }
+  ],
+  "stale_candidates": [
+    {
+      "requirement_id": "req-old-upload-copy",
+      "freshness_status": "withdrawn",
+      "withdrawal_note": "Superseded by cited public DevHub upload guidance fixture."
+    }
+  ]
+}

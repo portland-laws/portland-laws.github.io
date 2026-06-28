@@ -1,0 +1,140 @@
+{
+  "packet_id": "fixture-ppd-public-data-dry-run-release-2026-05-28",
+  "fixture_first": true,
+  "metadata_only": true,
+  "ready_for_live_release": false,
+  "disabled_capabilities": {
+    "live_crawl": true,
+    "devhub_session": true,
+    "upload": true,
+    "payment": true,
+    "submission": true,
+    "scheduling": true,
+    "cancellation": true,
+    "certification": true
+  },
+  "linked_outputs": [
+    {
+      "output_type": "source_coverage_audit",
+      "artifact_id": "source-coverage-audit-fixture-2026-05-28",
+      "source_fixture_path": "ppd/tests/fixtures/public_source_inventory_coverage/coverage_report.json",
+      "validation_status": "fixture_validated",
+      "citation_ids": ["plan.source-discovery", "plan.change-monitoring"],
+      "enables_live_execution": false,
+      "operator_summary": "Review allowlisted public source coverage, skipped reasons, and missing official anchors before any crawl promotion."
+    },
+    {
+      "output_type": "processor_handoff_dry_run",
+      "artifact_id": "processor-handoff-dry-run-fixture-2026-05-28",
+      "source_fixture_path": "ppd/tests/fixtures/processor_handoff/dry_run_packet.json",
+      "validation_status": "dry_run_complete",
+      "citation_ids": ["plan.processor-handoff", "plan.no-raw-body-persistence"],
+      "enables_live_execution": false,
+      "operator_summary": "Review policy preflight, processor contract fields, bounded rate limits, skipped reasons, and normalized document references."
+    },
+    {
+      "output_type": "extraction_quality_review",
+      "artifact_id": "extraction-quality-review-fixture-2026-05-28",
+      "source_fixture_path": "ppd/tests/fixtures/requirement_extraction_review_packet/packets.json",
+      "validation_status": "needs_operator_review",
+      "citation_ids": ["plan.requirement-extraction", "plan.pdf-and-form-extraction"],
+      "enables_live_execution": false,
+      "operator_summary": "Review cited requirement nodes, source order, anchors, OCR confidence, and low-confidence extraction findings."
+    },
+    {
+      "output_type": "process_model_impact",
+      "artifact_id": "process-model-impact-fixture-2026-05-28",
+      "source_fixture_path": "ppd/tests/fixtures/process_model_impact/dry_run_impact_packet.json",
+      "validation_status": "review_ready",
+      "citation_ids": ["plan.process-model", "plan.standard-process-stages"],
+      "enables_live_execution": false,
+      "operator_summary": "Review impacted process stages, required facts, document rules, unsupported paths, and DevHub surface references."
+    },
+    {
+      "output_type": "guardrail_candidate",
+      "artifact_id": "guardrail-candidate-fixture-2026-05-28",
+      "source_fixture_path": "ppd/tests/fixtures/guardrail_candidate/candidate_packet.json",
+      "validation_status": "accepted_fixture",
+      "citation_ids": ["plan.guardrail-bundle", "plan.non-negotiable-boundaries"],
+      "enables_live_execution": false,
+      "operator_summary": "Review draft predicates, exact-confirmation gates, refused-action predicates, and stale input model status before promotion."
+    },
+    {
+      "output_type": "agent_gap_analysis_rerun",
+      "artifact_id": "agent-gap-analysis-rerun-fixture-2026-05-28",
+      "source_fixture_path": "ppd/tests/fixtures/agent_gap_analysis_rerun_packet/synthetic_case_packet.json",
+      "validation_status": "fixture_validated",
+      "citation_ids": ["plan.user-gap-analysis", "plan.agent-safe-actions"],
+      "enables_live_execution": false,
+      "operator_summary": "Review changed missing facts, stale evidence, blocked actions, manual handoffs, local previews, and user-facing questions."
+    }
+  ],
+  "operator_review_checklist": [
+    {
+      "section": "source_coverage_audit",
+      "linked_output_type": "source_coverage_audit",
+      "review_prompt": "Confirm the public source coverage audit is fixture-backed, cites official anchors, and leaves skipped URLs actionable.",
+      "decision": "accepted_for_operator_review",
+      "requires_operator_review": true,
+      "agent_may_execute": false
+    },
+    {
+      "section": "processor_handoff_dry_run",
+      "linked_output_type": "processor_handoff_dry_run",
+      "review_prompt": "Confirm the processor handoff remains metadata-only, dry-run-only, policy-preflighted, and free of downloaded documents.",
+      "decision": "accepted_for_operator_review",
+      "requires_operator_review": true,
+      "agent_may_execute": false
+    },
+    {
+      "section": "extraction_quality_review",
+      "linked_output_type": "extraction_quality_review",
+      "review_prompt": "Confirm extraction review findings keep low-confidence or OCR-derived requirements in human review before guardrail compilation.",
+      "decision": "needs_operator_review",
+      "requires_operator_review": true,
+      "agent_may_execute": false
+    },
+    {
+      "section": "process_model_impact",
+      "linked_output_type": "process_model_impact",
+      "review_prompt": "Confirm process-model impact is limited to fixture-backed stage, document, fact, fee, and unsupported-path references.",
+      "decision": "needs_operator_review",
+      "requires_operator_review": true,
+      "agent_may_execute": false
+    },
+    {
+      "section": "guardrail_candidate",
+      "linked_output_type": "guardrail_candidate",
+      "review_prompt": "Confirm the guardrail candidate is not promoted to an active bundle until cited predicates and exact-confirmation gates are reviewed.",
+      "decision": "not_ready",
+      "requires_operator_review": true,
+      "agent_may_execute": false
+    },
+    {
+      "section": "agent_gap_analysis_rerun",
+      "linked_output_type": "agent_gap_analysis_rerun",
+      "review_prompt": "Confirm the rerun only changes local review prompts, missing facts, blocked actions, and manual handoff notes for the synthetic case.",
+      "decision": "needs_operator_review",
+      "requires_operator_review": true,
+      "agent_may_execute": false
+    },
+    {
+      "section": "operator_release_decision",
+      "linked_output_type": "release_boundary",
+      "review_prompt": "Confirm this packet is a public-data dry-run release review only and does not authorize live crawl, DevHub, upload, payment, submission, scheduling, cancellation, or certification.",
+      "decision": "not_ready",
+      "requires_operator_review": true,
+      "agent_may_execute": false
+    }
+  ],
+  "consequential_action_boundary": {
+    "live_crawl": "not_enabled",
+    "devhub_session": "manual_handoff",
+    "upload": "blocked",
+    "payment": "blocked",
+    "submission": "blocked",
+    "scheduling": "blocked",
+    "cancellation": "blocked",
+    "certification": "blocked"
+  }
+}

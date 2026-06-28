@@ -1,0 +1,54 @@
+{
+  "seeds": [
+    {
+      "url": "https://www.portland.gov/ppd",
+      "label": "PP&D bureau landing page",
+      "source_kind": "official_anchor"
+    },
+    {
+      "url": "https://www.portland.gov/ppd/",
+      "label": "Duplicate PP&D bureau landing page",
+      "source_kind": "official_anchor"
+    },
+    {
+      "url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "label": "Online permitting tools overview",
+      "source_kind": "official_anchor"
+    },
+    {
+      "url": "https://devhub.portlandoregon.gov",
+      "label": "DevHub public portal",
+      "source_kind": "official_anchor"
+    },
+    {
+      "url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "label": "Fee payment guide PDF link",
+      "source_kind": "official_anchor"
+    },
+    {
+      "url": "https://www.portlandmaps.com/detail/property/1234",
+      "label": "Portland Maps public reference",
+      "source_kind": "official_anchor"
+    },
+    {
+      "url": "https://example.com/not-allowed",
+      "label": "Outside allowlist example",
+      "source_kind": "negative_fixture"
+    },
+    {
+      "url": "ftp://www.portland.gov/ppd/file.pdf",
+      "label": "Unsupported scheme example",
+      "source_kind": "negative_fixture"
+    },
+    {
+      "url": "https://devhub.portlandoregon.gov/login",
+      "label": "Private DevHub login path",
+      "source_kind": "negative_fixture"
+    },
+    {
+      "url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application?b=2&a=1#steps",
+      "label": "Canonical query and fragment handling",
+      "source_kind": "official_anchor"
+    }
+  ]
+}

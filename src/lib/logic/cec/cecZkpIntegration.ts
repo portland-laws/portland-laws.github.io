@@ -1,5 +1,6 @@
 import type { ProofResult, ProofStatus } from '../types';
-import { axiomsCommitmentHex, theoremHashHex } from '../zkp/canonicalization';
+import { axiomsCommitmentHex, canonicalizeAxioms, theoremHashHex } from '../zkp/canonicalization';
+import { formatCircuitRef } from '../zkp/statement';
 import type { ZkpStatement, ZkpWitness } from '../zkp/statement';
 import type { CecExpression } from './ast';
 import { formatCecExpression } from './formatter';
@@ -9,11 +10,7 @@ import { CecProver, type CecKnowledgeBase, type CecProverOptions } from './prove
 export const HAVE_CEC_ZKP = true;
 export const HAVE_CEC_CACHE = true;
 
-export type CecProvingMethod =
-  | 'cec_standard'
-  | 'cec_zkp'
-  | 'cec_hybrid'
-  | 'cec_cached';
+export type CecProvingMethod = 'cec_standard' | 'cec_zkp' | 'cec_hybrid' | 'cec_cached';
 
 export interface CecZkpProof {
   backend: 'simulated' | 'groth16';
@@ -21,10 +18,39 @@ export interface CecZkpProof {
     goal: string;
     axiomsHash: string;
   };
+  publicInputs: CecZkpPublicInputs;
   witnessCommitment: string;
   proofDigest: string;
   simulated: boolean;
   securityNote: string;
+}
+
+export interface CecZkpPublicInputs {
+  circuit_id: 'cec_theorem_v1';
+  circuit_ref: string;
+  circuit_version: number;
+  ruleset_id: 'CEC_v1';
+  theorem: string;
+  theorem_hash: string;
+  axioms_commitment: string;
+  axioms_hash: string;
+  witness_commitment: string;
+  witness_count: number;
+  is_proved: boolean;
+}
+
+export interface CecZkpCircuitInputs {
+  publicInputs: CecZkpPublicInputs;
+  witness: ZkpWitness & {
+    goal: string;
+    isProved: boolean;
+  };
+}
+
+export interface UnsupportedCecZkpBackend {
+  backend: string;
+  supportedBackends: string[];
+  reason: string;
 }
 
 export interface UnifiedCecProofResult {
@@ -38,6 +64,7 @@ export interface UnifiedCecProofResult {
   inferenceRules?: string[];
   errorMessage?: string;
   zkpProof?: CecZkpProof;
+  unsupportedBackend?: UnsupportedCecZkpBackend;
   isPrivate: boolean;
   zkpBackend?: string;
   fromCache: boolean;
@@ -88,13 +115,16 @@ export class UnifiedCecProof implements UnifiedCecProofResult {
   readonly inferenceRules?: string[];
   readonly errorMessage?: string;
   readonly zkpProof?: CecZkpProof;
+  readonly unsupportedBackend?: UnsupportedCecZkpBackend;
   readonly isPrivate: boolean;
   readonly zkpBackend?: string;
   readonly fromCache: boolean;
   readonly cacheHitTime?: number;
   readonly timestamp: number;
 
-  constructor(options: Omit<UnifiedCecProofResult, 'toDict' | 'timestamp'> & { timestamp?: number }) {
+  constructor(
+    options: Omit<UnifiedCecProofResult, 'toDict' | 'timestamp'> & { timestamp?: number },
+  ) {
     this.isProved = options.isProved;
     this.formula = options.formula;
     this.axioms = [...options.axioms];
@@ -105,6 +135,7 @@ export class UnifiedCecProof implements UnifiedCecProofResult {
     this.inferenceRules = options.inferenceRules ? [...options.inferenceRules] : undefined;
     this.errorMessage = options.errorMessage;
     this.zkpProof = options.zkpProof;
+    this.unsupportedBackend = options.unsupportedBackend;
     this.isPrivate = options.isPrivate;
     this.zkpBackend = options.zkpBackend;
     this.fromCache = options.fromCache;
@@ -126,7 +157,7 @@ export class UnifiedCecProof implements UnifiedCecProofResult {
       proofTime: options.proofTime ?? (proof.timeMs ?? 0) / 1000,
       baseResult: proof.status,
       proofSteps: proof.steps.length,
-      inferenceRules: [...new Set(proof.steps.map((step) => step.rule).filter(Boolean))],
+      inferenceRules: uniqueRuleNames(proof.steps.map((step) => step.rule)),
       errorMessage: proof.error,
       isPrivate: false,
       fromCache: options.fromCache ?? false,
@@ -157,6 +188,34 @@ export class UnifiedCecProof implements UnifiedCecProofResult {
     });
   }
 
+  static unsupportedZkpBackend(
+    formula: CecExpression,
+    axioms: CecExpression[],
+    backend: string,
+    proofTime: number,
+    isPrivate: boolean,
+  ): UnifiedCecProof {
+    const supportedBackends = ['simulated'];
+    const reason = `CEC ZKP backend '${backend}' is not available in the browser-native port.`;
+    return new UnifiedCecProof({
+      isProved: false,
+      formula,
+      axioms: isPrivate ? [] : axioms,
+      method: 'cec_zkp',
+      proofTime,
+      baseResult: 'error',
+      errorMessage: `${reason} Supported local backend: simulated.`,
+      isPrivate,
+      zkpBackend: backend,
+      unsupportedBackend: {
+        backend,
+        supportedBackends,
+        reason,
+      },
+      fromCache: false,
+    });
+  }
+
   toDict(): Record<string, unknown> {
     return {
       is_proved: this.isProved,
@@ -168,6 +227,8 @@ export class UnifiedCecProof implements UnifiedCecProofResult {
       proof_steps: this.proofSteps,
       inference_rules: this.inferenceRules,
       error_message: this.errorMessage,
+      zkp_public_inputs: this.zkpProof?.publicInputs,
+      unsupported_backend: this.unsupportedBackend,
       is_private: this.isPrivate,
       zkp_backend: this.zkpBackend,
       from_cache: this.fromCache,
@@ -215,8 +276,8 @@ export class ZkpCecProver {
     const kb: CecKnowledgeBase = { axioms };
     const proverOptions = mergeProverOptions(this.proverOptions, options);
     const useCache = (options.useCache ?? true) && this.enableCaching && !options.forceStandard;
-    const preferZkp = options.forceStandard ? false : options.preferZkp ?? false;
-    const privateAxioms = options.forceStandard ? false : options.privateAxioms ?? false;
+    const preferZkp = options.forceStandard ? false : (options.preferZkp ?? false);
+    const privateAxioms = options.forceStandard ? false : (options.privateAxioms ?? false);
 
     if (useCache) {
       const cacheStart = performanceNow();
@@ -233,10 +294,19 @@ export class ZkpCecProver {
     if (preferZkp && this.enableZkp) {
       try {
         this.zkpAttempts += 1;
-        const zkpResult = await this.proveWithZkp(goal, axioms, privateAxioms, proverOptions, start);
+        const zkpResult = await this.proveWithZkp(
+          goal,
+          axioms,
+          privateAxioms,
+          proverOptions,
+          start,
+        );
         if (zkpResult.isProved) {
           this.zkpSuccesses += 1;
           if (useCache) this.cache.set(goal, kb, zkpResultToProofResult(zkpResult), proverOptions);
+          return zkpResult;
+        }
+        if (zkpResult.baseResult === 'error') {
           return zkpResult;
         }
       } catch (error) {
@@ -286,7 +356,13 @@ export class ZkpCecProver {
     start: number,
   ): Promise<UnifiedCecProof> {
     if (this.zkpBackend !== 'simulated') {
-      throw new Error('Only the simulated CEC ZKP backend is available in the browser-native port.');
+      return UnifiedCecProof.unsupportedZkpBackend(
+        goal,
+        axioms,
+        this.zkpBackend,
+        (performanceNow() - start) / 1000,
+        privateAxioms,
+      );
     }
 
     const proof = new CecProver(proverOptions).prove(goal, { axioms });
@@ -313,8 +389,37 @@ export async function createSimulatedCecZkpProof(
   axioms: CecExpression[],
   isProved: boolean,
 ): Promise<CecZkpProof> {
+  const circuitInputs = await createCecZkpCircuitInputs(goal, axioms, isProved);
+  const { publicInputs } = circuitInputs;
+  const proofDigest = await theoremHashHex(
+    `${publicInputs.theorem}#${publicInputs.axioms_commitment}#${publicInputs.witness_commitment}#${isProved}`,
+  );
+
+  return {
+    backend: 'simulated',
+    statement: {
+      theoremHash: publicInputs.theorem_hash,
+      axiomsCommitment: publicInputs.axioms_commitment,
+      circuitVersion: publicInputs.circuit_version,
+      rulesetId: publicInputs.ruleset_id,
+      goal: publicInputs.theorem,
+      axiomsHash: publicInputs.axioms_hash,
+    },
+    publicInputs,
+    witnessCommitment: publicInputs.witness_commitment,
+    proofDigest,
+    simulated: true,
+    securityNote: 'Simulated educational CEC ZKP certificate; not cryptographically secure.',
+  };
+}
+
+export async function createCecZkpCircuitInputs(
+  goal: CecExpression,
+  axioms: CecExpression[],
+  isProved: boolean,
+): Promise<CecZkpCircuitInputs> {
   const goalText = formatCecExpression(goal);
-  const axiomTexts = axioms.map(formatCecExpression);
+  const axiomTexts = canonicalizeAxioms(axioms.map(formatCecExpression));
   const axiomsCommitment = await axiomsCommitmentHex(axiomTexts);
   const theoremHash = await theoremHashHex(goalText);
   const witness: ZkpWitness = {
@@ -322,28 +427,34 @@ export async function createSimulatedCecZkpProof(
     theorem: goalText,
     axiomsCommitmentHex: axiomsCommitment,
     circuitVersion: 1,
+    rulesetId: 'CEC_v1',
   };
   const witnessCommitment = await axiomsCommitmentHex([
     ...witness.axioms,
     witness.theorem ?? '',
     String(isProved),
+    witness.rulesetId ?? 'CEC_v1',
   ]);
-  const proofDigest = await theoremHashHex(`${goalText}#${axiomsCommitment}#${witnessCommitment}#${isProved}`);
 
   return {
-    backend: 'simulated',
-    statement: {
-      theoremHash,
-      axiomsCommitment,
-      circuitVersion: 1,
-      rulesetId: 'CEC_v1',
-      goal: goalText,
-      axiomsHash: axiomsCommitment,
+    publicInputs: {
+      circuit_id: 'cec_theorem_v1',
+      circuit_ref: formatCircuitRef('cec_theorem_v1', 1),
+      circuit_version: 1,
+      ruleset_id: 'CEC_v1',
+      theorem: goalText,
+      theorem_hash: theoremHash,
+      axioms_commitment: axiomsCommitment,
+      axioms_hash: axiomsCommitment,
+      witness_commitment: witnessCommitment,
+      witness_count: axiomTexts.length,
+      is_proved: isProved,
     },
-    witnessCommitment,
-    proofDigest,
-    simulated: true,
-    securityNote: 'Simulated educational CEC ZKP certificate; not cryptographically secure.',
+    witness: {
+      ...witness,
+      goal: goalText,
+      isProved,
+    },
   };
 }
 
@@ -364,6 +475,14 @@ function mergeProverOptions(base: CecProverOptions, overrides: CecProverOptions)
     maxDerivedExpressions: overrides.maxDerivedExpressions ?? base.maxDerivedExpressions,
     rules: overrides.rules ?? base.rules,
   };
+}
+
+function uniqueRuleNames(values: unknown[]): string[] {
+  return [...new Set(values.filter(isRuleName))];
+}
+
+function isRuleName(value: unknown): value is string {
+  return typeof value === 'string' && value.length > 0;
 }
 
 function performanceNow(): number {

@@ -1,0 +1,40 @@
+{
+  "manifest_version": "1.0.0",
+  "fixture_only": true,
+  "generated_at": "2026-05-12T00:00:00Z",
+  "jurisdiction": "portland-or",
+  "program": "ppd",
+  "notes": "Fixture-only integration manifest. No crawling, downloading, or raw body storage.",
+  "records": [
+    {
+      "source_url": "https://www.portland.gov/ppd",
+      "canonical_document_id": "ppd:public-site:landing",
+      "content_hash_placeholder": "sha256:PLACEHOLDER_PPD_PUBLIC_SITE_LANDING",
+      "processor_handoff_id": "ppd-handoff-0001"
+    },
+    {
+      "source_url": "https://www.portland.gov/ppd/zoning-land-use",
+      "canonical_document_id": "ppd:public-site:zoning-land-use",
+      "content_hash_placeholder": "sha256:PLACEHOLDER_PPD_ZONING_LAND_USE",
+      "processor_handoff_id": "ppd-handoff-0002"
+    },
+    {
+      "source_url": "https://www.portland.gov/code/33",
+      "canonical_document_id": "ppd:code-title-33",
+      "content_hash_placeholder": "sha256:PLACEHOLDER_CODE_TITLE_33",
+      "processor_handoff_id": "ppd-handoff-0003"
+    },
+    {
+      "source_url": "https://www.portland.gov/ppd/residential-permitting",
+      "canonical_document_id": "ppd:public-site:residential-permitting",
+      "content_hash_placeholder": "sha256:PLACEHOLDER_PPD_RESIDENTIAL_PERMITTING",
+      "processor_handoff_id": "ppd-handoff-0004"
+    },
+    {
+      "source_url": "https://www.portlandmaps.com/bps/zoning/",
+      "canonical_document_id": "ppd:portlandmaps:zoning",
+      "content_hash_placeholder": "sha256:PLACEHOLDER_PORTLANDMAPS_ZONING",
+      "processor_handoff_id": "ppd-handoff-0005"
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "packet_type": "guarded_draft_preview_handoff_packet_v6",
+  "version": 6,
+  "draft_case_facts": [
+    {
+      "fact_id": "site_address",
+      "label": "Site address",
+      "value": "123 Fixture Ave, Portland, OR",
+      "citation_ids": ["cite-guarded-001"]
+    },
+    {
+      "fact_id": "project_scope",
+      "label": "Project scope",
+      "value": "Replace existing window with same rough opening in synthetic fixture case.",
+      "citation_ids": ["cite-guarded-002"]
+    }
+  ],
+  "required_facts": [
+    {
+      "fact_id": "site_address",
+      "label": "Site address",
+      "present": true
+    },
+    {
+      "fact_id": "contractor_license_number",
+      "label": "Contractor license number",
+      "present": false,
+      "reason": "not included in guarded draft preview fixture"
+    }
+  ],
+  "missing_document_labels": [
+    "site plan with dimensions"
+  ],
+  "stale_or_conflicting_evidence_rows": [],
+  "citation_payloads": [
+    {
+      "citation_id": "cite-guarded-001",
+      "source": "guarded draft preview fixture",
+      "label": "Synthetic site address row"
+    },
+    {
+      "citation_id": "cite-guarded-002",
+      "source": "guarded draft preview fixture",
+      "label": "Synthetic project scope row"
+    }
+  ],
+  "manual_handoff_notes": [
+    "Do not open DevHub or private files; ask the user for missing facts instead."
+  ]
+}

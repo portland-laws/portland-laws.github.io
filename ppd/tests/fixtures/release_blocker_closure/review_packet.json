@@ -1,0 +1,78 @@
+{
+  "packet_id": "release-blocker-closure-review-20260529-469",
+  "packet_type": "fixture_first_release_blocker_closure_review",
+  "generated_from": [
+    {
+      "packet_id": "public-source-refresh-tranche-proposal",
+      "role": "source_refresh_input",
+      "evidence_ref": "ppd/tests/fixtures/public_source_refresh_tranche/proposal_packet.json"
+    },
+    {
+      "packet_id": "requirement-regeneration-rehearsal-tranche",
+      "role": "requirement_regeneration_input",
+      "evidence_ref": "ppd/tests/fixtures/requirement_regeneration_rehearsal/proposal_packet.json"
+    },
+    {
+      "packet_id": "agent-safe-action-freshness-regression",
+      "role": "safe_action_freshness_input",
+      "evidence_ref": "ppd/tests/fixtures/agent_safe_action_freshness_regression/proposal_packet.json"
+    }
+  ],
+  "decision_order": [
+    "blocker-public-source-refresh",
+    "blocker-requirement-regeneration-rehearsal",
+    "blocker-agent-safe-action-freshness"
+  ],
+  "blocker_decisions": [
+    {
+      "blocker_id": "blocker-public-source-refresh",
+      "status": "closed",
+      "reviewer_owner": "ppd-release-reviewer",
+      "closure_rationale": "Fixture packet records the public source refresh tranche as proposed and reviewable without live crawling.",
+      "evidence_refs": [
+        "ppd/tests/fixtures/public_source_refresh_tranche/proposal_packet.json#packet_id",
+        "ppd/tests/fixtures/public_source_refresh_tranche/proposal_packet.json#proposed_tranche"
+      ],
+      "required_follow_up_validation_commands": [
+        ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
+        ["python3", "-m", "pytest", "ppd/tests/test_release_blocker_closure_review_packet.py"]
+      ]
+    },
+    {
+      "blocker_id": "blocker-requirement-regeneration-rehearsal",
+      "status": "closed",
+      "reviewer_owner": "ppd-requirements-reviewer",
+      "closure_rationale": "Fixture packet records a deterministic rehearsal tranche for requirement regeneration before any release mutation.",
+      "evidence_refs": [
+        "ppd/tests/fixtures/requirement_regeneration_rehearsal/proposal_packet.json#packet_id",
+        "ppd/tests/fixtures/requirement_regeneration_rehearsal/proposal_packet.json#rehearsal_scope"
+      ],
+      "required_follow_up_validation_commands": [
+        ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
+        ["python3", "-m", "pytest", "ppd/tests/test_release_blocker_closure_review_packet.py"]
+      ]
+    },
+    {
+      "blocker_id": "blocker-agent-safe-action-freshness",
+      "status": "unresolved",
+      "reviewer_owner": "ppd-safety-reviewer",
+      "closure_rationale": "Freshness regression remains unresolved until the fixture-backed regression command is rerun and reviewed with the current safe-action policy snapshot.",
+      "evidence_refs": [
+        "ppd/tests/fixtures/agent_safe_action_freshness_regression/proposal_packet.json#packet_id",
+        "ppd/tests/fixtures/agent_safe_action_freshness_regression/proposal_packet.json#freshness_regression_scope"
+      ],
+      "required_follow_up_validation_commands": [
+        ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
+        ["python3", "-m", "pytest", "ppd/tests/test_release_blocker_closure_review_packet.py"]
+      ]
+    }
+  ],
+  "attestations": {
+    "no_crawl": true,
+    "no_devhub": true,
+    "no_prompt_mutation": true,
+    "no_guardrail_mutation": true,
+    "no_release_mutation": true,
+    "fixture_first": true
+  }
+}

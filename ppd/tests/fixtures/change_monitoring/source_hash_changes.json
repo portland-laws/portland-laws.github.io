@@ -1,0 +1,56 @@
+{
+  "fixture_id": "ppd_change_monitoring_source_hash_changes_v1",
+  "description": "Hash-only PP&D source snapshots for deterministic change monitoring tests. No raw page bodies are stored.",
+  "previous_sources": [
+    {
+      "source_id": "src_devhub_faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "content_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "requirement_ids": ["req_devhub_account_services", "req_upload_corrections_gate"],
+      "process_ids": ["process_devhub_account_setup", "process_corrections_upload"],
+      "guardrail_bundle_ids": ["guardrail_devhub_authenticated_actions"]
+    },
+    {
+      "source_id": "src_single_pdf",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "content_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "requirement_ids": ["req_single_pdf_drawings", "req_supporting_docs_separate"],
+      "process_ids": ["process_document_preparation"],
+      "guardrail_bundle_ids": ["guardrail_document_upload_staging"]
+    },
+    {
+      "source_id": "src_retired_fee_notice",
+      "canonical_url": "https://www.portland.gov/ppd/documents/retired-fee-notice/download",
+      "content_hash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "requirement_ids": ["req_retired_fee_notice"],
+      "process_ids": ["process_fee_payment"],
+      "guardrail_bundle_ids": ["guardrail_fee_payment"]
+    }
+  ],
+  "current_sources": [
+    {
+      "source_id": "src_devhub_faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "content_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "requirement_ids": ["req_devhub_account_services", "req_upload_corrections_gate", "req_devhub_status_tracking"],
+      "process_ids": ["process_devhub_account_setup", "process_corrections_upload", "process_status_review"],
+      "guardrail_bundle_ids": ["guardrail_devhub_authenticated_actions"]
+    },
+    {
+      "source_id": "src_single_pdf",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "content_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "requirement_ids": ["req_single_pdf_drawings", "req_supporting_docs_separate"],
+      "process_ids": ["process_document_preparation"],
+      "guardrail_bundle_ids": ["guardrail_document_upload_staging"]
+    },
+    {
+      "source_id": "src_file_naming_standards",
+      "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+      "content_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "requirement_ids": ["req_file_naming_rule", "req_pdf_preparation_rule"],
+      "process_ids": ["process_document_preparation", "process_upload_staging"],
+      "guardrail_bundle_ids": ["guardrail_document_upload_staging"]
+    }
+  ]
+}

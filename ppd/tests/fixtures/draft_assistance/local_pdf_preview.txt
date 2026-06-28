@@ -1,0 +1,2 @@
+Fixture-only local PDF preview placeholder for PP&D draft-assistance tests.
+No downloaded document, private session data, or raw crawl output is stored here.

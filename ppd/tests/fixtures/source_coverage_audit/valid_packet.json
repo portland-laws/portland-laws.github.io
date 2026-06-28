@@ -1,0 +1,52 @@
+{
+  "packet_id": "fixture-valid-source-coverage-audit",
+  "official_anchors": [
+    "https://www.portland.gov/ppd",
+    "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+    "https://devhub.portlandoregon.gov",
+    "https://www.portland.gov/ppd/devhub-faqs",
+    "https://www.portland.gov/ppd/devhub-sign-guide",
+    "https://www.portland.gov/ppd/get-permit/apply-permits",
+    "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+    "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+    "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications",
+    "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+    "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+    "https://www.portlandmaps.com"
+  ],
+  "downstream_links": [
+    {
+      "url": "https://www.portland.gov/ppd/get-permit/residential-permits",
+      "cited_by": ["https://www.portland.gov/ppd/get-permit/apply-permits"],
+      "decision": "included"
+    },
+    {
+      "url": "https://www.portlandmaps.com/detail/property/fixture",
+      "cited_by": ["https://www.portland.gov/ppd"],
+      "decision": "included"
+    },
+    {
+      "url": "https://devhub.portlandoregon.gov/secure/my-permits",
+      "cited_by": ["https://devhub.portlandoregon.gov"],
+      "decision": "skipped",
+      "skipped_reason": "private_authenticated"
+    },
+    {
+      "url": "https://example.com/vendor-form.pdf",
+      "cited_by": ["https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications"],
+      "decision": "skipped",
+      "skipped_reason": "outside_allowlist"
+    },
+    {
+      "url": "https://www.portland.gov/ppd/documents/sample-handout/download",
+      "cited_by": ["https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications"],
+      "decision": "skipped",
+      "skipped_reason": "raw_download_not_permitted"
+    }
+  ],
+  "coverage_claim": {
+    "status": "partial",
+    "human_reviewed": false
+  },
+  "notes": "Fixture stores metadata only; no raw page bodies, local download paths, credentials, or authenticated state."
+}

@@ -1,0 +1,59 @@
+{
+  "packet_id": "synthetic-devhub-surface-registry-snapshots-v1",
+  "snapshot_type": "ppd.synthetic_devhub_surface_registry_snapshots.v1",
+  "fixture_first": true,
+  "launches_devhub": false,
+  "surfaces": [
+    {
+      "surface_id": "devhub_home_redacted",
+      "route_pattern": "/dashboard",
+      "redacted_heading": "[REDACTED_HEADING:devhub-home]",
+      "redacted_labels": [
+        "[REDACTED_LABEL:my-permits]",
+        "[REDACTED_LABEL:status-summary]"
+      ],
+      "read_only_status_category": "home_loaded",
+      "selector_confidence_notes": [
+        "primary heading and navigation labels are stable redacted tokens",
+        "status summary label has medium confidence because copy may vary by account state"
+      ],
+      "manual_handoff_prompts": [
+        "manual handoff if sign-in, MFA, CAPTCHA, account creation, upload, submit, certification, payment, scheduling, cancellation, or account settings prompt appears"
+      ],
+      "disabled_consequential_controls": [
+        "disabled:upload",
+        "disabled:submit",
+        "disabled:certify",
+        "disabled:payment",
+        "disabled:schedule-inspection",
+        "disabled:cancel"
+      ]
+    },
+    {
+      "surface_id": "devhub_permit_detail_redacted",
+      "route_pattern": "/permits/{permit_id}",
+      "redacted_heading": "[REDACTED_HEADING:permit-detail]",
+      "redacted_labels": [
+        "[REDACTED_LABEL:permit-status]",
+        "[REDACTED_LABEL:fees]",
+        "[REDACTED_LABEL:corrections]"
+      ],
+      "read_only_status_category": "permit_detail_visible",
+      "selector_confidence_notes": [
+        "route keeps permit identifier as a pattern placeholder",
+        "detail tabs require attended review before selector promotion"
+      ],
+      "manual_handoff_prompts": [
+        "manual handoff before opening upload, payment, scheduling, submit, certification, cancellation, extension, or reactivation controls"
+      ],
+      "disabled_consequential_controls": [
+        "disabled:upload-correction",
+        "disabled:pay-fee",
+        "disabled:schedule-inspection",
+        "disabled:request-extension",
+        "disabled:reactivate",
+        "disabled:withdraw"
+      ]
+    }
+  ]
+}

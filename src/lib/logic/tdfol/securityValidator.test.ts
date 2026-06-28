@@ -1,4 +1,9 @@
-import { TdfolRateLimiter, TdfolSecurityValidator, calculateDepth, simpleHash } from './securityValidator';
+import {
+  TdfolRateLimiter,
+  TdfolSecurityValidator,
+  calculateDepth,
+  simpleHash,
+} from './securityValidator';
 
 describe('TdfolSecurityValidator', () => {
   it('validates ordinary formulas and reports metadata', () => {
@@ -9,6 +14,9 @@ describe('TdfolSecurityValidator', () => {
       errors: [],
       metadata: {
         formula_length: 29,
+        formula_depth: 3,
+        variable_count: 3,
+        operator_count: 2,
         security_level: 'medium',
       },
     });
@@ -34,6 +42,25 @@ describe('TdfolSecurityValidator', () => {
 
     expect(result.valid).toBe(false);
     expect(result.threats).toContain('resource_exhaustion');
+  });
+
+  it('fails closed on parser errors while allowing explicit structural-only validation', () => {
+    const validator = new TdfolSecurityValidator({ now: () => 0 });
+
+    expect(validator.validateFormula('forall x. Person(')).toMatchObject({
+      valid: false,
+      threats: expect.arrayContaining(['parse_error']),
+    });
+    expect(validator.validateFormula('forall x. Person(', 'draft', { parse: false })).toMatchObject(
+      {
+        valid: true,
+        threats: [],
+        metadata: {
+          formula_depth: 1,
+          variable_count: 2,
+        },
+      },
+    );
   });
 
   it('detects injection and DoS patterns according to security level', () => {
@@ -77,11 +104,15 @@ describe('TdfolSecurityValidator', () => {
       challenge: 'abcdef123456',
       response: 'response',
       metadata: {
-        hash: simpleHash(JSON.stringify(Object.entries({
-          commitment: 'a'.repeat(32),
-          challenge: 'abcdef123456',
-          response: 'response',
-        }).sort())),
+        hash: simpleHash(
+          JSON.stringify(
+            Object.entries({
+              commitment: 'a'.repeat(32),
+              challenge: 'abcdef123456',
+              response: 'response',
+            }).sort(),
+          ),
+        ),
       },
     };
 
@@ -89,10 +120,108 @@ describe('TdfolSecurityValidator', () => {
       passed: true,
       riskLevel: 'low',
     });
-    expect(validator.auditZkpProof({ commitment: 'short', challenge: 'aaaa', response: 'r', metadata: { privateKey: 'x' } })).toMatchObject({
+    expect(
+      validator.auditZkpProof({
+        commitment: 'short',
+        challenge: 'aaaa',
+        response: 'r',
+        metadata: { privateKey: 'x' },
+      }),
+    ).toMatchObject({
       passed: false,
       riskLevel: 'critical',
     });
+  });
+
+  it('audits TDFOL proof results without non-browser fallbacks', () => {
+    const validator = new TdfolSecurityValidator({ maxProofTimeSeconds: 1 });
+
+    expect(
+      validator.auditProofResult({
+        status: 'proved',
+        theorem: 'Goal(x)',
+        steps: [
+          { id: 's1', rule: 'Axiom', premises: [], conclusion: 'Premise(x)' },
+          { id: 's2', rule: 'ModusPonens', premises: ['Premise(x)'], conclusion: 'Goal(x)' },
+        ],
+        method: 'tdfol-forward-chaining',
+        timeMs: 10,
+      }),
+    ).toMatchObject({
+      passed: true,
+      riskLevel: 'low',
+    });
+
+    expect(
+      validator.auditProofResult({
+        status: 'proved',
+        theorem: 'Goal(x)',
+        steps: [
+          { id: 's1', rule: '', premises: [], conclusion: 'Premise(x)' },
+          { id: 's1', rule: 'RpcDelegate', premises: [], conclusion: 'Other(x)' },
+        ],
+        method: 'python-rpc',
+        time_ms: 2000,
+      }),
+    ).toMatchObject({
+      passed: false,
+      riskLevel: 'critical',
+      vulnerabilities: expect.arrayContaining([
+        'Final proof step does not conclude theorem',
+        'Proof method references a non-browser runtime',
+        'Malformed proof step: s1',
+        'Duplicate proof step id: s1',
+      ]),
+      recommendations: expect.arrayContaining(['Proof exceeded configured proof-time budget']),
+    });
+  });
+
+  it('fails closed across formula, proof-cache, witness, and ZKP public input checks', () => {
+    const validator = new TdfolSecurityValidator({ now: () => 0 });
+    const validHash = 'a'.repeat(64);
+    const accepted = validator.validateSecurityBundle({
+      formula: 'P(alice)',
+      proofCacheEntry: { theorem: 'P(alice)', status: 'proved', steps: [] },
+      witness: { axioms: ['P(alice)'], theorem: 'P(alice)', intermediate_steps: [] },
+      zkpPublicInputs: {
+        theorem_hash: validHash,
+        axioms_commitment: validHash,
+        circuit_version: 1,
+        ruleset_id: 'TDFOL_v1',
+      },
+    });
+    expect(accepted).toMatchObject({
+      valid: true,
+      checks: { formula: true, proofCache: true, witness: true, zkpPublicInputs: true },
+      metadata: {
+        security_bundle_checked: true,
+        proof_cache_checked: true,
+        witness_checked: true,
+        zkp_public_inputs_checked: true,
+      },
+    });
+
+    const rejected = validator.validateSecurityBundle({
+      formula: 'forall x. Person(',
+      proofCacheEntry: { theorem: 'Person(alice)', status: 'proved', method: 'python-rpc' },
+      witness: { axioms: ['Person(alice)'], privateKey: 'leak' },
+      zkpPublicInputs: {
+        theorem_hash: 'short',
+        axioms_commitment: validHash,
+        circuit_version: 0,
+      },
+    });
+
+    expect(rejected.valid).toBe(false);
+    expect(rejected.checks).toEqual({
+      formula: false,
+      proofCache: false,
+      witness: false,
+      zkpPublicInputs: false,
+    });
+    expect(rejected.threats).toEqual(
+      expect.arrayContaining(['parse_error', 'malformed_input', 'side_channel', 'invalid_zkp']),
+    );
   });
 
   it('records security events in reports', () => {

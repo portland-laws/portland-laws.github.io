@@ -1,0 +1,11 @@
+{
+  "fixture_document_id": "fixture-doc-online-tools-v6",
+  "title": "Online permitting tools fixture excerpt",
+  "source_type": "public_html_normalized_fixture",
+  "sections": [
+    {
+      "section_id": "trade-permit-guidance",
+      "text": "Fixture excerpt for online permitting tools and standard trade permits. Contractor license information in a DevHub profile can affect available fixture choices, so re-extraction must leave missing or stale license facts for review before any draft is treated as ready."
+    }
+  ]
+}

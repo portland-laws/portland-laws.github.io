@@ -1,0 +1,101 @@
+{
+  "fixture_id": "agent-gap-analysis-delta-v1-synthetic-fixture",
+  "synthetic_user_cases": [
+    {
+      "case_id": "synthetic-building-plan-review-gap-case",
+      "process_id": "process-building-plan-review",
+      "source_ids": ["source-submit-plans-online"],
+      "requirement_ids": ["req-single-pdf-drawing-set"],
+      "dependency_ids": ["dep-upload-staging-before-certification"],
+      "guardrail_rule_ids": ["guardrail-block-certification-submit-upload"]
+    },
+    {
+      "case_id": "synthetic-trade-permit-gap-case",
+      "process_id": "process-standard-trade-permit",
+      "source_ids": ["source-devhub-faq"],
+      "requirement_ids": ["req-contractor-license-profile"],
+      "dependency_ids": ["dep-license-before-fixture-selection"],
+      "guardrail_rule_ids": ["guardrail-block-purchase-payment"]
+    }
+  ],
+  "input_delta_packets": {
+    "source_freshness_delta_packet": {
+      "packet_id": "synthetic-source-freshness-delta-v1",
+      "changes": [
+        {
+          "source_id": "source-submit-plans-online",
+          "changed_stale_evidence": ["single_pdf_guidance_capture_is_older_than_fixture_baseline"],
+          "changed_conflicting_evidence": ["drawing_set_upload_rule_differs_between_fixture_snapshots"],
+          "citation_references": ["citation-submit-plans-online-single-pdf"]
+        },
+        {
+          "source_id": "source-devhub-faq",
+          "changed_stale_evidence": ["devhub_services_fixture_needs_freshness_review"],
+          "changed_conflicting_evidence": ["devhub_trade_fixture_options_depend_on_license_profile"],
+          "citation_references": ["citation-devhub-faq-account-services"]
+        }
+      ]
+    },
+    "requirement_delta_packet": {
+      "packet_id": "synthetic-requirement-delta-v1",
+      "changes": [
+        {
+          "requirement_id": "req-single-pdf-drawing-set",
+          "changed_missing_facts": ["permit_request_requires_plan_review", "drawing_set_is_combined_single_pdf"],
+          "changed_missing_documents": ["combined_drawing_plan_pdf", "separate_supporting_calculations_pdf"],
+          "changed_conflicting_evidence": ["fixture_has_supporting_documents_combined_with_drawings"],
+          "citation_references": ["citation-submit-plans-online-single-pdf"],
+          "reviewer_holds": ["hold_until_single_pdf_rule_is_reviewed"]
+        },
+        {
+          "requirement_id": "req-contractor-license-profile",
+          "changed_missing_facts": ["trade_permit_role", "contractor_license_profile_status"],
+          "changed_missing_documents": ["license_status_reference"],
+          "changed_conflicting_evidence": ["license_profile_fixture_status_conflicts_with_available_trade_options"],
+          "citation_references": ["citation-devhub-standard-trade-license-note"],
+          "reviewer_holds": ["hold_until_license_dependent_fixture_options_are_reviewed"]
+        }
+      ]
+    },
+    "process_dependency_delta_packet": {
+      "packet_id": "synthetic-process-dependency-delta-v1",
+      "changes": [
+        {
+          "dependency_id": "dep-upload-staging-before-certification",
+          "changed_missing_facts": ["acknowledgement_text_reviewed_by_user"],
+          "changed_missing_documents": ["upload_staging_manifest"],
+          "required_confirmations": ["confirm_before_any_certification_or_submit_action"],
+          "citation_references": ["citation-devhub-application-guide-acknowledgement"],
+          "reviewer_holds": ["hold_for_certification_boundary_review"]
+        },
+        {
+          "dependency_id": "dep-license-before-fixture-selection",
+          "changed_missing_facts": ["license_dependent_fixture_selection_is_available"],
+          "changed_missing_documents": ["license_profile_review_note"],
+          "required_confirmations": ["confirm_trade_permit_scope_before_purchase_path"],
+          "citation_references": ["citation-devhub-standard-trade-license-note"],
+          "reviewer_holds": ["hold_for_trade_fixture_dependency_review"]
+        }
+      ]
+    },
+    "guardrail_impact_delta_packet": {
+      "packet_id": "synthetic-guardrail-impact-delta-v1",
+      "changes": [
+        {
+          "guardrail_rule_id": "guardrail-block-certification-submit-upload",
+          "required_confirmations": ["exact_confirmation_required_for_certification_submission_or_upload"],
+          "blocked_actions": ["blocked_certification_submit_or_upload_action"],
+          "citation_references": ["citation-devhub-application-guide-acknowledgement"],
+          "reviewer_holds": ["hold_for_consequential_action_gate_review"]
+        },
+        {
+          "guardrail_rule_id": "guardrail-block-purchase-payment",
+          "required_confirmations": ["exact_confirmation_required_for_purchase_or_fee_payment"],
+          "blocked_actions": ["blocked_purchase_or_fee_payment_action"],
+          "citation_references": ["citation-fee-payment-guide-financial-workflow"],
+          "reviewer_holds": ["hold_for_payment_boundary_review"]
+        }
+      ]
+    }
+  }
+}

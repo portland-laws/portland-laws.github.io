@@ -221,7 +221,7 @@
     "id": "fol_converter_ml_nlp_all_landlords_responsible",
     "kind": "fol_converter_ml_nlp",
     "input": "All landlords are responsible.",
-    "python_status": "partial",
+    "python_status": "success",
     "python_success": true,
     "python_confidence": 0.55,
     "python_formula_string": "∀x (Landlords(x) → Responsible(x))",
@@ -246,9 +246,7 @@
       "variables": ["x", "y"],
       "output_format": "json"
     },
-    "python_warnings": [
-      "Browser-native NLP extraction is not yet complete; regex extraction was used."
-    ],
+    "python_warnings": [],
     "python_feature_vector": [
       30, 4, 0, 1, 34, 3, 1, 3, 1, 1, 1, 1, 0, 1, 0, 0, 0, 0, 0,
       1.1333333333333333, 0.75, 1
@@ -259,7 +257,7 @@
     "id": "fol_converter_ml_nlp_some_permits_revocable",
     "kind": "fol_converter_ml_nlp",
     "input": "Some permits are revocable.",
-    "python_status": "partial",
+    "python_status": "success",
     "python_success": true,
     "python_confidence": 0.55,
     "python_formula_string": "∃x (Permits(x) ∧ Revocable(x))",
@@ -284,9 +282,7 @@
       "variables": ["x", "y"],
       "output_format": "json"
     },
-    "python_warnings": [
-      "Browser-native NLP extraction is not yet complete; regex extraction was used."
-    ],
+    "python_warnings": [],
     "python_feature_vector": [
       27, 4, 0, 1, 30, 3, 1, 3, 1, 1, 1, 1, 0, 0, 1, 0, 0, 0, 0,
       1.1111111111111112, 0.75, 1
@@ -297,7 +293,7 @@
     "id": "fol_converter_ml_nlp_if_applicant_then_eligible",
     "kind": "fol_converter_ml_nlp",
     "input": "If applicant then eligible.",
-    "python_status": "partial",
+    "python_status": "success",
     "python_success": true,
     "python_confidence": 0.6,
     "python_formula_string": "∀x (Applicant(x) → Eligible(x))",
@@ -322,9 +318,7 @@
       "variables": ["x"],
       "output_format": "json"
     },
-    "python_warnings": [
-      "Browser-native NLP extraction is not yet complete; regex extraction was used."
-    ],
+    "python_warnings": [],
     "python_feature_vector": [
       27, 4, 0, 1, 31, 3, 1, 1, 1, 0, 0, 0, 1, 0, 0, 0, 0, 1, 0,
       1.1481481481481481, 0.25, 2

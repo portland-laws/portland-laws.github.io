@@ -2,7 +2,12 @@
 
 [Live Site](https://portland-laws.github.io)
 
-A static, browser-only research tool for exploring and querying the **Portland, Oregon City Code**. All computation runs directly in your browser — no backend server, no API keys, no accounts required.
+This repository has two active workstreams:
+
+1. A static, browser-only research tool for exploring and querying the **Portland, Oregon City Code**.
+2. An isolated **PP&D automation workspace** (`ppd/`) with a local daemon/supervisor stack for Portland Permitting & Development process extraction, guarded DevHub login automation, and permit-filing workflow support.
+
+The legal-research app runs fully in the browser (no backend server required for core corpus search), while PP&D automation is intentionally constrained to the `ppd/` workspace and deterministic validation.
 
 ## What This Is
 
@@ -14,6 +19,24 @@ This repository is a static Vite/React/TypeScript application that provides:
 - **Knowledge Graph Explorer**: Visualize entities and relationships extracted from the legal corpus
 - **Logic Proof Explorer**: Inspect formal logic artifacts (obligations, permissions, prohibitions, temporal operators, ZKP certificates) derived from each section
 - **Browser Logic Engine**: A growing TypeScript/WASM port of the Python `ipfs_datasets_py` logic module, enabling deterministic browser-native theorem proving, TDFOL/CEC/DCEC parsing, deontic analysis, F-logic rendering, and ZKP metadata verification
+
+## PP&D Agent Daemon Workspace
+
+The `ppd/` workspace contains automation code for Portland Permitting & Development operations. It includes:
+
+- **Daemon worker** (`ppd/daemon/ppd_daemon.py`) that advances one task-board item at a time using JSON file-replacement proposals.
+- **Watchdog + control wrapper** (`ppd/daemon/control.sh`) for `start`, `stop`, `status`, `logs`, and supervisor controls.
+- **Supervisor** (`ppd/daemon/ppd_supervisor.py`) that can restart/recover the daemon and run narrow repair cycles.
+- **DevHub automation scaffolding** (`ppd/devhub/`) for authenticated portal login/session flows and guarded permit-related action support.
+- **Fixture-first validation** (`python3 ppd/tests/validate_ppd.py`) that must remain deterministic and avoid live submission/payment actions.
+
+Start/inspect locally from repository root:
+
+```bash
+bash ppd/daemon/control.sh start
+bash ppd/daemon/control.sh status
+bash ppd/daemon/control.sh supervisor-status
+```
 
 ## Corpus
 
@@ -127,18 +150,198 @@ Every push to `main` automatically builds and deploys the app to GitHub Pages vi
 
 You can also trigger a deployment manually from the GitHub Actions tab.
 
+### OpenRouter fallback proxy
+
+GitHub Pages is static and cannot safely proxy OpenRouter requests with a secret key. This repo includes a Vercel-compatible proxy at `api/openrouter/chat/completions.js` so GitHub can still own the code and deployment trigger while Vercel provides request-time compute and secret storage.
+
+Recommended setup:
+
+1. Import this GitHub repo into Vercel.
+2. Add Vercel environment variables:
+   - `OPENROUTER_API_KEY`
+   - `OPENROUTER_SITE_URL=https://portland-laws.github.io`
+   - `OPENROUTER_SITE_NAME=Portland Laws`
+   - `OPENROUTER_PROXY_ALLOWED_ORIGINS=https://portland-laws.github.io,http://localhost:5173,http://127.0.0.1:5173`
+3. Configure the GitHub Pages build, or local `.env`, with:
+   - `VITE_OPENROUTER_BASE_URL=https://<your-vercel-app>.vercel.app/api/openrouter`
+   - `VITE_OPENROUTER_ENABLED=true`
+
+The GitHub Pages deploy workflow now defaults to this proxy URL at build time:
+`https://animegf.chat:8787/api/openrouter`
+This default targets the currently documented DigitalOcean/Caddy TLS setup where the OpenRouter proxy is exposed on `:8787` instead of `:443`.
+
+You can override it by adding `VITE_OPENROUTER_BASE_URL` as a GitHub repository variable under
+**Settings → Secrets and variables → Actions → Variables**.
+
+For quick testing on an already-deployed static bundle, you can temporarily set the proxy URL in browser devtools and reload:
+
+```js
+localStorage.setItem('PORTLAND_OPENROUTER_BASE_URL', 'https://<your-vercel-app>.vercel.app/api/openrouter')
+```
+
+### Local LLM diagnostics
+
+The app does not trust local WebGPU inference merely because the model downloaded. It now marks local inference as ready only after a tiny generation probe succeeds. Legal GraphRAG prompts are compacted for the browser model, local generation is attempted first, and OpenRouter is used only as a last-resort fallback after local probe/generation failure, timeout, or an oversized prompt outside the configured local budget.
+
+To keep chat responsive for first-time visitors, the app can run cloud-first until local inference proves acceptable throughput. Tune these optional variables in your build environment:
+
+- `VITE_LOCAL_MIN_TOKENS_PER_SECOND` (default `4`)
+- `VITE_LOCAL_PERF_SAMPLE_MIN_TOKENS` (default `10`)
+- `VITE_LOCAL_PERF_BENCH_MAX_TOKENS` (default `40`)
+- `VITE_LOCAL_PERF_BENCH_TIMEOUT_MS` (default `20000`)
+- `VITE_LOCAL_GENERATION_FALLBACK_MS` (default `15000`)
+
+Useful browser console checks:
+
+```js
+__PORTLAND_LLM__.getStatus()
+await __PORTLAND_LLM__.probeLocalInference()
+[...performance.getEntriesByType('resource')]
+  .map(e => e.name)
+  .filter(n => n.includes('clientLLMWorkerService') || n.includes('clientLLMWorker') || n.includes('/assets/index-'))
+```
+
+If local generation or the probe times out, the worker is terminated and recreated so a stuck WebGPU/ORT run cannot keep blocking later requests. The status object reports `localHealth.state`, `localHealth.proven`, the last failure reason, and the cloud fallback configuration.
+
+The proxy only permits the LiquidAI OpenRouter models used by the app:
+`liquid/lfm-2.5-1.2b-instruct:free` and `liquid/lfm-2.5-1.2b-thinking:free`.
+
+### DigitalOcean proxy setup
+
+On a DigitalOcean droplet after cloning this repo:
+
+```bash
+cd portland-laws.github.io
+OPENROUTER_API_KEY=sk-or-... sudo -E bash scripts/setup-openrouter-proxy-digitalocean.sh
+```
+
+The script writes `/etc/portland-openrouter-proxy.env` and starts a systemd service on port `8787`. It does not need a full `npm install` because the proxy uses only built-in Node modules. Point the frontend at:
+
+```bash
+VITE_OPENROUTER_BASE_URL=https://animegf.chat:8787/api/openrouter
+```
+
+By default the proxy allows browser requests from:
+
+```bash
+https://portland-laws.github.io
+https://211-ai.github.io
+```
+
+Because the GitHub Pages app is served over HTTPS, the proxy URL used by the browser must also be HTTPS. If OpenVPN owns port `443`, keep the Node service on `127.0.0.1:8787` and terminate TLS on public port `8787` with Caddy or Nginx.
+
+Example Caddyfile for direct HTTPS on `:8787` while OpenVPN keeps `:443`:
+
+```caddy
+https://animegf.chat:8787 {
+   reverse_proxy 127.0.0.1:8787
+}
+```
+
+If you also serve pages from `https://animegf.chat`, add that origin to `OPENROUTER_PROXY_ALLOWED_ORIGINS` before restarting the service.
+
+To add or rotate the OpenRouter API key on the DigitalOcean VPS after setup:
+
+```bash
+sudo nano /etc/portland-openrouter-proxy.env
+```
+
+Set or replace this line:
+
+```bash
+OPENROUTER_API_KEY=sk-or-your-key-here
+```
+
+Then restart and verify the service:
+
+```bash
+sudo systemctl restart portland-openrouter-proxy
+sudo systemctl status portland-openrouter-proxy
+curl -fsS http://127.0.0.1:8787/health
+```
+
+### Configure GitHub Pages to use the proxy
+
+After the proxy is reachable from the browser, configure the GitHub Pages build with the proxy base URL:
+
+1. Open the GitHub repository.
+2. Go to **Settings → Secrets and variables → Actions → Variables**.
+3. Optionally add or update this repository variable to override the workflow default:
+   - Name: `VITE_OPENROUTER_BASE_URL`
+   - Value: `https://animegf.chat:8787/api/openrouter`
+
+### Voice proxy setup
+
+If you have a private voice inference service reachable from the VPS, for example:
+
+```bash
+curl -X POST \
+   -H "x-api-key: ..." \
+   -F "audio=@test_input.wav;type=audio/wav" \
+   http://10.8.0.99:8000/infer \
+   -o reply.wav
+```
+
+you can install a dedicated browser-safe proxy on a separate port:
+
+```bash
+sudo -E bash scripts/setup-voice-proxy-digitalocean.sh
+```
+
+The voice proxy listens on port `8790` by default and forwards multipart uploads to `http://10.8.0.99:8000/infer` unless you override `VOICE_PROXY_UPSTREAM_URL`. It also avoids a full `npm install` because the proxy uses only built-in Node modules. Set `VOICE_PROXY_API_KEY` only if your upstream service actually requires an `x-api-key` header.
+
+After terminating TLS for that port, call it from the browser at:
+
+```bash
+https://animegf.chat:8790/api/voice/infer
+```
+
+Example browser-compatible curl against the proxy:
+
+```bash
+curl -X POST \
+   -F "audio=@test_input.wav;type=audio/wav" \
+   https://animegf.chat:8790/api/voice/infer \
+   -o reply.wav
+```
+4. Confirm `VITE_OPENROUTER_ENABLED` is not set to `false`. The deploy workflow already builds with fallback enabled.
+5. Rerun the GitHub Pages deploy workflow from **Actions**, or push a new commit to `main`.
+6. Hard refresh the live page after deployment.
+
+The value must be the proxy base path, not the full chat endpoint. The app appends `/chat/completions` itself.
+
+For a quick browser-only test before rebuilding GitHub Pages, open DevTools on the live site and run:
+
+```js
+localStorage.setItem(
+  'PORTLAND_OPENROUTER_BASE_URL',
+   'https://animegf.chat/api/openrouter'
+)
+location.reload()
+```
+
+Then verify the app sees the proxy:
+
+```js
+__PORTLAND_LLM__.getCloudFallbackStatus()
+```
+
+It should report `configured: true` and a `baseUrl` pointing at your proxy, not `https://openrouter.ai/api/v1`.
+
 ## Documentation
 
 | Document | Description |
 |---|---|
-| [`ARCHITECTURE.md`](./ARCHITECTURE.md) | System architecture, component overview, and data flow |
+| [`ARCHITECTURE.md`](./ARCHITECTURE.md) | Current architecture for the legal-research frontend and the PP&D daemon workspace |
 | [`docs/PORTLAND_LEGAL_CORPUS_IMPLEMENTATION_PLAN.md`](./docs/PORTLAND_LEGAL_CORPUS_IMPLEMENTATION_PLAN.md) | Full implementation plan for the Portland corpus research UI |
 | [`docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md`](./docs/IPFS_DATASETS_LOGIC_TYPESCRIPT_PORT_PLAN.md) | Roadmap for porting the Python logic module to TypeScript/WASM |
 | [`docs/LOGIC_PORT_PARITY.md`](./docs/LOGIC_PORT_PARITY.md) | Parity tracker comparing TypeScript behavior to Python targets |
 | [`docs/LOGIC_WASM_RESEARCH.md`](./docs/LOGIC_WASM_RESEARCH.md) | Research notes on browser-native theorem-prover options |
-| [`TESTING.md`](./TESTING.md) | Testing strategy, test structure, and how to run the test suite |
+| [`TESTING.md`](./TESTING.md) | Current lint/build/test and PP&D validation commands |
 | [`CLIENT_LLM_IMPLEMENTATION.md`](./CLIENT_LLM_IMPLEMENTATION.md) | Browser inference architecture (Transformers.js, Web Workers) |
 | [`MODEL_GUIDE.md`](./MODEL_GUIDE.md) | Guidance on supported browser-inference models and hardware requirements |
+| [`ppd/README.md`](./ppd/README.md) | PP&D workspace boundaries, validation, and daemon control commands |
+| [`ppd/daemon/OPERATIONS.md`](./ppd/daemon/OPERATIONS.md) | PP&D daemon/supervisor operations, runtime files, and safety constraints |
 
 ## Legal Disclaimer
 

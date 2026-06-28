@@ -16,16 +16,17 @@ export class DcecParseToken {
 
   depthOf(): number {
     if (this.depth !== undefined) return this.depth;
-    const childDepths = this.args
-      .filter(isDcecParseToken)
-      .map((arg) => arg.depthOf());
+    const childDepths = this.args.filter(isDcecParseToken).map((arg) => arg.depthOf());
     this.depth = childDepths.length === 0 ? 1 : 1 + Math.max(...childDepths);
     return this.depth;
   }
 
   widthOf(): number {
     if (this.width !== undefined) return this.width;
-    this.width = this.args.reduce((sum, arg) => sum + (isDcecParseToken(arg) ? arg.widthOf() : 1), 0);
+    this.width = this.args.reduce(
+      (sum, arg) => sum + (isDcecParseToken(arg) ? arg.widthOf() : 1),
+      0,
+    );
     return this.width;
   }
 
@@ -52,6 +53,42 @@ export interface DcecPrefixOptions {
   atomics?: Record<string, string[]>;
 }
 
+export type DcecParseFormKind =
+  | 'atom'
+  | 'connective'
+  | 'quantifier'
+  | 'modal'
+  | 'deontic'
+  | 'unknown';
+
+export interface DcecParsedForm {
+  readonly kind: DcecParseFormKind;
+  readonly token: DcecParseToken;
+  readonly operator?: string;
+  readonly predicate?: string;
+  readonly variable?: string;
+  readonly sort?: string;
+  readonly arguments: readonly DcecParseArg[];
+  readonly body?: DcecParseArg;
+}
+
+export const DCEC_PARSING_METADATA = {
+  sourcePythonModule: 'logic/CEC/native/dcec_parsing.py',
+  runtime: 'browser-native-typescript',
+  browserNative: true,
+  pythonRuntime: false,
+  serverRuntime: false,
+  supportedOperations: [
+    'parse-token-rendering',
+    'remove-comments',
+    'functorize-symbols',
+    'replace-synonyms',
+    'prefix-logical-functions',
+    'prefix-emdas',
+    'form-classification',
+  ],
+} as const;
+
 const DCEC_SYNONYMS: Record<string, string> = {
   ifAndOnlyIf: 'iff',
   if: 'implies',
@@ -64,9 +101,91 @@ const DCEC_SYNONYMS: Record<string, string> = {
 
 const LOGICAL_KEYWORDS = ['not', 'and', 'or', 'xor', 'implies', 'iff'];
 const ARITHMETIC_KEYWORDS = ['negate', 'exponent', 'multiply', 'divide', 'add', 'sub'];
+const QUANTIFIER_ALIASES: Record<string, string> = {
+  all: 'forAll',
+  forall: 'forAll',
+  forAll: 'forAll',
+  ForAll: 'forAll',
+  exists: 'exists',
+  Exists: 'exists',
+  exist: 'exists',
+};
+const MODAL_ALIASES: Record<string, string> = {
+  B: 'B',
+  belief: 'B',
+  believes: 'B',
+  K: 'K',
+  knowledge: 'K',
+  knows: 'K',
+  I: 'I',
+  intention: 'I',
+  intends: 'I',
+  D: 'D',
+  desire: 'D',
+  G: 'G',
+  goal: 'G',
+};
+const DEONTIC_ALIASES: Record<string, string> = {
+  O: 'O',
+  obligation: 'O',
+  obligatory: 'O',
+  P: 'P',
+  permission: 'P',
+  permitted: 'P',
+  F: 'F',
+  prohibition: 'F',
+  forbidden: 'F',
+  S: 'S',
+  supererogation: 'S',
+  R: 'R',
+  right: 'R',
+  L: 'L',
+  liberty: 'L',
+};
+const SYMBOL_REPLACEMENTS_IN_PYTHON_ORDER: Array<readonly [string, string]> = [
+  ['^', 'exponent'],
+  ['*', '*'],
+  ['/', 'divide'],
+  ['+', 'add'],
+  ['<->', 'ifAndOnlyIf'],
+  ['->', 'implies'],
+  ['-', '-'],
+  ['&', '&'],
+  ['|', '|'],
+  ['~', 'not'],
+  ['>=', 'greaterOrEqual'],
+  ['==', 'equals'],
+  ['<=', 'lessOrEqual'],
+  ['===', 'tautology'],
+  ['=', 'equals'],
+  ['>', 'greater'],
+  ['<', 'less'],
+];
 
 export function isDcecParseToken(arg: DcecParseArg): arg is DcecParseToken {
   return arg instanceof DcecParseToken;
+}
+
+export function removeDcecParsingComments(expression: string): string {
+  const index = expression.indexOf(';');
+  return index === -1 ? expression : expression.slice(0, index);
+}
+
+export function functorizeDcecParsingSymbols(expression: string): string {
+  let result = expression;
+  for (const [symbol, replacement] of SYMBOL_REPLACEMENTS_IN_PYTHON_ORDER) {
+    result = result.split(symbol).join(` ${replacement} `);
+  }
+  return result.split('( ').join('(');
+}
+
+export function replaceDcecSynonymsInPlace(args: DcecParseArg[]): void {
+  for (let index = 0; index < args.length; index += 1) {
+    const arg = args[index];
+    if (typeof arg === 'string') {
+      args[index] = DCEC_SYNONYMS[arg] ?? arg;
+    }
+  }
 }
 
 export function replaceDcecSynonyms(args: DcecParseArg[]): DcecParseArg[] {
@@ -90,6 +209,93 @@ export function prefixDcecEmdas(
   options: DcecPrefixOptions = {},
 ): DcecParseArg[] {
   return prefixDcecFunctions(args, ARITHMETIC_KEYWORDS, 'Numeric', options.atomics);
+}
+
+export function createDcecAtom(predicate: string, args: DcecParseArg[] = []): DcecParseToken {
+  return new DcecParseToken(stripDcecTokenName(predicate), args);
+}
+
+export function createDcecConnective(operator: string, args: DcecParseArg[]): DcecParseToken {
+  const normalized = normalizeDcecConnective(operator);
+  return new DcecParseToken(normalized ?? operator, args);
+}
+
+export function createDcecQuantifier(
+  quantifier: string,
+  variable: string,
+  body: DcecParseArg,
+  sort = 'Entity',
+): DcecParseToken {
+  return new DcecParseToken(normalizeDcecQuantifier(quantifier) ?? quantifier, [
+    stripDcecTokenName(variable),
+    stripDcecTokenName(sort),
+    body,
+  ]);
+}
+
+export function createDcecModalForm(
+  operator: string,
+  agent: DcecParseArg,
+  body: DcecParseArg,
+): DcecParseToken {
+  return new DcecParseToken(normalizeDcecModalOperator(operator) ?? operator, [agent, body]);
+}
+
+export function createDcecDeonticForm(
+  operator: string,
+  body: DcecParseArg,
+  agent?: DcecParseArg,
+): DcecParseToken {
+  return new DcecParseToken(
+    normalizeDcecDeonticOperator(operator) ?? operator,
+    agent === undefined ? [body] : [agent, body],
+  );
+}
+
+export function classifyDcecParseForm(token: DcecParseToken): DcecParsedForm {
+  const connective = normalizeDcecConnective(token.funcName);
+  if (connective) {
+    return { kind: 'connective', token, operator: connective, arguments: token.args };
+  }
+
+  const quantifier = normalizeDcecQuantifier(token.funcName);
+  if (quantifier) {
+    const [variable, sortOrBody, maybeBody] = token.args;
+    return {
+      kind: 'quantifier',
+      token,
+      operator: quantifier,
+      variable: typeof variable === 'string' ? stripDcecTokenName(variable) : undefined,
+      sort: typeof maybeBody === 'undefined' ? undefined : String(sortOrBody),
+      body: maybeBody ?? sortOrBody,
+      arguments: token.args,
+    };
+  }
+
+  const modal = normalizeDcecModalOperator(token.funcName);
+  if (modal)
+    return {
+      kind: 'modal',
+      token,
+      operator: modal,
+      body: token.args.at(-1),
+      arguments: token.args,
+    };
+
+  const deontic = normalizeDcecDeonticOperator(token.funcName);
+  if (deontic)
+    return {
+      kind: 'deontic',
+      token,
+      operator: deontic,
+      body: token.args.at(-1),
+      arguments: token.args,
+    };
+
+  if (/^[A-Za-z_][\w-]*$/.test(token.funcName)) {
+    return { kind: 'atom', token, predicate: token.funcName, arguments: token.args };
+  }
+  return { kind: 'unknown', token, arguments: token.args };
 }
 
 function prefixDcecFunctions(
@@ -151,4 +357,25 @@ function addAtomicSort(atomics: Record<string, string[]>, name: string, sort: st
   } else {
     atomics[name] = [sort];
   }
+}
+
+function normalizeDcecConnective(operator: string): string | undefined {
+  const normalized = DCEC_SYNONYMS[operator] ?? operator;
+  return LOGICAL_KEYWORDS.includes(normalized) ? normalized : undefined;
+}
+
+function normalizeDcecQuantifier(operator: string): string | undefined {
+  return QUANTIFIER_ALIASES[operator] ?? QUANTIFIER_ALIASES[operator.toLowerCase()];
+}
+
+function normalizeDcecModalOperator(operator: string): string | undefined {
+  return MODAL_ALIASES[operator] ?? MODAL_ALIASES[operator.toLowerCase()];
+}
+
+function normalizeDcecDeonticOperator(operator: string): string | undefined {
+  return DEONTIC_ALIASES[operator] ?? DEONTIC_ALIASES[operator.toLowerCase()];
+}
+
+function stripDcecTokenName(value: string): string {
+  return value.trim().replace(/^\(+|\)+$/g, '');
 }

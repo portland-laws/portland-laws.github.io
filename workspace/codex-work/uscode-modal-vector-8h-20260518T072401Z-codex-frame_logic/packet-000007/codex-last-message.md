@@ -1,0 +1,29 @@
+Implemented a scoped `frame_logic` improvement that turns frame-linked signals into explicit ontology terms and carries them through BM25 selection, modal KG triples, and F-logic diagnostics.
+
+- Added deterministic ontology-term extraction to frame selections, exposed as `ontology_terms` in selection payloads, with stopword filtering and bounded size.  
+  [frame_bm25_selector.py:45](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000007-20260518_073352/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:45)  
+  [frame_bm25_selector.py:71](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000007-20260518_073352/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:71)  
+  [frame_bm25_selector.py:163](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000007-20260518_073352/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:163)
+
+- Emitted audited frame ontology terms into codec features and F-logic triples via `frame_term` predicates, so frame-term evidence is now part of deterministic feature keys (`flogic:frame_term:*`).  
+  [codec.py:385](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000007-20260518_073352/ipfs_datasets_py/logic/modal/codec.py:385)  
+  [codec.py:517](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000007-20260518_073352/ipfs_datasets_py/logic/modal/codec.py:517)  
+  [codec.py:727](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000007-20260518_073352/ipfs_datasets_py/logic/modal/codec.py:727)
+
+- Added frame-term audit metadata to F-logic optimizer results (`metadata["frame_logic_terms"]`, `metadata["kg_triple_count"]`).  
+  [flogic_optimizer.py:172](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000007-20260518_073352/ipfs_datasets_py/optimizers/logic/flogic_optimizer.py:172)  
+  [flogic_optimizer.py:348](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000007-20260518_073352/ipfs_datasets_py/optimizers/logic/flogic_optimizer.py:348)
+
+- Added/updated tests for these behaviors.  
+  [test_frame_bm25_selector.py:12](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000007-20260518_073352/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:12)  
+  [test_modal_codec.py:48](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000007-20260518_073352/tests/unit_tests/logic/modal/test_modal_codec.py:48)  
+  [test_modal_codec.py:1646](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000007-20260518_073352/tests/unit_tests/logic/modal/test_modal_codec.py:1646)  
+  [test_flogic_integration.py:405](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000007-20260518_073352/tests/unit/logic/test_flogic_integration.py:405)
+
+Validation run:
+
+- `PYTHONPATH="$(pwd)/ipfs_datasets_py" python3 -m pytest -q --rootdir=tests tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py tests/unit_tests/logic/modal/test_modal_codec.py::test_modal_codec_encodes_all_modal_families_with_frame_logic tests/unit_tests/logic/modal/test_modal_codec.py::test_modal_codec_supports_autoencoder_feature_codec_protocol tests/unit/logic/test_flogic_integration.py::TestFLogicSemanticOptimizer::test_result_metadata tests/unit/logic/test_flogic_integration.py::TestFLogicSemanticOptimizer::test_result_metadata_includes_frame_logic_terms`  
+  Result: `10 passed`
+
+- `PYTHONPATH="$(pwd)/ipfs_datasets_py" python3 -m pytest -q --rootdir=tests tests/unit_tests/logic/modal/test_autoencoder_loop.py::test_autoencoder_loop_keeps_frame_logic_graph_and_provers_before_llm`  
+  Result: `1 passed`

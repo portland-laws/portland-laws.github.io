@@ -1,32 +1,47 @@
 {
   "schemaVersion": 1,
   "fixtureKind": "processor_archive_integration_manifest",
-  "manifestId": "ppd-processor-archive-integration-2026-05-02",
+  "manifestId": "ppd-processor-archive-integration-fixture-2026-06-01",
   "manifestOnly": true,
   "networkAccess": false,
+  "processorInvoked": false,
+  "documentsDownloaded": false,
   "downloadedDocumentsIncluded": false,
   "rawBodiesIncluded": false,
   "privateDevhubArtifactsIncluded": false,
+  "canonicalizationPolicy": "metadata_only_public_source_mapping_no_fetch",
   "processorSuite": {
-    "name": "ipfs_datasets_py processor",
+    "name": "ipfs_datasets_py processor suite",
     "submodulePath": "ipfs_datasets_py",
     "processorPackage": "ipfs_datasets_py.processor",
-    "usageMode": "read_only_archive_handoff_fixture"
+    "usageMode": "read_only_archive_handoff_fixture",
+    "handoffMode": "deferred_metadata_only_no_processor_invocation"
   },
   "records": [
     {
-      "sourceUrl": "https://www.portland.gov/ppd/permits",
-      "canonicalUrl": "https://www.portland.gov/ppd/permits",
-      "sourceEvidenceId": "src-ppd-permits-public-guidance",
-      "canonicalDocumentId": "doc-ppd-permits-public-guidance",
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "canonicalUrl": "https://www.portland.gov/ppd",
+      "sourceType": "public_html",
+      "owningSurface": "ppd_public_website",
+      "sourceEvidenceId": "src-ppd-bureau-landing-page",
+      "canonicalDocumentId": "doc-ppd-bureau-landing-page",
       "contentHashPlaceholder": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
-      "httpCachePlaceholder": {
-        "etag": "fixture-etag-ppd-permits",
-        "lastModified": "2026-05-01T00:00:00Z"
+      "processorHandoffId": "handoff-ppd-bureau-landing-page-to-archive-manifest",
+      "processorArchiveRecordId": "archive-ppd-bureau-landing-page",
+      "normalizedDocumentRef": "normalized_documents/doc-ppd-bureau-landing-page.json",
+      "archiveArtifactRef": "metadata_only_archive_manifests/archive-ppd-bureau-landing-page.json",
+      "processorInput": {
+        "operation": "capture_url_metadata_only",
+        "metadataOnly": true,
+        "persistRawBody": false,
+        "downloadDocuments": false
       },
-      "processorHandoffId": "handoff-ppd-permits-public-guidance-to-formal-logic",
-      "processorArchiveRecordId": "archive-ppd-permits-public-guidance",
-      "archiveIntent": "normalize_public_guidance_for_requirement_extraction",
+      "httpCachePlaceholder": {
+        "etag": "fixture-etag-ppd-bureau-landing-page",
+        "lastModified": "2026-05-08T00:00:00Z"
+      },
+      "archiveIntent": "map_public_landing_page_for_source_registry_and_requirement_extraction",
+      "robotsPolicyPlaceholder": "pending_live_preflight_before_any_fetch",
       "skippedArtifacts": [
         "raw_http_body",
         "downloaded_document_bytes",
@@ -36,18 +51,317 @@
       ]
     },
     {
-      "sourceUrl": "https://www.portland.gov/ppd/building-permit-application-forms",
-      "canonicalUrl": "https://www.portland.gov/ppd/building-permit-application-forms",
-      "sourceEvidenceId": "src-ppd-building-forms-public-index",
-      "canonicalDocumentId": "doc-ppd-building-forms-public-index",
+      "sourceUrl": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "canonicalUrl": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "sourceType": "public_html",
+      "owningSurface": "ppd_public_website",
+      "sourceEvidenceId": "src-ppd-online-permitting-tools",
+      "canonicalDocumentId": "doc-ppd-online-permitting-tools",
       "contentHashPlaceholder": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
-      "httpCachePlaceholder": {
-        "etag": "fixture-etag-ppd-building-forms",
-        "lastModified": "2026-05-01T00:00:00Z"
+      "processorHandoffId": "handoff-ppd-online-permitting-tools-to-archive-manifest",
+      "processorArchiveRecordId": "archive-ppd-online-permitting-tools",
+      "normalizedDocumentRef": "normalized_documents/doc-ppd-online-permitting-tools.json",
+      "archiveArtifactRef": "metadata_only_archive_manifests/archive-ppd-online-permitting-tools.json",
+      "processorInput": {
+        "operation": "capture_url_metadata_only",
+        "metadataOnly": true,
+        "persistRawBody": false,
+        "downloadDocuments": false
       },
-      "processorHandoffId": "handoff-ppd-building-forms-to-formal-logic",
-      "processorArchiveRecordId": "archive-ppd-building-forms-public-index",
-      "archiveIntent": "normalize_public_form_index_for_document_requirement_extraction",
+      "httpCachePlaceholder": {
+        "etag": "fixture-etag-ppd-online-permitting-tools",
+        "lastModified": "2026-05-08T00:00:00Z"
+      },
+      "archiveIntent": "map_online_permitting_guidance_for_devhub_and_process_model_inputs",
+      "robotsPolicyPlaceholder": "pending_live_preflight_before_any_fetch",
+      "skippedArtifacts": [
+        "raw_http_body",
+        "downloaded_document_bytes",
+        "browser_trace",
+        "screenshot",
+        "private_devhub_state"
+      ]
+    },
+    {
+      "sourceUrl": "https://devhub.portlandoregon.gov",
+      "canonicalUrl": "https://devhub.portlandoregon.gov",
+      "sourceType": "devhub_public",
+      "owningSurface": "devhub_public_portal",
+      "sourceEvidenceId": "src-devhub-public-portal",
+      "canonicalDocumentId": "doc-devhub-public-portal",
+      "contentHashPlaceholder": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "processorHandoffId": "handoff-devhub-public-portal-to-archive-manifest",
+      "processorArchiveRecordId": "archive-devhub-public-portal",
+      "normalizedDocumentRef": "normalized_documents/doc-devhub-public-portal.json",
+      "archiveArtifactRef": "metadata_only_archive_manifests/archive-devhub-public-portal.json",
+      "processorInput": {
+        "operation": "capture_url_metadata_only",
+        "metadataOnly": true,
+        "persistRawBody": false,
+        "downloadDocuments": false
+      },
+      "httpCachePlaceholder": {
+        "etag": "fixture-etag-devhub-public-portal",
+        "lastModified": "2026-05-08T00:00:00Z"
+      },
+      "archiveIntent": "map_public_portal_entry_without_authentication_or_private_state",
+      "robotsPolicyPlaceholder": "pending_live_preflight_before_any_fetch",
+      "skippedArtifacts": [
+        "raw_http_body",
+        "downloaded_document_bytes",
+        "browser_trace",
+        "screenshot",
+        "private_devhub_state"
+      ]
+    },
+    {
+      "sourceUrl": "https://www.portland.gov/ppd/devhub-faqs",
+      "canonicalUrl": "https://www.portland.gov/ppd/devhub-faqs",
+      "sourceType": "public_html",
+      "owningSurface": "ppd_public_website",
+      "sourceEvidenceId": "src-ppd-devhub-faqs",
+      "canonicalDocumentId": "doc-ppd-devhub-faqs",
+      "contentHashPlaceholder": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "processorHandoffId": "handoff-ppd-devhub-faqs-to-archive-manifest",
+      "processorArchiveRecordId": "archive-ppd-devhub-faqs",
+      "normalizedDocumentRef": "normalized_documents/doc-ppd-devhub-faqs.json",
+      "archiveArtifactRef": "metadata_only_archive_manifests/archive-ppd-devhub-faqs.json",
+      "processorInput": {
+        "operation": "capture_url_metadata_only",
+        "metadataOnly": true,
+        "persistRawBody": false,
+        "downloadDocuments": false
+      },
+      "httpCachePlaceholder": {
+        "etag": "fixture-etag-ppd-devhub-faqs",
+        "lastModified": "2026-05-08T00:00:00Z"
+      },
+      "archiveIntent": "map_devhub_faq_guidance_for_public_requirement_extraction",
+      "robotsPolicyPlaceholder": "pending_live_preflight_before_any_fetch",
+      "skippedArtifacts": [
+        "raw_http_body",
+        "downloaded_document_bytes",
+        "browser_trace",
+        "screenshot",
+        "private_devhub_state"
+      ]
+    },
+    {
+      "sourceUrl": "https://www.portland.gov/ppd/devhub-sign-guide",
+      "canonicalUrl": "https://www.portland.gov/ppd/devhub-sign-guide",
+      "sourceType": "public_html",
+      "owningSurface": "ppd_public_website",
+      "sourceEvidenceId": "src-ppd-devhub-sign-guide",
+      "canonicalDocumentId": "doc-ppd-devhub-sign-guide",
+      "contentHashPlaceholder": "sha256:5555555555555555555555555555555555555555555555555555555555555555",
+      "processorHandoffId": "handoff-ppd-devhub-sign-guide-to-archive-manifest",
+      "processorArchiveRecordId": "archive-ppd-devhub-sign-guide",
+      "normalizedDocumentRef": "normalized_documents/doc-ppd-devhub-sign-guide.json",
+      "archiveArtifactRef": "metadata_only_archive_manifests/archive-ppd-devhub-sign-guide.json",
+      "processorInput": {
+        "operation": "capture_url_metadata_only",
+        "metadataOnly": true,
+        "persistRawBody": false,
+        "downloadDocuments": false
+      },
+      "httpCachePlaceholder": {
+        "etag": "fixture-etag-ppd-devhub-sign-guide",
+        "lastModified": "2026-05-08T00:00:00Z"
+      },
+      "archiveIntent": "map_public_account_and_sign_in_guidance_without_credential_capture",
+      "robotsPolicyPlaceholder": "pending_live_preflight_before_any_fetch",
+      "skippedArtifacts": [
+        "raw_http_body",
+        "downloaded_document_bytes",
+        "browser_trace",
+        "screenshot",
+        "private_devhub_state"
+      ]
+    },
+    {
+      "sourceUrl": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "canonicalUrl": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "sourceType": "public_html",
+      "owningSurface": "ppd_public_website",
+      "sourceEvidenceId": "src-ppd-apply-permits",
+      "canonicalDocumentId": "doc-ppd-apply-permits",
+      "contentHashPlaceholder": "sha256:6666666666666666666666666666666666666666666666666666666666666666",
+      "processorHandoffId": "handoff-ppd-apply-permits-to-archive-manifest",
+      "processorArchiveRecordId": "archive-ppd-apply-permits",
+      "normalizedDocumentRef": "normalized_documents/doc-ppd-apply-permits.json",
+      "archiveArtifactRef": "metadata_only_archive_manifests/archive-ppd-apply-permits.json",
+      "processorInput": {
+        "operation": "capture_url_metadata_only",
+        "metadataOnly": true,
+        "persistRawBody": false,
+        "downloadDocuments": false
+      },
+      "httpCachePlaceholder": {
+        "etag": "fixture-etag-ppd-apply-permits",
+        "lastModified": "2026-05-08T00:00:00Z"
+      },
+      "archiveIntent": "map_apply_permits_guidance_for_process_model_inputs",
+      "robotsPolicyPlaceholder": "pending_live_preflight_before_any_fetch",
+      "skippedArtifacts": [
+        "raw_http_body",
+        "downloaded_document_bytes",
+        "browser_trace",
+        "screenshot",
+        "private_devhub_state"
+      ]
+    },
+    {
+      "sourceUrl": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "canonicalUrl": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "sourceType": "public_html",
+      "owningSurface": "ppd_public_website",
+      "sourceEvidenceId": "src-ppd-devhub-submit-permit-application-guide",
+      "canonicalDocumentId": "doc-ppd-devhub-submit-permit-application-guide",
+      "contentHashPlaceholder": "sha256:7777777777777777777777777777777777777777777777777777777777777777",
+      "processorHandoffId": "handoff-ppd-devhub-submit-permit-application-guide-to-archive-manifest",
+      "processorArchiveRecordId": "archive-ppd-devhub-submit-permit-application-guide",
+      "normalizedDocumentRef": "normalized_documents/doc-ppd-devhub-submit-permit-application-guide.json",
+      "archiveArtifactRef": "metadata_only_archive_manifests/archive-ppd-devhub-submit-permit-application-guide.json",
+      "processorInput": {
+        "operation": "capture_url_metadata_only",
+        "metadataOnly": true,
+        "persistRawBody": false,
+        "downloadDocuments": false
+      },
+      "httpCachePlaceholder": {
+        "etag": "fixture-etag-ppd-devhub-submit-permit-application-guide",
+        "lastModified": "2026-05-08T00:00:00Z"
+      },
+      "archiveIntent": "map_submit_permit_application_guidance_for_action_gate_extraction",
+      "robotsPolicyPlaceholder": "pending_live_preflight_before_any_fetch",
+      "skippedArtifacts": [
+        "raw_http_body",
+        "downloaded_document_bytes",
+        "browser_trace",
+        "screenshot",
+        "private_devhub_state"
+      ]
+    },
+    {
+      "sourceUrl": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "canonicalUrl": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "sourceType": "public_html",
+      "owningSurface": "ppd_public_website",
+      "sourceEvidenceId": "src-ppd-submit-plans-online",
+      "canonicalDocumentId": "doc-ppd-submit-plans-online",
+      "contentHashPlaceholder": "sha256:8888888888888888888888888888888888888888888888888888888888888888",
+      "processorHandoffId": "handoff-ppd-submit-plans-online-to-archive-manifest",
+      "processorArchiveRecordId": "archive-ppd-submit-plans-online",
+      "normalizedDocumentRef": "normalized_documents/doc-ppd-submit-plans-online.json",
+      "archiveArtifactRef": "metadata_only_archive_manifests/archive-ppd-submit-plans-online.json",
+      "processorInput": {
+        "operation": "capture_url_metadata_only",
+        "metadataOnly": true,
+        "persistRawBody": false,
+        "downloadDocuments": false
+      },
+      "httpCachePlaceholder": {
+        "etag": "fixture-etag-ppd-submit-plans-online",
+        "lastModified": "2026-05-08T00:00:00Z"
+      },
+      "archiveIntent": "map_single_pdf_and_upload_staging_guidance_for_document_rules",
+      "robotsPolicyPlaceholder": "pending_live_preflight_before_any_fetch",
+      "skippedArtifacts": [
+        "raw_http_body",
+        "downloaded_document_bytes",
+        "browser_trace",
+        "screenshot",
+        "private_devhub_state"
+      ]
+    },
+    {
+      "sourceUrl": "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications",
+      "canonicalUrl": "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications",
+      "sourceType": "public_form",
+      "owningSurface": "ppd_public_website",
+      "sourceEvidenceId": "src-ppd-permits-inspections-applications-index",
+      "canonicalDocumentId": "doc-ppd-permits-inspections-applications-index",
+      "contentHashPlaceholder": "sha256:9999999999999999999999999999999999999999999999999999999999999999",
+      "processorHandoffId": "handoff-ppd-permits-inspections-applications-index-to-archive-manifest",
+      "processorArchiveRecordId": "archive-ppd-permits-inspections-applications-index",
+      "normalizedDocumentRef": "normalized_documents/doc-ppd-permits-inspections-applications-index.json",
+      "archiveArtifactRef": "metadata_only_archive_manifests/archive-ppd-permits-inspections-applications-index.json",
+      "processorInput": {
+        "operation": "capture_url_metadata_only",
+        "metadataOnly": true,
+        "persistRawBody": false,
+        "downloadDocuments": false
+      },
+      "httpCachePlaceholder": {
+        "etag": "fixture-etag-ppd-permits-inspections-applications-index",
+        "lastModified": "2026-05-08T00:00:00Z"
+      },
+      "archiveIntent": "map_public_forms_index_without_downloading_linked_documents",
+      "robotsPolicyPlaceholder": "pending_live_preflight_before_any_fetch",
+      "skippedArtifacts": [
+        "raw_http_body",
+        "downloaded_document_bytes",
+        "browser_trace",
+        "screenshot",
+        "private_devhub_state"
+      ]
+    },
+    {
+      "sourceUrl": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+      "canonicalUrl": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+      "sourceType": "public_html",
+      "owningSurface": "ppd_public_website",
+      "sourceEvidenceId": "src-ppd-spp-file-naming-standards-preparing-pdfs",
+      "canonicalDocumentId": "doc-ppd-spp-file-naming-standards-preparing-pdfs",
+      "contentHashPlaceholder": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "processorHandoffId": "handoff-ppd-spp-file-naming-standards-preparing-pdfs-to-archive-manifest",
+      "processorArchiveRecordId": "archive-ppd-spp-file-naming-standards-preparing-pdfs",
+      "normalizedDocumentRef": "normalized_documents/doc-ppd-spp-file-naming-standards-preparing-pdfs.json",
+      "archiveArtifactRef": "metadata_only_archive_manifests/archive-ppd-spp-file-naming-standards-preparing-pdfs.json",
+      "processorInput": {
+        "operation": "capture_url_metadata_only",
+        "metadataOnly": true,
+        "persistRawBody": false,
+        "downloadDocuments": false
+      },
+      "httpCachePlaceholder": {
+        "etag": "fixture-etag-ppd-spp-file-naming-standards-preparing-pdfs",
+        "lastModified": "2026-05-08T00:00:00Z"
+      },
+      "archiveIntent": "map_file_naming_and_pdf_preparation_rules_for_document_guardrails",
+      "robotsPolicyPlaceholder": "pending_live_preflight_before_any_fetch",
+      "skippedArtifacts": [
+        "raw_http_body",
+        "downloaded_document_bytes",
+        "browser_trace",
+        "screenshot",
+        "private_devhub_state"
+      ]
+    },
+    {
+      "sourceUrl": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "canonicalUrl": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "sourceType": "public_pdf",
+      "owningSurface": "ppd_public_website",
+      "sourceEvidenceId": "src-ppd-how-pay-fees-download",
+      "canonicalDocumentId": "doc-ppd-how-pay-fees-download",
+      "contentHashPlaceholder": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "processorHandoffId": "handoff-ppd-how-pay-fees-download-to-archive-manifest",
+      "processorArchiveRecordId": "archive-ppd-how-pay-fees-download",
+      "normalizedDocumentRef": "normalized_documents/doc-ppd-how-pay-fees-download.json",
+      "archiveArtifactRef": "metadata_only_archive_manifests/archive-ppd-how-pay-fees-download.json",
+      "processorInput": {
+        "operation": "capture_url_metadata_only",
+        "metadataOnly": true,
+        "persistRawBody": false,
+        "downloadDocuments": false
+      },
+      "httpCachePlaceholder": {
+        "etag": "fixture-etag-ppd-how-pay-fees-download",
+        "lastModified": "2026-05-08T00:00:00Z"
+      },
+      "archiveIntent": "map_fee_payment_public_pdf_metadata_without_downloading_pdf_bytes",
+      "robotsPolicyPlaceholder": "pending_live_preflight_before_any_fetch",
       "skippedArtifacts": [
         "raw_http_body",
         "downloaded_document_bytes",

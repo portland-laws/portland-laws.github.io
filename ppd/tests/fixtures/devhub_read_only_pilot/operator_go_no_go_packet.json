@@ -1,0 +1,39 @@
+{
+  "packet_id": "operator-go-no-go-devhub-read-only-pilot-20260528",
+  "operator_id": "synthetic-operator-001",
+  "pilot_decision": "go_for_fixture_dry_run",
+  "operator_acknowledgements": {
+    "read_only_scope": true,
+    "no_browser_artifacts": true,
+    "no_private_values": true,
+    "abort_before_consequential_actions": true
+  },
+  "surface_observations": [
+    {
+      "surface_label": "DevHub Home",
+      "observation_scope": "read_only_accessible_structure"
+    },
+    {
+      "surface_label": "My Permits and Requests",
+      "observation_scope": "read_only_status_list_structure"
+    },
+    {
+      "surface_label": "Permit Detail",
+      "observation_scope": "read_only_status_and_attachment_structure"
+    },
+    {
+      "surface_label": "Fee Notice Review",
+      "observation_scope": "read_only_fee_notice_structure_without_payment"
+    }
+  ],
+  "prohibited_artifacts": [
+    "credentials",
+    "cookies",
+    "auth_state",
+    "screenshots",
+    "traces",
+    "har",
+    "raw_private_values"
+  ],
+  "deferred_live_session_note": "Live DevHub use remains deferred until an attended browser session is separately approved and configured to avoid artifact capture."
+}

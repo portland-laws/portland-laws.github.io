@@ -1,0 +1,14 @@
+{
+  "version": "public-refresh-reviewer-handoff-packet-v1",
+  "citation_impact_queue_refs": ["ppd:queue:citations:2026-06-01"],
+  "preflight_checklist_refs": ["ppd:preflight:public-refresh-reviewer:v1"],
+  "reviewer_ready_seed_decisions": ["seed:permit-index:hold-for-review"],
+  "metadata_only_archive_expectations": ["archive only normalized citation metadata and source timestamps"],
+  "citation_refresh_priorities": ["refresh expired citation metadata before low-risk unchanged entries"],
+  "stale_source_hold_recommendations": ["hold stale sources for reviewer confirmation"],
+  "owner_routing": [{"owner": "public-refresh-reviewer", "scope": "citation metadata review"}],
+  "dependency_ordering": ["preflight", "citation-impact-queue", "reviewer-seed-decision", "metadata-only-archive"],
+  "rollback_checkpoints": ["restore prior published metadata manifest"],
+  "validation_commands": [["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]],
+  "notes": "Reviewer handoff is metadata-only and does not perform public-state writes."
+}

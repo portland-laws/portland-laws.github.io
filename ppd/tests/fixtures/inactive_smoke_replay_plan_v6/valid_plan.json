@@ -1,0 +1,54 @@
+{
+  "version": "v6",
+  "status": "inactive",
+  "inactive": true,
+  "dry_run": true,
+  "read_only": true,
+  "requires_reviewer_attendance": true,
+  "activation_rehearsal_references": [
+    {
+      "reference_id": "rehearsal-ref-001",
+      "description": "Reviewer-visible rehearsal note for comparing fixture-only replay inputs."
+    }
+  ],
+  "post_activation_smoke_scenarios": [
+    {
+      "scenario_id": "post-activation-fixture-only-001",
+      "expected_result": "The simulated response remains blocked unless reviewer attendance and source freshness checks are present."
+    }
+  ],
+  "source_freshness_precheck_rows": [
+    {
+      "source_id": "ppd-devhub-faq",
+      "last_verified_at": "2026-05-08",
+      "expected_status": "freshness check required before any future activation decision"
+    }
+  ],
+  "agent_facing_response_probes": [
+    {
+      "probe_id": "probe-missing-fact",
+      "expected_response": "Ask for missing or stale facts and cite the inactive guardrail bundle."
+    }
+  ],
+  "rollback_trigger_observations": [
+    {
+      "trigger_id": "source-hash-change",
+      "observation": "Any changed official-source hash keeps the replay inactive until reviewed."
+    }
+  ],
+  "monitoring_signal_expectations": [
+    {
+      "signal_id": "freshness-monitor",
+      "expectation": "Report changed public-source hashes and affected guardrail bundles."
+    }
+  ],
+  "reviewer_attendance_checkpoints": [
+    {
+      "checkpoint_id": "reviewer-present-before-decision",
+      "required": true
+    }
+  ],
+  "validation_commands": [
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

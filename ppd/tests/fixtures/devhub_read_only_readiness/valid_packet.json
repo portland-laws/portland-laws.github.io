@@ -1,0 +1,50 @@
+{
+  "packet_id": "fixture-read-only-ready",
+  "mode": "attended_read_only",
+  "prerequisite_links": [
+    {
+      "url": "https://www.portland.gov/ppd/devhub-faqs",
+      "source_evidence_id": "ppd-devhub-faqs-read-only-status-review"
+    },
+    {
+      "url": "https://www.portland.gov/ppd/devhub-sign-guide",
+      "source_evidence_id": "ppd-devhub-sign-guide-attended-login"
+    }
+  ],
+  "readiness_claims": [
+    {
+      "claim": "The packet is limited to attended read-only review of account-scoped DevHub status information after the user completes login manually.",
+      "source_evidence_ids": ["ppd-devhub-faqs-read-only-status-review"]
+    },
+    {
+      "claim": "The worker must hand off if authentication prompts, CAPTCHA, MFA, account setup, payment, upload, scheduling, certification, or submission appears.",
+      "source_evidence_ids": ["ppd-devhub-sign-guide-attended-login"]
+    }
+  ],
+  "abort_conditions": [
+    "Authentication challenge, CAPTCHA, MFA, or account creation appears.",
+    "Any upload, submit, certify, pay, purchase, schedule, cancel, withdraw, extension, or reactivation control is required.",
+    "The user asks the worker to operate outside read-only review."
+  ],
+  "controls": [
+    {
+      "label": "View permit details",
+      "kind": "read_only",
+      "enabled": true
+    },
+    {
+      "label": "Submit application",
+      "kind": "consequential_official",
+      "enabled": false
+    },
+    {
+      "label": "Upload corrections",
+      "kind": "consequential_official",
+      "disabled": true
+    }
+  ],
+  "artifacts": {
+    "commit_safe_manifest": "redacted-ui-structure-only",
+    "raw_private_artifacts_stored": false
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "version": "post-promotion-smoke-replay-plan-v7",
+  "dry_run": true,
+  "promotion_rehearsal_references": [
+    "ppd/tests/fixtures/rehearsals/rehearsal-2026-05-08.json"
+  ],
+  "smoke_scenario_rows": [
+    {
+      "id": "gap-analysis-read-only",
+      "surface": "public-source-model",
+      "expected_result": "read-only guardrail response"
+    }
+  ],
+  "probes": [
+    "missing information probe asks for required case facts without guessing",
+    "stale evidence probe blocks stale source facts until refreshed evidence exists",
+    "reversible draft probe verifies local-only form value staging",
+    "local PDF preview probe verifies preview generation without official upload",
+    "exact confirmation probe requires action-specific user wording",
+    "refused action probe blocks payment, upload, submission, scheduling, certification, or cancellation",
+    "manual handoff probe pauses for attended DevHub login and official-action review"
+  ],
+  "rollback_trigger_observations": [
+    "Any unexpected official-action affordance, missing refusal, or source mismatch is a rollback trigger."
+  ],
+  "monitoring_expectations": [
+    "Review guardrail issue counts, refused-action entries, and validation command results after replay."
+  ],
+  "validation_commands": [
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ],
+  "mutation_controls": {
+    "active_mutation": false,
+    "write_enabled": false,
+    "allow_live_mutation": false
+  }
+}

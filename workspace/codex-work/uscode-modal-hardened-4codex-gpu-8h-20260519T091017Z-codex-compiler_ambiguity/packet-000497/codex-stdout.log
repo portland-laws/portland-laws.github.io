@@ -1,0 +1,15 @@
+Implemented the `compiler_ambiguity` policy update for the requested pair coverage and aligned targeted tests.
+
+- Added `frame->epistemic` to `COMPILER_AMBIGUITY_POLICY_FAMILY_PAIRS` in [modal_registry.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_ambiguity/worktrees/agent-codex-compiler_ambiguity-packet-000497-20260519_155717/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py).
+- Updated compiler-ambiguity registry expectations (including directional assertions) in [test_modal_registry.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_ambiguity/worktrees/agent-codex-compiler_ambiguity-packet-000497-20260519_155717/tests/unit/optimizers/logic_theorem_optimizer/test_modal_registry.py).
+- Expanded ambiguity coverage/assertions for:
+  - recurrent frame policy pairs including `frame->epistemic`
+  - explicit compiler-bundle metadata checks for frame/epistemic ambiguities
+  - TODO evidence margins including `deontic->temporal` and `frame->epistemic`
+  
+  in [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_ambiguity/worktrees/agent-codex-compiler_ambiguity-packet-000497-20260519_155717/tests/unit_tests/logic/modal/test_modal_codec.py).
+
+Validation run:
+
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_modal_registry.py` -> `19 passed`
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "recurrent_policy_pairs or signal_free_pair_policy_for_frame_epistemic or uses_epistemic_signal_for_frame_epistemic or zero_margin_frame_epistemic_priority_pair or compiler_ambiguity_pairs_when_other_target_tables_are_sparse or compiled_primary_policy_pairs_cover_compiler_ambiguity_bundle or emits_explicit_ambiguity_for_todo_evidence_margin_pairs or marks_todo_policy_pairs_as_compiler_ambiguity_bundle"` -> `8 passed, 199 deselected`

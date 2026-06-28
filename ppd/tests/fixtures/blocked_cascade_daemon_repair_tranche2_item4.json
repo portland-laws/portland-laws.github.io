@@ -1,0 +1,33 @@
+{
+  "blocked_work": {
+    "id": "ppd-tranche-2-item-4-followup",
+    "status": "parked",
+    "blocked_by": "daemon-repair-tranche-2-item-4"
+  },
+  "repair_attempts": [
+    {
+      "id": "daemon-repair-tranche-2-item-4-old",
+      "target": "daemon-repair-tranche-2-item-4",
+      "fresh": false,
+      "validated": true
+    },
+    {
+      "id": "daemon-repair-tranche-2-item-4-wrong-target",
+      "target": "unrelated-daemon-repair",
+      "fresh": true,
+      "validated": true
+    },
+    {
+      "id": "daemon-repair-tranche-2-item-4-unvalidated",
+      "target": "daemon-repair-tranche-2-item-4",
+      "fresh": true,
+      "validated": false
+    },
+    {
+      "id": "daemon-repair-tranche-2-item-4-fresh-valid",
+      "target": "daemon-repair-tranche-2-item-4",
+      "fresh": true,
+      "validated": true
+    }
+  ]
+}

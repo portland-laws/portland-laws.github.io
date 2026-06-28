@@ -1,0 +1,14 @@
+{
+  "fixture_id": "rollback_references_v7",
+  "version": 7,
+  "sources": [
+    {
+      "source_id": "portland_maps_public_permits",
+      "rollback_reference": "rollback://ppd/public-fixtures/portland-maps-public-permits/v7"
+    },
+    {
+      "source_id": "portland_permitting_public_forms",
+      "rollback_reference": "rollback://ppd/public-fixtures/portland-permitting-public-forms/v7"
+    }
+  ]
+}

@@ -1,0 +1,92 @@
+{
+  "process_model": {
+    "process_id": "residential-building-permit-demo",
+    "permit_type": "Residential building permit",
+    "stages": [
+      {
+        "stage_id": "pre_application_research",
+        "name": "pre-application research",
+        "source_evidence_ids": ["SRC-PPD-001"],
+        "citation_spans": [
+          {
+            "source_id": "SRC-PPD-001",
+            "start": 0,
+            "end": 72
+          }
+        ]
+      },
+      {
+        "stage_id": "application_data_entry",
+        "name": "application data entry",
+        "source_evidence_ids": ["SRC-PPD-002"],
+        "citation_spans": [
+          {
+            "source_id": "SRC-PPD-002",
+            "start": 18,
+            "end": 96
+          }
+        ]
+      }
+    ],
+    "unsupported_paths": [
+      {
+        "action_id": "captcha_or_mfa_prompt",
+        "label": "Complete CAPTCHA or MFA prompt",
+        "classification": "unsupported",
+        "outcome": "manual_handoff",
+        "source_evidence_ids": ["SRC-PPD-003"]
+      }
+    ]
+  },
+  "guardrail_bundle": {
+    "guardrail_bundle_id": "gb-valid-demo",
+    "process_id": "residential-building-permit-demo",
+    "source_evidence_ids": ["SRC-PPD-001", "SRC-PPD-002", "SRC-PPD-003"],
+    "deterministic_predicates": [
+      {
+        "predicate_id": "has_property_address",
+        "expression": "known_facts.property_address is present",
+        "source_evidence_ids": ["SRC-PPD-001"]
+      }
+    ],
+    "reversible_action_predicates": [
+      {
+        "predicate_id": "draft_only_before_submission",
+        "expression": "action.kind == 'draft_fill'",
+        "source_evidence_ids": ["SRC-PPD-002"]
+      }
+    ],
+    "exact_confirmation_predicates": [
+      {
+        "predicate_id": "submission_requires_exact_confirmation",
+        "expression": "action.kind == 'submit' implies user_exact_confirmation",
+        "source_evidence_ids": ["SRC-PPD-003"]
+      }
+    ],
+    "refused_action_predicates": [
+      {
+        "predicate_id": "no_unattended_payment",
+        "expression": "action.kind != 'submit_payment' unless attended",
+        "source_evidence_ids": ["SRC-PPD-003"]
+      }
+    ]
+  },
+  "user_gap_analysis": {
+    "case_id": "case-demo",
+    "process_id": "residential-building-permit-demo",
+    "next_safe_actions": [
+      {
+        "action_id": "ask_for_property_address",
+        "label": "Ask for property address",
+        "explanation": "The property address is required before checking permit eligibility.",
+        "citation_spans": [
+          {
+            "source_id": "SRC-PPD-001",
+            "start": 5,
+            "end": 64
+          }
+        ]
+      }
+    ]
+  }
+}

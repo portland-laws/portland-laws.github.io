@@ -1,0 +1,60 @@
+{
+  "codex_apply_mode": "apply_to_main",
+  "codex_bundle_mode": "vector",
+  "codex_claimed_total": 5,
+  "codex_commit_mode": "commit_applied",
+  "codex_exec_mode": "packet_only",
+  "codex_execution_count": 0,
+  "codex_execution_failure_count": 0,
+  "codex_main_apply_count": 0,
+  "codex_main_apply_failure_count": 0,
+  "codex_main_apply_repair_count": 0,
+  "codex_merge_repair_attempts": 1,
+  "codex_merge_repair_mode": "apply_3way",
+  "codex_packet_count": 5,
+  "codex_patch_count": 0,
+  "codex_program_synthesis_execution_mode": "queued_for_external_codex_worker",
+  "codex_scope": "ir_decompiler",
+  "codex_task_embeddings_provider": "__force_hash_fallback__",
+  "codex_vector_index_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-presmoke-20260518T072044Z-autoencoder.codex-task-vectors.json",
+  "codex_vector_min_similarity": 0.72,
+  "codex_worktree_count": 5,
+  "cycles": 42,
+  "elapsed_seconds": 90.677,
+  "final": true,
+  "finished_at": "2026-05-18T07:22:17+00:00",
+  "latest_codex_vector_claim_report": {
+    "candidate_count": 0,
+    "mode": "vector",
+    "selected_count": 0
+  },
+  "latest_queue_counts": {
+    "claimed": 10,
+    "failed_validation": 10,
+    "pending": 56
+  },
+  "latest_role_queue_counts": {
+    "autoencoder_sgd": {
+      "failed_validation": 10,
+      "pending": 50
+    },
+    "program_synthesis": {
+      "claimed": 10,
+      "pending": 6
+    }
+  },
+  "latest_stop_reason": "signal_15",
+  "log_path": "/home/barberb/portland-laws.github.io/workspace/test-logs/uscode-modal-vector-presmoke-20260518T072044Z-codex-ir_decompiler.jsonl",
+  "loop_role": "codex",
+  "program_synthesis_claimed": 10,
+  "program_synthesis_completed": 0,
+  "program_synthesis_pending": 6,
+  "queue_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-presmoke-20260518T072044Z-autoencoder.jsonl",
+  "queue_run_id": "uscode-modal-vector-presmoke-20260518T072044Z-autoencoder",
+  "run_id": "uscode-modal-vector-presmoke-20260518T072044Z-codex-ir_decompiler",
+  "started_at": "2026-05-18T07:20:47+00:00",
+  "stopped_by_signal": 15,
+  "updated_at": "2026-05-18T07:22:17+00:00",
+  "work_dir": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-presmoke-20260518T072044Z-codex-ir_decompiler",
+  "worker_id": "codex-ir_decompiler"
+}

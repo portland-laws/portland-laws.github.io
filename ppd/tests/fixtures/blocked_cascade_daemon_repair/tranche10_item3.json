@@ -1,0 +1,45 @@
+{
+  "work_id": "ppd-tranche-10-item-3",
+  "blocked_at": "2026-05-08T10:00:00Z",
+  "events": [
+    {
+      "id": "blocked-work-created",
+      "kind": "work_blocked",
+      "work_id": "ppd-tranche-10-item-3",
+      "created_at": "2026-05-08T10:00:00Z",
+      "reason": "daemon validation failed before repair coverage existed"
+    },
+    {
+      "id": "stale-repair-validated",
+      "kind": "repair_task",
+      "task_type": "daemon-repair",
+      "target_work_id": "ppd-tranche-10-item-3",
+      "created_at": "2026-05-08T09:59:00Z",
+      "validation": "passed"
+    },
+    {
+      "id": "fresh-unrelated-repair-validated",
+      "kind": "repair_task",
+      "task_type": "daemon-repair",
+      "target_work_id": "ppd-tranche-10-item-9",
+      "created_at": "2026-05-08T10:01:00Z",
+      "validation": "passed"
+    },
+    {
+      "id": "fresh-targeted-repair-failed",
+      "kind": "repair_task",
+      "task_type": "daemon-repair",
+      "target_work_id": "ppd-tranche-10-item-3",
+      "created_at": "2026-05-08T10:02:00Z",
+      "validation": "failed"
+    },
+    {
+      "id": "fresh-targeted-repair-validated",
+      "kind": "repair_task",
+      "task_type": "daemon-repair",
+      "target_work_id": "ppd-tranche-10-item-3",
+      "created_at": "2026-05-08T10:03:00Z",
+      "validation": "passed"
+    }
+  ]
+}

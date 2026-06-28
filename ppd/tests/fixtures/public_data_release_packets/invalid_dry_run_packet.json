@@ -1,0 +1,30 @@
+{
+  "release_mode": "dry-run",
+  "promotion_target": "production",
+  "source_version": "sources-2026-05-01",
+  "guardrail_version": "guardrails-2026-05-01",
+  "expected_versions": {
+    "source_version": "sources-2026-05-28",
+    "guardrail_version": "guardrails-2026-05-28"
+  },
+  "prerequisite_packet_links": [],
+  "operator_checklist": [
+    {
+      "id": "public-data-only",
+      "label": "Confirm public-data-only inputs"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "ppd/.daemon/session/auth_state.json"
+    },
+    {
+      "path": "ppd/tests/fixtures/raw-crawl/page.har"
+    }
+  ],
+  "consequential_action_readiness": true,
+  "human_signoff": {
+    "approved": false,
+    "by": ""
+  }
+}

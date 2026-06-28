@@ -1,0 +1,164 @@
+{
+  "prerequisite_links": {
+    "source_registry": [
+      "src-devhub-submit-guide",
+      "ev-devhub-submit-guide-steps",
+      "ev-devhub-submit-guide-acknowledgement",
+      "src-single-pdf-guidance",
+      "ev-single-pdf-plan-set",
+      "src-devhub-faq",
+      "ev-devhub-faq-services"
+    ],
+    "requirement_index": [
+      "req-upload-staging-before-submit",
+      "req-exact-confirmation-for-certification",
+      "req-plan-set-single-pdf"
+    ],
+    "process_model_index": [
+      "process-building-permit-application",
+      "process-document-preparation"
+    ],
+    "guardrail_bundle_index": [
+      "guardrail-building-permit-application",
+      "guardrail-document-preparation"
+    ],
+    "reviewer_roster": [
+      "ppd-public-source-reviewer",
+      "ppd-document-reviewer"
+    ]
+  },
+  "public_source_to_guardrail_traceability_audit": {
+    "traceability": [
+      {
+        "source_id": "src-devhub-submit-guide",
+        "source_evidence_ids": [
+          "ev-devhub-submit-guide-steps",
+          "ev-devhub-submit-guide-acknowledgement"
+        ],
+        "requirement_ids": [
+          "req-upload-staging-before-submit",
+          "req-exact-confirmation-for-certification"
+        ],
+        "process_ids": [
+          "process-building-permit-application"
+        ],
+        "guardrail_bundle_ids": [
+          "guardrail-building-permit-application"
+        ],
+        "affected_id_citations": {
+          "req-upload-staging-before-submit": [
+            "ev-devhub-submit-guide-steps"
+          ],
+          "req-exact-confirmation-for-certification": [
+            "ev-devhub-submit-guide-acknowledgement"
+          ],
+          "process-building-permit-application": [
+            "ev-devhub-submit-guide-steps"
+          ],
+          "guardrail-building-permit-application": [
+            "ev-devhub-submit-guide-acknowledgement"
+          ]
+        },
+        "reviewer_owner": "ppd-public-source-reviewer"
+      },
+      {
+        "source_id": "src-single-pdf-guidance",
+        "source_evidence_ids": [
+          "ev-single-pdf-plan-set"
+        ],
+        "requirement_ids": [
+          "req-plan-set-single-pdf"
+        ],
+        "process_ids": [
+          "process-document-preparation"
+        ],
+        "guardrail_bundle_ids": [
+          "guardrail-document-preparation"
+        ],
+        "affected_id_citations": {
+          "req-plan-set-single-pdf": [
+            "ev-single-pdf-plan-set"
+          ],
+          "process-document-preparation": [
+            "ev-single-pdf-plan-set"
+          ],
+          "guardrail-document-preparation": [
+            "ev-single-pdf-plan-set"
+          ]
+        },
+        "reviewer_owner": "ppd-document-reviewer"
+      },
+      {
+        "source_id": "src-devhub-faq",
+        "source_evidence_ids": [
+          "ev-devhub-faq-services"
+        ],
+        "requirement_ids": [],
+        "process_ids": [],
+        "guardrail_bundle_ids": [],
+        "affected_id_citations": {},
+        "reviewer_owner": "ppd-public-source-reviewer"
+      }
+    ]
+  },
+  "public_source_freshness_review": {
+    "sources": [
+      {
+        "source_id": "src-devhub-submit-guide",
+        "freshness_status": "stale",
+        "reviewed_at": "2026-05-08",
+        "stale_reason": "source review is older than the monitoring cadence for DevHub submission guidance",
+        "stale_acknowledgement": "reviewer must confirm changed public guidance before guardrail recompilation",
+        "acknowledgement_required": true,
+        "acknowledgement_owner": "ppd-public-source-reviewer"
+      },
+      {
+        "source_id": "src-single-pdf-guidance",
+        "freshness_status": "current",
+        "reviewed_at": "2026-05-27",
+        "stale_reason": "",
+        "acknowledgement_required": false,
+        "acknowledgement_owner": "ppd-document-reviewer"
+      },
+      {
+        "source_id": "src-devhub-faq",
+        "freshness_status": "current",
+        "reviewed_at": "2026-05-27",
+        "stale_reason": "",
+        "acknowledgement_required": false,
+        "acknowledgement_owner": "ppd-public-source-reviewer"
+      }
+    ]
+  },
+  "public_source_monitoring_schedule_candidate": {
+    "candidates": [
+      {
+        "source_id": "src-devhub-submit-guide",
+        "change_signal": "content_hash_changed",
+        "prior_hash_ref": "sha256:fixture-prior-submit-guide",
+        "observed_hash_ref": "sha256:fixture-observed-submit-guide",
+        "scheduled_frequency": "daily",
+        "proposed_reviewer_owner": "ppd-public-source-reviewer",
+        "offline_review_rationale": "submission and acknowledgement guidance can affect exact-confirmation guardrails"
+      },
+      {
+        "source_id": "src-single-pdf-guidance",
+        "change_signal": "schedule_only",
+        "prior_hash_ref": "sha256:fixture-single-pdf",
+        "observed_hash_ref": "sha256:fixture-single-pdf",
+        "scheduled_frequency": "weekly",
+        "proposed_reviewer_owner": "ppd-document-reviewer",
+        "offline_review_rationale": "document preparation rules remain monitored without active bundle mutation"
+      },
+      {
+        "source_id": "src-devhub-faq",
+        "change_signal": "no_change",
+        "prior_hash_ref": "sha256:fixture-devhub-faq",
+        "observed_hash_ref": "sha256:fixture-devhub-faq",
+        "scheduled_frequency": "daily",
+        "proposed_reviewer_owner": "ppd-public-source-reviewer",
+        "offline_review_rationale": "FAQ remains monitored because it describes account-scoped DevHub services"
+      }
+    ]
+  }
+}

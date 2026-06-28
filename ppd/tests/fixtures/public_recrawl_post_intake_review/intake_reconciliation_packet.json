@@ -1,0 +1,54 @@
+{
+  "packet_id": "public-recrawl-intake-reconciliation-2026-05-29-fixture",
+  "generated_at": "2026-05-29T00:00:00Z",
+  "sources": [
+    {
+      "source_id": "ppd-devhub-faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "source_type": "public_html",
+      "reconciliation_decision": "changed",
+      "previous_content_hash": "sha256:old-faq",
+      "current_content_hash": "sha256:new-faq",
+      "source_evidence_ids": ["evidence-devhub-faq-heading", "evidence-devhub-faq-services"],
+      "citation_refs": ["devhub-faq#account-services"],
+      "affected_requirement_ids": ["req-devhub-account-services"],
+      "affected_guardrail_bundle_ids": ["guardrail-devhub-intake"]
+    },
+    {
+      "source_id": "ppd-fee-payment-guide",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "source_type": "public_pdf",
+      "reconciliation_decision": "conflict",
+      "previous_content_hash": "sha256:fee-old",
+      "current_content_hash": "sha256:fee-new",
+      "source_evidence_ids": ["evidence-fee-payment-final-submit"],
+      "citation_refs": ["fee-payment-guide#submit-payment"],
+      "affected_requirement_ids": ["req-payment-final-submit-gate"],
+      "affected_guardrail_bundle_ids": ["guardrail-payment-actions"]
+    },
+    {
+      "source_id": "ppd-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "source_type": "public_html",
+      "reconciliation_decision": "unchanged",
+      "previous_content_hash": "sha256:plans-same",
+      "current_content_hash": "sha256:plans-same",
+      "source_evidence_ids": ["evidence-single-pdf-rule"],
+      "citation_refs": ["submit-plans-online#single-pdf"],
+      "affected_requirement_ids": ["req-single-pdf-process"],
+      "affected_guardrail_bundle_ids": ["guardrail-document-prep"]
+    },
+    {
+      "source_id": "ppd-new-public-example",
+      "canonical_url": "https://www.portland.gov/ppd/example",
+      "source_type": "public_html",
+      "reconciliation_decision": "new",
+      "previous_content_hash": null,
+      "current_content_hash": "sha256:new-example",
+      "source_evidence_ids": ["evidence-new-public-example"],
+      "citation_refs": ["new-public-example#summary"],
+      "affected_requirement_ids": [],
+      "affected_guardrail_bundle_ids": []
+    }
+  ]
+}

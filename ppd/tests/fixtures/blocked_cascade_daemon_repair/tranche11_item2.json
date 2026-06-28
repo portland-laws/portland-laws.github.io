@@ -1,0 +1,59 @@
+{
+  "task": "checkbox-287",
+  "tranche": 11,
+  "item": 2,
+  "blocked_work": [
+    {
+      "id": "ppd-crawl-portland-permit-index",
+      "state": "parked",
+      "blocked_at": "2026-05-08T00:00:00Z",
+      "repair_task_id": "daemon-repair-blocked-cascade-tranche11-item2"
+    },
+    {
+      "id": "ppd-normalize-portland-permit-index",
+      "state": "parked",
+      "blocked_at": "2026-05-08T00:00:00Z",
+      "repair_task_id": "daemon-repair-blocked-cascade-tranche11-item2"
+    }
+  ],
+  "validations": {
+    "stale_or_unrelated": [
+      {
+        "task_id": "daemon-repair-blocked-cascade-tranche11-item2",
+        "kind": "daemon-repair",
+        "status": "passed",
+        "validated_at": "2026-05-07T23:59:59Z"
+      },
+      {
+        "task_id": "daemon-repair-other-task",
+        "kind": "daemon-repair",
+        "status": "passed",
+        "validated_at": "2026-05-08T00:05:00Z"
+      },
+      {
+        "task_id": "daemon-repair-blocked-cascade-tranche11-item2",
+        "kind": "daemon-repair",
+        "status": "failed",
+        "validated_at": "2026-05-08T00:06:00Z"
+      }
+    ],
+    "fresh_daemon_repair": [
+      {
+        "task_id": "daemon-repair-blocked-cascade-tranche11-item2",
+        "kind": "daemon-repair",
+        "status": "passed",
+        "validated_at": "2026-05-08T00:07:00Z"
+      }
+    ]
+  },
+  "expected": {
+    "parked_before_fresh_repair": [
+      "ppd-crawl-portland-permit-index",
+      "ppd-normalize-portland-permit-index"
+    ],
+    "released_after_fresh_repair": [
+      "ppd-crawl-portland-permit-index",
+      "ppd-normalize-portland-permit-index"
+    ]
+  }
+}

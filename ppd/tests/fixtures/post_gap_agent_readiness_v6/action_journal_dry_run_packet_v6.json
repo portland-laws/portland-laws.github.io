@@ -1,0 +1,36 @@
+{
+  "packet_version": "action_journal_dry_run_packet_v6",
+  "dry_run": true,
+  "allowed_routes": {
+    "draft_preview": "reversible_local_draft_preview",
+    "pdf_preview": "local_pdf_preview_only"
+  },
+  "refused_action_kinds": [
+    "upload",
+    "submit",
+    "certify",
+    "pay",
+    "schedule",
+    "cancel",
+    "create_account",
+    "mfa",
+    "captcha",
+    "financial_commitment",
+    "consequential_legal_or_permitting_action"
+  ],
+  "expected_journal_events": [
+    "gap_packet_loaded",
+    "dry_run_packet_loaded",
+    "synthetic_request_received",
+    "missing_information_questions_ordered",
+    "evidence_limitations_explained",
+    "citation_payload_attached",
+    "route_selected",
+    "manual_handoff_reminder_attached",
+    "offline_validation_commands_reported"
+  ],
+  "offline_validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/tests/test_post_gap_agent_readiness_replay_v6.py"],
+    ["python3", "-m", "pytest", "ppd/tests/test_post_gap_agent_readiness_replay_v6.py"]
+  ]
+}

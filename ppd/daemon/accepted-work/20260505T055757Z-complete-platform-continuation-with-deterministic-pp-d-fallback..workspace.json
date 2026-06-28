@@ -1,0 +1,27 @@
+{
+  "artifact_kind": "ephemeral-workspace",
+  "changed_files": [
+    "ppd/daemon/deterministic-progress.json"
+  ],
+  "created_at": "2026-05-05T05:57:57.902676Z",
+  "promoted_to_main_worktree": true,
+  "reason": "",
+  "schema_version": 1,
+  "summary": "Complete platform continuation with deterministic PP&D fallback.",
+  "target_task": "Task checkbox-922: Add autonomous platform continuation coverage for tranche 121 proving whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs stay connected through source evidence IDs.",
+  "transport": "ephemeral_worktree",
+  "validation_commands": [
+    [
+      "python3",
+      "-m",
+      "unittest",
+      "ppd.tests.test_daemon_llm_result_durability",
+      "ppd.tests.test_supervisor_stale_status_replanning"
+    ],
+    [
+      "python3",
+      "ppd/tests/validate_ppd.py"
+    ]
+  ],
+  "validation_passed": true
+}

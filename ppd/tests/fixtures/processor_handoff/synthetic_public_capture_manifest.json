@@ -1,0 +1,120 @@
+{
+  "manifest_fixture_id": "ppd-processor-handoff-synthetic-public-captures-v1",
+  "manifest_version": 1,
+  "fixture_scope": "synthetic_public_captures_only",
+  "description": "Deterministic PP&D-local processor handoff metadata for synthetic public captures. This fixture intentionally excludes raw response bodies, authenticated data, browser state, traces, screenshots, HAR data, and downloaded documents.",
+  "captures": [
+    {
+      "manifest_id": "archive-manifest-synthetic-ppd-public-html-001",
+      "source_id": "source-synthetic-ppd-public-html-001",
+      "capture_kind": "synthetic_public_capture",
+      "policy_preflight": {
+        "preflight_id": "ppd-policy-preflight-synthetic-public-html-001",
+        "policy_name": "ppd_public_source_preflight",
+        "policy_version": "2026-05-14.synthetic",
+        "evaluated_at": "2026-05-14T00:00:00Z",
+        "allowlist_decision": "allowed",
+        "robots_decision": "allowed_for_metadata_fixture",
+        "auth_scope": "public",
+        "privacy_classification": "public_synthetic",
+        "raw_body_policy": "do_not_persist_raw_body",
+        "allowed": true,
+        "skip_reason": null
+      },
+      "processor": {
+        "name": "ipfs_datasets_py.web_archive_processor",
+        "version": "synthetic-fixture-1",
+        "handoff_mode": "metadata_manifest_only"
+      },
+      "request": {
+        "requested_url": "https://www.portland.gov/ppd/synthetic-public-capture",
+        "method": "GET"
+      },
+      "redirect_metadata": {
+        "final_url": "https://www.portland.gov/ppd/synthetic-public-capture",
+        "redirect_count": 0,
+        "redirect_chain": []
+      },
+      "response_metadata": {
+        "http_status": 200,
+        "mime_type": "text/html; charset=utf-8",
+        "content_length_bytes": 4096,
+        "capture_started_at": "2026-05-14T00:00:00Z",
+        "capture_finished_at": "2026-05-14T00:00:01Z"
+      },
+      "content_hash": {
+        "algorithm": "sha256",
+        "value": "6f5f38d3f3ebd7a8cc7d0a32f2f0c0b76a681d998a0c4a0a6d2d5bd8f8b6e1a4"
+      },
+      "normalized_document_reference": {
+        "document_id": "doc-synthetic-ppd-public-html-001",
+        "source_id": "source-synthetic-ppd-public-html-001",
+        "document_type": "public_html",
+        "title": "Synthetic PP&D Public Guidance Capture",
+        "language": "en",
+        "content_hash": "sha256:6f5f38d3f3ebd7a8cc7d0a32f2f0c0b76a681d998a0c4a0a6d2d5bd8f8b6e1a4",
+        "normalized_ref": "ppd://documents/synthetic/doc-synthetic-ppd-public-html-001"
+      },
+      "no_raw_body_persisted": true
+    },
+    {
+      "manifest_id": "archive-manifest-synthetic-ppd-public-pdf-001",
+      "source_id": "source-synthetic-ppd-public-pdf-001",
+      "capture_kind": "synthetic_public_capture",
+      "policy_preflight": {
+        "preflight_id": "ppd-policy-preflight-synthetic-public-pdf-001",
+        "policy_name": "ppd_public_source_preflight",
+        "policy_version": "2026-05-14.synthetic",
+        "evaluated_at": "2026-05-14T00:00:00Z",
+        "allowlist_decision": "allowed",
+        "robots_decision": "allowed_for_metadata_fixture",
+        "auth_scope": "public",
+        "privacy_classification": "public_synthetic",
+        "raw_body_policy": "do_not_persist_raw_body",
+        "allowed": true,
+        "skip_reason": null
+      },
+      "processor": {
+        "name": "ipfs_datasets_py.pdf_archive_processor",
+        "version": "synthetic-fixture-1",
+        "handoff_mode": "metadata_manifest_only"
+      },
+      "request": {
+        "requested_url": "https://www.portland.gov/ppd/documents/synthetic-public-form/download",
+        "method": "GET"
+      },
+      "redirect_metadata": {
+        "final_url": "https://www.portland.gov/ppd/documents/synthetic-public-form/download",
+        "redirect_count": 1,
+        "redirect_chain": [
+          {
+            "from_url": "https://www.portland.gov/ppd/synthetic-public-form.pdf",
+            "to_url": "https://www.portland.gov/ppd/documents/synthetic-public-form/download",
+            "http_status": 302
+          }
+        ]
+      },
+      "response_metadata": {
+        "http_status": 200,
+        "mime_type": "application/pdf",
+        "content_length_bytes": 8192,
+        "capture_started_at": "2026-05-14T00:00:02Z",
+        "capture_finished_at": "2026-05-14T00:00:03Z"
+      },
+      "content_hash": {
+        "algorithm": "sha256",
+        "value": "49b0e23b9d83bd25a1f6fcd991b6f12f77d9631d70e7e2aaf45f03df8c0c6d0b"
+      },
+      "normalized_document_reference": {
+        "document_id": "doc-synthetic-ppd-public-pdf-001",
+        "source_id": "source-synthetic-ppd-public-pdf-001",
+        "document_type": "public_pdf",
+        "title": "Synthetic PP&D Public PDF Capture",
+        "language": "en",
+        "content_hash": "sha256:49b0e23b9d83bd25a1f6fcd991b6f12f77d9631d70e7e2aaf45f03df8c0c6d0b",
+        "normalized_ref": "ppd://documents/synthetic/doc-synthetic-ppd-public-pdf-001"
+      },
+      "no_raw_body_persisted": true
+    }
+  ]
+}

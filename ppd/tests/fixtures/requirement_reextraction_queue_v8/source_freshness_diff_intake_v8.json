@@ -1,0 +1,30 @@
+{
+  "fixture_version": "source-freshness-diff-intake-v8",
+  "source_freshness_diffs": [
+    {
+      "source_id": "devhub-building-submittal-checklist",
+      "freshness_status": "changed",
+      "evidence_ref": "fixture://source-freshness-diff-v8/devhub-building-submittal-checklist",
+      "changed_sections": ["submittal_requirements", "plan_review_notes"]
+    },
+    {
+      "source_id": "devhub-zoning-standards-summary",
+      "freshness_status": "new",
+      "evidence_ref": "fixture://source-freshness-diff-v8/devhub-zoning-standards-summary",
+      "changed_sections": ["zoning_review"]
+    },
+    {
+      "source_id": "devhub-site-development-intake",
+      "freshness_status": "unchanged",
+      "evidence_ref": "fixture://source-freshness-diff-v8/devhub-site-development-intake",
+      "changed_sections": []
+    },
+    {
+      "source_id": "devhub-fee-schedule-summary",
+      "freshness_status": "conflict",
+      "evidence_ref": "fixture://source-freshness-diff-v8/devhub-fee-schedule-summary",
+      "changed_sections": ["fees"],
+      "reviewer_note": "conflicting freshness signals in source diff fixture"
+    }
+  ]
+}

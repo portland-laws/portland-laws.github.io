@@ -1,6 +1,12 @@
 import { extractTdfolCountermodel } from './countermodels';
+import type { TdfolFormula } from './ast';
 import { parseTdfolFormula } from './parser';
-import { proveTdfolModalFormula, TdfolModalTableaux, TdfolTableauxBranch, TdfolTableauxWorld } from './modalTableaux';
+import {
+  proveTdfolModalFormula,
+  TdfolModalTableaux,
+  TdfolTableauxBranch,
+  TdfolTableauxWorld,
+} from './modalTableaux';
 
 describe('TDFOL modal tableaux', () => {
   it('closes direct contradictions in negated validity checks', () => {
@@ -33,6 +39,27 @@ describe('TDFOL modal tableaux', () => {
     expect(countermodel.explanation[0]).toContain('is not K-valid');
   });
 
+  it('instantiates universal formulas against branch constants', () => {
+    const result = proveTdfolModalFormula(
+      parseTdfolFormula('(forall x. Pred(x)) -> Pred(Alice)'),
+      'K',
+    );
+
+    expect(result.isValid).toBe(true);
+    expect(result.proofSteps).toContain('FORALL instantiation at world 0 with Alice');
+    expect(result.proofSteps.some((step) => step.includes('contradiction at world 0'))).toBe(true);
+  });
+
+  it('instantiates negated existential formulas against branch constants', () => {
+    const result = proveTdfolModalFormula(
+      parseTdfolFormula('Pred(Alice) -> exists x. Pred(x)'),
+      'K',
+    );
+
+    expect(result.isValid).toBe(true);
+    expect(result.proofSteps).toContain('EXISTS instantiation at world 0 with Alice');
+  });
+
   it('expands diamonds by creating accessible worlds', () => {
     const tableaux = new TdfolModalTableaux({ logicType: 'K' });
     const result = tableaux.prove(parseTdfolFormula('not eventually(Pred(x))'));
@@ -48,6 +75,46 @@ describe('TDFOL modal tableaux', () => {
     expect(result.isValid).toBe(false);
     expect(result.openBranch?.getAccessibleWorlds(0)).toEqual(new Set([0, 1]));
     expect(result.openBranch?.getAccessibleWorlds(1)).toEqual(new Set([1, 0]));
+  });
+
+  it('treats NEXT as a browser-native one-step modal successor', () => {
+    const result = proveTdfolModalFormula(
+      parseTdfolFormula('next(Pred(x)) -> eventually(Pred(x))'),
+      'K',
+    );
+
+    expect(result.isValid).toBe(true);
+    expect(result.proofSteps).toContain('NEXT: created world 1');
+    expect(result.proofSteps).toContain('Negated DIAMOND expansion at world 0');
+  });
+
+  it('branches XOR formulas into exclusive truth assignments', () => {
+    const pred = parseTdfolFormula('Pred(x)');
+    const goal = parseTdfolFormula('Goal(x)');
+    const xorFormula: TdfolFormula = {
+      kind: 'binary',
+      operator: 'XOR',
+      left: pred,
+      right: goal,
+    };
+    const exclusiveOrMeaning: TdfolFormula = {
+      kind: 'binary',
+      operator: 'AND',
+      left: { kind: 'binary', operator: 'OR', left: pred, right: goal },
+      right: {
+        kind: 'unary',
+        operator: 'NOT',
+        formula: { kind: 'binary', operator: 'AND', left: pred, right: goal },
+      },
+    };
+    const result = proveTdfolModalFormula(
+      { kind: 'binary', operator: 'IMPLIES', left: xorFormula, right: exclusiveOrMeaning },
+      'K',
+    );
+
+    expect(result.isValid).toBe(true);
+    expect(result.proofSteps).toContain('XOR split at world 0');
+    expect(result.closedBranches).toBe(result.totalBranches);
   });
 
   it('copies branches and tracks world contradictions with formula keys', () => {

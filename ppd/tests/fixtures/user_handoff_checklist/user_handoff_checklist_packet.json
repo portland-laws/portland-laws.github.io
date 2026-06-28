@@ -1,0 +1,216 @@
+{
+  "packet_id": "safe-next-action-user-handoff-checklist-synthetic-v1",
+  "packet_type": "ppd.safe_next_action.user_handoff_checklist.v1",
+  "mode": "fixture_first_offline_only_user_handoff",
+  "fixture_first": true,
+  "offline_only": true,
+  "llm_invoked": false,
+  "launches_devhub": false,
+  "launches_playwright": false,
+  "reads_private_files": false,
+  "network_requests_made": false,
+  "prerequisite_packet_links": [
+    {
+      "area": "source_registry_rehearsal",
+      "packet_id": "source-registry-rehearsal-fixture-v1",
+      "path": "ppd/tests/fixtures/release_gate_status/status_packet.json",
+      "kind": "validation_fixture",
+      "citations": ["ev-source-registry-fixture"]
+    },
+    {
+      "area": "guardrail_activation_rehearsal",
+      "packet_id": "guardrail-activation-rehearsal-fixture-v1",
+      "path": "ppd/tests/fixtures/release_gate_status/status_packet.json",
+      "kind": "validation_fixture",
+      "citations": ["ev-guardrail-activation-fixture"]
+    },
+    {
+      "area": "agent_api_conformance",
+      "packet_id": "agent-api-conformance-matrix-fixture-v1",
+      "path": "ppd/tests/fixtures/release_gate_status/status_packet.json",
+      "kind": "validation_fixture",
+      "citations": ["ev-agent-api-conformance"]
+    },
+    {
+      "area": "devhub_pilot_result_intake_readiness",
+      "packet_id": "devhub-read-only-pilot-result-intake-synthetic-v1",
+      "path": "ppd/tests/fixtures/release_gate_status/status_packet.json",
+      "kind": "validation_fixture",
+      "citations": ["ev-devhub-pilot-intake-template"]
+    }
+  ],
+  "source_packets": {
+    "agent_safe_next_action_release_notes": {
+      "packet_type": "ppd.safe_next_action.release_notes",
+      "packet_id": "ppd.safe_next_action.release_notes",
+      "consumed": true,
+      "citations": [
+        "fixture:public-crawl-metadata-dry-run:2026-05-28",
+        "fixture:requirement-regeneration-promotion-decision:2026-05-28",
+        "fixture:devhub-surface-registry-update-candidate:2026-05-28",
+        "fixture:agent-handoff-transcript-expectation-matrix:2026-05-28"
+      ]
+    },
+    "release_gate_status": {
+      "packet_type": "ppd.release_gate_status_packet.v1",
+      "packet_id": "ppd-release-gate-status-synthetic-v1",
+      "consumed": true,
+      "citations": [
+        "ev-agent-api-citation-checks",
+        "ev-agent-api-conformance",
+        "ev-consequential-actions-blocked",
+        "ev-devhub-official-actions-refused",
+        "ev-devhub-pilot-intake-template",
+        "ev-guardrail-activation-fixture",
+        "ev-source-registry-fixture",
+        "ev-source-registry-no-raw-body"
+      ]
+    },
+    "devhub_surface_registry_update_candidate": {
+      "packet_type": "ppd.devhub_surface_registry_update_candidate.v1",
+      "packet_id": "devhub-surface-registry-update-candidate-synthetic-v1",
+      "consumed": true,
+      "citations": [
+        "devhub-surface-registry-update-candidate-synthetic-v1",
+        "devhub_home_redacted",
+        "devhub_permit_detail_redacted"
+      ]
+    }
+  },
+  "cited_offline_user_prompts": [
+    {
+      "prompt_id": "user-prompt-01",
+      "audience": "user",
+      "prompt": "Should regenerated requirements stay fixture-only until PP&D confirms the source citation set?",
+      "offline_only": true,
+      "requires_private_file": false,
+      "requires_devhub_launch": false,
+      "citations": [
+        "fixture:public-crawl-metadata-dry-run:2026-05-28",
+        "fixture:requirement-regeneration-promotion-decision:2026-05-28",
+        "fixture:devhub-surface-registry-update-candidate:2026-05-28",
+        "fixture:agent-handoff-transcript-expectation-matrix:2026-05-28"
+      ]
+    },
+    {
+      "prompt_id": "user-prompt-02",
+      "audience": "user",
+      "prompt": "Who owns approval for moving the DevHub registry candidate from fixture to live verification?",
+      "offline_only": true,
+      "requires_private_file": false,
+      "requires_devhub_launch": false,
+      "citations": [
+        "fixture:public-crawl-metadata-dry-run:2026-05-28",
+        "fixture:requirement-regeneration-promotion-decision:2026-05-28",
+        "fixture:devhub-surface-registry-update-candidate:2026-05-28",
+        "fixture:agent-handoff-transcript-expectation-matrix:2026-05-28"
+      ]
+    }
+  ],
+  "allowed_reversible_local_previews": [
+    {
+      "preview_id": "review-source-registry-rehearsal-metadata",
+      "description": "Review fixture registry IDs, canonical URLs, freshness statuses, and no-raw-body attestations.",
+      "local_only": true,
+      "reversible": true,
+      "network_allowed": false,
+      "devhub_launch_allowed": false,
+      "official_action_allowed": false,
+      "citations": ["ev-source-registry-fixture", "ev-source-registry-no-raw-body"]
+    },
+    {
+      "preview_id": "compare-guardrail-rehearsal-outcomes",
+      "description": "Compare synthetic guardrail decisions with required PP&D blocked-action categories and exact-confirmation requirements.",
+      "local_only": true,
+      "reversible": true,
+      "network_allowed": false,
+      "devhub_launch_allowed": false,
+      "official_action_allowed": false,
+      "citations": ["ev-guardrail-activation-fixture", "ev-consequential-actions-blocked"]
+    },
+    {
+      "preview_id": "review-agent-api-conformance-matrix",
+      "description": "Review deterministic agent API response shapes, citation requirements, refusal labels, and reviewer prompt coverage.",
+      "local_only": true,
+      "reversible": true,
+      "network_allowed": false,
+      "devhub_launch_allowed": false,
+      "official_action_allowed": false,
+      "citations": ["ev-agent-api-conformance", "ev-agent-api-citation-checks"]
+    },
+    {
+      "preview_id": "prepare-devhub-pilot-result-intake-review",
+      "description": "Prepare reviewer intake questions for redacted attended-pilot metadata without keeping browser state or private field values.",
+      "local_only": true,
+      "reversible": true,
+      "network_allowed": false,
+      "devhub_launch_allowed": false,
+      "official_action_allowed": false,
+      "citations": ["ev-devhub-pilot-intake-template"]
+    }
+  ],
+  "blocked_consequential_actions": [
+    {
+      "action_id": "permit_submission",
+      "reason": "Permit submission is consequential and remains blocked.",
+      "enabled": false,
+      "blocked": true,
+      "requires_attended_user_confirmation": true,
+      "citations": ["ev-consequential-actions-blocked"]
+    },
+    {
+      "action_id": "fee_payment",
+      "reason": "Financial workflows remain blocked.",
+      "enabled": false,
+      "blocked": true,
+      "requires_attended_user_confirmation": true,
+      "citations": ["ev-consequential-actions-blocked"]
+    },
+    {
+      "action_id": "devhub_home_redacted:submit",
+      "reason": "DevHub surface candidate keeps this consequential control disabled.",
+      "enabled": false,
+      "blocked": true,
+      "requires_attended_user_confirmation": true,
+      "citations": ["devhub-surface-registry-update-candidate-synthetic-v1", "devhub_home_redacted"]
+    },
+    {
+      "action_id": "devhub_permit_detail_redacted:pay-fee",
+      "reason": "DevHub surface candidate keeps this consequential control disabled.",
+      "enabled": false,
+      "blocked": true,
+      "requires_attended_user_confirmation": true,
+      "citations": ["devhub-surface-registry-update-candidate-synthetic-v1", "devhub_permit_detail_redacted"]
+    }
+  ],
+  "reviewer_prompts": [
+    {
+      "prompt_id": "prompt-guardrail-stop-actions",
+      "reviewer_role": "PPD guardrail reviewer",
+      "question": "Does the guardrail rehearsal block upload, submission, certification, payment, scheduling, cancellation, and account-change paths?",
+      "requires_reviewer": true,
+      "citations": ["ev-guardrail-activation-fixture", "ev-consequential-actions-blocked"]
+    },
+    {
+      "prompt_id": "surface-devhub_home_redacted-manual-handoff-01",
+      "reviewer_role": "DevHub surface reviewer",
+      "question": "manual handoff if sign-in, MFA, CAPTCHA, account creation, upload, submit, certification, payment, scheduling, cancellation, or account settings prompt appears",
+      "requires_reviewer": true,
+      "citations": ["devhub-surface-registry-update-candidate-synthetic-v1", "devhub_home_redacted"]
+    }
+  ],
+  "rollback_references": [
+    {
+      "rollback_id": "rollback-01",
+      "instruction": "Remove the generated packet fixture and keep the previous PP&D fixture set.",
+      "local_rollback_only": true,
+      "requires_devhub_launch": false,
+      "citations": [
+        "fixture:public-crawl-metadata-dry-run:2026-05-28",
+        "fixture:requirement-regeneration-promotion-decision:2026-05-28",
+        "fixture:devhub-surface-registry-update-candidate:2026-05-28",
+        "fixture:agent-handoff-transcript-expectation-matrix:2026-05-28"
+      ]
+    }
+  ]
+}

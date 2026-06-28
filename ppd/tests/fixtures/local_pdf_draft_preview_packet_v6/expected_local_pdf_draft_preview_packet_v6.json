@@ -1,0 +1,185 @@
+{
+  "packet_version": "local-pdf-draft-preview-packet-v6",
+  "fixture_first": true,
+  "local_only": true,
+  "handoff_packet_ref": "guarded-draft-preview-handoff-v6-fixture",
+  "synthetic_field_fixture_ref": "synthetic-fillable-pdf-fields-v1-fixture",
+  "field_mapping_rows": [
+    {
+      "row_id": "mapping::pdf-field::site-address",
+      "pdf_fixture_id": "synthetic-local-preview-form",
+      "field_id": "pdf-field::site-address",
+      "pdf_field_name": "SiteAddressText",
+      "field_type": "text",
+      "required_fact_ids": ["fact::site-address"],
+      "matched_handoff_row_ids": ["handoff-row::site-address"],
+      "preview_value_placeholder": "NO_PRIVATE_DOCUMENT_VALUE_IN_FIXTURE",
+      "local_only": true,
+      "preview_only": true,
+      "writes_pdf": false,
+      "uses_private_document": false,
+      "source_evidence_ids": ["src::devhub-submit-guide::dynamic-questions"]
+    },
+    {
+      "row_id": "mapping::pdf-field::property-owner",
+      "pdf_fixture_id": "synthetic-local-preview-form",
+      "field_id": "pdf-field::property-owner",
+      "pdf_field_name": "PropertyOwnerText",
+      "field_type": "text",
+      "required_fact_ids": ["fact::property-owner"],
+      "matched_handoff_row_ids": ["handoff-row::property-owner"],
+      "preview_value_placeholder": "NO_PRIVATE_DOCUMENT_VALUE_IN_FIXTURE",
+      "local_only": true,
+      "preview_only": true,
+      "writes_pdf": false,
+      "uses_private_document": false,
+      "source_evidence_ids": ["src::single-pdf-process::separate-documents"]
+    },
+    {
+      "row_id": "mapping::pdf-field::applicant-email",
+      "pdf_fixture_id": "synthetic-local-preview-form",
+      "field_id": "pdf-field::applicant-email",
+      "pdf_field_name": "ApplicantEmailText",
+      "field_type": "text",
+      "required_fact_ids": ["fact::applicant-email"],
+      "matched_handoff_row_ids": [],
+      "preview_value_placeholder": "NO_PRIVATE_DOCUMENT_VALUE_IN_FIXTURE",
+      "local_only": true,
+      "preview_only": true,
+      "writes_pdf": false,
+      "uses_private_document": false,
+      "source_evidence_ids": ["src::devhub-submit-guide::dynamic-questions"]
+    }
+  ],
+  "missing_user_fact_prompts": [
+    {
+      "prompt_id": "missing-fact::fact::applicant-email",
+      "fact_id": "fact::applicant-email",
+      "prompt": "Ask the user for fixture-scoped provenance for fact::applicant-email before treating the local PDF preview row as reviewable.",
+      "blocks_field_ids": ["pdf-field::applicant-email"],
+      "source_evidence_ids": ["src::devhub-submit-guide::dynamic-questions"]
+    }
+  ],
+  "source_evidence_references": [
+    {
+      "source_evidence_id": "src::devhub-submit-guide::dynamic-questions",
+      "reference_kind": "fixture_public_or_guardrail_evidence",
+      "used_by_field_ids": ["pdf-field::site-address", "pdf-field::applicant-email"]
+    },
+    {
+      "source_evidence_id": "src::single-pdf-process::separate-documents",
+      "reference_kind": "fixture_public_or_guardrail_evidence",
+      "used_by_field_ids": ["pdf-field::property-owner"]
+    }
+  ],
+  "preview_only_rendering_notes": [
+    {
+      "note_id": "rendering::metadata-only",
+      "note": "Render field labels, synthetic field names, field types, placeholders, and citations only; do not read, create, or modify a PDF file.",
+      "source_evidence_ids": ["plan::local-pdf-preview", "plan::non-negotiable-boundaries"]
+    },
+    {
+      "note_id": "rendering::fillable-field-confidence",
+      "note": "Synthetic fillable-PDF fields are suitable for local mapping rehearsal only and require manual review before any attended workflow.",
+      "source_evidence_ids": ["fixture::synthetic-fillable-pdf-fields"]
+    }
+  ],
+  "no_private_document_placeholders": [
+    {
+      "placeholder_id": "placeholder::pdf-field::site-address",
+      "field_id": "pdf-field::site-address",
+      "placeholder_text": "NO_PRIVATE_DOCUMENT_VALUE_IN_FIXTURE",
+      "reason": "Preview packet carries no private document values or local file paths."
+    },
+    {
+      "placeholder_id": "placeholder::pdf-field::property-owner",
+      "field_id": "pdf-field::property-owner",
+      "placeholder_text": "NO_PRIVATE_DOCUMENT_VALUE_IN_FIXTURE",
+      "reason": "Preview packet carries no private document values or local file paths."
+    },
+    {
+      "placeholder_id": "placeholder::pdf-field::applicant-email",
+      "field_id": "pdf-field::applicant-email",
+      "placeholder_text": "NO_PRIVATE_DOCUMENT_VALUE_IN_FIXTURE",
+      "reason": "Preview packet carries no private document values or local file paths."
+    }
+  ],
+  "stop_gates": [
+    {
+      "topic": "upload",
+      "automated": false,
+      "requires_attended_user": true,
+      "requires_exact_confirmation": true,
+      "disposition": "stop_and_manual_handoff",
+      "source_evidence_ids": ["plan::non-negotiable-boundaries"]
+    },
+    {
+      "topic": "submission",
+      "automated": false,
+      "requires_attended_user": true,
+      "requires_exact_confirmation": true,
+      "disposition": "stop_and_manual_handoff",
+      "source_evidence_ids": ["plan::non-negotiable-boundaries"]
+    },
+    {
+      "topic": "certification",
+      "automated": false,
+      "requires_attended_user": true,
+      "requires_exact_confirmation": true,
+      "disposition": "stop_and_manual_handoff",
+      "source_evidence_ids": ["plan::non-negotiable-boundaries"]
+    },
+    {
+      "topic": "payment",
+      "automated": false,
+      "requires_attended_user": true,
+      "requires_exact_confirmation": true,
+      "disposition": "stop_and_manual_handoff",
+      "source_evidence_ids": ["plan::non-negotiable-boundaries"]
+    }
+  ],
+  "manual_review_notes": [
+    {
+      "note_id": "manual-review::field-mapping",
+      "note": "A reviewer must compare the synthetic mapping rows, missing prompts, and cited evidence before any user-facing draft guidance is promoted.",
+      "source_evidence_ids": ["plan::manual-review", "fixture::guarded-handoff-v6"]
+    },
+    {
+      "note_id": "manual-review::official-actions",
+      "note": "Consequential DevHub actions remain stopped and require attended user review with action-specific confirmation outside this packet.",
+      "source_evidence_ids": ["plan::authenticated-devhub-boundaries"]
+    }
+  ],
+  "no_effect_policy": {
+    "live_devhub_access": false,
+    "private_session_auth_artifacts": false,
+    "official_action_completion_claims": false,
+    "legal_or_permitting_guarantees": false,
+    "active_mutation_flags": false,
+    "opens_devhub": false,
+    "reads_private_documents": false,
+    "downloads_forms": false,
+    "writes_pdf": false,
+    "uploads": false,
+    "submits": false,
+    "certifies": false,
+    "pays": false,
+    "schedules": false,
+    "cancels": false,
+    "uses_authenticated_session": false,
+    "stores_auth_state": false,
+    "stores_cookies": false,
+    "creates_traces": false,
+    "creates_screenshots": false,
+    "creates_har_files": false,
+    "makes_legal_or_permitting_guarantees": false,
+    "mutates_release_state": false,
+    "mutates_guardrails": false,
+    "mutates_prompts": false
+  },
+  "validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/agent_readiness/local_pdf_draft_preview_packet_v6.py", "ppd/tests/test_local_pdf_draft_preview_packet_v6.py"],
+    ["python3", "-m", "unittest", "ppd.tests.test_local_pdf_draft_preview_packet_v6"],
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

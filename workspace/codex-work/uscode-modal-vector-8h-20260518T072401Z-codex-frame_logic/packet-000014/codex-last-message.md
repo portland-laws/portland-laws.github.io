@@ -1,0 +1,10 @@
+Implemented a deterministic frame-logic audit improvement so frame-family cue features are now included as ontology-term evidence.
+
+- Added cue parsing support in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000014-20260518_083531/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:100) and [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000014-20260518_083531/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:350) to extract terms from `cue:frame:<symbol>:<cue>` feature keys.
+- Wired frame-cue features into codec audit inputs in [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000014-20260518_083531/ipfs_datasets_py/logic/modal/codec.py:373) by adding `_frame_cue_features(...)` at [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000014-20260518_083531/ipfs_datasets_py/logic/modal/codec.py:1212).
+- Added regression tests for cue-based extraction in [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000014-20260518_083531/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:256) and [test_flogic_integration.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000014-20260518_083531/tests/unit/logic/test_flogic_integration.py:460).
+
+Validation run:
+
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py tests/unit/logic/test_flogic_integration.py`
+- Result: `54 passed`

@@ -1,0 +1,14 @@
+Implemented a deterministic no-cue U.S.C. fallback for the modal parser and added regression coverage for the three TODO sample IDs.
+
+- Added a final fallback stage in `fallback_formula` that runs only when all existing U.S.C. fallbacks miss, text is non-empty, citation is U.S.C., and cue extraction is empty: [legal_modal_parser.py:301](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000031-20260518_105918/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:301).
+- Added `_uscode_no_cue_citation_fallback_formula` to emit a deterministic frame formula (`fallback_rule = uscode_no_cue_citation_v1`) from a compact segment window: [legal_modal_parser.py:1083](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000031-20260518_105918/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:1083).
+- Added TODO-specific regression fixtures and test for:
+  - `us-code-14-1155-e938dff6f2f5890b`
+  - `us-code-7-2110-14b22fe93d7e45d7`
+  - `us-code-7-2611-3091131587c51778`
+  in [test_legal_modal_parser.py:216](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000031-20260518_105918/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py:216) and [test_legal_modal_parser.py:980](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000031-20260518_105918/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py:980).
+
+Validation run:
+
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py::test_parser_replays_symbolic_validity_todo_samples_for_14_1155_7_2110_and_7_2611` (passed)
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py` (26 passed)

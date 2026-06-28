@@ -1,8 +1,14 @@
 import type { ProofResult } from '../types';
-import { ModusPonensRule, TemporalKAxiomRule, TemporalTAxiomRule, type TdfolInferenceRule } from './inferenceRules';
+import {
+  ModusPonensRule,
+  TemporalKAxiomRule,
+  TemporalTAxiomRule,
+  type TdfolInferenceRule,
+} from './inferenceRules';
 import { parseTdfolFormula } from './parser';
 import {
   proveTdfolWithStrategySelection,
+  TdfolBaseProverStrategy,
   TdfolBackwardChainingStrategy,
   TdfolBidirectionalStrategy,
   TdfolCecDelegateStrategy,
@@ -10,11 +16,40 @@ import {
   TdfolLocalCecDelegate,
   TdfolModalTableauxStrategy,
   TdfolStrategySelector,
+  TDFOL_STRATEGY_SELECTOR_METADATA,
   tdfolToCecExpression,
   type TdfolProverStrategy,
 } from './strategies';
 
 describe('TDFOL proving strategies', () => {
+  it('exposes the browser-native base strategy contract with Python source metadata', () => {
+    const strategy = new FixtureBaseStrategy();
+    const theorem = parseTdfolFormula('Goal(x)');
+    const kb = { axioms: [parseTdfolFormula('Pred(x)'), parseTdfolFormula('Pred(x) -> Goal(x)')] };
+
+    expect(strategy.canHandle(theorem, kb)).toBe(true);
+    expect(strategy.getPriority()).toBe(42);
+    expect(strategy.estimateCost(theorem, kb)).toBeGreaterThan(1);
+    expect(strategy.getMetadata(theorem, kb)).toMatchObject({
+      name: 'Fixture Base Strategy',
+      type: 'forward_chaining',
+      priority: 42,
+      sourcePythonModule: 'logic/TDFOL/strategies/base.py',
+      browserNative: true,
+      defaultTimeoutMs: 250,
+    });
+    expect(strategy.prove(theorem, kb)).toMatchObject({
+      status: 'proved',
+      theorem: 'Goal(x)',
+      method: 'forward_chaining',
+      steps: [{ rule: 'FixtureLookup', conclusion: 'Goal(x)' }],
+    });
+  });
+
+  it('rejects invalid base strategy definitions fail-closed', () => {
+    expect(() => new InvalidBaseStrategy()).toThrow('TDFOL prover strategy name must be non-empty');
+  });
+
   it('proves direct knowledge-base formulas with forward chaining', () => {
     const theorem = parseTdfolFormula('Pred(x)');
     const strategy = new TdfolForwardChainingStrategy({ rules: [ModusPonensRule] });
@@ -28,7 +63,10 @@ describe('TDFOL proving strategies', () => {
   });
 
   it('derives formulas through bounded forward chaining', () => {
-    const strategy = new TdfolForwardChainingStrategy({ rules: [ModusPonensRule], maxIterations: 5 });
+    const strategy = new TdfolForwardChainingStrategy({
+      rules: [ModusPonensRule],
+      maxIterations: 5,
+    });
     const result = strategy.prove(parseTdfolFormula('Goal(x)'), {
       axioms: [parseTdfolFormula('Pred(x)'), parseTdfolFormula('Pred(x) -> Goal(x)')],
     });
@@ -40,12 +78,48 @@ describe('TDFOL proving strategies', () => {
     expect(result.timeMs).toBeGreaterThanOrEqual(0);
   });
 
-  it('chains temporal and propositional rules using the strategy facade', () => {
-    const result = proveTdfolWithStrategySelection(parseTdfolFormula('Goal(x)'), {
-      axioms: [parseTdfolFormula('always(Pred(x) -> Goal(x))'), parseTdfolFormula('always(Pred(x))')],
-    }, {
-      strategies: [new TdfolForwardChainingStrategy({ rules: [TemporalKAxiomRule, TemporalTAxiomRule] })],
+  it('uses late axioms and newly derived formulas as the forward-chaining frontier', () => {
+    const filler = Array.from({ length: 25 }, (_value, index) =>
+      parseTdfolFormula(`Noise${index}(x)`),
+    );
+    const strategy = new TdfolForwardChainingStrategy({
+      rules: [ModusPonensRule],
+      maxIterations: 5,
+      binaryPremiseWindow: 2,
     });
+
+    const result = strategy.prove(parseTdfolFormula('Goal(x)'), {
+      axioms: [
+        ...filler,
+        parseTdfolFormula('LateFact(x)'),
+        parseTdfolFormula('LateFact(x) -> Mid(x)'),
+        parseTdfolFormula('Mid(x) -> Goal(x)'),
+      ],
+    });
+
+    expect(result).toMatchObject({
+      status: 'proved',
+      theorem: 'Goal(x)',
+      method: 'forward_chaining',
+    });
+    expect(result.steps.map((step) => step.conclusion)).toEqual(['Mid(x)', 'Goal(x)']);
+  });
+
+  it('chains temporal and propositional rules using the strategy facade', () => {
+    const result = proveTdfolWithStrategySelection(
+      parseTdfolFormula('Goal(x)'),
+      {
+        axioms: [
+          parseTdfolFormula('always(Pred(x) -> Goal(x))'),
+          parseTdfolFormula('always(Pred(x))'),
+        ],
+      },
+      {
+        strategies: [
+          new TdfolForwardChainingStrategy({ rules: [TemporalKAxiomRule, TemporalTAxiomRule] }),
+        ],
+      },
+    );
 
     expect(result).toMatchObject({
       status: 'proved',
@@ -55,9 +129,14 @@ describe('TDFOL proving strategies', () => {
   });
 
   it('returns unknown when the selected strategy cannot progress', () => {
-    const strategy = new TdfolForwardChainingStrategy({ rules: [ModusPonensRule], maxIterations: 2 });
+    const strategy = new TdfolForwardChainingStrategy({
+      rules: [ModusPonensRule],
+      maxIterations: 2,
+    });
 
-    expect(strategy.prove(parseTdfolFormula('Goal(x)'), { axioms: [parseTdfolFormula('Pred(x)')] })).toMatchObject({
+    expect(
+      strategy.prove(parseTdfolFormula('Goal(x)'), { axioms: [parseTdfolFormula('Pred(x)')] }),
+    ).toMatchObject({
       status: 'unknown',
     });
   });
@@ -70,9 +149,14 @@ describe('TDFOL proving strategies', () => {
       canApply: () => true,
       apply: (formula) => ({ kind: 'temporal', operator: 'EVENTUALLY', formula }),
     };
-    const strategy = new TdfolForwardChainingStrategy({ rules: [expandingRule], maxDerivedFormulas: 2 });
+    const strategy = new TdfolForwardChainingStrategy({
+      rules: [expandingRule],
+      maxDerivedFormulas: 2,
+    });
 
-    expect(strategy.prove(parseTdfolFormula('Goal(x)'), { axioms: [parseTdfolFormula('Pred(x)')] })).toMatchObject({
+    expect(
+      strategy.prove(parseTdfolFormula('Goal(x)'), { axioms: [parseTdfolFormula('Pred(x)')] }),
+    ).toMatchObject({
       status: 'timeout',
       error: 'Derived formula budget exceeded',
     });
@@ -91,7 +175,9 @@ describe('TDFOL proving strategies', () => {
     const cheap = fakeStrategy('Cheap', 10, 1, false);
     const selector = new TdfolStrategySelector({ strategies: [expensive, cheap] });
 
-    expect(selector.selectStrategy(parseTdfolFormula('Goal(x)'), { axioms: [] }, true).name).toBe('Cheap');
+    expect(selector.selectStrategy(parseTdfolFormula('Goal(x)'), { axioms: [] }, true).name).toBe(
+      'Cheap',
+    );
   });
 
   it('reports strategy metadata and ordered fallback lists', () => {
@@ -103,12 +189,79 @@ describe('TDFOL proving strategies', () => {
       { name: 'High', type: 'forward_chaining', priority: 50, cost: 2 },
       { name: 'Low', type: 'forward_chaining', priority: 5, cost: 1 },
     ]);
-    expect(selector.selectMultiple(parseTdfolFormula('Goal(x)'), { axioms: [] }, 1).map((s) => s.name)).toEqual(['High']);
+    expect(
+      selector.selectMultiple(parseTdfolFormula('Goal(x)'), { axioms: [] }, 1).map((s) => s.name),
+    ).toEqual(['High']);
+  });
+
+  it('ports strategy_selector.py metadata and priority selection diagnostics', () => {
+    const selector = new TdfolStrategySelector({
+      strategies: [fakeStrategy('Low', 5, 1, false), fakeStrategy('High', 50, 2, false)],
+    });
+    const selection = selector.selectStrategyWithTrace(parseTdfolFormula('Goal(x)'), {
+      axioms: [],
+    });
+
+    expect(TDFOL_STRATEGY_SELECTOR_METADATA).toMatchObject({
+      sourcePythonModule: 'logic/TDFOL/strategies/strategy_selector.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntimeRequired: false,
+    });
+    expect(selector.getMetadata().strategyCount).toBe(2);
+    expect(selection.strategy.name).toBe('High');
+    expect(selection.trace).toMatchObject({
+      mode: 'priority',
+      fallbackUsed: false,
+      selected: { name: 'High', priority: 50, cost: 2 },
+      sourcePythonModule: 'logic/TDFOL/strategies/strategy_selector.py',
+      serverCallsAllowed: false,
+      pythonRuntimeRequired: false,
+    });
+    expect(selection.trace.applicableStrategies.map((strategy) => strategy.name)).toEqual([
+      'High',
+      'Low',
+    ]);
+  });
+
+  it('ports strategy_selector.py low-cost and fallback selection traces', () => {
+    const lowCostSelector = new TdfolStrategySelector({
+      strategies: [fakeStrategy('Expensive', 100, 200, false), fakeStrategy('Cheap', 10, 1, false)],
+    });
+
+    expect(
+      lowCostSelector.selectStrategyWithTrace(parseTdfolFormula('Goal(x)'), { axioms: [] }, true)
+        .trace,
+    ).toMatchObject({
+      mode: 'low_cost',
+      selected: { name: 'Cheap', cost: 1 },
+      fallbackUsed: false,
+    });
+
+    const fallbackSelector = new TdfolStrategySelector({
+      strategies: [
+        fakeStrategy('ModalOnly', 90, 4, false, false, 'modal_tableaux'),
+        fakeStrategy('ForwardFallback', 30, 8, false, false, 'forward_chaining'),
+      ],
+    });
+    const fallback = fallbackSelector.selectStrategyWithTrace(parseTdfolFormula('Goal(x)'), {
+      axioms: [],
+    });
+
+    expect(fallback.strategy.name).toBe('ForwardFallback');
+    expect(fallback.trace).toMatchObject({
+      mode: 'fallback',
+      fallbackUsed: true,
+      applicableStrategies: [],
+      selected: { name: 'ForwardFallback', type: 'forward_chaining' },
+    });
   });
 
   it('selects modal tableaux for modal formulas in the default strategy set', () => {
     const selector = new TdfolStrategySelector();
-    const strategy = selector.selectStrategy(parseTdfolFormula('always(Pred(x)) -> Pred(x)'), { axioms: [] });
+    const strategy = selector.selectStrategy(parseTdfolFormula('always(Pred(x)) -> Pred(x)'), {
+      axioms: [],
+    });
 
     expect(strategy.name).toBe('Modal Tableaux');
     expect(strategy.strategyType).toBe('modal_tableaux');
@@ -129,7 +282,9 @@ describe('TDFOL proving strategies', () => {
   it('returns unknown with an open branch for non-valid modal formulas', () => {
     const strategy = new TdfolModalTableauxStrategy({ logicType: 'K' });
 
-    expect(strategy.prove(parseTdfolFormula('always(Pred(x)) -> Pred(x)'), { axioms: [] })).toMatchObject({
+    expect(
+      strategy.prove(parseTdfolFormula('always(Pred(x)) -> Pred(x)'), { axioms: [] }),
+    ).toMatchObject({
       status: 'unknown',
       method: 'modal_tableaux:K',
       error: 'Open branch remains after 1 branch(es)',
@@ -183,10 +338,15 @@ describe('TDFOL proving strategies', () => {
 
   it('falls back to forward proof search in bidirectional mode', () => {
     const strategy = new TdfolBidirectionalStrategy({
-      forward: new TdfolForwardChainingStrategy({ rules: [TemporalKAxiomRule, TemporalTAxiomRule] }),
+      forward: new TdfolForwardChainingStrategy({
+        rules: [TemporalKAxiomRule, TemporalTAxiomRule],
+      }),
     });
     const result = strategy.prove(parseTdfolFormula('Goal(x)'), {
-      axioms: [parseTdfolFormula('always(Pred(x) -> Goal(x))'), parseTdfolFormula('always(Pred(x))')],
+      axioms: [
+        parseTdfolFormula('always(Pred(x) -> Goal(x))'),
+        parseTdfolFormula('always(Pred(x))'),
+      ],
     });
 
     expect(result).toMatchObject({
@@ -209,9 +369,11 @@ describe('TDFOL proving strategies', () => {
       'cec_delegate',
       'backward_chaining',
     ]);
-    expect(selector.selectStrategy(parseTdfolFormula('Goal(x)'), {
-      axioms: [parseTdfolFormula('Pred(x)'), parseTdfolFormula('Pred(x) -> Goal(x)')],
-    }).strategyType).toBe('bidirectional');
+    expect(
+      selector.selectStrategy(parseTdfolFormula('Goal(x)'), {
+        axioms: [parseTdfolFormula('Pred(x)'), parseTdfolFormula('Pred(x) -> Goal(x)')],
+      }).strategyType,
+    ).toBe('bidirectional');
   });
 
   it('translates TDFOL formulas to browser-native CEC expressions for delegation', () => {
@@ -247,21 +409,67 @@ describe('TDFOL proving strategies', () => {
     expect(result.steps.at(-1)?.conclusion).toBe('(F (Enter x))');
   });
 
+  it('runs native CEC inference rules over translated TDFOL formulas', () => {
+    const strategy = new TdfolCecDelegateStrategy({
+      delegate: new TdfolLocalCecDelegate({ maxIterations: 2 }),
+    });
+    const result = strategy.prove(parseTdfolFormula('O(Comply(x)) and O(Report(x))'), {
+      axioms: [parseTdfolFormula('O(Comply(x) and Report(x))')],
+    });
+
+    expect(result).toMatchObject({
+      status: 'proved',
+      method: 'cec_delegate',
+    });
+    expect(result.steps.some((step) => step.rule === 'CecObligationDistribution')).toBe(true);
+    expect(result.steps.at(-1)?.conclusion).toBe('(and (O (Comply x)) (O (Report x)))');
+  });
+
+  it('delegates temporal implication chaining to browser-native CEC rules', () => {
+    const strategy = new TdfolCecDelegateStrategy({
+      delegate: new TdfolLocalCecDelegate({ maxIterations: 2 }),
+    });
+    const result = strategy.prove(parseTdfolFormula('always(Goal(x))'), {
+      axioms: [
+        parseTdfolFormula('always(Pred(x))'),
+        parseTdfolFormula('always(Pred(x) -> Goal(x))'),
+      ],
+    });
+
+    expect(result).toMatchObject({
+      status: 'proved',
+      method: 'cec_delegate',
+    });
+    expect(result.steps.some((step) => step.rule === 'CecAlwaysImplication')).toBe(true);
+    expect(result.steps.at(-1)?.conclusion).toBe('(always (Goal x))');
+  });
+
   it('returns explicit unknown results when the local CEC delegate cannot justify a proof', () => {
     const strategy = new TdfolCecDelegateStrategy();
 
-    expect(strategy.prove(parseTdfolFormula('O(Comply(x))'), { axioms: [parseTdfolFormula('Permit(x)')] })).toMatchObject({
+    expect(
+      strategy.prove(parseTdfolFormula('O(Comply(x))'), {
+        axioms: [parseTdfolFormula('Permit(x)')],
+      }),
+    ).toMatchObject({
       status: 'unknown',
       method: 'cec_delegate',
     });
   });
 });
 
-function fakeStrategy(name: string, priority: number, cost: number, proved: boolean): TdfolProverStrategy {
+function fakeStrategy(
+  name: string,
+  priority: number,
+  cost: number,
+  proved: boolean,
+  canHandle = true,
+  strategyType: TdfolProverStrategy['strategyType'] = 'forward_chaining',
+): TdfolProverStrategy {
   return {
     name,
-    strategyType: 'forward_chaining',
-    canHandle: () => true,
+    strategyType,
+    canHandle: () => canHandle,
     prove: (formula): ProofResult => ({
       status: proved ? 'proved' : 'unknown',
       theorem: String(formula),
@@ -271,4 +479,38 @@ function fakeStrategy(name: string, priority: number, cost: number, proved: bool
     getPriority: () => priority,
     estimateCost: () => cost,
   };
+}
+
+class FixtureBaseStrategy extends TdfolBaseProverStrategy {
+  constructor() {
+    super({
+      name: 'Fixture Base Strategy',
+      strategyType: 'forward_chaining',
+      priority: 42,
+      defaultTimeoutMs: 250,
+    });
+  }
+
+  prove(
+    formula: ReturnType<typeof parseTdfolFormula>,
+    kb: { axioms: ReturnType<typeof parseTdfolFormula>[] },
+  ): ProofResult {
+    const start = performance.now();
+    return this.finishResult(
+      'proved',
+      formula,
+      [this.createStep(1, 'FixtureLookup', kb.axioms.slice(0, 1), formula, 'Fixture base proof')],
+      start,
+    );
+  }
+}
+
+class InvalidBaseStrategy extends TdfolBaseProverStrategy {
+  constructor() {
+    super({ name: ' ', strategyType: 'forward_chaining' });
+  }
+
+  prove(formula: ReturnType<typeof parseTdfolFormula>): ProofResult {
+    return this.finishResult('unknown', formula, [], performance.now());
+  }
 }

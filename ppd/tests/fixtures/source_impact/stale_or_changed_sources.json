@@ -1,0 +1,81 @@
+{
+  "fixture_id": "ppd-stale-or-changed-source-impact-20260515",
+  "description": "Deterministic synthetic source impact report for stale or changed PP&D source hashes.",
+  "source_impacts": [
+    {
+      "source_id": "source-devhub-application-guide-synthetic",
+      "previous_source_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "changed_source_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "change_reason": "devhub permit application guidance changed",
+      "affected_requirement_ids": [
+        "req-devhub-application-dynamic-questions",
+        "req-devhub-application-save-draft",
+        "req-devhub-application-certification-gate"
+      ],
+      "affected_process_ids": [
+        "process-building-permit-application",
+        "process-trade-with-plan-review-application"
+      ],
+      "affected_guardrail_bundle_ids": [
+        "guardrail-devhub-application-draft",
+        "guardrail-devhub-certification-stop"
+      ],
+      "blocked_readiness_statuses": [
+        "blocked_stale_source_review_required",
+        "blocked_requirement_revalidation_required",
+        "blocked_guardrail_recompile_required"
+      ],
+      "recommendation_status": "not_current"
+    },
+    {
+      "source_id": "source-single-pdf-guidance-synthetic",
+      "previous_source_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "changed_source_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "change_reason": "single PDF upload and file preparation guidance changed",
+      "affected_requirement_ids": [
+        "req-single-pdf-drawing-plans-combined",
+        "req-supporting-documents-separate-pdfs",
+        "req-file-naming-standard-before-upload"
+      ],
+      "affected_process_ids": [
+        "process-document-preparation",
+        "process-upload-staging"
+      ],
+      "affected_guardrail_bundle_ids": [
+        "guardrail-document-readiness",
+        "guardrail-upload-staging-stop"
+      ],
+      "blocked_readiness_statuses": [
+        "blocked_document_rule_review_required",
+        "blocked_upload_rule_revalidation_required",
+        "blocked_recommendation_refresh_required"
+      ],
+      "recommendation_status": "not_current"
+    },
+    {
+      "source_id": "source-fee-payment-guide-synthetic",
+      "previous_source_hash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "changed_source_hash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "change_reason": "fee payment instructions changed",
+      "affected_requirement_ids": [
+        "req-payment-details-attended-only",
+        "req-final-payment-submit-refused-without-user",
+        "req-fee-notice-review-before-payment"
+      ],
+      "affected_process_ids": [
+        "process-fee-payment",
+        "process-post-intake-fee-notice"
+      ],
+      "affected_guardrail_bundle_ids": [
+        "guardrail-financial-action-stop",
+        "guardrail-fee-notice-readonly-review"
+      ],
+      "blocked_readiness_statuses": [
+        "blocked_financial_guardrail_review_required",
+        "blocked_fee_instruction_revalidation_required",
+        "blocked_recommendation_refresh_required"
+      ],
+      "recommendation_status": "not_current"
+    }
+  ]
+}

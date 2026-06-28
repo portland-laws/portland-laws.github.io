@@ -4,6 +4,7 @@ import {
   ChunkedBatchProcessor,
   FOLBatchProcessor,
   ProofBatchProcessor,
+  exportBatchResult,
   normalizeProofLogic,
 } from './batchProcessing';
 
@@ -30,6 +31,35 @@ describe('logic batch processing browser-native parity helpers', () => {
       results_count: 3,
       errors_count: 1,
     });
+  });
+
+  it('exports BatchResult summaries as browser-native JSON and CSV without filesystem access', () => {
+    const result = new BatchResult({
+      totalItems: 2,
+      successful: 1,
+      failed: 1,
+      totalTime: 0.5,
+      itemsPerSecond: 4,
+      results: ['ok'],
+      errors: [{ index: 1, error: 'bad, "quoted" item' }],
+    });
+
+    expect(JSON.parse(result.toJson(0))).toEqual(result.toDict());
+    expect(exportBatchResult(result, 'dict')).toEqual(result.toDict());
+    expect(exportBatchResult(result, 'json', { jsonIndent: 0 })).toBe(result.toJson(0));
+    expect(result.toCsv()).toBe(
+      [
+        'metric,value',
+        'total_items,2',
+        'successful,1',
+        'failed,1',
+        'total_time,0.5',
+        'items_per_second,4',
+        'success_rate,50',
+        'results_count,1',
+        'errors_count,1',
+      ].join('\n'),
+    );
   });
 
   it('processes async batches with bounded local concurrency and per-item errors', async () => {
@@ -62,16 +92,21 @@ describe('logic batch processing browser-native parity helpers', () => {
 
   it('runs FOL conversion batches through the local converter', async () => {
     const processor = new FOLBatchProcessor(2, { useMl: true });
-    const result = await processor.convertBatch(['All tenants are residents', 'If tenant then resident'], {
-      useNlp: true,
-    });
+    const result = await processor.convertBatch(
+      ['All tenants are residents', 'If tenant then resident'],
+      {
+        useNlp: true,
+      },
+    );
 
     expect(result).toMatchObject({ totalItems: 2, successful: 2, failed: 0 });
     expect(result.results.map((item) => item.output?.formulaString)).toEqual([
       '∀x (Tenants(x) → Residents(x))',
       '∀x (Tenant(x) → Resident(x))',
     ]);
-    expect(result.results.every((item) => item.metadata.browser_native_ml_confidence === true)).toBe(true);
+    expect(
+      result.results.every((item) => item.metadata.browser_native_ml_confidence === true),
+    ).toBe(true);
   });
 
   it('runs proof batches through the browser-native bridge', async () => {
@@ -99,11 +134,14 @@ describe('logic batch processing browser-native parity helpers', () => {
       onChunkStart: (index, total) => chunks.push(`${index}/${total}`),
     });
 
-    const result = await processor.processLargeBatch(['a', 'b', 'c', 'd', 'e'], async (item, index) => {
-      now += 1;
-      if (item === 'd') throw new Error('bad chunk item');
-      return `${index}:${item}`;
-    });
+    const result = await processor.processLargeBatch(
+      ['a', 'b', 'c', 'd', 'e'],
+      async (item, index) => {
+        now += 1;
+        if (item === 'd') throw new Error('bad chunk item');
+        return `${index}:${item}`;
+      },
+    );
 
     expect(chunks).toEqual(['1/3', '2/3', '3/3']);
     expect(result).toMatchObject({ totalItems: 5, successful: 4, failed: 1 });

@@ -1,0 +1,138 @@
+{
+  "packet_type": "ppd.inactive_public_refresh_process_model_delta_plan.v1",
+  "packet_version": "v1",
+  "fixture_first": true,
+  "plan_mode": "fixture_first_inactive_public_refresh_process_model_delta_plan_only",
+  "requirement_reextraction_queue_refs": [
+    {
+      "queue_ref_id": "queue-ref-public-refresh-reextraction-devhub-faq",
+      "queue_packet_ref": "public-refresh-requirement-reextraction-queue-v2::synthetic-devhub-faq",
+      "requirement_candidate_refs": [
+        "pending-requirement-devhub-account-service-review"
+      ]
+    }
+  ],
+  "inactive_process_model_delta_placeholders": [
+    {
+      "placeholder_id": "inactive-process-model-delta-placeholder-online-permit-application",
+      "process_model_id": "process-online-permit-application",
+      "permit_type": "online permit application",
+      "requirement_reextraction_queue_refs": [
+        "queue-ref-public-refresh-reextraction-devhub-faq"
+      ],
+      "stage_level_eligibility_change_refs": [
+        "stage-change-devhub-account-setup-eligibility"
+      ],
+      "document_requirement_change_refs": [
+        "document-change-devhub-account-guide-reference"
+      ],
+      "unsupported_path_note_refs": [
+        "unsupported-path-note-email-or-non-devhub-routes"
+      ],
+      "stale_or_conflicting_evidence_hold_refs": [
+        "evidence-hold-devhub-faq-stale-review"
+      ],
+      "affected_guardrail_bundle_refs": [
+        "guardrail-bundle-ref-online-permit-application"
+      ],
+      "reviewer_routing_refs": [
+        "reviewer-route-process-model-owner"
+      ],
+      "rollback_note_refs": [
+        "rollback-note-drop-inactive-placeholder"
+      ],
+      "validation_commands": [
+        [
+          "python3",
+          "ppd/daemon/ppd_daemon.py",
+          "--self-test"
+        ]
+      ],
+      "status": "inactive_process_model_delta_placeholder_only",
+      "activation_allowed": false,
+      "active_mutation": false,
+      "active_process_model_mutation": false,
+      "active_guardrail_mutation": false,
+      "mutates_active_process_models": false,
+      "mutates_active_guardrails": false
+    }
+  ],
+  "stage_level_eligibility_changes": [
+    {
+      "stage_change_id": "stage-change-devhub-account-setup-eligibility",
+      "process_stage": "account setup or manual login",
+      "change_placeholder": "Review whether public guidance changes account-scoped eligibility language for online permitting services.",
+      "status": "inactive_review_placeholder"
+    }
+  ],
+  "document_requirement_changes": [
+    {
+      "document_change_id": "document-change-devhub-account-guide-reference",
+      "requirement_type": "document_requirement",
+      "change_placeholder": "Review whether updated public guidance changes supporting guide references before any ProcessModel update.",
+      "status": "inactive_review_placeholder"
+    }
+  ],
+  "unsupported_path_notes": [
+    {
+      "unsupported_path_note_id": "unsupported-path-note-email-or-non-devhub-routes",
+      "note": "Some permit paths may remain outside DevHub; reviewer must keep unsupported paths explicit before activation.",
+      "status": "inactive_note_only"
+    }
+  ],
+  "stale_or_conflicting_evidence_holds": [
+    {
+      "evidence_hold_id": "evidence-hold-devhub-faq-stale-review",
+      "hold_reason": "Public refresh candidate requires stale or conflicting evidence review before formalization.",
+      "status": "hold_active"
+    }
+  ],
+  "affected_guardrail_bundle_refs": [
+    {
+      "guardrail_bundle_ref_id": "guardrail-bundle-ref-online-permit-application",
+      "guardrail_bundle_id": "guardrail-online-permit-application",
+      "impact_placeholder": "Potential downstream guardrail recompilation candidate only after ProcessModel review approval.",
+      "status": "inactive_reference_only"
+    }
+  ],
+  "reviewer_routing": [
+    {
+      "reviewer_route_id": "reviewer-route-process-model-owner",
+      "review_queue": "public_refresh_process_model_delta_review",
+      "reviewer_role": "process_model_owner",
+      "status": "routing_required"
+    }
+  ],
+  "rollback_notes": [
+    {
+      "rollback_note_id": "rollback-note-drop-inactive-placeholder",
+      "note": "Rollback is to discard this inactive placeholder packet and leave active ProcessModel and guardrail bundles unchanged.",
+      "status": "rollback_note_only"
+    }
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ],
+  "active_mutation": false,
+  "active_process_model_mutation": false,
+  "active_process_model_promotion": false,
+  "active_guardrail_mutation": false,
+  "active_guardrail_promotion": false,
+  "active_requirement_mutation": false,
+  "active_source_registry_mutation": false,
+  "mutates_active_process_models": false,
+  "mutates_active_guardrails": false,
+  "mutates_active_requirements": false,
+  "official_action_completed": false,
+  "devhub_opened": false,
+  "live_extraction": false,
+  "live_crawl": false,
+  "raw_output_stored": false,
+  "downloaded_artifact_stored": false,
+  "private_artifact_stored": false,
+  "legal_or_permitting_guarantee": false
+}

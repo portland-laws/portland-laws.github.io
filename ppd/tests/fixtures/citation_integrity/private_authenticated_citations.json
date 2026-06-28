@@ -1,0 +1,15 @@
+{
+  "requirements": [
+    {
+      "requirement_id": "req-private-authenticated",
+      "requirement_type": "action_gate",
+      "source_evidence_ids": [
+        {
+          "citation_id": "cite-private-authenticated",
+          "source_id": "ppd-private-devhub-case",
+          "span_id": "span-private-case-status"
+        }
+      ]
+    }
+  ]
+}

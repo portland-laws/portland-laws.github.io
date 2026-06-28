@@ -1,0 +1,64 @@
+[
+  {
+    "case_id": "missing_hold_thresholds",
+    "patch": {
+      "monitoring_checks": [
+        {
+          "check_id": "no-thresholds",
+          "source_evidence_ids": ["src-ppd-official-anchors"],
+          "reviewer_routing": {"primary_reviewer": "ppd-public-source-reviewer"}
+        }
+      ]
+    },
+    "expected_problem": "lacks hold thresholds"
+  },
+  {
+    "case_id": "missing_reviewer_routing",
+    "patch": {
+      "reviewer_routing": {},
+      "monitoring_checks": [
+        {
+          "check_id": "no-routing",
+          "source_evidence_ids": ["src-ppd-official-anchors"],
+          "hold_thresholds": {"missing_required_source_count": 1}
+        }
+      ]
+    },
+    "expected_problem": "lacks reviewer routing"
+  },
+  {
+    "case_id": "missing_validation_commands",
+    "patch": {"validation_commands": []},
+    "expected_problem": "validation_commands must contain the exact PP&D daemon self-test command"
+  },
+  {
+    "case_id": "private_session_browser_raw_downloaded_artifact",
+    "patch": {"browser_artifact_path": "/home/example/.devhub/session-state.json"},
+    "expected_problem": "private/session/browser/raw/downloaded artifact"
+  },
+  {
+    "case_id": "live_crawl_claim",
+    "patch": {"monitoring_notes": "The live crawl ran against public sources."},
+    "expected_problem": "live crawl or DevHub claim"
+  },
+  {
+    "case_id": "live_devhub_claim",
+    "patch": {"monitoring_notes": "The reviewer logged in to DevHub and accessed DevHub."},
+    "expected_problem": "live crawl or DevHub claim"
+  },
+  {
+    "case_id": "official_action_completion_claim",
+    "patch": {"monitoring_notes": "The permit application was submitted and payment completed."},
+    "expected_problem": "official-action completion claim"
+  },
+  {
+    "case_id": "scheduler_state_mutation_claim",
+    "patch": {"scheduler_state_update": "enabled nightly monitor job"},
+    "expected_problem": "scheduler-state mutation claim"
+  },
+  {
+    "case_id": "active_mutation_flag",
+    "patch": {"execution_boundaries": {"active_monitoring_mutation": true}},
+    "expected_problem": "active mutation flag"
+  }
+]

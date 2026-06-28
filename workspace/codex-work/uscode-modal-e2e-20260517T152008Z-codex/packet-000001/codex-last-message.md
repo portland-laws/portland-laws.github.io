@@ -1,0 +1,27 @@
+Implemented a deterministic modal-family ambiguity policy in the compiler, with supporting registry/codec helpers and tests.
+
+- Added family-ambiguity config + detection in [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152008Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152008Z-codex-packet-000001-20260517_152019/ipfs_datasets_py/logic/modal/compiler.py:48):
+- `modal_family_share_margin`, `modal_family_secondary_share_floor`
+- new ambiguity types: `close_modal_family_shares`, `temporal_normative_overlap`
+- wired into compile flow via `_family_ambiguities(...)` ([compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152008Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152008Z-codex-packet-000001-20260517_152019/ipfs_datasets_py/logic/modal/compiler.py:150), [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152008Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152008Z-codex-packet-000001-20260517_152019/ipfs_datasets_py/logic/modal/compiler.py:245)).
+
+- Added normative-family helper in [modal_registry.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152008Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152008Z-codex-packet-000001-20260517_152019/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py:28):
+- `NORMATIVE_MODAL_FAMILIES`
+- `is_normative_modal_family(...)`.
+
+- Added deterministic family ranking helper in [spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152008Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152008Z-codex-packet-000001-20260517_152019/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py:429):
+- `ranked_modal_families(...)`
+- plus `SpaCyLegalEncoding.ranked_modal_families()` ([spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152008Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152008Z-codex-packet-000001-20260517_152019/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py:124)).
+
+- Added tests:
+- compiler ambiguity overlap case: [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152008Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152008Z-codex-packet-000001-20260517_152019/tests/unit_tests/logic/modal/test_modal_codec.py:146)
+- family ranking helper: [test_spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152008Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152008Z-codex-packet-000001-20260517_152019/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py:79)
+- normative helper: [test_modal_registry.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152008Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152008Z-codex-packet-000001-20260517_152019/tests/unit/optimizers/logic_theorem_optimizer/test_modal_registry.py:51)
+
+Validation:
+- `pytest` invocation failed before test execution due pre-existing repo bootstrap issue: root `__init__.py` raises `NameError: __path__ is not defined`.
+- Syntax compilation passed with `python3 -m compileall` on changed files.
+- Direct smoke run confirmed ambiguity emission: `['multi_family_same_span', 'close_modal_family_shares', 'temporal_normative_overlap']`.
+
+Patch artifact generated as requested:
+- [changes.patch](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152008Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152008Z-codex-packet-000001-20260517_152019/changes.patch)

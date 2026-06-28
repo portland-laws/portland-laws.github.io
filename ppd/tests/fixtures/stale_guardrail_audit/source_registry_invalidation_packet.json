@@ -1,0 +1,125 @@
+{
+  "packet_id": "stale_guardrail_audit_packet_v1",
+  "active_guardrail_bundle_inputs": {
+    "guardrail_bundle_id": "single_pdf_process_guardrails_active_v1",
+    "compiled_from_registry_revision": "source-registry-2026-05-07",
+    "deterministic_predicates": [
+      {
+        "id": "pred-single-pdf-required",
+        "predicate": "requires_single_searchable_drawing_pdf",
+        "source_evidence_ids": ["src-submit-plans-online"]
+      },
+      {
+        "id": "pred-property-address-known",
+        "predicate": "requires_property_address_before_draft",
+        "source_evidence_ids": ["src-devhub-application-guide"]
+      },
+      {
+        "id": "pred-fee-review-before-payment",
+        "predicate": "requires_fee_notice_review_before_payment",
+        "source_evidence_ids": ["src-fee-payment-guide"]
+      }
+    ],
+    "explanation_templates": [
+      {
+        "id": "explain-single-pdf-required",
+        "template": "Drawing plans must be grouped as one searchable PDF before upload staging.",
+        "source_evidence_ids": ["src-submit-plans-online"]
+      },
+      {
+        "id": "explain-fee-payment-gate",
+        "template": "Payment remains blocked until the user reviews the fee notice and confirms the exact payment action.",
+        "source_evidence_ids": ["src-fee-payment-guide"]
+      }
+    ],
+    "refused_action_predicates": [
+      {
+        "id": "refuse-submit-application",
+        "predicate": "refuse_submit_without_attended_exact_confirmation",
+        "source_evidence_ids": ["src-submit-plans-online"]
+      },
+      {
+        "id": "refuse-submit-payment",
+        "predicate": "refuse_payment_submission_without_attended_confirmation",
+        "source_evidence_ids": ["src-fee-payment-guide"]
+      }
+    ],
+    "exact_confirmation_predicates": [
+      {
+        "id": "confirm-submit-application",
+        "predicate": "requires_exact_confirmation_for_submit_application",
+        "source_evidence_ids": ["src-submit-plans-online"]
+      },
+      {
+        "id": "confirm-submit-payment",
+        "predicate": "requires_exact_confirmation_for_submit_payment",
+        "source_evidence_ids": ["src-fee-payment-guide"]
+      }
+    ]
+  },
+  "source_registry_update_candidate": {
+    "registry_revision_candidate": "source-registry-2026-05-08-candidate",
+    "sources": [
+      {
+        "source_id": "src-submit-plans-online",
+        "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+        "freshness_status": "changed",
+        "previous_content_hash": "sha256:single-pdf-old",
+        "current_content_hash": "sha256:single-pdf-new",
+        "update_explanation": "Submit Plans Online guidance changed after the active bundle was compiled."
+      },
+      {
+        "source_id": "src-fee-payment-guide",
+        "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+        "freshness_status": "changed",
+        "previous_content_hash": "sha256:fee-guide-old",
+        "current_content_hash": "sha256:fee-guide-new",
+        "update_explanation": "Fee payment guide candidate changed the payment review instructions."
+      },
+      {
+        "source_id": "src-devhub-application-guide",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+        "freshness_status": "current",
+        "previous_content_hash": "sha256:application-guide-current",
+        "current_content_hash": "sha256:application-guide-current",
+        "update_explanation": "No change detected."
+      }
+    ]
+  },
+  "invalidation_decision_queue": {
+    "queue_id": "invalidation-queue-2026-05-08",
+    "decisions": [
+      {
+        "source_id": "src-submit-plans-online",
+        "decision": "invalidate",
+        "affected_item_ids": [
+          "pred-single-pdf-required",
+          "explain-single-pdf-required",
+          "refuse-submit-application",
+          "confirm-submit-application"
+        ],
+        "rationale": "Plan upload and submit guidance changed; stale bundle inputs require human review before reuse.",
+        "requires_human_review": true
+      },
+      {
+        "source_id": "src-fee-payment-guide",
+        "decision": "invalidate",
+        "affected_item_ids": [
+          "pred-fee-review-before-payment",
+          "explain-fee-payment-gate",
+          "refuse-submit-payment",
+          "confirm-submit-payment"
+        ],
+        "rationale": "Financial workflow instructions changed; payment guardrails require human review before reuse.",
+        "requires_human_review": true
+      },
+      {
+        "source_id": "src-devhub-application-guide",
+        "decision": "keep",
+        "affected_item_ids": [],
+        "rationale": "Application guide hash is unchanged.",
+        "requires_human_review": false
+      }
+    ]
+  }
+}

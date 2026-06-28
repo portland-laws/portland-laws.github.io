@@ -1,0 +1,133 @@
+{
+  "valid_packet": {
+    "packet_type": "ppd.agent_readiness_packet.v1",
+    "generated_at": "2026-05-28T00:00:00Z",
+    "normalized_source_evidence": [
+      {
+        "evidence_id": "src-devhub-guide",
+        "source_id": "devhub-guide-submit-permit-application",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+        "freshness_status": "current",
+        "last_verified_at": "2026-05-20T00:00:00Z"
+      }
+    ],
+    "response_examples": [
+      {
+        "label": "manual upload handoff",
+        "source_evidence_ids": ["src-devhub-guide"],
+        "message": "I can prepare a metadata-only draft, but upload requires your attended review."
+      }
+    ],
+    "case_gap_report": {
+      "case_id": "case-redacted-001",
+      "source_evidence_ids": ["src-devhub-guide"],
+      "blocked_actions": [
+        {
+          "action_id": "upload-corrections",
+          "action_class": "upload_to_official_record",
+          "decision": "manual_handoff_required"
+        }
+      ]
+    },
+    "action_decision_output": {
+      "action_id": "upload-corrections",
+      "action_class": "upload_to_official_record",
+      "decision": "manual_handoff_required",
+      "blocked": true,
+      "source_evidence_ids": ["src-devhub-guide"]
+    },
+    "manual_handoff_response": {
+      "requires_user_attendance": true,
+      "response_template": "This action requires your attended DevHub session and exact confirmation before any official upload.",
+      "source_evidence_ids": ["src-devhub-guide"]
+    },
+    "devhub_surface_map_readiness": {
+      "surface_id": "devhub-upload-review",
+      "automation_mode": "attended",
+      "source_evidence_ids": ["src-devhub-guide"]
+    },
+    "execution_mode": "metadata_only"
+  },
+  "invalid_packets": [
+    {
+      "name": "uncited response example",
+      "patch": {
+        "response_examples": [
+          {
+            "label": "uncited",
+            "message": "You can submit this now."
+          }
+        ]
+      },
+      "expected_problem": "response example lacks source_evidence_ids"
+    },
+    {
+      "name": "stale source id marked current",
+      "patch": {
+        "normalized_source_evidence": [
+          {
+            "evidence_id": "src-devhub-guide",
+            "source_id": "devhub-guide-submit-permit-application",
+            "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+            "freshness_status": "current",
+            "last_verified_at": "2026-01-01T00:00:00Z"
+          }
+        ],
+        "stale_source_ids": ["src-devhub-guide"]
+      },
+      "expected_problem": "stale source evidence is marked current"
+    },
+    {
+      "name": "private local path",
+      "patch": {
+        "preview_metadata": {
+          "local_path": "/home/REDACTED/devhub-private/upload.pdf"
+        }
+      },
+      "expected_problem": "local private path is not allowed"
+    },
+    {
+      "name": "blocked action downgrade",
+      "patch": {
+        "case_gap_report": {
+          "case_id": "case-redacted-001",
+          "source_evidence_ids": ["src-devhub-guide"],
+          "blocked_actions": ["upload-corrections"]
+        },
+        "action_decision_output": {
+          "action_id": "upload-corrections",
+          "action_class": "upload_to_official_record",
+          "decision": "allowed",
+          "blocked": false,
+          "source_evidence_ids": ["src-devhub-guide"]
+        }
+      },
+      "expected_problem": "blocked action is downgraded"
+    },
+    {
+      "name": "missing manual handoff response",
+      "patch": {
+        "manual_handoff_response": null
+      },
+      "expected_problem": "manual_handoff_response is required"
+    },
+    {
+      "name": "live llm execution flag",
+      "patch": {
+        "live_llm_execution": true
+      },
+      "expected_problem": "live LLM execution flag is not allowed"
+    },
+    {
+      "name": "DevHub automation claim",
+      "patch": {
+        "devhub_surface_map_readiness": {
+          "surface_id": "devhub-upload-review",
+          "devhub_automation_enabled": true,
+          "source_evidence_ids": ["src-devhub-guide"]
+        }
+      },
+      "expected_problem": "DevHub automation claim is not allowed"
+    }
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "case_id": "case-demo-adu-001",
+  "process_id": "process-residential-adu-devhub-demo",
+  "known_facts": {
+    "property_address": "Fixture address redacted",
+    "project_scope": "Detached ADU demo fixture"
+  },
+  "matched_documents": [
+    {
+      "document_id": "site_plan_pdf",
+      "status": "present"
+    }
+  ],
+  "missing_facts": [
+    {
+      "fact_id": "contractor_license_status",
+      "question": "What contractor license status should be used for this DevHub application?",
+      "reason": "The available fixture choices can depend on license information.",
+      "source_evidence_ids": ["ev-standard-trade-license"]
+    }
+  ],
+  "missing_documents": [
+    {
+      "document_id": "single_pdf_plan_set",
+      "question": "Do you have the drawing plan set prepared as one PDF, with supporting documents separated?",
+      "reason": "The current document store has separate sheets but no confirmed single plan-set PDF.",
+      "source_evidence_ids": ["ev-single-pdf-guidance"]
+    }
+  ],
+  "stale_evidence": [
+    {
+      "evidence_id": "ev-devhub-save-later",
+      "message": "The saved-draft guidance fixture is older than the process freshness policy allows.",
+      "severity": "warning"
+    }
+  ],
+  "conflicting_evidence": [
+    {
+      "conflict_id": "conflict-plan-format",
+      "message": "The user document store has individual plan sheets, while PP&D guidance requires one drawing plan PDF for online submittal.",
+      "severity": "blocker",
+      "source_evidence_ids": ["ev-single-pdf-guidance"]
+    }
+  ],
+  "required_confirmations": [
+    {
+      "confirmation_id": "confirm-submit-application",
+      "action_type": "submit_permit_request"
+    }
+  ],
+  "blocked_actions": [
+    {
+      "action_id": "action-upload-corrections",
+      "action_type": "upload_to_official_record",
+      "label": "Upload correction files to DevHub",
+      "reason": "Official uploads are consequential and require attended confirmation.",
+      "source_evidence_ids": ["ev-upload-corrections"]
+    }
+  ],
+  "next_safe_actions": [
+    {
+      "action_id": "action-draft-form-values",
+      "action_type": "draft_form_values",
+      "label": "Draft reversible application field values from known facts",
+      "source_evidence_ids": ["ev-devhub-save-later"]
+    },
+    {
+      "action_id": "action-submit-request",
+      "action_type": "submit_permit_request",
+      "label": "Submit the permit request in DevHub",
+      "reason": "Submission is consequential and must wait for exact user confirmation.",
+      "source_evidence_ids": ["ev-devhub-submit-certify"]
+    }
+  ]
+}

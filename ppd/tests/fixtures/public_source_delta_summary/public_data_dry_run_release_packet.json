@@ -1,0 +1,107 @@
+{
+  "packet_type": "public_data_dry_run_release_packet",
+  "release_id": "public-dry-run-2026-05-28-fixture",
+  "prerequisite_packet_ids": [
+    "public-capture-summary-2026-05-28-fixture",
+    "public-data-release-gate-2026-05-28-fixture"
+  ],
+  "side_effect_policy": {
+    "metadata_only": true,
+    "crawl_performed": false,
+    "download_performed": false,
+    "production_bundle_changed": false
+  },
+  "sources": [
+    {
+      "source_id": "ppd-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "delta_status": "changed",
+      "changed_fields": ["content_hash", "required_document_labels"],
+      "evidence_ref": "fixture-manifest:submit-plans-online",
+      "citation_refs": ["citation:submit-plans-online:single-pdf-guidance"]
+    },
+    {
+      "source_id": "ppd-devhub-faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "delta_status": "unchanged",
+      "changed_fields": [],
+      "evidence_ref": "fixture-manifest:devhub-faq",
+      "citation_refs": ["citation:devhub-faq:public-services-list"]
+    },
+    {
+      "source_id": "ppd-fee-payment-guide",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "delta_status": "added",
+      "changed_fields": ["source_registry_entry"],
+      "evidence_ref": "fixture-manifest:fee-payment-guide",
+      "citation_refs": ["citation:fee-payment-guide:final-submit-gate"]
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "req-single-pdf-plans",
+      "source_ids": ["ppd-submit-plans-online"],
+      "requirement_type": "document_requirement"
+    },
+    {
+      "requirement_id": "req-payment-final-submit-gate",
+      "source_ids": ["ppd-fee-payment-guide"],
+      "requirement_type": "action_gate"
+    },
+    {
+      "requirement_id": "req-devhub-account-signin",
+      "source_ids": ["ppd-devhub-faq"],
+      "requirement_type": "precondition"
+    }
+  ],
+  "guardrails": [
+    {
+      "guardrail_id": "guardrail-upload-staging-review",
+      "validation_status": "requires_human_review",
+      "requirement_ids": ["req-single-pdf-plans"],
+      "block_reason": "Changed public source affects document upload staging guidance."
+    },
+    {
+      "guardrail_id": "guardrail-payment-final-submit",
+      "validation_status": "blocked",
+      "requirement_ids": ["req-payment-final-submit-gate"],
+      "block_reason": "Financial workflow remains exact-confirmation gated."
+    },
+    {
+      "guardrail_id": "guardrail-devhub-read-only-status",
+      "validation_status": "valid",
+      "requirement_ids": ["req-devhub-account-signin"],
+      "block_reason": ""
+    }
+  ],
+  "review_items": [
+    {
+      "review_id": "review-single-pdf-labels",
+      "status": "open",
+      "reason": "Confirm changed required document labels before formalization.",
+      "source_ids": ["ppd-submit-plans-online"],
+      "requirement_ids": ["req-single-pdf-plans"]
+    },
+    {
+      "review_id": "review-devhub-faq-baseline",
+      "status": "resolved",
+      "reason": "Unchanged fixture baseline.",
+      "source_ids": ["ppd-devhub-faq"],
+      "requirement_ids": ["req-devhub-account-signin"]
+    }
+  ],
+  "next_steps": [
+    {
+      "step_id": "next-update-metadata-fixture",
+      "kind": "fixture_update",
+      "description": "Update normalized metadata fixtures for the changed public source only.",
+      "metadata_only": true
+    },
+    {
+      "step_id": "next-operator-guardrail-review",
+      "kind": "guardrail_review",
+      "description": "Review blocked guardrail explanations before any agent-facing bundle promotion.",
+      "metadata_only": true
+    }
+  ]
+}

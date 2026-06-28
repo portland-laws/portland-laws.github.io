@@ -1,0 +1,66 @@
+{
+  "fixture_version": "prior-refresh-fixture-references-v6",
+  "fixture_first": true,
+  "source_observations": [
+    {
+      "source_id": "ppd-devhub-faq-placeholder",
+      "fixture_reference": "next-public-refresh-seed-packet-v5::ppd-devhub-faq-placeholder",
+      "stale_source_hold": true,
+      "changed_requirement_risk": "high",
+      "affected_requirement_ids": [
+        "requirement-devhub-account-scoped-services",
+        "requirement-devhub-corrections-upload-gate",
+        "requirement-devhub-fee-payment-gate"
+      ],
+      "affected_guardrail_bundle_ids": [
+        "guardrail-building-permit-application",
+        "guardrail-fee-payment",
+        "guardrail-inspection-scheduling"
+      ],
+      "reviewer_routing": "devhub-public-guidance-reviewer"
+    },
+    {
+      "source_id": "ppd-submit-plans-online-placeholder",
+      "fixture_reference": "next-public-refresh-seed-packet-v5::ppd-submit-plans-online-placeholder",
+      "stale_source_hold": true,
+      "changed_requirement_risk": "medium",
+      "affected_requirement_ids": [
+        "requirement-single-pdf-plan-set",
+        "requirement-supporting-documents-separate-pdfs",
+        "requirement-file-naming-standards-current"
+      ],
+      "affected_guardrail_bundle_ids": [
+        "guardrail-building-permit-application",
+        "guardrail-document-package-readiness"
+      ],
+      "reviewer_routing": "public-content-reviewer"
+    },
+    {
+      "source_id": "ppd-fee-payment-guide-placeholder",
+      "fixture_reference": "stale-source-agent-hold-packet-v1::source-fee-payment-guide",
+      "stale_source_hold": true,
+      "changed_requirement_risk": "medium",
+      "affected_requirement_ids": [
+        "requirement-payment-final-submit-gate",
+        "requirement-payment-detail-entry-gate"
+      ],
+      "affected_guardrail_bundle_ids": [
+        "guardrail-fee-payment"
+      ],
+      "reviewer_routing": "forms-and-pdf-reviewer"
+    },
+    {
+      "source_id": "ppd-forms-index-placeholder",
+      "fixture_reference": "next-public-refresh-seed-packet-v5::ppd-forms-index-placeholder",
+      "stale_source_hold": false,
+      "changed_requirement_risk": "low",
+      "affected_requirement_ids": [
+        "requirement-forms-index-public-reference"
+      ],
+      "affected_guardrail_bundle_ids": [
+        "guardrail-document-package-readiness"
+      ],
+      "reviewer_routing": "forms-and-pdf-reviewer"
+    }
+  ]
+}

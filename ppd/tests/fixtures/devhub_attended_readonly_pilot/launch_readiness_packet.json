@@ -1,0 +1,66 @@
+{
+  "packet_type": "devhub_attended_readonly_pilot_launch_readiness_packet",
+  "packet_id": "devhub-attended-readonly-launch-readiness-fixture-001",
+  "pilot_id": "devhub-attended-readonly-pilot-fixture",
+  "reviewer_owner_fields": {
+    "reviewer": "ppd-reviewer-fixture",
+    "owner": "devhub-pilot-operator-fixture",
+    "approval_required_before_live_use": true
+  },
+  "manual_user_attendance_checkpoints": [
+    {
+      "checkpoint_id": "attendance-001",
+      "operator_observation": "A live authorized user must be present before any DevHub page is viewed. This fixture does not authenticate or open a browser."
+    },
+    {
+      "checkpoint_id": "attendance-002",
+      "operator_observation": "The operator must stop at any login, CAPTCHA, MFA, payment, submission, certification, cancellation, upload, or official action prompt."
+    }
+  ],
+  "redacted_page_state_summaries": [
+    {
+      "page_state_id": "page-state-001",
+      "page_label": "DevHub landing page placeholder",
+      "redacted_summary": "Expected public navigation chrome and permit-search entry points only; no account, project, parcel-owner, payment, document, or application details are included.",
+      "redactions_applied": [
+        "account identifiers",
+        "project addresses",
+        "permit numbers",
+        "document links",
+        "payment state"
+      ]
+    },
+    {
+      "page_state_id": "page-state-002",
+      "page_label": "Read-only permit detail placeholder",
+      "redacted_summary": "Expected read-only detail layout is represented by neutral labels and empty state notes; this fixture contains no private DevHub data.",
+      "redactions_applied": [
+        "applicant names",
+        "review comments",
+        "inspection details",
+        "uploaded filenames"
+      ]
+    }
+  ],
+  "selector_confidence_confirmations": [
+    {
+      "selector_id": "readonly-navigation-fixture",
+      "confidence": "medium",
+      "basis": "Derived from fixture labels only and must be re-confirmed by an attended user before any live read-only pilot use."
+    },
+    {
+      "selector_id": "permit-detail-heading-fixture",
+      "confidence": "low",
+      "basis": "Placeholder selector confidence only; no private DevHub DOM, screenshot, trace, or authenticated page content was inspected."
+    }
+  ],
+  "guardrail_attestations": {
+    "no_browser_launched": true,
+    "no_auth_state_created_or_read": true,
+    "no_private_devhub_data_read": true,
+    "no_screenshots_captured": true,
+    "no_traces_captured": true,
+    "no_downloads_created": true,
+    "no_official_action_taken": true
+  }
+}

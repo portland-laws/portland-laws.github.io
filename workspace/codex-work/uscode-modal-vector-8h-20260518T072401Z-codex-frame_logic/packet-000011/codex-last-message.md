@@ -1,0 +1,18 @@
+Implemented a deterministic frame-term audit expansion across the frame-logic lane.
+
+**What changed**
+- Expanded frame-feature parsing and predicate normalization to capture legacy and slot-style frame-linked keys/predicates (hyphen/underscore variants, `slot:selected_frame:*`, legacy `candidate-frame`, `selected_frame_term`, etc.) in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000011-20260518_080742/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:53).
+- Updated codec audit flow to include decoded slot features in frame ontology audit feature keys before final term aggregation, and pass those keys into F-logic evaluation metadata in [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000011-20260518_080742/ipfs_datasets_py/logic/modal/codec.py:344) and [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000011-20260518_080742/ipfs_datasets_py/logic/modal/codec.py:1116).
+- Extended `FLogicSemanticOptimizer.evaluate` to accept optional `frame_feature_keys` and merge term audit from both feature keys and triples in [flogic_optimizer.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000011-20260518_080742/ipfs_datasets_py/optimizers/logic/flogic_optimizer.py:160).
+
+**Tests added**
+- Legacy/slot feature-key coverage and legacy triple predicate coverage in [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000011-20260518_080742/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:158).
+- Feature-key-driven frame ontology metadata coverage in [test_flogic_integration.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000011-20260518_080742/tests/unit/logic/test_flogic_integration.py:431).
+
+**Validation run**
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py`  
+- `pytest -q tests/unit/logic/test_flogic_integration.py -k "frame_ontology_term"`  
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "frame_ontology_term"`  
+All three are blocked by a pre-existing environment issue: `NameError: __path__ is not defined` in top-level `__init__.py` during test setup.
+- Syntax checks passed with `python3 -m py_compile` on edited modules/tests.
+- Direct smoke imports/execution for new frame-term paths succeeded.

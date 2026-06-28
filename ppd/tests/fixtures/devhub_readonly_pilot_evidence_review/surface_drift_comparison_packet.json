@@ -1,0 +1,18 @@
+{
+  "comparison_id": "surface-drift-comparison-devhub-readonly-001",
+  "pilot_id": "devhub-readonly-pilot-fixture-001",
+  "surface_diffs": [
+    {
+      "surface_id": "devhub-home-readonly",
+      "status": "matched",
+      "summary": "Synthetic home surface remained consistent with the candidate runbook.",
+      "candidate_registry_ref": "surface-registry-candidate/devhub-home-readonly"
+    },
+    {
+      "surface_id": "devhub-permit-detail-readonly",
+      "status": "selector_review_required",
+      "summary": "Synthetic permit detail status region kept read-only semantics but selector confidence is below promotion threshold.",
+      "candidate_registry_ref": "surface-registry-candidate/devhub-permit-detail-readonly"
+    }
+  ]
+}

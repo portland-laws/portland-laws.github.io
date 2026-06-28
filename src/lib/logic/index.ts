@@ -12,11 +12,15 @@ export {
   evaluateNlPolicy,
   evaluate_nl_policy,
   getGlobalLogicApi,
+  handleLogicApiServerRequest,
+  handle_logic_api_server_request,
   proveLogic,
   requireBrowserNativeSignedDelegation,
   resetGlobalLogicApi,
 } from './api';
 export type {
+  LogicApiServerRequest,
+  LogicApiServerResponse,
   LogicApiOptions,
   NlPolicyCompileResult,
   NlPolicyEvaluationResult,
@@ -25,10 +29,13 @@ export type {
 export * from './cache';
 export * from './batchProcessing';
 export * from './benchmarks';
+export * from './browserNativeValidation';
+export * from './cli';
 export * from './cec';
 export * from './config';
 export * from './converters';
 export * from './deontic';
+export * from './developerPanelSnapshots';
 export * from './errors';
 export * from './featureDetection';
 export * from './flogic';
@@ -39,6 +46,8 @@ export * from './monitoring';
 export * from './normalization';
 export * from './observability';
 export * from './proofCache';
+export * from './pythonLogicInventory';
+export * from './pythonSurfaceReplacements';
 export * from './reasoning';
 export * from './runtimeCapabilities';
 export * from './security';

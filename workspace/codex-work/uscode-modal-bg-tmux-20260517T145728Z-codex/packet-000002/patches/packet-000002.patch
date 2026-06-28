@@ -1,0 +1,164 @@
+diff --git a/ipfs_datasets_py/logic/modal/compiler.py b/ipfs_datasets_py/logic/modal/compiler.py
+index 03feae36..e652adc9 100644
+--- a/ipfs_datasets_py/logic/modal/compiler.py
++++ b/ipfs_datasets_py/logic/modal/compiler.py
+@@ -7,6 +7,7 @@ to decide the canonical IR.
+ 
+ from __future__ import annotations
+ 
++import math
+ from dataclasses import asdict, dataclass, field, replace
+ from typing import Any, Dict, List, Optional, Sequence
+ 
+@@ -24,11 +25,13 @@ from ipfs_datasets_py.optimizers.logic_theorem_optimizer.modal_ir import (
+ )
+ from ipfs_datasets_py.optimizers.logic_theorem_optimizer.modal_registry import (
+     DEFAULT_MODAL_REGISTRY,
++    ModalLogicFamily,
+     ModalRegistry,
+ )
+ from ipfs_datasets_py.optimizers.logic_theorem_optimizer.spacy_modal_codec import (
+     SpaCyLegalEncoder,
+     SpaCyLegalEncoding,
++    SpaCyModalDecoder,
+     SpaCyModalIRCompiler,
+ )
+ 
+@@ -42,6 +45,7 @@ class ModalCompilerConfig:
+     top_k_frames: int = 3
+     frame_domain: Optional[str] = None
+     frame_score_margin: float = 0.05
++    family_probability_margin: float = 0.15
+ 
+ 
+ @dataclass(frozen=True)
+@@ -101,6 +105,7 @@ class DeterministicModalCompiler:
+             model_name=self.config.spacy_model_name,
+             registry=registry,
+         )
++        self.decoder = SpaCyModalDecoder()
+         self.ir_compiler = SpaCyModalIRCompiler()
+         self.frame_selector = frame_selector or BM25FrameSelector(DEFAULT_LEGAL_FRAME_FIXTURE)
+ 
+@@ -143,6 +148,7 @@ class DeterministicModalCompiler:
+         ambiguities = [
+             *self._formula_ambiguities(modal_ir),
+             *self._frame_ambiguities(frame_selections),
++            *self._family_ambiguities(encoding),
+         ]
+         if normalized_text and not modal_ir.formulas:
+             ambiguities.append(
+@@ -259,6 +265,65 @@ class DeterministicModalCompiler:
+             )
+         ]
+ 
++    def _family_ambiguities(
++        self,
++        encoding: SpaCyLegalEncoding,
++    ) -> List[ModalCompilationAmbiguity]:
++        family_counts = encoding.modal_family_counts()
++        if len(family_counts) < 2:
++            return []
++        family_logits = self.decoder.family_logits(
++            encoding,
++            modal_families=[family.value for family in ModalLogicFamily],
++        )
++        family_probabilities = _softmax(family_logits)
++        ranked = sorted(
++            family_probabilities.items(),
++            key=lambda item: (-float(item[1]), item[0]),
++        )
++        if len(ranked) < 2:
++            return []
++        (top_family, top_probability), (runner_up_family, runner_up_probability) = ranked[:2]
++        margin = float(top_probability) - float(runner_up_probability)
++        if margin > self.config.family_probability_margin:
++            return []
++        return [
++            ModalCompilationAmbiguity(
++                ambiguity_type="close_modal_family_scores",
++                message="Top modal family scores are close enough to require review.",
++                candidate_ids=[top_family, runner_up_family],
++                metadata={
++                    "margin": round(margin, 6),
++                    "top_family": top_family,
++                    "top_probability": round(float(top_probability), 6),
++                    "runner_up_family": runner_up_family,
++                    "runner_up_probability": round(float(runner_up_probability), 6),
++                    "family_counts": family_counts,
++                },
++            )
++        ]
++
++
++def _softmax(logits: Dict[str, float]) -> Dict[str, float]:
++    if not logits:
++        return {}
++    max_logit = max(float(value) for value in logits.values())
++    exponentials = {
++        family: math.exp(float(value) - max_logit)
++        for family, value in logits.items()
++    }
++    total = sum(exponentials.values())
++    if total == 0.0:
++        uniform = 1.0 / len(exponentials)
++        return {
++            family: uniform
++            for family in sorted(exponentials)
++        }
++    return {
++        family: exponentials[family] / total
++        for family in sorted(exponentials)
++    }
++
+ 
+ __all__ = [
+     "DeterministicModalCompiler",
+diff --git a/tests/unit_tests/logic/modal/test_modal_codec.py b/tests/unit_tests/logic/modal/test_modal_codec.py
+index 4d47cd83..70edbc1e 100644
+--- a/tests/unit_tests/logic/modal/test_modal_codec.py
++++ b/tests/unit_tests/logic/modal/test_modal_codec.py
+@@ -143,6 +143,43 @@ def test_modal_compiler_decompiler_are_explainable_and_deterministic() -> None:
+     }
+ 
+ 
++def test_modal_compiler_surfaces_close_modal_family_scores_as_ambiguity() -> None:
++    compiler = DeterministicModalCompiler(
++        ModalCompilerConfig(
++            parser_backend="regex",
++            spacy_model_name="definitely_missing_legal_model",
++            family_probability_margin=0.15,
++        )
++    )
++
++    ambiguous = compiler.compile(
++        "The agency may proceed when it finds a violation.",
++        document_id="family-ambiguous-doc",
++        source="us_code",
++    )
++    clear = compiler.compile(
++        "The agency must provide notice.",
++        document_id="family-clear-doc",
++        source="us_code",
++    )
++
++    family_ambiguities = [
++        ambiguity
++        for ambiguity in ambiguous.ambiguities
++        if ambiguity.ambiguity_type == "close_modal_family_scores"
++    ]
++    assert family_ambiguities
++    assert family_ambiguities[0].candidate_ids == ["deontic", "epistemic"]
++    assert (
++        family_ambiguities[0].metadata["margin"]
++        <= compiler.config.family_probability_margin
++    )
++    assert all(
++        ambiguity.ambiguity_type != "close_modal_family_scores"
++        for ambiguity in clear.ambiguities
++    )
++
++
+ def test_modal_decompiler_preserves_context_without_formula_style_text() -> None:
+     codec = DeterministicModalLogicCodec(
+         ModalLogicCodecConfig(parser_backend="regex", embedding_dimensions=8)

@@ -1,0 +1,140 @@
+{
+  "packet_version": "public-refresh-reviewer-bundle-packet-v1",
+  "packet_id": "fixture-public-refresh-reviewer-bundle-v1",
+  "mode": "fixture_first_offline_review",
+  "network_access": "not_requested",
+  "devhub_scope": "not_touched",
+  "process_model_delta_refs": [
+    {
+      "ref_id": "process-delta-ref-001",
+      "process_id": "single-pdf-process",
+      "delta_id": "process-delta-20260601-fixture",
+      "fixture_ref": "ppd/tests/fixtures/public_refresh_reviewer_bundle_packet_v1/process_delta.json",
+      "review_status": "pending_reviewer_ready_disposition",
+      "required_before_release": true
+    }
+  ],
+  "guardrail_recompile_refs": [
+    {
+      "ref_id": "guardrail-recompile-ref-001",
+      "guardrail_bundle_id": "guardrail-bundle-single-pdf",
+      "recompile_plan_id": "guardrail-recompile-20260601-fixture",
+      "fixture_ref": "ppd/tests/fixtures/public_refresh_reviewer_bundle_packet_v1/guardrail_recompile.json",
+      "review_status": "pending_reviewer_ready_disposition",
+      "required_before_release": true
+    }
+  ],
+  "agent_gap_analysis_replay_refs": [
+    {
+      "ref_id": "agent-gap-replay-ref-001",
+      "replay_id": "agent-gap-replay-20260601-fixture",
+      "case_id": "synthetic-case-single-pdf",
+      "fixture_ref": "ppd/tests/fixtures/public_refresh_reviewer_bundle_packet_v1/agent_gap_replay.json",
+      "review_status": "pending_reviewer_ready_disposition",
+      "required_before_release": true
+    }
+  ],
+  "reviewer_ready_dispositions": [
+    {
+      "disposition_type": "requirement",
+      "subject_id": "requirement-delta-20260601-fixture",
+      "status": "reviewer_ready",
+      "reviewer_role": "requirements-reviewer",
+      "evidence_ref": "process-delta-ref-001",
+      "required_before_release": true
+    },
+    {
+      "disposition_type": "process",
+      "subject_id": "process-delta-20260601-fixture",
+      "status": "reviewer_ready",
+      "reviewer_role": "process-reviewer",
+      "evidence_ref": "process-delta-ref-001",
+      "required_before_release": true
+    },
+    {
+      "disposition_type": "guardrail",
+      "subject_id": "guardrail-recompile-20260601-fixture",
+      "status": "reviewer_ready",
+      "reviewer_role": "guardrail-reviewer",
+      "evidence_ref": "guardrail-recompile-ref-001",
+      "required_before_release": true
+    },
+    {
+      "disposition_type": "agent_impact",
+      "subject_id": "agent-gap-replay-20260601-fixture",
+      "status": "reviewer_ready",
+      "reviewer_role": "agent-impact-reviewer",
+      "evidence_ref": "agent-gap-replay-ref-001",
+      "required_before_release": true
+    }
+  ],
+  "owner_signoff_placeholders": [
+    {
+      "placeholder_id": "owner-signoff-public-refresh",
+      "owner_role": "public-refresh-owner",
+      "signoff_scope": "Confirm reviewer bundle evidence before any later release decision.",
+      "status": "pending_owner_signoff",
+      "required_before_release": true
+    }
+  ],
+  "dependency_sequence": [
+    {
+      "order": 1,
+      "dependency_id": "process-model-delta-review",
+      "depends_on": [],
+      "completion_state": "pending_review"
+    },
+    {
+      "order": 2,
+      "dependency_id": "guardrail-recompile-review",
+      "depends_on": ["process-model-delta-review"],
+      "completion_state": "pending_review"
+    },
+    {
+      "order": 3,
+      "dependency_id": "agent-gap-analysis-replay-review",
+      "depends_on": ["guardrail-recompile-review"],
+      "completion_state": "pending_review"
+    },
+    {
+      "order": 4,
+      "dependency_id": "owner-signoff-review",
+      "depends_on": ["agent-gap-analysis-replay-review"],
+      "completion_state": "pending_review"
+    }
+  ],
+  "release_blocker_notes": [
+    {
+      "blocker_id": "pending-owner-signoff",
+      "severity": "release_blocking",
+      "note": "Owner signoff remains a placeholder until the reviewer evidence is checked.",
+      "resolution_owner": "public-refresh-owner",
+      "blocks_release": true
+    }
+  ],
+  "rollback_checkpoints": [
+    {
+      "checkpoint_id": "rollback-before-release-decision",
+      "trigger": "Reviewer evidence is rejected or cannot be traced to the fixture refs.",
+      "rollback_action": "Keep the refresh bundle in offline review and do not advance the release decision packet.",
+      "owner_role": "public-refresh-owner",
+      "required_before_release": true
+    }
+  ],
+  "safety_attestations": {
+    "metadata_only": true,
+    "no_private_raw_or_downloaded_artifacts": true,
+    "no_live_extraction_or_crawl_claims": true,
+    "no_devhub_claims": true,
+    "no_release_activation_claims": true,
+    "no_active_artifact_mutation_claims": true,
+    "no_official_action_completion_claims": true,
+    "no_legal_or_permitting_guarantees": true,
+    "no_active_mutation_flags": true
+  },
+  "validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/public_refresh/reviewer_bundle_packet_v1.py"],
+    ["python3", "-m", "pytest", "ppd/tests/test_public_refresh_reviewer_bundle_packet_v1.py"],
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

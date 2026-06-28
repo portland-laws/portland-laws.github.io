@@ -1,0 +1,214 @@
+{
+  "fixture_id": "ppd_residential_building_permit_draft_fill_plan_v1",
+  "fixture_kind": "mocked_playwright_draft_fill_plan",
+  "jurisdiction": "Portland, Oregon",
+  "agency": "Portland Permitting & Development",
+  "form": {
+    "name": "Residential Building Permit Application",
+    "mock_url": "https://devhub.portlandoregon.gov/mock/permits/residential-building",
+    "requires_authentication": true,
+    "live_navigation_allowed": false
+  },
+  "automation_scope": {
+    "mode": "draft_preview_only",
+    "allowed_actions": [
+      "locate_field",
+      "preview_fill_value",
+      "clear_preview_value",
+      "collect_missing_fact_question"
+    ],
+    "prohibited_actions": [
+      "captcha",
+      "mfa",
+      "account_creation",
+      "payment",
+      "upload",
+      "certification",
+      "cancellation",
+      "submission"
+    ],
+    "reversibility": "Every preview_fill_value action must be paired with a clear_preview_value action before the browser context closes."
+  },
+  "draft_inputs": {
+    "project_address": "1122 SE Example Ave, Portland, OR 97214",
+    "permit_category": "Residential alteration",
+    "work_description": "Replace existing deck boards and guardrails in kind.",
+    "applicant_name": null,
+    "applicant_email": null,
+    "property_owner_authorization": null,
+    "estimated_project_value_usd": null
+  },
+  "missing_user_fact_questions": [
+    {
+      "fact_key": "applicant_name",
+      "question": "What legal name should appear as the permit applicant?",
+      "reason": "The draft form has an applicant-name field, but no value is available in the supplied draft inputs."
+    },
+    {
+      "fact_key": "applicant_email",
+      "question": "What email address should PP&D use for application notices?",
+      "reason": "The draft form has an applicant-email field, but no value is available in the supplied draft inputs."
+    },
+    {
+      "fact_key": "property_owner_authorization",
+      "question": "Has the property owner authorized this residential building permit application?",
+      "reason": "The draft form asks for owner authorization and the fixture must not infer certification facts."
+    },
+    {
+      "fact_key": "estimated_project_value_usd",
+      "question": "What is the estimated total project value in US dollars?",
+      "reason": "The draft form has a valuation field, but no value is available in the supplied draft inputs."
+    }
+  ],
+  "field_plans": [
+    {
+      "field_key": "project_address",
+      "draft_value_source": "draft_inputs.project_address",
+      "preview_only": true,
+      "selectors_by_evidence_confidence": [
+        {
+          "selector": "input[name='projectAddress']",
+          "confidence": 0.93,
+          "evidence": [
+            "name attribute matches normalized field key",
+            "input role accepts a single address string"
+          ]
+        },
+        {
+          "selector": "input[aria-label='Project address']",
+          "confidence": 0.88,
+          "evidence": [
+            "aria-label exactly names the expected field"
+          ]
+        },
+        {
+          "selector": "label:has-text('Project address') + input",
+          "confidence": 0.74,
+          "evidence": [
+            "nearby label text matches, but structure is more brittle"
+          ]
+        }
+      ]
+    },
+    {
+      "field_key": "permit_category",
+      "draft_value_source": "draft_inputs.permit_category",
+      "preview_only": true,
+      "selectors_by_evidence_confidence": [
+        {
+          "selector": "select[name='permitCategory']",
+          "confidence": 0.91,
+          "evidence": [
+            "name attribute matches normalized permit category field",
+            "select element supports category choices"
+          ]
+        },
+        {
+          "selector": "[role='combobox'][aria-label='Permit category']",
+          "confidence": 0.84,
+          "evidence": [
+            "combobox role and aria-label identify a category picker"
+          ]
+        }
+      ]
+    },
+    {
+      "field_key": "work_description",
+      "draft_value_source": "draft_inputs.work_description",
+      "preview_only": true,
+      "selectors_by_evidence_confidence": [
+        {
+          "selector": "textarea[name='workDescription']",
+          "confidence": 0.94,
+          "evidence": [
+            "textarea shape matches long-form work description",
+            "name attribute matches normalized field key"
+          ]
+        },
+        {
+          "selector": "textarea[aria-label='Description of work']",
+          "confidence": 0.86,
+          "evidence": [
+            "aria-label is semantically equivalent to work description"
+          ]
+        }
+      ]
+    },
+    {
+      "field_key": "applicant_name",
+      "draft_value_source": null,
+      "missing_fact_key": "applicant_name",
+      "preview_only": true,
+      "selectors_by_evidence_confidence": [
+        {
+          "selector": "input[name='applicantName']",
+          "confidence": 0.92,
+          "evidence": [
+            "name attribute matches applicant name"
+          ]
+        },
+        {
+          "selector": "input[autocomplete='name']",
+          "confidence": 0.69,
+          "evidence": [
+            "autocomplete indicates a person name but does not prove applicant context"
+          ]
+        }
+      ]
+    },
+    {
+      "field_key": "estimated_project_value_usd",
+      "draft_value_source": null,
+      "missing_fact_key": "estimated_project_value_usd",
+      "preview_only": true,
+      "selectors_by_evidence_confidence": [
+        {
+          "selector": "input[name='estimatedProjectValue']",
+          "confidence": 0.9,
+          "evidence": [
+            "name attribute matches estimated project value"
+          ]
+        },
+        {
+          "selector": "input[inputmode='decimal'][aria-label='Estimated project value']",
+          "confidence": 0.82,
+          "evidence": [
+            "numeric input mode and aria-label identify valuation field"
+          ]
+        }
+      ]
+    }
+  ],
+  "planned_actions": [
+    {
+      "action": "locate_field",
+      "field_key": "project_address"
+    },
+    {
+      "action": "preview_fill_value",
+      "field_key": "project_address",
+      "value_source": "draft_inputs.project_address",
+      "reversible": true
+    },
+    {
+      "action": "clear_preview_value",
+      "field_key": "project_address"
+    },
+    {
+      "action": "collect_missing_fact_question",
+      "fact_key": "applicant_name"
+    },
+    {
+      "action": "collect_missing_fact_question",
+      "fact_key": "applicant_email"
+    },
+    {
+      "action": "collect_missing_fact_question",
+      "fact_key": "property_owner_authorization"
+    },
+    {
+      "action": "collect_missing_fact_question",
+      "fact_key": "estimated_project_value_usd"
+    }
+  ]
+}

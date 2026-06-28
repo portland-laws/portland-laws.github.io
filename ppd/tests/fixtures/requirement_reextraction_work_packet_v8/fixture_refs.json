@@ -1,0 +1,9 @@
+{
+  "fixture_packet": "requirement_reextraction_work_packet_v8_fixture_refs",
+  "fixture_refs": {
+    "downstream_queue_v8": "downstream_queue_v8.json",
+    "normalized_public_document_records": [
+      "../public_metadata_manifest_dry_run_v5/manifest.json"
+    ]
+  }
+}

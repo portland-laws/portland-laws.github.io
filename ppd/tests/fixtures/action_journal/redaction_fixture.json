@@ -1,0 +1,217 @@
+{
+  "fixture_id": "action-journal-redaction-20260514-018",
+  "description": "Deterministic PP&D action-journal redaction fixture for commit-safe local preview and checkpoint events.",
+  "commit_safe_events": [
+    {
+      "event_id": "aj-safe-local-pdf-preview-001",
+      "event_type": "local_pdf_preview",
+      "occurred_at": "2026-05-14T00:00:00Z",
+      "actor": "ppd-local-preview-worker",
+      "summary": "Prepared a local PDF field preview using synthetic permit facts.",
+      "action": "preview_pdf_field_mapping",
+      "redaction_policy": "commit_safe_metadata_only",
+      "payload": {
+        "case_ref": "PPD-DEMO-001",
+        "document_ref": "synthetic-building-permit-form",
+        "field_count": 4,
+        "preview_mode": "metadata_only",
+        "stored_artifacts": []
+      }
+    },
+    {
+      "event_id": "aj-safe-reversible-draft-plan-001",
+      "event_type": "reversible_draft_plan",
+      "occurred_at": "2026-05-14T00:01:00Z",
+      "actor": "ppd-draft-planner",
+      "summary": "Generated a reversible draft plan without filling or submitting an official record.",
+      "action": "plan_reversible_draft_fill",
+      "redaction_policy": "field_labels_and_sources_only",
+      "payload": {
+        "case_ref": "PPD-DEMO-001",
+        "planned_steps": [
+          "select permit type draft value",
+          "map public form labels",
+          "prepare user review checkpoint"
+        ],
+        "field_labels": [
+          "Project description",
+          "Permit type",
+          "Applicant role"
+        ],
+        "requires_user_review": true
+      }
+    },
+    {
+      "event_id": "aj-safe-refused-action-001",
+      "event_type": "refused_action",
+      "occurred_at": "2026-05-14T00:02:00Z",
+      "actor": "ppd-action-guardrail",
+      "summary": "Refused a consequential official action because exact confirmation was absent.",
+      "action": "refuse_submit_without_confirmation",
+      "redaction_policy": "reason_codes_only",
+      "payload": {
+        "case_ref": "PPD-DEMO-001",
+        "refusal_reason_codes": [
+          "official_submission_requires_attendance",
+          "exact_confirmation_missing"
+        ],
+        "next_safe_action": "show_checkpoint_summary"
+      }
+    },
+    {
+      "event_id": "aj-safe-exact-confirmation-checkpoint-001",
+      "event_type": "exact_confirmation_checkpoint",
+      "occurred_at": "2026-05-14T00:03:00Z",
+      "actor": "ppd-action-guardrail",
+      "summary": "Created an exact-confirmation checkpoint for user review before any official action.",
+      "action": "create_confirmation_checkpoint",
+      "redaction_policy": "checkpoint_metadata_only",
+      "payload": {
+        "case_ref": "PPD-DEMO-001",
+        "checkpoint_kind": "official_submission_gate",
+        "requires_attendance": true,
+        "required_confirmation_text": "I confirm the exact official action described in checkpoint PPD-DEMO-001.",
+        "official_action_executed": false
+      }
+    }
+  ],
+  "rejected_events": [
+    {
+      "expected_rejection": "credentials",
+      "event": {
+        "event_id": "aj-reject-credentials-001",
+        "event_type": "local_pdf_preview",
+        "occurred_at": "2026-05-14T00:10:00Z",
+        "actor": "ppd-test",
+        "summary": "Unsafe credential capture.",
+        "action": "reject",
+        "redaction_policy": "must_reject",
+        "payload": {
+          "credential": "demo-user@example.test:correct-horse-battery-staple"
+        }
+      }
+    },
+    {
+      "expected_rejection": "cookies",
+      "event": {
+        "event_id": "aj-reject-cookies-001",
+        "event_type": "local_pdf_preview",
+        "occurred_at": "2026-05-14T00:11:00Z",
+        "actor": "ppd-test",
+        "summary": "Unsafe cookie capture.",
+        "action": "reject",
+        "redaction_policy": "must_reject",
+        "payload": {
+          "headers": "Cookie: sessionid=abc123; Path=/"
+        }
+      }
+    },
+    {
+      "expected_rejection": "auth_state",
+      "event": {
+        "event_id": "aj-reject-auth-state-001",
+        "event_type": "local_pdf_preview",
+        "occurred_at": "2026-05-14T00:12:00Z",
+        "actor": "ppd-test",
+        "summary": "Unsafe browser auth state capture.",
+        "action": "reject",
+        "redaction_policy": "must_reject",
+        "payload": {
+          "storage_state": {
+            "origins": []
+          }
+        }
+      }
+    },
+    {
+      "expected_rejection": "screenshots",
+      "event": {
+        "event_id": "aj-reject-screenshot-001",
+        "event_type": "local_pdf_preview",
+        "occurred_at": "2026-05-14T00:13:00Z",
+        "actor": "ppd-test",
+        "summary": "Unsafe screenshot artifact capture.",
+        "action": "reject",
+        "redaction_policy": "must_reject",
+        "payload": {
+          "screenshot": "devhub-private-page.png"
+        }
+      }
+    },
+    {
+      "expected_rejection": "traces",
+      "event": {
+        "event_id": "aj-reject-trace-001",
+        "event_type": "local_pdf_preview",
+        "occurred_at": "2026-05-14T00:14:00Z",
+        "actor": "ppd-test",
+        "summary": "Unsafe trace artifact capture.",
+        "action": "reject",
+        "redaction_policy": "must_reject",
+        "payload": {
+          "trace_file": "devhub-private-trace.zip"
+        }
+      }
+    },
+    {
+      "expected_rejection": "har_data",
+      "event": {
+        "event_id": "aj-reject-har-001",
+        "event_type": "local_pdf_preview",
+        "occurred_at": "2026-05-14T00:15:00Z",
+        "actor": "ppd-test",
+        "summary": "Unsafe HAR artifact capture.",
+        "action": "reject",
+        "redaction_policy": "must_reject",
+        "payload": {
+          "har": "devhub-network.har"
+        }
+      }
+    },
+    {
+      "expected_rejection": "private_values",
+      "event": {
+        "event_id": "aj-reject-private-values-001",
+        "event_type": "reversible_draft_plan",
+        "occurred_at": "2026-05-14T00:16:00Z",
+        "actor": "ppd-test",
+        "summary": "Unsafe private value capture.",
+        "action": "reject",
+        "redaction_policy": "must_reject",
+        "payload": {
+          "private_value": "DOB 1970-01-01"
+        }
+      }
+    },
+    {
+      "expected_rejection": "payment_details",
+      "event": {
+        "event_id": "aj-reject-payment-001",
+        "event_type": "refused_action",
+        "occurred_at": "2026-05-14T00:17:00Z",
+        "actor": "ppd-test",
+        "summary": "Unsafe payment detail capture.",
+        "action": "reject",
+        "redaction_policy": "must_reject",
+        "payload": {
+          "payment_details": "card number 4111 1111 1111 1111"
+        }
+      }
+    },
+    {
+      "expected_rejection": "local_private_paths",
+      "event": {
+        "event_id": "aj-reject-local-path-001",
+        "event_type": "exact_confirmation_checkpoint",
+        "occurred_at": "2026-05-14T00:18:00Z",
+        "actor": "ppd-test",
+        "summary": "Unsafe local private path capture.",
+        "action": "reject",
+        "redaction_policy": "must_reject",
+        "payload": {
+          "preview_reference": "/home/example/private/devhub/upload.pdf"
+        }
+      }
+    }
+  ]
+}

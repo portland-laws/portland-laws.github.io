@@ -1,0 +1,71 @@
+{
+  "fixture_type": "ppd.post_activation_monitoring_rehearsal.v5.source_fixture",
+  "inactive_activation_checklist_v5_fixtures": [
+    {
+      "packet_type": "ppd.inactive_activation_checklist.v5",
+      "packet_version": "v5",
+      "packet_id": "inactive-activation-checklist-v5-fixture-a",
+      "mode": "fixture_first_inactive_activation_checklist_v5",
+      "boundaries": {
+        "fixture_first": true,
+        "guardrail_activation_enabled": false,
+        "devhub_opened": false,
+        "private_documents_read": false,
+        "upload_enabled": false,
+        "submission_enabled": false,
+        "certification_enabled": false,
+        "financial_action_enabled": false,
+        "scheduling_enabled": false,
+        "legal_or_permitting_guarantee_enabled": false
+      },
+      "reviewer_controlled_activation_prerequisites": [
+        {
+          "prerequisite_id": "reviewer-control-required",
+          "status": "pending_reviewer_control",
+          "activation_allowed": false
+        }
+      ],
+      "source_freshness_hold_clearance_criteria": [
+        {
+          "criterion_id": "freshness-clearance-required",
+          "clearance_status": "pending_reviewer_clearance",
+          "activation_allowed": false
+        }
+      ],
+      "rollback_checkpoint_rows": [
+        {
+          "checkpoint_id": "rollback-owner-required",
+          "checkpoint_status": "pending_reviewer_confirmation",
+          "active_state_changed": false,
+          "activation_allowed": false
+        }
+      ],
+      "post_activation_smoke_checks": [
+        {
+          "check_id": "post-activation-guardrail-lookup-health",
+          "check_status": "placeholder_pending_future_activation",
+          "activation_allowed_by_this_packet": false
+        }
+      ],
+      "agent_notification_notes": [
+        {
+          "note_id": "agent-consumer-routing-required",
+          "notification_status": "placeholder_pending_manual_release_notice",
+          "activation_allowed": false
+        }
+      ],
+      "attestations": {
+        "guardrails_activated": false,
+        "devhub_opened": false,
+        "private_documents_read": false,
+        "uploads_performed": false,
+        "submissions_performed": false,
+        "certifications_performed": false,
+        "financial_actions_performed": false,
+        "scheduling_performed": false,
+        "legal_or_permitting_guarantees_made": false
+      },
+      "validation_commands": [["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]]
+    }
+  ]
+}

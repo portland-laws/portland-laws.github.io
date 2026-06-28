@@ -1,0 +1,46 @@
+{
+  "changed_files": [
+    "ppd/daemon/task-board.md"
+  ],
+  "created_at": "2026-05-03T11:04:34.033279Z",
+  "impact": "The daemon currently has zero needed tasks and nine blocked tasks, so it cannot make autonomous progress. This preserves all completed and blocked items, keeps recovery work under ppd/daemon and ppd/tests, and adds small parser-clean supervisor repair tasks before any blocked DevHub domain task is retried.",
+  "summary": "Append a new narrow daemon-repair tranche to the PP&D task board so the blocked-only daemon has selectable work again.",
+  "target_task": "Supervisor repair: 9 task(s) are blocked and no independent selectable task remains: Task checkbox-18: Task checkbox-178: Add a fixture-only DevHub draft-readiness decision matrix plus focused validation that combines missing facts, redacted file placeholders, selector confidence, upload-readiness gates, fee notices, and exact-confirmation defaults while refusing official actions.; Task checkbox-19: Task checkbox-182: Add daemon diagnostics coverage proving repeated non-JSON LLM responses for a blocked task are persisted with target task, failure kind, compact raw-response summary, and a next-action hint before the worker exits.; Task checkbox-20: Task checkbox-186: Add daemon retry-scope coverage proving that after two syntax_preflight failures on checkbox-178, the next prompt permits either one parser-bearing file or one daemon repair file, and rejects source-plus-fixture-plus-test bundles.",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 30 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "...........................................................................................................................................................................................................................................................................................................................................................................................................................ss................sss............................................................................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 719 tests in 0.114s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

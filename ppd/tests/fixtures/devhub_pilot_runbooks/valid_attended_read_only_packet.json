@@ -1,0 +1,33 @@
+{
+  "packet_kind": "devhub_attended_read_only_pilot_runbook",
+  "mode": "attended_read_only_pilot",
+  "pilot_id": "fixture-devhub-read-only-preflight",
+  "source_scope": [
+    "https://devhub.portlandoregon.gov",
+    "https://www.portland.gov/ppd/devhub-faqs",
+    "https://www.portland.gov/ppd/devhub-sign-guide"
+  ],
+  "purpose": "Prepare a human-attended, read-only DevHub pilot without recording private session artifacts.",
+  "preflight": [
+    "Open a visible browser only after policy validation passes.",
+    "Require the user to complete any sign-in, MFA, CAPTCHA, or security prompt manually.",
+    "Observe only page headings, landmarks, redacted action labels, and public help links."
+  ],
+  "allowed_actions": [
+    "record redacted page heading labels",
+    "record redacted navigation landmark names",
+    "record whether a read-only page is reachable after user attendance",
+    "write commit-safe completion evidence without private values"
+  ],
+  "prohibitions": [
+    "Do not automate login, MFA, CAPTCHA, account creation, password recovery, credential entry, or security prompts.",
+    "Do not store cookies, auth state, screenshots, traces, HAR files, private field values, payment details, or local private file paths.",
+    "Do not click submit, certify, upload, schedule, cancel, withdraw, purchase, pay, or change account settings.",
+    "Do not claim that live authenticated capture has already occurred from this fixture."
+  ],
+  "expected_artifacts": [
+    "commit-safe pilot validation result",
+    "redacted checklist status"
+  ],
+  "completion_claim": "This packet is a deterministic preflight fixture only."
+}

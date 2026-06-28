@@ -1,0 +1,23 @@
+{
+  "process_model_impact_references": ["ppd-process-model:guardrail-bundle-impact:v5"],
+  "guardrail_bundle_deltas": [
+    {"entity": "GuardrailBundle", "status": "inactive", "active": false, "change": "stage candidate only"}
+  ],
+  "predicate_deltas": [
+    {"kind": "deterministic", "name": "evidence_is_current"},
+    {"kind": "deontic", "name": "must_refuse_official_action"}
+  ],
+  "temporal_rule_deltas": [{"name": "stale_evidence_after_days", "days": 30}],
+  "reversible_action_handling": [{"action": "draft_note", "rollback": "delete draft"}],
+  "exact_confirmation_gates": [{"phrase": "I understand this only prepares a draft"}],
+  "refused_action_gates": [
+    {"kind": "consequential", "action": "submit application"},
+    {"kind": "financial", "action": "pay fee"}
+  ],
+  "stale_evidence_blocks": [{"source": "permit status", "block_after_days": 30}],
+  "explanation_templates": [{"name": "refusal", "template": "I cannot complete that action."}],
+  "reviewer_holds": [{"reason": "guardrail bundle candidate requires review"}],
+  "rollback_notes": ["Candidate is inactive and can be discarded without mutating active guardrails."],
+  "validation_commands": [["python3", "-m", "pytest", "ppd/tests/test_guardrail_bundle_recompile_candidate_v5.py"]],
+  "flags": {"active_mutation": false}
+}

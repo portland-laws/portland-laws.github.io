@@ -1,0 +1,108 @@
+{
+  "packet_id": "devhub-read-only-pilot-readiness-reconciliation-v1",
+  "packet_type": "ppd.devhub_read_only_pilot_readiness_reconciliation.v1",
+  "mode": "fixture_first_reconciliation",
+  "fixture_first": true,
+  "read_only_only": true,
+  "metadata_only": true,
+  "launches_devhub": false,
+  "launches_playwright": false,
+  "live_session_authorized": false,
+  "official_actions_enabled": false,
+  "stores_private_values": false,
+  "stores_browser_artifacts": false,
+  "source_packets": {
+    "operator_checklist": {
+      "packet_id": "devhub-read-only-pilot-operator-checklist-v1",
+      "path": "ppd/tests/fixtures/devhub/read_only_pilot_operator_checklist.json",
+      "consumed": true
+    },
+    "pilot_result_intake": {
+      "packet_id": "devhub-read-only-pilot-result-intake-synthetic-v1",
+      "path": "ppd/tests/fixtures/devhub/read_only_pilot_result_intake.json",
+      "consumed": true
+    },
+    "release_gate_status": {
+      "packet_id": "ppd-release-gate-status-synthetic-v1",
+      "path": "ppd/tests/fixtures/release_gate_status/status_packet.json",
+      "consumed": true
+    }
+  },
+  "redacted_observed_surfaces": [
+    {
+      "surface_id": "devhub_home_redacted",
+      "source_observation_id": "obs-home-heading",
+      "redacted_heading": "[REDACTED_HEADING:devhub-home]",
+      "redacted_labels": [
+        "[REDACTED_LABEL:my-permits]",
+        "[REDACTED_LABEL:status-summary]"
+      ],
+      "status_category": "home_loaded",
+      "journal_event_id": "JRN-PILOT-OBSERVATION"
+    }
+  ],
+  "safe_read_only_coverage_gaps": [
+    {
+      "gap_id": "gap-permit-detail-not-observed",
+      "scope": "permit_detail_visible",
+      "observed": false,
+      "safe_to_follow_up_read_only": true,
+      "no_live_devhub_needed": true,
+      "reason": "The intake fixture includes a home surface observation only; a later attended session must decide whether a redacted permit detail category can be observed without exposing private values."
+    },
+    {
+      "gap_id": "gap-fee-notice-not-observed",
+      "scope": "fees_notice_visible",
+      "observed": false,
+      "safe_to_follow_up_read_only": true,
+      "no_live_devhub_needed": true,
+      "reason": "The release gate keeps fee workflows disabled, so this packet records only a read-only coverage gap for reviewer planning."
+    }
+  ],
+  "manual_handoff_notes": [
+    {
+      "note_id": "handoff-attended-login-boundary",
+      "category": "manual_handoff",
+      "note": "Any future attended session requires the human operator to open DevHub, authenticate manually, remain present, and stop before recording private values or official-control outcomes.",
+      "attended_session_required": true,
+      "launches_devhub": false
+    },
+    {
+      "note_id": "handoff-release-gate-blocker",
+      "category": "manual_handoff",
+      "note": "The release gate still carries an open DevHub pilot result intake readiness blocker, so this reconciliation packet cannot promote live capability readiness.",
+      "attended_session_required": true,
+      "launches_devhub": false
+    }
+  ],
+  "abort_reasons": [
+    {
+      "reason_id": "abort-security-or-automation",
+      "trigger": "Abort on automated login, credential handling, MFA automation, CAPTCHA automation, account creation, private field value exposure, or browser artifact storage.",
+      "operator_response": "Stop the pilot review and record only a redacted refused-action metadata note.",
+      "records_only_redacted_metadata": true
+    },
+    {
+      "reason_id": "abort-official-or-financial-action",
+      "trigger": "Abort on upload, submit, certify, payment, schedule, cancel, or any other official action request.",
+      "operator_response": "Do not use DevHub controls; carry the issue as a manual handoff prerequisite.",
+      "records_only_redacted_metadata": true
+    }
+  ],
+  "next_attended_session_prerequisites": [
+    {
+      "prerequisite_id": "prereq-reviewer-signoff-on-redaction",
+      "required_before": "Any attended read-only follow-up planning",
+      "acceptance_criteria": "Reviewer confirms the operator checklist, intake packet, and release gate status still require redacted metadata only.",
+      "attended_operator_required": true,
+      "live_devhub_launch_allowed": false
+    },
+    {
+      "prerequisite_id": "prereq-surface-gap-plan",
+      "required_before": "Any attempt to observe additional read-only surface categories",
+      "acceptance_criteria": "Reviewer approves a narrow list of allowed redacted surface categories and abort conditions for the attended operator.",
+      "attended_operator_required": true,
+      "live_devhub_launch_allowed": false
+    }
+  ]
+}

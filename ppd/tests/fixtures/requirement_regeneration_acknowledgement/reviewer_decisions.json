@@ -1,0 +1,40 @@
+{
+  "fixture_id": "requirement-regeneration-acknowledgement-reviewer-decisions",
+  "prepared_at": "2026-05-28T00:00:00Z",
+  "reviewer_decisions": [
+    {
+      "source_id": "ppd-devhub-application-guide",
+      "reviewer_decision": "accepted_for_regeneration",
+      "decision_rationale": "Synthetic DevHub action guidance fixture is required before regenerating acknowledgement-gate requirements.",
+      "citation_refresh_scope": [
+        "changed_devhub_action_guidance",
+        "acknowledgement/certification review"
+      ],
+      "acknowledged_human_review_owners": [
+        "devhub-workflow-review",
+        "requirements-counsel"
+      ],
+      "acknowledged_required_synthetic_fixtures": [
+        "ppd/tests/fixtures/requirement_regeneration_queue/ppd-devhub-application-guide.changed_devhub_action_guidance.json"
+      ]
+    },
+    {
+      "source_id": "ppd-spp-file-naming-standards",
+      "reviewer_decision": "accepted_for_regeneration",
+      "decision_rationale": "Synthetic file-rule and document-requirement fixtures are required before refreshing single-PDF guardrails.",
+      "citation_refresh_scope": [
+        "changed_file_rule",
+        "changed_required_document",
+        "single_pdf_process"
+      ],
+      "acknowledged_human_review_owners": [
+        "document-intake-review"
+      ],
+      "acknowledged_required_synthetic_fixtures": [
+        "ppd/tests/fixtures/requirement_regeneration_queue/ppd-spp-file-naming-standards.changed_file_rule.json",
+        "ppd/tests/fixtures/requirement_regeneration_queue/ppd-spp-file-naming-standards.changed_required_document.json",
+        "ppd/tests/fixtures/requirement_regeneration_queue/spp_file_naming_guardrail_fixture.json"
+      ]
+    }
+  ]
+}

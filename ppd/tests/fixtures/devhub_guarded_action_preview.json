@@ -1,0 +1,105 @@
+{
+  "reversible_draft_fill": {
+    "action_type": "reversible_draft_fill",
+    "action_classification": "reversible_draft_preview",
+    "source_evidence": [
+      {
+        "source_id": "ppd-devhub-guide-submit-permit-application",
+        "citation": "DevHub permit application guidance describes dynamic application questions and draft review before final official steps."
+      }
+    ],
+    "surface_evidence": {
+      "surface_id": "devhub-application-draft-redacted",
+      "surface_kind": "devhub_authenticated_redacted",
+      "redacted": true,
+      "contains_private_values": false,
+      "selector_basis": "accessible label fixture"
+    },
+    "selector_confidence": 0.94,
+    "attendance": true,
+    "devhub_attended": true,
+    "preview_metadata": {
+      "preview_id": "draft-fill-preview-redacted-001",
+      "mode": "preview_only",
+      "may_mutate_devhub": false,
+      "fields": [
+        {
+          "selector": "input[name='ProjectDescription']",
+          "label": "Project description",
+          "redacted_proposed_value": "[REDACTED DRAFT DESCRIPTION]",
+          "evidence_id": "ppd-devhub-guide-submit-permit-application"
+        }
+      ]
+    }
+  },
+  "sensitive_packet_patches": [
+    {
+      "user_case_facts": {
+        "property_address": "1120 SW 5th Ave, Portland, OR"
+      }
+    },
+    {
+      "credentials": {
+        "username": "permit.user@example.com",
+        "password": "not-allowed"
+      }
+    },
+    {
+      "payment_details": {
+        "card_number": "4111 1111 1111 1111",
+        "cvv": "123"
+      }
+    }
+  ],
+  "side_effect_request_patches": [
+    {
+      "action_type": "continue"
+    },
+    {
+      "action_type": "save_draft"
+    },
+    {
+      "action_label": "Submit permit request"
+    },
+    {
+      "preview_metadata": {
+        "preview_id": "bad-preview-submit",
+        "mode": "preview_only",
+        "may_mutate_devhub": false,
+        "button_text": "Upload corrections",
+        "fields": [
+          {
+            "selector": "button[data-action='upload']",
+            "label": "Upload corrections",
+            "redacted_proposed_value": "[REDACTED]"
+          }
+        ]
+      }
+    },
+    {
+      "requested_effect": "schedule inspection preview"
+    },
+    {
+      "action_label": "Certify application statement"
+    },
+    {
+      "action_label": "Payment review and fee payment"
+    }
+  ],
+  "fail_closed_action_types": [
+    "continue",
+    "save",
+    "save_draft",
+    "official_upload",
+    "certification",
+    "submission",
+    "payment",
+    "pay_fee",
+    "enter_payment_details",
+    "inspection_scheduling",
+    "schedule_inspection",
+    "mfa",
+    "captcha",
+    "account_creation"
+  ]
+}

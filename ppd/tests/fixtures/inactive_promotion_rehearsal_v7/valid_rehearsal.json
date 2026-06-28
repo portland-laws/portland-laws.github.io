@@ -1,0 +1,63 @@
+{
+  "rehearsal_id": "inactive-guardrail-promotion-rehearsal-v7-fixture",
+  "rehearsal_version": 7,
+  "rehearsal_mode": "inactive",
+  "release_decision_references": [
+    {
+      "decision_id": "release-decision-184",
+      "evidence_ref": "ppd/tests/fixtures/inactive_promotion_rehearsal_v7/valid_rehearsal.json",
+      "reviewer_role": "PPD guardrail reviewer"
+    }
+  ],
+  "reviewer_controlled_promotion_checklist_rows": [
+    {
+      "row_id": "check-reviewer-control",
+      "reviewer_role": "PPD guardrail reviewer",
+      "check": "Confirm rehearsal remains inactive and evidence-only.",
+      "manual_status": "pending reviewer decision"
+    }
+  ],
+  "unresolved_hold_carry_forward_conditions": [
+    {
+      "condition_id": "hold-source-freshness-review",
+      "source_reference": "official-source-anchor-review",
+      "carry_forward_reason": "Freshness reminders must stay visible until reviewer closes the hold.",
+      "owner_role": "PPD guardrail reviewer"
+    }
+  ],
+  "pre_promotion_source_freshness_reminders": [
+    {
+      "source_id": "ppd-official-source-anchors",
+      "reminder": "Recheck official public source dates before any later promotion decision.",
+      "freshness_reference": "Last verified public source anchor date in plan"
+    }
+  ],
+  "agent_notification_placeholders": [
+    {
+      "placeholder_id": "notify-inactive-rehearsal-only",
+      "audience": "agent",
+      "message_template": "This is an inactive rehearsal record. Do not activate, promote, crawl live sources, mutate DevHub state, or claim official completion."
+    }
+  ],
+  "rollback_checkpoint_references": [
+    {
+      "checkpoint_id": "rollback-before-promotion-review",
+      "rollback_reference": "reviewer-controlled rollback checklist row",
+      "reviewer_role": "PPD guardrail reviewer"
+    }
+  ],
+  "monitoring_watch_rows": [
+    {
+      "watch_id": "watch-official-source-change",
+      "source_id": "ppd-official-source-anchors",
+      "watch_condition": "Source hash, guidance date, or official workflow text changes before reviewer decision.",
+      "owner_role": "PPD source monitor"
+    }
+  ],
+  "validation_commands": [
+    {
+      "command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
+      "purpose": "Run deterministic PP&D validation without live crawl, authentication, mutation, or private artifacts."
+    }
+  ]
+}

@@ -1,0 +1,94 @@
+{
+  "fixture_version": "guardrail_bundle_recompile_candidate_v5",
+  "bundle_id": "fixture-guardrail-recompile-candidate-v5-001",
+  "predicate_candidates": [
+    {
+      "predicate_id": "ppd.fixture.predicate.zoning-review-required",
+      "jurisdiction": "Portland, OR",
+      "permit_stage": "pre-submittal review",
+      "predicate_text": "Fixture-only predicate row stating that zoning review may be required before permit intake.",
+      "process_impact_evidence_refs": ["process-impact:devhub-intake-routing"],
+      "requirement_evidence_refs": ["requirement:zoning-review-screen"]
+    },
+    {
+      "predicate_id": "ppd.fixture.predicate.structural-review-hold",
+      "jurisdiction": "Portland, OR",
+      "permit_stage": "plan review",
+      "predicate_text": "Fixture-only predicate row stating that structural review status must be confirmed before downstream reliance.",
+      "process_impact_evidence_refs": ["process-impact:review-cycle-hold"],
+      "requirement_evidence_refs": ["requirement:structural-review-confirmation"]
+    }
+  ],
+  "process_impact_evidence": [
+    {
+      "ref": "process-impact:devhub-intake-routing",
+      "title": "Fixture DevHub intake routing impact",
+      "citation": "ppd/tests/fixtures/guardrails/recompile_candidate_v5/candidate.json#process-impact-devhub-intake-routing",
+      "note": "Fixture citation only; does not open DevHub or assert current city process."
+    },
+    {
+      "ref": "process-impact:review-cycle-hold",
+      "title": "Fixture review cycle hold impact",
+      "citation": "ppd/tests/fixtures/guardrails/recompile_candidate_v5/candidate.json#process-impact-review-cycle-hold",
+      "note": "Fixture citation only; reviewer must confirm against authorized current sources before operational use."
+    }
+  ],
+  "requirement_evidence": [
+    {
+      "ref": "requirement:zoning-review-screen",
+      "title": "Fixture zoning review screen requirement",
+      "citation": "ppd/tests/fixtures/guardrails/recompile_candidate_v5/candidate.json#requirement-zoning-review-screen",
+      "note": "Offline fixture reference, not a permitting guarantee."
+    },
+    {
+      "ref": "requirement:structural-review-confirmation",
+      "title": "Fixture structural review confirmation requirement",
+      "citation": "ppd/tests/fixtures/guardrails/recompile_candidate_v5/candidate.json#requirement-structural-review-confirmation",
+      "note": "Offline fixture reference, not a permitting guarantee."
+    }
+  ],
+  "stale_source_holds": [
+    {
+      "source_ref": "fixture-source:devhub-public-guidance-snapshot",
+      "reason": "Fixture declares the source stale until a reviewer confirms freshness outside this packet.",
+      "hold_action": "Do not activate compiled guardrail from this row."
+    }
+  ],
+  "exact_confirmation_checkpoints": [
+    {
+      "checkpoint_id": "confirm-public-source-date",
+      "prompt": "Reviewer must record the exact public source date before approval.",
+      "required_confirmation": "Exact public source date confirmed."
+    },
+    {
+      "checkpoint_id": "confirm-no-private-documents",
+      "prompt": "Reviewer must confirm no private documents were used.",
+      "required_confirmation": "No private documents were read or used."
+    }
+  ],
+  "refused_actions": [
+    {
+      "action": "open_devhub",
+      "reason": "Reviewer packet v5 is fixture-first and offline only."
+    },
+    {
+      "action": "submit_or_certify_permit",
+      "reason": "Packet generation cannot perform legal, permitting, payment, scheduling, submission, or certification actions."
+    }
+  ],
+  "source_freshness_caveats": [
+    "All cited evidence in this candidate is fixture evidence only.",
+    "A reviewer must independently confirm source freshness before any operational guardrail use."
+  ],
+  "rollback_owner_placeholders": [
+    {
+      "scope": "compiled predicate bundle",
+      "owner": "TODO: rollback owner",
+      "contact": "TODO: owner contact"
+    }
+  ],
+  "offline_validation_commands": [
+    ["python3", "-m", "pytest", "ppd/tests/test_guardrail_recompile_reviewer_packet_v5.py"],
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

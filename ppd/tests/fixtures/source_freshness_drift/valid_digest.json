@@ -1,0 +1,32 @@
+{
+  "digest_id": "drift-digest-valid-001",
+  "provenance": {
+    "generated_by": "deterministic_fixture"
+  },
+  "source_references": [
+    {
+      "source_id": "ppd-devhub-faq",
+      "source_type": "public_html",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "reference_type": "normalized_document"
+    }
+  ],
+  "changed_source_claims": [
+    {
+      "claim_id": "claim-devhub-faq-upload-guidance",
+      "changed": true,
+      "source_id": "ppd-devhub-faq",
+      "citation_ids": ["citation-devhub-faq-upload-corrections"],
+      "affected_requirement_ids": ["req-upload-corrections-authenticated-review"],
+      "affected_guardrail_bundle_ids": ["guardrail-devhub-upload-corrections"]
+    }
+  ],
+  "freshness_entries": [
+    {
+      "source_id": "ppd-devhub-faq",
+      "observed_freshness_status": "stale",
+      "freshness_status": "current",
+      "reviewer_acknowledged": true
+    }
+  ]
+}

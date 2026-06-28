@@ -1,0 +1,40 @@
+{
+  "fixture_kind": "public_source_registry_promotion_packets",
+  "valid_promoted_packet": {
+    "packet_id": "promotion-packet-valid-001",
+    "promotion_decision": "promote",
+    "source_id": "ppd-devhub-faq",
+    "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+    "rehearsal_link": "ppd/tests/fixtures/public_source_registry/rehearsal-report.json",
+    "release_gate_link": "ppd/tests/fixtures/public_source_registry/release-gate-report.json",
+    "rollback_notes": "Remove the staged source registry candidate and retain the previous registry snapshot.",
+    "blockers": [
+      {
+        "id": "robots-preflight-reviewed",
+        "status": "resolved"
+      }
+    ],
+    "network_execution": "dry_run_only",
+    "live_registry_mutation": false,
+    "output_policy": {
+      "metadata_only": true,
+      "store_raw_document": false
+    }
+  },
+  "invalid_promoted_packet": {
+    "packet_id": "promotion-packet-invalid-001",
+    "promotion_decision": "promote",
+    "source_id": "ppd-devhub-private-dashboard",
+    "canonical_url": "https://devhub.portlandoregon.gov/dashboard/my-permits?session=abc123",
+    "candidate_artifact": "ppd/data/raw_crawl/downloads/devhub-dashboard.html",
+    "blockers": [
+      {
+        "id": "release-gate-not-reviewed",
+        "status": "open"
+      }
+    ],
+    "live_registry_mutation": true,
+    "network_execution_claim": "live fetch performed",
+    "operator_notes": "curl executed against DevHub during packet creation"
+  }
+}

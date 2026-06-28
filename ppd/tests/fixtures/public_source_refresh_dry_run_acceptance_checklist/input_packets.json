@@ -1,0 +1,113 @@
+{
+  "public_source_refresh_tranche_proposal_packet": {
+    "packet_type": "ppd_public_source_refresh_tranche_proposal",
+    "mode": "fixture_first_metadata_only",
+    "reviewer_owner_fields": {
+      "reviewer": "ppd-refresh-reviewer",
+      "owner": "ppd-refresh-owner"
+    },
+    "evidence_refs": [
+      "fixture://freshness-watchlist-reviewer-disposition",
+      "fixture://source-registry-schedule-update-candidate"
+    ],
+    "ordered_sources": [
+      {
+        "order": 1,
+        "source_id": "ppd-online-tools",
+        "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+        "allowlist_evidence_refs": ["fixture://allowlist/www.portland.gov"],
+        "robots_evidence_refs": ["fixture://robots/www.portland.gov/ppd"],
+        "abort_checks": [
+          "Abort if canonical URL host is outside the PP&D public allowlist.",
+          "Abort if robots evidence is missing or stale.",
+          "Abort if review requires raw body persistence or document download."
+        ]
+      },
+      {
+        "order": 2,
+        "source_id": "devhub-faq",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+        "allowlist_evidence_refs": ["fixture://allowlist/www.portland.gov"],
+        "robots_evidence_refs": ["fixture://robots/www.portland.gov/ppd"],
+        "abort_checks": [
+          "Abort if the source redirects to an authenticated DevHub account surface.",
+          "Abort if the candidate asks for processor execution.",
+          "Abort if schedule mutation is requested during acceptance review."
+        ]
+      }
+    ],
+    "attestations": {
+      "no_fetch": true,
+      "no_download": true,
+      "no_processor": true,
+      "no_registry_mutation": true,
+      "no_schedule_mutation": true
+    }
+  },
+  "source_refresh_runbook_candidate": {
+    "packet_type": "ppd_source_refresh_runbook_candidate",
+    "mode": "fixture_first_metadata_only",
+    "reviewer_owner_fields": {
+      "reviewer": "ppd-refresh-reviewer",
+      "owner": "ppd-refresh-owner"
+    },
+    "runbook_step_refs": [
+      "runbook://public-source-refresh/preflight",
+      "runbook://public-source-refresh/source-abort-review"
+    ],
+    "preflight_gates": [
+      "Confirm tranche proposal is fixture-only.",
+      "Confirm allowlist and robots evidence exists for each source.",
+      "Confirm operator dry-run transcript has no live execution claims."
+    ],
+    "abort_criteria": [
+      "Abort on authenticated URL.",
+      "Abort on raw artifact reference.",
+      "Abort on registry or schedule mutation request."
+    ],
+    "attestations": {
+      "no_fetch": true,
+      "no_download": true,
+      "no_processor": true,
+      "no_registry_mutation": true,
+      "no_schedule_mutation": true
+    }
+  },
+  "public_source_refresh_operator_dry_run_transcript": {
+    "packet_type": "public_source_refresh_operator_dry_run_transcript",
+    "mode": "fixture_first_dry_run",
+    "reviewer": "ppd-refresh-reviewer",
+    "owner": "ppd-refresh-owner",
+    "observation_citations": [
+      "fixture://operator-dry-run/load-runbook",
+      "fixture://operator-dry-run/preview-sources"
+    ],
+    "steps": [
+      {
+        "order": 1,
+        "name": "load-runbook-candidate",
+        "simulation_only": true,
+        "expected_metadata_only_observation": "Runbook candidate metadata is readable from fixtures."
+      },
+      {
+        "order": 2,
+        "name": "preview-refresh-tranche",
+        "simulation_only": true,
+        "expected_metadata_only_observation": "Refresh tranche source order is readable from fixtures."
+      },
+      {
+        "order": 3,
+        "name": "record-attestations",
+        "simulation_only": true,
+        "expected_metadata_only_observation": "No-fetch, no-download, no-processor, no-registry, and no-schedule attestations are recorded."
+      }
+    ],
+    "attestations": {
+      "no_fetch": true,
+      "no_download": true,
+      "no_processor": true,
+      "no_registry_mutation": true,
+      "no_schedule_mutation": true
+    }
+  }
+}

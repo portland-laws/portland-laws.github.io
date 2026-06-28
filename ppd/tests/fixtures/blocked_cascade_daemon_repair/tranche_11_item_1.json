@@ -1,0 +1,25 @@
+{
+  "tranche": 11,
+  "item": 1,
+  "blocked_work_id": "ppd-tranche-11-item-1",
+  "repair_lineage": [
+    {
+      "task_id": "daemon-repair-old-invalid",
+      "fresh": false,
+      "validated": true,
+      "expected_blocked_state": "parked"
+    },
+    {
+      "task_id": "daemon-repair-fresh-unvalidated",
+      "fresh": true,
+      "validated": false,
+      "expected_blocked_state": "parked"
+    },
+    {
+      "task_id": "daemon-repair-fresh-validated",
+      "fresh": true,
+      "validated": true,
+      "expected_blocked_state": "released"
+    }
+  ]
+}

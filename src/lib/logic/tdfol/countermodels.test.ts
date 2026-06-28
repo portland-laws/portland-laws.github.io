@@ -1,12 +1,19 @@
 import { parseTdfolFormula } from './parser';
+import { exportCecTableauxCountermodelData } from '../cec/countermodels';
+import { proveCecModalFormula } from '../cec/modalTableaux';
+import { parseCecExpression } from '../cec/parser';
 import {
+  createTdfolCountermodelVisualizerDemo,
+  exportTdfolTableauxCountermodelData,
   extractTdfolCountermodel,
   TdfolCounterModel,
   TdfolCounterModelExtractor,
   TdfolCounterModelVisualizer,
   TdfolKripkeStructure,
+  validateTdfolTableauxCountermodelExport,
   visualizeTdfolCountermodel,
 } from './countermodels';
+import { TdfolModalTableaux } from './modalTableaux';
 
 describe('TDFOL countermodels', () => {
   it('models Kripke worlds, accessibility, valuation, and JSON export', () => {
@@ -71,7 +78,9 @@ describe('TDFOL countermodels', () => {
     expect(countermodel.toDot()).toContain('w0 -> w1;');
     expect(JSON.parse(countermodel.toJson()).kripke_structure.logic_type).toBe('D');
     expect(visualizeTdfolCountermodel(countermodel, 'compact-ascii')).toContain('Kripke(D)');
-    expect(visualizeTdfolCountermodel(countermodel, 'html')).toContain('<script type="application/json" id="kripke-data">');
+    expect(visualizeTdfolCountermodel(countermodel, 'html')).toContain(
+      '<script type="application/json" id="kripke-data">',
+    );
   });
 
   it('checks modal accessibility properties for visualizer summaries', () => {
@@ -89,7 +98,149 @@ describe('TDFOL countermodels', () => {
       transitive: true,
       serial: true,
     });
-    expect(visualizer.renderLogicProperties()).toContain('Expected for S5: Reflexive, Symmetric, Transitive');
+    expect(visualizer.renderLogicProperties()).toContain(
+      'Expected for S5: Reflexive, Symmetric, Transitive',
+    );
     expect(visualizer.renderAsciiEnhanced()).toContain('Kripke Structure (Logic: S5)');
+  });
+
+  it('exports deterministic browser-native visualizer snapshots and optional HTML sections', () => {
+    const kripke = new TdfolKripkeStructure({ logicType: 'S4' });
+    kripke.addAccessibility(2, 2);
+    kripke.addAccessibility(0, 2);
+    kripke.addAccessibility(0, 1);
+    kripke.setAtomTrue(2, 'Zed(x)');
+    kripke.setAtomTrue(2, 'Alpha(x)');
+
+    const visualizer = new TdfolCounterModelVisualizer(kripke);
+    const snapshot = visualizer.toDataSnapshot();
+
+    expect(snapshot.nodes.map((node) => node.id)).toEqual(['w0', 'w1', 'w2']);
+    expect(snapshot.nodes[2].atoms).toEqual(['Alpha(x)', 'Zed(x)']);
+    expect(snapshot.links).toEqual([
+      { source: 'w0', target: 'w1', from: 0, to: 1 },
+      { source: 'w0', target: 'w2', from: 0, to: 2 },
+      { source: 'w2', target: 'w2', from: 2, to: 2 },
+    ]);
+    expect(snapshot.expected_properties).toEqual(['Reflexive', 'Transitive']);
+    expect(snapshot.property_checks.serial).toBe(false);
+
+    const html = visualizer.toHtmlString({
+      includeDataScript: false,
+      includeLegend: false,
+      includeProperties: false,
+    });
+
+    expect(html).not.toContain('id="kripke-data"');
+    expect(html).not.toContain('Legend');
+    expect(html).not.toContain('Modal Properties');
+    expect(html).toContain('Kripke Structure (S4)');
+  });
+
+  it('builds deterministic browser-native countermodel visualizer demo scenarios', () => {
+    const scenarios = createTdfolCountermodelVisualizerDemo({
+      formats: ['compact-ascii', 'snapshot'],
+    });
+
+    expect(scenarios.map((scenario) => scenario.id)).toEqual([
+      'non-reflexive-t-countermodel',
+      'serial-d-visualization',
+    ]);
+    expect(scenarios[0].logic_type).toBe('T');
+    expect(scenarios[0].countermodel.accessibility).toEqual({ '0': [1], '1': [] });
+    expect(scenarios[0].snapshot.property_checks.reflexive).toBe(false);
+    expect(scenarios[0].rendered['compact-ascii']).toContain('Kripke(T)');
+    expect(JSON.parse(scenarios[0].rendered.snapshot ?? '{}').expected_properties).toEqual([
+      'Reflexive',
+    ]);
+
+    expect(scenarios[1].logic_type).toBe('D');
+    expect(scenarios[1].snapshot.property_checks.serial).toBe(true);
+    expect(scenarios[1].countermodel.valuation['1']).toEqual(['Permitted(a)']);
+  });
+
+  it('turns modal tableaux open branches into existing serializable visualization data', () => {
+    const formula = parseTdfolFormula('always(Pred(x)) -> Pred(x)');
+    const result = new TdfolModalTableaux({ logicType: 'K' }).prove(formula);
+
+    expect(result.isValid).toBe(false);
+    expect(result.openBranch).toBeDefined();
+
+    const countermodel = extractTdfolCountermodel(formula, result.openBranch!, 'K');
+    const snapshot = new TdfolCounterModelVisualizer(countermodel.kripke).toDataSnapshot();
+
+    expect(countermodel.kripke.toDict()).toMatchObject({
+      worlds: [0],
+      accessibility: { '0': [] },
+      logic_type: 'K',
+    });
+    expect(snapshot).toMatchObject({ num_worlds: 1, num_relations: 0, expected_properties: [] });
+    expect(JSON.parse(JSON.stringify(snapshot)).nodes[0].id).toBe('w0');
+  });
+
+  it('exports TDFOL and CEC modal tableaux countermodels with matching visualization payloads', () => {
+    const tdfolFormula = parseTdfolFormula('always(Pred(x)) -> Pred(x)');
+    const tdfolResult = new TdfolModalTableaux({ logicType: 'K' }).prove(tdfolFormula);
+    const cecFormula = parseCecExpression(
+      '(implies (always (comply_with agent code)) (comply_with agent code))',
+    );
+    const cecResult = proveCecModalFormula(cecFormula, 'K');
+
+    const tdfolExport = exportTdfolTableauxCountermodelData(
+      tdfolFormula,
+      tdfolResult.openBranch!,
+      'K',
+      tdfolResult.proofSteps,
+    );
+    const cecExport = exportCecTableauxCountermodelData(
+      cecFormula,
+      cecResult.openBranch!,
+      'K',
+      cecResult.proofSteps,
+    );
+
+    expect(tdfolExport).toMatchObject({
+      formula: '(□(Pred(x))) → (Pred(x))',
+      logic_type: 'K',
+      is_valid: false,
+      countermodel: { worlds: [0], accessibility: { '0': [] }, logic_type: 'K' },
+      visualization: { num_worlds: 1, num_relations: 0, expected_properties: [] },
+    });
+    expect(tdfolExport.open_branch.worlds[0].negated_formulas).toEqual(['Pred(x)']);
+    expect(tdfolExport.open_branch.accessibility).toEqual([]);
+    expect(tdfolExport.proof_steps).toEqual(tdfolResult.proofSteps);
+    expect(JSON.parse(JSON.stringify(tdfolExport)).visualization.nodes[0]).toMatchObject({
+      id: 'w0',
+      is_initial: true,
+    });
+    expect(validateTdfolTableauxCountermodelExport(tdfolExport)).toEqual({ ok: true, errors: [] });
+
+    expect(Object.keys(tdfolExport).sort()).toEqual(Object.keys(cecExport).sort());
+    expect(tdfolExport.open_branch.worlds[0]).toHaveProperty('formulas');
+    expect(tdfolExport.open_branch.worlds[0]).toHaveProperty('negated_formulas');
+    expect(cecExport.visualization.nodes[0].id).toBe(tdfolExport.visualization.nodes[0].id);
+  });
+
+  it('rejects inconsistent TDFOL countermodel visualization exports', () => {
+    const formula = parseTdfolFormula('always(Pred(x)) -> Pred(x)');
+    const result = new TdfolModalTableaux({ logicType: 'K' }).prove(formula);
+    const exported = exportTdfolTableauxCountermodelData(
+      formula,
+      result.openBranch!,
+      'K',
+      result.proofSteps,
+    );
+
+    const broken = {
+      ...JSON.parse(JSON.stringify(exported)),
+      visualization: {
+        ...exported.visualization,
+        links: [{ source: 'w0', target: 'w1', from: 0, to: 1 }],
+      },
+    };
+
+    expect(validateTdfolTableauxCountermodelExport(broken).errors).toContain(
+      'TDFOL visualization links do not match countermodel accessibility',
+    );
   });
 });

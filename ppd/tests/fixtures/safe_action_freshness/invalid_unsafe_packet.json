@@ -1,0 +1,30 @@
+{
+  "packet_id": "safe-action-freshness-invalid-unsafe-shapes",
+  "private_case_facts": {
+    "site_address": "123 Private Test St"
+  },
+  "raw_authenticated_values": {
+    "csrf_token": "raw-token-value"
+  },
+  "local_note_path": "/home/example/private/devhub-note.txt",
+  "live_devhub_execution": true,
+  "legal_summary": "This will be approved by permitting staff.",
+  "consequential_controls_enabled": true,
+  "prompt_mutation_enabled": true,
+  "guardrail_mutation_enabled": true,
+  "surface_registry_mutation_enabled": true,
+  "agent_state_mutation_enabled": true,
+  "scenarios": [
+    {
+      "scenario_id": "uncited-stale-evidence",
+      "stale_evidence": [
+        "source:old-devhub-guide"
+      ],
+      "blocked_actions": [
+        {
+          "action": "submit_application"
+        }
+      ]
+    }
+  ]
+}

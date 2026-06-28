@@ -1,0 +1,41 @@
+{
+  "packet_kind": "post_release_audit_seed_packet",
+  "packet_id": "synthetic-safe-post-release-audit-seed",
+  "status": "fixture-ready",
+  "production_ready": false,
+  "prerequisite_links": [
+    {
+      "source_id": "ppd-online-tools",
+      "citation_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "relation": "source registry anchor required before audit claim use"
+    },
+    {
+      "source_id": "ppd-devhub-faq",
+      "citation_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "relation": "DevHub capability boundary required before audit claim use"
+    }
+  ],
+  "audit_claims": [
+    {
+      "claim": "Seed packet remains fixture-only and does not assert live crawl completion.",
+      "source_evidence_ids": ["ppd-online-tools"]
+    },
+    {
+      "claim": "Consequential DevHub actions remain disabled and require attended handoff.",
+      "source_evidence_ids": ["ppd-devhub-faq"]
+    }
+  ],
+  "capabilities": [
+    {"name": "read_status_metadata", "enabled": true},
+    {"name": "payment", "enabled": false},
+    {"name": "upload", "enabled": false},
+    {"name": "submission", "enabled": false},
+    {"name": "scheduling", "enabled": false},
+    {"name": "cancellation", "enabled": false},
+    {"name": "certification", "enabled": false}
+  ],
+  "output_refs": ["ppd/tests/fixtures/post_release_audit_seed_packets/safe_seed_packet.json"],
+  "blockers": [],
+  "live_network_performed": false,
+  "devhub_execution_performed": false
+}

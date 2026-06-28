@@ -1,0 +1,17 @@
+Implemented a deterministic frame-logic audit improvement for `source_id` signals and updated coverage.
+
+Changes made:
+- Added `source_id` contextual extraction in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000041-20260518_123625/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:20), including:
+  - Parsing `us-code-{title}-{section}-{digest}` patterns.
+  - Stripping trailing section punctuation before term normalization.
+  - Emitting canonical `title_section` ontology terms (e.g. `43_945a`).
+  - Ignoring non-matching `source_id` strings (no noisy fallback term).
+- Added/updated tests for this behavior in:
+  - [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000041-20260518_123625/ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:157)
+  - [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000041-20260518_123625/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:206)
+  - [test_flogic_optimizer.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000041-20260518_123625/tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py:82)
+
+Validation:
+- Ran:
+  - `pytest -q ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py`
+- Result: `72 passed`.

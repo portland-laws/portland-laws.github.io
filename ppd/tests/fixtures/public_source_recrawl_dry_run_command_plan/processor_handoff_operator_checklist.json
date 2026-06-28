@@ -1,0 +1,38 @@
+{
+  "packet_id": "processor-handoff-checklist-20260528-fixture",
+  "evidence_ids": [
+    "operator-checklist-approved-2026-05-28"
+  ],
+  "checklist_items": [
+    {
+      "checklist_id": "checklist-online-tools-metadata-only",
+      "source_id": "ppd-online-tools",
+      "description": "Confirm dry-run command emits metadata prerequisites only.",
+      "satisfied": true,
+      "evidence_ids": [
+        "operator-online-tools-metadata-only-2026-05-28"
+      ],
+      "minimum_pause_seconds": 8
+    },
+    {
+      "checklist_id": "checklist-portlandmaps-metadata-only",
+      "source_id": "portlandmaps-public-reference",
+      "description": "Confirm dry-run command records processor handoff prerequisites without invoking processors.",
+      "satisfied": true,
+      "evidence_ids": [
+        "operator-portlandmaps-metadata-only-2026-05-28"
+      ],
+      "minimum_pause_seconds": 12
+    },
+    {
+      "checklist_id": "checklist-devhub-auth-boundary",
+      "source_id": "devhub-auth-private",
+      "description": "Authenticated DevHub surfaces are excluded from public recrawl dry-run batches.",
+      "satisfied": true,
+      "evidence_ids": [
+        "operator-devhub-auth-boundary-2026-05-28"
+      ],
+      "minimum_pause_seconds": 30
+    }
+  ]
+}

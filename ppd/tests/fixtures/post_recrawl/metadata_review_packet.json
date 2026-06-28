@@ -1,0 +1,65 @@
+{
+  "packet_id": "post-recrawl-review-2026-05-28-fixture",
+  "captured_at": "2026-05-28T00:00:00Z",
+  "active_bundle_change": false,
+  "sources": [
+    {
+      "source_id": "source:devhub-faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "previous_content_hash": "sha256:old-devhub-faq",
+      "content_hash": "sha256:new-devhub-faq",
+      "previous_http_status": 200,
+      "http_status": 200,
+      "freshness_status": "changed",
+      "last_seen_at": "2026-05-28T00:00:00Z",
+      "stale_after_days": 7,
+      "raw_body_persisted": false,
+      "affected_requirement_ids": [
+        "requirement:devhub-fee-payment-gate",
+        "requirement:devhub-upload-correction-gate"
+      ],
+      "affected_process_model_ids": [
+        "process:devhub-corrections"
+      ],
+      "affected_guardrail_bundle_ids": [
+        "guardrail:devhub-consequential-actions"
+      ]
+    },
+    {
+      "source_id": "source:spp-file-naming",
+      "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+      "previous_content_hash": "sha256:file-naming",
+      "content_hash": "sha256:file-naming",
+      "previous_http_status": 200,
+      "http_status": 200,
+      "freshness_status": "overdue",
+      "last_seen_at": "2026-04-01T00:00:00Z",
+      "stale_after_days": 30,
+      "raw_body_persisted": false,
+      "affected_requirement_ids": [
+        "requirement:single-pdf-file-rules"
+      ],
+      "affected_process_model_ids": [
+        "process:single-pdf-upload-prep"
+      ],
+      "affected_guardrail_bundle_ids": [
+        "guardrail:upload-staging"
+      ]
+    },
+    {
+      "source_id": "source:permit-forms-index",
+      "canonical_url": "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications",
+      "previous_content_hash": "sha256:forms-index",
+      "content_hash": "sha256:forms-index",
+      "previous_http_status": 200,
+      "http_status": 200,
+      "freshness_status": "unchanged",
+      "last_seen_at": "2026-05-28T00:00:00Z",
+      "stale_after_days": 30,
+      "raw_body_persisted": false,
+      "affected_requirement_ids": [],
+      "affected_process_model_ids": [],
+      "affected_guardrail_bundle_ids": []
+    }
+  ]
+}

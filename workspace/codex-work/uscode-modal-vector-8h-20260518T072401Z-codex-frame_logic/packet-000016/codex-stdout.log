@@ -1,0 +1,12 @@
+Implemented a deterministic frame-term audit expansion for `modal.frame_logic`.
+
+- Expanded contextual `flogic:` predicate handling so typed legal fields now audit into ontology terms (e.g., `citation_*`, `statutory_scope_*`, `predicate_argument_*`, `predicate_token_*`, etc.) in [_is_contextual_frame_ontology_predicate](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000016-20260518_085129/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:377) and the new prefix list at [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000016-20260518_085129/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:62).
+- Added regression coverage for citation/scope contextual features at [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000016-20260518_085129/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:306).
+
+Tests run:
+
+1. `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py`  
+2. `pytest -q tests/unit/logic/test_flogic_integration.py tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py`  
+3. `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "frame_ontology or frame_terms or audits_frame_terms"`  
+
+All passed.

@@ -1,0 +1,9 @@
+{
+  "decisions": [
+    {
+      "id": "recrawl-002",
+      "risk_decision": "invalidate stale public metadata",
+      "citations": ["https://www.portland.gov/ppd/public-record"]
+    }
+  ]
+}

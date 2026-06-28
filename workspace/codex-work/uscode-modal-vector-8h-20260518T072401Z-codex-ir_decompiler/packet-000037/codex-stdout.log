@@ -1,0 +1,19 @@
+Implemented one generalized slot refinement in the `modal.ir_decompiler` lane: non-punctuated section identifiers now emit explicit negative trailing-punctuation signals instead of omitting them.
+
+- Added `*_section_has_trailing_punct = "false"` and `*_section_trailing_punct_count = "0"` when no trailing section punctuation is present:
+  - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000037-20260518_110226/ipfs_datasets_py/logic/modal/decompiler.py:837)
+  - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000037-20260518_110226/ipfs_datasets_py/logic/modal/decompiler.py:1363)
+  - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000037-20260518_110226/ipfs_datasets_py/logic/modal/codec.py:1213)
+  - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000037-20260518_110226/ipfs_datasets_py/logic/modal/codec.py:1278)
+
+- Extended regressions to lock this behavior for both decoded slot maps and F-logic triple projection:
+  - [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000037-20260518_110226/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:222)
+  - [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000037-20260518_110226/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:330)
+
+Validation run:
+
+```bash
+pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py
+```
+
+Result: `14 passed`.

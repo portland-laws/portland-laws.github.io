@@ -6,6 +6,7 @@ const BINARY_SYMBOLS = {
   IMPLIES: '→',
   IFF: '↔',
   XOR: '⊕',
+  UNTIL: 'U',
 } as const;
 
 const QUANTIFIER_SYMBOLS = {
@@ -64,4 +65,3 @@ export function formatTdfolTerm(term: TdfolTerm): string {
 function parenthesize(value: string): string {
   return `(${value})`;
 }
-

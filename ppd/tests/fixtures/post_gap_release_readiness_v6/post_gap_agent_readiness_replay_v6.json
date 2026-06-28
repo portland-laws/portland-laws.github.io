@@ -1,0 +1,174 @@
+{
+  "packet_version": "post_gap_agent_readiness_replay_v6",
+  "fixture_only": true,
+  "source_fixture_refs": [
+    {
+      "fixture_role": "user_gap_analysis_packet_v6",
+      "path": "ppd/tests/fixtures/post_gap_agent_readiness_v6/user_gap_analysis_packet_v6.json"
+    },
+    {
+      "fixture_role": "action_journal_dry_run_packet_v6",
+      "path": "ppd/tests/fixtures/post_gap_agent_readiness_v6/action_journal_dry_run_packet_v6.json"
+    }
+  ],
+  "expected_journal_events": [
+    "gap_packet_loaded",
+    "dry_run_packet_loaded",
+    "synthetic_request_received",
+    "missing_information_questions_ordered",
+    "evidence_limitations_explained",
+    "citation_payload_attached",
+    "route_selected",
+    "manual_handoff_reminder_attached",
+    "offline_validation_commands_reported"
+  ],
+  "responses": [
+    {
+      "request_id": "req_questions",
+      "action_kind": "ask_missing_information",
+      "action_category": "safe_read_only",
+      "route": "manual_handoff_only",
+      "refused": false,
+      "missing_information_prompts": [
+        {"id": "q01_property_address", "order": 1},
+        {"id": "q02_scope_summary", "order": 2},
+        {"id": "q03_existing_use", "order": 3},
+        {"id": "q04_documents_available", "order": 4}
+      ],
+      "evidence_limitations": [
+        {
+          "evidence_id": "ev_stale_fee_table",
+          "kind": "stale",
+          "explanation": "Retrieved before the current replay window and must not be used for payment or fee guarantees."
+        },
+        {
+          "evidence_id": "ev_conflicting_zoning_note_a",
+          "kind": "conflicting",
+          "explanation": "Fixture A says a review is required while fixture B says the same review is not required."
+        }
+      ],
+      "citations": [
+        {"label": "Fixture checklist", "url": "fixture://post_gap_agent_readiness_v6/residential_checklist_stub.pdf"},
+        {"label": "Stale fixture fee table", "url": "fixture://post_gap_agent_readiness_v6/stale_fee_table.html"}
+      ],
+      "manual_handoff_reminders": [
+        "Confirm stale or conflicting evidence with PP&D staff or the authoritative public source before relying on it.",
+        "Review every draft manually before any upload, submission, certification, payment, or scheduling step.",
+        "Do not treat this replay as legal, permitting, zoning, fee, deadline, or approval advice."
+      ],
+      "journal_events": [
+        "gap_packet_loaded",
+        "dry_run_packet_loaded",
+        "synthetic_request_received",
+        "missing_information_questions_ordered",
+        "evidence_limitations_explained",
+        "citation_payload_attached",
+        "route_selected",
+        "manual_handoff_reminder_attached",
+        "offline_validation_commands_reported"
+      ]
+    },
+    {
+      "request_id": "req_draft",
+      "action_kind": "draft_preview",
+      "action_category": "reversible_draft",
+      "route": "reversible_local_draft_preview",
+      "refused": false,
+      "missing_information_prompts": [],
+      "evidence_limitations": [],
+      "citations": [
+        {"label": "Fixture checklist", "url": "fixture://post_gap_agent_readiness_v6/residential_checklist_stub.pdf"}
+      ],
+      "manual_handoff_reminders": ["Review every draft manually before any official action."],
+      "journal_events": [
+        "gap_packet_loaded",
+        "dry_run_packet_loaded",
+        "synthetic_request_received",
+        "missing_information_questions_ordered",
+        "evidence_limitations_explained",
+        "citation_payload_attached",
+        "route_selected",
+        "manual_handoff_reminder_attached",
+        "offline_validation_commands_reported"
+      ]
+    },
+    {
+      "request_id": "req_pdf",
+      "action_kind": "pdf_preview",
+      "action_category": "local_pdf_preview",
+      "route": "local_pdf_preview_only",
+      "refused": false,
+      "missing_information_prompts": [],
+      "evidence_limitations": [],
+      "citations": [
+        {"label": "Fixture checklist", "url": "fixture://post_gap_agent_readiness_v6/residential_checklist_stub.pdf"}
+      ],
+      "manual_handoff_reminders": ["Preview PDFs locally only and require manual review."],
+      "journal_events": [
+        "gap_packet_loaded",
+        "dry_run_packet_loaded",
+        "synthetic_request_received",
+        "missing_information_questions_ordered",
+        "evidence_limitations_explained",
+        "citation_payload_attached",
+        "route_selected",
+        "manual_handoff_reminder_attached",
+        "offline_validation_commands_reported"
+      ]
+    },
+    {
+      "request_id": "req_official_record_change",
+      "action_kind": "official_record_change",
+      "action_category": "consequential",
+      "route": "refused_manual_handoff",
+      "refused": true,
+      "missing_information_prompts": [],
+      "evidence_limitations": [],
+      "citations": [
+        {"label": "Fixture checklist", "url": "fixture://post_gap_agent_readiness_v6/residential_checklist_stub.pdf"}
+      ],
+      "manual_handoff_reminders": ["Consequential official actions require attended manual confirmation."],
+      "journal_events": [
+        "gap_packet_loaded",
+        "dry_run_packet_loaded",
+        "synthetic_request_received",
+        "missing_information_questions_ordered",
+        "evidence_limitations_explained",
+        "citation_payload_attached",
+        "route_selected",
+        "manual_handoff_reminder_attached",
+        "offline_validation_commands_reported"
+      ]
+    },
+    {
+      "request_id": "req_financial_commitment",
+      "action_kind": "financial_commitment",
+      "action_category": "financial",
+      "route": "refused_manual_handoff",
+      "refused": true,
+      "missing_information_prompts": [],
+      "evidence_limitations": [
+        {
+          "evidence_id": "ev_stale_fee_table",
+          "kind": "stale",
+          "explanation": "Stale fee table blocks financial readiness."
+        }
+      ],
+      "citations": [
+        {"label": "Stale fixture fee table", "url": "fixture://post_gap_agent_readiness_v6/stale_fee_table.html"}
+      ],
+      "manual_handoff_reminders": ["Financial actions require attended manual confirmation."],
+      "journal_events": [
+        "gap_packet_loaded",
+        "dry_run_packet_loaded",
+        "synthetic_request_received",
+        "missing_information_questions_ordered",
+        "evidence_limitations_explained",
+        "citation_payload_attached",
+        "route_selected",
+        "manual_handoff_reminder_attached",
+        "offline_validation_commands_reported"
+      ]
+    }
+  ]
+}

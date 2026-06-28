@@ -1,0 +1,49 @@
+{
+  "packet_version": "devhub-surface-map-delta-reviewer-packet-v3",
+  "active": false,
+  "delta_candidate_refs": [
+    "candidate:devhub-home-readonly-heading-20260601"
+  ],
+  "reviewer_ready_surface_rows": [
+    {
+      "surface_id": "devhub-home-readonly",
+      "auth_scope": "authenticated_user_attended",
+      "review_status": "reviewer_ready",
+      "delta_candidate_ref": "candidate:devhub-home-readonly-heading-20260601"
+    }
+  ],
+  "evidence_refs": [
+    "public-source:devhub-faqs:2026-05-08",
+    "fixture:devhub-surface-map-delta-reviewer-v3:readonly-heading"
+  ],
+  "safety_attestations": [
+    "Packet is inactive and derived from committed deterministic fixtures.",
+    "No credentials, cookies, browser storage, screenshots, traces, HAR files, or private DevHub values are included.",
+    "Packet does not claim live DevHub access, uploads, submissions, payments, inspections, cancellations, certifications, or other official actions."
+  ],
+  "selector_confidence_notes": [
+    {
+      "surface_id": "devhub-home-readonly",
+      "confidence": "medium",
+      "note": "Selector is proposed for reviewer evaluation only and is not marked as an active production selector."
+    }
+  ],
+  "unresolved_reviewer_holds": [
+    {
+      "hold_id": "hold:inactive-review-required",
+      "reason": "Human reviewer must compare proposed row with current policy fixtures before promotion."
+    }
+  ],
+  "rollback_notes": "Discard this inactive packet candidate; no active surface-map file or DevHub state is changed by this packet.",
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ],
+  "flags": {
+    "active_mutation": false,
+    "mutates_active_surface_map": false
+  }
+}

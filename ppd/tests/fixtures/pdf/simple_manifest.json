@@ -1,0 +1,17 @@
+{
+  "form_id": "sample-public-ppd-form",
+  "template_pdf_path": "sample-public-form.pdf",
+  "fields": [
+    {
+      "name": "ApplicantName",
+      "fact_key": "applicant_name"
+    },
+    {
+      "name": "ProjectAddress",
+      "redacted_fact_key": "project_address"
+    },
+    {
+      "name": "UnmappedPublicField"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "artifact_kind": "ephemeral-workspace",
+  "changed_files": [
+    "ppd/daemon/deterministic-progress.json"
+  ],
+  "created_at": "2026-05-05T04:52:20.746903Z",
+  "promoted_to_main_worktree": true,
+  "reason": "",
+  "schema_version": 1,
+  "summary": "Complete supervisor idle recovery with deterministic PP&D fallback.",
+  "target_task": "Task checkbox-485: Add supervisor idle-recovery validation for tranche 11 proving completed boards synthesize new goal-aligned platform tasks without sleeping, duplicate tranche reuse, or blocked-task retry churn.",
+  "transport": "ephemeral_worktree",
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ],
+    [
+      "python3",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "ppd/tests",
+      "-p",
+      "test_*.py"
+    ],
+    [
+      "bash",
+      "-lc",
+      "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+    ]
+  ],
+  "validation_passed": true
+}

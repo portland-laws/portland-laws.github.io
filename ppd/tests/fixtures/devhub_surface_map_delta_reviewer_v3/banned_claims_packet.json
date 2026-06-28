@@ -1,0 +1,43 @@
+{
+  "packet_version": "devhub-surface-map-delta-reviewer-packet-v3",
+  "active": false,
+  "delta_candidate_refs": [
+    "candidate:unsafe-claims"
+  ],
+  "reviewer_ready_surface_rows": [
+    {
+      "surface_id": "unsafe-claims",
+      "auth_scope": "authenticated_user_attended",
+      "review_status": "reviewer_ready"
+    }
+  ],
+  "evidence_refs": [
+    "fixture:unsafe-claims"
+  ],
+  "safety_attestations": [
+    "This fixture intentionally mentions auth_state and a session cookie so validation rejects private artifacts.",
+    "This fixture intentionally mentions a screenshot, Playwright trace, and HAR file so validation rejects capture claims.",
+    "This fixture intentionally says it logged into DevHub and observed live DevHub so validation rejects live interaction claims.",
+    "This fixture intentionally says it updated active surface map so validation rejects active mutation claims.",
+    "This fixture intentionally says it filled form fields and uploaded documents so validation rejects form-fill and upload claims.",
+    "This fixture intentionally says it submitted permit, paid fee, and scheduled inspection so validation rejects official-action claims.",
+    "This fixture intentionally says permit will be approved and legally sufficient so validation rejects legal or permitting guarantees."
+  ],
+  "selector_confidence_notes": [
+    "unsafe claims fixture"
+  ],
+  "unresolved_reviewer_holds": [
+    "unsafe claims fixture requires rejection"
+  ],
+  "rollback_notes": "Reject fixture only.",
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ],
+  "flags": {
+    "active_mutation": true
+  }
+}

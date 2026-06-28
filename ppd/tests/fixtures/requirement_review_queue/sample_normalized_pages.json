@@ -1,0 +1,11 @@
+{
+  "records": [
+    {
+      "source_id": "ppd-test-residential-building-page",
+      "url": "https://www.portland.gov/ppd/example/residential-building",
+      "title": "Residential Building Permit Requirements",
+      "content_type": "page",
+      "text": "PERMIT_FAMILY: Residential Building Permit\nSTAGE: Intake > Plan Review > Issuance\nDOCUMENT_RULE: Site plan required | stage=Intake | applies_to=new construction\nDOCUMENT_RULE: Structural plans required | stage=Plan Review | applies_to=alterations\nFEE_TRIGGER: Plan review fee due | stage=Intake | event=application accepted\nDEADLINE: Corrections response window | stage=Plan Review | days=180\nEXCEPTION: Historic resource review may add routing | stage=Plan Review"
+    }
+  ]
+}

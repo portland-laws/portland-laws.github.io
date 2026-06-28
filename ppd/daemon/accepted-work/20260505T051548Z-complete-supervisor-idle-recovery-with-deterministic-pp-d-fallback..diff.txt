@@ -1,0 +1,56 @@
+--- a/ppd/daemon/deterministic-progress.json
++++ b/ppd/daemon/deterministic-progress.json
+@@ -5202,9 +5202,52 @@
+       "taskLabel": "Task checkbox-604: Add Playwright/PDF handoff validation for tranche 41 proving redacted user facts can fill draft fields and PDF previews while official DevHub transitions stay behind exact confirmation checkpoints.",
+       "title": "Add Playwright/PDF handoff validation for tranche 41 proving redacted user facts can fill draft fields and PDF previews while official DevHub transitions stay behind exact confirmation checkpoints.",
+       "tranche": 41
++    },
++    {
++      "artifactContracts": [
++        "completed_board_summary",
++        "goal_aligned_task_synthesis",
++        "duplicate_tranche_guard",
++        "blocked_retry_churn_guard",
++        "immediate_restart_gate"
++      ],
++      "blockedActions": [
++        "official_upload",
++        "permit_submission",
++        "certification",
++        "fee_payment",
++        "account_security_transition",
++        "inspection_scheduling"
++      ],
++      "checkboxId": 605,
++      "completedAt": "2026-05-05T05:15:47.601639Z",
++      "fallbackKind": "supervisor_idle_recovery",
++      "guardrails": [
++        "public_sources_only",
++        "redacted_user_facts_only",
++        "reversible_draft_actions_only",
++        "local_pdf_preview_only",
++        "exact_confirmation_before_official_action",
++        "formal_logic_requires_source_evidence"
++      ],
++      "runtimePolicy": {
++        "liveCrawlAllowedByDefault": false,
++        "officialDevhubActionAllowedByDefault": false,
++        "privateArtifactPersistence": "forbidden",
++        "requiresHumanAttendanceBeforeBrowserUse": true
++      },
++      "sourceEvidenceIds": [
++        "evidence:ppd-home:2026-05-01",
++        "evidence:permit-applications-index:2026-05-01",
++        "evidence:devhub-faq:2026-05-01",
++        "evidence:single-pdf-process:2026-05-01"
++      ],
++      "taskLabel": "Task checkbox-605: Add supervisor idle-recovery validation for tranche 41 proving completed boards synthesize new goal-aligned platform tasks without sleeping, duplicate tranche reuse, or blocked-task retry churn.",
++      "title": "Add supervisor idle-recovery validation for tranche 41 proving completed boards synthesize new goal-aligned platform tasks without sleeping, duplicate tranche reuse, or blocked-task retry churn.",
++      "tranche": 41
+     }
+   ],
+   "schemaVersion": 1,
+   "strategy": "deterministic_task_fallback_when_llm_unavailable",
+-  "updatedAt": "2026-05-05T05:15:46.883578Z"
++  "updatedAt": "2026-05-05T05:15:47.601653Z"
+ }

@@ -1,0 +1,204 @@
+{
+  "source_registry": [
+    {
+      "source_id": "source-devhub-guide-submit-permit-application",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "source_type": "devhub_public",
+      "owning_surface": "ppd_public_guidance",
+      "privacy_classification": "public"
+    },
+    {
+      "source_id": "source-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "source_type": "public_html",
+      "owning_surface": "ppd_public_guidance",
+      "privacy_classification": "public"
+    }
+  ],
+  "archive_manifests": [
+    {
+      "manifest_id": "manifest-devhub-guide-submit-permit-application-2026-05-08",
+      "source_id": "source-devhub-guide-submit-permit-application",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "requested_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "redirect_chain": [],
+      "http_status": 200,
+      "content_type": "text/html",
+      "content_hash": "sha256:fixture-devhub-guide",
+      "capture_started_at": "2026-05-08T00:00:00Z",
+      "capture_finished_at": "2026-05-08T00:00:01Z",
+      "processor_name": "fixture-only",
+      "processor_version": "0",
+      "archive_artifact_ref": "fixture-metadata-only",
+      "normalized_document_id": "doc-devhub-guide-submit-permit-application",
+      "skipped_reason": null,
+      "no_raw_body_persisted": true
+    },
+    {
+      "manifest_id": "manifest-submit-plans-online-2026-05-08",
+      "source_id": "source-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "requested_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "redirect_chain": [],
+      "http_status": 200,
+      "content_type": "text/html",
+      "content_hash": "sha256:fixture-submit-plans-online",
+      "capture_started_at": "2026-05-08T00:00:02Z",
+      "capture_finished_at": "2026-05-08T00:00:03Z",
+      "processor_name": "fixture-only",
+      "processor_version": "0",
+      "archive_artifact_ref": "fixture-metadata-only",
+      "normalized_document_id": "doc-submit-plans-online",
+      "skipped_reason": null,
+      "no_raw_body_persisted": true
+    }
+  ],
+  "document_records": [
+    {
+      "document_id": "doc-devhub-guide-submit-permit-application",
+      "source_id": "source-devhub-guide-submit-permit-application",
+      "title": "DevHub permit application guide fixture",
+      "document_type": "public_html",
+      "language": "en",
+      "sections": [
+        {
+          "section_id": "section-devhub-application-types",
+          "heading": "Permit request types",
+          "text": "DevHub permit application guidance lists building, trade, sign, demolition, solar, and Urban Forestry request types. Some requests require acknowledgement before submission."
+        }
+      ],
+      "tables": [],
+      "links": [],
+      "pdf_pages": [],
+      "form_fields": [],
+      "citation_spans": [
+        {
+          "citation_span_id": "cite-devhub-request-types",
+          "source_id": "source-devhub-guide-submit-permit-application",
+          "archive_manifest_id": "manifest-devhub-guide-submit-permit-application-2026-05-08",
+          "document_id": "doc-devhub-guide-submit-permit-application",
+          "section_id": "section-devhub-application-types",
+          "start_offset": 0,
+          "end_offset": 108,
+          "cited_text": "DevHub permit application guidance lists building, trade, sign, demolition, solar, and Urban Forestry request types."
+        },
+        {
+          "citation_span_id": "cite-devhub-acknowledgement-before-submission",
+          "source_id": "source-devhub-guide-submit-permit-application",
+          "archive_manifest_id": "manifest-devhub-guide-submit-permit-application-2026-05-08",
+          "document_id": "doc-devhub-guide-submit-permit-application",
+          "section_id": "section-devhub-application-types",
+          "start_offset": 109,
+          "end_offset": 161,
+          "cited_text": "Some requests require acknowledgement before submission."
+        }
+      ],
+      "content_hash": "sha256:fixture-normalized-devhub-guide",
+      "extraction_confidence": 1.0
+    },
+    {
+      "document_id": "doc-submit-plans-online",
+      "source_id": "source-submit-plans-online",
+      "title": "Submit plans online fixture",
+      "document_type": "public_html",
+      "language": "en",
+      "sections": [
+        {
+          "section_id": "section-single-pdf-process",
+          "heading": "Single PDF process",
+          "text": "Single PDF guidance says drawing plans are uploaded together in one PDF. Applications, calculations, and other supporting documents are uploaded as separate PDFs."
+        }
+      ],
+      "tables": [],
+      "links": [],
+      "pdf_pages": [],
+      "form_fields": [],
+      "citation_spans": [
+        {
+          "citation_span_id": "cite-single-pdf-drawings",
+          "source_id": "source-submit-plans-online",
+          "archive_manifest_id": "manifest-submit-plans-online-2026-05-08",
+          "document_id": "doc-submit-plans-online",
+          "section_id": "section-single-pdf-process",
+          "start_offset": 0,
+          "end_offset": 75,
+          "cited_text": "Single PDF guidance says drawing plans are uploaded together in one PDF."
+        },
+        {
+          "citation_span_id": "cite-supporting-documents-separate-pdfs",
+          "source_id": "source-submit-plans-online",
+          "archive_manifest_id": "manifest-submit-plans-online-2026-05-08",
+          "document_id": "doc-submit-plans-online",
+          "section_id": "section-single-pdf-process",
+          "start_offset": 76,
+          "end_offset": 154,
+          "cited_text": "Applications, calculations, and other supporting documents are uploaded as separate PDFs."
+        }
+      ],
+      "content_hash": "sha256:fixture-normalized-submit-plans-online",
+      "extraction_confidence": 1.0
+    }
+  ],
+  "requirement_nodes": [
+    {
+      "requirement_id": "req-devhub-request-type-selection",
+      "source_evidence_ids": ["cite-devhub-request-types"],
+      "requirement_type": "precondition",
+      "subject": "permit applicant",
+      "action": "select",
+      "object": "supported DevHub request type",
+      "conditions": ["using DevHub public permit application workflow"],
+      "deadline_or_temporal_scope": null,
+      "permit_types": ["building", "trade", "sign", "demolition", "solar", "urban_forestry"],
+      "process_stage": "permit type selection",
+      "confidence": 1.0,
+      "human_review_status": "fixture_reviewed",
+      "formalization_status": "fixture_ready"
+    },
+    {
+      "requirement_id": "req-acknowledgement-before-submission",
+      "source_evidence_ids": ["cite-devhub-acknowledgement-before-submission"],
+      "requirement_type": "action_gate",
+      "subject": "agent",
+      "action": "stop before",
+      "object": "acknowledgement or submission",
+      "conditions": ["official DevHub request is ready for final acknowledgement or submission"],
+      "deadline_or_temporal_scope": null,
+      "permit_types": ["building", "trade", "sign", "demolition", "solar", "urban_forestry"],
+      "process_stage": "acknowledgement/certification review",
+      "confidence": 1.0,
+      "human_review_status": "fixture_reviewed",
+      "formalization_status": "fixture_ready"
+    },
+    {
+      "requirement_id": "req-single-pdf-drawings",
+      "source_evidence_ids": ["cite-single-pdf-drawings"],
+      "requirement_type": "document_requirement",
+      "subject": "permit applicant",
+      "action": "prepare",
+      "object": "drawing plans together in one PDF",
+      "conditions": ["plan review documents are required"],
+      "deadline_or_temporal_scope": null,
+      "permit_types": ["building"],
+      "process_stage": "document preparation",
+      "confidence": 1.0,
+      "human_review_status": "fixture_reviewed",
+      "formalization_status": "fixture_ready"
+    },
+    {
+      "requirement_id": "req-supporting-documents-separate-pdfs",
+      "source_evidence_ids": ["cite-supporting-documents-separate-pdfs"],
+      "requirement_type": "document_requirement",
+      "subject": "permit applicant",
+      "action": "upload",
+      "object": "applications, calculations, and supporting documents as separate PDFs",
+      "conditions": ["supporting documents are required for the permit request"],
+      "deadline_or_temporal_scope": null,
+      "permit_types": ["building"],
+      "process_stage": "upload staging",
+      "confidence": 1.0,
+      "human_review_status": "fixture_reviewed",
+      "formalization_status": "fixture_ready"
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+  "version": "agent_api_compatibility_rehearsal_v4",
+  "monitoring_rehearsal_references": [
+    {
+      "id": "monitoring-rehearsal-001",
+      "source": "deterministic local PP&D rehearsal fixture"
+    }
+  ],
+  "synthetic_agent_request_fixtures": [
+    {
+      "id": "request-001",
+      "user_request": "Summarize permit status from supplied public evidence only.",
+      "live_automation": false
+    }
+  ],
+  "expected_api_response_rows": [
+    {
+      "request_id": "request-001",
+      "status": "draft_only",
+      "requires_manual_review": true
+    }
+  ],
+  "response_scenarios": [
+    {
+      "kind": "missing_fact",
+      "expected_response": "Ask for the missing fact and do not infer it."
+    },
+    {
+      "kind": "stale_evidence",
+      "expected_response": "State that the evidence is stale and request refreshed public evidence."
+    },
+    {
+      "kind": "reversible_draft_only",
+      "expected_response": "Return a draft-only answer that can be revised or discarded."
+    },
+    {
+      "kind": "manual_handoff",
+      "expected_response": "Route official decisions and ambiguous permit actions to a human reviewer."
+    },
+    {
+      "kind": "refusal_explanation",
+      "expected_response": "Explain that the agent cannot perform restricted official, payment, or account actions."
+    }
+  ],
+  "source_citation_payloads": [
+    {
+      "row_id": "request-001",
+      "citations": [
+        {
+          "label": "PP&D public evidence fixture",
+          "url": "https://www.portland.gov/ppd"
+        }
+      ]
+    }
+  ],
+  "validation_commands": [
+    ["python3", "-m", "pytest", "ppd/tests/test_agent_api_compat_rehearsal_v4.py"]
+  ],
+  "safety": {
+    "draft_only": true,
+    "live_submit": false,
+    "mutates_live_systems": false,
+    "autonomous_official_action": false,
+    "legal_guarantee": false,
+    "permitting_guarantee": false
+  }
+}

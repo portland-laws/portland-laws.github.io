@@ -1,5 +1,6 @@
 import {
   createProofSearchBudget,
+  createParallelProofSearchBudgetPlan,
   DEFAULT_PROOF_SEARCH_BUDGET,
   advanceProofSearchBudget,
   startProofSearchBudget,
@@ -82,4 +83,47 @@ describe('proofSearchBudgets', () => {
     expect(result.reason).toBe('time_budget_exceeded');
     expect(result.shouldYield).toBe(false);
   });
+  it("splits deterministic worker budgets for parallel proof search", () => {
+    const plan = createParallelProofSearchBudgetPlan(
+      { maxSteps: 11, maxMilliseconds: 20, yieldEverySteps: 4 },
+      { parallelism: 3, reserveCoordinatorSteps: 2, profile: "standard" },
+    );
+
+    expect(plan.profile).toBe("standard");
+    expect(plan.parallelism).toBe(3);
+    expect(plan.distributedSteps).toBe(9);
+    expect(plan.coordinatorBudget).toEqual({
+      maxSteps: 2,
+      maxMilliseconds: 20,
+      yieldEverySteps: 2,
+    });
+    expect(plan.workerBudgets.map((entry) => entry.budget)).toEqual([
+      { maxSteps: 3, maxMilliseconds: 20, yieldEverySteps: 3 },
+      { maxSteps: 3, maxMilliseconds: 20, yieldEverySteps: 3 },
+      { maxSteps: 3, maxMilliseconds: 20, yieldEverySteps: 3 },
+    ]);
+  });
+
+  it("applies zkp_parallel defaults with accelerated cooperative yielding", () => {
+    const plan = createParallelProofSearchBudgetPlan(
+      { maxSteps: 40, maxMilliseconds: 60, yieldEverySteps: 6 },
+      { profile: "zkp_parallel" },
+    );
+
+    expect(plan.profile).toBe("zkp_parallel");
+    expect(plan.parallelism).toBe(4);
+    expect(plan.coordinatorBudget.maxSteps).toBe(2);
+    expect(plan.workerBudgets.map((entry) => entry.budget.maxSteps)).toEqual([10, 10, 9, 9]);
+    expect(plan.workerBudgets.map((entry) => entry.budget.yieldEverySteps)).toEqual([3, 3, 3, 3]);
+  });
+
+  it("fails closed when requested parallelism exceeds distributable steps", () => {
+    expect(() =>
+      createParallelProofSearchBudgetPlan(
+        { maxSteps: 5, maxMilliseconds: 10, yieldEverySteps: 1 },
+        { parallelism: 5, reserveCoordinatorSteps: 2 },
+      ),
+    ).toThrow("parallelism must not exceed distributable step budget");
+  });
+
 });

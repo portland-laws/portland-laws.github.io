@@ -1,0 +1,121 @@
+{
+  "process_model": {
+    "process_id": "ppd-demo-permit-intake",
+    "source_evidence": [
+      {
+        "evidence_id": "process-001",
+        "source_id": "fixture-process",
+        "title": "Fixture permit intake requirements",
+        "url": "https://example.invalid/ppd/process",
+        "quote": "Applicants must identify the property and provide project documents before permit intake."
+      },
+      {
+        "evidence_id": "process-002",
+        "source_id": "fixture-process",
+        "title": "Fixture permit filing boundary",
+        "url": "https://example.invalid/ppd/filing",
+        "quote": "Permit submission and fee payment are official actions requiring applicant authorization."
+      }
+    ],
+    "required_user_facts": [
+      {
+        "fact_id": "property_address",
+        "question": "What is the project property's street address?",
+        "reason": "The property address is needed to identify the permitting path.",
+        "source_evidence_ids": ["process-001"]
+      }
+    ],
+    "required_documents": [
+      {
+        "document_id": "site_plan",
+        "question": "Do you have a site plan or drawings for the proposed work?",
+        "reason": "Project documents are needed before drafting permit intake steps.",
+        "source_evidence_ids": ["process-001"]
+      }
+    ]
+  },
+  "user_gap_analysis": {
+    "case_id": "case-fixture-001",
+    "missing_facts": [
+      {
+        "fact_id": "property_address",
+        "source_evidence_ids": ["process-001"]
+      }
+    ],
+    "missing_documents": [
+      {
+        "document_id": "site_plan",
+        "source_evidence_ids": ["process-001"]
+      }
+    ],
+    "stale_evidence": [
+      {
+        "evidence_id": "process-001",
+        "message": "Fixture source date is not verified against live PP&D pages.",
+        "severity": "warning"
+      }
+    ],
+    "conflicting_evidence": [],
+    "next_safe_actions": [
+      {
+        "action_id": "draft_questions",
+        "action_type": "draft_user_questions",
+        "label": "Draft follow-up questions for the applicant",
+        "source_evidence_ids": ["process-001"]
+      },
+      {
+        "action_id": "submit_application",
+        "action_type": "submit_official_application",
+        "label": "Submit the permit application",
+        "reason": "Official submission is consequential and cannot be autonomous.",
+        "source_evidence_ids": ["process-002"]
+      },
+      {
+        "action_id": "pay_fee",
+        "action_type": "pay_fee",
+        "label": "Pay permit fees",
+        "reason": "Payment cannot be performed by the assistant.",
+        "source_evidence_ids": ["process-002"]
+      }
+    ],
+    "blocked_actions": [
+      {
+        "action_id": "schedule_inspection",
+        "action_type": "schedule_official_inspection",
+        "label": "Schedule an inspection",
+        "reason": "The case lacks confirmed permit and applicant authorization.",
+        "source_evidence_ids": ["process-002"]
+      }
+    ]
+  },
+  "guardrail_bundle": {
+    "guardrail_bundle_id": "ppd-fixture-guardrails",
+    "source_evidence": [
+      {
+        "evidence_id": "guardrail-001",
+        "source_id": "fixture-guardrails",
+        "title": "Fixture autonomy guardrails",
+        "url": "https://example.invalid/ppd/guardrails",
+        "quote": "Only reversible drafts may be prepared without explicit user confirmation."
+      }
+    ],
+    "reversible_action_predicates": [
+      {
+        "action_type": "draft_user_questions",
+        "source_evidence_ids": ["guardrail-001"]
+      }
+    ],
+    "exact_confirmation_predicates": [
+      {
+        "action_type": "submit_official_application",
+        "source_evidence_ids": ["guardrail-001"]
+      }
+    ],
+    "refused_action_predicates": [
+      {
+        "action_type": "pay_fee",
+        "source_evidence_ids": ["guardrail-001"]
+      }
+    ]
+  }
+}

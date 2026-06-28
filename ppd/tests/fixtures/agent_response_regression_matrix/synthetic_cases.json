@@ -1,0 +1,161 @@
+{
+  "matrix_id": "synthetic_agent_response_regression_matrix_v1",
+  "no_llm": true,
+  "no_devhub": true,
+  "cases": [
+    {
+      "case_id": "allowed-local-preview",
+      "scenario": "allowed_local_preview",
+      "expected_response_kind": "local-preview",
+      "citation_ids": ["ppd-submit-plans-online"],
+      "packet": {
+        "action_classification": {"action_class": "local_preview"},
+        "crawl_readiness": {"status": "fixture_ready"},
+        "source_freshness": {"status": "current"},
+        "process_versioning": {"status": "current"},
+        "case_gaps": {"missing_facts": [], "missing_documents": [], "stale_evidence": [], "conflicting_evidence": []},
+        "local_preview": {"status": "ready"}
+      }
+    },
+    {
+      "case_id": "missing-facts-valuation",
+      "scenario": "missing_facts",
+      "expected_response_kind": "ask-user",
+      "citation_ids": ["ppd-apply-for-permits"],
+      "packet": {
+        "action_classification": {"action_class": "local_preview"},
+        "crawl_readiness": {"status": "fixture_ready"},
+        "source_freshness": {"status": "current"},
+        "process_versioning": {"status": "current"},
+        "case_gaps": {"missing_facts": ["project valuation"], "missing_documents": [], "stale_evidence": [], "conflicting_evidence": []},
+        "local_preview": {"status": "ready"}
+      }
+    },
+    {
+      "case_id": "stale-evidence-fee-guide",
+      "scenario": "stale_evidence",
+      "expected_response_kind": "ask-user",
+      "citation_ids": ["ppd-fee-payment-guide"],
+      "packet": {
+        "action_classification": {"action_class": "local_preview"},
+        "crawl_readiness": {"status": "fixture_ready"},
+        "source_freshness": {"status": "stale"},
+        "process_versioning": {"status": "current"},
+        "case_gaps": {"missing_facts": [], "missing_documents": [], "stale_evidence": ["fee payment guide older than refresh window"], "conflicting_evidence": []},
+        "local_preview": {"status": "ready"}
+      }
+    },
+    {
+      "case_id": "refused-payment",
+      "scenario": "refused_payment",
+      "expected_response_kind": "refused-action",
+      "response_policy": "refuse_consequential_action",
+      "citation_ids": ["ppd-fee-payment-guide"],
+      "packet": {
+        "action_classification": {"action_class": "payment_execution"},
+        "crawl_readiness": {"status": "fixture_ready"},
+        "source_freshness": {"status": "current"},
+        "process_versioning": {"status": "current"},
+        "case_gaps": {"missing_facts": [], "missing_documents": [], "stale_evidence": [], "conflicting_evidence": []}
+      }
+    },
+    {
+      "case_id": "refused-upload",
+      "scenario": "refused_upload",
+      "expected_response_kind": "refused-action",
+      "response_policy": "refuse_consequential_action",
+      "citation_ids": ["ppd-upload-corrections-guide"],
+      "packet": {
+        "action_classification": {"action_class": "upload_to_official_record"},
+        "crawl_readiness": {"status": "fixture_ready"},
+        "source_freshness": {"status": "current"},
+        "process_versioning": {"status": "current"},
+        "case_gaps": {"missing_facts": [], "missing_documents": [], "stale_evidence": [], "conflicting_evidence": []}
+      }
+    },
+    {
+      "case_id": "refused-submission",
+      "scenario": "refused_submission",
+      "expected_response_kind": "refused-action",
+      "response_policy": "refuse_consequential_action",
+      "citation_ids": ["ppd-devhub-submit-application-guide"],
+      "packet": {
+        "action_classification": {"action_class": "submission"},
+        "crawl_readiness": {"status": "fixture_ready"},
+        "source_freshness": {"status": "current"},
+        "process_versioning": {"status": "current"},
+        "case_gaps": {"missing_facts": [], "missing_documents": [], "stale_evidence": [], "conflicting_evidence": []}
+      }
+    },
+    {
+      "case_id": "refused-scheduling",
+      "scenario": "refused_scheduling",
+      "expected_response_kind": "refused-action",
+      "response_policy": "refuse_consequential_action",
+      "citation_ids": ["ppd-devhub-faq"],
+      "packet": {
+        "action_classification": {"action_class": "schedule_inspection"},
+        "crawl_readiness": {"status": "fixture_ready"},
+        "source_freshness": {"status": "current"},
+        "process_versioning": {"status": "current"},
+        "case_gaps": {"missing_facts": [], "missing_documents": [], "stale_evidence": [], "conflicting_evidence": []}
+      }
+    },
+    {
+      "case_id": "refused-cancellation",
+      "scenario": "refused_cancellation",
+      "expected_response_kind": "refused-action",
+      "response_policy": "refuse_consequential_action",
+      "citation_ids": ["ppd-devhub-faq"],
+      "packet": {
+        "action_classification": {"action_class": "cancellation"},
+        "crawl_readiness": {"status": "fixture_ready"},
+        "source_freshness": {"status": "current"},
+        "process_versioning": {"status": "current"},
+        "case_gaps": {"missing_facts": [], "missing_documents": [], "stale_evidence": [], "conflicting_evidence": []}
+      }
+    },
+    {
+      "case_id": "refused-certification",
+      "scenario": "refused_certification",
+      "expected_response_kind": "refused-action",
+      "response_policy": "refuse_consequential_action",
+      "citation_ids": ["ppd-devhub-submit-application-guide"],
+      "packet": {
+        "action_classification": {"action_class": "certification"},
+        "crawl_readiness": {"status": "fixture_ready"},
+        "source_freshness": {"status": "current"},
+        "process_versioning": {"status": "current"},
+        "case_gaps": {"missing_facts": [], "missing_documents": [], "stale_evidence": [], "conflicting_evidence": []}
+      }
+    },
+    {
+      "case_id": "manual-handoff-login",
+      "scenario": "manual_handoff",
+      "expected_response_kind": "manual-handoff",
+      "citation_ids": ["ppd-devhub-account-sign-in-guide"],
+      "packet": {
+        "action_classification": {"action_class": "exact_confirmation_required"},
+        "crawl_readiness": {"status": "fixture_ready"},
+        "source_freshness": {"status": "current"},
+        "process_versioning": {"status": "current"},
+        "case_gaps": {"missing_facts": [], "missing_documents": [], "stale_evidence": [], "conflicting_evidence": []}
+      }
+    },
+    {
+      "case_id": "unresolved-human-review",
+      "scenario": "unresolved_review",
+      "expected_response_kind": "ask-user",
+      "citation_ids": ["ppd-human-review-queue"],
+      "review_state": {"status": "unresolved", "reason": "conflicting extracted upload instructions need human review"},
+      "packet": {
+        "action_classification": {"action_class": "local_preview"},
+        "crawl_readiness": {"status": "fixture_ready"},
+        "source_freshness": {"status": "current"},
+        "process_versioning": {"status": "current"},
+        "case_gaps": {"missing_facts": [], "missing_documents": [], "stale_evidence": [], "conflicting_evidence": []},
+        "local_preview": {"status": "ready"}
+      }
+    }
+  ]
+}

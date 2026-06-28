@@ -1,0 +1,16 @@
+Implemented a generalized slot refinement for composite citation/source-id structure values by decomposing them into typed token/alnum sub-slots in both decompiler and triple projection paths.
+
+- Added typed sub-slot emission for:
+  - `<namespace>_section_profile_signature`
+  - `<namespace>_title_section_signature`
+  - `<namespace>_title_section_profile`
+- This now applies in both decoded phrase slots and `modal_ir_to_flogic_triples` component output.
+
+Updated files:
+- [decompiler.py:2444](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000076-20260518_150835/ipfs_datasets_py/logic/modal/decompiler.py:2444)
+- [codec.py:3122](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000076-20260518_150835/ipfs_datasets_py/logic/modal/codec.py:3122)
+- [test_ir_decompiler_slots.py:3329](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000076-20260518_150835/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:3329)
+
+Validation:
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py`
+- Result: `46 passed`

@@ -1,0 +1,23 @@
+Implemented a deterministic frame-ontology term audit path for `modal.frame_logic` and wired it into triples + feature generation.
+
+- Added canonical frame ontology-term extraction in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000008-20260518_074335/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py#L129).
+- Codec now persists frame ontology terms in IR metadata, emits `candidate_ontology_term` / `selected_ontology_term` / `interpreted_in_frame_term` triples, and exposes `frame-term:*` + `selected-frame-term:*` features in [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000008-20260518_074335/ipfs_datasets_py/logic/modal/codec.py#L410), [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000008-20260518_074335/ipfs_datasets_py/logic/modal/codec.py#L558), and [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000008-20260518_074335/ipfs_datasets_py/logic/modal/codec.py#L908).
+- F-logic evaluation metadata now reports frame ontology term counts/values in [flogic_optimizer.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000008-20260518_074335/ipfs_datasets_py/optimizers/logic/flogic_optimizer.py#L172).
+
+Added/updated tests:
+
+- [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000008-20260518_074335/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py#L60)
+- [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000008-20260518_074335/tests/unit_tests/logic/modal/test_modal_codec.py#L1747)
+- [test_flogic_integration.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000008-20260518_074335/tests/unit/logic/test_flogic_integration.py#L397)
+
+Validation run (targeted, passing):
+
+```bash
+PYTHONPATH=ipfs_datasets_py pytest -q --rootdir=tests \
+  tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py \
+  tests/unit_tests/logic/modal/test_modal_codec.py \
+  tests/unit/logic/test_flogic_integration.py \
+  -k "frame_ontology_terms_are_canonical_and_include_matched_terms or feature_codec_protocol or frame_ontology_term_triples or result_metadata"
+```
+
+Result: `5 passed, 83 deselected`.

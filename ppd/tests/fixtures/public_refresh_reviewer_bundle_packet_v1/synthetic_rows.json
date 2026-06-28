@@ -1,0 +1,101 @@
+{
+  "fixture_first": true,
+  "live_crawl": false,
+  "live_extraction": false,
+  "documents_downloaded": false,
+  "devhub_opened": false,
+  "release_activation": false,
+  "active_artifacts_mutated": false,
+  "official_actions_performed": false,
+  "raw_outputs_stored": false,
+  "synthetic_process_model_delta_plan_rows": [
+    {
+      "row_type": "synthetic_process_model_delta_plan_row",
+      "row_id": "synthetic-process-delta-001",
+      "synthetic": true,
+      "state": "inactive",
+      "process_model_id": "process-public-refresh-intake",
+      "process_stage": "document preparation",
+      "requirement_refs": [
+        "synthetic-requirement-doc-upload-001"
+      ],
+      "requirement_disposition": "review_required_for_changed_document_requirement",
+      "process_disposition": "hold_inactive_process_delta_for_review",
+      "owner": "ppd-requirement-owner-placeholder"
+    },
+    {
+      "row_type": "synthetic_process_model_delta_plan_row",
+      "row_id": "synthetic-process-delta-002",
+      "synthetic": true,
+      "state": "inactive",
+      "process_model_id": "process-public-refresh-fee-payment",
+      "process_stage": "fee payment",
+      "requirement_refs": [
+        "synthetic-requirement-fee-gate-001"
+      ],
+      "requirement_disposition": "review_required_for_changed_fee_trigger",
+      "process_disposition": "hold_inactive_process_delta_for_payment_guard_review",
+      "owner": "ppd-process-owner-placeholder"
+    }
+  ],
+  "synthetic_guardrail_recompile_plan_rows": [
+    {
+      "row_type": "synthetic_guardrail_recompile_plan_row",
+      "row_id": "synthetic-guardrail-recompile-001",
+      "synthetic": true,
+      "state": "inactive",
+      "process_model_id": "process-public-refresh-intake",
+      "guardrail_bundle_id": "guardrail-public-refresh-intake",
+      "guardrail_disposition": "hold_inactive_guardrail_patch_for_review"
+    },
+    {
+      "row_type": "synthetic_guardrail_recompile_plan_row",
+      "row_id": "synthetic-guardrail-recompile-002",
+      "synthetic": true,
+      "state": "inactive",
+      "process_model_id": "process-public-refresh-fee-payment",
+      "guardrail_bundle_id": "guardrail-public-refresh-fee-payment",
+      "guardrail_disposition": "hold_inactive_guardrail_patch_for_payment_gate_review"
+    }
+  ],
+  "synthetic_agent_gap_analysis_replay_rows": [
+    {
+      "row_type": "synthetic_agent_gap_analysis_replay_row",
+      "row_id": "synthetic-agent-gap-replay-001",
+      "synthetic": true,
+      "state": "inactive",
+      "process_model_id": "process-public-refresh-intake",
+      "replay_id": "gap-replay-public-refresh-intake",
+      "agent_impact_disposition": "hold_gap_analysis_replay_for_review",
+      "release_blocker_status": "blocked_pending_requirement_process_guardrail_and_agent_review",
+      "blocked_action_classes": [
+        "upload",
+        "submit",
+        "certify",
+        "pay",
+        "schedule",
+        "cancel",
+        "official_record_change"
+      ]
+    },
+    {
+      "row_type": "synthetic_agent_gap_analysis_replay_row",
+      "row_id": "synthetic-agent-gap-replay-002",
+      "synthetic": true,
+      "state": "inactive",
+      "process_model_id": "process-public-refresh-fee-payment",
+      "replay_id": "gap-replay-public-refresh-fee-payment",
+      "agent_impact_disposition": "hold_gap_analysis_replay_for_payment_blocker_review",
+      "release_blocker_status": "blocked_pending_payment_guardrail_review",
+      "blocked_action_classes": [
+        "upload",
+        "submit",
+        "certify",
+        "pay",
+        "schedule",
+        "cancel",
+        "official_record_change"
+      ]
+    }
+  ]
+}

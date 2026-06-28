@@ -1,0 +1,74 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,8 +1,8 @@
+ {
+-  "createdAt": "2026-05-03T10:57:03.190131Z",
++  "createdAt": "2026-05-03T13:21:41.634552Z",
+   "decision": {
+-    "action": "invoke_codex",
+-    "reason": "10 consecutive daemon rounds failed without an accepted patch",
++    "action": "repair_daemon_programming",
++    "reason": "2 recent validation rollbacks were syntax or compile failures; patch daemon prompt, preflight, or repair guidance before more worker attempts",
+     "severity": "warning"
+   },
+   "failedAgenticRepair": {
+@@ -13,7 +13,7 @@
+       "Validation failed; file edits were rolled back."
+     ],
+     "failureKind": "validation",
+-    "summary": "Replace the PP&D supervisor repair guide with narrow parser-failure recovery rules that match the current daemon test expectations.",
++    "summary": "Replace the PP&D supervisor repair guide with explicit syntax-preflight recovery rules for repeated parser and compile failures.",
+     "validationResults": [
+       {
+         "command": [
+@@ -23,7 +23,7 @@
+         ],
+         "returncode": 0,
+         "stderr": "",
+-        "stdout": "{ \"ok\": true, \"task_count\": 27 }"
++        "stdout": "{ \"ok\": true, \"task_count\": 33 }"
+       },
+       {
+         "command": [
+@@ -37,7 +37,7 @@
+           "test_*.py"
+         ],
+         "returncode": 1,
+-        "stderr": "...........................................................................................................................................................................................................................................................................................................................................................................................................................ss..............sss............................................................................................................................................................................................................................FFF................................................................ ====================================================================== FAIL: test_guide_keeps_repair_separate_from_domain_implementation (test_supervisor_repair_guide.SupervisorRepai...",
++        "stderr": "......................................................................................................................................................................................................................................................................................................................................................................................................................................ss................sss............................................................................................................................................................................................................................FFF................................................................ ====================================================================== FAIL: test_guide_keeps_repair_separate_from_domain_implementation (test_supervisor_repair_guide.Su...",
+         "stdout": ""
+       },
+       {
+@@ -69,9 +69,11 @@
+   ],
+   "schemaVersion": 1,
+   "taskBoardRepair": {
+-    "parkedRepeatedSyntaxLoopTasks": [],
++    "parkedRepeatedSyntaxLoopTasks": [
++      "Add one daemon diagnostics helper or focused unittest proving compact failure summaries include target_task, failure_kind, next_action_hint, and a raw-response length cap while excluding private DevHub artifacts, auth state, traces, crawl output, and downloaded documents."
++    ],
+     "replenishedGoalTaskLabels": [],
+     "supersededTaskBoardOnlyLabels": [],
+-    "taskBoardUpdated": false
++    "taskBoardUpdated": true
+   }
+ }
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -74,7 +74,7 @@
+ 
+ - [x] Task checkbox-201: Add one daemon-only stale-calling-llm recovery unittest proving a task stuck in `calling_llm` for a blocked target is summarized as a compact supervisor diagnostic and the newest unchecked daemon-repair task remains selectable without retrying checkbox-178.
+ - [x] Task checkbox-202: Add one parser-clean daemon preflight unittest proving a proposal after checkbox-178 syntax_preflight history is rejected when it edits any DevHub domain file without also being the single parser-bearing repair file under test.
+-- [~] Task checkbox-203: Add one daemon diagnostics helper or focused unittest proving compact failure summaries include target_task, failure_kind, next_action_hint, and a raw-response length cap while excluding private DevHub artifacts, auth state, traces, crawl output, and downloaded documents.
++- [!] Task checkbox-203: Add one daemon diagnostics helper or focused unittest proving compact failure summaries include target_task, failure_kind, next_action_hint, and a raw-response length cap while excluding private DevHub artifacts, auth state, traces, crawl output, and downloaded documents.
+ 
+ 
+ ## Generated Status
+@@ -109,3 +109,7 @@
+ - Counts: `{"blocked": 10, "complete": 22, "in_progress": 0, "needed": 1}`
+ 
+ <!-- ppd-daemon-task-board:end -->
++## Built-In Supervisor Repair Notes
++
++- Parked repeated syntax-preflight loop for `Add one daemon diagnostics helper or focused unittest proving compact failure summaries include target_task, failure_kind, next_action_hint, and a raw-response length cap while excluding private DevHub artifacts, auth state, traces, crawl output, and downloaded documents.` so the daemon can continue with independent selectable work. The task should be resumed only after a narrow syntax-valid fixture/test repair is available.
++

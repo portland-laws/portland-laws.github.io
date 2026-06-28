@@ -1,0 +1,10 @@
+Implemented a focused IR/decompiler slot refinement for fallback metadata: `procedural_keyword` is now preserved and typed in both decode slots and F-logic triples.
+
+**Changes**
+- Added `procedural_keyword` slot emission in decompiler phrase reconstruction, including typed identifier subslots (`*_token_count`, `*_token_prefix`, etc.) in [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000067-20260518_135807/ipfs_datasets_py/logic/modal/decompiler.py:558).
+- Added matching `procedural_keyword` triple emission (plus typed sub-components) in [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000067-20260518_135807/ipfs_datasets_py/logic/modal/codec.py:1042).
+- Added regression coverage with a deterministic procedural-fallback sample and assertions for both decode slots and triple output in [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000067-20260518_135807/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:457) and [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000067-20260518_135807/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:2444).
+
+**Validation**
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py -k procedural_keyword` → 2 passed.
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py` → 42 passed.

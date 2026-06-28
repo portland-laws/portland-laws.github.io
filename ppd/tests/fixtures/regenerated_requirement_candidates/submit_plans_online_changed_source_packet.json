@@ -1,0 +1,168 @@
+{
+  "packet_id": "fixture-regenerated-requirement-candidates-submit-plans-online-20260528",
+  "packet_kind": "regenerated_requirement_candidate_packet",
+  "schema_version": "0.1.0",
+  "fixture_mode": "synthetic_normalized_excerpts_only",
+  "generated_at": "2026-05-28T00:00:00Z",
+  "activation": {
+    "status": "disabled",
+    "reason": "Fixture-only regenerated candidates require human review before guardrail activation."
+  },
+  "changed_public_source": {
+    "source_id": "ppd-public-submit-plans-online",
+    "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+    "source_type": "public_html",
+    "owning_surface": "ppd_public_guidance",
+    "change_event_id": "fixture-change-submit-plans-online-20260528",
+    "old_content_hash": "sha256:fixture-old-submit-plans-online",
+    "new_content_hash": "sha256:fixture-new-submit-plans-online",
+    "raw_body_persisted": false
+  },
+  "synthetic_normalized_document_excerpts": [
+    {
+      "excerpt_id": "syn-excerpt-submit-plans-online-old-001",
+      "document_version": "old",
+      "source_evidence_id": "src-ev-submit-plans-online-single-pdf-rule",
+      "section_path": ["Permit application materials", "Plan upload package"],
+      "text": "Synthetic old excerpt: plan sheets are prepared as one drawing PDF, while the permit application and supporting calculations are prepared as separate PDF documents.",
+      "synthetic": true,
+      "raw_source_text": false
+    },
+    {
+      "excerpt_id": "syn-excerpt-submit-plans-online-new-001",
+      "document_version": "new",
+      "source_evidence_id": "src-ev-submit-plans-online-single-pdf-rule",
+      "section_path": ["Permit application materials", "Plan upload package"],
+      "text": "Synthetic new excerpt: plan sheets must remain in one drawing PDF, and applications, calculations, and supplemental documents must be uploaded as separate PDF files instead of being merged into the drawing set.",
+      "synthetic": true,
+      "raw_source_text": false
+    },
+    {
+      "excerpt_id": "syn-excerpt-submit-plans-online-new-002",
+      "document_version": "new",
+      "source_evidence_id": "src-ev-submit-plans-online-upload-review-gate",
+      "section_path": ["Before upload", "Applicant review"],
+      "text": "Synthetic new excerpt: before a file is attached to an online record, the applicant reviews the prepared PDFs and confirms that each file belongs to the intended permit request.",
+      "synthetic": true,
+      "raw_source_text": false
+    }
+  ],
+  "regenerated_requirement_candidates": [
+    {
+      "candidate_id": "req-candidate-submit-plans-online-doc-separation-001",
+      "change_type": "modified_requirement",
+      "requirement_type": "document_requirement",
+      "source_evidence_ids": [
+        "src-ev-submit-plans-online-single-pdf-rule"
+      ],
+      "old_requirement": {
+        "requirement_id": "req-submit-plans-online-doc-separation",
+        "source_evidence_ids": [
+          "src-ev-submit-plans-online-single-pdf-rule"
+        ],
+        "subject": "permit applicant",
+        "action": "prepare",
+        "object": "plan drawings and supporting documents as separate PDF groups",
+        "conditions": [
+          "online permit request includes plan review documents"
+        ],
+        "process_stage": "document preparation",
+        "confidence": 0.82,
+        "human_review_status": "previously_reviewed"
+      },
+      "new_requirement": {
+        "requirement_id": "req-submit-plans-online-doc-separation",
+        "source_evidence_ids": [
+          "src-ev-submit-plans-online-single-pdf-rule"
+        ],
+        "subject": "permit applicant",
+        "action": "upload",
+        "object": "one drawing PDF plus separate application, calculation, and supplemental PDFs",
+        "conditions": [
+          "online permit request includes plan review documents",
+          "supporting materials are part of the permit package"
+        ],
+        "process_stage": "upload staging",
+        "confidence": 0.78,
+        "human_review_status": "needs_human_review"
+      },
+      "old_to_new_requirement_diff": {
+        "preserved_requirement_id": "req-submit-plans-online-doc-separation",
+        "preserved_source_evidence_ids": [
+          "src-ev-submit-plans-online-single-pdf-rule"
+        ],
+        "changed_fields": [
+          {
+            "field": "action",
+            "old_value": "prepare",
+            "new_value": "upload"
+          },
+          {
+            "field": "object",
+            "old_value": "plan drawings and supporting documents as separate PDF groups",
+            "new_value": "one drawing PDF plus separate application, calculation, and supplemental PDFs"
+          },
+          {
+            "field": "process_stage",
+            "old_value": "document preparation",
+            "new_value": "upload staging"
+          }
+        ],
+        "semantic_summary": "The regenerated candidate keeps the same evidence identity but narrows the document separation rule around upload staging."
+      },
+      "affected_process_ids": [
+        "process-building-permit-plan-review",
+        "process-residential-permit-plan-review"
+      ],
+      "confidence": 0.78,
+      "human_review_status": "needs_human_review",
+      "activation_status": "disabled"
+    },
+    {
+      "candidate_id": "req-candidate-submit-plans-online-upload-review-gate-001",
+      "change_type": "new_requirement_candidate",
+      "requirement_type": "action_gate",
+      "source_evidence_ids": [
+        "src-ev-submit-plans-online-upload-review-gate"
+      ],
+      "old_requirement": null,
+      "new_requirement": {
+        "requirement_id": "req-submit-plans-online-upload-review-gate",
+        "source_evidence_ids": [
+          "src-ev-submit-plans-online-upload-review-gate"
+        ],
+        "subject": "agent-assisted permit workflow",
+        "action": "require human confirmation before attaching prepared files",
+        "object": "online permit record upload action",
+        "conditions": [
+          "file attachment would affect an official permit record",
+          "prepared PDFs have been staged for upload"
+        ],
+        "process_stage": "upload staging",
+        "confidence": 0.71,
+        "human_review_status": "needs_human_review"
+      },
+      "old_to_new_requirement_diff": {
+        "preserved_requirement_id": null,
+        "preserved_source_evidence_ids": [
+          "src-ev-submit-plans-online-upload-review-gate"
+        ],
+        "changed_fields": [
+          {
+            "field": "requirement",
+            "old_value": null,
+            "new_value": "candidate action gate requiring human confirmation before official file attachment"
+          }
+        ],
+        "semantic_summary": "The changed synthetic excerpt introduces a candidate upload review gate, but it remains disabled until reviewed."
+      },
+      "affected_process_ids": [
+        "process-building-permit-plan-review",
+        "process-residential-permit-plan-review"
+      ],
+      "confidence": 0.71,
+      "human_review_status": "needs_human_review",
+      "activation_status": "disabled"
+    }
+  ]
+}

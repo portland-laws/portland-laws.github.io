@@ -1,0 +1,53 @@
+{
+  "blocked_task": {
+    "id": "checkbox-278",
+    "tranche": 9,
+    "item": 1,
+    "status": "parked",
+    "sequence": 278,
+    "blocked_reason": "blocked-cascade awaiting daemon repair validation"
+  },
+  "repair_attempts": [
+    {
+      "id": "daemon-repair-277",
+      "kind": "daemon-repair",
+      "repairs_task": "checkbox-278",
+      "status": "validated",
+      "sequence": 277,
+      "validation": {
+        "passed": true
+      }
+    },
+    {
+      "id": "daemon-repair-279",
+      "kind": "daemon-repair",
+      "repairs_task": "checkbox-278",
+      "status": "failed",
+      "sequence": 279,
+      "validation": {
+        "passed": false
+      }
+    },
+    {
+      "id": "daemon-repair-280",
+      "kind": "daemon-repair",
+      "repairs_task": "checkbox-999",
+      "status": "validated",
+      "sequence": 280,
+      "validation": {
+        "passed": true
+      }
+    },
+    {
+      "id": "daemon-repair-281",
+      "kind": "daemon-repair",
+      "repairs_task": "checkbox-278",
+      "status": "validated",
+      "sequence": 281,
+      "validation": {
+        "passed": true
+      }
+    }
+  ],
+  "expected_release_repair": "daemon-repair-281"
+}

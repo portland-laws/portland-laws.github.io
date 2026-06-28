@@ -1,0 +1,41 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,5 +1,5 @@
+ {
+-  "createdAt": "2026-05-05T05:23:29.133622Z",
++  "createdAt": "2026-05-05T05:24:00.432624Z",
+   "decision": {
+     "action": "plan_next_tasks",
+     "reason": "daemon has no eligible unblocked tasks; review blocked work against the PP&D goal and append a fresh goal-aligned tranche instead of retrying parked tasks",
+@@ -31,10 +31,10 @@
+   "taskBoardRepair": {
+     "parkedRepeatedSyntaxLoopTasks": [],
+     "replenishedGoalTaskLabels": [
+-      "checkbox-662",
+-      "checkbox-663",
+-      "checkbox-664",
+-      "checkbox-665"
++      "checkbox-666",
++      "checkbox-667",
++      "checkbox-668",
++      "checkbox-669"
+     ],
+     "supersededTaskBoardOnlyLabels": [],
+     "taskBoardUpdated": true
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -1892,3 +1892,14 @@
+ 
+ - The completed PP&D recovery board now advances into autonomous platform work. This tranche is aligned to whole-site public archival, ipfs_datasets_py processor-suite handoff, guarded Playwright draft automation, local PDF field filling, and formal-logic guardrail extraction.
+ - Slice policy: `autonomous_platform_after_completed_recovery`. The supervisor uses this deterministic tranche when an all-complete PP&D board would otherwise leave the daemon with no work.
++
++## Built-In Autonomous PP&D Platform Tranche 57
++
++- [ ] Task checkbox-666: Add autonomous platform continuation coverage for tranche 57 proving whole-site archival, Playwright draft automation, PDF field filling, and formal-logic outputs stay connected through source evidence IDs.
++- [ ] Task checkbox-667: Add processor-suite integration planning for tranche 57 proving PP&D public documents flow through archive manifests, normalized document records, PDF metadata, and requirement batches before agents use them.
++- [ ] Task checkbox-668: Add Playwright/PDF handoff validation for tranche 57 proving redacted user facts can fill draft fields and PDF previews while official DevHub transitions stay behind exact confirmation checkpoints.
++- [ ] Task checkbox-669: Add supervisor idle-recovery validation for tranche 57 proving completed boards synthesize new goal-aligned platform tasks without sleeping, duplicate tranche reuse, or blocked-task retry churn.
++## Built-In Supervisor Planning Notes
++
++- The completed PP&D recovery board now advances into autonomous platform work. This tranche is aligned to whole-site public archival, ipfs_datasets_py processor-suite handoff, guarded Playwright draft automation, local PDF field filling, and formal-logic guardrail extraction.
++- Slice policy: `autonomous_platform_after_completed_recovery`. The supervisor uses this deterministic tranche when an all-complete PP&D board would otherwise leave the daemon with no work.

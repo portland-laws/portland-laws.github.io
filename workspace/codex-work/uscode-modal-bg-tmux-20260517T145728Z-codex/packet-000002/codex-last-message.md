@@ -1,0 +1,17 @@
+Implemented a deterministic modal-family ambiguity policy in the compiler and added a focused test.
+
+- Added `family_probability_margin` to compiler config and wired a decoder-based family ambiguity check into compilation flow in [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-bg-tmux-20260517T145728Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-bg-tmux-20260517T145728Z-codex-packet-000002-20260517_150409/ipfs_datasets_py/logic/modal/compiler.py:48), [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-bg-tmux-20260517T145728Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-bg-tmux-20260517T145728Z-codex-packet-000002-20260517_150409/ipfs_datasets_py/logic/modal/compiler.py:148), [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-bg-tmux-20260517T145728Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-bg-tmux-20260517T145728Z-codex-packet-000002-20260517_150409/ipfs_datasets_py/logic/modal/compiler.py:268).
+- New ambiguity type: `close_modal_family_scores`, with explicit `top_family`, `runner_up_family`, probabilities, margin, and family counts in metadata.
+- Added local softmax helper for deterministic probability-gap computation in [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-bg-tmux-20260517T145728Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-bg-tmux-20260517T145728Z-codex-packet-000002-20260517_150409/ipfs_datasets_py/logic/modal/compiler.py:307).
+- Added regression test covering ambiguous vs clear family cases in [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-bg-tmux-20260517T145728Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-bg-tmux-20260517T145728Z-codex-packet-000002-20260517_150409/tests/unit_tests/logic/modal/test_modal_codec.py:146).
+
+Validation run:
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "compiler"` -> failed at environment setup with pre-existing `__init__.py:11` (`NameError: __path__ is not defined`).
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py` -> same pre-existing setup failure.
+- `python3 -m py_compile ...` on changed files -> passed.
+- Direct smoke check (`python3` snippet) verified:
+  - ambiguous text emits `close_modal_family_scores`
+  - clear deontic text does not emit it.
+
+Patch artifact generated as requested:
+- `changes.patch` at `/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-bg-tmux-20260517T145728Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-bg-tmux-20260517T145728Z-codex-packet-000002-20260517_150409/changes.patch`

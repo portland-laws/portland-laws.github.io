@@ -1,0 +1,30 @@
+{
+  "scenario": "tranche4_item1_blocked_cascade_daemon_repair",
+  "blocked_work": {
+    "id": "ppd-work-blocked-tranche4-item1",
+    "status": "blocked",
+    "blocked_generation": 4,
+    "blocked_by": "daemon-repair-stale",
+    "parked": true
+  },
+  "repair_tasks": [
+    {
+      "id": "daemon-repair-stale",
+      "status": "validated",
+      "repair_generation": 3,
+      "validates_work": "ppd-work-blocked-tranche4-item1"
+    },
+    {
+      "id": "daemon-repair-fresh-unvalidated",
+      "status": "queued",
+      "repair_generation": 5,
+      "validates_work": "ppd-work-blocked-tranche4-item1"
+    },
+    {
+      "id": "daemon-repair-fresh-validated",
+      "status": "validated",
+      "repair_generation": 5,
+      "validates_work": "ppd-work-blocked-tranche4-item1"
+    }
+  ]
+}

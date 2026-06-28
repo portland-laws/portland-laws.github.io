@@ -1,0 +1,16 @@
+Implemented a deterministic IR/decompiler slot refinement focused on clause typing and scope capture.
+
+**Changes**
+- Added full typed-token slot emission for each `condition`/`exception`, plus explicit `*_prefix_key` and `*_scope` slot families in the decompiler:
+  - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000068-20260518_140310/ipfs_datasets_py/logic/modal/decompiler.py:468)
+  - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000068-20260518_140310/ipfs_datasets_py/logic/modal/decompiler.py:1520)
+- Added matching F-logic triple enrichment in codec for parity with decompiler slots:
+  - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000068-20260518_140310/ipfs_datasets_py/logic/modal/codec.py:1079)
+  - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000068-20260518_140310/ipfs_datasets_py/logic/modal/codec.py:1149)
+- Added a targeted clause-scope fixture and regression tests for both decoded slots and triples:
+  - [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000068-20260518_140310/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:491)
+  - [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000068-20260518_140310/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:2504)
+
+**Validation**
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py -k "condition_exception_scope_slots"` passed (`2 passed`).
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py` passed (`44 passed`).

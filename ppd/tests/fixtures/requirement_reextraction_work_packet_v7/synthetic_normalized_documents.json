@@ -1,0 +1,42 @@
+{
+  "fixture_id": "synthetic-normalized-documents-for-requirement-work-packet-v7",
+  "fixture_kind": "synthetic_normalized_documents_v7",
+  "documents": [
+    {
+      "document_id": "norm-doc-submit-plans-v7",
+      "source_id": "ppd-submit-plans-online",
+      "title": "Synthetic Submit Plans Online normalized excerpt",
+      "document_type": "synthetic_public_guidance_excerpt",
+      "sections": [
+        {
+          "section_id": "submit-plans-v7-section-1",
+          "heading": "Synthetic file preparation excerpt",
+          "text": "Synthetic normalized fixture text for offline review: plan drawings are grouped separately from supporting documents, and reviewers must confirm any candidate document requirement against this fixture section before replacing stale citations."
+        },
+        {
+          "section_id": "submit-plans-v7-section-2",
+          "heading": "Synthetic reviewer caution",
+          "text": "This fixture does not authorize uploads, submissions, certifications, payment, scheduling, guardrail activation, or legal and permitting guarantees."
+        }
+      ]
+    },
+    {
+      "document_id": "norm-doc-devhub-faq-v7",
+      "source_id": "ppd-devhub-faq",
+      "title": "Synthetic DevHub FAQ normalized excerpt",
+      "document_type": "synthetic_public_guidance_excerpt",
+      "sections": [
+        {
+          "section_id": "devhub-faq-v7-section-1",
+          "heading": "Synthetic account-scoped action excerpt",
+          "text": "Synthetic normalized fixture text for offline review: DevHub account-scoped services can include permit request status checks and other actions, but candidate action-gate requirements remain placeholders until a reviewer confirms fixture-backed evidence."
+        },
+        {
+          "section_id": "devhub-faq-v7-section-2",
+          "heading": "Synthetic consequential action caution",
+          "text": "This fixture supports offline extraction prompts only and does not authorize opening DevHub or performing official account actions."
+        }
+      ]
+    }
+  ]
+}

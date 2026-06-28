@@ -1,0 +1,61 @@
+{
+  "fixture_id": "ppd-change-impact-guidance-2026-05-12",
+  "source_snapshot": {
+    "source_ids": [
+      "src-ppd-file-naming-standards",
+      "src-ppd-submit-plans-online",
+      "src-ppd-fee-payment-guide",
+      "src-ppd-devhub-submit-guide"
+    ],
+    "captured_at": "2026-05-12T00:00:00Z",
+    "live_crawl_performed": false,
+    "authenticated_session_used": false
+  },
+  "changes": [
+    {
+      "change_id": "chg-file-naming-sheets",
+      "change_type": "file_naming_rule",
+      "source_id": "src-ppd-file-naming-standards",
+      "changed_guidance": "Drawing sheet PDFs must use a sheet-number prefix and descriptive discipline label before upload staging.",
+      "affected_requirement_ids": ["req-file-naming-sheet-prefix"],
+      "affected_process_model_ids": ["process-building-plan-review"],
+      "affected_guardrail_bundle_ids": ["guardrail-building-plan-review"]
+    },
+    {
+      "change_id": "chg-required-structural-calcs",
+      "change_type": "required_document",
+      "source_id": "src-ppd-submit-plans-online",
+      "changed_guidance": "Structural calculations are required as a separate supporting PDF when structural work is included.",
+      "affected_requirement_ids": ["req-doc-structural-calculations"],
+      "affected_process_model_ids": ["process-building-plan-review"],
+      "affected_guardrail_bundle_ids": ["guardrail-building-plan-review"]
+    },
+    {
+      "change_id": "chg-fee-payment-before-review",
+      "change_type": "fee_trigger",
+      "source_id": "src-ppd-fee-payment-guide",
+      "changed_guidance": "Plan review cannot proceed until invoiced intake fees are paid through an approved payment path.",
+      "affected_requirement_ids": ["req-fee-intake-payment-trigger"],
+      "affected_process_model_ids": ["process-building-plan-review"],
+      "affected_guardrail_bundle_ids": ["guardrail-building-plan-review", "guardrail-fee-payment"]
+    },
+    {
+      "change_id": "chg-corrections-deadline",
+      "change_type": "deadline",
+      "source_id": "src-ppd-devhub-submit-guide",
+      "changed_guidance": "Correction responses must be uploaded before the review-cycle deadline shown in DevHub status details.",
+      "affected_requirement_ids": ["req-deadline-correction-response"],
+      "affected_process_model_ids": ["process-building-plan-review", "process-corrections-upload"],
+      "affected_guardrail_bundle_ids": ["guardrail-building-plan-review", "guardrail-corrections-upload"]
+    },
+    {
+      "change_id": "chg-devhub-certify-submit",
+      "change_type": "devhub_action_guidance",
+      "source_id": "src-ppd-devhub-submit-guide",
+      "changed_guidance": "DevHub certification and final submit actions require user attendance and exact action-specific confirmation.",
+      "affected_requirement_ids": ["req-action-gate-certify-submit"],
+      "affected_process_model_ids": ["process-building-plan-review"],
+      "affected_guardrail_bundle_ids": ["guardrail-building-plan-review", "guardrail-devhub-consequential-actions"]
+    }
+  ]
+}

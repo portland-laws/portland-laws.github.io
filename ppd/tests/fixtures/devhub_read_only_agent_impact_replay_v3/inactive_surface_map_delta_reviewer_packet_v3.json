@@ -1,0 +1,72 @@
+{
+  "attestations": {
+    "active_surface_map_mutation": false,
+    "auth_or_session_artifact_stored": false,
+    "devhub_opened": false,
+    "form_fill_performed": false,
+    "official_action_performed": false,
+    "payment_or_scheduling_action_performed": false,
+    "private_value_stored": false,
+    "raw_devhub_output_stored": false,
+    "screenshot_trace_or_har_stored": false,
+    "upload_or_submission_action_performed": false
+  },
+  "fixture_only": true,
+  "inactive_only": true,
+  "inactive_surface_map_deltas": [
+    {
+      "actions": [
+        {
+          "action_id": "review_status",
+          "action_label": "Review permit status summary",
+          "classification": "safe_read_only",
+          "required_missing_information": [
+            "permit_number"
+          ]
+        },
+        {
+          "action_id": "complete_record",
+          "action_label": "Complete official record step",
+          "classification": "consequential_official",
+          "required_missing_information": [
+            "permit_number"
+          ]
+        }
+      ],
+      "delta_id": "delta-status-review-v3",
+      "manual_handoff_reminder": "Keep this replay as an offline review artifact until a human authorizes any attended DevHub step.",
+      "rollback_note": "Drop delta-status-review-v3 from replay outputs; no active surface map row is changed.",
+      "surface_id": "devhub-permit-detail"
+    },
+    {
+      "actions": [
+        {
+          "action_id": "review_notice",
+          "action_label": "Review correction notice text",
+          "classification": "safe_read_only",
+          "required_missing_information": [
+            "permit_number",
+            "review_group"
+          ]
+        },
+        {
+          "action_id": "attach_record_material",
+          "action_label": "Attach material to official record",
+          "classification": "upload",
+          "required_missing_information": [
+            "permit_number",
+            "review_group"
+          ]
+        }
+      ],
+      "delta_id": "delta-correction-review-v3",
+      "manual_handoff_reminder": "Use a manual handoff before any correction record operation or attended account-scoped step.",
+      "rollback_note": "Discard correction replay rows and leave active DevHub surface maps unchanged.",
+      "surface_id": "devhub-correction-detail"
+    }
+  ],
+  "packet_version": "devhub_read_only_surface_map_delta_reviewer_packet_v3",
+  "source_fixture_refs": [
+    "ppd/tests/fixtures/devhub_read_only_agent_impact_replay_v3/inactive_surface_map_delta_reviewer_packet_v3.json"
+  ]
+}

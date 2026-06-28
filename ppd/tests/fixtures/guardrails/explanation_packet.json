@@ -1,0 +1,159 @@
+{
+  "packet_id": "ppd-fixture-first-guardrail-explanation-packet",
+  "expected_kinds": [
+    "blocked_action",
+    "exact_confirmation_gate",
+    "reversible_draft_action",
+    "missing_information_question",
+    "stale_evidence_warning",
+    "unsupported_path"
+  ],
+  "cases": [
+    {
+      "kind": "blocked_action",
+      "code": "block-final-permit-submission",
+      "title": "Final permit submission is blocked",
+      "reason": "Submitting a permit request is an official DevHub action and cannot be completed by the agent without user attendance and action-specific confirmation.",
+      "agent_instruction": "Explain that the agent may prepare draft values, but must stop before final submission.",
+      "metadata": {
+        "action_class": "consequential_official",
+        "allowed_next_step": "manual_handoff"
+      },
+      "private_values": [
+        "1234 Private St",
+        "owner@example.test"
+      ],
+      "citations": [
+        {
+          "source_id": "ppd-devhub-submit-guide",
+          "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+          "title": "DevHub permit application guide",
+          "evidence_label": "Guide describes permit request application and submission workflow.",
+          "last_verified_at": "2026-05-08"
+        }
+      ]
+    },
+    {
+      "kind": "exact_confirmation_gate",
+      "code": "gate-certification-acknowledgement",
+      "title": "Certification acknowledgement requires exact confirmation",
+      "reason": "Acknowledgement and certification steps represent user attestations, so the agent must present the exact action and wait for the user to confirm it.",
+      "agent_instruction": "Ask the user to attend the browser session and confirm the exact certification action before any click occurs.",
+      "metadata": {
+        "confirmation_type": "exact_action_text",
+        "requires_attendance": true
+      },
+      "private_values": [
+        "Permit IVR 0000000"
+      ],
+      "citations": [
+        {
+          "source_id": "ppd-devhub-submit-guide",
+          "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+          "title": "DevHub permit application guide",
+          "evidence_label": "Guide includes acknowledgement and application flow checkpoints.",
+          "last_verified_at": "2026-05-08"
+        }
+      ]
+    },
+    {
+      "kind": "reversible_draft_action",
+      "code": "allow-draft-form-fill",
+      "title": "Draft data entry is reversible",
+      "reason": "Entering application facts before submission can be staged as draft work when the user facts are sufficient and no official submission is made.",
+      "agent_instruction": "Draft field values only in a reversible state and keep the user-facing review step open before submission.",
+      "metadata": {
+        "action_class": "reversible_draft",
+        "must_stop_before": "submit_or_certify"
+      },
+      "private_values": [
+        "Private project narrative"
+      ],
+      "citations": [
+        {
+          "source_id": "ppd-devhub-submit-guide",
+          "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+          "title": "DevHub permit application guide",
+          "evidence_label": "Guide describes dynamic application questions and save-for-later style workflow behavior.",
+          "last_verified_at": "2026-05-08"
+        }
+      ]
+    },
+    {
+      "kind": "missing_information_question",
+      "code": "ask-license-profile-gap",
+      "title": "License-related facts are missing",
+      "reason": "Standard trade permit options can depend on contractor license information, so the agent needs license-related facts before deciding whether the draft path is available.",
+      "agent_instruction": "Ask a narrow question about the relevant contractor license status before selecting fixture or trade permit options.",
+      "metadata": {
+        "missing_fact": "contractor_license_status",
+        "question_scope": "eligibility"
+      },
+      "private_values": [
+        "CCB-PRIVATE-123"
+      ],
+      "citations": [
+        {
+          "source_id": "ppd-online-permitting-tools",
+          "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+          "title": "Online permitting tools overview",
+          "evidence_label": "Overview links DevHub trade permit and online permitting guidance.",
+          "last_verified_at": "2026-05-08"
+        },
+        {
+          "source_id": "ppd-devhub-faq",
+          "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+          "title": "DevHub FAQ",
+          "evidence_label": "FAQ describes account-scoped permit services and trade permit workflows.",
+          "last_verified_at": "2026-05-08"
+        }
+      ]
+    },
+    {
+      "kind": "stale_evidence_warning",
+      "code": "warn-fee-payment-guide-freshness",
+      "title": "Fee payment guidance needs freshness review",
+      "reason": "Fee payment instructions are high-impact and may change, so stale source evidence must be flagged before the agent relies on it.",
+      "agent_instruction": "Warn the user that the fee workflow source needs a freshness check and avoid entering payment details or submitting payment.",
+      "metadata": {
+        "freshness_status": "stale",
+        "affected_stage": "fee_payment"
+      },
+      "private_values": [
+        "4111111111111111"
+      ],
+      "citations": [
+        {
+          "source_id": "ppd-fee-payment-guide",
+          "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+          "title": "How to pay fees guide",
+          "evidence_label": "Guide covers fee payment workflow and final payment behavior.",
+          "last_verified_at": "2026-05-08"
+        }
+      ]
+    },
+    {
+      "kind": "unsupported_path",
+      "code": "handoff-email-only-permit-path",
+      "title": "Permit path is unsupported for DevHub automation",
+      "reason": "Some permit types use email or other non-DevHub submission paths, so the agent cannot assume that DevHub automation applies.",
+      "agent_instruction": "Explain the unsupported path and hand the user to the official manual instructions for that permit type.",
+      "metadata": {
+        "handoff_type": "manual_official_path",
+        "unsupported_reason": "non_devhub_submission_path"
+      },
+      "private_values": [
+        "manual-upload.pdf"
+      ],
+      "citations": [
+        {
+          "source_id": "ppd-apply-permits",
+          "canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+          "title": "Apply for permits",
+          "evidence_label": "Official permit application guidance distinguishes paths for permit requests.",
+          "last_verified_at": "2026-05-08"
+        }
+      ]
+    }
+  ]
+}

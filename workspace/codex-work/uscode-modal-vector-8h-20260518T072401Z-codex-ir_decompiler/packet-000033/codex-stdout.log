@@ -1,0 +1,17 @@
+Implemented a narrow deterministic slot refinement for citation/source-id trailing punctuation and validated it with focused regressions.
+
+- Added new decompiler slots:
+  - `citation_section_has_trailing_punct`, `citation_section_trailing_punct_count`
+  - `source_id_section_has_trailing_punct`, `source_id_section_trailing_punct_count`
+  - Changes in [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000033-20260518_104034/ipfs_datasets_py/logic/modal/decompiler.py#L829) and [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000033-20260518_104034/ipfs_datasets_py/logic/modal/decompiler.py#L1341)
+
+- Added matching triple-component emission so codec/decompiler stay parity-aligned:
+  - Changes in [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000033-20260518_104034/ipfs_datasets_py/logic/modal/codec.py#L1205) and [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000033-20260518_104034/ipfs_datasets_py/logic/modal/codec.py#L1267)
+
+- Added targeted regression coverage for TODO-like IDs/citations with trailing punctuation:
+  - New tests in [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000033-20260518_104034/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py#L447)
+  - Extended existing codec-level assertions in [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000033-20260518_104034/tests/unit_tests/logic/modal/test_modal_codec.py#L2697)
+
+Tests run:
+1. `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py` (10 passed)
+2. `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "expand_alphanumeric_citation_section_slots or surface_uscode_source_id_slots"` (2 passed)

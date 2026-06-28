@@ -1,0 +1,101 @@
+{
+  "queue_version": "process_model_refresh_impact_queue_v7",
+  "queue_id": "process-refresh-impact-queue-v7:fixture:guardrail-recompile-staging",
+  "requirement_node_candidate_set_refs": [
+    {
+      "candidate_set_id": "requirement-candidate-set:v7:public-refresh-fixture",
+      "requirement_ids": [
+        "requirement:residential-building:document-prep-placeholder",
+        "requirement:trade-permit:fee-review-placeholder"
+      ]
+    }
+  ],
+  "affected_process_model_rows": [
+    {
+      "process_id": "process-model:residential-building-permit",
+      "permit_type": "residential-building-permit",
+      "guardrail_bundle_id": "guardrail-bundle:residential-building-permit"
+    },
+    {
+      "process_id": "process-model:trade-permit",
+      "permit_type": "trade-permit",
+      "guardrail_bundle_id": "guardrail-bundle:trade-permit"
+    }
+  ],
+  "eligibility_impact_placeholders": [
+    {
+      "placeholder_id": "eligibility-impact:residential-site-address-review",
+      "process_id": "process-model:residential-building-permit",
+      "status": "review_placeholder"
+    }
+  ],
+  "document_impact_placeholders": [
+    {
+      "placeholder_id": "document-impact:single-pdf-plan-set-review",
+      "process_id": "process-model:residential-building-permit",
+      "status": "review_placeholder"
+    }
+  ],
+  "fee_impact_placeholders": [
+    {
+      "placeholder_id": "fee-impact:trade-permit-fee-notice-review",
+      "process_id": "process-model:trade-permit",
+      "status": "review_placeholder"
+    }
+  ],
+  "deadline_impact_placeholders": [
+    {
+      "placeholder_id": "deadline-impact:prescreen-response-window-review",
+      "process_id": "process-model:residential-building-permit",
+      "status": "review_placeholder"
+    }
+  ],
+  "stage_impact_placeholders": [
+    {
+      "placeholder_id": "stage-impact:upload-staging-review",
+      "process_id": "process-model:residential-building-permit",
+      "status": "review_placeholder"
+    }
+  ],
+  "unsupported_path_carry_forward_notes": [
+    {
+      "note_id": "unsupported-path:non-devhub-process-carry-forward",
+      "status": "carry_forward_review_only"
+    }
+  ],
+  "guardrail_bundle_recompile_suggestions": [
+    {
+      "suggestion_id": "recompile-suggestion:residential-document-and-gate-review",
+      "guardrail_bundle_id": "guardrail-bundle:residential-building-permit",
+      "status": "inactive_recompile_suggestion"
+    },
+    {
+      "suggestion_id": "recompile-suggestion:trade-fee-gate-review",
+      "guardrail_bundle_id": "guardrail-bundle:trade-permit",
+      "status": "inactive_recompile_suggestion"
+    }
+  ],
+  "stale_evidence_holds": [
+    {
+      "hold_id": "stale-evidence-hold:single-pdf-guidance-refresh",
+      "reason": "source freshness review pending"
+    }
+  ],
+  "reviewer_signoff_placeholders": [
+    {
+      "signoff_id": "reviewer-signoff:guardrail-recompile-v7:policy-reviewer",
+      "review_role": "policy_reviewer"
+    },
+    {
+      "signoff_id": "reviewer-signoff:guardrail-recompile-v7:release-reviewer",
+      "review_role": "release_reviewer"
+    }
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ]
+}

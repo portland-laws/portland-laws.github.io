@@ -1,0 +1,51 @@
+{
+  "schema": "ppd.daemon.circuit_breaker_status.v1",
+  "daemon_state": "paused",
+  "autonomous_work_allowed": false,
+  "circuit_breaker": {
+    "status": "open",
+    "opened_at": "2026-05-05T00:00:00Z",
+    "reason": "selected task exceeded safe autonomous retry budget before source evidence was refreshed"
+  },
+  "quarantine": {
+    "enabled": true,
+    "task_id": "checkbox-449",
+    "quarantine_id": "quarantine-checkbox-449-paused-daemon-fixture",
+    "failure_kind": "paused_daemon_circuit_breaker",
+    "quarantined_at": "2026-05-05T00:00:01Z"
+  },
+  "restart_eligibility": {
+    "eligible": true,
+    "mode": "supervised_fixture_only_restart",
+    "requires_operator_review": true,
+    "requires_self_test": true,
+    "may_resume_autonomous_work": false
+  },
+  "source_safe_recovery": {
+    "no_live_network": true,
+    "no_authenticated_devhub": true,
+    "no_raw_document_persistence": true,
+    "no_private_artifacts": true,
+    "required_steps_before_resume": [
+      "operator_review",
+      "fixture_validation",
+      "source_evidence_refresh"
+    ],
+    "forbidden_write_prefixes": [
+      "src/lib/logic/",
+      "public/corpus/portland-or/current/",
+      "ipfs_datasets_py/.daemon/",
+      "ppd/data/private/",
+      "ppd/data/raw/",
+      "ppd/devhub/sessions/",
+      "ppd/devhub/traces/"
+    ]
+  },
+  "source_evidence_ids": [
+    "fixture:ppd-daemon-circuit-breaker-paused-v1"
+  ],
+  "recorded_artifact_paths": [
+    "ppd/tests/fixtures/daemon/circuit_breaker_paused_status.json",
+    "ppd/daemon/circuit_breaker_status.py"
+  ]
+}

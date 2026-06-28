@@ -1,0 +1,52 @@
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -57,6 +57,7 @@
+ - The daemon reached a blocked-only board on 2026-05-03, so this board appends narrow daemon-repair tasks that can run independently before any blocked domain task is retried.
+ - Tranche 15 and Tranche 16 keep recovery in ppd/daemon and ppd/tests only. They do not implement DevHub draft readiness, live crawling, authenticated automation, upload, payment, submission, certification, cancellation, or inspection scheduling.
+ - Tranche 16 is intentionally small after repeated parser and regex failures: each task should change either one daemon file or one focused daemon test file unless the selected task explicitly requires both.
++- Tranche 17 replenishes independent daemon-repair work after the supervisor reported no selectable tasks while checkbox-178 remained active in calling_llm. These tasks must stay fixture-first, validation-first, and daemon-scoped.
+ 
+ ## Blocked Cascade Recovery Tranche 15
+ 
+@@ -69,25 +70,31 @@
+ - [x] Task checkbox-199: Add one daemon-only blocked-selection unittest using plain string parsing, not custom regex named-group syntax, proving blocked checkbox-178/182/186/187/191/193/194/195/197 are skipped when a fresh unchecked daemon-repair task exists.
+ - [x] Task checkbox-200: Add one parser-clean daemon retry-scope unittest proving a syntax_preflight history for checkbox-178 rejects a three-file source-plus-fixture-plus-test proposal and allows exactly one parser-bearing file or exactly one daemon repair file.
+ 
++## Blocked Cascade Recovery Tranche 17
++
++- [ ] Task checkbox-201: Add one daemon-only stale-calling-llm recovery unittest proving a task stuck in `calling_llm` for a blocked target is summarized as a compact supervisor diagnostic and the newest unchecked daemon-repair task remains selectable without retrying checkbox-178.
++- [ ] Task checkbox-202: Add one parser-clean daemon preflight unittest proving a proposal after checkbox-178 syntax_preflight history is rejected when it edits any DevHub domain file without also being the single parser-bearing repair file under test.
++- [ ] Task checkbox-203: Add one daemon diagnostics helper or focused unittest proving compact failure summaries include target_task, failure_kind, next_action_hint, and a raw-response length cap while excluding private DevHub artifacts, auth state, traces, crawl output, and downloaded documents.
++
+ 
+ ## Generated Status
+ 
+-Last updated: 2026-05-03T11:05:00.000000Z
++Last updated: 2026-05-03T12:05:00.000000Z
+ 
+-- Latest target: `Supervisor repair: blocked-only PP&D board after repeated syntax_preflight and parser-clean repair failures`
++- Latest target: `Supervisor repair: replenish selectable daemon-repair work after blocked-only PP&D board and active checkbox-178 calling_llm state`
+ - Latest result: `planned`
+ - Latest summary: Appended narrow daemon-repair tasks so autonomous work can resume without implementing blocked PP&D domain artifacts.
+-- Counts: `{"blocked": 9, "complete": 18, "in_progress": 0, "needed": 3}`
++- Counts: `{"blocked": 10, "complete": 20, "in_progress": 0, "needed": 3}`
+ 
+ 
+-<!-- ppd-daemon-task-board:start -->
++
+ ## Generated Status
+ 
+-Last updated: 2026-05-03T12:00:06.842247Z
++Last updated: 2026-05-03T12:05:00.000000Z
+ 
+-- Latest target: `Task checkbox-200: Add one parser-clean daemon retry-scope unittest proving a syntax_preflight history for checkbox-178 rejects a three-file source-plus-fixture-plus-test proposal and allows exactly one parser-bearing file or exactly one daemon repair file.`
+-- Latest result: `accepted`
+-- Latest summary: Add checkbox-200 retry-scope unittest for syntax_preflight checkbox-178 scope limits.
+-- Counts: `{"blocked": 10, "complete": 20, "in_progress": 0, "needed": 0}`
++- Latest target: `Supervisor repair: replenish selectable daemon-repair work after blocked-only PP&D board and active checkbox-178 calling_llm state`
++- Latest result: `planned`
++- Latest summary: Appended narrow daemon-repair tasks so autonomous work can resume without implementing blocked PP&D domain artifacts.
++- Counts: `{"blocked": 10, "complete": 20, "in_progress": 0, "needed": 3}`
+ 
+-<!-- ppd-daemon-task-board:end -->
++

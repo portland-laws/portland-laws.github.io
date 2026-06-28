@@ -1,0 +1,52 @@
+{
+  "release_decision_rows": [
+    {
+      "candidate_id": "public-refresh-candidate-proceed-001",
+      "decision": "proceed",
+      "decision_reason": "Synthetic inactive row has fixture validation evidence and no unresolved blockers.",
+      "reviewer_owner": "public-refresh-reviewer",
+      "source_packet_id": "public_refresh_release_decision_packet_v1",
+      "source_fixture_ref": "ppd/tests/fixtures/public_refresh_release_decision_packet_v1/candidate_rows.json",
+      "synthetic_release_decision_row": true,
+      "stale_source_detected": false,
+      "active_release_mutation": false,
+      "official_action_performed": false,
+      "citations": [
+        "public-refresh-release-decision:v1:public-refresh-candidate-proceed-001",
+        "public-refresh-validation-evidence:v1:public-refresh-candidate-proceed-001"
+      ]
+    },
+    {
+      "candidate_id": "public-refresh-candidate-hold-002",
+      "decision": "hold",
+      "decision_reason": "Stale source signal requires reviewer hold before any release action.",
+      "reviewer_owner": "source-freshness-reviewer",
+      "source_packet_id": "public_refresh_release_decision_packet_v1",
+      "source_fixture_ref": "ppd/tests/fixtures/public_refresh_release_decision_packet_v1/candidate_rows.json",
+      "synthetic_release_decision_row": true,
+      "stale_source_detected": true,
+      "active_release_mutation": false,
+      "official_action_performed": false,
+      "citations": [
+        "public-refresh-release-decision:v1:public-refresh-candidate-hold-002",
+        "public-refresh-stale-source-hold:v1:public-refresh-candidate-hold-002"
+      ]
+    },
+    {
+      "candidate_id": "public-refresh-candidate-skip-003",
+      "decision": "skip",
+      "decision_reason": "Candidate row is explicitly marked for offline skip disposition.",
+      "reviewer_owner": "release-reviewer",
+      "source_packet_id": "public_refresh_release_decision_packet_v1",
+      "source_fixture_ref": "ppd/tests/fixtures/public_refresh_release_decision_packet_v1/candidate_rows.json",
+      "synthetic_release_decision_row": true,
+      "stale_source_detected": false,
+      "active_release_mutation": false,
+      "official_action_performed": false,
+      "citations": [
+        "public-refresh-release-decision:v1:public-refresh-candidate-skip-003",
+        "public-refresh-rollback-decision-point:v1:public-refresh-candidate-skip-003"
+      ]
+    }
+  ]
+}

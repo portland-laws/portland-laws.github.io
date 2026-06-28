@@ -1,0 +1,56 @@
+{
+  "active_bundle_id": "ppd-guardrails-active-v7",
+  "candidate_bundle_id": "ppd-guardrails-candidate-v8",
+  "promotion_status": "production_ready",
+  "predicate_diffs": [
+    {
+      "diff_id": "diff-payment-gate",
+      "predicate_id": "payment.requires_exact_confirmation",
+      "change_type": "added",
+      "target_bundle_id": "ppd-guardrails-candidate-v8",
+      "source_evidence_ids": ["ev-fee-payment-guide"]
+    },
+    {
+      "diff_id": "diff-upload-refusal",
+      "predicate_id": "upload.refuse_without_authority",
+      "change_type": "added",
+      "target_bundle_id": "ppd-guardrails-candidate-v8",
+      "source_evidence_ids": ["ev-upload-corrections-guide"]
+    }
+  ],
+  "regression_coverage_links": [
+    {
+      "test_id": "test_guardrail_promotion_review_packet_accepts_complete_fixture",
+      "test_path": "ppd/tests/test_guardrail_promotion_review.py",
+      "fixture_path": "ppd/tests/fixtures/guardrail_promotion_review/packet.json",
+      "covered_diff_ids": ["diff-payment-gate", "diff-upload-refusal"]
+    }
+  ],
+  "guardrail_gates": [
+    {"action_type": "payment", "gate_type": "refusal"},
+    {"action_type": "payment", "gate_type": "exact_confirmation"},
+    {"action_type": "upload", "gate_type": "refusal"},
+    {"action_type": "upload", "gate_type": "exact_confirmation"},
+    {"action_type": "submission", "gate_type": "refusal"},
+    {"action_type": "submission", "gate_type": "exact_confirmation"},
+    {"action_type": "scheduling", "gate_type": "refusal"},
+    {"action_type": "scheduling", "gate_type": "exact_confirmation"},
+    {"action_type": "cancellation", "gate_type": "refusal"},
+    {"action_type": "cancellation", "gate_type": "exact_confirmation"},
+    {"action_type": "certification", "gate_type": "refusal"},
+    {"action_type": "certification", "gate_type": "exact_confirmation"}
+  ],
+  "case_facts": [
+    {
+      "fact_id": "property-address-present",
+      "privacy_classification": "public_reference",
+      "value_policy": "metadata_only"
+    }
+  ],
+  "review_items": [
+    {"item_id": "legal-review", "status": "resolved"},
+    {"item_id": "regression-review", "status": "resolved"}
+  ],
+  "active_bundle_mutation": false,
+  "active_bundle_changes": []
+}

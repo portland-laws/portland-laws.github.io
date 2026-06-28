@@ -1,0 +1,97 @@
+{
+  "packet_type": "operator_signoff_ledger",
+  "ledger_id": "operator-signoff-ledger-fixture-20260528-001",
+  "created_at": "2026-05-28T00:00:00Z",
+  "scope": "fixture-first review decisions for PP&D public-source and read-only safety packets",
+  "promotion_policy": {
+    "production_promotion_default": false,
+    "production_promotion_allowed": false,
+    "required_before_promotion": [
+      "all review decisions explicitly approved",
+      "all unresolved blockers closed in a later ledger",
+      "human operator approval recorded outside fixture bootstrap"
+    ]
+  },
+  "review_decisions": [
+    {
+      "packet_type": "public_source_delta_summary",
+      "packet_id": "public-source-delta-summary-fixture-20260528-001",
+      "operator_decision": "needs_review",
+      "decision_rationale": "Fixture confirms the delta summary packet shape, but no live public-source recrawl has been operator-reviewed for promotion.",
+      "evidence_refs": [
+        "fixture://ppd/tests/fixtures/public_source_delta_summary/public_source_delta_summary_packet.json"
+      ],
+      "unresolved_blockers": [
+        {
+          "blocker_id": "blocker-public-delta-live-review",
+          "status": "unresolved",
+          "reason": "Operator has not reviewed a current official-source delta report against production promotion criteria."
+        }
+      ]
+    },
+    {
+      "packet_type": "guardrail_explanation_audit",
+      "packet_id": "guardrail-explanation-audit-fixture-20260528-001",
+      "operator_decision": "needs_review",
+      "decision_rationale": "Fixture records that explanation audit output must remain advisory until source citations and refusal boundaries receive operator signoff.",
+      "evidence_refs": [
+        "fixture://ppd/tests/fixtures/guardrail_explanation_audit/guardrail_explanation_audit_packet.json"
+      ],
+      "unresolved_blockers": [
+        {
+          "blocker_id": "blocker-guardrail-explanation-human-audit",
+          "status": "unresolved",
+          "reason": "Guardrail explanations have not been compared by an operator against source evidence and consequential-action refusal requirements."
+        }
+      ]
+    },
+    {
+      "packet_type": "local_pdf_preview_safety",
+      "packet_id": "local-pdf-preview-safety-fixture-20260528-001",
+      "operator_decision": "needs_review",
+      "decision_rationale": "Fixture preserves local PDF preview as a safe dry-run surface only; no official upload, certification, or submission is approved.",
+      "evidence_refs": [
+        "fixture://ppd/tests/fixtures/local_pdf_preview_safety/local_pdf_preview_safety_packet.json"
+      ],
+      "unresolved_blockers": [
+        {
+          "blocker_id": "blocker-pdf-preview-no-production-fill",
+          "status": "unresolved",
+          "reason": "PDF preview safety has not been operator-approved for production document preparation or official filing."
+        }
+      ]
+    },
+    {
+      "packet_type": "devhub_read_only_observation_checklist",
+      "packet_id": "devhub-read-only-observation-checklist-fixture-20260528-001",
+      "operator_decision": "blocked",
+      "decision_rationale": "Read-only DevHub observation remains blocked for production promotion until attended-session boundaries are separately verified without storing private browser artifacts.",
+      "evidence_refs": [
+        "fixture://ppd/tests/fixtures/devhub_read_only_observation_checklist/devhub_read_only_observation_checklist_packet.json"
+      ],
+      "unresolved_blockers": [
+        {
+          "blocker_id": "blocker-devhub-attended-read-only-verification",
+          "status": "unresolved",
+          "reason": "No operator-attended DevHub read-only observation checklist has been approved for promotion, and no private session files may be committed."
+        }
+      ]
+    }
+  ],
+  "unresolved_blockers": [
+    "blocker-public-delta-live-review",
+    "blocker-guardrail-explanation-human-audit",
+    "blocker-pdf-preview-no-production-fill",
+    "blocker-devhub-attended-read-only-verification"
+  ],
+  "commit_safety": {
+    "contains_credentials": false,
+    "contains_cookies": false,
+    "contains_auth_state": false,
+    "contains_screenshots": false,
+    "contains_traces_or_har": false,
+    "contains_raw_crawl_output": false,
+    "contains_downloaded_documents": false,
+    "contains_private_devhub_values": false
+  }
+}

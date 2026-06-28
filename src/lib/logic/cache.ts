@@ -7,20 +7,34 @@ export interface CacheEntry<T> {
 export interface CacheStats {
   size: number;
   maxSize: number;
+  maxsize: number;
   ttlMs: number;
+  ttl: number;
   hits: number;
   misses: number;
   evictions: number;
   expirations: number;
   hitRate: number;
+  hit_rate: number;
   totalRequests: number;
+  total_requests: number;
 }
 
 export interface BoundedCacheOptions {
   maxSize?: number;
+  maxsize?: number;
   ttlMs?: number;
+  ttl?: number;
   now?: () => number;
 }
+
+export const BOUNDED_CACHE_PORT_STATUS = {
+  sourcePythonModule: 'logic/common/bounded_cache.py',
+  runtime: 'browser-native-typescript',
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  features: ['ttl-expiration', 'lru-eviction', 'bounded-size', 'python-compatible-aliases'],
+} as const;
 
 export class BoundedCache<T> {
   readonly maxSize: number;
@@ -34,9 +48,17 @@ export class BoundedCache<T> {
   private expirations = 0;
 
   constructor(options: BoundedCacheOptions = {}) {
-    this.maxSize = options.maxSize ?? 1000;
-    this.ttlMs = options.ttlMs ?? 60 * 60 * 1000;
+    this.maxSize = options.maxSize ?? options.maxsize ?? 1000;
+    this.ttlMs = options.ttlMs ?? (options.ttl === undefined ? 60 * 60 * 1000 : options.ttl * 1000);
     this.now = options.now ?? (() => Date.now());
+  }
+
+  get maxsize(): number {
+    return this.maxSize;
+  }
+
+  get ttl(): number {
+    return this.ttlMs / 1000;
   }
 
   get size(): number {
@@ -86,6 +108,21 @@ export class BoundedCache<T> {
     return this.cache.delete(key);
   }
 
+  contains(key: string): boolean {
+    const entry = this.cache.get(key);
+    if (!entry) {
+      return false;
+    }
+
+    if (this.isExpired(entry)) {
+      this.cache.delete(key);
+      this.expirations += 1;
+      return false;
+    }
+
+    return true;
+  }
+
   clear(): void {
     this.cache.clear();
     this.hits = 0;
@@ -110,23 +147,39 @@ export class BoundedCache<T> {
     return removed;
   }
 
+  cleanup_expired(): number {
+    return this.cleanupExpired();
+  }
+
   getStats(): CacheStats {
     const totalRequests = this.hits + this.misses;
+    const hitRate = totalRequests > 0 ? this.hits / totalRequests : 0;
     return {
       size: this.cache.size,
       maxSize: this.maxSize,
+      maxsize: this.maxSize,
       ttlMs: this.ttlMs,
+      ttl: this.ttl,
       hits: this.hits,
       misses: this.misses,
       evictions: this.evictions,
       expirations: this.expirations,
-      hitRate: totalRequests > 0 ? this.hits / totalRequests : 0,
+      hitRate,
+      hit_rate: hitRate,
       totalRequests,
+      total_requests: totalRequests,
     };
+  }
+
+  get_stats(): CacheStats {
+    return this.getStats();
+  }
+
+  __len__(): number {
+    return this.size;
   }
 
   private isExpired(entry: CacheEntry<T>): boolean {
     return this.ttlMs > 0 && this.now() - entry.timestamp > this.ttlMs;
   }
 }
-

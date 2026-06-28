@@ -1,0 +1,91 @@
+{
+  "case_id": "synthetic_residential_addition_case",
+  "process_id": "residential_addition_building_permit_synthetic",
+  "fixture_kind": "agent_missing_information_api",
+  "privacy_policy": {
+    "private_values": "redacted",
+    "local_file_paths": "omitted",
+    "allowed_fact_statuses": [
+      "missing",
+      "stale",
+      "ambiguous",
+      "conflicting"
+    ]
+  },
+  "facts": [
+    {
+      "fact_id": "property_owner_authorization",
+      "label": "Property owner authorization",
+      "status": "missing",
+      "reason": "The process requires confirmation that the applicant is the owner or is authorized by the owner before permit application drafting can be treated as ready.",
+      "question": "Are you the property owner, or do you have owner authorization for this residential addition permit?",
+      "current_value": null,
+      "source_evidence_ids": [
+        "ppd_apply_permits_public_guide"
+      ],
+      "blocks": [
+        "certification_review",
+        "permit_submission"
+      ]
+    },
+    {
+      "fact_id": "project_address",
+      "label": "Project address",
+      "status": "ambiguous",
+      "reason": "Two user-provided address references point to different units on the same parcel, so the agent cannot safely choose one for DevHub property lookup.",
+      "question": "Which exact project address and unit should be used for the permit record?",
+      "current_value": "[REDACTED]",
+      "source_evidence_ids": [
+        "devhub_property_lookup_public_guidance"
+      ],
+      "blocks": [
+        "property_lookup",
+        "application_data_entry"
+      ]
+    },
+    {
+      "fact_id": "contractor_license_status",
+      "label": "Contractor license status",
+      "status": "stale",
+      "reason": "The known contractor license confirmation is older than the fixture freshness window and may affect available trade or fixture options.",
+      "question": "Is the contractor license information still current for this project?",
+      "current_value": "[REDACTED]",
+      "last_confirmed_at": "2025-09-15",
+      "stale_after_days": 90,
+      "source_evidence_ids": [
+        "devhub_standard_trade_permit_public_guide"
+      ],
+      "blocks": [
+        "eligibility_screening",
+        "trade_scope_drafting"
+      ]
+    },
+    {
+      "fact_id": "plan_set_readiness",
+      "label": "Plan set readiness",
+      "status": "conflicting",
+      "reason": "One user note says drawings are combined into a single PDF, while another says structural sheets remain separate from the drawing set.",
+      "question": "Is the drawing plan set combined into one PDF, with applications, calculations, and other supporting documents kept as separate PDFs?",
+      "current_value": "[REDACTED]",
+      "source_evidence_ids": [
+        "ppd_submit_plans_online_single_pdf_guidance",
+        "ppd_file_naming_standards_guidance"
+      ],
+      "blocks": [
+        "upload_staging",
+        "document_preparation_review"
+      ]
+    }
+  ],
+  "omitted": {
+    "known_complete_facts": true,
+    "private_document_names": true,
+    "local_file_paths": true,
+    "credential_or_session_values": true,
+    "payment_values": true
+  },
+  "next_safe_actions": [
+    "Ask the listed follow-up questions before drafting DevHub values.",
+    "Do not submit, certify, upload, schedule, cancel, or pay from this fixture."
+  ]
+}

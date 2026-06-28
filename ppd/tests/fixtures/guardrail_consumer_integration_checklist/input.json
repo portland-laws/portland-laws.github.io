@@ -1,0 +1,88 @@
+{
+  "inputs": {
+    "guardrail_activation_decision": {
+      "packet_type": "ppd.guardrail_activation.decision_packet.v1",
+      "packet_id": "guardrail-activation-decision-synthetic-v1",
+      "fixture_first": true,
+      "metadata_only": true,
+      "activation_allowed": false,
+      "live_enforcement_enabled": false,
+      "active_guardrail_bundle_mutated": false,
+      "source_evidence_ids": [
+        "fixture:guardrail-activation:missing-facts",
+        "fixture:guardrail-activation:read-only-devhub"
+      ],
+      "decision_summary": "Activation remains disabled while consumer API expectations are checked against cited fixture packets."
+    },
+    "requirement_regeneration_promotion_decision": {
+      "packet_type": "requirement_regeneration_promotion_decision_packet",
+      "packet_id": "requirement-regeneration-promotion-decision-synthetic-v1",
+      "packet_mode": "fixture_first_metadata_only",
+      "blocked_downstream_activation": true,
+      "activation_allowed": false,
+      "active_guardrail_bundle_mutated": false,
+      "does_not_mutate_active_guardrail_bundles": true,
+      "citation_refresh_scope": [
+        {
+          "source_id": "fixture:regeneration-promotion:stale-evidence",
+          "refresh_reason": "stale public guidance remains blocked until reviewer acknowledgement"
+        }
+      ],
+      "reviewer_selected_decisions": [
+        {
+          "decision_id": "review-devhub-upload-boundary",
+          "reviewer_selected_decision": "defer",
+          "activation_allowed": false,
+          "mutates_active_artifacts": false,
+          "blocked_downstream_activation": true
+        }
+      ]
+    },
+    "safe_next_action_release_notes": {
+      "packet_type": "ppd.safe_next_action.release_notes",
+      "mode": "fixture_first_offline_only",
+      "offline_only_capabilities": [
+        {
+          "name": "local_pdf_preview",
+          "description": "Describe redacted local PDF preview expectations from committed fixtures.",
+          "citation": "fixture:safe-next-action:local-pdf-preview"
+        },
+        {
+          "name": "devhub_read_only_review",
+          "description": "Describe read-only DevHub review expectations without launching DevHub.",
+          "citation": "fixture:safe-next-action:devhub-read-only-review"
+        }
+      ],
+      "remaining_blockers": [
+        "Live guardrail enforcement remains disabled.",
+        "Consequential DevHub actions require attended manual handoff."
+      ],
+      "disabled_live_actions": [
+        "live_public_crawl",
+        "devhub_launch",
+        "authenticated_devhub_session",
+        "document_download",
+        "form_submission",
+        "payment",
+        "upload",
+        "scheduling",
+        "cancellation",
+        "certification"
+      ],
+      "user_facing_escalation_prompts": [
+        "Confirm the human reviewer before any official DevHub action is attempted."
+      ],
+      "rollback_references": [
+        "Remove the consumer checklist fixture and keep active guardrail bundles unchanged."
+      ],
+      "next_daemon_work": [
+        "Validate cited consumer API expectations before enabling any live enforcement path."
+      ],
+      "citations": [
+        "fixture:safe-next-action:local-pdf-preview",
+        "fixture:safe-next-action:devhub-read-only-review",
+        "fixture:safe-next-action:disabled-live-actions"
+      ]
+    }
+  }
+}

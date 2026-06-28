@@ -1,0 +1,32 @@
+{
+  "packet_id": "process-model-impact-rehearsal",
+  "uses_llm": false,
+  "promotes_active_guardrails": false,
+  "process_impacts": [
+    {
+      "id": "pm-observe",
+      "impact": "observation preserves the current public record and does not mutate a PP&D workflow",
+      "citation": "process-model-impact#observe"
+    },
+    {
+      "id": "pm-draft",
+      "impact": "draft preparation changes only local synthetic data until a person reviews it",
+      "citation": "process-model-impact#draft"
+    },
+    {
+      "id": "pm-checkpoint",
+      "impact": "checkpoint wording prevents accidental continuation into an official transaction",
+      "citation": "process-model-impact#checkpoint"
+    },
+    {
+      "id": "pm-handoff",
+      "impact": "manual handoff keeps credentials, legal judgment, and official account actions with a human operator",
+      "citation": "process-model-impact#handoff"
+    },
+    {
+      "id": "pm-refusal",
+      "impact": "refusal blocks irreversible or consequential changes to permits, payments, certifications, and submissions",
+      "citation": "process-model-impact#refusal"
+    }
+  ]
+}

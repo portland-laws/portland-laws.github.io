@@ -1,0 +1,17 @@
+Implemented a deterministic slot refinement for `modal.ir_decompiler` by adding typed numeric signatures for title↔section relation spans, and mirrored it in triple emission so slot/triple parity stays intact.
+
+- Added span-derived typed slots in decompiler relation extraction:
+  - [`ipfs_datasets_py/logic/modal/decompiler.py:2753`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000081-20260518_154643/ipfs_datasets_py/logic/modal/decompiler.py:2753)
+  - New helper: [`ipfs_datasets_py/logic/modal/decompiler.py:3525`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000081-20260518_154643/ipfs_datasets_py/logic/modal/decompiler.py:3525)
+
+- Mirrored the same span-signature expansion in codec triple components:
+  - [`ipfs_datasets_py/logic/modal/codec.py:3556`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000081-20260518_154643/ipfs_datasets_py/logic/modal/codec.py:3556)
+  - New helper: [`ipfs_datasets_py/logic/modal/codec.py:3336`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000081-20260518_154643/ipfs_datasets_py/logic/modal/codec.py:3336)
+
+- Added regression coverage for TODO-cluster-like USC samples (e.g. `43 U.S.C. 1.`, `49 U.S.C. 44114.`, `2 U.S.C. 132a`) asserting both decoded slots and F-logic triples:
+  - [`tests/unit/optimizers/logic_theorem_optimizer/test_modal_ir_decompiler_slots.py:366`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000081-20260518_154643/tests/unit/optimizers/logic_theorem_optimizer/test_modal_ir_decompiler_slots.py:366)
+
+Validation run:
+
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_modal_ir_decompiler_slots.py` (9 passed)
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py` (53 passed)

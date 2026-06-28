@@ -1,0 +1,147 @@
+{
+  "packet_type": "ppd.inactive_guardrail_recompile_staging_packet.v7",
+  "packet_version": "v7",
+  "packet_id": "inactive-guardrail-recompile-staging-v7-reviewer-fixture",
+  "mode": "fixture_first_inactive_recompile_staging_only",
+  "fixture_first": true,
+  "inactive_only": true,
+  "consumes_only_process_model_refresh_impact_queue_v7_fixtures": true,
+  "source_queue_ref": "process-refresh-impact-queue-v7:fixture:guardrail-recompile-staging",
+  "affected_guardrail_bundle_rows": [
+    {
+      "guardrail_bundle_id": "guardrail-bundle:residential-building-permit",
+      "process_id": "process-model:residential-building-permit",
+      "permit_type": "residential-building-permit",
+      "staging_status": "inactive_recompile_review_only",
+      "activation_allowed": false
+    },
+    {
+      "guardrail_bundle_id": "guardrail-bundle:trade-permit",
+      "process_id": "process-model:trade-permit",
+      "permit_type": "trade-permit",
+      "staging_status": "inactive_recompile_review_only",
+      "activation_allowed": false
+    }
+  ],
+  "deterministic_predicate_change_placeholders": [
+    {
+      "placeholder_id": "predicate-change:eligibility_predicates:1",
+      "source_queue_field": "eligibility_impact_placeholders",
+      "predicate_family": "eligibility_predicates",
+      "source_ref": "eligibility-impact:residential-site-address-review",
+      "review_status": "placeholder_requires_human_review",
+      "activation_allowed": false
+    },
+    {
+      "placeholder_id": "predicate-change:document_requirement_predicates:1",
+      "source_queue_field": "document_impact_placeholders",
+      "predicate_family": "document_requirement_predicates",
+      "source_ref": "document-impact:single-pdf-plan-set-review",
+      "review_status": "placeholder_requires_human_review",
+      "activation_allowed": false
+    }
+  ],
+  "deontic_rule_review_placeholders": [
+    {
+      "placeholder_id": "deontic_rule_review_placeholder:1",
+      "source_queue_field": "guardrail_bundle_recompile_suggestions",
+      "review_type": "deontic_rule_review_placeholder",
+      "source_ref": "recompile-suggestion:residential-document-and-gate-review",
+      "review_status": "placeholder_requires_human_review",
+      "activation_allowed": false
+    }
+  ],
+  "temporal_rule_review_placeholders": [
+    {
+      "placeholder_id": "temporal_rule_review_placeholder:1",
+      "source_queue_field": "deadline_impact_placeholders",
+      "review_type": "temporal_rule_review_placeholder",
+      "source_ref": "deadline-impact:prescreen-response-window-review",
+      "review_status": "placeholder_requires_human_review",
+      "activation_allowed": false
+    }
+  ],
+  "reversible_action_predicate_preservation_notes": [
+    {
+      "note_id": "reversible_action_predicates:guardrail-bundle:residential-building-permit",
+      "guardrail_bundle_id": "guardrail-bundle:residential-building-permit",
+      "process_id": "process-model:residential-building-permit",
+      "note_type": "reversible_action_predicates",
+      "note": "Keep reversible draft predicates inactive and preserve citation links until reviewer approval.",
+      "activation_allowed": false
+    }
+  ],
+  "exact_confirmation_gate_preservation_notes": [
+    {
+      "note_id": "exact_confirmation_predicates:guardrail-bundle:residential-building-permit",
+      "guardrail_bundle_id": "guardrail-bundle:residential-building-permit",
+      "process_id": "process-model:residential-building-permit",
+      "note_type": "exact_confirmation_predicates",
+      "note": "Preserve exact-confirmation gates for upload, submission, certification, payment, scheduling, and cancellation boundaries.",
+      "activation_allowed": false
+    }
+  ],
+  "refused_action_gate_preservation_notes": [
+    {
+      "note_id": "refused_action_predicates:guardrail-bundle:trade-permit",
+      "guardrail_bundle_id": "guardrail-bundle:trade-permit",
+      "process_id": "process-model:trade-permit",
+      "note_type": "refused_action_predicates",
+      "note": "Preserve refused-action gates for unsupported, consequential, private, or stale-evidence actions.",
+      "activation_allowed": false
+    }
+  ],
+  "stale_evidence_hold_propagation_rows": [
+    {
+      "hold_id": "stale-evidence-hold:single-pdf-guidance-refresh",
+      "source_queue_field": "stale_evidence_holds",
+      "propagation_status": "propagate_hold_to_guardrail_recompile_review",
+      "guardrail_activation_blocked_until_review": true,
+      "activation_allowed": false
+    }
+  ],
+  "rollback_checkpoint_placeholders": [
+    {
+      "rollback_checkpoint_id": "rollback-checkpoint:guardrail-bundle:residential-building-permit",
+      "guardrail_bundle_id": "guardrail-bundle:residential-building-permit",
+      "checkpoint_status": "placeholder_existing_bundle_snapshot_required_before_activation",
+      "activation_allowed": false
+    }
+  ],
+  "reviewer_signoff_placeholders": [
+    {
+      "signoff_id": "reviewer-signoff:guardrail-recompile-v7:policy-reviewer",
+      "source_queue_field": "reviewer_signoff_placeholders",
+      "review_status": "required_before_recompile_activation",
+      "activation_allowed": false
+    },
+    {
+      "signoff_id": "reviewer-signoff:guardrail-recompile-v7:release-reviewer",
+      "source_queue_field": "reviewer_signoff_placeholders",
+      "review_status": "required_before_recompile_activation",
+      "activation_allowed": false
+    }
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ],
+  "attestations": {
+    "guardrails_activated": false,
+    "guardrails_compiled": false,
+    "guardrails_promoted": false,
+    "live_crawl_executed": false,
+    "devhub_opened": false,
+    "private_documents_read": false,
+    "uploads_attempted": false,
+    "submissions_attempted": false,
+    "certifications_attempted": false,
+    "payments_attempted": false,
+    "inspection_scheduling_attempted": false,
+    "legal_or_permitting_guarantee": false
+  },
+  "activation_allowed": false
+}

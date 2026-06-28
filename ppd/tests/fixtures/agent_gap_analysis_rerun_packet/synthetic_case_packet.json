@@ -1,0 +1,119 @@
+{
+  "process_model_change": {
+    "process_id": "residential-building-permit-single-pdf",
+    "active_guardrail_bundle_id": "guardrail-bundle-active-single-pdf-20260508",
+    "impacted_change": {
+      "change_id": "single-pdf-supporting-documents-separate-upload",
+      "source_evidence_ids": [
+        "ppd-source-submit-plans-online#single-pdf-guidance",
+        "ppd-source-devhub-guide-submit-permit-application#upload-step"
+      ]
+    },
+    "before": {
+      "required_user_facts": [
+        "project_address",
+        "permit_type",
+        "property_owner_authorization"
+      ],
+      "required_documents": [
+        {
+          "document_id": "site_plan",
+          "label": "Site plan",
+          "accepted_document_types": [
+            "site_plan"
+          ]
+        }
+      ],
+      "file_rules": [
+        "plans_combined_as_single_pdf"
+      ],
+      "blocked_actions": [
+        "submit permit application"
+      ]
+    },
+    "after": {
+      "required_user_facts": [
+        "project_address",
+        "permit_type",
+        "property_owner_authorization",
+        "supporting_documents_are_separate_pdfs"
+      ],
+      "required_documents": [
+        {
+          "document_id": "site_plan",
+          "label": "Site plan",
+          "accepted_document_types": [
+            "site_plan"
+          ]
+        },
+        {
+          "document_id": "application_forms_pdf",
+          "label": "Application forms PDF",
+          "accepted_document_types": [
+            "application_forms_pdf"
+          ]
+        }
+      ],
+      "file_rules": [
+        "plans_combined_as_single_pdf",
+        "applications_calculations_and_supporting_documents_uploaded_as_separate_pdfs"
+      ],
+      "blocked_actions": [
+        "upload supporting documents",
+        "submit permit application"
+      ],
+      "action_gates": [
+        {
+          "action": "upload supporting documents",
+          "conditions": [
+            "user_attended",
+            "exact_confirmation"
+          ],
+          "requires_exact_confirmation": true,
+          "refuse_until_attended": true,
+          "confirmation_text": "I confirm I am ready to upload supporting documents for this PP&D permit application."
+        },
+        {
+          "action": "submit permit application",
+          "conditions": [
+            "user_attended",
+            "exact_confirmation"
+          ],
+          "requires_exact_confirmation": true,
+          "refuse_until_attended": true,
+          "confirmation_text": "I confirm I am ready to submit this PP&D permit application."
+        }
+      ]
+    }
+  },
+  "synthetic_case": {
+    "case_id": "synthetic-single-pdf-rerun-case",
+    "known_facts": {
+      "project_address": "synthetic public-address placeholder",
+      "permit_type": "residential_building_permit",
+      "property_owner_authorization": {
+        "value": "authorization-on-file",
+        "freshness_status": "stale"
+      }
+    },
+    "user_documents": [
+      {
+        "document_id": "site_plan_doc",
+        "document_type": "site_plan",
+        "label": "Site plan",
+        "freshness_status": "stale"
+      },
+      {
+        "document_id": "application_forms_doc",
+        "document_type": "application_forms_pdf",
+        "label": "Application forms PDF",
+        "freshness_status": "current"
+      }
+    ],
+    "requested_actions": [
+      "render_local_pdf_field_mapping_preview",
+      "upload supporting documents",
+      "submit permit application"
+    ]
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "packet_id": "devhub-read-only-pilot-review-unsafe",
+  "pilot_scope": "devhub_read_only_evidence_review",
+  "execution_mode": "live",
+  "live_browser_execution": true,
+  "review_summary": "Operator launched browser and clicked in DevHub during a real DevHub session.",
+  "raw_authenticated_value": "Jane Applicant, 123 Private Permit Street",
+  "session_cookie": "city_session=secret",
+  "screenshot_path": "/home/example/devhub/screenshots/home.png",
+  "trace_path": "artifacts/devhub-trace.zip",
+  "har_path": "captures/devhub.har",
+  "storage_state_path": "playwright/storage_state.json",
+  "private_notes_path": "file:///Users/example/private/devhub-notes.txt",
+  "controls": [
+    {
+      "control_id": "submit-application",
+      "action": "submit_application",
+      "enabled": true
+    },
+    {
+      "control_id": "pay-fee",
+      "action": "submit_payment",
+      "state": "enabled"
+    }
+  ],
+  "surface_registry_mutation": {
+    "active": true,
+    "enabled": true,
+    "requested": true,
+    "mode": "write"
+  },
+  "observations": [
+    {
+      "surface_id": "devhub-private-live",
+      "auth_scope": "authenticated",
+      "private_value": "Permit IVR 1234567"
+    }
+  ]
+}

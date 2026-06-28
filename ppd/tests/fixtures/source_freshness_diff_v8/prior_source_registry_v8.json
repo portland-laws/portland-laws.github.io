@@ -1,0 +1,59 @@
+{
+  "registry_version": "8",
+  "registry_id": "prior-source-registry-v8-fixture",
+  "sources": [
+    {
+      "source_id": "ppd-online-tools",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "content_hash": "sha256:prior-online-tools",
+      "last_seen_at": "2026-05-01T09:00:00Z",
+      "observed_links": [
+        {
+          "url": "https://www.portland.gov/ppd/devhub-faqs",
+          "link_text": "DevHub FAQ"
+        },
+        {
+          "url": "https://www.portland.gov/ppd/old-public-guide",
+          "link_text": "Old public guide"
+        }
+      ],
+      "citation_placeholders": [
+        "citation:ppd-online-tools:devhub-overview"
+      ],
+      "requirement_candidate_refs": [
+        "candidate:online-tools:devhub-services"
+      ]
+    },
+    {
+      "source_id": "ppd-single-pdf",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "content_hash": "sha256:unchanged-single-pdf",
+      "last_seen_at": "2026-05-01T09:05:00Z",
+      "observed_links": [
+        {
+          "url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+          "link_text": "File naming standards"
+        }
+      ],
+      "citation_placeholders": [
+        "citation:ppd-single-pdf:upload-rules"
+      ],
+      "requirement_candidate_refs": [
+        "candidate:single-pdf:document-packaging"
+      ]
+    },
+    {
+      "source_id": "ppd-retired-payment-guide",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "content_hash": "sha256:prior-payment-guide",
+      "last_seen_at": "2026-05-01T09:10:00Z",
+      "observed_links": [],
+      "citation_placeholders": [
+        "citation:ppd-payment-guide:fee-payment"
+      ],
+      "requirement_candidate_refs": [
+        "candidate:payment-guide:financial-action-gate"
+      ]
+    }
+  ]
+}

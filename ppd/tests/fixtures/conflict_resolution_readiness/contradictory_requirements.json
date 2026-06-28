@@ -1,0 +1,52 @@
+{
+  "fixture_id": "contradictory-single-pdf-readiness",
+  "description": "Contradictory cited requirement nodes for the same PP&D upload-preparation scope. The checker must block formalization and request missing information or human review instead of choosing a winner.",
+  "source_evidence": [
+    {
+      "evidence_id": "evidence-single-pdf-guidance",
+      "source_id": "ppd-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "title": "Submit Plans Online / Single PDF Process",
+      "citation": "Single PDF guidance fixture citation for plan drawing preparation."
+    },
+    {
+      "evidence_id": "evidence-separate-plan-files-guidance",
+      "source_id": "ppd-file-standards",
+      "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+      "title": "File naming standards and preparing PDFs",
+      "citation": "Separate upload guidance fixture citation for plan drawing preparation."
+    }
+  ],
+  "requirement_nodes": [
+    {
+      "requirement_id": "req-plan-drawings-single-pdf",
+      "source_evidence_ids": ["evidence-single-pdf-guidance"],
+      "requirement_type": "document_requirement",
+      "subject": "applicant",
+      "action": "combine",
+      "object": "plan drawings into one plan PDF",
+      "conditions": ["permit request requires plan review"],
+      "deadline_or_temporal_scope": "before upload staging",
+      "permit_types": ["building permit"],
+      "process_stage": "document preparation",
+      "confidence": 0.93,
+      "human_review_status": "not_reviewed",
+      "formalization_status": "candidate"
+    },
+    {
+      "requirement_id": "req-plan-drawings-not-single-pdf",
+      "source_evidence_ids": ["evidence-separate-plan-files-guidance"],
+      "requirement_type": "prohibition",
+      "subject": "applicant",
+      "action": "combine",
+      "object": "plan drawings into one plan PDF",
+      "conditions": ["permit request requires plan review"],
+      "deadline_or_temporal_scope": "before upload staging",
+      "permit_types": ["building permit"],
+      "process_stage": "document preparation",
+      "confidence": 0.88,
+      "human_review_status": "not_reviewed",
+      "formalization_status": "candidate"
+    }
+  ]
+}

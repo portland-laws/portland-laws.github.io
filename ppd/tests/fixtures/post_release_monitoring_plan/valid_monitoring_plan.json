@@ -1,0 +1,43 @@
+{
+  "packet_type": "ppd.post_release_monitoring_plan.v1",
+  "normalized_source_evidence": [
+    {
+      "evidence_id": "ppd-online-tools-guide",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools"
+    },
+    {
+      "evidence_id": "ppd-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online"
+    }
+  ],
+  "schedule_active": false,
+  "artifact_mutation_enabled": false,
+  "monitoring_checks": [
+    {
+      "check_id": "freshness:online-tools-guide",
+      "description": "Compare normalized metadata hash for the public online permitting tools guide.",
+      "source_evidence_ids": ["ppd-online-tools-guide"],
+      "reviewer_owner": "ppd-release-operator",
+      "escalation_note": "Open a release blocker if the normalized public metadata hash changes.",
+      "alert_threshold": {
+        "max_age_days": 3,
+        "change_count_greater_than": 0
+      },
+      "schedule_enabled": false,
+      "writes_active_state": false
+    },
+    {
+      "check_id": "freshness:submit-plans-online",
+      "description": "Confirm fixture-derived file preparation requirements still cite the public guidance page.",
+      "source_evidence_ids": ["ppd-submit-plans-online"],
+      "reviewer_owner": "ppd-release-operator",
+      "escalation_note": "Escalate to human review before promoting any changed file-preparation rule.",
+      "alert_threshold": {
+        "max_age_days": 7,
+        "changed_requirement_ids_greater_than": 0
+      },
+      "active_schedule_enabled": false,
+      "artifact_writes_enabled": false
+    }
+  ]
+}

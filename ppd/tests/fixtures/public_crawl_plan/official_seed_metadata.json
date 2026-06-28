@@ -1,0 +1,30 @@
+{
+  "source": "official_seed_metadata_fixture",
+  "allowed_hosts": [
+    "www.portland.gov",
+    "aca-prod.accela.com"
+  ],
+  "seeds": [
+    {
+      "id": "devhub-permits",
+      "url": "https://aca-prod.accela.com/PORTLAND/Default.aspx",
+      "kind": "html",
+      "crawl_frequency": "daily",
+      "rate_limit_bucket": "portland-devhub-public",
+      "robots": "requires_live_check"
+    },
+    {
+      "id": "audit-report",
+      "url": "https://www.portland.gov/audit-services/documents/example-report.pdf",
+      "kind": "pdf",
+      "frequency": "monthly",
+      "robots_status": "requires_live_check"
+    },
+    {
+      "id": "outside-domain",
+      "url": "https://example.com/not-official",
+      "kind": "html",
+      "crawl_frequency": "never"
+    }
+  ]
+}

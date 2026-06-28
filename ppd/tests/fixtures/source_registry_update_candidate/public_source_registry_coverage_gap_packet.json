@@ -1,0 +1,23 @@
+{
+  "packet_id": "public-source-registry-coverage-gap-fixture-20260529",
+  "packet_type": "public_source_registry_coverage_gap",
+  "coverage_gaps": [
+    {
+      "source_id": "ppd-devhub-faqs",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "gap_type": "missing_registry_row",
+      "gap_reason": "Official DevHub FAQ anchor was present in source anchors but absent from active registry coverage.",
+      "source_type": "devhub_public",
+      "owning_surface": "devhub_public_guidance",
+      "crawl_frequency": "daily_or_every_few_days",
+      "reviewer_owner": "public-source-registry-reviewer"
+    },
+    {
+      "source_id": "ppd-outside-social-link",
+      "canonical_url": "https://www.portland.gov/social",
+      "gap_type": "outside_ppd_source_scope",
+      "skip_reason": "outside ppd source scope",
+      "reviewer_owner": "public-source-registry-reviewer"
+    }
+  ]
+}

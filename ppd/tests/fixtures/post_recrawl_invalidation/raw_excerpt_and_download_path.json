@@ -1,0 +1,12 @@
+{
+  "decisions": [
+    {
+      "id": "recrawl-005",
+      "metadata_review_link": "ppd/reviews/metadata/recrawl-005.json",
+      "risk_decision": "invalidate stale public metadata",
+      "citations": ["https://www.portland.gov/ppd/public-record"],
+      "body_excerpt": "Full crawler body text must not be committed here.",
+      "downloaded_document_path": "ppd/tmp/downloads/private-document.pdf"
+    }
+  ]
+}

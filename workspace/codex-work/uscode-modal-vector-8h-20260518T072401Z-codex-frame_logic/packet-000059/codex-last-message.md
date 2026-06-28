@@ -1,0 +1,9 @@
+Implemented a frame-logic metadata audit fix that prevents structural key names from leaking into ontology terms and preserves nested hint/frame feature evidence.
+
+- Expanded preferred metadata value keys in [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000059-20260518_152129/ipfs_datasets_py/logic/modal/codec.py#L218) so term extraction now correctly consumes `hint_evidence`, `frame_features`, `top_family_features`, `citation(s)`, `sample_id(s)`, and `source_id(s)` values instead of treating those key names as candidate terms.
+- Added a regression test in [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000059-20260518_152129/tests/unit_tests/logic/modal/test_modal_codec.py#L4447) verifying mixed metadata (`matched_terms` + `hint_evidence` + `frame_features` + `top_family_features`) yields real ontology terms (`7_1595`, `42_6932`, `transferred`, `deontic`) and excludes key-noise terms (`hint_evidence`, `frame_features`, `top_family_features`).
+
+Validation run (all passing):
+
+1. `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py::test_modal_codec_audits_structured_hint_evidence_from_term_metadata_without_key_noise tests/unit_tests/logic/modal/test_modal_codec.py::test_modal_codec_audits_frame_feature_keys_from_term_metadata tests/unit_tests/logic/modal/test_modal_codec.py::test_modal_codec_audits_citation_and_sample_metadata_without_structural_key_noise`
+2. `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py::test_flogic_optimizer_extracts_frame_features_from_structured_hint_evidence tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py::test_frame_ontology_feature_keys_from_values_extracts_nested_hint_evidence`

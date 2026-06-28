@@ -1,0 +1,32 @@
+{
+  "case_id": "synthetic-permit-owner-001",
+  "facts": [
+    {
+      "key": "project_type",
+      "value": "residential alteration",
+      "freshness": "fresh",
+      "confidence": "high",
+      "source_document_id": "doc-001"
+    },
+    {
+      "key": "review_status",
+      "value": "intake review",
+      "freshness": "old",
+      "confidence": 1.2,
+      "source_document_id": "doc-002"
+    }
+  ],
+  "documents": [
+    {
+      "document_id": "doc-001",
+      "title": "Synthetic permit checklist",
+      "url": "https://example.test/portland-ppd/synthetic/checklist",
+      "published_at": "2026-05-01T12:00:00Z"
+    },
+    {
+      "document_id": "doc-002",
+      "title": "Synthetic review status note",
+      "published_at": "2026-04-01"
+    }
+  ]
+}

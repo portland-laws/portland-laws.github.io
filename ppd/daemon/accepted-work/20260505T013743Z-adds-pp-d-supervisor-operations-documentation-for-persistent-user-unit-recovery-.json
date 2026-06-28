@@ -1,0 +1,48 @@
+{
+  "artifact_kind": "accepted_ephemeral_workspace",
+  "changed_files": [
+    "ppd/daemon/supervisor-operations.md"
+  ],
+  "created_at": "2026-05-05T01:37:43.799750Z",
+  "impact": "This gives operators deterministic recovery guidance for stuck PP&D daemon runs while preserving the project\u2019s fail-closed requirements: no unattended authenticated DevHub work, no official-action side effects, and no private runtime artifacts committed to the repository.",
+  "summary": "Adds PP&D supervisor operations documentation for persistent user-unit recovery, explicit daemon resume gates, and side-effect-free DevHub boundaries.",
+  "target_task": "Task checkbox-448: Add PP&D supervisor operations documentation for persistent user-unit recovery, explicit daemon resume gates, and no live DevHub or official-action side effects.",
+  "transport": "ephemeral_worktree",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 279 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".....................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................ss..................sss....................................................................................................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 819 tests in 4.773s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

@@ -1,0 +1,205 @@
+{
+  "packet_id": "source-evidence-citation-normalization-release-blocker-burndown-ppd-readiness-reconciliation-20260528",
+  "packet_type": "ppd.source_evidence_citation_normalization_packet.v1",
+  "mode": "fixture_first",
+  "burn_down_queue": {
+    "queue_id": "release-blocker-burndown-ppd-readiness-reconciliation-20260528",
+    "queue_type": "ppd.release_blocker_burndown_queue.v1",
+    "fixture": "ppd/tests/fixtures/readiness/burndown_queue.json"
+  },
+  "crawl_enabled": false,
+  "download_enabled": false,
+  "active_source_record_replacement_enabled": false,
+  "source_registry_promotion_enabled": false,
+  "source_registry_snapshot": {
+    "registered_source_ids": [
+      "synthetic-source-registry-candidate-packet",
+      "synthetic-stale-guardrail-audit-packet",
+      "synthetic-agent-regression-matrix-packet",
+      "synthetic-attended-pilot-evidence-template-packet"
+    ],
+    "stale_source_ids": [],
+    "missing_source_id_policy": "reject_packet",
+    "promotion_action": "none_review_only"
+  },
+  "reviews": [
+    {
+      "review_id": "citation-normalization-source-registry-candidate-packet",
+      "source_evidence_id": "source-registry-candidate-packet",
+      "synthetic_source_id": "synthetic-source-registry-candidate-packet",
+      "source_id_status": "synthetic_unverified_review_only",
+      "source_id_freshness_status": "current_fixture_only_not_live_verified",
+      "citation_span_anchor": "ppd/tests/fixtures/readiness/burndown_queue.json#/ordered_blockers/0/source_evidence_ids/0",
+      "citation_anchor_status": "fixture_anchor_present",
+      "normalized_record_ids": [
+        "normalized-source-registry-candidate-packet"
+      ],
+      "document_hash": "1111111111111111111111111111111111111111111111111111111111111111",
+      "document_hash_status": "fixture_hash_present_not_live_verified",
+      "visible_update_date": "fixture_only_not_live_verified",
+      "visible_update_date_status": "review_required_before_freshness_promotion",
+      "downstream_requirement_links": [
+        {
+          "requirement_link_id": "burn-down-registry-candidate-not-promoted",
+          "blocker_id": "registry-candidate-not-promoted",
+          "action_required": "source_registry_candidate_review",
+          "prerequisite_packet_id": "source-registry-update-candidate-reviewed-metadata-outcomes",
+          "source_evidence_ids": [
+            "source-registry-candidate-packet"
+          ]
+        }
+      ],
+      "source_record_action": "review_only_no_active_source_record_replacement"
+    },
+    {
+      "review_id": "citation-normalization-stale-guardrail-audit-packet",
+      "source_evidence_id": "stale-guardrail-audit-packet",
+      "synthetic_source_id": "synthetic-stale-guardrail-audit-packet",
+      "source_id_status": "synthetic_unverified_review_only",
+      "source_id_freshness_status": "current_fixture_only_not_live_verified",
+      "citation_span_anchor": "ppd/tests/fixtures/readiness/burndown_queue.json#/ordered_blockers/1/source_evidence_ids/0",
+      "citation_anchor_status": "fixture_anchor_present",
+      "normalized_record_ids": [
+        "normalized-stale-guardrail-audit-packet"
+      ],
+      "document_hash": "2222222222222222222222222222222222222222222222222222222222222222",
+      "document_hash_status": "fixture_hash_present_not_live_verified",
+      "visible_update_date": "fixture_only_not_live_verified",
+      "visible_update_date_status": "review_required_before_freshness_promotion",
+      "downstream_requirement_links": [
+        {
+          "requirement_link_id": "burn-down-guardrail-audit-stale",
+          "blocker_id": "guardrail-audit-stale",
+          "action_required": "stale_guardrail_review",
+          "prerequisite_packet_id": "stale-guardrail-audit-validator",
+          "source_evidence_ids": [
+            "stale-guardrail-audit-packet"
+          ]
+        }
+      ],
+      "source_record_action": "review_only_no_active_source_record_replacement"
+    },
+    {
+      "review_id": "citation-normalization-agent-regression-matrix-packet",
+      "source_evidence_id": "agent-regression-matrix-packet",
+      "synthetic_source_id": "synthetic-agent-regression-matrix-packet",
+      "source_id_status": "synthetic_unverified_review_only",
+      "source_id_freshness_status": "current_fixture_only_not_live_verified",
+      "citation_span_anchor": "ppd/tests/fixtures/readiness/burndown_queue.json#/ordered_blockers/2/source_evidence_ids/0",
+      "citation_anchor_status": "fixture_anchor_present",
+      "normalized_record_ids": [
+        "normalized-agent-regression-matrix-packet"
+      ],
+      "document_hash": "3333333333333333333333333333333333333333333333333333333333333333",
+      "document_hash_status": "fixture_hash_present_not_live_verified",
+      "visible_update_date": "fixture_only_not_live_verified",
+      "visible_update_date_status": "review_required_before_freshness_promotion",
+      "downstream_requirement_links": [
+        {
+          "requirement_link_id": "burn-down-agent-regression-fixture-only",
+          "blocker_id": "agent-regression-fixture-only",
+          "action_required": "regression_gap_review",
+          "prerequisite_packet_id": "agent-response-regression-matrix-synthetic-cases",
+          "source_evidence_ids": [
+            "agent-regression-matrix-packet"
+          ]
+        }
+      ],
+      "source_record_action": "review_only_no_active_source_record_replacement"
+    },
+    {
+      "review_id": "citation-normalization-attended-pilot-evidence-template-packet",
+      "source_evidence_id": "attended-pilot-evidence-template-packet",
+      "synthetic_source_id": "synthetic-attended-pilot-evidence-template-packet",
+      "source_id_status": "synthetic_unverified_review_only",
+      "source_id_freshness_status": "current_fixture_only_not_live_verified",
+      "citation_span_anchor": "ppd/tests/fixtures/readiness/burndown_queue.json#/ordered_blockers/3/source_evidence_ids/0",
+      "citation_anchor_status": "fixture_anchor_present",
+      "normalized_record_ids": [
+        "normalized-attended-pilot-evidence-template-packet"
+      ],
+      "document_hash": "4444444444444444444444444444444444444444444444444444444444444444",
+      "document_hash_status": "fixture_hash_present_not_live_verified",
+      "visible_update_date": "fixture_only_not_live_verified",
+      "visible_update_date_status": "review_required_before_freshness_promotion",
+      "downstream_requirement_links": [
+        {
+          "requirement_link_id": "burn-down-pilot-evidence-template-only",
+          "blocker_id": "pilot-evidence-template-only",
+          "action_required": "attended_pilot_template_review",
+          "prerequisite_packet_id": "attended-pilot-evidence-template-validator",
+          "source_evidence_ids": [
+            "attended-pilot-evidence-template-packet"
+          ]
+        }
+      ],
+      "source_record_action": "review_only_no_active_source_record_replacement"
+    }
+  ],
+  "normalized_records": [
+    {
+      "record_id": "normalized-source-registry-candidate-packet",
+      "source_id": "synthetic-source-registry-candidate-packet",
+      "source_id_freshness_status": "current_fixture_only_not_live_verified",
+      "source_evidence_ids": [
+        "source-registry-candidate-packet"
+      ],
+      "citation_span_anchors": [
+        "ppd/tests/fixtures/readiness/burndown_queue.json#/ordered_blockers/0/source_evidence_ids/0"
+      ],
+      "body_storage": "metadata_only_no_raw_body",
+      "document_ref": "fixture_metadata_only:normalized-source-registry-candidate-packet",
+      "promotion_action": "review_only_no_source_registry_promotion"
+    },
+    {
+      "record_id": "normalized-stale-guardrail-audit-packet",
+      "source_id": "synthetic-stale-guardrail-audit-packet",
+      "source_id_freshness_status": "current_fixture_only_not_live_verified",
+      "source_evidence_ids": [
+        "stale-guardrail-audit-packet"
+      ],
+      "citation_span_anchors": [
+        "ppd/tests/fixtures/readiness/burndown_queue.json#/ordered_blockers/1/source_evidence_ids/0"
+      ],
+      "body_storage": "metadata_only_no_raw_body",
+      "document_ref": "fixture_metadata_only:normalized-stale-guardrail-audit-packet",
+      "promotion_action": "review_only_no_source_registry_promotion"
+    },
+    {
+      "record_id": "normalized-agent-regression-matrix-packet",
+      "source_id": "synthetic-agent-regression-matrix-packet",
+      "source_id_freshness_status": "current_fixture_only_not_live_verified",
+      "source_evidence_ids": [
+        "agent-regression-matrix-packet"
+      ],
+      "citation_span_anchors": [
+        "ppd/tests/fixtures/readiness/burndown_queue.json#/ordered_blockers/2/source_evidence_ids/0"
+      ],
+      "body_storage": "metadata_only_no_raw_body",
+      "document_ref": "fixture_metadata_only:normalized-agent-regression-matrix-packet",
+      "promotion_action": "review_only_no_source_registry_promotion"
+    },
+    {
+      "record_id": "normalized-attended-pilot-evidence-template-packet",
+      "source_id": "synthetic-attended-pilot-evidence-template-packet",
+      "source_id_freshness_status": "current_fixture_only_not_live_verified",
+      "source_evidence_ids": [
+        "attended-pilot-evidence-template-packet"
+      ],
+      "citation_span_anchors": [
+        "ppd/tests/fixtures/readiness/burndown_queue.json#/ordered_blockers/3/source_evidence_ids/0"
+      ],
+      "body_storage": "metadata_only_no_raw_body",
+      "document_ref": "fixture_metadata_only:normalized-attended-pilot-evidence-template-packet",
+      "promotion_action": "review_only_no_source_registry_promotion"
+    }
+  ],
+  "review_summary": {
+    "review_count": 4,
+    "normalized_record_count": 4,
+    "synthetic_source_id_count": 4,
+    "citation_anchor_count": 4,
+    "downstream_requirement_link_count": 4,
+    "status": "review_only_fixture_packet_not_production_registry_update"
+  }
+}

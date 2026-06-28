@@ -1,4 +1,126 @@
 const U64_MAX = (BigInt(1) << BigInt(64)) - BigInt(1);
+const UINT64_MASK = (BigInt(1) << BigInt(64)) - BigInt(1);
+const KECCAK_RATE_BYTES = 136;
+const KECCAK_ROUND_CONSTANTS = [
+  '0x0000000000000001',
+  '0x0000000000008082',
+  '0x800000000000808a',
+  '0x8000000080008000',
+  '0x000000000000808b',
+  '0x0000000080000001',
+  '0x8000000080008081',
+  '0x8000000000008009',
+  '0x000000000000008a',
+  '0x0000000000000088',
+  '0x0000000080008009',
+  '0x000000008000000a',
+  '0x000000008000808b',
+  '0x800000000000008b',
+  '0x8000000000008089',
+  '0x8000000000008003',
+  '0x8000000000008002',
+  '0x8000000000000080',
+  '0x000000000000800a',
+  '0x800000008000000a',
+  '0x8000000080008081',
+  '0x8000000000008080',
+  '0x0000000080000001',
+  '0x8000000080008008',
+].map((value) => BigInt(value));
+const KECCAK_ROTATION_OFFSETS = [
+  [0, 36, 3, 41, 18],
+  [1, 44, 10, 45, 2],
+  [62, 6, 43, 15, 61],
+  [28, 55, 25, 21, 56],
+  [27, 20, 39, 8, 14],
+];
+
+function rotl64(value: bigint, shift: number): bigint {
+  const normalizedShift = shift % 64;
+  if (normalizedShift === 0) {
+    return value & UINT64_MASK;
+  }
+  return (
+    ((value << BigInt(normalizedShift)) | (value >> BigInt(64 - normalizedShift))) & UINT64_MASK
+  );
+}
+
+function keccakF1600(state: Array<bigint>): void {
+  for (const roundConstant of KECCAK_ROUND_CONSTANTS) {
+    const c = new Array<bigint>(5);
+    const d = new Array<bigint>(5);
+    for (let x = 0; x < 5; x += 1) {
+      c[x] = state[x] ^ state[x + 5] ^ state[x + 10] ^ state[x + 15] ^ state[x + 20];
+    }
+    for (let x = 0; x < 5; x += 1) {
+      d[x] = c[(x + 4) % 5] ^ rotl64(c[(x + 1) % 5], 1);
+    }
+    for (let x = 0; x < 5; x += 1) {
+      for (let y = 0; y < 5; y += 1) {
+        state[x + 5 * y] = (state[x + 5 * y] ^ d[x]) & UINT64_MASK;
+      }
+    }
+
+    const b = new Array<bigint>(25).fill(BigInt(0));
+    for (let x = 0; x < 5; x += 1) {
+      for (let y = 0; y < 5; y += 1) {
+        b[y + 5 * ((2 * x + 3 * y) % 5)] = rotl64(state[x + 5 * y], KECCAK_ROTATION_OFFSETS[x][y]);
+      }
+    }
+    for (let x = 0; x < 5; x += 1) {
+      for (let y = 0; y < 5; y += 1) {
+        state[x + 5 * y] =
+          (b[x + 5 * y] ^ (~b[((x + 1) % 5) + 5 * y] & b[((x + 2) % 5) + 5 * y])) & UINT64_MASK;
+      }
+    }
+    state[0] = (state[0] ^ roundConstant) & UINT64_MASK;
+  }
+}
+
+function utf8Bytes(value: string): Uint8Array {
+  if (typeof TextEncoder !== 'undefined') {
+    return new TextEncoder().encode(value);
+  }
+  const encoded = unescape(encodeURIComponent(value));
+  const bytes = new Uint8Array(encoded.length);
+  for (let index = 0; index < encoded.length; index += 1) {
+    bytes[index] = encoded.charCodeAt(index);
+  }
+  return bytes;
+}
+
+export function keccak256Hex(value: string | Uint8Array): string {
+  const input = typeof value === 'string' ? utf8Bytes(value) : value;
+  const state = new Array<bigint>(25).fill(BigInt(0));
+  for (let offset = 0; offset < input.length; offset += KECCAK_RATE_BYTES) {
+    const block = input.slice(offset, Math.min(offset + KECCAK_RATE_BYTES, input.length));
+    for (let index = 0; index < block.length; index += 1) {
+      const lane = Math.floor(index / 8);
+      state[lane] ^= BigInt(block[index]) << BigInt(8 * (index % 8));
+    }
+    if (block.length === KECCAK_RATE_BYTES) {
+      keccakF1600(state);
+    } else {
+      const padLane = Math.floor(block.length / 8);
+      state[padLane] ^= BigInt(1) << BigInt(8 * (block.length % 8));
+      state[Math.floor((KECCAK_RATE_BYTES - 1) / 8)] ^=
+        BigInt(128) << BigInt(8 * ((KECCAK_RATE_BYTES - 1) % 8));
+      keccakF1600(state);
+    }
+  }
+  if (input.length % KECCAK_RATE_BYTES === 0) {
+    state[0] ^= BigInt(1);
+    state[Math.floor((KECCAK_RATE_BYTES - 1) / 8)] ^=
+      BigInt(128) << BigInt(8 * ((KECCAK_RATE_BYTES - 1) % 8));
+    keccakF1600(state);
+  }
+  const output = new Array<string>();
+  for (let index = 0; index < 32; index += 1) {
+    const byte = Number((state[Math.floor(index / 8)] >> BigInt(8 * (index % 8))) & BigInt(255));
+    output.push(byte.toString(16).padStart(2, '0'));
+  }
+  return `0x${output.join('')}`;
+}
 
 export interface RegisterVKPayload {
   circuitIdBytes32: string;
@@ -10,6 +132,24 @@ export interface RegisterVKPayloadDict {
   circuit_id_bytes32: string;
   version: number | bigint;
   vk_hash_bytes32: string;
+}
+
+export interface VKRegistryPayloadSource {
+  circuitId?: string;
+  circuit_id?: string;
+  version: number | bigint;
+  vkHashHex?: string;
+  vk_hash_hex?: string;
+}
+
+export interface RegisterVKCalldataBundle {
+  payload: RegisterVKPayload;
+  calldata: string;
+}
+
+export interface RegisterVKCalldataBundleDict {
+  payload: RegisterVKPayloadDict;
+  calldata: string;
 }
 
 export function normalizeHexNoPrefix(value: string): string {
@@ -50,7 +190,7 @@ export function circuitIdTextToBytes32(_circuitIdText: string): string {
   if (_circuitIdText === '') {
     throw new Error('circuit_id_text cannot be empty');
   }
-  throw new Error('Keccak circuit_id_text hashing requires a browser-native keccak implementation; pass a precomputed bytes32 circuitId.');
+  return keccak256Hex(_circuitIdText);
 }
 
 export function circuit_id_text_to_bytes32(circuitIdText: string): string {
@@ -96,11 +236,86 @@ export function build_register_vk_payload(options: {
   };
 }
 
-export function buildRegisterVkCalldata(_options: { payload: RegisterVKPayload; overwrite?: boolean }): string {
+export function buildRegisterVkPayloadFromEntry(entry: VKRegistryPayloadSource): RegisterVKPayload {
+  if (!entry || typeof entry !== 'object') {
+    throw new TypeError('entry must be a dict');
+  }
+  const circuitId = entry.circuitId ?? entry.circuit_id;
+  const vkHashHex = entry.vkHashHex ?? entry.vk_hash_hex;
+  if (typeof circuitId !== 'string') {
+    throw new TypeError('circuit_id must be a str');
+  }
+  if (typeof vkHashHex !== 'string') {
+    throw new TypeError('vk_hash_hex must be a str');
+  }
+  return buildRegisterVkPayload({
+    circuitIdBytes32: circuitIdTextToBytes32(circuitId),
+    version: entry.version,
+    vkHashHex,
+  });
+}
+
+export function build_register_vk_payload_from_entry(
+  entry: VKRegistryPayloadSource,
+): RegisterVKPayloadDict {
+  const payload = buildRegisterVkPayloadFromEntry(entry);
+  return {
+    circuit_id_bytes32: payload.circuitIdBytes32,
+    version: payload.version,
+    vk_hash_bytes32: payload.vkHashBytes32,
+  };
+}
+
+export function buildManyRegisterVkPayloads(
+  entries: Iterable<VKRegistryPayloadSource>,
+): Array<RegisterVKPayload> {
+  const payloads: Array<RegisterVKPayload> = [];
+  for (const entry of entries) {
+    payloads.push(buildRegisterVkPayloadFromEntry(entry));
+  }
+  return payloads;
+}
+
+export function build_many_register_vk_payloads(
+  entries: Iterable<VKRegistryPayloadSource>,
+): Array<RegisterVKPayloadDict> {
+  return buildManyRegisterVkPayloads(entries).map((payload) => ({
+    circuit_id_bytes32: payload.circuitIdBytes32,
+    version: payload.version,
+    vk_hash_bytes32: payload.vkHashBytes32,
+  }));
+}
+
+function uint256Word(value: number | bigint): string {
+  const version = BigInt(value);
+  return version.toString(16).padStart(64, '0');
+}
+
+function boolWord(value: boolean): string {
+  return value ? '1'.padStart(64, '0') : ''.padStart(64, '0');
+}
+
+export function buildRegisterVkCalldata(_options: {
+  payload: RegisterVKPayload;
+  overwrite?: boolean;
+}): string {
   if (_options.overwrite !== undefined && typeof _options.overwrite !== 'boolean') {
     throw new TypeError('overwrite must be bool');
   }
-  throw new Error('ABI calldata encoding requires a browser-native ABI/keccak implementation and is not yet ported.');
+  const payload = buildRegisterVkPayload({
+    circuitIdBytes32: _options.payload.circuitIdBytes32,
+    version: _options.payload.version,
+    vkHashHex: _options.payload.vkHashBytes32,
+  });
+  const selector = keccak256Hex('registerVK(bytes32,uint64,bytes32,bool)').slice(2, 10);
+  return [
+    '0x',
+    selector,
+    payload.circuitIdBytes32.slice(2),
+    uint256Word(payload.version),
+    payload.vkHashBytes32.slice(2),
+    boolWord(_options.overwrite ?? false),
+  ].join('');
 }
 
 export function build_register_vk_calldata(options: {
@@ -115,4 +330,30 @@ export function build_register_vk_calldata(options: {
       vkHashBytes32: options.payload.vk_hash_bytes32,
     },
   });
+}
+
+export function buildRegisterVkCalldataFromEntry(
+  entry: VKRegistryPayloadSource,
+  options: { overwrite?: boolean } = {},
+): RegisterVKCalldataBundle {
+  const payload = buildRegisterVkPayloadFromEntry(entry);
+  return {
+    calldata: buildRegisterVkCalldata({ payload, overwrite: options.overwrite }),
+    payload,
+  };
+}
+
+export function build_register_vk_calldata_from_entry(
+  entry: VKRegistryPayloadSource,
+  options: { overwrite?: boolean } = {},
+): RegisterVKCalldataBundleDict {
+  const bundle = buildRegisterVkCalldataFromEntry(entry, options);
+  return {
+    calldata: bundle.calldata,
+    payload: {
+      circuit_id_bytes32: bundle.payload.circuitIdBytes32,
+      version: bundle.payload.version,
+      vk_hash_bytes32: bundle.payload.vkHashBytes32,
+    },
+  };
 }

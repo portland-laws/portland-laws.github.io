@@ -1,0 +1,172 @@
+diff --git a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py
+index 7ec0264f..9ec1a19f 100644
+--- a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py
++++ b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py
+@@ -153,9 +153,36 @@ DEFAULT_MODAL_PROFILES: Tuple[ModalParseProfile, ...] = (
+         family=ModalLogicFamily.DEONTIC,
+         system=ModalSystem.D,
+         operators=(
+-            _op("O", ("obligation", "obligatory"), ("shall", "must", "required", "obligated"), (ModalSystem.D, ModalSystem.KD)),
++            _op(
++                "O",
++                ("obligation", "obligatory"),
++                (
++                    "shall",
++                    "must",
++                    "required",
++                    "obligated",
++                    "shall be liable",
++                    "shall be subject to",
++                ),
++                (ModalSystem.D, ModalSystem.KD),
++            ),
+             _op("P", ("permission", "permitted"), ("may", "permitted", "authorized", "allowed"), (ModalSystem.D, ModalSystem.KD)),
+-            _op("F", ("prohibition", "forbidden"), ("may not", "must not", "prohibited", "forbidden"), (ModalSystem.D, ModalSystem.KD)),
++            _op(
++                "F",
++                ("prohibition", "forbidden"),
++                (
++                    "may not",
++                    "must not",
++                    "prohibited",
++                    "forbidden",
++                    "unlawful",
++                    "civil penalty",
++                    "criminal penalty",
++                    "shall be fined",
++                    "shall be imprisoned",
++                ),
++                (ModalSystem.D, ModalSystem.KD),
++            ),
+         ),
+         semantics=ModalSemanticsSpec(serial=True),
+         description="Legal obligations, permissions, and prohibitions.",
+@@ -165,8 +192,27 @@ DEFAULT_MODAL_PROFILES: Tuple[ModalParseProfile, ...] = (
+         system=ModalSystem.LTL,
+         operators=(
+             _op("G", ("always",), ("always", "throughout", "until"), (ModalSystem.LTL, ModalSystem.CTL)),
+-            _op("F", ("eventually",), ("eventually", "within", "by"), (ModalSystem.LTL, ModalSystem.CTL)),
+-            _op("X", ("next",), ("next", "after", "following"), (ModalSystem.LTL, ModalSystem.CTL)),
++            _op(
++                "F",
++                ("eventually",),
++                (
++                    "eventually",
++                    "within",
++                    "deadline",
++                    "due date",
++                    "extension of time",
++                    "extended time",
++                    "no later than",
++                    "not later than",
++                ),
++                (ModalSystem.LTL, ModalSystem.CTL),
++            ),
++            _op(
++                "X",
++                ("next",),
++                ("next", "after", "following", "thereafter"),
++                (ModalSystem.LTL, ModalSystem.CTL),
++            ),
+         ),
+         semantics=ModalSemanticsSpec(tree_time=True),
+         description="Deadlines, effective dates, and temporal scopes.",
+@@ -202,7 +248,22 @@ DEFAULT_MODAL_PROFILES: Tuple[ModalParseProfile, ...] = (
+         family=ModalLogicFamily.CONDITIONAL_NORMATIVE,
+         system=ModalSystem.KD,
+         operators=(
+-            _op("O|", ("conditional_obligation",), ("if", "unless", "except", "provided that", "subject to"), (ModalSystem.KD,)),
++            _op(
++                "O|",
++                ("conditional_obligation",),
++                (
++                    "if",
++                    "unless",
++                    "except",
++                    "provided that",
++                    "subject to",
++                    "to the maximum extent feasible",
++                    "to the extent practicable",
++                    "to the extent feasible",
++                    "except as provided",
++                ),
++                (ModalSystem.KD,),
++            ),
+         ),
+         semantics=ModalSemanticsSpec(serial=True),
+         description="Conditions, exceptions, provisos, and scoped norms.",
+diff --git a/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py b/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py
+index acd81272..6fa031d4 100644
+--- a/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py
++++ b/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py
+@@ -111,6 +111,70 @@ def test_spacy_codec_ranks_modal_families_from_cues() -> None:
+     assert abs(sum(item["share"] for item in ranking) - 1.0) <= 1e-6
+ 
+ 
++def test_spacy_codec_treats_extension_of_time_as_temporal_family_cue() -> None:
++    codec = SpaCyModalCodec(
++        encoder=SpaCyLegalEncoder(model_name="definitely_missing_legal_model"),
++        decoder=SpaCyModalDecoder(),
++    )
++    sample = build_us_code_sample(
++        title="26",
++        section="6164",
++        text=(
++            "The Secretary may grant an extension of time for payment, and the amount "
++            "is due not later than 12 months after notice."
++        ),
++    )
++
++    ranking = ranked_modal_families(codec.encode_sample(sample))
++    temporal_entry = next((entry for entry in ranking if entry["family"] == "temporal"), None)
++
++    assert temporal_entry is not None
++    assert temporal_entry["count"] >= 2
++
++
++def test_spacy_codec_treats_penalty_language_as_deontic_family_cue() -> None:
++    codec = SpaCyModalCodec(
++        encoder=SpaCyLegalEncoder(model_name="definitely_missing_legal_model"),
++        decoder=SpaCyModalDecoder(),
++    )
++    sample = build_us_code_sample(
++        title="42",
++        section="1397a",
++        text=(
++            "A person who violates this section shall be fined under this title and "
++            "subject to a criminal penalty."
++        ),
++    )
++
++    ranking = ranked_modal_families(codec.encode_sample(sample))
++    assert ranking
++    assert ranking[0]["family"] == "deontic"
++
++
++def test_spacy_codec_treats_extent_feasibility_as_conditional_normative_cue() -> None:
++    codec = SpaCyModalCodec(
++        encoder=SpaCyLegalEncoder(model_name="definitely_missing_legal_model"),
++        decoder=SpaCyModalDecoder(),
++    )
++    sample = build_us_code_sample(
++        title="42",
++        section="12144",
++        text=(
++            "Public entities shall provide access to the maximum extent feasible "
++            "when alterations are made."
++        ),
++    )
++
++    ranking = ranked_modal_families(codec.encode_sample(sample))
++    conditional_entry = next(
++        (entry for entry in ranking if entry["family"] == "conditional_normative"),
++        None,
++    )
++
++    assert conditional_entry is not None
++    assert conditional_entry["count"] >= 1
++
++
+ def test_spacy_codec_lowers_initial_family_cross_entropy() -> None:
+     sample = build_us_code_sample(
+         title="42",

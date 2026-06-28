@@ -1,0 +1,67 @@
+{
+  "packet_id": "fixture-source-freshness-delta-packet-v1-20260531",
+  "generated_at": "2026-05-31T00:00:00Z",
+  "reviewer_owner": "ppd-source-freshness-reviewer",
+  "prior_source_metadata_rows": [
+    {
+      "source_id": "ppd-apply-permits",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "content_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "visible_updated_date": "2026-05-08",
+      "official_links": [
+        "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+        "https://www.portland.gov/ppd/get-permit/submit-plans-online"
+      ]
+    },
+    {
+      "source_id": "ppd-devhub-faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "content_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "visible_updated_date": "2026-05-08",
+      "official_links": [
+        "https://devhub.portlandoregon.gov",
+        "https://www.portland.gov/ppd/old-fee-help"
+      ]
+    },
+    {
+      "source_id": "ppd-retired-handout",
+      "canonical_url": "https://www.portland.gov/ppd/documents/retired-handout",
+      "content_hash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "visible_updated_date": "2026-04-01",
+      "official_links": [
+        "https://www.portland.gov/ppd"
+      ]
+    }
+  ],
+  "current_source_metadata_rows": [
+    {
+      "source_id": "ppd-apply-permits",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "content_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "visible_updated_date": "2026-05-20",
+      "official_links": [
+        "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+        "https://www.portland.gov/ppd/get-permit/submit-plans-online"
+      ]
+    },
+    {
+      "source_id": "ppd-devhub-faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "content_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "visible_updated_date": "2026-05-08",
+      "official_links": [
+        "https://devhub.portlandoregon.gov",
+        "https://www.portland.gov/ppd/devhub-faqs"
+      ]
+    },
+    {
+      "source_id": "ppd-new-devhub-guide",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "content_hash": "sha256:4444444444444444444444444444444444444444444444444444444444444444",
+      "visible_updated_date": "2026-05-25",
+      "official_links": [
+        "https://devhub.portlandoregon.gov"
+      ]
+    }
+  ]
+}

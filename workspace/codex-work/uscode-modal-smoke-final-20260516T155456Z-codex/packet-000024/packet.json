@@ -1,0 +1,279 @@
+{
+  "claimed_at": "2026-05-16T15:55:26+00:00",
+  "packet_id": "packet-000024",
+  "patch_error": "No changes found in worktree: /home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-final-20260516T155456Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-smoke-final-20260516T155456Z-codex-packet-000024-20260516_155525",
+  "patch_path": null,
+  "patch_status": "awaiting_codex_changes",
+  "queue_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-smoke-final-20260516T155456Z-autoencoder.jsonl",
+  "queue_run_id": "uscode-modal-smoke-final-20260516T155456Z-autoencoder",
+  "run_id": "uscode-modal-smoke-final-20260516T155456Z-codex",
+  "suggested_target_files": [
+    "ipfs_datasets_py/logic/modal/codec.py",
+    "ipfs_datasets_py/optimizers/logic/flogic_optimizer.py",
+    "ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py",
+    "ipfs_datasets_py/logic/modal/decompiler.py",
+    "ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_ir.py"
+  ],
+  "task_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-final-20260516T155456Z-codex/packet-000024/CODEX_TASK.md",
+  "task_source": "autoencoder_supervisor_program_synthesis_queue",
+  "todo_list_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-final-20260516T155456Z-codex/packet-000024/TODO_LIST.jsonl",
+  "todo_markdown_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-final-20260516T155456Z-codex/packet-000024/TODO_LIST.md",
+  "todos": [
+    {
+      "action": "audit_frame_logic_terms",
+      "citations": [
+        "14 U.S.C. 1905",
+        "20 U.S.C. 5965"
+      ],
+      "claimed_at": "2026-05-16T15:55:25+00:00",
+      "claimed_by": "codex-program-synthesis-uscode-modal-smoke-final-20260516T155456Z-codex",
+      "completed_at": null,
+      "created_at": "2026-05-16T15:55:22+00:00",
+      "loss_name": "autoencoder_residual_cluster",
+      "loss_value": 0.61852230974,
+      "metadata": {
+        "execution_target": "codex_program_repair",
+        "hint_evidence": [
+          {
+            "frame_features": [
+              "flogic:modal_family:temporal",
+              "flogic:modal_operator:F",
+              "flogic:modal_operator:P",
+              "flogic:modal_system:LTL",
+              "flogic:predicate_role:temporal_scope"
+            ],
+            "hint_id": "modal-synthesis-620a4ef5ae958e42",
+            "priority": 0.910855735373,
+            "sample_id": "us-code-14-1905-6a693ba4de600b23"
+          },
+          {
+            "frame_features": [
+              "flogic:modal_family:conditional_normative",
+              "flogic:modal_family:temporal",
+              "flogic:modal_operator:F"
+            ],
+            "hint_id": "modal-synthesis-a49e2ecf9753b7c4",
+            "priority": 0.326188884107,
+            "sample_id": "us-code-20-5965-8b42ad15e9524286"
+          }
+        ],
+        "hint_ids": [
+          "modal-synthesis-620a4ef5ae958e42",
+          "modal-synthesis-a49e2ecf9753b7c4"
+        ],
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "source": "modal_program_synthesis_todo_generator_v1",
+        "support_count": 2,
+        "target_component": "modal.frame_logic"
+      },
+      "objective": "Frame-linked features influenced reconstruction or family scoring and should be audited as ontology terms.",
+      "priority": 63.852231,
+      "sample_ids": [
+        "us-code-14-1905-6a693ba4de600b23",
+        "us-code-20-5965-8b42ad15e9524286"
+      ],
+      "status": "claimed",
+      "todo_id": "program-423e226c6324afbb"
+    },
+    {
+      "action": "refine_typed_ir_or_decompiler_slots",
+      "citations": [
+        "14 U.S.C. 1905",
+        "20 U.S.C. 5965"
+      ],
+      "claimed_at": "2026-05-16T15:55:25+00:00",
+      "claimed_by": "codex-program-synthesis-uscode-modal-smoke-final-20260516T155456Z-codex",
+      "completed_at": null,
+      "created_at": "2026-05-16T15:55:22+00:00",
+      "loss_name": "autoencoder_residual_cluster",
+      "loss_value": 0.61852230974,
+      "metadata": {
+        "execution_target": "codex_program_repair",
+        "hint_evidence": [
+          {
+            "cosine_similarity": 0.081698321021,
+            "hint_id": "modal-synthesis-c92cf4418dc5a9d6",
+            "priority": 0.326188884107,
+            "reconstruction_loss": 0.326188884107,
+            "sample_id": "us-code-20-5965-8b42ad15e9524286",
+            "top_embedding_features": [
+              "lemma:paragraph",
+              "lemma:year",
+              "cue:conditional_normative:O|:if",
+              "cue:deontic:P:may",
+              "cue:temporal:X:after",
+              "flogic:modal_family:conditional_normative",
+              "flogic:modal_family:temporal",
+              "flogic:modal_operator:F"
+            ]
+          },
+          {
+            "cosine_similarity": -0.365815776637,
+            "hint_id": "modal-synthesis-c96d85b212e0c4f0",
+            "priority": 0.910855735373,
+            "reconstruction_loss": 0.910855735373,
+            "sample_id": "us-code-14-1905-6a693ba4de600b23",
+            "top_embedding_features": [
+              "cue:deontic:P:may",
+              "cue:temporal:F:by",
+              "cue:temporal:F:within",
+              "flogic:modal_family:temporal",
+              "flogic:modal_operator:F",
+              "flogic:modal_operator:P",
+              "flogic:modal_system:LTL",
+              "flogic:predicate_role:temporal_scope"
+            ]
+          }
+        ],
+        "hint_ids": [
+          "modal-synthesis-c92cf4418dc5a9d6",
+          "modal-synthesis-c96d85b212e0c4f0"
+        ],
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "source": "modal_program_synthesis_todo_generator_v1",
+        "support_count": 2,
+        "target_component": "modal.ir_decompiler"
+      },
+      "objective": "Embedding residuals point to information not well represented by the typed IR/decompiler.",
+      "priority": 63.852231,
+      "sample_ids": [
+        "us-code-14-1905-6a693ba4de600b23",
+        "us-code-20-5965-8b42ad15e9524286"
+      ],
+      "status": "claimed",
+      "todo_id": "program-b48c8c4608daa38c"
+    },
+    {
+      "action": "refine_typed_ir_or_decompiler_slots",
+      "citations": [
+        "42 U.S.C. 15923.",
+        "16 U.S.C. 721"
+      ],
+      "claimed_at": "2026-05-16T15:55:25+00:00",
+      "claimed_by": "codex-program-synthesis-uscode-modal-smoke-final-20260516T155456Z-codex",
+      "completed_at": null,
+      "created_at": "2026-05-16T15:55:23+00:00",
+      "loss_name": "autoencoder_residual_cluster",
+      "loss_value": 0.609709967043,
+      "metadata": {
+        "execution_target": "codex_program_repair",
+        "hint_evidence": [
+          {
+            "cosine_similarity": -0.154725143157,
+            "hint_id": "modal-synthesis-0e420dcb4f576002",
+            "priority": 0.575041833528,
+            "reconstruction_loss": 0.575041833528,
+            "sample_id": "us-code-16-721-60610bafb76ac1a0",
+            "top_embedding_features": [
+              "cue:deontic:P:may",
+              "flogic:modal_operator:P",
+              "lemma:pub",
+              "family:frame:1",
+              "flogic:interpreted_in_frame:criminal_penalty_enforcement",
+              "flogic:selected_ontology_frame:criminal_penalty_enforcement",
+              "frame:criminal_penalty_enforcement",
+              "lemma:association"
+            ]
+          },
+          {
+            "cosine_similarity": -0.357580174614,
+            "hint_id": "modal-synthesis-796823c775e8be3e",
+            "priority": 0.644378100558,
+            "reconstruction_loss": 0.644378100558,
+            "sample_id": "us-code-42-15923.-0db47438360bf7c8",
+            "top_embedding_features": [
+              "lemma:pub",
+              "lemma:assessment",
+              "flogic:interpreted_in_frame:administrative_notice_hearing",
+              "flogic:selected_ontology_frame:administrative_notice_hearing",
+              "frame:administrative_notice_hearing",
+              "cue:deontic:O:shall",
+              "flogic:candidate_ontology_frame:administrative_notice_hearing",
+              "flogic:candidate_ontology_frame:criminal_penalty_enforcement"
+            ]
+          }
+        ],
+        "hint_ids": [
+          "modal-synthesis-0e420dcb4f576002",
+          "modal-synthesis-796823c775e8be3e"
+        ],
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "source": "modal_program_synthesis_todo_generator_v1",
+        "support_count": 2,
+        "target_component": "modal.ir_decompiler"
+      },
+      "objective": "Embedding residuals point to information not well represented by the typed IR/decompiler.",
+      "priority": 62.970997,
+      "sample_ids": [
+        "us-code-42-15923.-0db47438360bf7c8",
+        "us-code-16-721-60610bafb76ac1a0"
+      ],
+      "status": "claimed",
+      "todo_id": "program-9a70e2620a3b37fc"
+    },
+    {
+      "action": "audit_frame_logic_terms",
+      "citations": [
+        "42 U.S.C. 15923.",
+        "16 U.S.C. 721"
+      ],
+      "claimed_at": "2026-05-16T15:55:25+00:00",
+      "claimed_by": "codex-program-synthesis-uscode-modal-smoke-final-20260516T155456Z-codex",
+      "completed_at": null,
+      "created_at": "2026-05-16T15:55:23+00:00",
+      "loss_name": "autoencoder_residual_cluster",
+      "loss_value": 0.609709967043,
+      "metadata": {
+        "execution_target": "codex_program_repair",
+        "hint_evidence": [
+          {
+            "frame_features": [
+              "flogic:interpreted_in_frame:administrative_notice_hearing",
+              "flogic:selected_ontology_frame:administrative_notice_hearing",
+              "frame:administrative_notice_hearing",
+              "flogic:candidate_ontology_frame:administrative_notice_hearing",
+              "flogic:candidate_ontology_frame:criminal_penalty_enforcement"
+            ],
+            "hint_id": "modal-synthesis-419ab7a040f32ac6",
+            "priority": 0.644378100558,
+            "sample_id": "us-code-42-15923.-0db47438360bf7c8"
+          },
+          {
+            "frame_features": [
+              "flogic:modal_operator:P",
+              "flogic:interpreted_in_frame:criminal_penalty_enforcement",
+              "flogic:selected_ontology_frame:criminal_penalty_enforcement",
+              "frame:criminal_penalty_enforcement"
+            ],
+            "hint_id": "modal-synthesis-5de5dbf7b1d11db3",
+            "priority": 0.575041833528,
+            "sample_id": "us-code-16-721-60610bafb76ac1a0"
+          }
+        ],
+        "hint_ids": [
+          "modal-synthesis-419ab7a040f32ac6",
+          "modal-synthesis-5de5dbf7b1d11db3"
+        ],
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "source": "modal_program_synthesis_todo_generator_v1",
+        "support_count": 2,
+        "target_component": "modal.frame_logic"
+      },
+      "objective": "Frame-linked features influenced reconstruction or family scoring and should be audited as ontology terms.",
+      "priority": 62.970997,
+      "sample_ids": [
+        "us-code-42-15923.-0db47438360bf7c8",
+        "us-code-16-721-60610bafb76ac1a0"
+      ],
+      "status": "claimed",
+      "todo_id": "program-f12acfacde027ee7"
+    }
+  ],
+  "worker_id": "codex-program-synthesis-uscode-modal-smoke-final-20260516T155456Z-codex",
+  "worktree_error": null,
+  "worktree_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-final-20260516T155456Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-smoke-final-20260516T155456Z-codex-packet-000024-20260516_155525"
+}

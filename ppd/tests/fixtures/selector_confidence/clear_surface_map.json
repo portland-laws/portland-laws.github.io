@@ -1,0 +1,13 @@
+{
+  "labels": [
+    "Project name",
+    "Site address",
+    "Applicant email"
+  ],
+  "headings": [
+    "Residential permit draft"
+  ],
+  "route_evidence": [
+    "/permits/residential/draft"
+  ]
+}

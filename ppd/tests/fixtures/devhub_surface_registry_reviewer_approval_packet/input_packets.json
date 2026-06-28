@@ -1,0 +1,376 @@
+{
+  "promotion_candidate_packet": {
+    "packet_id": "devhub-surface-registry-promotion-candidate-reviewer-input",
+    "packet_type": "ppd.devhub_surface_registry_promotion_candidate.v1",
+    "mode": "fixture_first_devhub_surface_registry_promotion_candidate",
+    "fixture_first": true,
+    "active_promotion_state": "inactive",
+    "stores_browser_artifacts": false,
+    "stores_credentials_or_browser_state": false,
+    "writes_surface_registry": false,
+    "mutates_active_surface_registry": false,
+    "mutates_active_surface_map": false,
+    "source_packets": {
+      "devhub_read_only_pilot_evidence_review": {
+        "packet_id": "devhub-read-only-pilot-review-reviewer-input",
+        "consumed": true
+      },
+      "devhub_read_only_surface_drift_comparison": {
+        "packet_id": "devhub-read-only-surface-drift-comparison-reviewer-input",
+        "consumed": true
+      }
+    },
+    "synthetic_surface_map_deltas": [
+      {
+        "delta_id": "surface-map-delta-devhub_home_redacted",
+        "surface_id": "devhub_home_redacted",
+        "promotion_effect": "synthetic_delta_only",
+        "active_registry_mutation": false,
+        "route_deltas": [
+          {
+            "field": "route_pattern",
+            "status": "unchanged",
+            "observed": "/dashboard",
+            "candidate": "/dashboard",
+            "citations": [
+              "devhub-read-only-observation-reviewer-input",
+              "devhub-surface-registry-update-candidate-reviewer-input",
+              "devhub_home_redacted"
+            ]
+          }
+        ],
+        "heading_deltas": [
+          {
+            "field": "redacted_heading",
+            "status": "synthetic_difference",
+            "observed": "[REDACTED_HEADING:devhub-dashboard]",
+            "candidate": "[REDACTED_HEADING:devhub-home]",
+            "citations": [
+              "devhub-read-only-observation-reviewer-input",
+              "devhub-surface-registry-update-candidate-reviewer-input",
+              "devhub_home_redacted"
+            ]
+          }
+        ],
+        "action_deltas": [
+          {
+            "field": "disabled_consequential_controls",
+            "status": "disabled_controls_attested",
+            "observed": [
+              "disabled:upload",
+              "disabled:submit",
+              "disabled:certify",
+              "disabled:payment"
+            ],
+            "candidate": [
+              "disabled:upload",
+              "disabled:submit",
+              "disabled:certify",
+              "disabled:payment"
+            ],
+            "citations": [
+              "devhub-read-only-observation-reviewer-input",
+              "devhub-surface-registry-update-candidate-reviewer-input",
+              "devhub_home_redacted"
+            ]
+          }
+        ],
+        "unsupported_drift": true,
+        "citations": [
+          "devhub-read-only-pilot-review-reviewer-input",
+          "devhub-read-only-surface-drift-comparison-reviewer-input",
+          "devhub_home_redacted"
+        ]
+      }
+    ],
+    "selector_confidence_thresholds": [
+      {
+        "threshold_id": "selector-threshold-devhub_home_redacted-1",
+        "surface_id": "devhub_home_redacted",
+        "minimum_candidate_confidence": "redacted_fixture_review",
+        "active_registry_confidence_required": "attended_review_required",
+        "observed_confidence": "redacted_fixture_review",
+        "proposed_confidence": "attended_review_required",
+        "promotion_allowed": false,
+        "threshold_action": "manual_handoff_before_active_registry",
+        "rationale": "Heading drift is synthetic and requires attended review before selector promotion.",
+        "citations": [
+          "devhub-read-only-observation-reviewer-input",
+          "devhub-surface-registry-update-candidate-reviewer-input",
+          "devhub_home_redacted"
+        ]
+      }
+    ],
+    "redaction_attestations": {
+      "raw_authenticated_values_absent": true,
+      "private_browser_artifacts_absent": true,
+      "committed_artifacts_metadata_only": true,
+      "redacted_labels_only": true
+    },
+    "manual_handoff_carryovers": [
+      {
+        "carryover_id": "manual-login-required",
+        "source": "pilot_evidence_review",
+        "status": "carried_forward",
+        "reason": "User remains responsible for login, MFA, CAPTCHA, and account-scoped review.",
+        "citations": [
+          "devhub-read-only-pilot-review-reviewer-input",
+          "manual-login-required"
+        ]
+      },
+      {
+        "carryover_id": "unsupported-drift-devhub_home_redacted",
+        "source": "surface_drift_comparison",
+        "status": "carried_forward",
+        "reason": "Fixture comparison found route or heading drift that requires attended review before registry mutation.",
+        "citations": [
+          "devhub-read-only-surface-drift-comparison-reviewer-input",
+          "devhub_home_redacted"
+        ]
+      }
+    ],
+    "reviewer_signoff_slots": [
+      {
+        "owner": "ppd-devhub-reviewer",
+        "status": "pending",
+        "must_review": [
+          "route_differences",
+          "heading_differences"
+        ],
+        "signoff_prompt": "Review cited synthetic deltas and thresholds before any separate active promotion decision.",
+        "citations": [
+          "devhub-read-only-surface-drift-comparison-reviewer-input",
+          "ppd-devhub-reviewer"
+        ]
+      },
+      {
+        "owner": "ppd-selector-reviewer",
+        "status": "pending",
+        "must_review": [
+          "selector_confidence_notes"
+        ],
+        "signoff_prompt": "Review cited synthetic deltas and thresholds before any separate active promotion decision.",
+        "citations": [
+          "devhub-read-only-surface-drift-comparison-reviewer-input",
+          "ppd-selector-reviewer"
+        ]
+      }
+    ],
+    "no_active_promotion_attestations": {
+      "active_promotion_state_inactive": true,
+      "active_surface_registry_not_mutated": true,
+      "active_surface_map_not_replaced": true,
+      "selector_confidence_not_upgraded": true,
+      "consequential_controls_not_enabled": true
+    }
+  },
+  "pilot_evidence_review_packet": {
+    "packet_id": "devhub-read-only-pilot-review-reviewer-input",
+    "pilot_scope": "devhub_read_only_evidence_review",
+    "evidence_mode": "fixture_only",
+    "browser_execution": "none",
+    "review_summary": "Redacted fixture packet for read-only surface evidence review.",
+    "selector_confidence_notes": [
+      {
+        "surface_id": "devhub-home-redacted-fixture",
+        "selector": "role=heading[name='DevHub Home']",
+        "confidence": "high",
+        "rationale": "Selector is based on stable accessible role and fixture heading text only."
+      }
+    ],
+    "redaction_attestation": {
+      "accepted": true,
+      "no_raw_authenticated_values": true,
+      "no_private_session_artifacts": true,
+      "no_local_private_paths": true,
+      "redacted_fields": [
+        "account_name",
+        "permit_number",
+        "address"
+      ]
+    },
+    "manual_handoff_checkpoints": [
+      {
+        "checkpoint_id": "manual-login-required",
+        "status": "required",
+        "reason": "User remains responsible for login, MFA, CAPTCHA, and account-scoped review."
+      },
+      {
+        "checkpoint_id": "consequential-actions-blocked",
+        "status": "required",
+        "reason": "Submit, upload, payment, schedule, cancel, and certify actions require attended confirmation outside this packet."
+      }
+    ],
+    "controls": [
+      {
+        "control_id": "review-status-message",
+        "action": "read_status_message",
+        "enabled": true
+      },
+      {
+        "control_id": "submit-application",
+        "action": "submit_application",
+        "enabled": false
+      },
+      {
+        "control_id": "upload-correction",
+        "action": "upload_correction",
+        "enabled": false
+      },
+      {
+        "control_id": "pay-fee",
+        "action": "submit_payment",
+        "enabled": false
+      }
+    ],
+    "surface_registry_mutation": {
+      "active": false,
+      "enabled": false,
+      "requested": false,
+      "mode": "review_only"
+    },
+    "observations": [
+      {
+        "surface_id": "devhub-home-redacted-fixture",
+        "auth_scope": "authenticated_redacted_fixture",
+        "values": {
+          "visible_heading": "DevHub Home",
+          "account_label": "[REDACTED_ACCOUNT_LABEL]"
+        }
+      }
+    ]
+  },
+  "surface_drift_comparison_packet": {
+    "packet_id": "devhub-read-only-surface-drift-comparison-reviewer-input",
+    "packet_type": "ppd.devhub_read_only_surface_drift_comparison_packet.v1",
+    "mode": "fixture_first_devhub_read_only_surface_drift_comparison",
+    "fixture_first": true,
+    "launches_devhub": false,
+    "launches_playwright": false,
+    "stores_browser_artifacts": false,
+    "writes_surface_registry": false,
+    "mutates_active_surface_maps": false,
+    "source_packets": {
+      "devhub_read_only_observation_packet": {
+        "packet_id": "devhub-read-only-observation-reviewer-input",
+        "consumed": true
+      },
+      "devhub_surface_registry_update_candidate": {
+        "packet_id": "devhub-surface-registry-update-candidate-reviewer-input",
+        "consumed": true
+      }
+    },
+    "surface_comparisons": [
+      {
+        "surface_id": "devhub_home_redacted",
+        "citations": [
+          "devhub-read-only-observation-reviewer-input",
+          "devhub-surface-registry-update-candidate-reviewer-input",
+          "devhub_home_redacted"
+        ],
+        "route_differences": [
+          {
+            "field": "route_pattern",
+            "observed": "/dashboard",
+            "candidate": "/dashboard",
+            "status": "unchanged",
+            "citations": [
+              "devhub-read-only-observation-reviewer-input",
+              "devhub-surface-registry-update-candidate-reviewer-input",
+              "devhub_home_redacted"
+            ]
+          }
+        ],
+        "heading_differences": [
+          {
+            "field": "redacted_heading",
+            "observed": "[REDACTED_HEADING:devhub-dashboard]",
+            "candidate": "[REDACTED_HEADING:devhub-home]",
+            "status": "synthetic_difference",
+            "citations": [
+              "devhub-read-only-observation-reviewer-input",
+              "devhub-surface-registry-update-candidate-reviewer-input",
+              "devhub_home_redacted"
+            ]
+          }
+        ],
+        "action_differences": [
+          {
+            "field": "disabled_consequential_controls",
+            "observed": [
+              "disabled:upload",
+              "disabled:submit",
+              "disabled:certify",
+              "disabled:payment"
+            ],
+            "candidate": [
+              "disabled:upload",
+              "disabled:submit",
+              "disabled:certify",
+              "disabled:payment"
+            ],
+            "status": "disabled_controls_attested",
+            "citations": [
+              "devhub-read-only-observation-reviewer-input",
+              "devhub-surface-registry-update-candidate-reviewer-input",
+              "devhub_home_redacted"
+            ]
+          }
+        ],
+        "selector_confidence_notes": [
+          {
+            "previous_confidence": "committed_registry_fixture",
+            "observed_confidence": "redacted_fixture_review",
+            "proposed_confidence": "attended_review_required",
+            "upgrade_requested": false,
+            "note": "Heading drift is synthetic and requires attended review before selector promotion.",
+            "citations": [
+              "devhub-read-only-observation-reviewer-input",
+              "devhub-surface-registry-update-candidate-reviewer-input",
+              "devhub_home_redacted"
+            ]
+          }
+        ],
+        "unsupported_drift": true
+      }
+    ],
+    "reviewer_owners": [
+      {
+        "owner": "ppd-devhub-reviewer",
+        "owns": [
+          "route_differences",
+          "heading_differences"
+        ],
+        "reason": "Route and heading drift remain synthetic until attended review cites live evidence."
+      },
+      {
+        "owner": "ppd-selector-reviewer",
+        "owns": [
+          "selector_confidence_notes"
+        ],
+        "reason": "Selector confidence may be noted but not upgraded from fixture-only comparison."
+      }
+    ],
+    "unsupported_drift_deferrals": [
+      {
+        "surface_id": "devhub_home_redacted",
+        "reason": "Fixture comparison found route or heading drift that requires attended review before registry mutation.",
+        "resolution": "defer_no_registry_mutation",
+        "citations": [
+          "devhub-surface-registry-update-candidate-reviewer-input",
+          "devhub_home_redacted"
+        ]
+      }
+    ],
+    "no_registry_mutation_attestations": {
+      "no_devhub_launch": true,
+      "no_playwright_launch": true,
+      "no_browser_artifacts": true,
+      "no_registry_mutation": true,
+      "no_active_surface_map_change": true,
+      "no_selector_confidence_upgrade": true,
+      "no_consequential_controls_enabled": true,
+      "no_official_actions_completed": true
+    }
+  }
+}

@@ -1,0 +1,28 @@
+{
+  "blocked_item": {
+    "id": "checkbox-267.ppd-work",
+    "blocked_at": "2026-05-08T12:00:00Z",
+    "state": "blocked",
+    "parked": true
+  },
+  "repairs": [
+    {
+      "id": "repair-stale",
+      "target": "checkbox-267.ppd-work",
+      "created_at": "2026-05-08T11:59:59Z",
+      "validated": true
+    },
+    {
+      "id": "repair-failed",
+      "target": "checkbox-267.ppd-work",
+      "created_at": "2026-05-08T12:01:00Z",
+      "validated": false
+    },
+    {
+      "id": "repair-fresh-valid",
+      "target": "checkbox-267.ppd-work",
+      "created_at": "2026-05-08T12:02:00Z",
+      "validated": true
+    }
+  ]
+}

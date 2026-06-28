@@ -1,0 +1,23 @@
+{
+  "packet_id": "post-release-audit-seed-20260528",
+  "findings": [
+    {
+      "id": "seed-citation-gap",
+      "title": "Release packet includes an uncited audit claim",
+      "severity": "high",
+      "reviewer_owner": "records-reviewer",
+      "citation_refs": ["seed:release-note:claim-4", "checklist:safe-next-action-001"],
+      "safe_next_action_ref": "safe-next-action-001",
+      "unresolved_blocker_refs": ["blocker:citation-required-before-publication"]
+    },
+    {
+      "id": "seed-live-action-risk",
+      "title": "Follow-up requires explicit disabled live-action attestation",
+      "severity": "medium",
+      "reviewer_owner": "automation-reviewer",
+      "citation_refs": ["seed:daemon-log:dry-run-only", "checklist:safe-next-action-002"],
+      "safe_next_action_ref": "safe-next-action-002",
+      "unresolved_blocker_refs": []
+    }
+  ]
+}

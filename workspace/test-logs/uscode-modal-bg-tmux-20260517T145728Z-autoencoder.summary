@@ -1,0 +1,53 @@
+{
+  "best_validation_ce": 0.7554620011423789,
+  "best_validation_cosine": 0.4524040226948246,
+  "best_validation_ir_ce": 0.755462001,
+  "best_validation_ir_cosine": 0.452404023,
+  "best_validation_ir_reconstruction": 0.253038287,
+  "best_validation_ir_text_reconstruction": 0.0,
+  "best_validation_reconstruction": 0.2530382869239375,
+  "codex_program_synthesis_execution_mode": "queued_for_external_codex_worker",
+  "cycles": 89,
+  "dataset_id": "justicedao/ipfs_uscode",
+  "final": false,
+  "latest_queue_counts": {
+    "claimed": 3,
+    "completed": 1,
+    "failed_validation": 89,
+    "pending": 1383
+  },
+  "latest_role_queue_counts": {
+    "autoencoder_sgd": {
+      "failed_validation": 89,
+      "pending": 979
+    },
+    "program_synthesis": {
+      "claimed": 3,
+      "completed": 1,
+      "pending": 404
+    }
+  },
+  "latest_stop_reason": "no_validated_improvement",
+  "laws_path": "uscode_parquet/laws.parquet",
+  "log_path": "/home/barberb/portland-laws.github.io/workspace/test-logs/uscode-modal-bg-tmux-20260517T145728Z-autoencoder.jsonl",
+  "loop_role": "autoencoder",
+  "metric_failures": 0,
+  "optimizer_policy": "autoencoder_sgd_with_codex_program_synthesis_backlog",
+  "program_synthesis_claimed": 3,
+  "program_synthesis_completed": 1,
+  "program_synthesis_pending": 404,
+  "program_synthesis_pending_cap": 512,
+  "program_synthesis_seeded": 293,
+  "queue_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-bg-tmux-20260517T145728Z-autoencoder.jsonl",
+  "queue_run_id": "uscode-modal-bg-tmux-20260517T145728Z-autoencoder",
+  "run_id": "uscode-modal-bg-tmux-20260517T145728Z-autoencoder",
+  "seed": 253333366299747,
+  "started_at": "2026-05-17T14:57:29+00:00",
+  "state_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-bg-tmux-20260517T145728Z-autoencoder.state.json",
+  "test_failures": 7,
+  "train_ce_improved_cycles": 0,
+  "train_cosine_improved_cycles": 0,
+  "updated_at": "2026-05-17T15:13:46+00:00",
+  "validation_ce_improved_cycles": 0,
+  "validation_cosine_improved_cycles": 0
+}

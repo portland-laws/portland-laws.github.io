@@ -1,0 +1,28 @@
+Implemented a deterministic slot refinement for `modal.ir_decompiler` by adding canonical USC citation slots and mirroring them in triple projection.
+
+- Added `citation_canonical` and `source_id_citation_canonical` slot emission in the decompiler:
+  - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000022-20260518_092457/ipfs_datasets_py/logic/modal/decompiler.py):737
+  - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000022-20260518_092457/ipfs_datasets_py/logic/modal/decompiler.py):1107
+  - Added shared normalizer `_canonical_usc_citation(...)`:
+  - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000022-20260518_092457/ipfs_datasets_py/logic/modal/decompiler.py):1140
+
+- Added matching triple components in codec (`citation_canonical`, `source_id_citation_canonical`) so graph/triple output stays aligned with slot output:
+  - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000022-20260518_092457/ipfs_datasets_py/logic/modal/codec.py):1163
+  - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000022-20260518_092457/ipfs_datasets_py/logic/modal/codec.py):1227
+  - Helper:
+  - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000022-20260518_092457/ipfs_datasets_py/logic/modal/codec.py):1289
+
+- Extended targeted tests for the new slots/predicates:
+  - [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000022-20260518_092457/tests/unit_tests/logic/modal/test_modal_codec.py):2130
+  - [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000022-20260518_092457/tests/unit_tests/logic/modal/test_modal_codec.py):2294
+  - [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000022-20260518_092457/tests/unit_tests/logic/modal/test_modal_codec.py):2412
+
+Validation run:
+
+```bash
+pytest -q tests/unit_tests/logic/modal/test_modal_codec.py::test_modal_decompiler_recovers_condition_exception_and_citation_slots \
+  tests/unit_tests/logic/modal/test_modal_codec.py::test_modal_decompiler_and_triples_expand_alphanumeric_citation_section_slots \
+  tests/unit_tests/logic/modal/test_modal_codec.py::test_modal_decompiler_and_triples_surface_uscode_source_id_slots
+```
+
+Result: `3 passed`.

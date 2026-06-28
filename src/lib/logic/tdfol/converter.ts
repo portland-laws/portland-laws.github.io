@@ -6,6 +6,7 @@ import { parseTdfolFormula } from './parser';
 import { tdfolToCecExpression } from './strategies';
 
 export type TdfolConversionTarget = 'tdfol' | 'fol' | 'dcec' | 'tptp' | 'json';
+export type TdfolConversionInput = string | TdfolFormula;
 
 export interface TdfolConversionMetadata {
   target: TdfolConversionTarget;
@@ -15,6 +16,10 @@ export interface TdfolConversionMetadata {
   freeVariables: string[];
   containsTemporal: boolean;
   containsDeontic: boolean;
+  sourcePythonModule: 'logic/TDFOL/tdfol_converter.py';
+  browserNative: true;
+  serverCallsAllowed: false;
+  pythonRuntime: false;
 }
 
 export interface TdfolConversionResult {
@@ -26,16 +31,82 @@ export interface TdfolConversionResult {
   metadata: TdfolConversionMetadata;
 }
 
+export const TDFOL_CONVERTER_METADATA = {
+  sourcePythonModule: 'logic/TDFOL/tdfol_converter.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntime: false,
+  supportedTargets: ['tdfol', 'fol', 'dcec', 'tptp', 'json'],
+} as const;
+
+export class BrowserNativeTdfolConverter {
+  readonly metadata = TDFOL_CONVERTER_METADATA;
+
+  convert(
+    input: TdfolConversionInput,
+    target: TdfolConversionTarget | string = 'tdfol',
+  ): TdfolConversionResult {
+    return convertTdfolFormula(input, normalizeTdfolConversionTarget(target));
+  }
+
+  convertToDcec(input: TdfolConversionInput): TdfolConversionResult {
+    return this.convert(input, 'dcec');
+  }
+
+  async convertAsync(
+    input: TdfolConversionInput,
+    target: TdfolConversionTarget | string = 'tdfol',
+  ): Promise<TdfolConversionResult> {
+    return this.convert(input, target);
+  }
+
+  validate(input: TdfolConversionInput) {
+    const warnings: string[] = [];
+    try {
+      const ast = typeof input === 'string' ? parseTdfolFormula(input) : input;
+      const metadata = analyzeTdfolConversion(ast, 'tdfol');
+      if (metadata.containsTemporal) {
+        warnings.push(
+          'Temporal operators require projection warnings when converting to pure FOL.',
+        );
+      }
+      if (metadata.containsDeontic) {
+        warnings.push('Deontic operators require projection warnings when converting to pure FOL.');
+      }
+      return {
+        valid: true,
+        errors: [],
+        warnings,
+        sourcePythonModule: TDFOL_CONVERTER_METADATA.sourcePythonModule,
+        browserNative: true,
+        serverCallsAllowed: false,
+        pythonRuntime: false,
+      };
+    } catch (error) {
+      return {
+        valid: false,
+        errors: [error instanceof Error ? error.message : String(error)],
+        warnings,
+        sourcePythonModule: TDFOL_CONVERTER_METADATA.sourcePythonModule,
+        browserNative: true,
+        serverCallsAllowed: false,
+        pythonRuntime: false,
+      };
+    }
+  }
+}
+
 export function convertTdfolFormula(
-  input: string | TdfolFormula,
-  target: TdfolConversionTarget,
+  input: TdfolConversionInput,
+  target: TdfolConversionTarget | string,
 ): TdfolConversionResult {
+  const normalizedTarget = normalizeTdfolConversionTarget(target);
   const ast = typeof input === 'string' ? parseTdfolFormula(input) : input;
   const source = formatTdfolFormula(ast);
   const warnings: string[] = [];
   let output: string | Record<string, unknown>;
 
-  switch (target) {
+  switch (normalizedTarget) {
     case 'tdfol':
       output = source;
       break;
@@ -55,19 +126,20 @@ export function convertTdfolFormula(
 
   return {
     source,
-    target,
+    target: normalizedTarget,
     output,
     ast,
     warnings,
-    metadata: analyzeTdfolConversion(ast, target),
+    metadata: analyzeTdfolConversion(ast, normalizedTarget),
   };
 }
 
 export function convertTdfolBatch(
-  inputs: Array<string | TdfolFormula>,
-  target: TdfolConversionTarget,
+  inputs: Array<TdfolConversionInput>,
+  target: TdfolConversionTarget | string,
 ): TdfolConversionResult[] {
-  return inputs.map((input) => convertTdfolFormula(input, target));
+  const normalizedTarget = normalizeTdfolConversionTarget(target);
+  return inputs.map((input) => convertTdfolFormula(input, normalizedTarget));
 }
 
 export function tdfolToFol(formula: TdfolFormula, warnings: string[] = []): string {
@@ -115,7 +187,10 @@ function tdfolToJson(formula: TdfolFormula): Record<string, unknown> {
   };
 }
 
-function analyzeTdfolConversion(formula: TdfolFormula, target: TdfolConversionTarget): TdfolConversionMetadata {
+function analyzeTdfolConversion(
+  formula: TdfolFormula,
+  target: TdfolConversionTarget,
+): TdfolConversionMetadata {
   let quantifierCount = 0;
   let predicateCount = 0;
   let operatorCount = 0;
@@ -138,7 +213,39 @@ function analyzeTdfolConversion(formula: TdfolFormula, target: TdfolConversionTa
     freeVariables: [...getFreeVariables(formula)].sort(),
     containsTemporal,
     containsDeontic,
+    sourcePythonModule: TDFOL_CONVERTER_METADATA.sourcePythonModule,
+    browserNative: true,
+    serverCallsAllowed: false,
+    pythonRuntime: false,
   };
+}
+
+export function normalizeTdfolConversionTarget(
+  target: TdfolConversionTarget | string,
+): TdfolConversionTarget {
+  const normalized = target
+    .trim()
+    .toLowerCase()
+    .replace(/[-\s]+/g, '_');
+  const aliases: Record<string, TdfolConversionTarget> = {
+    tdfol: 'tdfol',
+    native: 'tdfol',
+    source: 'tdfol',
+    fol: 'fol',
+    first_order: 'fol',
+    first_order_logic: 'fol',
+    dcec: 'dcec',
+    cec: 'dcec',
+    tptp: 'tptp',
+    fof: 'tptp',
+    json: 'json',
+    ast: 'json',
+  };
+  const resolved = aliases[normalized];
+  if (!resolved) {
+    throw new Error(`Unsupported TDFOL conversion target: ${target}`);
+  }
+  return resolved;
 }
 
 function visitFormula(formula: TdfolFormula, visitor: (formula: TdfolFormula) => void): void {
@@ -161,7 +268,8 @@ function visitFormula(formula: TdfolFormula, visitor: (formula: TdfolFormula) =>
 
 function tdfolTermToTptp(term: TdfolTerm): string {
   if (term.kind === 'variable') return toTptpVariable(term.name);
-  if (term.kind === 'function') return `${toTptpSymbol(term.name)}(${term.args.map(tdfolTermToTptp).join(',')})`;
+  if (term.kind === 'function')
+    return `${toTptpSymbol(term.name)}(${term.args.map(tdfolTermToTptp).join(',')})`;
   return toTptpSymbol(formatTdfolTerm(term));
 }
 
@@ -172,6 +280,7 @@ function binarySymbol(operator: TdfolBinaryFormula['operator']): string {
     IMPLIES: '→',
     IFF: '↔',
     XOR: '⊕',
+    UNTIL: 'U',
   }[operator];
 }
 
@@ -182,6 +291,7 @@ function tptpBinarySymbol(operator: TdfolBinaryFormula['operator']): string {
     IMPLIES: '=>',
     IFF: '<=>',
     XOR: '<~>',
+    UNTIL: 'U',
   }[operator];
 }
 

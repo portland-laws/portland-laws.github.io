@@ -1,0 +1,37 @@
+{
+  "packet_id": "synthetic-reviewed-invalidation-001",
+  "review_status": "reviewed",
+  "reviewed_at": "2026-05-28T00:00:00Z",
+  "permit_process": {
+    "process_id": "synthetic-residential-alteration",
+    "name": "Synthetic Residential Alteration Permit",
+    "synthetic": true
+  },
+  "invalidations": [
+    {
+      "guardrail_id": "guardrail-intake-submittal-checklist",
+      "source_id": "devhub-page-synthetic-intake",
+      "reason": "Reviewed source changed the required intake checklist wording.",
+      "citation_ids": [
+        "citation-devhub-synthetic-intake-001"
+      ],
+      "cache_keys": [
+        "ppd:source:devhub-page-synthetic-intake",
+        "ppd:guardrail:guardrail-intake-submittal-checklist"
+      ]
+    },
+    {
+      "guardrail_id": "guardrail-fee-estimate-disclaimer",
+      "source_id": "devhub-page-synthetic-fees",
+      "reason": "Reviewed source changed fee estimate disclaimer language.",
+      "citation_ids": [
+        "citation-devhub-synthetic-fees-001",
+        "citation-devhub-synthetic-fees-002"
+      ],
+      "cache_keys": [
+        "ppd:source:devhub-page-synthetic-fees",
+        "ppd:guardrail:guardrail-fee-estimate-disclaimer"
+      ]
+    }
+  ]
+}

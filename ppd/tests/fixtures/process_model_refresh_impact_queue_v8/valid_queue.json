@@ -1,0 +1,96 @@
+{
+  "queue_version": "process_model_refresh_impact_queue_v8",
+  "queue_id": "pmriq-v8-fixture-001",
+  "created_at": "2026-06-02T00:00:00Z",
+  "mode": "deterministic_fixture",
+  "requirement_node_candidate_set_refs": [
+    "requirement-candidate-set:fixture:building-permit-documents"
+  ],
+  "process_model_refs": [
+    "process-model:fixture:residential-building-permit"
+  ],
+  "affected_process_ids": [
+    "residential-building-permit"
+  ],
+  "permit_type_impact_rows": [
+    {
+      "permit_type": "residential_building",
+      "impact": "review_required_documents",
+      "source_evidence_refs": [
+        "source-evidence:fixture:submit-plans-online"
+      ]
+    }
+  ],
+  "eligibility_impact_placeholders": [
+    {
+      "process_id": "residential-building-permit",
+      "placeholder_id": "eligibility-impact:fixture:001",
+      "status": "reviewer_hold"
+    }
+  ],
+  "required_fact_impact_placeholders": [
+    {
+      "process_id": "residential-building-permit",
+      "placeholder_id": "required-fact-impact:fixture:001",
+      "status": "reviewer_hold"
+    }
+  ],
+  "required_document_impact_placeholders": [
+    {
+      "process_id": "residential-building-permit",
+      "placeholder_id": "required-document-impact:fixture:001",
+      "status": "reviewer_hold"
+    }
+  ],
+  "file_rule_impact_placeholders": [
+    {
+      "process_id": "residential-building-permit",
+      "placeholder_id": "file-rule-impact:fixture:001",
+      "status": "reviewer_hold"
+    }
+  ],
+  "fee_impact_placeholders": [
+    {
+      "process_id": "residential-building-permit",
+      "placeholder_id": "fee-impact:fixture:001",
+      "status": "reviewer_hold"
+    }
+  ],
+  "deadline_impact_placeholders": [
+    {
+      "process_id": "residential-building-permit",
+      "placeholder_id": "deadline-impact:fixture:001",
+      "status": "reviewer_hold"
+    }
+  ],
+  "action_gate_impact_placeholders": [
+    {
+      "process_id": "residential-building-permit",
+      "placeholder_id": "action-gate-impact:fixture:001",
+      "status": "reviewer_hold"
+    }
+  ],
+  "unsupported_path_carry_forward_rows": [
+    {
+      "process_id": "residential-building-permit",
+      "unsupported_path_id": "unsupported-path:fixture:email-only",
+      "carry_forward_reason": "Previously identified unsupported path remains pending reviewer confirmation."
+    }
+  ],
+  "guardrail_recompile_candidate_refs": [
+    "guardrail-recompile-candidate:fixture:residential-building-permit"
+  ],
+  "reviewer_hold_notes": [
+    {
+      "note_id": "reviewer-hold:fixture:001",
+      "reason": "Fixture keeps changed impacts in reviewer hold pending source-backed review."
+    }
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ]
+}

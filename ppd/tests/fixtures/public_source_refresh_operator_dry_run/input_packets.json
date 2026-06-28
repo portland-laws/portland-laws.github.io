@@ -1,0 +1,28 @@
+{
+  "source_refresh_runbook_candidate": {
+    "runbook_id": "runbook-public-source-refresh-001",
+    "source_ids": ["portland-auditor-code"],
+    "operator_gates": ["allowlist", "robots", "metadata-only"]
+  },
+  "public_source_refresh_batch_packet": {
+    "batch_id": "batch-public-source-refresh-001",
+    "sources": [
+      {
+        "source_id": "portland-auditor-code",
+        "refresh_intent": "metadata-check"
+      }
+    ],
+    "allowlist_evidence_refs": ["fixture://allowlist/portland-auditor-code.json"]
+  },
+  "public_source_refresh_intake_evidence_packet": {
+    "intake_id": "intake-public-source-refresh-001",
+    "source_id": "portland-auditor-code",
+    "allowlist_evidence_refs": ["fixture://allowlist/portland-auditor-code.json"],
+    "robots_evidence_refs": ["fixture://robots/portland-auditor-code.txt"]
+  },
+  "source_registry_schedule_update_candidate": {
+    "candidate_id": "schedule-candidate-public-source-refresh-001",
+    "source_id": "portland-auditor-code",
+    "proposed_schedule": "manual-review-only"
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "requirements": [
+    {
+      "requirement_id": "req-public-guide-cited",
+      "requirement_type": "precondition",
+      "source_evidence_ids": [
+        {
+          "citation_id": "cite-public-guide-start",
+          "source_id": "ppd-public-devhub-guide",
+          "span_id": "span-apply-start"
+        }
+      ]
+    }
+  ]
+}

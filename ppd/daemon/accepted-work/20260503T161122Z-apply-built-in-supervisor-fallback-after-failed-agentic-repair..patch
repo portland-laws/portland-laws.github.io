@@ -1,0 +1,50 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,5 +1,5 @@
+ {
+-  "createdAt": "2026-05-03T16:07:56.612035Z",
++  "createdAt": "2026-05-03T16:11:20.732967Z",
+   "decision": {
+     "action": "invoke_codex",
+     "reason": "14 task(s) are blocked and no independent selectable task remains: Task checkbox-23: Task checkbox-178: Add a fixture-only DevHub draft-readiness decision matrix plus focused validation that combines missing facts, redacted file placeholders, selector confidence, upload-readiness gates, fee notices, and exact-confirmation defaults while refusing official actions.; Task checkbox-24: Task checkbox-182: Add daemon diagnostics coverage proving repeated non-JSON LLM responses for a blocked task are persisted with target task, failure kind, compact raw-response summary, and a next-action hint before the worker exits.; Task checkbox-25: Task checkbox-186: Add daemon retry-scope coverage proving that after two syntax_preflight failures on checkbox-178, the next prompt permits either one parser-bearing file or one daemon repair file, and rejects source-plus-fixture-plus-test bundles.",
+@@ -7,23 +7,35 @@
+   },
+   "failedAgenticRepair": {
+     "changedFiles": [
+-      "ppd/daemon/parser_clean_retry_scope.py"
++      "ppd/daemon/llm_failure_diagnostics.py",
++      "ppd/tests/test_llm_failure_diagnostics.py"
+     ],
+     "errors": [
+-      "Syntax preflight failed; file edits were rolled back. python3 -m py_compile ppd/daemon/parser_clean_retry_scope.py: ppd/daemon/parser_clean_retry_scope.py:67: malformed Python expression; use explicit operators such as `is None`, `is not None`, `isinstance(...)`, or a normal return expression. Do not place TypeScript-style type fragments inside Python control-flow or return statements. Next worker attempt should be smaller: replace only the syntactically failing file plus its narrow fixture/test if needed; run py_compile for each changed Python file or strict tsc for each changed TypeScript file mentally before returning JSON; do not add new contracts, fixtures, and broad tests in the same p..."
++      "Syntax preflight failed; file edits were rolled back. python3 -m py_compile ppd/daemon/llm_failure_diagnostics.py: File \"/home/barberb/portland-laws.github.io/ppd/daemon/llm_failure_diagnostics.py\", line 27 _HTML_RE = re.compile(r\" dict[str, Any]: ^ SyntaxError: unterminated string literal (detected at line 27) Next worker attempt should be smaller: replace only the syntactically failing file plus its narrow fixture/test if needed; run py_compile for each changed Python file or strict tsc for each changed TypeScript file mentally before returning JSON; do not add new contracts, fixtures, and broad tests in the same proposal until the parser-clean core file is valid."
+     ],
+     "failureKind": "syntax_preflight",
+-    "summary": "Add a parser-clean PP&D daemon retry-scope helper for repeated checkbox-178 syntax preflight failures.",
++    "summary": "Add parser-clean PP&D daemon diagnostics for repeated non-JSON LLM responses.",
+     "validationResults": [
+       {
+         "command": [
+           "python3",
+           "-m",
+           "py_compile",
+-          "ppd/daemon/parser_clean_retry_scope.py"
++          "ppd/daemon/llm_failure_diagnostics.py"
+         ],
+         "returncode": 1,
+-        "stderr": "ppd/daemon/parser_clean_retry_scope.py:67: malformed Python expression; use explicit operators such as `is None`, `is not None`, `isinstance(...)`, or a normal return expression. Do not place TypeScript-style type fragments inside Python control-flow or return statements.",
++        "stderr": "File \"/home/barberb/portland-laws.github.io/ppd/daemon/llm_failure_diagnostics.py\", line 27 _HTML_RE = re.compile(r\" dict[str, Any]: ^ SyntaxError: unterminated string literal (detected at line 27)",
++        "stdout": ""
++      },
++      {
++        "command": [
++          "python3",
++          "-m",
++          "py_compile",
++          "ppd/tests/test_llm_failure_diagnostics.py"
++        ],
++        "returncode": 0,
++        "stderr": "",
+         "stdout": ""
+       }
+     ]

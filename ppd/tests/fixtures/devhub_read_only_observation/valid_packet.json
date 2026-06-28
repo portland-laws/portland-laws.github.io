@@ -1,0 +1,23 @@
+{
+  "packet_type": "devhub_read_only_observation_checklist",
+  "mode": "deterministic_fixture",
+  "surface": {
+    "name": "DevHub public help checklist",
+    "auth_scope": "unauthenticated_or_redacted",
+    "source": "committed_fixture"
+  },
+  "observations": [
+    {
+      "heading": "My Permits and Requests",
+      "visible_sections": ["status summary", "attachment list labels"],
+      "redaction": "private values omitted"
+    }
+  ],
+  "controls": [
+    {"label": "View details", "role": "link"},
+    {"label": "Back", "role": "button"}
+  ],
+  "claims": [
+    "No credentials, browser state, screenshots, traces, cookies, HAR files, or private field values are present."
+  ]
+}

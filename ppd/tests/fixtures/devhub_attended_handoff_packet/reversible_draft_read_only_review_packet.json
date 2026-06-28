@@ -1,0 +1,151 @@
+{
+  "packet_id": "fixture-devhub-attended-handoff-001",
+  "fixture_only": true,
+  "workflow": {
+    "surface": "DevHub",
+    "workflow_type": "reversible_devhub_draft_or_read_only_review",
+    "allowed_modes": [
+      "read_only_review",
+      "reversible_draft"
+    ],
+    "prohibited_modes": [
+      "official_submission",
+      "payment",
+      "inspection_scheduling",
+      "correction_upload",
+      "account_security_change"
+    ]
+  },
+  "manual_login_prerequisites": {
+    "start_url": "https://devhub.portlandoregon.gov",
+    "browser_requirement": "user_visible_browser",
+    "credential_handling": "user_enters_portlandoregon_gov_credentials_manually",
+    "mfa_or_captcha_handling": "user_completes_any_mfa_captcha_or_security_prompt_manually",
+    "worker_must_not_request_credentials": true,
+    "worker_must_not_store_credentials": true,
+    "worker_must_not_store_session_state": true,
+    "authentication_evidence_allowed": [
+      "redacted_authenticated_home_observed",
+      "redacted_accessible_landmark_names",
+      "redacted_current_surface_label"
+    ]
+  },
+  "attendance_requirement": {
+    "requires_user_present": true,
+    "attendance_reason": "Authenticated DevHub review and draft work is account-scoped and must remain user-attended.",
+    "pause_when_user_absent": true,
+    "handoff_before_consequential_control": true
+  },
+  "selector_confidence_evidence": {
+    "minimum_confidence_for_draft": 0.92,
+    "minimum_confidence_for_read_only": 0.86,
+    "selector_observations": [
+      {
+        "name": "DevHub home landmark",
+        "selector_kind": "role",
+        "selector": "main",
+        "confidence": 0.94,
+        "evidence": "Stable accessible main landmark observed in fixture surface map.",
+        "private_value_included": false
+      },
+      {
+        "name": "My Permits and Requests link",
+        "selector_kind": "role_and_name",
+        "selector": "link:My Permits & Requests",
+        "confidence": 0.91,
+        "evidence": "Public DevHub guidance identifies account-scoped permit and request review.",
+        "private_value_included": false
+      },
+      {
+        "name": "Save draft control",
+        "selector_kind": "role_and_name",
+        "selector": "button:Save Draft",
+        "confidence": 0.93,
+        "evidence": "Reversible draft control only; final submit controls remain blocked.",
+        "private_value_included": false
+      }
+    ],
+    "evidence_artifacts_excluded": [
+      "screenshots",
+      "traces",
+      "har_data",
+      "raw_authenticated_html",
+      "private_page_values"
+    ]
+  },
+  "preview_text": {
+    "title": "Attended DevHub handoff preview",
+    "body": "I can review account-scoped status information or stage a reversible draft while you remain present. I will stop before upload, certification, submission, scheduling, cancellation, payment, or account changes and ask for exact confirmation where review is allowed.",
+    "redaction_note": "This packet intentionally contains only labels, policies, and redacted workflow evidence. It contains no credentials, cookies, auth state, screenshots, traces, HAR data, or private page values."
+  },
+  "exact_confirmation_checkpoints": [
+    {
+      "checkpoint_id": "confirm-read-only-surface",
+      "required_before": "opening_account_scoped_review_surface",
+      "confirmation_prompt": "Confirm that you want me to review this DevHub surface in read-only mode while you remain present.",
+      "requires_exact_user_confirmation": true
+    },
+    {
+      "checkpoint_id": "confirm-reversible-draft-fill",
+      "required_before": "filling_or_editing_reversible_draft_fields",
+      "confirmation_prompt": "Confirm that you want me to stage these draft values only, without uploading, certifying, submitting, scheduling, cancelling, or paying.",
+      "requires_exact_user_confirmation": true
+    },
+    {
+      "checkpoint_id": "confirm-stop-before-official-control",
+      "required_before": "any_control_that_could_affect_an_official_record",
+      "confirmation_prompt": "This control may affect an official record. I will stop here and leave the action to you unless a separate attended playbook permits it.",
+      "requires_exact_user_confirmation": true
+    }
+  ],
+  "blocked_official_controls": [
+    {
+      "control": "Submit permit request",
+      "reason": "Official submission is consequential and outside reversible draft mode."
+    },
+    {
+      "control": "Certify acknowledgement",
+      "reason": "Certification requires direct user review and action."
+    },
+    {
+      "control": "Upload correction or attachment to official record",
+      "reason": "Official uploads can alter the record and require attended confirmation and user action."
+    },
+    {
+      "control": "Purchase permit or submit payment",
+      "reason": "Financial workflows are blocked, including payment detail entry and final payment execution."
+    },
+    {
+      "control": "Schedule, cancel, or reschedule inspection",
+      "reason": "Inspection scheduling changes are official actions."
+    },
+    {
+      "control": "Cancel, withdraw, extend, or reactivate request",
+      "reason": "Lifecycle changes are consequential official controls."
+    },
+    {
+      "control": "Account creation or account security changes",
+      "reason": "Account and security actions require separate human-run handling."
+    }
+  ],
+  "redaction_guarantees": {
+    "exclude_credentials": true,
+    "exclude_cookies": true,
+    "exclude_auth_state": true,
+    "exclude_screenshots": true,
+    "exclude_traces": true,
+    "exclude_har_data": true,
+    "exclude_private_page_values": true,
+    "exclude_payment_details": true,
+    "exclude_local_private_file_paths": true,
+    "allowed_committed_fields": [
+      "workflow labels",
+      "policy booleans",
+      "redacted selector labels",
+      "confidence scores",
+      "confirmation prompts",
+      "blocked control names",
+      "public DevHub URL"
+    ]
+  }
+}

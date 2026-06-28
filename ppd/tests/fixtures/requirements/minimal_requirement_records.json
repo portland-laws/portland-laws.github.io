@@ -1,0 +1,19 @@
+{
+  "requirements": [
+    {
+      "requirement_id": "req-permit-001",
+      "title": "Confirm permit record identity",
+      "status": "needs_review",
+      "citation": "PP&D fixture permit-record.html#record-identity",
+      "source_path": "ppd/tests/fixtures/requirements/permit-record.html",
+      "excerpt": "Permit number and site address are visible in the fixture."
+    },
+    {
+      "requirement_id": "req-permit-002",
+      "title": "Skip completed requirement",
+      "status": "complete",
+      "citation": "PP&D fixture permit-record.html#completed-check",
+      "source_path": "ppd/tests/fixtures/requirements/permit-record.html"
+    }
+  ]
+}

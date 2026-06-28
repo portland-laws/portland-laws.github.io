@@ -1,0 +1,252 @@
+{
+  "fixture_id": "devhub_fee_payment_guardrail_packet_validation_cases_v1",
+  "privacy_note": "Synthetic validation fixture only. No credentials, payment instruments, auth state, browser traces, screenshots, raw authenticated page text, or private DevHub values are present.",
+  "accepted_packet": {
+    "packet_id": "fee-payment-guardrail-accepted-read-only-review",
+    "source_evidence_ids": [
+      "public-fee-payment-guide",
+      "mocked-devhub-fee-notice"
+    ],
+    "fee_triggers": [
+      {
+        "trigger": "A fee notice is visible for review after intake.",
+        "source_evidence_ids": [
+          "mocked-devhub-fee-notice"
+        ],
+        "guardrail": "review_only"
+      }
+    ],
+    "next_safe_actions": [
+      {
+        "action_id": "review_fee_notice",
+        "label": "Review fees due",
+        "kind": "read_only",
+        "text": "Fee notice and balance due summary"
+      }
+    ],
+    "blocked_actions": [
+      "enter_payment_details",
+      "submit_payment",
+      "save_payment_receipt",
+      "mark_payment_complete"
+    ]
+  },
+  "rejected_packets": [
+    {
+      "name": "payment card field",
+      "expected_error": "payment card or bank field",
+      "packet": {
+        "packet_id": "reject-card-field",
+        "source_evidence_ids": ["mocked-devhub-fee-notice"],
+        "fee_triggers": [
+          {
+            "trigger": "A fee notice is visible for review.",
+            "source_evidence_ids": ["mocked-devhub-fee-notice"]
+          }
+        ],
+        "card_number": "[REDACTED_SYNTHETIC_FIELD]",
+        "next_safe_actions": [
+          {
+            "action_id": "review_fee_notice",
+            "label": "Review fees due",
+            "kind": "read_only"
+          }
+        ]
+      }
+    },
+    {
+      "name": "bank field",
+      "expected_error": "payment card or bank field",
+      "packet": {
+        "packet_id": "reject-bank-field",
+        "source_evidence_ids": ["mocked-devhub-fee-notice"],
+        "fee_triggers": [
+          {
+            "trigger": "A fee notice is visible for review.",
+            "source_evidence_ids": ["mocked-devhub-fee-notice"]
+          }
+        ],
+        "bank_account": "[REDACTED_SYNTHETIC_FIELD]",
+        "next_safe_actions": [
+          {
+            "action_id": "review_fee_notice",
+            "label": "Review fees due",
+            "kind": "read_only"
+          }
+        ]
+      }
+    },
+    {
+      "name": "receipt claim",
+      "expected_error": "receipt",
+      "packet": {
+        "packet_id": "reject-receipt-claim",
+        "source_evidence_ids": ["mocked-devhub-fee-notice"],
+        "fee_triggers": [
+          {
+            "trigger": "A fee notice is visible for review.",
+            "source_evidence_ids": ["mocked-devhub-fee-notice"]
+          }
+        ],
+        "receipt_claim": "receipt saved by automation",
+        "next_safe_actions": [
+          {
+            "action_id": "review_fee_notice",
+            "label": "Review fees due",
+            "kind": "read_only"
+          }
+        ]
+      }
+    },
+    {
+      "name": "final payment completion claim",
+      "expected_error": "final payment completion",
+      "packet": {
+        "packet_id": "reject-payment-complete",
+        "source_evidence_ids": ["mocked-devhub-fee-notice"],
+        "fee_triggers": [
+          {
+            "trigger": "A fee notice is visible for review.",
+            "source_evidence_ids": ["mocked-devhub-fee-notice"]
+          }
+        ],
+        "payment_status": "completed",
+        "next_safe_actions": [
+          {
+            "action_id": "review_fee_notice",
+            "label": "Review fees due",
+            "kind": "read_only"
+          }
+        ]
+      }
+    },
+    {
+      "name": "uncited fee trigger",
+      "expected_error": "must cite source evidence",
+      "packet": {
+        "packet_id": "reject-uncited-fee-trigger",
+        "source_evidence_ids": ["mocked-devhub-fee-notice"],
+        "fee_triggers": [
+          {
+            "trigger": "A fee notice is visible for review."
+          }
+        ],
+        "next_safe_actions": [
+          {
+            "action_id": "review_fee_notice",
+            "label": "Review fees due",
+            "kind": "read_only"
+          }
+        ]
+      }
+    },
+    {
+      "name": "private value",
+      "expected_error": "private value",
+      "packet": {
+        "packet_id": "reject-private-value",
+        "source_evidence_ids": ["mocked-devhub-fee-notice"],
+        "fee_triggers": [
+          {
+            "trigger": "A fee notice is visible for review.",
+            "source_evidence_ids": ["mocked-devhub-fee-notice"]
+          }
+        ],
+        "private_value": "[REDACTED_SYNTHETIC_PRIVATE_VALUE]",
+        "next_safe_actions": [
+          {
+            "action_id": "review_fee_notice",
+            "label": "Review fees due",
+            "kind": "read_only"
+          }
+        ]
+      }
+    },
+    {
+      "name": "authenticated raw text",
+      "expected_error": "authenticated raw text",
+      "packet": {
+        "packet_id": "reject-authenticated-raw-text",
+        "source_evidence_ids": ["mocked-devhub-fee-notice"],
+        "fee_triggers": [
+          {
+            "trigger": "A fee notice is visible for review.",
+            "source_evidence_ids": ["mocked-devhub-fee-notice"]
+          }
+        ],
+        "authenticated_raw_text": "[REDACTED_SYNTHETIC_AUTHENTICATED_PAGE_TEXT]",
+        "next_safe_actions": [
+          {
+            "action_id": "review_fee_notice",
+            "label": "Review fees due",
+            "kind": "read_only"
+          }
+        ]
+      }
+    },
+    {
+      "name": "browser artifact",
+      "expected_error": "browser artifact",
+      "packet": {
+        "packet_id": "reject-browser-artifact",
+        "source_evidence_ids": ["mocked-devhub-fee-notice"],
+        "fee_triggers": [
+          {
+            "trigger": "A fee notice is visible for review.",
+            "source_evidence_ids": ["mocked-devhub-fee-notice"]
+          }
+        ],
+        "screenshot_path": "[REDACTED_SYNTHETIC_BROWSER_ARTIFACT]",
+        "next_safe_actions": [
+          {
+            "action_id": "review_fee_notice",
+            "label": "Review fees due",
+            "kind": "read_only"
+          }
+        ]
+      }
+    },
+    {
+      "name": "unsafe payment detail safe action",
+      "expected_error": "payment_detail_entry",
+      "packet": {
+        "packet_id": "reject-safe-action-enter-payment-details",
+        "source_evidence_ids": ["mocked-devhub-fee-notice"],
+        "fee_triggers": [
+          {
+            "trigger": "A fee notice is visible for review.",
+            "source_evidence_ids": ["mocked-devhub-fee-notice"]
+          }
+        ],
+        "next_safe_actions": [
+          {
+            "action_id": "enter_payment_details",
+            "label": "Enter payment information",
+            "kind": "form_fill"
+          }
+        ]
+      }
+    },
+    {
+      "name": "unsafe submit payment safe action",
+      "expected_error": "submit_payment",
+      "packet": {
+        "packet_id": "reject-safe-action-submit-payment",
+        "source_evidence_ids": ["mocked-devhub-fee-notice"],
+        "fee_triggers": [
+          {
+            "trigger": "A fee notice is visible for review.",
+            "source_evidence_ids": ["mocked-devhub-fee-notice"]
+          }
+        ],
+        "next_safe_actions": [
+          {
+            "action_id": "submit_payment",
+            "label": "Submit payment",
+            "kind": "click"
+          }
+        ]
+      }
+    }
+  ]
+}

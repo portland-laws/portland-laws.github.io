@@ -12,7 +12,7 @@ interface ModelSelectorProps {
 const supportedModels = SUPPORTED_MODELS;
 
 export default function ModelSelector({ className = '' }: ModelSelectorProps) {
-  const [currentModel, setCurrentModel] = useState<string>('Xenova/distilgpt2');
+  const [currentModel, setCurrentModel] = useState<string>('LiquidAI/LFM2.5-1.2B-Instruct-ONNX');
   const [isLoading, setIsLoading] = useState(false);
   const [loadingProgress, setLoadingProgress] = useState('');
   const [recommendedModel, setRecommendedModel] = useState<string>('');
@@ -33,7 +33,7 @@ export default function ModelSelector({ className = '' }: ModelSelectorProps) {
       
       // Determine recommended model based on capabilities
       if (caps.webgpu) {
-        setRecommendedModel('onnx-community/Llama-3.2-1B-Instruct');
+        setRecommendedModel('LiquidAI/LFM2.5-1.2B-Instruct-ONNX');
       } else if (caps.simd) {
         setRecommendedModel('Xenova/LaMini-GPT-774M');
       } else {

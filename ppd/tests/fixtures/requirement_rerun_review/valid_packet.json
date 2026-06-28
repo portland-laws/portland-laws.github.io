@@ -1,0 +1,26 @@
+{
+  "packet_id": "rerun-review-valid-001",
+  "source_id": "src-public-code",
+  "document_id": "doc-ppd-33.10",
+  "requirement_id": "req-33-10-review",
+  "source_url": "https://www.portland.gov/code/33/10",
+  "extraction_mode": "fixture",
+  "requirement_mutation_enabled": false,
+  "dispositions": [
+    {
+      "requirement_id": "req-33-10-review",
+      "decision": "retain",
+      "citations": [
+        {
+          "source_id": "src-public-code",
+          "document_id": "doc-ppd-33.10",
+          "requirement_id": "req-33-10-review",
+          "citation_id": "cite-33-10-a"
+        }
+      ],
+      "reviewer_owner": "ppd-reviewer",
+      "formalized_requirement": true,
+      "human_review_status": "human_reviewed"
+    }
+  ]
+}

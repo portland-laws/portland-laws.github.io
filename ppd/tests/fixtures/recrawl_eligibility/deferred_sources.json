@@ -1,0 +1,7 @@
+[
+  {
+    "source_id": "fee-payment-guide",
+    "reason": "financial workflow guidance is intentionally reviewed with payment guardrail tests before recrawl scheduling",
+    "defer_until": "2026-06-01T00:00:00Z"
+  }
+]

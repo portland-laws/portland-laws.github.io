@@ -1,0 +1,27 @@
+{
+  "packet_id": "freshness-watchlist-valid",
+  "citations": [
+    {"id": "src-portland-permits", "url": "https://www.portland.gov/ppd/permits"},
+    {"id": "req-offline-review", "url": "https://www.portland.gov/ppd"},
+    {"id": "guardrail-public-only", "url": "https://www.portland.gov/ppd"}
+  ],
+  "source_refs": ["src-portland-permits"],
+  "requirement_refs": ["req-offline-review"],
+  "guardrail_refs": ["guardrail-public-only"],
+  "offline_review_triggers": ["source freshness changed since last reviewed packet"],
+  "reviewers": [
+    {"owner": "ppd-offline-review"}
+  ],
+  "evidence": [
+    {
+      "label": "PPD permits landing page",
+      "url": "https://www.portland.gov/ppd/permits",
+      "notes": "Offline review required before relying on freshness status."
+    }
+  ],
+  "mutates_registry": false,
+  "mutates_requirements": false,
+  "mutates_guardrails": false,
+  "mutates_schedule": false,
+  "mutates_release_state": false
+}

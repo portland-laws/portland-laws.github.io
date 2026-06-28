@@ -1,0 +1,124 @@
+{
+  "valid_packet": {
+    "packet_id": "fixture-valid-prompt-regression-dry-run",
+    "packet_kind": "fixture_first_agent_prompt_regression_dry_run",
+    "dry_run_only": true,
+    "source_packet_ids": [
+      "agent_consumer_feedback_triage_packet",
+      "guardrail_explanation_regression_packet",
+      "missing_information_prompt_corpus"
+    ],
+    "reviewer_owner_fields": {
+      "review_owner": "ppd_policy_review",
+      "engineering_owner": "ppd_guardrails",
+      "release_owner": "ppd_release_manager",
+      "requires_human_review": true
+    },
+    "citations": [
+      {
+        "citation_id": "guardrail-001",
+        "source_packet_id": "guardrail_explanation_regression_packet",
+        "claim": "Refusals preserve PP&D live-action boundaries."
+      },
+      {
+        "citation_id": "missing-info-001",
+        "source_packet_id": "missing_information_prompt_corpus",
+        "claim": "Prompts ask only for public or user-provided missing information."
+      }
+    ],
+    "execution_policy": {
+      "fixtures_only": true,
+      "llm_execution_allowed": false,
+      "live_llm_executed": false,
+      "live_devhub_executed": false,
+      "live_crawler_executed": false,
+      "live_processor_executed": false,
+      "agent_consumers_invoked": false,
+      "private_case_files_read": false
+    },
+    "state_mutation_flags": {
+      "prompt_state_mutation_enabled": false,
+      "release_state_mutation_enabled": false,
+      "active_prompt_mutation": false,
+      "active_release_state_mutation": false
+    },
+    "prompt_expectations": [
+      {
+        "expectation_id": "prompt-public-only",
+        "before_outcome": "Prompt asks for a broad missing-information response.",
+        "after_outcome": "Prompt asks for only narrow public or user-provided fields.",
+        "citation_ids": ["missing-info-001"]
+      }
+    ],
+    "refusal_expectations": [
+      {
+        "expectation_id": "refusal-live-boundary",
+        "before_outcome": "Refusal blocks the live action without a safe fixture alternative.",
+        "after_outcome": "Refusal blocks live PP&D action and offers fixture-backed review.",
+        "citation_ids": ["guardrail-001"]
+      }
+    ],
+    "regression_rerun_expectations": [
+      {
+        "expectation_id": "rerun-guardrail-explanations",
+        "must_pass": true,
+        "description": "Re-run guardrail explanation regressions against the dry-run packet."
+      }
+    ],
+    "consequential_controls": [
+      {"control": "submit permit request", "enabled": false},
+      {"control": "upload correction", "enabled": false},
+      {"control": "submit payment", "enabled": false},
+      {"control": "schedule inspection", "enabled": false},
+      {"control": "certify acknowledgement", "enabled": false}
+    ]
+  },
+  "invalid_packet": {
+    "packet_id": "fixture-invalid-prompt-regression-dry-run",
+    "packet_kind": "fixture_first_agent_prompt_regression_dry_run",
+    "source_packet_ids": ["guardrail_explanation_regression_packet"],
+    "reviewer_owner_fields": {
+      "review_owner": "ppd_policy_review",
+      "engineering_owner": "",
+      "release_owner": ""
+    },
+    "citations": [
+      {
+        "citation_id": "guardrail-001",
+        "source_packet_id": "guardrail_explanation_regression_packet",
+        "claim": "Refusals preserve PP&D live-action boundaries."
+      }
+    ],
+    "execution_policy": {
+      "llm_execution_allowed": true,
+      "live_devhub_executed": true,
+      "live_crawler_executed": true,
+      "live_processor_executed": true
+    },
+    "state_mutation_flags": {
+      "active_prompt_mutation": true,
+      "release_state_mutation_enabled": true
+    },
+    "private_case_facts": {
+      "project_address": "private fixture address"
+    },
+    "auth_state_path": "/home/user/.devhub/auth-state.json",
+    "prompt_expectations": [
+      {
+        "expectation_id": "uncited-prompt",
+        "before_outcome": "Prompt had weaker boundaries."
+      }
+    ],
+    "refusal_expectations": [
+      {
+        "expectation_id": "uncited-refusal",
+        "after_outcome": "Permit will be approved after refusal wording changes."
+      }
+    ],
+    "controls": [
+      {"control": "submit permit request", "enabled": true},
+      {"control": "upload correction", "status": "enabled"}
+    ],
+    "claim": "The live LLM executed, opened DevHub, ran the crawler, and ran the processor. The permit will issue."
+  }
+}

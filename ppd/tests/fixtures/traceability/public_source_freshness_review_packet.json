@@ -1,0 +1,28 @@
+{
+  "packet_id": "freshness-review-fixture-20260528",
+  "sources": [
+    {
+      "source_id": "SRC-PPD-ONLINE-TOOLS",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "freshness_status": "current",
+      "last_reviewed_at": "2026-05-08"
+    },
+    {
+      "source_id": "SRC-PPD-FEE-PAYMENT-GUIDE",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "freshness_status": "stale",
+      "last_reviewed_at": "2026-04-01",
+      "stale_source_acknowledgement": {
+        "reviewer_owner": "ppd-fee-reviewer",
+        "acknowledged_at": "2026-05-28",
+        "rationale": "Fee payment guardrails remain blocked from payment execution while the source waits for refresh."
+      }
+    },
+    {
+      "source_id": "SRC-PPD-UNACKED-STALE",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "freshness_status": "stale",
+      "last_reviewed_at": "2026-03-15"
+    }
+  ]
+}

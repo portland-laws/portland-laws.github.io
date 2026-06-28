@@ -1,0 +1,353 @@
+{
+  "process_id": "ppd_fixture_single_dwelling_plan_review_v1",
+  "permit_type": "building permit requiring plan review",
+  "scope": "Fixture model for a residential single-dwelling building permit request submitted through DevHub with plan review.",
+  "stages": [
+    "pre-application research",
+    "account setup or manual login",
+    "property lookup",
+    "permit type selection",
+    "eligibility screening",
+    "document preparation",
+    "application data entry",
+    "upload staging",
+    "acknowledgement/certification review",
+    "submission",
+    "prescreen/intake",
+    "fee payment",
+    "plan review",
+    "corrections/checksheets",
+    "approval/issuance",
+    "inspections",
+    "closeout, cancellation, expiration, extension, or reactivation"
+  ],
+  "required_user_facts": [
+    {
+      "id": "fact_project_address",
+      "label": "project site address",
+      "stage": "property lookup"
+    },
+    {
+      "id": "fact_property_owner",
+      "label": "property owner name and contact information",
+      "stage": "application data entry"
+    },
+    {
+      "id": "fact_project_scope",
+      "label": "plain-language description of proposed building work",
+      "stage": "eligibility screening"
+    },
+    {
+      "id": "fact_applicant_role",
+      "label": "applicant role and authorization to apply",
+      "stage": "application data entry"
+    }
+  ],
+  "required_documents": [
+    {
+      "id": "doc_building_permit_application",
+      "label": "building permit application form",
+      "stage": "document preparation"
+    },
+    {
+      "id": "doc_plan_set_single_pdf",
+      "label": "complete drawing plan set as one PDF",
+      "stage": "document preparation"
+    },
+    {
+      "id": "doc_structural_calculations",
+      "label": "structural calculations when required by project scope",
+      "stage": "document preparation"
+    }
+  ],
+  "file_rules": [
+    {
+      "id": "file_rule_plans_single_pdf",
+      "label": "drawing plans must be combined into one plan-set PDF",
+      "stage": "document preparation",
+      "applies_to": "doc_plan_set_single_pdf"
+    },
+    {
+      "id": "file_rule_supporting_docs_separate_pdf",
+      "label": "applications, calculations, and supporting documents remain separate PDFs",
+      "stage": "document preparation",
+      "applies_to": "doc_structural_calculations"
+    },
+    {
+      "id": "file_rule_upload_only_after_review",
+      "label": "stage files for upload only after required document checks pass",
+      "stage": "upload staging",
+      "applies_to": "doc_plan_set_single_pdf"
+    }
+  ],
+  "fees": [
+    {
+      "id": "fee_trigger_intake_or_review_fee",
+      "label": "plan-review or intake fee may be due after PP&D intake determines payable fees",
+      "stage": "fee payment",
+      "trigger": "prescreen/intake has accepted the application for payable fees"
+    }
+  ],
+  "action_gates": [
+    {
+      "id": "gate_acknowledgement_review",
+      "label": "review applicant acknowledgements before continuing",
+      "stage": "acknowledgement/certification review",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true
+    },
+    {
+      "id": "gate_certification",
+      "label": "certification must be completed by the user, not automated",
+      "stage": "acknowledgement/certification review",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true
+    },
+    {
+      "id": "gate_final_submission",
+      "label": "final permit submission is a consequential action",
+      "stage": "submission",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true
+    },
+    {
+      "id": "gate_payment_submit",
+      "label": "final payment submission is a financial action",
+      "stage": "fee payment",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true
+    }
+  ],
+  "unsupported_paths": [
+    {
+      "id": "unsupported_standard_trade_purchase",
+      "label": "standard trade permit purchase flow is not this plan-review process",
+      "stage": "permit type selection",
+      "blocked_action": "purchase_standard_trade_permit"
+    },
+    {
+      "id": "unsupported_email_only_submission",
+      "label": "permit types requiring email or another manual path are outside this DevHub plan-review fixture",
+      "stage": "eligibility screening",
+      "blocked_action": "submit_email_only_permit_in_devhub"
+    },
+    {
+      "id": "unsupported_agent_certification",
+      "label": "agent cannot certify, submit, upload, or pay on behalf of the user unattended",
+      "stage": "acknowledgement/certification review",
+      "blocked_action": "automate_certification_submission_upload_or_payment"
+    }
+  ],
+  "next_safe_actions": [
+    {
+      "id": "safe_action_ask_project_address",
+      "label": "ask the user for the project address before property lookup",
+      "stage": "property lookup",
+      "requires": []
+    },
+    {
+      "id": "safe_action_identify_missing_documents",
+      "label": "compare known project facts to the required document checklist",
+      "stage": "document preparation",
+      "requires": [
+        "fact_project_address",
+        "fact_project_scope"
+      ]
+    },
+    {
+      "id": "safe_action_prepare_reversible_draft",
+      "label": "prepare reversible draft application values without submitting",
+      "stage": "application data entry",
+      "requires": [
+        "fact_property_owner",
+        "fact_applicant_role",
+        "doc_building_permit_application"
+      ]
+    },
+    {
+      "id": "safe_action_stage_upload_manifest",
+      "label": "create a local upload checklist without uploading files",
+      "stage": "upload staging",
+      "requires": [
+        "doc_plan_set_single_pdf",
+        "file_rule_plans_single_pdf",
+        "file_rule_supporting_docs_separate_pdf"
+      ]
+    },
+    {
+      "id": "safe_action_manual_handoff_for_acknowledgement",
+      "label": "stop and hand off to the attended user for acknowledgement and certification review",
+      "stage": "acknowledgement/certification review",
+      "requires": [
+        "gate_acknowledgement_review",
+        "gate_certification"
+      ]
+    }
+  ],
+  "dependency_graph": [
+    {
+      "id": "fact_project_address",
+      "stage": "property lookup",
+      "depends_on": []
+    },
+    {
+      "id": "fact_project_scope",
+      "stage": "eligibility screening",
+      "depends_on": [
+        "fact_project_address"
+      ]
+    },
+    {
+      "id": "unsupported_standard_trade_purchase",
+      "stage": "permit type selection",
+      "depends_on": []
+    },
+    {
+      "id": "unsupported_email_only_submission",
+      "stage": "eligibility screening",
+      "depends_on": [
+        "fact_project_scope"
+      ]
+    },
+    {
+      "id": "doc_building_permit_application",
+      "stage": "document preparation",
+      "depends_on": [
+        "fact_project_scope"
+      ]
+    },
+    {
+      "id": "doc_plan_set_single_pdf",
+      "stage": "document preparation",
+      "depends_on": [
+        "fact_project_scope"
+      ]
+    },
+    {
+      "id": "doc_structural_calculations",
+      "stage": "document preparation",
+      "depends_on": [
+        "fact_project_scope"
+      ]
+    },
+    {
+      "id": "file_rule_plans_single_pdf",
+      "stage": "document preparation",
+      "depends_on": [
+        "doc_plan_set_single_pdf"
+      ]
+    },
+    {
+      "id": "file_rule_supporting_docs_separate_pdf",
+      "stage": "document preparation",
+      "depends_on": [
+        "doc_structural_calculations"
+      ]
+    },
+    {
+      "id": "fact_property_owner",
+      "stage": "application data entry",
+      "depends_on": [
+        "fact_project_address"
+      ]
+    },
+    {
+      "id": "fact_applicant_role",
+      "stage": "application data entry",
+      "depends_on": [
+        "fact_project_address"
+      ]
+    },
+    {
+      "id": "file_rule_upload_only_after_review",
+      "stage": "upload staging",
+      "depends_on": [
+        "file_rule_plans_single_pdf",
+        "file_rule_supporting_docs_separate_pdf"
+      ]
+    },
+    {
+      "id": "gate_acknowledgement_review",
+      "stage": "acknowledgement/certification review",
+      "depends_on": [
+        "fact_property_owner",
+        "fact_applicant_role",
+        "file_rule_upload_only_after_review"
+      ]
+    },
+    {
+      "id": "gate_certification",
+      "stage": "acknowledgement/certification review",
+      "depends_on": [
+        "gate_acknowledgement_review"
+      ]
+    },
+    {
+      "id": "unsupported_agent_certification",
+      "stage": "acknowledgement/certification review",
+      "depends_on": [
+        "gate_certification"
+      ]
+    },
+    {
+      "id": "gate_final_submission",
+      "stage": "submission",
+      "depends_on": [
+        "gate_certification"
+      ]
+    },
+    {
+      "id": "fee_trigger_intake_or_review_fee",
+      "stage": "fee payment",
+      "depends_on": [
+        "gate_final_submission"
+      ]
+    },
+    {
+      "id": "gate_payment_submit",
+      "stage": "fee payment",
+      "depends_on": [
+        "fee_trigger_intake_or_review_fee"
+      ]
+    },
+    {
+      "id": "safe_action_ask_project_address",
+      "stage": "property lookup",
+      "depends_on": []
+    },
+    {
+      "id": "safe_action_identify_missing_documents",
+      "stage": "document preparation",
+      "depends_on": [
+        "fact_project_address",
+        "fact_project_scope"
+      ]
+    },
+    {
+      "id": "safe_action_prepare_reversible_draft",
+      "stage": "application data entry",
+      "depends_on": [
+        "fact_property_owner",
+        "fact_applicant_role",
+        "doc_building_permit_application"
+      ]
+    },
+    {
+      "id": "safe_action_stage_upload_manifest",
+      "stage": "upload staging",
+      "depends_on": [
+        "doc_plan_set_single_pdf",
+        "file_rule_plans_single_pdf",
+        "file_rule_supporting_docs_separate_pdf"
+      ]
+    },
+    {
+      "id": "safe_action_manual_handoff_for_acknowledgement",
+      "stage": "acknowledgement/certification review",
+      "depends_on": [
+        "gate_acknowledgement_review",
+        "gate_certification"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "source": "synthetic-redacted-devhub-accessible-tree",
+  "route": "/devhub/permits",
+  "nodes": [
+    {
+      "role": "button",
+      "name": "Submit application",
+      "route": "/devhub/permits/apply",
+      "action": "submit"
+    }
+  ]
+}

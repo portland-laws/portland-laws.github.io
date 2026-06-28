@@ -1,0 +1,60 @@
+{
+  "source_registry": {
+    "registry_id": "synthetic-portland-ppd-registry-v1",
+    "sources": {
+      "portland-ppd-appeals": {
+        "jurisdiction": "Portland, OR",
+        "title": "Synthetic Portland PP&D Appeals"
+      },
+      "portland-ppd-permits": {
+        "jurisdiction": "Portland, OR",
+        "title": "Synthetic Portland PP&D Permits"
+      }
+    }
+  },
+  "archive_manifest": {
+    "manifest_id": "synthetic-portland-ppd-archive-v1",
+    "entries": [
+      {
+        "archive_path": "fixtures/archive/appeal-001.pdf",
+        "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "document_id": "appeal-001"
+      },
+      {
+        "archive_path": "fixtures/archive/permit-001.pdf",
+        "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "document_id": "permit-001"
+      }
+    ]
+  },
+  "document_records": [
+    {
+      "archive_path": "fixtures/archive/appeal-001.pdf",
+      "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "document_id": "appeal-001",
+      "public_url": "https://www.portland.gov/ppd/appeals/appeal-001",
+      "source_id": "portland-ppd-appeals"
+    },
+    {
+      "archive_path": "fixtures/archive/permit-001.pdf",
+      "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "document_id": "permit-001",
+      "public_url": "https://www.portland.gov/ppd/permits/permit-001",
+      "source_id": "portland-ppd-permits"
+    }
+  ],
+  "citation_integrity": [
+    {
+      "citation_id": "appeal-001-cite-001",
+      "content_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "document_id": "appeal-001",
+      "locator": "p. 1"
+    },
+    {
+      "citation_id": "permit-001-cite-001",
+      "content_sha256": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "document_id": "permit-001",
+      "locator": "p. 2"
+    }
+  ]
+}

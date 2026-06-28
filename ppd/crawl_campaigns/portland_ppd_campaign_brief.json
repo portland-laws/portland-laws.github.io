@@ -1,0 +1,212 @@
+{
+  "brief_id": "portland_ppd_permit_family_crawl_campaign_2026_05_08",
+  "task": "checkbox-9350",
+  "last_verified": "2026-05-08",
+  "scope": {
+    "agency": "Portland Permitting & Development",
+    "jurisdiction": "Portland, Oregon",
+    "purpose": "Group public PP&D sources into bounded permit-family crawl batches for deterministic discovery, normalization, and recrawl planning.",
+    "storage_policy": "Store source URL, retrieved timestamp, content hash, document metadata, normalized extracted facts, and citations only. Do not store raw response bodies, private DevHub session state, auth traces, downloaded documents, or browser recordings.",
+    "allowlist_policy": "Use only hosts already approved for public PP&D discovery. This brief does not request or imply any allowlist expansion.",
+    "requires_authentication": false
+  },
+  "allowed_public_source_families": [
+    {
+      "family": "official_portland_gov_ppd_pages",
+      "host_examples": [
+        "www.portland.gov",
+        "portland.gov"
+      ],
+      "source_type": "html",
+      "notes": "Public PP&D and permit guidance pages used as canonical crawl seeds and citation anchors."
+    },
+    {
+      "family": "official_portland_gov_public_pdfs",
+      "host_examples": [
+        "www.portland.gov",
+        "portland.gov"
+      ],
+      "source_type": "pdf_download_endpoint",
+      "notes": "Public Portland.gov document download endpoints only. Persist hashes and extracted/cited facts, not raw PDFs."
+    },
+    {
+      "family": "devhub_public_routes",
+      "host_examples": [
+        "devhub.portlandoregon.gov"
+      ],
+      "source_type": "public_route",
+      "notes": "Public DevHub routes that expose permit search, status, or public permit detail views without login. No account, CAPTCHA, payment, submission, upload, or certification flows are in scope."
+    }
+  ],
+  "campaign_defaults": {
+    "max_depth": 2,
+    "max_pages_per_batch": 150,
+    "max_public_pdf_download_metadata_records_per_batch": 75,
+    "respect_robots_txt": true,
+    "dedupe_by": [
+      "canonical_url",
+      "content_hash"
+    ],
+    "body_retention": "forbidden",
+    "recrawl_jitter_days": 3
+  },
+  "permit_family_batches": [
+    {
+      "batch_id": "ppd_01_building_permits",
+      "permit_family": "building permits",
+      "priority": 1,
+      "recrawl_cadence": "weekly",
+      "public_html_seeds": [
+        "https://www.portland.gov/ppd/permits/building-permits",
+        "https://www.portland.gov/ppd/residential-permitting",
+        "https://www.portland.gov/ppd/commercial-permitting"
+      ],
+      "public_pdf_seeds": [
+        "https://www.portland.gov/ppd/documents/building-permit-application/download"
+      ],
+      "devhub_public_routes": [
+        "https://devhub.portlandoregon.gov/"
+      ],
+      "bounded_follow_patterns": [
+        "/ppd/permits/building-permits",
+        "/ppd/residential-permitting",
+        "/ppd/commercial-permitting",
+        "/ppd/documents/"
+      ],
+      "exclude_patterns": [
+        "/user/login",
+        "/session",
+        "/payment",
+        "/upload",
+        "/checkout"
+      ]
+    },
+    {
+      "batch_id": "ppd_02_trade_permits",
+      "permit_family": "trade permits",
+      "priority": 2,
+      "recrawl_cadence": "weekly",
+      "public_html_seeds": [
+        "https://www.portland.gov/ppd/permits/trade-permits",
+        "https://www.portland.gov/ppd/permits/electrical-permits",
+        "https://www.portland.gov/ppd/permits/mechanical-permits",
+        "https://www.portland.gov/ppd/permits/plumbing-permits"
+      ],
+      "public_pdf_seeds": [
+        "https://www.portland.gov/ppd/documents/electrical-permit-application/download",
+        "https://www.portland.gov/ppd/documents/mechanical-permit-application/download",
+        "https://www.portland.gov/ppd/documents/plumbing-permit-application/download"
+      ],
+      "devhub_public_routes": [
+        "https://devhub.portlandoregon.gov/"
+      ],
+      "bounded_follow_patterns": [
+        "/ppd/permits/trade-permits",
+        "/ppd/permits/electrical-permits",
+        "/ppd/permits/mechanical-permits",
+        "/ppd/permits/plumbing-permits",
+        "/ppd/documents/"
+      ],
+      "exclude_patterns": [
+        "/user/login",
+        "/session",
+        "/payment",
+        "/upload",
+        "/checkout"
+      ]
+    },
+    {
+      "batch_id": "ppd_03_zoning_land_use",
+      "permit_family": "zoning and land use reviews",
+      "priority": 3,
+      "recrawl_cadence": "weekly",
+      "public_html_seeds": [
+        "https://www.portland.gov/ppd/permits/zoning-permits",
+        "https://www.portland.gov/ppd/zoning-land-use",
+        "https://www.portland.gov/ppd/land-use-review"
+      ],
+      "public_pdf_seeds": [
+        "https://www.portland.gov/ppd/documents/zoning-permit-application/download"
+      ],
+      "devhub_public_routes": [
+        "https://devhub.portlandoregon.gov/"
+      ],
+      "bounded_follow_patterns": [
+        "/ppd/permits/zoning-permits",
+        "/ppd/zoning-land-use",
+        "/ppd/land-use-review",
+        "/ppd/documents/"
+      ],
+      "exclude_patterns": [
+        "/user/login",
+        "/session",
+        "/payment",
+        "/upload",
+        "/checkout"
+      ]
+    },
+    {
+      "batch_id": "ppd_04_public_records_status_and_inspections",
+      "permit_family": "public permit records, status, and inspections",
+      "priority": 4,
+      "recrawl_cadence": "daily_for_indexes_weekly_for_guidance",
+      "public_html_seeds": [
+        "https://www.portland.gov/ppd/permit-review-process",
+        "https://www.portland.gov/ppd/inspections",
+        "https://www.portland.gov/ppd/permit-status"
+      ],
+      "public_pdf_seeds": [],
+      "devhub_public_routes": [
+        "https://devhub.portlandoregon.gov/"
+      ],
+      "bounded_follow_patterns": [
+        "/ppd/permit-review-process",
+        "/ppd/inspections",
+        "/ppd/permit-status"
+      ],
+      "exclude_patterns": [
+        "/user/login",
+        "/session",
+        "/payment",
+        "/upload",
+        "/checkout",
+        "/apply",
+        "/submit"
+      ]
+    },
+    {
+      "batch_id": "ppd_05_fees_forms_and_code_guidance",
+      "permit_family": "fees, forms, and code guidance",
+      "priority": 5,
+      "recrawl_cadence": "monthly",
+      "public_html_seeds": [
+        "https://www.portland.gov/ppd/forms",
+        "https://www.portland.gov/ppd/fees",
+        "https://www.portland.gov/ppd/codes-rules-guides"
+      ],
+      "public_pdf_seeds": [
+        "https://www.portland.gov/ppd/documents/fee-schedule/download"
+      ],
+      "devhub_public_routes": [],
+      "bounded_follow_patterns": [
+        "/ppd/forms",
+        "/ppd/fees",
+        "/ppd/codes-rules-guides",
+        "/ppd/documents/"
+      ],
+      "exclude_patterns": [
+        "/user/login",
+        "/session",
+        "/payment",
+        "/upload",
+        "/checkout"
+      ]
+    }
+  ],
+  "validation_expectations": [
+    "Every seed URL must be public and unauthenticated.",
+    "Every batch must define a permit_family, recrawl_cadence, bounded_follow_patterns, and exclude_patterns.",
+    "No batch may include private DevHub routes, session files, auth state, traces, raw crawl output, downloaded documents, payment routes, upload routes, or submission automation.",
+    "Campaign execution should first run against deterministic fixtures under ppd/tests/fixtures before any live crawl."
+  ]
+}

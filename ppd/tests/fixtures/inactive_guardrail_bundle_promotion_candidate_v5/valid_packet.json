@@ -1,0 +1,287 @@
+{
+  "packet_type": "ppd.inactive_guardrail_promotion_candidate.v5",
+  "packet_version": "v5",
+  "fixture_first": true,
+  "inactive_candidate_only": true,
+  "post_recompile_agent_readiness_replay_v5_fixtures_only": true,
+  "manual_reviewer_signoff_required": true,
+  "source_freshness_clearance_required": true,
+  "rollback_checkpoints_required": true,
+  "post_promotion_smoke_required": true,
+  "agent_notification_notes_required": true,
+  "active_guardrail_mutation": false,
+  "active_guardrail_bundle_mutation": false,
+  "active_prompt_mutation": false,
+  "active_process_model_mutation": false,
+  "active_requirement_mutation": false,
+  "active_source_mutation": false,
+  "active_devhub_surface_mutation": false,
+  "active_release_state_mutation": false,
+  "active_mutation": false,
+  "guardrails_changed": false,
+  "guardrail_bundles_changed": false,
+  "promotion_executed": false,
+  "activation_executed": false,
+  "opens_devhub": false,
+  "reads_private_documents": false,
+  "uploads": false,
+  "submits": false,
+  "certifies": false,
+  "pays": false,
+  "schedules": false,
+  "legal_or_permitting_guarantee": false,
+  "replay_fixture_inputs": [
+    {
+      "fixture_role": "reviewer_packet_v5",
+      "path": "ppd/tests/fixtures/agent_readiness_replay_v5/guardrail_recompile_reviewer_packet_v5.json"
+    },
+    {
+      "fixture_role": "synthetic_agent_requests_v5",
+      "path": "ppd/tests/fixtures/agent_readiness_replay_v5/synthetic_agent_requests_v5.json"
+    }
+  ],
+  "replay_source_versions": [
+    "guardrail_recompile_reviewer_packet_v5",
+    "synthetic_agent_requests_v5"
+  ],
+  "inactive_promotion_rows": [
+    {
+      "candidate_id": "inactive-promotion-v5::missing-info-draft-only",
+      "row_id": "row::missing-info-draft-only",
+      "source_replay_response_id": "missing-info-draft-only",
+      "candidate_status": "inactive_candidate_only",
+      "activation_allowed": false,
+      "derived_from_replay_v5": true,
+      "missing_information_prompt_count": 2,
+      "refused_action_count": 0,
+      "citation_count": 1
+    },
+    {
+      "candidate_id": "inactive-promotion-v5::stale-and-conflicting-evidence",
+      "row_id": "row::stale-and-conflicting-evidence",
+      "source_replay_response_id": "stale-and-conflicting-evidence",
+      "candidate_status": "inactive_candidate_only",
+      "activation_allowed": false,
+      "derived_from_replay_v5": true,
+      "missing_information_prompt_count": 0,
+      "refused_action_count": 0,
+      "citation_count": 1
+    },
+    {
+      "candidate_id": "inactive-promotion-v5::confirmation-and-refusals",
+      "row_id": "row::confirmation-and-refusals",
+      "source_replay_response_id": "confirmation-and-refusals",
+      "candidate_status": "inactive_candidate_only",
+      "activation_allowed": false,
+      "derived_from_replay_v5": true,
+      "missing_information_prompt_count": 0,
+      "refused_action_count": 2,
+      "citation_count": 2
+    }
+  ],
+  "activation_prerequisites": [
+    {
+      "prerequisite_id": "prereq::missing-info-draft-only",
+      "candidate_id": "inactive-promotion-v5::missing-info-draft-only",
+      "requires_replay_v5_response": true,
+      "requires_manual_reviewer_signoff": true,
+      "requires_unresolved_hold_clearance": true,
+      "requires_source_freshness_clearance": true,
+      "requires_rollback_checkpoint": true,
+      "requires_post_promotion_smoke_plan": true,
+      "activation_allowed": false
+    },
+    {
+      "prerequisite_id": "prereq::stale-and-conflicting-evidence",
+      "candidate_id": "inactive-promotion-v5::stale-and-conflicting-evidence",
+      "requires_replay_v5_response": true,
+      "requires_manual_reviewer_signoff": true,
+      "requires_unresolved_hold_clearance": true,
+      "requires_source_freshness_clearance": true,
+      "requires_rollback_checkpoint": true,
+      "requires_post_promotion_smoke_plan": true,
+      "activation_allowed": false
+    },
+    {
+      "prerequisite_id": "prereq::confirmation-and-refusals",
+      "candidate_id": "inactive-promotion-v5::confirmation-and-refusals",
+      "requires_replay_v5_response": true,
+      "requires_manual_reviewer_signoff": true,
+      "requires_unresolved_hold_clearance": true,
+      "requires_source_freshness_clearance": true,
+      "requires_rollback_checkpoint": true,
+      "requires_post_promotion_smoke_plan": true,
+      "activation_allowed": false
+    }
+  ],
+  "unresolved_hold_inventory": [
+    {
+      "hold_id": "hold::missing-info-draft-only",
+      "candidate_id": "inactive-promotion-v5::missing-info-draft-only",
+      "hold_status": "unresolved_pending_manual_review",
+      "promotion_blocked": true,
+      "stale_evidence_block": false,
+      "conflicting_evidence_block": false,
+      "refused_actions_present": false
+    },
+    {
+      "hold_id": "hold::stale-and-conflicting-evidence",
+      "candidate_id": "inactive-promotion-v5::stale-and-conflicting-evidence",
+      "hold_status": "unresolved_pending_manual_review",
+      "promotion_blocked": true,
+      "stale_evidence_block": true,
+      "conflicting_evidence_block": true,
+      "refused_actions_present": false
+    },
+    {
+      "hold_id": "hold::confirmation-and-refusals",
+      "candidate_id": "inactive-promotion-v5::confirmation-and-refusals",
+      "hold_status": "unresolved_pending_manual_review",
+      "promotion_blocked": true,
+      "stale_evidence_block": false,
+      "conflicting_evidence_block": false,
+      "refused_actions_present": true
+    }
+  ],
+  "reviewer_signoff_placeholders": [
+    {
+      "placeholder_id": "signoff::missing-info-draft-only",
+      "candidate_id": "inactive-promotion-v5::missing-info-draft-only",
+      "signoff_status": "pending_manual_review",
+      "reviewer": "",
+      "signed_at": ""
+    },
+    {
+      "placeholder_id": "signoff::stale-and-conflicting-evidence",
+      "candidate_id": "inactive-promotion-v5::stale-and-conflicting-evidence",
+      "signoff_status": "pending_manual_review",
+      "reviewer": "",
+      "signed_at": ""
+    },
+    {
+      "placeholder_id": "signoff::confirmation-and-refusals",
+      "candidate_id": "inactive-promotion-v5::confirmation-and-refusals",
+      "signoff_status": "pending_manual_review",
+      "reviewer": "",
+      "signed_at": ""
+    }
+  ],
+  "source_freshness_clearance_criteria": [
+    {
+      "clearance_id": "freshness::missing-info-draft-only",
+      "candidate_id": "inactive-promotion-v5::missing-info-draft-only",
+      "clearance_status": "pending_public_source_freshness_review",
+      "all_citations_have_fresh_source_review": false,
+      "stale_or_conflicting_evidence_resolved": false,
+      "activation_allowed": false
+    },
+    {
+      "clearance_id": "freshness::stale-and-conflicting-evidence",
+      "candidate_id": "inactive-promotion-v5::stale-and-conflicting-evidence",
+      "clearance_status": "pending_public_source_freshness_review",
+      "all_citations_have_fresh_source_review": false,
+      "stale_or_conflicting_evidence_resolved": false,
+      "activation_allowed": false
+    },
+    {
+      "clearance_id": "freshness::confirmation-and-refusals",
+      "candidate_id": "inactive-promotion-v5::confirmation-and-refusals",
+      "clearance_status": "pending_public_source_freshness_review",
+      "all_citations_have_fresh_source_review": false,
+      "stale_or_conflicting_evidence_resolved": false,
+      "activation_allowed": false
+    }
+  ],
+  "rollback_checkpoint_rows": [
+    {
+      "checkpoint_id": "rollback::missing-info-draft-only",
+      "candidate_id": "inactive-promotion-v5::missing-info-draft-only",
+      "checkpoint_status": "planned_not_executed",
+      "rollback_target": "discard_inactive_candidate_only",
+      "active_state_changed": false
+    },
+    {
+      "checkpoint_id": "rollback::stale-and-conflicting-evidence",
+      "candidate_id": "inactive-promotion-v5::stale-and-conflicting-evidence",
+      "checkpoint_status": "planned_not_executed",
+      "rollback_target": "discard_inactive_candidate_only",
+      "active_state_changed": false
+    },
+    {
+      "checkpoint_id": "rollback::confirmation-and-refusals",
+      "candidate_id": "inactive-promotion-v5::confirmation-and-refusals",
+      "checkpoint_status": "planned_not_executed",
+      "rollback_target": "discard_inactive_candidate_only",
+      "active_state_changed": false
+    }
+  ],
+  "post_promotion_smoke_checks": [
+    {
+      "smoke_check_id": "smoke::missing-info-draft-only",
+      "candidate_id": "inactive-promotion-v5::missing-info-draft-only",
+      "smoke_status": "planned_not_run_for_inactive_candidate",
+      "requires_separate_post_promotion_task": true,
+      "checks_agent_readiness_replay": true
+    },
+    {
+      "smoke_check_id": "smoke::stale-and-conflicting-evidence",
+      "candidate_id": "inactive-promotion-v5::stale-and-conflicting-evidence",
+      "smoke_status": "planned_not_run_for_inactive_candidate",
+      "requires_separate_post_promotion_task": true,
+      "checks_agent_readiness_replay": true
+    },
+    {
+      "smoke_check_id": "smoke::confirmation-and-refusals",
+      "candidate_id": "inactive-promotion-v5::confirmation-and-refusals",
+      "smoke_status": "planned_not_run_for_inactive_candidate",
+      "requires_separate_post_promotion_task": true,
+      "checks_agent_readiness_replay": true
+    }
+  ],
+  "agent_notification_notes": [
+    {
+      "note_id": "notify::missing-info-draft-only",
+      "candidate_id": "inactive-promotion-v5::missing-info-draft-only",
+      "notification_status": "draft_note_only",
+      "message": "Inactive candidate assembled from replay v5 fixtures; keep guardrails inactive until manual review, freshness clearance, rollback checkpoint review, and post-promotion smoke planning are complete."
+    },
+    {
+      "note_id": "notify::stale-and-conflicting-evidence",
+      "candidate_id": "inactive-promotion-v5::stale-and-conflicting-evidence",
+      "notification_status": "draft_note_only",
+      "message": "Inactive candidate assembled from replay v5 fixtures; keep guardrails inactive until manual review, freshness clearance, rollback checkpoint review, and post-promotion smoke planning are complete."
+    },
+    {
+      "note_id": "notify::confirmation-and-refusals",
+      "candidate_id": "inactive-promotion-v5::confirmation-and-refusals",
+      "notification_status": "draft_note_only",
+      "message": "Inactive candidate assembled from replay v5 fixtures; keep guardrails inactive until manual review, freshness clearance, rollback checkpoint review, and post-promotion smoke planning are complete."
+    }
+  ],
+  "offline_validation_commands": [
+    [
+      "python3",
+      "-m",
+      "py_compile",
+      "ppd/agent_readiness/inactive_guardrail_bundle_promotion_candidate_v5.py"
+    ],
+    [
+      "python3",
+      "-m",
+      "unittest",
+      "ppd.tests.test_inactive_guardrail_bundle_promotion_candidate_v5"
+    ],
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ]
+}

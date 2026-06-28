@@ -1,0 +1,36 @@
+{
+  "inactive_activation_rehearsal_checklist_rows": [
+    {
+      "row_type": "synthetic_inactive_activation_rehearsal_checklist_row",
+      "synthetic": true,
+      "release_state": "inactive",
+      "activation_enabled": false,
+      "checklist_row_id": "checklist-row-address-draft",
+      "scenario_key": "address-draft",
+      "offline_probe": "Confirm the offline address draft probe remains planned and cites placeholder evidence.",
+      "guardrail_bundle_id": "guardrail-bundle-address-draft-v1",
+      "agent_api_smoke_check": "Replay the synthetic agent API missing-information response without network calls.",
+      "action_journal_redaction_check": "Verify journal output contains only placeholder identifiers and no private values.",
+      "stale_source_hold_check": "Hold the agent response when placeholder source freshness is stale.",
+      "reviewer_escalation_route": "Route stale or conflicting placeholder evidence to ppd-reviewer-placeholder.",
+      "rollback_trigger_threshold": "Rollback rehearsal is required after one failed offline probe for this checklist row.",
+      "source_evidence_placeholder_ids": ["placeholder-evidence-address-draft"]
+    },
+    {
+      "row_type": "synthetic_inactive_activation_rehearsal_checklist_row",
+      "synthetic": true,
+      "release_state": "inactive",
+      "activation_enabled": false,
+      "checklist_row_id": "checklist-row-upload-gate",
+      "scenario_key": "upload-gate",
+      "offline_probe": "Confirm the offline upload gate probe blocks consequential action placeholders.",
+      "guardrail_bundle_id": "guardrail-bundle-upload-gate-v1",
+      "agent_api_smoke_check": "Replay the synthetic agent API upload-gate refusal response without network calls.",
+      "action_journal_redaction_check": "Verify journal output omits private upload values and local paths.",
+      "stale_source_hold_check": "Hold the agent response when upload guidance placeholder evidence is stale.",
+      "reviewer_escalation_route": "Route upload-gate ambiguity to ppd-reviewer-placeholder.",
+      "rollback_trigger_threshold": "Rollback rehearsal is required after one failed redaction or stale-source hold check.",
+      "source_evidence_placeholder_ids": ["placeholder-evidence-upload-gate"]
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "fixture_id": "synthetic-fillable-pdf-fields-v1-fixture",
+  "fixture_kind": "synthetic_fillable_pdf_fields_v1",
+  "fixture_first": true,
+  "synthetic": true,
+  "pdf_fixture_id": "synthetic-local-preview-form",
+  "opens_devhub": false,
+  "reads_private_documents": false,
+  "downloads_forms": false,
+  "writes_pdf": false,
+  "fields": [
+    {
+      "field_id": "pdf-field::site-address",
+      "pdf_field_name": "SiteAddressText",
+      "field_type": "text",
+      "required_fact_ids": ["fact::site-address"],
+      "source_evidence_ids": ["src::devhub-submit-guide::dynamic-questions"]
+    },
+    {
+      "field_id": "pdf-field::property-owner",
+      "pdf_field_name": "PropertyOwnerText",
+      "field_type": "text",
+      "required_fact_ids": ["fact::property-owner"],
+      "source_evidence_ids": ["src::single-pdf-process::separate-documents"]
+    },
+    {
+      "field_id": "pdf-field::applicant-email",
+      "pdf_field_name": "ApplicantEmailText",
+      "field_type": "text",
+      "required_fact_ids": ["fact::applicant-email"],
+      "source_evidence_ids": ["src::devhub-submit-guide::dynamic-questions"]
+    }
+  ]
+}

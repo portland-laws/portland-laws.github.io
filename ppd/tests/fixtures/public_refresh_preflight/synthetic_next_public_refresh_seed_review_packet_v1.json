@@ -1,0 +1,58 @@
+{
+  "packet_id": "synthetic-next-public-refresh-seed-review-packet-v1",
+  "packet_version": "2026-06-01.fixture-only",
+  "rows": [
+    {
+      "seed_id": "ppd-permit-search-index-placeholder",
+      "seed_url": "https://www.portland.gov/ppd/permits/placeholder-search-index",
+      "robots_user_agent": "PortlandPolicyDocsFixtureBot",
+      "robots_expected": "review robots allowance from fixture placeholder before any future public refresh",
+      "allowlist_decision": "allow",
+      "canonical_url_expectation": "https://www.portland.gov/ppd/permits/placeholder-search-index",
+      "request_methods": ["GET", "HEAD"],
+      "rate_limit_note": "Use one synthetic planning row only; any future live request must be separately approved and rate limited outside this checklist.",
+      "archive_manifest_expectation": {
+        "metadata_only": true,
+        "raw_document_storage": false,
+        "expected_fields": ["seed_id", "canonical_url", "source_anchor_title", "retrieved_at_placeholder", "reviewer_route", "skip_reason"]
+      },
+      "skip_reason_expectation": "Skip if robots, canonical URL, or official source anchor cannot be confirmed by reviewer before refresh.",
+      "reviewer_routing": "PP&D public refresh reviewer queue",
+      "rollback_note": "Remove the seed from the next public refresh allowlist fixture and regenerate only metadata manifests.",
+      "source_anchor_placeholders": [
+        {
+          "kind": "official_source_anchor_placeholder",
+          "title": "Portland PP&D permits landing page placeholder",
+          "url_placeholder": "https://www.portland.gov/ppd/permits",
+          "expected_use": "Anchor the seed to an official PP&D public permits source without fetching it during validation."
+        }
+      ]
+    },
+    {
+      "seed_id": "ppd-code-guide-placeholder",
+      "seed_url": "https://www.portland.gov/ppd/code-guide/placeholder",
+      "robots_user_agent": "PortlandPolicyDocsFixtureBot",
+      "robots_expected": "review robots allowance from fixture placeholder before any future public refresh",
+      "allowlist_decision": "skip",
+      "canonical_url_expectation": "https://www.portland.gov/ppd/code-guide/placeholder",
+      "request_methods": ["HEAD"],
+      "rate_limit_note": "No request is made by this checklist; HEAD is the maximum future method if separately approved.",
+      "archive_manifest_expectation": {
+        "metadata_only": true,
+        "raw_document_storage": false,
+        "expected_fields": ["seed_id", "canonical_url", "source_anchor_title", "retrieved_at_placeholder", "reviewer_route", "skip_reason"]
+      },
+      "skip_reason_expectation": "Skip until an official source anchor and canonical URL are verified by a reviewer.",
+      "reviewer_routing": "PP&D code policy reviewer queue",
+      "rollback_note": "Keep this seed excluded from the public refresh allowlist until fixture review is updated.",
+      "source_anchor_placeholders": [
+        {
+          "kind": "official_source_anchor_placeholder",
+          "title": "Portland PP&D code and rules placeholder",
+          "url_placeholder": "https://www.portland.gov/ppd/code-rules",
+          "expected_use": "Anchor the skipped seed to an official PP&D source category without opening the source during validation."
+        }
+      ]
+    }
+  ]
+}

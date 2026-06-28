@@ -1,0 +1,39 @@
+{
+  "packet_type": "guardrail_recompilation_rehearsal",
+  "changes": [
+    {
+      "kind": "predicate_change",
+      "predicate": "allows_upload_without_confirmation",
+      "new_value": true
+    }
+  ],
+  "refusal_coverage": {
+    "payment": true,
+    "upload": true,
+    "submission": true
+  },
+  "exact_confirmation_gates": {
+    "payment": true,
+    "submission": true
+  },
+  "private_facts": {
+    "access_token": "redacted-token-placeholder"
+  },
+  "reviewer_prompts": [
+    {
+      "id": "review-sensitive-action-gap",
+      "resolved": true,
+      "unresolved": true,
+      "resolution": "TODO"
+    }
+  ],
+  "target_environment": "production",
+  "production_activation": true,
+  "bundle_operations": [
+    {
+      "target": "active",
+      "operation": "update",
+      "active_guardrail_bundle": "current"
+    }
+  ]
+}

@@ -1,0 +1,279 @@
+{
+  "packet_id": "fixture-requirement-regeneration-promotion-decision-input-001",
+  "reviewer_acknowledgement_packet": {
+    "packet_id": "requirement-regeneration-acknowledgement-ppd-devhub-file-standards-2026-05-08",
+    "packet_type": "ppd.requirement_regeneration_reviewer_acknowledgement.v1",
+    "mode": "fixture_first",
+    "live_crawl_required": false,
+    "private_artifact_persistence": "forbidden",
+    "source_acknowledgements": [
+      {
+        "source_id": "src.ppd.spp-file-naming-standards",
+        "queue_item_id": "queue.file-naming-standards.001",
+        "reviewer_decision": "accepted_for_regeneration",
+        "decision_rationale": "Fixture reviewer accepted citation refresh and metadata-only regeneration.",
+        "affected_requirement_ids": [
+          "req.file-naming.single-pdf"
+        ],
+        "affected_process_model_ids": [
+          "process.building-permit-plan-review"
+        ],
+        "affected_guardrail_bundle_ids": [
+          "guardrail.bundle.building-permit-plan-review.active"
+        ],
+        "required_synthetic_fixtures": [
+          "fixture.file-naming.current-html"
+        ],
+        "acknowledged_required_synthetic_fixtures": [
+          "fixture.file-naming.current-html"
+        ],
+        "missing_required_synthetic_fixtures": [],
+        "citation_refresh_scope": [
+          "file_naming_rule",
+          "upload_document_separation"
+        ],
+        "human_review_owners": [
+          "requirements-reviewer"
+        ],
+        "acknowledged_human_review_owners": [
+          "requirements-reviewer"
+        ],
+        "missing_human_review_owner_acknowledgements": [],
+        "inherited_queue_activation_block": true,
+        "blocked_downstream_activation_until_acknowledgement_complete": false,
+        "acknowledgement_complete": true
+      }
+    ],
+    "acknowledgement_complete": true,
+    "downstream_activation_blocked": false,
+    "activation_block_reason": "acknowledgement_complete_validation_required_before_activation"
+  },
+  "regenerated_requirement_candidate": {
+    "packet_type": "regenerated_requirement_candidate",
+    "candidate_id": "regenerated-requirement-candidate-file-standards-001",
+    "candidate_status": "draft_requires_human_review",
+    "candidate_mode": "fixture_first_review_only",
+    "affected_process_ids": [
+      "process.building-permit-plan-review"
+    ],
+    "requirement_diffs": [
+      {
+        "diff_id": "diff.req.file-naming.single-pdf.001",
+        "requirement_id": "req.file-naming.single-pdf",
+        "change_type": "citation_refresh",
+        "requirement_type": "document_requirement",
+        "source_evidence_ids": [
+          "ev.file-standards.current.001"
+        ],
+        "impact_hints": {
+          "process_stage_ids": [
+            "document_preparation",
+            "upload_staging"
+          ],
+          "required_document_ids": [
+            "doc.plan-set-single-pdf"
+          ],
+          "reviewer_prompt": "Confirm file naming and separate-document guidance before any process or guardrail promotion."
+        }
+      }
+    ]
+  },
+  "process_model_impact_candidate": {
+    "packet_type": "process_model_impact_candidate",
+    "candidate_id": "process-model-impact-file-standards-001",
+    "candidate_status": "draft_requires_human_review",
+    "candidate_mode": "fixture_first_review_only",
+    "source_regenerated_requirement_candidate_id": "regenerated-requirement-candidate-file-standards-001",
+    "input_requirement_diff_ids": [
+      "diff.req.file-naming.single-pdf.001"
+    ],
+    "affected_process_model_ids": [
+      "process.building-permit-plan-review"
+    ],
+    "does_not_replace_active_process_models": true,
+    "active_process_model_mutated": false,
+    "promotion": {
+      "target": "candidate",
+      "promote_to_active": false
+    },
+    "affected_process_stages": [
+      {
+        "process_model_id": "process.building-permit-plan-review",
+        "stage_id": "document_preparation",
+        "impact_kinds": [
+          "file_rule"
+        ],
+        "source_requirement_diff_ids": [
+          "diff.req.file-naming.single-pdf.001"
+        ]
+      },
+      {
+        "process_model_id": "process.building-permit-plan-review",
+        "stage_id": "upload_staging",
+        "impact_kinds": [
+          "file_rule"
+        ],
+        "source_requirement_diff_ids": [
+          "diff.req.file-naming.single-pdf.001"
+        ]
+      }
+    ],
+    "affected_user_facts": [],
+    "affected_required_documents": [
+      {
+        "process_model_id": "process.building-permit-plan-review",
+        "required_document_id": "doc.plan-set-single-pdf",
+        "impact_kinds": [
+          "file_rule"
+        ],
+        "source_requirement_diff_ids": [
+          "diff.req.file-naming.single-pdf.001"
+        ]
+      }
+    ],
+    "affected_unsupported_paths": [],
+    "reviewer_prompts": [
+      {
+        "prompt_id": "review-process-model-impact-diff.req.file-naming.single-pdf.001",
+        "source_requirement_diff_id": "diff.req.file-naming.single-pdf.001",
+        "impact_kind": "file_rule",
+        "prompt": "Confirm file naming and separate-document guidance before any process or guardrail promotion.",
+        "blocks_process_model_promotion": true,
+        "status": "unresolved"
+      }
+    ]
+  },
+  "guardrail_recompilation_rehearsal": {
+    "packet_type": "guardrail_recompilation_rehearsal",
+    "rehearsal_id": "guardrail-recompilation-rehearsal-file-standards-001",
+    "rehearsal_mode": "fixture_first_disabled_review_only",
+    "candidate_status": "draft_rehearsal_only",
+    "source_process_model_impact_candidate_id": "process-model-impact-file-standards-001",
+    "source_requirement_diff_ids": [
+      "diff.req.file-naming.single-pdf.001"
+    ],
+    "affected_process_model_ids": [
+      "process.building-permit-plan-review"
+    ],
+    "active_guardrail_bundle_id": "guardrail.bundle.building-permit-plan-review.active",
+    "active_guardrail_bundle_revision": "rev.2026-05-08",
+    "draft_predicate_changes": [
+      {
+        "predicate_id": "draft.process-building-permit-plan-review.required-document-review-required.doc-plan-set-single-pdf",
+        "change_type": "add_or_update_draft_predicate",
+        "predicate_kind": "required_document_review_required",
+        "process_model_id": "process.building-permit-plan-review",
+        "required_document_id": "doc.plan-set-single-pdf",
+        "impact_kinds": [
+          "file_rule"
+        ],
+        "source_requirement_diff_ids": [
+          "diff.req.file-naming.single-pdf.001"
+        ],
+        "review_status": "draft_requires_human_review",
+        "activation_allowed": false
+      }
+    ],
+    "exact_confirmation_gate_coverage": [
+      {
+        "action": "upload permit documents",
+        "requires_exact_confirmation": true,
+        "required_confirmation_text": "I am present and confirm uploading the selected permit documents.",
+        "source_requirement_diff_ids": [
+          "diff.req.file-naming.single-pdf.001"
+        ]
+      }
+    ],
+    "refused_consequential_action_coverage": [
+      {
+        "action": "upload permit documents",
+        "refuse_until_attended_exact_confirmation": true,
+        "source_requirement_diff_ids": [
+          "diff.req.file-naming.single-pdf.001"
+        ]
+      }
+    ],
+    "explanation_template_deltas": [
+      {
+        "template_id": "draft.explain.file-naming-refresh",
+        "review_status": "draft_requires_human_review",
+        "source_requirement_diff_ids": [
+          "diff.req.file-naming.single-pdf.001"
+        ]
+      }
+    ],
+    "rollback_references": [
+      {
+        "rollback_ref_id": "rollback.guardrail-bundle-building-permit-plan-review-active.rev-2026-05-08",
+        "active_guardrail_bundle_id": "guardrail.bundle.building-permit-plan-review.active",
+        "active_guardrail_bundle_revision": "rev.2026-05-08",
+        "restore_action": "retain_active_bundle_and_discard_rehearsal_candidate",
+        "activation_blocked": true
+      }
+    ],
+    "activation_state": {
+      "disabled": true,
+      "activation_enabled": false,
+      "promotion_target": "none",
+      "requires_human_review_before_activation": true,
+      "reason": "Recompilation rehearsal is fixture-first and must not replace the active guardrail bundle."
+    }
+  },
+  "regenerated_agent_regression_matrix": {
+    "matrix_id": "agent-regression-matrix-file-standards-001",
+    "generated_at": "2026-05-08T00:00:00+00:00",
+    "use_live_llm": false,
+    "cases": [
+      {
+        "case_id": "case.upload-documents-remains-blocked",
+        "action": "upload permit documents",
+        "expected": {
+          "outcome": "blocked with manual_handoff until attended exact confirmation",
+          "source_evidence_ids": [
+            "ev.file-standards.current.001"
+          ]
+        }
+      },
+      {
+        "case_id": "case.local-draft-remains-safe",
+        "action": "prepare local draft filename checklist",
+        "expected": {
+          "outcome": "allowed as reversible local draft assistance",
+          "source_evidence_ids": [
+            "ev.file-standards.current.001"
+          ]
+        }
+      }
+    ],
+    "sources": [
+      {
+        "source_id": "src.ppd.spp-file-naming-standards",
+        "freshness_status": "current",
+        "last_verified_at": "2026-05-08T00:00:00+00:00"
+      }
+    ]
+  },
+  "reviewer_promotion_decisions": [
+    {
+      "decision_id": "decision.promote.file-naming-citation-refresh",
+      "target_id": "diff.req.file-naming.single-pdf.001",
+      "target_type": "requirement_diff",
+      "decision": "promote",
+      "decision_rationale": "Promote the regenerated candidate metadata to the next review queue while keeping active artifacts unchanged.",
+      "citation_refresh_scope_ids": [
+        "ev.file-standards.current.001"
+      ]
+    },
+    {
+      "decision_id": "decision.defer.upload-activation",
+      "target_id": "upload permit documents",
+      "target_type": "downstream_activation",
+      "decision": "defer",
+      "defer_reason": "consequential_upload_activation_requires_attended_exact_confirmation",
+      "decision_rationale": "Do not activate upload-facing guardrails from this packet.",
+      "citation_refresh_scope_ids": [
+        "upload_document_separation"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "packet_type": "ppd.operator_promotion_approval_packet.v1",
+  "packet_id": "operator-promotion-approval-fixture",
+  "fixture_only": true,
+  "approval_status": "approved_for_fixture_audit_candidate",
+  "approval_scope": "fixture_audit_candidate_only",
+  "readiness_status": "approved",
+  "approved_source_packet_ids": [
+    "dry-run-sequence-fixture"
+  ],
+  "ledger_links": [
+    {
+      "ledger_id": "ppd-readiness-ledger",
+      "entry_id": "fixture-entry-approval"
+    }
+  ],
+  "reviewer_signoffs": [
+    {
+      "reviewer_id": "release-owner",
+      "reviewer_role": "ppd_release_operator",
+      "approval_id": "approval-fixture-audit-candidate",
+      "signed_at": "2026-05-29T00:00:00Z",
+      "source_evidence_ids": [
+        "evidence-operator-approval"
+      ]
+    }
+  ],
+  "blockers": [],
+  "prerequisite_packets": [
+    {
+      "packet_id": "dry-run-sequence-fixture",
+      "version": "v1",
+      "expected_version": "v1",
+      "freshness_status": "current"
+    }
+  ],
+  "production_promotion": {
+    "production_promotion_enabled": false
+  },
+  "no_active_write_attestations": [
+    {
+      "attestation_id": "approval-fixture-only",
+      "attested": true,
+      "summary": "Approval is limited to building audit-entry candidates from committed fixtures and does not authorize active-state writes.",
+      "source_evidence_ids": [
+        "evidence-operator-approval"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+Implemented the TODO by refining deterministic modal family cue rules in the registry and adding focused regressions.
+
+Changes made:
+- Updated temporal cues in [modal_registry.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-bg-tmux-20260517T145728Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-bg-tmux-20260517T145728Z-codex-packet-000001-20260517_145739/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py:158):
+1. Removed overly broad temporal cue `by` (to avoid agentive false positives like “administered by”).
+2. Added statutory temporal phrases: `not later than`, `no later than`, `not less often than`, `at least every`, plus `from time to time`, `periodically`, `thereafter`.
+
+- Added parser regression tests in [test_legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-bg-tmux-20260517T145728Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-bg-tmux-20260517T145728Z-codex-packet-000001-20260517_145739/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py:39):
+1. Frequency phrase is recognized as temporal.
+2. Agentive `by` does not trigger temporal family.
+
+- Added spaCy codec regression in [test_spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-bg-tmux-20260517T145728Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-bg-tmux-20260517T145728Z-codex-packet-000001-20260517_145739/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py:60) to confirm the same behavior through encoder cue extraction.
+
+Validation:
+- Attempted pytest subset, but this worktree currently errors before tests run due unrelated bootstrap issue in repo root `__init__.py` (`NameError: __path__ is not defined`).
+- Ran direct runtime assertions with `python3` for the new cue logic and spaCy extraction; checks passed.
+
+Patch artifact:
+- Generated `changes.patch` at [changes.patch](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-bg-tmux-20260517T145728Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-bg-tmux-20260517T145728Z-codex-packet-000001-20260517_145739/changes.patch).

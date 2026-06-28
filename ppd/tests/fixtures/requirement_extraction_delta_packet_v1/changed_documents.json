@@ -1,0 +1,82 @@
+{
+  "changed_document_rows": [
+    {
+      "document_id": "synthetic-html-apply-permits",
+      "source_id": "ppd-public-apply-permits",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "title": "Synthetic Apply for Permits Page",
+      "document_type": "public_html",
+      "change_type": "added",
+      "content_hash": "sha256:html-added-v1",
+      "previous_content_hash": null,
+      "stale_evidence_ids": [],
+      "extracted_statements": [
+        {
+          "requirement_type": "document_requirement",
+          "subject": "applicant",
+          "action": "prepare",
+          "object": "complete permit application materials before requesting plan review",
+          "conditions": ["permit request requires plan review"],
+          "deadline_or_temporal_scope": "before application submission",
+          "permit_types": ["building", "trade_with_plan_review"],
+          "process_stage": "document preparation",
+          "quote": "Applicants must prepare complete application materials before requesting plan review.",
+          "locator": "html:#application-materials",
+          "confidence": 0.86
+        }
+      ]
+    },
+    {
+      "document_id": "synthetic-pdf-single-pdf-process",
+      "source_id": "ppd-public-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "title": "Synthetic Single PDF Process Handout",
+      "document_type": "public_pdf",
+      "change_type": "changed",
+      "content_hash": "sha256:pdf-changed-v2",
+      "previous_content_hash": "sha256:pdf-changed-v1",
+      "stale_evidence_ids": ["evidence_old_single_pdf_001", "evidence_old_single_pdf_002"],
+      "extracted_statements": [
+        {
+          "requirement_type": "document_requirement",
+          "subject": "applicant",
+          "action": "upload",
+          "object": "drawing plan set as one PDF",
+          "conditions": ["plans are required"],
+          "deadline_or_temporal_scope": "during upload staging",
+          "permit_types": ["building"],
+          "process_stage": "upload staging",
+          "quote": "Drawing plan sheets are uploaded together as one PDF.",
+          "locator": "pdf:page=2",
+          "confidence": 0.82
+        },
+        {
+          "requirement_type": "prohibition",
+          "subject": "applicant",
+          "action": "avoid combining",
+          "object": "application forms with drawing plan sheets",
+          "conditions": ["supporting documents are present"],
+          "deadline_or_temporal_scope": "during upload staging",
+          "permit_types": ["building"],
+          "process_stage": "upload staging",
+          "quote": "Applications and calculations remain separate from the drawing plan PDF.",
+          "locator": "pdf:page=3",
+          "confidence": 0.74,
+          "human_review_status": "needs_human_review"
+        }
+      ]
+    },
+    {
+      "document_id": "synthetic-form-old-fee-form",
+      "source_id": "ppd-public-old-fee-form",
+      "canonical_url": "https://www.portland.gov/ppd/documents/old-fee-form/download",
+      "title": "Synthetic Retired Fee Form",
+      "document_type": "public_form",
+      "change_type": "removed",
+      "content_hash": "sha256:form-removed-v2",
+      "previous_content_hash": "sha256:form-removed-v1",
+      "stale_evidence_ids": ["evidence_old_fee_form_001"],
+      "extracted_statements": []
+    }
+  ]
+}

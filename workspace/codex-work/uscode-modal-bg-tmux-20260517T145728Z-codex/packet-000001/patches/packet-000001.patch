@@ -1,0 +1,98 @@
+diff --git a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py
+index 6aaea1cc..60920615 100644
+--- a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py
++++ b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py
+@@ -158,9 +158,26 @@ DEFAULT_MODAL_PROFILES: Tuple[ModalParseProfile, ...] = (
+         family=ModalLogicFamily.TEMPORAL,
+         system=ModalSystem.LTL,
+         operators=(
+-            _op("G", ("always",), ("always", "throughout", "until"), (ModalSystem.LTL, ModalSystem.CTL)),
+-            _op("F", ("eventually",), ("eventually", "within", "by"), (ModalSystem.LTL, ModalSystem.CTL)),
+-            _op("X", ("next",), ("next", "after", "following"), (ModalSystem.LTL, ModalSystem.CTL)),
++            _op(
++                "G",
++                ("always",),
++                ("always", "throughout", "until", "from time to time", "periodically"),
++                (ModalSystem.LTL, ModalSystem.CTL),
++            ),
++            _op(
++                "F",
++                ("eventually",),
++                (
++                    "eventually",
++                    "within",
++                    "not later than",
++                    "no later than",
++                    "not less often than",
++                    "at least every",
++                ),
++                (ModalSystem.LTL, ModalSystem.CTL),
++            ),
++            _op("X", ("next",), ("next", "after", "following", "thereafter"), (ModalSystem.LTL, ModalSystem.CTL)),
+         ),
+         semantics=ModalSemanticsSpec(tree_time=True),
+         description="Deadlines, effective dates, and temporal scopes.",
+diff --git a/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py b/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py
+index 7fc5af47..f7492979 100644
+--- a/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py
++++ b/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py
+@@ -36,6 +36,29 @@ def test_parser_extracts_deontic_and_temporal_cues() -> None:
+     assert {"must", "within"}.issubset(cue_terms)
+ 
+ 
++def test_parser_treats_statutory_frequency_phrases_as_temporal() -> None:
++    parser = LegalModalParser()
++
++    cues = parser.extract_cues(
++        "The President shall revise and republish the plan not less often than every 5 years."
++    )
++    families = {cue.family.value for cue in cues}
++    cue_terms = {cue.cue for cue in cues}
++
++    assert {"deontic", "temporal"}.issubset(families)
++    assert "not less often than" in cue_terms
++
++
++def test_parser_does_not_treat_agentive_by_as_temporal_cue() -> None:
++    parser = LegalModalParser()
++
++    cues = parser.extract_cues("A housing voucher is administered by the public housing agency.")
++    families = {cue.family.value for cue in cues}
++
++    assert "frame" in families
++    assert "temporal" not in families
++
++
+ def test_parser_compiles_cues_to_modal_ir_with_provenance() -> None:
+     parser = LegalModalParser()
+ 
+diff --git a/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py b/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py
+index 66b6e568..ec8ffa58 100644
+--- a/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py
++++ b/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py
+@@ -57,6 +57,25 @@ def test_spacy_decoder_vector_and_family_logits_are_deterministic() -> None:
+     assert logits["deontic"] > logits["temporal"]
+ 
+ 
++def test_spacy_encoder_uses_temporal_frequency_phrase_without_agentive_by_noise() -> None:
++    encoder = SpaCyLegalEncoder(model_name="definitely_missing_legal_model")
++    encoding = encoder.encode(
++        (
++            "The President shall revise the plan not less often than every 5 years. "
++            "A housing voucher is administered by the agency."
++        ),
++        document_id="sample-temporal-frequency",
++        source="us_code",
++    )
++
++    temporal_cues = [cue for cue in encoding.cues if cue.family == "temporal"]
++    cue_terms = {cue.cue for cue in temporal_cues}
++
++    assert temporal_cues
++    assert "not less often than" in cue_terms
++    assert "by" not in cue_terms
++
++
+ def test_spacy_codec_exposes_text_features_without_sample_ids() -> None:
+     codec = SpaCyModalCodec(
+         encoder=SpaCyLegalEncoder(model_name="definitely_missing_legal_model"),

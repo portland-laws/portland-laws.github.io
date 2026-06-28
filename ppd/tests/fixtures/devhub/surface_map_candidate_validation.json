@@ -1,0 +1,184 @@
+{
+  "fixtureKind": "devhub_surface_map_candidate_validation",
+  "schemaVersion": 1,
+  "candidates": [
+    {
+      "candidate_id": "valid_residential_draft_surface",
+      "selector_confidence": 0.94,
+      "url_pattern": "https://devhub.portlandoregon.gov/permits/draft/*",
+      "page_heading": "Residential Permit Draft",
+      "fields": [
+        {
+          "id": "project_address",
+          "label": "Project address",
+          "required": true
+        },
+        {
+          "id": "project_scope",
+          "label": "Project scope",
+          "required": true
+        }
+      ],
+      "actions": [
+        {
+          "id": "save_draft",
+          "label": "Save for later",
+          "kind": "save_draft",
+          "classification": "reversible_draft_edit",
+          "reversible": true
+        },
+        {
+          "id": "review_status",
+          "label": "Review status",
+          "kind": "read_status",
+          "classification": "safe_read_only",
+          "reversible": false
+        }
+      ]
+    },
+    {
+      "candidate_id": "low_confidence_missing_context",
+      "selector_confidence": 0.61,
+      "fields": [
+        {
+          "id": "project_address",
+          "label": "Project address",
+          "required": true
+        }
+      ],
+      "actions": [
+        {
+          "id": "save_draft",
+          "label": "Save for later",
+          "kind": "save_draft",
+          "classification": "reversible_draft_edit",
+          "reversible": true
+        }
+      ]
+    },
+    {
+      "candidate_id": "ambiguous_required_labels",
+      "selector_confidence": 0.91,
+      "route_evidence": ["/permits/draft/residential"],
+      "heading_evidence": ["Residential Permit Draft"],
+      "fields": [
+        {
+          "id": "owner_name",
+          "labels": ["Name", "Applicant name"],
+          "required": true
+        },
+        {
+          "id": "contractor_name",
+          "label": "Project contact",
+          "required": true
+        },
+        {
+          "id": "applicant_name",
+          "label": "Project contact",
+          "required": true
+        }
+      ],
+      "actions": [
+        {
+          "id": "save_draft",
+          "label": "Save for later",
+          "kind": "save_draft",
+          "classification": "reversible_draft_edit",
+          "reversible": true
+        }
+      ]
+    },
+    {
+      "candidate_id": "consequential_controls_mislabeled_reversible",
+      "selector_confidence": 0.9,
+      "url_pattern": "https://devhub.portlandoregon.gov/permits/draft/*",
+      "page_heading": "Upload and Submit",
+      "fields": [
+        {
+          "id": "project_address",
+          "label": "Project address",
+          "required": true
+        }
+      ],
+      "actions": [
+        {
+          "id": "submit_application",
+          "label": "Submit application",
+          "kind": "submit_application",
+          "classification": "reversible_draft_edit",
+          "reversible": true
+        },
+        {
+          "id": "pay_fee",
+          "label": "Pay fee",
+          "kind": "pay_fee",
+          "classification": "reversible_draft_edit",
+          "reversible": true
+        }
+      ],
+      "upload_controls": [
+        {
+          "id": "upload_plans",
+          "label": "Upload plans",
+          "classification": "reversible_draft_edit",
+          "reversible": true
+        }
+      ]
+    }
+  ],
+  "candidate_v2_packets": [
+    {
+      "candidate_id": "valid_readonly_surface_map_candidate_v2",
+      "schema_version": 2,
+      "mode": "fixture-first-read-only-review",
+      "candidate_rows": [
+        {
+          "row_id": "devhub_home_status_review",
+          "surface_label": "DevHub home status review placeholder",
+          "selector_stability_placeholder": "placeholder: selector stability evidence pending attended read-only review",
+          "accessible_role_evidence_placeholder": "placeholder: accessible role evidence pending attended read-only review",
+          "redacted_validation_message_placeholder": "[redacted]",
+          "action_boundary_classification": "safe_read_only",
+          "reviewer_disposition": "pending_review"
+        }
+      ],
+      "validation_commands": [
+        ["python3", "-m", "pytest", "ppd/tests/test_devhub_surface_map_candidate_validation.py"]
+      ],
+      "attestations": {
+        "no_live_devhub": true,
+        "no_browser_artifacts": true,
+        "no_auth_state": true,
+        "no_private_values": true,
+        "no_active_mutations": true
+      }
+    },
+    {
+      "candidate_id": "unsafe_readonly_surface_map_candidate_v2",
+      "schema_version": 2,
+      "candidate_rows": [
+        {
+          "row_id": "unsafe_row",
+          "surface_label": "Unsafe placeholder",
+          "selector_stability_placeholder": "placeholder present",
+          "accessible_role_evidence_placeholder": "placeholder present",
+          "redacted_validation_message_placeholder": "Call owner@example.test about permit number 24-123456-000-00-CO",
+          "action_boundary_classification": "safe_read_only",
+          "reviewer_disposition": "pending_review"
+        }
+      ],
+      "validation_commands": [
+        ["python3", "-m", "pytest", "ppd/tests/test_devhub_surface_map_candidate_validation.py"]
+      ],
+      "session_state": "storage_state.json",
+      "browser_trace": "trace.zip",
+      "raw_crawl_output": "raw DevHub body was copied",
+      "downloaded_documents": ["downloaded permit document.pdf"],
+      "notes": [
+        "Script will automate login and handle MFA prompts.",
+        "Operator may submit the application after review.",
+        "This guarantees permit approval and legal compliance."
+      ]
+    }
+  ]
+}

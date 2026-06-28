@@ -1,0 +1,31 @@
+{
+  "fixture_id": "synthetic-process-dependency-graph-delta-v1",
+  "requirement_delta_candidates": [
+    {
+      "candidate_id": "candidate-required-upload-prep",
+      "requirement_id": "REQ-SYNTH-UPLOAD-PREP-001",
+      "delta_type": "document_requirement_added",
+      "affected_permit_families": ["building permit with plan review"],
+      "process_stages": ["document preparation"],
+      "required_user_facts": ["project address"],
+      "required_documents": ["site plan PDF"],
+      "fee_deadline_triggers": ["plan review fee notice reviewed before payment"],
+      "unsupported_paths": ["email-only permit paths remain outside DevHub automation"],
+      "devhub_boundary_refs": ["draft upload staging only; no official upload"],
+      "reviewer_holds": ["reviewer must confirm cited source before promotion"]
+    },
+    {
+      "candidate_id": "candidate-trade-license-check",
+      "requirement_id": "REQ-SYNTH-TRADE-LICENSE-001",
+      "delta_type": "required_user_fact_added",
+      "affected_permit_families": ["standard trade permit"],
+      "process_stages": ["eligibility screening"],
+      "required_user_facts": ["contractor license profile status"],
+      "required_documents": ["license evidence if requested by reviewer"],
+      "fee_deadline_triggers": ["fee payment remains action-gated"],
+      "unsupported_paths": ["purchase flow is not eligible for autonomous completion"],
+      "devhub_boundary_refs": ["read-only fee review allowed; payment submission blocked"],
+      "reviewer_holds": ["reviewer must verify boundary text before promotion"]
+    }
+  ]
+}

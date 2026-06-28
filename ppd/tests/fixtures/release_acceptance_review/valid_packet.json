@@ -1,0 +1,47 @@
+{
+  "packet_id": "release-review-valid-fixture",
+  "consumed_packet_refs": ["supervisor-20260529-446"],
+  "checklist_items": [
+    {
+      "id": "citations-present",
+      "status": "accepted",
+      "citations": ["ppd-plan:non-negotiable-boundaries"]
+    },
+    {
+      "id": "validation-present",
+      "status": "accepted",
+      "source_evidence_ids": ["fixture:release-acceptance-review"]
+    }
+  ],
+  "blockers": [
+    {
+      "id": "known-open-risk",
+      "status": "open",
+      "disposition": "defer release until deterministic validator passes"
+    }
+  ],
+  "reviewers": [
+    {
+      "owner": "ppd-release-reviewer"
+    }
+  ],
+  "validation_rerun_expectations": [
+    {
+      "command": "python3 ppd/daemon/ppd_daemon.py --self-test",
+      "expected_result": "passes without acceptance review validation issues"
+    }
+  ],
+  "consequential_controls": [
+    {
+      "name": "submit",
+      "classification": "consequential",
+      "enabled": false
+    }
+  ],
+  "artifact_mutation_flags": {
+    "mutate_artifacts": false,
+    "crawl_live": false,
+    "download_live": false
+  },
+  "notes": "Release acceptance is limited to deterministic fixture validation and does not claim publication or permitting outcomes."
+}

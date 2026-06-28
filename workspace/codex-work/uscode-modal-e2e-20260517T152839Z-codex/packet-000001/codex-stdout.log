@@ -1,0 +1,32 @@
+Implemented a deterministic modal IR/decompiler slot refinement focused on missing legal qualifiers.
+
+**What Changed**
+- Added deterministic extraction of clause-level `conditions` and `exceptions` into modal formulas in the regex parser path.
+  - [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000001-20260517_152850/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:120)
+- Added the same `conditions`/`exceptions` extraction in the spaCy IR compiler path.
+  - [spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000001-20260517_152850/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py:279)
+- Refined decompiler slot emission to include:
+  - `condition`
+  - `exception`
+  - `citation`
+  - plus robust `selected_frame` fallback order: metadata -> `frame_logic.selected_frame` -> top frame candidate.
+  - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000001-20260517_152850/ipfs_datasets_py/logic/modal/decompiler.py:166)
+- Extended F-logic triple projection so formula `condition`, `exception`, and provenance `citation` are represented symbolically.
+  - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000001-20260517_152850/ipfs_datasets_py/logic/modal/codec.py:562)
+
+**Tests Added**
+- Parser condition/exception extraction coverage:
+  - [test_legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000001-20260517_152850/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py:58)
+- spaCy compiler condition/exception extraction coverage:
+  - [test_spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000001-20260517_152850/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py:40)
+- Decompiler slot + triple coverage and selected-frame fallback coverage:
+  - [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000001-20260517_152850/tests/unit_tests/logic/modal/test_modal_codec.py:225)
+
+**Verification Run**
+- Attempted:
+  - `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py tests/unit_tests/logic/modal/test_modal_codec.py`
+- Result:
+  - Blocked by existing repo bootstrap issue: `NameError: name '__path__' is not defined` from top-level `__init__.py` during pytest setup.
+- Additional checks that passed:
+  - `python3 -m py_compile` on all touched modules/tests.
+  - Direct runtime assertions script validating the new slot/triple behaviors (`modal slot refinement checks passed`).

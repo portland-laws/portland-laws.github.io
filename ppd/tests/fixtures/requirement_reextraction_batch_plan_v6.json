@@ -1,0 +1,88 @@
+{
+  "plan_id": "requirement-reextraction-batch-plan-v6",
+  "version": 6,
+  "mode": "fixture_first_offline_only",
+  "stale_citation_remediation_refs": [
+    {
+      "queue_id": "stale-citation-remediation-queue-v6",
+      "fixture_path": "ppd/tests/fixtures/stale_citation_queue_v6/valid_queue.json"
+    }
+  ],
+  "prohibited_actions": [
+    "crawl_live_sites",
+    "download_documents",
+    "store_raw_bodies",
+    "open_devhub",
+    "read_private_documents",
+    "upload",
+    "submit",
+    "certify",
+    "pay",
+    "schedule",
+    "make_legal_or_permitting_guarantees"
+  ],
+  "guardrails": {
+    "live_site_access": "inactive",
+    "authenticated_devhub_access": "inactive",
+    "private_document_access": "inactive",
+    "raw_body_storage": "inactive",
+    "transactional_actions": "inactive",
+    "legal_or_permitting_guarantees": "inactive"
+  },
+  "permit_process_batches": [
+    {
+      "permit_process": "residential_building_permit",
+      "changed_public_documents": [
+        {
+          "document_key": "residential-building-permit-requirements",
+          "stale_citation_queue_fixture_id": "queue-v6-residential-building-001",
+          "change_reason": "fixture_stale_citation_remediation"
+        }
+      ],
+      "cite_extraction_fixtures_to_refresh": [
+        "ppd/tests/fixtures/cite_extraction/residential_building_permit_requirements.json"
+      ],
+      "human_review_holds": [
+        {
+          "hold_id": "hold-v6-residential-building-citation-scope",
+          "reason": "Reviewer must confirm fixture-only citation replacement scope before downstream use.",
+          "status": "hold",
+          "carried_forward": true
+        }
+      ]
+    },
+    {
+      "permit_process": "commercial_building_permit",
+      "changed_public_documents": [
+        {
+          "document_key": "commercial-building-permit-requirements",
+          "stale_citation_queue_fixture_id": "queue-v6-commercial-building-001",
+          "change_reason": "fixture_stale_citation_remediation"
+        }
+      ],
+      "cite_extraction_fixtures_to_refresh": [
+        "ppd/tests/fixtures/cite_extraction/commercial_building_permit_requirements.json"
+      ],
+      "human_review_holds": [
+        {
+          "hold_id": "hold-v6-commercial-building-citation-scope",
+          "reason": "Reviewer must confirm fixture-only citation replacement scope before downstream use.",
+          "status": "pending_human_review",
+          "carried_forward": true
+        }
+      ]
+    }
+  ],
+  "reviewer_acceptance_criteria": [
+    "All changed public documents are derived only from stale-citation remediation queue v6 fixtures.",
+    "Each changed public document is grouped under exactly one permit process batch.",
+    "Each batch lists cite extraction fixtures to refresh without fetching live documents.",
+    "Human-review holds from the queue are carried forward and remain unresolved until reviewer action.",
+    "Existing guardrail inactive statuses remain inactive.",
+    "The plan contains no legal, permitting, scheduling, payment, submission, certification, or approval promises."
+  ],
+  "offline_validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/logic/requirement_reextraction_batch_plan_v6.py"],
+    ["python3", "-m", "pytest", "ppd/tests/test_requirement_reextraction_batch_plan_v6.py"]
+  ]
+}

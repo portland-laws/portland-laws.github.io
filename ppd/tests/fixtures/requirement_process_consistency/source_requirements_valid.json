@@ -1,0 +1,42 @@
+{
+  "fixture_id": "synthetic-public-source-requirements-valid",
+  "description": "Synthetic source-derived PP&D requirements based on public guidance categories only.",
+  "requirements": [
+    {
+      "requirement_id": "REQ-SYNTH-DOC-001",
+      "source_evidence_ids": ["SRC-SYNTH-SINGLE-PDF-001"],
+      "process_id": "building-plan-review",
+      "permit_type": "building_plan_review",
+      "category": "required_document",
+      "key": "plans_single_pdf",
+      "label": "Drawing plans must be prepared as one plans PDF for plan review upload staging."
+    },
+    {
+      "requirement_id": "REQ-SYNTH-FILE-001",
+      "source_evidence_ids": ["SRC-SYNTH-FILE-STANDARDS-001"],
+      "process_id": "building-plan-review",
+      "permit_type": "building_plan_review",
+      "category": "file_rule",
+      "key": "supporting_documents_separate_pdfs",
+      "label": "Applications, calculations, and other supporting documents are staged as separate PDFs from drawing plans."
+    },
+    {
+      "requirement_id": "REQ-SYNTH-FEE-001",
+      "source_evidence_ids": ["SRC-SYNTH-FEE-GUIDE-001"],
+      "process_id": "building-plan-review",
+      "permit_type": "building_plan_review",
+      "category": "fee_trigger",
+      "key": "fees_due_after_intake_notice",
+      "label": "Payment is triggered only after PP&D identifies fees due for the request."
+    },
+    {
+      "requirement_id": "REQ-SYNTH-UNSUPPORTED-001",
+      "source_evidence_ids": ["SRC-SYNTH-DEVHUB-GUIDE-001"],
+      "process_id": "building-plan-review",
+      "permit_type": "building_plan_review",
+      "category": "unsupported_path",
+      "key": "permit_types_not_available_in_devhub",
+      "label": "Some permit request paths are not supported by DevHub and require alternate instructions."
+    }
+  ]
+}

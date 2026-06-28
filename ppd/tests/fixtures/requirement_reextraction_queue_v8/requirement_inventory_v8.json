@@ -1,0 +1,37 @@
+{
+  "fixture_version": "requirement-inventory-v8",
+  "requirements": [
+    {
+      "requirement_id": "REQ-BLDG-PLAN-002",
+      "source_id": "devhub-building-submittal-checklist",
+      "permit_type": "building",
+      "process_stage": "plan_review",
+      "title": "Plan review notes fixture row",
+      "last_verified": "2026-05-01"
+    },
+    {
+      "requirement_id": "REQ-BLDG-INTAKE-001",
+      "source_id": "devhub-building-submittal-checklist",
+      "permit_type": "building",
+      "process_stage": "intake",
+      "title": "Building intake checklist fixture row",
+      "last_verified": "2026-05-01"
+    },
+    {
+      "requirement_id": "REQ-ZONING-REVIEW-001",
+      "source_id": "devhub-zoning-standards-summary",
+      "permit_type": "zoning",
+      "process_stage": "review",
+      "title": "Zoning review summary fixture row",
+      "last_verified": "2026-05-01"
+    },
+    {
+      "requirement_id": "REQ-SITE-INTAKE-001",
+      "source_id": "devhub-site-development-intake",
+      "permit_type": "site_development",
+      "process_stage": "intake",
+      "title": "Site development intake fixture row",
+      "last_verified": "2026-05-01"
+    }
+  ]
+}

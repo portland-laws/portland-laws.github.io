@@ -1,0 +1,76 @@
+{
+  "valid_candidate": {
+    "candidate_id": "remediate-stale-upload-refusal",
+    "active_bundle_id": "guardrail-bundle-active-v1",
+    "replacement_bundle_id": "guardrail-bundle-candidate-v2",
+    "validation_status": "draft",
+    "human_review_status": "pending",
+    "citations": [
+      {
+        "id": "src-devhub-upload-corrections",
+        "url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+        "privacy_classification": "public"
+      }
+    ],
+    "stale_input_comparisons": [
+      {
+        "predicate_id": "predicate-upload-corrections-refusal",
+        "stale_input": "upload corrections may be staged",
+        "replacement_input": "official correction upload remains exact-confirmation gated"
+      }
+    ],
+    "proposed_predicate_changes": [
+      {
+        "id": "change-upload-corrections-refusal",
+        "predicate_id": "predicate-upload-corrections-refusal",
+        "action": "upload_correction",
+        "citation_ids": ["src-devhub-upload-corrections"]
+      }
+    ],
+    "refusal_rules": [
+      {
+        "action": "upload_correction",
+        "rule": "refuse unless the user is present and gives exact action confirmation"
+      }
+    ],
+    "private_case_facts": [],
+    "mutations": []
+  },
+  "invalid_candidate": {
+    "candidate_id": "unsafe-remediate-stale-submit-rule",
+    "active_bundle_id": "guardrail-bundle-active-v1",
+    "replacement_bundle_id": "guardrail-bundle-active-v1",
+    "validation_status": "production_ready",
+    "human_review_status": "pending",
+    "citations": [
+      {
+        "id": "case-note-1",
+        "url": "redacted-local-case-note",
+        "privacy_classification": "private_case_fact"
+      }
+    ],
+    "stale_input_comparisons": [],
+    "proposed_predicate_changes": [
+      {
+        "id": "change-submit-permit",
+        "predicate_id": "predicate-submit-permit-refusal",
+        "action": "submit_permit_request",
+        "citation_ids": []
+      }
+    ],
+    "refusal_rules": [],
+    "private_case_facts": [
+      {
+        "name": "owner phone",
+        "value": "redacted"
+      }
+    ],
+    "active_bundle_mutation": true,
+    "mutations": [
+      {
+        "target": "active_bundle",
+        "operation": "patch_active_bundle"
+      }
+    ]
+  }
+}

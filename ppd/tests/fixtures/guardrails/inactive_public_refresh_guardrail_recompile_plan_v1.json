@@ -1,0 +1,55 @@
+{
+  "valid_plan": {
+    "plan_version": "inactive-public-refresh-guardrail-recompile-plan-v1",
+    "mode": "inactive_public_refresh_guardrail_recompile",
+    "process_model_delta_refs": ["process-delta:public-refresh:demo:001"],
+    "requirement_reextraction_queue_refs": ["requirement-queue:public-refresh:demo:001"],
+    "inactive_guardrail_bundle_recompile_candidates": [
+      {
+        "guardrail_bundle_id": "guardrail-bundle:demo:inactive:001",
+        "process_id": "process:demo:001",
+        "status": "inactive"
+      }
+    ],
+    "deterministic_predicate_placeholder_changes": ["predicate-placeholder:address-eligibility:changed"],
+    "reversible_action_predicate_impacts": ["reversible-action:local-draft-fill:review"],
+    "exact_confirmation_predicate_impacts": ["exact-confirmation:submit:unchanged-hold"],
+    "refused_action_predicate_impacts": ["refused-action:payment-submit:unchanged-hold"],
+    "explanation_template_refresh_notes": ["Refresh public citation labels for inactive bundle candidate only."],
+    "validation_status_holds": ["hold-active-publication-until-self-test-and-review-pass"],
+    "rollback_notes": ["Discard inactive candidate and keep current active bundle unchanged."],
+    "validation_commands": [
+      ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+    ],
+    "claims": ["Fixture validates only inactive public refresh planning metadata."],
+    "active_mutation": false,
+    "allow_active_mutation": false
+  },
+  "invalid_plan": {
+    "plan_version": "inactive-public-refresh-guardrail-recompile-plan-v1",
+    "mode": "inactive_public_refresh_guardrail_recompile",
+    "process_model_delta_refs": [],
+    "requirement_reextraction_queue_refs": [],
+    "inactive_guardrail_bundle_recompile_candidates": [
+      {
+        "guardrail_bundle_id": "guardrail-bundle:demo:active:001",
+        "process_id": "process:demo:001",
+        "status": "active"
+      }
+    ],
+    "deterministic_predicate_placeholder_changes": [],
+    "reversible_action_predicate_impacts": [],
+    "exact_confirmation_predicate_impacts": [],
+    "refused_action_predicate_impacts": [],
+    "explanation_template_refresh_notes": [],
+    "validation_status_holds": [],
+    "rollback_notes": [],
+    "validation_commands": [],
+    "claims": [
+      "The live crawl completed and DevHub submitted successfully.",
+      "This private artifact includes raw downloaded documents and guaranteed approval."
+    ],
+    "active_mutation": true,
+    "writes_active_guardrails": true
+  }
+}

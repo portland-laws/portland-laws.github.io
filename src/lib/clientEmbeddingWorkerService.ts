@@ -1,8 +1,16 @@
 const DEFAULT_EMBEDDING_MODEL =
   (import.meta.env.VITE_DEFAULT_EMBEDDING_MODEL as string | undefined) || 'Xenova/gte-small';
 
+interface EmbeddingWorkerData {
+  embedding?: number[];
+  modelName?: string;
+  isInitialized?: boolean;
+  attemptedModels?: string[];
+  failedAttempts?: string[];
+}
+
 interface PendingRequest {
-  resolve: (value: any) => void;
+  resolve: (value: EmbeddingWorkerData) => void;
   reject: (reason?: any) => void;
 }
 
@@ -18,6 +26,7 @@ class ClientEmbeddingWorkerService {
 
   private initializeWorker() {
     try {
+      this.worker?.terminate();
       this.worker = new Worker(new URL('../workers/embeddingWorker.ts', import.meta.url), {
         type: 'module',
       });
@@ -44,6 +53,7 @@ class ClientEmbeddingWorkerService {
       pending.resolve(data);
     } else {
       pending.reject(new Error(error || 'Embedding worker request failed'));
+      this.resetWorkerAfterRuntimeFailure(error);
     }
   }
 
@@ -53,9 +63,27 @@ class ClientEmbeddingWorkerService {
       pending.reject(new Error('Embedding worker error'));
       this.pendingRequests.delete(id);
     }
+    this.resetWorker();
   }
 
-  private sendWorkerRequest(type: string, data: unknown, timeoutMs = 90000): Promise<any> {
+  private resetWorkerAfterRuntimeFailure(error?: string) {
+    if (!error || !error.includes('byteLength')) {
+      return;
+    }
+    this.resetWorker();
+  }
+
+  private resetWorker() {
+    this.worker?.terminate();
+    this.worker = null;
+    this.initializeWorker();
+  }
+
+  private sendWorkerRequest(type: string, data: unknown, timeoutMs = 90000): Promise<EmbeddingWorkerData> {
+    if (!this.worker) {
+      this.initializeWorker();
+    }
+
     if (!this.worker) {
       throw new Error('Embedding worker is not available');
     }
@@ -87,10 +115,21 @@ class ClientEmbeddingWorkerService {
 
   async generateEmbedding(text: string, modelName = this.currentModel): Promise<Float32Array> {
     const response = await this.sendWorkerRequest('embed', { text, modelName });
-    if (!Array.isArray(response.embedding)) {
+    if (!Array.isArray(response.embedding) || response.embedding.length === 0) {
       throw new Error('Embedding worker returned an invalid embedding');
     }
-    return new Float32Array(response.embedding);
+
+    const embedding = new Float32Array(response.embedding);
+    const invalidIndex = embedding.findIndex((value) => !Number.isFinite(value));
+    if (invalidIndex !== -1) {
+      throw new Error(`Embedding worker returned a non-finite value at index ${invalidIndex}`);
+    }
+
+    if (response.modelName) {
+      this.currentModel = response.modelName;
+    }
+
+    return embedding;
   }
 
   async getStatus(): Promise<{ modelName: string; isInitialized: boolean }> {

@@ -1,0 +1,42 @@
+{
+  "packet_id": "devhub-surface-review-2026-05-29-fixture",
+  "surface_id": "devhub-permit-detail-readonly",
+  "surface_registry_mutation_enabled": false,
+  "live_browser_execution": false,
+  "browser_execution_claim": "fixture_only",
+  "selector_deltas": [
+    {
+      "selector": "main h1",
+      "change": "confirm heading selector for read-only permit detail review",
+      "source_citations": [
+        "https://www.portland.gov/ppd/devhub-faqs"
+      ]
+    }
+  ],
+  "controls": [
+    {
+      "name": "review permit status",
+      "classification": "read_only",
+      "enabled": true
+    },
+    {
+      "name": "submit permit request",
+      "classification": "consequential",
+      "enabled": false
+    }
+  ],
+  "reviewer_signoffs": [
+    {
+      "reviewer_id": "ppd-reviewer-fixture",
+      "approved": true,
+      "signed_at": "2026-05-29T00:00:00Z"
+    }
+  ],
+  "redaction_attestation": {
+    "private_values_removed": true,
+    "browser_artifacts_removed": true,
+    "attested_by": "ppd-reviewer-fixture"
+  },
+  "rollback_notes": "Reject this selector delta and keep the prior surface registry entry if reviewer evidence is stale or incomplete.",
+  "evidence_mode": "deterministic_fixture_only"
+}

@@ -1,0 +1,12 @@
+Implemented a deterministic frame-logic term-audit improvement across the frame ontology extraction path.
+
+- Expanded feature-key extraction to recognize direct ontology-predicate keys (not just hardcoded prefixes and `flogic:` forms), while restricting namespaced parsing to `slot`/`flogic` to avoid unrelated feature noise in [frame_bm25_selector.py:349](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000013-20260518_082702/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:349) and [frame_bm25_selector.py:99](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000013-20260518_082702/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:99).
+- Made frame ontology term metadata deterministic by sorting de-duplicated terms in [flogic_optimizer.py:191](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000013-20260518_082702/ipfs_datasets_py/optimizers/logic/flogic_optimizer.py:191) and helper [flogic_optimizer.py:357](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000013-20260518_082702/ipfs_datasets_py/optimizers/logic/flogic_optimizer.py:357).
+- Applied the same deterministic ordering for codec-level frame audit terms in [codec.py:1183](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000013-20260518_082702/ipfs_datasets_py/logic/modal/codec.py:1183).
+- Added coverage for direct ontology predicates and namespace filtering in [test_frame_bm25_selector.py:238](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000013-20260518_082702/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:238).
+
+Tests run:
+
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py` -> 16 passed
+- `pytest -q tests/unit/logic/test_flogic_integration.py -k "frame_ontology_term"` -> 3 passed
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "frame_ontology or feature_codec_protocol"` -> 3 passed

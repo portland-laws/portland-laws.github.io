@@ -1,0 +1,35 @@
+{
+  "packet_type": "ppd_public_recrawl_operator_checklist",
+  "operator_checklist_id": "fixture-public-recrawl-unsafe-001",
+  "execution_mode": "metadata_only_dry_run",
+  "live_network": true,
+  "targets": [
+    {
+      "source_id": "ppd:public:outside_host",
+      "url": "https://example.com/ppd",
+      "robots_evidence": "synthetic fixture only",
+      "policy_evidence": "synthetic fixture only"
+    },
+    {
+      "source_id": "ppd:public:private_devhub",
+      "url": "https://devhub.portlandoregon.gov/account/REDACTED",
+      "robots_evidence": "synthetic fixture only",
+      "policy_evidence": "synthetic fixture only"
+    },
+    {
+      "source_id": "ppd:public:tokenized_query",
+      "url": "https://www.portland.gov/ppd?token=REDACTED",
+      "robots_evidence": "synthetic fixture only",
+      "policy_evidence": "synthetic fixture only"
+    }
+  ],
+  "output_policy": {
+    "metadata_only": false,
+    "persist_raw_body": true,
+    "downloaded_document_path": "data/raw/synthetic-public-recrawl-download.pdf"
+  },
+  "promotion_policy": {
+    "direct_production_promotion": true,
+    "requires_staging_review": false
+  }
+}

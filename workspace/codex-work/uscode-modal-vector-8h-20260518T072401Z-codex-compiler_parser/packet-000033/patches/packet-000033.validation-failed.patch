@@ -1,0 +1,252 @@
+diff --git a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py
+index 65432c01..65fe7f24 100644
+--- a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py
++++ b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py
+@@ -67,6 +67,8 @@ _USCODE_SUBSECTION_HEADING_BODY_MIN_TOKENS = 40
+ _USCODE_HEADING_ONLY_MAX_TOKENS = 12
+ _USCODE_HEADING_ONLY_MIN_TOKENS = 1
+ _USCODE_EMBEDDED_HEADING_WINDOW_MAX_CHARS = 260
++_USCODE_CONTEXT_FALLBACK_MIN_TOKENS = 6
++_USCODE_CONTEXT_FALLBACK_MAX_TOKENS = 24
+ _USCODE_HEADING_ONLY_VERB_HINT_RE = re.compile(
+     r"\b(?:shall|must|may|is|are|was|were|be|been|being|has|have|had|"
+     r"will|would|should|can|could|do|does|did)\b",
+@@ -298,7 +300,16 @@ class LegalModalParser:
+         )
+         if fallback_formula is not None:
+             return fallback_formula
+-        return self._uscode_section_heading_fallback_formula(
++        fallback_formula = self._uscode_section_heading_fallback_formula(
++            resolved_document_id=document_id,
++            normalized_text=normalized,
++            citation=citation,
++            segments=candidate_segments,
++            start_index=start_index,
++        )
++        if fallback_formula is not None:
++            return fallback_formula
++        return self._uscode_citation_context_fallback_formula(
+             resolved_document_id=document_id,
+             normalized_text=normalized,
+             citation=citation,
+@@ -1071,6 +1082,100 @@ class LegalModalParser:
+             role="clause",
+         )
+ 
++    def _uscode_citation_context_fallback_formula(
++        self,
++        *,
++        resolved_document_id: str,
++        normalized_text: str,
++        citation: Optional[str],
++        segments: Sequence[LegalSegment],
++        start_index: int,
++    ) -> Optional[ModalIRFormula]:
++        """Recover a compact frame fallback from citation-context prose with no cues."""
++        if not normalized_text.strip():
++            return None
++        if not self._is_uscode_citation(citation):
++            return None
++        if self.extract_cues(normalized_text):
++            return None
++
++        candidate_segment = self._uscode_citation_context_segment(segments)
++        if candidate_segment is None:
++            return None
++
++        profile = self.registry.get_profile(ModalLogicFamily.FRAME)
++        if not profile.operators:
++            return None
++        operator = profile.operators[0]
++        predicate = self._predicate_from_segment(
++            candidate_segment.text,
++            "__uscode_citation_context_fallback__",
++        )
++        conditions, exceptions = self._conditions_and_exceptions_from_segment(
++            candidate_segment.text
++        )
++        return ModalIRFormula(
++            formula_id=f"{resolved_document_id}:f{start_index:04d}",
++            operator=ModalIROperator(
++                family=profile.family.value,
++                system=profile.system.value,
++                symbol=operator.symbol,
++                label=operator.aliases[0] if operator.aliases else operator.symbol,
++            ),
++            predicate=ModalIRPredicate(
++                name=predicate,
++                arguments=[],
++                role="frame",
++            ),
++            provenance=ModalIRProvenance(
++                source_id=resolved_document_id,
++                start_char=candidate_segment.start_char,
++                end_char=candidate_segment.end_char,
++                citation=citation,
++            ),
++            conditions=conditions,
++            exceptions=exceptions,
++            metadata={
++                "cue": "__uscode_citation_context_fallback__",
++                "fallback_rule": "uscode_citation_context_v1",
++            },
++        )
++
++    def _uscode_citation_context_segment(
++        self,
++        segments: Sequence[LegalSegment],
++    ) -> Optional[LegalSegment]:
++        for segment in segments:
++            normalized = self.normalize_text(segment.text)
++            if not normalized:
++                continue
++            lowered = normalized.lower()
++            if (
++                _USCODE_CODIFICATION_HINT_RE.search(lowered)
++                or _USCODE_EDITORIAL_STATUS_HINT_RE.search(lowered)
++                or _USCODE_DECLARATIVE_STATEMENT_HINT_RE.search(lowered)
++            ):
++                continue
++
++            token_matches = list(_TOKEN_RE.finditer(normalized))
++            token_count = len(token_matches)
++            if token_count < _USCODE_CONTEXT_FALLBACK_MIN_TOKENS:
++                continue
++
++            if token_count > _USCODE_CONTEXT_FALLBACK_MAX_TOKENS:
++                cutoff = token_matches[_USCODE_CONTEXT_FALLBACK_MAX_TOKENS - 1].end()
++                normalized = self.normalize_text(normalized[:cutoff])
++                if not normalized:
++                    continue
++
++            return LegalSegment(
++                text=normalized,
++                start_char=segment.start_char,
++                end_char=segment.start_char + len(normalized),
++                role="clause",
++            )
++        return None
++
+ 
+ __all__ = [
+     "LegalModalParser",
+diff --git a/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py b/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py
+index 66da7eea..f450deea 100644
+--- a/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py
++++ b/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py
+@@ -254,6 +254,10 @@ _USCODE_19_3702_SYMBOLIC_VALIDITY_TEXT = (
+     "schedule registry digest table profile catalog narrative appendix mapping index "
+     "ledger coordination protocol record workflow archive taxonomy matrix"
+ )
++_USCODE_CITATION_CONTEXT_ONLY_TEXT = (
++    "U S C Title reference register digest taxonomy matrix chapter overview "
++    "administrative coordination index profile ledger archive"
++)
+ _USCODE_25_422_HEADING_ONLY_TEXT = "Housing voucher benefits and utility allowances."
+ _USCODE_48_1572_HEADING_ONLY_TEXT = "Administrative notice and hearing."
+ _USCODE_42_6323_HEADING_ONLY_TEXT = "Notice and hearing requirements."
+@@ -1060,6 +1064,40 @@ def test_parser_replays_symbolic_validity_todo_samples_with_coarse_section_headi
+         assert fallback.provenance.citation == citation
+ 
+ 
++def test_parser_replays_symbolic_validity_todo_samples_with_uscode_citation_context_fallback() -> None:
++    parser = LegalModalParser()
++    cases = [
++        (
++            "us-code-42-300u-4e3697e3e30dfaab",
++            "42 U.S.C. 300u",
++        ),
++        (
++            "us-code-5-6384-8b50e16be95927f5",
++            "5 U.S.C. 6384",
++        ),
++        (
++            "us-code-33-1265-058d44e9ce9b3d2d",
++            "33 U.S.C. 1265",
++        ),
++    ]
++
++    for document_id, citation in cases:
++        document = parser.parse(
++            _USCODE_CITATION_CONTEXT_ONLY_TEXT,
++            document_id=document_id,
++            source="us_code",
++            citation=citation,
++        )
++
++        assert document.document_id == document_id
++        assert document.formulas
++        fallback = document.formulas[-1]
++        assert fallback.operator.family == "frame"
++        assert fallback.metadata["cue"] == "__uscode_citation_context_fallback__"
++        assert fallback.metadata["fallback_rule"] == "uscode_citation_context_v1"
++        assert fallback.provenance.citation == citation
++
++
+ def test_logic_extractor_uses_deterministic_modal_parser_without_llm() -> None:
+     class FailingBackend:
+         def generate(self, request):  # pragma: no cover - should never be called
+diff --git a/tests/unit_tests/logic/modal/test_modal_codec.py b/tests/unit_tests/logic/modal/test_modal_codec.py
+index 118107aa..ba3474ba 100644
+--- a/tests/unit_tests/logic/modal/test_modal_codec.py
++++ b/tests/unit_tests/logic/modal/test_modal_codec.py
+@@ -460,6 +460,10 @@ _USCODE_19_3702_SYMBOLIC_VALIDITY_TEXT = (
+     "schedule registry digest table profile catalog narrative appendix mapping index "
+     "ledger coordination protocol record workflow archive taxonomy matrix"
+ )
++_USCODE_CITATION_CONTEXT_ONLY_TEXT = (
++    "U S C Title reference register digest taxonomy matrix chapter overview "
++    "administrative coordination index profile ledger archive"
++)
+ 
+ 
+ def test_modal_codec_encodes_all_modal_families_with_frame_logic() -> None:
+@@ -1387,6 +1391,48 @@ def test_modal_compiler_replays_long_embedded_section_heading_samples_for_8_1365
+             assert fallback.provenance.citation == citation
+ 
+ 
++def test_modal_compiler_replays_packet_todo_samples_with_uscode_citation_context_fallback() -> None:
++    cases = [
++        (
++            "us-code-42-300u-4e3697e3e30dfaab",
++            "42 U.S.C. 300u",
++        ),
++        (
++            "us-code-5-6384-8b50e16be95927f5",
++            "5 U.S.C. 6384",
++        ),
++        (
++            "us-code-33-1265-058d44e9ce9b3d2d",
++            "33 U.S.C. 1265",
++        ),
++    ]
++    for backend in ("regex", "spacy"):
++        compiler = DeterministicModalCompiler(
++            ModalCompilerConfig(
++                parser_backend=backend,
++                spacy_model_name="definitely_missing_legal_model",
++            )
++        )
++        for document_id, citation in cases:
++            compiled = compiler.compile(
++                _USCODE_CITATION_CONTEXT_ONLY_TEXT,
++                document_id=document_id,
++                citation=citation,
++                source="us_code",
++            )
++
++            assert compiled.modal_ir.formulas
++            assert all(
++                ambiguity.ambiguity_type != "missing_modal_formula"
++                for ambiguity in compiled.ambiguities
++            )
++            fallback = compiled.modal_ir.formulas[-1]
++            assert fallback.operator.family == "frame"
++            assert fallback.metadata["cue"] == "__uscode_citation_context_fallback__"
++            assert fallback.metadata["fallback_rule"] == "uscode_citation_context_v1"
++            assert fallback.provenance.citation == citation
++
++
+ def test_modal_compiler_surfaces_modal_family_ambiguity_when_cues_overlap() -> None:
+     frame_selector = BM25FrameSelector(
+         (

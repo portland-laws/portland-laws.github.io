@@ -1,0 +1,48 @@
+{
+  "changed_files": [
+    "ppd/daemon/builtin-repair-status.json",
+    "ppd/daemon/task-board.md"
+  ],
+  "created_at": "2026-05-04T03:37:17.258255Z",
+  "impact": "The supervisor handles an active-state timeout deterministically by parking the stalled task, recording the repair, appending execution-capability work when old platform slices are stale, validating, and restarting on the next independent task.",
+  "summary": "Park stalled worker task before restart.",
+  "target_task": "Built-in supervisor fallback: daemon process is not running but status is still calling_llm on Task checkbox-255: Add generated blocked-cascade daemon-repair coverage for tranche 3 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates., and 3 recent failure diagnostic(s) already exist for that target; park the task before restart instead of resetting it into another immediate retry",
+  "transport": "temporary_worktree",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 87 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": "................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................ss..................sss......................................................................................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 800 tests in 1.569s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

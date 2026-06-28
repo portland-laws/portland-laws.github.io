@@ -1,0 +1,26 @@
+{
+  "packet_id": "guardrail-activation-fixture-20260528",
+  "guardrail_bundles": [
+    {
+      "guardrail_bundle_id": "GB-DEVHUB-READONLY-ACTIONS",
+      "requirement_ids": ["REQ-DEVHUB-ACCOUNT-SERVICES"],
+      "source_evidence_ids": ["SRC-PPD-ONLINE-TOOLS"],
+      "activation_decision": "activate",
+      "reviewer_owner": "ppd-guardrail-reviewer"
+    },
+    {
+      "guardrail_bundle_id": "GB-FEE-PAYMENT-STOP-GATE",
+      "requirement_ids": ["REQ-FEE-PAYMENT-BLOCKED", "REQ-NOT-PROMOTED"],
+      "source_evidence_ids": ["SRC-PPD-FEE-PAYMENT-GUIDE", "SRC-PPD-MISSING-BUNDLE-SOURCE"],
+      "activation_decision": "activate",
+      "reviewer_owner": "ppd-guardrail-reviewer"
+    },
+    {
+      "guardrail_bundle_id": "GB-HELD-BUNDLE",
+      "requirement_ids": ["REQ-DEVHUB-ACCOUNT-SERVICES"],
+      "source_evidence_ids": ["SRC-PPD-ONLINE-TOOLS"],
+      "activation_decision": "hold",
+      "reviewer_owner": "ppd-guardrail-reviewer"
+    }
+  ]
+}

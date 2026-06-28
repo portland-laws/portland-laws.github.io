@@ -1,0 +1,94 @@
+{
+  "packet_id": "devhub-read-only-pilot-result-intake-synthetic-v1",
+  "packet_type": "ppd.devhub_read_only_pilot_result_intake.v1",
+  "mode": "attended_read_only_pilot_result_intake",
+  "fixture_first": true,
+  "attended_session": true,
+  "read_only_only": true,
+  "metadata_only": true,
+  "automated_login": false,
+  "mfa_automated": false,
+  "captcha_automated": false,
+  "account_creation_automated": false,
+  "credential_prompted": false,
+  "stores_browser_artifacts": false,
+  "screenshots_captured": false,
+  "traces_captured": false,
+  "har_captured": false,
+  "official_actions_completed": false,
+  "source_packets": {
+    "operator_checklist": "devhub-read-only-pilot-operator-checklist-v1",
+    "evidence_template": "devhub-attended-pilot-evidence-template-v1"
+  },
+  "redaction_attestations": {
+    "no_automated_login": true,
+    "no_mfa_automation": true,
+    "no_captcha_automation": true,
+    "no_account_creation_automation": true,
+    "no_credential_prompts": true,
+    "no_credentials": true,
+    "no_cookies": true,
+    "no_auth_state": true,
+    "no_stored_browser_artifacts": true,
+    "no_screenshots": true,
+    "no_traces": true,
+    "no_har_data": true,
+    "no_private_field_values": true,
+    "no_consequential_controls": true,
+    "no_official_actions_completed": true
+  },
+  "journal_event_ids": [
+    "JRN-PILOT-PREFLIGHT",
+    "JRN-PILOT-OBSERVATION",
+    "JRN-PILOT-ABORT",
+    "JRN-PILOT-HARDENING"
+  ],
+  "observations": [
+    {
+      "observation_id": "obs-home-heading",
+      "surface_id": "devhub_home_redacted",
+      "redacted_heading": "[REDACTED_HEADING:devhub-home]",
+      "redacted_labels": [
+        "[REDACTED_LABEL:my-permits]",
+        "[REDACTED_LABEL:status-summary]"
+      ],
+      "status_category": "home_loaded",
+      "scope_category": "read_only",
+      "journal_event_id": "JRN-PILOT-OBSERVATION"
+    }
+  ],
+  "abort_conditions": [
+    {
+      "condition_id": "abort-login-security-artifacts",
+      "trigger": "Abort on automated login, credential handling, MFA, CAPTCHA, account creation, cookie, auth state, browser artifact, screenshot, trace, HAR, private field value, upload, submit, certify, payment, schedule, cancel, or official action request.",
+      "operator_response": "Stop intake, record a refused-action journal event, and keep only redacted metadata.",
+      "journal_event_id": "JRN-PILOT-ABORT"
+    }
+  ],
+  "consequential_controls": [
+    {"control_id": "upload", "status": "refused", "allowed": false, "official_action_completed": false},
+    {"control_id": "submit", "status": "refused", "allowed": false, "official_action_completed": false},
+    {"control_id": "certify", "status": "refused", "allowed": false, "official_action_completed": false},
+    {"control_id": "payment", "status": "refused", "allowed": false, "official_action_completed": false},
+    {"control_id": "pay fee", "status": "refused", "allowed": false, "official_action_completed": false},
+    {"control_id": "schedule inspection", "status": "refused", "allowed": false, "official_action_completed": false},
+    {"control_id": "cancel", "status": "refused", "allowed": false, "official_action_completed": false},
+    {"control_id": "withdraw", "status": "refused", "allowed": false, "official_action_completed": false},
+    {"control_id": "request extension", "status": "refused", "allowed": false, "official_action_completed": false},
+    {"control_id": "reactivate", "status": "refused", "allowed": false, "official_action_completed": false},
+    {"control_id": "official action", "status": "refused", "allowed": false, "official_action_completed": false}
+  ],
+  "post_action_hardening": {
+    "required": true,
+    "official_state_changed": false,
+    "official_actions_completed": false,
+    "browser_artifacts_stored": false,
+    "screenshots_stored": false,
+    "traces_stored": false,
+    "har_stored": false,
+    "private_values_stored": false,
+    "notes": [
+      "Committed packet contains only redacted headings, labels, categories, journal IDs, abort notes, and hardening notes."
+    ]
+  }
+}

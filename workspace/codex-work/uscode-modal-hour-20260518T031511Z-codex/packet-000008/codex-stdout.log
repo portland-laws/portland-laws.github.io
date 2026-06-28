@@ -1,0 +1,25 @@
+Implemented the ambiguity policy update for `modal.compiler.ambiguity` with deterministic, explicit output.
+
+**What changed**
+- Added a dedicated adaptive ambiguity threshold and policy in the modal compiler:
+  - `modal_adaptive_family_margin` config field.
+  - New ambiguity emission: `adaptive_family_margin_low` when temporal predictions compete with frame / conditional_normative / deontic families under the configured margin.
+  - File: [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T031511Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T031511Z-codex-packet-000008-20260518_034731/ipfs_datasets_py/logic/modal/compiler.py:41), [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T031511Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T031511Z-codex-packet-000008-20260518_034731/ipfs_datasets_py/logic/modal/compiler.py:519)
+
+- Expanded frame ambiguity lexical signals for editorial/status language:
+  - Added frame-context tokens and phrases like `transferred`, `reclassified`, `reserved`, `repealed`, etc.
+  - Added `has_frame_scope_phrase` signal.
+  - File: [spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T031511Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T031511Z-codex-packet-000008-20260518_034731/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py:158), [spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T031511Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T031511Z-codex-packet-000008-20260518_034731/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py:695)
+
+- Added focused tests for the new ambiguity behavior:
+  - Temporal vs conditional_normative/deontic/frame adaptive ambiguity surfacing.
+  - Editorial `transferred` as frame-scope ambiguity signal.
+  - File: [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T031511Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T031511Z-codex-packet-000008-20260518_034731/tests/unit_tests/logic/modal/test_modal_codec.py:286)
+
+**Validation run**
+- `pytest` invocation is currently blocked by an existing repo issue:
+  - `NameError: name '__path__' is not defined` from repo-root `__init__.py`.
+- Ran direct `python3` behavioral checks instead, confirming:
+  - `adaptive_family_margin_low` appears for temporal vs frame/conditional_normative/deontic.
+  - `has_frame_scope_phrase` is `True` for `transferred` text.
+  - Existing temporal-conditional and deontic-scope outvote ambiguities still appear.

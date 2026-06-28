@@ -1,0 +1,18 @@
+{
+  "packet_type": "ppd.public_recrawl_execution_rehearsal_plan.v1",
+  "metadata_targets": [
+    {
+      "source_id": "ppd-devhub-faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "host": "www.portland.gov",
+      "source_type": "public_html",
+      "expected_archive_manifest_id": "archive-manifest.ppd-devhub-faq.20260528T000000Z"
+    }
+  ],
+  "required_abort_condition_ids": [
+    "robots_or_policy_not_approved",
+    "target_outside_allowlist",
+    "raw_body_persistence_requested",
+    "live_network_or_processor_invocation_requested"
+  ]
+}

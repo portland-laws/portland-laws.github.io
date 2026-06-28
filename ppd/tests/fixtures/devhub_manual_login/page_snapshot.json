@@ -1,0 +1,20 @@
+{
+  "text": "Portland DevHub dashboard My Permits Account Sign out",
+  "accessible_elements": [
+    {"role": "link", "name": "My Permits"},
+    {"role": "button", "name": "Apply for permit"},
+    {"role": "textbox", "name": "Search permits"},
+    {"role": "presentation", "name": "Decorative divider"},
+    {"role": "button", "name": "Save \"draft\""}
+  ],
+  "metadata": {
+    "source": "mocked-fixture",
+    "username": "planner@example.test",
+    "session_cookie": "abc123",
+    "authorization": "Bearer secret-token",
+    "nested": {
+      "csrf_token": "token-value",
+      "note": "contact planner@example.test"
+    }
+  }
+}

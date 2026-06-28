@@ -1,0 +1,11 @@
+Implemented a scoped `frame_logic` audit improvement that makes frame-term evidence explicitly ontology-grounded and preserved through IR/features/F-logic.
+
+**Changes**
+- Updated BM25 frame selection to distinguish lexical overlap from ontology-term matches, and to treat `matched_terms` as ontology-term matches for auditing: [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000006-20260518_072441/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:30)
+- Added frame-term audit propagation in codec metadata/feature keys and emitted ontology-term triples (`ontology_term`, `selected_ontology_term`) in deterministic F-logic projection: [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000006-20260518_072441/ipfs_datasets_py/logic/modal/codec.py:366)
+- Fixed F-logic consistency projection to preserve repeated predicates as `set_methods` instead of overwriting, plus structural checks for empty predicate/object: [flogic_optimizer.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000006-20260518_072441/ipfs_datasets_py/optimizers/logic/flogic_optimizer.py:251)
+- Added targeted tests for selector term auditing, ontology-term triple emission, and multi-valued F-logic projection: [test_frame_logic_term_audit.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000006-20260518_072441/ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_frame_logic_term_audit.py:1)
+
+**Validation**
+- Passed: `PYTHONPATH=.../ipfs_datasets_py pytest -q --pyargs ipfs_datasets_py.optimizers.logic_theorem_optimizer.test_frame_logic_term_audit` (4 passed).
+- Also ran `test_logic_session_contracts`; it has 4 pre-existing failures unrelated to these edits.

@@ -1,0 +1,295 @@
+{
+  "promotion_audit_log_candidate": {
+    "packet_type": "ppd.promotion_audit_log_candidate_packet.v1",
+    "packet_id": "promotion-audit-candidate-fixture-for-rollback-drill",
+    "fixture_only": true,
+    "candidate_status": "candidate_entries_not_written",
+    "source_packet_ids": {
+      "dry_run_promotion_sequence_packet": "dry-run-sequence-fixture",
+      "operator_promotion_approval_packet": "operator-promotion-approval-fixture"
+    },
+    "audit_log_policy": {
+      "fixtures_only": true,
+      "writes_operational_audit_log": false,
+      "appends_audit_ledger": false,
+      "promotes_artifacts": false,
+      "writes_active_state": false,
+      "uses_live_network": false,
+      "invokes_devhub": false,
+      "invokes_crawlers": false,
+      "invokes_processors": false,
+      "reads_private_case_files": false
+    },
+    "audit_entry_candidates": [
+      {
+        "sequence": 1,
+        "audit_entry_id": "audit-candidate-01-load-offline-decision-packet",
+        "event_type": "synthetic_promotion_step_reviewed",
+        "event_summary": "Load the cited offline decision packet as read-only fixture input.",
+        "synthetic_only": true,
+        "writes_operational_audit_log": false,
+        "promotes_artifacts": false,
+        "source_step_id": "load-offline-decision-packet",
+        "source_packet_refs": [
+          "dry_run_promotion_sequence_packet",
+          "operator_promotion_approval_packet"
+        ],
+        "cited_prerequisites": [
+          {
+            "prerequisite_id": "offline-decision-packet-validated",
+            "status": "satisfied",
+            "source_evidence_ids": [
+              "evidence-offline-decision",
+              "evidence-validation-command"
+            ]
+          }
+        ],
+        "affected_artifact_refs": [
+          {
+            "artifact_id": "candidate-guardrail-export-fixture",
+            "artifact_role": "candidate_or_fixture_reference",
+            "source_packet_ref": "dry_run_promotion_sequence_packet",
+            "source_evidence_ids": [
+              "evidence-rollback-checkpoint"
+            ]
+          },
+          {
+            "artifact_id": "candidate-process-model-fixture",
+            "artifact_role": "candidate_or_fixture_reference",
+            "source_packet_ref": "dry_run_promotion_sequence_packet",
+            "source_evidence_ids": [
+              "evidence-rollback-checkpoint"
+            ]
+          }
+        ],
+        "reviewer_owner_fields": [
+          {
+            "reviewer_owner_id": "release-owner",
+            "role": "ppd_release_operator",
+            "signoff_request_id": "operator-signoff-request-fixture",
+            "approval_id": "approval-fixture-audit-candidate",
+            "approval_status": "approved_for_fixture_audit_candidate",
+            "approved_by_reviewer_id": "release-owner",
+            "signed_at": "2026-05-29T00:00:00Z",
+            "source_evidence_ids": [
+              "evidence-operator-approval",
+              "evidence-operator-signoff-request"
+            ]
+          }
+        ],
+        "rollback_links": [
+          {
+            "rollback_id": "stop-before-active-state",
+            "rollback_action": "Abort before any active PP&D write boundary is reached.",
+            "affected_artifact_ids": [
+              "candidate-guardrail-export-fixture",
+              "candidate-process-model-fixture"
+            ],
+            "source_evidence_ids": [
+              "evidence-rollback-checkpoint"
+            ]
+          }
+        ],
+        "retention_notes": [
+          {
+            "retention_note_id": "retain-load-offline-decision-packet",
+            "summary": "Retain as fixture audit-entry candidate metadata only; discard or regenerate before any operational audit-log process.",
+            "source_evidence_ids": [
+              "evidence-offline-decision",
+              "evidence-operator-approval"
+            ]
+          }
+        ],
+        "source_evidence_ids": [
+          "evidence-offline-decision",
+          "evidence-validation-command",
+          "evidence-rollback-checkpoint",
+          "evidence-operator-approval"
+        ]
+      },
+      {
+        "sequence": 2,
+        "audit_entry_id": "audit-candidate-02-stage-synthetic-promotion-order",
+        "event_type": "synthetic_promotion_step_reviewed",
+        "event_summary": "Create ordered dry-run promotion steps without writing active PP&D state.",
+        "synthetic_only": true,
+        "writes_operational_audit_log": false,
+        "promotes_artifacts": false,
+        "source_step_id": "stage-synthetic-promotion-order",
+        "source_packet_refs": [
+          "dry_run_promotion_sequence_packet",
+          "operator_promotion_approval_packet"
+        ],
+        "cited_prerequisites": [
+          {
+            "prerequisite_id": "rollback-checkpoints-present",
+            "status": "satisfied",
+            "source_evidence_ids": [
+              "evidence-rollback-checkpoint"
+            ]
+          }
+        ],
+        "affected_artifact_refs": [
+          {
+            "artifact_id": "candidate-guardrail-export-fixture",
+            "artifact_role": "candidate_or_fixture_reference",
+            "source_packet_ref": "dry_run_promotion_sequence_packet",
+            "source_evidence_ids": [
+              "evidence-rollback-checkpoint"
+            ]
+          }
+        ],
+        "reviewer_owner_fields": [
+          {
+            "reviewer_owner_id": "release-owner",
+            "role": "ppd_release_operator",
+            "signoff_request_id": "operator-signoff-request-fixture",
+            "approval_id": "approval-fixture-audit-candidate",
+            "approval_status": "approved_for_fixture_audit_candidate",
+            "approved_by_reviewer_id": "release-owner",
+            "signed_at": "2026-05-29T00:00:00Z",
+            "source_evidence_ids": [
+              "evidence-operator-approval"
+            ]
+          }
+        ],
+        "rollback_links": [
+          {
+            "rollback_id": "discard-synthetic-sequence",
+            "rollback_action": "Discard synthetic promotion steps and retain source packets unchanged.",
+            "affected_artifact_ids": [
+              "candidate-guardrail-export-fixture"
+            ],
+            "source_evidence_ids": [
+              "evidence-rollback-checkpoint"
+            ]
+          }
+        ],
+        "retention_notes": [
+          {
+            "retention_note_id": "retain-stage-synthetic-promotion-order",
+            "summary": "Retain as fixture audit-entry candidate metadata only; discard or regenerate before any operational audit-log process.",
+            "source_evidence_ids": [
+              "evidence-rollback-checkpoint",
+              "evidence-operator-approval"
+            ]
+          }
+        ],
+        "source_evidence_ids": [
+          "evidence-rollback-checkpoint",
+          "evidence-operator-approval"
+        ]
+      }
+    ],
+    "packet_retention_notes": [
+      {
+        "retention_note_id": "retain-candidate-with-fixtures",
+        "summary": "Retain this packet as committed fixture metadata only; it is not an operational audit log and does not append to any ledger.",
+        "source_evidence_ids": [
+          "evidence-offline-decision",
+          "evidence-validation-command",
+          "evidence-rollback-checkpoint",
+          "evidence-operator-approval"
+        ]
+      }
+    ]
+  },
+  "operator_promotion_approval_packet": {
+    "packet_type": "ppd.operator_promotion_approval_packet.v1",
+    "packet_id": "operator-promotion-approval-fixture",
+    "fixture_only": true,
+    "approval_status": "approved_for_fixture_audit_candidate",
+    "approval_scope": "fixture_audit_candidate_only",
+    "readiness_status": "approved",
+    "approved_source_packet_ids": [
+      "dry-run-sequence-fixture"
+    ],
+    "ledger_links": [
+      {
+        "ledger_id": "ppd-readiness-ledger",
+        "entry_id": "fixture-entry-approval"
+      }
+    ],
+    "reviewer_signoffs": [
+      {
+        "reviewer_id": "release-owner",
+        "reviewer_role": "ppd_release_operator",
+        "approval_id": "approval-fixture-audit-candidate",
+        "signed_at": "2026-05-29T00:00:00Z",
+        "source_evidence_ids": [
+          "evidence-operator-approval"
+        ]
+      }
+    ],
+    "blockers": [],
+    "prerequisite_packets": [
+      {
+        "packet_id": "dry-run-sequence-fixture",
+        "version": "v1",
+        "expected_version": "v1",
+        "freshness_status": "current"
+      }
+    ],
+    "production_promotion": {
+      "production_promotion_enabled": false
+    },
+    "no_active_write_attestations": [
+      {
+        "attestation_id": "approval-fixture-only",
+        "attested": true,
+        "summary": "Approval is limited to building audit-entry candidates from committed fixtures and does not authorize active-state writes.",
+        "source_evidence_ids": [
+          "evidence-operator-approval"
+        ]
+      }
+    ]
+  },
+  "post_release_monitoring_plan": {
+    "packet_type": "ppd.post_release_monitoring_plan.v1",
+    "packet_id": "post-release-monitoring-fixture-for-rollback-drill",
+    "normalized_source_evidence": [
+      {
+        "evidence_id": "ppd-online-tools-guide",
+        "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools"
+      },
+      {
+        "evidence_id": "ppd-submit-plans-online",
+        "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online"
+      }
+    ],
+    "schedule_active": false,
+    "artifact_mutation_enabled": false,
+    "monitoring_checks": [
+      {
+        "check_id": "freshness-online-tools-guide",
+        "description": "Compare normalized metadata hash for the public online permitting tools guide.",
+        "source_evidence_ids": [
+          "ppd-online-tools-guide"
+        ],
+        "reviewer_owner": "ppd-release-operator",
+        "escalation_note": "Open a release blocker if the normalized public metadata hash changes.",
+        "alert_threshold": {
+          "max_age_days": 3,
+          "change_count_greater_than": 0
+        },
+        "schedule_enabled": false,
+        "writes_active_state": false
+      },
+      {
+        "check_id": "freshness-submit-plans-online",
+        "description": "Confirm fixture-derived file preparation requirements still cite the public guidance page.",
+        "source_evidence_ids": [
+          "ppd-submit-plans-online"
+        ],
+        "reviewer_owner": "ppd-release-operator",
+        "escalation_note": "Escalate to human review before promoting any changed file-preparation rule.",
+        "alert_threshold": {
+          "max_age_days": 7,
+          "changed_requirement_ids_greater_than": 0
+        },
+        "schedule_enabled": false,
+        "writes_active_state": false
+      }
+    ]
+  }
+}

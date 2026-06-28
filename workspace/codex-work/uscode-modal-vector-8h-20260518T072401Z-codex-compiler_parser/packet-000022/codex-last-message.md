@@ -1,0 +1,15 @@
+Implemented a deterministic parser improvement for long U.S.C. preambles that contain an in-text section reference but previously produced no fallback formula.
+
+**Changes**
+- Added `_embedded_citation_heading_segment(...)` and window config to recover a compact heading anchored on `§/Sec./Section <citation-section>` inside long uncued text, then reused existing `uscode_section_heading_v1` fallback metadata.
+  - [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000022-20260518_093815/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:62)
+  - [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000022-20260518_093815/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:482)
+  - [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000022-20260518_093815/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:775)
+- Added replay fixtures/tests for the three TODO sample IDs:
+  - parser-level test: [test_legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000022-20260518_093815/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py:712)
+  - compiler-level test (regex + spacy backends): [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000022-20260518_093815/tests/unit_tests/logic/modal/test_modal_codec.py:907)
+
+**Validation**
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py -k "long_embedded_section_heading_samples_for_8_1365b_34_50108_and_19_3702"` passed.
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "long_embedded_section_heading_samples_for_8_1365b_34_50108_and_19_3702"` passed.
+- Additional regression slice around existing heading/symbolic tests also passed.

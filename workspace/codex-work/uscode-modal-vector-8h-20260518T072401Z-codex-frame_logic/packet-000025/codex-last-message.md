@@ -1,0 +1,17 @@
+Implemented a targeted frame-ontology audit improvement: citation/source suffix terms like `i` and `e` are now preserved when they come from citation/source suffix predicates, instead of being dropped as non-informative single-character tokens.
+
+Changed code:
+- Updated normalization and predicate-policy plumbing to allow single-letter alpha tokens only for relevant citation/source suffix predicates in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000025-20260518_100324/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:315).
+- Added predicate-specific enablement logic in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000025-20260518_100324/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:596).
+- Extended feature-value extraction tuple wiring to carry the new policy flag in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000025-20260518_100324/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:525).
+
+Tests updated:
+- Added/adjusted unit coverage for single-letter citation/source suffixes in:
+  - [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000025-20260518_100324/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:445)
+  - [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000025-20260518_100324/ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:70)
+
+Validation run:
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py`
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "citation_shape or source_id_slots or frame_decoder_audit_features_use_canonical_feature_parser"`
+
+All passed.

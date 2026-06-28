@@ -1,0 +1,39 @@
+{
+  "scenario": "tranche3_item4_blocked_cascade_daemon_repair",
+  "blocked_task": "checkbox-257-dependent-work",
+  "required_repair_task": "daemon-repair-checkbox-257",
+  "events": [
+    {
+      "event": "blocked_work_detected",
+      "task": "checkbox-257-dependent-work",
+      "blocked_by": "daemon-repair-checkbox-257",
+      "repair_validated": false,
+      "repair_generation": 1,
+      "expected_state": "parked"
+    },
+    {
+      "event": "stale_repair_seen",
+      "task": "checkbox-257-dependent-work",
+      "blocked_by": "daemon-repair-checkbox-257",
+      "repair_validated": true,
+      "repair_generation": 0,
+      "expected_state": "parked"
+    },
+    {
+      "event": "fresh_repair_failed_validation",
+      "task": "checkbox-257-dependent-work",
+      "blocked_by": "daemon-repair-checkbox-257",
+      "repair_validated": false,
+      "repair_generation": 2,
+      "expected_state": "parked"
+    },
+    {
+      "event": "fresh_repair_validated",
+      "task": "checkbox-257-dependent-work",
+      "blocked_by": "daemon-repair-checkbox-257",
+      "repair_validated": true,
+      "repair_generation": 2,
+      "expected_state": "eligible"
+    }
+  ]
+}

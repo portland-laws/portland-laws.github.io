@@ -1,0 +1,10 @@
+Implemented a narrow frame-logic parser improvement: bare US Code coordinates now count as frame-ontology feature signals, not just `flogic:`/`slot:` prefixed keys.
+
+Changes:
+- Added raw-coordinate fallback parsing in [`frame_bm25_selector.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000057-20260518_150356/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py#L1009).
+- Added tests for bare citation/source-id feature keys and key-detection behavior in [`test_frame_bm25_selector.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000057-20260518_150356/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py#L990) and [`test_frame_bm25_selector.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000057-20260518_150356/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py#L1358).
+
+Validation run:
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py -k "bare_usc_and_source_id_coordinates or is_frame_ontology_feature_key_distinguishes_frame_linked_signals or support_digestless_source_ids"` → 4 passed.
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "audits_citation_coordinates_from_frame_term_metadata or audits_slot_normalized_source_ids_from_frame_term_metadata or audits_citation_and_sample_metadata_without_structural_key_noise"` → 3 passed.
+- `pytest -q tests/unit/logic/test_flogic_integration.py -k "result_metadata"` → 9 passed.

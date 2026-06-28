@@ -1,0 +1,82 @@
+{
+  "batch_id": "public-recrawl-batch-2026-05-28-fixture",
+  "generated_at": "2026-05-28T00:00:00Z",
+  "plan_scope": "public metadata-only PP&D recrawl plan",
+  "network_requests_made": false,
+  "raw_page_bodies_stored": false,
+  "sources": [
+    {
+      "source_id": "src-devhub-submit-permit-application-guide",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "source_type": "public_html",
+      "owning_surface": "devhub_public_guidance",
+      "crawl_frequency": "daily",
+      "freshness_watch_reason": "DevHub request types, upload staging, certification, and post-submission guidance affect agent guardrails.",
+      "current_content_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "source_record_ids": [
+        "source-record-devhub-submit-guide"
+      ],
+      "affected_requirement_ids": [
+        "req-devhub-dynamic-questions",
+        "req-devhub-required-uploads",
+        "req-devhub-certification-gate"
+      ],
+      "affected_process_model_ids": [
+        "process-devhub-permit-application",
+        "process-trade-with-plan-review"
+      ],
+      "affected_guardrail_bundle_ids": [
+        "guardrail-devhub-application-draft",
+        "guardrail-official-submission-confirmation"
+      ],
+      "affected_agent_readiness_checklist_item_ids": [
+        "agent-ready-source-freshness-current",
+        "agent-ready-required-documents-current",
+        "agent-ready-action-gates-current"
+      ]
+    },
+    {
+      "source_id": "src-submit-plans-online-single-pdf",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "source_type": "public_html",
+      "owning_surface": "public_document_guidance",
+      "crawl_frequency": "weekly",
+      "freshness_watch_reason": "Single PDF and supporting document rules affect upload readiness and document gap analysis.",
+      "current_content_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "source_record_ids": [
+        "source-record-submit-plans-online"
+      ],
+      "affected_requirement_ids": [
+        "req-single-pdf-drawing-set",
+        "req-supporting-documents-separate-pdfs"
+      ],
+      "affected_process_model_ids": [
+        "process-building-permit-plan-review"
+      ],
+      "affected_guardrail_bundle_ids": [
+        "guardrail-upload-staging"
+      ],
+      "affected_agent_readiness_checklist_item_ids": [
+        "agent-ready-file-rules-current"
+      ]
+    }
+  ],
+  "agent_readiness_checklist_catalog": {
+    "agent-ready-source-freshness-current": {
+      "label": "Source freshness has been checked for cited PP&D guidance.",
+      "readiness_gate": "block source-backed advice when changed source hashes are unresolved"
+    },
+    "agent-ready-required-documents-current": {
+      "label": "Required document lists reflect the latest public guidance fixture.",
+      "readiness_gate": "rerun gap analysis before drafting upload staging"
+    },
+    "agent-ready-action-gates-current": {
+      "label": "Consequential DevHub action gates reflect current public guidance.",
+      "readiness_gate": "require attended exact confirmation before official actions"
+    },
+    "agent-ready-file-rules-current": {
+      "label": "File preparation rules are current for document staging.",
+      "readiness_gate": "block upload staging when file rules are stale"
+    }
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "fixture_id": "devhub-playwright-draft-fill-default-refusals-001",
+  "created_for_task": "checkbox-44",
+  "privacy_classification": "commit_safe_synthetic_fixture",
+  "live_automation_allowed": false,
+  "stores_private_session_artifacts": false,
+  "default_policy": "refuse_unless_explicitly_allowed",
+  "source_basis": [
+    "PP&D plan: Non-Negotiable Boundaries",
+    "PP&D plan: Authenticated DevHub Automation Plan",
+    "PP&D plan: DevHub Surface Categories"
+  ],
+  "draft_fill_plan": {
+    "plan_id": "synthetic-playwright-draft-fill-refusal-plan",
+    "playwright_import_required": false,
+    "browser_launch_required": false,
+    "selector_confidence_fixture": {
+      "labels": [
+        "Project name",
+        "Project Name"
+      ],
+      "headings": [
+        "Permit draft",
+        "Permit Draft"
+      ],
+      "route_evidence": [
+        "/permits/draft",
+        "/permits/draft"
+      ]
+    },
+    "default_refusals": [
+      {
+        "category": "low_confidence_selector",
+        "default_allowed": false,
+        "default_decision": "refuse",
+        "requires_selector_confidence": "unambiguous_label_heading_and_route",
+        "reason": "Refuse draft-fill when selector evidence is missing, duplicated, or ambiguous."
+      },
+      {
+        "category": "upload",
+        "action_kind": "official_upload",
+        "default_allowed": false,
+        "default_decision": "refuse",
+        "may_execute_without_user": false,
+        "requires_user_attendance": true,
+        "requires_exact_confirmation": true,
+        "confirmation_text": "I confirm I am present and authorize: UPLOAD TO OFFICIAL DEVHUB RECORD",
+        "reason": "Refuse official uploads by default; uploads require user attendance and exact confirmation."
+      },
+      {
+        "category": "submission",
+        "action_kind": "submit_application",
+        "default_allowed": false,
+        "default_decision": "refuse",
+        "may_execute_without_user": false,
+        "requires_user_attendance": true,
+        "requires_exact_confirmation": true,
+        "confirmation_text": "I confirm I am present and authorize: SUBMIT PERMIT APPLICATION",
+        "reason": "Refuse application submission by default."
+      },
+      {
+        "category": "payment",
+        "action_kind": "pay_fee",
+        "default_allowed": false,
+        "default_decision": "refuse",
+        "may_execute_without_user": false,
+        "requires_user_attendance": true,
+        "requires_exact_confirmation": true,
+        "confirmation_text": "I confirm I am present and authorize: PAY PP&D FEES",
+        "reason": "Refuse payment actions by default."
+      },
+      {
+        "category": "certification",
+        "action_kind": "certify_acknowledgment",
+        "default_allowed": false,
+        "default_decision": "refuse",
+        "may_execute_without_user": false,
+        "requires_user_attendance": true,
+        "requires_exact_confirmation": true,
+        "confirmation_text": "I confirm I am present and authorize: CERTIFY ACKNOWLEDGMENT",
+        "reason": "Refuse certification and acknowledgement actions by default."
+      },
+      {
+        "category": "cancellation",
+        "action_kind": "cancel_request",
+        "default_allowed": false,
+        "default_decision": "refuse",
+        "may_execute_without_user": false,
+        "requires_user_attendance": true,
+        "requires_exact_confirmation": true,
+        "confirmation_text": "I confirm I am present and authorize: CANCEL REQUEST",
+        "reason": "Refuse cancellation or withdrawal actions by default."
+      },
+      {
+        "category": "mfa",
+        "default_allowed": false,
+        "default_decision": "refuse",
+        "automation_supported": false,
+        "manual_handoff_required": true,
+        "may_execute_without_user": false,
+        "reason": "Manual handoff required; do not automate MFA."
+      },
+      {
+        "category": "captcha",
+        "default_allowed": false,
+        "default_decision": "refuse",
+        "automation_supported": false,
+        "manual_handoff_required": true,
+        "may_execute_without_user": false,
+        "reason": "Manual handoff required; do not automate CAPTCHA."
+      },
+      {
+        "category": "inspection_scheduling",
+        "action_kind": "schedule_inspection",
+        "default_allowed": false,
+        "default_decision": "refuse",
+        "may_execute_without_user": false,
+        "requires_user_attendance": true,
+        "requires_exact_confirmation": true,
+        "confirmation_text": "I confirm I am present and authorize: SCHEDULE INSPECTION",
+        "reason": "Refuse inspection scheduling by default."
+      }
+    ]
+  }
+}

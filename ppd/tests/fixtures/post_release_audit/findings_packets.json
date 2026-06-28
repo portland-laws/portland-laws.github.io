@@ -1,0 +1,71 @@
+{
+  "valid": {
+    "packet_type": "ppd.post_release_audit_findings.v1",
+    "release_status": "blocked_until_manual_review",
+    "normalized_source_evidence": [
+      {
+        "evidence_id": "ev-devhub-guide",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+        "citation_spans": [{"start": 12, "end": 48}],
+        "freshness_status": "current"
+      },
+      {
+        "evidence_id": "ev-payment-guide",
+        "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+        "citation_spans": [{"page": 1}],
+        "freshness_status": "current"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "finding-payment-gate",
+        "summary": "Payment remains a manual handoff gate.",
+        "source_evidence_ids": ["ev-payment-guide"]
+      },
+      {
+        "finding_id": "finding-devhub-attended",
+        "summary": "DevHub official actions require attended review and exact confirmation.",
+        "source_evidence_ids": ["ev-devhub-guide"]
+      }
+    ],
+    "capabilities": [
+      {"capability_type": "payment", "enabled": false, "state": "manual_handoff_required"},
+      {"capability_type": "upload", "enabled": false, "state": "blocked"},
+      {"capability_type": "submission", "enabled": false, "state": "blocked"},
+      {"capability_type": "schedule_inspection", "enabled": false, "state": "manual_handoff_required"},
+      {"capability_type": "cancellation", "enabled": false, "state": "manual_handoff_required"},
+      {"capability_type": "certification", "enabled": false, "state": "manual_handoff_required"}
+    ],
+    "production_ready": false,
+    "network_execution": "not_run",
+    "devhub_mode": "metadata_only"
+  },
+  "invalid": {
+    "packet_type": "ppd.post_release_audit_findings.v1",
+    "release_status": "production_ready",
+    "production_ready": true,
+    "unresolved_blockers": ["selector validation incomplete"],
+    "normalized_source_evidence": [
+      {"evidence_id": "ev-devhub-guide", "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application"}
+    ],
+    "findings": [
+      {"finding_id": "uncited", "summary": "This finding has no citation."},
+      {"finding_id": "unknown-citation", "summary": "Unknown citation.", "source_evidence_ids": ["missing-ev"]},
+      {"finding_id": "guarantee", "summary": "This ensures permit approval.", "source_evidence_ids": ["ev-devhub-guide"]}
+    ],
+    "session_state": "private-devhub-session.json",
+    "local_path": "/home/alex/.devhub/session.json",
+    "raw_crawl_ref": "raw-crawl/devhub-home.warc.gz",
+    "archive_artifact_ref": "archive_artifact/private-session.har",
+    "live_devhub_execution": true,
+    "execution_notes": "Ran against DevHub and submitted through DevHub.",
+    "payment_enabled": true,
+    "capabilities": [
+      {"capability_type": "upload", "enabled": true, "state": "enabled"},
+      {"capability_type": "submission", "allowed": true, "state": "ready"},
+      {"capability_type": "schedule_inspection", "enabled": true},
+      {"capability_type": "cancellation", "enabled": true},
+      {"capability_type": "certification", "enabled": true}
+    ]
+  }
+}

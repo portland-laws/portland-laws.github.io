@@ -1,0 +1,16 @@
+Implemented a deterministic typed-slot refinement for mixed alphanumeric identifiers in the modal IR decompiler path.
+
+**Changes**
+- Added additive `*_has_mixed_token`, `*_mixed_token_count`, and `*_alnum_segment*` slots in typed identifier expansion so values like `410ww-25`/`940e` emit explicit digit/alpha segment structure without changing existing slots.
+- Mirrored the same refinement in codec triple emission so decompiler slot metadata and F-logic predicates stay aligned.
+- Extended slot regression tests for both decoded phrase slots and triple predicates using the existing `360bbb-0` sample.
+
+Files:
+- [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000051-20260518_121838/ipfs_datasets_py/logic/modal/decompiler.py:1963)
+- [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000051-20260518_121838/ipfs_datasets_py/logic/modal/codec.py:1991)
+- [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000051-20260518_121838/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:324)
+
+**Validation**
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py` (27 passed)
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_modal_ir_decompiler_slots.py` (2 passed)
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_modal_ir.py` (2 passed)

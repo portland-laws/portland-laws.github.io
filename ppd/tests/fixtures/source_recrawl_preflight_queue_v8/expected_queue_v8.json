@@ -1,0 +1,128 @@
+{
+  "queue_version": "source-recrawl-preflight-queue-v8",
+  "offline_only": true,
+  "prohibited_actions": [
+    "live_crawl",
+    "raw_artifact_download",
+    "devhub_open",
+    "private_document_read",
+    "upload",
+    "submit",
+    "certify",
+    "pay",
+    "schedule",
+    "legal_or_permitting_guarantee"
+  ],
+  "authorization_packet_id": "public-refresh-auth-v8-fixture-001",
+  "source_registry_id": "current-public-source-registry-fixture-001",
+  "ordered_public_source_candidates": [
+    {
+      "sequence": 1,
+      "source_id": "portland_public_bds",
+      "source_name": "City of Portland BDS public pages",
+      "input_url": "https://www.portland.gov/bds/permits",
+      "canonical_url": "https://www.portland.gov/bds/permits",
+      "canonical_url_check": {
+        "input_url": "https://www.portland.gov/bds/permits",
+        "trimmed_url": "https://www.portland.gov/bds/permits",
+        "is_valid_public_http_url": true,
+        "canonical_url": "https://www.portland.gov/bds/permits",
+        "reason": "canonicalized"
+      },
+      "allowlist_decision": {
+        "allowed": true,
+        "allowed_hosts": [
+          "www.portland.gov",
+          "portland.gov"
+        ],
+        "reason": "canonical_host_matched_source_allowlist"
+      },
+      "robots_decision_placeholder": {
+        "status": "not_evaluated_offline_preflight_only",
+        "allowed": null
+      },
+      "policy_decision_placeholder": {
+        "status": "not_evaluated_offline_preflight_only",
+        "allowed": null
+      },
+      "processor_handoff_eligibility": {
+        "eligible": false,
+        "reason": "blocked_until_fixture_backed_robots_and_policy_decisions_exist"
+      }
+    },
+    {
+      "sequence": 2,
+      "source_id": "portland_maps_public_permits",
+      "source_name": "Portland Maps public permits",
+      "input_url": "https://www.portlandmaps.com/permits/?propertyid=fixture",
+      "canonical_url": "https://www.portlandmaps.com/permits?propertyid=fixture",
+      "canonical_url_check": {
+        "input_url": "https://www.portlandmaps.com/permits/?propertyid=fixture",
+        "trimmed_url": "https://www.portlandmaps.com/permits/?propertyid=fixture",
+        "is_valid_public_http_url": true,
+        "canonical_url": "https://www.portlandmaps.com/permits?propertyid=fixture",
+        "reason": "canonicalized"
+      },
+      "allowlist_decision": {
+        "allowed": true,
+        "allowed_hosts": [
+          "www.portlandmaps.com",
+          "portlandmaps.com"
+        ],
+        "reason": "canonical_host_matched_source_allowlist"
+      },
+      "robots_decision_placeholder": {
+        "status": "not_evaluated_offline_preflight_only",
+        "allowed": null
+      },
+      "policy_decision_placeholder": {
+        "status": "not_evaluated_offline_preflight_only",
+        "allowed": null
+      },
+      "processor_handoff_eligibility": {
+        "eligible": false,
+        "reason": "blocked_until_fixture_backed_robots_and_policy_decisions_exist"
+      }
+    }
+  ],
+  "skipped_url_reason_rows": [
+    {
+      "source_id": "portland_public_bds",
+      "input_url": "https://WWW.PORTLAND.GOV:443/bds/permits/",
+      "canonical_url": "https://www.portland.gov/bds/permits",
+      "reason": "duplicate_canonical_url"
+    },
+    {
+      "source_id": "portland_public_bds",
+      "input_url": "ftp://www.portland.gov/bds/private",
+      "canonical_url": null,
+      "reason": "unsupported_or_missing_public_http_url"
+    },
+    {
+      "source_id": "portland_maps_public_permits",
+      "input_url": "https://example.com/not-allowed",
+      "canonical_url": "https://example.com/not-allowed",
+      "reason": "canonical_host_not_in_source_allowlist"
+    },
+    {
+      "source_id": "missing_authorized_source",
+      "input_url": null,
+      "canonical_url": null,
+      "reason": "authorized_source_missing_from_registry_fixture"
+    }
+  ],
+  "offline_validation_commands": [
+    [
+      "python3",
+      "-m",
+      "py_compile",
+      "ppd/source_recrawl_preflight_queue_v8.py"
+    ],
+    [
+      "python3",
+      "-m",
+      "pytest",
+      "ppd/tests/test_source_recrawl_preflight_queue_v8.py"
+    ]
+  ]
+}

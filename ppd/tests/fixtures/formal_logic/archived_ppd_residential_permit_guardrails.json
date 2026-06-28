@@ -1,0 +1,69 @@
+{
+  "fixture_id": "archived_ppd_residential_permit_guardrails_v1",
+  "fixture_type": "ppd_formal_logic_guardrail_bundle",
+  "source_archive": {
+    "agency": "Portland Permitting & Development",
+    "jurisdiction": "Portland, Oregon",
+    "requirement_set": "Residential building permit application intake requirements",
+    "archived_as_of": "2026-05-08",
+    "archive_scope": "fixture-only normalized requirement set for deterministic guardrail validation"
+  },
+  "requirements": [
+    {
+      "id": "REQ-PPD-RES-INTAKE-001",
+      "text": "A residential building permit application package must identify the project address, applicant contact, scope of work, and permit type before intake review.",
+      "obligations": [
+        {
+          "id": "OBL-001",
+          "actor": "applicant",
+          "must": "provide project address, applicant contact, scope of work, and permit type",
+          "deadline": "before intake review",
+          "evidence": [
+            "completed application form",
+            "project description"
+          ]
+        }
+      ],
+      "prerequisites": [
+        {
+          "id": "PRE-001",
+          "condition": "application package exists",
+          "required_before": "intake review can begin"
+        }
+      ],
+      "stop_gates": [
+        {
+          "id": "STOP-001",
+          "trigger": "missing project address, applicant contact, scope of work, or permit type",
+          "effect": "do not submit or certify the application package",
+          "manual_resolution": "return to applicant for completion"
+        }
+      ],
+      "reversible_actions": [
+        {
+          "id": "REV-001",
+          "action": "save incomplete application draft",
+          "reversal": "discard or revise draft before submission",
+          "allowed_without_exact_confirmation": true
+        }
+      ],
+      "exact_confirmations": [
+        {
+          "id": "CONF-001",
+          "phrase": "I confirm the residential permit application package is complete and ready for manual submission review.",
+          "required_before": "any submission, certification, payment, upload, or cancellation step",
+          "blocked_automation": [
+            "captcha",
+            "mfa",
+            "account_creation",
+            "payment",
+            "submission",
+            "certification",
+            "cancellation",
+            "upload"
+          ]
+        }
+      ]
+    }
+  ]
+}

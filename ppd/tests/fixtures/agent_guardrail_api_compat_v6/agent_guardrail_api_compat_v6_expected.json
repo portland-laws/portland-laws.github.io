@@ -1,0 +1,30 @@
+{
+  "packet_version": "agent-guardrail-api-compatibility-v6",
+  "source_fixture_version": "post-activation-monitoring-rehearsal-v5",
+  "status": "inactive_fixture_only",
+  "fixture_first": true,
+  "synthetic_requests_only": true,
+  "guardrails_activated": false,
+  "devhub_opened": false,
+  "live_crawl_performed": false,
+  "private_documents_read": false,
+  "required_scenarios": [
+    "missing_facts",
+    "stale_source_block",
+    "conflicting_evidence_block",
+    "reversible_draft_only_action",
+    "exact_confirmation_checkpoint",
+    "refused_consequential_action",
+    "refused_financial_action",
+    "citation_payload",
+    "manual_handoff_routing",
+    "rollback_notes",
+    "monitoring_references",
+    "exact_offline_validation_commands"
+  ],
+  "required_offline_validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/logic/agent_guardrail_api_compat_v6.py"],
+    ["python3", "-m", "pytest", "ppd/tests/test_agent_guardrail_api_compat_v6.py"],
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

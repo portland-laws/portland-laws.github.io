@@ -1,0 +1,35 @@
+{
+  "synthetic_metadata_manifest_dry_run_plan_rows": [
+    {
+      "synthetic_metadata_manifest_dry_run_plan_row": true,
+      "row_id": "row-001",
+      "plan_id": "public-refresh-dry-run-plan-20260601",
+      "metadata_dry_run_reference_id": "metadata-dry-run-ref-001",
+      "source_id": "ppd-source-devhub-faq-public",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "manifest_id": "manifest-devhub-faq-public-001",
+      "document_id": "document-devhub-faq-public-001",
+      "citation_span_ids": ["span-devhub-faq-001"],
+      "affected_requirement_ids": ["requirement-devhub-account-service-review"],
+      "affected_process_model_ids": ["process-devhub-account-setup"],
+      "affected_guardrail_bundle_ids": ["guardrail-devhub-attended-login"],
+      "refresh_signal": "stale_source",
+      "stale_source_hold_impact": "Keep affected DevHub account-service guidance on stale-source hold until a human reviewer confirms the refreshed public citation span.",
+      "extraction_confidence_placeholder": "pending-human-review-confidence-placeholder",
+      "human_review_route": "public-source-refresh-reviewer",
+      "rollback_note": "Discard the fixture queue candidate and retain the prior active citation span if reviewer confirmation fails.",
+      "dry_run_evidence": "Synthetic metadata-only dry-run row; no live extraction, crawl, download, DevHub access, raw output, active mutation, official action, or guarantee.",
+      "live_extraction": false,
+      "live_crawl": false,
+      "document_download": false,
+      "raw_output_stored": false,
+      "devhub_opened": false,
+      "active_mutation": false,
+      "active_requirement_mutation": false,
+      "active_process_model_mutation": false,
+      "active_guardrail_mutation": false,
+      "official_action_completed": false,
+      "legal_or_permitting_guarantee": false
+    }
+  ]
+}

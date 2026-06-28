@@ -1,0 +1,32 @@
+{
+  "packet_id": "guardrail-recompilation-rehearsal",
+  "uses_llm": false,
+  "promotes_active_guardrails": false,
+  "guardrails": [
+    {
+      "id": "gr-read-only",
+      "requirement": "public pages and saved fixtures may be read without side effects",
+      "citation": "guardrail-recompilation#read-only"
+    },
+    {
+      "id": "gr-draft-only",
+      "requirement": "draft artifacts must remain reversible and unsubmitted",
+      "citation": "guardrail-recompilation#draft-only"
+    },
+    {
+      "id": "gr-exact-confirmation",
+      "requirement": "state-changing checkpoints require exact human confirmation before continuing",
+      "citation": "guardrail-recompilation#exact-confirmation"
+    },
+    {
+      "id": "gr-manual-handoff",
+      "requirement": "ambiguous authenticated or official-record steps must stop for manual handoff",
+      "citation": "guardrail-recompilation#manual-handoff"
+    },
+    {
+      "id": "gr-refuse-consequential",
+      "requirement": "consequential filing, payment, certification, cancellation, upload, or submission actions are refused",
+      "citation": "guardrail-recompilation#refuse-consequential"
+    }
+  ]
+}

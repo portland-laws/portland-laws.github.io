@@ -1,0 +1,62 @@
+{
+  "packet_version": "next-public-refresh-seed-packet-v5",
+  "mode": "fixture-first-offline-public-refresh-planning",
+  "monitoring_rehearsal_references": [
+    "monitoring-rehearsal://post-activation/v4/public-source-staleness",
+    "monitoring-rehearsal://post-activation/v4/citation-span-drift"
+  ],
+  "source_registry_placeholders": [
+    {
+      "placeholder_id": "src-placeholder-permit-applications-index",
+      "source_registry_ref": "source-registry-placeholder://portland-ppd/permit-applications-index",
+      "owning_surface": "public_ppd_forms_index",
+      "metadata_only": true
+    },
+    {
+      "placeholder_id": "src-placeholder-file-standards",
+      "source_registry_ref": "source-registry-placeholder://portland-ppd/file-standards",
+      "owning_surface": "public_ppd_file_guidance",
+      "metadata_only": true
+    }
+  ],
+  "stale_source_hold_mapping": {
+    "hold-none": "no stale-source guardrail hold applies to this candidate",
+    "hold-file-standards-review": "candidate remains reviewer-held until stale file-standard evidence is reconciled"
+  },
+  "reviewer_routing": {
+    "queue": "PPD public refresh seed review",
+    "reviewer_role": "public source freshness reviewer",
+    "routing_note": "offline fixture review only; future network access requires separate preflight"
+  },
+  "rollback_notes": "Drop the proposed seed from the next metadata-only manifest draft and keep prior public corpus pointers unchanged.",
+  "validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/public_refresh/next_public_refresh_seed_packet_v5.py"],
+    ["python3", "-m", "pytest", "ppd/tests/test_next_public_refresh_seed_packet_v5.py"]
+  ],
+  "refresh_candidate_ranking": [
+    {
+      "seed_id": "seed-permit-applications-index-metadata",
+      "rank": 1,
+      "source_registry_placeholder_id": "src-placeholder-permit-applications-index",
+      "monitoring_rehearsal_reference": "monitoring-rehearsal://post-activation/v4/citation-span-drift",
+      "changed_requirement_risk_label": "high",
+      "crawl_frequency_label": "weekly",
+      "skipped_source_reason": "not_skipped",
+      "stale_source_hold_key": "hold-none",
+      "reviewer_route": "PPD public refresh seed review",
+      "rollback_note": "Remove this candidate from the metadata-only seed draft if reviewer evidence is incomplete."
+    },
+    {
+      "seed_id": "seed-file-standards-review-hold",
+      "rank": 2,
+      "source_registry_placeholder_id": "src-placeholder-file-standards",
+      "monitoring_rehearsal_reference": "monitoring-rehearsal://post-activation/v4/public-source-staleness",
+      "changed_requirement_risk_label": "review_required",
+      "crawl_frequency_label": "skip_until_review",
+      "skipped_source_reason": "robots_or_policy_disallowed",
+      "stale_source_hold_key": "hold-file-standards-review",
+      "reviewer_route": "PPD stale source hold review",
+      "rollback_note": "Keep this candidate out of the refresh manifest until the stale-source hold is cleared."
+    }
+  ]
+}

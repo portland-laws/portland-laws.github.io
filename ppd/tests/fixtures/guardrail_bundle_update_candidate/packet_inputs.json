@@ -1,0 +1,32 @@
+{
+  "fixture_id": "guardrail-bundle-update-candidate-inputs-2026-05-29",
+  "generated_at": "2026-05-29T00:00:00Z",
+  "source_packet_fixture_paths": {
+    "requirement_rerun_review_disposition_inputs": "../requirement_rerun_review_disposition/valid_disposition_inputs.json",
+    "process_model_update_requirement_review": "../process_model_update_candidate/requirement_rerun_review.json",
+    "process_model_update_impact_rehearsal": "../process_model_update_candidate/impact_rehearsal_packet.json",
+    "guardrail_recompilation_reviewed_requirements": "../guardrail_recompilation_rehearsal/reviewed_synthetic_requirement_candidates.json",
+    "guardrail_recompilation_process_model": "../process_models/synthetic_public_process.json"
+  },
+  "active_guardrail_bundle_id": "guardrail-bundle-single-pdf-active",
+  "active_guardrail_bundle_revision": "active-2026-05-29",
+  "expected_attestations": {
+    "fixture_first": true,
+    "review_packet_only": true,
+    "compiled_guardrail_bundle": false,
+    "promoted_guardrail_bundle": false,
+    "mutated_active_guardrail_bundle": false,
+    "active_guardrail_bundle_replaced": false,
+    "live_guardrail_compiler_invoked": false,
+    "no_active_guardrail_mutation": true
+  },
+  "expected_minimums": {
+    "cited_predicate_additions": 1,
+    "cited_predicate_removals": 1,
+    "explanation_template_updates": 1,
+    "blocked_action_expectations": 1,
+    "exact_confirmation_checkpoints": 1,
+    "manual_handoff_notes": 1,
+    "rollback_notes": 1
+  }
+}

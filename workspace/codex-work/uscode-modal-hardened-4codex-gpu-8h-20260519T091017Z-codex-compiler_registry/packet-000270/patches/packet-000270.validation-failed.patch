@@ -1,0 +1,192 @@
+diff --git a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py
+index e1cbe1ca..852d26c3 100644
+--- a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py
++++ b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py
+@@ -536,6 +536,10 @@ _STATUTORY_GENERIC_FRAME_COMPETING_SCOPE_MAX = 0.62
+ _STATUTORY_GENERIC_FRAME_CONDITIONAL_SCOPE_MAX = 0.62
+ _STATUTORY_GENERIC_FRAME_EPISTEMIC_SCOPE_MAX = 0.45
+ _STATUTORY_GENERIC_FRAME_STRONG_TEMPORAL_SCOPE_MAX = 0.72
++_GENERIC_FRAME_COMPETING_SCOPE_RATIO = 0.5
++_GENERIC_FRAME_STRONG_COMPETING_SCOPE_RATIO = 0.75
++_GENERIC_FRAME_COMPETING_SCOPE_MAX = 0.45
++_GENERIC_FRAME_STRONG_COMPETING_SCOPE_MAX = 0.62
+ _TEMPORAL_COMPETING_SCOPE_BACKFILL_RATIO = 0.2
+ _TEMPORAL_COMPETING_SCOPE_BACKFILL_MAX = 0.45
+ _DEONTIC_COMPETING_SCOPE_BACKFILL_RATIO = 0.2
+@@ -1368,6 +1372,10 @@ def _weighted_modal_family_counts(
+             counts,
+             resolved_signals,
+         )
++        _apply_generic_frame_competing_scope_uplift(
++            counts,
++            resolved_signals,
++        )
+     return counts
+ 
+ 
+@@ -1860,6 +1868,77 @@ def _apply_generic_frame_statutory_competing_scope_backfill(
+         )
+ 
+ 
++def _apply_generic_frame_competing_scope_uplift(
++    counts: Dict[str, float],
++    signals: Mapping[str, bool],
++) -> None:
++    """Raise non-frame scope floors for dense generic-frame competition."""
++    frame_family = ModalLogicFamily.FRAME.value
++    frame_count = float(counts.get(frame_family, 0.0))
++    if frame_count <= 0.0:
++        return
++
++    base_floor = _scaled_competing_scope_backfill(
++        source_count=frame_count,
++        ratio=_GENERIC_FRAME_COMPETING_SCOPE_RATIO,
++        minimum=_COMPETING_SCOPE_BACKFILL_WEIGHT,
++        maximum=_GENERIC_FRAME_COMPETING_SCOPE_MAX,
++    )
++    strong_floor = _scaled_competing_scope_backfill(
++        source_count=frame_count,
++        ratio=_GENERIC_FRAME_STRONG_COMPETING_SCOPE_RATIO,
++        minimum=_FRAME_MODERATE_COMPETING_SCOPE_BACKFILL_WEIGHT,
++        maximum=_GENERIC_FRAME_STRONG_COMPETING_SCOPE_MAX,
++    )
++
++    has_explicit_conditional_scope = _has_explicit_conditional_scope(signals)
++    if bool(signals.get("has_condition_or_exception_scope")):
++        conditional_floor = (
++            strong_floor if has_explicit_conditional_scope else base_floor
++        )
++        counts[ModalLogicFamily.CONDITIONAL_NORMATIVE.value] = max(
++            float(counts.get(ModalLogicFamily.CONDITIONAL_NORMATIVE.value, 0.0)),
++            conditional_floor,
++        )
++
++    has_strong_deontic_scope = bool(
++        signals.get("has_deontic_scope_phrase")
++        or signals.get("has_deontic_cue")
++    )
++    if bool(signals.get("has_deontic_scope")):
++        deontic_floor = strong_floor if has_strong_deontic_scope else base_floor
++        counts[ModalLogicFamily.DEONTIC.value] = max(
++            float(counts.get(ModalLogicFamily.DEONTIC.value, 0.0)),
++            deontic_floor,
++        )
++
++    has_strong_temporal_scope = bool(
++        signals.get("has_calendar_date_scope")
++        or signals.get("has_temporal_scope_phrase")
++        or signals.get("has_temporal_within_scope")
++    )
++    if bool(signals.get("has_temporal_scope")):
++        temporal_floor = strong_floor if has_strong_temporal_scope else base_floor
++        counts[ModalLogicFamily.TEMPORAL.value] = max(
++            float(counts.get(ModalLogicFamily.TEMPORAL.value, 0.0)),
++            temporal_floor,
++        )
++
++    has_strong_epistemic_scope = bool(
++        signals.get("has_epistemic_scope_phrase")
++        or signals.get("has_epistemic_cue")
++    )
++    if bool(
++        signals.get("has_epistemic_scope")
++        or signals.get("has_epistemic_cue")
++    ):
++        epistemic_floor = strong_floor if has_strong_epistemic_scope else base_floor
++        counts[ModalLogicFamily.EPISTEMIC.value] = max(
++            float(counts.get(ModalLogicFamily.EPISTEMIC.value, 0.0)),
++            epistemic_floor,
++        )
++
++
+ def _apply_competing_scope_backfill(
+     counts: Dict[str, float],
+     signals: Mapping[str, bool],
+diff --git a/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py b/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py
+index 574d5149..8015ef2f 100644
+--- a/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py
++++ b/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py
+@@ -3841,6 +3841,83 @@ def test_spacy_codec_strengthens_temporal_share_for_statutory_generic_frame_comp
+     assert frame_share > temporal_share
+ 
+ 
++def test_spacy_codec_strengthens_epistemic_share_for_statutory_generic_frame_competition() -> None:
++    codec = SpaCyModalCodec(
++        encoder=SpaCyLegalEncoder(model_name="definitely_missing_legal_model"),
++        decoder=SpaCyModalDecoder(),
++    )
++    sample = build_us_code_sample(
++        title="7",
++        section="6011",
++        text=(
++            "Authority and jurisdiction and authority and jurisdiction under this section "
++            "rest upon a formal finding that the applicant concealed facts."
++        ),
++    )
++    encoding = codec.encode_sample(sample)
++    ranking = ranked_modal_families(encoding)
++
++    assert not any(cue.family == "epistemic" for cue in encoding.cues)
++    epistemic_share = next(
++        float(item["share"])
++        for item in ranking
++        if item["family"] == "epistemic"
++    )
++    frame_share = next(
++        float(item["share"])
++        for item in ranking
++        if item["family"] == "frame"
++    )
++    assert epistemic_share > 0.25
++    assert frame_share > epistemic_share
++
++
++def test_spacy_codec_strengthens_conditional_share_for_dense_generic_frame_condition_clauses() -> None:
++    codec = SpaCyModalCodec(
++        encoder=SpaCyLegalEncoder(model_name="definitely_missing_legal_model"),
++        decoder=SpaCyModalDecoder(),
++    )
++    baseline = build_us_code_sample(
++        title="7",
++        section="6012",
++        text=(
++            "Authority and jurisdiction and authority and jurisdiction apply."
++        ),
++    )
++    competing = build_us_code_sample(
++        title="7",
++        section="6013",
++        text=(
++            "When designated by the Secretary, authority and jurisdiction and authority "
++            "and jurisdiction apply."
++        ),
++    )
++    baseline_encoding = codec.encode_sample(baseline)
++    competing_encoding = codec.encode_sample(competing)
++    baseline_ranking = ranked_modal_families(baseline_encoding)
++    competing_ranking = ranked_modal_families(competing_encoding)
++
++    assert not any(cue.family == "conditional_normative" for cue in competing_encoding.cues)
++    baseline_conditional_share = next(
++        (
++            float(item["share"])
++            for item in baseline_ranking
++            if item["family"] == "conditional_normative"
++        ),
++        0.0,
++    )
++    competing_conditional_share = next(
++        (
++            float(item["share"])
++            for item in competing_ranking
++            if item["family"] == "conditional_normative"
++        ),
++        0.0,
++    )
++    assert competing_conditional_share > baseline_conditional_share
++    assert competing_conditional_share > 0.2
++
++
+ def test_spacy_codec_strengthens_conditional_share_for_dense_temporal_scope_statutory_conflict() -> None:
+     codec = SpaCyModalCodec(
+         encoder=SpaCyLegalEncoder(model_name="definitely_missing_legal_model"),

@@ -1,0 +1,44 @@
+{
+  "packet_type": "guardrail_recompilation_rehearsal",
+  "changes": [
+    {
+      "kind": "predicate_change",
+      "predicate": "requires_exact_confirmation_before_submission",
+      "citations": [
+        "official-public-source:devhub-automation-policy#sensitive-actions"
+      ],
+      "new_value": true
+    }
+  ],
+  "refusal_coverage": {
+    "payment": true,
+    "upload": true,
+    "submission": true,
+    "scheduling": true,
+    "cancellation": true,
+    "certification": true
+  },
+  "exact_confirmation_gates": {
+    "payment": true,
+    "upload": true,
+    "submission": true,
+    "scheduling": true,
+    "cancellation": true,
+    "certification": true
+  },
+  "reviewer_prompts": [
+    {
+      "id": "confirm-sensitive-action-refusals",
+      "resolved": true,
+      "resolution": "All sensitive action refusals are covered by deterministic gates."
+    }
+  ],
+  "target_environment": "rehearsal",
+  "production_activation": false,
+  "bundle_operations": [
+    {
+      "target": "candidate",
+      "operation": "compile"
+    }
+  ]
+}

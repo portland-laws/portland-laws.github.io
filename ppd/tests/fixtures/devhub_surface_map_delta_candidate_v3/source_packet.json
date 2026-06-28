@@ -1,0 +1,130 @@
+{
+  "packet_id": "fixture-first-inactive-devhub-surface-map-delta-candidate-v3-source",
+  "surface_id": "devhub.synthetic.readonly.permit-overview",
+  "redaction_acceptance_packet_v3": {
+    "packet_version": "devhub_read_only_observation_redaction_acceptance_v3",
+    "packet_id": "fixture-devhub-read-only-redaction-v3-surface-map-delta-source",
+    "observation_intake_references": [
+      {
+        "reference_id": "synthetic-intake-001",
+        "source_kind": "synthetic_fixture",
+        "description": "Read-only DevHub labels and structural placeholder rows for offline candidate assembly."
+      }
+    ],
+    "redaction_coverage_checks": [
+      {
+        "check_id": "coverage-001",
+        "scope": "labels, landmarks, validation copy classes, and action boundaries",
+        "result": "passed",
+        "notes": "No account identifiers, user-entered values, case numbers, document names, or local paths are retained."
+      }
+    ],
+    "private_value_omission_evidence": [
+      {
+        "evidence_id": "omission-001",
+        "omitted_categories": [
+          "account identifiers",
+          "user-entered values",
+          "case numbers",
+          "addresses",
+          "document names"
+        ],
+        "replacement_policy": "Use stable synthetic labels and placeholder identifiers only."
+      }
+    ],
+    "route_pattern_normalization_checks": [
+      {
+        "check_id": "route-pattern-001",
+        "raw_route_policy": "No authenticated route is stored.",
+        "normalized_pattern": "/devhub/synthetic/{surface}",
+        "result": "passed"
+      }
+    ],
+    "selector_evidence_confidence_summaries": [
+      {
+        "selector_group": "prior fixture placeholders",
+        "confidence": "medium",
+        "basis": "Synthetic placeholder rows only.",
+        "review_required_before_live_use": true
+      }
+    ],
+    "unsupported_manual_handoff_reminders": [
+      {
+        "reminder_id": "manual-handoff-001",
+        "condition": "Any credentialed, certification, payment, final filing, calendar booking, cancellation, or file-transfer workflow.",
+        "required_response": "Stop automation and require attended user control."
+      }
+    ],
+    "fixture_promotion_holds": [
+      {
+        "hold_id": "promotion-hold-001",
+        "reason": "Synthetic delta rows remain inactive until reviewer acceptance and separate promotion controls pass."
+      }
+    ],
+    "reviewer_routing": [
+      {
+        "reviewer_role": "PPD automation reviewer",
+        "routing_reason": "Verify read-only scope, selector confidence, redaction policy, and action boundaries."
+      }
+    ],
+    "rollback_notes": [
+      {
+        "note_id": "rollback-001",
+        "note": "Discard the generated inactive delta candidate rows and rebuild from accepted synthetic fixtures if any retained field is later found to be private or account-scoped."
+      }
+    ],
+    "validation_commands": [
+      [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ]
+    ],
+    "read_only_controls": {
+      "mutation_enabled": false,
+      "writes_enabled": false,
+      "allows_mutation": false
+    }
+  },
+  "prior_surface_map_fixture_placeholders": [
+    {
+      "placeholder_id": "field-status-heading",
+      "row_kind": "read_only_field",
+      "label": "Permit overview status heading",
+      "page_heading": "Permit overview",
+      "url_pattern": "/devhub/synthetic/permit-overview",
+      "action_text": "Review status heading",
+      "selector_confidence": "medium",
+      "validation_message": "Synthetic status heading placeholder retained as label only.",
+      "blocked_official_action": false,
+      "requires_attendance": false,
+      "requires_exact_confirmation": false
+    },
+    {
+      "placeholder_id": "action-submit-application",
+      "row_kind": "action",
+      "label": "Submit application control",
+      "page_heading": "Application review",
+      "url_pattern": "/devhub/synthetic/application-review",
+      "action_text": "Submit application",
+      "selector_confidence": "low",
+      "validation_message": "Official action control is represented only as a blocked synthetic label.",
+      "blocked_official_action": true,
+      "requires_attendance": true,
+      "requires_exact_confirmation": true
+    },
+    {
+      "placeholder_id": "upload-plans-control",
+      "row_kind": "upload_control",
+      "label": "Plans file control",
+      "page_heading": "Plans review",
+      "url_pattern": "/devhub/synthetic/plans-review",
+      "action_text": "Choose plans file",
+      "selector_confidence": "low",
+      "validation_message": "File control evidence is label-only; no file interaction is represented.",
+      "blocked_official_action": true,
+      "requires_attendance": true,
+      "requires_exact_confirmation": true
+    }
+  ]
+}

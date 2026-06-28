@@ -1,0 +1,98 @@
+{
+  "runbook_id": "fixture-first-source-refresh-candidate-20260529",
+  "status": "candidate",
+  "mode": "metadata-only",
+  "prohibited_actions": [
+    "fetch_urls",
+    "invoke_processors",
+    "mutate_schedules",
+    "create_private_session_state",
+    "write_raw_crawl_output"
+  ],
+  "input_packets": [
+    {
+      "packet_id": "public-source-recrawl-dry-run-command-plan",
+      "required": true,
+      "accepted_form": "fixture_or_reviewer_supplied_metadata"
+    },
+    {
+      "packet_id": "source-registry-coverage-gap-packet",
+      "required": true,
+      "accepted_form": "fixture_or_reviewer_supplied_metadata"
+    },
+    {
+      "packet_id": "post-release-monitoring-plan",
+      "required": true,
+      "accepted_form": "fixture_or_reviewer_supplied_metadata"
+    }
+  ],
+  "ordered_steps": [
+    "confirm_fixture_set",
+    "build_source_inventory_delta",
+    "assign_allowlisted_batches",
+    "attach_robots_policy_evidence",
+    "define_rate_limit_windows",
+    "reviewer_checkpoint_source_eligibility",
+    "reviewer_checkpoint_batch_readiness",
+    "reviewer_checkpoint_monitoring_alignment",
+    "produce_metadata_only_handoff_packet"
+  ],
+  "allowlisted_batch_requirements": [
+    "batch_id",
+    "source_ids",
+    "source_registry_refs",
+    "dry_run_plan_refs",
+    "coverage_gap_refs",
+    "robots_policy_evidence_refs",
+    "proposed_rate_limit_window",
+    "reviewer_checkpoint",
+    "abort_conditions",
+    "escalation_contact_or_role",
+    "monitoring_plan_refs"
+  ],
+  "default_rate_limit_window": {
+    "requests_per_minute": "reviewer_defined_conservative_limit",
+    "quiet_hours": "required_before_live_execution",
+    "retry_policy": "no_retries_in_candidate_mode"
+  },
+  "reviewer_checkpoints": [
+    {
+      "checkpoint_id": "source_eligibility",
+      "requires": [
+        "public_source_confirmation",
+        "ppd_scope_confirmation",
+        "registry_presence_confirmation"
+      ]
+    },
+    {
+      "checkpoint_id": "batch_readiness",
+      "requires": [
+        "robots_policy_evidence_refs",
+        "rate_limit_window",
+        "abort_conditions",
+        "no_interactive_or_authenticated_barriers"
+      ]
+    },
+    {
+      "checkpoint_id": "monitoring_alignment",
+      "requires": [
+        "monitoring_plan_refs",
+        "owner_or_role",
+        "rollback_note",
+        "escalation_channel"
+      ]
+    }
+  ],
+  "abort_conditions": [
+    "missing_required_fixture",
+    "unapproved_live_fetch_source",
+    "missing_or_ambiguous_policy_evidence",
+    "authentication_or_captcha_required",
+    "payment_submission_upload_or_certification_required",
+    "out_of_scope_source",
+    "schedule_mutation_required",
+    "processor_invocation_required",
+    "reviewer_checkpoint_not_approved"
+  ],
+  "candidate_output": "metadata_only_handoff_packet"
+}

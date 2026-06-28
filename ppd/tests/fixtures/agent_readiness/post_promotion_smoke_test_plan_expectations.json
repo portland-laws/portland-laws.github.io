@@ -1,0 +1,20 @@
+{
+  "execution_policy": {
+    "fixtures_only": true,
+    "agents_invoked": false,
+    "agent_consumers_invoked": false,
+    "devhub_invoked": false,
+    "live_crawlers_invoked": false,
+    "processors_invoked": false,
+    "compilers_invoked": false,
+    "private_case_files_read": false,
+    "writes_active_state": false
+  },
+  "minimum_smoke_case_count": 10,
+  "required_refusal_check_ids": [
+    "refusal-check:synthetic-payment-submit-refusal"
+  ],
+  "required_reversible_draft_boundary_check_ids": [
+    "reversible-draft-boundary:synthetic-draft-application-missing-facts"
+  ]
+}

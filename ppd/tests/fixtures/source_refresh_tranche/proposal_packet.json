@@ -1,0 +1,181 @@
+{
+  "tranche_id": "public-source-refresh-tranche-2026-05-fixture-001",
+  "evidence_freshness_watchlist_reviewer_disposition_packet": {
+    "packet_id": "evidence-freshness-watchlist-reviewer-disposition-2026-05-29-fixture",
+    "source_dispositions": [
+      {
+        "source_id": "ppd-online-permitting-tools",
+        "reviewer_disposition": "approved_for_metadata_refresh_proposal",
+        "freshness_reason": "DevHub public workflow guidance is watched for possible action-gate and help-link drift.",
+        "owner": "ppd-public-sources-owner",
+        "reviewer": "ppd-freshness-reviewer",
+        "allowlist_evidence_ref": "allowlist://ppd-public-sources/portland-gov-hosts#www.portland.gov",
+        "robots_evidence_ref": "robots://www.portland.gov/robots.txt#fixture-reviewed-2026-05-29"
+      },
+      {
+        "source_id": "ppd-devhub-faqs",
+        "reviewer_disposition": "approved_for_metadata_refresh_proposal",
+        "freshness_reason": "FAQ content is watched for changes to authenticated service descriptions and consequential action boundaries.",
+        "owner": "ppd-devhub-public-owner",
+        "reviewer": "ppd-freshness-reviewer",
+        "allowlist_evidence_ref": "allowlist://ppd-public-sources/portland-gov-hosts#www.portland.gov",
+        "robots_evidence_ref": "robots://www.portland.gov/robots.txt#fixture-reviewed-2026-05-29"
+      },
+      {
+        "source_id": "ppd-spp-file-naming-standards",
+        "reviewer_disposition": "approved_for_metadata_refresh_proposal",
+        "freshness_reason": "File naming and PDF preparation requirements can affect document readiness guardrails.",
+        "owner": "ppd-document-requirements-owner",
+        "reviewer": "ppd-freshness-reviewer",
+        "allowlist_evidence_ref": "allowlist://ppd-public-sources/portland-gov-hosts#www.portland.gov",
+        "robots_evidence_ref": "robots://www.portland.gov/robots.txt#fixture-reviewed-2026-05-29"
+      }
+    ]
+  },
+  "source_registry_schedule_update_candidate": {
+    "packet_id": "source-registry-schedule-update-candidate-2026-05-29-fixture",
+    "sources": [
+      {
+        "source_id": "ppd-online-permitting-tools",
+        "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+        "current_frequency": "weekly",
+        "proposed_frequency": "daily"
+      },
+      {
+        "source_id": "ppd-devhub-faqs",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+        "current_frequency": "weekly",
+        "proposed_frequency": "daily"
+      },
+      {
+        "source_id": "ppd-spp-file-naming-standards",
+        "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+        "current_frequency": "monthly",
+        "proposed_frequency": "weekly"
+      }
+    ]
+  },
+  "source_refresh_runbook_candidate": {
+    "packet_id": "source-refresh-runbook-candidate-2026-05-29-fixture",
+    "ordered_source_ids": [
+      "ppd-online-permitting-tools",
+      "ppd-devhub-faqs",
+      "ppd-spp-file-naming-standards"
+    ],
+    "source_steps": [
+      {
+        "source_id": "ppd-online-permitting-tools",
+        "step_refs": [
+          "runbook://public-source-refresh/preflight-only",
+          "runbook://public-source-refresh/metadata-review"
+        ],
+        "abort_criteria": [
+          "Abort if host is not present in the committed public-source allowlist evidence reference.",
+          "Abort if robots evidence is missing, stale, or records a disallow decision for the proposed path.",
+          "Abort if the page redirects to authenticated DevHub, payment, upload, scheduling, or account-management surfaces."
+        ]
+      },
+      {
+        "source_id": "ppd-devhub-faqs",
+        "step_refs": [
+          "runbook://public-source-refresh/preflight-only",
+          "runbook://public-source-refresh/action-boundary-review"
+        ],
+        "abort_criteria": [
+          "Abort if FAQ links require sign-in or account-scoped state to inspect.",
+          "Abort if robots evidence is missing, stale, or records a disallow decision for the proposed path.",
+          "Abort if reviewer ownership fields are absent from the tranche proposal."
+        ]
+      },
+      {
+        "source_id": "ppd-spp-file-naming-standards",
+        "step_refs": [
+          "runbook://public-source-refresh/preflight-only",
+          "runbook://public-source-refresh/document-rule-review"
+        ],
+        "abort_criteria": [
+          "Abort if the canonical URL resolves to a binary download instead of public HTML metadata.",
+          "Abort if robots evidence is missing, stale, or records a disallow decision for the proposed path.",
+          "Abort if the candidate would require downloading or processing PDF bodies during this metadata-only tranche."
+        ]
+      }
+    ]
+  },
+  "expected_proposal": {
+    "packet_type": "ppd_public_source_refresh_tranche_proposal",
+    "packet_version": "1.0",
+    "tranche_id": "public-source-refresh-tranche-2026-05-fixture-001",
+    "proposal_status": "metadata_only_review_required",
+    "consumes_packet_ids": [
+      "evidence-freshness-watchlist-reviewer-disposition-2026-05-29-fixture",
+      "source-registry-schedule-update-candidate-2026-05-29-fixture",
+      "source-refresh-runbook-candidate-2026-05-29-fixture"
+    ],
+    "ordered_sources": [
+      {
+        "source_id": "ppd-online-permitting-tools",
+        "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+        "refresh_reason": "DevHub public workflow guidance is watched for possible action-gate and help-link drift.",
+        "proposed_frequency": "daily",
+        "owner": "ppd-public-sources-owner",
+        "reviewer": "ppd-freshness-reviewer",
+        "allowlist_evidence_ref": "allowlist://ppd-public-sources/portland-gov-hosts#www.portland.gov",
+        "robots_evidence_ref": "robots://www.portland.gov/robots.txt#fixture-reviewed-2026-05-29",
+        "abort_criteria": [
+          "Abort if host is not present in the committed public-source allowlist evidence reference.",
+          "Abort if robots evidence is missing, stale, or records a disallow decision for the proposed path.",
+          "Abort if the page redirects to authenticated DevHub, payment, upload, scheduling, or account-management surfaces."
+        ],
+        "runbook_step_refs": [
+          "runbook://public-source-refresh/preflight-only",
+          "runbook://public-source-refresh/metadata-review"
+        ]
+      },
+      {
+        "source_id": "ppd-devhub-faqs",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+        "refresh_reason": "FAQ content is watched for changes to authenticated service descriptions and consequential action boundaries.",
+        "proposed_frequency": "daily",
+        "owner": "ppd-devhub-public-owner",
+        "reviewer": "ppd-freshness-reviewer",
+        "allowlist_evidence_ref": "allowlist://ppd-public-sources/portland-gov-hosts#www.portland.gov",
+        "robots_evidence_ref": "robots://www.portland.gov/robots.txt#fixture-reviewed-2026-05-29",
+        "abort_criteria": [
+          "Abort if FAQ links require sign-in or account-scoped state to inspect.",
+          "Abort if robots evidence is missing, stale, or records a disallow decision for the proposed path.",
+          "Abort if reviewer ownership fields are absent from the tranche proposal."
+        ],
+        "runbook_step_refs": [
+          "runbook://public-source-refresh/preflight-only",
+          "runbook://public-source-refresh/action-boundary-review"
+        ]
+      },
+      {
+        "source_id": "ppd-spp-file-naming-standards",
+        "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+        "refresh_reason": "File naming and PDF preparation requirements can affect document readiness guardrails.",
+        "proposed_frequency": "weekly",
+        "owner": "ppd-document-requirements-owner",
+        "reviewer": "ppd-freshness-reviewer",
+        "allowlist_evidence_ref": "allowlist://ppd-public-sources/portland-gov-hosts#www.portland.gov",
+        "robots_evidence_ref": "robots://www.portland.gov/robots.txt#fixture-reviewed-2026-05-29",
+        "abort_criteria": [
+          "Abort if the canonical URL resolves to a binary download instead of public HTML metadata.",
+          "Abort if robots evidence is missing, stale, or records a disallow decision for the proposed path.",
+          "Abort if the candidate would require downloading or processing PDF bodies during this metadata-only tranche."
+        ],
+        "runbook_step_refs": [
+          "runbook://public-source-refresh/preflight-only",
+          "runbook://public-source-refresh/document-rule-review"
+        ]
+      }
+    ],
+    "attestations": {
+      "no_fetch_performed": true,
+      "no_download_performed": true,
+      "no_processor_invoked": true,
+      "no_schedule_mutation_performed": true
+    },
+    "reviewer_owner_fields_required": true
+  }
+}

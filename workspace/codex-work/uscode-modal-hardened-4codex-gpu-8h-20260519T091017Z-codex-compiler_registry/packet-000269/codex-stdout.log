@@ -1,0 +1,23 @@
+Implemented a focused modal cue-rule refinement in the compiler-registry lane by updating the deterministic weighting/backfill logic in `spacy_modal_codec`:
+
+- Added epistemic competition as a first-class frame soft-cap trigger, so dense frame cues now downweight when strong epistemic scope evidence is present.  
+[spacy_modal_codec.py#L1594](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_registry/worktrees/agent-codex-compiler_registry-packet-000269-20260519_155954/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py#L1594)
+
+- Strengthened temporal backfill under dense deontic competition when temporal scope is strong (calendar/phrase/within) and deontic cue pressure is explicit.  
+[spacy_modal_codec.py#L2060](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_registry/worktrees/agent-codex-compiler_registry-packet-000269-20260519_155954/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py#L2060)
+
+- Fixed frame→epistemic backfill gating to also reinforce low existing epistemic weights (not only exact zero), and to use stronger fill when epistemic signal is explicit.  
+[spacy_modal_codec.py#L2299](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_registry/worktrees/agent-codex-compiler_registry-packet-000269-20260519_155954/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py#L2299)
+
+- Added a targeted temporal logit increment for strong temporal scope competing with weak deontic-cue dominance (`cue` present, no deontic scope phrase).  
+[spacy_modal_codec.py#L2598](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_registry/worktrees/agent-codex-compiler_registry-packet-000269-20260519_155954/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py#L2598)
+
+Added deterministic unit coverage for these exact rule paths:  
+[test_spacy_modal_codec.py#L1595](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_registry/worktrees/agent-codex-compiler_registry-packet-000269-20260519_155954/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py#L1595)
+
+Validation run:
+
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py` -> **133 passed**
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "frame_epistemic or frame_deontic or frame_conditional or deontic_self_pair or temporal_deontic"` -> **15 passed**
+
+Note: `tests/unit/optimizers/logic_theorem_optimizer/test_modal_registry.py` currently has 2 pre-existing failures tied to expected policy bundle contents vs current registry constants; I did not change registry constants in this patch.

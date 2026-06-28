@@ -1,0 +1,41 @@
+{
+  "packet_id": "operator-signoff-valid-fixture",
+  "reviewer_prompts": [
+    "Confirm cited source evidence supports each accepted guardrail.",
+    "Confirm no official DevHub action is enabled by this packet."
+  ],
+  "prerequisite_packet_links": [
+    "ppd://packets/public-source-inventory-coverage",
+    "ppd://packets/devhub-action-policy"
+  ],
+  "artifacts": [
+    {
+      "kind": "commit_safe_manifest",
+      "ref": "ppd/tests/fixtures/operator_signoff_ledger_packets/valid_packet.json"
+    }
+  ],
+  "blockers": [
+    {
+      "blocker_id": "review-open-question",
+      "status": "resolved",
+      "approved": true
+    }
+  ],
+  "production_promotion": {
+    "requested": true,
+    "signatures": {
+      "operator": "fixture-operator",
+      "reviewer": "fixture-reviewer"
+    }
+  },
+  "action_enablements": [
+    {
+      "action": "read_status_messages",
+      "enabled": true
+    },
+    {
+      "action": "draft_local_pdf_preview",
+      "enabled": true
+    }
+  ]
+}

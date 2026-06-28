@@ -1,0 +1,146 @@
+{
+  "packet_version": "public-refresh-preflight-packet-v5",
+  "mode": "fixture-first-offline-public-refresh-preflight",
+  "input_packet_version": "next-public-refresh-seed-packet-v5",
+  "offline_only": true,
+  "source_fixture_policy": {
+    "accepted_input": "next public refresh seed packet v5 fixture only",
+    "live_crawl_permitted": false,
+    "document_download_permitted": false,
+    "raw_body_storage_permitted": false,
+    "devhub_access_permitted": false,
+    "legal_or_permitting_guarantees_permitted": false
+  },
+  "allowlist_checks": [
+    {
+      "seed_id": "seed-permit-applications-index-metadata",
+      "source_registry_placeholder_id": "src-placeholder-permit-applications-index",
+      "source_registry_ref": "source-registry-placeholder://portland-ppd/permit-applications-index",
+      "owning_surface": "public_ppd_forms_index",
+      "allowed_public_hosts": [
+        "www.portland.gov",
+        "devhub.portlandoregon.gov",
+        "www.portlandoregon.gov",
+        "www.portlandmaps.com"
+      ],
+      "fixture_decision": "allowlist_placeholder_ready",
+      "skip_reason": "not_skipped",
+      "preflight_note": "Host and path must be rechecked by a later offline-reviewed network preflight before any live request."
+    },
+    {
+      "seed_id": "seed-file-standards-review-hold",
+      "source_registry_placeholder_id": "src-placeholder-file-standards",
+      "source_registry_ref": "source-registry-placeholder://portland-ppd/file-standards",
+      "owning_surface": "public_ppd_file_guidance",
+      "allowed_public_hosts": [
+        "www.portland.gov",
+        "devhub.portlandoregon.gov",
+        "www.portlandoregon.gov",
+        "www.portlandmaps.com"
+      ],
+      "fixture_decision": "skip_before_allowlist_handoff",
+      "skip_reason": "robots_or_policy_disallowed",
+      "preflight_note": "Host and path must be rechecked by a later offline-reviewed network preflight before any live request."
+    }
+  ],
+  "robots_policy_preflight_placeholders": [
+    {
+      "seed_id": "seed-permit-applications-index-metadata",
+      "robots_policy_state": "placeholder_pending_future_check",
+      "policy_state": "fixture_review_only",
+      "preflight_note": "No robots.txt fetch or policy lookup occurs in this packet."
+    },
+    {
+      "seed_id": "seed-file-standards-review-hold",
+      "robots_policy_state": "placeholder_pending_future_check",
+      "policy_state": "fixture_review_only",
+      "preflight_note": "No robots.txt fetch or policy lookup occurs in this packet."
+    }
+  ],
+  "processor_handoff_readiness": [
+    {
+      "seed_id": "seed-permit-applications-index-metadata",
+      "source_registry_placeholder_id": "src-placeholder-permit-applications-index",
+      "metadata_only": true,
+      "raw_body_storage": false,
+      "processor_handoff_state": "metadata_manifest_candidate_ready",
+      "handoff_note": "Processor execution is not invoked by this packet."
+    },
+    {
+      "seed_id": "seed-file-standards-review-hold",
+      "source_registry_placeholder_id": "src-placeholder-file-standards",
+      "metadata_only": true,
+      "raw_body_storage": false,
+      "processor_handoff_state": "blocked_by_skip_or_reviewer_hold",
+      "handoff_note": "Processor execution is not invoked by this packet."
+    }
+  ],
+  "raw_body_persistence_refusal": {
+    "decision": "refuse_raw_body_persistence",
+    "metadata_only_manifest": true,
+    "allowed_persisted_material": [
+      "source registry placeholder identifiers",
+      "canonical source placeholder references",
+      "skip reasons",
+      "reviewer routing labels",
+      "rollback notes",
+      "validation command arrays"
+    ]
+  },
+  "rate_limit_notes": [
+    {
+      "seed_id": "seed-permit-applications-index-metadata",
+      "crawl_frequency_label": "weekly",
+      "rate_limit_note": "No request budget is consumed; any later live refresh must use a separately approved rate limit preflight."
+    },
+    {
+      "seed_id": "seed-file-standards-review-hold",
+      "crawl_frequency_label": "skip_until_review",
+      "rate_limit_note": "No request budget is consumed; any later live refresh must use a separately approved rate limit preflight."
+    }
+  ],
+  "skipped_source_inventory": [
+    {
+      "seed_id": "seed-file-standards-review-hold",
+      "skipped_source_reason": "robots_or_policy_disallowed",
+      "reviewer_route": "PPD stale source hold review"
+    }
+  ],
+  "reviewer_holds": {
+    "mapping": {
+      "hold-none": "no stale-source guardrail hold applies to this candidate",
+      "hold-file-standards-review": "candidate remains reviewer-held until stale file-standard evidence is reconciled"
+    },
+    "candidate_holds": [
+      {
+        "seed_id": "seed-file-standards-review-hold",
+        "stale_source_hold_key": "hold-file-standards-review",
+        "hold_disposition": "candidate remains reviewer-held until stale file-standard evidence is reconciled",
+        "reviewer_route": "PPD stale source hold review"
+      }
+    ],
+    "routing": {
+      "queue": "PPD public refresh seed review",
+      "reviewer_role": "public source freshness reviewer",
+      "routing_note": "offline fixture review only; future network access requires separate preflight"
+    }
+  },
+  "rollback_notes": {
+    "packet_level": "Drop the proposed seed from the next metadata-only manifest draft and keep prior public corpus pointers unchanged.",
+    "candidate_level": [
+      {
+        "seed_id": "seed-permit-applications-index-metadata",
+        "rollback_note": "Remove this candidate from the metadata-only seed draft if reviewer evidence is incomplete."
+      },
+      {
+        "seed_id": "seed-file-standards-review-hold",
+        "rollback_note": "Keep this candidate out of the refresh manifest until the stale-source hold is cleared."
+      }
+    ]
+  },
+  "validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/public_refresh/public_refresh_preflight_packet_v5.py"],
+    ["python3", "-m", "pytest", "ppd/tests/test_public_refresh_preflight_packet_v5.py"],
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

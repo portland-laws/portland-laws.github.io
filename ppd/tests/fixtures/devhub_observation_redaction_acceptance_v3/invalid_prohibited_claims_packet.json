@@ -1,0 +1,69 @@
+{
+  "packet_version": "devhub_read_only_observation_redaction_acceptance_v3",
+  "packet_id": "fixture-devhub-read-only-redaction-v3-invalid",
+  "observation_intake_references": [
+    {
+      "reference_id": "intake-invalid-001",
+      "description": "The observation used session state from an authenticated DevHub session."
+    }
+  ],
+  "redaction_coverage_checks": [
+    {
+      "check_id": "coverage-invalid-001",
+      "result": "passed after reviewing a screenshot"
+    }
+  ],
+  "private_value_omission_evidence": [
+    {
+      "evidence_id": "omission-invalid-001",
+      "notes": "Cookie and bearer token values were kept for replay."
+    }
+  ],
+  "route_pattern_normalization_checks": [
+    {
+      "check_id": "route-invalid-001",
+      "notes": "Opened DevHub and clicked in DevHub during live DevHub verification."
+    }
+  ],
+  "selector_evidence_confidence_summaries": [
+    {
+      "selector_group": "invalid upload flow",
+      "confidence": "high",
+      "basis": "Uploaded a document and filled the form."
+    }
+  ],
+  "unsupported_manual_handoff_reminders": [
+    {
+      "reminder_id": "invalid-reminder-001",
+      "condition": "Submission completed and permit will be approved."
+    }
+  ],
+  "fixture_promotion_holds": [
+    {
+      "hold_id": "invalid-hold-001",
+      "reason": "Trace and HAR file are available for replay."
+    }
+  ],
+  "reviewer_routing": [
+    {
+      "reviewer_role": "invalid reviewer",
+      "routing_reason": "Certified official action completed."
+    }
+  ],
+  "rollback_notes": [
+    {
+      "note_id": "invalid-rollback-001",
+      "note": "No rollback needed because approval guaranteed."
+    }
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ],
+  "read_only_controls": {
+    "active_mutation": true
+  }
+}

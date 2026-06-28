@@ -1,0 +1,16 @@
+Implemented a generalized `ir_decompiler` refinement for provenance-style alignment between citation and source-id section slots.
+
+- Added new alignment slot families in decompiler and triple projection:
+  - `citation_source_id_section_style_pair|match|presence_match`
+  - `citation_source_id_section_suffix_style_pair|match|presence_match`
+  - `citation_source_id_section_punctuation_style_pair|match|presence_match`
+- Kept decode-slot and F-logic triple parity by mirroring logic in both paths.
+
+Changed files:
+- [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000080-20260518_153940/ipfs_datasets_py/logic/modal/decompiler.py:1362)
+- [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000080-20260518_153940/ipfs_datasets_py/logic/modal/codec.py:1839)
+- [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000080-20260518_153940/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:3158)
+
+Validation:
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py -k "citation_source_id_alignment_slots"` -> `3 passed`
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_modal_ir_decompiler_slots.py` -> `8 passed`

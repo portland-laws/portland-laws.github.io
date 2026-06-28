@@ -1,0 +1,45 @@
+{
+  "packet_id": "audit-public-source-to-guardrail-2026-05-29-fixture",
+  "packet_type": "public_source_to_guardrail_traceability_audit",
+  "generated_at": "2026-05-29T00:00:00+00:00",
+  "traceability_mappings": [
+    {
+      "source_id": "ppd-devhub-faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "source_evidence_id": "evidence:ppd-devhub-faq:services",
+      "guardrail_bundle_id": "guardrail-bundle-devhub-readonly",
+      "requirement_ids": ["req-devhub-account-services"],
+      "audit_status": "traceable",
+      "verified_at": "2026-05-29T00:00:00+00:00"
+    },
+    {
+      "source_id": "ppd-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "source_evidence_id": "evidence:ppd-submit-plans-online:single-pdf",
+      "guardrail_bundle_id": "guardrail-bundle-upload-staging",
+      "requirement_ids": ["req-single-pdf-separate-documents"],
+      "audit_status": "traceable",
+      "verified_at": "2026-05-29T00:00:00+00:00"
+    },
+    {
+      "source_id": "ppd-file-naming-standards",
+      "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+      "source_evidence_id": "evidence:ppd-file-naming-standards:file-rules",
+      "guardrail_bundle_id": "guardrail-bundle-document-prep",
+      "requirement_ids": ["req-file-name-format"],
+      "audit_status": "needs-review",
+      "finding_state": "conflicting",
+      "verified_at": "2026-05-29T00:00:00+00:00"
+    },
+    {
+      "source_id": "ppd-fee-payment-guide",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "source_evidence_id": "evidence:ppd-fee-payment-guide:final-submit",
+      "guardrail_bundle_id": "guardrail-bundle-payment",
+      "requirement_ids": ["req-payment-final-submit-gate"],
+      "audit_status": "deferred",
+      "finding_state": "manual_handoff",
+      "verified_at": "2026-05-29T00:00:00+00:00"
+    }
+  ]
+}

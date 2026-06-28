@@ -1,0 +1,184 @@
+{
+  "fixture_id": "synthetic_public_source_chain_v1",
+  "description": "Synthetic public-source lineage chain for PP&D citation, freshness, hash, and no-raw-body regression coverage.",
+  "source_registry": {
+    "source_id": "src_ppd_synthetic_submit_plans_online",
+    "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+    "source_type": "public_html",
+    "owning_surface": "ppd_public_website",
+    "allowlist_policy": "official_portland_ppd_public_allowlist",
+    "robots_policy": "allowed_for_public_metadata_fixture",
+    "crawl_frequency": "weekly",
+    "processor_policy": "metadata_and_normalized_text_only",
+    "privacy_classification": "public",
+    "last_seen_at": "2026-05-08T12:00:00Z",
+    "freshness_status": "current",
+    "lineage": {
+      "source_id": "src_ppd_synthetic_submit_plans_online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "content_hash": "sha256:6f7542e6b9d23d7998bc41de56d2d0d8b499ed705e2d3edb6e9e20c0ef86e7e4",
+      "last_seen_at": "2026-05-08T12:00:00Z",
+      "freshness_status": "current",
+      "evidence_ids": ["src_ppd_synthetic_submit_plans_online"]
+    }
+  },
+  "archive_manifest": {
+    "manifest_id": "manifest_ppd_synthetic_submit_plans_online_20260508",
+    "source_id": "src_ppd_synthetic_submit_plans_online",
+    "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+    "requested_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+    "redirect_chain": [],
+    "http_status": 200,
+    "content_type": "text/html; charset=utf-8",
+    "content_hash": "sha256:6f7542e6b9d23d7998bc41de56d2d0d8b499ed705e2d3edb6e9e20c0ef86e7e4",
+    "capture_started_at": "2026-05-08T12:00:01Z",
+    "capture_finished_at": "2026-05-08T12:00:02Z",
+    "processor_name": "ppd_fixture_processor",
+    "processor_version": "fixture-only-1",
+    "archive_artifact_ref": "fixture://public_source_lineage/synthetic_public_source_chain#archive_manifest",
+    "normalized_document_id": "doc_ppd_synthetic_submit_plans_online",
+    "skipped_reason": null,
+    "no_raw_body_persisted": true,
+    "lineage": {
+      "source_id": "src_ppd_synthetic_submit_plans_online",
+      "manifest_id": "manifest_ppd_synthetic_submit_plans_online_20260508",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "content_hash": "sha256:6f7542e6b9d23d7998bc41de56d2d0d8b499ed705e2d3edb6e9e20c0ef86e7e4",
+      "captured_at": "2026-05-08T12:00:02Z",
+      "last_seen_at": "2026-05-08T12:00:00Z",
+      "freshness_status": "current",
+      "evidence_ids": ["src_ppd_synthetic_submit_plans_online"]
+    }
+  },
+  "document_record": {
+    "document_id": "doc_ppd_synthetic_submit_plans_online",
+    "source_id": "src_ppd_synthetic_submit_plans_online",
+    "title": "Submit Plans Online - Synthetic Fixture",
+    "document_type": "public_html",
+    "language": "en",
+    "sections": [
+      {
+        "section_id": "sec_submit_plans_single_pdf",
+        "heading": "Prepare plan files",
+        "normalized_excerpt": "Plans are represented as one combined PDF while applications, calculations, and supporting documents remain separate files.",
+        "citation_id": "doc_ppd_synthetic_submit_plans_online#sec_submit_plans_single_pdf"
+      }
+    ],
+    "tables": [],
+    "links": [
+      {
+        "label": "Permit applications and forms",
+        "url": "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications",
+        "citation_id": "doc_ppd_synthetic_submit_plans_online#link_forms_index"
+      }
+    ],
+    "pdf_pages": [],
+    "form_fields": [],
+    "citation_spans": [
+      {
+        "evidence_id": "ev_submit_plans_single_pdf",
+        "document_id": "doc_ppd_synthetic_submit_plans_online",
+        "source_id": "src_ppd_synthetic_submit_plans_online",
+        "citation_id": "doc_ppd_synthetic_submit_plans_online#sec_submit_plans_single_pdf",
+        "selector": "section:Prepare plan files",
+        "start_offset": 0,
+        "end_offset": 116,
+        "content_hash": "sha256:1b5fe0b1a2ad149b989bfb59f95b36df79876d5964331df56d728de51cba33a2"
+      }
+    ],
+    "content_hash": "sha256:1b5fe0b1a2ad149b989bfb59f95b36df79876d5964331df56d728de51cba33a2",
+    "extraction_confidence": 0.99,
+    "lineage": {
+      "source_id": "src_ppd_synthetic_submit_plans_online",
+      "manifest_id": "manifest_ppd_synthetic_submit_plans_online_20260508",
+      "document_id": "doc_ppd_synthetic_submit_plans_online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "content_hash": "sha256:1b5fe0b1a2ad149b989bfb59f95b36df79876d5964331df56d728de51cba33a2",
+      "captured_at": "2026-05-08T12:00:02Z",
+      "last_seen_at": "2026-05-08T12:00:00Z",
+      "freshness_status": "current",
+      "evidence_ids": ["ev_submit_plans_single_pdf"]
+    }
+  },
+  "requirement_node": {
+    "requirement_id": "req_submit_plans_single_pdf_fixture",
+    "source_evidence_ids": ["ev_submit_plans_single_pdf"],
+    "requirement_type": "document_requirement",
+    "subject": "permit applicant",
+    "action": "prepare",
+    "object": "plan files as one combined PDF with other supporting documents separate",
+    "conditions": ["when submitting plans online for a permit request that requires plan review"],
+    "deadline_or_temporal_scope": "before upload staging",
+    "permit_types": ["building_permit_fixture"],
+    "process_stage": "document preparation",
+    "confidence": 0.98,
+    "human_review_status": "fixture_reviewed",
+    "formalization_status": "formalized_fixture",
+    "lineage": {
+      "source_id": "src_ppd_synthetic_submit_plans_online",
+      "manifest_id": "manifest_ppd_synthetic_submit_plans_online_20260508",
+      "document_id": "doc_ppd_synthetic_submit_plans_online",
+      "requirement_id": "req_submit_plans_single_pdf_fixture",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "content_hash": "sha256:1b5fe0b1a2ad149b989bfb59f95b36df79876d5964331df56d728de51cba33a2",
+      "captured_at": "2026-05-08T12:00:02Z",
+      "last_seen_at": "2026-05-08T12:00:00Z",
+      "freshness_status": "current",
+      "evidence_ids": ["ev_submit_plans_single_pdf"]
+    }
+  },
+  "process_model": {
+    "process_id": "process_building_permit_fixture_submit_plans",
+    "permit_type": "building_permit_fixture",
+    "scope": "Synthetic fixture process for online plan preparation lineage regression.",
+    "eligibility_rules": ["req_submit_plans_single_pdf_fixture"],
+    "required_user_facts": ["project_address", "permit_scope"],
+    "required_documents": ["combined_plan_pdf", "separate_application_pdf", "separate_calculations_pdf"],
+    "file_rules": ["req_submit_plans_single_pdf_fixture"],
+    "fees": [],
+    "stages": ["document preparation", "upload staging", "acknowledgement/certification review", "submission"],
+    "deadlines": [],
+    "exceptions": [],
+    "unsupported_paths": [],
+    "devhub_surface_refs": ["devhub_upload_staging_fixture"],
+    "guardrail_bundle_id": "guardrail_submit_plans_fixture_bundle",
+    "lineage": {
+      "source_id": "src_ppd_synthetic_submit_plans_online",
+      "manifest_id": "manifest_ppd_synthetic_submit_plans_online_20260508",
+      "document_id": "doc_ppd_synthetic_submit_plans_online",
+      "process_id": "process_building_permit_fixture_submit_plans",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "content_hash": "sha256:1b5fe0b1a2ad149b989bfb59f95b36df79876d5964331df56d728de51cba33a2",
+      "captured_at": "2026-05-08T12:00:02Z",
+      "last_seen_at": "2026-05-08T12:00:00Z",
+      "freshness_status": "current",
+      "evidence_ids": ["ev_submit_plans_single_pdf", "req_submit_plans_single_pdf_fixture"]
+    }
+  },
+  "guardrail_bundle": {
+    "guardrail_bundle_id": "guardrail_submit_plans_fixture_bundle",
+    "process_id": "process_building_permit_fixture_submit_plans",
+    "source_evidence_ids": ["ev_submit_plans_single_pdf", "req_submit_plans_single_pdf_fixture"],
+    "deterministic_predicates": ["requires_combined_plan_pdf_before_upload_staging"],
+    "deontic_rules": ["agent_must_not_mark_submission_ready_without_required_document_facts"],
+    "temporal_rules": ["document_preparation_precedes_upload_staging"],
+    "reversible_action_predicates": ["may_prepare_local_file_mapping_preview"],
+    "exact_confirmation_predicates": ["requires_exact_confirmation_before_certification_or_submission"],
+    "refused_action_predicates": ["refuse_unattended_upload_submit_certify_or_payment"],
+    "explanation_templates": ["Plans must be checked against cited public guidance before upload staging."],
+    "validation_status": "fixture_validated",
+    "lineage": {
+      "source_id": "src_ppd_synthetic_submit_plans_online",
+      "manifest_id": "manifest_ppd_synthetic_submit_plans_online_20260508",
+      "document_id": "doc_ppd_synthetic_submit_plans_online",
+      "process_id": "process_building_permit_fixture_submit_plans",
+      "guardrail_bundle_id": "guardrail_submit_plans_fixture_bundle",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "content_hash": "sha256:1b5fe0b1a2ad149b989bfb59f95b36df79876d5964331df56d728de51cba33a2",
+      "captured_at": "2026-05-08T12:00:02Z",
+      "last_seen_at": "2026-05-08T12:00:00Z",
+      "freshness_status": "current",
+      "evidence_ids": ["ev_submit_plans_single_pdf", "req_submit_plans_single_pdf_fixture"]
+    }
+  }
+}

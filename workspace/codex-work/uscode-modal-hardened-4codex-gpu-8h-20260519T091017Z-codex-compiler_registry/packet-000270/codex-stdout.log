@@ -1,0 +1,12 @@
+Implemented a deterministic frame-debias refinement for modal family competition in the compiler registry lane.
+
+- Added scaled generic-frame competing-scope uplift logic in [spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_registry/worktrees/agent-codex-compiler_registry-packet-000270-20260519_161027/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py:1871), with new tuning constants at [spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_registry/worktrees/agent-codex-compiler_registry-packet-000270-20260519_161027/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py:539).
+- Wired the uplift into weighted family scoring under generic-frame debias context at [spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_registry/worktrees/agent-codex-compiler_registry-packet-000270-20260519_161027/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py:1375).
+- Added regression coverage for epistemic and conditional competition in dense generic-frame contexts at:
+  - [test_spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_registry/worktrees/agent-codex-compiler_registry-packet-000270-20260519_161027/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py:3844)
+  - [test_spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_registry/worktrees/agent-codex-compiler_registry-packet-000270-20260519_161027/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py:3875)
+
+Validation run:
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py` (135 passed)
+- `pytest -q ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_legal_modal_parser_deterministic_rules.py` (32 passed)
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_modal_registry.py` (19 passed)

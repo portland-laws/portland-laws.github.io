@@ -1,7 +1,30 @@
 import { parseTdfolFormula } from '../tdfol';
+import {
+  DEONTOLOGICAL_REASONING_TYPES_METADATA,
+  assertDeontologicalReasoningResult,
+  checkDeontologicalReasoningType,
+  isDeontologicalReasoningType,
+} from './deontologicalReasoningTypes';
+import {
+  DEONTOLOGICAL_REASONING_UTILS_METADATA,
+  areActionsSimilar,
+  areEntitiesSimilar,
+  calculateTextSimilarity,
+  extractConditionsFromText,
+  extractExceptionsFromText,
+  extractKeywords,
+  normalizeAction,
+  normalizeEntity,
+} from './deontologicalReasoningUtils';
 import { createImplication, runForwardChaining } from './forwardChaining';
 import { createLogicKnowledgeBase, makeFact } from './knowledgeBase';
-import { detectNormConflicts } from './normConflicts';
+import {
+  DEONTIC_CONFLICT_MIXIN_METADATA,
+  DEONTOLOGICAL_REASONING_METADATA,
+  detectDeonticConflictMixinConflicts,
+  detectNormConflicts,
+  reasonDeontologically,
+} from './normConflicts';
 import { describeTemporalSummary, summarizeTemporalOperators } from './temporal';
 
 describe('lightweight reasoning', () => {
@@ -69,17 +92,184 @@ describe('lightweight reasoning', () => {
         conflictType: 'obligation_prohibition',
         severity: 'high',
         sourceIds: ['cid-o', 'cid-f'],
-        message: 'Potential conflict: the same action appears both obligatory and prohibited (agent|comply|).',
+        message:
+          'Potential conflict: the same action appears both obligatory and prohibited (agent|comply|).',
       },
     ]);
   });
 
+  it('ports integration reasoning deontic conflict mixin semantics locally', () => {
+    const conflicts = detectDeonticConflictMixinConflicts([
+      {
+        id: 'rule-o',
+        actor: 'Tenant',
+        action: 'Pay rent',
+        condition: 'Lease is active',
+        modality: 'obligation',
+      },
+      {
+        id: 'rule-f',
+        actor: 'tenant',
+        action: 'pay rent',
+        condition: 'the lease is active and unit is uninhabitable',
+        modality: 'prohibition',
+      },
+      { id: 'rule-p', actor: 'Tenant', action: 'inspect records', normOperator: 'P' },
+      { id: 'rule-f2', actor: 'Tenant', action: 'inspect records', normOperator: 'F' },
+    ]);
+
+    expect(DEONTIC_CONFLICT_MIXIN_METADATA).toMatchObject({
+      sourcePythonModule: 'logic/integration/reasoning/_deontic_conflict_mixin.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+    });
+    expect(conflicts).toMatchObject([
+      {
+        conflictType: 'obligation_prohibition',
+        severity: 'high',
+        conditionRelationship: 'overlap',
+        sourceIds: ['rule-o', 'rule-f'],
+      },
+      {
+        conflictType: 'permission_prohibition',
+        severity: 'medium',
+        conditionRelationship: 'unconditional',
+        sourceIds: ['rule-p', 'rule-f2'],
+      },
+    ]);
+  });
+
+  it('treats explicit exceptions as local conflict suppressors', () => {
+    const conflicts = detectDeonticConflictMixinConflicts([
+      {
+        id: 'general-duty',
+        actor: 'Tenant',
+        action: 'pay rent',
+        modality: 'obligation',
+        exceptions: ['unit is uninhabitable'],
+      },
+      {
+        id: 'exception-rule',
+        actor: 'Tenant',
+        action: 'pay rent',
+        modality: 'prohibition',
+        condition: 'the unit is uninhabitable',
+      },
+    ]);
+
+    expect(conflicts).toEqual([]);
+  });
+
+  it('ports deontological reasoning violations, conditions, and conflicts locally', () => {
+    const result = reasonDeontologically(
+      [
+        { id: 'duty-pay', actor: 'Tenant', action: 'Pay rent', normOperator: 'O' },
+        { id: 'ban-lock', actor: 'Tenant', action: 'Change locks', modality: 'prohibition' },
+        {
+          id: 'inspect',
+          actor: 'tenant',
+          action: 'inspect records',
+          modality: 'permission',
+          condition: 'audit pending',
+        },
+        {
+          id: 'inspect-ban',
+          actor: 'tenant',
+          action: 'inspect records',
+          normOperator: 'F',
+          condition: 'audit pending',
+          exceptions: ['court order'],
+        },
+      ],
+      {
+        actor: 'tenant',
+        performedActions: ['change locks'],
+        facts: { 'audit pending': true },
+      },
+    );
+
+    expect(DEONTOLOGICAL_REASONING_METADATA).toEqual({
+      sourcePythonModule: 'logic/integration/reasoning/deontological_reasoning.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+    });
+    expect(result.verdict).toBe('conflict');
+    expect(result.violations.map((violation) => violation.violationType)).toEqual([
+      'missing_obligation',
+      'forbidden_action',
+    ]);
+    expect(result.conflicts).toMatchObject([
+      {
+        conflictType: 'permission_prohibition',
+        severity: 'medium',
+        conditionRelationship: 'same',
+        sourceIds: ['inspect', 'inspect-ban'],
+      },
+    ]);
+  });
+
+  it('ports deontological reasoning type contracts with fail-closed validation', () => {
+    const result = reasonDeontologically([
+      { id: 'duty-pay', actor: 'Tenant', action: 'Pay rent', normOperator: 'O' },
+    ]);
+    const invalid = checkDeontologicalReasoningType('query', {
+      performedActions: ['pay rent', 42],
+      facts: { 'lease active': 'yes' },
+    });
+
+    expect(DEONTOLOGICAL_REASONING_TYPES_METADATA.sourcePythonModule).toBe(
+      'logic/integration/reasoning/deontological_reasoning_types.py',
+    );
+    expect(DEONTOLOGICAL_REASONING_TYPES_METADATA.runtimeDependencies).toEqual([]);
+    expect(assertDeontologicalReasoningResult(result)).toBe(result);
+    expect(
+      isDeontologicalReasoningType('norm', { action: 'Pay rent', modality: 'obligation' }),
+    ).toBe(true);
+    expect(invalid.ok).toBe(false);
+    expect(invalid.issues.map((issue) => issue.path)).toEqual([
+      '$.performedActions[1]',
+      '$.facts.lease active',
+    ]);
+  });
+
+  it('ports deontological reasoning utility keyword and clause helpers locally', () => {
+    expect(DEONTOLOGICAL_REASONING_UTILS_METADATA).toEqual({
+      sourcePythonModule: 'logic/integration/reasoning/deontological_reasoning_utils.py',
+      browserNative: true,
+      serverCallsAllowed: false,
+      pythonRuntimeAllowed: false,
+      runtimeDependencies: [],
+    });
+    expect(Array.from(extractKeywords('The tenant must pay annual taxes.')).sort()).toEqual([
+      'annual',
+      'must',
+      'pay',
+      'taxes',
+      'tenant',
+    ]);
+    expect(calculateTextSimilarity('pay taxes', 'pay annual taxes')).toBeCloseTo(2 / 3);
+    expect(areEntitiesSimilar('citizen', 'citizens')).toBe(true);
+    expect(areEntitiesSimilar('citizen', 'corporation')).toBe(false);
+    expect(areActionsSimilar('pay taxes', 'pay annual taxes')).toBe(true);
+    expect(normalizeEntity('  CITIZEN  ')).toBe('citizen');
+    expect(normalizeAction('  PAY TAXES  ')).toBe('pay taxes');
+    expect(
+      extractConditionsFromText('if employed, tenant must pay unless exempt, then file'),
+    ).toEqual(['employed', 'exempt']);
+    expect(
+      extractExceptionsFromText('tenant must pay unless exempt, but not when waived.'),
+    ).toEqual(['exempt', 'waived.']);
+  });
+
   it('summarizes temporal operators from TDFOL formulas', () => {
-    const formula = parseTdfolFormula('forall a. SubjectTo(a, section) -> O([]ComplyWith(a, section))');
+    const formula = parseTdfolFormula(
+      'forall a. SubjectTo(a, section) -> O([]ComplyWith(a, section))',
+    );
     const summary = summarizeTemporalOperators(formula);
 
     expect(summary).toEqual(['always']);
     expect(describeTemporalSummary(summary)).toBe('Always/continuing condition');
   });
 });
-

@@ -1,0 +1,22 @@
+{
+  "packet_id": "fixture-post-promotion-smoke-test-plan-v1",
+  "packet_type": "post_promotion_smoke_test_plan",
+  "reviewer_owner": "ppd-smoke-reviewer",
+  "citations": [
+    {
+      "citation_id": "post-promotion-smoke:guardrail-checks",
+      "title": "Post-promotion guardrail smoke checks",
+      "owner": "ppd-smoke-reviewer"
+    }
+  ],
+  "smoke_checks": [
+    {
+      "check_id": "refusal-boundary-still-blocks-submit",
+      "rerun_when": "guardrail bundle fixture changes"
+    },
+    {
+      "check_id": "read-only-review-still-allowed",
+      "rerun_when": "promotion smoke plan changes"
+    }
+  ]
+}

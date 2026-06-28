@@ -1,0 +1,46 @@
+{
+  "process_id": "fixture_ppd_unsupported_manual_handoff_paths",
+  "permit_type": "manual_or_email_only_permit_paths",
+  "scope": "Deterministic coverage for PP&D permit paths that public guidance does not support through DevHub automation or that require manual/email handling.",
+  "source_evidence_ids": [
+    "official_ppd_apply_permits_supported_devhub_types",
+    "official_ppd_guidance_manual_email_paths"
+  ],
+  "eligibility_rules": [],
+  "required_user_facts": [],
+  "required_documents": [],
+  "file_rules": [],
+  "fees": [],
+  "stages": [
+    "pre-application research",
+    "eligibility screening",
+    "manual handoff"
+  ],
+  "deadlines": [],
+  "exceptions": [],
+  "unsupported_paths": [
+    {
+      "path_id": "not_listed_in_devhub_apply_guide",
+      "permit_path": "Permit request type not listed in PP&D DevHub application guidance",
+      "reason": "PP&D DevHub guidance lists specific request types that may be started in DevHub. A path outside that supported list must not be automated as a DevHub application.",
+      "required_channel": "manual PP&D contact or official non-DevHub intake channel",
+      "source_evidence_ids": [
+        "official_ppd_apply_permits_supported_devhub_types"
+      ]
+    },
+    {
+      "path_id": "email_intake_required",
+      "permit_path": "Permit path where PP&D guidance directs the applicant to email or otherwise contact staff",
+      "reason": "When official PP&D guidance requires email or staff handling, the next safe action is to prepare a handoff package rather than click through DevHub.",
+      "required_channel": "email_or_staff_handoff",
+      "source_evidence_ids": [
+        "official_ppd_guidance_manual_email_paths"
+      ]
+    }
+  ],
+  "devhub_surface_refs": [
+    "devhub_public_portal",
+    "devhub_apply_permit_request"
+  ],
+  "guardrail_bundle_id": "fixture_guardrail_manual_handoff_paths"
+}

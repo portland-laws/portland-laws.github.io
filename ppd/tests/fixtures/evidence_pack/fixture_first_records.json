@@ -1,0 +1,200 @@
+{
+  "packet_id": "fixture-agent-evidence-pack-001",
+  "sources": [
+    {
+      "source_id": "src-devhub-guide-submit-application",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "source_type": "devhub_public",
+      "owning_surface": "Portland PP&D",
+      "allowlist_policy": "allowed_official_public_source",
+      "robots_policy": "respect_robots_before_live_fetch",
+      "crawl_frequency": "weekly",
+      "processor_policy": "metadata_and_normalized_text_only",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-08T00:00:00Z",
+      "freshness_status": "fixture-current",
+      "raw_html": "raw body that must never appear in the packet"
+    }
+  ],
+  "archive_manifests": [
+    {
+      "manifest_id": "arc-devhub-guide-submit-application-20260508",
+      "source_id": "src-devhub-guide-submit-application",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "requested_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "redirect_chain": [],
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "content_hash": "sha256:fixture-devhub-guide-submit-application",
+      "capture_started_at": "2026-05-08T00:00:00Z",
+      "capture_finished_at": "2026-05-08T00:00:01Z",
+      "processor_name": "ppd-fixture-processor",
+      "processor_version": "0.1",
+      "archive_artifact_ref": "metadata-only:arc-devhub-guide-submit-application-20260508",
+      "normalized_document_id": "doc-devhub-guide-submit-application",
+      "skipped_reason": "",
+      "no_raw_body_persisted": true,
+      "local_path": "/home/barberb/private/raw/devhub-guide.html"
+    }
+  ],
+  "documents": [
+    {
+      "document_id": "doc-devhub-guide-submit-application",
+      "source_id": "src-devhub-guide-submit-application",
+      "title": "DevHub permit application guide fixture",
+      "document_type": "public_html",
+      "language": "en",
+      "sections": [],
+      "tables": [],
+      "links": [],
+      "pdf_pages": [],
+      "form_fields": [],
+      "citation_spans": [
+        {
+          "evidence_id": "ev-devhub-guide-upload-staging",
+          "citation_span_id": "span-upload-staging",
+          "section_id": "uploads",
+          "page": null,
+          "start_char": 120,
+          "end_char": 188,
+          "label": "Upload staging instructions"
+        },
+        {
+          "evidence_id": "ev-devhub-guide-certification-gate",
+          "citation_span_id": "span-certification-gate",
+          "section_id": "acknowledgement",
+          "page": null,
+          "start_char": 260,
+          "end_char": 344,
+          "label": "Certification and submission gate"
+        }
+      ],
+      "content_hash": "sha256:fixture-normalized-document",
+      "extraction_confidence": 0.98,
+      "raw_text": "raw body that must never appear in the packet"
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "req-upload-staging-before-certification",
+      "source_evidence_ids": [
+        "ev-devhub-guide-upload-staging",
+        "ev-devhub-guide-certification-gate"
+      ],
+      "requirement_type": "action_gate",
+      "subject": "applicant or attended agent",
+      "action": "review staged uploads and certification language before submission",
+      "object": "DevHub permit application",
+      "conditions": [
+        "permit request requires plan review",
+        "uploads are staged before an official submission action"
+      ],
+      "deadline_or_temporal_scope": "before acknowledgement, certification, or submission",
+      "permit_types": [
+        "building permit with plan review"
+      ],
+      "process_stage": "upload staging",
+      "confidence": 0.91,
+      "human_review_status": "fixture-reviewed",
+      "formalization_status": "fixture-formalized",
+      "devhub_private_values": {
+        "permit_number": "BEGIN PRIVATE DEVHUB VALUE 24-000000"
+      }
+    }
+  ],
+  "process_models": [
+    {
+      "process_id": "proc-building-permit-devhub-plan-review",
+      "permit_type": "building permit with plan review",
+      "scope": "Fixture process for a DevHub application requiring upload staging and certification review.",
+      "eligibility_rules": [
+        "public guidance supports DevHub application path"
+      ],
+      "required_user_facts": [
+        "property address",
+        "permit type",
+        "applicant role"
+      ],
+      "required_documents": [
+        "single drawing PDF",
+        "separate supporting documents"
+      ],
+      "file_rules": [
+        "staged files are reviewed before submission"
+      ],
+      "fees": [],
+      "stages": [
+        "pre-application research",
+        "account setup or manual login",
+        "document preparation",
+        "upload staging",
+        "acknowledgement/certification review",
+        "submission"
+      ],
+      "deadlines": [],
+      "exceptions": [],
+      "unsupported_paths": [
+        "final submission without attended exact confirmation"
+      ],
+      "devhub_surface_refs": [
+        "surface-devhub-application-upload"
+      ],
+      "guardrail_bundle_id": "grd-building-permit-devhub-plan-review",
+      "auth_state": "storageState token Set-Cookie Authorization: bearer fixture"
+    }
+  ],
+  "guardrail_bundles": [
+    {
+      "guardrail_bundle_id": "grd-building-permit-devhub-plan-review",
+      "process_id": "proc-building-permit-devhub-plan-review",
+      "source_evidence_ids": [
+        "ev-devhub-guide-upload-staging",
+        "ev-devhub-guide-certification-gate"
+      ],
+      "deterministic_predicates": [
+        {
+          "id": "pred-has-required-upload-facts"
+        }
+      ],
+      "deontic_rules": [],
+      "temporal_rules": [],
+      "reversible_action_predicates": [
+        {
+          "id": "pred-draft-review-is-reversible"
+        }
+      ],
+      "exact_confirmation_predicates": [
+        {
+          "id": "pred-certification-requires-exact-confirmation"
+        }
+      ],
+      "refused_action_predicates": [
+        {
+          "id": "pred-refuse-unattended-submit"
+        }
+      ],
+      "explanation_templates": [],
+      "validation_status": "fixture-valid",
+      "trace": "trace.zip",
+      "screenshot": "screenshot.png",
+      "har": "capture.har"
+    }
+  ],
+  "next_safe_actions": [
+    {
+      "action_id": "nsa-review-upload-checklist",
+      "process_id": "proc-building-permit-devhub-plan-review",
+      "guardrail_bundle_id": "grd-building-permit-devhub-plan-review",
+      "label": "Review missing upload checklist facts before any DevHub submission step",
+      "action_class": "safe_read_only",
+      "allowed": true,
+      "requires_attendance": false,
+      "requires_exact_confirmation": false,
+      "blocked_reason": "",
+      "supporting_requirement_ids": [
+        "req-upload-staging-before-certification"
+      ],
+      "download_path": "C:\\Users\\Owner\\private\\devhub.pdf"
+    }
+  ]
+}

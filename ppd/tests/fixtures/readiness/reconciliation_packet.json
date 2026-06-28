@@ -1,0 +1,104 @@
+{
+  "packet_id": "ppd-readiness-reconciliation-20260528",
+  "packet_version": "2026-05-28.checkbox-70.reconciled",
+  "mode": "fixture_first",
+  "purpose": "Reconcile implementation readiness evidence before any live PP&D crawl or authenticated DevHub automation is enabled.",
+  "evidence_catalog": [
+    {
+      "evidence_id": "source-registry-candidate-packet",
+      "citation": "ppd/tests/fixtures/source_registry_update_candidate/reviewed_metadata_outcomes.json",
+      "summary": "Reviewed metadata outcomes fixture for source registry update candidate validation."
+    },
+    {
+      "evidence_id": "stale-guardrail-audit-packet",
+      "citation": "ppd/validation/stale_guardrail_audit_packet.py",
+      "summary": "Validator coverage for stale guardrail audit packets and unresolved stale predicate handling."
+    },
+    {
+      "evidence_id": "agent-regression-matrix-packet",
+      "citation": "ppd/tests/fixtures/agent_response_regression_matrix/synthetic_cases.json",
+      "summary": "Fixture-backed synthetic agent response regression matrix coverage."
+    },
+    {
+      "evidence_id": "attended-pilot-evidence-template-packet",
+      "citation": "ppd/tests/fixtures/devhub_attended_evidence/valid_template.json",
+      "summary": "Commit-safe attended pilot evidence template validation fixture."
+    }
+  ],
+  "linked_artifacts": {
+    "source_registry_update_candidate": {
+      "fixture": "ppd/tests/fixtures/source_registry_update_candidate/reviewed_metadata_outcomes.json",
+      "packet_id": "source-registry-update-candidate-reviewed-metadata-outcomes",
+      "packet_version": "2026-05-28.checkbox-63",
+      "readiness": "candidate_only",
+      "summary": "Documents the source registry update candidate without mutating the live registry."
+    },
+    "stale_guardrail_audit": {
+      "fixture": "ppd/validation/stale_guardrail_audit_packet.py",
+      "packet_id": "stale-guardrail-audit-validator",
+      "packet_version": "2026-05-28.checkbox-65",
+      "readiness": "requires_review",
+      "summary": "Flags stale guardrail evidence that must be reconciled before release."
+    },
+    "agent_response_regression_matrix": {
+      "fixture": "ppd/tests/fixtures/agent_response_regression_matrix/synthetic_cases.json",
+      "packet_id": "agent-response-regression-matrix-synthetic-cases",
+      "packet_version": "2026-05-28.checkbox-66",
+      "readiness": "fixture_regression_only",
+      "summary": "Tracks fixture-backed agent response expectations and regressions."
+    },
+    "attended_pilot_evidence_template": {
+      "fixture": "ppd/tests/fixtures/devhub_attended_evidence/valid_template.json",
+      "packet_id": "attended-pilot-evidence-template-validator",
+      "packet_version": "2026-05-28.checkbox-69",
+      "readiness": "template_only",
+      "summary": "Defines evidence fields for a future attended pilot without creating live browser artifacts or submissions."
+    }
+  },
+  "release_blockers": [
+    {
+      "id": "registry-candidate-not-promoted",
+      "status": "blocking",
+      "summary": "The source registry update remains a candidate fixture and has not been reconciled into an approved registry change.",
+      "source_evidence_ids": ["source-registry-candidate-packet"]
+    },
+    {
+      "id": "guardrail-audit-stale",
+      "status": "blocking",
+      "summary": "The stale guardrail audit requires human review before any release can enable automation beyond deterministic fixtures.",
+      "source_evidence_ids": ["stale-guardrail-audit-packet"]
+    },
+    {
+      "id": "agent-regression-fixture-only",
+      "status": "blocking",
+      "summary": "Agent response behavior is covered by deterministic synthetic fixtures only and is not a release approval for official actions.",
+      "source_evidence_ids": ["agent-regression-matrix-packet"]
+    },
+    {
+      "id": "pilot-evidence-template-only",
+      "status": "blocking",
+      "summary": "Attended pilot evidence is represented only as a template and contains no validated live pilot record.",
+      "source_evidence_ids": ["attended-pilot-evidence-template-packet"]
+    }
+  ],
+  "unresolved_blockers": [
+    "registry-candidate-not-promoted",
+    "guardrail-audit-stale",
+    "agent-regression-fixture-only",
+    "pilot-evidence-template-only"
+  ],
+  "readiness_status": "blocked_by_release_blockers",
+  "production_status": "blocked",
+  "production_ready": false,
+  "disabled_capabilities": [
+    "live_crawl",
+    "devhub_authenticated_automation",
+    "payment",
+    "upload",
+    "submission",
+    "scheduling",
+    "cancellation",
+    "certification"
+  ],
+  "forbidden_live_evidence_present": false
+}

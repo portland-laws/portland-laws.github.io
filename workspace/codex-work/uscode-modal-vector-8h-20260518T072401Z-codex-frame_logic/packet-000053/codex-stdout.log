@@ -1,0 +1,10 @@
+Implemented a deterministic frame-ontology normalization fix for repeated `*_pair` values, so frame-linked citation/source-id pair features collapse to canonical terms instead of duplicated noise.
+
+Changed files:
+- [_normalized_frame_ontology_value pair handling](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000053-20260518_143049/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py#L759)
+- [new `_normalized_pair_ontology_value` helper](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000053-20260518_143049/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py#L857)
+- [new regression test for repeated pair canonicalization](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000053-20260518_143049/ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py#L264)
+
+Validation run:
+- `python3 -m pytest -q ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py` → `16 passed`
+- `python3 -m pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "frame_ontology"` → `7 passed`

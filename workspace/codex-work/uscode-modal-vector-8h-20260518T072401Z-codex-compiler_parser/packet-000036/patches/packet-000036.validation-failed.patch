@@ -1,0 +1,165 @@
+diff --git a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py
+index 440e473f..1327b6cb 100644
+--- a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py
++++ b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py
+@@ -796,6 +796,11 @@ class LegalModalParser:
+                 fallback_rule_override = "uscode_section_heading_coarse_v1"
+         if candidate_segment is None:
+             return None
++        candidate_segment = self._extend_sparse_uscode_heading_segment(
++            candidate_segment=candidate_segment,
++            segments=segments,
++            citation_section=citation_section,
++        )
+ 
+         profile = self.registry.get_profile(ModalLogicFamily.FRAME)
+         if not profile.operators:
+@@ -847,6 +852,75 @@ class LegalModalParser:
+             },
+         )
+ 
++    def _extend_sparse_uscode_heading_segment(
++        self,
++        *,
++        candidate_segment: LegalSegment,
++        segments: Sequence[LegalSegment],
++        citation_section: str,
++    ) -> LegalSegment:
++        """Extend bare ``§1234.`` heading segments with adjacent heading text."""
++        if not citation_section:
++            return candidate_segment
++
++        normalized_candidate = self.normalize_text(candidate_segment.text)
++        candidate_tokens = _TOKEN_RE.findall(normalized_candidate.lower())
++        if len(candidate_tokens) >= 2:
++            return candidate_segment
++        if not (
++            self._starts_with_citation_section_reference(
++                normalized_candidate,
++                citation_section,
++            )
++            or self._contains_citation_section_reference(
++                normalized_candidate,
++                citation_section,
++            )
++        ):
++            return candidate_segment
++
++        candidate_index = -1
++        for index, segment in enumerate(segments):
++            if (
++                segment.start_char == candidate_segment.start_char
++                and segment.end_char == candidate_segment.end_char
++                and segment.text == candidate_segment.text
++            ):
++                candidate_index = index
++                break
++        if candidate_index < 0 or candidate_index + 1 >= len(segments):
++            return candidate_segment
++
++        next_segment = segments[candidate_index + 1]
++        next_text = self.normalize_text(next_segment.text)
++        if not next_text:
++            return candidate_segment
++        if self._starts_with_citation_section_reference(next_text, citation_section):
++            return candidate_segment
++
++        next_tokens = _TOKEN_RE.findall(next_text.lower())
++        if (
++            len(next_tokens) < 2
++            or len(next_tokens) > _USCODE_SECTION_HEADING_SHORT_MAX_TOKENS
++        ):
++            return candidate_segment
++        if _USCODE_HEADING_ONLY_VERB_HINT_RE.search(next_text):
++            return candidate_segment
++        if not self._looks_like_heading_without_section_reference(next_text):
++            return candidate_segment
++
++        combined_text = self.normalize_text(f"{normalized_candidate} {next_text}")
++        combined_tokens = _TOKEN_RE.findall(combined_text.lower())
++        if len(combined_tokens) > _USCODE_SECTION_HEADING_EXTENDED_MAX_TOKENS:
++            return candidate_segment
++
++        return LegalSegment(
++            text=combined_text,
++            start_char=candidate_segment.start_char,
++            end_char=next_segment.end_char,
++            role=candidate_segment.role,
++        )
++
+     def _looks_like_transferred_section_heading(
+         self,
+         segment_text: str,
+diff --git a/tests/unit_tests/logic/modal/test_modal_codec.py b/tests/unit_tests/logic/modal/test_modal_codec.py
+index 118107aa..11d0d0a5 100644
+--- a/tests/unit_tests/logic/modal/test_modal_codec.py
++++ b/tests/unit_tests/logic/modal/test_modal_codec.py
+@@ -460,6 +460,11 @@ _USCODE_19_3702_SYMBOLIC_VALIDITY_TEXT = (
+     "schedule registry digest table profile catalog narrative appendix mapping index "
+     "ledger coordination protocol record workflow archive taxonomy matrix"
+ )
++_USCODE_42_1395W_SPARSE_HEADING_TEXT = (
++    "\u00a71395w\u2013131. Application to Medicare Advantage program and related managed care programs."
++)
++_USCODE_5_3110_SPARSE_HEADING_TEXT = "\u00a73110. Employment of relatives; restrictions."
++_USCODE_16_2204_SPARSE_HEADING_TEXT = "\u00a72204. Funding and administration."
+ 
+ 
+ def test_modal_codec_encodes_all_modal_families_with_frame_logic() -> None:
+@@ -1278,6 +1283,56 @@ def test_modal_compiler_replays_sec_prefixed_heading_samples_with_usc_citation_v
+             assert fallback.provenance.citation == citation
+ 
+ 
++def test_modal_compiler_replays_sparse_heading_segments_for_42_1395w_5_3110_and_16_2204() -> None:
++    cases = [
++        (
++            "us-code-42-1395w-heading-segment",
++            "42 U.S.C. 1395w",
++            _USCODE_42_1395W_SPARSE_HEADING_TEXT,
++            "application",
++        ),
++        (
++            "us-code-5-3110-heading-segment",
++            "5 U.S.C. 3110",
++            _USCODE_5_3110_SPARSE_HEADING_TEXT,
++            "employment",
++        ),
++        (
++            "us-code-16-2204-heading-segment",
++            "16 U.S.C. 2204",
++            _USCODE_16_2204_SPARSE_HEADING_TEXT,
++            "funding",
++        ),
++    ]
++    for backend in ("regex", "spacy"):
++        compiler = DeterministicModalCompiler(
++            ModalCompilerConfig(
++                parser_backend=backend,
++                spacy_model_name="definitely_missing_legal_model",
++            )
++        )
++        for document_id, citation, text, expected_token in cases:
++            compiled = compiler.compile(
++                text,
++                document_id=document_id,
++                citation=citation,
++                source="us_code",
++            )
++
++            assert compiled.modal_ir.formulas
++            assert all(
++                ambiguity.ambiguity_type != "missing_modal_formula"
++                for ambiguity in compiled.ambiguities
++            )
++            fallback = compiled.modal_ir.formulas[-1]
++            assert fallback.operator.family == "frame"
++            assert fallback.metadata["cue"] == "__uscode_section_heading_fallback__"
++            assert fallback.metadata["fallback_rule"] == "uscode_section_heading_v1"
++            assert fallback.predicate.name != "unnamed_predicate"
++            assert expected_token in fallback.predicate.name
++            assert fallback.provenance.citation == citation
++
++
+ def test_modal_compiler_replays_symbolic_validity_samples_for_4_123_5_5564_16_6410_16_47a_16_6808_7_614_and_7_7656() -> None:
+     cases = [
+         (

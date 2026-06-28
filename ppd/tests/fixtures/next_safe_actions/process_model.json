@@ -1,0 +1,67 @@
+{
+  "process_id": "process-residential-adu-devhub-demo",
+  "permit_type": "Residential detached ADU",
+  "scope": "Fixture model for an agent-facing next-safe-actions response.",
+  "source_evidence": [
+    {
+      "evidence_id": "ev-standard-trade-license",
+      "source_id": "ppd-devhub-standard-trade-guide",
+      "url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "title": "Online permitting tools overview",
+      "quote": "Contractor license information can affect available DevHub options."
+    },
+    {
+      "evidence_id": "ev-single-pdf-guidance",
+      "source_id": "ppd-single-pdf-guidance",
+      "url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "title": "Submit plans online",
+      "quote": "Drawing plans are prepared as one PDF while supporting documents are separate PDFs."
+    },
+    {
+      "evidence_id": "ev-devhub-save-later",
+      "source_id": "ppd-devhub-application-guide",
+      "url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "title": "DevHub permit application guide",
+      "quote": "Applications may be saved before final review and submission."
+    },
+    {
+      "evidence_id": "ev-devhub-submit-certify",
+      "source_id": "ppd-devhub-application-guide",
+      "url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "title": "DevHub permit application guide",
+      "quote": "Submission and acknowledgement steps require applicant review."
+    },
+    {
+      "evidence_id": "ev-upload-corrections",
+      "source_id": "ppd-devhub-upload-corrections",
+      "url": "https://www.portland.gov/ppd/devhub-faqs",
+      "title": "DevHub FAQs",
+      "quote": "Uploading corrections changes the official permit record."
+    }
+  ],
+  "required_user_facts": [
+    {
+      "fact_id": "contractor_license_status",
+      "question": "What contractor license status should be used for this DevHub application?",
+      "reason": "DevHub options can depend on contractor license information.",
+      "source_evidence_ids": ["ev-standard-trade-license"]
+    }
+  ],
+  "required_documents": [
+    {
+      "document_id": "single_pdf_plan_set",
+      "question": "Do you have the drawing plan set prepared as one PDF, with supporting documents separated?",
+      "reason": "PP&D online plan guidance distinguishes the plan set PDF from other supporting PDFs.",
+      "source_evidence_ids": ["ev-single-pdf-guidance"]
+    }
+  ],
+  "stages": [
+    "eligibility screening",
+    "document preparation",
+    "application data entry",
+    "upload staging",
+    "acknowledgement/certification review",
+    "submission"
+  ],
+  "guardrail_bundle_id": "guardrails-residential-adu-devhub-demo"
+}

@@ -1,0 +1,22 @@
+{
+  "packet_id": "rerun-review-invalid-001",
+  "source_id": "src-missing",
+  "document_id": "doc-missing",
+  "requirement_id": "req-missing",
+  "source_url": "https://user:pass@private.example.test/doc",
+  "callback_url": "http://127.0.0.1:8080/session?token=secret",
+  "raw_source_text": "Do not commit raw source text into review packets.",
+  "downloaded_document_path": "downloads/ppd/private.pdf",
+  "live_extraction": true,
+  "active_requirement_mutation": true,
+  "dispositions": [
+    {
+      "requirement_id": "req-missing",
+      "decision": "stale_withdrawn",
+      "citations": [],
+      "reviewer_owner": "",
+      "formalized_requirement": true,
+      "human_review_status": "machine_only"
+    }
+  ]
+}

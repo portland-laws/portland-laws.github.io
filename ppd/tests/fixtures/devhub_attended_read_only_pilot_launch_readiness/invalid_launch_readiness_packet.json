@@ -1,0 +1,48 @@
+{
+  "packet_id": "devhub-attended-read-only-pilot-launch-readiness-invalid",
+  "packet_type": "ppd.devhub.attended_read_only_pilot_launch_readiness_packet.v1",
+  "manual_attendance_required": false,
+  "attendance_prerequisites": [],
+  "manual_stop_points": [],
+  "selector_confidence_notes": [
+    {
+      "note_id": "uncited-selector-note",
+      "surface_id": "devhub-home-redacted-fixture",
+      "selector": "role=button[name='Submit']",
+      "confidence": "medium"
+    }
+  ],
+  "redaction_checklist_items": [
+    {
+      "check_id": "no_auth_state",
+      "required": true,
+      "raw_value_allowed": false,
+      "private_value_allowed": false,
+      "citations": ["devhub-attended-read-only-pilot-runbook-v1"]
+    }
+  ],
+  "reviewer_owner_signoff_slots": [
+    {
+      "slot_id": "missing-owner",
+      "owner": "",
+      "can_enable_official_action": true
+    }
+  ],
+  "raw_authenticated_value": "actual authenticated field text",
+  "session_cookie": "devhub-session-cookie",
+  "local_private_path": "/home/operator/private/devhub/session.json",
+  "screenshot_path": "screenshots/devhub-home.png",
+  "trace_path": "traces/trace.zip",
+  "har_path": "network.har",
+  "storage_state_path": "playwright/.auth/storage_state.json",
+  "execution_note": "Playwright executed and clicked in DevHub during launch readiness.",
+  "controls": [
+    {
+      "label": "Submit permit request",
+      "kind": "consequential_official",
+      "enabled": true
+    }
+  ],
+  "mutates_surface_registry": true,
+  "mutates_agent_state": true
+}

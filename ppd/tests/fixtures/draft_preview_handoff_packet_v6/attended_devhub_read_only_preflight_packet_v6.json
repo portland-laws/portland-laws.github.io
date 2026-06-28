@@ -1,0 +1,32 @@
+{
+  "packet_type": "attended_devhub_read_only_preflight_packet",
+  "packet_version": "v6",
+  "surface_id": "devhub-read-only-fixture-application-start",
+  "read_only_fields": [
+    {
+      "field_id": "project_address",
+      "label": "Project address",
+      "selector": "input[name='ProjectAddress']",
+      "selector_confidence": "medium",
+      "selector_caveats": [
+        "Selector observed in read-only fixture only; verify visible label during attended session."
+      ]
+    },
+    {
+      "field_id": "work_description",
+      "label": "Describe the work",
+      "selector": "textarea[name='WorkDescription']",
+      "selector_confidence": "high",
+      "selector_caveats": []
+    },
+    {
+      "field_id": "applicant_email",
+      "label": "Applicant email",
+      "selector": "input[name='ApplicantEmail']",
+      "selector_confidence": "low",
+      "selector_caveats": [
+        "Email field may be account-derived; do not overwrite without user review."
+      ]
+    }
+  ]
+}

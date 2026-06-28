@@ -1,0 +1,14 @@
+Implemented a narrow `ir_decompiler`-lane refinement for statutory-scope slot coverage.
+
+- Expanded deterministic statutory cross-reference connector matching in:
+  - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000010-20260518_080253/ipfs_datasets_py/logic/modal/decompiler.py:71)
+  - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000010-20260518_080253/ipfs_datasets_py/logic/modal/codec.py:126)
+
+This now captures additional legal reference forms like `as described in`, `as defined in`, `referred to in`, `as set forth in`, and `except as provided in` for both decompiler slots and F-logic triples.
+
+- Added regression coverage in:
+  - [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000010-20260518_080253/tests/unit_tests/logic/modal/test_modal_codec.py:1844)
+
+Test run:
+- `PYTHONPATH=. pytest -q --rootdir=tests tests/unit_tests/logic/modal/test_modal_codec.py -k 'statutory_scope_reference_slots or expand_statutory_scope_units_and_connectors or extended_statutory_scope_connectors'`
+- Result: `3 passed` (targeted subset).

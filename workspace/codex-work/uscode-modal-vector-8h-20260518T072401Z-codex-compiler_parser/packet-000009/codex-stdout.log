@@ -1,0 +1,15 @@
+Implemented a deterministic spaCy-path fallback for US Code editorial-status headings, and added golden regression coverage for the three TODO citations/sample IDs.
+
+Changes made:
+- Added a reusable fallback hook in [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000009-20260518_073259/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:191), and switched `parse()` to call it at [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000009-20260518_073259/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:169).
+- Wired the same fallback into spaCy IR compilation when cue extraction yields zero formulas at [spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000009-20260518_073259/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py:517), with parser dependency setup at [spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000009-20260518_073259/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py:479).
+- Added spaCy compiler golden test for the three cited zero-formula cases at [test_spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000009-20260518_073259/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py:56).
+- Added `DeterministicModalCompiler` (spacy backend) regression test to assert no `missing_modal_formula` for those same cases at [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000009-20260518_073259/tests/unit_tests/logic/modal/test_modal_codec.py:221).
+
+Validation run:
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py -k 'editorial_status_zero_formula_cases'`  
+  failed before test execution due existing repo bootstrap issue: `__init__.py:11 NameError: __path__ not defined`.
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k 'spacy_replays_editorial_status_zero_formula_samples'`  
+  failed for the same pre-existing `__init__.py` issue.
+- `python3 -m py_compile ...` on all modified files passed.
+- Direct runtime verification script for the three TODO cases (spaCy compiler + `DeterministicModalCompiler` spacy backend) passed with `verification-ok`.

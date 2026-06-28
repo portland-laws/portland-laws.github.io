@@ -1,0 +1,120 @@
+{
+  "claimed_at": "2026-05-16T15:53:01+00:00",
+  "packet_id": "packet-000028",
+  "patch_error": "No changes found in worktree: /home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-drain-20260516T155232Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-smoke-drain-20260516T155232Z-codex-packet-000028-20260516_155300",
+  "patch_path": null,
+  "patch_status": "awaiting_codex_changes",
+  "queue_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-smoke-drain-20260516T155232Z-autoencoder.jsonl",
+  "queue_run_id": "uscode-modal-smoke-drain-20260516T155232Z-autoencoder",
+  "run_id": "uscode-modal-smoke-drain-20260516T155232Z-codex",
+  "suggested_target_files": [
+    "ipfs_datasets_py/logic/modal/codec.py",
+    "ipfs_datasets_py/logic/modal/decompiler.py",
+    "ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_ir.py",
+    "ipfs_datasets_py/optimizers/logic/flogic_optimizer.py",
+    "ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py"
+  ],
+  "task_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-drain-20260516T155232Z-codex/packet-000028/CODEX_TASK.md",
+  "task_source": "autoencoder_supervisor_program_synthesis_queue",
+  "todo_list_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-drain-20260516T155232Z-codex/packet-000028/TODO_LIST.jsonl",
+  "todo_markdown_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-drain-20260516T155232Z-codex/packet-000028/TODO_LIST.md",
+  "todos": [
+    {
+      "action": "refine_typed_ir_or_decompiler_slots",
+      "citations": [
+        "42 U.S.C. 3041 to 3041f.",
+        "42 U.S.C. 300j"
+      ],
+      "claimed_at": "2026-05-16T15:53:00+00:00",
+      "claimed_by": "codex-program-synthesis-uscode-modal-smoke-drain-20260516T155232Z-codex",
+      "completed_at": null,
+      "created_at": "2026-05-16T15:52:58+00:00",
+      "loss_name": "autoencoder_residual_cluster",
+      "loss_value": 0.284593766102,
+      "metadata": {
+        "execution_target": "codex_program_repair",
+        "hint_evidence": [
+          {
+            "cosine_similarity": 0.028037591261,
+            "hint_id": "modal-synthesis-2f0a2fa90b98848f",
+            "priority": 0.270672581433,
+            "reconstruction_loss": 0.270672581433,
+            "sample_id": "us-code-42-300j-6b7f0e2ba54bb3d6"
+          },
+          {
+            "cosine_similarity": -0.022409598628,
+            "hint_id": "modal-synthesis-37057e1dd3728df2",
+            "priority": 0.298514950771,
+            "reconstruction_loss": 0.298514950771,
+            "sample_id": "us-code-42-3041 to 3041f.-f7a25e2c39f54090"
+          }
+        ],
+        "hint_ids": [
+          "modal-synthesis-2f0a2fa90b98848f",
+          "modal-synthesis-37057e1dd3728df2"
+        ],
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "source": "modal_program_synthesis_todo_generator_v1",
+        "support_count": 2,
+        "target_component": "modal.ir_decompiler"
+      },
+      "objective": "Embedding residuals point to information not well represented by the typed IR/decompiler.",
+      "priority": 30.459377,
+      "sample_ids": [
+        "us-code-42-3041 to 3041f.-f7a25e2c39f54090",
+        "us-code-42-300j-6b7f0e2ba54bb3d6"
+      ],
+      "status": "claimed",
+      "todo_id": "program-10729dc60cbbf851"
+    },
+    {
+      "action": "audit_frame_logic_terms",
+      "citations": [
+        "42 U.S.C. 3041 to 3041f.",
+        "42 U.S.C. 300j"
+      ],
+      "claimed_at": "2026-05-16T15:53:00+00:00",
+      "claimed_by": "codex-program-synthesis-uscode-modal-smoke-drain-20260516T155232Z-codex",
+      "completed_at": null,
+      "created_at": "2026-05-16T15:52:58+00:00",
+      "loss_name": "autoencoder_residual_cluster",
+      "loss_value": 0.284593766102,
+      "metadata": {
+        "execution_target": "codex_program_repair",
+        "hint_evidence": [
+          {
+            "hint_id": "modal-synthesis-2949459e506ca2f9",
+            "priority": 0.270672581433,
+            "sample_id": "us-code-42-300j-6b7f0e2ba54bb3d6"
+          },
+          {
+            "hint_id": "modal-synthesis-765293ad18f6f8b3",
+            "priority": 0.298514950771,
+            "sample_id": "us-code-42-3041 to 3041f.-f7a25e2c39f54090"
+          }
+        ],
+        "hint_ids": [
+          "modal-synthesis-2949459e506ca2f9",
+          "modal-synthesis-765293ad18f6f8b3"
+        ],
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "source": "modal_program_synthesis_todo_generator_v1",
+        "support_count": 2,
+        "target_component": "modal.frame_logic"
+      },
+      "objective": "Frame-linked features influenced reconstruction or family scoring and should be audited as ontology terms.",
+      "priority": 30.459377,
+      "sample_ids": [
+        "us-code-42-3041 to 3041f.-f7a25e2c39f54090",
+        "us-code-42-300j-6b7f0e2ba54bb3d6"
+      ],
+      "status": "claimed",
+      "todo_id": "program-df59e89c25109f65"
+    }
+  ],
+  "worker_id": "codex-program-synthesis-uscode-modal-smoke-drain-20260516T155232Z-codex",
+  "worktree_error": null,
+  "worktree_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-drain-20260516T155232Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-smoke-drain-20260516T155232Z-codex-packet-000028-20260516_155300"
+}

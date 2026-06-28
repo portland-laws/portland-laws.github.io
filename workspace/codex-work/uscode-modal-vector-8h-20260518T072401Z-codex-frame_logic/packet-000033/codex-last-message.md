@@ -1,0 +1,17 @@
+Implemented a deterministic frame-logic audit gap fix: frame-semantic slot features are now audited as ontology terms.
+
+- Updated parser logic to treat `slot:operator:framed_as` and `slot:role:frame` as frame-linked signals and normalize them to the ontology term `frame` in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000033-20260518_110358/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py#L186) and [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000033-20260518_110358/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py#L672).
+- Added selector tests for extraction and key classification in [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000033-20260518_110358/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py#L410) and [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000033-20260518_110358/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py#L855).
+- Added optimizer metadata coverage in [test_flogic_optimizer.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000033-20260518_110358/tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py#L119).
+- Added end-to-end codec audit assertion in [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000033-20260518_110358/tests/unit_tests/logic/modal/test_modal_codec.py#L3840).
+
+Tests run:
+
+```bash
+pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py \
+         tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py \
+         tests/unit_tests/logic/modal/test_modal_codec.py \
+         -k 'frame_ontology or frame_logic_terms or frame_decoder_audit_features_use_canonical_feature_parser or frame_ontology_audit_prioritizes_decoder_frame_features or frame_semantic_slot'
+```
+
+Result: `45 passed, 86 deselected`.

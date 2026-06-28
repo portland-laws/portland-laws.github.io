@@ -1,0 +1,186 @@
+diff --git a/ipfs_datasets_py/logic/modal/codec.py b/ipfs_datasets_py/logic/modal/codec.py
+index b664de30..d5d12301 100644
+--- a/ipfs_datasets_py/logic/modal/codec.py
++++ b/ipfs_datasets_py/logic/modal/codec.py
+@@ -1231,6 +1231,12 @@ def _citation_components(citation: str) -> List[tuple[str, str]]:
+                     str(len(section_trailing_punct)),
+                 )
+             )
++            trailing_punct_kind = _trailing_punct_kind(section_trailing_punct)
++            if trailing_punct_kind:
++                components.append(("citation_section_trailing_punct_kind", trailing_punct_kind))
++        else:
++            components.append(("citation_section_has_trailing_punct", "false"))
++            components.append(("citation_section_trailing_punct_count", "0"))
+         components.extend(_citation_section_components(section))
+         components.extend(
+             _typed_identifier_components(
+@@ -1300,6 +1306,12 @@ def _source_id_components(source_id: str) -> List[tuple[str, str]]:
+                 str(len(section_trailing_punct)),
+             )
+         )
++        trailing_punct_kind = _trailing_punct_kind(section_trailing_punct)
++        if trailing_punct_kind:
++            components.append(("source_id_section_trailing_punct_kind", trailing_punct_kind))
++    elif section:
++        components.append(("source_id_section_has_trailing_punct", "false"))
++        components.append(("source_id_section_trailing_punct_count", "0"))
+     source_id_canonical = _canonical_usc_citation(title, section_for_components)
+     if source_id_canonical:
+         components.append(("source_id_citation_canonical", source_id_canonical))
+@@ -1755,6 +1767,19 @@ def _citation_section_delimiter_kind(delimiter: str) -> str:
+     return "other"
+ 
+ 
++def _trailing_punct_kind(value: str) -> str:
++    cleaned = _clean_non_empty_string(value)
++    if not cleaned:
++        return ""
++    if all(character == "." for character in cleaned):
++        return "dot"
++    if all(character == ":" for character in cleaned):
++        return "colon"
++    if all(character == ";" for character in cleaned):
++        return "semicolon"
++    return "other"
++
++
+ def _citation_section_component_profile(
+     *,
+     component_count: int,
+diff --git a/ipfs_datasets_py/logic/modal/decompiler.py b/ipfs_datasets_py/logic/modal/decompiler.py
+index 2c41d14c..6e4a6db2 100644
+--- a/ipfs_datasets_py/logic/modal/decompiler.py
++++ b/ipfs_datasets_py/logic/modal/decompiler.py
+@@ -845,6 +845,12 @@ def _source_id_slots(source_id: str) -> List[Tuple[str, str]]:
+                 str(len(section_trailing_punct)),
+             )
+         )
++        trailing_punct_kind = _trailing_punct_kind(section_trailing_punct)
++        if trailing_punct_kind:
++            slots.append(("source_id_section_trailing_punct_kind", trailing_punct_kind))
++    elif section:
++        slots.append(("source_id_section_has_trailing_punct", "false"))
++        slots.append(("source_id_section_trailing_punct_count", "0"))
+     section_for_slots = normalized_section or section
+     source_id_canonical = _canonical_usc_citation(title, section_for_slots)
+     if source_id_canonical:
+@@ -1381,6 +1387,12 @@ def _citation_slots(citation: str) -> List[Tuple[str, str]]:
+                     str(len(section_trailing_punct)),
+                 )
+             )
++            trailing_punct_kind = _trailing_punct_kind(section_trailing_punct)
++            if trailing_punct_kind:
++                slots.append(("citation_section_trailing_punct_kind", trailing_punct_kind))
++        else:
++            slots.append(("citation_section_has_trailing_punct", "false"))
++            slots.append(("citation_section_trailing_punct_count", "0"))
+         slots.extend(_citation_section_slots(section))
+         slots.extend(
+             _typed_identifier_slots(
+@@ -1776,6 +1788,19 @@ def _citation_section_delimiter_kind(delimiter: str) -> str:
+     return "other"
+ 
+ 
++def _trailing_punct_kind(value: str) -> str:
++    cleaned = _clean_text(value)
++    if not cleaned:
++        return ""
++    if all(character == "." for character in cleaned):
++        return "dot"
++    if all(character == ":" for character in cleaned):
++        return "colon"
++    if all(character == ";" for character in cleaned):
++        return "semicolon"
++    return "other"
++
++
+ def _citation_section_component_profile(
+     *,
+     component_count: int,
+diff --git a/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py b/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py
+index 6cef8da4..967d5abf 100644
+--- a/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py
++++ b/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py
+@@ -260,6 +260,8 @@ def test_decode_modal_ir_document_emits_positional_citation_slots() -> None:
+     assert slot_map["citation_section_delimiter_distinct_count"] == ["1"]
+     assert slot_map["citation_title_section_key"] == ["21:360bbb-0"]
+     assert slot_map["citation_title_section_key_normalized"] == ["21:360bbb-0"]
++    assert slot_map["citation_section_has_trailing_punct"] == ["false"]
++    assert slot_map["citation_section_trailing_punct_count"] == ["0"]
+ 
+     assert slot_map["source_id_section_component_positioned"] == ["1:360bbb", "2:0"]
+     assert slot_map["source_id_section_number_positioned"] == ["1:360", "2:0"]
+@@ -305,6 +307,8 @@ def test_decode_modal_ir_document_emits_positional_citation_slots() -> None:
+     assert slot_map["source_id_section_delimiter_distinct_count"] == ["1"]
+     assert slot_map["source_id_title_section_key"] == ["21:360bbb-0"]
+     assert slot_map["source_id_title_section_key_normalized"] == ["21:360bbb-0"]
++    assert slot_map["source_id_section_has_trailing_punct"] == ["false"]
++    assert slot_map["source_id_section_trailing_punct_count"] == ["0"]
+ 
+ 
+ def test_modal_ir_to_flogic_triples_emits_positional_citation_components() -> None:
+@@ -364,6 +368,8 @@ def test_modal_ir_to_flogic_triples_emits_positional_citation_components() -> No
+     assert objects("citation_section_delimiter_distinct_count") == ["1"]
+     assert objects("citation_title_section_key") == ["21:360bbb-0"]
+     assert objects("citation_title_section_key_normalized") == ["21:360bbb-0"]
++    assert objects("citation_section_has_trailing_punct") == ["false"]
++    assert objects("citation_section_trailing_punct_count") == ["0"]
+ 
+     assert objects("source_id_section_component_positioned") == ["1:360bbb", "2:0"]
+     assert objects("source_id_section_number_positioned") == ["1:360", "2:0"]
+@@ -409,6 +415,8 @@ def test_modal_ir_to_flogic_triples_emits_positional_citation_components() -> No
+     assert objects("source_id_section_delimiter_distinct_count") == ["1"]
+     assert objects("source_id_title_section_key") == ["21:360bbb-0"]
+     assert objects("source_id_title_section_key_normalized") == ["21:360bbb-0"]
++    assert objects("source_id_section_has_trailing_punct") == ["false"]
++    assert objects("source_id_section_trailing_punct_count") == ["0"]
+ 
+ 
+ def test_decode_modal_ir_document_emits_single_component_section_role_slots() -> None:
+@@ -802,12 +810,14 @@ def test_decode_modal_ir_document_emits_trailing_punct_presence_slots() -> None:
+     assert slot_map["citation_section_trailing_punct"] == ["."]
+     assert slot_map["citation_section_has_trailing_punct"] == ["true"]
+     assert slot_map["citation_section_trailing_punct_count"] == ["1"]
++    assert slot_map["citation_section_trailing_punct_kind"] == ["dot"]
+     assert slot_map["citation_section_has_suffix"] == ["false"]
+     assert slot_map["citation_section_primary_has_suffix"] == ["false"]
+     assert slot_map["citation_section_terminal_has_suffix"] == ["false"]
+     assert slot_map["source_id_section_trailing_punct"] == ["."]
+     assert slot_map["source_id_section_has_trailing_punct"] == ["true"]
+     assert slot_map["source_id_section_trailing_punct_count"] == ["1"]
++    assert slot_map["source_id_section_trailing_punct_kind"] == ["dot"]
+     assert slot_map["source_id_section_has_suffix"] == ["false"]
+     assert slot_map["source_id_section_primary_has_suffix"] == ["false"]
+     assert slot_map["source_id_section_terminal_has_suffix"] == ["false"]
+@@ -826,12 +836,14 @@ def test_modal_ir_to_flogic_triples_emit_trailing_punct_presence_slots() -> None
+     assert objects("citation_section_trailing_punct") == ["."]
+     assert objects("citation_section_has_trailing_punct") == ["true"]
+     assert objects("citation_section_trailing_punct_count") == ["1"]
++    assert objects("citation_section_trailing_punct_kind") == ["dot"]
+     assert objects("citation_section_has_suffix") == ["false"]
+     assert objects("citation_section_primary_has_suffix") == ["false"]
+     assert objects("citation_section_terminal_has_suffix") == ["false"]
+     assert objects("source_id_section_trailing_punct") == ["."]
+     assert objects("source_id_section_has_trailing_punct") == ["true"]
+     assert objects("source_id_section_trailing_punct_count") == ["1"]
++    assert objects("source_id_section_trailing_punct_kind") == ["dot"]
+     assert objects("source_id_section_has_suffix") == ["false"]
+     assert objects("source_id_section_primary_has_suffix") == ["false"]
+     assert objects("source_id_section_terminal_has_suffix") == ["false"]
+@@ -1047,11 +1059,15 @@ def test_modal_ir_to_flogic_triples_emits_document_citation_slots_when_no_formul
+     assert objects("citation_canonical") == ["50 U.S.C. 3091"]
+     assert objects("citation_section") == ["3091"]
+     assert objects("citation_section_trailing_punct") == ["."]
++    assert objects("citation_section_has_trailing_punct") == ["true"]
+     assert objects("citation_section_trailing_punct_count") == ["1"]
++    assert objects("citation_section_trailing_punct_kind") == ["dot"]
+     assert objects("source_id_section") == ["3091."]
+     assert objects("source_id_section_normalized") == ["3091"]
+     assert objects("source_id_section_trailing_punct") == ["."]
++    assert objects("source_id_section_has_trailing_punct") == ["true"]
+     assert objects("source_id_section_trailing_punct_count") == ["1"]
++    assert objects("source_id_section_trailing_punct_kind") == ["dot"]
+     assert objects("source_id_citation_canonical") == ["50 U.S.C. 3091"]
+ 
+ 

@@ -1,0 +1,162 @@
+{
+  "process_id": "standard-trade-permit-minimal-fixture",
+  "permit_type": "standard trade permit",
+  "scope": "Minimal committed fixture for process model normalization and guardrail derivation.",
+  "guardrail_bundle_id": "guardrails:standard-trade-permit-minimal-fixture",
+  "source_evidence": [
+    {
+      "evidence_id": "ppd-source:online-tools:devhub-services",
+      "source_id": "online-permitting-tools-overview",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "excerpt": "DevHub is the City of Portland online permitting system."
+    },
+    {
+      "evidence_id": "ppd-source:devhub-faq:standard-permits",
+      "source_id": "devhub-faqs",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "excerpt": "DevHub supports purchasing standard permits not requiring plan review."
+    },
+    {
+      "evidence_id": "ppd-source:devhub-signin:account-required",
+      "source_id": "devhub-sign-guide",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-sign-guide",
+      "excerpt": "A DevHub user account with PortlandOregon.gov credentials is required for online permitting services."
+    },
+    {
+      "evidence_id": "ppd-source:trade-guide:license-affects-options",
+      "source_id": "standard-trade-permit-guide",
+      "canonical_url": "https://www.portland.gov/ppd",
+      "excerpt": "Contractor license data on the DevHub profile can affect available fixture options."
+    },
+    {
+      "evidence_id": "ppd-source:fee-payment:financial-workflow",
+      "source_id": "fee-payment-guide",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "excerpt": "Fee payment is a financial workflow with payment detail entry and final submit-payment action."
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "req-devhub-account-required",
+      "source_evidence_ids": ["ppd-source:devhub-signin:account-required"],
+      "requirement_type": "precondition",
+      "subject": "applicant",
+      "action": "use",
+      "object": "DevHub account with PortlandOregon.gov credentials",
+      "conditions": {
+        "required_user_fact": "has_devhub_account",
+        "fact_label": "DevHub account is available for attended login",
+        "predicate": "known_fact.has_devhub_account == true",
+        "devhub_surface_ref": "devhub-public-sign-in"
+      },
+      "permit_types": ["standard trade permit"],
+      "process_stage": "account setup or manual login",
+      "confidence": 1.0,
+      "human_review_status": "fixture_reviewed",
+      "formalization_status": "normalized"
+    },
+    {
+      "requirement_id": "req-contractor-license-profile-check",
+      "source_evidence_ids": ["ppd-source:trade-guide:license-affects-options"],
+      "requirement_type": "license_requirement",
+      "subject": "agent",
+      "action": "check",
+      "object": "contractor license facts before assuming fixture options are available",
+      "conditions": {
+        "required_user_fact": "contractor_license_context",
+        "fact_label": "Contractor license context for available fixture options",
+        "predicate": "known_fact.contractor_license_context is present"
+      },
+      "permit_types": ["standard trade permit"],
+      "process_stage": "eligibility screening",
+      "confidence": 1.0,
+      "human_review_status": "fixture_reviewed",
+      "formalization_status": "normalized"
+    },
+    {
+      "requirement_id": "req-standard-permit-devhub-path",
+      "source_evidence_ids": ["ppd-source:devhub-faq:standard-permits", "ppd-source:online-tools:devhub-services"],
+      "requirement_type": "permission",
+      "subject": "applicant",
+      "action": "purchase",
+      "object": "standard permit not requiring plan review through DevHub",
+      "conditions": {
+        "predicate": "permit.requires_plan_review == false",
+        "devhub_surface_ref": "devhub-standard-permit-flow"
+      },
+      "permit_types": ["standard trade permit"],
+      "process_stage": "permit type selection",
+      "confidence": 1.0,
+      "human_review_status": "fixture_reviewed",
+      "formalization_status": "normalized"
+    },
+    {
+      "requirement_id": "req-plan-review-not-standard-purchase",
+      "source_evidence_ids": ["ppd-source:devhub-faq:standard-permits"],
+      "requirement_type": "prohibition",
+      "subject": "agent",
+      "action": "treat",
+      "object": "permit requiring plan review as a standard purchase workflow",
+      "conditions": {
+        "unsupported_path": "standard purchase when plan review is required",
+        "predicate": "permit.requires_plan_review == true"
+      },
+      "permit_types": ["standard trade permit"],
+      "process_stage": "eligibility screening",
+      "confidence": 1.0,
+      "human_review_status": "fixture_reviewed",
+      "formalization_status": "normalized"
+    },
+    {
+      "requirement_id": "req-local-draft-reversible",
+      "source_evidence_ids": ["ppd-source:online-tools:devhub-services"],
+      "requirement_type": "action_gate",
+      "subject": "agent",
+      "action": "draft",
+      "object": "local permit facts before official submission",
+      "conditions": {
+        "gate": "reversible",
+        "predicate": "action.is_local_draft == true"
+      },
+      "permit_types": ["standard trade permit"],
+      "process_stage": "application data entry",
+      "confidence": 1.0,
+      "human_review_status": "fixture_reviewed",
+      "formalization_status": "normalized"
+    },
+    {
+      "requirement_id": "req-submit-exact-confirmation",
+      "source_evidence_ids": ["ppd-source:devhub-faq:standard-permits"],
+      "requirement_type": "action_gate",
+      "subject": "agent",
+      "action": "submit or purchase",
+      "object": "official DevHub permit request or standard permit",
+      "conditions": {
+        "gate": "exact_confirmation",
+        "predicate": "action.is_official_submission == true"
+      },
+      "permit_types": ["standard trade permit"],
+      "process_stage": "submission",
+      "confidence": 1.0,
+      "human_review_status": "fixture_reviewed",
+      "formalization_status": "normalized"
+    },
+    {
+      "requirement_id": "req-payment-refused-without-attendance",
+      "source_evidence_ids": ["ppd-source:fee-payment:financial-workflow"],
+      "requirement_type": "action_gate",
+      "subject": "agent",
+      "action": "enter payment details or submit payment",
+      "object": "fee payment workflow",
+      "conditions": {
+        "gate": "refused",
+        "predicate": "action.is_financial == true and user_attendance.confirmed != true"
+      },
+      "permit_types": ["standard trade permit"],
+      "process_stage": "fee payment",
+      "confidence": 1.0,
+      "human_review_status": "fixture_reviewed",
+      "formalization_status": "normalized"
+    }
+  ]
+}

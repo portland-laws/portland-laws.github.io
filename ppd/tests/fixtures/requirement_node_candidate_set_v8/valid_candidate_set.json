@@ -1,0 +1,138 @@
+{
+  "candidate_set_version": "requirement-node-candidate-set-v8",
+  "candidate_set_id": "candidate-set-v8::fixture-single-pdf",
+  "work_packet_ref": "fixture://requirement-reextraction-work-packet-v8/valid_packet.json",
+  "required_requirement_type_coverage": [
+    "document_requirement",
+    "action_gate",
+    "deadline"
+  ],
+  "source_evidence_catalog": [
+    {
+      "evidence_id": "evidence:single-pdf-guidance:document-set",
+      "source_id": "source:submit-plans-online"
+    },
+    {
+      "evidence_id": "evidence:single-pdf-guidance:upload-gate",
+      "source_id": "source:submit-plans-online"
+    },
+    {
+      "evidence_id": "evidence:single-pdf-guidance:revision-window",
+      "source_id": "source:submit-plans-online"
+    },
+    {
+      "evidence_id": "evidence:retired-handout:prior-rule",
+      "source_id": "source:retired-handout"
+    }
+  ],
+  "rows": [
+    {
+      "requirement_id": "REQ-SINGLE-PDF-DOC-001",
+      "candidate_action": "add",
+      "work_packet_ref": "fixture://requirement-reextraction-work-packet-v8/valid_packet.json",
+      "source_evidence_ids": [
+        "evidence:single-pdf-guidance:document-set"
+      ],
+      "requirement_type": "document_requirement",
+      "subject": "applicant",
+      "action": "prepare",
+      "object": "drawing plans in one PDF with separate application and supporting documents",
+      "conditions": [
+        "candidate text is fixture-only and requires reviewer confirmation"
+      ],
+      "permit_types": [
+        "building"
+      ],
+      "process_stage": "document preparation",
+      "confidence": "candidate_only",
+      "human_review_status": "needs_review",
+      "formalization_status": "formalization_placeholder"
+    },
+    {
+      "requirement_id": "REQ-SINGLE-PDF-ACTION-002",
+      "candidate_action": "add",
+      "work_packet_ref": "fixture://requirement-reextraction-work-packet-v8/valid_packet.json",
+      "source_evidence_ids": [
+        "evidence:single-pdf-guidance:upload-gate"
+      ],
+      "requirement_type": "action_gate",
+      "subject": "agent",
+      "action": "block",
+      "object": "upload, certification, and submission until user attendance and exact confirmation are present",
+      "conditions": [
+        "candidate text is fixture-only and requires reviewer confirmation"
+      ],
+      "permit_types": [
+        "building"
+      ],
+      "process_stage": "upload staging",
+      "confidence": "candidate_only",
+      "human_review_status": "needs_review",
+      "formalization_status": "formalization_placeholder"
+    },
+    {
+      "requirement_id": "REQ-SINGLE-PDF-DEADLINE-003",
+      "candidate_action": "add",
+      "work_packet_ref": "fixture://requirement-reextraction-work-packet-v8/valid_packet.json",
+      "source_evidence_ids": [
+        "evidence:single-pdf-guidance:revision-window"
+      ],
+      "requirement_type": "deadline",
+      "subject": "applicant",
+      "action": "review",
+      "object": "source-stated timing before relying on any deadline candidate",
+      "conditions": [
+        "candidate text is fixture-only and requires reviewer confirmation"
+      ],
+      "permit_types": [
+        "building"
+      ],
+      "process_stage": "plan review",
+      "confidence": "candidate_only",
+      "human_review_status": "needs_review",
+      "formalization_status": "formalization_placeholder"
+    },
+    {
+      "requirement_id": "REQ-RETIRED-HANDOUT-004",
+      "candidate_action": "deprecate",
+      "work_packet_ref": "fixture://requirement-reextraction-work-packet-v8/valid_packet.json",
+      "source_evidence_ids": [
+        "evidence:retired-handout:prior-rule"
+      ],
+      "superseded_requirement_refs": [
+        "REQ-OLD-SINGLE-PDF-004"
+      ],
+      "requirement_type": "document_requirement",
+      "subject": "reviewer",
+      "action": "deprecate",
+      "object": "retired prior document-preparation wording",
+      "conditions": [
+        "candidate text is fixture-only and requires reviewer confirmation"
+      ],
+      "permit_types": [
+        "building"
+      ],
+      "process_stage": "document preparation",
+      "confidence": "candidate_only",
+      "human_review_status": "needs_review",
+      "formalization_status": "formalization_placeholder"
+    }
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "-m",
+      "py_compile",
+      "ppd/extraction/requirement_node_candidate_set_v8.py"
+    ],
+    [
+      "python3",
+      "-m",
+      "pytest",
+      "ppd/tests/test_requirement_node_candidate_set_v8.py"
+    ]
+  ],
+  "offline_only": true,
+  "live_access_performed": false,
+  "active_mutation_flags": "inactive"
+}

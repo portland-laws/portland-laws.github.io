@@ -1,0 +1,33 @@
+{
+  "scenario": "tranche4_item2_blocked_cascade_daemon_repair",
+  "blocked_work": {
+    "id": "checkbox-259-dependent-ppd-work",
+    "state": "blocked",
+    "blocked_by": "daemon-repair-tranche4-item2",
+    "created_at": "2026-05-08T00:00:00Z"
+  },
+  "repair_attempts": [
+    {
+      "id": "daemon-repair-tranche4-item2-old",
+      "kind": "daemon_repair",
+      "created_at": "2026-05-07T23:59:00Z",
+      "validated_at": "2026-05-07T23:59:30Z",
+      "validates": true
+    },
+    {
+      "id": "daemon-repair-tranche4-item2-fresh-unvalidated",
+      "kind": "daemon_repair",
+      "created_at": "2026-05-08T00:05:00Z",
+      "validated_at": null,
+      "validates": false
+    },
+    {
+      "id": "daemon-repair-tranche4-item2-fresh-validated",
+      "kind": "daemon_repair",
+      "created_at": "2026-05-08T00:10:00Z",
+      "validated_at": "2026-05-08T00:10:30Z",
+      "validates": true
+    }
+  ],
+  "fresh_after": "2026-05-08T00:00:00Z"
+}

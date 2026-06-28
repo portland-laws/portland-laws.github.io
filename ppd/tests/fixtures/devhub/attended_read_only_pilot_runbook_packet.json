@@ -1,0 +1,194 @@
+{
+  "packet_id": "devhub-attended-read-only-pilot-runbook-v1",
+  "packet_type": "devhub_attended_read_only_pilot_runbook",
+  "mode": "fixture_first_attended_read_only_pilot_runbook",
+  "fixture_first": true,
+  "read_only_only": true,
+  "manual_attendance_required": true,
+  "launches_browser": false,
+  "launches_playwright": false,
+  "stores_private_session_state": false,
+  "stores_browser_artifacts": false,
+  "stores_auth_state": false,
+  "stores_screenshots": false,
+  "stores_traces": false,
+  "stores_har_files": false,
+  "stores_raw_authenticated_values": false,
+  "source_packets": {
+    "devhub_read_only_pilot_operator_checklist": {
+      "packet_id": "devhub-read-only-pilot-operator-checklist-v1",
+      "consumed": true
+    },
+    "devhub_read_only_observation_packet": {
+      "packet_id": "devhub-read-only-observation-valid-001",
+      "consumed": true
+    },
+    "devhub_read_only_surface_drift_comparison_packet": {
+      "packet_id": "devhub-read-only-surface-drift-comparison-synthetic-v1",
+      "consumed": true
+    }
+  },
+  "synthetic_attended_pilot_steps": [
+    {
+      "step_id": "fixture_input_crosscheck",
+      "manual_action": "Confirm the operator checklist, read-only observation packet, and surface drift comparison packet identifiers before scheduling an attended pilot.",
+      "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001", "devhub-read-only-surface-drift-comparison-synthetic-v1"],
+      "operator_attendance_required": true,
+      "automated": false,
+      "browser_launch_allowed_by_runbook": false,
+      "playwright_allowed": false,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "allows_consequential_action": false
+    },
+    {
+      "step_id": "manual_login_boundary",
+      "manual_action": "Human operator opens DevHub in their own browser and handles sign-in, credentials, MFA, CAPTCHA, and security prompts manually.",
+      "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1"],
+      "operator_attendance_required": true,
+      "automated": false,
+      "browser_launch_allowed_by_runbook": false,
+      "playwright_allowed": false,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "allows_consequential_action": false
+    },
+    {
+      "step_id": "read_only_scope_boundary",
+      "manual_action": "Limit the pilot to read-only home, list, detail, status, heading, landmark, and disabled-control observation fields.",
+      "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001"],
+      "operator_attendance_required": true,
+      "automated": false,
+      "browser_launch_allowed_by_runbook": false,
+      "playwright_allowed": false,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "allows_consequential_action": false
+    },
+    {
+      "step_id": "redaction_preflight",
+      "manual_action": "Verify that only synthetic metadata fields will be written and that no browser, session, or raw authenticated artifact will be stored.",
+      "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001"],
+      "operator_attendance_required": true,
+      "automated": false,
+      "browser_launch_allowed_by_runbook": false,
+      "playwright_allowed": false,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "allows_consequential_action": false
+    },
+    {
+      "step_id": "page_observation_entry",
+      "manual_action": "Transcribe only allowed page-observation fields using redacted labels and synthetic status categories.",
+      "source_packet_ids": ["devhub-read-only-observation-valid-001"],
+      "operator_attendance_required": true,
+      "automated": false,
+      "browser_launch_allowed_by_runbook": false,
+      "playwright_allowed": false,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "allows_consequential_action": false
+    },
+    {
+      "step_id": "surface_drift_reviewer_checkpoint",
+      "manual_action": "Compare redacted route, heading, disabled-control, and selector-confidence notes against the drift comparison packet without mutating registry state.",
+      "source_packet_ids": ["devhub-read-only-surface-drift-comparison-synthetic-v1"],
+      "operator_attendance_required": true,
+      "automated": false,
+      "browser_launch_allowed_by_runbook": false,
+      "playwright_allowed": false,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "allows_consequential_action": false
+    },
+    {
+      "step_id": "abort_and_refusal_gate",
+      "manual_action": "Stop and write only a commit-safe refusal summary if any abort prompt appears.",
+      "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1"],
+      "operator_attendance_required": true,
+      "automated": false,
+      "browser_launch_allowed_by_runbook": false,
+      "playwright_allowed": false,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "allows_consequential_action": false
+    },
+    {
+      "step_id": "closeout_without_artifacts",
+      "manual_action": "Close the manual browser session without saving auth state, screenshots, traces, HAR files, downloads, raw DOM, or raw authenticated values.",
+      "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001", "devhub-read-only-surface-drift-comparison-synthetic-v1"],
+      "operator_attendance_required": true,
+      "automated": false,
+      "browser_launch_allowed_by_runbook": false,
+      "playwright_allowed": false,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "allows_consequential_action": false
+    }
+  ],
+  "manual_login_boundaries": [
+    {
+      "boundary_id": "portlandoregon_gov_login_manual_only",
+      "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1"],
+      "human_operator_required": true,
+      "agent_may_request_credentials": false,
+      "agent_may_store_credentials": false,
+      "agent_may_automate_mfa_or_captcha": false,
+      "account_creation_allowed": false,
+      "browser_state_storage_allowed": false,
+      "prompt": "The operator completes login and security prompts manually; the runbook records no credential, MFA, CAPTCHA, cookie, or auth state value."
+    }
+  ],
+  "page_observation_fields": [
+    {"field_id": "stable_surface_id", "source_packet_ids": ["devhub-read-only-observation-valid-001", "devhub-read-only-surface-drift-comparison-synthetic-v1"], "raw_value_allowed": false, "private_value_allowed": false, "review_required": true},
+    {"field_id": "page_heading", "source_packet_ids": ["devhub-read-only-observation-valid-001", "devhub-read-only-surface-drift-comparison-synthetic-v1"], "raw_value_allowed": false, "private_value_allowed": false, "review_required": true},
+    {"field_id": "route_pattern", "source_packet_ids": ["devhub-read-only-observation-valid-001", "devhub-read-only-surface-drift-comparison-synthetic-v1"], "raw_value_allowed": false, "private_value_allowed": false, "review_required": true},
+    {"field_id": "accessible_landmark_summary", "source_packet_ids": ["devhub-read-only-observation-valid-001", "devhub-read-only-surface-drift-comparison-synthetic-v1"], "raw_value_allowed": false, "private_value_allowed": false, "review_required": true},
+    {"field_id": "synthetic_record_status_label", "source_packet_ids": ["devhub-read-only-observation-valid-001", "devhub-read-only-surface-drift-comparison-synthetic-v1"], "raw_value_allowed": false, "private_value_allowed": false, "review_required": true},
+    {"field_id": "disabled_consequential_controls", "source_packet_ids": ["devhub-read-only-observation-valid-001", "devhub-read-only-surface-drift-comparison-synthetic-v1"], "raw_value_allowed": false, "private_value_allowed": false, "review_required": true},
+    {"field_id": "operator_decision_code", "source_packet_ids": ["devhub-read-only-observation-valid-001", "devhub-read-only-surface-drift-comparison-synthetic-v1"], "raw_value_allowed": false, "private_value_allowed": false, "review_required": true},
+    {"field_id": "redacted_timestamp", "source_packet_ids": ["devhub-read-only-observation-valid-001", "devhub-read-only-surface-drift-comparison-synthetic-v1"], "raw_value_allowed": false, "private_value_allowed": false, "review_required": true}
+  ],
+  "redaction_checks": [
+    {"check_id": "no_credentials", "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001"], "required": true, "passes_when": "The runbook stores only redacted synthetic metadata and omits the prohibited value or artifact."},
+    {"check_id": "no_credential_prompts", "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001"], "required": true, "passes_when": "The runbook stores only redacted synthetic metadata and omits the prohibited value or artifact."},
+    {"check_id": "no_cookies", "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001"], "required": true, "passes_when": "The runbook stores only redacted synthetic metadata and omits the prohibited value or artifact."},
+    {"check_id": "no_auth_state", "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001"], "required": true, "passes_when": "The runbook stores only redacted synthetic metadata and omits the prohibited value or artifact."},
+    {"check_id": "no_session_state", "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001"], "required": true, "passes_when": "The runbook stores only redacted synthetic metadata and omits the prohibited value or artifact."},
+    {"check_id": "no_screenshots", "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001"], "required": true, "passes_when": "The runbook stores only redacted synthetic metadata and omits the prohibited value or artifact."},
+    {"check_id": "no_traces", "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001"], "required": true, "passes_when": "The runbook stores only redacted synthetic metadata and omits the prohibited value or artifact."},
+    {"check_id": "no_har_files", "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001"], "required": true, "passes_when": "The runbook stores only redacted synthetic metadata and omits the prohibited value or artifact."},
+    {"check_id": "no_downloads", "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001"], "required": true, "passes_when": "The runbook stores only redacted synthetic metadata and omits the prohibited value or artifact."},
+    {"check_id": "no_raw_dom", "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001"], "required": true, "passes_when": "The runbook stores only redacted synthetic metadata and omits the prohibited value or artifact."},
+    {"check_id": "no_raw_authenticated_text", "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001"], "required": true, "passes_when": "The runbook stores only redacted synthetic metadata and omits the prohibited value or artifact."},
+    {"check_id": "no_private_field_values", "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001"], "required": true, "passes_when": "The runbook stores only redacted synthetic metadata and omits the prohibited value or artifact."},
+    {"check_id": "no_local_private_paths", "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001"], "required": true, "passes_when": "The runbook stores only redacted synthetic metadata and omits the prohibited value or artifact."},
+    {"check_id": "no_payment_details", "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001"], "required": true, "passes_when": "The runbook stores only redacted synthetic metadata and omits the prohibited value or artifact."}
+  ],
+  "reviewer_checkpoints": [
+    {"checkpoint_id": "manual_login_boundary_review", "reviewer_role": "ppd-devhub-read-only-reviewer", "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1"], "required_before_pilot_closeout": true, "approval_can_enable_official_action": false},
+    {"checkpoint_id": "redaction_review", "reviewer_role": "ppd-devhub-read-only-reviewer", "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001"], "required_before_pilot_closeout": true, "approval_can_enable_official_action": false},
+    {"checkpoint_id": "page_observation_review", "reviewer_role": "ppd-devhub-read-only-reviewer", "source_packet_ids": ["devhub-read-only-observation-valid-001"], "required_before_pilot_closeout": true, "approval_can_enable_official_action": false},
+    {"checkpoint_id": "surface_drift_review", "reviewer_role": "ppd-devhub-read-only-reviewer", "source_packet_ids": ["devhub-read-only-surface-drift-comparison-synthetic-v1"], "required_before_pilot_closeout": true, "approval_can_enable_official_action": false},
+    {"checkpoint_id": "selector_confidence_review", "reviewer_role": "ppd-devhub-read-only-reviewer", "source_packet_ids": ["devhub-read-only-surface-drift-comparison-synthetic-v1"], "required_before_pilot_closeout": true, "approval_can_enable_official_action": false},
+    {"checkpoint_id": "consequential_control_review", "reviewer_role": "ppd-devhub-read-only-reviewer", "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001", "devhub-read-only-surface-drift-comparison-synthetic-v1"], "required_before_pilot_closeout": true, "approval_can_enable_official_action": false},
+    {"checkpoint_id": "closeout_review", "reviewer_role": "ppd-devhub-read-only-reviewer", "source_packet_ids": ["devhub-read-only-pilot-operator-checklist-v1", "devhub-read-only-observation-valid-001", "devhub-read-only-surface-drift-comparison-synthetic-v1"], "required_before_pilot_closeout": true, "approval_can_enable_official_action": false}
+  ],
+  "abort_prompts": [
+    "Abort if a credential, MFA, CAPTCHA, password recovery, or account creation prompt would require automation or recording rather than manual operator handling.",
+    "Abort if any payment, upload, submit, certify, schedule, cancel, withdraw, extension, reactivation, or account security control is in scope.",
+    "Abort if raw authenticated text, raw DOM, private field values, local private paths, downloads, auth state, cookies, screenshot, trace, HAR, or any browser artifact would be stored.",
+    "Abort on timeout, unexpected private account data, or any request to treat the fixture-first runbook as live browser execution.",
+    "Record only a commit-safe refusal reason citing the operator checklist packet devhub-read-only-pilot-operator-checklist-v1."
+  ],
+  "closeout_attestations": {
+    "official_state_changed": false,
+    "browser_artifacts_created_for_storage": false,
+    "auth_state_saved": false,
+    "screenshots_saved": false,
+    "traces_saved": false,
+    "har_files_saved": false,
+    "raw_authenticated_values_saved": false,
+    "next_actions_limited_to": ["read_only_review", "local_preview", "manual_reviewer_decision"]
+  }
+}

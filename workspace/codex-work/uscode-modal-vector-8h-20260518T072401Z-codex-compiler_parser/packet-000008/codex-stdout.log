@@ -1,0 +1,18 @@
+Implemented a deterministic parser robustness fix for U.S. Code transferred headings with spaced section markers, plus golden regressions for the three claimed sample IDs.
+
+**Changes**
+- Updated citation-section normalization and heading matching in [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000008-20260518_072450/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:335):
+  - Strips trailing punctuation from citation section tokens (e.g. `2169.` -> `2169`).
+  - Adds regex-based section-reference detection for `§\s*<section>` and `section <section>`.
+  - Uses those helpers in transferred/editorial heading checks so forms like `§ 2169 Transferred.` are recognized.
+- Added parser golden regression fixture for:
+  - `us-code-48-2169.-816da61b9d4f3363`
+  - `us-code-3-21-4ce508fff75e0824`
+  - `us-code-16-469i-bc1e2d2974a2257d`
+  in [test_legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000008-20260518_072450/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py:141).
+- Added compiler-level regression for the same three cases in [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000008-20260518_072450/tests/unit_tests/logic/modal/test_modal_codec.py:183).
+
+**Validation**
+- `pytest` targeted runs are currently blocked in this environment by an existing setup issue:
+  - `NameError: name '__path__' is not defined` from top-level `__init__.py:11` during test setup.
+- Ran direct `python3` verification for parser + compiler on the three new cases; all now produce one fallback frame formula with `fallback_rule = uscode_transferred_heading_v1`, and compiler no longer emits `missing_modal_formula` for them.

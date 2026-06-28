@@ -1,0 +1,36 @@
+{
+  "packet_kind": "post_release_audit_seed_packet",
+  "packet_id": "synthetic-unsafe-post-release-audit-seed",
+  "status": "production-ready",
+  "production_ready": true,
+  "prerequisite_links": [
+    {
+      "source_id": "ppd-online-tools",
+      "relation": "missing citation URL should block"
+    }
+  ],
+  "audit_claims": [
+    {
+      "claim": "The permit will be issued after this packet is accepted.",
+      "source_evidence_ids": []
+    }
+  ],
+  "capabilities": [
+    {"name": "payment", "enabled": true},
+    {"name": "upload", "enabled": true},
+    {"name": "submission", "enabled": true},
+    {"name": "scheduling", "enabled": true},
+    {"name": "cancellation", "enabled": true},
+    {"name": "certification", "enabled": true}
+  ],
+  "output_refs": [
+    "ppd/crawler/raw_bodies/devhub-page.html",
+    "ppd/crawler/downloads/fee-guide.pdf",
+    "ppd/archive/captures/public-page.warc.gz",
+    "ppd/devhub/auth_state/session-storage-state.json"
+  ],
+  "blockers": ["uncited audit claim remains unresolved"],
+  "live_network_performed": true,
+  "devhub_execution_performed": true,
+  "notes": "Live network fetch performed and executed in DevHub."
+}

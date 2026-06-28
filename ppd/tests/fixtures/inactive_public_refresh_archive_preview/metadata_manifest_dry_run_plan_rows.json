@@ -1,0 +1,39 @@
+[
+  {
+    "source_id": "ppd-bds-permits",
+    "archive_key": "synthetic/ppd-bds-permits/2026-06-01.json",
+    "current_canonical_url": "https://www.portland.gov/ppd/old-permits",
+    "candidate_url": "https://www.portland.gov/ppd/permits",
+    "expected_canonical_url": "https://www.portland.gov/ppd/permits",
+    "redirect_chain_placeholder": [
+      "offline:not-requested"
+    ],
+    "http_status_placeholder": "not_requested_offline",
+    "content_type_expectation": "text/html"
+  },
+  {
+    "source_id": "ppd-notice-archive",
+    "archive_key": "synthetic/ppd-notice-archive/2026-06-01.json",
+    "current_canonical_url": "https://www.portland.gov/ppd/notices",
+    "candidate_url": "https://www.portland.gov/ppd/notices",
+    "expected_canonical_url": "https://www.portland.gov/ppd/notices",
+    "redirect_chain_placeholder": [
+      "offline:not-requested"
+    ],
+    "http_status_placeholder": "not_requested_offline",
+    "content_type_expectation": "application/json"
+  },
+  {
+    "source_id": "ppd-retired-feed",
+    "archive_key": "synthetic/ppd-retired-feed/2026-06-01.json",
+    "current_canonical_url": "https://www.portland.gov/ppd/retired-feed",
+    "candidate_url": "https://www.portland.gov/ppd/retired-feed",
+    "expected_canonical_url": "https://www.portland.gov/ppd/retired-feed",
+    "redirect_chain_placeholder": [
+      "offline:not-requested"
+    ],
+    "http_status_placeholder": "not_requested_offline",
+    "content_type_expectation": "application/rss+xml",
+    "skipped_reason": "manifest_marked_retired"
+  }
+]

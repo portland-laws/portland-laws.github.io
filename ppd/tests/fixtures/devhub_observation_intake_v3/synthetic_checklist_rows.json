@@ -1,0 +1,44 @@
+[
+  {
+    "checklist_id": "synthetic-devhub-readonly-intake-001",
+    "synthetic": true,
+    "attended_authorization": true,
+    "page_title_hint": "permits workspace overview title",
+    "visible_heading_hint": "permits workspace visible heading",
+    "url_pattern_hint": "/devhub/permits/{redacted-workspace-id}",
+    "accessible_landmark_hints": [
+      "main work area",
+      "navigation region",
+      "status region"
+    ],
+    "read_only_action_label_hints": [
+      "view details",
+      "download blank instructions label",
+      "print summary label"
+    ],
+    "validation_message_hints": [
+      "required field message placeholder",
+      "format guidance message placeholder"
+    ],
+    "upload_control_label_hints": [
+      "plans attachment control label",
+      "supporting document control label"
+    ],
+    "state_transition_hints": [
+      "draft to ready for review placeholder",
+      "ready for review to corrections requested placeholder"
+    ],
+    "selector_confidence_note_hints": [
+      "prefer accessible role and name over visual position",
+      "record low confidence when label requires reviewer confirmation"
+    ],
+    "source_evidence_hints": [
+      "synthetic attended checklist row only",
+      "no live DevHub page opened"
+    ],
+    "reviewer_hold_hints": [
+      "hold for official terminology review",
+      "hold before any authenticated automation"
+    ]
+  }
+]

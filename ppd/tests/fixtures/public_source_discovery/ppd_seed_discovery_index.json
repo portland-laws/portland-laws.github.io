@@ -1,0 +1,161 @@
+{
+  "metadata": {
+    "name": "PP&D official seed public source discovery index",
+    "fixture_only": true,
+    "no_live_crawl": true,
+    "no_raw_page_bodies": true,
+    "verified_source_anchor_date": "2026-05-08",
+    "allowed_hosts": [
+      "devhub.portlandoregon.gov",
+      "www.portland.gov",
+      "www.portlandmaps.com",
+      "www.portlandoregon.gov"
+    ],
+    "skip_reason_codes": [
+      "disallowed_by_robots_or_policy",
+      "outside_allowlist",
+      "private_authenticated",
+      "raw_download_not_permitted",
+      "too_large",
+      "unsupported_content_type",
+      "unsupported_scheme"
+    ]
+  },
+  "records": [
+    {
+      "discovery_id": "ppd-seed-001",
+      "canonical_url": "https://www.portland.gov/ppd",
+      "source_page_url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md",
+      "link_text": "PP&D bureau landing page",
+      "content_type_hint": "public_html",
+      "decision": "allow",
+      "skip_reason_code": null
+    },
+    {
+      "discovery_id": "ppd-seed-002",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "source_page_url": "https://www.portland.gov/ppd",
+      "link_text": "Online permitting tools overview",
+      "content_type_hint": "public_html",
+      "decision": "allow",
+      "skip_reason_code": null
+    },
+    {
+      "discovery_id": "ppd-seed-003",
+      "canonical_url": "https://devhub.portlandoregon.gov",
+      "source_page_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "link_text": "DevHub public portal",
+      "content_type_hint": "devhub_public",
+      "decision": "allow",
+      "skip_reason_code": null
+    },
+    {
+      "discovery_id": "ppd-seed-004",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "source_page_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "link_text": "DevHub FAQ",
+      "content_type_hint": "public_html",
+      "decision": "allow",
+      "skip_reason_code": null
+    },
+    {
+      "discovery_id": "ppd-seed-005",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-sign-guide",
+      "source_page_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "link_text": "DevHub account and sign-in guide",
+      "content_type_hint": "public_html",
+      "decision": "allow",
+      "skip_reason_code": null
+    },
+    {
+      "discovery_id": "ppd-seed-006",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "source_page_url": "https://www.portland.gov/ppd",
+      "link_text": "Apply for permits",
+      "content_type_hint": "public_html",
+      "decision": "allow",
+      "skip_reason_code": null
+    },
+    {
+      "discovery_id": "ppd-seed-007",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "source_page_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "link_text": "DevHub permit application guide",
+      "content_type_hint": "public_html",
+      "decision": "allow",
+      "skip_reason_code": null
+    },
+    {
+      "discovery_id": "ppd-seed-008",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "source_page_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "link_text": "Submit Plans Online / Single PDF Process",
+      "content_type_hint": "public_html",
+      "decision": "allow",
+      "skip_reason_code": null
+    },
+    {
+      "discovery_id": "ppd-seed-009",
+      "canonical_url": "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications",
+      "source_page_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "link_text": "Permit applications and forms index",
+      "content_type_hint": "public_form",
+      "decision": "allow",
+      "skip_reason_code": null
+    },
+    {
+      "discovery_id": "ppd-seed-010",
+      "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+      "source_page_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "link_text": "File naming standards and PDF preparation",
+      "content_type_hint": "public_html",
+      "decision": "allow",
+      "skip_reason_code": null
+    },
+    {
+      "discovery_id": "ppd-seed-011",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "source_page_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "link_text": "Fee payment guide",
+      "content_type_hint": "public_pdf",
+      "decision": "skip",
+      "skip_reason_code": "raw_download_not_permitted"
+    },
+    {
+      "discovery_id": "ppd-seed-012",
+      "canonical_url": "https://www.portlandmaps.com",
+      "source_page_url": "https://www.portland.gov/ppd",
+      "link_text": "Portland Maps public references where linked from PP&D guidance",
+      "content_type_hint": "external_reference",
+      "decision": "allow",
+      "skip_reason_code": null
+    },
+    {
+      "discovery_id": "ppd-policy-skip-001",
+      "canonical_url": "https://www.portland.gov/user/login",
+      "source_page_url": "https://www.portland.gov/ppd/devhub-sign-guide",
+      "link_text": "PortlandOregon.gov sign-in flow",
+      "content_type_hint": "public_html",
+      "decision": "skip",
+      "skip_reason_code": "private_authenticated"
+    },
+    {
+      "discovery_id": "ppd-policy-skip-002",
+      "canonical_url": "https://example.com/permit-reference",
+      "source_page_url": "https://www.portland.gov/ppd",
+      "link_text": "Non-official external reference example",
+      "content_type_hint": "unknown",
+      "decision": "skip",
+      "skip_reason_code": "outside_allowlist"
+    },
+    {
+      "discovery_id": "ppd-policy-skip-003",
+      "canonical_url": "mailto:devhub@example.invalid",
+      "source_page_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "link_text": "Email contact example not suitable for crawl frontier",
+      "content_type_hint": "unknown",
+      "decision": "skip",
+      "skip_reason_code": "unsupported_scheme"
+    }
+  ]
+}

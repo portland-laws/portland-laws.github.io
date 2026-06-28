@@ -1,0 +1,64 @@
+{
+  "observation_id": "redacted-observation-devhub-readonly-001",
+  "pilot_id": "devhub-readonly-pilot-fixture-001",
+  "browser_launched": false,
+  "raw_authenticated_values_present": false,
+  "captured_artifacts": {
+    "auth_state": false,
+    "cookies": false,
+    "har_files": false,
+    "raw_authenticated_values": false,
+    "screenshots": false,
+    "session_storage": false,
+    "traces": false
+  },
+  "observed_surfaces": [
+    {
+      "surface_id": "devhub-home-readonly",
+      "page_heading": "DevHub Home",
+      "actions": [
+        {"action_id": "review-home-heading", "classification": "safe_read_only"},
+        {"action_id": "review-my-permits-link", "classification": "safe_read_only"}
+      ],
+      "fields": [
+        {"field_id": "account-display-name", "redaction_state": "redacted"},
+        {"field_id": "permit-count", "redaction_state": "synthetic"}
+      ],
+      "selector_evidence": [
+        {
+          "name": "home-heading",
+          "selectors": ["role=heading[name='DevHub Home']"],
+          "confidence": 0.92,
+          "rationale": "Accessible heading is present in the synthetic observation packet."
+        },
+        {
+          "name": "my-permits-link",
+          "selectors": ["role=link[name='My Permits & Requests']"],
+          "confidence": 0.84,
+          "rationale": "Read-only navigation link is visible without recording private values."
+        }
+      ]
+    },
+    {
+      "surface_id": "devhub-permit-detail-readonly",
+      "page_heading": "Permit Detail",
+      "actions": [
+        {"action_id": "review-permit-status-summary", "classification": "safe_read_only"},
+        {"action_id": "review-attachment-list", "classification": "safe_read_only"}
+      ],
+      "fields": [
+        {"field_id": "permit-number", "redaction_state": "redacted"},
+        {"field_id": "status-label", "redaction_state": "synthetic"},
+        {"field_id": "attachment-filename", "redaction_state": "redacted"}
+      ],
+      "selector_evidence": [
+        {
+          "name": "status-summary",
+          "selectors": ["data-testid=permit-status-summary", "role=region[name='Status']"],
+          "confidence": 0.68,
+          "rationale": "Synthetic packet saw a stable region but drift comparison still needs review."
+        }
+      ]
+    }
+  ]
+}

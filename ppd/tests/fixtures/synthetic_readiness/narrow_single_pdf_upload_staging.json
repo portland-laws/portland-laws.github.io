@@ -1,0 +1,432 @@
+{
+  "fixture_id": "synthetic-readiness-single-pdf-upload-staging-v1",
+  "fixture_version": 1,
+  "synthetic": true,
+  "workflow_name": "Single PDF permit application upload staging readiness",
+  "workflow_scope": "Offline readiness analysis for preparing application PDFs before any authenticated DevHub upload, certification, submission, or payment action.",
+  "prohibited_artifacts": [
+    "credentials",
+    "cookies",
+    "auth_state",
+    "screenshots",
+    "traces",
+    "har_files",
+    "private_uploads",
+    "raw_crawl_output",
+    "downloaded_documents",
+    "payment_details"
+  ],
+  "source_registry": [
+    {
+      "source_id": "src-ppd-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "source_type": "public_html",
+      "owning_surface": "portland.gov PP&D public guidance",
+      "allowlist_policy": "official_ppd_public_seed",
+      "robots_policy": "respect_robots_before_live_crawl",
+      "crawl_frequency": "weekly",
+      "processor_policy": "metadata_and_normalized_text_only",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-08T00:00:00Z",
+      "freshness_status": "synthetic_snapshot"
+    },
+    {
+      "source_id": "src-ppd-devhub-submit-application-guide",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "source_type": "public_html",
+      "owning_surface": "portland.gov DevHub public guide",
+      "allowlist_policy": "official_ppd_public_seed",
+      "robots_policy": "respect_robots_before_live_crawl",
+      "crawl_frequency": "daily_or_every_few_days",
+      "processor_policy": "metadata_and_normalized_text_only",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-08T00:00:00Z",
+      "freshness_status": "synthetic_snapshot"
+    }
+  ],
+  "archive_manifest": [
+    {
+      "manifest_id": "archive-submit-plans-online-synthetic-20260508",
+      "source_id": "src-ppd-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "requested_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "redirect_chain": [],
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "content_hash": "sha256:synthetic-submit-plans-online-v1",
+      "capture_started_at": "2026-05-08T00:00:00Z",
+      "capture_finished_at": "2026-05-08T00:00:01Z",
+      "processor_name": "synthetic-fixture",
+      "processor_version": "1",
+      "archive_artifact_ref": "metadata-only:synthetic-readiness-single-pdf-upload-staging-v1",
+      "normalized_document_id": "doc-submit-plans-online-synthetic",
+      "skipped_reason": null,
+      "no_raw_body_persisted": true
+    },
+    {
+      "manifest_id": "archive-devhub-submit-application-guide-synthetic-20260508",
+      "source_id": "src-ppd-devhub-submit-application-guide",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "requested_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "redirect_chain": [],
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "content_hash": "sha256:synthetic-devhub-submit-application-guide-v1",
+      "capture_started_at": "2026-05-08T00:00:02Z",
+      "capture_finished_at": "2026-05-08T00:00:03Z",
+      "processor_name": "synthetic-fixture",
+      "processor_version": "1",
+      "archive_artifact_ref": "metadata-only:synthetic-readiness-single-pdf-upload-staging-v1",
+      "normalized_document_id": "doc-devhub-submit-application-guide-synthetic",
+      "skipped_reason": null,
+      "no_raw_body_persisted": true
+    }
+  ],
+  "document_records": [
+    {
+      "document_id": "doc-submit-plans-online-synthetic",
+      "source_id": "src-ppd-submit-plans-online",
+      "title": "Submit Plans Online / Single PDF Process",
+      "document_type": "public_guidance",
+      "language": "en",
+      "sections": [
+        {
+          "section_id": "sec-single-pdf-rule",
+          "heading": "Single PDF process",
+          "synthetic_text": "Drawing plans are prepared together in one PDF. Applications, calculations, and other supporting documents are uploaded as separate PDFs.",
+          "citation_span_id": "cite-single-pdf-rule"
+        }
+      ],
+      "tables": [],
+      "links": [],
+      "pdf_pages": [],
+      "form_fields": [],
+      "citation_spans": [
+        {
+          "citation_span_id": "cite-single-pdf-rule",
+          "source_id": "src-ppd-submit-plans-online",
+          "manifest_id": "archive-submit-plans-online-synthetic-20260508",
+          "locator": "synthetic section: Single PDF process"
+        }
+      ],
+      "content_hash": "sha256:synthetic-normalized-submit-plans-online-v1",
+      "extraction_confidence": 0.98
+    },
+    {
+      "document_id": "doc-devhub-submit-application-guide-synthetic",
+      "source_id": "src-ppd-devhub-submit-application-guide",
+      "title": "DevHub Permit Application Guide",
+      "document_type": "public_guidance",
+      "language": "en",
+      "sections": [
+        {
+          "section_id": "sec-devhub-authenticated-application",
+          "heading": "Submit a permit application in DevHub",
+          "synthetic_text": "Permit request workflows can include dynamic questions, required uploads, acknowledgement or certification review, save-for-later behavior, and post-submission status tracking.",
+          "citation_span_id": "cite-devhub-authenticated-application"
+        }
+      ],
+      "tables": [],
+      "links": [],
+      "pdf_pages": [],
+      "form_fields": [],
+      "citation_spans": [
+        {
+          "citation_span_id": "cite-devhub-authenticated-application",
+          "source_id": "src-ppd-devhub-submit-application-guide",
+          "manifest_id": "archive-devhub-submit-application-guide-synthetic-20260508",
+          "locator": "synthetic section: Submit a permit application in DevHub"
+        }
+      ],
+      "content_hash": "sha256:synthetic-normalized-devhub-guide-v1",
+      "extraction_confidence": 0.96
+    }
+  ],
+  "extracted_requirements": [
+    {
+      "requirement_id": "req-single-pdf-drawings",
+      "source_evidence_ids": ["cite-single-pdf-rule"],
+      "requirement_type": "document_requirement",
+      "subject": "permit applicant",
+      "action": "prepare",
+      "object": "drawing plans together in one PDF",
+      "conditions": ["permit request includes drawing plans"],
+      "deadline_or_temporal_scope": "before upload staging or application submission",
+      "permit_types": ["building permit request requiring plan review"],
+      "process_stage": "document preparation",
+      "confidence": 0.98,
+      "human_review_status": "synthetic_seed_reviewed",
+      "formalization_status": "formalized"
+    },
+    {
+      "requirement_id": "req-separate-supporting-pdfs",
+      "source_evidence_ids": ["cite-single-pdf-rule"],
+      "requirement_type": "document_requirement",
+      "subject": "permit applicant",
+      "action": "prepare",
+      "object": "applications, calculations, and supporting documents as separate PDFs",
+      "conditions": ["supporting documents are required for the selected permit path"],
+      "deadline_or_temporal_scope": "before upload staging or application submission",
+      "permit_types": ["building permit request requiring plan review"],
+      "process_stage": "document preparation",
+      "confidence": 0.97,
+      "human_review_status": "synthetic_seed_reviewed",
+      "formalization_status": "formalized"
+    },
+    {
+      "requirement_id": "req-upload-submit-certification-gate",
+      "source_evidence_ids": ["cite-devhub-authenticated-application"],
+      "requirement_type": "action_gate",
+      "subject": "agent",
+      "action": "stop before",
+      "object": "official upload, acknowledgement, certification, or submission in DevHub",
+      "conditions": ["workflow is authenticated", "action changes or may change an official permit record"],
+      "deadline_or_temporal_scope": "always",
+      "permit_types": ["building permit request requiring plan review"],
+      "process_stage": "upload staging",
+      "confidence": 0.96,
+      "human_review_status": "synthetic_seed_reviewed",
+      "formalization_status": "formalized"
+    }
+  ],
+  "process_model": {
+    "process_id": "process-building-plan-review-single-pdf-readiness",
+    "permit_type": "building permit request requiring plan review",
+    "scope": "Offline readiness check for single-PDF drawing plan preparation and supporting PDF separation before any DevHub authenticated upload or submission.",
+    "eligibility_rules": [
+      {
+        "rule_id": "eligibility-public-guidance-only",
+        "description": "The readiness check uses public guidance and user-provided document inventory only.",
+        "source_requirement_ids": ["req-single-pdf-drawings", "req-separate-supporting-pdfs"]
+      }
+    ],
+    "required_user_facts": [
+      {
+        "fact_id": "fact-permit-path",
+        "label": "The user's selected permit path requires plan review.",
+        "source_requirement_ids": ["req-single-pdf-drawings"]
+      },
+      {
+        "fact_id": "fact-drawings-combined",
+        "label": "All drawing sheets are combined into one PDF.",
+        "source_requirement_ids": ["req-single-pdf-drawings"]
+      },
+      {
+        "fact_id": "fact-supporting-documents-separated",
+        "label": "Application forms, calculations, and supporting documents are separate PDFs.",
+        "source_requirement_ids": ["req-separate-supporting-pdfs"]
+      }
+    ],
+    "required_documents": [
+      {
+        "document_requirement_id": "docreq-combined-plan-set",
+        "label": "Combined drawing plan set PDF",
+        "source_requirement_ids": ["req-single-pdf-drawings"]
+      },
+      {
+        "document_requirement_id": "docreq-supporting-pdfs",
+        "label": "Separate application, calculation, and supporting PDFs when applicable",
+        "source_requirement_ids": ["req-separate-supporting-pdfs"]
+      }
+    ],
+    "file_rules": [
+      {
+        "file_rule_id": "file-rule-drawings-one-pdf",
+        "description": "Drawing plans are represented as one PDF for readiness analysis.",
+        "source_requirement_ids": ["req-single-pdf-drawings"]
+      },
+      {
+        "file_rule_id": "file-rule-supporting-separate-pdfs",
+        "description": "Supporting materials are represented as separate PDFs for readiness analysis.",
+        "source_requirement_ids": ["req-separate-supporting-pdfs"]
+      }
+    ],
+    "fees": [],
+    "stages": [
+      "pre-application research",
+      "document preparation",
+      "application data entry",
+      "upload staging",
+      "acknowledgement/certification review",
+      "submission"
+    ],
+    "deadlines": [],
+    "exceptions": [],
+    "unsupported_paths": [
+      "email-only permit paths",
+      "unclear permit types that public guidance does not confirm are supported by DevHub"
+    ],
+    "devhub_surface_refs": ["devhub-permit-application-authenticated-synthetic"],
+    "guardrail_bundle_id": "guardrails-single-pdf-upload-staging-v1"
+  },
+  "devhub_surface_map": [
+    {
+      "surface_id": "devhub-permit-application-authenticated-synthetic",
+      "auth_scope": "authenticated_user_owned_session",
+      "url_pattern": "https://devhub.portlandoregon.gov/*",
+      "page_heading": "Permit application workflow",
+      "accessible_landmarks": ["main", "form", "navigation"],
+      "actions": [
+        {
+          "action_id": "action-review-upload-requirements",
+          "label": "Review upload requirements",
+          "classification": "safe_read_only"
+        },
+        {
+          "action_id": "action-stage-local-upload-plan",
+          "label": "Prepare local upload staging checklist",
+          "classification": "reversible_draft"
+        },
+        {
+          "action_id": "action-official-upload",
+          "label": "Upload document to official DevHub record",
+          "classification": "consequential_official"
+        },
+        {
+          "action_id": "action-certify-and-submit",
+          "label": "Certify acknowledgement and submit application",
+          "classification": "consequential_official"
+        }
+      ],
+      "fields": [],
+      "validation_messages": [],
+      "upload_controls": ["synthetic-upload-control-placeholder"],
+      "state_transitions": ["draft", "upload_staged", "submitted"],
+      "redaction_policy": "do_not_commit_private_values_or_browser_artifacts",
+      "selector_confidence": "synthetic_not_for_browser_execution",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true
+    }
+  ],
+  "user_gap_analysis": {
+    "case_id": "case-synthetic-single-pdf-readiness",
+    "process_id": "process-building-plan-review-single-pdf-readiness",
+    "guardrail_bundle_id": "guardrails-single-pdf-upload-staging-v1",
+    "known_facts": [
+      {
+        "fact_id": "fact-permit-path",
+        "value": "building permit request requiring plan review",
+        "evidence": "synthetic user scenario"
+      }
+    ],
+    "matched_documents": [
+      {
+        "document_requirement_id": "docreq-combined-plan-set",
+        "status": "missing",
+        "matched_document_ref": null
+      },
+      {
+        "document_requirement_id": "docreq-supporting-pdfs",
+        "status": "unknown",
+        "matched_document_ref": null
+      }
+    ],
+    "missing_facts": ["fact-drawings-combined", "fact-supporting-documents-separated"],
+    "missing_documents": ["docreq-combined-plan-set", "docreq-supporting-pdfs"],
+    "stale_evidence": [],
+    "conflicting_evidence": [],
+    "required_confirmations": [
+      {
+        "confirmation_id": "confirm-before-official-upload",
+        "label": "User must attend and explicitly confirm any official upload action.",
+        "source_requirement_ids": ["req-upload-submit-certification-gate"]
+      },
+      {
+        "confirmation_id": "confirm-before-certification-submit",
+        "label": "User must attend and explicitly confirm any acknowledgement, certification, or submission action.",
+        "source_requirement_ids": ["req-upload-submit-certification-gate"]
+      }
+    ],
+    "blocked_actions": [
+      {
+        "action_id": "action-official-upload",
+        "reason": "Official upload may alter an authenticated permit record and requires attended exact confirmation."
+      },
+      {
+        "action_id": "action-certify-and-submit",
+        "reason": "Certification and submission are consequential official actions."
+      }
+    ],
+    "next_safe_actions": [
+      {
+        "next_safe_action_id": "next-ask-for-document-inventory",
+        "action_type": "ask_user_for_missing_information",
+        "classification": "safe_read_only",
+        "prompt": "Ask whether the drawing sheets have been combined into one PDF and whether applications, calculations, and supporting documents are available as separate PDFs.",
+        "depends_on_missing_facts": ["fact-drawings-combined", "fact-supporting-documents-separated"],
+        "blocked_action_ids": ["action-official-upload", "action-certify-and-submit"],
+        "guardrail_predicate_ids": ["predicate-only-public-synthetic-inputs", "predicate-stop-before-official-upload-or-submit"]
+      }
+    ]
+  },
+  "guardrail_bundle": {
+    "guardrail_bundle_id": "guardrails-single-pdf-upload-staging-v1",
+    "process_id": "process-building-plan-review-single-pdf-readiness",
+    "source_evidence_ids": ["cite-single-pdf-rule", "cite-devhub-authenticated-application"],
+    "deterministic_predicates": [
+      {
+        "predicate_id": "predicate-only-public-synthetic-inputs",
+        "description": "Readiness analysis must use this committed synthetic fixture plus user-provided non-secret document inventory only."
+      },
+      {
+        "predicate_id": "predicate-required-documents-known-before-ready",
+        "description": "The case is not ready for upload staging until combined drawings and separate supporting PDFs are confirmed or marked not applicable."
+      }
+    ],
+    "deontic_rules": [
+      {
+        "rule_id": "rule-agent-must-ask-missing-file-facts",
+        "modality": "obligation",
+        "description": "The agent must ask for missing document inventory facts before declaring upload readiness."
+      },
+      {
+        "rule_id": "rule-agent-must-not-submit",
+        "modality": "prohibition",
+        "description": "The agent must not certify, submit, upload to the official record, schedule, cancel, or pay from this fixture."
+      }
+    ],
+    "temporal_rules": [
+      {
+        "rule_id": "temporal-document-readiness-before-upload",
+        "description": "Document preparation and gap analysis precede upload staging, acknowledgement review, and submission."
+      }
+    ],
+    "reversible_action_predicates": [
+      {
+        "predicate_id": "predicate-local-checklist-only",
+        "description": "Creating or updating a local readiness checklist is reversible when it contains no credentials, payment data, or private file paths."
+      }
+    ],
+    "exact_confirmation_predicates": [
+      {
+        "predicate_id": "predicate-stop-before-official-upload-or-submit",
+        "description": "Official upload, acknowledgement, certification, and submission require user attendance and action-specific confirmation."
+      }
+    ],
+    "refused_action_predicates": [
+      {
+        "predicate_id": "predicate-refuse-live-auth-or-crawl-from-fixture",
+        "description": "This fixture cannot trigger live crawling, authenticated automation, CAPTCHA, MFA, account creation, payment, upload, certification, or submission."
+      }
+    ],
+    "explanation_templates": [
+      {
+        "template_id": "explain-missing-single-pdf-readiness",
+        "text": "I can check readiness from the public guidance chain, but I need confirmation that drawings are one PDF and supporting materials are separate PDFs before any upload staging."
+      },
+      {
+        "template_id": "explain-official-action-blocked",
+        "text": "I cannot take official upload, certification, or submission actions from this offline fixture; those require attended exact confirmation in the user's session."
+      }
+    ],
+    "validation_status": "synthetic_fixture_validated_by_unit_test"
+  },
+  "next_safe_action_output": {
+    "case_id": "case-synthetic-single-pdf-readiness",
+    "selected_next_safe_action_id": "next-ask-for-document-inventory",
+    "classification": "safe_read_only",
+    "message": "Ask the user to confirm whether all drawing sheets are combined into one PDF and whether application forms, calculations, and supporting documents are separate PDFs. Do not open DevHub, upload files, certify, submit, or pay.",
+    "source_evidence_ids": ["cite-single-pdf-rule", "cite-devhub-authenticated-application"],
+    "blocked_action_ids": ["action-official-upload", "action-certify-and-submit"]
+  }
+}

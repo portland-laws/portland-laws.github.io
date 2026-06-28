@@ -1,0 +1,49 @@
+{
+  "packet_id": "triage-public-source-change-impact-2026-05-29-fixture",
+  "packet_type": "public_source_change_impact_triage",
+  "generated_at": "2026-05-29T00:00:00+00:00",
+  "source_change_impacts": [
+    {
+      "source_id": "ppd-devhub-faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "freshness_status": "current",
+      "change_state": "unchanged",
+      "content_hash": "sha256:fixture-current-devhub-faq",
+      "observed_at": "2026-05-29T00:00:00+00:00",
+      "affected_requirement_ids": ["req-devhub-account-services"],
+      "affected_guardrail_bundle_ids": ["guardrail-bundle-devhub-readonly"]
+    },
+    {
+      "source_id": "ppd-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "freshness_status": "stale",
+      "change_state": "changed",
+      "content_hash": "sha256:fixture-stale-submit-plans-online",
+      "observed_at": "2026-05-29T00:00:00+00:00",
+      "affected_requirement_ids": ["req-single-pdf-separate-documents"],
+      "affected_guardrail_bundle_ids": ["guardrail-bundle-upload-staging"]
+    },
+    {
+      "source_id": "ppd-file-naming-standards",
+      "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+      "freshness_status": "needs-review",
+      "change_state": "changed",
+      "review_reason": "conflicting changed section labels in fixture packet",
+      "content_hash": "sha256:fixture-review-file-naming",
+      "observed_at": "2026-05-29T00:00:00+00:00",
+      "affected_requirement_ids": ["req-file-name-format"],
+      "affected_guardrail_bundle_ids": ["guardrail-bundle-document-prep"]
+    },
+    {
+      "source_id": "ppd-fee-payment-guide",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "freshness_status": "deferred",
+      "change_state": "deferred",
+      "deferred_reason": "fixture represents manual financial-workflow review deferral",
+      "content_hash": "sha256:fixture-deferred-fee-payment",
+      "observed_at": "2026-05-29T00:00:00+00:00",
+      "affected_requirement_ids": ["req-payment-final-submit-gate"],
+      "affected_guardrail_bundle_ids": ["guardrail-bundle-payment"]
+    }
+  ]
+}

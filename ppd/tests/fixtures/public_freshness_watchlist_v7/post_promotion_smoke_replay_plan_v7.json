@@ -1,0 +1,16 @@
+{
+  "fixture_id": "post_promotion_smoke_replay_plan_v7",
+  "version": 7,
+  "sources": [
+    {
+      "source_id": "portland_maps_public_permits",
+      "promotion_state": "post_promotion_smoke_replay_ready",
+      "last_smoke_replay_fixture_utc": "2026-05-28T00:00:00Z"
+    },
+    {
+      "source_id": "portland_permitting_public_forms",
+      "promotion_state": "post_promotion_smoke_replay_ready",
+      "last_smoke_replay_fixture_utc": "2026-05-28T00:00:00Z"
+    }
+  ]
+}

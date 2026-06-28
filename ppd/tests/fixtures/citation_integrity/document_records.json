@@ -1,0 +1,34 @@
+{
+  "documents": [
+    {
+      "document_id": "doc-public-devhub-guide",
+      "source_id": "ppd-public-devhub-guide",
+      "title": "DevHub permit application guide fixture",
+      "document_type": "public_html",
+      "citation_spans": [
+        {
+          "span_id": "span-apply-start",
+          "source_id": "ppd-public-devhub-guide",
+          "text": "Start a permit application from the public DevHub guide.",
+          "start": 0,
+          "end": 57
+        }
+      ]
+    },
+    {
+      "document_id": "doc-private-devhub-case",
+      "source_id": "ppd-private-devhub-case",
+      "title": "Private DevHub authenticated case fixture",
+      "document_type": "devhub_authenticated",
+      "citation_spans": [
+        {
+          "span_id": "span-private-case-status",
+          "source_id": "ppd-private-devhub-case",
+          "text": "Authenticated case status is private and must not be used as committed evidence.",
+          "start": 0,
+          "end": 76
+        }
+      ]
+    }
+  ]
+}

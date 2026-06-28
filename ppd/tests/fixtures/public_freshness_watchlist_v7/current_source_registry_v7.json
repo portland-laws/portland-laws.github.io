@@ -1,0 +1,22 @@
+{
+  "fixture_id": "current_source_registry_v7",
+  "version": 7,
+  "sources": [
+    {
+      "source_id": "portland_maps_public_permits",
+      "label": "Portland Maps public permits index",
+      "public_url": "https://www.portlandmaps.com/permits/",
+      "last_public_registry_refresh_utc": "2026-05-20T00:00:00Z",
+      "next_refresh_window": "next_authorized_public_refresh_cycle",
+      "citation_repair_owner_placeholder": "PPD_PUBLIC_CITATION_OWNER_TBD"
+    },
+    {
+      "source_id": "portland_permitting_public_forms",
+      "label": "Portland permitting public forms index",
+      "public_url": "https://www.portland.gov/ppd/forms",
+      "last_public_registry_refresh_utc": "2026-05-20T00:00:00Z",
+      "next_refresh_window": "next_authorized_public_refresh_cycle",
+      "citation_repair_owner_placeholder": "PPD_PUBLIC_CITATION_OWNER_TBD"
+    }
+  ]
+}

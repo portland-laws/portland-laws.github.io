@@ -1,0 +1,12 @@
+{
+  "packet_id": "fixture:guardrail-bundle-update-candidate:20260529",
+  "guardrail_owner": "guardrail-review",
+  "affected_requirement_ids": [
+    "PCC-33.110.265"
+  ],
+  "guardrail_refs": [
+    "guardrail:no-live-extraction",
+    "guardrail:no-requirement-mutation"
+  ],
+  "candidate_update": "metadata-only guardrail reference bundle"
+}

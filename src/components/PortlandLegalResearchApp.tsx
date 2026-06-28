@@ -11,7 +11,9 @@ import {
   searchCorpus,
 } from '../lib/portlandCorpus';
 import { clientEmbeddingWorkerService } from '../lib/clientEmbeddingWorkerService';
+import { clientLLMWorkerService } from '../lib/clientLLMWorkerService';
 import { answerWithGraphRag } from '../lib/portlandGraphRag';
+import { buildChatPromptStarters, DEFAULT_CHAT_PROMPTS } from '../lib/chatPromptStarters';
 import {
   LogicProofSummary,
   NormType,
@@ -48,11 +50,7 @@ const INITIAL_RESULT_LIMIT = 6;
 const RESULT_INCREMENT = 6;
 const GRAPH_ENTITY_LIMIT = 14;
 const GRAPH_RELATIONSHIP_LIMIT = 14;
-const CHAT_PROMPTS = [
-  'What does this section require?',
-  'Who is affected by this section?',
-  'What evidence supports this answer?',
-];
+const CHAT_PROMPTS = DEFAULT_CHAT_PROMPTS;
 
 const TITLE_LABELS: Record<string, string> = {
   '1': 'General Provisions',
@@ -114,6 +112,8 @@ export default function PortlandLegalResearchApp() {
   const [chatEvidence, setChatEvidence] = useState<GraphRagEvidence | null>(null);
   const [chatError, setChatError] = useState<string | null>(null);
   const [chatUsedLocalModel, setChatUsedLocalModel] = useState(false);
+  const [chatGenerationSource, setChatGenerationSource] = useState<'local' | 'cloud' | 'retrieved'>('retrieved');
+  const [chatGenerationWarning, setChatGenerationWarning] = useState<string | null>(null);
   const [isAnswering, setIsAnswering] = useState(false);
 
   useEffect(() => {
@@ -138,6 +138,11 @@ export default function PortlandLegalResearchApp() {
     }
 
     load();
+
+    // Warm local inference in the background so cloud-first routing can
+    // switch to local once throughput is proven, without blocking chat UX.
+    clientLLMWorkerService.warmLocalModelInBackground();
+
     return () => {
       cancelled = true;
     };
@@ -301,11 +306,15 @@ export default function PortlandLegalResearchApp() {
       setChatAnswer(response.answer);
       setChatEvidence(response.evidence);
       setChatUsedLocalModel(response.usedLocalModel);
+      setChatGenerationSource(response.generationSource);
+      setChatGenerationWarning(response.generationWarning || null);
     } catch (err) {
       setChatError(err instanceof Error ? err.message : 'Unable to answer that question.');
       setChatAnswer('');
       setChatEvidence(null);
       setChatUsedLocalModel(false);
+      setChatGenerationSource('retrieved');
+      setChatGenerationWarning(null);
     } finally {
       setIsAnswering(false);
     }
@@ -446,6 +455,8 @@ export default function PortlandLegalResearchApp() {
           chatEvidence={chatEvidence}
           chatError={chatError}
           chatUsedLocalModel={chatUsedLocalModel}
+          chatGenerationSource={chatGenerationSource}
+          chatGenerationWarning={chatGenerationWarning}
           isAnswering={isAnswering}
           onQuestionChange={setChatQuestion}
           onAskQuestion={onAskSelectedQuestion}
@@ -1119,6 +1130,8 @@ function WorkspacePanel({
   chatEvidence,
   chatError,
   chatUsedLocalModel,
+  chatGenerationSource,
+  chatGenerationWarning,
   isAnswering,
   onQuestionChange,
   onAskQuestion,
@@ -1136,6 +1149,8 @@ function WorkspacePanel({
   chatEvidence: GraphRagEvidence | null;
   chatError: string | null;
   chatUsedLocalModel: boolean;
+  chatGenerationSource: 'local' | 'cloud' | 'retrieved';
+  chatGenerationWarning: string | null;
   isAnswering: boolean;
   onQuestionChange: (question: string) => void;
   onAskQuestion: (event: FormEvent<HTMLFormElement>) => void;
@@ -1234,13 +1249,19 @@ function WorkspacePanel({
         )}
         {selected && activeTab === 'chat' && (
           <div id="panel-chat" role="tabpanel" aria-labelledby="tab-chat" tabIndex={0}>
-            <GraphRagChat
-              question={chatQuestion}
-              answer={chatAnswer}
-              evidence={chatEvidence}
-              error={chatError}
-              usedLocalModel={chatUsedLocalModel}
-              isAnswering={isAnswering}
+          <GraphRagChat
+            section={selected}
+            proof={proof}
+            relatedEntities={relatedEntities}
+            relatedRelationships={relatedRelationships}
+            question={chatQuestion}
+            answer={chatAnswer}
+            evidence={chatEvidence}
+            error={chatError}
+            generationWarning={chatGenerationWarning}
+            usedLocalModel={chatUsedLocalModel}
+            generationSource={chatGenerationSource}
+            isAnswering={isAnswering}
               onQuestionChange={onQuestionChange}
               onSubmit={onAskQuestion}
             />
@@ -1540,32 +1561,95 @@ function formatNormTypeLabel(norm: NormType) {
 }
 
 function GraphRagChat({
+  section,
+  proof,
+  relatedEntities,
+  relatedRelationships,
   question,
   answer,
   evidence,
   error,
+  generationWarning,
   usedLocalModel,
+  generationSource,
   isAnswering,
   onQuestionChange,
   onSubmit,
 }: {
+  section: CorpusSection;
+  proof: LogicProofSummary | null;
+  relatedEntities: CorpusEntity[];
+  relatedRelationships: CorpusRelationship[];
   question: string;
   answer: string;
   evidence: GraphRagEvidence | null;
   error: string | null;
+  generationWarning: string | null;
   usedLocalModel: boolean;
+  generationSource: 'local' | 'cloud' | 'retrieved';
   isAnswering: boolean;
   onQuestionChange: (question: string) => void;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }) {
   const evidenceSections = evidence?.sections.slice(0, 5) || [];
   const topCitation = evidenceSections[0]?.citation || 'None yet';
+  const [cloudConfigured, setCloudConfigured] = useState(false);
+  const [cloudBaseUrl, setCloudBaseUrl] = useState('');
+  const [localProven, setLocalProven] = useState(false);
+  const [performanceProven, setPerformanceProven] = useState(false);
+  const [tokensPerSecond, setTokensPerSecond] = useState<number | null>(null);
+  const promptStarters = useMemo(
+    () => buildChatPromptStarters(section, proof, relatedEntities, relatedRelationships),
+    [section, proof, relatedEntities, relatedRelationships],
+  );
+
+  useEffect(() => {
+    const refresh = () => {
+      const cloud = clientLLMWorkerService.getCloudFallbackStatus();
+      const status = clientLLMWorkerService.getStatus();
+      setCloudConfigured(cloud.configured);
+      setCloudBaseUrl(cloud.baseUrl);
+      setLocalProven(status.localHealth.proven);
+      setPerformanceProven(status.localHealth.performanceProven);
+      setTokensPerSecond(status.localHealth.lastMeasuredTokensPerSecond ?? null);
+    };
+
+    const onDiagnostic = () => refresh();
+    refresh();
+    window.addEventListener('clientLLMServiceDiagnostic', onDiagnostic as EventListener);
+    return () => {
+      window.removeEventListener('clientLLMServiceDiagnostic', onDiagnostic as EventListener);
+    };
+  }, []);
+
+  const routeLabel = !cloudConfigured
+    ? 'Local only'
+    : !localProven
+      ? 'Proxy first (warming local)'
+      : !performanceProven
+        ? 'Proxy first (benchmarking local speed)'
+        : 'Local ready';
 
   return (
     <div className="px-4 py-4 sm:px-5 sm:py-5">
       <div className="mb-4">
         <h2 className="text-xl font-semibold tracking-normal text-[#172026]">Code Chat</h2>
         <p className="mt-1 text-base leading-7 text-[#4f615b]">Ask questions grounded in local Portland City Code evidence.</p>
+        <div className="mt-2 flex flex-wrap items-center gap-2" aria-label="Inference routing status">
+          <span className="rounded-md border border-[#cdd8cb] bg-white px-2 py-1 text-xs font-semibold text-[#24594f]">
+            {routeLabel}
+          </span>
+          {tokensPerSecond !== null && (
+            <span className="rounded-md border border-[#d8dfd3] bg-[#f7faf4] px-2 py-1 text-xs font-semibold text-[#4f615b]">
+              Local speed {tokensPerSecond.toFixed(1)} tok/s
+            </span>
+          )}
+          {cloudConfigured && (
+            <span className="rounded-md border border-[#d8dfd3] bg-[#f7faf4] px-2 py-1 text-xs text-[#4f615b]">
+              Proxy {cloudBaseUrl}
+            </span>
+          )}
+        </div>
       </div>
       <form onSubmit={onSubmit} className="grid gap-3 md:grid-cols-[1fr_112px]">
         <label className="block">
@@ -1595,10 +1679,18 @@ function GraphRagChat({
           {error}
         </div>
       )}
+      {generationWarning && (
+        <div role="status" className="mt-4 rounded-md border border-[#d8c27a] bg-[#fff9df] px-3 py-2 text-sm text-[#71551b]">
+          {generationWarning}
+        </div>
+      )}
       {answer && (
         <div className="mt-4 grid gap-2 sm:grid-cols-3" aria-label="Chat response summary">
           <ChatSummaryMetric label="Sources found" value={evidenceSections.length.toLocaleString()} />
-          <ChatSummaryMetric label="Answer basis" value={usedLocalModel ? 'Local model' : 'Retrieved code'} />
+          <ChatSummaryMetric
+            label="Answer basis"
+            value={generationSource === 'local' ? 'Local model' : generationSource === 'cloud' ? 'Proxy model' : 'Retrieved code'}
+          />
           <ChatSummaryMetric label="Top citation" value={topCitation} />
         </div>
       )}
@@ -1614,7 +1706,7 @@ function GraphRagChat({
       )}
       {!answer && !error && (
         <div className="mt-4" aria-label="Chat empty state">
-          <ChatPromptStarters onQuestionChange={onQuestionChange} />
+          <ChatPromptStarters prompts={promptStarters} onQuestionChange={onQuestionChange} />
         </div>
       )}
       {evidenceSections.length > 0 && (
@@ -1643,12 +1735,18 @@ function GraphRagChat({
   );
 }
 
-function ChatPromptStarters({ onQuestionChange }: { onQuestionChange: (question: string) => void }) {
+function ChatPromptStarters({
+  prompts,
+  onQuestionChange,
+}: {
+  prompts: string[];
+  onQuestionChange: (question: string) => void;
+}) {
   return (
     <div className="rounded-md border border-dashed border-[#aebba9] bg-white/70 px-4 py-5" role="status">
       <p className="text-center text-sm font-semibold text-[#26343a]">No answer yet</p>
       <div className="mt-3 flex flex-wrap justify-center gap-2" aria-label="Suggested chat questions">
-        {CHAT_PROMPTS.map((prompt) => (
+        {prompts.map((prompt) => (
           <button
             key={prompt}
             type="button"
@@ -1662,6 +1760,7 @@ function ChatPromptStarters({ onQuestionChange }: { onQuestionChange: (question:
     </div>
   );
 }
+
 
 function CitedAnswer({ text }: { text: string }) {
   const blocks = text.split(/\n{2,}/).map((block) => block.trim()).filter(Boolean);

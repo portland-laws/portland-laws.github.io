@@ -1,0 +1,108 @@
+{
+  "source_freshness_drift_digest": {
+    "digest_id": "source-freshness-drift-digest-20260528-fixture",
+    "source_references": [
+      {
+        "source_id": "ppd-devhub-faq",
+        "source_type": "devhub_public",
+        "reference_type": "metadata_manifest"
+      },
+      {
+        "source_id": "ppd-submit-plans-online",
+        "source_type": "public_html",
+        "reference_type": "metadata_manifest"
+      }
+    ],
+    "changed_source_claims": [
+      {
+        "source_id": "ppd-devhub-faq",
+        "changed": true,
+        "severity": "high",
+        "summary": "DevHub FAQ metadata drift can affect account-scoped service guidance.",
+        "citation_ids": ["cite-devhub-faq-metadata"],
+        "affected_requirement_ids": ["RequirementNode:PPD:devhub-account-service-scope"],
+        "affected_guardrail_bundle_ids": ["GuardrailBundle:PPD:devhub-safe-next-actions"]
+      },
+      {
+        "source_id": "ppd-submit-plans-online",
+        "changed": true,
+        "severity": "medium",
+        "summary": "Single PDF process metadata drift can affect file preparation checks.",
+        "citation_ids": ["cite-submit-plans-online-metadata"],
+        "affected_requirement_ids": ["RequirementNode:PPD:single-pdf-file-preparation"],
+        "affected_guardrail_bundle_ids": ["GuardrailBundle:PPD:file-preparation"]
+      }
+    ]
+  },
+  "public_crawl_metadata_dry_run_intake": {
+    "packet_id": "public-crawl-metadata-intake-20260528-fixture",
+    "dry_run": true,
+    "promotion_manifest_url": "https://www.portland.gov/ppd/fixture-public-crawl-promotion-manifest",
+    "requested_url": "https://www.portland.gov/ppd/devhub-faqs",
+    "discovered_urls": [
+      "https://www.portland.gov/ppd/devhub-faqs",
+      "https://www.portland.gov/ppd/get-permit/submit-plans-online"
+    ],
+    "robots_evidence": ["robots-prereq-portland-gov-20260528"],
+    "policy_evidence": ["policy-prereq-ppd-public-metadata-only-20260528"],
+    "prerequisite_evidence_ids": [
+      "robots-prereq-portland-gov-20260528",
+      "policy-prereq-ppd-public-metadata-only-20260528"
+    ],
+    "selected_allowlisted_targets": [
+      {
+        "source_id": "ppd-devhub-faq",
+        "target_id": "target-devhub-faq",
+        "public_metadata_url": "https://www.portland.gov/ppd/devhub-faqs",
+        "robots_policy_prerequisite_ids": [
+          "robots-prereq-portland-gov-20260528",
+          "policy-prereq-ppd-public-metadata-only-20260528"
+        ]
+      },
+      {
+        "source_id": "ppd-submit-plans-online",
+        "target_id": "target-submit-plans-online",
+        "public_metadata_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+        "robots_policy_prerequisite_ids": [
+          "robots-prereq-portland-gov-20260528",
+          "policy-prereq-ppd-public-metadata-only-20260528"
+        ]
+      }
+    ],
+    "operator_abort_conditions": [
+      {
+        "condition_id": "abort-if-live-fetch-requested",
+        "description": "Abort if the candidate requires fetching a URL instead of using dry-run metadata."
+      },
+      {
+        "condition_id": "abort-if-prerequisite-evidence-missing",
+        "description": "Abort if robots or policy prerequisite evidence is missing for any source."
+      }
+    ],
+    "abort_decision": {
+      "decision": "continue_dry_run_only",
+      "reason": "Synthetic fixture records metadata-only intake; no real crawl or download was completed."
+    }
+  },
+  "safe_next_action_release_notes": {
+    "packet_id": "safe-next-action-release-notes-20260528-fixture",
+    "mode": "fixture_first_offline_only",
+    "reviewer_owners": {
+      "source_freshness": "ppd-source-freshness-reviewer",
+      "ppd-devhub-faq": "ppd-devhub-guidance-reviewer",
+      "ppd-submit-plans-online": "ppd-file-standards-reviewer"
+    },
+    "remaining_blockers": [
+      "Live public crawl remains disabled until metadata-only schedule recommendations are reviewed."
+    ],
+    "disabled_live_actions": [
+      "live_public_crawl",
+      "document_download",
+      "live_schedule_mutation"
+    ],
+    "citations": [
+      "public-crawl-metadata-intake-20260528-fixture",
+      "source-freshness-drift-digest-20260528-fixture"
+    ]
+  }
+}

@@ -1,0 +1,117 @@
+{
+  "case_id": "fixture-single-pdf-supporting-documents-001",
+  "source_evidence": [
+    {
+      "evidence_id": "single_pdf_guidance_drawings_001",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "title": "Submit Plans Online / Single PDF Process",
+      "quote": "Drawing plans must be combined into one PDF for the Single PDF process. Applications, calculations, and other supporting documents are uploaded separately."
+    },
+    {
+      "evidence_id": "file_standards_pdf_001",
+      "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+      "title": "File naming standards and preparing PDFs",
+      "quote": "Files must be PDFs and named to identify the document type, project, and revision or date."
+    }
+  ],
+  "raw_documents": [
+    {
+      "local_fixture_name": "A0_cover_sheet.pdf",
+      "declared_document_type": "drawing sheet",
+      "filename": "A0_CoverSheet_123Main_2026-05-14.pdf",
+      "provided": true
+    },
+    {
+      "local_fixture_name": "A1_site_plan.pdf",
+      "declared_document_type": "drawing plan",
+      "filename": "A1_SitePlan_123Main_2026-05-14.pdf",
+      "provided": true
+    },
+    {
+      "local_fixture_name": "structural_calculations.pdf",
+      "declared_document_type": "calculations",
+      "filename": "StructuralCalculations_123Main_2026-05-14.pdf",
+      "provided": true
+    },
+    {
+      "local_fixture_name": "building_permit_application.pdf",
+      "declared_document_type": "application",
+      "filename": "BuildingPermitApplication_123Main_2026-05-14.pdf",
+      "provided": true
+    },
+    {
+      "local_fixture_name": "energy_compliance_form.docx",
+      "declared_document_type": "supporting document",
+      "filename": "EnergyCompliance_123Main_2026-05-14.docx",
+      "provided": true
+    },
+    {
+      "local_fixture_name": null,
+      "declared_document_type": "site erosion control plan",
+      "filename": null,
+      "provided": false,
+      "missing_reason": "Required by fixture scenario but not present in applicant document set."
+    }
+  ],
+  "required_document_rules": [
+    {
+      "normalized_document_type": "drawing_plan_set",
+      "input_types": ["drawing sheet", "drawing plan"],
+      "upload_grouping": "combine_all_matching_documents_into_one_pdf",
+      "required": true,
+      "requires_pdf": true,
+      "source_evidence_ids": ["single_pdf_guidance_drawings_001", "file_standards_pdf_001"]
+    },
+    {
+      "normalized_document_type": "permit_application",
+      "input_types": ["application"],
+      "upload_grouping": "separate_pdf",
+      "required": true,
+      "requires_pdf": true,
+      "source_evidence_ids": ["single_pdf_guidance_drawings_001", "file_standards_pdf_001"]
+    },
+    {
+      "normalized_document_type": "calculations",
+      "input_types": ["calculations"],
+      "upload_grouping": "separate_pdf",
+      "required": true,
+      "requires_pdf": true,
+      "source_evidence_ids": ["single_pdf_guidance_drawings_001", "file_standards_pdf_001"]
+    },
+    {
+      "normalized_document_type": "supporting_document",
+      "input_types": ["supporting document"],
+      "upload_grouping": "separate_pdf",
+      "required": true,
+      "requires_pdf": true,
+      "source_evidence_ids": ["single_pdf_guidance_drawings_001", "file_standards_pdf_001"]
+    },
+    {
+      "normalized_document_type": "site_erosion_control_plan",
+      "input_types": ["site erosion control plan"],
+      "upload_grouping": "separate_pdf",
+      "required": true,
+      "requires_pdf": true,
+      "source_evidence_ids": ["single_pdf_guidance_drawings_001", "file_standards_pdf_001"]
+    }
+  ],
+  "normalization_order": [
+    "load_source_evidence",
+    "normalize_file_rules",
+    "normalize_document_inventory",
+    "normalize_missing_document_questions",
+    "consider_upload_staging"
+  ],
+  "expected_missing_questions": [
+    {
+      "question_id": "missing_site_erosion_control_plan",
+      "normalized_document_type": "site_erosion_control_plan",
+      "prompt": "Please provide the site erosion control plan as a PDF before upload staging can be evaluated."
+    },
+    {
+      "question_id": "non_pdf_supporting_document_energy_compliance",
+      "normalized_document_type": "supporting_document",
+      "prompt": "Please provide EnergyCompliance_123Main_2026-05-14.docx as a PDF before upload staging can be evaluated."
+    }
+  ]
+}

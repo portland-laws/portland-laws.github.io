@@ -1,0 +1,22 @@
+{
+  "packet_type": "agent_guardrail_api_compatibility_packet_v6",
+  "version": 6,
+  "allowed_actions": [
+    "review_synthetic_case_fact_inventory",
+    "fill_missing_fact_rows_from_user_memory",
+    "label_missing_documents_without_uploading",
+    "compare_fixture_citation_payloads",
+    "prepare_manual_handoff_notes",
+    "run_offline_validation_commands"
+  ],
+  "blocked_external_actions": [
+    "read_private_documents",
+    "open_devhub",
+    "upload",
+    "submit",
+    "certify",
+    "pay",
+    "schedule",
+    "legal_or_permitting_guarantee"
+  ]
+}

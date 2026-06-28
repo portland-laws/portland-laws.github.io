@@ -1,0 +1,79 @@
+{
+  "packet_id": "devhub-read-only-observation-redaction-review-synthetic-v1",
+  "packet_type": "ppd.devhub.read_only_observation_redaction_review.v1",
+  "mode": "fixture_first_devhub_read_only_observation_redaction_review",
+  "fixture_first": true,
+  "offline_only": true,
+  "synthetic_only": true,
+  "launches_browser": false,
+  "launches_devhub": false,
+  "launches_playwright": false,
+  "network_requests_made": false,
+  "stores_browser_artifacts": false,
+  "stores_private_artifacts": false,
+  "stores_downloads": false,
+  "source_packets": {
+    "readiness_decision_packet": {
+      "packet_id": "devhub-read-only-readiness-decision-synthetic-v1",
+      "packet_type": "ppd.devhub.read_only_readiness_decision_packet.v1",
+      "consumed": true,
+      "citations": ["devhub-read-only-readiness-decision-synthetic-v1", "ev-heading-dashboard", "ev-status-review"]
+    },
+    "read_only_pilot_operator_checklist": {
+      "packet_id": "devhub-read-only-pilot-operator-checklist-v1",
+      "packet_type": "devhub_read_only_pilot_operator_checklist",
+      "consumed": true,
+      "citations": ["devhub-read-only-pilot-operator-checklist-v1", "fixture_packet_review", "login_attendance_handoff"]
+    }
+  },
+  "synthetic_observation_fields": [
+    {"field_name": "stable_surface_id", "source": "operator_checklist.redaction_policy.allowed_observation_fields", "synthetic_value_only": true, "raw_value_allowed": false, "commit_safe": true, "citations": ["devhub-read-only-readiness-decision-synthetic-v1"]},
+    {"field_name": "page_heading", "source": "operator_checklist.redaction_policy.allowed_observation_fields", "synthetic_value_only": true, "raw_value_allowed": false, "commit_safe": true, "citations": ["devhub-read-only-readiness-decision-synthetic-v1"]},
+    {"field_name": "accessible_landmark_summary", "source": "operator_checklist.redaction_policy.allowed_observation_fields", "synthetic_value_only": true, "raw_value_allowed": false, "commit_safe": true, "citations": ["devhub-read-only-pilot-operator-checklist-v1"]},
+    {"field_name": "redacted_label_category", "source": "operator_checklist.redaction_policy.allowed_observation_fields", "synthetic_value_only": true, "raw_value_allowed": false, "commit_safe": true, "citations": ["devhub-read-only-pilot-operator-checklist-v1"]},
+    {"field_name": "synthetic_record_status_label", "source": "operator_checklist.redaction_policy.allowed_observation_fields", "synthetic_value_only": true, "raw_value_allowed": false, "commit_safe": true, "citations": ["ev-status-review"]},
+    {"field_name": "operator_decision_code", "source": "operator_checklist.redaction_policy.allowed_observation_fields", "synthetic_value_only": true, "raw_value_allowed": false, "commit_safe": true, "citations": ["fixture_packet_review"]},
+    {"field_name": "redacted_timestamp", "source": "operator_checklist.redaction_policy.allowed_observation_fields", "synthetic_value_only": true, "raw_value_allowed": false, "commit_safe": true, "citations": ["fixture_packet_review"]}
+  ],
+  "allowed_metadata": [
+    {"metadata_id": "stable_surface_id", "description": "Stable synthetic surface identifier", "private_value_allowed": false, "browser_artifact_allowed": false, "citations": ["devhub-read-only-readiness-decision-synthetic-v1"]},
+    {"metadata_id": "page_heading", "description": "Generic heading text after private identifiers are removed", "private_value_allowed": false, "browser_artifact_allowed": false, "citations": ["ev-heading-dashboard"]},
+    {"metadata_id": "accessible_landmark_summary", "description": "Role or landmark category summary", "private_value_allowed": false, "browser_artifact_allowed": false, "citations": ["devhub-read-only-pilot-operator-checklist-v1"]},
+    {"metadata_id": "redacted_label_category", "description": "Label category with private values removed", "private_value_allowed": false, "browser_artifact_allowed": false, "citations": ["devhub-read-only-pilot-operator-checklist-v1"]},
+    {"metadata_id": "synthetic_record_status_label", "description": "Generic status label", "private_value_allowed": false, "browser_artifact_allowed": false, "citations": ["ev-status-review"]},
+    {"metadata_id": "operator_decision_code", "description": "Commit-safe operator decision code", "private_value_allowed": false, "browser_artifact_allowed": false, "citations": ["fixture_packet_review"]},
+    {"metadata_id": "redacted_timestamp", "description": "Coarse redacted review timestamp when needed", "private_value_allowed": false, "browser_artifact_allowed": false, "citations": ["fixture_packet_review"]}
+  ],
+  "redaction_rules": [
+    {"rule_id": "redact-forbidden-artifact-01", "target": "credentials", "required": true, "raw_storage_allowed": false, "replacement": "[REDACTED_PRIVATE]", "citations": ["redaction_preflight"]},
+    {"rule_id": "redact-forbidden-artifact-02", "target": "credential_prompts", "required": true, "raw_storage_allowed": false, "replacement": "[REDACTED_PRIVATE]", "citations": ["redaction_preflight"]},
+    {"rule_id": "redact-forbidden-artifact-03", "target": "cookies", "required": true, "raw_storage_allowed": false, "replacement": "[REDACTED_PRIVATE]", "citations": ["redaction_preflight"]},
+    {"rule_id": "redact-forbidden-artifact-04", "target": "auth state", "required": true, "raw_storage_allowed": false, "replacement": "[REDACTED_PRIVATE]", "citations": ["redaction_preflight"]},
+    {"rule_id": "redact-forbidden-artifact-05", "target": "screenshots", "required": true, "raw_storage_allowed": false, "replacement": "[REDACTED_PRIVATE]", "citations": ["redaction_preflight"]},
+    {"rule_id": "redact-forbidden-artifact-06", "target": "traces", "required": true, "raw_storage_allowed": false, "replacement": "[REDACTED_PRIVATE]", "citations": ["redaction_preflight"]},
+    {"rule_id": "redact-forbidden-artifact-07", "target": "HAR files", "required": true, "raw_storage_allowed": false, "replacement": "[REDACTED_PRIVATE]", "citations": ["redaction_preflight"]},
+    {"rule_id": "redact-forbidden-artifact-08", "target": "raw authenticated text", "required": true, "raw_storage_allowed": false, "replacement": "[REDACTED_PRIVATE]", "citations": ["redaction_preflight"]},
+    {"rule_id": "redact-forbidden-artifact-09", "target": "downloads", "required": true, "raw_storage_allowed": false, "replacement": "[REDACTED_PRIVATE]", "citations": ["closeout_without_browser_artifacts"]}
+  ],
+  "abort_prompts": [
+    {"prompt_id": "abort-01", "prompt": "A login, MFA, CAPTCHA, account recovery, or credential prompt appears.", "operator_response": "Stop observation, discard non-redacted notes, and record only a manual handoff reason.", "must_abort": true, "continue_allowed": false, "citations": ["ev-heading-dashboard", "ev-status-review"]},
+    {"prompt_id": "abort-05", "prompt": "A payment, checkout, card entry, invoice payment, or receipt screen appears.", "operator_response": "Stop observation, discard non-redacted notes, and record only a manual handoff reason.", "must_abort": true, "continue_allowed": false, "citations": ["ev-heading-dashboard", "ev-status-review"]},
+    {"prompt_id": "abort-06", "prompt": "An upload, resubmit, submit, certify, acknowledge, withdraw, cancel, schedule, or reschedule control is the next step.", "operator_response": "Stop observation, discard non-redacted notes, and record only a manual handoff reason.", "must_abort": true, "continue_allowed": false, "citations": ["ev-heading-dashboard", "ev-status-review"]},
+    {"prompt_id": "abort-private-value-or-artifact", "prompt": "Any need to record a private value, private account data, cookie, auth state, browser artifact, screenshot, trace, HAR file, raw DOM, raw authenticated text, download, or local private path stops the pilot.", "operator_response": "Stop observation and record only a redacted operator decision code.", "must_abort": true, "continue_allowed": false, "citations": ["devhub-read-only-pilot-operator-checklist-v1"]}
+  ],
+  "reviewer_owners": [
+    {"owner_id": "devhub_pilot_operator", "reviewer_role": "DevHub read-only pilot operator", "owns": "manual login attendance, stop-condition enforcement, and redacted note discipline", "requires_reviewer": true, "citations": ["devhub-read-only-readiness-decision-synthetic-v1"]},
+    {"owner_id": "devhub_surface_reviewer", "reviewer_role": "DevHub surface registry reviewer", "owns": "candidate surface metadata and selector-confidence deferral", "requires_reviewer": true, "citations": ["devhub-read-only-readiness-decision-synthetic-v1"]},
+    {"owner_id": "ppd_guardrail_reviewer", "reviewer_role": "PP&D guardrail reviewer", "owns": "consequential-action blocks and exact-confirmation gates", "requires_reviewer": true, "citations": ["ev-payment-guide", "ev-devhub-guide"]}
+  ],
+  "private_artifact_prohibitions": [
+    {"prohibition_id": "private-artifact-prohibition-01", "prohibition": "Do not store screenshots.", "allowed": false, "commit_safe": true, "citations": ["ev-heading-dashboard", "ev-status-review"]},
+    {"prohibition_id": "private-artifact-prohibition-02", "prohibition": "Do not store Playwright or browser traces.", "allowed": false, "commit_safe": true, "citations": ["ev-heading-dashboard", "ev-status-review"]},
+    {"prohibition_id": "private-artifact-prohibition-03", "prohibition": "Do not store HAR data.", "allowed": false, "commit_safe": true, "citations": ["ev-heading-dashboard", "ev-status-review"]},
+    {"prohibition_id": "private-artifact-prohibition-04", "prohibition": "Do not store cookies.", "allowed": false, "commit_safe": true, "citations": ["ev-heading-dashboard", "ev-status-review"]},
+    {"prohibition_id": "private-artifact-prohibition-05", "prohibition": "Do not store auth state, browser storage state, or credentials.", "allowed": false, "commit_safe": true, "citations": ["ev-heading-dashboard", "ev-status-review"]},
+    {"prohibition_id": "private-artifact-prohibition-06", "prohibition": "Do not store raw authenticated HTML, downloaded documents, payment data, or private DevHub values.", "allowed": false, "commit_safe": true, "citations": ["ev-heading-dashboard", "ev-status-review"]},
+    {"prohibition_id": "operator-forbidden-artifact-01", "prohibition": "Do not store or commit downloads.", "allowed": false, "commit_safe": true, "citations": ["devhub-read-only-pilot-operator-checklist-v1"]},
+    {"prohibition_id": "operator-forbidden-artifact-02", "prohibition": "Do not store or commit local private file paths.", "allowed": false, "commit_safe": true, "citations": ["devhub-read-only-pilot-operator-checklist-v1"]}
+  ]
+}

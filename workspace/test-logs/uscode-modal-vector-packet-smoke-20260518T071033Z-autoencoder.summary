@@ -1,0 +1,59 @@
+{
+  "applied_todo_ids": 0,
+  "best_validation_ce": 0.9681026213870687,
+  "best_validation_cosine": 0.21322404805723189,
+  "best_validation_ir_ce": 0.968102621,
+  "best_validation_ir_cosine": 0.213224048,
+  "best_validation_ir_reconstruction": 0.32565684,
+  "best_validation_ir_text_reconstruction": 0.0,
+  "best_validation_reconstruction": 0.32565684030256253,
+  "codex_program_synthesis_execution_mode": "queued_for_external_codex_worker",
+  "cycles": 14,
+  "dataset_id": "justicedao/ipfs_uscode",
+  "decoded_embedding_entries": 0,
+  "elapsed_seconds": 83.587,
+  "family_logit_entries": 0,
+  "feature_embedding_weight_entries": 0,
+  "feature_family_logit_entries": 0,
+  "final": true,
+  "finished_at": "2026-05-18T07:11:57+00:00",
+  "latest_queue_counts": {
+    "claimed": 30,
+    "failed_validation": 28,
+    "pending": 163
+  },
+  "latest_role_queue_counts": {
+    "autoencoder_sgd": {
+      "failed_validation": 28,
+      "pending": 140
+    },
+    "program_synthesis": {
+      "claimed": 30,
+      "pending": 23
+    }
+  },
+  "latest_stop_reason": "no_validated_improvement",
+  "laws_path": "uscode_parquet/laws.parquet",
+  "log_path": "/home/barberb/portland-laws.github.io/workspace/test-logs/uscode-modal-vector-packet-smoke-20260518T071033Z-autoencoder.jsonl",
+  "loop_role": "autoencoder",
+  "metric_failures": 0,
+  "optimizer_policy": "autoencoder_sgd_with_codex_program_synthesis_backlog",
+  "program_synthesis_claimed": 30,
+  "program_synthesis_completed": 0,
+  "program_synthesis_pending": 23,
+  "program_synthesis_pending_cap": 512,
+  "program_synthesis_seeded": 49,
+  "program_synthesis_semantic_deduped": 0,
+  "queue_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-packet-smoke-20260518T071033Z-autoencoder.jsonl",
+  "queue_run_id": "uscode-modal-vector-packet-smoke-20260518T071033Z-autoencoder",
+  "run_id": "uscode-modal-vector-packet-smoke-20260518T071033Z-autoencoder",
+  "seed": 192286380852805,
+  "started_at": "2026-05-18T07:10:34+00:00",
+  "state_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-packet-smoke-20260518T071033Z-autoencoder.state.json",
+  "test_failures": 0,
+  "train_ce_improved_cycles": 0,
+  "train_cosine_improved_cycles": 0,
+  "updated_at": "2026-05-18T07:11:57+00:00",
+  "validation_ce_improved_cycles": 0,
+  "validation_cosine_improved_cycles": 0
+}

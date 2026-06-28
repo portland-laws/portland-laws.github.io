@@ -1,0 +1,82 @@
+{
+  "version": "release_decision_packet_v5",
+  "fixture_scope": "release_decision_packet_only",
+  "decision_id": "fixture-release-decision-v5-hold-001",
+  "source_fixture_refs": [
+    "ppd/tests/fixtures/post_decision_smoke_replay_v5/release_decision_packet_v5.json"
+  ],
+  "go_no_go": {
+    "outcome": "hold",
+    "release_allowed": false,
+    "activation_allowed": false,
+    "reason": "Unresolved source freshness and reviewer ownership placeholders block activation."
+  },
+  "unresolved_holds": [
+    {
+      "hold_id": "hold-source-freshness-v5",
+      "placeholder_id": "inactive-guardrail-placeholder-source-freshness",
+      "status": "unresolved",
+      "propagate_to_agent": true,
+      "blocks_activation": true
+    },
+    {
+      "hold_id": "hold-rollback-owner-v5",
+      "placeholder_id": "inactive-guardrail-placeholder-rollback-owner",
+      "status": "unresolved",
+      "propagate_to_agent": true,
+      "blocks_activation": true
+    }
+  ],
+  "source_freshness_caveats": [
+    {
+      "caveat_id": "source-freshness-caveat-v5",
+      "display_to_agent": true,
+      "blocks_activation": true,
+      "message": "Official PP&D source freshness remains a hold until a later reviewed packet clears it."
+    }
+  ],
+  "agent_api_compatibility_notes": [
+    {
+      "note_id": "agent-api-v5-hold-compatible",
+      "compatible": "with_holds",
+      "activates_guardrails": false,
+      "message": "Agent consumers may display the hold, caveat, and manual handoff reminders, but must not treat this as an active guardrail release."
+    }
+  ],
+  "rollback_owner_placeholders": [
+    {
+      "rollback_id": "rollback-owner-placeholder-v5",
+      "owner_placeholder": "release_operator_to_be_assigned",
+      "assignment_status": "pending_manual_assignment",
+      "active_state_changed": false
+    }
+  ],
+  "manual_handoff_reminders": [
+    "Manual handoff remains required for upload, submit, certify, pay, schedule, cancellation, private records, authenticated portals, and any legal or permitting determination."
+  ],
+  "post_decision_agent_notification_rows": [
+    {
+      "row_id": "agent-notification-row-v5-001",
+      "notification_status": "draft_row_only",
+      "sent": false,
+      "includes_go_no_go": true,
+      "includes_unresolved_holds": true,
+      "includes_source_freshness_caveat": true,
+      "includes_manual_handoff_reminder": true
+    }
+  ],
+  "offline_validation_commands": [
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ],
+  "side_effects": {
+    "activate_guardrails": false,
+    "open_devhub": false,
+    "read_private_documents": false,
+    "upload": false,
+    "submit": false,
+    "certify": false,
+    "pay": false,
+    "schedule": false,
+    "legal_or_permitting_guarantee": false
+  }
+}

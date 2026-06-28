@@ -1,0 +1,20 @@
+{
+  "schema_version": "operator-signoff-ledger.v1",
+  "entries": [
+    {
+      "id": "review-decision-001",
+      "title": "Fixture crawl scope reviewed",
+      "status": "approved",
+      "operator": "fixture-operator",
+      "source": "operator-signoff-ledger.fixture"
+    },
+    {
+      "id": "review-decision-002",
+      "title": "Production promotion gate",
+      "status": "blocked",
+      "operator": "fixture-operator",
+      "reason": "production promotion must remain disabled until live operator authorization exists",
+      "source": "operator-signoff-ledger.fixture"
+    }
+  ]
+}

@@ -1,0 +1,110 @@
+{
+  "fixture_id": "synthetic-file-preparation-to-guardrail-v1",
+  "description": "Synthetic PP&D document metadata compliance findings used to verify deterministic action guardrails without live crawl or authenticated DevHub automation.",
+  "document_metadata_findings": [
+    {
+      "finding_id": "metadata-file-name-not-standard",
+      "document_id": "doc_plan_set_combined_pdf",
+      "status": "noncompliant",
+      "severity": "error",
+      "rule_id": "ppd-file-prep-file-naming-standard",
+      "source_evidence_ids": [
+        "ppd-file-standards-name-drawings-v1"
+      ],
+      "action_impacts": [
+        {
+          "action_id": "upload_staged_documents",
+          "reason": "Plan PDF metadata does not meet the synthetic PP&D file naming rule, so upload staging must wait."
+        },
+        {
+          "action_id": "submit_permit_request",
+          "reason": "A permit request cannot be submitted while required upload metadata is noncompliant."
+        }
+      ],
+      "safe_actions": [
+        {
+          "action_id": "rename_local_pdf_to_ppd_standard",
+          "label": "Rename plan PDF",
+          "rationale": "Bring the local filename metadata into compliance before any official upload action."
+        }
+      ]
+    },
+    {
+      "finding_id": "metadata-pdf-not-searchable",
+      "document_id": "doc_structural_calculations_pdf",
+      "status": "failed",
+      "severity": "blocker",
+      "rule_id": "ppd-file-prep-searchable-pdf",
+      "source_evidence_ids": [
+        "ppd-single-pdf-searchable-v1"
+      ],
+      "action_impacts": [
+        {
+          "action_id": "upload_staged_documents",
+          "reason": "Synthetic metadata marks the calculations PDF as not searchable."
+        },
+        {
+          "action_id": "upload_correction_documents",
+          "reason": "Correction upload is consequential and must wait for searchable PDF metadata."
+        }
+      ],
+      "safe_actions": [
+        {
+          "action_id": "rebuild_searchable_plan_pdf",
+          "label": "Rebuild searchable PDF",
+          "rationale": "Regenerate or OCR the local PDF and rerun metadata validation."
+        }
+      ]
+    },
+    {
+      "finding_id": "metadata-owner-authorization-stale",
+      "document_id": "doc_owner_authorization_pdf",
+      "status": "stale",
+      "severity": "critical",
+      "rule_id": "ppd-file-prep-current-authorization",
+      "source_evidence_ids": [
+        "ppd-authorization-current-v1"
+      ],
+      "action_impacts": [
+        {
+          "action_id": "certify_application",
+          "reason": "Certification requires current authorization evidence."
+        },
+        {
+          "action_id": "submit_permit_request",
+          "reason": "Submission must wait until stale authorization metadata is resolved."
+        }
+      ],
+      "safe_actions": [
+        {
+          "action_id": "request_current_owner_authorization",
+          "label": "Request current authorization",
+          "rationale": "Ask the user for current authorization before certification or submission."
+        }
+      ]
+    },
+    {
+      "finding_id": "metadata-cover-sheet-note-present",
+      "document_id": "doc_cover_sheet_pdf",
+      "status": "compliant",
+      "severity": "info",
+      "rule_id": "ppd-file-prep-cover-sheet-note",
+      "source_evidence_ids": [
+        "ppd-cover-sheet-note-v1"
+      ],
+      "action_impacts": [
+        {
+          "action_id": "upload_staged_documents",
+          "reason": "Compliant informational finding should not block action."
+        }
+      ],
+      "safe_actions": [
+        {
+          "action_id": "review_optional_cover_sheet_note",
+          "label": "Review cover sheet note",
+          "rationale": "The user can review the optional note without making an official change."
+        }
+      ]
+    }
+  ]
+}

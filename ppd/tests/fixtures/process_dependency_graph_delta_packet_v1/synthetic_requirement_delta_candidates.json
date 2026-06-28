@@ -1,0 +1,44 @@
+{
+  "fixture_id": "synthetic-process-dependency-graph-delta-v1",
+  "requirement_delta_candidates": [
+    {
+      "candidate_id": "CAND-BLDG-UPLOAD-001",
+      "requirement_id": "REQ-ADD-UPLOAD-STAGING-001",
+      "delta_type": "add",
+      "affected_permit_families": ["building", "new single-family residence and detached ADU"],
+      "process_stages": ["document preparation", "upload staging", "acknowledgement/certification review"],
+      "required_user_facts": ["project address", "scope of work", "applicant contact", "property owner acknowledgement status"],
+      "required_documents": ["single PDF drawing set", "application form", "supporting calculations PDF"],
+      "fee_deadline_triggers": ["plan review intake fee may be triggered after prescreen", "deadline hold if stale source evidence changes upload rules"],
+      "unsupported_paths": ["email-only permit paths remain outside DevHub drafting", "official upload is not automated"],
+      "devhub_boundary_refs": ["DevHub permit application guide public boundary", "Submit Plans Online public boundary"],
+      "reviewer_holds": ["confirm upload-staging language against current public guidance before promotion"]
+    },
+    {
+      "candidate_id": "CAND-TRADE-LICENSE-002",
+      "requirement_id": "REQ-CHANGE-TRADE-LICENSE-002",
+      "delta_type": "change",
+      "affected_permit_families": ["trade", "trade with plan review"],
+      "process_stages": ["account setup or manual login", "eligibility screening", "fee payment"],
+      "required_user_facts": ["contractor license number", "DevHub profile license status", "trade category", "fixture count"],
+      "required_documents": ["trade permit application fixture summary", "plan review supporting document when required"],
+      "fee_deadline_triggers": ["fixture selections can trigger permit fee calculation", "payment remains exact-confirmation gated"],
+      "unsupported_paths": ["purchase trade permit action is consequential", "payment-detail entry is out of scope"],
+      "devhub_boundary_refs": ["DevHub standard trade permit guide public boundary", "DevHub fee payment guide public boundary"],
+      "reviewer_holds": ["confirm contractor-license dependency before any active process-model update"]
+    },
+    {
+      "candidate_id": "CAND-CORRECTION-003",
+      "requirement_id": "REQ-REMOVE-STALE-CORRECTION-003",
+      "delta_type": "remove",
+      "affected_permit_families": ["building", "commercial alterations"],
+      "process_stages": ["corrections/checksheets", "plan review", "approval/issuance"],
+      "required_user_facts": ["permit application number", "review group status", "correction notice date"],
+      "required_documents": ["corrected plan set", "checksheets response letter"],
+      "fee_deadline_triggers": ["correction response deadline may be listed on notice", "additional review fees may be assessed after intake"],
+      "unsupported_paths": ["official correction upload is not automated", "review-group status must be user-confirmed"],
+      "devhub_boundary_refs": ["DevHub upload corrections public boundary", "DevHub authenticated read-only status boundary"],
+      "reviewer_holds": ["remove stale draft-only correction instruction only after reviewer disposition"]
+    }
+  ]
+}

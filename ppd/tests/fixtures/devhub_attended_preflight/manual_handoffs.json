@@ -1,0 +1,160 @@
+{
+  "fixture_id": "devhub_attended_preflight_manual_handoffs_v1",
+  "fixture_type": "devhub_attended_preflight",
+  "description": "Deterministic fixture proving DevHub authentication-adjacent states are manual handoffs and authenticated browser state is never committed.",
+  "source_scope": "synthetic_policy_fixture",
+  "live_devhub_required": false,
+  "committed_fixture_paths": [
+    "ppd/tests/fixtures/devhub_attended_preflight/manual_handoffs.json"
+  ],
+  "manual_handoff_states": [
+    {
+      "state_id": "login",
+      "display_name": "PortlandOregon.gov sign-in",
+      "trigger_examples": [
+        "Sign In/Register button is visible",
+        "PortlandOregon.gov credential prompt is visible",
+        "DevHub redirects to an identity-provider sign-in page"
+      ],
+      "automation_policy": "manual_handoff",
+      "requires_user_attendance": true,
+      "may_store_authenticated_browser_state": false,
+      "allowed_committed_artifacts": [
+        "redacted_attended_preflight_event"
+      ],
+      "blocked_automation": [
+        "enter_username",
+        "enter_password",
+        "submit_credentials",
+        "password_recovery"
+      ],
+      "handoff_message": "User must complete sign-in manually in the attended browser."
+    },
+    {
+      "state_id": "mfa",
+      "display_name": "Multi-factor authentication",
+      "trigger_examples": [
+        "One-time code prompt is visible",
+        "Authenticator approval prompt is visible",
+        "Security verification prompt is visible"
+      ],
+      "automation_policy": "manual_handoff",
+      "requires_user_attendance": true,
+      "may_store_authenticated_browser_state": false,
+      "allowed_committed_artifacts": [
+        "redacted_attended_preflight_event"
+      ],
+      "blocked_automation": [
+        "request_mfa_code_from_user",
+        "enter_mfa_code",
+        "approve_mfa_challenge",
+        "change_mfa_settings"
+      ],
+      "handoff_message": "User must complete MFA manually in the attended browser."
+    },
+    {
+      "state_id": "captcha",
+      "display_name": "CAPTCHA or bot-defense challenge",
+      "trigger_examples": [
+        "CAPTCHA challenge is visible",
+        "Bot-defense interstitial is visible",
+        "Human verification prompt is visible"
+      ],
+      "automation_policy": "manual_handoff",
+      "requires_user_attendance": true,
+      "may_store_authenticated_browser_state": false,
+      "allowed_committed_artifacts": [
+        "redacted_attended_preflight_event"
+      ],
+      "blocked_automation": [
+        "solve_captcha",
+        "bypass_bot_defense",
+        "outsource_challenge_solution",
+        "retry_until_challenge_clears"
+      ],
+      "handoff_message": "User must resolve CAPTCHA or bot-defense prompts manually."
+    },
+    {
+      "state_id": "account_creation",
+      "display_name": "Account creation or registration",
+      "trigger_examples": [
+        "Create account form is visible",
+        "Registration workflow is visible",
+        "Terms or identity setup form is visible before account creation"
+      ],
+      "automation_policy": "manual_handoff",
+      "requires_user_attendance": true,
+      "may_store_authenticated_browser_state": false,
+      "allowed_committed_artifacts": [
+        "redacted_attended_preflight_event"
+      ],
+      "blocked_automation": [
+        "create_account",
+        "accept_terms_for_user",
+        "submit_registration",
+        "enroll_security_factor"
+      ],
+      "handoff_message": "User must create or modify accounts manually."
+    }
+  ],
+  "authenticated_browser_state": {
+    "commit_policy": "never_commit",
+    "storage_state_path": null,
+    "trace_path": null,
+    "har_path": null,
+    "screenshot_path": null,
+    "raw_crawl_output_path": null,
+    "downloaded_document_path": null,
+    "redaction_required_before_any_journal_event": true,
+    "allowed_runtime_only_artifacts": [
+      "ephemeral_user_browser_profile",
+      "ephemeral_playwright_context",
+      "redacted_accessible_ui_summary"
+    ],
+    "prohibited_committed_artifacts": [
+      {
+        "artifact_type": "playwright_storage_state",
+        "example_names": ["storageState.json", "auth-state.json", "state.json"],
+        "commit_safe": false
+      },
+      {
+        "artifact_type": "cookies_or_tokens",
+        "example_names": ["cookies.json", "session.json", "tokens.json"],
+        "commit_safe": false
+      },
+      {
+        "artifact_type": "browser_trace_or_har",
+        "example_names": ["trace.zip", "network.har"],
+        "commit_safe": false
+      },
+      {
+        "artifact_type": "private_screenshot_or_download",
+        "example_names": ["authenticated-page.png", "permit-download.pdf"],
+        "commit_safe": false
+      }
+    ]
+  },
+  "artifact_inventory": [
+    {
+      "path": "ppd/tests/fixtures/devhub_attended_preflight/manual_handoffs.json",
+      "classification": "deterministic_policy_fixture",
+      "contains_credentials": false,
+      "contains_cookies": false,
+      "contains_tokens": false,
+      "contains_authenticated_browser_state": false,
+      "contains_private_devhub_values": false,
+      "contains_screenshots": false,
+      "contains_traces": false,
+      "contains_har": false,
+      "contains_raw_crawl_output": false,
+      "commit_safe": true
+    }
+  ],
+  "expected_preflight_outcome": {
+    "login": "pause_for_manual_handoff",
+    "mfa": "pause_for_manual_handoff",
+    "captcha": "pause_for_manual_handoff",
+    "account_creation": "pause_for_manual_handoff",
+    "authenticated_state_commit_attempt": "refuse"
+  }
+}

@@ -1,0 +1,10 @@
+Implemented a narrow frame-logic audit normalization fix: legacy slot-positioned values like `1_1572` are now decoded to canonical positioned values (e.g., `1572`) before ontology term normalization.
+
+Changed files:
+- [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000031-20260518_104515/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:17)
+- [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000031-20260518_104515/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:695)
+- [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000031-20260518_104515/tests/unit_tests/logic/modal/test_modal_codec.py:3543)
+
+Validation run:
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py tests/unit_tests/logic/modal/test_modal_codec.py -k "frame_ontology or frame_terms or frame_decoder_audit_features or legacy_slot_positioned"`  
+- Result: `44 passed, 80 deselected`.

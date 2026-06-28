@@ -1,0 +1,140 @@
+{
+  "packet_id": "agent-gap-analysis-rerun-synthetic-single-pdf-rerun-case",
+  "packet_status": "fixture_only_no_private_file_reads_no_devhub_launch",
+  "case_id": "synthetic-single-pdf-rerun-case",
+  "process_id": "residential-building-permit-single-pdf",
+  "guardrail_candidate": {
+    "candidate_id": "guardrail-candidate-synthetic-single-pdf",
+    "candidate_status": "draft_review_required",
+    "does_not_replace_active_bundle": true,
+    "active_guardrail_bundle_id": "guardrail-bundle-active-single-pdf-20260508",
+    "source_evidence_ids": [
+      "ppd-source-submit-plans-online#single-pdf-guidance",
+      "ppd-source-devhub-guide-submit-permit-application#upload-step"
+    ]
+  },
+  "comparison_to_prior_gap_analysis": {
+    "prior_result_id": "gap-analysis-before-single-pdf-change",
+    "current_result_id": "gap-analysis-rerun-single-pdf-change",
+    "changed_missing_facts": {
+      "added": [
+        "supporting_documents_are_separate_pdfs"
+      ],
+      "removed": [],
+      "unchanged": []
+    },
+    "changed_blocked_actions": {
+      "added": [
+        "upload supporting documents"
+      ],
+      "removed": [],
+      "unchanged": [
+        "submit permit application"
+      ]
+    }
+  },
+  "baseline_missing_facts": [],
+  "rerun_missing_facts": [
+    "supporting_documents_are_separate_pdfs"
+  ],
+  "changed_missing_facts": {
+    "added": [
+      "supporting_documents_are_separate_pdfs"
+    ],
+    "removed": [],
+    "unchanged": []
+  },
+  "missing_documents": [],
+  "stale_evidence": [
+    "property_owner_authorization",
+    "site_plan_doc"
+  ],
+  "conflicting_evidence": [],
+  "blocked_actions": [
+    {
+      "action_id": "submit permit application",
+      "reason": "Consequential PP&D action requires attended user review and exact confirmation.",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true,
+      "source": "gap_analysis"
+    },
+    {
+      "action_id": "upload supporting documents",
+      "reason": "This official PP&D action is consequential and requires user attendance plus exact confirmation.",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true,
+      "source": "draft_guardrail_candidate"
+    }
+  ],
+  "manual_handoffs": [
+    {
+      "handoff_id": "submit permit application",
+      "reason": "User attendance is required before this PP&D or account-scoped action can continue.",
+      "agent_may_continue_locally": true
+    },
+    {
+      "handoff_id": "upload supporting documents",
+      "reason": "User attendance is required before this PP&D or account-scoped action can continue.",
+      "agent_may_continue_locally": true
+    }
+  ],
+  "allowed_local_previews": [
+    {
+      "action_id": "render_local_pdf_field_mapping_preview",
+      "allowed": true,
+      "requires_devhub": false,
+      "requires_private_file_read": false,
+      "basis": "local_preview_only"
+    },
+    {
+      "action_id": "preview_missing_fact_question_list",
+      "allowed": true,
+      "requires_devhub": false,
+      "requires_private_file_read": false,
+      "basis": "local_preview_only"
+    },
+    {
+      "action_id": "preview_reversible_draft_plan",
+      "allowed": true,
+      "requires_devhub": false,
+      "requires_private_file_read": false,
+      "basis": "local_preview_only"
+    },
+    {
+      "action_id": "preview_draft_guardrail_explanations",
+      "allowed": true,
+      "requires_devhub": false,
+      "requires_private_file_read": false,
+      "basis": "draft_candidate_review_only"
+    }
+  ],
+  "next_safe_actions": [
+    "review_public_requirements",
+    "preview_missing_fact_question_list"
+  ],
+  "user_facing_questions": [
+    {
+      "question_id": "missing_fact.supporting_documents_are_separate_pdfs",
+      "question": "Please provide the PP&D case fact: supporting documents are separate pdfs.",
+      "reason": "The draft guardrail candidate made this fact required for the rerun.",
+      "source_evidence_ids": [
+        "ppd-source-submit-plans-online#single-pdf-guidance"
+      ]
+    },
+    {
+      "question_id": "stale_evidence.site_plan_doc",
+      "question": "Is site plan doc still current for this permit case?",
+      "reason": "The fixture marks this fact or document as stale, so the agent should not rely on it silently.",
+      "source_evidence_ids": [
+        "ppd-source-devhub-guide-submit-permit-application#upload-step"
+      ]
+    }
+  ],
+  "privacy_and_execution_limits": {
+    "reads_private_files": false,
+    "launches_devhub": false,
+    "uses_authenticated_session": false,
+    "stores_raw_user_documents": false,
+    "automates_official_actions": false
+  }
+}

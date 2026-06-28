@@ -1,0 +1,7 @@
+{
+  "fixture_id": "public_refresh_authorization_packet_v8_source_fixture",
+  "fixture_version": 8,
+  "public_freshness_watchlist_handoff_v7_fixture_dir": "../public_freshness_watchlist_v7",
+  "agent_api_compatibility_matrix_v7_fixture": "../public_freshness_watchlist_v7/agent_api_compatibility_matrix_v7.json",
+  "current_source_registry_fixture": "../public_freshness_watchlist_v7/current_source_registry_v7.json"
+}

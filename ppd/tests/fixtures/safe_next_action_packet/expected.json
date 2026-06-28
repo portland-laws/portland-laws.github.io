@@ -1,0 +1,61 @@
+{
+  "citations": [
+    "fixture:public-crawl-metadata-dry-run:2026-05-28",
+    "fixture:requirement-regeneration-promotion-decision:2026-05-28",
+    "fixture:devhub-surface-registry-update-candidate:2026-05-28",
+    "fixture:agent-handoff-transcript-expectation-matrix:2026-05-28"
+  ],
+  "disabled_live_actions": [
+    "live_public_crawl",
+    "devhub_launch",
+    "authenticated_devhub_session",
+    "private_file_read",
+    "llm_release_note_generation",
+    "document_download",
+    "form_submission"
+  ],
+  "mode": "fixture_first_offline_only",
+  "next_daemon_work": [
+    "Promote public crawl dry-run metadata into the offline release packet fixture.",
+    "Leave regenerated requirements unpromoted and record blockers in the release packet.",
+    "Queue DevHub surface registry candidate for human review without launching DevHub.",
+    "Resolve unmet handoff transcript expectations before re-enabling live automation."
+  ],
+  "offline_only_capabilities": [
+    {
+      "citation": "fixture:public-crawl-metadata-dry-run:2026-05-28",
+      "description": "Summarize public crawl metadata dry-run counts and warnings from committed fixtures.",
+      "name": "public_crawl_metadata_dry_run_intake"
+    },
+    {
+      "citation": "fixture:requirement-regeneration-promotion-decision:2026-05-28",
+      "description": "Report whether regenerated requirements remain blocked or are ready for fixture promotion.",
+      "name": "requirement_regeneration_promotion_decision"
+    },
+    {
+      "citation": "fixture:devhub-surface-registry-update-candidate:2026-05-28",
+      "description": "Describe candidate DevHub surface registry updates without launching DevHub.",
+      "name": "devhub_surface_registry_update_candidate"
+    },
+    {
+      "citation": "fixture:agent-handoff-transcript-expectation-matrix:2026-05-28",
+      "description": "List transcript expectations that a future agent must satisfy before live work resumes.",
+      "name": "agent_handoff_transcript_expectation_matrix"
+    }
+  ],
+  "packet_type": "ppd.safe_next_action.release_notes",
+  "remaining_blockers": [
+    "Promotion requires human review of regenerated requirement diffs.",
+    "Live crawl remains disabled; only dry-run metadata is cited.",
+    "Future handoff must cite rollback references and disabled live actions."
+  ],
+  "rollback_references": [
+    "Remove the generated packet fixture and keep the previous PP&D fixture set.",
+    "Do not promote regenerated requirements until the offline intake cites pass validation.",
+    "Keep DevHub surface registry changes as candidates until a human approves live verification."
+  ],
+  "user_facing_escalation_prompts": [
+    "Should regenerated requirements stay fixture-only until PP&D confirms the source citation set?",
+    "Who owns approval for moving the DevHub registry candidate from fixture to live verification?"
+  ]
+}

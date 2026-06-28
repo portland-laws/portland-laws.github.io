@@ -1,0 +1,17 @@
+Implemented a deterministic section-style slot refinement for the IR decompiler/codec path.
+
+- Added composite style slot emission for both citation and source-id sections:
+  - `*_section_style`
+  - `*_section_suffix_style`
+  - `*_section_punctuation_style`
+  - plus typed token features for `*_section_style`
+- Wired this into both decompiler phrase-slot output and F-logic triple projection so both views stay aligned.
+
+Changed files:
+- [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000077-20260518_151617/ipfs_datasets_py/logic/modal/decompiler.py:1115)
+- [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000077-20260518_151617/ipfs_datasets_py/logic/modal/codec.py:1454)
+- [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000077-20260518_151617/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:3551)
+
+Validation run:
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py -k section_style` -> `2 passed`
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py` -> `48 passed`

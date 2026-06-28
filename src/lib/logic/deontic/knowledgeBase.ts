@@ -1,6 +1,21 @@
 export type KnowledgeDeonticModality = 'O' | 'P' | 'F' | 'OPT';
-export type KnowledgeTemporalOperator = 'before' | 'after' | 'coincident' | 'during' | 'overlaps' | 'starts' | 'finishes' | 'equals';
-export type KnowledgeLogicalOperator = 'and' | 'or' | 'not' | 'implies' | 'iff' | 'forall' | 'exists';
+export type KnowledgeTemporalOperator =
+  | 'before'
+  | 'after'
+  | 'coincident'
+  | 'during'
+  | 'overlaps'
+  | 'starts'
+  | 'finishes'
+  | 'equals';
+export type KnowledgeLogicalOperator =
+  | 'and'
+  | 'or'
+  | 'not'
+  | 'implies'
+  | 'iff'
+  | 'forall'
+  | 'exists';
 
 export interface TimeInterval {
   start?: Date;
@@ -35,6 +50,21 @@ export interface DeonticStatement {
   condition?: Proposition;
 }
 
+export interface DeonticStatementQuery {
+  modality?: KnowledgeDeonticModality;
+  actor?: Party | string;
+  action?: Action | string;
+  recipient?: Party | string;
+  atTime?: Date;
+  includeDerived?: boolean;
+}
+
+export interface ComplianceResult {
+  compliant: boolean;
+  message: string;
+  matchedStatements: Array<DeonticStatement>;
+}
+
 export function resolvedEnd(interval: TimeInterval): Date | undefined {
   if (interval.end) return interval.end;
   if (interval.start && interval.durationDays !== undefined) {
@@ -58,7 +88,7 @@ export function actionToString(action: Action): string {
   return `${action.verb} ${action.objectNoun}`.trim();
 }
 
-export function predicate(name: string, args: unknown[] = []): Proposition {
+export function predicate(name: string, args: Array<unknown> = []): Proposition {
   return {
     kind: 'predicate',
     evaluate(model) {
@@ -123,9 +153,18 @@ export class DeonticKnowledgeBase {
   readonly rules: Array<{ condition: Proposition; statement: DeonticStatement }> = [];
   readonly facts: Record<string, boolean> = {};
   readonly derivedStatements = new Map<string, DeonticStatement>();
+  private readonly statementOrder: Array<string> = [];
+  private readonly actorIndex = new Map<string, Set<string>>();
+  private readonly actionIndex = new Map<string, Set<string>>();
+  private readonly modalityIndex = new Map<KnowledgeDeonticModality, Set<string>>();
 
   addStatement(statement: DeonticStatement): void {
-    this.statements.set(statementKey(statement), statement);
+    const key = statementKey(statement);
+    if (!this.statements.has(key)) {
+      this.statementOrder.push(key);
+    }
+    this.statements.set(key, statement);
+    this.indexStatement(key, statement);
   }
 
   addRule(condition: Proposition, statement: DeonticStatement): void {
@@ -137,7 +176,7 @@ export class DeonticKnowledgeBase {
   }
 
   inferStatements(): DeonticStatement[] {
-    const derived = new Map(this.statements);
+    const derived = new Map<string, DeonticStatement>(this.statements);
     let changed = true;
     while (changed) {
       changed = false;
@@ -151,31 +190,117 @@ export class DeonticKnowledgeBase {
     }
     this.derivedStatements.clear();
     for (const [key, statement] of derived.entries()) {
-      this.derivedStatements.set(key, statement);
+      if (!this.statements.has(key)) {
+        this.derivedStatements.set(key, statement);
+      }
     }
     return [...derived.values()];
   }
 
-  checkCompliance(actor: Party, action: Action, atTime: Date): { compliant: boolean; message: string } {
-    const statements = this.derivedStatements.size > 0 ? [...this.derivedStatements.values()] : [...this.statements.values()];
-    const matching = statements.filter((statement) => sameParty(statement.actor, actor) && sameAction(statement.action, action));
+  getStatements(query: DeonticStatementQuery = {}): Array<DeonticStatement> {
+    const baseKeys = this.candidateKeys(query);
+    const baseStatements = baseKeys.map((key) => this.statements.get(key)).filter(isStatement);
+    const includeDerived = query.includeDerived !== false;
+    const derivedStatements = includeDerived ? [...this.derivedStatements.values()] : [];
+    return [...baseStatements, ...derivedStatements].filter((statement) =>
+      statementMatchesQuery(statement, query),
+    );
+  }
+
+  findActiveStatements(
+    actor: Party | string,
+    action: Action | string,
+    atTime: Date,
+  ): Array<DeonticStatement> {
+    return this.getStatements({ actor, action, atTime, includeDerived: true });
+  }
+
+  hasFact(factName: string): boolean {
+    return this.facts[factName] === true;
+  }
+
+  snapshot(): {
+    statements: Array<DeonticStatement>;
+    facts: Record<string, boolean>;
+    rules: number;
+  } {
+    return {
+      statements: this.getStatements({ includeDerived: true }),
+      facts: { ...this.facts },
+      rules: this.rules.length,
+    };
+  }
+
+  checkCompliance(actor: Party, action: Action, atTime: Date): ComplianceResult {
+    const matching = this.findActiveStatements(actor, action, atTime);
     for (const statement of matching) {
       if (statement.modality === 'F') {
-        return { compliant: false, message: `${partyToString(actor)} violates prohibition against ${actionToString(action)}` };
+        return {
+          compliant: false,
+          message: `${partyToString(actor)} violates prohibition against ${actionToString(action)}`,
+          matchedStatements: matching,
+        };
       }
       if (statement.modality === 'O') {
-        if (statement.timeInterval && !intervalContains(statement.timeInterval, atTime)) {
-          return { compliant: false, message: `${partyToString(actor)} is outside the obligation window for ${actionToString(action)}` };
-        }
-        return { compliant: true, message: `${partyToString(actor)} complies with obligation to ${actionToString(action)}` };
+        return {
+          compliant: true,
+          message: `${partyToString(actor)} complies with obligation to ${actionToString(action)}`,
+          matchedStatements: matching,
+        };
       }
     }
-    return { compliant: true, message: `No active contrary deontic rule found for ${partyToString(actor)} and ${actionToString(action)}` };
+    const inactiveObligation = this.getStatements({
+      actor,
+      action,
+      modality: 'O',
+      includeDerived: true,
+    }).find((statement) => {
+      return (
+        statement.timeInterval !== undefined && !intervalContains(statement.timeInterval, atTime)
+      );
+    });
+    if (inactiveObligation) {
+      return {
+        compliant: false,
+        message: `${partyToString(actor)} is outside the obligation window for ${actionToString(action)}`,
+        matchedStatements: [inactiveObligation],
+      };
+    }
+    return {
+      compliant: true,
+      message: `No active contrary deontic rule found for ${partyToString(actor)} and ${actionToString(action)}`,
+      matchedStatements: [],
+    };
+  }
+
+  private candidateKeys(query: DeonticStatementQuery): Array<string> {
+    const sets: Array<Set<string>> = [];
+    const actorId = typeof query.actor === 'string' ? query.actor : query.actor?.entityId;
+    const actionId = typeof query.action === 'string' ? query.action : query.action?.actionId;
+    if (actorId !== undefined) sets.push(this.actorIndex.get(actorId) ?? new Set<string>());
+    if (actionId !== undefined) sets.push(this.actionIndex.get(actionId) ?? new Set<string>());
+    if (query.modality !== undefined)
+      sets.push(this.modalityIndex.get(query.modality) ?? new Set<string>());
+    if (sets.length === 0) return [...this.statementOrder];
+    const [first, ...rest] = sets.sort((left, right) => left.size - right.size);
+    return [...first].filter((key) => rest.every((set) => set.has(key)));
+  }
+
+  private indexStatement(key: string, statement: DeonticStatement): void {
+    addToIndex(this.actorIndex, statement.actor.entityId, key);
+    addToIndex(this.actionIndex, statement.action.actionId, key);
+    addToIndex(this.modalityIndex, statement.modality, key);
   }
 }
 
 function statementKey(statement: DeonticStatement): string {
-  return [statement.modality, statement.actor.entityId, statement.action.actionId, statement.recipient?.entityId ?? '', statement.condition?.toString() ?? ''].join('|');
+  return [
+    statement.modality,
+    statement.actor.entityId,
+    statement.action.actionId,
+    statement.recipient?.entityId ?? '',
+    statement.condition?.toString() ?? '',
+  ].join('|');
 }
 
 function sameParty(left: Party, right: Party): boolean {
@@ -184,4 +309,39 @@ function sameParty(left: Party, right: Party): boolean {
 
 function sameAction(left: Action, right: Action): boolean {
   return left.actionId === right.actionId;
+}
+
+function addToIndex<Key>(
+  index: Map<Key, Set<string>>,
+  indexKey: Key,
+  statementKeyValue: string,
+): void {
+  const existing = index.get(indexKey);
+  if (existing) {
+    existing.add(statementKeyValue);
+    return;
+  }
+  index.set(indexKey, new Set<string>([statementKeyValue]));
+}
+
+function isStatement(statement: DeonticStatement | undefined): statement is DeonticStatement {
+  return statement !== undefined;
+}
+
+function statementMatchesQuery(statement: DeonticStatement, query: DeonticStatementQuery): boolean {
+  const actorId = typeof query.actor === 'string' ? query.actor : query.actor?.entityId;
+  const actionId = typeof query.action === 'string' ? query.action : query.action?.actionId;
+  const recipientId =
+    typeof query.recipient === 'string' ? query.recipient : query.recipient?.entityId;
+  if (query.modality !== undefined && statement.modality !== query.modality) return false;
+  if (actorId !== undefined && statement.actor.entityId !== actorId) return false;
+  if (actionId !== undefined && statement.action.actionId !== actionId) return false;
+  if (recipientId !== undefined && statement.recipient?.entityId !== recipientId) return false;
+  if (
+    query.atTime !== undefined &&
+    statement.timeInterval !== undefined &&
+    !intervalContains(statement.timeInterval, query.atTime)
+  )
+    return false;
+  return true;
 }

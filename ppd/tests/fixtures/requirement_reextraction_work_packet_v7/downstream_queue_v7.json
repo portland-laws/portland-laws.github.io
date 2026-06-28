@@ -1,0 +1,152 @@
+{
+  "schema": "ppd.downstream_requirement_reextraction_queue.v7",
+  "mode": "fixture_first_downstream_reextraction_queue_v7",
+  "consumes_only": {
+    "source_freshness_diff_intake_v7_fixtures": true
+  },
+  "source_fixture_refs": [
+    {
+      "fixture_role": "source_freshness_diff_intake_v7",
+      "fixture_ref": "synthetic-source-freshness-diff-v7",
+      "handoff_manifest_id": "synthetic-handoff-v7",
+      "prior_metadata_id": "synthetic-prior-v7",
+      "current_metadata_id": "synthetic-current-v7"
+    }
+  ],
+  "boundaries": {
+    "fixture_first": true,
+    "source_freshness_diff_intake_v7_fixtures_only": true,
+    "downstream_queue_only": true,
+    "live_crawl_executed": false,
+    "raw_artifacts_downloaded": false,
+    "devhub_opened": false,
+    "private_documents_read": false,
+    "uploads_performed": false,
+    "submissions_performed": false,
+    "certifications_performed": false,
+    "payments_performed": false,
+    "scheduling_performed": false,
+    "legal_or_permitting_guarantees_made": false,
+    "active_requirement_mutation": false,
+    "active_process_model_mutation": false,
+    "active_guardrail_mutation": false,
+    "active_mutation": false
+  },
+  "source_to_extraction_work_rows": [
+    {
+      "work_row_id": "source-to-extraction::ppd-submit-plans-online",
+      "source_id": "ppd-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "change_kind": "changed_normalized_public_guidance_fixture",
+      "normalized_document_id_placeholder": "norm-doc-submit-plans-v7",
+      "requirement_placeholder_id": "candidate-req-submit-plans-v7",
+      "work_status": "queued_for_fixture_backed_reextraction_review",
+      "requires_live_crawl": false,
+      "requires_devhub": false,
+      "active_mutation_allowed": false
+    },
+    {
+      "work_row_id": "source-to-extraction::ppd-devhub-faq",
+      "source_id": "ppd-devhub-faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "change_kind": "changed_normalized_public_guidance_fixture",
+      "normalized_document_id_placeholder": "norm-doc-devhub-faq-v7",
+      "requirement_placeholder_id": "candidate-req-devhub-faq-v7",
+      "work_status": "queued_for_fixture_backed_reextraction_review",
+      "requires_live_crawl": false,
+      "requires_devhub": false,
+      "active_mutation_allowed": false
+    }
+  ],
+  "changed_section_placeholders": [
+    {
+      "source_id": "ppd-submit-plans-online",
+      "section_placeholder_id": "changed-section::ppd-submit-plans-online",
+      "expected_basis": "source_freshness_diff_v7_changed_source_row",
+      "section_status": "placeholder_until_normalized_document_sections_reviewed",
+      "changed_section_claim_made": false
+    },
+    {
+      "source_id": "ppd-devhub-faq",
+      "section_placeholder_id": "changed-section::ppd-devhub-faq",
+      "expected_basis": "source_freshness_diff_v7_changed_source_row",
+      "section_status": "placeholder_until_normalized_document_sections_reviewed",
+      "changed_section_claim_made": false
+    }
+  ],
+  "citation_span_refresh_expectations": [
+    {
+      "source_id": "ppd-submit-plans-online",
+      "citation_placeholder_id": "citation-submit-plans-v7",
+      "refresh_expected": true,
+      "refresh_source": "normalized_document_fixture_only",
+      "span_status": "needs_fixture_backed_span_refresh",
+      "carry_forward_reason": "Synthetic fixture indicates prior file-preparation citation must be replaced only after reviewer confirms normalized section anchors."
+    },
+    {
+      "source_id": "ppd-devhub-faq",
+      "citation_placeholder_id": "citation-devhub-faq-v7",
+      "refresh_expected": true,
+      "refresh_source": "normalized_document_fixture_only",
+      "span_status": "needs_fixture_backed_span_refresh",
+      "carry_forward_reason": "Synthetic fixture indicates prior account-scoped action citation must be replaced only after reviewer confirms normalized section anchors."
+    }
+  ],
+  "requirement_family_hints": [
+    {
+      "source_id": "ppd-submit-plans-online",
+      "family_hint_id": "requirement-family::ppd-submit-plans-online",
+      "requirement_family_hint": "document_requirement",
+      "hint_status": "reviewer_must_confirm_from_fixture_evidence",
+      "legal_or_permitting_guarantee": false
+    },
+    {
+      "source_id": "ppd-devhub-faq",
+      "family_hint_id": "requirement-family::ppd-devhub-faq",
+      "requirement_family_hint": "action_gate",
+      "hint_status": "reviewer_must_confirm_from_fixture_evidence",
+      "legal_or_permitting_guarantee": false
+    }
+  ],
+  "stale_evidence_hold_carry_forward_rows": [
+    {
+      "source_id": "ppd-submit-plans-online",
+      "hold_id": "stale-evidence-hold::ppd-submit-plans-online",
+      "prior_hold_status": "held_for_fixture_backed_replacement",
+      "carry_forward": true,
+      "release_condition": "Human reviewer confirms replacement source evidence anchor from synthetic normalized document fixture.",
+      "release_requires_reviewer_disposition": true
+    },
+    {
+      "source_id": "ppd-devhub-faq",
+      "hold_id": "stale-evidence-hold::ppd-devhub-faq",
+      "prior_hold_status": "held_for_fixture_backed_replacement",
+      "carry_forward": true,
+      "release_condition": "Human reviewer confirms replacement source evidence anchor from synthetic normalized document fixture.",
+      "release_requires_reviewer_disposition": true
+    }
+  ],
+  "reviewer_assignment_placeholders": [
+    {
+      "source_id": "ppd-submit-plans-online",
+      "assignment_id": "reviewer-assignment::ppd-submit-plans-online",
+      "owner_placeholder": "PPD_REQUIREMENT_REVIEWER_PLACEHOLDER",
+      "review_stage": "downstream_requirement_reextraction_queue_v7",
+      "assignment_status": "placeholder_unassigned",
+      "human_reviewer_required": true
+    },
+    {
+      "source_id": "ppd-devhub-faq",
+      "assignment_id": "reviewer-assignment::ppd-devhub-faq",
+      "owner_placeholder": "PPD_REQUIREMENT_REVIEWER_PLACEHOLDER",
+      "review_stage": "downstream_requirement_reextraction_queue_v7",
+      "assignment_status": "placeholder_unassigned",
+      "human_reviewer_required": true
+    }
+  ],
+  "exact_offline_validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/agent_readiness/downstream_requirement_reextraction_queue_v7.py"],
+    ["python3", "-m", "pytest", "ppd/tests/test_downstream_requirement_reextraction_queue_v7.py"],
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

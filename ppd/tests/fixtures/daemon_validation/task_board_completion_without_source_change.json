@@ -1,0 +1,13 @@
+{
+  "summary": "Mark PP&D extraction task complete",
+  "impact": "Only updates the task board.",
+  "files": [
+    {
+      "path": "ppd/daemon/task_board.md",
+      "content": "# PP&D Task Board\n\n- [x] checkbox-49: Extract permit requirements\n"
+    }
+  ],
+  "validation_commands": [
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

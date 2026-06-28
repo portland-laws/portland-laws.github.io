@@ -1,0 +1,38 @@
+{
+  "packet_id": "source-monitoring-schedule-20260528-fixture",
+  "evidence_ids": [
+    "schedule-candidate-approved-2026-05-28"
+  ],
+  "schedule_entries": [
+    {
+      "schedule_candidate_id": "schedule-online-tools-daily",
+      "source_id": "ppd-online-tools",
+      "cadence": "daily",
+      "recrawl_decision": "due",
+      "evidence_ids": [
+        "schedule-online-tools-cadence-2026-05-28"
+      ],
+      "minimum_pause_seconds": 6
+    },
+    {
+      "schedule_candidate_id": "schedule-portlandmaps-weekly",
+      "source_id": "portlandmaps-public-reference",
+      "cadence": "weekly",
+      "recrawl_decision": "monitor",
+      "evidence_ids": [
+        "schedule-portlandmaps-cadence-2026-05-28"
+      ],
+      "minimum_pause_seconds": 10
+    },
+    {
+      "schedule_candidate_id": "schedule-devhub-auth-excluded",
+      "source_id": "devhub-auth-private",
+      "cadence": "never-public-recrawl",
+      "recrawl_decision": "blocked",
+      "evidence_ids": [
+        "schedule-devhub-auth-excluded-2026-05-28"
+      ],
+      "minimum_pause_seconds": 30
+    }
+  ]
+}

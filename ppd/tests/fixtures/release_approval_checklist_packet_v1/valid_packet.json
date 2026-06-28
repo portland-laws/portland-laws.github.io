@@ -1,0 +1,48 @@
+{
+  "packet_type": "ppd.release_approval_checklist_packet.v1",
+  "mode": "fixture-first-offline-only",
+  "approval_decision": "hold",
+  "rehearsal_references": [
+    {
+      "rehearsal_id": "offline-release-rehearsal-20260531",
+      "packet_ref": "ppd.agent_readiness.offline_release_rehearsal_gate_v2",
+      "source_evidence_ids": ["fixture:offline-release-rehearsal-gate-v2"]
+    }
+  ],
+  "reviewer_disposition_evidence": [
+    {
+      "reviewer_id": "release-reviewer-fixture",
+      "disposition": "hold",
+      "evidence_ref": "fixture:reviewer-disposition-ledger-v1",
+      "source_evidence_ids": ["fixture:reviewer-disposition-ledger-v1"]
+    }
+  ],
+  "rollback_note_rows": [
+    {
+      "rollback_note_id": "rollback-note-fixture-1",
+      "note": "Keep generated checklist output separate from active release state until manual approval is recorded elsewhere.",
+      "source_evidence_ids": ["fixture:release-rollback-readiness-packet"]
+    }
+  ],
+  "dependency_order_checks": [
+    {
+      "check_id": "dependency-order-fixture-1",
+      "before": "offline rehearsal review",
+      "after": "manual release approval consideration",
+      "status": "checked",
+      "source_evidence_ids": ["fixture:dependency-order-check"]
+    }
+  ],
+  "hold_reject_reasons": [
+    {
+      "reason_id": "hold-reason-fixture-1",
+      "decision": "hold",
+      "reason": "Manual reviewer disposition and release supervisor signoff remain external to this fixture packet.",
+      "source_evidence_ids": ["fixture:hold-reason"]
+    }
+  ],
+  "validation_commands": [
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ],
+  "no_active_mutation_attested": true
+}

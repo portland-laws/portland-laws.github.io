@@ -1,0 +1,223 @@
+{
+  "packet_id": "process-model-impact-rehearsal.synthetic.2026-05-29",
+  "guardrail_recompilation_rehearsal_packet": {
+    "packet_id": "guardrail-recompilation-rehearsal.synthetic.2026-05-29",
+    "compiled": false,
+    "promoted": false,
+    "source_evidence_ids": [
+      "ppd-devhub-guide-submit-permit-application#dynamic-questions",
+      "ppd-submit-plans-online#single-pdf-process",
+      "ppd-devhub-faq#not-all-permits"
+    ],
+    "predicate_impacts": [
+      {
+        "requirement_id": "REQ-SYN-PLAN-PDF-SEPARATION",
+        "affected_stage": "document preparation",
+        "required_facts_added": [
+          "project_has_plan_review",
+          "drawing_pages_combined_into_single_pdf"
+        ],
+        "required_facts_removed": [],
+        "document_rules_added": [
+          {
+            "document": "combined_drawing_plan_pdf",
+            "rule": "drawing sheets must be grouped as one plan PDF while applications and calculations remain separate PDFs"
+          }
+        ],
+        "document_rules_changed": [],
+        "unsupported_paths": [],
+        "citation_ids": [
+          "ppd-submit-plans-online#single-pdf-process"
+        ]
+      },
+      {
+        "requirement_id": "REQ-SYN-DEVHUB-DYNAMIC-QUESTIONS",
+        "affected_stage": "application data entry",
+        "required_facts_added": [
+          "devhub_dynamic_questions_reviewed"
+        ],
+        "required_facts_removed": [],
+        "document_rules_added": [],
+        "document_rules_changed": [
+          {
+            "document": "application_form_pdf",
+            "rule": "application document readiness depends on dynamic DevHub question responses when the portal presents them"
+          }
+        ],
+        "unsupported_paths": [],
+        "citation_ids": [
+          "ppd-devhub-guide-submit-permit-application#dynamic-questions"
+        ]
+      },
+      {
+        "requirement_id": "REQ-SYN-NON-DEVHUB-PATH",
+        "affected_stage": "permit type selection",
+        "required_facts_added": [
+          "permit_path_confirmed_devhub_supported"
+        ],
+        "required_facts_removed": [],
+        "document_rules_added": [],
+        "document_rules_changed": [],
+        "unsupported_paths": [
+          "Some permit types may require email or another official path instead of DevHub; rehearsal must flag this before draft planning."
+        ],
+        "citation_ids": [
+          "ppd-devhub-faq#not-all-permits"
+        ]
+      }
+    ]
+  },
+  "reviewed_synthetic_requirement_candidates": [
+    {
+      "candidate_id": "CAND-SYN-001",
+      "requirement_id": "REQ-SYN-PLAN-PDF-SEPARATION",
+      "process_id": "single_pdf_process.synthetic",
+      "review_status": "accepted_for_rehearsal",
+      "reviewer_owner": "ppd-document-rules-reviewer",
+      "requirement_type": "document_requirement",
+      "process_stage": "document preparation",
+      "source_evidence_ids": [
+        "ppd-submit-plans-online#single-pdf-process"
+      ],
+      "required_fact_changes": {
+        "add": [
+          "project_has_plan_review",
+          "drawing_pages_combined_into_single_pdf"
+        ],
+        "remove": [],
+        "review": [
+          "supporting_documents_uploaded_as_separate_pdfs"
+        ]
+      },
+      "document_rule_impacts": [
+        {
+          "document": "combined_drawing_plan_pdf",
+          "impact_type": "add",
+          "rule": "drawing pages are rehearsed as a single combined PDF requirement"
+        }
+      ],
+      "unsupported_path_notes": []
+    },
+    {
+      "candidate_id": "CAND-SYN-002",
+      "requirement_id": "REQ-SYN-DEVHUB-DYNAMIC-QUESTIONS",
+      "process_id": "trade_permit_with_plan_review.synthetic",
+      "review_status": "accepted_for_rehearsal",
+      "reviewer_owner": "ppd-application-data-reviewer",
+      "requirement_type": "precondition",
+      "process_stage": "application data entry",
+      "source_evidence_ids": [
+        "ppd-devhub-guide-submit-permit-application#dynamic-questions"
+      ],
+      "required_fact_changes": {
+        "add": [
+          "devhub_dynamic_questions_reviewed"
+        ],
+        "remove": [],
+        "review": []
+      },
+      "document_rule_impacts": [
+        {
+          "document": "application_form_pdf",
+          "impact_type": "change",
+          "rule": "application data should not be considered ready until dynamic question responses are reviewed"
+        }
+      ],
+      "unsupported_path_notes": []
+    },
+    {
+      "candidate_id": "CAND-SYN-003",
+      "requirement_id": "REQ-SYN-NON-DEVHUB-PATH",
+      "process_id": "trade_permit_with_plan_review.synthetic",
+      "review_status": "needs_reviewer_followup",
+      "reviewer_owner": "ppd-process-path-reviewer",
+      "requirement_type": "exception",
+      "process_stage": "permit type selection",
+      "source_evidence_ids": [
+        "ppd-devhub-faq#not-all-permits"
+      ],
+      "required_fact_changes": {
+        "add": [
+          "permit_path_confirmed_devhub_supported"
+        ],
+        "remove": [],
+        "review": []
+      },
+      "document_rule_impacts": [],
+      "unsupported_path_notes": [
+        "Do not assume DevHub supports this request type until the fixture path is confirmed by cited public guidance."
+      ]
+    },
+    {
+      "candidate_id": "CAND-SYN-004",
+      "requirement_id": "REQ-SYN-UNREVIEWED-FEE-TEXT",
+      "process_id": "single_pdf_process.synthetic",
+      "review_status": "rejected_needs_source",
+      "reviewer_owner": "ppd-fee-reviewer",
+      "requirement_type": "fee_trigger",
+      "process_stage": "fee payment",
+      "source_evidence_ids": [],
+      "required_fact_changes": {
+        "add": [],
+        "remove": [],
+        "review": []
+      },
+      "document_rule_impacts": [],
+      "unsupported_path_notes": []
+    }
+  ],
+  "process_model_fixtures": [
+    {
+      "process_id": "single_pdf_process.synthetic",
+      "fixture_ref": "ppd/tests/fixtures/process_models/single_pdf_process.synthetic.json",
+      "permit_type": "building permit with plan review",
+      "required_user_facts": [
+        "property_address",
+        "scope_of_work",
+        "supporting_documents_uploaded_as_separate_pdfs"
+      ],
+      "required_documents": [
+        {
+          "document": "application_form_pdf",
+          "rule": "application is uploaded separately from drawings"
+        }
+      ],
+      "stages": [
+        "document preparation",
+        "upload staging",
+        "submission"
+      ],
+      "unsupported_paths": [],
+      "guardrail_bundle_id": "guardrail-bundle-single-pdf.synthetic"
+    },
+    {
+      "process_id": "trade_permit_with_plan_review.synthetic",
+      "fixture_ref": "ppd/tests/fixtures/process_models/trade_permit_with_plan_review.synthetic.json",
+      "permit_type": "trade permit with plan review",
+      "required_user_facts": [
+        "property_address",
+        "licensed_contractor_profile_reviewed"
+      ],
+      "required_documents": [
+        {
+          "document": "application_form_pdf",
+          "rule": "application form captures trade permit scope"
+        },
+        {
+          "document": "trade_plan_pdf",
+          "rule": "plans are required when trade work needs plan review"
+        }
+      ],
+      "stages": [
+        "permit type selection",
+        "application data entry",
+        "document preparation",
+        "upload staging"
+      ],
+      "unsupported_paths": [
+        "email-only trade review paths remain unsupported by autonomous DevHub drafting"
+      ],
+      "guardrail_bundle_id": "guardrail-bundle-trade-plan-review.synthetic"
+    }
+  ]
+}

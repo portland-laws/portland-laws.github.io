@@ -1,0 +1,63 @@
+{
+  "fixture_kind": "inactive-guardrail-smoke-replay-plan-v6",
+  "mode": "inactive_fixture_replay_only",
+  "live_actions_allowed": false,
+  "prohibited_actions": [
+    "activate_live_guardrails",
+    "rollback_live_guardrails",
+    "open_devhub",
+    "crawl_live_sites",
+    "read_private_documents",
+    "upload",
+    "submit",
+    "certify",
+    "pay",
+    "schedule",
+    "make_legal_or_permitting_guarantees"
+  ],
+  "replay_rows": [
+    {
+      "replay_id": "inactive-smoke-replay-v6-001",
+      "guardrail": "held_source_citation_required",
+      "observed_result": "fixture_blocked_uncited_downgrade",
+      "rollback_reason": "rollback remains inactive because citation continuity held in fixture replay"
+    },
+    {
+      "replay_id": "inactive-smoke-replay-v6-002",
+      "guardrail": "manual_reviewer_required_before_recovery",
+      "observed_result": "fixture_requires_manual_placeholder",
+      "rollback_reason": "rollback remains inactive pending manual reviewer placeholder completion"
+    }
+  ],
+  "held_sources": [
+    {
+      "source_id": "held-source-v6-001",
+      "title": "Fixture PP&D guardrail policy excerpt",
+      "citation": "ppd/tests/fixtures/inactive_guardrail_smoke_replay_plan_v6.json#held-source-v6-001"
+    }
+  ],
+  "affected_agents": [
+    {
+      "agent_id": "ppd-logic-daemon-fixture-agent",
+      "capability": "offline smoke replay validation",
+      "inactive_effect": "must report downgrade expectation without mutating daemon ledgers"
+    }
+  ],
+  "safe_downgrade_expectations": [
+    {
+      "expectation_id": "safe-downgrade-v6-001",
+      "from": "strict_fixture_guardrail",
+      "to": "held_inactive_fixture_guardrail",
+      "expected_result": "no live capability activation and no live rollback"
+    }
+  ],
+  "recovery_journal_event_names": [
+    "rollback_drill_packet_opened",
+    "manual_review_placeholder_recorded",
+    "inactive_recovery_drill_closed"
+  ],
+  "offline_validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/drills/inactive_rollback_packet_v6.py"],
+    ["python3", "-m", "pytest", "ppd/tests/test_inactive_rollback_packet_v6.py"]
+  ]
+}

@@ -1,0 +1,44 @@
+{
+  "packet_version": "devhub_read_only_release_decision_packet_v3",
+  "mode": "fixture_only_read_only",
+  "source": "committed_test_fixture",
+  "route_lookup_ids": [
+    "devhub-permit-status-readonly",
+    "devhub-review-comments-readonly",
+    "devhub-fees-readonly"
+  ],
+  "actions": [
+    {
+      "id": "lookup-permit-status",
+      "type": "read_only_route_lookup",
+      "route_id": "devhub-permit-status-readonly"
+    },
+    {
+      "id": "confirm-no-official-action",
+      "type": "offline_non_mutating_check",
+      "requires_exact_confirmation": true,
+      "expected_confirmation": "fixture-only-no-devhub-auth-no-official-action"
+    },
+    {
+      "id": "handoff-for-ambiguous-review-note",
+      "type": "offline_non_mutating_check",
+      "manual_handoff_required": true,
+      "handoff_reason": "review note cannot be resolved from read-only fixtures"
+    },
+    {
+      "id": "hold-for-reviewer-decision",
+      "type": "offline_non_mutating_check",
+      "reviewer_hold": true,
+      "hold_reason": "requires human reviewer before any live or official step"
+    }
+  ],
+  "rollback_readiness": {
+    "ready": true,
+    "requires_live_reversal": false,
+    "reason": "replay is fixture-only and performs no mutation"
+  },
+  "offline_validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/replay/post_decision_smoke_replay_v3.py"],
+    ["python3", "-m", "pytest", "ppd/tests/test_post_decision_smoke_replay_v3.py"]
+  ]
+}

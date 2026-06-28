@@ -1,0 +1,111 @@
+{
+  "packet_id": "stale_predicate_remediation_candidate_v1",
+  "active_guardrail_bundle": {
+    "guardrail_bundle_id": "single_pdf_process_guardrails_active_v1",
+    "compiled_from_registry_revision": "source-registry-2026-05-07",
+    "deterministic_predicates": [
+      {
+        "id": "pred-single-pdf-required",
+        "predicate": "requires_single_searchable_drawing_pdf",
+        "source_evidence_ids": ["src-submit-plans-online"]
+      }
+    ],
+    "explanation_templates": [
+      {
+        "id": "explain-single-pdf-required",
+        "template": "Drawing plans must be grouped as one searchable PDF before upload staging.",
+        "source_evidence_ids": ["src-submit-plans-online"]
+      }
+    ],
+    "refused_action_predicates": [
+      {
+        "id": "refuse-submit-application",
+        "predicate": "refuse_submit_without_attended_exact_confirmation",
+        "action": "submit permit application",
+        "source_evidence_ids": ["src-submit-plans-online"]
+      }
+    ],
+    "exact_confirmation_predicates": [
+      {
+        "id": "confirm-submit-application",
+        "predicate": "requires_exact_confirmation_for_submit_application",
+        "action": "submit permit application",
+        "source_evidence_ids": ["src-submit-plans-online"]
+      }
+    ]
+  },
+  "normalized_citation_evidence": [
+    {
+      "evidence_id": "evidence-submit-plans-single-pdf-rule",
+      "source_id": "src-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "citation_span_id": "submit-plans-online#single-pdf-process",
+      "normalized_claim": "Drawing plans must be grouped together in one PDF, while applications, calculations, and other supporting documents are separate PDFs.",
+      "target_group": "deterministic_predicates",
+      "target_item_ids": ["pred-single-pdf-required"],
+      "draft_fix": {
+        "predicate": "requires_drawing_plans_in_one_pdf_and_supporting_documents_as_separate_pdfs",
+        "conditions": [
+          "drawing plans are grouped in one PDF",
+          "applications calculations and supporting documents are prepared as separate PDFs"
+        ]
+      },
+      "human_review_note": "A reviewer must confirm the normalized single-PDF claim against the changed Submit Plans Online guidance before promotion."
+    },
+    {
+      "evidence_id": "evidence-submit-plans-explanation",
+      "source_id": "src-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "citation_span_id": "submit-plans-online#document-preparation",
+      "normalized_claim": "The user-facing explanation should distinguish drawing-plan PDFs from application and supporting-document PDFs.",
+      "target_group": "explanation_templates",
+      "target_item_ids": ["explain-single-pdf-required"],
+      "draft_fix": {
+        "template": "Prepare drawing plans as one PDF and keep applications, calculations, and supporting documents as separate PDFs before DevHub upload staging.",
+        "variables": ["document_category", "source_evidence_ids"]
+      },
+      "human_review_note": "A reviewer must approve the revised explanation wording before it can replace active agent-facing text."
+    },
+    {
+      "evidence_id": "evidence-submit-application-refusal",
+      "source_id": "src-devhub-application-guide",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "citation_span_id": "devhub-submit-guide#acknowledgement-submit",
+      "normalized_claim": "Submitting a permit application is a consequential DevHub action that remains blocked until the user is present and confirms the exact action.",
+      "target_group": "refused_action_predicates",
+      "target_item_ids": ["refuse-submit-application"],
+      "draft_fix": {
+        "predicate": "refuse_submit_application_until_attended_exact_confirmation",
+        "action": "submit permit application",
+        "refusal_reason": "I cannot submit this PP&D permit application automatically; the user must attend the DevHub session and provide exact confirmation."
+      },
+      "human_review_note": "A reviewer must verify that the refusal rule still matches current DevHub submit guidance."
+    },
+    {
+      "evidence_id": "evidence-submit-application-confirmation",
+      "source_id": "src-devhub-application-guide",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "citation_span_id": "devhub-submit-guide#final-submit-control",
+      "normalized_claim": "Final permit application submission requires an exact confirmation gate after user review of uploads and acknowledgement text.",
+      "target_group": "exact_confirmation_predicates",
+      "target_item_ids": ["confirm-submit-application"],
+      "draft_fix": {
+        "predicate": "requires_exact_confirmation_for_final_permit_application_submit",
+        "action": "submit permit application",
+        "required_confirmation_text": "I confirm I am ready to submit this PP&D permit application."
+      },
+      "human_review_note": "A reviewer must confirm the exact-confirmation wording before activation."
+    }
+  ],
+  "unresolved_human_review_notes": [
+    {
+      "note_id": "changed-guidance-review-required",
+      "severity": "blocks_activation",
+      "message": "Changed public guidance requires human review before any stale predicate remediation can be promoted.",
+      "source_evidence_ids": [
+        "evidence-submit-plans-single-pdf-rule",
+        "evidence-submit-application-confirmation"
+      ]
+    }
+  ]
+}

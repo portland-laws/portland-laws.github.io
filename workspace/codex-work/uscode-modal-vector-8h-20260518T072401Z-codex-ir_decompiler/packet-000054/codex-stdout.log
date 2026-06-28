@@ -1,0 +1,13 @@
+Implemented a deterministic range-slot refinement for IR decompilation/triple emission so section ranges are represented explicitly and consistently.
+
+- Updated [`decompiler.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000054-20260518_123545/ipfs_datasets_py/logic/modal/decompiler.py:1474) in `_citation_section_slots`:
+  - added `citation_section_is_range` (`true`/`false`)
+  - added range-only slots: `citation_section_range_number_relation`, `citation_section_range_number_span`, `citation_section_range_has_suffix`
+- Mirrored the same logic in [`codec.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000054-20260518_123545/ipfs_datasets_py/logic/modal/codec.py:1453) in `_citation_section_components`, so F-logic triples stay aligned with decompiler slots.
+- Extended coverage in [`test_ir_decompiler_slots.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000054-20260518_123545/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:69):
+  - added `_numeric_range_sample_document()` using `50 U.S.C. 1381 to 1398.`
+  - asserted non-range `is_range=false` on compound non-range sections
+  - asserted range-specific relation/span/suffix slots for alphanumeric and numeric ranges in both decode and triple paths
+
+Validation run:
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py` (31 passed).

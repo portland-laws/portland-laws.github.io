@@ -1,0 +1,11 @@
+Implemented a deterministic frame-term audit cleanup for source-id metadata:
+
+- Updated [`codec.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000044-20260518_131236/ipfs_datasets_py/logic/modal/codec.py#L2572) so `_frame_ontology_metadata_terms` treats `us-code-...-<digest>` values as canonical title/section coordinates only, instead of also emitting digest-derived noise terms.
+- Added a regression assertion in [`test_modal_codec.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000044-20260518_131236/tests/unit_tests/logic/modal/test_modal_codec.py#L4204) to verify the digest token is not emitted.
+
+Validation run:
+
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k 'frame_term_citation_metadata or frame_ontology'`
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py tests/unit_tests/logic/modal/test_modal_codec.py -k 'frame_ontology or frame_logic_terms or frame_decoder_audit_features'`
+
+Both passed.

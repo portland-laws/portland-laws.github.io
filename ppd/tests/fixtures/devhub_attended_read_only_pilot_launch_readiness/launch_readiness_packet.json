@@ -1,0 +1,173 @@
+{
+  "packet_id": "devhub-attended-read-only-pilot-launch-readiness-v1",
+  "packet_type": "ppd.devhub.attended_read_only_pilot_launch_readiness_packet.v1",
+  "mode": "fixture_first_devhub_attended_read_only_pilot_launch_readiness",
+  "fixture_first": true,
+  "offline_only": true,
+  "read_only_only": true,
+  "manual_attendance_required": true,
+  "launches_browser": false,
+  "launches_playwright": false,
+  "uses_stored_auth_state": false,
+  "stores_auth_state": false,
+  "stores_session_state": false,
+  "stores_screenshots": false,
+  "stores_traces": false,
+  "stores_har_files": false,
+  "stores_raw_authenticated_values": false,
+  "takes_official_action": false,
+  "mutates_surface_registry": false,
+  "source_packets": {
+    "devhub_attended_read_only_pilot_runbook": {
+      "packet_id": "devhub-attended-read-only-pilot-runbook-v1",
+      "consumed": true
+    },
+    "devhub_surface_registry_reviewer_approval_packet": {
+      "packet_id": "devhub-surface-registry-reviewer-approval-synthetic-v1",
+      "consumed": true
+    },
+    "devhub_read_only_pilot_evidence_review_packet": {
+      "packet_id": "devhub-read-only-pilot-review-valid",
+      "consumed": true
+    },
+    "devhub_observation_redaction_review_packet": {
+      "packet_id": "devhub-read-only-observation-redaction-review-synthetic-v1",
+      "consumed": true
+    }
+  },
+  "attendance_prerequisites": [
+    {
+      "prerequisite_id": "portlandoregon_gov_login_manual_only",
+      "description": "Operator completes DevHub login and security prompts manually while the launch packet records only cited readiness metadata.",
+      "required_before_launch": true,
+      "operator_present": true,
+      "agent_may_request_credentials": false,
+      "agent_may_store_credentials": false,
+      "agent_may_automate_mfa_or_captcha": false,
+      "account_creation_allowed": false,
+      "browser_state_storage_allowed": false,
+      "citations": ["devhub-attended-read-only-pilot-runbook-v1", "devhub-read-only-pilot-operator-checklist-v1"]
+    },
+    {
+      "prerequisite_id": "pilot_evidence_review_available",
+      "description": "Read-only pilot evidence review is available before launch readiness signoff.",
+      "required_before_launch": true,
+      "operator_present": true,
+      "agent_may_request_credentials": false,
+      "agent_may_store_credentials": false,
+      "agent_may_automate_mfa_or_captcha": false,
+      "account_creation_allowed": false,
+      "browser_state_storage_allowed": false,
+      "citations": ["devhub-read-only-pilot-review-valid"]
+    }
+  ],
+  "manual_stop_points": [
+    {
+      "stop_id": "runbook-abort-credential-security-prompts",
+      "trigger": "Stop if credential, MFA, CAPTCHA, password recovery, or account creation handling would require automation or recording.",
+      "agent_action": "stop_and_record_commit_safe_refusal",
+      "official_action_allowed_after_stop": false,
+      "citations": ["devhub-attended-read-only-pilot-runbook-v1"]
+    },
+    {
+      "stop_id": "runbook-abort-consequential-controls",
+      "trigger": "Stop if any payment, upload, submit, certify, schedule, cancel, withdraw, extension, reactivation, or account security control enters launch scope.",
+      "agent_action": "stop_and_record_commit_safe_refusal",
+      "official_action_allowed_after_stop": false,
+      "citations": ["devhub-attended-read-only-pilot-runbook-v1"]
+    },
+    {
+      "stop_id": "redaction-abort-private-artifacts",
+      "trigger": "Stop if raw authenticated text, private field values, local private paths, downloads, auth state, cookies, screenshot, trace, HAR, or browser artifacts would be stored.",
+      "agent_action": "stop_and_record_commit_safe_refusal",
+      "official_action_allowed_after_stop": false,
+      "citations": ["devhub-read-only-observation-redaction-review-synthetic-v1"]
+    }
+  ],
+  "redaction_checklist_items": [
+    {
+      "check_id": "no_auth_state",
+      "required": true,
+      "raw_value_allowed": false,
+      "private_value_allowed": false,
+      "passes_when": "No stored auth state, storage state, cookie, or session artifact is present in the launch packet.",
+      "citations": ["devhub-attended-read-only-pilot-runbook-v1", "devhub-read-only-observation-redaction-review-synthetic-v1"]
+    },
+    {
+      "check_id": "no_screenshots",
+      "required": true,
+      "raw_value_allowed": false,
+      "private_value_allowed": false,
+      "passes_when": "No screenshot or image capture artifact is referenced or retained.",
+      "citations": ["devhub-attended-read-only-pilot-runbook-v1", "devhub-read-only-observation-redaction-review-synthetic-v1"]
+    },
+    {
+      "check_id": "no_traces_or_har_files",
+      "required": true,
+      "raw_value_allowed": false,
+      "private_value_allowed": false,
+      "passes_when": "No trace, HAR, video, or browser recording artifact is referenced or retained.",
+      "citations": ["devhub-attended-read-only-pilot-runbook-v1", "devhub-read-only-observation-redaction-review-synthetic-v1"]
+    },
+    {
+      "check_id": "no_raw_authenticated_values",
+      "required": true,
+      "raw_value_allowed": false,
+      "private_value_allowed": false,
+      "passes_when": "Only redacted synthetic metadata fields may be used for launch readiness review.",
+      "citations": ["devhub-read-only-pilot-review-valid", "devhub-read-only-observation-redaction-review-synthetic-v1"]
+    }
+  ],
+  "selector_confidence_notes": [
+    {
+      "note_id": "evidence-selector-1",
+      "surface_id": "devhub-home-redacted-fixture",
+      "selector": "role=heading[name='DevHub Home']",
+      "confidence": "high",
+      "rationale": "Selector is based on stable accessible role and fixture heading text only.",
+      "launch_effect": "notes_only_no_registry_promotion",
+      "citations": ["devhub-read-only-pilot-review-valid"]
+    },
+    {
+      "note_id": "approval-selector-delta-pending",
+      "surface_id": "devhub-home-redacted-fixture",
+      "selector": "redacted_fixture_review",
+      "confidence": "pending_reviewer_approval",
+      "rationale": "Reviewer approval packet keeps selector deltas pending and does not promote registry state.",
+      "launch_effect": "notes_only_no_registry_promotion",
+      "citations": ["devhub-surface-registry-reviewer-approval-synthetic-v1"]
+    }
+  ],
+  "reviewer_owner_signoff_slots": [
+    {
+      "slot_id": "approval-ppd-devhub-surface-reviewer",
+      "owner": "ppd-devhub-surface-reviewer",
+      "status": "pending",
+      "decision": "",
+      "signed_at": "",
+      "can_enable_official_action": false,
+      "citations": ["devhub-surface-registry-reviewer-approval-synthetic-v1"]
+    },
+    {
+      "slot_id": "redaction-devhub-pilot-operator",
+      "owner": "devhub_pilot_operator",
+      "status": "pending",
+      "decision": "",
+      "signed_at": "",
+      "can_enable_official_action": false,
+      "citations": ["devhub-read-only-observation-redaction-review-synthetic-v1"]
+    }
+  ],
+  "launch_attestations": {
+    "no_browser_execution": true,
+    "no_auth_state_saved": true,
+    "no_session_state_saved": true,
+    "no_screenshots_saved": true,
+    "no_traces_saved": true,
+    "no_har_files_saved": true,
+    "no_raw_authenticated_values_saved": true,
+    "no_downloads_saved": true,
+    "no_official_action_taken": true,
+    "no_registry_mutation": true
+  }
+}

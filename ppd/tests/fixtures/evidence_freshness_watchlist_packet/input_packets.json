@@ -1,0 +1,202 @@
+{
+  "source_registry_schedule_update_candidate": {
+    "packet_type": "source_registry_schedule_update_candidate_packet",
+    "packet_id": "schedule-update-candidate-20260529-fixture",
+    "affected_source_ids": [
+      "ppd-devhub-faq",
+      "ppd-submit-plans-online"
+    ],
+    "source_evidence_ids": [
+      "SRC-DEVHUB-FAQ-20260508",
+      "SRC-SUBMIT-PLANS-ONLINE-20260508"
+    ],
+    "source_adjustments": [
+      {
+        "source_id": "ppd-devhub-faq",
+        "affected_source_ids": [
+          "ppd-devhub-faq"
+        ],
+        "proposed_crawl_frequency": "daily",
+        "reason": "DevHub FAQ affects upload, correction, fee, and account-scoped service guidance.",
+        "source_evidence_ids": [
+          "SRC-DEVHUB-FAQ-20260508"
+        ]
+      },
+      {
+        "source_id": "ppd-submit-plans-online",
+        "affected_source_ids": [
+          "ppd-submit-plans-online"
+        ],
+        "proposed_crawl_frequency": "weekly",
+        "reason": "Single PDF process guidance affects file preparation guardrails.",
+        "source_evidence_ids": [
+          "SRC-SUBMIT-PLANS-ONLINE-20260508"
+        ]
+      }
+    ],
+    "reviewer_owners": {
+      "primary_reviewer": "ppd-source-reviewer",
+      "backup_reviewer": "ppd-backup-source-reviewer",
+      "review_queue": "ppd-source-registry-review"
+    },
+    "abort_criteria": [
+      "Abort if allowlist evidence is absent.",
+      "Abort if authenticated or private source scope appears.",
+      "Abort if raw download or archive persistence is requested.",
+      "Abort before any live crawl or processor invocation.",
+      "Abort if a guarantee of permitting outcome appears.",
+      "Abort if registry or schedule mutation is requested."
+    ]
+  },
+  "public_source_refresh_operator_dry_run_transcript": {
+    "packet_type": "public_source_refresh_operator_dry_run_transcript",
+    "packet_id": "source-refresh-dry-run-20260529-fixture",
+    "mode": "fixture_first_dry_run",
+    "sources": [
+      "ppd-devhub-faq",
+      "ppd-submit-plans-online"
+    ],
+    "reviewer": "ppd-refresh-reviewer",
+    "owner": "ppd-source-refresh-owner",
+    "allowlist_evidence_refs": [
+      "fixture://allowlist/ppd-public-sources.json"
+    ],
+    "robots_evidence_refs": [
+      "fixture://robots/portland-gov-ppd.txt"
+    ],
+    "ordered_simulated_operator_steps": [
+      {
+        "order": 1,
+        "name": "load-schedule-candidate",
+        "simulation_only": true,
+        "observation_citations": [
+          "schedule-update-candidate-20260529-fixture"
+        ]
+      },
+      {
+        "order": 2,
+        "name": "record-review-only-outcome",
+        "simulation_only": true,
+        "observation_citations": [
+          "fixture://allowlist/ppd-public-sources.json",
+          "fixture://robots/portland-gov-ppd.txt"
+        ]
+      }
+    ],
+    "abort_or_rollback_checkpoints": [
+      {
+        "checkpoint": "missing-allowlist-or-robots-reference",
+        "operator_action": "abort before any source interaction"
+      },
+      {
+        "checkpoint": "schedule-mutation-requested",
+        "operator_action": "rollback transcript draft and return to offline review"
+      }
+    ],
+    "attestations": {
+      "no_fetch": true,
+      "no_processor": true,
+      "no_download": true,
+      "no_schedule_mutation": true,
+      "no_registry_mutation": true,
+      "metadata_only_observations": true
+    }
+  },
+  "requirement_guardrail_traceability_review_packet": {
+    "packet_type": "fixture_first_requirement_guardrail_traceability_review_packet",
+    "packet_id": "traceability-review-20260529-fixture",
+    "packet_mode": "review_only_no_active_mutation",
+    "fixture_first": true,
+    "consumed_packets": {
+      "requirement_rerun_work_queue_packet": {
+        "packet_id": "requirement-rerun-work-queue-fixture",
+        "source_evidence_ids": [
+          "SRC-DEVHUB-FAQ-20260508"
+        ]
+      },
+      "process_model_impact_review_packet": {
+        "packet_id": "process-impact-review-fixture",
+        "source_evidence_ids": [
+          "SRC-SUBMIT-PLANS-ONLINE-20260508"
+        ]
+      },
+      "guardrail_bundle_update_candidate_packet": {
+        "packet_id": "guardrail-update-candidate-fixture",
+        "source_evidence_ids": [
+          "SRC-DEVHUB-FAQ-20260508",
+          "SRC-SUBMIT-PLANS-ONLINE-20260508"
+        ]
+      }
+    },
+    "requirement_to_process_to_guardrail_links": [
+      {
+        "link_id": "trace.req-devhub-upload-gate-002",
+        "requirement_id": "REQ-DEVHUB-UPLOAD-GATE-002",
+        "process_ids": [
+          "process.single-pdf-plan-review"
+        ],
+        "guardrail_ids": [
+          "GR-DEVHUB-UPLOAD-EXACT-CONFIRMATION"
+        ],
+        "source_evidence_ids": [
+          "SRC-DEVHUB-FAQ-20260508"
+        ]
+      },
+      {
+        "link_id": "trace.req-single-pdf-file-rule-001",
+        "requirement_id": "REQ-SINGLE-PDF-FILE-RULE-001",
+        "process_ids": [
+          "process.single-pdf-plan-review"
+        ],
+        "guardrail_ids": [
+          "GR-SINGLE-PDF-FILE-PREP-CHECK"
+        ],
+        "source_evidence_ids": [
+          "SRC-SUBMIT-PLANS-ONLINE-20260508"
+        ]
+      }
+    ],
+    "blocked_action_carryovers": [
+      {
+        "action_id": "upload_to_official_record",
+        "blocked": true,
+        "source_evidence_ids": [
+          "SRC-DEVHUB-FAQ-20260508"
+        ]
+      },
+      {
+        "action_id": "submit_permit_application",
+        "blocked": true,
+        "source_evidence_ids": [
+          "SRC-SUBMIT-PLANS-ONLINE-20260508"
+        ]
+      }
+    ],
+    "reviewer_owner_fields": {
+      "requirement_owner": "ppd-requirement-reviewer",
+      "process_owner": "ppd-process-reviewer",
+      "guardrail_owner": "ppd-guardrail-reviewer",
+      "prompt_owner": "ppd-agent-prompt-reviewer",
+      "traceability_review_owner": "ppd-traceability-reviewer"
+    },
+    "attestations": {
+      "no_active_requirement_mutation": true,
+      "no_active_process_mutation": true,
+      "no_active_guardrail_mutation": true,
+      "no_active_prompt_mutation": true,
+      "no_active_release_state_mutation": true,
+      "no_live_crawl": true,
+      "no_devhub_execution": true,
+      "no_processor_invocation": true,
+      "no_llm_execution": true,
+      "fixture_first_inputs_only": true
+    },
+    "active_mutation_effects": {
+      "requirements_mutated": false,
+      "process_models_mutated": false,
+      "guardrails_mutated": false,
+      "prompts_mutated": false,
+      "release_state_mutated": false
+    }
+  }
+}

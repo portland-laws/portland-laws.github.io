@@ -1,0 +1,209 @@
+{
+  "packet_version": "devhub_fixture_first_read_only_observation_seed_packet_v1",
+  "packet_id": "synthetic-next-devhub-read-only-observation-seed-packet-v1",
+  "input_rows": [
+    {
+      "row_id": "synthetic-next-devhub-home-row",
+      "source_type": "synthetic_post_decision_smoke_replay",
+      "contains_live_devhub_data": false,
+      "contains_private_values": false,
+      "surface": "synthetic_devhub_home",
+      "expected_read_only_elements": [
+        "account home heading placeholder",
+        "permit request list placeholder",
+        "status summary placeholder"
+      ],
+      "blocked_controls": [
+        "apply control placeholder",
+        "payment control placeholder",
+        "inspection scheduling control placeholder"
+      ]
+    },
+    {
+      "row_id": "synthetic-next-permit-detail-row",
+      "source_type": "synthetic_post_decision_smoke_replay",
+      "contains_live_devhub_data": false,
+      "contains_private_values": false,
+      "surface": "synthetic_permit_detail",
+      "expected_read_only_elements": [
+        "permit detail heading placeholder",
+        "review status placeholder",
+        "correction notice placeholder",
+        "attachment list placeholder"
+      ],
+      "blocked_controls": [
+        "upload control placeholder",
+        "submit response control placeholder",
+        "cancel request control placeholder"
+      ]
+    }
+  ],
+  "official_guidance_placeholders": [
+    {
+      "placeholder_id": "official-devhub-account-sign-in-guidance-placeholder",
+      "source_type": "official_devhub_guidance_placeholder",
+      "placeholder_status": "placeholder_only",
+      "live_fetch_performed": false,
+      "canonical_url": "https://www.portland.gov/ppd/devhub-sign-guide",
+      "note": "Placeholder for official account and sign-in guidance; no live fetch performed."
+    },
+    {
+      "placeholder_id": "official-devhub-faq-read-only-services-placeholder",
+      "source_type": "official_devhub_guidance_placeholder",
+      "placeholder_status": "placeholder_only",
+      "live_fetch_performed": false,
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "note": "Placeholder for official DevHub services guidance; no live fetch performed."
+    }
+  ],
+  "observation_targets": [
+    {
+      "target_id": "target-synthetic-devhub-home-read-only",
+      "surface_label": "Synthetic DevHub home read-only overview",
+      "route_label": "DevHub account home placeholder route",
+      "classification": "safe_read_only",
+      "basis_row_ids": [
+        "synthetic-next-devhub-home-row"
+      ],
+      "guidance_placeholder_ids": [
+        "official-devhub-account-sign-in-guidance-placeholder",
+        "official-devhub-faq-read-only-services-placeholder"
+      ],
+      "authorization_prerequisite_ids": [
+        "prereq-attended-operator-present",
+        "prereq-read-only-observation-only"
+      ],
+      "redaction_expectation_ids": [
+        "redact-account-scoped-values",
+        "redact-browser-artifact-references"
+      ],
+      "capture_schema_update_ids": [
+        "schema-synthetic-read-only-notes"
+      ],
+      "reviewer_route_ids": [
+        "route-devhub-read-only-reviewer"
+      ]
+    },
+    {
+      "target_id": "target-synthetic-permit-detail-read-only",
+      "surface_label": "Synthetic permit detail read-only review",
+      "route_label": "DevHub permit detail placeholder route",
+      "classification": "read_only_observation",
+      "basis_row_ids": [
+        "synthetic-next-permit-detail-row"
+      ],
+      "guidance_placeholder_ids": [
+        "official-devhub-faq-read-only-services-placeholder"
+      ],
+      "authorization_prerequisite_ids": [
+        "prereq-attended-operator-present",
+        "prereq-read-only-observation-only"
+      ],
+      "redaction_expectation_ids": [
+        "redact-account-scoped-values",
+        "redact-browser-artifact-references"
+      ],
+      "capture_schema_update_ids": [
+        "schema-synthetic-read-only-notes"
+      ],
+      "reviewer_route_ids": [
+        "route-devhub-read-only-reviewer",
+        "route-ppd-guardrail-reviewer"
+      ]
+    }
+  ],
+  "authorization_prerequisites": [
+    {
+      "prerequisite_id": "prereq-attended-operator-present",
+      "note": "An attended operator must be present before any observation is considered authorized."
+    },
+    {
+      "prerequisite_id": "prereq-read-only-observation-only",
+      "note": "The authorized activity is limited to read-only labels, headings, status text, notices, lists, and navigation structure."
+    }
+  ],
+  "redaction_expectations": [
+    {
+      "redaction_id": "redact-account-scoped-values",
+      "note": "Account, address, contact, permit, invoice, license, fee, document, and status values must be placeholders only."
+    },
+    {
+      "redaction_id": "redact-browser-artifact-references",
+      "note": "Browser evidence artifacts and local paths must be absent from committed notes."
+    }
+  ],
+  "fixture_only_capture_schema_updates": [
+    {
+      "schema_update_id": "schema-synthetic-read-only-notes",
+      "fixture_only": true,
+      "allowed_fixture_fields": [
+        "synthetic_surface_label",
+        "synthetic_read_only_element_label",
+        "synthetic_redaction_placeholder",
+        "synthetic_reviewer_note"
+      ]
+    }
+  ],
+  "unsupported_manual_handoff_reminders": [
+    {
+      "handoff_id": "manual-auth-prompts-only",
+      "note": "Credentials, MFA, CAPTCHA, and security prompts remain operator-only and are not represented as stored values."
+    },
+    {
+      "handoff_id": "official-action-stop",
+      "note": "Uploads, submissions, payments, scheduling, cancellations, certifications, and form fills are outside this fixture packet."
+    }
+  ],
+  "rollback_notes": [
+    {
+      "rollback_note_id": "rollback-discard-checklist-candidate",
+      "note": "Discard the generated checklist candidate and rerun offline fixture validation; no live cleanup is needed because no live artifacts are created."
+    }
+  ],
+  "reviewer_routing": [
+    {
+      "route_id": "route-devhub-read-only-reviewer",
+      "reviewer_role": "devhub_read_only_reviewer",
+      "note": "Review that every target remains read-only, attended, and placeholder-only."
+    },
+    {
+      "route_id": "route-ppd-guardrail-reviewer",
+      "reviewer_role": "ppd_guardrail_reviewer",
+      "note": "Review that blocked consequential controls remain represented only as reminders."
+    }
+  ],
+  "artifact_policy": {
+    "opens_devhub": false,
+    "logs_in": false,
+    "performs_form_fills": false,
+    "performs_official_actions": false,
+    "stores_auth_artifacts": false,
+    "stores_session_artifacts": false,
+    "stores_screenshots": false,
+    "stores_traces": false,
+    "stores_har_files": false,
+    "stores_private_values": false,
+    "stores_raw_crawl_output": false,
+    "downloads_documents": false
+  },
+  "validation_commands": [
+    [
+      "python3",
+      "-m",
+      "py_compile",
+      "ppd/agent_readiness/devhub_fixture_first_read_only_observation_seed_packet_v1.py",
+      "ppd/tests/test_devhub_fixture_first_read_only_observation_seed_packet_v1.py"
+    ],
+    [
+      "python3",
+      "-m",
+      "unittest",
+      "ppd.tests.test_devhub_fixture_first_read_only_observation_seed_packet_v1"
+    ],
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "metadata_intake_id": "metadata-intake-public-crawl-dry-run-20260528",
+  "results": [
+    {
+      "target_id": "ppd-landing",
+      "manifest_id": "archive-manifest-ppd-landing-dry-run",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "raw_body_persisted": false
+    },
+    {
+      "target_id": "devhub-faq",
+      "manifest_id": "archive-manifest-devhub-faq-dry-run",
+      "http_status": 200,
+      "content_type": "text/html; charset=utf-8",
+      "raw_body_persisted": false
+    },
+    {
+      "target_id": "fee-guide-pdf",
+      "manifest_id": "archive-manifest-fee-guide-pdf-dry-run",
+      "http_status": 200,
+      "content_type": "application/pdf",
+      "raw_body_persisted": false
+    },
+    {
+      "target_id": "outside-allowlist",
+      "manifest_id": "archive-manifest-outside-allowlist-dry-run",
+      "http_status": null,
+      "content_type": null,
+      "raw_body_persisted": false,
+      "skipped_reason": "outside allowlist; processor handoff must skip target"
+    }
+  ]
+}

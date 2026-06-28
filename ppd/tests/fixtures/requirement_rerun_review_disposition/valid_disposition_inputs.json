@@ -1,0 +1,237 @@
+{
+  "generated_at": "2026-05-29T00:00:00Z",
+  "requirement_extraction_rerun_rehearsal_packet": {
+    "schema_version": 1,
+    "packet_id": "requirement-rerun-rehearsal-disposition-fixture-001",
+    "packet_type": "requirement_extraction_rerun_rehearsal_packet",
+    "mode": "fixture_first_no_extraction_execution",
+    "generated_at": "2026-05-29T00:00:00Z",
+    "fixture_first": true,
+    "input_packet_refs": {
+      "public_recrawl_post_intake_review_packet_type": "public_recrawl_post_intake_review",
+      "requirement_review_queue_packet_type": "requirement_extraction_human_review_queue",
+      "synthetic_public_document_record_count": 4
+    },
+    "cited_candidate_requirement_deltas": [
+      {
+        "delta_id": "rerun-delta-cand-single-pdf-upload-rule",
+        "candidate_id": "cand-single-pdf-upload-rule",
+        "delta_type": "candidate_requirement_rehearsal",
+        "source_ids": [
+          "src-submit-plans-online"
+        ],
+        "citations": [
+          "ev-submit-plans-single-pdf-001"
+        ],
+        "matched_document_ids": [
+          "doc-submit-plans-online-fixture"
+        ],
+        "proposed_disposition": "human_review_required",
+        "reviewer_owner": "requirements-intake-reviewer",
+        "requirements_mutated": false,
+        "formal_requirement_written": false
+      },
+      {
+        "delta_id": "rerun-delta-cand-devhub-save-later",
+        "candidate_id": "cand-devhub-save-later",
+        "delta_type": "candidate_requirement_rehearsal",
+        "source_ids": [
+          "src-devhub-guide-submit-application"
+        ],
+        "citations": [
+          "ev-devhub-save-later-001"
+        ],
+        "matched_document_ids": [
+          "doc-devhub-guide-fixture"
+        ],
+        "proposed_disposition": "human_review_required",
+        "reviewer_owner": "devhub-guidance-reviewer",
+        "requirements_mutated": false,
+        "formal_requirement_written": false
+      },
+      {
+        "delta_id": "rerun-delta-cand-old-upload-copy",
+        "candidate_id": "cand-old-upload-copy",
+        "delta_type": "candidate_requirement_rehearsal",
+        "source_ids": [
+          "src-submit-plans-online"
+        ],
+        "citations": [
+          "ev-submit-plans-old-upload-copy-001"
+        ],
+        "matched_document_ids": [
+          "doc-submit-plans-online-fixture"
+        ],
+        "proposed_disposition": "human_review_required",
+        "reviewer_owner": "requirements-intake-reviewer",
+        "requirements_mutated": false,
+        "formal_requirement_written": false
+      },
+      {
+        "delta_id": "rerun-delta-cand-retired-devhub-note",
+        "candidate_id": "cand-retired-devhub-note",
+        "delta_type": "candidate_requirement_rehearsal",
+        "source_ids": [
+          "src-devhub-guide-submit-application"
+        ],
+        "citations": [
+          "ev-devhub-retired-note-001"
+        ],
+        "matched_document_ids": [
+          "doc-devhub-guide-fixture"
+        ],
+        "proposed_disposition": "human_review_required",
+        "reviewer_owner": "devhub-guidance-reviewer",
+        "requirements_mutated": false,
+        "formal_requirement_written": false
+      }
+    ],
+    "stale_candidate_withdrawal_notes": [
+      {
+        "withdrawal_id": "withdraw-stale-cand-old-upload-copy",
+        "candidate_id": "cand-old-upload-copy",
+        "source_ids": [
+          "src-submit-plans-online"
+        ],
+        "reason": "stale_or_changed_public_source_blocks_candidate_reuse",
+        "withdrawal_scope": "candidate_rehearsal_only",
+        "requirements_mutated": false
+      },
+      {
+        "withdrawal_id": "withdraw-stale-cand-retired-devhub-note",
+        "candidate_id": "cand-retired-devhub-note",
+        "source_ids": [
+          "src-devhub-guide-submit-application"
+        ],
+        "reason": "changed_public_source_retired_candidate_language",
+        "withdrawal_scope": "candidate_rehearsal_only",
+        "requirements_mutated": false
+      }
+    ],
+    "human_review_owners": [
+      {
+        "owner_id": "owner-cand-single-pdf-upload-rule",
+        "candidate_id": "cand-single-pdf-upload-rule",
+        "reviewer_owner": "requirements-intake-reviewer",
+        "handoff_reason": "candidate_delta_requires_human_review"
+      },
+      {
+        "owner_id": "owner-cand-devhub-save-later",
+        "candidate_id": "cand-devhub-save-later",
+        "reviewer_owner": "devhub-guidance-reviewer",
+        "handoff_reason": "candidate_delta_requires_human_review"
+      },
+      {
+        "owner_id": "owner-cand-old-upload-copy",
+        "candidate_id": "cand-old-upload-copy",
+        "reviewer_owner": "requirements-intake-reviewer",
+        "handoff_reason": "candidate_delta_requires_human_review"
+      },
+      {
+        "owner_id": "owner-cand-retired-devhub-note",
+        "candidate_id": "cand-retired-devhub-note",
+        "reviewer_owner": "devhub-guidance-reviewer",
+        "handoff_reason": "candidate_delta_requires_human_review"
+      }
+    ],
+    "deferred_formalization_notes": [
+      {
+        "deferred_id": "defer-formalization-cand-single-pdf-upload-rule",
+        "candidate_id": "cand-single-pdf-upload-rule",
+        "reviewer_owner": "requirements-intake-reviewer",
+        "reason": "fixture_rerun_rehearsal_does_not_formalize_requirements",
+        "formalization_status": "deferred_pending_human_review",
+        "formal_requirement_written": false
+      },
+      {
+        "deferred_id": "defer-formalization-cand-devhub-save-later",
+        "candidate_id": "cand-devhub-save-later",
+        "reviewer_owner": "devhub-guidance-reviewer",
+        "reason": "fixture_rerun_rehearsal_does_not_formalize_requirements",
+        "formalization_status": "deferred_pending_human_review",
+        "formal_requirement_written": false
+      },
+      {
+        "deferred_id": "defer-formalization-cand-old-upload-copy",
+        "candidate_id": "cand-old-upload-copy",
+        "reviewer_owner": "requirements-intake-reviewer",
+        "reason": "fixture_rerun_rehearsal_does_not_formalize_requirements",
+        "formalization_status": "deferred_pending_human_review",
+        "formal_requirement_written": false
+      },
+      {
+        "deferred_id": "defer-formalization-cand-retired-devhub-note",
+        "candidate_id": "cand-retired-devhub-note",
+        "reviewer_owner": "devhub-guidance-reviewer",
+        "reason": "fixture_rerun_rehearsal_does_not_formalize_requirements",
+        "formalization_status": "deferred_pending_human_review",
+        "formal_requirement_written": false
+      }
+    ],
+    "no_extraction_execution_attestations": {
+      "live_network_used": false,
+      "crawler_invoked": false,
+      "processor_invoked": false,
+      "extraction_executed": false,
+      "requirements_mutated": false,
+      "formal_requirements_written": false,
+      "documents_downloaded": false,
+      "raw_bodies_persisted": false,
+      "attestation_basis": "fixture_inputs_only"
+    },
+    "rehearsal_summary": {
+      "candidate_delta_count": 4,
+      "stale_withdrawal_note_count": 2,
+      "human_review_owner_count": 4,
+      "deferred_formalization_note_count": 4,
+      "extraction_executed": false,
+      "requirements_mutated": false
+    }
+  },
+  "validation_fixture": {
+    "packet_type": "requirement_rerun_review_disposition_validation_fixture",
+    "fixture_id": "requirement-rerun-review-disposition-validation-001",
+    "validates_packet_id": "requirement-rerun-rehearsal-disposition-fixture-001",
+    "validation_result": "accepted_for_disposition",
+    "extraction_executed": false,
+    "requirements_mutated": false,
+    "disposition_reviews": [
+      {
+        "candidate_id": "cand-single-pdf-upload-rule",
+        "disposition": "accepted",
+        "reviewer_owner": "requirements-intake-reviewer",
+        "citations": [
+          "ev-submit-plans-single-pdf-001"
+        ],
+        "decision_rationale": "Candidate remains cited to the Single PDF Process fixture and is ready for separate formalization review."
+      },
+      {
+        "candidate_id": "cand-devhub-save-later",
+        "disposition": "deferred",
+        "reviewer_owner": "devhub-guidance-reviewer",
+        "citations": [
+          "ev-devhub-save-later-001"
+        ],
+        "decision_rationale": "Candidate is cited but needs separate DevHub workflow owner review before formalization."
+      },
+      {
+        "candidate_id": "cand-old-upload-copy",
+        "disposition": "superseded",
+        "reviewer_owner": "requirements-intake-reviewer",
+        "citations": [
+          "ev-submit-plans-old-upload-copy-001"
+        ],
+        "decision_rationale": "Changed Submit Plans Online evidence supersedes the older upload wording candidate."
+      },
+      {
+        "candidate_id": "cand-retired-devhub-note",
+        "disposition": "withdrawn",
+        "reviewer_owner": "devhub-guidance-reviewer",
+        "citations": [
+          "ev-devhub-retired-note-001"
+        ],
+        "decision_rationale": "Fixture validation withdraws the retired DevHub guidance candidate from rerun consideration."
+      }
+    ]
+  }
+}

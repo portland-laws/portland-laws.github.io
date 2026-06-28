@@ -1,0 +1,158 @@
+{
+  "consumer_integration_checklist": {
+    "checklist_id": "guardrail-consumer-integration-checklist-fixture-2026-05-28",
+    "fixture_first": true,
+    "metadata_only": true,
+    "live_services_called": false,
+    "consumers_invoked": false,
+    "active_guardrail_bundles_changed": false,
+    "normalized_source_evidence": [
+      {
+        "source_evidence_id": "ppd-plan:missing-facts",
+        "source_title": "PP&D plan UserGapAnalysis contract",
+        "citation": "UserGapAnalysis requires missing_facts, missing_documents, stale_evidence, required_confirmations, blocked_actions, and next_safe_actions."
+      },
+      {
+        "source_evidence_id": "ppd-plan:stale-evidence",
+        "source_title": "PP&D change monitoring plan",
+        "citation": "Change reports identify changed source hashes and affected requirement or guardrail bundle IDs."
+      },
+      {
+        "source_evidence_id": "ppd-plan:local-pdf-preview",
+        "source_title": "PP&D DevHub surface categories",
+        "citation": "Local preview of field mapping is reversible draft work before official attach or submit."
+      },
+      {
+        "source_evidence_id": "ppd-plan:devhub-read-only",
+        "source_title": "PP&D authenticated DevHub automation plan",
+        "citation": "Safe read-only DevHub surfaces include Home, My Permits & Requests, permit details, status messages, fee notice review, correction review, attachment list review, and inspection results review."
+      },
+      {
+        "source_evidence_id": "ppd-plan:manual-handoff",
+        "source_title": "PP&D non-negotiable boundaries",
+        "citation": "The worker must not automate CAPTCHA, MFA, account creation, payment, submission, certification, cancellation, scheduling, or upload actions."
+      },
+      {
+        "source_evidence_id": "ppd-plan:refused-actions",
+        "source_title": "PP&D consequential official action boundaries",
+        "citation": "Consequential official actions include submit permit request, certify acknowledgement, upload correction, purchase trade permit, schedule inspection, cancel or withdraw, request extension or reactivation, and account or security changes."
+      },
+      {
+        "source_evidence_id": "ppd-plan:disabled-live-enforcement",
+        "source_title": "PP&D fixture-first validation rule",
+        "citation": "Prefer deterministic fixtures and validation before any live crawl or authenticated automation."
+      }
+    ],
+    "consumer_contract_expectations": [
+      {
+        "item_id": "checklist:missing-facts",
+        "category": "missing_facts",
+        "status": "gap",
+        "consumer_expectation": "agent responses expose missing facts and required documents as blockers before draft readiness",
+        "source_evidence_ids": ["ppd-plan:missing-facts"]
+      },
+      {
+        "item_id": "checklist:stale-evidence",
+        "category": "stale_evidence",
+        "status": "gap",
+        "consumer_expectation": "agent responses cite stale evidence and require refresh before relying on affected requirements",
+        "source_evidence_ids": ["ppd-plan:stale-evidence"]
+      },
+      {
+        "item_id": "checklist:local-pdf-preview",
+        "category": "local_pdf_preview",
+        "status": "gap",
+        "consumer_expectation": "agent responses distinguish local PDF preview from official upload or submission",
+        "source_evidence_ids": ["ppd-plan:local-pdf-preview"]
+      },
+      {
+        "item_id": "checklist:devhub-read-only-review",
+        "category": "devhub_read_only_review",
+        "status": "gap",
+        "consumer_expectation": "agent responses expose DevHub review as read-only redacted metadata unless an attended gate is present",
+        "source_evidence_ids": ["ppd-plan:devhub-read-only"]
+      },
+      {
+        "item_id": "checklist:manual-handoffs",
+        "category": "manual_handoffs",
+        "status": "manual_handoff_required",
+        "consumer_expectation": "agent responses name attended handoffs for login, MFA, certification, payment, scheduling, upload, and submission",
+        "source_evidence_ids": ["ppd-plan:manual-handoff"]
+      },
+      {
+        "item_id": "checklist:refused-consequential-actions",
+        "category": "refused_consequential_actions",
+        "status": "refused",
+        "consumer_expectation": "agent responses refuse consequential official actions rather than presenting them as safe autonomous steps",
+        "source_evidence_ids": ["ppd-plan:refused-actions"]
+      },
+      {
+        "item_id": "checklist:disabled-live-enforcement",
+        "category": "disabled_live_enforcement",
+        "status": "disabled",
+        "consumer_expectation": "agent responses state fixture validation only and do not enable live enforcement",
+        "source_evidence_ids": ["ppd-plan:disabled-live-enforcement"]
+      }
+    ]
+  },
+  "post_release_audit_findings": {
+    "packet_id": "post-release-audit-findings-fixture-2026-05-28",
+    "fixture_first": true,
+    "metadata_only": true,
+    "live_services_called": false,
+    "consumers_invoked": false,
+    "active_guardrail_bundles_changed": false,
+    "normalized_source_evidence": [],
+    "audit_findings": [
+      {
+        "finding_id": "audit:missing-facts",
+        "category": "missing_facts",
+        "severity": "contract_gap",
+        "finding": "consumer examples can be read as complete unless missing facts are repeated in the response contract",
+        "source_evidence_ids": ["ppd-plan:missing-facts"]
+      },
+      {
+        "finding_id": "audit:stale-evidence",
+        "category": "stale_evidence",
+        "severity": "contract_gap",
+        "finding": "stale source evidence requires an explicit blocker so consumers do not treat old citations as current",
+        "source_evidence_ids": ["ppd-plan:stale-evidence"]
+      },
+      {
+        "finding_id": "audit:local-pdf-preview",
+        "category": "local_pdf_preview",
+        "severity": "contract_gap",
+        "finding": "local PDF preview must not be described as an official upload, certification, or submission step",
+        "source_evidence_ids": ["ppd-plan:local-pdf-preview"]
+      },
+      {
+        "finding_id": "audit:devhub-read-only-review",
+        "category": "devhub_read_only_review",
+        "severity": "contract_gap",
+        "finding": "DevHub read-only review needs a consumer-visible boundary against authenticated mutation",
+        "source_evidence_ids": ["ppd-plan:devhub-read-only"]
+      },
+      {
+        "finding_id": "audit:manual-handoffs",
+        "category": "manual_handoffs",
+        "severity": "contract_gap",
+        "finding": "manual handoff steps must be named instead of hidden behind a generic blocked action label",
+        "source_evidence_ids": ["ppd-plan:manual-handoff"]
+      },
+      {
+        "finding_id": "audit:refused-consequential-actions",
+        "category": "refused_consequential_actions",
+        "severity": "contract_gap",
+        "finding": "consequential actions need refusal language and cannot be downgraded to reversible draft actions",
+        "source_evidence_ids": ["ppd-plan:refused-actions"]
+      },
+      {
+        "finding_id": "audit:disabled-live-enforcement",
+        "category": "disabled_live_enforcement",
+        "severity": "contract_gap",
+        "finding": "fixture packets must keep live enforcement disabled and avoid invoking consumers during audit assembly",
+        "source_evidence_ids": ["ppd-plan:disabled-live-enforcement"]
+      }
+    ]
+  }
+}

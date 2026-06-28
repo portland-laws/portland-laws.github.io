@@ -1,0 +1,17 @@
+Implemented a deterministic citation-slot refinement for `modal.ir_decompiler` that accepts USC section-marker variants (`§`, `§§`, `sec.`, `section`) while preserving existing slot semantics.
+
+Changed files:
+- [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000047-20260518_115515/ipfs_datasets_py/logic/modal/decompiler.py:64)  
+  Extended `_USC_CITATION_RE` to allow optional section markers before the section token.
+- [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000047-20260518_115515/ipfs_datasets_py/logic/modal/codec.py:104)  
+  Applied the same regex extension so decompiler slots and F-logic triple emission stay aligned.
+- [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000047-20260518_115515/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:69)  
+  Added new regression fixtures and tests for:
+  - `2 U.S.C. §190l`
+  - `45 U.S.C. §§ 228a to 228c.`
+  validating both decompiler slot maps and `modal_ir_to_flogic_triples` outputs ([tests at end of file](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000047-20260518_115515/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:1218)).
+
+Tests run:
+1. `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py -k "section_marker_variant_slots"` → 2 passed  
+2. `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py` → 23 passed  
+3. `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "usc_citation_variants or expand_alphanumeric_citation_section_slots"` → 2 passed

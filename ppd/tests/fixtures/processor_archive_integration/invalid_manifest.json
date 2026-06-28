@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "manifestKind": "processor_archive_integration_validation",
+  "manifestId": "ppd-processor-archive-integration-validation-invalid-2026-06-01",
+  "formalLogicExtractionReady": true,
+  "formalLogicHandoffId": "logic-handoff-doc-ppd-bureau-landing-page",
+  "networkAccess": false,
+  "processorInvoked": false,
+  "documentsDownloaded": false,
+  "downloadedDocumentsIncluded": false,
+  "rawBodiesIncluded": false,
+  "rawCrawlOutputIncluded": false,
+  "privateDevhubDataIncluded": false,
+  "archivedPublicSources": [
+    {
+      "sourceUrl": "https://www.portland.gov/ppd",
+      "canonicalDocumentId": "doc-ppd-bureau-landing-page",
+      "archiveArtifactRef": "metadata_only_archive_manifests/archive-ppd-bureau-landing-page.json",
+      "contentHash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "processorInput": {
+        "operation": "capture_url_metadata_only",
+        "metadataOnly": true,
+        "persistRawBody": false,
+        "downloadDocuments": false
+      },
+      "citations": []
+    }
+  ]
+}

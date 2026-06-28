@@ -1,0 +1,9 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,5 +1,5 @@
+ {
+-  "createdAt": "2026-05-04T01:36:34.889815Z",
++  "createdAt": "2026-05-04T01:39:11.047055Z",
+   "decision": {
+     "action": "reconcile_repeated_llm_loop_and_restart",
+     "reason": "3 recent durable LLM parse/runtime diagnostics were recorded for the same task before the daemon exited; park the looping task and restart on the next independent task without invoking the LLM repair path",

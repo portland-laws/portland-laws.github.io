@@ -1,0 +1,25 @@
+[
+  {
+    "artifact_id": "raw-html-body",
+    "artifact_type": "raw_html",
+    "path": "ppd/archive/raw/ppd-home.html",
+    "privacy_classification": "public",
+    "auth_scope": "public",
+    "contains_raw_body": true,
+    "no_raw_body_persisted": false
+  },
+  {
+    "artifact_id": "devhub-session",
+    "artifact_type": "auth_state",
+    "path": "ppd/devhub/session/auth_state.json",
+    "privacy_classification": "session_secret",
+    "auth_scope": "authenticated"
+  },
+  {
+    "artifact_id": "unknown-export",
+    "artifact_type": "zip_export",
+    "path": "ppd/archive/exports/public.zip",
+    "privacy_classification": "public",
+    "auth_scope": "public"
+  }
+]

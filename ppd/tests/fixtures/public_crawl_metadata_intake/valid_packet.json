@@ -1,0 +1,32 @@
+{
+  "packet_id": "fixture-public-crawl-dry-run-001",
+  "dry_run": true,
+  "requested_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+  "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+  "discovered_urls": [
+    "https://www.portland.gov/ppd/devhub-faqs",
+    "https://devhub.portlandoregon.gov"
+  ],
+  "promotion_manifest_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools#promotion-manifest-review",
+  "robots_evidence": [
+    {
+      "host": "www.portland.gov",
+      "source": "robots-preflight-fixture",
+      "decision": "allowed_for_metadata_dry_run"
+    }
+  ],
+  "policy_evidence": {
+    "allowlist_policy": "ppd_public_hosts_v1",
+    "privacy_classification": "public_metadata_only",
+    "raw_body_persistence": "forbidden"
+  },
+  "abort_decision": {
+    "decision": "continue_dry_run_only",
+    "reason": "metadata fixture only; no live crawl, raw body persistence, or download occurred"
+  },
+  "metadata": {
+    "http_status_planned": 200,
+    "content_type_planned": "text/html",
+    "no_raw_body_persisted": true
+  }
+}

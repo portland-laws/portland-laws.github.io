@@ -1,0 +1,85 @@
+{
+  "packet_type": "ppd.offline_release_decision_packet.v1",
+  "packet_id": "fixture-offline-release-decision-packet",
+  "fixture_only": true,
+  "source_packet_id": "fixture-offline-release-readiness-packet",
+  "recommendations": [
+    {
+      "recommendation_id": "release-decision-primary",
+      "decision": "no_go",
+      "summary": "Do not promote until the dry-run reviewer has reconciled the fixture blocker.",
+      "source_evidence_ids": ["evidence-readiness-summary"],
+      "validation_command_ref_ids": ["validation-command-self-test"]
+    }
+  ],
+  "unresolved_blocker_summaries": [
+    {
+      "blocker_id": "blocker-reviewer-approval-pending",
+      "candidate_id": "candidate-guardrail-bundle-2026-05-29",
+      "reason": "operator_review_pending",
+      "summary": "The release operator has not completed attended review of the offline decision packet.",
+      "source_evidence_ids": ["evidence-operator-review-required"]
+    }
+  ],
+  "operator_signoff_requests": [
+    {
+      "signoff_request_id": "signoff-ppd-release-operator",
+      "role": "ppd_release_operator",
+      "candidate_id": "candidate-guardrail-bundle-2026-05-29",
+      "request": "Review blocker status, rollback checkpoints, validation command references, and no-promotion attestations before any go claim.",
+      "required_before": "any_release_promotion_or_operator_go_claim",
+      "source_evidence_ids": ["evidence-operator-review-required"]
+    },
+    {
+      "signoff_request_id": "signoff-ppd-guardrail-reviewer",
+      "role": "ppd_guardrail_reviewer",
+      "candidate_id": "candidate-guardrail-bundle-2026-05-29",
+      "request": "Confirm high-risk action gates remain refusal-first and exact-confirmation gated.",
+      "required_before": "any_release_promotion_or_operator_go_claim",
+      "source_evidence_ids": ["evidence-high-risk-gate-review"]
+    }
+  ],
+  "rollback_checkpoints": [
+    {
+      "checkpoint_id": "rollback-before-registry-boundary",
+      "candidate_id": "candidate-guardrail-bundle-2026-05-29",
+      "checkpoint": "Keep active PP&D registries unchanged and discard only synthetic dry-run sequence state.",
+      "required_before": "operator_signoff",
+      "source_evidence_ids": ["evidence-no-active-registry-write"]
+    },
+    {
+      "checkpoint_id": "rollback-before-agent-consumer-boundary",
+      "candidate_id": "candidate-agent-consumer-contract-2026-05-29",
+      "checkpoint": "Keep agent consumer state unchanged and rerun fixture validation before another review attempt.",
+      "required_before": "operator_signoff",
+      "source_evidence_ids": ["evidence-no-agent-state-write"]
+    }
+  ],
+  "validation_command_references": [
+    {
+      "command_ref_id": "validation-command-self-test",
+      "command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
+      "returncode": 0,
+      "summary": "Daemon self-test passed for the fixture decision packet.",
+      "source_evidence_ids": ["evidence-self-test"]
+    }
+  ],
+  "no_promotion_attestations": [
+    {
+      "attestation_id": "no-active-registry-write",
+      "attests": "No active PP&D registry, manifest, requirement, process model, guardrail, source index, or agent consumer state is written by this fixture.",
+      "value": true,
+      "source_packet_id": "fixture-offline-release-readiness-packet"
+    }
+  ],
+  "release_state_effects": {
+    "mutates_registries": false,
+    "mutates_manifests": false,
+    "mutates_requirements": false,
+    "mutates_process_models": false,
+    "mutates_guardrails": false,
+    "promotes_release": false,
+    "launches_devhub": false,
+    "uses_live_network": false
+  }
+}

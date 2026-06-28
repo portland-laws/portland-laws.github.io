@@ -1,0 +1,24 @@
+{
+  "packet_type": "source_freshness_badge_packet",
+  "packet_version": "1.0",
+  "freshness_badges": [
+    {
+      "source_id": "ppd-online-tools-overview",
+      "freshness_status": "review_due_daily",
+      "last_verified_at": "2026-05-08",
+      "badge_reason": "DevHub and online permitting tool guidance can change frequently."
+    },
+    {
+      "source_id": "ppd-devhub-faqs",
+      "freshness_status": "review_due_daily",
+      "last_verified_at": "2026-05-08",
+      "badge_reason": "FAQ content defines supported account-scoped services."
+    },
+    {
+      "source_id": "ppd-submit-plans-online",
+      "freshness_status": "review_due_weekly",
+      "last_verified_at": "2026-05-08",
+      "badge_reason": "File preparation guidance changes less frequently but affects upload readiness."
+    }
+  ]
+}

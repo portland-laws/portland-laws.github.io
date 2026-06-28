@@ -1,0 +1,94 @@
+{
+  "queue_id": "pm-refresh-impact-v7-fixture-valid",
+  "queue_version": "process_model_refresh_impact_queue_v7",
+  "requirement_node_candidate_set_refs": [
+    {
+      "candidate_set_id": "rn-candidates-building-alteration-2026-05-08",
+      "requirement_ids": [
+        "req-document-single-pdf",
+        "req-fee-payment-gate"
+      ],
+      "source_evidence_ids": [
+        "src-submit-plans-online",
+        "src-how-pay-fees"
+      ]
+    }
+  ],
+  "affected_process_model_rows": [
+    {
+      "process_id": "pm-building-alteration",
+      "permit_type": "building alteration",
+      "guardrail_bundle_id": "gb-building-alteration-v1",
+      "refresh_reason": "fixture impact validation"
+    }
+  ],
+  "eligibility_impact_placeholders": [
+    {
+      "process_id": "pm-building-alteration",
+      "placeholder_id": "eligibility-impact-review-needed",
+      "status": "pending_review"
+    }
+  ],
+  "document_impact_placeholders": [
+    {
+      "process_id": "pm-building-alteration",
+      "placeholder_id": "document-impact-single-pdf",
+      "status": "pending_review"
+    }
+  ],
+  "fee_impact_placeholders": [
+    {
+      "process_id": "pm-building-alteration",
+      "placeholder_id": "fee-impact-payment-gate",
+      "status": "pending_review"
+    }
+  ],
+  "deadline_impact_placeholders": [
+    {
+      "process_id": "pm-building-alteration",
+      "placeholder_id": "deadline-impact-staleness-check",
+      "status": "pending_review"
+    }
+  ],
+  "stage_impact_placeholders": [
+    {
+      "process_id": "pm-building-alteration",
+      "placeholder_id": "stage-impact-upload-staging",
+      "status": "pending_review"
+    }
+  ],
+  "unsupported_path_carry_forward_notes": [
+    {
+      "note_id": "unsupported-path-email-submission-review",
+      "text": "Carry forward unsupported-path review for permit types that official guidance says must use email or another non-DevHub path."
+    }
+  ],
+  "guardrail_bundle_recompile_suggestions": [
+    {
+      "guardrail_bundle_id": "gb-building-alteration-v1",
+      "suggestion": "Recompile after reviewer acceptance of changed requirement candidates."
+    }
+  ],
+  "stale_evidence_holds": [
+    {
+      "source_evidence_id": "src-submit-plans-online",
+      "hold_reason": "Require freshness check before relying on extracted document rules."
+    }
+  ],
+  "reviewer_signoff_placeholders": [
+    {
+      "reviewer_role": "ppd_process_model_reviewer",
+      "signoff_status": "pending"
+    }
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ],
+  "notes": [
+    "Fixture contains only deterministic metadata and no live crawl, auth, private, raw, or official-action artifacts."
+  ]
+}

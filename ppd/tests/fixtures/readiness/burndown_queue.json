@@ -1,0 +1,123 @@
+{
+  "queue_id": "release-blocker-burndown-ppd-readiness-reconciliation-20260528",
+  "queue_type": "ppd.release_blocker_burndown_queue.v1",
+  "mode": "fixture_first",
+  "reconciliation_packet": {
+    "packet_id": "ppd-readiness-reconciliation-20260528",
+    "packet_version": "2026-05-28.checkbox-70.reconciled",
+    "fixture": "ppd/tests/fixtures/readiness/reconciliation_packet.json"
+  },
+  "ordering_policy": [
+    "source_freshness",
+    "guardrail_staleness",
+    "regression_coverage",
+    "attended_pilot_evidence_readiness",
+    "owner_prompt",
+    "prerequisite_packet_id"
+  ],
+  "ordered_blockers": [
+    {
+      "rank": 1,
+      "blocker_id": "registry-candidate-not-promoted",
+      "status": "open",
+      "priority_dimension": "source_freshness",
+      "summary": "The source registry update remains a candidate fixture and has not been reconciled into an approved registry change.",
+      "source_evidence_ids": [
+        "source-registry-candidate-packet"
+      ],
+      "owner_prompt": "Review the source registry update candidate and decide whether cited metadata can be promoted without live crawl output.",
+      "action_required": "source_registry_candidate_review",
+      "prerequisite_artifact": "source_registry_update_candidate",
+      "prerequisite_packet_id": "source-registry-update-candidate-reviewed-metadata-outcomes",
+      "prerequisite_packet_version": "2026-05-28.checkbox-63",
+      "automation_boundary": "fixture_only_no_live_crawl_no_devhub_automation",
+      "source_freshness_status": "candidate_not_promoted",
+      "guardrail_staleness_status": "not_primary_ordering_dimension",
+      "regression_coverage_status": "not_primary_ordering_dimension",
+      "attended_pilot_evidence_status": "not_primary_ordering_dimension",
+      "owner_prompt_status": "not_primary_ordering_dimension",
+      "prerequisite_packet_status": "not_primary_ordering_dimension"
+    },
+    {
+      "rank": 2,
+      "blocker_id": "guardrail-audit-stale",
+      "status": "open",
+      "priority_dimension": "guardrail_staleness",
+      "summary": "The stale guardrail audit requires human review before any release can enable automation beyond deterministic fixtures.",
+      "source_evidence_ids": [
+        "stale-guardrail-audit-packet"
+      ],
+      "owner_prompt": "Resolve stale guardrail predicates against cited fixture evidence before any release approval.",
+      "action_required": "stale_guardrail_review",
+      "prerequisite_artifact": "stale_guardrail_audit",
+      "prerequisite_packet_id": "stale-guardrail-audit-validator",
+      "prerequisite_packet_version": "2026-05-28.checkbox-65",
+      "automation_boundary": "fixture_only_no_live_crawl_no_devhub_automation",
+      "source_freshness_status": "not_primary_ordering_dimension",
+      "guardrail_staleness_status": "stale_requires_review",
+      "regression_coverage_status": "not_primary_ordering_dimension",
+      "attended_pilot_evidence_status": "not_primary_ordering_dimension",
+      "owner_prompt_status": "not_primary_ordering_dimension",
+      "prerequisite_packet_status": "not_primary_ordering_dimension"
+    },
+    {
+      "rank": 3,
+      "blocker_id": "agent-regression-fixture-only",
+      "status": "open",
+      "priority_dimension": "regression_coverage",
+      "summary": "Agent response behavior is covered by deterministic synthetic fixtures only and is not a release approval for official actions.",
+      "source_evidence_ids": [
+        "agent-regression-matrix-packet"
+      ],
+      "owner_prompt": "Review fixture-only regression coverage and identify the missing release evidence needed for agent responses.",
+      "action_required": "regression_gap_review",
+      "prerequisite_artifact": "agent_response_regression_matrix",
+      "prerequisite_packet_id": "agent-response-regression-matrix-synthetic-cases",
+      "prerequisite_packet_version": "2026-05-28.checkbox-66",
+      "automation_boundary": "fixture_only_no_live_crawl_no_devhub_automation",
+      "source_freshness_status": "not_primary_ordering_dimension",
+      "guardrail_staleness_status": "not_primary_ordering_dimension",
+      "regression_coverage_status": "fixture_only_not_release_approval",
+      "attended_pilot_evidence_status": "not_primary_ordering_dimension",
+      "owner_prompt_status": "not_primary_ordering_dimension",
+      "prerequisite_packet_status": "not_primary_ordering_dimension"
+    },
+    {
+      "rank": 4,
+      "blocker_id": "pilot-evidence-template-only",
+      "status": "open",
+      "priority_dimension": "attended_pilot_evidence_readiness",
+      "summary": "Attended pilot evidence is represented only as a template and contains no validated live pilot record.",
+      "source_evidence_ids": [
+        "attended-pilot-evidence-template-packet"
+      ],
+      "owner_prompt": "Prepare attended pilot evidence from the template without creating DevHub session artifacts or official actions.",
+      "action_required": "attended_pilot_template_review",
+      "prerequisite_artifact": "attended_pilot_evidence_template",
+      "prerequisite_packet_id": "attended-pilot-evidence-template-validator",
+      "prerequisite_packet_version": "2026-05-28.checkbox-69",
+      "automation_boundary": "fixture_only_no_live_crawl_no_devhub_automation",
+      "source_freshness_status": "not_primary_ordering_dimension",
+      "guardrail_staleness_status": "not_primary_ordering_dimension",
+      "regression_coverage_status": "not_primary_ordering_dimension",
+      "attended_pilot_evidence_status": "template_only_no_live_pilot_record",
+      "owner_prompt_status": "not_primary_ordering_dimension",
+      "prerequisite_packet_status": "not_primary_ordering_dimension"
+    }
+  ],
+  "open_blocker_count": 4,
+  "release_status": "blocked_by_open_release_blockers",
+  "production_ready": false,
+  "live_crawl_enabled": false,
+  "devhub_automation_enabled": false,
+  "disabled_capabilities": [
+    "cancellation",
+    "certification",
+    "devhub_authenticated_automation",
+    "live_crawl",
+    "payment",
+    "scheduling",
+    "submission",
+    "upload"
+  ]
+}

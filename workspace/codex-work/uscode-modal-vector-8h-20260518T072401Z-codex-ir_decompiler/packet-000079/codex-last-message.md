@@ -1,0 +1,15 @@
+Implemented a generalized decompiler/typed-slot refinement for section-range suffix semantics.
+
+- Added deterministic primary/terminal suffix relation slots in the decompiler section parser, including pair/match/presence plus length and alpha-order relations.
+- Mirrored the same logic in the codec component path so decoded slots and F-logic triples stay aligned.
+- Added regression coverage for long alpha ranges (`616tttt to 616yyyy`) and standard alpha ranges (`228a to 228c`) in both decode and triple tests.
+
+Key edits:
+- [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000079-20260518_153213/ipfs_datasets_py/logic/modal/decompiler.py:3315)
+- [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000079-20260518_153213/ipfs_datasets_py/logic/modal/codec.py:3130)
+- [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000079-20260518_153213/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:175)
+- [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000079-20260518_153213/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:1762)
+
+Validation run:
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py -k "suffix_relation_slots or section_range_slots"` (passed)
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py` (53 passed)

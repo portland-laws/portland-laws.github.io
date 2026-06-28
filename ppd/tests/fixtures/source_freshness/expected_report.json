@@ -1,0 +1,30 @@
+{
+  "as_of": "2026-05-12T00:00:00Z",
+  "fresh": [
+    "ppd_online_tools"
+  ],
+  "stale": [
+    {
+      "source_id": "ppd_devhub_faq",
+      "last_capture_at": "2026-04-30T16:30:02Z",
+      "crawl_frequency": "daily"
+    }
+  ],
+  "missing": [
+    "ppd_file_naming_standards"
+  ],
+  "changed_hash": [
+    {
+      "source_id": "ppd_fee_payment_guide",
+      "expected_content_hash": "sha256:fee-payment-previous",
+      "actual_content_hash": "sha256:fee-payment-current"
+    }
+  ],
+  "intentionally_deferred": [
+    {
+      "source_id": "portlandmaps_property_reference",
+      "deferred_until": "2026-06-01T00:00:00Z",
+      "deferred_reason": "Policy review required before automated Portland Maps recrawl."
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+Implemented a deterministic slot refinement for `modal.ir_decompiler` by adding explicit primary/terminal pairwise morphology slots for citation/source-id section components.
+
+**What changed**
+- Added new section slots in decompiler emission:
+  - `citation_section_primary_terminal_component_signature_pair`
+  - `citation_section_primary_terminal_component_signature_match`
+  - `citation_section_primary_terminal_component_kind_pair`
+  - `citation_section_primary_terminal_component_kind_match`  
+  in [_citation_section_slots](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000070-20260518_141559/ipfs_datasets_py/logic/modal/decompiler.py:2092).
+- Mirrored the same logic in codec triple generation so F-logic export stays aligned with decompiler slots in [_citation_section_components](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000070-20260518_141559/ipfs_datasets_py/logic/modal/codec.py:2052).
+- Extended regression coverage in [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000070-20260518_141559/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:830) and [section signature tests](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000070-20260518_141559/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:1015).
+
+**Validation**
+- Ran focused tests:
+  - `pytest -q ...::test_decode_modal_ir_document_emits_single_component_section_role_slots ...::test_modal_ir_to_flogic_triples_emits_single_component_section_role_slots ...::test_decode_modal_ir_document_emits_section_component_signature_slots ...::test_modal_ir_to_flogic_triples_emits_section_component_signature_slots`
+- Ran full slot suite:
+  - `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py`
+- Result: `44 passed`.

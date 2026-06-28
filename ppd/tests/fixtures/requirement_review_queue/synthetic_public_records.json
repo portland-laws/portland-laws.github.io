@@ -1,0 +1,112 @@
+{
+  "fixture_id": "synthetic-ppd-review-queue-001",
+  "source_evidence_freshness_badges": [
+    {
+      "source_evidence_id": "evidence-devhub-application-guide-step-upload",
+      "source_id": "src-devhub-application-guide",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "freshness_status": "fresh",
+      "freshness_badge": "verified-public-page-2026-05-08",
+      "last_verified_at": "2026-05-08",
+      "content_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "location_ref": "public-guide:upload-stage"
+    },
+    {
+      "source_evidence_id": "evidence-single-pdf-prep-rule",
+      "source_id": "src-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "freshness_status": "fresh",
+      "freshness_badge": "verified-public-page-2026-05-08",
+      "last_verified_at": "2026-05-08",
+      "content_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+      "location_ref": "public-guide:single-pdf-process"
+    },
+    {
+      "source_evidence_id": "evidence-fee-payment-guide",
+      "source_id": "src-fee-payment-guide",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "freshness_status": "stale",
+      "freshness_badge": "needs-refresh-before-formalization",
+      "last_verified_at": "2026-02-15",
+      "content_hash": "sha256:3333333333333333333333333333333333333333333333333333333333333333",
+      "location_ref": "public-pdf:fee-payment-overview"
+    }
+  ],
+  "synthetic_public_document_records": [
+    {
+      "document_id": "doc-devhub-application-guide-synthetic",
+      "source_id": "src-devhub-application-guide",
+      "title": "Synthetic DevHub permit application guide record",
+      "document_type": "devhub_public",
+      "language": "en",
+      "content_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "extraction_confidence": 0.74,
+      "candidate_requirement_hints": [
+        {
+          "requirement_id": "candidate-devhub-upload-action-gate",
+          "source_evidence_ids": ["evidence-devhub-application-guide-step-upload"],
+          "requirement_type": "action_gate",
+          "subject": "applicant or assisting agent",
+          "action": "pause before upload, acknowledgement, certification, or submission controls",
+          "object": "authenticated DevHub permit application workflow",
+          "conditions": ["workflow reaches upload staging or final review controls"],
+          "deadline_or_temporal_scope": "before any consequential authenticated action",
+          "permit_types": ["building", "trade with plan review", "solar", "demolition"],
+          "process_stage": "upload staging",
+          "candidate_confidence": 0.76,
+          "requires_inference": true
+        }
+      ]
+    },
+    {
+      "document_id": "doc-single-pdf-process-synthetic",
+      "source_id": "src-submit-plans-online",
+      "title": "Synthetic Submit Plans Online record",
+      "document_type": "public_html",
+      "language": "en",
+      "content_hash": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+      "extraction_confidence": 0.82,
+      "candidate_requirement_hints": [
+        {
+          "requirement_id": "candidate-single-pdf-document-requirement",
+          "source_evidence_ids": ["evidence-single-pdf-prep-rule"],
+          "requirement_type": "document_requirement",
+          "subject": "permit applicant",
+          "action": "prepare drawing plans together",
+          "object": "one plan-set PDF with other supporting documents as separate PDFs",
+          "conditions": ["project requires plan review", "documents are being prepared for online submittal"],
+          "deadline_or_temporal_scope": "before application upload staging",
+          "permit_types": ["building", "new single-family residence", "detached ADU"],
+          "process_stage": "document preparation",
+          "candidate_confidence": 0.86,
+          "requires_inference": false
+        }
+      ]
+    },
+    {
+      "document_id": "doc-fee-payment-guide-synthetic",
+      "source_id": "src-fee-payment-guide",
+      "title": "Synthetic fee payment guide record",
+      "document_type": "public_pdf",
+      "language": "en",
+      "content_hash": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+      "extraction_confidence": 0.68,
+      "candidate_requirement_hints": [
+        {
+          "requirement_id": "candidate-fee-payment-action-gate",
+          "source_evidence_ids": ["evidence-fee-payment-guide"],
+          "requirement_type": "fee_trigger",
+          "subject": "applicant or assisting agent",
+          "action": "obtain attended confirmation before entering payment details or submitting payment",
+          "object": "DevHub fee payment workflow",
+          "conditions": ["fees are due", "payment controls are visible"],
+          "deadline_or_temporal_scope": "before payment-detail entry or final payment execution",
+          "permit_types": ["building", "trade", "permit application requiring fees"],
+          "process_stage": "fee payment",
+          "candidate_confidence": 0.64,
+          "requires_inference": true
+        }
+      ]
+    }
+  ]
+}

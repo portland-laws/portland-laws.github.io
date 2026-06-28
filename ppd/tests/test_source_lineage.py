@@ -1,49 +1,103 @@
+from __future__ import annotations
+
 from pathlib import Path
 
 import pytest
 
-from ppd.source_lineage import build_public_source_lineage_rollup, load_public_source_lineage_fixture
+from ppd.extraction.source_lineage import (
+    SourceLineageError,
+    lineage_index,
+    load_public_source_lineage,
+    public_source_lineage_dicts,
+)
 
 
-FIXTURE_PATH = Path(__file__).parent / "fixtures" / "source_lineage" / "public_lineage_fixture.json"
+FIXTURES = Path(__file__).parent / "fixtures" / "public_source_lineage"
 
 
-def test_public_source_lineage_rollup_is_fixture_only() -> None:
-    rollup = load_public_source_lineage_fixture(FIXTURE_PATH)
+def test_load_public_source_lineage_from_committed_fixture() -> None:
+    lineage = load_public_source_lineage(FIXTURES / "public_sources.json", fixtures_root=FIXTURES)
 
-    assert rollup["fixture_only"] is True
-    assert rollup["seed_url_count"] == 2
-    assert rollup["normalized_document_ids"] == [
-        "ppd:building-permit-application",
-        "ppd:residential-permits",
-    ]
-    assert rollup["normalized_document_id_count"] == 2
-    assert rollup["processor_handoff_manifests"] == [
+    assert [item.source_id for item in lineage] == ["ppd-online-tools", "devhub-public-portal"]
+    assert lineage[0].fixture_path == "public_sources.json"
+    assert lineage[0].content_hash.startswith("sha256:")
+    assert lineage[0].evidence_id.startswith("evidence:")
+    assert lineage[1].source_type == "devhub_public"
+
+
+def test_public_source_lineage_dicts_are_json_ready() -> None:
+    records = public_source_lineage_dicts(FIXTURES / "public_sources.json", fixtures_root=FIXTURES)
+
+    assert records[0]["canonical_url"] == "https://www.portland.gov/ppd/how-use-online-permitting-tools"
+    assert set(records[0]) == {
+        "source_id",
+        "canonical_url",
+        "source_type",
+        "title",
+        "content_hash",
+        "fixture_path",
+        "evidence_id",
+    }
+
+
+def test_rejects_private_devhub_source_type(tmp_path: Path) -> None:
+    fixture = tmp_path / "private_devhub.json"
+    fixture.write_text(
+        """
         {
-            "manifest_id": "fixture-public-guidance-001",
-            "processor": "ppd-public-guidance-normalizer",
-            "document_ids": [
-                "ppd:building-permit-application",
-                "ppd:residential-permits",
-            ],
-            "document_count": 2,
+          "sources": [
+            {
+              "source_id": "devhub-private-case",
+              "canonical_url": "https://devhub.portlandoregon.gov/mypermits",
+              "source_type": "devhub_authenticated",
+              "title": "Private case list",
+              "normalized_text": "private authenticated account data"
+            }
+          ]
         }
-    ]
-    assert rollup["skipped_action_reasons"] == {
-        "fixture_only_validation": 1,
-        "public_lineage_only": 1,
-        "raw_bodies_out_of_scope": 1,
-    }
+        """,
+        encoding="utf-8",
+    )
+
+    with pytest.raises(SourceLineageError, match="non-public source type rejected"):
+        load_public_source_lineage(fixture)
 
 
-def test_public_source_lineage_rollup_rejects_raw_response_bodies() -> None:
-    fixture = {
-        "seed_urls": ["https://www.portland.gov/ppd/residential-permits"],
-        "processor_handoff_manifests": [],
-        "source_freshness_records": [],
-        "skipped_actions": [],
-        "response_body": "not allowed in committed lineage fixtures",
-    }
+def test_rejects_sensitive_devhub_public_url(tmp_path: Path) -> None:
+    fixture = tmp_path / "devhub_session.json"
+    fixture.write_text(
+        """
+        {
+          "sources": [
+            {
+              "source_id": "devhub-session",
+              "canonical_url": "https://devhub.portlandoregon.gov/?session=abc123",
+              "source_type": "devhub_public",
+              "title": "DevHub session URL",
+              "normalized_text": "session-bearing URL must not be accepted"
+            }
+          ]
+        }
+        """,
+        encoding="utf-8",
+    )
 
-    with pytest.raises(ValueError, match="raw response body field"):
-        build_public_source_lineage_rollup(fixture)
+    with pytest.raises(SourceLineageError, match="sensitive query parameter rejected"):
+        load_public_source_lineage(fixture)
+
+
+def test_rejects_fixture_outside_supplied_root(tmp_path: Path) -> None:
+    fixture = tmp_path / "public_sources.json"
+    fixture.write_text("[]", encoding="utf-8")
+
+    with pytest.raises(SourceLineageError, match="under the supplied fixtures root"):
+        load_public_source_lineage(fixture, fixtures_root=FIXTURES)
+
+
+def test_lineage_index_rejects_duplicate_source_ids() -> None:
+    lineage = load_public_source_lineage(FIXTURES / "public_sources.json", fixtures_root=FIXTURES)
+
+    with pytest.raises(SourceLineageError, match="duplicate source_id"):
+        lineage_index([lineage[0], lineage[0]])
+
+    assert set(lineage_index(lineage)) == {"ppd-online-tools", "devhub-public-portal"}

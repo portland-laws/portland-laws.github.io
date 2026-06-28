@@ -1,3 +1,6 @@
+import { parseTdfolFormula } from './parser';
+import type { ProofResult } from '../types';
+
 export type TdfolSecurityLevel = 'low' | 'medium' | 'high' | 'paranoid';
 export type TdfolThreatType =
   | 'injection'
@@ -7,6 +10,7 @@ export type TdfolThreatType =
   | 'side_channel'
   | 'timing_attack'
   | 'recursive_bomb'
+  | 'parse_error'
   | 'invalid_zkp';
 
 export interface TdfolSecurityConfig {
@@ -40,6 +44,26 @@ export interface TdfolZkpAuditResult {
   auditTime: number;
 }
 
+export interface TdfolProofAuditResult {
+  passed: boolean;
+  vulnerabilities: string[];
+  recommendations: string[];
+  riskLevel: 'low' | 'medium' | 'high' | 'critical';
+  auditTime: number;
+}
+
+export interface TdfolSecurityBundleInput {
+  formula: unknown;
+  proofCacheEntry?: unknown;
+  witness?: unknown;
+  zkpPublicInputs?: unknown;
+  identifier?: string;
+}
+
+export interface TdfolSecurityBundleResult extends TdfolSecurityValidationResult {
+  checks: { formula: boolean; proofCache: boolean; witness: boolean; zkpPublicInputs: boolean };
+}
+
 export interface TdfolSecurityEvent {
   timestamp: string;
   threatType: TdfolThreatType;
@@ -59,7 +83,9 @@ export class TdfolRateLimiter {
 
   checkRateLimit(identifier: string): { allowed: boolean; error?: string } {
     const currentTime = this.now();
-    const recent = (this.requests.get(identifier) ?? []).filter((time) => currentTime - time < this.timeWindowMs);
+    const recent = (this.requests.get(identifier) ?? []).filter(
+      (time) => currentTime - time < this.timeWindowMs,
+    );
     if (recent.length >= this.maxRequests) {
       this.requests.set(identifier, recent);
       return {
@@ -91,16 +117,36 @@ export class TdfolSecurityValidator {
       maxRequestsPerMinute: config.maxRequestsPerMinute ?? 100,
       maxConcurrentRequests: config.maxConcurrentRequests ?? 10,
       securityLevel: config.securityLevel ?? 'medium',
-      allowedChars: config.allowedChars ?? new Set('abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]{}∀∃∧∨¬→↔=≠<>≤≥+-*/,.:_\' '),
-      dangerousPatterns:
-        config.dangerousPatterns ??
-        [/__.*__/, /eval/i, /exec/i, /compile/i, /import/i, /__import__/i, /getattr/i, /setattr/i, /delattr/i],
+      allowedChars:
+        config.allowedChars ??
+        new Set(
+          "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789()[]{}∀∃∧∨¬→↔=≠<>≤≥+-*/,.:_' ",
+        ),
+      dangerousPatterns: config.dangerousPatterns ?? [
+        /__.*__/,
+        /eval/i,
+        /exec/i,
+        /compile/i,
+        /import/i,
+        /__import__/i,
+        /getattr/i,
+        /setattr/i,
+        /delattr/i,
+      ],
       now: config.now ?? (() => Date.now()),
     };
-    this.rateLimiter = new TdfolRateLimiter(this.config.maxRequestsPerMinute, 60_000, this.config.now);
+    this.rateLimiter = new TdfolRateLimiter(
+      this.config.maxRequestsPerMinute,
+      60_000,
+      this.config.now,
+    );
   }
 
-  validateFormula(formula: unknown, identifier = 'default'): TdfolSecurityValidationResult {
+  validateFormula(
+    formula: unknown,
+    identifier = 'default',
+    options: { parse?: boolean } = {},
+  ): TdfolSecurityValidationResult {
     const result = createSecurityValidationResult();
     const rate = this.rateLimiter.checkRateLimit(identifier);
     if (!rate.allowed) {
@@ -125,8 +171,12 @@ export class TdfolSecurityValidator {
         this.detectInjection(formula, result);
         this.detectDosPatterns(formula, result);
         this.detectRecursiveBombs(formula, result);
+        if (options.parse ?? true) this.validateParse(formula, result);
         result.metadata = {
           formula_length: formula.length,
+          formula_depth: calculateDepth(formula),
+          variable_count: countVariables(formula),
+          operator_count: countOperators(formula),
           validation_time: this.config.now(),
           security_level: this.config.securityLevel,
         };
@@ -142,7 +192,11 @@ export class TdfolSecurityValidator {
     if (!input) return '';
     let sanitized = input.replace(/\x00/g, '');
     for (const pattern of this.config.dangerousPatterns) {
-      sanitized = sanitized.replace(pattern, '');
+      let previous = '';
+      while (previous !== sanitized) {
+        previous = sanitized;
+        sanitized = sanitized.replace(pattern, '');
+      }
     }
     sanitized = sanitized.replace(/\s+/g, ' ');
     sanitized = [...sanitized].filter((char) => /[\n\t]/.test(char) || char >= ' ').join('');
@@ -172,6 +226,73 @@ export class TdfolSecurityValidator {
     this.analyzeSideChannels(proof, result);
     result.riskLevel = calculateRiskLevel(result);
     result.auditTime = performance.now() - startedAt;
+    return result;
+  }
+
+  auditProofResult(proof: ProofResult): TdfolProofAuditResult {
+    const startedAt = performance.now();
+    const result: TdfolProofAuditResult = {
+      passed: true,
+      vulnerabilities: [],
+      recommendations: [],
+      riskLevel: 'low',
+      auditTime: 0,
+    };
+
+    if (!proof.theorem) {
+      result.passed = false;
+      result.vulnerabilities.push('Proof result missing theorem');
+    }
+    if (!Array.isArray(proof.steps)) {
+      result.passed = false;
+      result.vulnerabilities.push('Proof result steps must be an array');
+    } else {
+      this.auditProofSteps(proof, result);
+    }
+    if (
+      typeof proof.method === 'string' &&
+      /python|subprocess|rpc|server|http|fetch|websocket/i.test(proof.method)
+    ) {
+      result.passed = false;
+      result.vulnerabilities.push('Proof method references a non-browser runtime');
+    }
+    const elapsedMs = proof.timeMs ?? proof.time_ms ?? 0;
+    if (elapsedMs > this.config.maxProofTimeSeconds * 1000) {
+      result.recommendations.push('Proof exceeded configured proof-time budget');
+    }
+
+    result.riskLevel = calculateProofRiskLevel(result);
+    result.auditTime = performance.now() - startedAt;
+    return result;
+  }
+
+  validateSecurityBundle(input: TdfolSecurityBundleInput): TdfolSecurityBundleResult {
+    const formulaResult = this.validateFormula(input.formula, input.identifier ?? 'bundle');
+    const result: TdfolSecurityBundleResult = {
+      ...formulaResult,
+      errors: [...formulaResult.errors],
+      warnings: [...formulaResult.warnings],
+      threats: [...formulaResult.threats],
+      metadata: { ...formulaResult.metadata },
+      checks: {
+        formula: formulaResult.valid,
+        proofCache: true,
+        witness: true,
+        zkpPublicInputs: true,
+      },
+    };
+
+    validateProofCacheEntry(input.proofCacheEntry, result);
+    validateWitnessInput(input.witness, result);
+    validateZkpPublicInputs(input.zkpPublicInputs, result);
+    result.valid = result.valid && Object.values(result.checks).every(Boolean);
+    result.metadata = {
+      ...result.metadata,
+      security_bundle_checked: true,
+      proof_cache_checked: input.proofCacheEntry !== undefined,
+      witness_checked: input.witness !== undefined,
+      zkp_public_inputs_checked: input.zkpPublicInputs !== undefined,
+    };
     return result;
   }
 
@@ -232,13 +353,13 @@ export class TdfolSecurityValidator {
       result.errors.push(`Formula too deep: ${depth} > ${this.config.maxFormulaDepth}`);
       result.threats.push('resource_exhaustion');
     }
-    const variableCount = [...formula.matchAll(/\b[a-z][a-z0-9_]*\b/g)].length;
+    const variableCount = countVariables(formula);
     if (variableCount > this.config.maxVariables) {
       result.valid = false;
       result.errors.push(`Too many variables: ${variableCount} > ${this.config.maxVariables}`);
       result.threats.push('resource_exhaustion');
     }
-    const operatorCount = [...formula.matchAll(/[∀∃∧∨¬→↔=≠<>≤≥]/g)].length;
+    const operatorCount = countOperators(formula);
     if (operatorCount > this.config.maxOperators) {
       result.valid = false;
       result.errors.push(`Too many operators: ${operatorCount} > ${this.config.maxOperators}`);
@@ -248,7 +369,9 @@ export class TdfolSecurityValidator {
 
   private validateCharacters(formula: string, result: TdfolSecurityValidationResult): void {
     if (this.config.securityLevel !== 'high' && this.config.securityLevel !== 'paranoid') return;
-    const invalidChars = [...new Set([...formula].filter((char) => !this.config.allowedChars.has(char)))];
+    const invalidChars = [
+      ...new Set([...formula].filter((char) => !this.config.allowedChars.has(char))),
+    ];
     if (invalidChars.length === 0) return;
     const message = `Invalid characters: ${invalidChars.map((char) => JSON.stringify(char)).join(', ')}`;
     if (this.config.securityLevel === 'paranoid') {
@@ -269,7 +392,7 @@ export class TdfolSecurityValidator {
         this.logSecurityEvent('injection', `Pattern: ${pattern.source}`, formula.slice(0, 100));
       }
     }
-    for (const sequence of ['$(' , '`', '${', '|', ';', '&&', '||']) {
+    for (const sequence of ['$(', '`', '${', '|', ';', '&&', '||']) {
       if (!formula.includes(sequence)) continue;
       if (this.config.securityLevel === 'high' || this.config.securityLevel === 'paranoid') {
         result.valid = false;
@@ -308,15 +431,33 @@ export class TdfolSecurityValidator {
     if (duplicates > 10) result.warnings.push(`High variable reuse: ${duplicates} duplicates`);
   }
 
-  private validateProofStructure(proof: Record<string, unknown>, result: TdfolZkpAuditResult): void {
+  private validateParse(formula: string, result: TdfolSecurityValidationResult): void {
+    if (!result.valid) return;
+    try {
+      parseTdfolFormula(formula);
+    } catch (error) {
+      result.valid = false;
+      result.errors.push(error instanceof Error ? error.message : 'Invalid TDFOL formula');
+      result.threats.push('parse_error');
+    }
+  }
+
+  private validateProofStructure(
+    proof: Record<string, unknown>,
+    result: TdfolZkpAuditResult,
+  ): void {
     for (const field of ['commitment', 'challenge', 'response']) {
       if (!(field in proof)) {
         result.passed = false;
         result.vulnerabilities.push(`Missing required field: ${field}`);
       }
     }
-    const unexpected = Object.keys(proof).filter((key) => !['commitment', 'challenge', 'response', 'metadata', 'timestamp', 'version'].includes(key));
-    if (unexpected.length > 0) result.recommendations.push(`Unexpected fields in proof: ${unexpected.join(', ')}`);
+    const unexpected = Object.keys(proof).filter(
+      (key) =>
+        !['commitment', 'challenge', 'response', 'metadata', 'timestamp', 'version'].includes(key),
+    );
+    if (unexpected.length > 0)
+      result.recommendations.push(`Unexpected fields in proof: ${unexpected.join(', ')}`);
   }
 
   private checkCryptoParameters(proof: Record<string, unknown>, result: TdfolZkpAuditResult): void {
@@ -324,7 +465,10 @@ export class TdfolSecurityValidator {
       result.passed = false;
       result.vulnerabilities.push('Commitment too short (< 32 bytes)');
     }
-    if (typeof proof.challenge === 'string' && new Set(proof.challenge).size < proof.challenge.length / 4) {
+    if (
+      typeof proof.challenge === 'string' &&
+      new Set(proof.challenge).size < proof.challenge.length / 4
+    ) {
       result.recommendations.push('Challenge appears to have low entropy');
     }
   }
@@ -332,7 +476,9 @@ export class TdfolSecurityValidator {
   private checkProofIntegrity(proof: Record<string, unknown>, result: TdfolZkpAuditResult): void {
     const metadata = proof.metadata;
     if (!metadata || typeof metadata !== 'object' || !('hash' in metadata)) return;
-    const proofData = Object.fromEntries(Object.entries(proof).filter(([key]) => key !== 'metadata'));
+    const proofData = Object.fromEntries(
+      Object.entries(proof).filter(([key]) => key !== 'metadata'),
+    );
     const calculatedHash = simpleHash(JSON.stringify(Object.entries(proofData).sort()));
     if ((metadata as { hash?: unknown }).hash !== calculatedHash) {
       result.passed = false;
@@ -343,11 +489,42 @@ export class TdfolSecurityValidator {
   private analyzeSideChannels(proof: Record<string, unknown>, result: TdfolZkpAuditResult): void {
     const metadata = proof.metadata;
     if (!metadata || typeof metadata !== 'object') return;
-    if (JSON.stringify(metadata).length > 1000) result.recommendations.push('Large metadata could leak information');
+    if (JSON.stringify(metadata).length > 1000)
+      result.recommendations.push('Large metadata could leak information');
     for (const key of Object.keys(metadata)) {
-      if (['secret', 'private', 'key', 'password'].some((keyword) => key.toLowerCase().includes(keyword))) {
+      if (
+        ['secret', 'private', 'key', 'password'].some((keyword) =>
+          key.toLowerCase().includes(keyword),
+        )
+      ) {
         result.passed = false;
         result.vulnerabilities.push(`Potentially sensitive metadata field: ${key}`);
+      }
+    }
+  }
+
+  private auditProofSteps(proof: ProofResult, result: TdfolProofAuditResult): void {
+    if (proof.status === 'proved' && proof.steps.length > 0) {
+      const finalConclusion = proof.steps[proof.steps.length - 1]?.conclusion;
+      if (finalConclusion !== proof.theorem) {
+        result.passed = false;
+        result.vulnerabilities.push('Final proof step does not conclude theorem');
+      }
+    }
+    const seenIds = new Set<string>();
+    for (const [index, step] of proof.steps.entries()) {
+      const stepLabel = step.id || `<missing id at ${index}>`;
+      if (!step.id || !step.rule || !step.conclusion || !Array.isArray(step.premises)) {
+        result.passed = false;
+        result.vulnerabilities.push(`Malformed proof step: ${stepLabel}`);
+      }
+      if (step.id && seenIds.has(step.id)) {
+        result.passed = false;
+        result.vulnerabilities.push(`Duplicate proof step id: ${step.id}`);
+      }
+      if (step.id) seenIds.add(step.id);
+      if (Array.isArray(step.premises) && step.premises.length > 100) {
+        result.recommendations.push(`Proof step ${stepLabel} has many premises`);
       }
     }
   }
@@ -390,6 +567,14 @@ export function simpleHash(value: string): string {
   return (hash >>> 0).toString(16).padStart(8, '0');
 }
 
+function countVariables(formula: string): number {
+  return [...formula.matchAll(/\b[a-z][a-z0-9_]*\b/g)].length;
+}
+
+function countOperators(formula: string): number {
+  return [...formula.matchAll(/[∀∃∧∨¬→↔=≠<>≤≥]/g)].length;
+}
+
 function hasExcessiveRepetition(formula: string, threshold = 100): boolean {
   for (let index = 0; index <= formula.length - threshold; index += 1) {
     if (new Set(formula.slice(index, index + threshold)).size < 5) return true;
@@ -411,7 +596,138 @@ function hasExponentialPattern(formula: string): boolean {
   return maxQuantifierDepth > 10;
 }
 
+function validateProofCacheEntry(entry: unknown, result: TdfolSecurityBundleResult): void {
+  if (entry === undefined) return;
+  if (!isPlainRecord(entry)) {
+    failBundleCheck(result, 'proofCache', 'Proof cache entry must be an object', 'malformed_input');
+    return;
+  }
+  const status = entry.status;
+  if (
+    typeof entry.theorem !== 'string' ||
+    !['proved', 'disproved', 'unknown', 'timeout', 'error', 'unprovable'].includes(String(status))
+  ) {
+    failBundleCheck(
+      result,
+      'proofCache',
+      'Proof cache entry must include a theorem and known status',
+      'malformed_input',
+    );
+  }
+  if (!Array.isArray(entry.steps)) {
+    failBundleCheck(
+      result,
+      'proofCache',
+      'Proof cache entry steps must be an array',
+      'malformed_input',
+    );
+  }
+  if (typeof entry.method === 'string' && /python|subprocess|rpc|server|http/i.test(entry.method)) {
+    failBundleCheck(
+      result,
+      'proofCache',
+      'Proof cache entry references a non-browser proof method',
+      'side_channel',
+    );
+  }
+}
+
+function validateWitnessInput(witness: unknown, result: TdfolSecurityBundleResult): void {
+  if (witness === undefined) return;
+  if (!isPlainRecord(witness) || !Array.isArray(witness.axioms)) {
+    failBundleCheck(result, 'witness', 'Witness must include an axioms array', 'invalid_zkp');
+    return;
+  }
+  if (!witness.axioms.every((axiom) => typeof axiom === 'string' && axiom.length > 0)) {
+    failBundleCheck(result, 'witness', 'Witness axioms must be non-empty strings', 'invalid_zkp');
+  }
+  const intermediateSteps = witness.intermediate_steps ?? witness.intermediateSteps;
+  if (intermediateSteps !== undefined && !Array.isArray(intermediateSteps)) {
+    failBundleCheck(
+      result,
+      'witness',
+      'Witness intermediate steps must be an array',
+      'invalid_zkp',
+    );
+  }
+  for (const key of Object.keys(witness)) {
+    if (/secret|private[_-]?key|password/i.test(key)) {
+      failBundleCheck(
+        result,
+        'witness',
+        `Witness contains sensitive field: ${key}`,
+        'side_channel',
+      );
+    }
+  }
+}
+
+function validateZkpPublicInputs(inputs: unknown, result: TdfolSecurityBundleResult): void {
+  if (inputs === undefined) return;
+  if (!isPlainRecord(inputs)) {
+    failBundleCheck(
+      result,
+      'zkpPublicInputs',
+      'ZKP public inputs must be an object',
+      'invalid_zkp',
+    );
+    return;
+  }
+  for (const field of ['theorem_hash', 'axioms_commitment', 'circuit_version', 'ruleset_id']) {
+    if (!(field in inputs)) {
+      failBundleCheck(
+        result,
+        'zkpPublicInputs',
+        `Missing ZKP public input: ${field}`,
+        'invalid_zkp',
+      );
+    }
+  }
+  for (const field of ['theorem_hash', 'axioms_commitment']) {
+    const value = inputs[field];
+    if (typeof value !== 'string' || !/^[0-9a-f]{64}$/i.test(value)) {
+      failBundleCheck(
+        result,
+        'zkpPublicInputs',
+        `Invalid ZKP field element hash: ${field}`,
+        'invalid_zkp',
+      );
+    }
+  }
+  if (!Number.isSafeInteger(inputs.circuit_version) || Number(inputs.circuit_version) <= 0) {
+    failBundleCheck(result, 'zkpPublicInputs', 'Invalid ZKP circuit version', 'invalid_zkp');
+  }
+  if (typeof inputs.ruleset_id !== 'string' || inputs.ruleset_id.length === 0) {
+    failBundleCheck(result, 'zkpPublicInputs', 'Invalid ZKP ruleset id', 'invalid_zkp');
+  }
+}
+
+function failBundleCheck(
+  result: TdfolSecurityBundleResult,
+  check: keyof TdfolSecurityBundleResult['checks'],
+  message: string,
+  threat: TdfolThreatType,
+): void {
+  result.checks[check] = false;
+  result.valid = false;
+  result.errors.push(message);
+  result.threats.push(threat);
+}
+
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
+}
+
 function calculateRiskLevel(result: TdfolZkpAuditResult): TdfolZkpAuditResult['riskLevel'] {
+  if (!result.passed) return 'critical';
+  if (result.vulnerabilities.length > 0) return 'high';
+  if (result.recommendations.length > 3) return 'medium';
+  return 'low';
+}
+
+function calculateProofRiskLevel(
+  result: TdfolProofAuditResult,
+): TdfolProofAuditResult['riskLevel'] {
   if (!result.passed) return 'critical';
   if (result.vulnerabilities.length > 0) return 'high';
   if (result.recommendations.length > 3) return 'medium';

@@ -1,0 +1,9 @@
+{
+  "decisions": [
+    {
+      "id": "recrawl-003",
+      "metadata_review_link": "ppd/reviews/metadata/recrawl-003.json",
+      "risk_decision": "invalidate because recrawl changed the page"
+    }
+  ]
+}

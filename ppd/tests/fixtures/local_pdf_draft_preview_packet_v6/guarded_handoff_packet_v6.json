@@ -1,0 +1,151 @@
+{
+  "packet_version": "guarded-draft-preview-handoff-packet-v6",
+  "fixture_first": true,
+  "handoff_id": "guarded-draft-preview-handoff-v6-fixture",
+  "agent_api_compatibility_refs": [
+    {
+      "ref_id": "agent-api-compat-v6",
+      "reference_kind": "agent_api_compatibility",
+      "source_evidence_ids": ["agent-api-compat-fixture-v6"]
+    }
+  ],
+  "attended_preflight_refs": [
+    {
+      "ref_id": "devhub-read-only-preflight-v6",
+      "reference_kind": "attended_preflight",
+      "source_evidence_ids": ["devhub-read-only-preflight-fixture-v6"]
+    }
+  ],
+  "reversible_draft_preview_rows": [
+    {
+      "row_id": "handoff-row::site-address",
+      "required_fact_ids": ["fact::site-address"],
+      "reversible": true,
+      "local_only": true,
+      "requires_user_review": true,
+      "official_action": false,
+      "devhub_mutation": false,
+      "pdf_write": false,
+      "upload_ready": false,
+      "source_evidence_ids": ["src::devhub-submit-guide::dynamic-questions"],
+      "user_fact_provenance_requirements": ["User-provided site address source is required before preview review."],
+      "selector_confidence_caveats": ["Synthetic selector mapping cannot support unattended execution."],
+      "local_pdf_preview_boundaries": ["Preview metadata only; no PDF write or private path."]
+    },
+    {
+      "row_id": "handoff-row::property-owner",
+      "required_fact_ids": ["fact::property-owner"],
+      "reversible": true,
+      "local_only": true,
+      "requires_user_review": true,
+      "official_action": false,
+      "devhub_mutation": false,
+      "pdf_write": false,
+      "upload_ready": false,
+      "source_evidence_ids": ["src::single-pdf-process::separate-documents"],
+      "user_fact_provenance_requirements": ["User-provided owner source is required before preview review."],
+      "selector_confidence_caveats": ["Synthetic field mapping cannot support unattended execution."],
+      "local_pdf_preview_boundaries": ["Preview metadata only; no PDF write or private path."]
+    }
+  ],
+  "user_fact_provenance_requirements": [
+    {
+      "fact_id": "fact::site-address",
+      "requires_user_supplied_provenance": true,
+      "allow_inference_without_source": false
+    },
+    {
+      "fact_id": "fact::property-owner",
+      "requires_user_supplied_provenance": true,
+      "allow_inference_without_source": false
+    }
+  ],
+  "selector_confidence_caveats": [
+    {
+      "caveat_id": "synthetic-selector-confidence-only",
+      "blocks_unattended_execution": true,
+      "allows_live_selector_claim": false
+    }
+  ],
+  "stop_gates": [
+    {
+      "topic": "upload",
+      "automated": false,
+      "requires_attended_user": true,
+      "requires_exact_confirmation": true,
+      "disposition": "stop_and_manual_handoff"
+    },
+    {
+      "topic": "submission",
+      "automated": false,
+      "requires_attended_user": true,
+      "requires_exact_confirmation": true,
+      "disposition": "stop_and_manual_handoff"
+    },
+    {
+      "topic": "payment",
+      "automated": false,
+      "requires_attended_user": true,
+      "requires_exact_confirmation": true,
+      "disposition": "stop_and_manual_handoff"
+    },
+    {
+      "topic": "certification",
+      "automated": false,
+      "requires_attended_user": true,
+      "requires_exact_confirmation": true,
+      "disposition": "stop_and_manual_handoff"
+    }
+  ],
+  "local_pdf_preview_boundaries": [
+    {
+      "boundary_id": "metadata-only-local-pdf-preview",
+      "local_preview_only": true,
+      "writes_pdf": false,
+      "uses_private_file_path": false
+    }
+  ],
+  "exact_confirmation_checkpoint_reminders": [
+    {
+      "reminder_id": "official-action-exact-confirmation",
+      "reminder": "Official actions remain stopped until the user is present and gives action-specific exact confirmation.",
+      "source_evidence_ids": ["non-negotiable-boundaries"]
+    }
+  ],
+  "manual_handoff_notes": [
+    {
+      "note_id": "manual-devhub-handoff",
+      "note": "Hand off to the user for attended DevHub review before consequential actions.",
+      "source_evidence_ids": ["authenticated-devhub-automation-plan"]
+    }
+  ],
+  "no_effect_policy": {
+    "live_devhub_access": false,
+    "private_session_auth_artifacts": false,
+    "official_action_completion_claims": false,
+    "legal_or_permitting_guarantees": false,
+    "active_mutation_flags": false,
+    "opens_devhub": false,
+    "uses_authenticated_session": false,
+    "stores_auth_state": false,
+    "stores_cookies": false,
+    "creates_traces": false,
+    "creates_screenshots": false,
+    "creates_har_files": false,
+    "uploads": false,
+    "submits": false,
+    "pays": false,
+    "certifies": false,
+    "schedules": false,
+    "cancels": false,
+    "mutates_release_state": false,
+    "mutates_guardrails": false,
+    "mutates_prompts": false,
+    "writes_pdf": false
+  },
+  "validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/agent_readiness/guarded_draft_preview_handoff_packet_v6.py", "ppd/tests/test_guarded_draft_preview_handoff_packet_v6.py"],
+    ["python3", "-m", "unittest", "ppd.tests.test_guarded_draft_preview_handoff_packet_v6"],
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "packet_id": "fixture:source-freshness-drift-escalation:20260529",
+  "escalation_owner": "freshness-review",
+  "requirement_ids": [
+    "PCC-33.110.265",
+    "PCC-33.445.320"
+  ],
+  "affected_process_refs": [
+    "ppd-process:source-freshness-review"
+  ],
+  "drift_signal": "fixture-only source freshness drift escalation"
+}

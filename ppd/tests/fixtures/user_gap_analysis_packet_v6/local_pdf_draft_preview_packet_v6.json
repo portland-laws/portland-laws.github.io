@@ -1,0 +1,30 @@
+{
+  "packet_type": "local_pdf_draft_preview_packet_v6",
+  "version": 6,
+  "unresolved_fields": [
+    {
+      "field_id": "owner_signature_date",
+      "label": "Owner signature date"
+    }
+  ],
+  "missing_document_labels": [
+    "fixture-only draft preview attachment label"
+  ],
+  "stale_or_conflicting_evidence_rows": [
+    {
+      "evidence_id": "ev-001",
+      "issue": "scope text differs between guarded draft and local PDF preview",
+      "safe_resolution": "ask user to choose intended wording before any external action"
+    }
+  ],
+  "citation_payloads": [
+    {
+      "citation_id": "cite-local-pdf-001",
+      "source": "local PDF draft preview fixture",
+      "label": "Synthetic unresolved owner signature date field"
+    }
+  ],
+  "manual_handoff_notes": [
+    "Local PDF draft preview is a committed fixture summary only; no downloaded or private document is read."
+  ]
+}

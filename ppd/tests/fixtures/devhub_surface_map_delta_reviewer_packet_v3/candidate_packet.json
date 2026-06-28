@@ -1,0 +1,205 @@
+{
+  "packet_version": "devhub_surface_map_delta_candidate_v3",
+  "packet_id": "fixture-inactive-surface-map-delta-candidate-v3-for-review",
+  "mode": "fixture_first_inactive_devhub_surface_map_delta_candidate_v3",
+  "source_inputs": {
+    "redaction_acceptance_packet_id": "fixture-redaction-acceptance-v3-for-review",
+    "redaction_acceptance_packet_version": "devhub_read_only_observation_redaction_acceptance_v3",
+    "prior_surface_map_fixture_placeholders": [
+      {
+        "placeholder_id": "status-heading-placeholder",
+        "row_kind": "read_only_field"
+      }
+    ],
+    "prior_placeholder_count": 1,
+    "synthetic_fixture_only": true
+  },
+  "read_only_surface_delta_rows": [
+    {
+      "delta_row_id": "delta-v3-001-status-heading-placeholder",
+      "surface_id": "devhub.synthetic.readonly.permit-overview",
+      "prior_placeholder_id": "status-heading-placeholder",
+      "row_kind": "read_only_field",
+      "page_heading": "Permit overview",
+      "url_pattern": "/devhub/synthetic/permit-overview",
+      "candidate_label": "Permit overview status heading",
+      "action_text": "Review status heading",
+      "blocked_official_action": false,
+      "requires_attendance": false,
+      "requires_exact_confirmation": false,
+      "selector_confidence": "medium",
+      "validation_message": "Synthetic status heading placeholder retained as label only.",
+      "fixture_only": true,
+      "inactive": true,
+      "active_surface_map_mutation": false
+    }
+  ],
+  "accessible_landmark_delta_rows": [
+    {
+      "delta_row_id": "landmark-delta-v3-001-status-heading-placeholder",
+      "surface_delta_row_id": "delta-v3-001-status-heading-placeholder",
+      "surface_id": "devhub.synthetic.readonly.permit-overview",
+      "fixture_only": true,
+      "inactive": true,
+      "active_surface_map_mutation": false,
+      "landmarks": [
+        "main",
+        "navigation"
+      ],
+      "accessible_name_policy": "synthetic_label_only"
+    }
+  ],
+  "action_classification_delta_rows": [
+    {
+      "delta_row_id": "action-delta-v3-001-status-heading-placeholder",
+      "surface_delta_row_id": "delta-v3-001-status-heading-placeholder",
+      "surface_id": "devhub.synthetic.readonly.permit-overview",
+      "fixture_only": true,
+      "inactive": true,
+      "active_surface_map_mutation": false,
+      "action_text": "Review status heading",
+      "classification": "read_only_observation",
+      "automation_allowed": true,
+      "official_action_allowed": false
+    }
+  ],
+  "validation_message_delta_rows": [
+    {
+      "delta_row_id": "validation-delta-v3-001-status-heading-placeholder",
+      "surface_delta_row_id": "delta-v3-001-status-heading-placeholder",
+      "surface_id": "devhub.synthetic.readonly.permit-overview",
+      "fixture_only": true,
+      "inactive": true,
+      "active_surface_map_mutation": false,
+      "message": "Synthetic status heading placeholder retained as label only.",
+      "raw_message_captured": false
+    }
+  ],
+  "upload_control_evidence_delta_rows": [
+    {
+      "delta_row_id": "upload-control-delta-v3-001-status-heading-placeholder",
+      "surface_delta_row_id": "delta-v3-001-status-heading-placeholder",
+      "surface_id": "devhub.synthetic.readonly.permit-overview",
+      "fixture_only": true,
+      "inactive": true,
+      "active_surface_map_mutation": false,
+      "upload_control_present": false,
+      "evidence_policy": "label_only_no_file_interaction",
+      "file_interaction_allowed": false
+    }
+  ],
+  "state_transition_delta_rows": [
+    {
+      "delta_row_id": "state-transition-delta-v3-001-status-heading-placeholder",
+      "surface_delta_row_id": "delta-v3-001-status-heading-placeholder",
+      "surface_id": "devhub.synthetic.readonly.permit-overview",
+      "fixture_only": true,
+      "inactive": true,
+      "active_surface_map_mutation": false,
+      "from_state": "prior_fixture_placeholder",
+      "to_state": "inactive_delta_candidate",
+      "promotes_active_surface": false
+    }
+  ],
+  "redaction_policy_delta_rows": [
+    {
+      "delta_row_id": "redaction-delta-v3-001-status-heading-placeholder",
+      "surface_delta_row_id": "delta-v3-001-status-heading-placeholder",
+      "surface_id": "devhub.synthetic.readonly.permit-overview",
+      "fixture_only": true,
+      "inactive": true,
+      "active_surface_map_mutation": false,
+      "policy": "retain_labels_and_structure_only",
+      "raw_values_stored": false
+    }
+  ],
+  "selector_confidence_delta_rows": [
+    {
+      "delta_row_id": "selector-delta-v3-001-status-heading-placeholder",
+      "surface_delta_row_id": "delta-v3-001-status-heading-placeholder",
+      "surface_id": "devhub.synthetic.readonly.permit-overview",
+      "fixture_only": true,
+      "inactive": true,
+      "active_surface_map_mutation": false,
+      "confidence": "medium",
+      "basis": "prior fixture placeholder only",
+      "live_selector_verified": false
+    }
+  ],
+  "attendance_requirement_delta_rows": [
+    {
+      "delta_row_id": "attendance-delta-v3-001-status-heading-placeholder",
+      "surface_delta_row_id": "delta-v3-001-status-heading-placeholder",
+      "surface_id": "devhub.synthetic.readonly.permit-overview",
+      "fixture_only": true,
+      "inactive": true,
+      "active_surface_map_mutation": false,
+      "requires_attendance": false,
+      "reason": "Required for any credentialed or consequential DevHub step."
+    }
+  ],
+  "exact_confirmation_requirement_delta_rows": [
+    {
+      "delta_row_id": "exact-confirmation-delta-v3-001-status-heading-placeholder",
+      "surface_delta_row_id": "delta-v3-001-status-heading-placeholder",
+      "surface_id": "devhub.synthetic.readonly.permit-overview",
+      "fixture_only": true,
+      "inactive": true,
+      "active_surface_map_mutation": false,
+      "requires_exact_confirmation": false,
+      "confirmation_scope": "future_attended_action_only"
+    }
+  ],
+  "reviewer_hold_delta_rows": [
+    {
+      "delta_row_id": "reviewer-hold-delta-v3-001-status-heading-placeholder",
+      "surface_delta_row_id": "delta-v3-001-status-heading-placeholder",
+      "surface_id": "devhub.synthetic.readonly.permit-overview",
+      "fixture_only": true,
+      "inactive": true,
+      "active_surface_map_mutation": false,
+      "hold_required": true,
+      "reason": "Inactive fixture delta requires reviewer acceptance before any promotion."
+    }
+  ],
+  "rollback_note_delta_rows": [
+    {
+      "delta_row_id": "rollback-delta-v3-001-status-heading-placeholder",
+      "surface_delta_row_id": "delta-v3-001-status-heading-placeholder",
+      "surface_id": "devhub.synthetic.readonly.permit-overview",
+      "fixture_only": true,
+      "inactive": true,
+      "active_surface_map_mutation": false,
+      "rollback_note": "Discard inactive delta rows and rebuild from accepted synthetic fixtures.",
+      "active_surface_map_unchanged": true
+    }
+  ],
+  "attestations": {
+    "no_live_devhub_opened": true,
+    "no_login_attempted": true,
+    "no_auth_or_session_artifacts": true,
+    "no_screenshots_traces_or_har": true,
+    "no_private_values": true,
+    "no_active_surface_map_mutation": true,
+    "no_form_fills_uploads_submissions_payments_scheduling_or_official_actions": true
+  },
+  "validation_commands": [
+    [
+      "python3",
+      "-m",
+      "py_compile",
+      "ppd/devhub/surface_map_delta_candidate_v3.py"
+    ],
+    [
+      "python3",
+      "-m",
+      "pytest",
+      "ppd/tests/test_devhub_surface_map_delta_candidate_v3.py"
+    ],
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ]
+}

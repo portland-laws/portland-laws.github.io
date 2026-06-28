@@ -1,0 +1,55 @@
+{
+  "packet_version": "guardrail_recompile_staging_packet_v6",
+  "packet_id": "staging-v6-payment-fixture",
+  "guardrails": [
+    {
+      "guardrail_id": "gr-payment-final-action",
+      "process_id": "devhub-fee-payment",
+      "activation_status": "inactive",
+      "previous_rule_hash": "sha256:previous-payment-rule",
+      "staged_rule_hash": "sha256:staged-payment-rule",
+      "source_evidence_ids": [
+        "src-pay-fees-guide"
+      ],
+      "comparison_note": "Staged rule refuses final payment execution outside attended confirmation."
+    }
+  ],
+  "source_evidence": [
+    {
+      "source_evidence_id": "src-pay-fees-guide",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "freshness_status": "current",
+      "continuity_note": "Fixture records public fee payment guide citation metadata only."
+    }
+  ],
+  "deterministic_predicates": [
+    {
+      "predicate_id": "pred-payment-refusal",
+      "predicate_text": "Payment detail entry and final payment execution are refused in offline reviewer packets."
+    }
+  ],
+  "exact_confirmations": [
+    {
+      "confirmation_id": "confirm-final-payment",
+      "text": "I confirm I want to make this payment in DevHub."
+    }
+  ],
+  "refused_actions": [
+    {
+      "refusal_id": "refuse-payment-execution",
+      "action": "pay",
+      "reason": "Payment is a consequential financial workflow requiring attended user action."
+    }
+  ],
+  "stale_evidence": [],
+  "offline_validation_commands": [
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "ppd.tests.test_guardrail_recompile_reviewer_packet_v6"
+      ]
+    }
+  ]
+}

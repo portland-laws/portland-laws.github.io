@@ -1,0 +1,12 @@
+Implemented a deterministic parser fallback for U.S.C. heading lines that start with stopwords (the pattern causing zero-formula symbolic validity misses for the 13/303, 12/326, and 16/467b packet samples).
+
+**Changes**
+- Added a relaxed heading detector and fallback path in [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000028-20260518_103659/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:775) and [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000028-20260518_103659/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:1015).
+- Added parser regression coverage for the three TODO sample IDs in [test_legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000028-20260518_103659/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py:589).
+- Added spaCy compiler regression coverage in [test_spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000028-20260518_103659/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py:231).
+- Added deterministic modal compiler (regex + spacy backends) regression coverage in [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000028-20260518_103659/tests/unit_tests/logic/modal/test_modal_codec.py:792).
+
+**Validation**
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py` passed (`25 passed`)
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py` passed (`18 passed`)
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py` passed (`77 passed`)

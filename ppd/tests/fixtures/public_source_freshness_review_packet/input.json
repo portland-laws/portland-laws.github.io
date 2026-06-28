@@ -1,0 +1,161 @@
+{
+  "public_source_monitoring_schedule_candidate": {
+    "packet_type": "ppd.public_source_monitoring_schedule_candidate.v1",
+    "mode": "fixture_first_metadata_only_schedule_candidate",
+    "generated_at": "2026-05-28T22:10:00Z",
+    "fixture_first": true,
+    "metadata_only": true,
+    "execution_policy": {
+      "network_allowed": false,
+      "network_invoked": false,
+      "fetch_urls": false,
+      "download_documents": false,
+      "persist_raw_body": false,
+      "schedule_mutation_allowed": false,
+      "live_schedule_mutated": false
+    },
+    "input_artifacts": {
+      "source_freshness_drift_digest_id": "source-freshness-drift-digest-20260528-fixture",
+      "public_crawl_metadata_dry_run_intake_id": "public-crawl-metadata-intake-20260528-fixture",
+      "safe_next_action_release_notes_id": "safe-next-action-release-notes-20260528-fixture"
+    },
+    "allowlisted_source_ids": [
+      "ppd-devhub-faq",
+      "ppd-submit-plans-online"
+    ],
+    "robots_policy_prerequisite_ids": [
+      "policy-prereq-ppd-public-metadata-only-20260528",
+      "robots-prereq-portland-gov-20260528"
+    ],
+    "cadence_recommendations": [
+      {
+        "source_id": "ppd-devhub-faq",
+        "recommended_cadence": "daily",
+        "metadata_only": true,
+        "rationale": "DevHub FAQ metadata drift can affect account-scoped service guidance.",
+        "robots_policy_prerequisite_ids": [
+          "policy-prereq-ppd-public-metadata-only-20260528",
+          "robots-prereq-portland-gov-20260528"
+        ],
+        "reviewer_owner": "ppd-devhub-guidance-reviewer",
+        "abort_condition_ids": [
+          "abort-if-live-fetch-requested",
+          "abort-if-prerequisite-evidence-missing"
+        ]
+      },
+      {
+        "source_id": "ppd-submit-plans-online",
+        "recommended_cadence": "weekly",
+        "metadata_only": true,
+        "rationale": "Single PDF process metadata drift can affect file preparation checks.",
+        "robots_policy_prerequisite_ids": [
+          "policy-prereq-ppd-public-metadata-only-20260528",
+          "robots-prereq-portland-gov-20260528"
+        ],
+        "reviewer_owner": "ppd-file-standards-reviewer",
+        "abort_condition_ids": [
+          "abort-if-live-fetch-requested",
+          "abort-if-prerequisite-evidence-missing"
+        ]
+      }
+    ],
+    "reviewer_owners": {
+      "source_freshness": "ppd-source-freshness-reviewer",
+      "ppd-devhub-faq": "ppd-devhub-guidance-reviewer",
+      "ppd-submit-plans-online": "ppd-file-standards-reviewer"
+    },
+    "abort_conditions": [
+      {
+        "condition_id": "abort-if-live-fetch-requested",
+        "description": "Abort if the candidate requires fetching a URL instead of using dry-run metadata."
+      },
+      {
+        "condition_id": "abort-if-prerequisite-evidence-missing",
+        "description": "Abort if robots or policy prerequisite evidence is missing for any source."
+      }
+    ],
+    "candidate_output": {
+      "writes_live_schedule": false,
+      "requires_separate_reviewer_approval": true,
+      "allowed_next_step": "review_metadata_only_schedule_candidate"
+    }
+  },
+  "post_release_audit_findings_packet": {
+    "packet_type": "ppd.post_release_audit_findings.v1",
+    "release_status": "blocked_until_manual_review",
+    "normalized_source_evidence": [
+      {
+        "evidence_id": "ev-devhub-guide",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+        "citation_spans": [
+          {
+            "start": 12,
+            "end": 48
+          }
+        ],
+        "freshness_status": "current"
+      },
+      {
+        "evidence_id": "ev-payment-guide",
+        "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+        "citation_spans": [
+          {
+            "page": 1
+          }
+        ],
+        "freshness_status": "current"
+      }
+    ],
+    "findings": [
+      {
+        "finding_id": "finding-payment-gate",
+        "summary": "Payment remains a manual handoff gate.",
+        "source_evidence_ids": [
+          "ev-payment-guide"
+        ]
+      },
+      {
+        "finding_id": "finding-devhub-attended",
+        "summary": "DevHub official actions require attended review and exact confirmation.",
+        "source_evidence_ids": [
+          "ev-devhub-guide"
+        ]
+      }
+    ],
+    "capabilities": [
+      {
+        "capability_type": "payment",
+        "enabled": false,
+        "state": "manual_handoff_required"
+      },
+      {
+        "capability_type": "upload",
+        "enabled": false,
+        "state": "blocked"
+      },
+      {
+        "capability_type": "submission",
+        "enabled": false,
+        "state": "blocked"
+      },
+      {
+        "capability_type": "schedule_inspection",
+        "enabled": false,
+        "state": "manual_handoff_required"
+      },
+      {
+        "capability_type": "cancellation",
+        "enabled": false,
+        "state": "manual_handoff_required"
+      },
+      {
+        "capability_type": "certification",
+        "enabled": false,
+        "state": "manual_handoff_required"
+      }
+    ],
+    "production_ready": false,
+    "network_execution": "not_run",
+    "devhub_mode": "metadata_only"
+  }
+}

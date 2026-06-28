@@ -28,49 +28,120 @@ export interface TdfolStatisticalSummary {
   p999: number;
 }
 
+export interface TdfolMemorySample {
+  currentMb: number;
+  peakMb?: number;
+}
+
+export interface TdfolMetricsCollectorOptions {
+  maxLength?: number;
+  now?: () => number;
+  wallClock?: () => number;
+  memorySampler?: () => TdfolMemorySample | undefined;
+}
+
+export const TDFOL_PERFORMANCE_METRICS_METADATA = {
+  sourcePythonModule: 'logic/TDFOL/performance_metrics.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeRequired: false,
+} as const;
+
 export class TdfolMetricsCollector {
   readonly timings = new Map<string, number[]>();
   readonly timingResults: TdfolTimingResult[] = [];
-  readonly memorySnapshots = new Map<string, Array<{ currentMb: number; peakMb: number; deltaMb: number }>>();
+  readonly memorySnapshots = new Map<
+    string,
+    Array<{ currentMb: number; peakMb: number; deltaMb: number }>
+  >();
   readonly memoryResults: TdfolMemoryResult[] = [];
   readonly counters = new Map<string, number>();
   readonly gauges = new Map<string, number>();
   readonly histograms = new Map<string, number[]>();
 
   private readonly timerStarts = new Map<string, number>();
+  private readonly now: () => number;
+  private readonly wallClock: () => number;
+  private readonly memorySampler?: () => TdfolMemorySample | undefined;
+  readonly maxLength: number;
 
-  constructor(readonly maxLength = 10000) {}
+  constructor(options: number | TdfolMetricsCollectorOptions = {}) {
+    const normalized = typeof options === 'number' ? { maxLength: options } : options;
+    this.maxLength = normalized.maxLength ?? 10000;
+    this.now = normalized.now ?? nowMs;
+    this.wallClock = normalized.wallClock ?? Date.now;
+    this.memorySampler = normalized.memorySampler;
+  }
 
   startTimer(name: string): void {
-    this.timerStarts.set(name, performance.now());
+    this.timerStarts.set(name, this.now());
   }
 
   stopTimer(name: string, metadata: Record<string, unknown> = {}): number {
     const startedAt = this.timerStarts.get(name);
     if (startedAt === undefined) throw new Error(`Timer '${name}' was not started`);
     this.timerStarts.delete(name);
-    const durationMs = performance.now() - startedAt;
+    const durationMs = this.now() - startedAt;
     this.recordTiming(name, durationMs, metadata);
     return durationMs;
   }
 
   time<T>(name: string, fn: () => T, metadata: Record<string, unknown> = {}): T {
-    const startedAt = performance.now();
+    const startedAt = this.now();
     try {
       return fn();
     } finally {
-      this.recordTiming(name, performance.now() - startedAt, metadata);
+      this.recordTiming(name, this.now() - startedAt, metadata);
+    }
+  }
+
+  async timeAsync<T>(
+    name: string,
+    fn: () => Promise<T>,
+    metadata: Record<string, unknown> = {},
+  ): Promise<T> {
+    const startedAt = this.now();
+    try {
+      return await fn();
+    } finally {
+      this.recordTiming(name, this.now() - startedAt, metadata);
     }
   }
 
   recordTiming(name: string, durationMs: number, metadata: Record<string, unknown> = {}): void {
     pushBounded(this.timings, name, durationMs, this.maxLength);
-    this.timingResults.push({ name, durationMs, timestamp: Date.now(), metadata });
+    this.timingResults.push({ name, durationMs, timestamp: this.wallClock(), metadata });
   }
 
-  recordMemory(name: string, currentMb: number, peakMb: number, deltaMb: number, metadata: Record<string, unknown> = {}): void {
+  recordMemory(
+    name: string,
+    currentMb: number,
+    peakMb: number,
+    deltaMb: number,
+    metadata: Record<string, unknown> = {},
+  ): void {
     pushBounded(this.memorySnapshots, name, { currentMb, peakMb, deltaMb }, this.maxLength);
-    this.memoryResults.push({ name, currentMb, peakMb, deltaMb, timestamp: Date.now(), metadata });
+    this.memoryResults.push({
+      name,
+      currentMb,
+      peakMb,
+      deltaMb,
+      timestamp: this.wallClock(),
+      metadata,
+    });
+  }
+
+  sampleMemory(
+    name: string,
+    metadata: Record<string, unknown> = {},
+  ): TdfolMemoryResult | undefined {
+    const sample = this.memorySampler?.();
+    if (sample === undefined) return undefined;
+    const previous = this.memorySnapshots.get(name)?.at(-1);
+    const peakMb = sample.peakMb ?? Math.max(sample.currentMb, previous?.peakMb ?? 0);
+    const deltaMb = previous === undefined ? 0 : sample.currentMb - previous.currentMb;
+    this.recordMemory(name, sample.currentMb, peakMb, deltaMb, metadata);
+    return this.memoryResults[this.memoryResults.length - 1];
   }
 
   incrementCounter(name: string, value = 1): void {
@@ -90,7 +161,10 @@ export class TdfolMetricsCollector {
     return values?.length ? calculateStats(values) : undefined;
   }
 
-  getMemoryStats(name: string, field: 'currentMb' | 'peakMb' | 'deltaMb' = 'deltaMb'): TdfolStatisticalSummary | undefined {
+  getMemoryStats(
+    name: string,
+    field: 'currentMb' | 'peakMb' | 'deltaMb' = 'deltaMb',
+  ): TdfolStatisticalSummary | undefined {
     const values = this.memorySnapshots.get(name)?.map((snapshot) => snapshot[field]);
     return values?.length ? calculateStats(values) : undefined;
   }
@@ -102,7 +176,9 @@ export class TdfolMetricsCollector {
 
   getStatistics(): Record<string, unknown> {
     return {
-      timing: Object.fromEntries([...this.timings.keys()].map((name) => [name, this.getTimingStats(name)])),
+      timing: Object.fromEntries(
+        [...this.timings.keys()].map((name) => [name, this.getTimingStats(name)]),
+      ),
       memory: Object.fromEntries(
         [...this.memorySnapshots.keys()].map((name) => [
           name,
@@ -113,24 +189,66 @@ export class TdfolMetricsCollector {
           },
         ]),
       ),
-      histograms: Object.fromEntries([...this.histograms.keys()].map((name) => [name, this.getHistogramStats(name)])),
+      histograms: Object.fromEntries(
+        [...this.histograms.keys()].map((name) => [name, this.getHistogramStats(name)]),
+      ),
       counters: Object.fromEntries(this.counters),
       gauges: Object.fromEntries(this.gauges),
       metadata: {
+        sourcePythonModule: TDFOL_PERFORMANCE_METRICS_METADATA.sourcePythonModule,
+        browserNative: true,
+        serverCallsAllowed: false,
+        pythonRuntimeRequired: false,
         collector_maxlen: this.maxLength,
-        total_timing_samples: [...this.timings.values()].reduce((total, values) => total + values.length, 0),
-        total_memory_samples: [...this.memorySnapshots.values()].reduce((total, values) => total + values.length, 0),
-        generated_at: new Date().toISOString(),
+        total_timing_samples: [...this.timings.values()].reduce(
+          (total, values) => total + values.length,
+          0,
+        ),
+        total_memory_samples: [...this.memorySnapshots.values()].reduce(
+          (total, values) => total + values.length,
+          0,
+        ),
+        total_histogram_samples: [...this.histograms.values()].reduce(
+          (total, values) => total + values.length,
+          0,
+        ),
+        generated_at: new Date(this.wallClock()).toISOString(),
       },
     };
   }
 
+  get_statistics(): Record<string, unknown> {
+    return this.getStatistics();
+  }
+
   exportDict(): Record<string, unknown> {
     return {
+      metadata: TDFOL_PERFORMANCE_METRICS_METADATA,
       statistics: this.getStatistics(),
       timing_results: this.timingResults.slice(-1000),
       memory_results: this.memoryResults.slice(-1000),
     };
+  }
+
+  export_dict(): Record<string, unknown> {
+    return this.exportDict();
+  }
+
+  exportPythonCompatibleDict(): Record<string, unknown> {
+    const exported = this.exportDict();
+    return {
+      ...exported,
+      metadata: {
+        source_python_module: TDFOL_PERFORMANCE_METRICS_METADATA.sourcePythonModule,
+        browser_native: true,
+        server_calls_allowed: false,
+        python_runtime_required: false,
+      },
+    };
+  }
+
+  export_python_compatible_dict(): Record<string, unknown> {
+    return this.exportPythonCompatibleDict();
   }
 
   reset(): void {
@@ -158,12 +276,27 @@ export function resetGlobalTdfolMetricsCollector(): void {
 
 export function calculateStats(values: number[]): TdfolStatisticalSummary {
   if (values.length === 0) {
-    return { count: 0, sum: 0, mean: 0, median: 0, stdDev: 0, min: 0, max: 0, p50: 0, p95: 0, p99: 0, p999: 0 };
+    return {
+      count: 0,
+      sum: 0,
+      mean: 0,
+      median: 0,
+      stdDev: 0,
+      min: 0,
+      max: 0,
+      p50: 0,
+      p95: 0,
+      p99: 0,
+      p999: 0,
+    };
   }
   const sorted = [...values].sort((left, right) => left - right);
   const sum = sorted.reduce((total, value) => total + value, 0);
   const mean = sum / sorted.length;
-  const variance = sorted.length > 1 ? sorted.reduce((total, value) => total + (value - mean) ** 2, 0) / (sorted.length - 1) : 0;
+  const variance =
+    sorted.length > 1
+      ? sorted.reduce((total, value) => total + (value - mean) ** 2, 0) / (sorted.length - 1)
+      : 0;
   return {
     count: sorted.length,
     sum,
@@ -193,4 +326,10 @@ function pushBounded<T>(map: Map<string, T[]>, name: string, value: T, maxLength
   values.push(value);
   if (values.length > maxLength) values.splice(0, values.length - maxLength);
   map.set(name, values);
+}
+
+function nowMs(): number {
+  return typeof performance !== 'undefined' && typeof performance.now === 'function'
+    ? performance.now()
+    : Date.now();
 }

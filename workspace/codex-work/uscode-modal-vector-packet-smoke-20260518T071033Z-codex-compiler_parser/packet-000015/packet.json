@@ -1,0 +1,86 @@
+{
+  "claimed_at": "2026-05-18T07:11:05+00:00",
+  "packet_id": "packet-000015",
+  "packet_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-packet-smoke-20260518T071033Z-codex-compiler_parser/packet-000015/packet.json",
+  "patch_error": "No changes found in worktree: /home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-packet-smoke-20260518T071033Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000015-20260518_071104",
+  "patch_path": null,
+  "patch_status": "awaiting_codex_changes",
+  "program_synthesis_scopes": [
+    "compiler_parser"
+  ],
+  "queue_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-packet-smoke-20260518T071033Z-autoencoder.jsonl",
+  "queue_run_id": "uscode-modal-vector-packet-smoke-20260518T071033Z-autoencoder",
+  "repo_root": "/home/barberb/portland-laws.github.io",
+  "run_id": "uscode-modal-vector-packet-smoke-20260518T071033Z-codex-compiler_parser",
+  "semantic_bundle_keys": [
+    "{\"action\":\"add_deterministic_parser_rule\",\"family_pairs\":[],\"program_synthesis_scope\":\"compiler_parser\",\"target_component\":\"modal.compiler\"}"
+  ],
+  "source_repo_root": "/home/barberb/portland-laws.github.io/ipfs_datasets_py",
+  "suggested_target_files": [
+    "ipfs_datasets_py/logic/modal/compiler.py",
+    "ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py",
+    "ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py"
+  ],
+  "task_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-packet-smoke-20260518T071033Z-codex-compiler_parser/packet-000015/CODEX_TASK.md",
+  "task_source": "autoencoder_supervisor_program_synthesis_queue",
+  "todo_list_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-packet-smoke-20260518T071033Z-codex-compiler_parser/packet-000015/TODO_LIST.jsonl",
+  "todo_markdown_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-packet-smoke-20260518T071033Z-codex-compiler_parser/packet-000015/TODO_LIST.md",
+  "todos": [
+    {
+      "action": "add_deterministic_parser_rule",
+      "citations": [
+        "25 U.S.C. 458aaa-13"
+      ],
+      "claimed_at": "2026-05-18T07:11:04+00:00",
+      "claimed_by": "codex-compiler_parser",
+      "completed_at": null,
+      "created_at": "2026-05-18T07:11:02+00:00",
+      "loss_name": "parser_formula_count",
+      "loss_value": 1.0,
+      "metadata": {
+        "dedupe_signature": "{\"action\":\"add_deterministic_parser_rule\",\"sample_ids\":[\"us-code-25-458aaa-13-9841567e37933284\"],\"target_component\":\"modal.compiler\"}",
+        "execution_target": "codex_program_repair",
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "program_synthesis_scope": "compiler_parser",
+        "selected_frame": "administrative_notice_hearing",
+        "semantic_bundle_key": "{\"action\":\"add_deterministic_parser_rule\",\"family_pairs\":[],\"program_synthesis_scope\":\"compiler_parser\",\"target_component\":\"modal.compiler\"}",
+        "source": "modal_loss_todo_generator_v1",
+        "target_component": "modal.compiler",
+        "vector_bundle_anchor_id": "2c47f68224eacc3e",
+        "vector_bundle_backend": "local_hash_fallback",
+        "vector_bundle_index_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-packet-smoke-20260518T071033Z-autoencoder.codex-task-vectors.json",
+        "vector_bundle_similarity": 1.0
+      },
+      "objective": "Create a golden parser case for legal text that produced no modal formulas.",
+      "priority": 103.630758,
+      "sample_ids": [
+        "us-code-25-458aaa-13-9841567e37933284"
+      ],
+      "status": "claimed",
+      "todo_id": "2c47f68224eacc3e"
+    }
+  ],
+  "vector_bundle_anchor_ids": [
+    "2c47f68224eacc3e"
+  ],
+  "vector_claim_report": {
+    "anchor_id": "2c47f68224eacc3e",
+    "backend": "local_hash_fallback",
+    "candidate_count": 4,
+    "fallback_reason": "Unknown embeddings provider: __force_hash_fallback__",
+    "indexed_count": 13,
+    "min_similarity": 0.72,
+    "mode": "vector",
+    "path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-packet-smoke-20260518T071033Z-autoencoder.codex-task-vectors.json",
+    "provider": "__force_hash_fallback__",
+    "refreshed_count": 7,
+    "selected_count": 1,
+    "selected_ids": [
+      "2c47f68224eacc3e"
+    ]
+  },
+  "worker_id": "codex-compiler_parser",
+  "worktree_error": null,
+  "worktree_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-packet-smoke-20260518T071033Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000015-20260518_071104"
+}

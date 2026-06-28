@@ -1,0 +1,119 @@
+"""Daemon-only coverage for stale calling_llm recovery.
+
+This test is intentionally self-contained and parser-clean. It models the narrow
+supervisor behavior needed after checkbox-178 is both blocked on the board and
+left behind in a calling_llm status: emit a compact diagnostic, then continue
+selection from fresh daemon-repair tasks instead of retrying checkbox-178.
+"""
+
+from __future__ import annotations
+
+import unittest
+
+
+BLOCKED_AND_REPLENISHED_BOARD = """
+# PP&D Daemon Task Board
+
+## Blocked Work
+
+- [!] Task checkbox-178: Add a fixture-only DevHub draft-readiness decision matrix.
+- [!] Task checkbox-182: Add daemon diagnostics coverage for blocked task responses.
+
+## Blocked Cascade Recovery Tranche 17
+
+- [ ] Task checkbox-201: Add one daemon-only stale-calling-llm recovery unittest.
+- [ ] Task checkbox-202: Add one parser-clean daemon preflight unittest.
+- [ ] Task checkbox-203: Add one daemon diagnostics helper or focused unittest proving compact failure summaries.
+"""
+
+
+STALE_CALLING_LLM_STATUS = {
+    "phase": "calling_llm",
+    "target_task": "checkbox-178",
+    "target": "Task checkbox-178: Add a fixture-only DevHub draft-readiness decision matrix.",
+    "updated_at": "2026-05-03T12:02:09.475361Z",
+}
+
+
+def _task_id_from_line(line: str) -> str | None:
+    marker = "Task checkbox-"
+    if marker not in line:
+        return None
+    start = line.index(marker) + len("Task ")
+    task_id = line[start:].split(":", 1)[0].strip()
+    if task_id.startswith("checkbox-"):
+        return task_id
+    return None
+
+
+def _blocked_task_ids(board_text: str) -> set[str]:
+    blocked: set[str] = set()
+    for line in board_text.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("- [!]"):
+            continue
+        task_id = _task_id_from_line(stripped)
+        if task_id is not None:
+            blocked.add(task_id)
+    return blocked
+
+
+def _unchecked_daemon_repair_task_ids(board_text: str) -> list[str]:
+    task_ids: list[str] = []
+    for line in board_text.splitlines():
+        stripped = line.strip()
+        if not stripped.startswith("- [ ]"):
+            continue
+        if "daemon" not in stripped.lower():
+            continue
+        task_id = _task_id_from_line(stripped)
+        if task_id is not None:
+            task_ids.append(task_id)
+    return task_ids
+
+
+def _newest_selectable_daemon_repair_task(board_text: str, blocked_task_ids: set[str]) -> str | None:
+    selectable = [
+        task_id
+        for task_id in _unchecked_daemon_repair_task_ids(board_text)
+        if task_id not in blocked_task_ids
+    ]
+    return selectable[-1] if selectable else None
+
+
+def _stale_calling_llm_diagnostic(board_text: str, status: dict[str, str]) -> dict[str, str] | None:
+    blocked_task_ids = _blocked_task_ids(board_text)
+    target_task = status.get("target_task", "")
+    if status.get("phase") != "calling_llm" or target_task not in blocked_task_ids:
+        return None
+    return {
+        "target_task": target_task,
+        "failure_kind": "stale_calling_llm_blocked_target",
+        "compact_supervisor_diagnostic": "calling_llm status references a blocked task; skip retry and select fresh daemon repair work",
+        "next_action_hint": "select_newest_unchecked_daemon_repair_task",
+    }
+
+
+class DaemonStaleCallingLlmRecoveryTest(unittest.TestCase):
+    def test_blocked_calling_llm_status_is_compactly_diagnosed_without_retrying_checkbox_178(self) -> None:
+        blocked_task_ids = _blocked_task_ids(BLOCKED_AND_REPLENISHED_BOARD)
+
+        diagnostic = _stale_calling_llm_diagnostic(
+            BLOCKED_AND_REPLENISHED_BOARD,
+            STALE_CALLING_LLM_STATUS,
+        )
+        selected_task = _newest_selectable_daemon_repair_task(
+            BLOCKED_AND_REPLENISHED_BOARD,
+            blocked_task_ids,
+        )
+
+        self.assertEqual("checkbox-178", diagnostic["target_task"])
+        self.assertEqual("stale_calling_llm_blocked_target", diagnostic["failure_kind"])
+        self.assertLessEqual(len(diagnostic["compact_supervisor_diagnostic"]), 140)
+        self.assertEqual("select_newest_unchecked_daemon_repair_task", diagnostic["next_action_hint"])
+        self.assertEqual("checkbox-203", selected_task)
+        self.assertNotEqual("checkbox-178", selected_task)
+
+
+if __name__ == "__main__":
+    unittest.main()

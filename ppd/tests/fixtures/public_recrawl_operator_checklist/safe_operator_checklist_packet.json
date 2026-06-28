@@ -1,0 +1,43 @@
+{
+  "packet_type": "ppd_public_recrawl_operator_checklist",
+  "operator_checklist_id": "fixture-public-recrawl-safe-001",
+  "execution_mode": "metadata_only_dry_run",
+  "live_network": false,
+  "network_invoked": false,
+  "targets": [
+    {
+      "source_id": "ppd:public:devhub_faq",
+      "url": "https://www.portland.gov/ppd/devhub-faqs",
+      "robots_evidence": "fixture robots policy allowed",
+      "policy_evidence": "fixture crawl policy approved"
+    },
+    {
+      "source_id": "ppd:public:online_tools",
+      "url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "robots_evidence": "fixture robots policy allowed",
+      "policy_evidence": "fixture crawl policy approved"
+    }
+  ],
+  "output_policy": {
+    "metadata_only": true,
+    "persist_raw_body": false,
+    "download_documents": false,
+    "planned_manifest_path": "metadata_outputs/public_recrawl/checklist-safe-001.manifest.json"
+  },
+  "abort_conditions": [
+    "Abort if any target redirects outside the PP&D public allowlist.",
+    "Abort if robots or crawl policy evidence is missing or no longer allowed.",
+    "Abort if a response would require authentication or raw body persistence."
+  ],
+  "post_run_review_prompts": [
+    "Review metadata-only manifests for source ids, checksums, and citation references.",
+    "Confirm no raw body, downloaded document, browser trace, or private path was persisted.",
+    "Require a separate human approval before any later live recrawl proposal."
+  ],
+  "promotion_policy": {
+    "direct": false,
+    "requires_staging_review": true,
+    "requires_human_review": true,
+    "production_promotion": "disabled"
+  }
+}

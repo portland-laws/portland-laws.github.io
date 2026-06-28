@@ -1,0 +1,89 @@
+{
+  "packet_version": "user_gap_analysis_packet_v6",
+  "workspace": "isolated_ppd_implementation",
+  "missing_information_questions": [
+    {
+      "id": "q01_property_address",
+      "order": 1,
+      "question": "What is the project site address or tax lot?",
+      "reason": "Routing and permit applicability cannot be checked without a site identifier."
+    },
+    {
+      "id": "q02_scope_summary",
+      "order": 2,
+      "question": "What work is being proposed?",
+      "reason": "Permit type, review path, and required forms depend on the work scope."
+    },
+    {
+      "id": "q03_existing_use",
+      "order": 3,
+      "question": "What is the current use or occupancy?",
+      "reason": "A change of occupancy may alter review requirements."
+    },
+    {
+      "id": "q04_documents_available",
+      "order": 4,
+      "question": "Which plans, forms, or notices are already available for local preview?",
+      "reason": "The agent may preview local documents but must not read private documents unless explicitly provided for this replay."
+    }
+  ],
+  "evidence": [
+    {
+      "id": "ev_current_checklist",
+      "title": "Residential permit checklist fixture",
+      "source": "ppd/tests/fixtures/post_gap_agent_readiness_v6/residential_checklist_stub.pdf",
+      "retrieved_at": "2026-05-20",
+      "status": "current",
+      "citation": {
+        "label": "Fixture checklist",
+        "url": "fixture://post_gap_agent_readiness_v6/residential_checklist_stub.pdf",
+        "page": 1,
+        "quote": "Fixture excerpt for local preview routing only."
+      }
+    },
+    {
+      "id": "ev_stale_fee_table",
+      "title": "Fee table fixture",
+      "source": "fixture://post_gap_agent_readiness_v6/stale_fee_table.html",
+      "retrieved_at": "2024-01-10",
+      "status": "stale",
+      "stale_reason": "Retrieved before the current replay window and must not be used for payment or fee guarantees.",
+      "citation": {
+        "label": "Stale fixture fee table",
+        "url": "fixture://post_gap_agent_readiness_v6/stale_fee_table.html"
+      }
+    },
+    {
+      "id": "ev_conflicting_zoning_note_a",
+      "title": "Zoning fixture note A",
+      "source": "fixture://post_gap_agent_readiness_v6/zoning_note_a.txt",
+      "retrieved_at": "2026-05-21",
+      "status": "conflicting",
+      "conflicts_with": "ev_conflicting_zoning_note_b",
+      "conflict_reason": "Fixture A says a review is required while fixture B says the same review is not required.",
+      "citation": {
+        "label": "Fixture zoning note A",
+        "url": "fixture://post_gap_agent_readiness_v6/zoning_note_a.txt"
+      }
+    },
+    {
+      "id": "ev_conflicting_zoning_note_b",
+      "title": "Zoning fixture note B",
+      "source": "fixture://post_gap_agent_readiness_v6/zoning_note_b.txt",
+      "retrieved_at": "2026-05-21",
+      "status": "conflicting",
+      "conflicts_with": "ev_conflicting_zoning_note_a",
+      "conflict_reason": "Fixture B contradicts fixture A and requires manual confirmation.",
+      "citation": {
+        "label": "Fixture zoning note B",
+        "url": "fixture://post_gap_agent_readiness_v6/zoning_note_b.txt"
+      }
+    }
+  ],
+  "citation_payload_required_keys": ["label", "url"],
+  "manual_handoff_reminders": [
+    "Confirm stale or conflicting evidence with PP&D staff or the authoritative public source before relying on it.",
+    "Review every draft manually before any upload, submission, certification, payment, or scheduling step.",
+    "Do not treat this replay as legal, permitting, zoning, fee, deadline, or approval advice."
+  ]
+}

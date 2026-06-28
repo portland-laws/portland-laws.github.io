@@ -1,0 +1,172 @@
+{
+  "packet_id": "ppd-guardrail-activation-decision-fixture-v1",
+  "packet_type": "ppd.guardrail_activation_decision_packet.v1",
+  "fixture_first": true,
+  "metadata_only": true,
+  "generated_from_fixtures": true,
+  "decision_status": "deferred_fixture_only",
+  "mutates_active_guardrail_bundles": false,
+  "active_bundle_mutation": false,
+  "writes_active_bundle": false,
+  "live_enforcement_enabled": false,
+  "consumes": [
+    {
+      "packet_role": "guardrail_activation_rehearsal",
+      "packet_id": "fixture-guardrail-activation-rehearsal-20260528",
+      "fixture_path": "ppd/tests/fixtures/guardrails/activation_rehearsal_packet.json",
+      "freshness_status": "current",
+      "stale": false,
+      "evidence_ids": [
+        "promotion_review.source_citations",
+        "agent_readiness_contract.operator_confirmation",
+        "agent_readiness_contract.prohibited_actions"
+      ]
+    },
+    {
+      "packet_role": "release_gate_status",
+      "packet_id": "ppd-release-gate-status-synthetic-v1",
+      "fixture_path": "ppd/tests/fixtures/release_gate_status/status_packet.json",
+      "freshness_status": "current",
+      "stale": false,
+      "evidence_ids": [
+        "ev-guardrail-activation-fixture",
+        "ev-consequential-actions-blocked"
+      ]
+    }
+  ],
+  "reviewer_decisions": [
+    {
+      "decision_id": "decision-defer-live-guardrail-enforcement",
+      "reviewer_role": "PPD guardrail reviewer",
+      "predicate_bundle_id": "predicate-bundle.ppd-devhub-consequential-actions.v1",
+      "selected_decision": "defer",
+      "decision_record_only": true,
+      "applies_to_active_bundle": false,
+      "mutates_active_bundle": false,
+      "reason": "Release gate status keeps guardrail activation review open, so live enforcement remains disabled while predicate coverage is recorded for reviewer follow-up.",
+      "source_evidence_ids": [
+        "ev-guardrail-activation-fixture",
+        "ev-consequential-actions-blocked"
+      ]
+    },
+    {
+      "decision_id": "decision-defer-exact-confirmation-enforcement",
+      "reviewer_role": "PPD guardrail reviewer",
+      "predicate_bundle_id": "predicate-bundle.ppd-exact-confirmation-gates.v1",
+      "selected_decision": "defer",
+      "decision_record_only": true,
+      "applies_to_active_bundle": false,
+      "mutates_active_bundle": false,
+      "reason": "Exact-confirmation gates are covered in the rehearsal packet, but this decision packet does not activate or enforce them against live DevHub sessions.",
+      "source_evidence_ids": [
+        "agent_readiness_contract.operator_confirmation",
+        "ev-guardrail-activation-fixture"
+      ]
+    }
+  ],
+  "predicate_bundle_ids": [
+    "predicate-bundle.ppd-devhub-consequential-actions.v1",
+    "predicate-bundle.ppd-exact-confirmation-gates.v1"
+  ],
+  "exact_confirmation_coverage": {
+    "all_required_categories_covered": true,
+    "covered_action_categories": [
+      "payment",
+      "upload",
+      "submission",
+      "scheduling",
+      "cancellation",
+      "certification"
+    ],
+    "source_gate_ids": [
+      "payment_confirmation",
+      "upload_confirmation",
+      "submission_confirmation",
+      "scheduling_confirmation",
+      "cancellation_confirmation",
+      "certification_confirmation"
+    ],
+    "missing_categories": [],
+    "evidence_ids": [
+      "agent_readiness_contract.operator_confirmation",
+      "ev-guardrail-activation-fixture"
+    ]
+  },
+  "refused_consequential_action_coverage": {
+    "all_required_categories_refused": true,
+    "refused_action_categories": [
+      "payment",
+      "upload",
+      "submission",
+      "scheduling",
+      "cancellation",
+      "certification"
+    ],
+    "source_refusal_actions": [
+      "enter_or_submit_payment",
+      "upload_or_certify_documents",
+      "submit_devhub_application",
+      "schedule_inspection",
+      "cancel_or_withdraw",
+      "certify_acknowledgement"
+    ],
+    "missing_categories": [],
+    "evidence_ids": [
+      "agent_readiness_contract.prohibited_actions",
+      "ev-consequential-actions-blocked"
+    ]
+  },
+  "release_gate_blockers_acknowledged": [
+    {
+      "blocker_id": "block-guardrail-activation-review",
+      "status": "open",
+      "decision_effect": "defer_activation",
+      "evidence_ids": [
+        "ev-guardrail-activation-fixture",
+        "ev-consequential-actions-blocked"
+      ]
+    }
+  ],
+  "disabled_live_enforcement": {
+    "enabled": false,
+    "status": "disabled",
+    "allows_official_actions": false,
+    "blocked_action_categories": [
+      "payment",
+      "upload",
+      "submission",
+      "scheduling",
+      "cancellation",
+      "certification",
+      "guardrail_bundle_activation"
+    ],
+    "note": "This packet records reviewer decisions from committed fixtures only and does not activate live guardrail enforcement.",
+    "evidence_ids": [
+      "ev-guardrail-activation-fixture",
+      "ev-consequential-actions-blocked"
+    ]
+  },
+  "rollback_notes": [
+    {
+      "note_id": "rollback-active-bundle-pointer-unchanged",
+      "note": "Keep the existing active guardrail bundle pointer unchanged because every decision is record-only and deferred.",
+      "evidence_ids": [
+        "ev-guardrail-activation-fixture"
+      ]
+    },
+    {
+      "note_id": "rollback-live-enforcement-remains-disabled",
+      "note": "If a later review changes the decision, rerun fixture validation before any active bundle pointer or live enforcement state is considered.",
+      "evidence_ids": [
+        "ev-consequential-actions-blocked"
+      ]
+    }
+  ],
+  "audit": {
+    "created_for_task": "checkbox-29 supervisor-20260528-275",
+    "live_crawl_used": false,
+    "authenticated_automation_used": false,
+    "private_case_facts_used": false,
+    "active_guardrail_bundle_mutated": false
+  }
+}

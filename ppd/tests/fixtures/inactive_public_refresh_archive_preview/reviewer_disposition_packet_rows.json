@@ -1,0 +1,22 @@
+[
+  {
+    "source_id": "ppd-bds-permits",
+    "disposition": "accept",
+    "reviewer_hold": false,
+    "reviewer_note": "Synthetic fixture acceptance for inactive preview only."
+  },
+  {
+    "source_id": "ppd-notice-archive",
+    "disposition": "accept",
+    "reviewer_hold": true,
+    "hold_reason": "needs_second_reviewer",
+    "reviewer_note": "Synthetic hold fixture."
+  },
+  {
+    "source_id": "ppd-retired-feed",
+    "disposition": "skip",
+    "reviewer_hold": false,
+    "skipped_reason": "retired_source_fixture",
+    "reviewer_note": "Synthetic skip fixture."
+  }
+]

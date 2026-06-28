@@ -1,0 +1,65 @@
+{
+  "fixture_id": "inactive-smoke-replay-agent-api-v6",
+  "fixture_class": "inactive_smoke_replay",
+  "status": "inactive",
+  "source_scope": "committed_offline_fixture_only",
+  "agent_queries": [
+    "Summarize the known permit process model for a user-owned case from cited public evidence.",
+    "List missing user facts before drafting any PP&D form values.",
+    "Explain whether existing evidence is stale, ambiguous, conflicting, or sufficient.",
+    "Prepare a reversible draft plan that stops before official DevHub actions.",
+    "Describe local PDF preview limits without reading private documents."
+  ],
+  "blocked_action_classes": [
+    "account_creation",
+    "captcha_or_mfa_automation",
+    "certification_or_acknowledgement",
+    "fee_payment",
+    "inspection_scheduling",
+    "official_submission",
+    "password_recovery",
+    "private_document_read",
+    "upload_to_official_record"
+  ],
+  "stale_evidence_behavior": [
+    "Flag public-source evidence as stale when fixture freshness is expired or unknown.",
+    "Ask the user for refreshed public-source confirmation before relying on stale evidence.",
+    "Do not convert stale evidence into a permitting guarantee."
+  ],
+  "missing_information_prompts": [
+    "Ask for the permit type when no fixture-backed process match exists.",
+    "Ask for property address or permit number before case-specific gap analysis.",
+    "Ask whether plan review, trade permit purchase, or correction response is intended.",
+    "Ask for user confirmation that they are present before any attended handoff."
+  ],
+  "reversible_draft_boundaries": [
+    "May map known facts to draft fields in memory or committed test fixtures only.",
+    "May prepare save-for-later instructions as a draft plan.",
+    "Must stop before certification, upload, payment, scheduling, cancellation, or submission.",
+    "Must not claim a workflow step is complete without user-visible completion evidence."
+  ],
+  "local_pdf_preview_boundaries": [
+    "May describe expected PDF field mappings from fixture data.",
+    "May produce a local preview plan without opening private user files.",
+    "Must not persist private file paths, private document text, signatures, or payment details.",
+    "Must keep official upload and record attachment out of automated preview behavior."
+  ],
+  "exact_confirmation_checkpoints": [
+    "Before opening any attended browser handoff.",
+    "Before saving a draft in an authenticated surface.",
+    "Before any action that could alter an official record.",
+    "Before certification, acknowledgement, payment, scheduling, upload, or submission."
+  ],
+  "manual_handoff_surfaces": [
+    "DevHub login and PortlandOregon.gov sign-in.",
+    "MFA, CAPTCHA, security prompt, or password recovery.",
+    "Certification and acknowledgement review.",
+    "Payment details and final payment execution.",
+    "Final official submission, cancellation, scheduling, or upload."
+  ],
+  "offline_validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/agent_api_compatibility_matrix_v6.py", "ppd/tests/test_agent_api_compatibility_matrix_v6.py"],
+    ["python3", "-m", "pytest", "ppd/tests/test_agent_api_compatibility_matrix_v6.py"],
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

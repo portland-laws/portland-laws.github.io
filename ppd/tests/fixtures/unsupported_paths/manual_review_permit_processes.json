@@ -1,0 +1,33 @@
+{
+  "processes": [
+    {
+      "process_id": "fixture_ppd_unsupported_manual_review_appeal",
+      "permit_type": "manual review permit appeal",
+      "scope": "Fixture process for permit guidance that explicitly requires email or staff review outside DevHub.",
+      "devhub_surface_refs": [],
+      "unsupported_paths": [
+        {
+          "route_type": "email",
+          "route_label": "email/manual review",
+          "source_evidence_ids": [
+            "ppd_source_apply_permits_email_path",
+            "ppd_source_manual_review_required"
+          ],
+          "user_visible_reason": "Official PP&D guidance says this permit path must be handled by email or manual staff review instead of starting a DevHub draft application.",
+          "manual_handoff_recommendations": [
+            "Do not create or edit a DevHub draft application for this permit path.",
+            "Show the user the cited PP&D guidance and prepare a manual handoff checklist for the email or staff-review process.",
+            "Ask the user to complete any official email, staff intake, certification, payment, or submission step themselves."
+          ]
+        }
+      ]
+    },
+    {
+      "process_id": "fixture_ppd_supported_devhub_trade_permit",
+      "permit_type": "standard trade permit",
+      "scope": "Control fixture for a process that is not marked as an unsupported path.",
+      "devhub_surface_refs": ["devhub_standard_trade_permit"],
+      "unsupported_paths": []
+    }
+  ]
+}

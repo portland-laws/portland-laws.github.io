@@ -1,0 +1,146 @@
+{
+  "fixture_version": 1,
+  "description": "Synthetic public-capture assembler fixture for Portland PP&D document candidate normalization.",
+  "archive_manifests": [
+    {
+      "source_id": "archive:ppd-zoning-2026-05",
+      "source_type": "archive_manifest",
+      "retrieved_at": "2026-05-08T00:00:00Z",
+      "items": [
+        {
+          "capture_id": "html:zoning-code-guide",
+          "url": "https://www.portland.gov/ppd/zoning-code-guide",
+          "media_type": "text/html",
+          "title": "Zoning Code Guide",
+          "section_order": 10,
+          "content_sha256": "0f9a8d3b22b2ab90f3668db4fd1ab9cda3c2e39bb4c6b23f50d29d575bca9b5f"
+        },
+        {
+          "capture_id": "pdf:building-permit-application",
+          "url": "https://www.portland.gov/ppd/forms/building-permit-application.pdf",
+          "media_type": "application/pdf",
+          "title": "Building Permit Application",
+          "section_order": 20,
+          "content_sha256": "3382ce7f8a3df43c38aa5db5ff12f459d446d96d14d066f29d50f61e5c583c32"
+        }
+      ]
+    }
+  ],
+  "html_extractions": [
+    {
+      "capture_id": "html:zoning-code-guide",
+      "extractor": "synthetic-html-v1",
+      "section_order": 10,
+      "content_sha256": "0f9a8d3b22b2ab90f3668db4fd1ab9cda3c2e39bb4c6b23f50d29d575bca9b5f",
+      "citation_spans": [
+        {
+          "start": 42,
+          "end": 56,
+          "target": "PCC 33.110.220",
+          "kind": "municipal_code"
+        }
+      ],
+      "confidence": 0.96
+    }
+  ],
+  "pdf_form_extractions": [
+    {
+      "capture_id": "pdf:building-permit-application",
+      "extractor": "synthetic-pdf-form-v1",
+      "section_order": 20,
+      "content_sha256": "3382ce7f8a3df43c38aa5db5ff12f459d446d96d14d066f29d50f61e5c583c32",
+      "form_fields": [
+        {
+          "name": "project_address",
+          "label": "Project Address",
+          "field_type": "text",
+          "required": true
+        },
+        {
+          "name": "permit_type",
+          "label": "Permit Type",
+          "field_type": "choice",
+          "required": true,
+          "options": [
+            "Residential",
+            "Commercial"
+          ]
+        }
+      ],
+      "citation_spans": [
+        {
+          "start": 18,
+          "end": 31,
+          "target": "ORS 455.020",
+          "kind": "state_law"
+        }
+      ],
+      "confidence": 0.91
+    }
+  ],
+  "expected_document_records": [
+    {
+      "record_id": "candidate:archive-ppd-zoning-2026-05:html-zoning-code-guide",
+      "source_id": "archive:ppd-zoning-2026-05",
+      "capture_id": "html:zoning-code-guide",
+      "source_url": "https://www.portland.gov/ppd/zoning-code-guide",
+      "media_type": "text/html",
+      "title": "Zoning Code Guide",
+      "section_order": 10,
+      "content_hash": {
+        "algorithm": "sha256",
+        "value": "0f9a8d3b22b2ab90f3668db4fd1ab9cda3c2e39bb4c6b23f50d29d575bca9b5f"
+      },
+      "form_fields": [],
+      "citation_spans": [
+        {
+          "start": 42,
+          "end": 56,
+          "target": "PCC 33.110.220",
+          "kind": "municipal_code"
+        }
+      ],
+      "extraction_confidence": 0.96
+    },
+    {
+      "record_id": "candidate:archive-ppd-zoning-2026-05:pdf-building-permit-application",
+      "source_id": "archive:ppd-zoning-2026-05",
+      "capture_id": "pdf:building-permit-application",
+      "source_url": "https://www.portland.gov/ppd/forms/building-permit-application.pdf",
+      "media_type": "application/pdf",
+      "title": "Building Permit Application",
+      "section_order": 20,
+      "content_hash": {
+        "algorithm": "sha256",
+        "value": "3382ce7f8a3df43c38aa5db5ff12f459d446d96d14d066f29d50f61e5c583c32"
+      },
+      "form_fields": [
+        {
+          "name": "project_address",
+          "label": "Project Address",
+          "field_type": "text",
+          "required": true
+        },
+        {
+          "name": "permit_type",
+          "label": "Permit Type",
+          "field_type": "choice",
+          "required": true,
+          "options": [
+            "Residential",
+            "Commercial"
+          ]
+        }
+      ],
+      "citation_spans": [
+        {
+          "start": 18,
+          "end": 31,
+          "target": "ORS 455.020",
+          "kind": "state_law"
+        }
+      ],
+      "extraction_confidence": 0.91
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+Implemented a narrow IR/decompiler slot refinement for declarative fallback metadata.
+
+- Added `statement_hint` slot emission in decompiler phrase output at [decompiler.py:415](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000011-20260518_081116/ipfs_datasets_py/logic/modal/decompiler.py:415).
+- Added `statement_hint` triple emission in F-logic export at [codec.py:793](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000011-20260518_081116/ipfs_datasets_py/logic/modal/codec.py:793).
+- Added regression test for declarative fallback hint slot/triple at [test_modal_codec.py:2003](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000011-20260518_081116/tests/unit_tests/logic/modal/test_modal_codec.py:2003).
+
+Validation:
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "declarative_statement_hint_slot or editorial_fallback_slots"` currently errors in this worktree due pre-existing root import issue: `NameError: __path__` in `/.../__init__.py:11`.
+- Ran focused runtime checks instead (with `IPFS_DATASETS_PY_MINIMAL_IMPORTS=1`) and confirmed:
+  - declarative fallback emits `fallback_rule=uscode_declarative_statement_v1`
+  - decompiler emits `statement_hint=sense_of_congress`
+  - triple export includes `predicate=statement_hint` with `object=sense_of_congress`.

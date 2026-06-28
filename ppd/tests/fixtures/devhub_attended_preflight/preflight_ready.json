@@ -1,0 +1,19 @@
+{
+  "mode": "attended",
+  "start_url": "https://devhub.portlandoregon.gov/",
+  "requires_user_attendance": true,
+  "launch_browser": false,
+  "save_storage_state": false,
+  "intended_actions": [
+    "manual_login_handoff",
+    "read_only_review",
+    "record_redacted_surface_metadata"
+  ],
+  "proposed_artifacts": [
+    {
+      "name": "redacted_surface_manifest",
+      "kind": "commit_safe_metadata",
+      "path": "ppd/tests/fixtures/devhub_attended_preflight/redacted_surface_manifest.json"
+    }
+  ]
+}

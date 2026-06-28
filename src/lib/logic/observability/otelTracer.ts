@@ -1,5 +1,34 @@
 export type SpanStatus = 'unset' | 'ok' | 'error';
-export type OtelEventType = 'circuit_breaker.state_change' | 'circuit_breaker.call' | 'circuit_breaker.error' | 'log.entry' | 'error';
+export type OtelEventType =
+  | 'circuit_breaker.state_change'
+  | 'circuit_breaker.call'
+  | 'circuit_breaker.error'
+  | 'log.entry'
+  | 'error';
+
+export interface OtelIntegrationMetadata {
+  sourcePythonModule: 'logic/observability/otel_integration.py';
+  browserNative: true;
+  serverCallsAllowed: false;
+  pythonRuntimeAllowed: false;
+  filesystemAllowed: false;
+  subprocessAllowed: false;
+}
+
+export interface OtelIntegrationOptions {
+  serviceName?: string;
+  exporterEndpoint?: string;
+  enabled?: boolean;
+}
+
+export const OTEL_INTEGRATION_METADATA: OtelIntegrationMetadata = {
+  sourcePythonModule: 'logic/observability/otel_integration.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  filesystemAllowed: false,
+  subprocessAllowed: false,
+};
 
 export interface SpanEvent {
   name: string;
@@ -63,7 +92,14 @@ export class OTelTracer {
 
   startSpan(name: string, attributes: Record<string, unknown> = {}, parentSpanId?: string): Span {
     const traceId = this.getCurrentTraceId();
-    const span = new Span(name, this.idFactory(), traceId, parentSpanId ?? this.getCurrentSpanId(), this.now(), { ...attributes });
+    const span = new Span(
+      name,
+      this.idFactory(),
+      traceId,
+      parentSpanId ?? this.getCurrentSpanId(),
+      this.now(),
+      { ...attributes },
+    );
     if (!this.traces.has(traceId)) this.traces.set(traceId, new Trace(traceId, this.now()));
     this.traces.get(traceId)!.spans.push(span);
     this.spanStack.push(span.spanId);
@@ -83,14 +119,27 @@ export class OTelTracer {
     }
   }
 
-  recordEvent(span: Span, eventType: OtelEventType, attributes: Record<string, unknown> = {}): SpanEvent {
+  recordEvent(
+    span: Span,
+    eventType: OtelEventType,
+    attributes: Record<string, unknown> = {},
+  ): SpanEvent {
     const event = { name: eventType, timestamp: this.now(), attributes: { ...attributes } };
     span.events.push(event);
     return event;
   }
 
-  recordError(span: Span, errorMessage: string, errorType = 'UnknownError', attributes: Record<string, unknown> = {}): void {
-    this.recordEvent(span, 'error', { ...attributes, 'error.type': errorType, 'error.message': errorMessage });
+  recordError(
+    span: Span,
+    errorMessage: string,
+    errorType = 'UnknownError',
+    attributes: Record<string, unknown> = {},
+  ): void {
+    this.recordEvent(span, 'error', {
+      ...attributes,
+      'error.type': errorType,
+      'error.message': errorMessage,
+    });
     span.status = 'error';
   }
 
@@ -101,7 +150,11 @@ export class OTelTracer {
       this.endSpan(span, 'ok');
       return result;
     } catch (error) {
-      this.recordError(span, error instanceof Error ? error.message : String(error), error instanceof Error ? error.name : 'Error');
+      this.recordError(
+        span,
+        error instanceof Error ? error.message : String(error),
+        error instanceof Error ? error.name : 'Error',
+      );
       this.endSpan(span, 'error');
       throw error;
     }
@@ -118,7 +171,9 @@ export class OTelTracer {
   }
 
   getTrace(traceId: string): Trace | undefined {
-    return this.traces.get(traceId) ?? this.completedTraces.find((trace) => trace.traceId === traceId);
+    return (
+      this.traces.get(traceId) ?? this.completedTraces.find((trace) => trace.traceId === traceId)
+    );
   }
 
   getCompletedTraces(): Trace[] {
@@ -126,24 +181,30 @@ export class OTelTracer {
   }
 
   exportJaegerFormat(): string {
-    return JSON.stringify({
-      data: this.completedTraces.map((trace) => ({
-        traceID: trace.traceId,
-        spans: trace.spans.map((span) => ({
-          traceID: span.traceId,
-          spanID: span.spanId,
-          operationName: span.name,
-          startTime: Math.trunc(span.startTime * 1e6),
-          duration: Math.trunc(span.durationMs(this.now()) * 1000),
-          references: span.parentSpanId ? [{ refType: 'CHILD_OF', traceID: span.parentSpanId }] : [],
-          tags: Object.entries(span.attributes).map(([key, value]) => ({ key, value })),
-          logs: span.events.map((event) => ({
-            timestamp: Math.trunc(event.timestamp * 1e6),
-            fields: Object.entries(event.attributes).map(([key, value]) => ({ key, value })),
+    return JSON.stringify(
+      {
+        data: this.completedTraces.map((trace) => ({
+          traceID: trace.traceId,
+          spans: trace.spans.map((span) => ({
+            traceID: span.traceId,
+            spanID: span.spanId,
+            operationName: span.name,
+            startTime: Math.trunc(span.startTime * 1e6),
+            duration: Math.trunc(span.durationMs(this.now()) * 1000),
+            references: span.parentSpanId
+              ? [{ refType: 'CHILD_OF', traceID: span.parentSpanId }]
+              : [],
+            tags: Object.entries(span.attributes).map(([key, value]) => ({ key, value })),
+            logs: span.events.map((event) => ({
+              timestamp: Math.trunc(event.timestamp * 1e6),
+              fields: Object.entries(event.attributes).map(([key, value]) => ({ key, value })),
+            })),
           })),
         })),
-      })),
-    }, null, 2);
+      },
+      null,
+      2,
+    );
   }
 
   setTraceContext(traceId: string): void {
@@ -177,7 +238,90 @@ export function getOtelTracer(): OTelTracer {
   return defaultTracer;
 }
 
+export class BrowserNativeOtelIntegration {
+  readonly metadata = OTEL_INTEGRATION_METADATA;
+  readonly tracer: OTelTracer;
+  readonly serviceName: string;
+  readonly exporterEndpoint?: string;
+  readonly enabled: boolean;
+
+  constructor(options: OtelIntegrationOptions = {}, tracer?: OTelTracer) {
+    this.serviceName = normalizeServiceValue(options.serviceName, 'ipfs-datasets-logic');
+    this.exporterEndpoint = normalizeOptionalString(options.exporterEndpoint);
+    this.enabled = options.enabled !== false;
+    this.tracer = tracer ?? new OTelTracer(this.serviceName);
+  }
+
+  instrument<T>(name: string, attributes: Record<string, unknown>, fn: (span: Span) => T): T {
+    if (!this.enabled) return fn(newDisabledSpan(name, attributes));
+    return this.tracer.spanContext(name, this.enrichAttributes(attributes), fn);
+  }
+
+  exportSnapshot(now = Date.now() / 1000): Record<string, unknown> {
+    return {
+      status: this.enabled ? 'success' : 'disabled',
+      metadata: this.metadata,
+      service: { name: this.serviceName },
+      exporter: {
+        endpoint: this.exporterEndpoint,
+        mode: 'in-memory-browser-native',
+        networkExportAttempted: false,
+      },
+      traces: this.tracer.getCompletedTraces().map((trace) => ({
+        trace_id: trace.traceId,
+        start_time: trace.startTime,
+        end_time: trace.endTime,
+        duration_ms: trace.durationMs(now),
+        spans: trace.spans.map((span) => ({
+          span_id: span.spanId,
+          parent_span_id: span.parentSpanId,
+          name: span.name,
+          status: span.status,
+          start_time: span.startTime,
+          end_time: span.endTime,
+          duration_ms: span.durationMs(now),
+          attributes: { ...span.attributes },
+          events: span.events.map((event) => ({
+            name: event.name,
+            timestamp: event.timestamp,
+            attributes: { ...event.attributes },
+          })),
+        })),
+      })),
+    };
+  }
+
+  private enrichAttributes(attributes: Record<string, unknown>): Record<string, unknown> {
+    return {
+      'service.name': this.serviceName,
+      ...attributes,
+    };
+  }
+}
+
+export function setupOtelIntegration(
+  options: OtelIntegrationOptions = {},
+): BrowserNativeOtelIntegration {
+  const integration = new BrowserNativeOtelIntegration(options);
+  defaultTracer = integration.tracer;
+  return integration;
+}
+
 function cryptoSafeId(): string {
   if (typeof crypto !== 'undefined' && 'randomUUID' in crypto) return crypto.randomUUID();
   return Math.random().toString(16).slice(2) + Date.now().toString(16);
+}
+
+function normalizeServiceValue(value: string | undefined, fallback: string): string {
+  const trimmed = value?.trim();
+  return trimmed === undefined || trimmed.length === 0 ? fallback : trimmed;
+}
+
+function normalizeOptionalString(value: string | undefined): string | undefined {
+  const trimmed = value?.trim();
+  return trimmed === undefined || trimmed.length === 0 ? undefined : trimmed;
+}
+
+function newDisabledSpan(name: string, attributes: Record<string, unknown>): Span {
+  return new Span(name, 'disabled', 'disabled', undefined, 0, { ...attributes, disabled: true });
 }

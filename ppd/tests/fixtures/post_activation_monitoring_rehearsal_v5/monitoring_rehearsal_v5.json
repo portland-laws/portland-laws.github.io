@@ -1,0 +1,56 @@
+{
+  "fixture_version": "post-activation-monitoring-rehearsal-v5",
+  "fixture_scope": "offline committed PP&D monitoring rehearsal data only",
+  "generated_from_live_crawl": false,
+  "devhub_opened": false,
+  "private_documents_read": false,
+  "guardrails_activated": false,
+  "evidence": [
+    {
+      "evidence_id": "ppd-landing",
+      "source_id": "ppd-public-landing",
+      "title": "PP&D public landing page fixture anchor",
+      "fixture_anchor": "official_source_anchor_ppd_landing",
+      "freshness_status": "current_in_fixture",
+      "monitoring_status": "rehearsal_only"
+    },
+    {
+      "evidence_id": "apply-permits",
+      "source_id": "ppd-apply-permits",
+      "title": "Apply for permits fixture anchor",
+      "fixture_anchor": "official_source_anchor_apply_permits",
+      "freshness_status": "current_in_fixture",
+      "monitoring_status": "rehearsal_only"
+    },
+    {
+      "evidence_id": "devhub-faqs",
+      "source_id": "ppd-devhub-faqs",
+      "title": "DevHub FAQ fixture anchor",
+      "fixture_anchor": "official_source_anchor_devhub_faqs",
+      "freshness_status": "stale_in_synthetic_case",
+      "monitoring_status": "rehearsal_only"
+    },
+    {
+      "evidence_id": "how-pay-fees",
+      "source_id": "ppd-fee-payment-guide",
+      "title": "Fee payment guide fixture anchor",
+      "fixture_anchor": "official_source_anchor_fee_payment",
+      "freshness_status": "current_in_fixture",
+      "monitoring_status": "rehearsal_only"
+    }
+  ],
+  "monitoring_checks": [
+    {
+      "check_id": "v5-monitor-devhub-faq-freshness",
+      "surface": "devhub_public_guidance",
+      "expected_status": "rehearsal_only",
+      "live_network_allowed": false
+    },
+    {
+      "check_id": "v5-monitor-fee-payment-guide-freshness",
+      "surface": "financial_guidance",
+      "expected_status": "rehearsal_only",
+      "live_network_allowed": false
+    }
+  ]
+}

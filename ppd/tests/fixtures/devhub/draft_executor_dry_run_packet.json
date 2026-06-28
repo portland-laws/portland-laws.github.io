@@ -1,0 +1,74 @@
+{
+  "packet_id": "synthetic-devhub-field-fill-draft-executor-dry-run-v1",
+  "run_mode": "reversible_draft_executor_dry_run",
+  "live_devhub_session": false,
+  "browser_launched": false,
+  "auth_state_saved": false,
+  "browser_artifacts_saved": false,
+  "source_evidence": [
+    {
+      "source_evidence_id": "ev-devhub-apply-guide-draft",
+      "source_kind": "public_guidance_fixture",
+      "summary": "Synthetic public DevHub guide evidence for permit application draft fields and save-for-later boundaries."
+    }
+  ],
+  "attendance_requirement": {
+    "requires_user_attendance": true,
+    "unattended_execution_allowed": false,
+    "attendance_reason": "Authenticated DevHub assistance is account-scoped; the dry-run packet is preview-only and requires the user to remain present before any future live draft interaction."
+  },
+  "allowed_action_classification": {
+    "action_id": "preview-fill-project-description",
+    "action_class": "reversible_draft_fill_preview",
+    "decision": "allow_reversible_draft",
+    "may_execute_in_dry_run": true,
+    "changes_official_state": false,
+    "requires_exact_confirmation": false,
+    "blocked_consequential_actions": [
+      "certification",
+      "official_upload",
+      "payment_detail_entry",
+      "submission"
+    ]
+  },
+  "required_user_facts": [
+    {
+      "fact_id": "project_description",
+      "fact_kind": "permit_application_field",
+      "redacted_label": "[REDACTED_FIELD_LABEL:PROJECT_DESCRIPTION]",
+      "source_evidence_ids": [
+        "ev-devhub-apply-guide-draft"
+      ],
+      "value_policy": "value_ref_only"
+    }
+  ],
+  "steps": [
+    {
+      "step_id": "step-preview-fill-project-description",
+      "action": "fill_field",
+      "selector": "[data-testid='project-description']",
+      "selector_confidence": 0.96,
+      "selector_evidence": "Synthetic accessible test id fixture; no browser was launched.",
+      "field_label_redacted": "[REDACTED_FIELD_LABEL:PROJECT_DESCRIPTION]",
+      "value_ref": "project_description",
+      "preview_diff": {
+        "diff_kind": "redacted_field_fill",
+        "before": "[REDACTED_EMPTY]",
+        "after": "[REDACTED_USER_FACT:PROJECT_DESCRIPTION]",
+        "value_ref": "project_description"
+      }
+    }
+  ],
+  "rollback_evidence": {
+    "rollback_mode": "no_browser_no_side_effect_fixture",
+    "official_state_changed": false,
+    "browser_artifacts_saved": false,
+    "side_effects": "none",
+    "evidence": [
+      "Packet was derived from committed synthetic fixture data only.",
+      "No Playwright context, browser storage, trace, screenshot, HAR, upload, save, submit, certification, scheduling, or payment action is represented.",
+      "Preview diff uses redacted markers and can be discarded without contacting DevHub."
+    ]
+  },
+  "dry_run_result": "preview_only_no_devhub_state_change"
+}

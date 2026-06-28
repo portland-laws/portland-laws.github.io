@@ -1,0 +1,15 @@
+Implemented a narrow parser fallback for the packet’s gap and added golden replay coverage for the three cited samples.
+
+- Added `uscode_procedural_clause_v1` in [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000038-20260518_120015/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:88), wired into fallback flow at [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000038-20260518_120015/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:315), and implemented at [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000038-20260518_120015/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:871).  
+  This emits a frame formula when U.S.C. procedural clauses have no modal cues and previously yielded zero formulas.
+- Added parser replay constants/tests for:
+  - `us-code-36-170307-8767653c3220e539`
+  - `us-code-10-1095c-95cb9940fa4690f6`
+  - `us-code-19-2113-bb39dec0898628d3`  
+  in [test_legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000038-20260518_120015/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py:77) and [test_legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000038-20260518_120015/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py:936).
+- Added mirrored spaCy-compiler replay coverage in [test_spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000038-20260518_120015/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py:92) and [test_spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000038-20260518_120015/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py:448).
+
+Validation run:
+
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py`  
+  Result: `53 passed`.

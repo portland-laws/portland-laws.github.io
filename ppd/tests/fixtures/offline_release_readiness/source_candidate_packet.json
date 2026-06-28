@@ -1,0 +1,92 @@
+{
+  "packet_id": "fixture-offline-release-readiness-20260529",
+  "validation_evidence": [
+    {
+      "evidence_id": "evidence-source-registry-candidate",
+      "evidence_type": "fixture_candidate_review",
+      "description": "Source registry candidate was reviewed from committed metadata only."
+    },
+    {
+      "evidence_id": "evidence-archive-manifest-readiness",
+      "evidence_type": "archive_manifest_promotion_readiness",
+      "description": "Archive manifest candidate includes checksum, freshness, and no-raw-body attestations."
+    },
+    {
+      "evidence_id": "evidence-requirement-rerun-disposition",
+      "evidence_type": "requirement_review_disposition",
+      "description": "Requirement rerun review disposition remains pending operator review."
+    },
+    {
+      "evidence_id": "evidence-process-model-candidate",
+      "evidence_type": "process_model_candidate_review",
+      "description": "Process model update candidate is fixture-only and not written to an active model."
+    },
+    {
+      "evidence_id": "evidence-guardrail-bundle-candidate",
+      "evidence_type": "guardrail_bundle_candidate_review",
+      "description": "Guardrail bundle update candidate is fixture-only and not written to an active bundle."
+    },
+    {
+      "evidence_id": "evidence-agent-regression-plan",
+      "evidence_type": "agent_regression_rerun_plan",
+      "description": "Agent regression rerun plan selects synthetic fixture cases only."
+    }
+  ],
+  "source_registry_update_candidates": [
+    {
+      "candidate_id": "source-registry-candidate-devhub-faq-refresh",
+      "status": "validated",
+      "source_evidence_ids": ["evidence-source-registry-candidate"],
+      "required_operator_signoffs": ["source_registry_reviewer"],
+      "mutate_registry": false
+    }
+  ],
+  "archive_manifest_promotion_readiness": [
+    {
+      "packet_id": "archive-manifest-readiness-devhub-faq-refresh",
+      "status": "blocked",
+      "source_evidence_ids": ["evidence-archive-manifest-readiness"],
+      "required_operator_signoffs": ["archive_operator"],
+      "manifest_promotion_active": false,
+      "promotion_enabled": false
+    }
+  ],
+  "requirement_rerun_review_dispositions": [
+    {
+      "disposition_id": "requirement-rerun-devhub-faq-action-gates",
+      "review_status": "pending",
+      "source_evidence_ids": ["evidence-requirement-rerun-disposition"],
+      "required_operator_signoffs": ["requirement_reviewer"]
+    }
+  ],
+  "process_model_update_candidates": [
+    {
+      "candidate_id": "process-model-devhub-upload-staging-candidate",
+      "status": "needs_review",
+      "source_evidence_ids": ["evidence-process-model-candidate"],
+      "required_operator_signoffs": ["process_model_reviewer"],
+      "mutate_process_model": false
+    }
+  ],
+  "guardrail_bundle_update_candidates": [
+    {
+      "candidate_id": "guardrail-bundle-upload-submit-gates-candidate",
+      "validation_status": "validated",
+      "source_evidence_ids": ["evidence-guardrail-bundle-candidate"],
+      "required_operator_signoffs": ["guardrail_reviewer"],
+      "mutate_guardrail_bundle": false,
+      "guardrail_promotion_enabled": false
+    }
+  ],
+  "agent_regression_rerun_plans": [
+    {
+      "plan_id": "agent-regression-rerun-upload-submit-gates",
+      "status": "validated",
+      "source_evidence_ids": ["evidence-agent-regression-plan"],
+      "required_operator_signoffs": ["agent_regression_reviewer"],
+      "launches_devhub": false,
+      "calls_llm": false,
+      "reads_private_files": false
+    }
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "process_id": "single-pdf-plan-review-permit",
+  "active_guardrail_bundle_id": "guardrail-bundle-active-single-pdf-2026-05-08",
+  "human_review_status": "needs_review",
+  "impacted_change": {
+    "change_id": "single-pdf-upload-acknowledgement-gate",
+    "summary": "Single PDF process now requires a separated supporting-document upload check before acknowledgement and submission.",
+    "source_evidence_ids": [
+      "ppd-source-submit-plans-online#single-pdf-guidance",
+      "ppd-source-devhub-guide-submit-permit-application#upload-step"
+    ]
+  },
+  "before": {
+    "required_user_facts": [
+      "permit_request_type",
+      "project_address"
+    ],
+    "required_documents": [
+      "plan_set_pdf"
+    ],
+    "file_rules": [
+      "drawing_plans_combined_in_one_pdf"
+    ],
+    "action_gates": []
+  },
+  "after": {
+    "required_user_facts": [
+      "permit_request_type",
+      "project_address",
+      "supporting_documents_are_separate_pdfs"
+    ],
+    "required_documents": [
+      "plan_set_pdf",
+      "application_forms_pdf",
+      "calculations_or_supporting_documents_pdf"
+    ],
+    "file_rules": [
+      "drawing_plans_combined_in_one_pdf",
+      "applications_calculations_and_supporting_documents_uploaded_as_separate_pdfs"
+    ],
+    "action_gates": [
+      {
+        "action": "upload supporting documents",
+        "conditions": [
+          "all required supporting documents are prepared as separate PDFs",
+          "the user is present in the authenticated DevHub session"
+        ],
+        "requires_attendance": true,
+        "requires_exact_confirmation": true,
+        "confirmation_text": "I confirm the supporting documents are ready to upload for this PP&D permit request."
+      },
+      {
+        "action": "submit permit application",
+        "conditions": [
+          "uploaded files have been reviewed by the user",
+          "acknowledgement or certification text has been reviewed by the user"
+        ],
+        "requires_attendance": true,
+        "requires_exact_confirmation": true,
+        "confirmation_text": "I confirm I am ready to submit this PP&D permit application."
+      }
+    ]
+  }
+}

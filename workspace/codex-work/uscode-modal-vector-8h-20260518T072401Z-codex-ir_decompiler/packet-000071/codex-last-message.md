@@ -1,0 +1,26 @@
+Implemented a scoped `ir_decompiler` refinement that adds deterministic provenance-alignment slots for section endpoints and range/profile semantics.
+
+**Changes**
+- Added terminal endpoint alignment slots in decompiler output:
+  - `citation_source_id_section_terminal_number_relation`
+  - `citation_source_id_section_terminal_number_span`
+  - `citation_source_id_section_terminal_suffix_pair`
+  - `citation_source_id_section_terminal_suffix_match`
+  - `citation_source_id_section_terminal_suffix_presence_match`
+  - `citation_source_id_section_terminal_component_signature_pair`
+  - `citation_source_id_section_terminal_component_signature_match`
+  - `citation_source_id_section_component_profile_pair`
+  - `citation_source_id_section_component_profile_match`
+  - `citation_source_id_section_is_range_pair`
+  - `citation_source_id_section_is_range_match`
+  - File: [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000071-20260518_142259/ipfs_datasets_py/logic/modal/decompiler.py:1274)
+
+- Mirrored the same slot expansion in triple-generation alignment logic so decompiler slots and F-logic predicates stay consistent.
+  - File: [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000071-20260518_142259/ipfs_datasets_py/logic/modal/codec.py:1708)
+
+- Added regression coverage for both range (`31 to 39.`) and alphanumeric terminal (`3352e.`) cases, asserting both slot-map and triple outputs.
+  - File: [test_modal_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000071-20260518_142259/tests/unit/optimizers/logic_theorem_optimizer/test_modal_ir_decompiler_slots.py:364)
+
+**Validation**
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_modal_ir_decompiler_slots.py` passed (`7 passed`).
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "source_id or citation_section"` passed (`4 passed`).

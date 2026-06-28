@@ -1,0 +1,104 @@
+{
+  "packet_version": "inactive-release-decision-packet-v1",
+  "mode": "fixture-first-offline-only",
+  "promotion_candidate_references": [
+    {
+      "ref_id": "candidate-20260601-a",
+      "packet_type": "ppd.inactive_fixture_promotion_candidate.v2",
+      "fixture_path": "ppd/tests/fixtures/agent_readiness/inactive_release_decision_packet_v2.json"
+    }
+  ],
+  "readiness_replay_references": [
+    {
+      "ref_id": "readiness-replay-20260601-a",
+      "packet_type": "ppd.agent_readiness_replay_packet.v2",
+      "fixture_path": "ppd/tests/fixtures/agent_readiness/agent_readiness_replay_packet_v2/source_packets.json"
+    }
+  ],
+  "release_decisions": [
+    {
+      "decision_id": "decision-approve-reference",
+      "decision": "approve",
+      "rationale": "Reviewer may approve only after offline evidence is replayed and routed for human review.",
+      "evidence_refs": [
+        "candidate-20260601-a",
+        "readiness-replay-20260601-a"
+      ]
+    },
+    {
+      "decision_id": "decision-hold-reference",
+      "decision": "hold",
+      "rationale": "Hold remains available when blockers or replay gaps are present.",
+      "evidence_refs": [
+        "blocker-open-1"
+      ]
+    },
+    {
+      "decision_id": "decision-reject-reference",
+      "decision": "reject",
+      "rationale": "Reject remains available when fixture evidence fails offline validation.",
+      "evidence_refs": [
+        "smoke-replay-required-1"
+      ]
+    }
+  ],
+  "dependency_ordering": [
+    {
+      "item_id": "readiness-replay-20260601-a",
+      "depends_on": [
+        "candidate-20260601-a"
+      ],
+      "ordering_reason": "Replay evidence must be reviewed after selecting the candidate reference."
+    }
+  ],
+  "human_reviewer_routing": [
+    {
+      "reviewer_role": "ppd_release_reviewer",
+      "review_queue": "inactive_release_manual_review",
+      "required_before": "any_release_promotion_or_official_action"
+    }
+  ],
+  "release_blocker_summaries": [
+    {
+      "blocker_id": "blocker-open-1",
+      "status": "open",
+      "summary": "Manual reviewer must reconcile fixture replay and blocker evidence before a separate release action."
+    }
+  ],
+  "smoke_replay_requirements": [
+    {
+      "requirement_id": "smoke-replay-required-1",
+      "fixture_ref": "readiness-replay-20260601-a",
+      "expected_checks": [
+        "offline replay exits zero",
+        "no active mutation flags are present"
+      ]
+    }
+  ],
+  "rollback_notes": [
+    {
+      "note_id": "rollback-note-1",
+      "rollback_scope": "inactive packet only",
+      "operator_note": "A later authorized release path must describe rollback handling before changing release state."
+    }
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "-m",
+      "py_compile",
+      "ppd/inactive_release_decision_packet_v1.py"
+    ],
+    [
+      "python3",
+      "-m",
+      "pytest",
+      "ppd/tests/test_inactive_release_decision_packet_v1.py"
+    ],
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ]
+}

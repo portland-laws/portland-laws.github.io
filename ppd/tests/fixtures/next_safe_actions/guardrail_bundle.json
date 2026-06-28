@@ -1,0 +1,53 @@
+{
+  "guardrail_bundle_id": "guardrails-residential-adu-devhub-demo",
+  "process_id": "process-residential-adu-devhub-demo",
+  "source_evidence_ids": [
+    "ev-devhub-save-later",
+    "ev-devhub-submit-certify",
+    "ev-upload-corrections"
+  ],
+  "source_evidence": [],
+  "deterministic_predicates": [
+    {
+      "predicate_id": "has_required_questions_answered",
+      "description": "All required process facts must be known before drafting final values."
+    }
+  ],
+  "reversible_action_predicates": [
+    {
+      "predicate_id": "draft_form_values_is_reversible",
+      "action_type": "draft_form_values",
+      "description": "Local draft values may be prepared without touching the official record."
+    },
+    {
+      "predicate_id": "save_draft_is_reversible",
+      "action_type": "save_draft",
+      "description": "Saving a draft is reversible before final submission."
+    }
+  ],
+  "exact_confirmation_predicates": [
+    {
+      "predicate_id": "submit_requires_exact_confirmation",
+      "action_type": "submit_permit_request",
+      "description": "Permit request submission requires user attendance and exact confirmation."
+    },
+    {
+      "predicate_id": "certify_requires_exact_confirmation",
+      "action_type": "certify_acknowledgement",
+      "description": "Certification and acknowledgement steps are consequential."
+    }
+  ],
+  "refused_action_predicates": [
+    {
+      "predicate_id": "payment_refused_without_handoff",
+      "action_type": "submit_payment",
+      "description": "Final payment execution is refused without attended handoff."
+    },
+    {
+      "predicate_id": "official_upload_refused_without_handoff",
+      "action_type": "upload_to_official_record",
+      "description": "Official record uploads are blocked until attended confirmation."
+    }
+  ],
+  "validation_status": "fixture_validated"
+}

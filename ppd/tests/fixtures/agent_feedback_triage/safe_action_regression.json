@@ -1,0 +1,22 @@
+{
+  "packet_id": "fixture-safe-action-regression-v1",
+  "packet_type": "safe_action_regression",
+  "reviewer_owner": "ppd-guardrail-reviewer",
+  "citations": [
+    {
+      "citation_id": "safe-action-regression:boundary-matrix",
+      "title": "Safe-action regression boundary matrix",
+      "owner": "ppd-guardrail-reviewer"
+    }
+  ],
+  "regression_cases": [
+    {
+      "case_id": "read-only-status-review",
+      "expected_classification": "safe_read_only"
+    },
+    {
+      "case_id": "submit-permit-request",
+      "expected_classification": "refuse_consequential_official_action"
+    }
+  ]
+}

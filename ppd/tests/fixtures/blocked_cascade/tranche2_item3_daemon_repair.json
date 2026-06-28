@@ -1,0 +1,39 @@
+{
+  "generated_for": "checkbox-252",
+  "scenario": "blocked cascade daemon repair tranche 2 item 3",
+  "fresh_after": 1700000000,
+  "blocked_work": [
+    {
+      "id": "ppd-tranche2-item3-normalize-devhub-guides",
+      "state": "blocked",
+      "blocked_by": "daemon-repair-devhub-session-ledger",
+      "reason": "daemon repair must validate before blocked PP&D work may resume"
+    },
+    {
+      "id": "ppd-tranche2-item3-refresh-permit-guide-index",
+      "state": "blocked",
+      "blocked_by": "daemon-repair-devhub-session-ledger",
+      "reason": "same repair cascade dependency"
+    }
+  ],
+  "repair_attempts": [
+    {
+      "id": "daemon-repair-devhub-session-ledger",
+      "kind": "daemon-repair",
+      "created_at": 1699999900,
+      "validated": true
+    },
+    {
+      "id": "daemon-repair-devhub-session-ledger",
+      "kind": "daemon-repair",
+      "created_at": 1700000100,
+      "validated": false
+    },
+    {
+      "id": "daemon-repair-devhub-session-ledger",
+      "kind": "daemon-repair",
+      "created_at": 1700000200,
+      "validated": true
+    }
+  ]
+}

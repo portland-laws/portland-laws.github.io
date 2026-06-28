@@ -1,0 +1,10 @@
+Implemented a narrow deterministic parser fallback plus a golden regression case.
+
+- Added a U.S. Code-only fallback cue path in [`legal_modal_parser.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000008-20260517_161413/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:118) and [`legal_modal_parser.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000008-20260517_161413/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:172).  
+  - Behavior: when no modal cues are found, and citation is a U.S.C. citation, parser emits one deterministic `frame` formula with cue `__uscode_heading_fallback__`.
+- Added regression test for heading-style legal text tied to `42 U.S.C. 3731.` in [`test_legal_modal_parser.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000008-20260517_161413/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py:83).
+
+Validation run:
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py` failed before test execution due pre-existing repo bootstrap issue: root `__init__.py` uses `__path__` when not loaded as a package.
+- `python3 -m py_compile ...` on both changed files passed.
+- Direct smoke check passed: fallback parse produced `formula_count=1`, `family=frame`, `cue=__uscode_heading_fallback__`.

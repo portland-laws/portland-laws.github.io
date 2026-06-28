@@ -1,0 +1,25 @@
+{
+  "packet_type": "public_refresh_post_decision_smoke_replay_packet",
+  "packet_version": 1,
+  "mode": "fixture_first_offline_post_decision_smoke_replay",
+  "packet_id": "fixture-public-refresh-post-decision-smoke-replay-v1",
+  "validation_commands": [
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ],
+  "smoke_scenarios": [
+    {
+      "scenario_id": "post-decision-public-refresh-smoke-001",
+      "release_decision_references": ["release-decision::public-refresh::held-001"],
+      "offline_agent_api_smoke_expectations": ["agent API returns a stale-source hold response from committed fixture evidence"],
+      "source_citation_lookup_checks": ["citation lookup resolves fixture source id ppd-public-refresh-source-001"],
+      "guardrail_predicate_replay_checks": ["guardrail predicate replay keeps official actions blocked"],
+      "blocked_action_regression_checks": ["submit/upload/payment/schedule actions remain refused in fixture replay"],
+      "stale_source_hold_checks": ["stale source remains held until reviewer disposition placeholder is present"],
+      "rollback_notes": ["rollback is documentation-only because no active release state changes are made"],
+      "reviewer_routing": ["route to public-refresh reviewer queue before any release consideration"],
+      "validation_commands": [
+        ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+      ]
+    }
+  ]
+}

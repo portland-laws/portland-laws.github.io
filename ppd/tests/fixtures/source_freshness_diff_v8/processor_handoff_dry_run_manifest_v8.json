@@ -1,0 +1,67 @@
+{
+  "manifest_version": "8",
+  "manifest_id": "processor-handoff-dry-run-v8-fixture",
+  "dry_run": true,
+  "live_crawl_performed": false,
+  "raw_artifacts_downloaded": false,
+  "sources": [
+    {
+      "source_id": "ppd-online-tools",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "content_hash": "sha256:current-online-tools",
+      "capture_finished_at": "2026-05-08T10:15:00Z",
+      "links": [
+        {
+          "url": "https://www.portland.gov/ppd/devhub-faqs",
+          "link_text": "DevHub FAQ"
+        },
+        {
+          "url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+          "link_text": "Apply for permits"
+        }
+      ],
+      "citation_placeholders": [
+        "citation:ppd-online-tools:devhub-overview"
+      ],
+      "requirement_candidate_refs": [
+        "candidate:online-tools:devhub-services"
+      ]
+    },
+    {
+      "source_id": "ppd-single-pdf",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "content_hash": "sha256:unchanged-single-pdf",
+      "capture_finished_at": "2026-05-08T10:20:00Z",
+      "links": [
+        {
+          "url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+          "link_text": "File naming standards"
+        }
+      ],
+      "citation_placeholders": [
+        "citation:ppd-single-pdf:upload-rules"
+      ],
+      "requirement_candidate_refs": [
+        "candidate:single-pdf:document-packaging"
+      ]
+    },
+    {
+      "source_id": "ppd-new-forms-index",
+      "canonical_url": "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications",
+      "content_hash": "sha256:new-forms-index",
+      "capture_finished_at": "2026-05-08T10:25:00Z",
+      "links": [
+        {
+          "url": "https://www.portland.gov/ppd/documents/sample-public-form/download",
+          "link_text": "Sample public form"
+        }
+      ],
+      "citation_placeholders": [
+        "citation:ppd-new-forms-index:forms-index"
+      ],
+      "requirement_candidate_refs": [
+        "candidate:forms-index:document-requirements"
+      ]
+    }
+  ]
+}

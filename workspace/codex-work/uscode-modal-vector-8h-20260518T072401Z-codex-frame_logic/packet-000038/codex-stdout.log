@@ -1,0 +1,17 @@
+Implemented a deterministic frame-ontology audit improvement for structured metadata payloads.
+
+- Updated [`codec.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000038-20260518_120655/ipfs_datasets_py/logic/modal/codec.py:214) to add bounded, recursive extraction of ontology term candidates from `frame_ontology_terms` metadata.
+- Added handling for common structured term keys (`term`, `terms`, `text`, `label`, `value`, etc.) and filtered structural keys (`weight`, `score`, `rank`, `confidence`, etc.) so dict payloads no longer collapse into noisy stringified terms.
+- Kept extraction deterministic with max depth/value caps.
+
+Added regression coverage:
+
+- New test [`test_modal_codec_audits_frame_terms_when_metadata_contains_structured_entries`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000038-20260518_120655/tests/unit_tests/logic/modal/test_modal_codec.py:3913) in [`test_modal_codec.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000038-20260518_120655/tests/unit_tests/logic/modal/test_modal_codec.py), validating structured entries produce canonical terms and avoid noisy artifacts.
+
+Tests run:
+
+1. `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k 'audits_frame_terms_when_metadata_contains_structured_entries or audits_frame_terms_when_metadata_is_partial or audits_frame_terms_when_metadata_contains_weight_maps'`
+2. `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py -k 'frame_ontology or legacy_bare_contextual or source_id_citation_canonical or keeps_direct_frame_terms_when_audit_key_cap_is_exceeded'`
+3. `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py tests/unit_tests/logic/modal/test_modal_codec.py -k 'frame_ontology or frame_logic_terms or frame_decoder_audit or audits_frame_terms'`
+
+All passed.

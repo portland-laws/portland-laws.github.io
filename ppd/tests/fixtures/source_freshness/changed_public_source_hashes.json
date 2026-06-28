@@ -1,0 +1,13 @@
+{
+  "batch_id": "changed-public-source-hashes-2026-05-28-fixture",
+  "detected_at": "2026-05-28T00:00:00Z",
+  "network_requests_made": false,
+  "raw_page_bodies_stored": false,
+  "changed_sources": [
+    {
+      "source_id": "src-devhub-submit-permit-application-guide",
+      "previous_content_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+      "new_content_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    }
+  ]
+}

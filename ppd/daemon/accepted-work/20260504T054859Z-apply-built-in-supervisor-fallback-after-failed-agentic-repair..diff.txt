@@ -1,0 +1,70 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,16 +1,39 @@
+ {
+-  "createdAt": "2026-05-04T05:47:48.440403Z",
++  "createdAt": "2026-05-04T05:48:53.855720Z",
+   "decision": {
+-    "action": "reconcile_blocked_cascade_and_restart",
+-    "reason": "all selectable PP&D tasks are blocked after repeated daemon recovery attempts; append deterministic daemon-repair tasks before retrying blocked domain work",
++    "action": "reconcile_repeated_llm_loop_and_restart",
++    "reason": "4 recent durable LLM parse/runtime diagnostics were recorded for the same task before the daemon exited; park the looping task and restart on the next independent task without invoking the LLM repair path",
+     "severity": "warning"
+   },
+-  "repairKind": "blocked_cascade_replenishment",
+-  "replenishedTaskLabels": [
+-    "checkbox-354",
+-    "checkbox-355",
+-    "checkbox-356",
+-    "checkbox-357"
++  "failedAgenticRepair": {
++    "changedFiles": [],
++    "errors": [],
++    "failureKind": "llm",
++    "summary": "Repeated LLM parse/runtime diagnostic loop detected.",
++    "validationResults": []
++  },
++  "fallbackActions": [
++    "preserve failed repair diagnostics without accepting the invalid patch",
++    "run full PP&D daemon validation before restarting unattended worker attempts",
++    "restart the worker with PPD_LLM_BACKEND=llm_router after fallback validation passes",
++    "keep future retry scope narrow and fixture-first"
+   ],
+-  "schemaVersion": 1
++  "llmBackend": "llm_router",
++  "repairKind": "builtin_supervisor_fallback",
++  "safetyBoundaries": [
++    "no private DevHub session artifacts",
++    "no raw crawl output",
++    "no downloaded documents",
++    "no browser traces or screenshots",
++    "no consequential DevHub actions"
++  ],
++  "schemaVersion": 1,
++  "taskBoardRepair": {
++    "parkedRepeatedSyntaxLoopTasks": [
++      "Add generated blocked-cascade daemon-repair coverage for tranche 28 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates."
++    ],
++    "replenishedGoalTaskLabels": [],
++    "supersededTaskBoardOnlyLabels": [],
++    "taskBoardUpdated": true
++  }
+ }
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -790,10 +790,14 @@
+ 
+ ## Built-In Blocked Cascade Recovery Tranche 28
+ 
+-- [~] Task checkbox-354: Add generated blocked-cascade daemon-repair coverage for tranche 28 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
++- [!] Task checkbox-354: Add generated blocked-cascade daemon-repair coverage for tranche 28 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+ - [ ] Task checkbox-355: Add generated blocked-cascade daemon-repair coverage for tranche 28 item 2 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+ - [ ] Task checkbox-356: Add generated blocked-cascade daemon-repair coverage for tranche 28 item 3 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+ - [ ] Task checkbox-357: Add generated blocked-cascade daemon-repair coverage for tranche 28 item 4 proving blocked PP&D work stays parked until a fresh daemon repair task validates.
+ ## Built-In Supervisor Repair Notes
+ 
+ - Appended deterministic blocked-cascade recovery tasks because all selectable work was blocked. The supervisor avoided the LLM repair path and created daemon-repair tasks that can run independently before blocked domain work is retried.
++## Built-In Supervisor Repair Notes
++
++- Parked repeated LLM parse/runtime loop for `Add generated blocked-cascade daemon-repair coverage for tranche 28 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.
++

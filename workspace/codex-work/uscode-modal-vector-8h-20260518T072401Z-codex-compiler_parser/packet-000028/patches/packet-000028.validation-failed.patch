@@ -1,0 +1,233 @@
+diff --git a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py
+index 65432c01..df7e5a75 100644
+--- a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py
++++ b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py
+@@ -775,6 +775,14 @@ class LegalModalParser:
+                 if self._looks_like_heading_without_section_reference(segment.text):
+                     candidate_segment = segment
+                     break
++        if candidate_segment is None:
++            for segment in segments:
++                if self._looks_like_relaxed_heading_without_section_reference(segment.text):
++                    candidate_segment = segment
++                    fallback_rule_override = (
++                        "uscode_heading_with_leading_stopword_v1"
++                    )
++                    break
+         if candidate_segment is None:
+             candidate_segment = self._embedded_citation_heading_segment(
+                 normalized_text=normalized_text,
+@@ -1004,6 +1012,36 @@ class LegalModalParser:
+             return False
+         return True
+ 
++    def _looks_like_relaxed_heading_without_section_reference(
++        self,
++        segment_text: str,
++    ) -> bool:
++        """Allow compact heading-like phrases that start with stopwords."""
++        normalized = self.normalize_text(segment_text)
++        if not normalized:
++            return False
++        lowered = normalized.lower()
++        tokens = _TOKEN_RE.findall(lowered)
++        if (
++            len(tokens) < _USCODE_HEADING_ONLY_MIN_TOKENS
++            or len(tokens) > _USCODE_HEADING_ONLY_MAX_TOKENS
++        ):
++            return False
++        if _USCODE_HEADING_ONLY_VERB_HINT_RE.search(lowered):
++            return False
++        if (
++            _USCODE_CODIFICATION_HINT_RE.search(lowered)
++            or _USCODE_EDITORIAL_STATUS_HINT_RE.search(lowered)
++            or _USCODE_DECLARATIVE_STATEMENT_HINT_RE.search(lowered)
++        ):
++            return False
++        if any(punctuation in normalized for punctuation in ":[]{}"):
++            return False
++        # Prevent degenerate headings like just "the" or "this".
++        if len(tokens) == 1 and tokens[0] in _USCODE_HEADING_ONLY_LEADING_STOPWORDS:
++            return False
++        return True
++
+     def _coarse_citation_heading_segment(
+         self,
+         *,
+diff --git a/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py b/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py
+index e2c4254b..f57cdfd1 100644
+--- a/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py
++++ b/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py
+@@ -222,6 +222,7 @@ _USCODE_45_81_TO_92_TODO_TEXT = "Secs. 81 to 92. Repealed."
+ _USCODE_6_314_TODO_TEXT = "National planning scenarios, preparedness targets, and implementation guidance."
+ _USCODE_35_4_TODO_TEXT = "Officers, employees, and attorneys."
+ _USCODE_7_7316_TODO_TEXT = "Report."
++_USCODE_LEADING_STOPWORD_HEADING_TODO_TEXT = "The administrative notice and hearing."
+ 
+ 
+ def _coarse_uscode_heading_noise_text(section: str, heading: str) -> str:
+@@ -585,6 +586,43 @@ def test_parser_replays_packet_todo_heading_only_samples_for_6_314_35_4_and_7_73
+         assert fallback.provenance.citation == citation
+ 
+ 
++def test_parser_replays_packet_todo_heading_samples_with_leading_stopwords_for_13_303_12_326_and_16_467b() -> None:
++    parser = LegalModalParser()
++    cases = [
++        (
++            "us-code-13-303-bcfda0ce2292fef5",
++            "13 U.S.C. 303",
++            _USCODE_LEADING_STOPWORD_HEADING_TODO_TEXT,
++        ),
++        (
++            "us-code-12-326-cdc87a23656b98e3",
++            "12 U.S.C. 326",
++            _USCODE_LEADING_STOPWORD_HEADING_TODO_TEXT,
++        ),
++        (
++            "us-code-16-467b-4168eef88d7e96d0",
++            "16 U.S.C. 467b",
++            _USCODE_LEADING_STOPWORD_HEADING_TODO_TEXT,
++        ),
++    ]
++
++    for document_id, citation, text in cases:
++        document = parser.parse(
++            text,
++            document_id=document_id,
++            source="us_code",
++            citation=citation,
++        )
++
++        assert document.document_id == document_id
++        assert document.formulas
++        fallback = document.formulas[-1]
++        assert fallback.operator.family == "frame"
++        assert fallback.metadata["cue"] == "__uscode_section_heading_fallback__"
++        assert fallback.metadata["fallback_rule"] == "uscode_heading_with_leading_stopword_v1"
++        assert fallback.provenance.citation == citation
++
++
+ def test_parser_replays_uscode_declarative_statement_zero_formula_cases() -> None:
+     parser = LegalModalParser()
+     cases = [
+diff --git a/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py b/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py
+index 547735f0..1dc1e28a 100644
+--- a/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py
++++ b/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py
+@@ -26,6 +26,7 @@ _USCODE_15_2501_SEC_HEADING_TEXT = "Sec. 2501 - Congressional findings and polic
+ _USCODE_7_431_TODO_TEXT = "Sec. 431 - Declaration of policy."
+ _USCODE_6_257_TODO_TEXT = "Sec. 257 - National planning scenarios and preparedness targets."
+ _USCODE_45_81_TO_92_TODO_TEXT = "Secs. 81 to 92. Repealed."
++_USCODE_LEADING_STOPWORD_HEADING_TODO_TEXT = "The administrative notice and hearing."
+ 
+ 
+ def _coarse_uscode_heading_noise_text(section: str, heading: str) -> str:
+@@ -227,6 +228,44 @@ def test_spacy_compiler_replays_packet_todo_samples_for_7_431_6_257_and_45_81_to
+         assert fallback.provenance.citation == citation
+ 
+ 
++def test_spacy_compiler_replays_packet_todo_heading_samples_with_leading_stopwords_for_13_303_12_326_and_16_467b() -> None:
++    encoder = SpaCyLegalEncoder(model_name="definitely_missing_legal_model")
++    compiler = SpaCyModalIRCompiler()
++    cases = [
++        (
++            "us-code-13-303-bcfda0ce2292fef5",
++            "13 U.S.C. 303",
++            _USCODE_LEADING_STOPWORD_HEADING_TODO_TEXT,
++        ),
++        (
++            "us-code-12-326-cdc87a23656b98e3",
++            "12 U.S.C. 326",
++            _USCODE_LEADING_STOPWORD_HEADING_TODO_TEXT,
++        ),
++        (
++            "us-code-16-467b-4168eef88d7e96d0",
++            "16 U.S.C. 467b",
++            _USCODE_LEADING_STOPWORD_HEADING_TODO_TEXT,
++        ),
++    ]
++
++    for document_id, citation, text in cases:
++        encoding = encoder.encode(
++            text,
++            document_id=document_id,
++            citation=citation,
++            source="us_code",
++        )
++        modal_ir = compiler.compile(encoding)
++
++        assert modal_ir.formulas
++        fallback = modal_ir.formulas[-1]
++        assert fallback.operator.family == "frame"
++        assert fallback.metadata["cue"] == "__uscode_section_heading_fallback__"
++        assert fallback.metadata["fallback_rule"] == "uscode_heading_with_leading_stopword_v1"
++        assert fallback.provenance.citation == citation
++
++
+ def test_spacy_compiler_supports_usc_and_section_symbol_citation_variants_for_sec_headings() -> None:
+     encoder = SpaCyLegalEncoder(model_name="definitely_missing_legal_model")
+     compiler = SpaCyModalIRCompiler()
+diff --git a/tests/unit_tests/logic/modal/test_modal_codec.py b/tests/unit_tests/logic/modal/test_modal_codec.py
+index ba7cbf0d..2650238b 100644
+--- a/tests/unit_tests/logic/modal/test_modal_codec.py
++++ b/tests/unit_tests/logic/modal/test_modal_codec.py
+@@ -188,6 +188,7 @@ _USCODE_45_81_TO_92_TODO_TEXT = "Secs. 81 to 92. Repealed."
+ _USCODE_6_314_TODO_TEXT = "National planning scenarios, preparedness targets, and implementation guidance."
+ _USCODE_35_4_TODO_TEXT = "Officers, employees, and attorneys."
+ _USCODE_7_7316_TODO_TEXT = "Report."
++_USCODE_LEADING_STOPWORD_HEADING_TODO_TEXT = "The administrative notice and hearing."
+ _USCODE_LONG_SUBSECTION_BODY = (
+     "general program coordination reporting documentation verification auditing review "
+     "management data cataloging compliance mapping operations planning record indexing "
+@@ -788,6 +789,51 @@ def test_modal_compiler_replays_packet_todo_heading_only_samples_for_6_314_35_4_
+             assert fallback.provenance.citation == citation
+ 
+ 
++def test_modal_compiler_replays_packet_todo_heading_samples_with_leading_stopwords_for_13_303_12_326_and_16_467b() -> None:
++    cases = [
++        (
++            "us-code-13-303-bcfda0ce2292fef5",
++            "13 U.S.C. 303",
++            _USCODE_LEADING_STOPWORD_HEADING_TODO_TEXT,
++        ),
++        (
++            "us-code-12-326-cdc87a23656b98e3",
++            "12 U.S.C. 326",
++            _USCODE_LEADING_STOPWORD_HEADING_TODO_TEXT,
++        ),
++        (
++            "us-code-16-467b-4168eef88d7e96d0",
++            "16 U.S.C. 467b",
++            _USCODE_LEADING_STOPWORD_HEADING_TODO_TEXT,
++        ),
++    ]
++    for backend in ("regex", "spacy"):
++        compiler = DeterministicModalCompiler(
++            ModalCompilerConfig(
++                parser_backend=backend,
++                spacy_model_name="definitely_missing_legal_model",
++            )
++        )
++        for document_id, citation, text in cases:
++            compiled = compiler.compile(
++                text,
++                document_id=document_id,
++                citation=citation,
++                source="us_code",
++            )
++
++            assert compiled.modal_ir.formulas
++            assert all(
++                ambiguity.ambiguity_type != "missing_modal_formula"
++                for ambiguity in compiled.ambiguities
++            )
++            fallback = compiled.modal_ir.formulas[-1]
++            assert fallback.operator.family == "frame"
++            assert fallback.metadata["cue"] == "__uscode_section_heading_fallback__"
++            assert fallback.metadata["fallback_rule"] == "uscode_heading_with_leading_stopword_v1"
++            assert fallback.provenance.citation == citation
++
++
+ def test_modal_compiler_replays_dataset_samples_for_478_1_6930_and_60101() -> None:
+     cases = [
+         (

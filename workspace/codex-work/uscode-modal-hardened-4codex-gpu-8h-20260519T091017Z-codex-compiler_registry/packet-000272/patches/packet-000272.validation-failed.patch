@@ -1,0 +1,130 @@
+diff --git a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py
+index d3460208..34e85790 100644
+--- a/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py
++++ b/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py
+@@ -658,10 +658,19 @@ DEFAULT_MODAL_PROFILES: Tuple[ModalParseProfile, ...] = (
+                     "shall",
+                     "must",
+                     "required",
++                    "is required to",
+                     "obligated",
+                     "has a duty to",
+                     "have a duty to",
++                    "duty of",
++                    "duties of",
++                    "powers and duties",
++                    "powers or duties",
+                     "under an obligation to",
++                    "subject to a civil penalty",
++                    "subject to civil penalties",
++                    "subject to criminal penalties",
++                    "subject to imprisonment",
+                 ),
+                 (ModalSystem.D, ModalSystem.KD),
+             ),
+@@ -690,6 +699,9 @@ DEFAULT_MODAL_PROFILES: Tuple[ModalParseProfile, ...] = (
+                     "from time to time",
+                     "on or after",
+                     "beginning on or after",
++                    "date of enactment",
++                    "on the date of enactment",
++                    "during the period",
+                     "no earlier than",
+                     "no later than",
+                     "not earlier than",
+@@ -738,7 +750,21 @@ DEFAULT_MODAL_PROFILES: Tuple[ModalParseProfile, ...] = (
+         family=ModalLogicFamily.DYNAMIC,
+         system=ModalSystem.PDL,
+         operators=(
+-            _op("[a]", ("after_action",), ("files", "serves", "transfers", "terminates", "enforces"), (ModalSystem.PDL, ModalSystem.STIT)),
++            _op(
++                "[a]",
++                ("after_action",),
++                (
++                    "files",
++                    "serves",
++                    "transfers",
++                    "terminates",
++                    "enforces",
++                    "enforce",
++                    "enforced",
++                    "enforcement",
++                ),
++                (ModalSystem.PDL, ModalSystem.STIT),
++            ),
+         ),
+         semantics=ModalSemanticsSpec(action_transition=True),
+         description="Action transitions and pre/postconditions.",
+diff --git a/tests/unit/optimizers/logic_theorem_optimizer/test_modal_registry.py b/tests/unit/optimizers/logic_theorem_optimizer/test_modal_registry.py
+index 1a5590f5..d73fe264 100644
+--- a/tests/unit/optimizers/logic_theorem_optimizer/test_modal_registry.py
++++ b/tests/unit/optimizers/logic_theorem_optimizer/test_modal_registry.py
+@@ -40,6 +40,7 @@ def test_deontic_profile_has_expected_operators_and_serial_semantics() -> None:
+     assert {"O", "P", "F"}.issubset(symbols)
+     assert {"shall", "must", "may", "prohibited"}.issubset(cue_terms)
+     assert {"has a duty to", "under an obligation to"}.issubset(cue_terms)
++    assert {"powers and duties", "subject to civil penalties"}.issubset(cue_terms)
+ 
+ 
+ def test_frame_profile_is_bm25_ontology_grounded() -> None:
+@@ -70,6 +71,14 @@ def test_temporal_profile_includes_deadline_and_calendar_scope_cues() -> None:
+     assert "fiscal year" in cue_terms
+     assert "from time to time" in cue_terms
+     assert "on or after" in cue_terms
++    assert "date of enactment" in cue_terms
++
++
++def test_dynamic_profile_includes_enforcement_cues() -> None:
++    profile = DEFAULT_MODAL_REGISTRY.get_profile(ModalLogicFamily.DYNAMIC)
++    cue_terms = {cue for operator in profile.operators for cue in operator.cue_terms}
++
++    assert {"enforces", "enforce", "enforced", "enforcement"}.issubset(cue_terms)
+ 
+ 
+ def test_registry_serialization_is_stable_json_ready() -> None:
+diff --git a/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py b/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py
+index 574d5149..c0c33dca 100644
+--- a/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py
++++ b/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py
+@@ -2826,6 +2826,20 @@ def test_spacy_encoder_extracts_temporal_scope_cues_from_deadline_phrases() -> N
+     )
+ 
+ 
++def test_spacy_encoder_extracts_temporal_date_of_enactment_cue() -> None:
++    encoder = SpaCyLegalEncoder(model_name="definitely_missing_legal_model")
++    encoding = encoder.encode(
++        "This section takes effect on the date of enactment.",
++        document_id="sample-temporal-date-of-enactment",
++    )
++
++    assert any(
++        cue.family == "temporal"
++        and cue.cue.lower() == "date of enactment"
++        for cue in encoding.cues
++    )
++
++
+ def test_spacy_encoder_extracts_deontic_obligation_phrase_cue() -> None:
+     encoder = SpaCyLegalEncoder(model_name="definitely_missing_legal_model")
+     encoding = encoder.encode(
+@@ -2840,6 +2854,20 @@ def test_spacy_encoder_extracts_deontic_obligation_phrase_cue() -> None:
+     )
+ 
+ 
++def test_spacy_encoder_extracts_dynamic_enforcement_cue() -> None:
++    encoder = SpaCyLegalEncoder(model_name="definitely_missing_legal_model")
++    encoding = encoder.encode(
++        "Administrative enforcement shall be carried out by the agency.",
++        document_id="sample-dynamic-enforcement-cue",
++    )
++
++    assert any(
++        cue.family == "dynamic"
++        and cue.cue.lower() == "enforcement"
++        for cue in encoding.cues
++    )
++
++
+ def test_spacy_encoder_avoids_alethic_may_be_cue_in_permission_context() -> None:
+     encoder = SpaCyLegalEncoder(model_name="definitely_missing_legal_model")
+     encoding = encoder.encode(

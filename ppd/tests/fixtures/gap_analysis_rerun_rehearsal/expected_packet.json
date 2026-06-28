@@ -1,0 +1,345 @@
+{
+  "packet_id": "fixture-first-user-gap-analysis-rerun-rehearsal",
+  "packet_status": "fixture_only_no_private_files_no_devhub_no_agent_consumers",
+  "source_packets": {
+    "process_model_impact_rehearsal_packet_id": "process-model-impact-rehearsal.synthetic.2026-05-29",
+    "missing_information_prompt_corpus_id": "ppd-agent-missing-information-prompt-regression-20260528"
+  },
+  "execution_boundaries": {
+    "calls_llm": false,
+    "launches_devhub": false,
+    "uses_authenticated_session": false,
+    "reads_private_files": false,
+    "runs_agent_consumers": false,
+    "writes_private_artifacts": false
+  },
+  "synthetic_case_deltas": [
+    {
+      "case_id": "synthetic-sfr-plan-review-missing-property-facts",
+      "process_id": "single_pdf_process.synthetic",
+      "requirement_id": "REQ-SYN-PLAN-PDF-SEPARATION",
+      "candidate_id": "CAND-SYN-001",
+      "source_evidence_ids": [
+        "ppd-submit-plans-online#single-pdf-process",
+        "offline-guardrail-consumer-smoke-test-plan#cited prompt expectations",
+        "agent-readiness-release-blocker-reconciliation-packet#missing fact blockers",
+        "safe-next-action-user-handoff-checklist#ask only missing facts",
+        "offline-guardrail-consumer-smoke-test-plan#safe reversible actions",
+        "safe-next-action-user-handoff-checklist#local preview only"
+      ],
+      "synthetic_case_delta": {
+        "known_fact_keys": [
+          "documents_available",
+          "permit_family",
+          "project_description"
+        ],
+        "required_facts_added": [
+          "drawing_pages_combined_into_single_pdf",
+          "project_has_plan_review"
+        ],
+        "document_rule_deltas": [
+          {
+            "document": "combined_drawing_plan_pdf",
+            "impact_type": "add",
+            "rule": "drawing pages are rehearsed as a single combined PDF requirement"
+          }
+        ],
+        "unsupported_path_notes": []
+      }
+    },
+    {
+      "case_id": "synthetic-trade-permit-stale-fee-guidance",
+      "process_id": "trade_permit_with_plan_review.synthetic",
+      "requirement_id": "REQ-SYN-DEVHUB-DYNAMIC-QUESTIONS",
+      "candidate_id": "CAND-SYN-002",
+      "source_evidence_ids": [
+        "ppd-devhub-guide-submit-permit-application#dynamic-questions",
+        "offline-guardrail-consumer-smoke-test-plan#offline inputs only",
+        "agent-readiness-release-blocker-reconciliation-packet#stale evidence blockers",
+        "safe-next-action-user-handoff-checklist#refresh stale evidence",
+        "offline-guardrail-consumer-smoke-test-plan#blocked consequential actions",
+        "agent-readiness-release-blocker-reconciliation-packet#consequential action blockers"
+      ],
+      "synthetic_case_delta": {
+        "known_fact_keys": [
+          "evidence_status",
+          "permit_family",
+          "requested_action"
+        ],
+        "required_facts_added": [
+          "devhub_dynamic_questions_reviewed"
+        ],
+        "document_rule_deltas": [
+          {
+            "document": "application_form_pdf",
+            "impact_type": "change",
+            "rule": "application data should not be considered ready until dynamic question responses are reviewed"
+          }
+        ],
+        "unsupported_path_notes": []
+      }
+    },
+    {
+      "case_id": "synthetic-correction-upload-attended-handoff",
+      "process_id": "single_pdf_process.synthetic",
+      "requirement_id": "REQ-SYN-PLAN-PDF-SEPARATION",
+      "candidate_id": "CAND-SYN-001",
+      "source_evidence_ids": [
+        "ppd-submit-plans-online#single-pdf-process",
+        "offline-guardrail-consumer-smoke-test-plan#blocked consequential actions",
+        "agent-readiness-release-blocker-reconciliation-packet#manual attendance blockers",
+        "safe-next-action-user-handoff-checklist#manual handoff wording",
+        "agent-readiness-release-blocker-reconciliation-packet#consequential action blockers",
+        "safe-next-action-user-handoff-checklist#local preview only"
+      ],
+      "synthetic_case_delta": {
+        "known_fact_keys": [
+          "attendance",
+          "permit_family",
+          "requested_action"
+        ],
+        "required_facts_added": [
+          "drawing_pages_combined_into_single_pdf",
+          "project_has_plan_review"
+        ],
+        "document_rule_deltas": [
+          {
+            "document": "combined_drawing_plan_pdf",
+            "impact_type": "add",
+            "rule": "drawing pages are rehearsed as a single combined PDF requirement"
+          }
+        ],
+        "unsupported_path_notes": []
+      }
+    }
+  ],
+  "missing_fact_prompts": [
+    {
+      "case_id": "synthetic-sfr-plan-review-missing-property-facts",
+      "process_id": "single_pdf_process.synthetic",
+      "prompt_id": "synthetic-sfr-plan-review-missing-property-facts.missing_fact_prompt",
+      "missing_fact_keys": [
+        "drawing_pages_combined_into_single_pdf",
+        "project_has_plan_review"
+      ],
+      "prompt": "What PP&D property address or permit-site identifier should I use, and can you confirm the project valuation and contractor-license status for this plan-review request?",
+      "agent_state": "blocked_until_user_supplies_required_case_facts",
+      "source_evidence_ids": [
+        "ppd-submit-plans-online#single-pdf-process",
+        "offline-guardrail-consumer-smoke-test-plan#cited prompt expectations",
+        "agent-readiness-release-blocker-reconciliation-packet#missing fact blockers",
+        "safe-next-action-user-handoff-checklist#ask only missing facts",
+        "offline-guardrail-consumer-smoke-test-plan#safe reversible actions",
+        "safe-next-action-user-handoff-checklist#local preview only"
+      ]
+    },
+    {
+      "case_id": "synthetic-trade-permit-stale-fee-guidance",
+      "process_id": "trade_permit_with_plan_review.synthetic",
+      "prompt_id": "synthetic-trade-permit-stale-fee-guidance.missing_fact_prompt",
+      "missing_fact_keys": [
+        "devhub_dynamic_questions_reviewed"
+      ],
+      "prompt": "Please confirm these PP&D case facts before I rerun the gap analysis: devhub_dynamic_questions_reviewed.",
+      "agent_state": "blocked_until_user_supplies_required_case_facts",
+      "source_evidence_ids": [
+        "ppd-devhub-guide-submit-permit-application#dynamic-questions",
+        "offline-guardrail-consumer-smoke-test-plan#offline inputs only",
+        "agent-readiness-release-blocker-reconciliation-packet#stale evidence blockers",
+        "safe-next-action-user-handoff-checklist#refresh stale evidence",
+        "offline-guardrail-consumer-smoke-test-plan#blocked consequential actions",
+        "agent-readiness-release-blocker-reconciliation-packet#consequential action blockers"
+      ]
+    },
+    {
+      "case_id": "synthetic-correction-upload-attended-handoff",
+      "process_id": "single_pdf_process.synthetic",
+      "prompt_id": "synthetic-correction-upload-attended-handoff.missing_fact_prompt",
+      "missing_fact_keys": [
+        "drawing_pages_combined_into_single_pdf",
+        "project_has_plan_review"
+      ],
+      "prompt": "Please confirm these PP&D case facts before I rerun the gap analysis: drawing_pages_combined_into_single_pdf, project_has_plan_review.",
+      "agent_state": "blocked_until_user_supplies_required_case_facts",
+      "source_evidence_ids": [
+        "ppd-submit-plans-online#single-pdf-process",
+        "offline-guardrail-consumer-smoke-test-plan#blocked consequential actions",
+        "agent-readiness-release-blocker-reconciliation-packet#manual attendance blockers",
+        "safe-next-action-user-handoff-checklist#manual handoff wording",
+        "agent-readiness-release-blocker-reconciliation-packet#consequential action blockers",
+        "safe-next-action-user-handoff-checklist#local preview only"
+      ]
+    }
+  ],
+  "stale_conflicting_evidence_notes": [
+    {
+      "case_id": "synthetic-trade-permit-stale-fee-guidance",
+      "process_id": "trade_permit_with_plan_review.synthetic",
+      "note_id": "synthetic-trade-permit-stale-fee-guidance.stale_evidence",
+      "kind": "stale_evidence",
+      "note": "Cached or stale evidence must be refreshed or confirmed before the rerun can rely on it.",
+      "source_evidence_ids": [
+        "ppd-devhub-guide-submit-permit-application#dynamic-questions",
+        "offline-guardrail-consumer-smoke-test-plan#offline inputs only",
+        "agent-readiness-release-blocker-reconciliation-packet#stale evidence blockers",
+        "safe-next-action-user-handoff-checklist#refresh stale evidence",
+        "offline-guardrail-consumer-smoke-test-plan#blocked consequential actions",
+        "agent-readiness-release-blocker-reconciliation-packet#consequential action blockers"
+      ]
+    }
+  ],
+  "blocked_action_expectations": [
+    {
+      "case_id": "synthetic-sfr-plan-review-missing-property-facts",
+      "process_id": "single_pdf_process.synthetic",
+      "action_id": "submit_permit_application",
+      "blocked": true,
+      "requires_attendance": true,
+      "requires_exact_confirmation": true,
+      "reason_code": "fixture_gap_analysis_blocks_consequential_action",
+      "source_evidence_ids": [
+        "ppd-submit-plans-online#single-pdf-process",
+        "offline-guardrail-consumer-smoke-test-plan#cited prompt expectations",
+        "agent-readiness-release-blocker-reconciliation-packet#missing fact blockers",
+        "safe-next-action-user-handoff-checklist#ask only missing facts",
+        "offline-guardrail-consumer-smoke-test-plan#safe reversible actions",
+        "safe-next-action-user-handoff-checklist#local preview only"
+      ]
+    },
+    {
+      "case_id": "synthetic-trade-permit-stale-fee-guidance",
+      "process_id": "trade_permit_with_plan_review.synthetic",
+      "action_id": "purchase_trade_permit",
+      "blocked": true,
+      "requires_attendance": true,
+      "requires_exact_confirmation": true,
+      "reason_code": "fixture_gap_analysis_blocks_consequential_action",
+      "source_evidence_ids": [
+        "ppd-devhub-guide-submit-permit-application#dynamic-questions",
+        "offline-guardrail-consumer-smoke-test-plan#offline inputs only",
+        "agent-readiness-release-blocker-reconciliation-packet#stale evidence blockers",
+        "safe-next-action-user-handoff-checklist#refresh stale evidence",
+        "offline-guardrail-consumer-smoke-test-plan#blocked consequential actions",
+        "agent-readiness-release-blocker-reconciliation-packet#consequential action blockers"
+      ]
+    },
+    {
+      "case_id": "synthetic-trade-permit-stale-fee-guidance",
+      "process_id": "trade_permit_with_plan_review.synthetic",
+      "action_id": "submit_payment",
+      "blocked": true,
+      "requires_attendance": true,
+      "requires_exact_confirmation": true,
+      "reason_code": "fixture_gap_analysis_blocks_consequential_action",
+      "source_evidence_ids": [
+        "ppd-devhub-guide-submit-permit-application#dynamic-questions",
+        "offline-guardrail-consumer-smoke-test-plan#offline inputs only",
+        "agent-readiness-release-blocker-reconciliation-packet#stale evidence blockers",
+        "safe-next-action-user-handoff-checklist#refresh stale evidence",
+        "offline-guardrail-consumer-smoke-test-plan#blocked consequential actions",
+        "agent-readiness-release-blocker-reconciliation-packet#consequential action blockers"
+      ]
+    },
+    {
+      "case_id": "synthetic-correction-upload-attended-handoff",
+      "process_id": "single_pdf_process.synthetic",
+      "action_id": "certify_acknowledgement",
+      "blocked": true,
+      "requires_attendance": true,
+      "requires_exact_confirmation": true,
+      "reason_code": "fixture_gap_analysis_blocks_consequential_action",
+      "source_evidence_ids": [
+        "ppd-submit-plans-online#single-pdf-process",
+        "offline-guardrail-consumer-smoke-test-plan#blocked consequential actions",
+        "agent-readiness-release-blocker-reconciliation-packet#manual attendance blockers",
+        "safe-next-action-user-handoff-checklist#manual handoff wording",
+        "agent-readiness-release-blocker-reconciliation-packet#consequential action blockers",
+        "safe-next-action-user-handoff-checklist#local preview only"
+      ]
+    },
+    {
+      "case_id": "synthetic-correction-upload-attended-handoff",
+      "process_id": "single_pdf_process.synthetic",
+      "action_id": "submit_permit_application",
+      "blocked": true,
+      "requires_attendance": true,
+      "requires_exact_confirmation": true,
+      "reason_code": "fixture_gap_analysis_blocks_consequential_action",
+      "source_evidence_ids": [
+        "ppd-submit-plans-online#single-pdf-process",
+        "offline-guardrail-consumer-smoke-test-plan#blocked consequential actions",
+        "agent-readiness-release-blocker-reconciliation-packet#manual attendance blockers",
+        "safe-next-action-user-handoff-checklist#manual handoff wording",
+        "agent-readiness-release-blocker-reconciliation-packet#consequential action blockers",
+        "safe-next-action-user-handoff-checklist#local preview only"
+      ]
+    },
+    {
+      "case_id": "synthetic-correction-upload-attended-handoff",
+      "process_id": "single_pdf_process.synthetic",
+      "action_id": "upload_to_official_record",
+      "blocked": true,
+      "requires_attendance": true,
+      "requires_exact_confirmation": true,
+      "reason_code": "fixture_gap_analysis_blocks_consequential_action",
+      "source_evidence_ids": [
+        "ppd-submit-plans-online#single-pdf-process",
+        "offline-guardrail-consumer-smoke-test-plan#blocked consequential actions",
+        "agent-readiness-release-blocker-reconciliation-packet#manual attendance blockers",
+        "safe-next-action-user-handoff-checklist#manual handoff wording",
+        "agent-readiness-release-blocker-reconciliation-packet#consequential action blockers",
+        "safe-next-action-user-handoff-checklist#local preview only"
+      ]
+    }
+  ],
+  "next_safe_action_candidates": [
+    {
+      "case_id": "synthetic-sfr-plan-review-missing-property-facts",
+      "process_id": "single_pdf_process.synthetic",
+      "action_id": "ask_cited_missing_fact_prompt",
+      "requires_devhub": false,
+      "reads_private_files": false,
+      "runs_agent_consumer": false,
+      "source_evidence_ids": [
+        "ppd-submit-plans-online#single-pdf-process",
+        "offline-guardrail-consumer-smoke-test-plan#cited prompt expectations",
+        "agent-readiness-release-blocker-reconciliation-packet#missing fact blockers",
+        "safe-next-action-user-handoff-checklist#ask only missing facts",
+        "offline-guardrail-consumer-smoke-test-plan#safe reversible actions",
+        "safe-next-action-user-handoff-checklist#local preview only"
+      ]
+    },
+    {
+      "case_id": "synthetic-trade-permit-stale-fee-guidance",
+      "process_id": "trade_permit_with_plan_review.synthetic",
+      "action_id": "ask_cited_missing_fact_prompt",
+      "requires_devhub": false,
+      "reads_private_files": false,
+      "runs_agent_consumer": false,
+      "source_evidence_ids": [
+        "ppd-devhub-guide-submit-permit-application#dynamic-questions",
+        "offline-guardrail-consumer-smoke-test-plan#offline inputs only",
+        "agent-readiness-release-blocker-reconciliation-packet#stale evidence blockers",
+        "safe-next-action-user-handoff-checklist#refresh stale evidence",
+        "offline-guardrail-consumer-smoke-test-plan#blocked consequential actions",
+        "agent-readiness-release-blocker-reconciliation-packet#consequential action blockers"
+      ]
+    },
+    {
+      "case_id": "synthetic-correction-upload-attended-handoff",
+      "process_id": "single_pdf_process.synthetic",
+      "action_id": "ask_cited_missing_fact_prompt",
+      "requires_devhub": false,
+      "reads_private_files": false,
+      "runs_agent_consumer": false,
+      "source_evidence_ids": [
+        "ppd-submit-plans-online#single-pdf-process",
+        "offline-guardrail-consumer-smoke-test-plan#blocked consequential actions",
+        "agent-readiness-release-blocker-reconciliation-packet#manual attendance blockers",
+        "safe-next-action-user-handoff-checklist#manual handoff wording",
+        "agent-readiness-release-blocker-reconciliation-packet#consequential action blockers",
+        "safe-next-action-user-handoff-checklist#local preview only"
+      ]
+    }
+  ]
+}

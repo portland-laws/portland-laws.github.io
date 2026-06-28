@@ -1,0 +1,21 @@
+{
+  "packet_type": "correction_upload_boundary",
+  "permit_reference": "public-example-permit-reference",
+  "status": "draft_review_only",
+  "correction_requirements": [
+    {
+      "requirement_id": "req-corrections-review-status",
+      "summary": "Confirm the review group and checksheet status before staging a correction-upload draft.",
+      "source_evidence_ids": ["official-devhub-upload-corrections-guide"]
+    }
+  ],
+  "next_actions": [
+    "Review the cited correction requirement with the user before preparing a draft upload plan.",
+    "Ask user to confirm attendance for any DevHub handoff."
+  ],
+  "blocked_actions": [
+    "official upload",
+    "certification",
+    "submission"
+  ]
+}

@@ -1,0 +1,37 @@
+Traceback (most recent call last):
+  File "<frozen runpy>", line 198, in _run_module_as_main
+  File "<frozen runpy>", line 88, in _run_code
+  File "/home/barberb/portland-laws.github.io/ipfs_datasets_py/ipfs_datasets_py/optimizers/logic_theorem_optimizer/uscode_modal_daemon_runner.py", line 3116, in <module>
+    raise SystemExit(main())
+                     ^^^^^^
+  File "/home/barberb/portland-laws.github.io/ipfs_datasets_py/ipfs_datasets_py/optimizers/logic_theorem_optimizer/uscode_modal_daemon_runner.py", line 3112, in main
+    return run_guarded_uscode_modal_daemon(args)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/portland-laws.github.io/ipfs_datasets_py/ipfs_datasets_py/optimizers/logic_theorem_optimizer/uscode_modal_daemon_runner.py", line 2629, in run_guarded_uscode_modal_daemon
+    before_train = autoencoder.evaluate(train_samples)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/portland-laws.github.io/ipfs_datasets_py/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_autoencoder.py", line 595, in evaluate
+    decoded = self.decode(self.encode(sample, use_sample_memory=use_sample_memory))
+                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/portland-laws.github.io/ipfs_datasets_py/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_autoencoder.py", line 623, in encode
+    "family_distribution": self._family_distribution(
+                           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/portland-laws.github.io/ipfs_datasets_py/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_autoencoder.py", line 906, in _family_distribution
+    return _softmax(self._logits_for(sample, use_sample_memory=use_sample_memory))
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/portland-laws.github.io/ipfs_datasets_py/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_autoencoder.py", line 927, in _logits_for
+    for feature in self._feature_keys_for(sample):
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/portland-laws.github.io/ipfs_datasets_py/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_autoencoder.py", line 1004, in _feature_keys_for
+    for value in self.feature_codec.feature_keys_for_sample(sample)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/portland-laws.github.io/ipfs_datasets_py/ipfs_datasets_py/logic/modal/codec.py", line 634, in feature_keys_for_sample
+    codec_result = self.encode(
+                   ^^^^^^^^^^^^
+  File "/home/barberb/portland-laws.github.io/ipfs_datasets_py/ipfs_datasets_py/logic/modal/codec.py", line 532, in encode
+    flogic_result = self._evaluate_flogic(
+                    ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/barberb/portland-laws.github.io/ipfs_datasets_py/ipfs_datasets_py/logic/modal/codec.py", line 738, in _evaluate_flogic
+    return self.flogic_optimizer.evaluate(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+TypeError: FLogicSemanticOptimizer.evaluate() got an unexpected keyword argument 'frame_feature_keys'

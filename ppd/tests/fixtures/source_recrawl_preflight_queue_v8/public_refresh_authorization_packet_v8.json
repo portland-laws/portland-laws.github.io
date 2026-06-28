@@ -1,0 +1,28 @@
+{
+  "packet_version": "public-refresh-authorization-packet-v8",
+  "packet_id": "public-refresh-auth-v8-fixture-001",
+  "public_fixture_only": true,
+  "authorized_source_ids": [
+    "portland_maps_public_permits",
+    "portland_public_bds"
+  ],
+  "source_order": [
+    "portland_public_bds",
+    "portland_maps_public_permits",
+    "missing_authorized_source"
+  ],
+  "offline_validation_commands": [
+    [
+      "python3",
+      "-m",
+      "py_compile",
+      "ppd/source_recrawl_preflight_queue_v8.py"
+    ],
+    [
+      "python3",
+      "-m",
+      "pytest",
+      "ppd/tests/test_source_recrawl_preflight_queue_v8.py"
+    ]
+  ]
+}

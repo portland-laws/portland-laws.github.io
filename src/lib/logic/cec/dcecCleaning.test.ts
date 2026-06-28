@@ -1,9 +1,13 @@
 import {
   checkDcecParens,
+  DCEC_CLEANING_METADATA,
+  cleanDcecLegalText,
   cleanDcecExpression,
   consolidateDcecParens,
+  cleanupDcecTokens,
   functorizeDcecSymbols,
   getMatchingDcecCloseParen,
+  normalizeDcecText,
   removeDcecSemicolonComments,
   stripDcecComments,
   stripDcecWhitespace,
@@ -48,16 +52,107 @@ describe('DCEC cleaning utilities', () => {
 
   it('functorizes symbolic operators with longest-match replacements', () => {
     expect(functorizeDcecSymbols('a -> b')).toBe('a  implies  b');
+    expect(functorizeDcecSymbols('a => b')).toBe('a  implies  b');
     expect(functorizeDcecSymbols('x + y')).toBe('x  add  y');
     expect(functorizeDcecSymbols('~p')).toBe(' not p');
+    expect(functorizeDcecSymbols('!p')).toBe(' not p');
     expect(functorizeDcecSymbols('a >= b')).toBe('a  greaterOrEqual  b');
     expect(functorizeDcecSymbols('a <-> b')).toBe('a  ifAndOnlyIf  b');
+    expect(functorizeDcecSymbols('p && q || r')).toBe('p  and  q  or  r');
   });
 
   it('runs the standard cleaning pipeline without Python or server fallbacks', () => {
     expect(cleanDcecExpression('  ((and a b)) # comment')).toBe('(and,a,b)');
     expect(cleanDcecExpression('Happens(Attack(e),t1) ; ignored')).toBe('(Happens,(Attack,e),t1)');
     expect(cleanDcecExpression('(a -> b)')).toBe('(a,implies,b)');
+    expect(cleanDcecExpression('(∀ x) (Permitted(x) → Safe(x))')).toBe(
+      '((forall,x),((Permitted,x),implies,(Safe,x)))',
+    );
     expect(cleanDcecExpression(')and a b(')).toBe('');
+  });
+
+  it('normalizes legal-text punctuation and Unicode formula operators', () => {
+    expect(normalizeDcecText(' “Duty” — (¬Breach(x) ∧ Notice(x)); trailing note')).toBe(
+      '"Duty" - ( not Breach(x) and Notice(x))',
+    );
+    expect(cleanupDcecTokens('(Claim(x) iff Defense(y)) # docket note')).toEqual([
+      '(',
+      'Claim',
+      '(',
+      'x',
+      ')',
+      'ifAndOnlyIf',
+      'Defense',
+      '(',
+      'y',
+      ')',
+      ')',
+    ]);
+    expect(cleanupDcecTokens('⊤ ⇔ (Filed(x) && !Void(x))')).toEqual([
+      'true',
+      'ifAndOnlyIf',
+      '(',
+      'Filed',
+      '(',
+      'x',
+      ')',
+      'and',
+      'not',
+      'Void',
+      '(',
+      'x',
+      ')',
+      ')',
+    ]);
+  });
+
+  it('returns fail-closed fixture results for malformed legal-text inputs', () => {
+    const malformedFixtures = [
+      {
+        input: 'Section 12(a) says (Obligated(agent,act) → Done(act)',
+        warning: 'unbalanced-parentheses',
+      },
+      {
+        input: '   # only a margin comment',
+        warning: 'empty-input',
+      },
+      {
+        input: 'Rule { Obligated(agent, act) }',
+        warning: 'unsupported-character',
+      },
+    ];
+
+    for (const fixture of malformedFixtures) {
+      const result = cleanDcecLegalText(fixture.input);
+      expect(result.cleaned).toBe('');
+      expect(result.rejected).toBe(true);
+      expect(result.warnings).toContain(fixture.warning);
+    }
+  });
+
+  it('cleans normalized legal formulas while preserving browser-native token metadata', () => {
+    const result = cleanDcecLegalText('Happens(“Filing”(case_1), t1) ∧ Valid(case_1) ; clerk note');
+
+    expect(result.cleaned).toBe('((Happens,(Filing,case_1),t1),and,(Valid,case_1))');
+    expect(result.rejected).toBe(false);
+    expect(result.tokens).toContain('and');
+    expect(result.normalizedText).toBe('Happens("Filing"(case_1), t1) and Valid(case_1)');
+    expect(result.metadata).toEqual(DCEC_CLEANING_METADATA);
+    expect(result.metadata.sourcePythonModule).toBe('logic/CEC/native/dcec_cleaning.py');
+    expect(result.metadata.pythonRuntime).toBe(false);
+    expect(result.metadata.serverRuntime).toBe(false);
+  });
+
+  it('sanitizes quoted legal labels and cleans alternate Python-style operator aliases', () => {
+    const result = cleanDcecLegalText(
+      '"Notice Sent"(case_1) <=> (Delivered(case_1) && !Invalid(case_1))',
+    );
+
+    expect(result.cleaned).toBe(
+      '((Notice_Sent,case_1),ifAndOnlyIf,((Delivered,case_1),and,not,(Invalid,case_1)))',
+    );
+    expect(result.tokens).toContain('Notice_Sent');
+    expect(result.tokens).toContain('ifAndOnlyIf');
+    expect(result.rejected).toBe(false);
   });
 });

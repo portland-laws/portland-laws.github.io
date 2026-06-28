@@ -1,0 +1,134 @@
+{
+  "packet_id": "fixture-offline-release-decision-20260529",
+  "offline_release_readiness_packet": {
+    "packet_id": "fixture-first-offline-release-readiness",
+    "packet_status": "blocked_no_promotion",
+    "fixture_only": true,
+    "source": "committed PP&D test fixtures only",
+    "release_blockers": [
+      {
+        "blocker_id": "blocker-archive-manifest-readiness-devhub-faq-refresh-blocked",
+        "candidate_id": "archive-manifest-readiness-devhub-faq-refresh",
+        "reason": "blocked",
+        "message": "Archive manifest readiness remains blocked pending operator review.",
+        "source_evidence_ids": ["evidence-archive-manifest-readiness"]
+      },
+      {
+        "blocker_id": "blocker-process-model-devhub-upload-staging-candidate-needs_review",
+        "candidate_id": "process-model-devhub-upload-staging-candidate",
+        "reason": "needs_review",
+        "message": "Process model update candidate is not release-clear.",
+        "source_evidence_ids": ["evidence-process-model-candidate"]
+      }
+    ],
+    "required_operator_signoffs": [
+      {
+        "signoff_id": "signoff-archive-manifest-readiness-devhub-faq-refresh-archive_operator",
+        "role": "archive_operator",
+        "candidate_id": "archive-manifest-readiness-devhub-faq-refresh",
+        "source_evidence_ids": ["evidence-archive-manifest-readiness"],
+        "required_before": "any_promotion_or_operator_release_claim"
+      },
+      {
+        "signoff_id": "signoff-process-model-devhub-upload-staging-candidate-process_model_reviewer",
+        "role": "process_model_reviewer",
+        "candidate_id": "process-model-devhub-upload-staging-candidate",
+        "source_evidence_ids": ["evidence-process-model-candidate"],
+        "required_before": "any_promotion_or_operator_release_claim"
+      }
+    ],
+    "rollback_checkpoints": [
+      {
+        "checkpoint_id": "rollback-archive-manifest-readiness-devhub-faq-refresh",
+        "candidate_id": "archive-manifest-readiness-devhub-faq-refresh",
+        "source_evidence_ids": ["evidence-archive-manifest-readiness"],
+        "checkpoint": "Keep current archive manifest pointer unchanged and do not promote candidate manifest.",
+        "must_complete_before": "operator_signoff"
+      },
+      {
+        "checkpoint_id": "rollback-process-model-devhub-upload-staging-candidate",
+        "candidate_id": "process-model-devhub-upload-staging-candidate",
+        "source_evidence_ids": ["evidence-process-model-candidate"],
+        "checkpoint": "Keep active process model unchanged and retain prior process-model fixture.",
+        "must_complete_before": "operator_signoff"
+      }
+    ],
+    "validation_evidence_references": [
+      {
+        "reference_id": "validation-archive-manifest-readiness-devhub-faq-refresh-evidence-archive-manifest-readiness",
+        "candidate_id": "archive-manifest-readiness-devhub-faq-refresh",
+        "evidence_id": "evidence-archive-manifest-readiness",
+        "source_evidence_ids": ["evidence-archive-manifest-readiness"],
+        "evidence_type": "archive_manifest_promotion_readiness",
+        "description": "Archive manifest candidate includes checksum, freshness, and no-raw-body attestations."
+      },
+      {
+        "reference_id": "validation-process-model-devhub-upload-staging-candidate-evidence-process-model-candidate",
+        "candidate_id": "process-model-devhub-upload-staging-candidate",
+        "evidence_id": "evidence-process-model-candidate",
+        "source_evidence_ids": ["evidence-process-model-candidate"],
+        "evidence_type": "process_model_candidate_review",
+        "description": "Process model update candidate is fixture-only and not written to an active model."
+      }
+    ],
+    "no_promotion_attestations": [
+      {
+        "attestation_id": "no-registry-mutation",
+        "attests": "source registries are not mutated by this packet",
+        "value": true
+      },
+      {
+        "attestation_id": "no-manifest-promotion",
+        "attests": "archive manifests are not promoted by this packet",
+        "value": true
+      },
+      {
+        "attestation_id": "no-requirement-mutation",
+        "attests": "requirements are not mutated by this packet",
+        "value": true
+      },
+      {
+        "attestation_id": "no-process-model-mutation",
+        "attests": "process models are not mutated by this packet",
+        "value": true
+      },
+      {
+        "attestation_id": "no-guardrail-mutation",
+        "attests": "guardrail bundles are not mutated by this packet",
+        "value": true
+      },
+      {
+        "attestation_id": "no-live-devhub-or-crawl",
+        "attests": "no live crawl, DevHub session, authenticated automation, upload, submission, payment, scheduling, certification, or cancellation is performed",
+        "value": true
+      }
+    ],
+    "execution_boundaries": {
+      "live_network": false,
+      "launches_devhub": false,
+      "uses_authenticated_session": false,
+      "writes_registries": false,
+      "writes_manifests": false,
+      "writes_requirements": false,
+      "writes_process_models": false,
+      "writes_guardrails": false,
+      "performs_promotion": false
+    }
+  },
+  "readiness_validation_results": [
+    {
+      "command_ref_id": "validation-command-ppd-daemon-self-test",
+      "command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
+      "returncode": 0,
+      "summary": "PP&D daemon self-test passed against committed fixtures.",
+      "source_evidence_ids": ["evidence-daemon-self-test"]
+    },
+    {
+      "command_ref_id": "validation-command-offline-readiness-validation",
+      "command": ["python3", "-m", "pytest", "ppd/tests/test_offline_release_readiness_packet.py"],
+      "returncode": 0,
+      "summary": "Offline release readiness packet tests passed against committed fixtures.",
+      "source_evidence_ids": ["evidence-offline-readiness-validation"]
+    }
+  ]
+}

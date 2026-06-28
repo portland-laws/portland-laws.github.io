@@ -1,0 +1,24 @@
+{
+  "packet_type": "ppd.human_review_queue.v1",
+  "case_id": "synthetic-case-single-pdf-001",
+  "process_id": "process-single-pdf-plan-review-fixture",
+  "review_status": "human_review_required",
+  "production_ready": false,
+  "blocked_from_production": true,
+  "review_item_categories": [
+    "source_freshness",
+    "requirement_confidence",
+    "guardrail_predicates",
+    "devhub_surface_evidence",
+    "payment_upload_boundaries",
+    "operator_signoff"
+  ],
+  "review_item_ids": [
+    "human-review-01-source_freshness",
+    "human-review-02-requirement_confidence",
+    "human-review-03-guardrail_predicates",
+    "human-review-04-devhub_surface_evidence",
+    "human-review-05-payment_upload_boundaries",
+    "human-review-06-operator_signoff"
+  ]
+}

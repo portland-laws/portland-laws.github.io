@@ -1,0 +1,131 @@
+{
+  "valid_packet": {
+    "packet_id": "pm-impact-candidate-valid",
+    "process_id": "single-pdf-process",
+    "changed_requirement_ids": ["req-upload-single-pdf"],
+    "regenerated_requirement_links": [
+      {
+        "requirement_id": "req-upload-single-pdf",
+        "regenerated_requirement_id": "regen-req-upload-single-pdf-20260528",
+        "evidence_ids": ["src-submit-plans-online#single-pdf"]
+      }
+    ],
+    "stage_changes": [
+      {
+        "stage_id": "upload-staging",
+        "change_type": "clarify_exit_condition",
+        "citation_ids": ["src-submit-plans-online#upload-separate-pdfs"]
+      }
+    ],
+    "unsupported_path_changes": [
+      {
+        "path_id": "final-submit",
+        "from_status": "unsupported",
+        "to_status": "manual_handoff"
+      }
+    ],
+    "reviewer_prompts": [
+      {
+        "prompt": "Confirm whether the cited regenerated requirement preserves the manual handoff before official upload."
+      }
+    ],
+    "labels": ["candidate", "needs-review"],
+    "active_process_model_mutation": false
+  },
+  "invalid_packets": [
+    {
+      "name": "missing regenerated requirement link",
+      "expected_code": "missing_regenerated_requirement_link",
+      "packet": {
+        "packet_id": "pm-impact-missing-link",
+        "changed_requirement_ids": ["req-upload-single-pdf"],
+        "regenerated_requirement_links": [],
+        "stage_changes": [],
+        "reviewer_prompts": ["Review citation coverage."],
+        "labels": ["candidate"]
+      }
+    },
+    {
+      "name": "uncited stage change",
+      "expected_code": "uncited_stage_change",
+      "packet": {
+        "packet_id": "pm-impact-uncited-stage",
+        "changed_requirement_ids": ["req-upload-single-pdf"],
+        "regenerated_requirement_links": [
+          {
+            "requirement_id": "req-upload-single-pdf",
+            "regenerated_requirement_id": "regen-req-upload-single-pdf-20260528",
+            "evidence_ids": ["src-submit-plans-online#single-pdf"]
+          }
+        ],
+        "stage_changes": [
+          {
+            "stage_id": "submission",
+            "change_type": "move_earlier"
+          }
+        ],
+        "reviewer_prompts": ["Review stage ordering."],
+        "labels": ["candidate"]
+      }
+    },
+    {
+      "name": "private case fact",
+      "expected_code": "private_case_fact_present",
+      "packet": {
+        "packet_id": "pm-impact-private-fact",
+        "private_case_facts": [
+          {
+            "permit_number": "PRIVATE-CASE-VALUE"
+          }
+        ],
+        "reviewer_prompts": ["Review public evidence only."],
+        "labels": ["candidate"]
+      }
+    },
+    {
+      "name": "unsupported path downgrade",
+      "expected_code": "unsupported_path_downgrade",
+      "packet": {
+        "packet_id": "pm-impact-path-downgrade",
+        "unsupported_path_changes": [
+          {
+            "path_id": "official-correction-upload",
+            "from_status": "manual_handoff",
+            "to_status": "automatable"
+          }
+        ],
+        "reviewer_prompts": ["Review unsupported path treatment."],
+        "labels": ["candidate"]
+      }
+    },
+    {
+      "name": "missing reviewer prompt",
+      "expected_code": "missing_reviewer_prompt",
+      "packet": {
+        "packet_id": "pm-impact-no-reviewer-prompt",
+        "labels": ["candidate"]
+      }
+    },
+    {
+      "name": "production-ready label",
+      "expected_code": "production_ready_label",
+      "packet": {
+        "packet_id": "pm-impact-production-ready",
+        "reviewer_prompts": ["Review promotion status."],
+        "labels": ["candidate", "production-ready"]
+      }
+    },
+    {
+      "name": "active model mutation",
+      "expected_code": "active_process_model_mutation",
+      "packet": {
+        "packet_id": "pm-impact-active-mutation",
+        "reviewer_prompts": ["Review writeback separation."],
+        "labels": ["candidate"],
+        "active_process_model_patch": {
+          "stages": []
+        }
+      }
+    }
+  ]
+}

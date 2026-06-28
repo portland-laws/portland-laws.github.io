@@ -1,0 +1,14 @@
+Implemented the compiler-ambiguity policy hardening for the packet.
+
+1. Added `alethic -> epistemic` to the compiler ambiguity policy pair table so these low-margin adaptive ambiguities are explicitly classified in the `compiler_ambiguity` bundle.
+- [modal_registry.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_ambiguity/worktrees/agent-codex-compiler_ambiguity-packet-000568-20260519_163910/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py:144)
+
+2. Added focused regression tests for the TODO family-pair behavior:
+- `alethic -> epistemic` from adaptive logits must be emitted as explicit adaptive ambiguity and marked as `compiler_ambiguity`.
+- `temporal -> temporal` low-margin self-pair from adaptive logits must be emitted explicitly and marked as `compiler_ambiguity`.
+- [test_legal_modal_parser_deterministic_rules.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_ambiguity/worktrees/agent-codex-compiler_ambiguity-packet-000568-20260519_163910/ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_legal_modal_parser_deterministic_rules.py:918)
+- [test_legal_modal_parser_deterministic_rules.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hardened-4codex-gpu-8h-20260519T091017Z-codex-compiler_ambiguity/worktrees/agent-codex-compiler_ambiguity-packet-000568-20260519_163910/ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_legal_modal_parser_deterministic_rules.py:981)
+
+Validation run:
+- `pytest -q ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_legal_modal_parser_deterministic_rules.py`
+- Result: `34 passed`

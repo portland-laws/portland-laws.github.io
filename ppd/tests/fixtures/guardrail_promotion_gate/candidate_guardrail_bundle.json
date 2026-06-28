@@ -1,0 +1,13 @@
+{
+  "guardrail_bundle_id": "fixture-guardrail-bundle-candidate",
+  "process_id": "fixture-process-model",
+  "source_evidence_ids": [
+    "fixture-public-source-evidence"
+  ],
+  "validation_status": "candidate",
+  "deterministic_predicates": [
+    "fixture predicate only"
+  ],
+  "exact_confirmation_predicates": [],
+  "refused_action_predicates": []
+}

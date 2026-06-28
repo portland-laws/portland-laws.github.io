@@ -1,0 +1,19 @@
+Implemented a deterministic ambiguity-policy upgrade for modal family conflicts.
+
+- Added a new config threshold `modal_primary_family_outvote_margin` and explicit outvote ambiguities in the compiler:
+  - `primary_modal_family_outvoted`
+  - `frame_modal_family_outvoted`
+- Kept existing low-margin ambiguities (`low_primary_modal_family_margin`, `low_frame_modal_family_margin`) so behavior is backward-compatible while now surfacing stronger mismatch signals explicitly.
+
+Changed files:
+- [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000004-20260517_154730/ipfs_datasets_py/logic/modal/compiler.py#L40)
+- [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-e2e-20260517T152839Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-e2e-20260517T152839Z-codex-packet-000004-20260517_154730/tests/unit_tests/logic/modal/test_modal_codec.py#L194)
+
+Validation:
+- Attempted targeted pytest run:
+  - `tests/unit_tests/logic/modal/test_modal_codec.py::test_modal_compiler_surfaces_primary_family_margin_ambiguity_when_outvoted`
+  - `tests/unit_tests/logic/modal/test_modal_codec.py::test_modal_compiler_surfaces_frame_family_margin_ambiguity_when_outvoted`
+- Pytest failed before test execution due existing repo bootstrap issue in root `__init__.py` (`NameError: __path__ is not defined`).
+- Ran direct `python3` smoke checks for both scenarios; output confirmed new ambiguity types are emitted:
+  - primary case includes `primary_modal_family_outvoted`
+  - frame case includes `frame_modal_family_outvoted`

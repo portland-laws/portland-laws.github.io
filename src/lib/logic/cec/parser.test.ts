@@ -1,10 +1,19 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 
-import { analyzeCecExpression } from './analyzer';
+import { analyzeCecExpression, analyzeExternalProverFormula } from './analyzer';
 import { collectCecAtoms } from './ast';
 import { formatCecExpression } from './formatter';
-import { parseCecExpression, validateCecExpression } from './parser';
+import {
+  parseCecExpression,
+  parseCecNaturalLanguageFrench,
+  parseCecNaturalLanguageGerman,
+  parseCecNaturalLanguageBase,
+  parse_cec_natural_language_french,
+  parse_cec_natural_language_german,
+  parse_cec_natural_language_base,
+  validateCecExpression,
+} from './parser';
 
 const portlandDcec =
   '(forall agent (implies (subject_to agent portland_city_code_1_01_010) (P (always (comply_with agent portland_city_code_1_01_010)))))';
@@ -52,7 +61,9 @@ describe('CEC/DCEC parser', () => {
   });
 
   it('normalizes valid DCEC expressions back to s-expression syntax', () => {
-    const formatted = formatCecExpression(parseCecExpression(`  ${portlandDcec.replaceAll(' ', '\n  ')}  `));
+    const formatted = formatCecExpression(
+      parseCecExpression(`  ${portlandDcec.replaceAll(' ', '\n  ')}  `),
+    );
 
     expect(formatted).toBe(portlandDcec);
   });
@@ -78,6 +89,38 @@ describe('CEC/DCEC parser', () => {
     });
   });
 
+  it('ports external_provers/formula_analyzer.py formula classification without runtime bridges', () => {
+    const analysis = analyzeExternalProverFormula(
+      '(forall tenant (implies (licensed tenant) (O (operate tenant portland_city_code_1_01_010))))',
+    );
+
+    expect(analysis.ok).toBe(true);
+    expect(analysis.formulaClass).toBe('modal-deontic');
+    expect(analysis.decidableFragment).toBe('modal-temporal');
+    expect(analysis.predicates).toEqual(['licensed', 'operate']);
+    expect(analysis.constants).toEqual(['portland_city_code_1_01_010']);
+    expect(analysis.variables).toEqual(['tenant']);
+    expect(analysis.quantifiers).toEqual(['forall']);
+    expect(analysis.unaryOperators).toEqual(['O']);
+    expect(analysis.binaryOperators).toEqual(['implies']);
+    expect(analysis.arityByPredicate).toEqual({ licensed: 1, operate: 2 });
+    expect(analysis.metadata.pythonRuntime).toBe(false);
+    expect(analysis.metadata.serverRuntime).toBe(false);
+    expect([analysis.maxDepth, analysis.nodeCount]).toEqual([5, 8]);
+  });
+
+  it('fails closed for external prover formula analysis parse errors', () => {
+    const analysis = analyzeExternalProverFormula('(forall tenant (licensed tenant)');
+
+    expect(analysis.ok).toBe(false);
+    expect(analysis.formulaClass).toBe('unsupported');
+    expect(analysis.decidableFragment).toBe('unknown');
+    expect(analysis.predicates).toEqual([]);
+    expect(analysis.errors).toEqual([expect.stringContaining('Expected RPAREN but found EOF')]);
+    expect(analysis.metadata.pythonRuntime).toBe(false);
+    expect(analysis.metadata.serverRuntime).toBe(false);
+  });
+
   it('returns validation failures for malformed expressions', () => {
     expect(validateCecExpression('(forall agent)')).toMatchObject({
       ok: false,
@@ -92,6 +135,138 @@ describe('CEC/DCEC parser', () => {
     expect(validateCecExpression('(subject_to agent portland_city_code_1_01_010')).toMatchObject({
       ok: false,
       error: expect.stringContaining('Unclosed application subject_to'),
+    });
+  });
+
+  it('ports base_parser.py deontic natural-language clauses without runtime bridges', () => {
+    const obligation = parseCecNaturalLanguageBase('Tenant shall maintain smoke alarms.');
+    const prohibition = parseCecNaturalLanguageBase('Tenant must not block exits.');
+    const permission = parseCecNaturalLanguageBase('Tenant may enter the unit.');
+
+    expect(obligation).toMatchObject({
+      ok: true,
+      formula: '(O (maintain_smoke_alarms tenant))',
+      parseMethod: 'base_parser_pattern',
+      metadata: {
+        sourcePythonModule: 'logic/CEC/nl/base_parser.py',
+        runtime: 'browser-native-typescript',
+        browserNative: true,
+        pythonRuntime: false,
+        serverRuntime: false,
+      },
+    });
+    expect(prohibition.formula).toBe('(F (block_exits tenant))');
+    expect(permission.formula).toBe('(P (enter_unit tenant))');
+  });
+
+  it('ports base_parser.py deterministic conditional and temporal forms', () => {
+    const result = parse_cec_natural_language_base(
+      'If tenant shall pay rent then always landlord may enter unit.',
+    );
+
+    expect(result.ok).toBe(true);
+    expect(result.formula).toBe(
+      '(implies (O (pay_rent tenant)) (always (P (enter_unit landlord))))',
+    );
+    expect(result.expression?.kind).toBe('binary');
+  });
+
+  it('fails closed for base_parser.py unsupported text instead of using Python or services', () => {
+    const result = parseCecNaturalLanguageBase('greetings and salutations');
+
+    expect(result).toMatchObject({
+      ok: false,
+      parseMethod: 'fail_closed',
+      confidence: 0,
+      errors: ['No deterministic base_parser pattern matched.'],
+      metadata: {
+        implementation: 'deterministic-base-nl-parser',
+        pythonRuntime: false,
+        serverRuntime: false,
+      },
+    });
+    expect(result.expression).toBeUndefined();
+  });
+
+  it('ports french_parser.py deontic, conditional, and fail-closed clauses without runtime bridges', () => {
+    const obligation = parseCecNaturalLanguageFrench(
+      'Le locataire doit maintenir les detecteurs de fumee.',
+    );
+    const prohibition = parseCecNaturalLanguageFrench(
+      'Le locataire ne doit pas bloquer les sorties.',
+    );
+    const conditional = parse_cec_natural_language_french(
+      'Si le locataire doit payer le loyer alors toujours le bailleur peut entrer dans le logement.',
+    );
+    const unsupported = parseCecNaturalLanguageFrench('bonjour tout le monde');
+
+    expect(obligation).toMatchObject({
+      ok: true,
+      formula: '(O (maintenir_detecteurs_fumee locataire))',
+      parseMethod: 'french_parser_pattern',
+      metadata: {
+        sourcePythonModule: 'logic/CEC/nl/french_parser.py',
+        runtime: 'browser-native-typescript',
+        browserNative: true,
+        pythonRuntime: false,
+        serverRuntime: false,
+      },
+    });
+    expect(prohibition.formula).toBe('(F (bloquer_sorties locataire))');
+    expect(conditional.ok).toBe(true);
+    expect(conditional.formula).toBe(
+      '(implies (O (payer_loyer locataire)) (always (P (entrer_dans_logement bailleur))))',
+    );
+    expect(unsupported).toMatchObject({
+      ok: false,
+      parseMethod: 'fail_closed',
+      confidence: 0,
+      errors: ['No deterministic french_parser pattern matched.'],
+      metadata: {
+        implementation: 'deterministic-french-nl-parser',
+        pythonRuntime: false,
+        serverRuntime: false,
+      },
+    });
+  });
+
+  it('ports german_parser.py deontic, conditional, and fail-closed clauses without runtime bridges', () => {
+    const obligation = parseCecNaturalLanguageGerman('Der Mieter muss Rauchmelder warten.');
+    const prohibition = parseCecNaturalLanguageGerman(
+      'Der Mieter darf nicht Ausgaenge blockieren.',
+    );
+    const conditional = parse_cec_natural_language_german(
+      'Wenn der Mieter muss Miete zahlen dann immer der Vermieter darf die Wohnung betreten.',
+    );
+    const unsupported = parseCecNaturalLanguageGerman('guten tag zusammen');
+
+    expect(obligation).toMatchObject({
+      ok: true,
+      formula: '(O (rauchmelder_warten mieter))',
+      parseMethod: 'german_parser_pattern',
+      metadata: {
+        sourcePythonModule: 'logic/CEC/nl/german_parser.py',
+        runtime: 'browser-native-typescript',
+        browserNative: true,
+        pythonRuntime: false,
+        serverRuntime: false,
+      },
+    });
+    expect(prohibition.formula).toBe('(F (ausgaenge_blockieren mieter))');
+    expect(conditional).toMatchObject({
+      ok: true,
+      formula: '(implies (O (miete_zahlen mieter)) (always (P (wohnung_betreten vermieter))))',
+    });
+    expect(unsupported).toMatchObject({
+      ok: false,
+      parseMethod: 'fail_closed',
+      confidence: 0,
+      errors: ['No deterministic german_parser pattern matched.'],
+      metadata: {
+        implementation: 'deterministic-german-nl-parser',
+        pythonRuntime: false,
+        serverRuntime: false,
+      },
     });
   });
 

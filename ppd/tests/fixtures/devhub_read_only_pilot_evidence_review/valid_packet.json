@@ -1,0 +1,72 @@
+{
+  "packet_id": "devhub-read-only-pilot-review-valid",
+  "pilot_scope": "devhub_read_only_evidence_review",
+  "evidence_mode": "fixture_only",
+  "browser_execution": "none",
+  "review_summary": "Redacted fixture packet for read-only surface evidence review.",
+  "selector_confidence_notes": [
+    {
+      "surface_id": "devhub-home-redacted-fixture",
+      "selector": "role=heading[name='DevHub Home']",
+      "confidence": "high",
+      "rationale": "Selector is based on stable accessible role and fixture heading text only."
+    }
+  ],
+  "redaction_attestation": {
+    "accepted": true,
+    "no_raw_authenticated_values": true,
+    "no_private_session_artifacts": true,
+    "no_local_private_paths": true,
+    "redacted_fields": ["account_name", "permit_number", "address"]
+  },
+  "manual_handoff_checkpoints": [
+    {
+      "checkpoint_id": "manual-login-required",
+      "status": "required",
+      "reason": "User remains responsible for login, MFA, CAPTCHA, and account-scoped review."
+    },
+    {
+      "checkpoint_id": "consequential-actions-blocked",
+      "status": "required",
+      "reason": "Submit, upload, payment, schedule, cancel, and certify actions require attended confirmation outside this packet."
+    }
+  ],
+  "controls": [
+    {
+      "control_id": "review-status-message",
+      "action": "read_status_message",
+      "enabled": true
+    },
+    {
+      "control_id": "submit-application",
+      "action": "submit_application",
+      "enabled": false
+    },
+    {
+      "control_id": "upload-correction",
+      "action": "upload_correction",
+      "enabled": false
+    },
+    {
+      "control_id": "pay-fee",
+      "action": "submit_payment",
+      "enabled": false
+    }
+  ],
+  "surface_registry_mutation": {
+    "active": false,
+    "enabled": false,
+    "requested": false,
+    "mode": "review_only"
+  },
+  "observations": [
+    {
+      "surface_id": "devhub-home-redacted-fixture",
+      "auth_scope": "authenticated_redacted_fixture",
+      "values": {
+        "visible_heading": "DevHub Home",
+        "account_label": "[REDACTED_ACCOUNT_LABEL]"
+      }
+    }
+  ]
+}

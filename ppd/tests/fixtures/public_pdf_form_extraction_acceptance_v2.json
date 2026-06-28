@@ -1,0 +1,150 @@
+{
+  "packet_id": "public-pdf-form-extraction-acceptance-v2",
+  "version": 2,
+  "fixture_policy": {
+    "synthetic_only": true,
+    "real_pdf_read": false,
+    "document_download": false,
+    "ocr_execution": false,
+    "devhub_access": false,
+    "private_file_access": false,
+    "uploads_or_submissions": false,
+    "payments_or_scheduling": false,
+    "mutates_process_models": false,
+    "mutates_guardrails": false,
+    "mutates_sources_or_archives": false
+  },
+  "validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/tests/test_public_pdf_form_extraction_acceptance_v2.py"],
+    ["python3", "-m", "pytest", "ppd/tests/test_public_pdf_form_extraction_acceptance_v2.py"],
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ],
+  "documents": [
+    {
+      "document_id": "synthetic-building-permit-application-v2",
+      "source_id": "fixture-public-form-building-application-v2",
+      "title": "Synthetic Building Permit Application",
+      "document_type": "public_form_pdf_fixture",
+      "language": "en",
+      "content_hash": "sha256:fixture-building-application-v2",
+      "extraction_confidence": 0.96,
+      "pdf_pages": [
+        {
+          "page_number": 1,
+          "page_anchor": "synthetic-building-permit-application-v2#page=1",
+          "text_extraction_confidence": 0.97,
+          "extracted_text": "Building permit application. Project address, applicant information, required documents, certification, and deadline notice.",
+          "deadline_language": [
+            "Submit corrections by the date stated in the checksheet notice.",
+            "Applications may expire if required information is not provided before the listed deadline."
+          ],
+          "file_preparation_instructions": [
+            "Upload drawing plans as one combined PDF.",
+            "Upload applications, calculations, and supporting documents as separate PDFs.",
+            "Use clear file names that identify document type and project address."
+          ]
+        },
+        {
+          "page_number": 2,
+          "page_anchor": "synthetic-building-permit-application-v2#page=2",
+          "text_extraction_confidence": 0.94,
+          "extracted_text": "Checklist and certification page. Required site plan, structural calculations, energy documents, and owner or applicant signature block.",
+          "deadline_language": [],
+          "file_preparation_instructions": []
+        }
+      ],
+      "tables": [
+        {
+          "table_id": "fixture-fee-schedule-table",
+          "page_anchor": "synthetic-building-permit-application-v2#page=1",
+          "kind": "fee_schedule",
+          "headers": ["Fee item", "Trigger", "Amount basis"],
+          "rows": [
+            {"fee_item": "Intake fee", "trigger": "Application accepted for review", "amount_basis": "Calculated by permit type"},
+            {"fee_item": "Plan review fee", "trigger": "Plan review required", "amount_basis": "Calculated from project valuation"}
+          ]
+        }
+      ],
+      "checklist_items": [
+        {"label": "Completed permit application", "page_anchor": "synthetic-building-permit-application-v2#page=2", "required": true},
+        {"label": "Site plan", "page_anchor": "synthetic-building-permit-application-v2#page=2", "required": true},
+        {"label": "Structural calculations when required", "page_anchor": "synthetic-building-permit-application-v2#page=2", "required": false}
+      ],
+      "required_document_labels": [
+        "Combined drawing plan PDF",
+        "Permit application PDF",
+        "Supporting calculations PDF"
+      ],
+      "signature_certification_block_labels": [
+        "Applicant signature",
+        "Owner certification",
+        "Date signed"
+      ],
+      "form_fields": [
+        {"name": "project_address", "field_type": "text", "page_anchor": "synthetic-building-permit-application-v2#page=1", "required": true},
+        {"name": "applicant_email", "field_type": "text", "page_anchor": "synthetic-building-permit-application-v2#page=1", "required": true},
+        {"name": "work_type", "field_type": "radio", "page_anchor": "synthetic-building-permit-application-v2#page=1", "required": true, "options": ["New construction", "Alteration", "Demolition"]},
+        {"name": "deferred_submittal_requested", "field_type": "checkbox", "page_anchor": "synthetic-building-permit-application-v2#page=2", "required": false, "options": ["Yes"]},
+        {"name": "applicant_signature", "field_type": "signature", "page_anchor": "synthetic-building-permit-application-v2#page=2", "required": true}
+      ],
+      "ocr_review": {
+        "ocr_attempted": false,
+        "hold_required": true,
+        "hold_reason": "Synthetic fixture includes an image-only stamp region that must remain human-review held until a real OCR policy is exercised outside this acceptance test."
+      }
+    },
+    {
+      "document_id": "synthetic-trade-permit-checklist-v2",
+      "source_id": "fixture-public-pdf-trade-checklist-v2",
+      "title": "Synthetic Trade Permit Checklist",
+      "document_type": "public_pdf_fixture",
+      "language": "en",
+      "content_hash": "sha256:fixture-trade-checklist-v2",
+      "extraction_confidence": 0.93,
+      "pdf_pages": [
+        {
+          "page_number": 1,
+          "page_anchor": "synthetic-trade-permit-checklist-v2#page=1",
+          "text_extraction_confidence": 0.93,
+          "extracted_text": "Trade permit checklist. License information, fixture counts, fee rows, required documents, and certification acknowledgement.",
+          "deadline_language": ["Schedule inspections before permit expiration."],
+          "file_preparation_instructions": ["Prepare separate PDF attachments for supporting documents when plan review is required."]
+        }
+      ],
+      "tables": [
+        {
+          "table_id": "fixture-trade-fixture-fee-table",
+          "page_anchor": "synthetic-trade-permit-checklist-v2#page=1",
+          "kind": "fee_schedule",
+          "headers": ["Fixture", "Quantity", "Fee trigger"],
+          "rows": [
+            {"fixture": "Water heater", "quantity": "Each", "fee_trigger": "Selected fixture count"},
+            {"fixture": "Branch circuit", "quantity": "Each", "fee_trigger": "Selected fixture count"}
+          ]
+        }
+      ],
+      "checklist_items": [
+        {"label": "Contractor license number", "page_anchor": "synthetic-trade-permit-checklist-v2#page=1", "required": true},
+        {"label": "Fixture count worksheet", "page_anchor": "synthetic-trade-permit-checklist-v2#page=1", "required": true}
+      ],
+      "required_document_labels": [
+        "Trade permit worksheet",
+        "Plans for trade permits requiring plan review"
+      ],
+      "signature_certification_block_labels": [
+        "Responsible party certification",
+        "Authorized signer name"
+      ],
+      "form_fields": [
+        {"name": "license_number", "field_type": "text", "page_anchor": "synthetic-trade-permit-checklist-v2#page=1", "required": true},
+        {"name": "permit_category", "field_type": "radio", "page_anchor": "synthetic-trade-permit-checklist-v2#page=1", "required": true, "options": ["Electrical", "Mechanical", "Plumbing"]},
+        {"name": "requires_plan_review", "field_type": "checkbox", "page_anchor": "synthetic-trade-permit-checklist-v2#page=1", "required": false, "options": ["Plan review required"]}
+      ],
+      "ocr_review": {
+        "ocr_attempted": false,
+        "hold_required": false,
+        "hold_reason": "Text extraction confidence is sufficient for the synthetic text layer."
+      }
+    }
+  ]
+}

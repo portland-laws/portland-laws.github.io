@@ -1,0 +1,104 @@
+{
+  "packet_version": "guardrail_recompile_staging_packet_v6",
+  "packet_id": "staging-v6-permit-application-fixture",
+  "guardrails": [
+    {
+      "guardrail_id": "gr-devhub-submit-final-action",
+      "process_id": "devhub-permit-application",
+      "activation_status": "inactive",
+      "previous_rule_hash": "sha256:previous-submit-rule",
+      "staged_rule_hash": "sha256:staged-submit-rule",
+      "source_evidence_ids": [
+        "src-devhub-guide-submit",
+        "src-submit-plans-online"
+      ],
+      "comparison_note": "Staged rule keeps final submission behind attended exact confirmation."
+    },
+    {
+      "guardrail_id": "gr-upload-staging-only",
+      "process_id": "devhub-permit-application",
+      "activation_status": "inactive",
+      "previous_rule_hash": "sha256:previous-upload-rule",
+      "staged_rule_hash": "sha256:staged-upload-rule",
+      "source_evidence_ids": [
+        "src-submit-plans-online",
+        "src-file-naming-standards"
+      ],
+      "comparison_note": "Staged rule permits local draft preparation but refuses official upload."
+    }
+  ],
+  "source_evidence": [
+    {
+      "source_evidence_id": "src-devhub-guide-submit",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "freshness_status": "current",
+      "continuity_note": "Fixture captures public DevHub permit application guide citation metadata only."
+    },
+    {
+      "source_evidence_id": "src-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "freshness_status": "current",
+      "continuity_note": "Fixture captures public single PDF process citation metadata only."
+    },
+    {
+      "source_evidence_id": "src-file-naming-standards",
+      "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+      "freshness_status": "stale",
+      "continuity_note": "Fixture intentionally holds stale evidence for reviewer propagation testing."
+    }
+  ],
+  "deterministic_predicates": [
+    {
+      "predicate_id": "pred-final-submit-exact-confirmation",
+      "predicate_text": "A final DevHub submit action is blocked unless the attended user confirms the exact action."
+    },
+    {
+      "predicate_id": "pred-upload-refusal",
+      "predicate_text": "Official upload actions are refused in offline or unattended modes."
+    }
+  ],
+  "exact_confirmations": [
+    {
+      "confirmation_id": "confirm-final-submit",
+      "text": "I confirm I want to submit this permit application in DevHub."
+    }
+  ],
+  "refused_actions": [
+    {
+      "refusal_id": "refuse-unattended-upload",
+      "action": "upload",
+      "reason": "Official upload requires attended user action and exact confirmation."
+    },
+    {
+      "refusal_id": "refuse-legal-guarantee",
+      "action": "make_legal_or_permitting_guarantee",
+      "reason": "PP&D guardrails cannot guarantee legal or permitting outcomes."
+    }
+  ],
+  "stale_evidence": [
+    {
+      "source_evidence_id": "src-file-naming-standards",
+      "hold_reason": "Fixture marks file naming guidance stale until a fresh public-source fixture is committed.",
+      "guardrail_ids": [
+        "gr-upload-staging-only"
+      ]
+    }
+  ],
+  "offline_validation_commands": [
+    {
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "ppd.tests.test_guardrail_recompile_reviewer_packet_v6"
+      ]
+    },
+    {
+      "argv": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ]
+    }
+  ]
+}

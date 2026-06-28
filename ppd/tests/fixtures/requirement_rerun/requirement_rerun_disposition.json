@@ -1,0 +1,15 @@
+{
+  "packet_id": "fixture:requirement-rerun-disposition:20260529",
+  "reviewer_owner": "requirements-review",
+  "cited_requirement_ids": [
+    "PCC-33.110.265",
+    "PCC-33.445.320"
+  ],
+  "affected_process_refs": [
+    "ppd-process:requirement-rerun-review"
+  ],
+  "affected_guardrail_refs": [
+    "guardrail:no-live-extraction"
+  ],
+  "disposition": "rerun required from committed metadata fixtures only"
+}

@@ -1,0 +1,63 @@
+[
+  {
+    "case_id": "missing_hold_thresholds",
+    "patch": {
+      "synthetic_follow_up_freshness_checks": [
+        {
+          "check_id": "no-thresholds",
+          "schedule": "fixture-first synthetic check",
+          "coverage_categories": ["official_ppd_anchors", "file_preparation_guidance", "fee_payment_guidance", "devhub_public_guidance", "forms_index", "linked_portland_maps_references"],
+          "source_evidence_ids": ["src-ppd-landing-anchor"],
+          "reviewer_routing": {"primary_reviewer": "ppd-public-source-reviewer"}
+        }
+      ]
+    },
+    "expected_problem": "lacks hold thresholds"
+  },
+  {
+    "case_id": "missing_reviewer_routing",
+    "patch": {
+      "reviewer_routing": {},
+      "synthetic_follow_up_freshness_checks": [
+        {
+          "check_id": "no-routing",
+          "schedule": "fixture-first synthetic check",
+          "coverage_categories": ["official_ppd_anchors", "file_preparation_guidance", "fee_payment_guidance", "devhub_public_guidance", "forms_index", "linked_portland_maps_references"],
+          "source_evidence_ids": ["src-ppd-landing-anchor"],
+          "hold_thresholds": {"missing_required_source_count": 1}
+        }
+      ]
+    },
+    "expected_problem": "lacks reviewer routing"
+  },
+  {
+    "case_id": "missing_validation_commands",
+    "patch": {"validation_commands": []},
+    "expected_problem": "validation_commands must contain only the exact PP&D daemon self-test command"
+  },
+  {
+    "case_id": "private_artifact_field",
+    "patch": {"browser_artifact_path": "example-session-state.json"},
+    "expected_problem": "private, live, raw, browser, or downloaded artifact field"
+  },
+  {
+    "case_id": "live_crawl_claim",
+    "patch": {"monitoring_notes": "A live crawl ran against public sources."},
+    "expected_problem": "live crawl, DevHub, browser, or download claim"
+  },
+  {
+    "case_id": "devhub_access_claim",
+    "patch": {"monitoring_notes": "The reviewer opened DevHub and accessed DevHub."},
+    "expected_problem": "live crawl, DevHub, browser, or download claim"
+  },
+  {
+    "case_id": "scheduler_state_mutation_claim",
+    "patch": {"scheduler_state_update": "enable a nightly monitor job"},
+    "expected_problem": "scheduler-state mutation claim"
+  },
+  {
+    "case_id": "active_state_mutation_flag",
+    "patch": {"execution_boundaries": {"active_guardrail_mutation": true}},
+    "expected_problem": "active PP&D state mutation flag"
+  }
+]

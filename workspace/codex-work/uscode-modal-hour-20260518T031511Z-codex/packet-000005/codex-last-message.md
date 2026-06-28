@@ -1,0 +1,17 @@
+Implemented a narrow deterministic ambiguity-policy expansion so deontic-dominant clauses surface explicit ambiguity when statutory cross-reference or institutional frame context is present.
+
+**Edits**
+- Extended lexical ambiguity signals in [spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T031511Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T031511Z-codex-packet-000005-20260518_032913/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py:32):
+  - Added statutory-scope phrases (`as provided in`, `pursuant to`, `under subsection/paragraph/...`), token `pursuant`, and broader frame-context tokens (`attorney`, `court`, `judge`, `justice`, `intelligence`).
+  - Added `has_statutory_scope_reference` and folded it into `has_condition_or_exception_scope` in [spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T031511Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T031511Z-codex-packet-000005-20260518_032913/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py:609).
+- Updated frame ambiguity gating in [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T031511Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T031511Z-codex-packet-000005-20260518_032913/ipfs_datasets_py/logic/modal/compiler.py:617) to treat statutory scope references as frame-scope ambiguity signals.
+- Added targeted tests in [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T031511Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T031511Z-codex-packet-000005-20260518_032913/tests/unit_tests/logic/modal/test_modal_codec.py:378):
+  - `test_modal_compiler_treats_as_provided_in_as_conditional_scope_ambiguity_signal`
+  - `test_modal_compiler_treats_court_as_frame_scope_ambiguity_signal`
+
+**Validation**
+- `pytest` targeted run is currently blocked by an unrelated repo issue: `NameError: __path__ is not defined` at top-level `__init__.py:11`.
+- `python3 -m py_compile` passed for all edited files.
+- Direct `python3` smoke run confirms new ambiguity surfacing:
+  - `"as provided in subsection (b)"` now emits `conditional_scope_family_outvoted` (and frame-scope as expected from signals).
+  - `"The court shall and must issue the order."` emits `frame_scope_family_outvoted`.

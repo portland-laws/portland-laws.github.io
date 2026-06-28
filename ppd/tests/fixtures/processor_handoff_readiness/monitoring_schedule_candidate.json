@@ -1,0 +1,34 @@
+{
+  "monitoring_schedule_candidate_id": "monitor-public-crawl-candidate-20260528",
+  "processors": [
+    {
+      "processor_name": "public-html-normalizer",
+      "rate_limit_note": "Respect Portland.gov public crawl pacing: one request every 10 seconds."
+    },
+    {
+      "processor_name": "public-pdf-metadata-prober",
+      "rate_limit_note": "PDF metadata probe only; do not download or persist raw PDF bytes."
+    }
+  ],
+  "targets": [
+    {
+      "target_id": "ppd-landing",
+      "crawl_frequency": "weekly",
+      "rate_limit_note": "Respect Portland.gov public crawl pacing: one request every 10 seconds."
+    },
+    {
+      "target_id": "devhub-faq",
+      "crawl_frequency": "daily"
+    },
+    {
+      "target_id": "fee-guide-pdf",
+      "crawl_frequency": "weekly",
+      "rate_limit_note": "PDF metadata probe only; do not download or persist raw PDF bytes."
+    },
+    {
+      "target_id": "outside-allowlist",
+      "crawl_frequency": "never",
+      "skipped_reason": "outside allowlist; processor handoff must skip target"
+    }
+  ]
+}

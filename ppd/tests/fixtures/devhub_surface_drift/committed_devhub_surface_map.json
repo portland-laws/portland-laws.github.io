@@ -1,0 +1,62 @@
+{
+  "map_id": "devhub-surface-map-fixture",
+  "fixture_policy": "committed_synthetic_surface_map",
+  "surfaces": [
+    {
+      "surface_id": "devhub_home",
+      "auth_scope": "authenticated",
+      "url_pattern": "https://devhub.portlandoregon.gov/*/home*",
+      "page_heading": "DevHub Home",
+      "accessible_landmarks": [
+        {"label": "Main navigation"},
+        {"label": "My Permits and Requests"}
+      ],
+      "actions": [
+        {"label": "Search permits", "classification": "safe_read_only"},
+        {"label": "Start permit request", "classification": "reversible_draft"}
+      ],
+      "fields": [
+        {"label": "Search by permit number", "selector": "#permit-search"},
+        {"label": "Project address", "selector": "#project-address"}
+      ],
+      "upload_controls": [],
+      "payment_controls": [],
+      "selector_confidence": {
+        "#permit-search": 0.96,
+        "#project-address": 0.92,
+        "button:has-text('Start permit request')": 0.9
+      },
+      "requires_attendance": true,
+      "requires_exact_confirmation": []
+    },
+    {
+      "surface_id": "permit_detail",
+      "auth_scope": "authenticated",
+      "url_pattern": "https://devhub.portlandoregon.gov/*/permits/*",
+      "page_heading": "Permit Details",
+      "accessible_landmarks": [
+        {"label": "Permit summary"},
+        {"label": "Review status"}
+      ],
+      "actions": [
+        {"label": "View fees", "classification": "safe_read_only"},
+        {"label": "Save draft", "classification": "reversible_draft"}
+      ],
+      "fields": [
+        {"label": "Permit number", "selector": "[data-testid='permit-number']"},
+        {"label": "Review group", "selector": "[data-testid='review-group']"}
+      ],
+      "upload_controls": [
+        {"label": "Supporting documents list", "selector": "[data-testid='document-list']"}
+      ],
+      "payment_controls": [],
+      "selector_confidence": {
+        "[data-testid='permit-number']": 0.95,
+        "[data-testid='review-group']": 0.91,
+        "[data-testid='document-list']": 0.88
+      },
+      "requires_attendance": true,
+      "requires_exact_confirmation": ["submit", "upload", "pay"]
+    }
+  ]
+}

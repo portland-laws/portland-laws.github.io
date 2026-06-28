@@ -1,0 +1,114 @@
+{
+  "release_acceptance_review_packet": {
+    "packet_id": "release-review-valid-fixture",
+    "packet_type": "ppd.fixture_first_release_acceptance_review_packet.v1",
+    "fixture_first": true,
+    "review_status": "pending_reviewer_acceptance",
+    "consumed_packets": {
+      "release_acceptance_review": {
+        "packet_id": "release-review-valid-fixture",
+        "source_evidence_ids": ["release-acceptance-review"]
+      }
+    },
+    "reviewer_owner_signoff_slots": [
+      {
+        "reviewer_role": "release acceptance reviewer",
+        "owner": "ppd-release-reviewer",
+        "status": "pending",
+        "source_evidence_ids": ["release-acceptance-review"]
+      }
+    ],
+    "release_effects": {
+      "publishes_release": false,
+      "launches_devhub": false,
+      "invokes_llm_consumers": false,
+      "mutates_prompts": false,
+      "mutates_agent_state": false
+    }
+  },
+  "agent_release_consumer_handoff_packet": {
+    "packet_id": "release-consumer-handoff-fixture-20260529",
+    "packet_type": "ppd.agent_release_consumer_handoff_packet.v1",
+    "handoff": {
+      "readiness_notes": [
+        {
+          "note_id": "rn-001",
+          "text": "Release consumers may render cited readiness notes, compare supplied non-private case facts against required facts, and identify safe read-only or reversible draft next actions.",
+          "citation_ids": ["plan-user-experience", "plan-devhub-safe-read-only"]
+        }
+      ],
+      "missing_information_prompt_reminders": [
+        {
+          "reminder_id": "mipr-001",
+          "text": "Ask for missing, stale, ambiguous, or conflicting permit facts before recommending a next step.",
+          "citation_ids": ["plan-user-experience"]
+        }
+      ],
+      "refusal_examples": [
+        {
+          "example_id": "refusal-payment-submit",
+          "user_request": "Pay the permit fee for me now.",
+          "refusal_response": "I cannot enter payment details or submit a payment. I can help review a cited checklist while the user completes payment manually.",
+          "citation_ids": ["plan-devhub-consequential", "official-devhub-faq"]
+        }
+      ],
+      "reviewer_owners": [
+        {
+          "owner_id": "owner-guardrail-consumer",
+          "owner": "guardrail consumer reviewer",
+          "review_scope": "Verify action envelopes preserve read-only, reversible draft, consequential official, and financial boundaries before promotion.",
+          "citation_ids": ["plan-devhub-safe-read-only", "plan-devhub-consequential"]
+        }
+      ]
+    },
+    "attestations": {
+      "fixture_first_inputs_only": true,
+      "no_llm_consumers_invoked": true,
+      "no_live_agent_execution": true,
+      "no_private_case_files_read": true
+    }
+  },
+  "devhub_read_only_pilot_reconciliation_packet": {
+    "packet_id": "devhub-read-only-pilot-post-observation-reconciliation-synthetic-v1",
+    "packet_type": "ppd.devhub.read_only_pilot_post_observation_reconciliation.v1",
+    "mode": "fixture_first_devhub_read_only_pilot_post_observation_reconciliation",
+    "fixture_first": true,
+    "offline_only": true,
+    "read_only_only": true,
+    "observed_surface_deltas": [
+      {
+        "delta_id": "observed-surface-delta-1",
+        "surface_id": "devhub-dashboard-readonly",
+        "observed_change": "Synthetic redacted dashboard state remains read-only and review-only.",
+        "decision": "keep_as_redacted_observation_delta",
+        "active_registry_mutation": false,
+        "agent_state_mutation": false,
+        "citations": ["devhub-read-only-pilot-reconciliation"]
+      }
+    ],
+    "manual_handoff_decisions": [
+      {
+        "handoff_id": "manual-handoff-1",
+        "surface_id": "devhub-dashboard-readonly",
+        "reason": "Live DevHub verification remains attended and no active registry promotion is authorized by the fixture packet.",
+        "decision": "manual_handoff_required",
+        "live_devhub_launch_allowed_by_packet": false,
+        "citations": ["devhub-read-only-pilot-reconciliation"]
+      }
+    ],
+    "reviewer_owner_fields": [
+      {
+        "owner": "devhub reconciliation reviewer",
+        "reviewer": "devhub pilot reviewer",
+        "scope": "Confirm read-only reconciliation before any attended pilot rerun.",
+        "citations": ["devhub-read-only-pilot-reconciliation"]
+      }
+    ],
+    "no_active_surface_registry_no_agent_state_mutation_attestations": {
+      "no_active_surface_registry_mutation": true,
+      "no_agent_state_mutation": true,
+      "no_devhub_browser_launch": true,
+      "no_auth_state_or_browser_artifact_storage": true
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "version": "inactive_guardrail_placeholder_fixture_v5",
+  "fixture_scope": "inactive_guardrail_placeholders_only",
+  "source_fixture_refs": [
+    "ppd/tests/fixtures/post_decision_smoke_replay_v5/inactive_guardrail_placeholders_v5.json"
+  ],
+  "placeholder_rows": [
+    {
+      "placeholder_id": "inactive-guardrail-placeholder-source-freshness",
+      "placeholder_type": "source_freshness_hold",
+      "status": "inactive_placeholder",
+      "activation_allowed": false,
+      "display_to_agent": true
+    },
+    {
+      "placeholder_id": "inactive-guardrail-placeholder-rollback-owner",
+      "placeholder_type": "rollback_owner_assignment",
+      "status": "inactive_placeholder",
+      "activation_allowed": false,
+      "display_to_agent": true
+    }
+  ],
+  "side_effects": {
+    "activate_guardrails": false,
+    "open_devhub": false,
+    "read_private_documents": false,
+    "upload": false,
+    "submit": false,
+    "certify": false,
+    "pay": false,
+    "schedule": false,
+    "legal_or_permitting_guarantee": false
+  }
+}

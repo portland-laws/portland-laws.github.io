@@ -1,0 +1,76 @@
+{
+  "snapshot_id": "fixture-current-2026-05-08",
+  "sources": [
+    {
+      "source_id": "SRC-DEVHUB-FAQ",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "source_type": "devhub_public",
+      "owning_surface": "devhub_public_help",
+      "allowlist_policy": "allowed_public",
+      "robots_policy": "allowed",
+      "crawl_frequency": "daily",
+      "processor_policy": "metadata_then_normalized_text",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-08T00:00:00Z",
+      "freshness_status": "changed",
+      "content_hash": "sha256:current-devhub-faq",
+      "citation_hash": "sha256:current-devhub-citations",
+      "requirement_ids": ["REQ-DEVHUB-ACCOUNT", "REQ-DEVHUB-CORRECTIONS", "REQ-DEVHUB-FEE-PAYMENT"],
+      "guardrail_bundle_ids": ["GRB-DEVHUB-ATTENDED", "GRB-PAYMENT-GATE"]
+    },
+    {
+      "source_id": "SRC-FILE-STANDARDS",
+      "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+      "source_type": "public_html",
+      "owning_surface": "public_guidance",
+      "allowlist_policy": "allowed_public",
+      "robots_policy": "allowed",
+      "crawl_frequency": "weekly",
+      "processor_policy": "metadata_then_normalized_text",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-08T00:00:00Z",
+      "freshness_status": "fresh",
+      "content_hash": "sha256:file-standards-stable",
+      "citation_hash": "sha256:file-standards-citations",
+      "requirement_ids": ["REQ-SINGLE-PDF-NAMING"],
+      "guardrail_bundle_ids": ["GRB-DOCUMENT-PREP"]
+    },
+    {
+      "source_id": "SRC-FEE-PAYMENT-GUIDE",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "source_type": "public_pdf",
+      "owning_surface": "public_guidance",
+      "allowlist_policy": "allowed_public",
+      "robots_policy": "allowed",
+      "crawl_frequency": "daily",
+      "processor_policy": "metadata_then_normalized_text",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-08T00:00:00Z",
+      "freshness_status": "new",
+      "content_hash": "sha256:fee-payment-guide",
+      "citation_hash": "sha256:fee-payment-citations",
+      "requirement_ids": ["REQ-DEVHUB-FEE-PAYMENT"],
+      "guardrail_bundle_ids": ["GRB-PAYMENT-GATE"]
+    }
+  ],
+  "requirement_citations": {
+    "REQ-DEVHUB-ACCOUNT": ["SRC-DEVHUB-FAQ"],
+    "REQ-DEVHUB-CORRECTIONS": ["SRC-DEVHUB-FAQ"],
+    "REQ-DEVHUB-FEE-PAYMENT": ["SRC-DEVHUB-FAQ", "SRC-FEE-PAYMENT-GUIDE"],
+    "REQ-SINGLE-PDF-NAMING": ["SRC-FILE-STANDARDS"]
+  },
+  "guardrail_bundles": [
+    {
+      "guardrail_bundle_id": "GRB-DEVHUB-ATTENDED",
+      "source_ids": ["SRC-DEVHUB-FAQ"]
+    },
+    {
+      "guardrail_bundle_id": "GRB-DOCUMENT-PREP",
+      "source_ids": ["SRC-FILE-STANDARDS"]
+    },
+    {
+      "guardrail_bundle_id": "GRB-PAYMENT-GATE",
+      "source_ids": ["SRC-DEVHUB-FAQ", "SRC-FEE-PAYMENT-GUIDE"]
+    }
+  ]
+}

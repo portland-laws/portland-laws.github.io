@@ -1,0 +1,14 @@
+{
+  "fixture_id": "spp-file-naming-guardrail-fixture",
+  "source_id": "ppd-spp-file-naming-standards",
+  "purpose": "Synthetic validation input for regenerated file naming and single PDF guardrail bundles.",
+  "case_facts": {
+    "permit_type": "building permit with plan review",
+    "upload_package": [
+      "plans.pdf",
+      "structural_calculations.pdf",
+      "application.pdf"
+    ]
+  },
+  "expected_review_status": "human_review_required_before_activation"
+}

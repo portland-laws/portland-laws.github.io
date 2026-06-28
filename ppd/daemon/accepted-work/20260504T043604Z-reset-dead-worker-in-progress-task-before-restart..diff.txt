@@ -1,0 +1,19 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,14 +1,12 @@
+ {
+-  "createdAt": "2026-05-04T04:35:46.732476Z",
++  "createdAt": "2026-05-04T04:36:01.940573Z",
+   "decision": {
+     "action": "reconcile_dead_worker_and_restart",
+     "reason": "daemon process is not running but status is still calling_llm on Task checkbox-290: Add generated blocked-cascade daemon-repair coverage for tranche 12 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates.; reset the in-progress task before restart",
+     "severity": "warning"
+   },
+   "repairKind": "dead_worker_task_reset",
+-  "resetInProgressTaskLabels": [
+-    "Add generated blocked-cascade daemon-repair coverage for tranche 12 item 1 proving blocked PP&D work stays parked until a fresh daemon repair task validates."
+-  ],
++  "resetInProgressTaskLabels": [],
+   "schemaVersion": 1,
+   "statusBeforeRepair": {
+     "active_state": "calling_llm",

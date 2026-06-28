@@ -1,0 +1,62 @@
+{
+  "as_of": "2026-05-15T00:00:00Z",
+  "max_age_days": 14,
+  "registry_records": [
+    {
+      "source_id": "ppd-devhub-faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "source_type": "devhub_public",
+      "owning_surface": "ppd_public_guidance",
+      "last_seen_at": "2026-05-14T12:00:00Z",
+      "freshness_status": "fresh",
+      "content_hash": "sha256:faq-current"
+    },
+    {
+      "source_id": "ppd-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "source_type": "public_html",
+      "owning_surface": "ppd_public_guidance",
+      "last_seen_at": "2026-05-13T08:30:00Z",
+      "freshness_status": "fresh",
+      "content_hash": "sha256:single-pdf-current"
+    },
+    {
+      "source_id": "ppd-stale-fee-guide",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "source_type": "public_pdf",
+      "owning_surface": "ppd_public_guidance",
+      "last_seen_at": "2026-04-15T00:00:00Z",
+      "freshness_status": "fresh",
+      "content_hash": "sha256:fee-guide-old"
+    },
+    {
+      "source_id": "ppd-apply-permits",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "source_type": "public_html",
+      "owning_surface": "ppd_public_guidance",
+      "last_seen_at": "2026-05-14T09:00:00Z",
+      "freshness_status": "fresh",
+      "content_hash": "sha256:apply-permits-new"
+    }
+  ],
+  "change_monitor_records": [
+    {
+      "source_id": "ppd-apply-permits",
+      "event_type": "hash_changed",
+      "observed_at": "2026-05-14T09:01:00Z",
+      "previous_hash": "sha256:apply-permits-old",
+      "current_hash": "sha256:apply-permits-new",
+      "resolution_status": "unreviewed",
+      "affected_guardrail_bundle_ids": ["guardrail-building-permit-application"]
+    },
+    {
+      "source_id": "ppd-devhub-faq",
+      "event_type": "hash_changed",
+      "observed_at": "2026-05-13T10:00:00Z",
+      "previous_hash": "sha256:faq-previous",
+      "current_hash": "sha256:faq-current",
+      "resolution_status": "reviewed",
+      "affected_guardrail_bundle_ids": ["guardrail-devhub-account"]
+    }
+  ]
+}

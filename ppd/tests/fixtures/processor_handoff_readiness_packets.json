@@ -1,0 +1,124 @@
+{
+  "valid_minimal": {
+    "packet_id": "fixture-valid-public-readiness",
+    "prerequisite_links": [
+      {
+        "url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+        "relation": "official_public_source"
+      }
+    ],
+    "targets": [
+      {
+        "url": "https://www.portland.gov/ppd/devhub-faqs",
+        "source_type": "devhub_public"
+      }
+    ],
+    "skipped_targets": [
+      {
+        "url": "https://example.com/not-ppd",
+        "reason": "outside allowlist"
+      }
+    ],
+    "attestations": {
+      "no_raw_body_persisted": true
+    },
+    "processor_policy": {
+      "dry_run_only": true
+    }
+  },
+  "invalid_cases": {
+    "missing_prerequisite_links": {
+      "targets": [
+        "https://www.portland.gov/ppd"
+      ],
+      "attestations": {
+        "no_raw_body_persisted": true
+      }
+    },
+    "private_authenticated_target": {
+      "prerequisite_links": [
+        "https://www.portland.gov/ppd"
+      ],
+      "targets": [
+        {
+          "url": "https://devhub.portlandoregon.gov/account/my-permits",
+          "authenticated": true
+        }
+      ],
+      "attestations": {
+        "no_raw_body_persisted": true
+      }
+    },
+    "non_allowlisted_target": {
+      "prerequisite_links": [
+        "https://www.portland.gov/ppd"
+      ],
+      "targets": [
+        "https://records.example.org/portland-permits"
+      ],
+      "attestations": {
+        "no_raw_body_persisted": true
+      }
+    },
+    "raw_download_reference": {
+      "prerequisite_links": [
+        "https://www.portland.gov/ppd"
+      ],
+      "targets": [
+        "https://www.portland.gov/ppd/documents/how-pay-fees/download"
+      ],
+      "raw_download_ref": "tmp/raw/how-pay-fees.pdf",
+      "attestations": {
+        "no_raw_body_persisted": true
+      }
+    },
+    "live_processor_execution_flag": {
+      "prerequisite_links": [
+        "https://www.portland.gov/ppd"
+      ],
+      "targets": [
+        "https://www.portland.gov/ppd/devhub-faqs"
+      ],
+      "processor_execute": true,
+      "attestations": {
+        "no_raw_body_persisted": true
+      }
+    },
+    "missing_no_raw_body_attestation": {
+      "prerequisite_links": [
+        "https://www.portland.gov/ppd"
+      ],
+      "targets": [
+        "https://www.portland.gov/ppd/devhub-faqs"
+      ]
+    },
+    "missing_skipped_target_reason": {
+      "prerequisite_links": [
+        "https://www.portland.gov/ppd"
+      ],
+      "targets": [
+        "https://www.portland.gov/ppd/devhub-faqs"
+      ],
+      "skipped_targets": [
+        {
+          "url": "https://not-allowed.example/private"
+        }
+      ],
+      "attestations": {
+        "no_raw_body_persisted": true
+      }
+    },
+    "archive_artifact_claim": {
+      "prerequisite_links": [
+        "https://www.portland.gov/ppd"
+      ],
+      "targets": [
+        "https://www.portland.gov/ppd/devhub-faqs"
+      ],
+      "archive_artifact_ref": "ipfs://bafy-placeholder",
+      "attestations": {
+        "no_raw_body_persisted": true
+      }
+    }
+  }
+}

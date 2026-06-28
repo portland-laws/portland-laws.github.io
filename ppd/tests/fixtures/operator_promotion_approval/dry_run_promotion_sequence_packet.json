@@ -1,0 +1,27 @@
+{
+  "packet_id": "dry-run-promotion-sequence-fixture-001",
+  "packet_type": "dry_run_promotion_sequence_packet",
+  "active_promotion_state": "inactive",
+  "mutates_active_targets": [],
+  "sequence_summary": "Dry-run promotion sequence completed against fixtures only and reported no active state writes.",
+  "citations": [
+    "dry-run:sequence-summary"
+  ],
+  "no_go_conditions": [
+    {
+      "description": "Do not promote if any dry-run step requires live registry writes.",
+      "citations": [
+        "dry-run:no-live-writes"
+      ]
+    }
+  ],
+  "rollback_rehearsal": [
+    {
+      "reference_id": "rollback-rehearsal-dry-run-001",
+      "summary": "Rollback rehearsal confirmed previous fixture snapshot restoration steps are documented.",
+      "citations": [
+        "dry-run:rollback-rehearsal"
+      ]
+    }
+  ]
+}

@@ -31,7 +31,7 @@ export default function LLMTestComponent({ className = '' }: LLMTestComponentPro
       addTestResult(`Recommended model for this device: ${recommendedModel}`);
 
       // Test 3: Test model compatibility
-      for (const modelName of ['onnx-community/Llama-3.2-1B-Instruct', 'onnx-community/Llama-3.2-3B-Instruct']) {
+      for (const modelName of ['LiquidAI/LFM2.5-1.2B-Instruct-ONNX', 'LiquidAI/LFM2.5-1.2B-Thinking-ONNX']) {
         const compatibility = await clientLLM.validateModelCompatibility(modelName);
         addTestResult(`${modelName}: ${compatibility.compatible ? 'Compatible' : `Incompatible - ${compatibility.reason}`}`);
       }
@@ -63,14 +63,14 @@ export default function LLMTestComponent({ className = '' }: LLMTestComponentPro
       // Test 7: If WebGPU is available and we're not using a WebGPU model, try to load one
       const currentModelConfig = clientLLM.getCurrentModelConfig();
       if (!currentModelConfig?.requiresWebGPU) {
-        const webgpuCompatible = await clientLLM.validateModelCompatibility('onnx-community/Llama-3.2-1B-Instruct');
+        const webgpuCompatible = await clientLLM.validateModelCompatibility('LiquidAI/LFM2.5-1.2B-Instruct-ONNX');
         if (webgpuCompatible.compatible) {
-          addTestResult('Device supports WebGPU models. Testing Llama 1B...');
-          await clientLLM.switchModel('onnx-community/Llama-3.2-1B-Instruct');
-          setCurrentModel('onnx-community/Llama-3.2-1B-Instruct');
+          addTestResult('Device supports WebGPU models. Testing LiquidAI LFM2.5 Instruct...');
+          await clientLLM.switchModel('LiquidAI/LFM2.5-1.2B-Instruct-ONNX');
+          setCurrentModel('LiquidAI/LFM2.5-1.2B-Instruct-ONNX');
           
           const webgpuResponse = await clientLLM.generateResponse('What is artificial intelligence?', 50);
-          addTestResult(`Llama 1B response: "${webgpuResponse}"`);
+          addTestResult(`LiquidAI LFM2.5 response: "${webgpuResponse}"`);
         }
       }
 
@@ -141,7 +141,7 @@ export default function LLMTestComponent({ className = '' }: LLMTestComponentPro
 
       {testResults.length === 0 && !isLoading && (
         <div className="text-gray-400 text-sm text-center py-8">
-          Click "Run Full Test" to verify LLM functionality including WebGPU support for Llama models.
+          Click "Run Full Test" to verify LLM functionality including WebGPU support for LiquidAI models.
           This will test model loading, inference, and WebGPU compatibility.
         </div>
       )}
@@ -152,7 +152,7 @@ export default function LLMTestComponent({ className = '' }: LLMTestComponentPro
           <li>Check available models and device compatibility</li>
           <li>Load the recommended model for your device</li>
           <li>Test text generation capabilities</li>
-          <li>Try WebGPU-enabled Llama models if supported</li>
+          <li>Try WebGPU-enabled LiquidAI models if supported</li>
           <li>Verify conversation generation features</li>
         </ul>
       </div>

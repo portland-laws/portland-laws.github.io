@@ -1,0 +1,22 @@
+{
+  "packet_type": "correction_upload_boundary",
+  "status": "upload completed",
+  "private_document_content": "Applicant tax document bytes would be here.",
+  "local_path": "/Users/alex/private/corrections/site-plan.pdf",
+  "browser_state": {
+    "cookies": [
+      {"name": "session", "value": "redacted-example"}
+    ]
+  },
+  "screenshot_path": "trace-output/correction-upload.png",
+  "har_path": "network.har",
+  "correction_requirements": [
+    {
+      "requirement_id": "req-without-citation",
+      "summary": "Upload the corrected sheets."
+    }
+  ],
+  "next_actions": [
+    "Click Submit Corrections and certify the acknowledgement."
+  ]
+}

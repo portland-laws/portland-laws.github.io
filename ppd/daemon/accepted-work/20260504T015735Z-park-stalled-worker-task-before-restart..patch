@@ -1,0 +1,53 @@
+--- a/ppd/daemon/builtin-repair-status.json
++++ b/ppd/daemon/builtin-repair-status.json
+@@ -1,22 +1,23 @@
+ {
+-  "createdAt": "2026-05-04T01:55:49.871363Z",
++  "createdAt": "2026-05-04T01:57:33.575661Z",
+   "decision": {
+     "action": "reconcile_dead_worker_with_recent_failures_and_restart",
+-    "reason": "daemon process is not running but status is still calling_llm on Task checkbox-242: Add processor-suite execution integration under ppd/crawler proving public PP&D pages and PDFs flow through archive manifests, normalized document records, PDF metadata, requirement batches, and formal-logic source evidence IDs before agent reuse., and 2 recent failure diagnostic(s) already exist for that target; park the task before restart instead of resetting it into another immediate retry",
++    "reason": "daemon process is not running but status is still calling_llm on Task checkbox-243: Add an attended Playwright DevHub worker runner under ppd/devhub that supports manual login handoff, journal replay, reversible draft field fills from redacted facts, and mandatory pauses before upload, submit, certification, cancellation, inspection, security, or payment transitions., and 2 recent failure diagnostic(s) already exist for that target; park the task before restart instead of resetting it into another immediate retry",
+     "severity": "warning"
+   },
+   "parkedStalledTaskLabels": [
+-    "Add processor-suite execution integration under ppd/crawler proving public PP&D pages and PDFs flow through archive manifests, normalized document records, PDF metadata, requirement batches, and formal-logic source evidence IDs before agent reuse."
++    "Add an attended Playwright DevHub worker runner under ppd/devhub that supports manual login handoff, journal replay, reversible draft field fills from redacted facts, and mandatory pauses before upload, submit, certification, cancellation, inspection, security, or payment transitions."
+   ],
+   "repairKind": "stalled_worker_task_parked",
+   "replenishedExecutionTaskLabels": [],
+   "schemaVersion": 1,
+   "statusBeforeRepair": {
+     "active_state": "calling_llm",
+-    "active_state_started_at": "2026-05-04T01:53:40.093038Z",
+-    "active_target_task": "Task checkbox-242: Add processor-suite execution integration under ppd/crawler proving public PP&D pages and PDFs flow through archive manifests, normalized document records, PDF metadata, requirement batches, and formal-logic source evidence IDs before agent reuse.",
+-    "pid": 806051,
+-    "state": "heartbeat",
+-    "updated_at": "2026-05-04T01:54:10.988380Z"
++    "active_state_started_at": "2026-05-04T01:56:19.894332Z",
++    "active_target_task": "Task checkbox-243: Add an attended Playwright DevHub worker runner under ppd/devhub that supports manual login handoff, journal replay, reversible draft field fills from redacted facts, and mandatory pauses before upload, submit, certification, cancellation, inspection, security, or payment transitions.",
++    "pid": 823224,
++    "state": "calling_llm",
++    "target_task": "Task checkbox-243: Add an attended Playwright DevHub worker runner under ppd/devhub that supports manual login handoff, journal replay, reversible draft field fills from redacted facts, and mandatory pauses before upload, submit, certification, cancellation, inspection, security, or payment transitions.",
++    "updated_at": "2026-05-04T01:56:19.894343Z"
+   }
+ }
+--- a/ppd/daemon/task-board.md
++++ b/ppd/daemon/task-board.md
+@@ -170,7 +170,7 @@
+ 
+ - [!] Task checkbox-241: Add a supervised live whole-site public crawl runner under ppd/crawler that resumes an allowlisted PP&D frontier, delegates archival capture to the ipfs_datasets_py processor suite, records robots and content-type decisions, and persists metadata manifests instead of raw bodies or downloaded documents.
+ - [!] Task checkbox-242: Add processor-suite execution integration under ppd/crawler proving public PP&D pages and PDFs flow through archive manifests, normalized document records, PDF metadata, requirement batches, and formal-logic source evidence IDs before agent reuse.
+-- [~] Task checkbox-243: Add an attended Playwright DevHub worker runner under ppd/devhub that supports manual login handoff, journal replay, reversible draft field fills from redacted facts, and mandatory pauses before upload, submit, certification, cancellation, inspection, security, or payment transitions.
++- [!] Task checkbox-243: Add an attended Playwright DevHub worker runner under ppd/devhub that supports manual login handoff, journal replay, reversible draft field fills from redacted facts, and mandatory pauses before upload, submit, certification, cancellation, inspection, security, or payment transitions.
+ - [ ] Task checkbox-244: Add a local PDF draft-fill work queue under ppd/pdf that maps public PP&D form field manifests to redacted user facts, invokes the pypdf draft filler for previews, and never uploads, submits, or stores private source documents.
+ - [ ] Task checkbox-245: Add a formal-logic guardrail extraction pipeline under ppd/logic that converts processor-backed requirement batches into obligations, prerequisites, missing-fact questions, reversible-action predicates, exact-confirmation predicates, and refused official-action stop gates.
+ - [ ] Task checkbox-246: Add supervisor execution-capability recovery coverage proving stale calling_llm or applying_files status on old platform slices parks the stale tranche, appends this comprehensive execution tranche, validates the daemon, and restarts with PPD_LLM_BACKEND=llm_router.
+@@ -209,3 +209,7 @@
+ ## Built-In Supervisor Repair Notes
+ 
+ - Parked stalled worker task `Add processor-suite execution integration under ppd/crawler proving public PP&D pages and PDFs flow through archive manifests, normalized document records, PDF metadata, requirement batches, and formal-logic source evidence IDs before agent reuse.` after it exceeded the active-state timeout. The supervisor restarted the daemon on the next independent selectable task instead of reselecting the same stalled work.
++## Built-In Supervisor Repair Notes
++
++- Parked stalled worker task `Add an attended Playwright DevHub worker runner under ppd/devhub that supports manual login handoff, journal replay, reversible draft field fills from redacted facts, and mandatory pauses before upload, submit, certification, cancellation, inspection, security, or payment transitions.` after it exceeded the active-state timeout. The supervisor restarted the daemon on the next independent selectable task instead of reselecting the same stalled work.
++

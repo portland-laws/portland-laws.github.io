@@ -1,0 +1,69 @@
+{
+  "fixture_id": "guardrail-bundle-recompile-candidate-v5-fixture",
+  "process_model_impact_candidate_v5": {
+    "packet_version": "process_model_impact_candidate_v5",
+    "packet_id": "process-model-impact-candidate-v5-fixture",
+    "status": "inactive_candidate",
+    "fixture_first": true,
+    "source_mode": "fixture_only_requirement_reextraction_delta_queue_v5",
+    "side_effects": {
+      "active_process_models_mutated": false,
+      "active_requirements_mutated": false,
+      "active_guardrails_mutated": false,
+      "active_devhub_surfaces_mutated": false,
+      "devhub_opened": false,
+      "documents_downloaded": false,
+      "forms_submitted": false,
+      "fees_paid": false,
+      "inspections_scheduled": false,
+      "official_actions_completed": false
+    },
+    "inactive_changes": [
+      {
+        "change_id": "inactive-pm-impact-v5-eligibility-building-001",
+        "process_model_id": "process-building-permit-fixture-v5",
+        "guardrail_bundle_id": "guardrail-bundle-building-permit-fixture-v5",
+        "impact_area": "eligibility_rules",
+        "operation": "change",
+        "requirement_id": "req-building-eligibility-review-v5",
+        "candidate_text": "Require offline eligibility predicate review when fixture evidence changes permit request path assumptions.",
+        "source_evidence_ids": ["src-ppd-apply-permits-v5", "src-devhub-guide-v5"],
+        "reviewer_hold": "needs_guardrail_reviewer",
+        "rollback_note": "Discard the inactive eligibility guardrail candidate row; no active GuardrailBundle is changed."
+      },
+      {
+        "change_id": "inactive-pm-impact-v5-deadline-corrections-001",
+        "process_model_id": "process-building-permit-fixture-v5",
+        "guardrail_bundle_id": "guardrail-bundle-building-permit-fixture-v5",
+        "impact_area": "deadlines",
+        "operation": "hold",
+        "requirement_id": "req-correction-response-window-v5",
+        "candidate_text": "Hold temporal predicates until cited correction-response evidence is reviewed for freshness and applicability.",
+        "source_evidence_ids": ["src-devhub-corrections-v5", "src-ppd-checksheet-v5"],
+        "reviewer_hold": "needs_temporal_review",
+        "rollback_note": "Discard the inactive temporal guardrail candidate row; no active deadline predicate is changed."
+      },
+      {
+        "change_id": "inactive-pm-impact-v5-devhub-action-gate-001",
+        "process_model_id": "process-building-permit-fixture-v5",
+        "guardrail_bundle_id": "guardrail-bundle-building-permit-fixture-v5",
+        "impact_area": "devhub_surface_refs",
+        "operation": "add",
+        "requirement_id": "req-devhub-action-gate-v5",
+        "candidate_text": "Add inactive confirmation and refusal predicates for consequential DevHub action gates based on public fixture evidence only.",
+        "source_evidence_ids": ["src-devhub-faq-v5", "src-devhub-guide-v5"],
+        "reviewer_hold": "needs_process_owner_review",
+        "rollback_note": "Discard the inactive DevHub action-gate guardrail candidate row; no DevHub surface or active guardrail is changed."
+      }
+    ]
+  },
+  "prior_guardrail_bundle_placeholders": [
+    {
+      "guardrail_bundle_id": "guardrail-bundle-building-permit-fixture-v5",
+      "process_id": "process-building-permit-fixture-v5",
+      "placeholder_only": true,
+      "active_bundle_ref": "",
+      "review_status": "placeholder_pending_guardrail_review"
+    }
+  ]
+}

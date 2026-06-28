@@ -1,0 +1,132 @@
+{
+  "packet_id": "devhub-observed-surface-drift-review-synthetic-v1",
+  "packet_type": "ppd.devhub_observed_surface_drift_review.v1",
+  "mode": "fixture_first_devhub_observed_surface_drift_review",
+  "fixture_first": true,
+  "launches_devhub": false,
+  "source_packets": {
+    "pilot_evidence_packet_id": "devhub-read-only-pilot-result-intake-synthetic-v1",
+    "surface_registry_snapshot_packet_id": "synthetic-devhub-surface-registry-snapshots-v1"
+  },
+  "review_scope": {
+    "no_live_browser_launch": true,
+    "records_disabled_consequential_controls": true,
+    "records_manual_handoff_prompts": true,
+    "records_only_redacted_headings": true,
+    "records_only_redacted_labels": true,
+    "records_read_only_status_categories": true,
+    "records_route_patterns": true,
+    "records_selector_confidence_notes": true
+  },
+  "observed_surfaces": [
+    {
+      "surface_id": "devhub_home_redacted",
+      "route_pattern": "/dashboard",
+      "redacted_heading": "[REDACTED_HEADING:devhub-home]",
+      "redacted_labels": [
+        "[REDACTED_LABEL:my-permits]",
+        "[REDACTED_LABEL:status-summary]"
+      ],
+      "read_only_status_category": "home_loaded",
+      "selector_confidence_notes": [
+        "primary heading and navigation labels are stable redacted tokens",
+        "status summary label has medium confidence because copy may vary by account state"
+      ],
+      "manual_handoff_prompts": [
+        "manual handoff if sign-in, MFA, CAPTCHA, account creation, upload, submit, certification, payment, scheduling, cancellation, or account settings prompt appears"
+      ],
+      "disabled_consequential_controls": [
+        "disabled:upload",
+        "disabled:submit",
+        "disabled:certify",
+        "disabled:payment",
+        "disabled:schedule-inspection",
+        "disabled:cancel"
+      ]
+    },
+    {
+      "surface_id": "devhub_permit_detail_redacted",
+      "route_pattern": "/permits/{permit_id}",
+      "redacted_heading": "[REDACTED_HEADING:permit-detail]",
+      "redacted_labels": [
+        "[REDACTED_LABEL:permit-status]",
+        "[REDACTED_LABEL:fees]",
+        "[REDACTED_LABEL:corrections]"
+      ],
+      "read_only_status_category": "permit_detail_visible",
+      "selector_confidence_notes": [
+        "route keeps permit identifier as a pattern placeholder",
+        "detail tabs require attended review before selector promotion"
+      ],
+      "manual_handoff_prompts": [
+        "manual handoff before opening upload, payment, scheduling, submit, certification, cancellation, extension, or reactivation controls"
+      ],
+      "disabled_consequential_controls": [
+        "disabled:upload-correction",
+        "disabled:pay-fee",
+        "disabled:schedule-inspection",
+        "disabled:request-extension",
+        "disabled:reactivate",
+        "disabled:withdraw"
+      ]
+    }
+  ],
+  "drift_findings": [
+    {
+      "surface_id": "devhub_home_redacted",
+      "status": "attended_review",
+      "reasons": [
+        "selector_confidence_review",
+        "manual_handoff_prompt_present",
+        "consequential_controls_disabled"
+      ],
+      "manual_handoff_prompts": [
+        "manual handoff if sign-in, MFA, CAPTCHA, account creation, upload, submit, certification, payment, scheduling, cancellation, or account settings prompt appears"
+      ],
+      "disabled_consequential_controls": [
+        "disabled:upload",
+        "disabled:submit",
+        "disabled:certify",
+        "disabled:payment",
+        "disabled:schedule-inspection",
+        "disabled:cancel"
+      ]
+    },
+    {
+      "surface_id": "devhub_permit_detail_redacted",
+      "status": "attended_review",
+      "reasons": [
+        "selector_confidence_review",
+        "manual_handoff_prompt_present",
+        "consequential_controls_disabled"
+      ],
+      "manual_handoff_prompts": [
+        "manual handoff before opening upload, payment, scheduling, submit, certification, cancellation, extension, or reactivation controls"
+      ],
+      "disabled_consequential_controls": [
+        "disabled:upload-correction",
+        "disabled:pay-fee",
+        "disabled:schedule-inspection",
+        "disabled:request-extension",
+        "disabled:reactivate",
+        "disabled:withdraw"
+      ]
+    }
+  ],
+  "redaction_attestations": {
+    "no_devhub_launch": true,
+    "no_automated_login": true,
+    "no_credentials": true,
+    "no_cookies": true,
+    "no_auth_state": true,
+    "no_browser_artifacts": true,
+    "no_screenshots": true,
+    "no_traces": true,
+    "no_har_data": true,
+    "no_raw_dom": true,
+    "no_raw_authenticated_text": true,
+    "no_private_field_values": true,
+    "no_consequential_controls_enabled": true,
+    "no_official_actions_completed": true
+  }
+}

@@ -1,0 +1,9 @@
+Implemented a deterministic frame-logic audit gap fix for zero-formula samples.
+
+- Added document-level citation/source-id triple emission in [`codec.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000035-20260518_113025/ipfs_datasets_py/logic/modal/codec.py:700), so frame ontology auditing still sees citation/section terms when `modal_ir.formulas` is empty.
+- Added `_document_source_context_components(...)` in [`codec.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000035-20260518_113025/ipfs_datasets_py/logic/modal/codec.py:1346) to deterministically derive those terms from `document_id` and metadata citation.
+- Added regression coverage with a zero-formula fixture and assertion test in [`test_ir_decompiler_slots.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000035-20260518_113025/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:173) and [`test_ir_decompiler_slots.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000035-20260518_113025/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:962).
+
+Validation run:
+
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py` (28 passed)

@@ -1,0 +1,44 @@
+{
+  "codex_claimed_total": 24,
+  "codex_exec_mode": "packet_only",
+  "codex_execution_count": 0,
+  "codex_execution_failure_count": 0,
+  "codex_packet_count": 8,
+  "codex_patch_count": 0,
+  "codex_program_synthesis_execution_mode": "queued_for_external_codex_worker",
+  "codex_worktree_count": 8,
+  "cycles": 92,
+  "elapsed_seconds": 105.273,
+  "final": true,
+  "finished_at": "2026-05-16T15:56:42+00:00",
+  "latest_queue_counts": {
+    "claimed": 24,
+    "completed": 13,
+    "failed_validation": 27,
+    "pending": 20
+  },
+  "latest_role_queue_counts": {
+    "autoencoder_sgd": {
+      "completed": 13,
+      "failed_validation": 27,
+      "pending": 20
+    },
+    "program_synthesis": {
+      "claimed": 24
+    }
+  },
+  "latest_stop_reason": "signal_15",
+  "log_path": "/home/barberb/portland-laws.github.io/workspace/test-logs/uscode-modal-smoke-final-20260516T155456Z-codex.jsonl",
+  "loop_role": "codex",
+  "program_synthesis_claimed": 24,
+  "program_synthesis_completed": 0,
+  "program_synthesis_pending": 0,
+  "queue_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-smoke-final-20260516T155456Z-autoencoder.jsonl",
+  "queue_run_id": "uscode-modal-smoke-final-20260516T155456Z-autoencoder",
+  "run_id": "uscode-modal-smoke-final-20260516T155456Z-codex",
+  "started_at": "2026-05-16T15:54:57+00:00",
+  "stopped_by_signal": 15,
+  "updated_at": "2026-05-16T15:56:42+00:00",
+  "work_dir": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-smoke-final-20260516T155456Z-codex",
+  "worker_id": "codex-program-synthesis-uscode-modal-smoke-final-20260516T155456Z-codex"
+}

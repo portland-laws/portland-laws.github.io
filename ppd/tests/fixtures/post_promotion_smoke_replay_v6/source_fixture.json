@@ -1,0 +1,180 @@
+{
+  "inactive_guardrail_promotion_rehearsal_v6_refs": [
+    "ppd/tests/fixtures/post_promotion_smoke_replay_v6/inactive_guardrail_promotion_rehearsal_v6.json"
+  ],
+  "inactive_guardrail_placeholder_fixture_refs": [
+    "ppd/tests/fixtures/post_promotion_smoke_replay_v6/inactive_guardrail_placeholder_fixture.json"
+  ],
+  "inactive_guardrail_promotion_rehearsal_v6": {
+    "packet_type": "ppd.inactive_guardrail_promotion_rehearsal.v6",
+    "packet_version": "v6",
+    "mode": "fixture_first_inactive_guardrail_promotion_rehearsal_v6",
+    "fixture_first": true,
+    "inactive_candidate_only": true,
+    "post_gap_release_readiness_packet_v6_fixtures_only": true,
+    "manual_reviewer_signoff_required": true,
+    "source_freshness_clearance_required": true,
+    "unresolved_hold_propagation_required": true,
+    "rollback_checkpoints_required": true,
+    "post_promotion_smoke_replay_required": true,
+    "agent_api_compatibility_reminders_required": true,
+    "monitoring_handoff_required": true,
+    "active_guardrail_mutation": false,
+    "active_guardrail_bundle_mutation": false,
+    "active_prompt_mutation": false,
+    "active_process_model_mutation": false,
+    "active_requirement_mutation": false,
+    "active_source_mutation": false,
+    "active_devhub_surface_mutation": false,
+    "active_release_state_mutation": false,
+    "active_mutation": false,
+    "guardrails_changed": false,
+    "guardrail_bundles_changed": false,
+    "promotion_executed": false,
+    "activation_executed": false,
+    "opens_devhub": false,
+    "crawls_live_sites": false,
+    "reads_private_documents": false,
+    "uploads": false,
+    "submits": false,
+    "certifies": false,
+    "pays": false,
+    "schedules": false,
+    "legal_or_permitting_guarantee": false,
+    "source_fixture_refs": [
+      {
+        "fixture_role": "post_gap_release_readiness_packet_v6",
+        "path": "ppd/tests/fixtures/inactive_guardrail_promotion_rehearsal_v6/post_gap_release_readiness_packet_v6.json"
+      }
+    ],
+    "consumes_only": {
+      "post_gap_release_readiness_packet_v6_fixtures": true,
+      "packet_type": "ppd.post_gap_release_readiness_packet.v6",
+      "packet_version": "v6"
+    },
+    "inactive_promotion_candidate_rows": [
+      {
+        "candidate_id": "inactive-promotion-v6::post-gap-release-readiness-v6-reviewer-row",
+        "source_reviewer_row_id": "post-gap-release-readiness-v6-reviewer-row",
+        "candidate_status": "inactive_candidate_only",
+        "activation_allowed": false,
+        "promotion_allowed": false,
+        "derived_from_post_gap_release_readiness_v6": true,
+        "source_recommendation": "NO_GO",
+        "source_unresolved_hold_count": 2,
+        "source_fixture_citation_count": 2,
+        "manual_reviewer_final_decision_required": true
+      }
+    ],
+    "reviewer_controlled_signoff_placeholders": [
+      {
+        "placeholder_id": "signoff::inactive-promotion-v6::post-gap-release-readiness-v6-reviewer-row",
+        "candidate_id": "inactive-promotion-v6::post-gap-release-readiness-v6-reviewer-row",
+        "signoff_status": "pending_manual_review",
+        "reviewer": "REVIEWER_TBD",
+        "reviewed_at": "",
+        "activation_allowed": false
+      }
+    ],
+    "source_freshness_clearance_prerequisites": [
+      {
+        "prerequisite_id": "freshness::inactive-promotion-v6::post-gap-release-readiness-v6-reviewer-row",
+        "candidate_id": "inactive-promotion-v6::post-gap-release-readiness-v6-reviewer-row",
+        "clearance_status": "pending_public_source_freshness_review",
+        "fixture_citation_refs": [
+          "fixture://post_promotion_smoke_replay_v6/checklist_stub.pdf",
+          "fixture://post_promotion_smoke_replay_v6/stale_fee_table.html"
+        ],
+        "all_sources_confirmed_fresh": false,
+        "activation_allowed": false
+      }
+    ],
+    "unresolved_hold_propagation_rows": [
+      {
+        "propagation_id": "hold::inactive-promotion-v6::post-gap-release-readiness-v6-reviewer-row::missing-fact-property-address",
+        "candidate_id": "inactive-promotion-v6::post-gap-release-readiness-v6-reviewer-row",
+        "source_hold_id": "missing-fact-property-address",
+        "hold_type": "missing_fact",
+        "hold_status": "propagated_unresolved",
+        "promotion_blocked": true,
+        "reviewer_disposition_required": true
+      },
+      {
+        "propagation_id": "hold::inactive-promotion-v6::post-gap-release-readiness-v6-reviewer-row::stale-evidence-fee-table",
+        "candidate_id": "inactive-promotion-v6::post-gap-release-readiness-v6-reviewer-row",
+        "source_hold_id": "stale-evidence-fee-table",
+        "hold_type": "stale_evidence",
+        "hold_status": "propagated_unresolved",
+        "promotion_blocked": true,
+        "reviewer_disposition_required": true
+      }
+    ],
+    "rollback_checkpoint_rows": [
+      {
+        "checkpoint_id": "rollback::inactive-promotion-v6::post-gap-release-readiness-v6-reviewer-row",
+        "candidate_id": "inactive-promotion-v6::post-gap-release-readiness-v6-reviewer-row",
+        "checkpoint_status": "planned_not_executed",
+        "rollback_target": "discard_inactive_rehearsal_candidate_only",
+        "active_state_changed": false
+      }
+    ],
+    "post_promotion_smoke_replay_expectations": [
+      {
+        "expectation_id": "smoke::inactive-promotion-v6::post-gap-release-readiness-v6-reviewer-row",
+        "candidate_id": "inactive-promotion-v6::post-gap-release-readiness-v6-reviewer-row",
+        "smoke_status": "planned_not_run_for_inactive_candidate",
+        "requires_separate_post_promotion_task": true,
+        "expected_journal_events": [
+          "gap_packet_loaded",
+          "manual_handoff_reminder_attached",
+          "offline_validation_commands_reported"
+        ],
+        "activation_allowed": false
+      }
+    ],
+    "agent_api_compatibility_reminders": [
+      {
+        "reminder_id": "agent-api::inactive-promotion-v6::post-gap-release-readiness-v6-reviewer-row",
+        "candidate_id": "inactive-promotion-v6::post-gap-release-readiness-v6-reviewer-row",
+        "compatibility_status": "reminder_only_pending_reviewer_acceptance",
+        "preserve_missing_information_contract": true,
+        "preserve_refused_action_contract": true,
+        "preserve_citation_payload_contract": true,
+        "manual_handoff_reminder_count": 3,
+        "active_api_change_allowed": false
+      }
+    ],
+    "monitoring_handoff_rows": [
+      {
+        "handoff_id": "monitoring::inactive-promotion-v6::post-gap-release-readiness-v6-reviewer-row",
+        "candidate_id": "inactive-promotion-v6::post-gap-release-readiness-v6-reviewer-row",
+        "handoff_status": "planned_not_started",
+        "monitoring_inputs": [
+          "source_freshness_clearance_prerequisites",
+          "unresolved_hold_propagation_rows",
+          "post_promotion_smoke_replay_expectations"
+        ],
+        "source_packet_mode": "fixture_first_post_gap_release_readiness_v6",
+        "activation_allowed": false
+      }
+    ],
+    "offline_validation_commands": [
+      ["python3", "-m", "py_compile", "ppd/agent_readiness/inactive_guardrail_promotion_rehearsal_v6.py"],
+      ["python3", "-m", "py_compile", "ppd/tests/test_inactive_guardrail_promotion_rehearsal_v6.py"],
+      ["python3", "-m", "pytest", "ppd/tests/test_inactive_guardrail_promotion_rehearsal_v6.py"],
+      ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+    ],
+    "validation_commands": [
+      ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+    ]
+  },
+  "inactive_guardrail_placeholder_fixtures": [
+    {
+      "fixture_kind": "inactive_guardrail_placeholder_fixture",
+      "placeholder_id": "inactive-placeholder-post-promotion-smoke-v6",
+      "guardrail_bundle_id": "guardrail-bundle-placeholder-post-promotion-v6",
+      "placeholder_status": "inactive_placeholder_only",
+      "activation_allowed": false
+    }
+  ]
+}

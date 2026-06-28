@@ -1,5 +1,13 @@
 export type AuditSeverity = 'low' | 'medium' | 'high' | 'critical';
 
+export interface AuditLogMetadata {
+  sourcePythonModule: 'logic/security/audit_log.py';
+  browserNative: true;
+  serverCallsAllowed: false;
+  pythonRuntimeAllowed: false;
+  storage: 'memory';
+}
+
 export interface AuditEvent {
   timestamp: string;
   event_type: string;
@@ -9,10 +17,46 @@ export interface AuditEvent {
   [key: string]: unknown;
 }
 
-export class AuditLogger {
-  readonly events: AuditEvent[] = [];
+export type AuditEventListener = (event: AuditEvent) => void;
 
-  constructor(readonly now = () => new Date().toISOString()) {}
+export interface AuditLoggerOptions {
+  now?: () => string;
+  maxEvents?: number;
+  listeners?: Array<AuditEventListener>;
+}
+
+export const AUDIT_LOG_METADATA: AuditLogMetadata = {
+  sourcePythonModule: 'logic/security/audit_log.py',
+  browserNative: true,
+  serverCallsAllowed: false,
+  pythonRuntimeAllowed: false,
+  storage: 'memory',
+};
+
+export class AuditLogger {
+  readonly metadata = AUDIT_LOG_METADATA;
+  readonly events: AuditEvent[] = [];
+  private readonly listeners: Array<AuditEventListener>;
+  private readonly maxEvents: number;
+  private readonly now: () => string;
+
+  constructor(nowOrOptions: (() => string) | AuditLoggerOptions = () => new Date().toISOString()) {
+    const options: AuditLoggerOptions =
+      typeof nowOrOptions === 'function' ? { now: nowOrOptions } : nowOrOptions;
+    this.now = options.now ?? (() => new Date().toISOString());
+    this.maxEvents = Math.max(0, Math.floor(options.maxEvents ?? Number.POSITIVE_INFINITY));
+    this.listeners = [...(options.listeners ?? [])];
+  }
+
+  addEventListener(listener: AuditEventListener): () => void {
+    this.listeners.push(listener);
+    return () => {
+      const index = this.listeners.indexOf(listener);
+      if (index >= 0) {
+        this.listeners.splice(index, 1);
+      }
+    };
+  }
 
   logEvent(
     eventType: string,
@@ -30,6 +74,12 @@ export class AuditLogger {
     };
     if (details) event.details = { ...details };
     this.events.push(event);
+    if (this.events.length > this.maxEvents) {
+      this.events.splice(0, this.events.length - this.maxEvents);
+    }
+    for (const listener of this.listeners) {
+      listener({ ...event, details: event.details ? { ...event.details } : undefined });
+    }
     return event;
   }
 
@@ -76,14 +126,44 @@ export class AuditLogger {
   }
 
   logValidationError(userId: string, validationType: string, errorMessage: string): AuditEvent {
-    return this.logSecurityEvent(userId, 'validation_error', 'low', `Input validation failed: ${validationType}`, {
-      validation_type: validationType,
-      error: errorMessage,
-    });
+    return this.logSecurityEvent(
+      userId,
+      'validation_error',
+      'low',
+      `Input validation failed: ${validationType}`,
+      {
+        validation_type: validationType,
+        error: errorMessage,
+      },
+    );
   }
 
   toJsonLines(): string {
     return this.events.map((event) => JSON.stringify(event)).join('\n');
+  }
+
+  toJson(): string {
+    return JSON.stringify(this.events);
+  }
+
+  getEvents(
+    options: { eventType?: string; userId?: string; limit?: number } = {},
+  ): Array<AuditEvent> {
+    const filtered = this.events.filter((event) => {
+      if (options.eventType !== undefined && event.event_type !== options.eventType) {
+        return false;
+      }
+      if (options.userId !== undefined && event.user_id !== options.userId) {
+        return false;
+      }
+      return true;
+    });
+    const limit =
+      options.limit === undefined ? filtered.length : Math.max(0, Math.floor(options.limit));
+    return filtered.slice(Math.max(0, filtered.length - limit)).map((event) => ({
+      ...event,
+      details: event.details ? { ...event.details } : undefined,
+    }));
   }
 
   clear(): void {
@@ -111,7 +191,10 @@ export function logProofAttempt(
   cached = false,
   error?: string,
 ): AuditEvent {
-  return getAuditLogger().logProofAttempt(userId, formula, prover, success, durationMs, { cached, error });
+  return getAuditLogger().logProofAttempt(userId, formula, prover, success, durationMs, {
+    cached,
+    error,
+  });
 }
 
 export function logSecurityEvent(

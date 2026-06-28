@@ -1,0 +1,265 @@
+{
+  "packet_type": "ppd.inactive_activation_rehearsal_checklist.v1",
+  "packet_version": "v1",
+  "packet_id": "inactive-activation-rehearsal-checklist-v1",
+  "mode": "fixture_first_inactive_activation_rehearsal_checklist_only",
+  "source_kind": "synthetic_approved_inactive_release_decision_rows_and_inactive_smoke_replay_rows",
+  "boundaries": {
+    "fixture_first": true,
+    "synthetic_rows_only": true,
+    "approved_inactive_decision_rows_only": true,
+    "inactive_smoke_replay_rows_only": true,
+    "activation_enabled": false,
+    "guardrail_activation_enabled": false,
+    "active_prompt_changes_enabled": false,
+    "live_crawling_enabled": false,
+    "devhub_opened": false,
+    "private_artifact_storage_enabled": false,
+    "official_action_enabled": false
+  },
+  "consumed_approved_inactive_release_decision_row_ids": [
+    "decision-approved-blocked-action",
+    "decision-approved-citation-placeholder",
+    "decision-approved-missing-info"
+  ],
+  "consumed_inactive_smoke_replay_row_ids": [
+    "smoke-row-blocked-action",
+    "smoke-row-citation-placeholder",
+    "smoke-row-missing-info"
+  ],
+  "activation_prerequisites": [
+    {
+      "prerequisite_id": "activation-prerequisite-blocked-action",
+      "source_decision_row_id": "decision-approved-blocked-action",
+      "source_smoke_replay_row_id": "smoke-row-blocked-action",
+      "description": "Confirm blocked-action outcomes remain exact-confirmation gated in fixture replay before activation review.",
+      "status": "placeholder_only",
+      "required_before": "any_separate_activation_decision"
+    },
+    {
+      "prerequisite_id": "activation-prerequisite-citation-placeholder",
+      "source_decision_row_id": "decision-approved-citation-placeholder",
+      "source_smoke_replay_row_id": "smoke-row-citation-placeholder",
+      "description": "Confirm citation placeholders are unresolved and reviewer-owned before activation review.",
+      "status": "placeholder_only",
+      "required_before": "any_separate_activation_decision"
+    },
+    {
+      "prerequisite_id": "activation-prerequisite-missing-info",
+      "source_decision_row_id": "decision-approved-missing-info",
+      "source_smoke_replay_row_id": "smoke-row-missing-info",
+      "description": "Confirm missing-information prompts still reference fixture source placeholders before any separate activation decision.",
+      "status": "placeholder_only",
+      "required_before": "any_separate_activation_decision"
+    }
+  ],
+  "source_evidence_placeholder_checks": [
+    {
+      "check_id": "source-evidence-placeholder-blocked-action",
+      "source_decision_row_id": "decision-approved-blocked-action",
+      "placeholder_ids": [
+        "placeholder-source-blocked-action-a"
+      ],
+      "status": "placeholder_only",
+      "requires_offline_reviewer_resolution": true
+    },
+    {
+      "check_id": "source-evidence-placeholder-citation-placeholder",
+      "source_decision_row_id": "decision-approved-citation-placeholder",
+      "placeholder_ids": [
+        "placeholder-source-citation-a",
+        "placeholder-source-citation-b"
+      ],
+      "status": "placeholder_only",
+      "requires_offline_reviewer_resolution": true
+    },
+    {
+      "check_id": "source-evidence-placeholder-missing-info",
+      "source_decision_row_id": "decision-approved-missing-info",
+      "placeholder_ids": [
+        "placeholder-source-missing-info-a",
+        "placeholder-source-missing-info-b"
+      ],
+      "status": "placeholder_only",
+      "requires_offline_reviewer_resolution": true
+    }
+  ],
+  "reviewer_signoff_placeholders": [
+    {
+      "signoff_id": "reviewer-signoff-blocked-action",
+      "source_decision_row_id": "decision-approved-blocked-action",
+      "reviewer_role": "guardrail-reviewer",
+      "status": "not_signed",
+      "signature_record": null,
+      "required_before": "any_separate_activation_decision"
+    },
+    {
+      "signoff_id": "reviewer-signoff-citation-placeholder",
+      "source_decision_row_id": "decision-approved-citation-placeholder",
+      "reviewer_role": "source-evidence-reviewer",
+      "status": "not_signed",
+      "signature_record": null,
+      "required_before": "any_separate_activation_decision"
+    },
+    {
+      "signoff_id": "reviewer-signoff-missing-info",
+      "source_decision_row_id": "decision-approved-missing-info",
+      "reviewer_role": "release-reviewer",
+      "status": "not_signed",
+      "signature_record": null,
+      "required_before": "any_separate_activation_decision"
+    }
+  ],
+  "rollback_checkpoints": [
+    {
+      "checkpoint_id": "rollback-checkpoint-blocked-action",
+      "source_decision_row_id": "decision-approved-blocked-action",
+      "description": "Verify blocked-action rollback checkpoint names the inactive candidate only.",
+      "status": "pending_rehearsal_review",
+      "required_before": "any_separate_activation_decision"
+    },
+    {
+      "checkpoint_id": "rollback-checkpoint-citation-placeholder",
+      "source_decision_row_id": "decision-approved-citation-placeholder",
+      "description": "Verify placeholder citation rollback checkpoint is documented for the inactive candidate.",
+      "status": "pending_rehearsal_review",
+      "required_before": "any_separate_activation_decision"
+    },
+    {
+      "checkpoint_id": "rollback-checkpoint-missing-info",
+      "source_decision_row_id": "decision-approved-missing-info",
+      "description": "Verify inactive bundle rollback notes are available as placeholders before activation review.",
+      "status": "pending_rehearsal_review",
+      "required_before": "any_separate_activation_decision"
+    }
+  ],
+  "post_activation_smoke_requirements": [
+    {
+      "requirement_id": "post-activation-smoke-blocked-action",
+      "source_decision_row_id": "decision-approved-blocked-action",
+      "source_smoke_replay_row_id": "smoke-row-blocked-action",
+      "description": "Replay blocked-action scenario against offline fixtures and verify consequential steps stay blocked.",
+      "expected_smoke_checks": [
+        "blocked-action warning is present",
+        "exact-confirmation placeholder is present",
+        "no guardrail activation is expected"
+      ],
+      "status": "placeholder_only",
+      "offline_validation_commands": [
+        [
+          "python3",
+          "ppd/daemon/ppd_daemon.py",
+          "--self-test"
+        ]
+      ]
+    },
+    {
+      "requirement_id": "post-activation-smoke-citation-placeholder",
+      "source_decision_row_id": "decision-approved-citation-placeholder",
+      "source_smoke_replay_row_id": "smoke-row-citation-placeholder",
+      "description": "Replay citation-placeholder scenario against offline fixtures and verify unresolved source evidence is called out.",
+      "expected_smoke_checks": [
+        "citation placeholder check is present",
+        "reviewer evidence placeholder remains required",
+        "no active prompt change is expected"
+      ],
+      "status": "placeholder_only",
+      "offline_validation_commands": [
+        [
+          "python3",
+          "ppd/daemon/ppd_daemon.py",
+          "--self-test"
+        ]
+      ]
+    },
+    {
+      "requirement_id": "post-activation-smoke-missing-info",
+      "source_decision_row_id": "decision-approved-missing-info",
+      "source_smoke_replay_row_id": "smoke-row-missing-info",
+      "description": "Replay missing-information scenario against offline fixtures and verify the agent asks for unresolved facts.",
+      "expected_smoke_checks": [
+        "missing fact prompt is present",
+        "placeholder citation labels remain visible",
+        "no release state delta is expected"
+      ],
+      "status": "placeholder_only",
+      "offline_validation_commands": [
+        [
+          "python3",
+          "ppd/daemon/ppd_daemon.py",
+          "--self-test"
+        ]
+      ]
+    }
+  ],
+  "hold_conditions": [
+    {
+      "hold_condition_id": "hold-condition-blocked-action",
+      "source_decision_row_id": "decision-approved-blocked-action",
+      "source_smoke_replay_row_id": "smoke-row-blocked-action",
+      "description": "Hold if a consequential action is not blocked by the fixture expectation.",
+      "blocked_action_expectations": [
+        "agent blocks consequential workflow step",
+        "agent asks for attended reviewer confirmation placeholder"
+      ],
+      "status": "active_for_rehearsal_only"
+    },
+    {
+      "hold_condition_id": "hold-condition-citation-placeholder",
+      "source_decision_row_id": "decision-approved-citation-placeholder",
+      "source_smoke_replay_row_id": "smoke-row-citation-placeholder",
+      "description": "Hold if any source evidence placeholder is treated as resolved evidence.",
+      "blocked_action_expectations": [
+        "agent holds when source evidence placeholders are unresolved"
+      ],
+      "status": "active_for_rehearsal_only"
+    },
+    {
+      "hold_condition_id": "hold-condition-missing-info",
+      "source_decision_row_id": "decision-approved-missing-info",
+      "source_smoke_replay_row_id": "smoke-row-missing-info",
+      "description": "Hold if required fixture facts are absent, stale, or conflicting.",
+      "blocked_action_expectations": [
+        "agent does not proceed when required facts are missing"
+      ],
+      "status": "active_for_rehearsal_only"
+    }
+  ],
+  "release_notes_placeholders": [
+    {
+      "placeholder_id": "release-notes-blocked-action",
+      "source_decision_row_id": "decision-approved-blocked-action",
+      "description": "Add release-note text describing blocked-action safeguards after reviewer approval.",
+      "status": "placeholder_only",
+      "notes_text": null
+    },
+    {
+      "placeholder_id": "release-notes-citation-placeholder",
+      "source_decision_row_id": "decision-approved-citation-placeholder",
+      "description": "Add release-note text describing source-evidence placeholder limits after reviewer approval.",
+      "status": "placeholder_only",
+      "notes_text": null
+    },
+    {
+      "placeholder_id": "release-notes-missing-info",
+      "source_decision_row_id": "decision-approved-missing-info",
+      "description": "Add release-note text describing missing-information prompt expectations after reviewer approval.",
+      "status": "placeholder_only",
+      "notes_text": null
+    }
+  ],
+  "exact_offline_validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ]
+}

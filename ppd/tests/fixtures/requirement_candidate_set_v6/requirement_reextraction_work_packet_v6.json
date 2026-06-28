@@ -1,0 +1,153 @@
+{
+  "packet_id": "requirement-reextraction-work-packet-v6",
+  "packet_version": 6,
+  "source_batch_plan_id": "requirement-reextraction-batch-plan-v6-fixture",
+  "source_batch_plan_version": 6,
+  "fixture_only": true,
+  "live_access": {
+    "certify": false,
+    "crawl_live_sites": false,
+    "download_documents": false,
+    "legal_or_permitting_guarantees": false,
+    "open_devhub": false,
+    "pay": false,
+    "read_private_documents": false,
+    "schedule": false,
+    "store_raw_bodies": false,
+    "submit": false,
+    "upload": false
+  },
+  "process_packets": [
+    {
+      "process_id": "building-permit-plan-review-fixture-v6",
+      "permit_type": "Building permit with plan review",
+      "extraction_inputs": [
+        {
+          "fixture_document_id": "fixture-doc-apply-permits-v6",
+          "source_id": "src-ppd-apply-permits-fixture",
+          "source_kind": "public_html_normalized_fixture",
+          "normalized_text_fixture_ref": "ppd/tests/fixtures/requirement_reextraction_batch_plan_v6/normalized/apply_permits_excerpt.json",
+          "raw_body_ref": null,
+          "requires_live_fetch": false
+        },
+        {
+          "fixture_document_id": "fixture-doc-single-pdf-v6",
+          "source_id": "src-ppd-single-pdf-fixture",
+          "source_kind": "public_html_normalized_fixture",
+          "normalized_text_fixture_ref": "ppd/tests/fixtures/requirement_reextraction_batch_plan_v6/normalized/single_pdf_excerpt.json",
+          "raw_body_ref": null,
+          "requires_live_fetch": false
+        }
+      ],
+      "source_span_refresh_targets": [
+        {
+          "requirement_id": "req-plan-review-upload-separate-pdfs",
+          "source_evidence_id": "evidence-single-pdf-separate-documents",
+          "fixture_document_id": "fixture-doc-single-pdf-v6",
+          "current_citation_span": {
+            "section_id": "single-pdf-guidance",
+            "start_char": 123,
+            "end_char": 276
+          },
+          "refresh_goal": "refresh cited source span for drawings, applications, calculations, and separate supporting PDFs",
+          "requires_live_fetch": false
+        },
+        {
+          "requirement_id": "req-plan-review-devhub-before-submit",
+          "source_evidence_id": "evidence-apply-permits-devhub-before-submit",
+          "fixture_document_id": "fixture-doc-apply-permits-v6",
+          "current_citation_span": {
+            "section_id": "apply-permits-devhub-guidance",
+            "start_char": 42,
+            "end_char": 190
+          },
+          "refresh_goal": "refresh fixture citation for DevHub draft-only guidance while preserving submission and certification exclusions",
+          "requires_live_fetch": false
+        }
+      ],
+      "requirement_placeholders": [
+        {
+          "requirement_id": "req-plan-review-upload-separate-pdfs",
+          "old_requirement_placeholder": "OLD_REQUIREMENT_PLACEHOLDER: supporting documents may need separate upload review",
+          "new_requirement_placeholder": "NEW_REQUIREMENT_PLACEHOLDER: preserve until reviewer compares fixture span against extracted wording",
+          "comparison_status": "pending_fixture_review",
+          "human_review_status": "hold"
+        },
+        {
+          "requirement_id": "req-plan-review-devhub-before-submit",
+          "old_requirement_placeholder": "OLD_REQUIREMENT_PLACEHOLDER: DevHub application may be drafted before official submission",
+          "new_requirement_placeholder": "NEW_REQUIREMENT_PLACEHOLDER: keep official submission and certification excluded from automation",
+          "comparison_status": "pending_fixture_review",
+          "human_review_status": "pending"
+        }
+      ],
+      "reviewer_comparison_prompt": "Compare fixture-only old-vs-new requirement placeholders for Building permit with plan review (building-permit-plan-review-fixture-v6). Verify cited source-span refresh targets evidence-single-pdf-separate-documents and evidence-apply-permits-devhub-before-submit; do not infer beyond fixtures; keep inactive guardrails unchanged; leave requirements pending when human review is needed: req-plan-review-upload-separate-pdfs, req-plan-review-devhub-before-submit.",
+      "human_review_hold": true,
+      "human_review_hold_reasons": [
+        "process_marked_for_human_review",
+        "req-plan-review-upload-separate-pdfs:placeholder_human_review_hold"
+      ],
+      "inactive_guardrail_status": "unchanged"
+    },
+    {
+      "process_id": "standard-trade-permit-fixture-v6",
+      "permit_type": "Standard trade permit",
+      "extraction_inputs": [
+        {
+          "fixture_document_id": "fixture-doc-online-tools-v6",
+          "source_id": "src-ppd-online-tools-fixture",
+          "source_kind": "public_html_normalized_fixture",
+          "normalized_text_fixture_ref": "ppd/tests/fixtures/requirement_reextraction_batch_plan_v6/normalized/online_tools_excerpt.json",
+          "raw_body_ref": null,
+          "requires_live_fetch": false
+        }
+      ],
+      "source_span_refresh_targets": [
+        {
+          "requirement_id": "req-trade-license-profile-check",
+          "source_evidence_id": "evidence-standard-trade-license-profile",
+          "fixture_document_id": "fixture-doc-online-tools-v6",
+          "current_citation_span": {
+            "section_id": "trade-permit-guidance",
+            "start_char": 40,
+            "end_char": 198
+          },
+          "refresh_goal": "refresh fixture citation for contractor-license profile checks before assuming fixture options are available",
+          "requires_live_fetch": false
+        }
+      ],
+      "requirement_placeholders": [
+        {
+          "requirement_id": "req-trade-license-profile-check",
+          "old_requirement_placeholder": "OLD_REQUIREMENT_PLACEHOLDER: contractor license profile facts can affect available trade fixture choices",
+          "new_requirement_placeholder": "NEW_REQUIREMENT_PLACEHOLDER: reviewer must compare against fixture-only extracted source span",
+          "comparison_status": "pending_fixture_review",
+          "human_review_status": "pending"
+        }
+      ],
+      "reviewer_comparison_prompt": "Compare fixture-only old-vs-new requirement placeholders for Standard trade permit (standard-trade-permit-fixture-v6). Verify cited source-span refresh targets evidence-standard-trade-license-profile; do not infer beyond fixtures; keep inactive guardrails unchanged; leave requirements pending when human review is needed: req-trade-license-profile-check.",
+      "human_review_hold": false,
+      "human_review_hold_reasons": [],
+      "inactive_guardrail_status": "unchanged"
+    }
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "-m",
+      "py_compile",
+      "ppd/extraction/requirement_reextraction_work_packet_v6.py"
+    ],
+    [
+      "python3",
+      "-m",
+      "pytest",
+      "ppd/tests/test_requirement_reextraction_work_packet_v6.py"
+    ],
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ]
+}

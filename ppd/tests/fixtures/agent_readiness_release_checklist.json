@@ -1,0 +1,334 @@
+{
+  "checklist_id": "ppd-agent-readiness-release-checklist-2026-05-28",
+  "fixture_name": "fixture-first cited guardrail API readiness mapping",
+  "citations": [
+    {
+      "citation_id": "plan.boundaries.no-consequential-actions",
+      "source_url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md#non-negotiable-boundaries",
+      "supports": "Agents must not upload, submit, certify, cancel, schedule, or pay without user attendance and exact confirmation."
+    },
+    {
+      "citation_id": "plan.devhub.safe-read-only",
+      "source_url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md#devhub-surface-categories",
+      "supports": "Read-only status, fee notice, correction request, attachment list, and inspection result review are safe categories."
+    },
+    {
+      "citation_id": "plan.devhub.reversible-draft",
+      "source_url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md#devhub-surface-categories",
+      "supports": "Address search, permit type selection before submission, form field fill before submission, save draft, local preview, and upload staging are reversible draft categories."
+    },
+    {
+      "citation_id": "plan.devhub.consequential-official",
+      "source_url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md#devhub-surface-categories",
+      "supports": "Submission, certification, official correction upload, permit purchase, inspection scheduling, cancellation, and extension or reactivation are consequential."
+    },
+    {
+      "citation_id": "plan.devhub.unsupported-manual",
+      "source_url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md#devhub-surface-categories",
+      "supports": "MFA, CAPTCHA, account creation, password recovery, final payment execution, and unclear workflows require refusal or manual handoff."
+    },
+    {
+      "citation_id": "plan.readiness.fixture-first",
+      "source_url": "docs/PORTLAND_PPD_SCRAPING_AUTOMATION_LOGIC_PLAN.md#purpose",
+      "supports": "The agent must load cited process models and ask only for missing, stale, ambiguous, or conflicting facts before reversible drafting."
+    }
+  ],
+  "guardrail_api_responses": [
+    {
+      "response_id": "gap.prompt.property-address",
+      "prompt_or_action": "ask_for_property_address",
+      "decision": "allowed_user_prompt",
+      "citation_ids": ["plan.readiness.fixture-first"],
+      "response": "Ask the user for the project property address because it is required for property lookup and is not yet known."
+    },
+    {
+      "response_id": "gap.prompt.contractor-license",
+      "prompt_or_action": "ask_for_contractor_license_status",
+      "decision": "allowed_user_prompt",
+      "citation_ids": ["plan.readiness.fixture-first"],
+      "response": "Ask whether the user is applying as owner, contractor, or authorized representative before drafting license-dependent values."
+    },
+    {
+      "response_id": "preview.local.pdf-field-map",
+      "prompt_or_action": "show_local_pdf_field_mapping_preview",
+      "decision": "local_preview",
+      "citation_ids": ["plan.devhub.reversible-draft"],
+      "response": "Show a local-only PDF field mapping preview without upload, certification, or submission."
+    },
+    {
+      "response_id": "preview.local.gap-report",
+      "prompt_or_action": "show_local_gap_analysis_preview",
+      "decision": "local_preview",
+      "citation_ids": ["plan.readiness.fixture-first", "plan.devhub.safe-read-only"],
+      "response": "Show a cited local gap report that identifies missing facts, missing documents, stale evidence, and blocked actions."
+    },
+    {
+      "response_id": "draft.devhub.address-search",
+      "prompt_or_action": "preview_devhub_address_search_draft",
+      "decision": "reversible_draft_preview",
+      "citation_ids": ["plan.devhub.reversible-draft"],
+      "response": "Prepare a reversible address search draft preview without submitting or saving official changes."
+    },
+    {
+      "response_id": "draft.devhub.form-values",
+      "prompt_or_action": "preview_devhub_form_value_draft",
+      "decision": "reversible_draft_preview",
+      "citation_ids": ["plan.devhub.reversible-draft", "plan.boundaries.no-consequential-actions"],
+      "response": "Prepare form values for user review while blocking certification, upload, and submission."
+    },
+    {
+      "response_id": "refuse.captcha",
+      "prompt_or_action": "captcha",
+      "decision": "refused_action",
+      "citation_ids": ["plan.devhub.unsupported-manual"],
+      "response": "Refuse CAPTCHA automation and hand control to the user."
+    },
+    {
+      "response_id": "refuse.mfa",
+      "prompt_or_action": "mfa",
+      "decision": "refused_action",
+      "citation_ids": ["plan.devhub.unsupported-manual"],
+      "response": "Refuse MFA automation and require the user to complete the challenge manually."
+    },
+    {
+      "response_id": "refuse.account-creation",
+      "prompt_or_action": "account_creation",
+      "decision": "refused_action",
+      "citation_ids": ["plan.devhub.unsupported-manual"],
+      "response": "Refuse automated account creation."
+    },
+    {
+      "response_id": "refuse.final-payment",
+      "prompt_or_action": "final_payment",
+      "decision": "refused_action",
+      "citation_ids": ["plan.devhub.unsupported-manual", "plan.boundaries.no-consequential-actions"],
+      "response": "Refuse final payment execution."
+    },
+    {
+      "response_id": "refuse.official-submit",
+      "prompt_or_action": "official_submit",
+      "decision": "refused_action",
+      "citation_ids": ["plan.devhub.consequential-official", "plan.boundaries.no-consequential-actions"],
+      "response": "Refuse official submission automation in unattended agent mode."
+    },
+    {
+      "response_id": "handoff.login",
+      "prompt_or_action": "login",
+      "decision": "manual_handoff",
+      "citation_ids": ["plan.devhub.unsupported-manual"],
+      "response": "Open an attended browser and ask the user to complete login without sharing credentials."
+    },
+    {
+      "response_id": "handoff.certification-review",
+      "prompt_or_action": "certification_review",
+      "decision": "manual_handoff",
+      "citation_ids": ["plan.devhub.consequential-official", "plan.boundaries.no-consequential-actions"],
+      "response": "Stop before acknowledgement or certification and require user review."
+    },
+    {
+      "response_id": "handoff.ambiguous-devhub-path",
+      "prompt_or_action": "ambiguous_devhub_path",
+      "decision": "manual_handoff",
+      "citation_ids": ["plan.devhub.unsupported-manual", "plan.readiness.fixture-first"],
+      "response": "Escalate ambiguous DevHub workflows to a human review path."
+    },
+    {
+      "response_id": "blocker.review.source-freshness",
+      "prompt_or_action": "public_source_freshness_review",
+      "decision": "unresolved_review_blocker",
+      "citation_ids": ["plan.readiness.fixture-first"],
+      "response": "Public source freshness and extracted requirement review are unresolved, so release readiness remains blocked."
+    },
+    {
+      "response_id": "blocker.review.devhub-selector-confidence",
+      "prompt_or_action": "devhub_selector_confidence_review",
+      "decision": "unresolved_review_blocker",
+      "citation_ids": ["plan.devhub.safe-read-only", "plan.devhub.reversible-draft"],
+      "response": "DevHub selector confidence and post-action hardening evidence are unresolved."
+    },
+    {
+      "response_id": "not-ready.submission",
+      "prompt_or_action": "submission",
+      "decision": "not_ready",
+      "citation_ids": ["plan.devhub.consequential-official", "plan.boundaries.no-consequential-actions"],
+      "response": "The agent is not ready for permit submission."
+    },
+    {
+      "response_id": "not-ready.payment",
+      "prompt_or_action": "payment",
+      "decision": "not_ready",
+      "citation_ids": ["plan.devhub.unsupported-manual", "plan.boundaries.no-consequential-actions"],
+      "response": "The agent is not ready for payment detail entry or payment submission."
+    },
+    {
+      "response_id": "not-ready.upload",
+      "prompt_or_action": "upload",
+      "decision": "not_ready",
+      "citation_ids": ["plan.devhub.consequential-official", "plan.boundaries.no-consequential-actions"],
+      "response": "The agent is not ready for official document upload or correction upload."
+    },
+    {
+      "response_id": "not-ready.scheduling",
+      "prompt_or_action": "scheduling",
+      "decision": "not_ready",
+      "citation_ids": ["plan.devhub.consequential-official", "plan.boundaries.no-consequential-actions"],
+      "response": "The agent is not ready for inspection scheduling or cancellation."
+    }
+  ],
+  "release_checklist": {
+    "allowed_user_prompt": [
+      {
+        "response_id": "gap.prompt.property-address",
+        "prompt_or_action": "ask_for_property_address",
+        "decision": "allowed_user_prompt",
+        "citation_ids": ["plan.readiness.fixture-first"],
+        "reason": "The fixture permits a narrow missing-fact question before drafting."
+      },
+      {
+        "response_id": "gap.prompt.contractor-license",
+        "prompt_or_action": "ask_for_contractor_license_status",
+        "decision": "allowed_user_prompt",
+        "citation_ids": ["plan.readiness.fixture-first"],
+        "reason": "The fixture permits a license-status prompt because eligibility may depend on it."
+      }
+    ],
+    "local_preview": [
+      {
+        "response_id": "preview.local.pdf-field-map",
+        "prompt_or_action": "show_local_pdf_field_mapping_preview",
+        "decision": "local_preview",
+        "citation_ids": ["plan.devhub.reversible-draft"],
+        "reason": "Local PDF previews do not touch DevHub or official records."
+      },
+      {
+        "response_id": "preview.local.gap-report",
+        "prompt_or_action": "show_local_gap_analysis_preview",
+        "decision": "local_preview",
+        "citation_ids": ["plan.readiness.fixture-first", "plan.devhub.safe-read-only"],
+        "reason": "A cited local gap report is read-only and reviewable."
+      }
+    ],
+    "reversible_draft_preview": [
+      {
+        "response_id": "draft.devhub.address-search",
+        "prompt_or_action": "preview_devhub_address_search_draft",
+        "decision": "reversible_draft_preview",
+        "citation_ids": ["plan.devhub.reversible-draft"],
+        "reason": "Address search drafting is reversible before any official action."
+      },
+      {
+        "response_id": "draft.devhub.form-values",
+        "prompt_or_action": "preview_devhub_form_value_draft",
+        "decision": "reversible_draft_preview",
+        "citation_ids": ["plan.devhub.reversible-draft", "plan.boundaries.no-consequential-actions"],
+        "reason": "Form value drafting is allowed only as a preview with consequential actions blocked."
+      }
+    ],
+    "refused_action": [
+      {
+        "response_id": "refuse.captcha",
+        "prompt_or_action": "captcha",
+        "decision": "refused_action",
+        "citation_ids": ["plan.devhub.unsupported-manual"],
+        "reason": "CAPTCHA automation is outside allowed PP&D agent behavior."
+      },
+      {
+        "response_id": "refuse.mfa",
+        "prompt_or_action": "mfa",
+        "decision": "refused_action",
+        "citation_ids": ["plan.devhub.unsupported-manual"],
+        "reason": "MFA automation is outside allowed PP&D agent behavior."
+      },
+      {
+        "response_id": "refuse.account-creation",
+        "prompt_or_action": "account_creation",
+        "decision": "refused_action",
+        "citation_ids": ["plan.devhub.unsupported-manual"],
+        "reason": "Account creation requires a separate human-run playbook and is not automated."
+      },
+      {
+        "response_id": "refuse.final-payment",
+        "prompt_or_action": "final_payment",
+        "decision": "refused_action",
+        "citation_ids": ["plan.devhub.unsupported-manual", "plan.boundaries.no-consequential-actions"],
+        "reason": "Final payment execution is refused in agent mode."
+      },
+      {
+        "response_id": "refuse.official-submit",
+        "prompt_or_action": "official_submit",
+        "decision": "refused_action",
+        "citation_ids": ["plan.devhub.consequential-official", "plan.boundaries.no-consequential-actions"],
+        "reason": "Official submission is refused until a separate attended confirmation path exists."
+      }
+    ],
+    "manual_handoff": [
+      {
+        "response_id": "handoff.login",
+        "prompt_or_action": "login",
+        "decision": "manual_handoff",
+        "citation_ids": ["plan.devhub.unsupported-manual"],
+        "reason": "Login is attended and credentials must not be requested or stored."
+      },
+      {
+        "response_id": "handoff.certification-review",
+        "prompt_or_action": "certification_review",
+        "decision": "manual_handoff",
+        "citation_ids": ["plan.devhub.consequential-official", "plan.boundaries.no-consequential-actions"],
+        "reason": "Certification requires user review and exact confirmation."
+      },
+      {
+        "response_id": "handoff.ambiguous-devhub-path",
+        "prompt_or_action": "ambiguous_devhub_path",
+        "decision": "manual_handoff",
+        "citation_ids": ["plan.devhub.unsupported-manual", "plan.readiness.fixture-first"],
+        "reason": "Unclear DevHub workflows must be escalated instead of guessed."
+      }
+    ],
+    "unresolved_review_blocker": [
+      {
+        "response_id": "blocker.review.source-freshness",
+        "prompt_or_action": "public_source_freshness_review",
+        "decision": "unresolved_review_blocker",
+        "citation_ids": ["plan.readiness.fixture-first"],
+        "reason": "Public source freshness review is not complete."
+      },
+      {
+        "response_id": "blocker.review.devhub-selector-confidence",
+        "prompt_or_action": "devhub_selector_confidence_review",
+        "decision": "unresolved_review_blocker",
+        "citation_ids": ["plan.devhub.safe-read-only", "plan.devhub.reversible-draft"],
+        "reason": "DevHub selector confidence and post-action evidence review are not complete."
+      }
+    ],
+    "not_ready": [
+      {
+        "response_id": "not-ready.submission",
+        "prompt_or_action": "submission",
+        "decision": "not_ready",
+        "citation_ids": ["plan.devhub.consequential-official", "plan.boundaries.no-consequential-actions"],
+        "reason": "Submission remains explicitly non-ready."
+      },
+      {
+        "response_id": "not-ready.payment",
+        "prompt_or_action": "payment",
+        "decision": "not_ready",
+        "citation_ids": ["plan.devhub.unsupported-manual", "plan.boundaries.no-consequential-actions"],
+        "reason": "Payment remains explicitly non-ready."
+      },
+      {
+        "response_id": "not-ready.upload",
+        "prompt_or_action": "upload",
+        "decision": "not_ready",
+        "citation_ids": ["plan.devhub.consequential-official", "plan.boundaries.no-consequential-actions"],
+        "reason": "Official upload remains explicitly non-ready."
+      },
+      {
+        "response_id": "not-ready.scheduling",
+        "prompt_or_action": "scheduling",
+        "decision": "not_ready",
+        "citation_ids": ["plan.devhub.consequential-official", "plan.boundaries.no-consequential-actions"],
+        "reason": "Inspection scheduling remains explicitly non-ready."
+      }
+    ]
+  }
+}

@@ -1,0 +1,5 @@
+{
+  "taskBoardMarkdown": "- [x] Task checkbox-61: Completed baseline work.\n\n## Built-In Supervisor Repair Notes\n\n- Parked repeated LLM parse/runtime loop for `Task checkbox-62: Add daemon repair coverage` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.\n\n## Built-In Supervisor Repair Notes\n\n- Parked repeated LLM parse/runtime loop for `Task checkbox-62: Add daemon repair coverage` so the daemon can continue with the next independent selectable task. Resume only after prompt, parser, or retry policy has been updated.\n\n## Built-In Generated Blocked-Cascade Quarantine Notes\n\n- Parked open generated blocked-cascade daemon-repair tasks after a systemic termination storm. The supervisor will not grow generated fallback tranches again until the resource policy is hardened or a vetted human-authored task is reopened.\n\n## Normal Project Notes\n\n- This regular task-board note mentions repair in passing but is not a supervisor repair-note section.\n",
+  "expectedTotalNotes": 3,
+  "expectedUniqueNotes": 2
+}

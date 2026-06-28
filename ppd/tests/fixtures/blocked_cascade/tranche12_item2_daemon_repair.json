@@ -1,0 +1,30 @@
+{
+  "tranche": 12,
+  "item": 2,
+  "blocked_task": {
+    "id": "ppd-work-tranche12-item2",
+    "status": "blocked",
+    "blocked_by": "daemon-repair-tranche12-item2",
+    "generation": 7
+  },
+  "repair_attempts": [
+    {
+      "id": "daemon-repair-tranche12-item2-old",
+      "kind": "daemon-repair",
+      "generation": 6,
+      "validated": true
+    },
+    {
+      "id": "daemon-repair-tranche12-item2-failed",
+      "kind": "daemon-repair",
+      "generation": 8,
+      "validated": false
+    },
+    {
+      "id": "daemon-repair-tranche12-item2-fresh",
+      "kind": "daemon-repair",
+      "generation": 8,
+      "validated": true
+    }
+  ]
+}

@@ -1,0 +1,78 @@
+{
+  "packet_id": "reviewed-synthetic-requirement-candidates-20260529",
+  "packet_kind": "reviewed_synthetic_requirement_candidate_packet",
+  "fixture_mode": "synthetic_reviewed_candidates_only",
+  "reviewed_requirement_candidates": [
+    {
+      "candidate_id": "req-candidate-single-pdf-upload-separation-reviewed",
+      "change_type": "modified_requirement",
+      "requirement_type": "document_requirement",
+      "source_evidence_ids": [
+        "src-ev-submit-plans-online-single-pdf-rule"
+      ],
+      "new_requirement": {
+        "requirement_id": "req-submit-plans-online-doc-separation",
+        "source_evidence_ids": [
+          "src-ev-submit-plans-online-single-pdf-rule"
+        ],
+        "action": "upload one drawing PDF plus separate application and calculation PDFs",
+        "object": "online permit request upload package",
+        "process_stage": "upload staging",
+        "human_review_status": "reviewed_synthetic"
+      },
+      "old_to_new_requirement_diff": {
+        "changed_fields": [
+          {
+            "field": "action",
+            "old_value": "prepare",
+            "new_value": "upload"
+          },
+          {
+            "field": "process_stage",
+            "old_value": "document preparation",
+            "new_value": "upload staging"
+          }
+        ],
+        "semantic_summary": "Reviewed synthetic change narrows the single PDF rule around upload staging."
+      },
+      "affected_process_ids": [
+        "synthetic-public-single-pdf-process"
+      ],
+      "human_review_status": "reviewed_synthetic",
+      "activation_status": "disabled"
+    },
+    {
+      "candidate_id": "req-candidate-devhub-submit-confirmation-reviewed",
+      "change_type": "new_requirement_candidate",
+      "requirement_type": "action_gate",
+      "source_evidence_ids": [
+        "src-ev-devhub-submit-confirmation"
+      ],
+      "new_requirement": {
+        "requirement_id": "req-devhub-submit-exact-confirmation",
+        "source_evidence_ids": [
+          "src-ev-devhub-submit-confirmation"
+        ],
+        "action": "require exact confirmation before submit permit request",
+        "object": "DevHub submit action",
+        "process_stage": "submission",
+        "human_review_status": "reviewed_synthetic"
+      },
+      "old_to_new_requirement_diff": {
+        "changed_fields": [
+          {
+            "field": "requirement",
+            "old_value": null,
+            "new_value": "exact confirmation checkpoint before submission"
+          }
+        ],
+        "semantic_summary": "Reviewed synthetic action gate keeps submission blocked until attended exact confirmation."
+      },
+      "affected_process_ids": [
+        "synthetic-public-single-pdf-process"
+      ],
+      "human_review_status": "reviewed_synthetic",
+      "activation_status": "disabled"
+    }
+  ]
+}

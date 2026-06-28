@@ -1,0 +1,20 @@
+Implemented a narrow IR/decompiler slot refinement for `modal.ir_decompiler` by adding deterministic `title ↔ section-number` relation slots.
+
+- Added new derived slot families for both `citation_*` and `source_id_*`:
+  - `*_title_section_primary_number_relation`
+  - `*_title_section_primary_number_span`
+  - `*_title_section_terminal_number_relation`
+  - `*_title_section_terminal_number_span`
+- Wired this into both decompiler phrase-slot emission and F-logic triple projection:
+  - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000075-20260518_145859/ipfs_datasets_py/logic/modal/decompiler.py:1127)
+  - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000075-20260518_145859/ipfs_datasets_py/logic/modal/decompiler.py:2372)
+  - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000075-20260518_145859/ipfs_datasets_py/logic/modal/decompiler.py:2476)
+  - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000075-20260518_145859/ipfs_datasets_py/logic/modal/codec.py:1466)
+  - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000075-20260518_145859/ipfs_datasets_py/logic/modal/codec.py:1590)
+  - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000075-20260518_145859/ipfs_datasets_py/logic/modal/codec.py:3158)
+- Extended regression assertions for these slots in both decode and triple paths:
+  - [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000075-20260518_145859/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:646)
+
+Validation run:
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py`  
+- Result: `46 passed`

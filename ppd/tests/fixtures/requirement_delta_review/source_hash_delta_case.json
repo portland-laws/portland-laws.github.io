@@ -1,0 +1,360 @@
+{
+  "cases": [
+    {
+      "name": "formalization-gate-deltas",
+      "previous_snapshot": {
+        "snapshot_id": "previous-formalization-gate",
+        "source_hashes": {
+          "devhub-guide-submit-permit-application": "sha256:devhub-guide-v1"
+        },
+        "synthetic_requirements": [
+          {
+            "requirement_id": "REQ-MISSING-MAPPINGS",
+            "source_id": "devhub-guide-submit-permit-application",
+            "source_evidence_ids": ["devhub-guide-submit-permit-application#missing-mappings"],
+            "requirement_hash": "sha256:req-missing-mappings-v1",
+            "requirement_type": "precondition",
+            "subject": "applicant",
+            "action": "identify application facts",
+            "object": "permit request",
+            "conditions": ["before draft preparation"],
+            "process_stage": "application data entry",
+            "process_ids": ["process-building-permit"],
+            "guardrail_bundle_ids": ["guardrail-building-permit"],
+            "human_review_status": "approved",
+            "citations": [
+              {
+                "citation_id": "cite-missing-mappings-current",
+                "freshness_status": "fresh"
+              }
+            ],
+            "supported_path_taxonomy": [
+              {
+                "path_id": "path-missing-mappings",
+                "path_kind": "devhub_public_guidance",
+                "support_status": "supported"
+              }
+            ]
+          },
+          {
+            "requirement_id": "REQ-MISSING-TAXONOMY",
+            "source_id": "devhub-guide-submit-permit-application",
+            "source_evidence_ids": ["devhub-guide-submit-permit-application#taxonomy"],
+            "requirement_hash": "sha256:req-missing-taxonomy-v1",
+            "requirement_type": "document_requirement",
+            "subject": "applicant",
+            "action": "stage upload documents",
+            "object": "permit request attachments",
+            "conditions": ["before acknowledgement"],
+            "process_stage": "upload staging",
+            "process_ids": ["process-building-permit"],
+            "guardrail_bundle_ids": ["guardrail-building-permit"],
+            "human_review_status": "approved",
+            "citations": [
+              {
+                "citation_id": "cite-taxonomy-current",
+                "freshness_status": "fresh"
+              }
+            ],
+            "supported_path_taxonomy": [
+              {
+                "path_id": "path-taxonomy-v1",
+                "path_kind": "devhub_public_guidance",
+                "support_status": "supported"
+              }
+            ]
+          },
+          {
+            "requirement_id": "REQ-PENDING-REVIEW",
+            "source_id": "devhub-guide-submit-permit-application",
+            "source_evidence_ids": ["devhub-guide-submit-permit-application#review"],
+            "requirement_hash": "sha256:req-pending-review-v1",
+            "requirement_type": "action_gate",
+            "subject": "applicant",
+            "action": "certify acknowledgement",
+            "object": "permit request submission",
+            "conditions": ["after application review"],
+            "process_stage": "acknowledgement/certification review",
+            "process_ids": ["process-building-permit"],
+            "guardrail_bundle_ids": ["guardrail-building-permit"],
+            "human_review_status": "approved",
+            "citations": [
+              {
+                "citation_id": "cite-pending-review-current",
+                "freshness_status": "fresh"
+              }
+            ],
+            "supported_path_taxonomy": [
+              {
+                "path_id": "path-pending-review",
+                "path_kind": "devhub_public_guidance",
+                "support_status": "supported"
+              }
+            ]
+          },
+          {
+            "requirement_id": "REQ-READY-CHANGED",
+            "source_id": "devhub-guide-submit-permit-application",
+            "source_evidence_ids": ["devhub-guide-submit-permit-application#ready"],
+            "requirement_hash": "sha256:req-ready-v1",
+            "requirement_type": "permission",
+            "subject": "applicant",
+            "action": "save permit request data",
+            "object": "DevHub draft",
+            "conditions": ["before submission"],
+            "process_stage": "application data entry",
+            "process_ids": ["process-building-permit"],
+            "guardrail_bundle_ids": ["guardrail-building-permit"],
+            "human_review_status": "approved",
+            "citations": [
+              {
+                "citation_id": "cite-ready-current",
+                "freshness_status": "fresh"
+              }
+            ],
+            "supported_path_taxonomy": [
+              {
+                "path_id": "path-public-html",
+                "path_kind": "public_html_guidance",
+                "support_status": "supported"
+              }
+            ]
+          },
+          {
+            "requirement_id": "REQ-STALE-CITATION",
+            "source_id": "devhub-guide-submit-permit-application",
+            "source_evidence_ids": ["devhub-guide-submit-permit-application#citation"],
+            "requirement_hash": "sha256:req-stale-citation-v1",
+            "requirement_type": "precondition",
+            "subject": "applicant",
+            "action": "review required uploads",
+            "object": "permit documents",
+            "conditions": ["before upload staging"],
+            "process_stage": "document preparation",
+            "process_ids": ["process-building-permit"],
+            "guardrail_bundle_ids": ["guardrail-building-permit"],
+            "human_review_status": "approved",
+            "citations": [
+              {
+                "citation_id": "cite-stale-before",
+                "freshness_status": "fresh"
+              }
+            ],
+            "supported_path_taxonomy": [
+              {
+                "path_id": "path-stale-citation",
+                "path_kind": "public_pdf_guidance",
+                "support_status": "supported"
+              }
+            ]
+          }
+        ]
+      },
+      "current_snapshot": {
+        "snapshot_id": "current-formalization-gate",
+        "source_hashes": {
+          "devhub-guide-submit-permit-application": "sha256:devhub-guide-v2"
+        },
+        "synthetic_requirements": [
+          {
+            "requirement_id": "REQ-MISSING-MAPPINGS",
+            "source_id": "devhub-guide-submit-permit-application",
+            "source_evidence_ids": ["devhub-guide-submit-permit-application#missing-mappings-v2"],
+            "requirement_hash": "sha256:req-missing-mappings-v2",
+            "requirement_type": "precondition",
+            "subject": "applicant",
+            "action": "identify application facts",
+            "object": "permit request",
+            "conditions": ["before draft preparation", "before upload staging"],
+            "process_stage": "application data entry",
+            "process_ids": [],
+            "guardrail_bundle_ids": [],
+            "human_review_status": "approved",
+            "citations": [
+              {
+                "citation_id": "cite-missing-mappings-current",
+                "freshness_status": "fresh"
+              }
+            ],
+            "supported_path_taxonomy": [
+              {
+                "path_id": "path-missing-mappings",
+                "path_kind": "devhub_public_guidance",
+                "support_status": "supported"
+              }
+            ]
+          },
+          {
+            "requirement_id": "REQ-MISSING-TAXONOMY",
+            "source_id": "devhub-guide-submit-permit-application",
+            "source_evidence_ids": ["devhub-guide-submit-permit-application#taxonomy-v2"],
+            "requirement_hash": "sha256:req-missing-taxonomy-v2",
+            "requirement_type": "document_requirement",
+            "subject": "applicant",
+            "action": "stage upload documents",
+            "object": "permit request attachments",
+            "conditions": ["before acknowledgement", "before submission"],
+            "process_stage": "upload staging",
+            "process_ids": ["process-building-permit"],
+            "guardrail_bundle_ids": ["guardrail-building-permit"],
+            "human_review_status": "approved",
+            "citations": [
+              {
+                "citation_id": "cite-taxonomy-current",
+                "freshness_status": "fresh"
+              }
+            ],
+            "supported_path_taxonomy": []
+          },
+          {
+            "requirement_id": "REQ-PENDING-REVIEW",
+            "source_id": "devhub-guide-submit-permit-application",
+            "source_evidence_ids": ["devhub-guide-submit-permit-application#review-v2"],
+            "requirement_hash": "sha256:req-pending-review-v2",
+            "requirement_type": "action_gate",
+            "subject": "applicant",
+            "action": "certify acknowledgement",
+            "object": "permit request submission",
+            "conditions": ["after application review", "before official submission"],
+            "process_stage": "acknowledgement/certification review",
+            "process_ids": ["process-building-permit"],
+            "guardrail_bundle_ids": ["guardrail-building-permit"],
+            "human_review_status": "needs_review",
+            "citations": [
+              {
+                "citation_id": "cite-pending-review-current",
+                "freshness_status": "fresh"
+              }
+            ],
+            "supported_path_taxonomy": [
+              {
+                "path_id": "path-pending-review",
+                "path_kind": "devhub_public_guidance",
+                "support_status": "supported"
+              }
+            ]
+          },
+          {
+            "requirement_id": "REQ-READY-CHANGED",
+            "source_id": "devhub-guide-submit-permit-application",
+            "source_evidence_ids": ["devhub-guide-submit-permit-application#ready-v2"],
+            "requirement_hash": "sha256:req-ready-v2",
+            "requirement_type": "permission",
+            "subject": "applicant",
+            "action": "save permit request data",
+            "object": "DevHub draft",
+            "conditions": ["before acknowledgement, certification, or submission"],
+            "process_stage": "application data entry",
+            "process_ids": ["process-building-permit"],
+            "guardrail_bundle_ids": ["guardrail-building-permit"],
+            "human_review_status": "approved",
+            "citations": [
+              {
+                "citation_id": "cite-ready-current",
+                "freshness_status": "fresh"
+              }
+            ],
+            "supported_path_taxonomy": [
+              {
+                "path_id": "path-public-html",
+                "path_kind": "public_html_guidance",
+                "support_status": "supported"
+              }
+            ]
+          },
+          {
+            "requirement_id": "REQ-STALE-CITATION",
+            "source_id": "devhub-guide-submit-permit-application",
+            "source_evidence_ids": ["devhub-guide-submit-permit-application#citation-v2"],
+            "requirement_hash": "sha256:req-stale-citation-v2",
+            "requirement_type": "precondition",
+            "subject": "applicant",
+            "action": "review required uploads",
+            "object": "permit documents",
+            "conditions": ["before upload staging", "before acknowledgement"],
+            "process_stage": "document preparation",
+            "process_ids": ["process-building-permit"],
+            "guardrail_bundle_ids": ["guardrail-building-permit"],
+            "human_review_status": "approved",
+            "citations": [
+              {
+                "citation_id": "cite-stale-after",
+                "freshness_status": "stale"
+              }
+            ],
+            "supported_path_taxonomy": [
+              {
+                "path_id": "path-stale-citation",
+                "path_kind": "public_pdf_guidance",
+                "support_status": "supported"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "name": "unchanged-source-requirement-edit-is-ignored",
+      "previous_snapshot": {
+        "snapshot_id": "previous-stable-source",
+        "source_hashes": {
+          "devhub-faq": "sha256:stable"
+        },
+        "synthetic_requirements": [
+          {
+            "requirement_id": "REQ-STABLE-FAQ",
+            "source_id": "devhub-faq",
+            "source_evidence_ids": ["devhub-faq#status"],
+            "requirement_hash": "sha256:req-stable-v1",
+            "requirement_type": "permission",
+            "subject": "applicant",
+            "action": "review DevHub status messages",
+            "object": "permit status",
+            "conditions": [],
+            "process_stage": "status review",
+            "process_ids": ["process-building-permit"],
+            "guardrail_bundle_ids": ["guardrail-building-permit"],
+            "human_review_status": "approved",
+            "citations": [
+              {
+                "citation_id": "cite-stable",
+                "freshness_status": "fresh"
+              }
+            ],
+            "supported_path_taxonomy": ["devhub_public_guidance"]
+          }
+        ]
+      },
+      "current_snapshot": {
+        "snapshot_id": "current-stable-source",
+        "source_hashes": {
+          "devhub-faq": "sha256:stable"
+        },
+        "synthetic_requirements": [
+          {
+            "requirement_id": "REQ-STABLE-FAQ",
+            "source_id": "devhub-faq",
+            "source_evidence_ids": ["devhub-faq#status"],
+            "requirement_hash": "sha256:req-stable-v2",
+            "requirement_type": "permission",
+            "subject": "applicant",
+            "action": "review updated DevHub status messages",
+            "object": "permit status",
+            "conditions": [],
+            "process_stage": "status review",
+            "process_ids": ["process-building-permit"],
+            "guardrail_bundle_ids": ["guardrail-building-permit"],
+            "human_review_status": "needs_review",
+            "citations": [
+              {
+                "citation_id": "cite-stable",
+                "freshness_status": "fresh"
+              }
+            ],
+            "supported_path_taxonomy": ["devhub_public_guidance"]
+          }
+        ]
+      }
+    }
+  ]
+}

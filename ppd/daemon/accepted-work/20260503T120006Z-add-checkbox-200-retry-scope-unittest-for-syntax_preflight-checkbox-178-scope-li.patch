@@ -1,0 +1,130 @@
+--- a/ppd/tests/test_checkbox_200_syntax_preflight_retry_scope.py
++++ b/ppd/tests/test_checkbox_200_syntax_preflight_retry_scope.py
+@@ -0,0 +1,127 @@
++"""Regression coverage for checkbox-200 syntax-preflight retry scope.
++
++The daemon retry prompt for checkbox-178 must stay narrow after syntax_preflight
++history. A retry may replace exactly one parser-bearing implementation/test file,
++or exactly one daemon repair file. It must not bundle source, fixture, and test
++changes together while recovering from parser failures.
++"""
++
++from __future__ import annotations
++
++import unittest
++
++
++SYNTAX_PREFLIGHT = "syntax_preflight"
++TARGET_TASK = "checkbox-178"
++
++PARSER_SUFFIXES = (".py", ".ts", ".tsx", ".js", ".jsx")
++DAEMON_REPAIR_PREFIX = "ppd/daemon/"
++
++
++class RetryScopeDecision:
++    def __init__(self, allowed: bool, reason: str) -> None:
++        self.allowed = allowed
++        self.reason = reason
++
++
++def _has_checkbox_178_syntax_preflight(history: list[dict[str, str]]) -> bool:
++    return any(
++        item.get("target_task") == TARGET_TASK and item.get("failure_kind") == SYNTAX_PREFLIGHT
++        for item in history
++    )
++
++
++def _is_parser_bearing_file(path: str) -> bool:
++    return path.startswith("ppd/") and path.endswith(PARSER_SUFFIXES)
++
++
++def _is_daemon_repair_file(path: str) -> bool:
++    return path.startswith(DAEMON_REPAIR_PREFIX)
++
++
++def decide_checkbox_178_retry_scope(
++    history: list[dict[str, str]],
++    proposed_paths: list[str],
++) -> RetryScopeDecision:
++    """Return whether a checkbox-178 syntax-preflight retry is narrow enough."""
++
++    if not _has_checkbox_178_syntax_preflight(history):
++        return RetryScopeDecision(True, "no checkbox-178 syntax_preflight retry narrowing required")
++
++    if len(proposed_paths) != 1:
++        return RetryScopeDecision(
++            False,
++            "checkbox-178 syntax_preflight retry must replace exactly one file",
++        )
++
++    only_path = proposed_paths[0]
++    if _is_daemon_repair_file(only_path):
++        return RetryScopeDecision(True, "one daemon repair file is allowed")
++    if _is_parser_bearing_file(only_path):
++        return RetryScopeDecision(True, "one parser-bearing file is allowed")
++
++    return RetryScopeDecision(
++        False,
++        "single-file retry is neither parser-bearing nor daemon repair",
++    )
++
++
++class Checkbox200SyntaxPreflightRetryScopeTest(unittest.TestCase):
++    def setUp(self) -> None:
++        self.syntax_history = [
++            {
++                "target_task": TARGET_TASK,
++                "failure_kind": SYNTAX_PREFLIGHT,
++                "summary": "checkbox-178 parser-clean recovery",
++            }
++        ]
++
++    def test_rejects_three_file_source_fixture_test_bundle(self) -> None:
++        decision = decide_checkbox_178_retry_scope(
++            self.syntax_history,
++            [
++                "ppd/devhub/draft_readiness.py",
++                "ppd/tests/fixtures/devhub/draft_readiness_case.json",
++                "ppd/tests/test_devhub_draft_readiness.py",
++            ],
++        )
++
++        self.assertFalse(decision.allowed)
++        self.assertEqual(
++            decision.reason,
++            "checkbox-178 syntax_preflight retry must replace exactly one file",
++        )
++
++    def test_allows_exactly_one_parser_bearing_file_after_syntax_preflight(self) -> None:
++        decision = decide_checkbox_178_retry_scope(
++            self.syntax_history,
++            ["ppd/devhub/draft_readiness.py"],
++        )
++
++        self.assertTrue(decision.allowed)
++        self.assertEqual(decision.reason, "one parser-bearing file is allowed")
++
++    def test_allows_exactly_one_daemon_repair_file_after_syntax_preflight(self) -> None:
++        decision = decide_checkbox_178_retry_scope(
++            self.syntax_history,
++            ["ppd/daemon/retry_scope.py"],
++        )
++
++        self.assertTrue(decision.allowed)
++        self.assertEqual(decision.reason, "one daemon repair file is allowed")
++
++    def test_rejects_single_non_parser_non_daemon_file(self) -> None:
++        decision = decide_checkbox_178_retry_scope(
++            self.syntax_history,
++            ["ppd/tests/fixtures/devhub/draft_readiness_case.json"],
++        )
++
++        self.assertFalse(decision.allowed)
++        self.assertEqual(
++            decision.reason,
++            "single-file retry is neither parser-bearing nor daemon repair",
++        )
++
++
++if __name__ == "__main__":
++    unittest.main()

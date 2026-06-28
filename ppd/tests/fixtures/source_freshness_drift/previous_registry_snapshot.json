@@ -1,0 +1,54 @@
+{
+  "snapshot_id": "fixture-previous-2026-05-01",
+  "sources": [
+    {
+      "source_id": "SRC-DEVHUB-FAQ",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "source_type": "devhub_public",
+      "owning_surface": "devhub_public_help",
+      "allowlist_policy": "allowed_public",
+      "robots_policy": "allowed",
+      "crawl_frequency": "daily",
+      "processor_policy": "metadata_then_normalized_text",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-01T00:00:00Z",
+      "freshness_status": "fresh",
+      "content_hash": "sha256:previous-devhub-faq",
+      "citation_hash": "sha256:previous-devhub-citations",
+      "requirement_ids": ["REQ-DEVHUB-ACCOUNT", "REQ-DEVHUB-CORRECTIONS"],
+      "guardrail_bundle_ids": ["GRB-DEVHUB-ATTENDED"]
+    },
+    {
+      "source_id": "SRC-FILE-STANDARDS",
+      "canonical_url": "https://www.portland.gov/ppd/spp-file-naming-standards-preparing-pdfs",
+      "source_type": "public_html",
+      "owning_surface": "public_guidance",
+      "allowlist_policy": "allowed_public",
+      "robots_policy": "allowed",
+      "crawl_frequency": "weekly",
+      "processor_policy": "metadata_then_normalized_text",
+      "privacy_classification": "public",
+      "last_seen_at": "2026-05-01T00:00:00Z",
+      "freshness_status": "fresh",
+      "content_hash": "sha256:file-standards-stable",
+      "citation_hash": "sha256:file-standards-citations",
+      "requirement_ids": ["REQ-SINGLE-PDF-NAMING"],
+      "guardrail_bundle_ids": ["GRB-DOCUMENT-PREP"]
+    }
+  ],
+  "requirement_citations": {
+    "REQ-DEVHUB-ACCOUNT": ["SRC-DEVHUB-FAQ"],
+    "REQ-DEVHUB-CORRECTIONS": ["SRC-DEVHUB-FAQ"],
+    "REQ-SINGLE-PDF-NAMING": ["SRC-FILE-STANDARDS"]
+  },
+  "guardrail_bundles": [
+    {
+      "guardrail_bundle_id": "GRB-DEVHUB-ATTENDED",
+      "source_ids": ["SRC-DEVHUB-FAQ"]
+    },
+    {
+      "guardrail_bundle_id": "GRB-DOCUMENT-PREP",
+      "source_ids": ["SRC-FILE-STANDARDS"]
+    }
+  ]
+}

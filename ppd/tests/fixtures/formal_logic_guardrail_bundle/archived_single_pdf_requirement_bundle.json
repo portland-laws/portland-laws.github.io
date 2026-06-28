@@ -1,0 +1,324 @@
+{
+  "fixture_id": "archived_single_pdf_formal_logic_guardrail_bundle_v1",
+  "fixture_version": 1,
+  "created_at": "2026-05-08T00:00:00Z",
+  "privacy_classification": "public_redacted_fixture",
+  "purpose": "Fixture-only formal-logic guardrail bundle for an archived PP&D Single PDF Process requirement set. The fixture translates public requirements into obligations, prerequisites, stop gates, reversible actions, and exact-confirmation requirements without invoking live crawl or authenticated DevHub automation.",
+  "source_policy": {
+    "fixture_only": true,
+    "live_crawl_required": false,
+    "authenticated_session_required": false,
+    "contains_private_user_data": false,
+    "mutates_active_guardrails": false,
+    "allowed_uses": [
+      "offline_validation",
+      "guardrail_bundle_fixture_tests",
+      "agent_gap_analysis_rehearsal"
+    ],
+    "disallowed_uses": [
+      "DevHub login",
+      "file upload",
+      "permit submission",
+      "certification",
+      "payment",
+      "inspection scheduling",
+      "CAPTCHA automation",
+      "MFA automation"
+    ]
+  },
+  "archived_requirement_set": {
+    "requirement_set_id": "archived-ppd-single-pdf-process-requirements-v1",
+    "archive_manifest_id": "fixture-archive-manifest-single-pdf-process-v1",
+    "source_evidence_ids": [
+      "ev-single-pdf-file-rules",
+      "ev-single-pdf-document-separation",
+      "ev-devhub-review-before-submit"
+    ],
+    "captured_at": "2026-05-08T00:00:00Z",
+    "sources": [
+      {
+        "source_id": "ppd_single_pdf_process_archived_fixture",
+        "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+        "source_type": "public_html",
+        "freshness_status": "archived_fixture",
+        "no_raw_body_persisted": true,
+        "evidence": [
+          {
+            "evidence_id": "ev-single-pdf-file-rules",
+            "anchor_id": "single-pdf-file-rules",
+            "excerpt": "Drawing plans are represented as one searchable PDF for the Single PDF Process."
+          },
+          {
+            "evidence_id": "ev-single-pdf-document-separation",
+            "anchor_id": "application-calculation-supporting-documents",
+            "excerpt": "Applications, calculations, and other supporting documents are represented as separate PDFs."
+          }
+        ]
+      },
+      {
+        "source_id": "ppd_devhub_submit_application_archived_fixture",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+        "source_type": "public_html",
+        "freshness_status": "archived_fixture",
+        "no_raw_body_persisted": true,
+        "evidence": [
+          {
+            "evidence_id": "ev-devhub-review-before-submit",
+            "anchor_id": "review-before-submit",
+            "excerpt": "The applicant reviews application information and required documents before final submission."
+          }
+        ]
+      }
+    ],
+    "requirements": [
+      {
+        "requirement_id": "req-single-pdf-drawing-plan-obligation",
+        "requirement_type": "obligation",
+        "subject": "applicant",
+        "action": "provide",
+        "object": "drawing plans as one searchable PDF",
+        "conditions": [
+          "single_pdf_process_applies",
+          "plan_review_permit_request"
+        ],
+        "deadline_or_temporal_scope": "before(upload_staging)",
+        "source_evidence_ids": [
+          "ev-single-pdf-file-rules"
+        ],
+        "formalization_status": "fixture_formalized"
+      },
+      {
+        "requirement_id": "req-single-pdf-separate-supporting-docs-obligation",
+        "requirement_type": "obligation",
+        "subject": "applicant",
+        "action": "provide",
+        "object": "application calculations and supporting documents as separate PDFs",
+        "conditions": [
+          "supporting_documents_required"
+        ],
+        "deadline_or_temporal_scope": "before(upload_staging)",
+        "source_evidence_ids": [
+          "ev-single-pdf-document-separation"
+        ],
+        "formalization_status": "fixture_formalized"
+      },
+      {
+        "requirement_id": "req-property-facts-prerequisite",
+        "requirement_type": "precondition",
+        "subject": "agent",
+        "action": "verify_known_fact",
+        "object": "project address and permit type",
+        "conditions": [
+          "before_draft_application_data_entry"
+        ],
+        "deadline_or_temporal_scope": "before(draft_devhub_application)",
+        "source_evidence_ids": [
+          "ev-devhub-review-before-submit"
+        ],
+        "formalization_status": "fixture_formalized"
+      },
+      {
+        "requirement_id": "req-stop-before-official-upload-gate",
+        "requirement_type": "action_gate",
+        "subject": "agent",
+        "action": "stop_before",
+        "object": "official DevHub upload or attachment",
+        "conditions": [
+          "action_changes_official_record",
+          "user_not_attending_or_exact_confirmation_absent"
+        ],
+        "deadline_or_temporal_scope": "before(official_upload)",
+        "source_evidence_ids": [
+          "ev-devhub-review-before-submit"
+        ],
+        "formalization_status": "fixture_formalized"
+      },
+      {
+        "requirement_id": "req-stop-before-submit-gate",
+        "requirement_type": "action_gate",
+        "subject": "agent",
+        "action": "stop_before",
+        "object": "final DevHub application submission",
+        "conditions": [
+          "action_is_final_submission",
+          "exact_user_confirmation_absent"
+        ],
+        "deadline_or_temporal_scope": "before(submit_application)",
+        "source_evidence_ids": [
+          "ev-devhub-review-before-submit"
+        ],
+        "formalization_status": "fixture_formalized"
+      }
+    ]
+  },
+  "guardrail_bundle": {
+    "guardrail_bundle_id": "fixture-guardrail-bundle-single-pdf-formal-logic-v1",
+    "process_id": "process-single-pdf-plan-review-fixture-v1",
+    "source_evidence_ids": [
+      "ev-single-pdf-file-rules",
+      "ev-single-pdf-document-separation",
+      "ev-devhub-review-before-submit"
+    ],
+    "validation_status": "fixture_validated",
+    "deterministic_predicates": [
+      {
+        "predicate_id": "pred-has-single-searchable-plan-pdf",
+        "requirement_id": "req-single-pdf-drawing-plan-obligation",
+        "expression": "exists(document.type == 'drawing_plan' and document.mime_type == 'application/pdf' and document.searchable_text == true and count(document.type == 'drawing_plan') == 1)",
+        "on_false": "missing_document_or_file_rule_violation"
+      },
+      {
+        "predicate_id": "pred-has-required-separate-supporting-pdfs",
+        "requirement_id": "req-single-pdf-separate-supporting-docs-obligation",
+        "expression": "all(required_supporting_document.type in uploaded_documents.type and uploaded_document.mime_type == 'application/pdf')",
+        "on_false": "missing_document"
+      },
+      {
+        "predicate_id": "pred-has-project-prerequisites",
+        "requirement_id": "req-property-facts-prerequisite",
+        "expression": "known_facts.project_address != null and known_facts.permit_type != null",
+        "on_false": "ask_for_missing_fact"
+      }
+    ],
+    "deontic_rules": [
+      {
+        "rule_id": "obl-single-searchable-plan-pdf",
+        "requirement_id": "req-single-pdf-drawing-plan-obligation",
+        "modality": "obligated",
+        "formula": "O(applicant, provide(single_searchable_drawing_plan_pdf), before(upload_staging))"
+      },
+      {
+        "rule_id": "obl-separate-supporting-pdfs",
+        "requirement_id": "req-single-pdf-separate-supporting-docs-obligation",
+        "modality": "obligated",
+        "formula": "O(applicant, provide(separate_supporting_pdf_files), before(upload_staging))"
+      },
+      {
+        "rule_id": "pre-project-facts",
+        "requirement_id": "req-property-facts-prerequisite",
+        "modality": "required_precondition",
+        "formula": "PRE(agent, draft_devhub_application, has(project_address) and has(permit_type))"
+      },
+      {
+        "rule_id": "prohibit-official-upload-without-confirmation",
+        "requirement_id": "req-stop-before-official-upload-gate",
+        "modality": "prohibited_without_exact_confirmation",
+        "formula": "P(agent, official_upload, unless(exact_confirmation('upload these named files to this permit/application')))"
+      },
+      {
+        "rule_id": "prohibit-submit-without-confirmation",
+        "requirement_id": "req-stop-before-submit-gate",
+        "modality": "prohibited_without_exact_confirmation",
+        "formula": "P(agent, submit_application, unless(exact_confirmation('submit this PP&D application now')))"
+      }
+    ],
+    "temporal_rules": [
+      {
+        "rule_id": "tmp-documents-before-upload-staging",
+        "relation": "before",
+        "trigger": "upload_staging",
+        "requires": [
+          "pred-has-single-searchable-plan-pdf",
+          "pred-has-required-separate-supporting-pdfs"
+        ]
+      },
+      {
+        "rule_id": "tmp-prerequisites-before-draft",
+        "relation": "before",
+        "trigger": "draft_devhub_application",
+        "requires": [
+          "pred-has-project-prerequisites"
+        ]
+      }
+    ],
+    "prerequisite_predicates": [
+      {
+        "predicate_id": "preq-project-address-known",
+        "fact_key": "project_address",
+        "missing_status": "ask_user"
+      },
+      {
+        "predicate_id": "preq-permit-type-known",
+        "fact_key": "permit_type",
+        "missing_status": "ask_user"
+      }
+    ],
+    "stop_gate_predicates": [
+      {
+        "predicate_id": "stop-before-official-upload",
+        "blocked_action": "official_upload",
+        "required_confirmation_predicate_id": "confirm-upload-named-files",
+        "default_decision": "blocked"
+      },
+      {
+        "predicate_id": "stop-before-final-submission",
+        "blocked_action": "submit_application",
+        "required_confirmation_predicate_id": "confirm-submit-application-now",
+        "default_decision": "blocked"
+      }
+    ],
+    "reversible_action_predicates": [
+      {
+        "predicate_id": "rev-local-document-inventory",
+        "action": "inventory_local_document_metadata",
+        "classification": "reversible_draft",
+        "allowed_without_confirmation": true,
+        "must_not_persist_private_paths": true
+      },
+      {
+        "predicate_id": "rev-draft-field-map",
+        "action": "draft_devhub_field_mapping",
+        "classification": "reversible_draft",
+        "allowed_without_confirmation": true,
+        "must_not_submit": true
+      },
+      {
+        "predicate_id": "rev-local-pdf-preview",
+        "action": "render_local_pdf_preview",
+        "classification": "reversible_draft",
+        "allowed_without_confirmation": true,
+        "must_not_upload": true
+      }
+    ],
+    "exact_confirmation_predicates": [
+      {
+        "predicate_id": "confirm-upload-named-files",
+        "action": "official_upload",
+        "required_user_phrase_template": "Upload these named files to PP&D DevHub for {permit_or_application_number} now: {file_names}",
+        "confirmation_scope": "one_action_one_case",
+        "expires_after_action": true
+      },
+      {
+        "predicate_id": "confirm-submit-application-now",
+        "action": "submit_application",
+        "required_user_phrase_template": "Submit this PP&D application for {project_address} now.",
+        "confirmation_scope": "one_action_one_case",
+        "expires_after_action": true
+      }
+    ],
+    "refused_action_predicates": [
+      {
+        "predicate_id": "refuse-payment-entry-or-submit",
+        "action_pattern": "enter_payment_details_or_submit_payment",
+        "decision": "manual_handoff"
+      },
+      {
+        "predicate_id": "refuse-mfa-captcha-account-creation",
+        "action_pattern": "mfa_captcha_or_account_creation",
+        "decision": "manual_handoff"
+      }
+    ],
+    "explanation_templates": {
+      "missing_prerequisite": "I need {fact_key} before drafting PP&D application values because {requirement_id} is a prerequisite in the cited fixture.",
+      "blocked_stop_gate": "I can prepare reversible draft work, but I must stop before {blocked_action} until you confirm the exact action.",
+      "reversible_allowed": "This action is limited to reversible local draft preparation and does not upload, submit, certify, schedule, cancel, or pay."
+    }
+  },
+  "validation_expectations": [
+    "The fixture is self-contained and does not require live crawl, DevHub login, or private user data.",
+    "Every requirement has at least one cited source_evidence_id from the archived requirement set.",
+    "The guardrail bundle includes obligations, prerequisite predicates, stop gates, reversible action predicates, and exact-confirmation predicates.",
+    "Official upload and final submission default to blocked until exact action-specific confirmation is present.",
+    "Reversible actions are limited to local inventory, field mapping, and preview work."
+  ]
+}

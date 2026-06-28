@@ -1,0 +1,20 @@
+Implemented a narrow deterministic parser improvement for the three claimed samples.
+
+- Added `Sec. <section>` recognition to citation-section matching so transferred/editorial heading fallbacks fire for `Sec.`-prefixed U.S.C. text.
+- Added a final heading fallback rule (`uscode_section_heading_v1`) for short U.S.C. section-title lines with no modal cues, to avoid zero-formula outputs on heading-only legal text.
+- Added golden replay tests for:
+  - `us-code-2-123b-a41bd4aaf77abbf3`
+  - `us-code-25-478-ebbb6cefef299fc2`
+  - `us-code-15-1693l-62b207bc138a3216`
+
+Key edits:
+- [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000012-20260518_080047/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:231)
+- [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000012-20260518_080047/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:393)
+- [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000012-20260518_080047/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:575)
+- [test_legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000012-20260518_080047/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py:178)
+- [test_spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000012-20260518_080047/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py:95)
+- [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000012-20260518_080047/tests/unit_tests/logic/modal/test_modal_codec.py:221)
+
+Validation:
+- `pytest` slices were attempted, but all were blocked by an existing repo bootstrap issue: `NameError: __path__ is not defined` in top-level [`__init__.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000012-20260518_080047/__init__.py:11).
+- Ran direct smoke checks via `python3` for parser/spacy/compiler paths; all three target cases now emit one frame fallback formula with expected fallback rules and no `missing_modal_formula` ambiguity.

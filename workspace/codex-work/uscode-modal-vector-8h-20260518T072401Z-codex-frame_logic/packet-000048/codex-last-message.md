@@ -1,0 +1,18 @@
+Implemented a focused frame-logic audit improvement so feature-key-shaped metadata is converted into canonical ontology terms instead of being treated as raw text.
+
+### What changed
+- Added a normalized feature-value extractor in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000048-20260518_135103/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:832) and exported it in [__all__](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000048-20260518_135103/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:1069).
+- Extended metadata value-key handling in [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000048-20260518_135103/ipfs_datasets_py/logic/modal/codec.py:217) to include `feature`, `features`, `feature_key`, `feature_keys`.
+- Updated metadata term extraction in [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000048-20260518_135103/ipfs_datasets_py/logic/modal/codec.py:2767) to:
+  - parse frame-linked feature keys via canonical feature parser first,
+  - fall back to citation/source-id normalization only when needed.
+
+### Tests added/updated
+- [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000048-20260518_135103/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:335): validates `frame_ontology_feature_value`.
+- [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000048-20260518_135103/tests/unit_tests/logic/modal/test_modal_codec.py:4209): validates feature-key metadata produces `42_6932`, `transferred`, `5_552` and avoids noisy terms.
+
+### Verification run
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py tests/unit_tests/logic/modal/test_modal_codec.py -k 'frame_ontology or frame_feature_keys_from_term_metadata or feature_value'`
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py`
+
+All passed.

@@ -1,0 +1,107 @@
+{
+  "case_id": "synthetic-case-pdf-preview-001",
+  "document_id": "synthetic-residential-alteration-application",
+  "synthetic_fixture": true,
+  "pdf_binary_read": false,
+  "case_facts": [
+    {
+      "fact_id": "project_address",
+      "label": "Project address",
+      "value": "1234 SW Fixture Ave",
+      "sensitivity": "ordinary"
+    },
+    {
+      "fact_id": "permit_type",
+      "label": "Permit type",
+      "value": "Residential Alteration",
+      "sensitivity": "ordinary"
+    },
+    {
+      "fact_id": "applicant_phone",
+      "label": "Applicant phone",
+      "value": "[REDACTED:PHONE]",
+      "sensitivity": "contact",
+      "redaction_label": "[REDACTED:PHONE]"
+    },
+    {
+      "fact_id": "owner_occupied",
+      "label": "Owner occupied",
+      "value": true,
+      "sensitivity": "ordinary"
+    }
+  ],
+  "citation_evidence": [
+    {
+      "evidence_id": "ppd-forms-index-field-evidence",
+      "source_title": "PP&D permit applications and forms index",
+      "source_url": "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications",
+      "evidence_label": "Application forms identify project, applicant, and permit type fields."
+    },
+    {
+      "evidence_id": "ppd-devhub-guide-field-evidence",
+      "source_title": "DevHub permit application guide",
+      "source_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "evidence_label": "Permit requests can require typed facts and acknowledgements before submission."
+    }
+  ],
+  "fillable_pdf_fields": [
+    {
+      "field_name": "project_address",
+      "field_type": "text",
+      "fact_id": "project_address",
+      "required": true,
+      "purpose": "data_entry",
+      "source_evidence_ids": ["ppd-forms-index-field-evidence"]
+    },
+    {
+      "field_name": "permit_type",
+      "field_type": "choice",
+      "fact_id": "permit_type",
+      "required": true,
+      "purpose": "data_entry",
+      "source_evidence_ids": ["ppd-forms-index-field-evidence"]
+    },
+    {
+      "field_name": "applicant_phone",
+      "field_type": "text",
+      "fact_id": "applicant_phone",
+      "required": false,
+      "purpose": "data_entry",
+      "source_evidence_ids": ["ppd-forms-index-field-evidence"]
+    },
+    {
+      "field_name": "owner_occupied",
+      "field_type": "checkbox",
+      "fact_id": "owner_occupied",
+      "required": false,
+      "purpose": "data_entry",
+      "source_evidence_ids": ["ppd-devhub-guide-field-evidence"]
+    },
+    {
+      "field_name": "contractor_license_number",
+      "field_type": "text",
+      "fact_id": "contractor_license_number",
+      "required": true,
+      "purpose": "data_entry",
+      "source_evidence_ids": ["ppd-devhub-guide-field-evidence"]
+    },
+    {
+      "field_name": "applicant_signature",
+      "field_type": "signature",
+      "fact_id": "applicant_signature",
+      "required": true,
+      "purpose": "signature",
+      "requires_exact_confirmation": true,
+      "source_evidence_ids": ["ppd-devhub-guide-field-evidence"]
+    },
+    {
+      "field_name": "certification_acknowledgement",
+      "field_type": "checkbox",
+      "fact_id": "certification_acknowledgement",
+      "required": true,
+      "purpose": "certification",
+      "requires_exact_confirmation": true,
+      "source_evidence_ids": ["ppd-devhub-guide-field-evidence"]
+    }
+  ]
+}

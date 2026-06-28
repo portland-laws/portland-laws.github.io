@@ -1,0 +1,179 @@
+{
+  "packet_id": "devhub-attended-readonly-operator-transcript-fixture-001",
+  "packet_type": "devhub_attended_readonly_pilot_operator_transcript_packet",
+  "packet_version": 1,
+  "source_packet_type": "devhub_attended_readonly_pilot_launch_readiness_packet",
+  "source_packet_id": "devhub-attended-readonly-launch-readiness-fixture-001",
+  "pilot_id": "devhub-attended-readonly-pilot-fixture",
+  "mode": "fixture_first_attended_readonly_simulation",
+  "reviewer_owner_fields": {
+    "reviewer": "ppd-reviewer-fixture",
+    "owner": "devhub-pilot-operator-fixture",
+    "approval_required_before_live_use": true
+  },
+  "ordered_operator_observations": [
+    {
+      "sequence": 1,
+      "kind": "manual_user_attendance_checkpoint",
+      "checkpoint_id": "attendance-001",
+      "operator_observation": "A live authorized user must be present before any DevHub page is viewed. This fixture does not authenticate or open a browser.",
+      "requires_live_user_presence": true,
+      "simulated_only": true
+    },
+    {
+      "sequence": 2,
+      "kind": "manual_user_attendance_checkpoint",
+      "checkpoint_id": "attendance-002",
+      "operator_observation": "The operator must stop at any login, CAPTCHA, MFA, payment, submission, certification, cancellation, upload, or official action prompt.",
+      "requires_live_user_presence": true,
+      "simulated_only": true
+    },
+    {
+      "sequence": 3,
+      "kind": "redacted_page_state_summary",
+      "page_state_id": "page-state-001",
+      "page_label": "DevHub landing page placeholder",
+      "redacted_summary": "Expected public navigation chrome and permit-search entry points only; no account, project, parcel-owner, payment, document, or application details are included.",
+      "redactions_applied": [
+        "account identifiers",
+        "project addresses",
+        "permit numbers",
+        "document links",
+        "payment state"
+      ],
+      "contains_private_devhub_data": false,
+      "simulated_only": true
+    },
+    {
+      "sequence": 4,
+      "kind": "redacted_page_state_summary",
+      "page_state_id": "page-state-002",
+      "page_label": "Read-only permit detail placeholder",
+      "redacted_summary": "Expected read-only detail layout is represented by neutral labels and empty state notes; this fixture contains no private DevHub data.",
+      "redactions_applied": [
+        "applicant names",
+        "review comments",
+        "inspection details",
+        "uploaded filenames"
+      ],
+      "contains_private_devhub_data": false,
+      "simulated_only": true
+    },
+    {
+      "sequence": 5,
+      "kind": "selector_confidence_confirmation",
+      "selector_id": "readonly-navigation-fixture",
+      "confidence": "medium",
+      "basis": "Derived from fixture labels only and must be re-confirmed by an attended user before any live read-only pilot use.",
+      "requires_live_verification_before_use": true,
+      "citations": [
+        "devhub-attended-readonly-launch-readiness-fixture-001",
+        "selector-confidence-fixture-readonly-navigation"
+      ],
+      "simulated_only": true
+    },
+    {
+      "sequence": 6,
+      "kind": "selector_confidence_confirmation",
+      "selector_id": "permit-detail-heading-fixture",
+      "confidence": "low",
+      "basis": "Placeholder selector confidence only; no private DevHub DOM, screenshot, trace, or authenticated page content was inspected.",
+      "requires_live_verification_before_use": true,
+      "citations": [
+        "devhub-attended-readonly-launch-readiness-fixture-001",
+        "selector-confidence-fixture-permit-detail-heading"
+      ],
+      "simulated_only": true
+    }
+  ],
+  "guardrail_attestations": {
+    "no_browser_launched": true,
+    "no_auth_state_created_or_read": true,
+    "no_private_devhub_data_read": true,
+    "no_screenshots_captured": true,
+    "no_traces_captured": true,
+    "no_downloads_created": true,
+    "no_official_action_taken": true
+  },
+  "prohibited_artifacts": {
+    "browser_sessions": [],
+    "auth_state_files": [],
+    "screenshots": [],
+    "traces": [],
+    "har_files": [],
+    "raw_crawl_outputs": [],
+    "downloaded_documents": []
+  },
+  "source_launch_readiness_packet": {
+    "packet_type": "devhub_attended_readonly_pilot_launch_readiness_packet",
+    "packet_id": "devhub-attended-readonly-launch-readiness-fixture-001",
+    "pilot_id": "devhub-attended-readonly-pilot-fixture",
+    "reviewer_owner_fields": {
+      "reviewer": "ppd-reviewer-fixture",
+      "owner": "devhub-pilot-operator-fixture",
+      "approval_required_before_live_use": true
+    },
+    "manual_user_attendance_checkpoints": [
+      {
+        "checkpoint_id": "attendance-001",
+        "operator_observation": "A live authorized user must be present before any DevHub page is viewed. This fixture does not authenticate or open a browser."
+      },
+      {
+        "checkpoint_id": "attendance-002",
+        "operator_observation": "The operator must stop at any login, CAPTCHA, MFA, payment, submission, certification, cancellation, upload, or official action prompt."
+      }
+    ],
+    "redacted_page_state_summaries": [
+      {
+        "page_state_id": "page-state-001",
+        "page_label": "DevHub landing page placeholder",
+        "redacted_summary": "Expected public navigation chrome and permit-search entry points only; no account, project, parcel-owner, payment, document, or application details are included.",
+        "redactions_applied": [
+          "account identifiers",
+          "project addresses",
+          "permit numbers",
+          "document links",
+          "payment state"
+        ]
+      },
+      {
+        "page_state_id": "page-state-002",
+        "page_label": "Read-only permit detail placeholder",
+        "redacted_summary": "Expected read-only detail layout is represented by neutral labels and empty state notes; this fixture contains no private DevHub data.",
+        "redactions_applied": [
+          "applicant names",
+          "review comments",
+          "inspection details",
+          "uploaded filenames"
+        ]
+      }
+    ],
+    "selector_confidence_confirmations": [
+      {
+        "selector_id": "readonly-navigation-fixture",
+        "confidence": "medium",
+        "basis": "Derived from fixture labels only and must be re-confirmed by an attended user before any live read-only pilot use.",
+        "citations": [
+          "selector-confidence-fixture-readonly-navigation"
+        ]
+      },
+      {
+        "selector_id": "permit-detail-heading-fixture",
+        "confidence": "low",
+        "basis": "Placeholder selector confidence only; no private DevHub DOM, screenshot, trace, or authenticated page content was inspected.",
+        "citations": [
+          "selector-confidence-fixture-permit-detail-heading"
+        ]
+      }
+    ],
+    "guardrail_attestations": {
+      "no_browser_launched": true,
+      "no_auth_state_created_or_read": true,
+      "no_private_devhub_data_read": true,
+      "no_screenshots_captured": true,
+      "no_traces_captured": true,
+      "no_downloads_created": true,
+      "no_official_action_taken": true
+    }
+  }
+}

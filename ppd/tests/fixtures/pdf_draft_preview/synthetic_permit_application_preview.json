@@ -1,0 +1,64 @@
+{
+  "case_id": "synthetic-demo-case-001",
+  "document_id": "synthetic-fillable-permit-application",
+  "fixture_purpose": "Local draft-preview only; no PDF binary is read or written.",
+  "user_facts": {
+    "applicant_name": "Alex Example",
+    "project_address": "1234 SE Fixture St, Portland, OR 97214",
+    "work_description": "Replace existing porch framing with like-for-like materials.",
+    "contractor_license_number": ""
+  },
+  "fillable_fields": [
+    {
+      "field_name": "ApplicantName",
+      "field_type": "text",
+      "fact_key": "applicant_name",
+      "required": true,
+      "purpose": "data_entry"
+    },
+    {
+      "field_name": "ProjectAddress",
+      "field_type": "text",
+      "fact_key": "project_address",
+      "required": true,
+      "purpose": "data_entry"
+    },
+    {
+      "field_name": "WorkDescription",
+      "field_type": "multiline_text",
+      "fact_key": "work_description",
+      "required": true,
+      "purpose": "data_entry"
+    },
+    {
+      "field_name": "ContractorLicenseNumber",
+      "field_type": "text",
+      "fact_key": "contractor_license_number",
+      "required": true,
+      "purpose": "license_requirement"
+    },
+    {
+      "field_name": "OwnerCertificationInitials",
+      "field_type": "text",
+      "fact_key": "owner_certification_initials",
+      "required": true,
+      "purpose": "certification",
+      "requires_confirmation": true
+    },
+    {
+      "field_name": "ApplicantSignature",
+      "field_type": "signature",
+      "fact_key": "applicant_signature",
+      "required": true,
+      "purpose": "signature",
+      "requires_confirmation": true
+    },
+    {
+      "field_name": "SubmitApplication",
+      "field_type": "button",
+      "required": false,
+      "purpose": "submission",
+      "requires_confirmation": true
+    }
+  ]
+}

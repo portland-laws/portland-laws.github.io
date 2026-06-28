@@ -6,18 +6,27 @@ import {
 } from './canonicalization';
 import { MVPCircuit, TDFOLv1DerivationCircuit } from './circuits';
 import { deriveTdfolV1Trace } from './legalTheoremSemantics';
-import type { ZkpProofStatement, ZkpStatement, ZkpWitness } from './statement';
+import {
+  proofStatementToDict,
+  witnessFromDict,
+  witnessToDict,
+  type ZkpProofStatement,
+  type ZkpStatement,
+  type ZkpWitness,
+} from './statement';
+
+export interface WitnessGenerationOptions {
+  axioms: string[];
+  theorem: string;
+  intermediateSteps?: string[];
+  circuitVersion?: number;
+  rulesetId?: string;
+}
 
 export class WitnessManager {
   private readonly witnessCache = new Map<string, ZkpWitness>();
 
-  async generateWitness(options: {
-    axioms: string[];
-    theorem: string;
-    intermediateSteps?: string[];
-    circuitVersion?: number;
-    rulesetId?: string;
-  }): Promise<ZkpWitness> {
+  async generateWitness(options: WitnessGenerationOptions): Promise<ZkpWitness> {
     const { axioms, theorem } = options;
     const circuitVersion = options.circuitVersion ?? 1;
     const rulesetId = options.rulesetId ?? 'TDFOL_v1';
@@ -46,8 +55,28 @@ export class WitnessManager {
       theorem,
     };
 
-    this.witnessCache.set(axiomsCommitmentHex, witness);
-    return witness;
+    this.witnessCache.set(axiomsCommitmentHex, cloneWitness(witness));
+    return cloneWitness(witness);
+  }
+
+  async generateWitnessFromDict(data: Record<string, unknown>): Promise<ZkpWitness> {
+    const witness = witnessFromDict(data);
+    if (!witness.theorem) {
+      throw new Error('Cannot generate witness from dict: theorem is required');
+    }
+    const intermediateSteps =
+      data.intermediate_steps === undefined ? undefined : witness.intermediateSteps;
+    return this.generateWitness({
+      axioms: witness.axioms,
+      circuitVersion: witness.circuitVersion,
+      intermediateSteps,
+      rulesetId: witness.rulesetId,
+      theorem: witness.theorem,
+    });
+  }
+
+  generate_witness_from_dict(data: Record<string, unknown>): Promise<ZkpWitness> {
+    return this.generateWitnessFromDict(data);
   }
 
   generate_witness(
@@ -74,9 +103,11 @@ export class WitnessManager {
     try {
       if (!Array.isArray(witness.axioms) || witness.axioms.length === 0) return false;
       if (!witness.axiomsCommitmentHex) return false;
-      if (expectedAxiomCount !== undefined && witness.axioms.length !== expectedAxiomCount) return false;
+      if (expectedAxiomCount !== undefined && witness.axioms.length !== expectedAxiomCount)
+        return false;
       if (expectedAxioms !== undefined) {
-        if (!sameStringList(canonicalizeAxioms(expectedAxioms), canonicalizeAxioms(witness.axioms))) return false;
+        if (!sameStringList(canonicalizeAxioms(expectedAxioms), canonicalizeAxioms(witness.axioms)))
+          return false;
       }
 
       const expected =
@@ -124,10 +155,36 @@ export class WitnessManager {
     return this.createProofStatement(witness, theorem, circuitId);
   }
 
+  exportWitness(witness: ZkpWitness): Record<string, string | number | string[] | null> {
+    return witnessToDict(witness);
+  }
+
+  export_witness(witness: ZkpWitness): Record<string, string | number | string[] | null> {
+    return this.exportWitness(witness);
+  }
+
+  exportProofStatement(
+    proofStatement: ZkpProofStatement,
+  ): Record<string, string | number | Record<string, string | number>> {
+    return proofStatementToDict(proofStatement);
+  }
+
+  export_proof_statement(
+    proofStatement: ZkpProofStatement,
+  ): Record<string, string | number | Record<string, string | number>> {
+    return this.exportProofStatement(proofStatement);
+  }
+
   async verifyWitnessConsistency(witness: ZkpWitness, statement: ZkpStatement): Promise<boolean> {
     try {
-      if ((statement.circuitVersion >= 2 || (witness.circuitVersion ?? 1) >= 2) && statement.rulesetId === 'TDFOL_v1') {
-        return new TDFOLv1DerivationCircuit(statement.circuitVersion).verifyConstraints(witness, statement);
+      if (
+        (statement.circuitVersion >= 2 || (witness.circuitVersion ?? 1) >= 2) &&
+        statement.rulesetId === 'TDFOL_v1'
+      ) {
+        return new TDFOLv1DerivationCircuit(statement.circuitVersion).verifyConstraints(
+          witness,
+          statement,
+        );
       }
       return new MVPCircuit(statement.circuitVersion).verifyConstraints(witness, statement);
     } catch {
@@ -149,12 +206,28 @@ export class WitnessManager {
 
   getCachedWitness(commitmentHex: string): ZkpWitness | undefined {
     const witness = this.witnessCache.get(commitmentHex);
-    return witness ? { ...witness, axioms: [...witness.axioms], intermediateSteps: [...(witness.intermediateSteps ?? [])] } : undefined;
+    return witness ? cloneWitness(witness) : undefined;
   }
 
   get_cached_witness(commitmentHex: string): ZkpWitness | undefined {
     return this.getCachedWitness(commitmentHex);
   }
+}
+
+export function createWitnessManager(): WitnessManager {
+  return new WitnessManager();
+}
+
+export function create_witness_manager(): WitnessManager {
+  return createWitnessManager();
+}
+
+function cloneWitness(witness: ZkpWitness): ZkpWitness {
+  return {
+    ...witness,
+    axioms: [...witness.axioms],
+    intermediateSteps: [...(witness.intermediateSteps ?? [])],
+  };
 }
 
 function sameStringList(left: string[], right: string[]): boolean {

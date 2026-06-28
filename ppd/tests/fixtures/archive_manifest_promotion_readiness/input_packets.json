@@ -1,0 +1,247 @@
+{
+  "processor_handoff_manifest_rehearsal_packet": {
+    "schemaVersion": 1,
+    "packetType": "ppd_processor_handoff_manifest_rehearsal_packet",
+    "mode": "fixture_first_processor_handoff_manifest_rehearsal",
+    "generatedAt": "2026-05-29T01:20:00Z",
+    "fixtureFirst": true,
+    "metadataOnly": true,
+    "processorInvocationAllowed": false,
+    "processorInvoked": false,
+    "archiveArtifactWritesAllowed": false,
+    "archiveArtifactWritten": false,
+    "rawBodiesPersisted": false,
+    "syntheticProcessorPrerequisites": [
+      {
+        "prerequisite_id": "processor-prereq-source-portland-ppd",
+        "source_id": "source-portland-ppd",
+        "canonical_url": "https://www.portland.gov/ppd",
+        "requested_url": "https://www.portland.gov/ppd",
+        "source_evidence_ids": ["evidence-source-portland-ppd"],
+        "robots_evidence_id": "robots-www-portland-gov",
+        "policy_evidence_id": "policy-public-allowlist",
+        "rate_limit_note": "metadata-only rehearsal does not open a network connection",
+        "processor_input_kind": "metadata_only_synthetic_prerequisite",
+        "processorInvocationAllowed": false,
+        "archiveArtifactWritesAllowed": false,
+        "no_raw_body_persisted": true
+      },
+      {
+        "prerequisite_id": "processor-prereq-source-devhub-faqs",
+        "source_id": "source-devhub-faqs",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+        "requested_url": "https://www.portland.gov/ppd/devhub-faqs",
+        "source_evidence_ids": ["evidence-source-devhub-faqs"],
+        "robots_evidence_id": "robots-www-portland-gov",
+        "policy_evidence_id": "policy-public-allowlist",
+        "rate_limit_note": "metadata-only rehearsal does not open a network connection",
+        "processor_input_kind": "metadata_only_synthetic_prerequisite",
+        "processorInvocationAllowed": false,
+        "archiveArtifactWritesAllowed": false,
+        "no_raw_body_persisted": true
+      }
+    ],
+    "expectedMetadataOnlyArchiveManifests": [
+      {
+        "manifest_id": "archive-manifest-rehearsal-source-portland-ppd",
+        "source_id": "source-portland-ppd",
+        "canonical_url": "https://www.portland.gov/ppd",
+        "requested_url": "https://www.portland.gov/ppd",
+        "redirect_chain": [],
+        "http_status": "expected_metadata_only_not_fetched",
+        "content_type": "expected_metadata_only_pending_capture",
+        "content_hash": "expected_metadata_only_pending_capture",
+        "capture_started_at": null,
+        "capture_finished_at": null,
+        "processor_name": "ipfs_datasets_py.web_archive_processor",
+        "processor_version": "fixture-rehearsal-no-execution",
+        "archive_artifact_ref": null,
+        "normalized_document_id": "expected-normalized-document-source-portland-ppd",
+        "skipped_reason": "rehearsal_only_processor_not_invoked",
+        "no_raw_body_persisted": true,
+        "metadata_only": true
+      },
+      {
+        "manifest_id": "archive-manifest-rehearsal-source-devhub-faqs",
+        "source_id": "source-devhub-faqs",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+        "requested_url": "https://www.portland.gov/ppd/devhub-faqs",
+        "redirect_chain": [],
+        "http_status": "expected_metadata_only_not_fetched",
+        "content_type": "expected_metadata_only_pending_capture",
+        "content_hash": "expected_metadata_only_pending_capture",
+        "capture_started_at": null,
+        "capture_finished_at": null,
+        "processor_name": "ipfs_datasets_py.web_archive_processor",
+        "processor_version": "fixture-rehearsal-no-execution",
+        "archive_artifact_ref": null,
+        "normalized_document_id": "expected-normalized-document-source-devhub-faqs",
+        "skipped_reason": "rehearsal_only_processor_not_invoked",
+        "no_raw_body_persisted": true,
+        "metadata_only": true
+      }
+    ],
+    "noRawBodyAttestations": [
+      {
+        "attestation_id": "no-payload-source-portland-ppd",
+        "source_id": "source-portland-ppd",
+        "canonical_url": "https://www.portland.gov/ppd",
+        "raw_body_persisted": false,
+        "archive_artifact_written": false,
+        "attestation": "Only metadata-only expected fields are rehearsed."
+      },
+      {
+        "attestation_id": "no-payload-source-devhub-faqs",
+        "source_id": "source-devhub-faqs",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+        "raw_body_persisted": false,
+        "archive_artifact_written": false,
+        "attestation": "Only metadata-only expected fields are rehearsed."
+      }
+    ],
+    "abortConditions": [
+      {
+        "abort_id": "processor-invocation-requested",
+        "condition": "Abort if any step would invoke a processor from this rehearsal packet.",
+        "source": "processor_handoff_policy"
+      },
+      {
+        "abort_id": "archive-artifact-write-requested",
+        "condition": "Abort if any step would write an archive artifact.",
+        "source": "processor_handoff_policy"
+      },
+      {
+        "abort_id": "live-fetch-requested",
+        "condition": "Abort if any step would use live fetch authority.",
+        "source": "processor_handoff_policy"
+      }
+    ]
+  },
+  "public_recrawl_metadata_intake_reconciliation_packet": {
+    "schemaVersion": 1,
+    "packetType": "ppd_public_recrawl_metadata_intake_reconciliation_packet",
+    "mode": "fixture_first_public_recrawl_metadata_intake_reconciliation",
+    "generatedAt": "2026-05-29T02:00:00Z",
+    "fixtureFirst": true,
+    "metadataOnly": true,
+    "liveNetworkUsed": false,
+    "fetchedLive": false,
+    "processorInvoked": false,
+    "archiveArtifactWritten": false,
+    "rawBodiesPersisted": false,
+    "documentsDownloaded": false,
+    "activeRegistryMutated": false,
+    "syntheticMetadataOnlyIntakeRows": [
+      {
+        "intake_id": "metadata-intake-source-portland-ppd",
+        "source_id": "source-portland-ppd",
+        "canonical_url": "https://www.portland.gov/ppd",
+        "requested_url": "https://www.portland.gov/ppd",
+        "source_evidence_ids": ["evidence-source-portland-ppd"],
+        "freshness_badge_id": "freshness-source-portland-ppd",
+        "expected_manifest_id": "archive-manifest-rehearsal-source-portland-ppd",
+        "normalized_document_id": "expected-normalized-document-source-portland-ppd",
+        "content_type": "expected_metadata_only_pending_capture",
+        "http_status": "expected_metadata_only_not_fetched",
+        "intake_status": "ready_for_metadata_only_rehearsal",
+        "fixtureSynthetic": true,
+        "metadataOnly": true,
+        "liveFetchUsed": false,
+        "processorInvoked": false,
+        "archiveArtifactWritten": false,
+        "noRawBodyPersisted": true
+      },
+      {
+        "intake_id": "metadata-intake-source-devhub-faqs",
+        "source_id": "source-devhub-faqs",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+        "requested_url": "https://www.portland.gov/ppd/devhub-faqs",
+        "source_evidence_ids": ["evidence-source-devhub-faqs"],
+        "freshness_badge_id": "freshness-source-devhub-faqs-stale",
+        "expected_manifest_id": "archive-manifest-rehearsal-source-devhub-faqs",
+        "normalized_document_id": "expected-normalized-document-source-devhub-faqs",
+        "content_type": "expected_metadata_only_pending_capture",
+        "http_status": "expected_metadata_only_not_fetched",
+        "intake_status": "ready_for_metadata_only_rehearsal",
+        "fixtureSynthetic": true,
+        "metadataOnly": true,
+        "liveFetchUsed": false,
+        "processorInvoked": false,
+        "archiveArtifactWritten": false,
+        "noRawBodyPersisted": true
+      }
+    ],
+    "expectedManifestReferences": [
+      {
+        "manifest_ref_id": "manifest-ref-archive-manifest-rehearsal-source-portland-ppd",
+        "manifest_id": "archive-manifest-rehearsal-source-portland-ppd",
+        "source_id": "source-portland-ppd",
+        "canonical_url": "https://www.portland.gov/ppd",
+        "normalized_document_id": "expected-normalized-document-source-portland-ppd",
+        "archive_artifact_ref_present": false,
+        "metadataOnly": true
+      },
+      {
+        "manifest_ref_id": "manifest-ref-archive-manifest-rehearsal-source-devhub-faqs",
+        "manifest_id": "archive-manifest-rehearsal-source-devhub-faqs",
+        "source_id": "source-devhub-faqs",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+        "normalized_document_id": "expected-normalized-document-source-devhub-faqs",
+        "archive_artifact_ref_present": false,
+        "metadataOnly": true
+      }
+    ],
+    "changedSourceReviewQueues": [
+      {
+        "queue_id": "changed-source-review-source-devhub-faqs",
+        "source_id": "source-devhub-faqs",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+        "queue_reason": "stale_freshness_badge",
+        "freshness_status": "stale",
+        "reviewer_owner": "archive-manifest-reviewer",
+        "source_evidence_ids": ["evidence-source-devhub-faqs"],
+        "changedSourceReviewRequired": true,
+        "activeRegistryWriteAllowed": false
+      }
+    ],
+    "freshnessBadgeUpdateCandidates": [
+      {
+        "candidate_id": "freshness-badge-candidate-source-devhub-faqs",
+        "source_id": "source-devhub-faqs",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+        "current_freshness_status": "stale",
+        "proposed_next_status": "needs_review_before_recrawl",
+        "source_evidence_ids": ["evidence-source-devhub-faqs"],
+        "reviewer_owner": "archive-manifest-reviewer",
+        "updateRequiresHumanReview": true,
+        "activeRegistryWriteAllowed": false
+      }
+    ],
+    "abortNotes": [
+      {
+        "abort_id": "fixture-reconciliation-live-fetch-requested",
+        "source": "public_recrawl_metadata_intake_reconciliation_policy",
+        "note": "Abort if live fetch is requested during reconciliation.",
+        "abortBeforeLiveFetch": true,
+        "processorInvocationAllowed": false,
+        "archiveArtifactWriteAllowed": false
+      },
+      {
+        "abort_id": "fixture-reconciliation-processor-requested",
+        "source": "public_recrawl_metadata_intake_reconciliation_policy",
+        "note": "Abort if processor invocation is requested during reconciliation.",
+        "abortBeforeLiveFetch": true,
+        "processorInvocationAllowed": false,
+        "archiveArtifactWriteAllowed": false
+      },
+      {
+        "abort_id": "fixture-reconciliation-archive-write-requested",
+        "source": "public_recrawl_metadata_intake_reconciliation_policy",
+        "note": "Abort if archive write authority is requested during reconciliation.",
+        "abortBeforeLiveFetch": true,
+        "processorInvocationAllowed": false,
+        "archiveArtifactWriteAllowed": false
+      }
+    ]
+  }
+}

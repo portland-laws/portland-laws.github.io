@@ -1,0 +1,38 @@
+{
+  "fixture_id": "synthetic-process-model-with-orphan-entry",
+  "process_models": [
+    {
+      "process_id": "building-plan-review",
+      "permit_type": "building_plan_review",
+      "scope": "Synthetic building permit request requiring plan review.",
+      "required_documents": [
+        {
+          "key": "plans_single_pdf",
+          "label": "Plans PDF"
+        },
+        {
+          "key": "extra_unverified_upload",
+          "label": "Unverified extra upload"
+        }
+      ],
+      "file_rules": [
+        {
+          "key": "supporting_documents_separate_pdfs",
+          "label": "Supporting documents are separate PDFs"
+        }
+      ],
+      "fee_triggers": [
+        {
+          "key": "fees_due_after_intake_notice",
+          "label": "Fees due notice or status"
+        }
+      ],
+      "unsupported_paths": [
+        {
+          "key": "permit_types_not_available_in_devhub",
+          "label": "Alternate submission path required when DevHub does not support the permit type"
+        }
+      ]
+    }
+  ]
+}

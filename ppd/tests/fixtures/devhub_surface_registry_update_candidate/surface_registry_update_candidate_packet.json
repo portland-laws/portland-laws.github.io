@@ -1,0 +1,120 @@
+{
+  "packet_id": "devhub-surface-registry-update-candidate-synthetic-v1",
+  "packet_type": "ppd.devhub_surface_registry_update_candidate.v1",
+  "mode": "fixture_first_devhub_surface_registry_update_candidate",
+  "fixture_first": true,
+  "launches_devhub": false,
+  "launches_playwright": false,
+  "stores_browser_artifacts": false,
+  "source_packets": {
+    "observed_surface_drift_review": {
+      "packet_id": "devhub-observed-surface-drift-review-synthetic-v1",
+      "consumed": true
+    },
+    "read_only_pilot_readiness_reconciliation": {
+      "packet_id": "devhub-read-only-pilot-readiness-reconciliation-v1",
+      "consumed": true
+    }
+  },
+  "candidate_scope": {
+    "consumes_observed_surface_drift_review": true,
+    "consumes_read_only_pilot_readiness_reconciliation": true,
+    "records_only_redacted_route_patterns": true,
+    "records_only_redacted_headings": true,
+    "records_only_redacted_labels": true,
+    "records_read_only_status_categories": true,
+    "records_selector_confidence_deltas": true,
+    "records_manual_handoff_prompts": true,
+    "records_disabled_consequential_controls": true,
+    "no_live_browser_launch": true,
+    "no_browser_artifact_storage": true
+  },
+  "registry_update_candidates": [
+    {
+      "surface_id": "devhub_home_redacted",
+      "candidate_registry_action": "update_redacted_surface_metadata_only",
+      "route_pattern": "/dashboard",
+      "redacted_heading": "[REDACTED_HEADING:devhub-home]",
+      "redacted_labels": [
+        "[REDACTED_LABEL:my-permits]",
+        "[REDACTED_LABEL:status-summary]"
+      ],
+      "read_only_status_category": "home_loaded",
+      "selector_confidence_delta": {
+        "previous_confidence": "committed_registry_fixture",
+        "observed_confidence": "redacted_fixture_review",
+        "proposed_confidence": "attended_review_required",
+        "delta_reason": "primary heading and navigation labels are stable redacted tokens; status summary label has medium confidence because copy may vary by account state",
+        "upgrade_requested": false
+      },
+      "manual_handoff_prompts": [
+        "manual handoff if sign-in, MFA, CAPTCHA, account creation, upload, submit, certification, payment, scheduling, cancellation, or account settings prompt appears"
+      ],
+      "disabled_consequential_controls": [
+        "disabled:upload",
+        "disabled:submit",
+        "disabled:certify",
+        "disabled:payment",
+        "disabled:schedule-inspection",
+        "disabled:cancel"
+      ]
+    },
+    {
+      "surface_id": "devhub_permit_detail_redacted",
+      "candidate_registry_action": "update_redacted_surface_metadata_only",
+      "route_pattern": "/permits/{permit_id}",
+      "redacted_heading": "[REDACTED_HEADING:permit-detail]",
+      "redacted_labels": [
+        "[REDACTED_LABEL:permit-status]",
+        "[REDACTED_LABEL:fees]",
+        "[REDACTED_LABEL:corrections]"
+      ],
+      "read_only_status_category": "permit_detail_visible",
+      "selector_confidence_delta": {
+        "previous_confidence": "committed_registry_fixture",
+        "observed_confidence": "redacted_fixture_review",
+        "proposed_confidence": "attended_review_required",
+        "delta_reason": "route keeps permit identifier as a pattern placeholder; detail tabs require attended review before selector promotion",
+        "upgrade_requested": false
+      },
+      "manual_handoff_prompts": [
+        "manual handoff before opening upload, payment, scheduling, submit, certification, cancellation, extension, or reactivation controls"
+      ],
+      "disabled_consequential_controls": [
+        "disabled:upload-correction",
+        "disabled:pay-fee",
+        "disabled:schedule-inspection",
+        "disabled:request-extension",
+        "disabled:reactivate",
+        "disabled:withdraw"
+      ]
+    }
+  ],
+  "blocked_registry_changes": [
+    {
+      "change_id": "block-selector-upgrades-without-live-evidence",
+      "reason": "Selector confidence may not be upgraded from this fixture packet; attended evidence is required before promotion.",
+      "blocked": true
+    },
+    {
+      "change_id": "block-consequential-control-enablement",
+      "reason": "Upload, submission, payment, scheduling, cancellation, and certification controls remain disabled in every candidate.",
+      "blocked": true
+    }
+  ],
+  "redaction_attestations": {
+    "no_devhub_launch": true,
+    "no_playwright_launch": true,
+    "no_browser_artifacts": true,
+    "no_screenshots": true,
+    "no_traces": true,
+    "no_har_data": true,
+    "no_cookies": true,
+    "no_auth_state": true,
+    "no_credentials": true,
+    "no_private_values": true,
+    "no_raw_authenticated_text": true,
+    "no_consequential_controls_enabled": true,
+    "no_official_actions_completed": true
+  }
+}

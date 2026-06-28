@@ -1,0 +1,60 @@
+{
+  "applied_todo_ids": 7,
+  "best_validation_ce": 1.2670335825337624,
+  "best_validation_cosine": 0.3764490038282993,
+  "best_validation_ir_ce": 1.267033583,
+  "best_validation_ir_cosine": 0.368289139,
+  "best_validation_ir_reconstruction": 0.261954926,
+  "best_validation_ir_text_reconstruction": 0.0,
+  "best_validation_reconstruction": 0.26221241152043184,
+  "codex_program_synthesis_execution_mode": "queued_for_external_codex_worker",
+  "cycles": 6,
+  "dataset_id": "justicedao/ipfs_uscode",
+  "decoded_embedding_entries": 7,
+  "elapsed_seconds": 52.336,
+  "family_logit_entries": 0,
+  "feature_embedding_weight_entries": 795,
+  "feature_family_logit_entries": 0,
+  "final": true,
+  "finished_at": "2026-05-16T15:49:53+00:00",
+  "latest_queue_counts": {
+    "claimed": 17,
+    "completed": 7,
+    "failed_validation": 17,
+    "pending": 17
+  },
+  "latest_role_queue_counts": {
+    "autoencoder_sgd": {
+      "completed": 7,
+      "failed_validation": 17,
+      "pending": 12
+    },
+    "program_synthesis": {
+      "claimed": 17,
+      "pending": 5
+    }
+  },
+  "latest_stop_reason": "max_iterations",
+  "laws_path": "uscode_parquet/laws.parquet",
+  "log_path": "/home/barberb/portland-laws.github.io/workspace/test-logs/uscode-modal-smoke-20260516T154900Z-autoencoder.jsonl",
+  "loop_role": "autoencoder",
+  "metric_failures": 0,
+  "optimizer_policy": "autoencoder_sgd_with_codex_program_synthesis_backlog",
+  "program_synthesis_claimed": 17,
+  "program_synthesis_completed": 0,
+  "program_synthesis_pending": 5,
+  "program_synthesis_pending_cap": 512,
+  "program_synthesis_seeded": 16,
+  "queue_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-smoke-20260516T154900Z-autoencoder.jsonl",
+  "queue_run_id": "uscode-modal-smoke-20260516T154900Z-autoencoder",
+  "run_id": "uscode-modal-smoke-20260516T154900Z-autoencoder",
+  "seed": 73292541216826,
+  "started_at": "2026-05-16T15:49:01+00:00",
+  "state_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-smoke-20260516T154900Z-autoencoder.state.json",
+  "test_failures": 0,
+  "train_ce_improved_cycles": 0,
+  "train_cosine_improved_cycles": 5,
+  "updated_at": "2026-05-16T15:49:53+00:00",
+  "validation_ce_improved_cycles": 0,
+  "validation_cosine_improved_cycles": 5
+}

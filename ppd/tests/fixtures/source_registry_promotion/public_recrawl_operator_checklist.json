@@ -1,0 +1,22 @@
+{
+  "checklist_id": "public-recrawl-checklist-2026-05-28-fixture",
+  "public_recrawl_run_id": "public-recrawl-fixture-run-2026-05-28",
+  "operator": "fixture-operator",
+  "completed_items": [
+    {
+      "item_id": "robots-policy-reviewed",
+      "status": "complete",
+      "evidence": "Fixture confirms only public allowlisted PP&D URLs were rehearsed."
+    },
+    {
+      "item_id": "raw-body-persistence-disabled",
+      "status": "complete",
+      "evidence": "Fixture records hashes and metadata only; no raw body output is included."
+    },
+    {
+      "item_id": "auth-boundary-confirmed",
+      "status": "complete",
+      "evidence": "Fixture excludes credentials, cookies, browser state, screenshots, traces, and private values."
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "cascade_id": "tranche-10-item-1",
+  "blocked_work": [
+    {
+      "id": "ppd-blocked-cascade-282",
+      "cascade_id": "tranche-10-item-1",
+      "state": "blocked",
+      "blocked_at": "2026-05-08T21:00:00Z",
+      "reason": "daemon repair required before generated blocked cascade work may resume"
+    }
+  ],
+  "repair_scenarios": {
+    "missing": [],
+    "stale_validated": [
+      {
+        "id": "daemon-repair-old",
+        "kind": "daemon-repair",
+        "cascade_id": "tranche-10-item-1",
+        "state": "validated",
+        "validated_at": "2026-05-08T20:59:59Z"
+      }
+    ],
+    "failed_fresh": [
+      {
+        "id": "daemon-repair-failed",
+        "kind": "daemon-repair",
+        "cascade_id": "tranche-10-item-1",
+        "state": "failed",
+        "validated_at": "2026-05-08T21:05:00Z"
+      }
+    ],
+    "wrong_cascade": [
+      {
+        "id": "daemon-repair-other",
+        "kind": "daemon-repair",
+        "cascade_id": "tranche-10-item-2",
+        "state": "validated",
+        "validated_at": "2026-05-08T21:05:00Z"
+      }
+    ],
+    "fresh_validated": [
+      {
+        "id": "daemon-repair-fresh",
+        "kind": "daemon-repair",
+        "cascade_id": "tranche-10-item-1",
+        "state": "validated",
+        "validated_at": "2026-05-08T21:05:00Z"
+      }
+    ]
+  }
+}

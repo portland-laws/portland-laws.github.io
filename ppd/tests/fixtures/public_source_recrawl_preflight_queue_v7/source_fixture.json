@@ -1,0 +1,7 @@
+{
+  "fixture_version": "public-source-recrawl-preflight-queue-source-fixture-v7",
+  "fixture_first": true,
+  "public_refresh_authorization_fixture": "ppd/tests/fixtures/public_refresh_authorization_packet_v7/source_fixture.json",
+  "allowlist_fixture": "ppd/crawler/allowlist.json",
+  "robots_policy_fixture": "robots_policy_fixture.json"
+}

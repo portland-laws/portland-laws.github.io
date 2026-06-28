@@ -1,0 +1,20 @@
+Implemented a narrow deterministic slot refinement for `modal.ir_decompiler`: the system now explicitly represents the *absence* of trailing punctuation in citation/source-id sections.
+
+**Changes**
+- Added explicit negative trailing-punctuation slots in decompiler extraction:
+  - `citation_section_has_trailing_punct = "false"` and `citation_section_trailing_punct_count = "0"` when no trailing punct exists.
+  - `source_id_section_has_trailing_punct = "false"` and `source_id_section_trailing_punct_count = "0"` when no trailing punct exists.
+  - [decompiler.py#L869](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000046-20260518_115211/ipfs_datasets_py/logic/modal/decompiler.py#L869)
+  - [decompiler.py#L1417](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000046-20260518_115211/ipfs_datasets_py/logic/modal/decompiler.py#L1417)
+
+- Mirrored the same behavior in codec triple/component emission for parity:
+  - [codec.py#L1234](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000046-20260518_115211/ipfs_datasets_py/logic/modal/codec.py#L1234)
+  - [codec.py#L1306](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000046-20260518_115211/ipfs_datasets_py/logic/modal/codec.py#L1306)
+
+- Expanded regression coverage to assert both true/false trailing-punct cases in decoded slots and emitted triples:
+  - [test_modal_ir_decompiler_slots.py#L33](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000046-20260518_115211/tests/unit/optimizers/logic_theorem_optimizer/test_modal_ir_decompiler_slots.py#L33)
+
+**Validation**
+- Ran:
+  - `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_modal_ir_decompiler_slots.py ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py`
+- Result: `23 passed`.

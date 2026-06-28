@@ -1,0 +1,144 @@
+{
+  "snapshot_id": "release-readiness-operator-snapshot-v1",
+  "snapshot_type": "ppd.release_readiness_operator_snapshot.v1",
+  "mode": "fixture_first",
+  "readiness_label": "non_production_operator_snapshot",
+  "production_ready": false,
+  "operator_scope": "non_production_review_only",
+  "prerequisite_packets": {
+    "burn_down_queue": {
+      "packet_id": "release-blocker-burndown-implementation-readiness-reconciliation-v1",
+      "packet_type": "ppd.release_blocker_burndown_queue.v1",
+      "fixture": "ppd/tests/fixtures/readiness/burndown_queue.json",
+      "status": "linked_fixture_review_only"
+    },
+    "citation_normalization_packet": {
+      "packet_id": "source-evidence-citation-normalization-release-blocker-burndown-implementation-readiness-reconciliation-v1",
+      "packet_type": "ppd.source_evidence_citation_normalization_packet.v1",
+      "fixture": "ppd/tests/fixtures/readiness/source_evidence_citation_packet.json",
+      "status": "linked_fixture_review_only"
+    },
+    "stale_predicate_remediation_candidate": {
+      "packet_id": "stale-predicate-remediation-candidate-v1",
+      "packet_type": "ppd.stale_predicate_remediation_candidate.v1",
+      "fixture": "ppd/tests/fixtures/stale_predicate_remediation_candidate/normalized_citation_evidence_packet.json",
+      "status": "linked_fixture_review_only"
+    },
+    "agent_regression_rerun_plan": {
+      "packet_id": "stale-predicate-remediation-agent-regression-rerun-v1",
+      "packet_type": "fixture_only_no_llm_no_devhub_no_private_file_reads",
+      "fixture": "ppd/tests/fixtures/agent_regression_rerun_plan/stale_predicate_cases.json",
+      "status": "linked_fixture_review_only"
+    },
+    "attended_pilot_dry_run_review": {
+      "packet_id": "attended-pilot-dry-run-review-v1",
+      "packet_type": "attended_pilot_dry_run_review",
+      "fixture": "ppd/tests/fixtures/devhub/attended_pilot_review_packet.complete.json",
+      "status": "linked_fixture_review_only"
+    }
+  },
+  "readiness_claims": [
+    {
+      "claim_id": "burn-down-linked",
+      "status": "blocked_by_open_release_blockers",
+      "summary": "The release-blocker burn-down queue is linked and still contains unresolved blockers.",
+      "citations": ["burn_down_queue"]
+    },
+    {
+      "claim_id": "citation-normalization-linked",
+      "status": "review_only_not_source_registry_promotion",
+      "summary": "Citation normalization evidence is linked for review without replacing active source records.",
+      "citations": ["citation_normalization_packet", "burn_down_queue"]
+    },
+    {
+      "claim_id": "stale-predicate-remediation-linked",
+      "status": "candidate_only_human_review_unresolved",
+      "summary": "Stale-predicate remediation remains a cited candidate and does not mutate active guardrail bundles.",
+      "citations": ["stale_predicate_remediation_candidate", "citation_normalization_packet"]
+    },
+    {
+      "claim_id": "regression-rerun-plan-linked",
+      "status": "fixture_only_no_llm_no_devhub_execution",
+      "summary": "Agent regression rerun planning is limited to affected synthetic cases and expected outcomes.",
+      "citations": ["agent_regression_rerun_plan", "stale_predicate_remediation_candidate"]
+    },
+    {
+      "claim_id": "attended-pilot-review-linked",
+      "status": "dry_run_review_only_no_live_authenticated_evidence",
+      "summary": "The attended pilot dry-run review is linked without captured live authenticated session evidence.",
+      "citations": ["attended_pilot_dry_run_review"]
+    }
+  ],
+  "unresolved_blockers": [
+    {
+      "blocker_id": "registry-candidate-not-promoted",
+      "source": "burn_down_queue",
+      "summary": "Source registry candidate evidence remains review-only and is not promoted to active source records.",
+      "status": "open",
+      "priority_dimension": "source_freshness",
+      "citations": ["burn_down_queue"]
+    },
+    {
+      "blocker_id": "guardrail-audit-stale",
+      "source": "burn_down_queue",
+      "summary": "Stale guardrail predicates still require human review against normalized citation evidence.",
+      "status": "open",
+      "priority_dimension": "guardrail_staleness",
+      "citations": ["burn_down_queue", "stale_predicate_remediation_candidate"]
+    },
+    {
+      "blocker_id": "agent-regression-fixture-only",
+      "source": "burn_down_queue",
+      "summary": "Agent regression coverage is fixture-only and does not authorize live LLM or DevHub execution.",
+      "status": "open",
+      "priority_dimension": "regression_coverage",
+      "citations": ["burn_down_queue", "agent_regression_rerun_plan"]
+    },
+    {
+      "blocker_id": "pilot-evidence-template-only",
+      "source": "burn_down_queue",
+      "summary": "Attended pilot evidence remains a dry-run review template and is not live authenticated evidence.",
+      "status": "open",
+      "priority_dimension": "attended_pilot_evidence_readiness",
+      "citations": ["burn_down_queue", "attended_pilot_dry_run_review"]
+    }
+  ],
+  "live_capabilities": {
+    "live_crawl_enabled": false,
+    "devhub_automation_enabled": false,
+    "authenticated_devhub_enabled": false,
+    "llm_execution_enabled": false,
+    "payment_enabled": false,
+    "upload_enabled": false,
+    "submission_enabled": false,
+    "scheduling_enabled": false,
+    "cancellation_enabled": false,
+    "certification_enabled": false
+  },
+  "disabled_capabilities": [
+    "account_creation",
+    "captcha_automation",
+    "cancellation",
+    "certification",
+    "devhub_authenticated_automation",
+    "live_crawl",
+    "live_llm_execution",
+    "mfa_automation",
+    "payment",
+    "scheduling",
+    "submission",
+    "upload"
+  ],
+  "operator_next_actions": [
+    "Resolve burn-down blockers against cited fixtures before any production readiness claim.",
+    "Complete human review for citation normalization and stale-predicate remediation candidates.",
+    "Rerun only fixture-backed synthetic agent cases until live capabilities are separately authorized.",
+    "Keep attended DevHub pilot work manual, read-only, and dry-run reviewed before future live attendance."
+  ],
+  "validation_summary": {
+    "status": "blocked_non_production_snapshot",
+    "unresolved_blocker_count": 4,
+    "live_capabilities_disabled": true,
+    "fixture_first_only": true
+  }
+}

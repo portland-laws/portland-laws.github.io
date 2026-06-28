@@ -1,0 +1,133 @@
+{
+  "packet_id": "fixture-first-guardrail-explanation-audit-001",
+  "fixture_version": 2,
+  "scope": "synthetic_predicate_outcome_sample",
+  "devhub_launch_required": false,
+  "private_file_access_required": false,
+  "live_crawl_required": false,
+  "guardrail_inputs": {
+    "guardrail_bundle_id": "fixture.guardrail_bundle.synthetic_preview",
+    "source_snapshot_date": "2026-05-28",
+    "audit_date": "2026-05-28",
+    "freshness_window_days": 30,
+    "input_status": "fresh_fixture_only"
+  },
+  "synthetic_case": {
+    "case_id": "synthetic-ppd-preview-001",
+    "description": "Synthetic residential permit preview request used only to audit guardrail explanations.",
+    "requested_action": "prepare_local_preview",
+    "jurisdiction": "Portland, Oregon",
+    "facts": {
+      "property_address": "1234 SW Fixture Ave",
+      "permit_type": "residential alteration",
+      "work_summary": "replace two existing windows without changing opening size",
+      "source_snapshot_date": "2026-05-28"
+    }
+  },
+  "forbidden_side_effects": [
+    "launch_devhub",
+    "read_private_files",
+    "create_auth_state",
+    "create_trace",
+    "download_documents",
+    "submit_application",
+    "upload_documents",
+    "pay_fee",
+    "certify_or_attest"
+  ],
+  "sampled_outcomes": [
+    {
+      "state": "allowed_local_preview",
+      "predicate_result": "allow",
+      "draft_decision": "The request may be rendered as a local unauthenticated preview because it uses synthetic facts and does not submit, certify, upload, pay, or authenticate.",
+      "user_facing_explanation": "I can show a local preview using the synthetic case facts. This preview will not open DevHub, sign in, submit anything, upload documents, pay fees, schedule inspections, cancel records, certify statements, or create private session artifacts.",
+      "citations": [
+        {
+          "source_id": "fixture.synthetic_case",
+          "supports": "The request is synthetic and limited to prepare_local_preview."
+        },
+        {
+          "source_id": "fixture.forbidden_side_effects",
+          "supports": "The preview explicitly excludes authenticated or irreversible actions."
+        }
+      ]
+    },
+    {
+      "state": "missing_fact",
+      "predicate_result": "block_until_user_fact",
+      "draft_decision": "The automation must ask for the missing fact before producing a grounded answer.",
+      "missing_fact": "zoning_overlay_or_applicable_district",
+      "user_facing_explanation": "I cannot determine the applicable local rule from this fixture alone because the zoning overlay or district is not present. Provide that fact or a cited public source before I treat the outcome as grounded.",
+      "citations": [
+        {
+          "source_id": "fixture.synthetic_case.facts",
+          "supports": "The available facts do not include a zoning overlay or district."
+        }
+      ]
+    },
+    {
+      "state": "refused_action",
+      "predicate_result": "refuse",
+      "draft_decision": "The requested action is refused because it would cross into authenticated submission or certification behavior.",
+      "refused_action": "submit_application",
+      "user_facing_explanation": "I cannot submit, certify, upload, pay, schedule, cancel, or perform authenticated permit actions. I can help prepare a review checklist or local preview that you control.",
+      "citations": [
+        {
+          "source_id": "fixture.forbidden_side_effects",
+          "supports": "submit_application, upload_documents, pay_fee, and certify_or_attest are forbidden side effects."
+        }
+      ]
+    },
+    {
+      "state": "manual_handoff",
+      "predicate_result": "handoff_required",
+      "draft_decision": "Manual review is required when the requested decision depends on professional judgment or a city-only determination.",
+      "handoff_reason": "fixture_contains_unresolved_discretionary_review",
+      "user_facing_explanation": "This case needs manual review before any conclusion is presented as ready to act on. The fixture does not establish every discretionary PP&D determination needed for a final answer.",
+      "citations": [
+        {
+          "source_id": "fixture.synthetic_case.description",
+          "supports": "The case is an audit sample, not an official PP&D determination."
+        }
+      ]
+    },
+    {
+      "state": "stale_evidence",
+      "predicate_result": "block_until_refreshed",
+      "draft_decision": "The sampled predicate blocks when evidence is stale, even though this packet's guardrail inputs are fresh.",
+      "stale_evidence": {
+        "source_snapshot_date": "2026-05-08",
+        "audit_date": "2026-05-28",
+        "freshness_window_days": 14
+      },
+      "user_facing_explanation": "The sampled source snapshot is older than the fixture freshness window, so I should refresh public evidence before giving current PP&D guidance.",
+      "citations": [
+        {
+          "source_id": "fixture.sampled_outcomes.stale_evidence.source_snapshot_date",
+          "supports": "The sampled stale source snapshot date is 2026-05-08."
+        },
+        {
+          "source_id": "fixture.sampled_outcomes.stale_evidence.freshness_window_days",
+          "supports": "The sampled stale-evidence outcome uses a 14 day freshness window."
+        }
+      ]
+    },
+    {
+      "state": "unresolved_review",
+      "predicate_result": "hold_for_review",
+      "draft_decision": "The draft remains unresolved when cited evidence and requested outcome do not establish a complete rule-backed answer.",
+      "unresolved_items": [
+        "confirm_public_rule_source",
+        "confirm_permit_path",
+        "confirm_no_authenticated_action_needed"
+      ],
+      "user_facing_explanation": "This remains in review because the fixture does not yet cite enough public evidence to support a final rule-backed answer. I can keep the draft local and list the unresolved items.",
+      "citations": [
+        {
+          "source_id": "fixture.sampled_outcomes.unresolved_review.unresolved_items",
+          "supports": "The fixture names the review items that prevent finalization."
+        }
+      ]
+    }
+  ]
+}

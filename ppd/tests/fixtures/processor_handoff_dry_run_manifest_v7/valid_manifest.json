@@ -1,0 +1,65 @@
+{
+  "manifest_version": 7,
+  "manifest_type": "ppd_processor_handoff_dry_run_manifest",
+  "generated_at": "2026-06-02T00:00:00Z",
+  "recrawl_preflight_refs": [
+    "public-recrawl-preflight:v7:ppd-official-guidance"
+  ],
+  "processor_invocation_plans": [
+    {
+      "plan_id": "processor-plan-001",
+      "source_id": "ppd-online-tools",
+      "dry_run": true,
+      "processor_invocation_allowed": false,
+      "network_allowed": false,
+      "metadata_only": true
+    }
+  ],
+  "archive_manifest_placeholders": [
+    {
+      "archive_manifest_id": "archive-manifest-ppd-online-tools",
+      "source_id": "ppd-online-tools",
+      "placeholder_only": true,
+      "artifact_persisted": false,
+      "metadata_path": "metadata_outputs/processor_handoff_dry_run_v7/archive_manifests/ppd-online-tools.json"
+    }
+  ],
+  "normalized_document_reference_placeholders": [
+    {
+      "normalized_document_id": "document-ppd-online-tools",
+      "source_id": "ppd-online-tools",
+      "placeholder_only": true,
+      "document_content_persisted": false,
+      "metadata_path": "metadata_outputs/processor_handoff_dry_run_v7/normalized_documents/document-ppd-online-tools.json"
+    }
+  ],
+  "no_raw_body_persistence_assertions": [
+    {
+      "source_id": "ppd-online-tools",
+      "no_raw_body_persisted": true,
+      "persist_raw_body": false,
+      "download_documents": false
+    }
+  ],
+  "skipped_source_evidence_rows": [
+    {
+      "source_id": "devhub-private-account-path",
+      "skip_reason": "private_or_authenticated_path",
+      "evidence_ref": "preflight-skip:devhub-private-account-path"
+    }
+  ],
+  "validation_handoff_rows": [
+    {
+      "handoff_id": "validation-handoff-processor-dry-run-v7",
+      "reviewer": "ppd-fixture-reviewer",
+      "status": "ready_for_fixture_validation"
+    }
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ]
+}

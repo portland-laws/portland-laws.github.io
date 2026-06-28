@@ -1,0 +1,66 @@
+{
+  "manifest_cases": [
+    {
+      "name": "raw_body_artifact",
+      "path": ["sources", 0, "raw_body"],
+      "value": "raw body artifact should never be committed",
+      "message": "raw body artifacts are not allowed"
+    },
+    {
+      "name": "downloaded_document_claim",
+      "path": ["sources", 1, "document_downloaded"],
+      "value": true,
+      "message": "downloaded document claims are not allowed"
+    },
+    {
+      "name": "private_session_artifact",
+      "path": ["sources", 0, "cookies"],
+      "value": ["session cookie placeholder"],
+      "message": "private/session/auth artifacts are not allowed"
+    },
+    {
+      "name": "legal_or_permitting_guarantee",
+      "path": ["sources", 0, "legal_guarantee"],
+      "value": "permit approval guaranteed",
+      "message": "legal or permitting guarantees are not allowed"
+    },
+    {
+      "name": "active_mutation_flag",
+      "path": ["sources", 0, "active_mutation"],
+      "value": true,
+      "message": "active mutation flags are not allowed"
+    }
+  ],
+  "record_cases": [
+    {
+      "name": "live_crawl_claim",
+      "key": "operator_note",
+      "value": "live crawl performed during this packet",
+      "message": "live crawl claims are not allowed"
+    },
+    {
+      "name": "raw_html_artifact",
+      "key": "raw_html",
+      "value": "raw html artifact",
+      "message": "raw body artifacts are not allowed"
+    },
+    {
+      "name": "private_auth_artifact",
+      "key": "auth_state",
+      "value": "auth token placeholder",
+      "message": "private/session/auth artifacts are not allowed"
+    },
+    {
+      "name": "downloaded_document_claim",
+      "key": "downloaded_document_claim",
+      "value": true,
+      "message": "downloaded document claims are not allowed"
+    },
+    {
+      "name": "active_mutation_flag",
+      "key": "mutation_enabled",
+      "value": true,
+      "message": "active mutation flags are not allowed"
+    }
+  ]
+}

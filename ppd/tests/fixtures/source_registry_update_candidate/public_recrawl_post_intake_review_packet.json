@@ -1,0 +1,27 @@
+{
+  "packet_id": "public-recrawl-post-intake-review-fixture-20260529",
+  "packet_type": "public_recrawl_post_intake_review",
+  "reviewed_sources": [
+    {
+      "source_id": "ppd-devhub-faqs",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "review_status": "metadata_reviewed",
+      "proposed_freshness_status": "recrawl_candidate",
+      "review_disposition": "add_metadata_candidate",
+      "registry_before": null,
+      "owner": "devhub-guidance-reviewer"
+    },
+    {
+      "source_id": "ppd-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "review_status": "metadata_reviewed",
+      "proposed_freshness_status": "stale_review_required",
+      "review_disposition": "metadata_update_candidate",
+      "registry_before": {
+        "source_id": "ppd-submit-plans-online",
+        "freshness_status": "current"
+      },
+      "owner": "single-pdf-guidance-reviewer"
+    }
+  ]
+}

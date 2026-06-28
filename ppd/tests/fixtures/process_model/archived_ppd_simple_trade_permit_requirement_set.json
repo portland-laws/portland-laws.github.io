@@ -1,0 +1,110 @@
+{
+  "process_model_id": "portland-ppd-simple-trade-permit-fixture-v1",
+  "jurisdiction": "Portland, Oregon",
+  "agency": "Portland Permitting & Development",
+  "source_archive": {
+    "archive_id": "ppd-archive-fixture-simple-trade-permit-2026-05-08",
+    "title": "Simple trade permit archived requirement fixture",
+    "source_url": "https://www.portland.gov/ppd/permits",
+    "archived_at": "2026-05-08T00:00:00Z",
+    "content_sha256": "fixture-only-not-a-live-crawl"
+  },
+  "requirements": [
+    {
+      "id": "REQ-ELIGIBILITY-001",
+      "text": "A simple trade permit path is available only for eligible residential mechanical, electrical, or plumbing work that does not require plan review.",
+      "eligibility_rules": [
+        {
+          "id": "eligibility.simple_trade.work_type",
+          "all": [
+            {"fact": "project_location.city", "operator": "equals", "value": "Portland"},
+            {"fact": "permit_type", "operator": "in", "value": ["mechanical", "electrical", "plumbing"]},
+            {"fact": "requires_plan_review", "operator": "equals", "value": false}
+          ]
+        }
+      ],
+      "required_user_facts": [
+        {"id": "project_location.city", "label": "Project city", "type": "string"},
+        {"id": "permit_type", "label": "Permit type", "type": "enum", "allowed_values": ["mechanical", "electrical", "plumbing"]},
+        {"id": "requires_plan_review", "label": "Requires plan review", "type": "boolean"}
+      ],
+      "required_documents": [
+        {"id": "doc.site_address", "label": "Site address or property identifier", "required_when": "always"},
+        {"id": "doc.scope_of_work", "label": "Description of proposed work", "required_when": "always"}
+      ],
+      "file_rules": [
+        {"id": "file.pdf.accepted", "description": "Upload supporting documents as PDF files when documents are required.", "allowed_extensions": [".pdf"]}
+      ],
+      "fees": [
+        {"id": "fee.trade_permit_base", "label": "Base trade permit fee", "amount": null, "currency": "USD", "calculation": "determined_by_current_fee_schedule"}
+      ],
+      "stages": [
+        {"id": "stage.prepare", "label": "Prepare application facts and documents", "sequence": 1},
+        {"id": "stage.submit", "label": "Submit through the approved PP&D channel", "sequence": 2},
+        {"id": "stage.review_or_issue", "label": "PP&D reviews or issues the permit", "sequence": 3}
+      ],
+      "unsupported_paths": [
+        {"id": "unsupported.plan_review", "when": {"fact": "requires_plan_review", "operator": "equals", "value": true}, "reason": "Plan review paths are outside the simple trade permit fixture."},
+        {"id": "unsupported.outside_portland", "when": {"fact": "project_location.city", "operator": "not_equals", "value": "Portland"}, "reason": "The PP&D process model covers Portland jurisdiction only."}
+      ],
+      "guardrail_bundle_refs": [
+        "guardrails.ppd.no_submission_without_user_confirmation",
+        "guardrails.ppd.no_payment_or_certification_automation",
+        "guardrails.ppd.source_grounded_archived_requirements"
+      ]
+    }
+  ],
+  "expected_process_model": {
+    "process_model_id": "portland-ppd-simple-trade-permit-fixture-v1",
+    "jurisdiction": "Portland, Oregon",
+    "agency": "Portland Permitting & Development",
+    "source_archive": {
+      "archive_id": "ppd-archive-fixture-simple-trade-permit-2026-05-08",
+      "title": "Simple trade permit archived requirement fixture",
+      "source_url": "https://www.portland.gov/ppd/permits",
+      "archived_at": "2026-05-08T00:00:00Z",
+      "content_sha256": "fixture-only-not-a-live-crawl"
+    },
+    "compiled_from_requirement_ids": ["REQ-ELIGIBILITY-001"],
+    "eligibility_rules": [
+      {
+        "id": "eligibility.simple_trade.work_type",
+        "all": [
+          {"fact": "project_location.city", "operator": "equals", "value": "Portland"},
+          {"fact": "permit_type", "operator": "in", "value": ["mechanical", "electrical", "plumbing"]},
+          {"fact": "requires_plan_review", "operator": "equals", "value": false}
+        ],
+        "requirement_id": "REQ-ELIGIBILITY-001"
+      }
+    ],
+    "required_user_facts": [
+      {"id": "project_location.city", "label": "Project city", "type": "string", "requirement_id": "REQ-ELIGIBILITY-001"},
+      {"id": "permit_type", "label": "Permit type", "type": "enum", "allowed_values": ["mechanical", "electrical", "plumbing"], "requirement_id": "REQ-ELIGIBILITY-001"},
+      {"id": "requires_plan_review", "label": "Requires plan review", "type": "boolean", "requirement_id": "REQ-ELIGIBILITY-001"}
+    ],
+    "required_documents": [
+      {"id": "doc.site_address", "label": "Site address or property identifier", "required_when": "always", "requirement_id": "REQ-ELIGIBILITY-001"},
+      {"id": "doc.scope_of_work", "label": "Description of proposed work", "required_when": "always", "requirement_id": "REQ-ELIGIBILITY-001"}
+    ],
+    "file_rules": [
+      {"id": "file.pdf.accepted", "description": "Upload supporting documents as PDF files when documents are required.", "allowed_extensions": [".pdf"], "requirement_id": "REQ-ELIGIBILITY-001"}
+    ],
+    "fees": [
+      {"id": "fee.trade_permit_base", "label": "Base trade permit fee", "amount": null, "currency": "USD", "calculation": "determined_by_current_fee_schedule", "requirement_id": "REQ-ELIGIBILITY-001"}
+    ],
+    "stages": [
+      {"id": "stage.prepare", "label": "Prepare application facts and documents", "sequence": 1, "requirement_id": "REQ-ELIGIBILITY-001"},
+      {"id": "stage.submit", "label": "Submit through the approved PP&D channel", "sequence": 2, "requirement_id": "REQ-ELIGIBILITY-001"},
+      {"id": "stage.review_or_issue", "label": "PP&D reviews or issues the permit", "sequence": 3, "requirement_id": "REQ-ELIGIBILITY-001"}
+    ],
+    "unsupported_paths": [
+      {"id": "unsupported.plan_review", "when": {"fact": "requires_plan_review", "operator": "equals", "value": true}, "reason": "Plan review paths are outside the simple trade permit fixture.", "requirement_id": "REQ-ELIGIBILITY-001"},
+      {"id": "unsupported.outside_portland", "when": {"fact": "project_location.city", "operator": "not_equals", "value": "Portland"}, "reason": "The PP&D process model covers Portland jurisdiction only.", "requirement_id": "REQ-ELIGIBILITY-001"}
+    ],
+    "guardrail_bundle_refs": [
+      "guardrails.ppd.no_payment_or_certification_automation",
+      "guardrails.ppd.no_submission_without_user_confirmation",
+      "guardrails.ppd.source_grounded_archived_requirements"
+    ]
+  }
+}

@@ -1,0 +1,15 @@
+Implemented a deterministic slot refinement for `modal.ir_decompiler` by adding generalized U.S.C. section-shape features to both decompiler slot emission and triple emission.
+
+- Added new citation/source-section abstraction slots in decompiler parsing at [decompiler.py:1148](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000023-20260518_093025/ipfs_datasets_py/logic/modal/decompiler.py:1148):
+  - `*_section_shape` (e.g., `N`, `NA`, `NA-NA`)
+  - `*_section_component_kind` (`numeric`, `alphanumeric`, `other`)
+  - `*_section_number_digit_count`
+  - `*_section_numeric_component_count`
+  - `*_section_suffix_component_count`
+- Mirrored the same logic for F-logic triple component extraction at [codec.py:1246](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000023-20260518_093025/ipfs_datasets_py/logic/modal/codec.py:1246), so decompiler slots and KG triples remain aligned.
+- Extended existing modal codec tests to assert these new slots/triples for alphanumeric citation sections and source-id sections at [test_modal_codec.py:2215](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000023-20260518_093025/tests/unit_tests/logic/modal/test_modal_codec.py:2215) and [test_modal_codec.py:2353](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000023-20260518_093025/tests/unit_tests/logic/modal/test_modal_codec.py:2353).
+
+Tests run:
+
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "expand_alphanumeric_citation_section_slots or surface_uscode_source_id_slots"` (passed)
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py` (71 passed)

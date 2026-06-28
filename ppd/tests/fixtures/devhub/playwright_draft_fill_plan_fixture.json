@@ -1,0 +1,295 @@
+{
+  "fixture_id": "mock_devhub_residential_building_permit_draft_fill_plan_v1",
+  "fixture_type": "playwright_draft_fill_plan",
+  "created_for_task": "checkbox-43",
+  "source_mode": "mocked_no_live_crawl",
+  "permit_form": {
+    "form_id": "residential_building_permit_application_mock",
+    "name": "Residential Building Permit Application",
+    "owning_surface": "DevHub",
+    "page_url_pattern": "https://devhub.portlandoregon.gov/permits/*/draft",
+    "auth_scope": "attended_user_session_required_for_real_use",
+    "mock_page_heading": "Apply for a residential building permit"
+  },
+  "automation_limits": {
+    "mode": "reversible_draft_preview_only",
+    "may_open_authenticated_browser": false,
+    "may_fill_live_fields": false,
+    "may_click_save_draft": false,
+    "may_upload_documents": false,
+    "may_submit_application": false,
+    "may_certify_or_acknowledge": false,
+    "may_enter_payment_details": false,
+    "may_schedule_or_cancel": false,
+    "allowed_preview_actions": [
+      "rank_candidate_selectors",
+      "map_known_facts_to_field_preview_values",
+      "ask_questions_for_missing_facts",
+      "render_local_draft_fill_summary"
+    ],
+    "blocked_action_policy": "Any action beyond local preview requires attended review and an exact action-specific confirmation outside this fixture."
+  },
+  "known_case_facts": {
+    "project_description": "Replace existing rear deck stairs in kind.",
+    "site_address": "1122 SW Example Ave, Portland, OR 97205",
+    "applicant_email": "applicant@example.invalid"
+  },
+  "missing_user_facts": [
+    {
+      "fact_key": "property_owner_full_name",
+      "required_for_field_ids": [
+        "owner_name"
+      ],
+      "question": "What is the property owner's full legal name for this permit draft?",
+      "reason": "The mocked form includes an owner name field, and no owner name is present in known case facts.",
+      "answer_type": "short_text"
+    },
+    {
+      "fact_key": "applicant_phone",
+      "required_for_field_ids": [
+        "applicant_phone"
+      ],
+      "question": "What phone number should PP&D use for application contact questions?",
+      "reason": "The mocked contact section includes a phone field, and only an email address is known.",
+      "answer_type": "phone"
+    },
+    {
+      "fact_key": "project_valuation_usd",
+      "required_for_field_ids": [
+        "project_valuation"
+      ],
+      "question": "What is the estimated project valuation in US dollars, excluding cents?",
+      "reason": "Permit applications commonly request valuation, and the fixture must not infer cost from the project description.",
+      "answer_type": "integer_usd"
+    },
+    {
+      "fact_key": "contractor_license_status",
+      "required_for_field_ids": [
+        "contractor_role"
+      ],
+      "question": "Will the work be performed by the owner or by a licensed contractor?",
+      "reason": "The applicant role affects downstream eligibility and cannot be guessed by automation.",
+      "answer_type": "single_choice",
+      "choices": [
+        "owner",
+        "licensed_contractor",
+        "unknown"
+      ]
+    }
+  ],
+  "field_previews": [
+    {
+      "field_id": "site_address",
+      "label": "Project site address",
+      "preview_value_source": "known_case_facts.site_address",
+      "preview_value_redaction": "public_example_fixture_value",
+      "draft_preview_value": "1122 SW Example Ave, Portland, OR 97205",
+      "confidence": 0.94,
+      "selector_candidates": [
+        {
+          "rank": 1,
+          "selector": "getByLabel('Project site address')",
+          "strategy": "accessible_label",
+          "confidence": 0.96,
+          "evidence": [
+            "Label text exactly matches mocked field label.",
+            "Address field appears in the property lookup section before permit details."
+          ]
+        },
+        {
+          "rank": 2,
+          "selector": "getByRole('textbox', { name: /site address/i })",
+          "strategy": "accessible_role_name",
+          "confidence": 0.88,
+          "evidence": [
+            "Textbox role and accessible name are consistent with address entry.",
+            "Regex selector is slightly broader than the exact label candidate."
+          ]
+        },
+        {
+          "rank": 3,
+          "selector": "input[name='siteAddress']",
+          "strategy": "stable_attribute",
+          "confidence": 0.72,
+          "evidence": [
+            "Name attribute is plausible for the mocked form.",
+            "No live DevHub DOM has been captured for this fixture."
+          ]
+        }
+      ],
+      "allowed_action": "local_preview_only"
+    },
+    {
+      "field_id": "project_description",
+      "label": "Describe the proposed work",
+      "preview_value_source": "known_case_facts.project_description",
+      "preview_value_redaction": "public_example_fixture_value",
+      "draft_preview_value": "Replace existing rear deck stairs in kind.",
+      "confidence": 0.91,
+      "selector_candidates": [
+        {
+          "rank": 1,
+          "selector": "getByLabel('Describe the proposed work')",
+          "strategy": "accessible_label",
+          "confidence": 0.95,
+          "evidence": [
+            "Exact mocked label match.",
+            "Field purpose directly matches the known project description fact."
+          ]
+        },
+        {
+          "rank": 2,
+          "selector": "getByRole('textbox', { name: /proposed work/i })",
+          "strategy": "accessible_role_name",
+          "confidence": 0.87,
+          "evidence": [
+            "Role/name selector should remain resilient if label punctuation changes.",
+            "Could match another proposed-work textbox if the page has repeated sections."
+          ]
+        },
+        {
+          "rank": 3,
+          "selector": "textarea[name='workDescription']",
+          "strategy": "stable_attribute",
+          "confidence": 0.7,
+          "evidence": [
+            "Textarea is plausible for longer descriptions.",
+            "Attribute is mocked and should not be treated as verified DevHub evidence."
+          ]
+        }
+      ],
+      "allowed_action": "local_preview_only"
+    },
+    {
+      "field_id": "applicant_email",
+      "label": "Applicant email",
+      "preview_value_source": "known_case_facts.applicant_email",
+      "preview_value_redaction": "reserved_invalid_domain",
+      "draft_preview_value": "applicant@example.invalid",
+      "confidence": 0.9,
+      "selector_candidates": [
+        {
+          "rank": 1,
+          "selector": "getByLabel('Applicant email')",
+          "strategy": "accessible_label",
+          "confidence": 0.94,
+          "evidence": [
+            "Exact mocked label match.",
+            "Email field maps directly to the known applicant email fact."
+          ]
+        },
+        {
+          "rank": 2,
+          "selector": "getByRole('textbox', { name: /email/i })",
+          "strategy": "accessible_role_name",
+          "confidence": 0.82,
+          "evidence": [
+            "Accessible name contains email.",
+            "Could be ambiguous if owner, contractor, and applicant emails are present."
+          ]
+        },
+        {
+          "rank": 3,
+          "selector": "input[type='email']",
+          "strategy": "semantic_input_type",
+          "confidence": 0.64,
+          "evidence": [
+            "Input type identifies email format.",
+            "Type-only selector is not unique enough for automation without further evidence."
+          ]
+        }
+      ],
+      "allowed_action": "local_preview_only"
+    },
+    {
+      "field_id": "owner_name",
+      "label": "Property owner name",
+      "preview_value_source": "missing_user_facts.property_owner_full_name",
+      "preview_value_redaction": "not_available",
+      "draft_preview_value": null,
+      "confidence": 0.0,
+      "selector_candidates": [
+        {
+          "rank": 1,
+          "selector": "getByLabel('Property owner name')",
+          "strategy": "accessible_label",
+          "confidence": 0.93,
+          "evidence": [
+            "Exact mocked label match.",
+            "Value is intentionally absent until the user answers the mapped question."
+          ]
+        },
+        {
+          "rank": 2,
+          "selector": "getByRole('textbox', { name: /owner name/i })",
+          "strategy": "accessible_role_name",
+          "confidence": 0.84,
+          "evidence": [
+            "Accessible role/name candidate matches the field purpose.",
+            "Less precise than exact label because multiple owner contact fields may exist."
+          ]
+        }
+      ],
+      "allowed_action": "ask_question_before_preview"
+    },
+    {
+      "field_id": "project_valuation",
+      "label": "Project valuation",
+      "preview_value_source": "missing_user_facts.project_valuation_usd",
+      "preview_value_redaction": "not_available",
+      "draft_preview_value": null,
+      "confidence": 0.0,
+      "selector_candidates": [
+        {
+          "rank": 1,
+          "selector": "getByLabel('Project valuation')",
+          "strategy": "accessible_label",
+          "confidence": 0.92,
+          "evidence": [
+            "Exact mocked label match.",
+            "The fixture forbids estimating valuation from the project description."
+          ]
+        },
+        {
+          "rank": 2,
+          "selector": "input[name='valuation']",
+          "strategy": "stable_attribute",
+          "confidence": 0.68,
+          "evidence": [
+            "Attribute is plausible for the mocked form.",
+            "No live DOM or public source evidence confirms the attribute."
+          ]
+        }
+      ],
+      "allowed_action": "ask_question_before_preview"
+    }
+  ],
+  "blocked_actions": [
+    {
+      "action": "click_submit_application",
+      "reason": "Submission is a consequential official action and is outside reversible draft preview."
+    },
+    {
+      "action": "click_certification_checkbox",
+      "reason": "Certification or acknowledgement requires attended user review and exact confirmation."
+    },
+    {
+      "action": "upload_plan_pdf",
+      "reason": "Uploads attach user documents to an official workflow and are not allowed in this fixture."
+    },
+    {
+      "action": "enter_payment_method",
+      "reason": "Payment detail entry is financial and prohibited for this draft-fill plan."
+    },
+    {
+      "action": "save_live_devhub_draft",
+      "reason": "Even save-for-later can affect an authenticated account record, so this fixture only previews local values."
+    }
+  ],
+  "validation_expectations": {
+    "selector_candidates_sorted_by_confidence": true,
+    "every_missing_fact_has_question": true,
+    "no_live_devhub_artifacts": true,
+    "only_reversible_draft_preview_actions": true
+  }
+}

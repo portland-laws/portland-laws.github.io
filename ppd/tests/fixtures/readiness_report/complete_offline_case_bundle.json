@@ -1,0 +1,155 @@
+{
+  "case_id": "case-offline-single-pdf-demo",
+  "sources": [
+    {
+      "source_id": "src-devhub-guide",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "owning_surface": "public_ppd_guidance",
+      "last_verified_at": "2026-05-08",
+      "freshness_status": "fresh"
+    },
+    {
+      "source_id": "src-single-pdf",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "owning_surface": "public_ppd_guidance",
+      "last_verified_at": "2026-05-08",
+      "freshness_status": "fresh"
+    },
+    {
+      "source_id": "src-fee-payment",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "owning_surface": "public_ppd_guidance",
+      "last_verified_at": "2026-05-08",
+      "freshness_status": "fresh"
+    }
+  ],
+  "evidence": [
+    {
+      "evidence_id": "ev-devhub-application-save",
+      "source_id": "src-devhub-guide",
+      "citation": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application#application-data-entry",
+      "quote": "Permit applications can include dynamic questions and save-for-later behavior."
+    },
+    {
+      "evidence_id": "ev-single-pdf-separate-supporting",
+      "source_id": "src-single-pdf",
+      "citation": "https://www.portland.gov/ppd/get-permit/submit-plans-online#single-pdf-process",
+      "quote": "Drawing plans are prepared as one PDF and applications, calculations, and other supporting documents are uploaded separately."
+    },
+    {
+      "evidence_id": "ev-fee-payment-final-submit",
+      "source_id": "src-fee-payment",
+      "citation": "https://www.portland.gov/ppd/documents/how-pay-fees/download#payment-submit",
+      "quote": "Fee payment includes payment detail entry and a final submit-payment action."
+    }
+  ],
+  "requirements": [
+    {
+      "requirement_id": "req-draft-before-submit",
+      "requirement_type": "precondition",
+      "source_evidence_ids": ["ev-devhub-application-save"],
+      "subject": "applicant",
+      "action": "prepare reversible draft application",
+      "object": "permit request"
+    },
+    {
+      "requirement_id": "req-single-pdf-document-pack",
+      "requirement_type": "document_requirement",
+      "source_evidence_ids": ["ev-single-pdf-separate-supporting"],
+      "subject": "applicant",
+      "action": "prepare",
+      "object": "single drawing PDF and separate supporting PDFs"
+    },
+    {
+      "requirement_id": "req-payment-gate",
+      "requirement_type": "action_gate",
+      "source_evidence_ids": ["ev-fee-payment-final-submit"],
+      "subject": "agent",
+      "action": "block unattended final payment submission",
+      "object": "fee payment"
+    }
+  ],
+  "process_model": {
+    "process_id": "process-building-plan-review-demo",
+    "permit_type": "building permit requiring plan review",
+    "stages": [
+      {"stage_id": "pre_application_research", "depends_on": []},
+      {"stage_id": "document_preparation", "depends_on": ["pre_application_research"]},
+      {"stage_id": "application_data_entry", "depends_on": ["document_preparation"]},
+      {"stage_id": "upload_staging", "depends_on": ["application_data_entry"]},
+      {"stage_id": "acknowledgement_review", "depends_on": ["upload_staging"]},
+      {"stage_id": "submission", "depends_on": ["acknowledgement_review"]},
+      {"stage_id": "fee_payment", "depends_on": ["submission"]}
+    ]
+  },
+  "user_gap_analysis": {
+    "case_id": "case-offline-single-pdf-demo",
+    "process_id": "process-building-plan-review-demo",
+    "known_facts": ["property address", "project description"],
+    "matched_documents": ["draft site plan"],
+    "missing_facts": ["contractor license status"],
+    "missing_documents": ["single combined drawing PDF", "separate structural calculations PDF"],
+    "stale_evidence": [],
+    "conflicting_evidence": [],
+    "required_confirmations": ["submission confirmation must be attended and exact"],
+    "blocked_actions": ["submit application", "upload official files", "pay fees"],
+    "next_safe_actions": [
+      {
+        "action_id": "safe-ask-license-status",
+        "action_type": "ask_user",
+        "label": "Ask whether contractor license information is current",
+        "source_evidence_ids": ["ev-devhub-application-save"]
+      },
+      {
+        "action_id": "safe-review-document-pack",
+        "action_type": "local_review",
+        "label": "Review local document checklist before any upload",
+        "source_evidence_ids": ["ev-single-pdf-separate-supporting"]
+      }
+    ]
+  },
+  "evidence_packs": [
+    {
+      "pack_id": "pack-document-prep",
+      "purpose": "Support document preparation and gap analysis",
+      "evidence_ids": ["ev-single-pdf-separate-supporting"]
+    },
+    {
+      "pack_id": "pack-action-gates",
+      "purpose": "Support consequential action blocking",
+      "evidence_ids": ["ev-devhub-application-save", "ev-fee-payment-final-submit"]
+    }
+  ],
+  "question_plan": [
+    {
+      "question_id": "q-license-status",
+      "asks_for": "contractor license status",
+      "reason": "License-related facts can affect available application options before drafting is ready.",
+      "source_evidence_ids": ["ev-devhub-application-save"]
+    },
+    {
+      "question_id": "q-document-readiness",
+      "asks_for": "single drawing PDF and separate supporting PDF readiness",
+      "reason": "The document pack must be checked before any upload staging.",
+      "source_evidence_ids": ["ev-single-pdf-separate-supporting"]
+    }
+  ],
+  "handoff_packets": [
+    {
+      "packet_id": "handoff-submit-application",
+      "action_type": "submit",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true,
+      "summary": "Application submission is blocked until the user is present and confirms the exact submission action.",
+      "source_evidence_ids": ["ev-devhub-application-save"]
+    },
+    {
+      "packet_id": "handoff-pay-fees",
+      "action_type": "pay",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true,
+      "summary": "Final payment submission is blocked until the user is present and confirms the exact payment action.",
+      "source_evidence_ids": ["ev-fee-payment-final-submit"]
+    }
+  ]
+}

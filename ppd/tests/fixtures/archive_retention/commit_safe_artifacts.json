@@ -1,0 +1,26 @@
+[
+  {
+    "artifact_id": "manifest-ppd-home",
+    "artifact_type": "archive_manifest",
+    "path": "ppd/archive/manifests/ppd-home.json",
+    "privacy_classification": "public",
+    "auth_scope": "public",
+    "no_raw_body_persisted": true
+  },
+  {
+    "artifact_id": "normalized-ppd-home",
+    "artifact_type": "normalized_document",
+    "path": "ppd/archive/normalized/ppd-home.json",
+    "privacy_classification": "public",
+    "auth_scope": "public",
+    "no_raw_body_persisted": true
+  },
+  {
+    "artifact_id": "checksums-ppd-home",
+    "artifact_type": "checksum_manifest",
+    "path": "ppd/archive/checksums/ppd-home.json",
+    "privacy_classification": "public",
+    "auth_scope": "public",
+    "contains_raw_body": false
+  }
+]

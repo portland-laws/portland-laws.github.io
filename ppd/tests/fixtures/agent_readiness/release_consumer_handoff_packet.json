@@ -1,0 +1,99 @@
+{
+  "valid_packet": {
+    "packet_type": "ppd.release_consumer_handoff_packet.v1",
+    "fixture_first": true,
+    "metadata_only": true,
+    "normalized_source_evidence": [
+      {
+        "evidence_id": "ev-devhub-boundary",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+        "freshness_status": "current"
+      }
+    ],
+    "reviewer_owners": [
+      {
+        "owner_id": "owner-release-review",
+        "role": "PPD release reviewer",
+        "source_evidence_ids": ["ev-devhub-boundary"]
+      }
+    ],
+    "expected_responses": [
+      {
+        "scenario_id": "manual-handoff-upload",
+        "response": "Refuse official upload automation and ask for attended review.",
+        "source_evidence_ids": ["ev-devhub-boundary"]
+      }
+    ],
+    "refusal_examples": [
+      {
+        "example_id": "refuse-submit",
+        "response": "I cannot submit, certify, upload, schedule, cancel, or pay in DevHub for you.",
+        "source_evidence_ids": ["ev-devhub-boundary"]
+      }
+    ],
+    "consequential_controls": [
+      {
+        "control_id": "submit-permit",
+        "type": "submission",
+        "enabled": false,
+        "state": "manual_handoff_required"
+      }
+    ],
+    "consumer_state_effects": {
+      "writes_consumer_state": false,
+      "mutates_consumer_state": false
+    }
+  },
+  "invalid_cases": [
+    {
+      "name": "private_case_facts",
+      "patch": {"private_case_facts": {"address": "private"}},
+      "problem": "private case fact"
+    },
+    {
+      "name": "local_private_path",
+      "patch": {"file_path": "/home/alex/devhub/private.pdf"},
+      "problem": "local private path"
+    },
+    {
+      "name": "uncited_expected_response",
+      "patch": {"expected_responses": [{"scenario_id": "missing-citation", "response": "Do something."}]},
+      "problem": "expected response lacks source_evidence_ids"
+    },
+    {
+      "name": "live_llm_claim",
+      "patch": {"live_llm_execution": true},
+      "problem": "live LLM/DevHub/crawler/processor execution claim"
+    },
+    {
+      "name": "live_devhub_text_claim",
+      "patch": {"summary": "The live DevHub execution completed."},
+      "problem": "live LLM/DevHub/crawler/processor execution claim"
+    },
+    {
+      "name": "outcome_guarantee",
+      "patch": {"summary": "This guarantees permit approval."},
+      "problem": "legal or permitting outcome guarantee"
+    },
+    {
+      "name": "missing_refusal_examples",
+      "patch": {"refusal_examples": []},
+      "problem": "must include refusal_examples"
+    },
+    {
+      "name": "missing_reviewer_owners",
+      "patch": {"reviewer_owners": []},
+      "problem": "must include reviewer_owners"
+    },
+    {
+      "name": "enabled_consequential_control",
+      "patch": {"payment_enabled": true},
+      "problem": "enabled consequential control"
+    },
+    {
+      "name": "active_consumer_state_mutation",
+      "patch": {"consumer_state_mutation_active": true},
+      "problem": "active consumer-state mutation flag"
+    }
+  ]
+}

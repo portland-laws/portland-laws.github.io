@@ -1,0 +1,84 @@
+{
+  "evidence": [
+    {
+      "evidence_id": "synthetic-evidence:permit-intake-001",
+      "synthetic": true,
+      "committed": true,
+      "title": "Synthetic PP&D permit intake checklist",
+      "spans": [
+        {
+          "span_id": "span:requirement-address",
+          "text": "A permit intake record includes a project address before routing begins."
+        },
+        {
+          "span_id": "span:process-zoning-review",
+          "text": "Zoning review follows intake and precedes final issuance in this synthetic workflow."
+        }
+      ]
+    },
+    {
+      "evidence_id": "synthetic-evidence:guardrails-001",
+      "synthetic": true,
+      "committed": true,
+      "title": "Synthetic PP&D safe automation guardrails",
+      "spans": [
+        {
+          "span_id": "span:guardrail-no-submit",
+          "text": "Automation must not submit, certify, upload, pay, cancel, or create accounts."
+        },
+        {
+          "span_id": "span:next-safe-fixture",
+          "text": "When source confidence is incomplete, the next safe action is to validate committed fixtures."
+        }
+      ]
+    }
+  ],
+  "requirements": [
+    {
+      "id": "requirement:project-address-before-routing",
+      "statement": "Permit intake records require a project address before routing.",
+      "citations": [
+        {
+          "evidence_id": "synthetic-evidence:permit-intake-001",
+          "span_id": "span:requirement-address"
+        }
+      ]
+    }
+  ],
+  "process_model_rules": [
+    {
+      "id": "process-rule:intake-before-zoning",
+      "rule": "Zoning review must occur after intake in the synthetic model.",
+      "citations": [
+        {
+          "evidence_id": "synthetic-evidence:permit-intake-001",
+          "span_id": "span:process-zoning-review"
+        }
+      ]
+    }
+  ],
+  "guardrail_predicates": [
+    {
+      "id": "guardrail:no-submission-actions",
+      "predicate": "action not in submitted_state_changing_actions",
+      "citations": [
+        {
+          "evidence_id": "synthetic-evidence:guardrails-001",
+          "span_id": "span:guardrail-no-submit"
+        }
+      ]
+    }
+  ],
+  "next_safe_action_explanations": [
+    {
+      "id": "next-safe-action:validate-fixtures-first",
+      "explanation": "Validate committed synthetic fixtures before any live automation.",
+      "citations": [
+        {
+          "evidence_id": "synthetic-evidence:guardrails-001",
+          "span_id": "span:next-safe-fixture"
+        }
+      ]
+    }
+  ]
+}

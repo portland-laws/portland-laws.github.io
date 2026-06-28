@@ -1,0 +1,14 @@
+Implemented one generalized frame-logic audit improvement: `fallback_surface_text` signals are now treated as contextual frame-ontology terms.
+
+**Code changes**
+- Added `fallback_surface_text` contextual predicate handling in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000020-20260518_092344/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:53) and its typed prefix `fallback_surface_text_` in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000020-20260518_092344/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:74).
+- Added selector coverage for triple and feature-key extraction in [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000020-20260518_092344/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:257) and [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000020-20260518_092344/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:404).
+- Added F-logic metadata coverage from triples in [test_flogic_integration.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000020-20260518_092344/tests/unit/logic/test_flogic_integration.py:590).
+- Added F-logic metadata coverage from feature keys in [test_flogic_optimizer.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000020-20260518_092344/tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py:54).
+
+**Validation run**
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py -k "fallback_surface_text"` passed (`2 passed`).
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py -k "fallback_surface_text"` passed (`1 passed`).
+- `pytest -q tests/unit/logic/test_flogic_integration.py -k "fallback_surface_text_terms_from_triples"` passed (`1 passed`).
+
+Note: running the entire `test_frame_bm25_selector.py` file also surfaces an existing unrelated failure in `test_frame_ontology_terms_from_feature_keys_support_typed_flogic_citation_and_scope_features` (numeric-term expectation mismatch).

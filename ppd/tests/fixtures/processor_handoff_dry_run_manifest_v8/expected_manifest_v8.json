@@ -1,0 +1,246 @@
+{
+  "manifest_version": "v8",
+  "fixture_scope": "source_recrawl_preflight_queue_v8_fixtures_only",
+  "source_recrawl_preflight_queue_fixture_ref": "ppd/tests/fixtures/processor_handoff_dry_run_manifest_v8/source_recrawl_preflight_queue_v8.json",
+  "source_queue_version": "v8",
+  "authorization_reference": "ppd-public-recrawl-preflight-authorization-2026-06-02",
+  "planned_processor_invocations": [
+    {
+      "invocation_id": "processor-handoff-dry-run-v8::001::ppd-landing-page",
+      "source_queue_order": 1,
+      "source_id": "ppd-landing-page",
+      "canonical_url": "https://www.portland.gov/ppd",
+      "requested_url_placeholder": "https://www.portland.gov/ppd",
+      "source_type": "public_html",
+      "processor_name": "ipfs_datasets_py.web_archive_html_processor",
+      "processor_version_placeholder": "fixture_pending_no_processor_invocation",
+      "invocation_mode": "dry_run_plan_only_from_preflight_fixture",
+      "allowlist_decision": "allowlisted_public_official_source",
+      "robots_policy_decision_placeholder": "placeholder_required_before_fetch",
+      "policy_decision_placeholder": "placeholder_required_before_fetch",
+      "response_metadata_placeholder": {
+        "http_status": "placeholder_pending_no_fetch",
+        "content_type": "placeholder_pending_no_fetch",
+        "redirect_chain": [],
+        "capture_started_at": "not_started_dry_run_only",
+        "capture_finished_at": "not_started_dry_run_only"
+      },
+      "content_hash_placeholder": {
+        "algorithm": "sha256",
+        "value": "placeholder_pending_processor_output_no_raw_body",
+        "raw_body_persisted": false
+      },
+      "normalized_document_reference_placeholder": {
+        "document_id": "doc-placeholder-ppd-landing-page",
+        "source_id": "ppd-landing-page",
+        "normalized_ref": "ppd://documents/placeholders/ppd-landing-page",
+        "content_hash": "sha256:placeholder_pending_processor_output_no_raw_body",
+        "status": "placeholder_pending_processor_output"
+      },
+      "no_raw_body_persistence_assertion": {
+        "no_raw_body_persisted": true,
+        "raw_artifact_ref_allowed": false,
+        "manifest_only": true
+      }
+    },
+    {
+      "invocation_id": "processor-handoff-dry-run-v8::002::ppd-submit-plans-online",
+      "source_queue_order": 2,
+      "source_id": "ppd-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "requested_url_placeholder": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "source_type": "public_html",
+      "processor_name": "ipfs_datasets_py.web_archive_html_processor",
+      "processor_version_placeholder": "fixture_pending_no_processor_invocation",
+      "invocation_mode": "dry_run_plan_only_from_preflight_fixture",
+      "allowlist_decision": "allowlisted_public_official_source",
+      "robots_policy_decision_placeholder": "placeholder_required_before_fetch",
+      "policy_decision_placeholder": "placeholder_required_before_fetch",
+      "response_metadata_placeholder": {
+        "http_status": "placeholder_pending_no_fetch",
+        "content_type": "placeholder_pending_no_fetch",
+        "redirect_chain": [],
+        "capture_started_at": "not_started_dry_run_only",
+        "capture_finished_at": "not_started_dry_run_only"
+      },
+      "content_hash_placeholder": {
+        "algorithm": "sha256",
+        "value": "placeholder_pending_processor_output_no_raw_body",
+        "raw_body_persisted": false
+      },
+      "normalized_document_reference_placeholder": {
+        "document_id": "doc-placeholder-ppd-submit-plans-online",
+        "source_id": "ppd-submit-plans-online",
+        "normalized_ref": "ppd://documents/placeholders/ppd-submit-plans-online",
+        "content_hash": "sha256:placeholder_pending_processor_output_no_raw_body",
+        "status": "placeholder_pending_processor_output"
+      },
+      "no_raw_body_persistence_assertion": {
+        "no_raw_body_persisted": true,
+        "raw_artifact_ref_allowed": false,
+        "manifest_only": true
+      }
+    }
+  ],
+  "response_metadata_placeholders": [
+    {
+      "invocation_id": "processor-handoff-dry-run-v8::001::ppd-landing-page",
+      "source_id": "ppd-landing-page",
+      "response_metadata_placeholder": {
+        "http_status": "placeholder_pending_no_fetch",
+        "content_type": "placeholder_pending_no_fetch",
+        "redirect_chain": [],
+        "capture_started_at": "not_started_dry_run_only",
+        "capture_finished_at": "not_started_dry_run_only"
+      }
+    },
+    {
+      "invocation_id": "processor-handoff-dry-run-v8::002::ppd-submit-plans-online",
+      "source_id": "ppd-submit-plans-online",
+      "response_metadata_placeholder": {
+        "http_status": "placeholder_pending_no_fetch",
+        "content_type": "placeholder_pending_no_fetch",
+        "redirect_chain": [],
+        "capture_started_at": "not_started_dry_run_only",
+        "capture_finished_at": "not_started_dry_run_only"
+      }
+    }
+  ],
+  "content_hash_placeholders": [
+    {
+      "invocation_id": "processor-handoff-dry-run-v8::001::ppd-landing-page",
+      "source_id": "ppd-landing-page",
+      "content_hash_placeholder": {
+        "algorithm": "sha256",
+        "value": "placeholder_pending_processor_output_no_raw_body",
+        "raw_body_persisted": false
+      }
+    },
+    {
+      "invocation_id": "processor-handoff-dry-run-v8::002::ppd-submit-plans-online",
+      "source_id": "ppd-submit-plans-online",
+      "content_hash_placeholder": {
+        "algorithm": "sha256",
+        "value": "placeholder_pending_processor_output_no_raw_body",
+        "raw_body_persisted": false
+      }
+    }
+  ],
+  "normalized_document_reference_placeholders": [
+    {
+      "invocation_id": "processor-handoff-dry-run-v8::001::ppd-landing-page",
+      "source_id": "ppd-landing-page",
+      "normalized_document_reference_placeholder": {
+        "document_id": "doc-placeholder-ppd-landing-page",
+        "source_id": "ppd-landing-page",
+        "normalized_ref": "ppd://documents/placeholders/ppd-landing-page",
+        "content_hash": "sha256:placeholder_pending_processor_output_no_raw_body",
+        "status": "placeholder_pending_processor_output"
+      }
+    },
+    {
+      "invocation_id": "processor-handoff-dry-run-v8::002::ppd-submit-plans-online",
+      "source_id": "ppd-submit-plans-online",
+      "normalized_document_reference_placeholder": {
+        "document_id": "doc-placeholder-ppd-submit-plans-online",
+        "source_id": "ppd-submit-plans-online",
+        "normalized_ref": "ppd://documents/placeholders/ppd-submit-plans-online",
+        "content_hash": "sha256:placeholder_pending_processor_output_no_raw_body",
+        "status": "placeholder_pending_processor_output"
+      }
+    }
+  ],
+  "no_raw_body_persistence_assertions": [
+    {
+      "invocation_id": "processor-handoff-dry-run-v8::001::ppd-landing-page",
+      "source_id": "ppd-landing-page",
+      "no_raw_body_persisted": true,
+      "raw_artifact_ref_allowed": false,
+      "manifest_only": true
+    },
+    {
+      "invocation_id": "processor-handoff-dry-run-v8::002::ppd-submit-plans-online",
+      "source_id": "ppd-submit-plans-online",
+      "no_raw_body_persisted": true,
+      "raw_artifact_ref_allowed": false,
+      "manifest_only": true
+    }
+  ],
+  "skipped_source_rows": [
+    {
+      "source_id": "skipped-preflight-placeholder-001",
+      "canonical_url": "https://www.portland.gov/ppd/private-policy-placeholder",
+      "source_type": "preflight_skip_placeholder",
+      "skipped_reason": "disallowed_by_robots_or_policy",
+      "source_queue_order": null,
+      "raw_body_persisted": false
+    },
+    {
+      "source_id": "skipped-preflight-placeholder-002",
+      "canonical_url": "https://example.invalid/outside-allowlist",
+      "source_type": "preflight_skip_placeholder",
+      "skipped_reason": "outside_allowlist",
+      "source_queue_order": null,
+      "raw_body_persisted": false
+    },
+    {
+      "source_id": "skipped-preflight-placeholder-003",
+      "canonical_url": "https://devhub.portlandoregon.gov/private-placeholder",
+      "source_type": "preflight_skip_placeholder",
+      "skipped_reason": "private_authenticated",
+      "source_queue_order": null,
+      "raw_body_persisted": false
+    },
+    {
+      "source_id": "skipped-preflight-placeholder-004",
+      "canonical_url": "https://www.portland.gov/ppd/documents/raw-download-placeholder",
+      "source_type": "preflight_skip_placeholder",
+      "skipped_reason": "raw_download_not_permitted",
+      "source_queue_order": null,
+      "raw_body_persisted": false
+    },
+    {
+      "source_id": "skipped-preflight-placeholder-005",
+      "canonical_url": "https://www.portland.gov/ppd/documents/too-large-placeholder",
+      "source_type": "preflight_skip_placeholder",
+      "skipped_reason": "too_large",
+      "source_queue_order": null,
+      "raw_body_persisted": false
+    },
+    {
+      "source_id": "skipped-preflight-placeholder-006",
+      "canonical_url": "https://www.portland.gov/ppd/downloads/archive-placeholder.zip",
+      "source_type": "preflight_skip_placeholder",
+      "skipped_reason": "unsupported_content_type",
+      "source_queue_order": null,
+      "raw_body_persisted": false
+    },
+    {
+      "source_id": "skipped-preflight-placeholder-007",
+      "canonical_url": "mailto:ppd@example.invalid",
+      "source_type": "preflight_skip_placeholder",
+      "skipped_reason": "unsupported_scheme",
+      "source_queue_order": null,
+      "raw_body_persisted": false
+    }
+  ],
+  "blocked_activity_assertions": {
+    "processors_invoked": false,
+    "live_urls_fetched": false,
+    "raw_artifacts_downloaded": false,
+    "devhub_opened": false,
+    "private_documents_read": false,
+    "uploads_performed": false,
+    "submissions_performed": false,
+    "certifications_performed": false,
+    "payments_performed": false,
+    "inspections_scheduled": false,
+    "legal_or_permitting_guarantees_made": false
+  },
+  "exact_offline_validation_commands": [
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ],
+  "validation_commands": [
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

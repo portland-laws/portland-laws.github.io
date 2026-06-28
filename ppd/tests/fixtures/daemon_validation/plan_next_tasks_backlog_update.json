@@ -1,0 +1,16 @@
+{
+  "summary": "Supervisor plan_next_tasks backlog update",
+  "impact": "Adds the next daemon backlog item without claiming application/domain completion.",
+  "plan_next_tasks": [
+    "Add deterministic source freshness fixture coverage"
+  ],
+  "files": [
+    {
+      "path": "ppd/daemon/task_board.md",
+      "content": "# PP&D Task Board\n\nplan_next_tasks:\n- [ ] Add deterministic source freshness fixture coverage\n"
+    }
+  ],
+  "validation_commands": [
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

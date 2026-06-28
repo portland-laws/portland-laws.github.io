@@ -1,0 +1,114 @@
+diff --git a/ipfs_datasets_py/logic/modal/codec.py b/ipfs_datasets_py/logic/modal/codec.py
+index 85cf8023..52ea4be0 100644
+--- a/ipfs_datasets_py/logic/modal/codec.py
++++ b/ipfs_datasets_py/logic/modal/codec.py
+@@ -1143,9 +1143,11 @@ def _source_id_components(source_id: str) -> List[tuple[str, str]]:
+                 components.append(("source_id_title_number", title_number))
+             if title_suffix:
+                 components.append(("source_id_title_suffix", title_suffix))
+-    if section:
+-        components.append(("source_id_section", section))
+-    if normalized_section and normalized_section != section:
++    section_component_value = normalized_section or section
++    if section_component_value:
++        components.append(("source_id_section", section_component_value))
++    if section and normalized_section and normalized_section != section:
++        components.append(("source_id_section_raw", section))
+         components.append(("source_id_section_normalized", normalized_section))
+     if section_trailing_punct:
+         components.append(("source_id_section_trailing_punct", section_trailing_punct))
+diff --git a/ipfs_datasets_py/logic/modal/decompiler.py b/ipfs_datasets_py/logic/modal/decompiler.py
+index c8d6e17c..fda33fe7 100644
+--- a/ipfs_datasets_py/logic/modal/decompiler.py
++++ b/ipfs_datasets_py/logic/modal/decompiler.py
+@@ -630,9 +630,11 @@ def _source_id_slots(source_id: str) -> List[Tuple[str, str]]:
+             if title_suffix:
+                 slots.append(("source_id_title_suffix", title_suffix))
+ 
+-    if section:
+-        slots.append(("source_id_section", section))
+-    if normalized_section and normalized_section != section:
++    section_slot_value = normalized_section or section
++    if section_slot_value:
++        slots.append(("source_id_section", section_slot_value))
++    if section and normalized_section and normalized_section != section:
++        slots.append(("source_id_section_raw", section))
+         slots.append(("source_id_section_normalized", normalized_section))
+     if section_trailing_punct:
+         slots.append(("source_id_section_trailing_punct", section_trailing_punct))
+diff --git a/tests/unit/optimizers/logic_theorem_optimizer/test_modal_decompiler_source_id_slots.py b/tests/unit/optimizers/logic_theorem_optimizer/test_modal_decompiler_source_id_slots.py
+new file mode 100644
+index 00000000..0dda3139
+--- /dev/null
++++ b/tests/unit/optimizers/logic_theorem_optimizer/test_modal_decompiler_source_id_slots.py
+@@ -0,0 +1,70 @@
++"""Regression tests for source-id section slot normalization."""
++
++from __future__ import annotations
++
++from ipfs_datasets_py.logic.modal.codec import modal_ir_to_flogic_triples
++from ipfs_datasets_py.logic.modal.decompiler import (
++    decode_modal_ir_document,
++    decoded_modal_phrase_slot_text_map,
++)
++from ipfs_datasets_py.optimizers.logic_theorem_optimizer.modal_ir import (
++    ModalIRDocument,
++    ModalIRFormula,
++    ModalIROperator,
++    ModalIRPredicate,
++    ModalIRProvenance,
++)
++
++
++def _document_for_source_id(source_id: str) -> ModalIRDocument:
++    return ModalIRDocument(
++        document_id=source_id,
++        source="us_code",
++        normalized_text="Section heading text.",
++        formulas=[
++            ModalIRFormula(
++                formula_id=f"{source_id}:f0001",
++                operator=ModalIROperator(
++                    family="frame",
++                    system="Frame",
++                    symbol="Frame",
++                    label="framed as",
++                ),
++                predicate=ModalIRPredicate(
++                    name="section_heading_text",
++                    arguments=[],
++                    role="frame",
++                ),
++                provenance=ModalIRProvenance(
++                    source_id=source_id,
++                    start_char=0,
++                    end_char=21,
++                    citation="50 U.S.C. 171a.",
++                ),
++                metadata={"cue": "__uscode_section_heading_fallback__"},
++            )
++        ],
++    )
++
++
++def test_source_id_section_slots_keep_normalized_and_raw_values() -> None:
++    source_id = "us-code-50-171a.-b44deffd2b6380cc"
++    document = _document_for_source_id(source_id)
++
++    decoded = decode_modal_ir_document(document)
++    slot_map = decoded_modal_phrase_slot_text_map(decoded)
++
++    assert slot_map["source_id_section"] == ["171a"]
++    assert slot_map["source_id_section_raw"] == ["171a."]
++    assert slot_map["source_id_section_normalized"] == ["171a"]
++    assert slot_map["source_id_section_trailing_punct"] == ["."]
++
++    triples = modal_ir_to_flogic_triples(document)
++    source_id_section_triples = {
++        (str(item["predicate"]), str(item["object"]))
++        for item in triples
++        if str(item.get("predicate", "")).startswith("source_id_section")
++    }
++    assert ("source_id_section", "171a") in source_id_section_triples
++    assert ("source_id_section_raw", "171a.") in source_id_section_triples
++    assert ("source_id_section_normalized", "171a") in source_id_section_triples

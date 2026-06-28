@@ -1,0 +1,43 @@
+{
+  "case_id": "case-fixture-001",
+  "process_model": {
+    "process_id": "residential-building-permit-fixture",
+    "required_user_facts": [
+      "site_address",
+      "property_owner_name",
+      "contractor_license_number"
+    ],
+    "required_documents": [
+      {
+        "document_id": "plans_single_pdf",
+        "label": "Single PDF drawing set",
+        "accepted_document_types": ["single_pdf_plan_set"]
+      },
+      {
+        "document_id": "structural_calculations",
+        "label": "Structural calculations",
+        "accepted_document_types": ["structural_calculations"]
+      }
+    ],
+    "requested_actions": [
+      "review_public_requirements",
+      "upload_plans",
+      "certify_application",
+      "submit_permit_request",
+      "submit_payment",
+      "schedule_inspection"
+    ]
+  },
+  "known_facts": {
+    "site_address": "1120 SW 5th Ave",
+    "property_owner_name": "Fixture Owner"
+  },
+  "user_documents": [
+    {
+      "document_id": "doc-001",
+      "document_type": "single_pdf_plan_set",
+      "label": "Single PDF drawing set",
+      "freshness_status": "current"
+    }
+  ]
+}

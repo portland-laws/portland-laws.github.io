@@ -1,0 +1,24 @@
+Implemented a deterministic parser fix for article-prefixed heading-only U.S.C. text and added packet-specific golden replay coverage for all three TODO sample IDs.
+
+- Parser update: broadened `_looks_like_article_prefixed_heading` from only `notice/hearing` to a controlled noun-hint set (`oath`, `office`, `application`, `motion`, `withdrawal`, `reservation`, etc.), still excluding `"the term(s) ..."` cases.  
+  [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000039-20260518_120820/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:91)
+
+- Added new parser replay fixture test for:
+  - `us-code-2-453-868ad5bf81742f35`
+  - `us-code-9-6-725aa2302c64ab87`
+  - `us-code-43-1656.-ee86a662b13291c8`  
+  [test_legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000039-20260518_120820/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py:1237)
+
+- Added matching spaCy compiler replay fixture test for the same 3 IDs.  
+  [test_spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000039-20260518_120820/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py:705)
+
+- Added integrated modal compiler replay test (both `regex` and `spacy` backends) for the same 3 IDs.  
+  [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000039-20260518_120820/tests/unit_tests/logic/modal/test_modal_codec.py:935)
+
+Tests run (all passed):
+
+1. New tests only (3 passed):
+`pytest -q ...test_legal_modal_parser.py::test_parser_replays_packet_todo_article_prefixed_heading_samples_for_2_453_9_6_and_43_1656 ...test_spacy_modal_codec.py::test_spacy_compiler_replays_packet_todo_article_prefixed_heading_samples_for_2_453_9_6_and_43_1656 ...test_modal_codec.py::test_modal_compiler_replays_packet_todo_article_prefixed_heading_samples_for_2_453_9_6_and_43_1656`
+
+2. Related regression checks (3 passed):
+`pytest -q ...test_legal_modal_parser.py::test_parser_replays_packet_todo_samples_for_2_88b_5_42_18431_and_42_12313 ...test_spacy_modal_codec.py::test_spacy_compiler_replays_packet_todo_samples_for_2_88b_5_42_18431_and_42_12313 ...test_modal_codec.py::test_modal_compiler_replays_packet_todo_heading_only_samples_for_6_314_35_4_and_7_7316`

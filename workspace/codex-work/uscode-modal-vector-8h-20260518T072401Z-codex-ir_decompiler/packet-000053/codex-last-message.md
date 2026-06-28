@@ -1,0 +1,20 @@
+Implemented a narrow deterministic IR/decompiler slot refinement for citation/source-id structure:
+
+1. Added explicit trailing-punctuation presence/count slots for both punctuated and non-punctuated sections.
+2. Added numeric `digit_count` to numeric signature slots (including title-number signatures).
+
+Changes:
+- [decompiler.py:877](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000053-20260518_122952/ipfs_datasets_py/logic/modal/decompiler.py#L877)
+- [decompiler.py:1430](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000053-20260518_122952/ipfs_datasets_py/logic/modal/decompiler.py#L1430)
+- [decompiler.py:1902](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000053-20260518_122952/ipfs_datasets_py/logic/modal/decompiler.py#L1902)
+- [codec.py:1276](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000053-20260518_122952/ipfs_datasets_py/logic/modal/codec.py#L1276)
+- [codec.py:1350](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000053-20260518_122952/ipfs_datasets_py/logic/modal/codec.py#L1350)
+- [codec.py:1888](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000053-20260518_122952/ipfs_datasets_py/logic/modal/codec.py#L1888)
+
+Regression coverage updates:
+- [test_ir_decompiler_slots.py:409](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000053-20260518_122952/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py#L409)
+- [test_ir_decompiler_slots.py:1471](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000053-20260518_122952/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py#L1471)
+- [test_ir_decompiler_slots.py:1756](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000053-20260518_122952/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py#L1756)
+
+Validation run:
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py` (29 passed).

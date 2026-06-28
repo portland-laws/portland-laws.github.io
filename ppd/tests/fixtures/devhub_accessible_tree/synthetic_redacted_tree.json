@@ -1,0 +1,31 @@
+{
+  "source": "synthetic-redacted-devhub-accessible-tree",
+  "route": "/devhub/permits",
+  "nodes": [
+    {
+      "role": "heading",
+      "name": "Apply for permits",
+      "heading": "Apply for permits",
+      "route": "/devhub/permits"
+    },
+    {
+      "role": "link",
+      "name": "Residential permit status",
+      "heading": "Apply for permits",
+      "route": "/devhub/permits"
+    },
+    {
+      "role": "textbox",
+      "name": "Permit number",
+      "heading": "Find permit information",
+      "route": "/devhub/permits/search",
+      "validation_message": "Use the public permit number format shown on the page."
+    },
+    {
+      "role": "button",
+      "name": "Search public records",
+      "heading": "Find permit information",
+      "route": "/devhub/permits/search"
+    }
+  ]
+}

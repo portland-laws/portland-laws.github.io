@@ -1,0 +1,38 @@
+{
+  "promotion_manifest_id": "promotion-public-crawl-dry-run-20260528",
+  "targets": [
+    {
+      "target_id": "ppd-landing",
+      "canonical_url": "https://www.portland.gov/ppd",
+      "processor_name": "public-html-normalizer",
+      "expected_manifest_id": "archive-manifest-ppd-landing-dry-run",
+      "no_raw_body_persisted": true,
+      "rate_limit_note": "Respect Portland.gov public crawl pacing: one request every 10 seconds.",
+      "operator_abort_prompt": "Abort if robots or policy preflight changes before processor promotion."
+    },
+    {
+      "target_id": "devhub-faq",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "processor_name": "public-html-normalizer",
+      "expected_manifest_id": "archive-manifest-devhub-faq-dry-run",
+      "no_raw_body_persisted": true,
+      "operator_abort_prompt": "Abort if any dry-run target requires authentication or raw body persistence."
+    },
+    {
+      "target_id": "fee-guide-pdf",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "processor_name": "public-pdf-metadata-prober",
+      "expected_manifest_id": "archive-manifest-fee-guide-pdf-dry-run",
+      "no_raw_body_persisted": true,
+      "rate_limit_note": "PDF metadata probe only; do not download or persist raw PDF bytes."
+    },
+    {
+      "target_id": "outside-allowlist",
+      "canonical_url": "https://example.com/not-ppd",
+      "processor_name": "public-html-normalizer",
+      "expected_manifest_id": "archive-manifest-outside-allowlist-dry-run",
+      "no_raw_body_persisted": true,
+      "skipped_reason": "outside allowlist; processor handoff must skip target"
+    }
+  ]
+}

@@ -1,0 +1,2 @@
+ppd/daemon/syntax_preflight_hint.py
+ppd/tests/test_syntax_preflight_hint.py

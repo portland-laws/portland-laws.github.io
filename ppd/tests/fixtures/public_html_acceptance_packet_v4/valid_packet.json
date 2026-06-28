@@ -1,0 +1,160 @@
+{
+  "packet_version": "public_html_extraction_acceptance_packet_v4",
+  "ordered_structure": [
+    {
+      "order": 1,
+      "name": "source_metadata"
+    },
+    {
+      "order": 2,
+      "name": "document_structure"
+    },
+    {
+      "order": 3,
+      "name": "evidence_rows"
+    },
+    {
+      "order": 4,
+      "name": "review_controls"
+    },
+    {
+      "order": 5,
+      "name": "validation_commands"
+    },
+    {
+      "order": 6,
+      "name": "safety_attestation"
+    }
+  ],
+  "source_metadata": {
+    "canonical_url": "https://www.portland.gov/ppd/example-public-guide",
+    "source_type": "public_html",
+    "content_hash": "sha256:fixture-only",
+    "captured_at": "2026-05-31T00:00:00Z",
+    "no_raw_body_persisted": true,
+    "downloadable_link_metadata": [
+      {
+        "url": "https://www.portland.gov/ppd/example-public-guide/download",
+        "link_text": "Download guide",
+        "content_type": "application/pdf",
+        "download_allowed": true,
+        "raw_download_persisted": false
+      }
+    ]
+  },
+  "document_structure": {
+    "ordered_steps": [
+      {
+        "step_number": 1,
+        "text": "Review the public guide."
+      }
+    ],
+    "callout_rows": [
+      {
+        "row_id": "callout-1",
+        "severity": "info",
+        "text": "Public guidance may change."
+      }
+    ],
+    "warning_rows": [
+      {
+        "row_id": "warning-1",
+        "severity": "warning",
+        "text": "Confirm requirements with the official source before consequential action."
+      }
+    ],
+    "table_rows": [
+      {
+        "table_id": "table-1",
+        "row_index": 0,
+        "cells": [
+          "Document",
+          "When needed"
+        ]
+      }
+    ],
+    "expected_table_row_groups": [
+      "required_documents"
+    ],
+    "citation_spans": [
+      {
+        "span_id": "span-1",
+        "source_url": "https://www.portland.gov/ppd/example-public-guide",
+        "start": 0,
+        "end": 24
+      }
+    ],
+    "extraction_confidence": 0.93
+  },
+  "evidence_rows": [
+    {
+      "row_id": "evidence-1",
+      "row_type": "callout",
+      "source_url": "https://www.portland.gov/ppd/example-public-guide",
+      "citation_span_id": "span-1",
+      "text": "Public guidance may change.",
+      "severity": "info",
+      "confidence": 0.91
+    },
+    {
+      "row_id": "evidence-2",
+      "row_type": "warning",
+      "source_url": "https://www.portland.gov/ppd/example-public-guide",
+      "citation_span_id": "span-1",
+      "text": "Confirm requirements with the official source before consequential action.",
+      "severity": "warning",
+      "confidence": 0.9
+    },
+    {
+      "row_id": "evidence-3",
+      "row_type": "table",
+      "source_url": "https://www.portland.gov/ppd/example-public-guide",
+      "citation_span_id": "span-1",
+      "text": "Document when needed",
+      "table_row_index": 0,
+      "confidence": 0.89
+    }
+  ],
+  "review_controls": {
+    "reviewer_holds": [
+      {
+        "hold_id": "hold-source-freshness",
+        "reason": "Human reviewer must confirm the public source is still current before acceptance.",
+        "required_before_acceptance": true
+      }
+    ]
+  },
+  "validation_commands": [
+    [
+      "python3",
+      "-m",
+      "py_compile",
+      "ppd/validation/public_html_acceptance_packet_v4.py"
+    ]
+  ],
+  "artifacts": [
+    {
+      "kind": "normalized_public_text",
+      "path": "ppd/tests/fixtures/public_html_acceptance_packet_v4/valid_packet.json",
+      "committed": true,
+      "privacy_classification": "public_fixture"
+    }
+  ],
+  "safety_attestation": {
+    "live_crawl_performed": false,
+    "devhub_claims_made": false,
+    "legal_guarantees_made": false,
+    "permitting_guarantees_made": false
+  },
+  "mutation_flags": {
+    "mutates_remote_state": false,
+    "writes_to_devhub": false,
+    "submits_application": false,
+    "uploads_documents": false,
+    "pays_fees": false,
+    "schedules_inspection": false,
+    "cancels_request": false,
+    "certifies_information": false
+  },
+  "notes": "Fixture-only packet for deterministic validation."
+}

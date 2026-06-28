@@ -1,0 +1,44 @@
+{
+  "packet_id": "devhub-read-only-observation-valid-001",
+  "packet_kind": "devhub_read_only_observation_packet",
+  "mode": "attended_read_only_observation",
+  "read_only_only": true,
+  "metadata_only": true,
+  "reviewer_notes": [
+    "Fixture contains redacted structure only and no private DevHub values.",
+    "Consequential DevHub controls are recorded only as disabled guardrail metadata."
+  ],
+  "abort_prompts": [
+    "Abort if credentials, MFA, CAPTCHA, account creation, cookies, auth state, screenshots, traces, HAR files, private values, uploads, submissions, payments, scheduling, cancellation, or certification are requested.",
+    "Do not store local paths, raw authenticated page text, downloads, browser artifacts, or session artifacts."
+  ],
+  "observations": [
+    {
+      "surface_id": "devhub_home_redacted_read_only",
+      "auth_scope": "authenticated_read_only_metadata",
+      "route_pattern": "/devhub/home",
+      "redacted_heading": "DevHub Home",
+      "reviewer_notes": [
+        "Only landmark names and structural labels are retained."
+      ],
+      "abort_prompts": [
+        "Do not open account settings, credential management, or private message bodies."
+      ],
+      "artifact_policy": {
+        "auth_state_stored": false,
+        "screenshots_stored": false,
+        "traces_stored": false,
+        "har_stored": false,
+        "raw_authenticated_values_stored": false
+      },
+      "controls": [
+        {"control_id": "upload", "enabled": false, "allowed": false, "control_state": "disabled"},
+        {"control_id": "submission", "enabled": false, "allowed": false, "control_state": "disabled"},
+        {"control_id": "payment", "enabled": false, "allowed": false, "control_state": "disabled"},
+        {"control_id": "scheduling", "enabled": false, "allowed": false, "control_state": "disabled"},
+        {"control_id": "cancellation", "enabled": false, "allowed": false, "control_state": "disabled"},
+        {"control_id": "certification", "enabled": false, "allowed": false, "control_state": "disabled"}
+      ]
+    }
+  ]
+}

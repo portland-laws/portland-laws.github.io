@@ -1,0 +1,50 @@
+{
+  "artifact_kind": "accepted_ephemeral_workspace",
+  "changed_files": [
+    "ppd/daemon/circuit_breaker_status.py",
+    "ppd/tests/fixtures/daemon/circuit_breaker_paused_status.json",
+    "ppd/tests/test_circuit_breaker_status.py"
+  ],
+  "created_at": "2026-05-05T01:39:09.063451Z",
+  "impact": "This advances the PP&D plan by making autonomous daemon recovery fail closed: a paused daemon can be checked against deterministic fixtures before any autonomous work resumes, without live crawl, DevHub automation, or private artifact writes.",
+  "summary": "Adds a fixture-only PP&D daemon circuit-breaker status scenario and validator covering paused state quarantine, restart eligibility, and source-safe recovery boundaries.",
+  "target_task": "Task checkbox-449: Add a fixture-only circuit-breaker status scenario proving paused daemon state records quarantine, restart eligibility, and source-safe recovery boundaries before autonomous work resumes.",
+  "transport": "ephemeral_worktree",
+  "validation_results": [
+    {
+      "command": [
+        "python3",
+        "ppd/daemon/ppd_daemon.py",
+        "--self-test"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "{ \"ok\": true, \"task_count\": 279 }"
+    },
+    {
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "ppd/tests",
+        "-p",
+        "test_*.py"
+      ],
+      "returncode": 0,
+      "stderr": ".....................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................ss..................sss....................................................................................................................................................................................................................................................................................................................... ---------------------------------------------------------------------- Ran 819 tests in 4.739s OK (skipped=5)",
+      "stdout": ""
+    },
+    {
+      "command": [
+        "bash",
+        "-lc",
+        "files=$(find ppd -name '*.ts' -not -path '*/node_modules/*' -print); test -z \"$files\" || npx tsc --noEmit --target ES2020 --module ESNext --moduleResolution node --strict --skipLibCheck --types node $files"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": ""
+    }
+  ]
+}

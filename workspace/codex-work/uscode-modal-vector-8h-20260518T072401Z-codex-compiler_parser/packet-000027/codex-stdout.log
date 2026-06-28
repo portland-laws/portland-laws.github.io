@@ -1,0 +1,18 @@
+Implemented a deterministic coarse section-heading fallback for U.S.C. noisy long lines, and added regression coverage for all three packet TODO citations.
+
+**Changes**
+- Added a new last-resort candidate extractor in the parser fallback chain: [`legal_modal_parser.py#L734`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000027-20260518_102657/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py#L734)
+- Added `_coarse_citation_heading_segment(...)` to recover compact heading text around citation anchors and mark the rule as `uscode_section_heading_coarse_v1`: [`legal_modal_parser.py#L1007`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000027-20260518_102657/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py#L1007)
+- Added parser regression helper + test for:
+  - `7 U.S.C. 3125`
+  - `15 U.S.C. 828`
+  - `22 U.S.C. 2878`
+  asserting `__uscode_section_heading_fallback__` + `uscode_section_heading_coarse_v1`:  
+  [`test_legal_modal_parser.py#L227`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000027-20260518_102657/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py#L227), [`test_legal_modal_parser.py#L863`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000027-20260518_102657/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py#L863)
+- Added matching spaCy compiler regression to verify end-to-end fallback through `SpaCyModalIRCompiler`: [`test_spacy_modal_codec.py#L31`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000027-20260518_102657/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py#L31), [`test_spacy_modal_codec.py#L321`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000027-20260518_102657/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py#L321)
+
+**Tests Run**
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py::test_parser_replays_symbolic_validity_todo_samples_with_coarse_section_heading_fallback tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py::test_spacy_compiler_replays_symbolic_validity_todo_samples_with_coarse_section_heading_fallback`  
+  Result: `2 passed`
+- `pytest -q ...` (section-heading focused subset across both files)  
+  Result: `9 passed, 32 deselected`

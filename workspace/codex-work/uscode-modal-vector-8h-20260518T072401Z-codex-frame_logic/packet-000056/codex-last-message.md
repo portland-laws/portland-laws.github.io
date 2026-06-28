@@ -1,0 +1,11 @@
+Implemented a deterministic frame-ontology audit improvement for digestless `us-code` source IDs.
+
+- Added strict digestless source-id regex fallbacks (hyphen and slot-normalized forms) in [`frame_bm25_selector.py` ](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000056-20260518_145536/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py#L24) and wired them into normalization at [`_normalized_source_id_ontology_value` ](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000056-20260518_145536/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py#L794).
+- Added selector tests for digestless source IDs from both feature keys and triples in [`test_frame_bm25_selector.py` ](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000056-20260518_145536/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py#L975), plus `is_frame_ontology_feature_key` coverage update in the same file.
+- Added optimizer integration coverage in [`test_flogic_optimizer.py` ](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000056-20260518_145536/tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py#L249).
+
+Validation run:
+
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py` (65 passed)
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py` (15 passed)
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "frame_ontology and source_id"` (1 passed)

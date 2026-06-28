@@ -1,0 +1,47 @@
+{
+  "packet_type": "ppd_source_registry_schedule_update_candidate_packet",
+  "packet_version": "1.0",
+  "fixture_first": true,
+  "affected_source_ids": [
+    "ppd-devhub-faq"
+  ],
+  "reviewer_owners": {
+    "primary_reviewer": "ppd-source-registry-reviewer",
+    "backup_reviewer": "ppd-automation-maintainer",
+    "review_queue": "ppd-source-registry-schedule-review"
+  },
+  "abort_criteria": [
+    "Abort if a canonical URL falls outside the public allowlist.",
+    "Abort if a candidate references authenticated or private DevHub account scope.",
+    "Abort if raw body, download, or archive references are present.",
+    "Abort if a live crawl or processor execution claim is present.",
+    "Abort if a legal or permitting outcome guarantee is present.",
+    "Abort if active registry or schedule mutation is requested."
+  ],
+  "side_effect_boundary": {
+    "network_io_allowed": false,
+    "processor_invocation_allowed": false,
+    "live_fetch_allowed": false,
+    "registry_mutation_allowed": false,
+    "schedule_mutation_allowed": false
+  },
+  "source_adjustments": [
+    {
+      "source_id": "ppd-devhub-faq",
+      "affected_source_ids": [
+        "ppd-devhub-faq"
+      ],
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "source_type": "devhub_public",
+      "privacy_classification": "public",
+      "proposed_schedule": "daily_review_candidate",
+      "adjustment_reason": "High-change DevHub guidance page should remain in the daily manual review candidate set.",
+      "source_evidence_ids": [
+        "official-source-anchor-devhub-faq-2026-05-08"
+      ],
+      "policy_evidence": {
+        "evidence_ref": "ppd-plan-source-facts-2026-05-08"
+      }
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "surface_id": "devhub_public_permit_application_redacted",
+  "controls": [
+    {
+      "key": "permit_type",
+      "label": "Permit type",
+      "control_type": "select",
+      "action": "choose_permit_type"
+    },
+    {
+      "key": "save_draft",
+      "label": "Save for later",
+      "control_type": "button",
+      "action": "save_draft"
+    },
+    {
+      "key": "upload_plans",
+      "label": "Upload plans",
+      "control_type": "file",
+      "action": "upload",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true
+    },
+    {
+      "key": "submit_application",
+      "label": "Submit application",
+      "control_type": "button",
+      "action": "submit",
+      "requires_attendance": true,
+      "requires_exact_confirmation": true
+    }
+  ]
+}

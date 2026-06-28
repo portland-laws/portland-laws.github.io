@@ -1,0 +1,46 @@
+{
+  "rehearsal_id": "process-model-impact-rehearsal-2026-05-29-fixture",
+  "process_model_id": "residential-building-permit-draft",
+  "reviewer_owners": [
+    "ppd-process-model-reviewer",
+    "ppd-guardrail-reviewer"
+  ],
+  "no_active_process_mutation_attestation": true,
+  "source_evidence": [
+    {
+      "source_id": "src-submit-plans-online-single-pdf",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "quote": "Drawing plans are handled as one PDF while applications, calculations, and other supporting documents are uploaded as separate PDFs."
+    },
+    {
+      "source_id": "src-standard-trade-license-profile",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "quote": "Contractor license information on a DevHub profile can affect available standard trade permit fixture options."
+    },
+    {
+      "source_id": "src-devhub-submit-application-guide",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "quote": "The guide describes dynamic questions, uploads, acknowledgements, certification, submission, and post-submission status review."
+    },
+    {
+      "source_id": "src-apply-permits-email-paths",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "quote": "Some permit request paths are handled outside DevHub and require email or other manual submission guidance."
+    },
+    {
+      "source_id": "src-fee-payment-guide",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "quote": "Fee payment is a financial workflow and requires separate guardrails."
+    }
+  ],
+  "rehearsed_impacts": [
+    {
+      "requirement_id": "req-single-pdf-stage",
+      "impact": "Adds a proposed document preparation stage before upload staging."
+    },
+    {
+      "requirement_id": "req-final-submit-consequential",
+      "impact": "Records automated final submission as unsupported for process-model automation."
+    }
+  ]
+}

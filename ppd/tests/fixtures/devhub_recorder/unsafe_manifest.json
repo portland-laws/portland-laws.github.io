@@ -1,0 +1,33 @@
+{
+  "manifest_version": "devhub-recorder-manifest/v1",
+  "recorded_at": "2026-05-12T00:00:00Z",
+  "recorder": {
+    "mode": "playwright_recording",
+    "playwright_launched": true,
+    "auth_state_saved": true,
+    "artifacts_saved": [
+      "trace.zip",
+      "page.har",
+      "home.png"
+    ]
+  },
+  "privacy": {
+    "classification": "private",
+    "private_values_persisted": true
+  },
+  "surface": {
+    "surface_id": "devhub-private-page",
+    "auth_scope": "authenticated_attended",
+    "url_pattern": "https://devhub.portlandoregon.gov/**",
+    "fields": [
+      {
+        "field_id": "email",
+        "label": "Email",
+        "value": "person@example.com"
+      }
+    ],
+    "cookies": [
+      "session=abc"
+    ]
+  }
+}

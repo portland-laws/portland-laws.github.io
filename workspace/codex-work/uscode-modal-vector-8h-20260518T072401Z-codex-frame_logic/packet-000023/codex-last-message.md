@@ -1,0 +1,15 @@
+Implemented a deterministic frame-term audit normalization improvement in `frame_logic` scope.
+
+- Updated [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000023-20260518_094513/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py#L14):
+  - Added predicate-aware value normalization for contextual ontology values.
+  - Strips ordinal prefixes from `*_positioned` values (for example `1:360bbb` -> `360bbb`) before term normalization.
+  - Applies this to both triple extraction and feature-key extraction paths ([frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000023-20260518_094513/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py#L327), [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000023-20260518_094513/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py#L504)).
+  - Normalizes `statutory_scope_target` to its stable base reference before term tokenization (for example `552(a)(1)` -> `552`) ([frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000023-20260518_094513/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py#L486)).
+
+- Added regression tests in [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000023-20260518_094513/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py#L452):
+  - Feature-key positioned citation/source-id normalization.
+  - Triple positioned citation/source-id normalization.
+
+Tests run:
+1. `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py` (31 passed)
+2. `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "frame_decoder_audit_features_use_canonical_feature_parser or audits_frame_terms_when_metadata_is_partial or audits_frame_terms_when_metadata_contains_weight_maps"` (3 passed)

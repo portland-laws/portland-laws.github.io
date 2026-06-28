@@ -1,0 +1,74 @@
+{
+  "packet_id": "inactive-rollback-drill-v6-fixture",
+  "packet_version": 6,
+  "packet_state": "inactive",
+  "smoke_replay_plan_references": [
+    {
+      "plan_id": "smoke-replay-public-fixture-001",
+      "source": "ppd/tests/fixtures/rollback_drill_packet_v6/smoke_replay_plan.json",
+      "mode": "fixture-only"
+    }
+  ],
+  "rollback_decision_rows": [
+    {
+      "condition": "Fixture replay output diverges from committed expected manifest.",
+      "decision": "Hold packet and request manual review before any next step.",
+      "reviewer_placeholder": "manual-reviewer-name-and-date",
+      "citation_ref": "held-source-continuity-001"
+    }
+  ],
+  "held_source_citation_continuity_checks": [
+    {
+      "check_id": "held-source-continuity-001",
+      "expectation": "Every rollback decision row keeps a citation reference to a held public-source fixture.",
+      "required_result": "manual reviewer confirms citation continuity before promotion"
+    }
+  ],
+  "affected_agent_capability_notes": [
+    {
+      "capability": "public-source replay",
+      "effect": "Agents may compare committed fixture metadata only and must stop before external retrieval."
+    },
+    {
+      "capability": "DevHub assistance",
+      "effect": "Agents may produce attended handoff notes only and must not store browser state."
+    }
+  ],
+  "safe_downgrade_expectations": [
+    {
+      "expectation_id": "safe-downgrade-001",
+      "behavior": "Use fixture-only requirement summaries when replay validation is unavailable.",
+      "user_visible_status": "degraded fixture validation pending manual review"
+    }
+  ],
+  "manual_reviewer_approval_placeholders": [
+    {
+      "placeholder_id": "review-approval-001",
+      "label": "manual reviewer approval pending",
+      "required_before": "promotion out of inactive packet state"
+    }
+  ],
+  "recovery_journal_event_templates": [
+    {
+      "event_type": "manual handoff",
+      "summary_template": "Manual reviewer receives fixture replay diff and held citation list.",
+      "contains_private_artifacts": false
+    },
+    {
+      "event_type": "refused action",
+      "summary_template": "Agent refuses consequential or external action while packet remains inactive.",
+      "contains_private_artifacts": false
+    }
+  ],
+  "validation_commands": [
+    [
+      "python3",
+      "ppd/daemon/ppd_daemon.py",
+      "--self-test"
+    ]
+  ],
+  "mutation_controls": {
+    "active": false,
+    "enabled": false
+  }
+}

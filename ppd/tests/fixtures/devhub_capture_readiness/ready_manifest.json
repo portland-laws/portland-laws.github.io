@@ -1,0 +1,35 @@
+{
+  "manual_login_handoff": true,
+  "human_operator_attendance": true,
+  "capture_scope": "accessible_structure_only",
+  "redaction_policy": {
+    "enabled": true,
+    "categories": [
+      "credentials",
+      "cookies",
+      "session_state",
+      "personal_identifiers",
+      "payment_information"
+    ]
+  },
+  "boundary_notices": [
+    "Manual login handoff only: a human operator must authenticate in the browser and remain present for the entire capture.",
+    "Capture scope is accessible structure only: collect semantic headings, labels, links, form field names, and status text; do not capture screenshots, traces, HAR data, cookies, credentials, or session state.",
+    "No transactional actions: do not upload files, submit forms, schedule inspections or appointments, make payments, certify statements, create accounts, cancel records, or change permit/project state."
+  ],
+  "artifacts": {
+    "accessible_structure": true,
+    "session_state": false,
+    "cookies": false,
+    "credentials": false,
+    "screenshots": false,
+    "traces": false,
+    "har_data": false,
+    "downloads": false
+  },
+  "allowed_actions": [
+    "navigate",
+    "read_accessible_structure",
+    "record_public_labels"
+  ]
+}

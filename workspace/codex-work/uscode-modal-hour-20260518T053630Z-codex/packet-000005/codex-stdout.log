@@ -1,0 +1,21 @@
+Implemented a targeted modal-family cue refinement in the registry and added focused coverage for the three conflict patterns.
+
+**Code changes**
+- Updated cue rules in [modal_registry.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T053630Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T053630Z-codex-packet-000005-20260518_053713/ipfs_datasets_py/optimizers/logic_theorem_optimizer/modal_registry.py):
+  - Deontic: added stronger sanction/liability cues (`shall be liable`, `shall be subject to`, `unlawful`, `civil penalty`, `criminal penalty`, `shall be fined`, `shall be imprisoned`).
+  - Temporal: removed overly broad `by` cue; added more specific deadline/deferral cues (`deadline`, `due date`, `extension of time`, `extended time`, `no/not later than`, `thereafter`).
+  - Conditional normative: added qualified-obligation cues (`to the maximum extent feasible`, `to the extent practicable`, `to the extent feasible`, `except as provided`).
+
+- Added focused tests in [test_spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T053630Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T053630Z-codex-packet-000005-20260518_053713/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py):
+  - temporal cueing for “extension of time … not later than …”
+  - deontic cueing for penalty language
+  - conditional_normative cueing for “maximum extent feasible”
+
+**Validation run**
+- `python3 -m py_compile ...` on changed files: passed.
+- Direct runtime smoke checks with `SpaCyModalCodec` and `DeterministicModalCompiler`: passed and showed expected ranking shifts:
+  - `26 U.S.C. 6164`-style text ranked temporal highest.
+  - `42 U.S.C. 1397a`-style penalty text ranked deontic highest.
+  - `42 U.S.C. 12144`-style “extent feasible” text produced conditional_normative cues.
+- `pytest` in this checkout still errors before test execution due pre-existing root package issue:
+  - `NameError: name '__path__' is not defined` in [`__init__.py`](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T053630Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T053630Z-codex-packet-000005-20260518_053713/__init__.py):11.

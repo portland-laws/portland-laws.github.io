@@ -1,0 +1,20 @@
+Implemented a deterministic IR/decompiler slot refinement for alphanumeric U.S.C. section suffixes.
+
+**Changes**
+- Added suffix alphabetic-signature slot derivation in decompiler citation/source-id section parsing:
+  - emits `*_initial`, `*_terminal`, `*_initial_ordinal`, `*_terminal_ordinal`, `*_vowel_count`, `*_consonant_count`, `*_has_vowel`, `*_has_consonant`, `*_unique_char_count`
+  - emits positioned variants for component-level suffixes
+  - applies to base suffix slots and primary/terminal suffix slots  
+  - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000050-20260518_121158/ipfs_datasets_py/logic/modal/decompiler.py:1680)
+  - [decompiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000050-20260518_121158/ipfs_datasets_py/logic/modal/decompiler.py:1906)
+
+- Mirrored the same predicates in triple generation for codec parity (`modal_ir_to_flogic_triples` path):
+  - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000050-20260518_121158/ipfs_datasets_py/logic/modal/codec.py:1628)
+  - [codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000050-20260518_121158/ipfs_datasets_py/logic/modal/codec.py:1855)
+
+- Added focused regression tests for decoded slot maps and emitted F-logic triples:
+  - [test_ir_decompiler_slots.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-ir_decompiler/worktrees/agent-codex-ir_decompiler-packet-000050-20260518_121158/ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py:659)
+
+**Tests**
+- `pytest -q ipfs_datasets_py/logic/modal/test_ir_decompiler_slots.py`
+- Result: `27 passed`

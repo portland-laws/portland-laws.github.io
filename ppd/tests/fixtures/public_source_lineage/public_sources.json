@@ -1,0 +1,18 @@
+{
+  "sources": [
+    {
+      "source_id": "ppd-online-tools",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "source_type": "public_html",
+      "title": "How to use online permitting tools",
+      "normalized_text": "DevHub is the City of Portland online permitting system for public permitting guidance."
+    },
+    {
+      "source_id": "devhub-public-portal",
+      "canonical_url": "https://devhub.portlandoregon.gov/",
+      "source_type": "devhub_public",
+      "title": "DevHub public portal",
+      "content_hash": "sha256:8c9cc9c60f1fbd41a0b8dbb9eb6281680b0795b1be9d2af3aa6c42ff09bb61de"
+    }
+  ]
+}

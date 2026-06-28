@@ -1,0 +1,202 @@
+{
+  "tranche_id": "requirement-regeneration-rehearsal-tranche-2026-05-fixture-001",
+  "evidence_freshness_watchlist_reviewer_disposition_packet": {
+    "packet_id": "evidence-freshness-watchlist-reviewer-disposition-2026-05-29-fixture",
+    "watchlist_item_dispositions": [
+      {
+        "source_id": "ppd-devhub-faqs",
+        "decision": "escalate",
+        "reviewer_owner": "ppd-devhub-public-owner",
+        "source_evidence_ids": [
+          "source:devhub-faqs:account-scoped-services"
+        ]
+      },
+      {
+        "source_id": "ppd-spp-file-naming-standards",
+        "decision": "approve",
+        "reviewer_owner": "ppd-document-requirements-owner",
+        "source_evidence_ids": [
+          "source:spp-file-naming:pdf-preparation"
+        ]
+      }
+    ]
+  },
+  "requirement_rerun_work_queue_packet": {
+    "packet_id": "requirement-rerun-fixture-001",
+    "requirement_ids": [
+      "REQ-devhub-upload-corrections-attended",
+      "REQ-single-pdf-separate-supporting-documents"
+    ],
+    "citations": {
+      "REQ-devhub-upload-corrections-attended": [
+        "source:devhub-faqs:account-scoped-services",
+        "source:upload-corrections-guide:review-group-status"
+      ],
+      "REQ-single-pdf-separate-supporting-documents": [
+        "source:spp-file-naming:pdf-preparation",
+        "source:submit-plans-online:single-pdf-guidance"
+      ]
+    },
+    "affected_process_refs": [
+      "process:corrections-checksheets",
+      "process:document-preparation"
+    ],
+    "affected_guardrail_refs": [
+      "guardrail:official-upload-exact-confirmation",
+      "guardrail:single-pdf-document-preparation"
+    ],
+    "rerun_steps": [
+      {
+        "order": 1,
+        "name": "review_existing_citations"
+      },
+      {
+        "order": 2,
+        "name": "rerun_deterministic_formalization"
+      },
+      {
+        "order": 3,
+        "name": "queue_human_review"
+      }
+    ],
+    "reviewer_owners": [
+      "ppd-requirements-review"
+    ]
+  },
+  "requirement_guardrail_traceability_review_packet": {
+    "packet_id": "requirement-guardrail-traceability-review-2026-05-29-fixture",
+    "requirement_to_process_to_guardrail_links": [
+      {
+        "requirement_id": "REQ-devhub-upload-corrections-attended",
+        "process_ids": [
+          "process:corrections-checksheets"
+        ],
+        "guardrail_ids": [
+          "guardrail:official-upload-exact-confirmation"
+        ],
+        "source_evidence_ids": [
+          "source:devhub-faqs:account-scoped-services",
+          "trace:devhub-upload-corrections"
+        ],
+        "reviewer_owner_fields": {
+          "traceability_owner": "ppd-devhub-guardrail-reviewer"
+        }
+      },
+      {
+        "requirement_id": "REQ-single-pdf-separate-supporting-documents",
+        "process_ids": [
+          "process:document-preparation"
+        ],
+        "guardrail_ids": [
+          "guardrail:single-pdf-document-preparation"
+        ],
+        "source_evidence_ids": [
+          "source:spp-file-naming:pdf-preparation",
+          "trace:single-pdf-document-rule"
+        ],
+        "reviewer_owner_fields": {
+          "traceability_owner": "ppd-document-guardrail-reviewer"
+        }
+      }
+    ]
+  },
+  "expected_packet": {
+    "packet_type": "ppd_requirement_regeneration_rehearsal_tranche_packet",
+    "packet_version": "1.0",
+    "tranche_id": "requirement-regeneration-rehearsal-tranche-2026-05-fixture-001",
+    "tranche_status": "metadata_only_rehearsal_ready_for_review",
+    "consumes_packet_ids": [
+      "evidence-freshness-watchlist-reviewer-disposition-2026-05-29-fixture",
+      "requirement-rerun-fixture-001",
+      "requirement-guardrail-traceability-review-2026-05-29-fixture"
+    ],
+    "ordered_synthetic_rerun_cases": [
+      {
+        "case_id": "requirement-regeneration-case-req-devhub-upload-corrections-attended",
+        "order": 1,
+        "requirement_id": "REQ-devhub-upload-corrections-attended",
+        "source_id": "ppd-devhub-faqs",
+        "rerun_step_ref": "review_existing_citations",
+        "expected_output": {
+          "output_ref": "metadata://requirement-regeneration/req-devhub-upload-corrections-attended",
+          "output_kind": "requirement_delta_review_metadata",
+          "metadata_only": true
+        },
+        "affected_requirement_ids": [
+          "REQ-devhub-upload-corrections-attended"
+        ],
+        "affected_process_ids": [
+          "process:corrections-checksheets"
+        ],
+        "affected_guardrail_ids": [
+          "guardrail:official-upload-exact-confirmation"
+        ],
+        "source_evidence_ids": [
+          "source:devhub-faqs:account-scoped-services",
+          "source:upload-corrections-guide:review-group-status",
+          "trace:devhub-upload-corrections"
+        ],
+        "reviewer_owner": "ppd-devhub-guardrail-reviewer",
+        "reviewer_disposition": "escalate"
+      },
+      {
+        "case_id": "requirement-regeneration-case-req-single-pdf-separate-supporting-documents",
+        "order": 2,
+        "requirement_id": "REQ-single-pdf-separate-supporting-documents",
+        "source_id": "ppd-spp-file-naming-standards",
+        "rerun_step_ref": "rerun_deterministic_formalization",
+        "expected_output": {
+          "output_ref": "metadata://requirement-regeneration/req-single-pdf-separate-supporting-documents",
+          "output_kind": "requirement_delta_review_metadata",
+          "metadata_only": true
+        },
+        "affected_requirement_ids": [
+          "REQ-single-pdf-separate-supporting-documents"
+        ],
+        "affected_process_ids": [
+          "process:document-preparation"
+        ],
+        "affected_guardrail_ids": [
+          "guardrail:single-pdf-document-preparation"
+        ],
+        "source_evidence_ids": [
+          "source:spp-file-naming:pdf-preparation",
+          "source:submit-plans-online:single-pdf-guidance",
+          "trace:single-pdf-document-rule"
+        ],
+        "reviewer_owner": "ppd-document-guardrail-reviewer",
+        "reviewer_disposition": "approve"
+      }
+    ],
+    "expected_metadata_only_outputs": [
+      {
+        "case_id": "requirement-regeneration-case-req-devhub-upload-corrections-attended",
+        "output_ref": "metadata://requirement-regeneration/req-devhub-upload-corrections-attended",
+        "output_kind": "requirement_delta_review_metadata",
+        "metadata_only": true,
+        "no_requirement_record_written": true,
+        "no_process_model_written": true,
+        "no_guardrail_bundle_written": true
+      },
+      {
+        "case_id": "requirement-regeneration-case-req-single-pdf-separate-supporting-documents",
+        "output_ref": "metadata://requirement-regeneration/req-single-pdf-separate-supporting-documents",
+        "output_kind": "requirement_delta_review_metadata",
+        "metadata_only": true,
+        "no_requirement_record_written": true,
+        "no_process_model_written": true,
+        "no_guardrail_bundle_written": true
+      }
+    ],
+    "reviewer_owner_fields_required": true,
+    "attestations": {
+      "fixture_first_inputs_only": true,
+      "metadata_only_outputs": true,
+      "no_live_extraction_performed": true,
+      "no_processor_invoked": true,
+      "no_requirement_mutation_performed": true,
+      "no_process_mutation_performed": true,
+      "no_guardrail_mutation_performed": true
+    }
+  }
+}

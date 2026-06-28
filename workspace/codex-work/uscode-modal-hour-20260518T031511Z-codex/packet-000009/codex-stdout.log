@@ -1,0 +1,13 @@
+Implemented the ambiguity-policy update for `modal.compiler.ambiguity` with a narrow deterministic change.
+
+- Extended adaptive ambiguity coverage in [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T031511Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T031511Z-codex-packet-000009-20260518_035540/ipfs_datasets_py/logic/modal/compiler.py:519) so `adaptive_family_margin_low` now also triggers for `deontic -> frame` conflicts when frame/statutory scope signals exist.
+- Kept temporal behavior intact, and generalized the ambiguity message text to avoid temporal-only wording in [compiler.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T031511Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T031511Z-codex-packet-000009-20260518_035540/ipfs_datasets_py/logic/modal/compiler.py:576).
+- Added additional statutory scope phrases (`under this section`, etc.) used by ambiguity signals in [spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T031511Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T031511Z-codex-packet-000009-20260518_035540/ipfs_datasets_py/optimizers/logic_theorem_optimizer/spacy_modal_codec.py:40).
+- Added a regression test for deontic-vs-frame adaptive ambiguity via statutory reference wording in [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-hour-20260518T031511Z-codex/worktrees/agent-codex-program-synthesis-uscode-modal-hour-20260518T031511Z-codex-packet-000009-20260518_035540/tests/unit_tests/logic/modal/test_modal_codec.py:339).
+
+Validation run:
+
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "adaptive_family_margin or under_this_section or frame_scope_family_outvote or temporal_frame_family_outvote"`  
+  failed due pre-existing repo bootstrap issue: `NameError: __path__ is not defined` at `/.../__init__.py:11`.
+- `python3 -m py_compile ...` on all edited files passed.
+- Direct `python3` assertion script for temporal adaptive cases and the new `deontic -> frame` adaptive case passed.

@@ -1,0 +1,151 @@
+{
+  "packet_version": "requirement-reextract-work-packet-v7",
+  "packet_id": "ppd-reextract-v7-fixture-001",
+  "source_mode": "fixture_only",
+  "live_access_performed": false,
+  "stale_evidence_ids": [
+    "evidence::devhub-faq::upload-corrections::2026-05-08"
+  ],
+  "source_evidence": [
+    {
+      "evidence_id": "evidence::apply-permits::plan-review::2026-05-08",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "source_type": "public_html_fixture",
+      "fixture_extract": "Permit requests requiring plan review are distinct from standard trade permits.",
+      "last_verified_at": "2026-05-08"
+    },
+    {
+      "evidence_id": "evidence::submit-plans-online::single-pdf::2026-05-08",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "source_type": "public_html_fixture",
+      "fixture_extract": "Drawing plans are prepared as one PDF while applications and supporting documents are separate PDFs.",
+      "last_verified_at": "2026-05-08"
+    },
+    {
+      "evidence_id": "evidence::devhub-faq::upload-corrections::2026-05-08",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "source_type": "public_html_fixture",
+      "fixture_extract": "Uploading corrections is an account-scoped DevHub workflow.",
+      "last_verified_at": "2026-05-08"
+    },
+    {
+      "evidence_id": "evidence::fee-payment::financial-action::2026-05-08",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "source_type": "public_pdf_fixture",
+      "fixture_extract": "Payment detail entry and final payment submission are financial workflow steps.",
+      "last_verified_at": "2026-05-08"
+    }
+  ],
+  "existing_requirement_nodes": [
+    {
+      "requirement_id": "REQ-PPD-PLAN-REVIEW-001",
+      "source_evidence_ids": [
+        "evidence::apply-permits::plan-review::2026-05-08"
+      ]
+    },
+    {
+      "requirement_id": "REQ-PPD-LEGACY-UPLOAD-001",
+      "source_evidence_ids": [
+        "evidence::devhub-faq::upload-corrections::2026-05-08"
+      ]
+    }
+  ],
+  "reextracted_requirements": [
+    {
+      "requirement_id": "REQ-PPD-PLAN-REVIEW-001",
+      "source_evidence_ids": [
+        "evidence::apply-permits::plan-review::2026-05-08",
+        "evidence::submit-plans-online::single-pdf::2026-05-08"
+      ],
+      "requirement_type": "document_requirement",
+      "subject": "applicant",
+      "action": "prepare",
+      "object": "plan-review permit documents",
+      "conditions": [
+        "when the permit request requires plan review"
+      ],
+      "deadline_or_temporal_scope": null,
+      "permit_types": [
+        "building",
+        "new single-family residence and detached ADU"
+      ],
+      "process_stage": "document preparation",
+      "confidence": "fixture_candidate_high",
+      "human_review_status": "needs_review",
+      "formalization_status": "formalization_placeholder",
+      "reviewer_owner": "reviewer_owner_placeholder",
+      "source_text_digest": "sha256:fixture-plan-review"
+    },
+    {
+      "requirement_id": "REQ-PPD-FEE-GATE-001",
+      "source_evidence_ids": [
+        "evidence::fee-payment::financial-action::2026-05-08"
+      ],
+      "requirement_type": "action_gate",
+      "subject": "agent",
+      "action": "block",
+      "object": "final payment submission",
+      "conditions": [
+        "when a workflow reaches payment detail entry or final payment execution"
+      ],
+      "deadline_or_temporal_scope": null,
+      "permit_types": [],
+      "process_stage": "fee payment",
+      "confidence": "fixture_candidate_medium",
+      "human_review_status": "needs_review",
+      "formalization_status": "formalization_placeholder",
+      "reviewer_owner": "reviewer_owner_placeholder",
+      "source_text_digest": "sha256:fixture-fee-gate"
+    },
+    {
+      "requirement_id": "REQ-PPD-CORRECTION-UPLOAD-001",
+      "source_evidence_ids": [
+        "evidence::devhub-faq::upload-corrections::2026-05-08"
+      ],
+      "requirement_type": "action_gate",
+      "subject": "agent",
+      "action": "escalate",
+      "object": "official correction upload",
+      "conditions": [
+        "when an authenticated DevHub correction upload would attach material to an official record"
+      ],
+      "deadline_or_temporal_scope": null,
+      "permit_types": [
+        "permit_type_mapping_placeholder"
+      ],
+      "process_stage": "corrections/checksheets",
+      "confidence": "fixture_candidate_medium",
+      "human_review_status": "needs_review",
+      "formalization_status": "formalization_placeholder",
+      "reviewer_owner": "reviewer_owner_placeholder",
+      "conflict_notes": [
+        "Fixture evidence names account-scoped upload capability but does not by itself prove every correction path is DevHub-supported."
+      ],
+      "source_text_digest": "sha256:fixture-correction-upload"
+    }
+  ],
+  "deprecated_requirements": [
+    {
+      "requirement_id": "REQ-PPD-LEGACY-UPLOAD-001",
+      "previous_source_evidence_ids": [
+        "evidence::devhub-faq::upload-corrections::2026-05-08"
+      ],
+      "source_evidence_ids": [],
+      "requirement_type": "action_gate",
+      "subject": "agent",
+      "action": "deprecate",
+      "object": "legacy correction upload assumption",
+      "conditions": [
+        "legacy node lacks continuity in re-extracted v7 fixture rows"
+      ],
+      "deadline_or_temporal_scope": null,
+      "permit_types": [],
+      "process_stage": "mapping_placeholder",
+      "confidence": "candidate_only",
+      "human_review_status": "needs_review",
+      "formalization_status": "formalization_placeholder",
+      "reviewer_owner": "reviewer_owner_placeholder",
+      "source_text_digest": "sha256:fixture-legacy-upload"
+    }
+  ]
+}

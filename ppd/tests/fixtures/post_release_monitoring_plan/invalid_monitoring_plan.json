@@ -1,0 +1,36 @@
+{
+  "packet_type": "ppd.post_release_monitoring_plan.v1",
+  "normalized_source_evidence": [
+    {
+      "evidence_id": "ppd-public-guide",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools"
+    }
+  ],
+  "active_schedule": true,
+  "write_artifacts": true,
+  "monitoring_checks": [
+    {
+      "check_id": "unsafe:uncited-live-private",
+      "description": "Live monitor executed against an authenticated DevHub account page.",
+      "target_url": "https://devhub.portlandoregon.gov/account/my-permits?token=secret",
+      "raw_body": "private body",
+      "download_path": "/archives/raw-crawl/devhub.trace.zip",
+      "local_path": "/home/operator/private/devhub-session.json",
+      "monitor_executed": true,
+      "schedule_enabled": true,
+      "artifact_mutation_enabled": true
+    },
+    {
+      "check_id": "unsafe:unknown-citation",
+      "description": "Browser ran and wrote a raw archive reference.",
+      "source_evidence_ids": ["unknown-evidence"],
+      "reviewer_owner": "ppd-release-operator",
+      "escalation_note": "Escalate before promotion.",
+      "alert_threshold": {
+        "max_age_days": 1
+      },
+      "notes": "browser executed after live fetch",
+      "raw_archive_ref": "raw_download/archive_artifact.warc.gz"
+    }
+  ]
+}

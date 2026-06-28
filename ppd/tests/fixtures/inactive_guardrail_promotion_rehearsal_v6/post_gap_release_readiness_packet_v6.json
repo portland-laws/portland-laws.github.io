@@ -1,0 +1,238 @@
+{
+  "packet_type": "ppd.post_gap_release_readiness_packet.v6",
+  "packet_version": "v6",
+  "mode": "fixture_first_post_gap_release_readiness_v6",
+  "fixture_first": true,
+  "post_gap_readiness_replay_fixtures_only": true,
+  "manual_reviewer_decision_required": true,
+  "unresolved_missing_fact_hold_required": true,
+  "stale_evidence_hold_required": true,
+  "rollback_owner_assignment_required": true,
+  "active_guardrail_mutation": false,
+  "active_release_state_mutation": false,
+  "active_mutation": false,
+  "activation_executed": false,
+  "opens_devhub": false,
+  "reads_private_documents": false,
+  "uploads": false,
+  "submits": false,
+  "certifies": false,
+  "pays": false,
+  "schedules": false,
+  "legal_or_permitting_guarantee": false,
+  "source_fixture_refs": [
+    {
+      "fixture_role": "post_gap_agent_readiness_replay_v6",
+      "path": "ppd/tests/fixtures/post_gap_release_readiness_v6/post_gap_agent_readiness_replay_v6.json"
+    }
+  ],
+  "consumes_only": {
+    "post_gap_agent_readiness_replay_v6_fixtures": true,
+    "replay_packet_version": "post_gap_agent_readiness_replay_v6"
+  },
+  "reviewer_go_no_go_rows": [
+    {
+      "row_id": "post-gap-release-readiness-v6-reviewer-row",
+      "recommendation": "NO_GO",
+      "activation_allowed": false,
+      "manual_reviewer_final_decision_required": true,
+      "unresolved_hold_count": 5,
+      "basis": "Fixture replay still requires reviewer disposition of missing facts, stale evidence, refused official actions, rollback ownership, and agent notices."
+    }
+  ],
+  "unresolved_hold_inventory": [
+    {
+      "hold_id": "missing-fact-q01_property_address",
+      "hold_type": "missing_fact",
+      "source_prompt_id": "q01_property_address",
+      "reviewer_disposition_required": true,
+      "release_blocked": true
+    },
+    {
+      "hold_id": "missing-fact-q02_scope_summary",
+      "hold_type": "missing_fact",
+      "source_prompt_id": "q02_scope_summary",
+      "reviewer_disposition_required": true,
+      "release_blocked": true
+    },
+    {
+      "hold_id": "missing-fact-q03_existing_use",
+      "hold_type": "missing_fact",
+      "source_prompt_id": "q03_existing_use",
+      "reviewer_disposition_required": true,
+      "release_blocked": true
+    },
+    {
+      "hold_id": "missing-fact-q04_documents_available",
+      "hold_type": "missing_fact",
+      "source_prompt_id": "q04_documents_available",
+      "reviewer_disposition_required": true,
+      "release_blocked": true
+    },
+    {
+      "hold_id": "stale-evidence-ev_stale_fee_table",
+      "hold_type": "stale_evidence",
+      "evidence_id": "ev_stale_fee_table",
+      "reason": "Retrieved before the current replay window and must not be used for payment or fee guarantees.",
+      "reviewer_disposition_required": true,
+      "release_blocked": true
+    }
+  ],
+  "reversible_draft_readiness_summaries": [
+    {
+      "summary_id": "draft_preview-req_draft",
+      "request_id": "req_draft",
+      "route": "reversible_local_draft_preview",
+      "ready_for_reviewer_preview_only": true,
+      "official_action_allowed": false
+    }
+  ],
+  "local_pdf_preview_readiness_summaries": [
+    {
+      "summary_id": "pdf_preview-req_pdf",
+      "request_id": "req_pdf",
+      "route": "local_pdf_preview_only",
+      "ready_for_reviewer_preview_only": true,
+      "official_action_allowed": false
+    }
+  ],
+  "refused_consequential_action_summaries": [
+    {
+      "summary_id": "refused-consequential-req_official_record_change",
+      "request_id": "req_official_record_change",
+      "action_kind": "official_record_change",
+      "action_category": "consequential",
+      "refused": true,
+      "manual_handoff_required": true,
+      "official_action_completed": false
+    }
+  ],
+  "refused_financial_action_summaries": [
+    {
+      "summary_id": "refused-financial-req_financial_commitment",
+      "request_id": "req_financial_commitment",
+      "action_kind": "financial_commitment",
+      "action_category": "financial",
+      "refused": true,
+      "manual_handoff_required": true,
+      "official_action_completed": false
+    }
+  ],
+  "journal_dry_run_coverage_refs": [
+    {
+      "journal_event": "gap_packet_loaded",
+      "covered_by_request_ids": ["req_questions", "req_draft", "req_pdf", "req_official_record_change", "req_financial_commitment"],
+      "dry_run_only": true
+    },
+    {
+      "journal_event": "dry_run_packet_loaded",
+      "covered_by_request_ids": ["req_questions", "req_draft", "req_pdf", "req_official_record_change", "req_financial_commitment"],
+      "dry_run_only": true
+    },
+    {
+      "journal_event": "synthetic_request_received",
+      "covered_by_request_ids": ["req_questions", "req_draft", "req_pdf", "req_official_record_change", "req_financial_commitment"],
+      "dry_run_only": true
+    },
+    {
+      "journal_event": "missing_information_questions_ordered",
+      "covered_by_request_ids": ["req_questions", "req_draft", "req_pdf", "req_official_record_change", "req_financial_commitment"],
+      "dry_run_only": true
+    },
+    {
+      "journal_event": "evidence_limitations_explained",
+      "covered_by_request_ids": ["req_questions", "req_draft", "req_pdf", "req_official_record_change", "req_financial_commitment"],
+      "dry_run_only": true
+    },
+    {
+      "journal_event": "citation_payload_attached",
+      "covered_by_request_ids": ["req_questions", "req_draft", "req_pdf", "req_official_record_change", "req_financial_commitment"],
+      "dry_run_only": true
+    },
+    {
+      "journal_event": "route_selected",
+      "covered_by_request_ids": ["req_questions", "req_draft", "req_pdf", "req_official_record_change", "req_financial_commitment"],
+      "dry_run_only": true
+    },
+    {
+      "journal_event": "manual_handoff_reminder_attached",
+      "covered_by_request_ids": ["req_questions", "req_draft", "req_pdf", "req_official_record_change", "req_financial_commitment"],
+      "dry_run_only": true
+    },
+    {
+      "journal_event": "offline_validation_commands_reported",
+      "covered_by_request_ids": ["req_questions", "req_draft", "req_pdf", "req_official_record_change", "req_financial_commitment"],
+      "dry_run_only": true
+    }
+  ],
+  "citation_coverage_notes": [
+    {
+      "citation_note_id": "citation-01",
+      "label": "Fixture checklist",
+      "url": "fixture://post_gap_agent_readiness_v6/residential_checklist_stub.pdf",
+      "fixture_citation_only": true,
+      "coverage_status": "present"
+    },
+    {
+      "citation_note_id": "citation-02",
+      "label": "Stale fixture fee table",
+      "url": "fixture://post_gap_agent_readiness_v6/stale_fee_table.html",
+      "fixture_citation_only": true,
+      "coverage_status": "present"
+    }
+  ],
+  "rollback_owner_placeholders": [
+    {
+      "placeholder_id": "rollback-owner-post-gap-release-readiness-v6",
+      "owner": "REVIEWER_TBD",
+      "assignment_required_before": "release_signoff",
+      "active_state_changed": false
+    }
+  ],
+  "agent_notification_rows": [
+    {
+      "notification_id": "agent-notice-req_questions",
+      "request_id": "req_questions",
+      "notification_status": "draft_note_only",
+      "manual_handoff_reminders": [
+        "Confirm stale or conflicting evidence with PP&D staff or the authoritative public source before relying on it.",
+        "Review every draft manually before any upload, submission, certification, payment, or scheduling step.",
+        "Do not treat this replay as legal, permitting, zoning, fee, deadline, or approval advice."
+      ],
+      "send_or_submit_allowed": false
+    },
+    {
+      "notification_id": "agent-notice-req_draft",
+      "request_id": "req_draft",
+      "notification_status": "draft_note_only",
+      "manual_handoff_reminders": ["Review every draft manually before any official action."],
+      "send_or_submit_allowed": false
+    },
+    {
+      "notification_id": "agent-notice-req_pdf",
+      "request_id": "req_pdf",
+      "notification_status": "draft_note_only",
+      "manual_handoff_reminders": ["Preview PDFs locally only and require manual review."],
+      "send_or_submit_allowed": false
+    },
+    {
+      "notification_id": "agent-notice-req_official_record_change",
+      "request_id": "req_official_record_change",
+      "notification_status": "draft_note_only",
+      "manual_handoff_reminders": ["Consequential official actions require attended manual confirmation."],
+      "send_or_submit_allowed": false
+    },
+    {
+      "notification_id": "agent-notice-req_financial_commitment",
+      "request_id": "req_financial_commitment",
+      "notification_status": "draft_note_only",
+      "manual_handoff_reminders": ["Financial actions require attended manual confirmation."],
+      "send_or_submit_allowed": false
+    }
+  ],
+  "offline_validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/agent_readiness/post_gap_release_readiness_packet_v6.py"],
+    ["python3", "-m", "py_compile", "ppd/tests/test_post_gap_release_readiness_packet_v6.py"],
+    ["python3", "-m", "pytest", "ppd/tests/test_post_gap_release_readiness_packet_v6.py"]
+  ]
+}

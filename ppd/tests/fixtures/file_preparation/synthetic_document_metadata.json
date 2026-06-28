@@ -1,0 +1,24 @@
+{
+  "documents": [
+    {
+      "document_id": "synthetic-permit-001",
+      "title": "Synthetic permit application placeholder",
+      "media_type": "application/pdf",
+      "synthetic": true,
+      "downloaded": false,
+      "private": false,
+      "upload_staging": false,
+      "raw_pdf_persisted": false
+    },
+    {
+      "document_id": "synthetic-checklist-001",
+      "title": "Synthetic intake checklist placeholder",
+      "media_type": "text/html",
+      "synthetic": true,
+      "downloaded": false,
+      "private": false,
+      "upload_staging": false,
+      "raw_pdf_persisted": false
+    }
+  ]
+}

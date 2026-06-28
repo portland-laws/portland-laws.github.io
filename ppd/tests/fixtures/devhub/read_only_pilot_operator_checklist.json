@@ -1,0 +1,335 @@
+{
+  "packet_id": "devhub-read-only-pilot-operator-checklist-v1",
+  "packet_type": "devhub_read_only_pilot_operator_checklist",
+  "mode": "fixture_first",
+  "manual_session_only": true,
+  "read_only_only": true,
+  "launches_playwright": false,
+  "live_session_authorized": false,
+  "stores_private_session_state": false,
+  "stores_browser_artifacts": false,
+  "source_packets": {
+    "attended_pilot_runbook": "devhub-attended-read-only-pilot-runbook-v1",
+    "attended_dry_run_review": "attended_pilot_dry_run_review",
+    "attended_evidence_template": "devhub-attended-pilot-evidence-template-v1"
+  },
+  "checklist_steps": [
+    {
+      "step_id": "fixture_packet_review",
+      "manual_action": "Confirm the runbook, dry-run review, and evidence template fixture identifiers match this packet before any manual session is scheduled.",
+      "requires_operator_attendance": true,
+      "automated": false,
+      "playwright_allowed": false,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "captures_live_evidence": false,
+      "allows_consequential_control": false
+    },
+    {
+      "step_id": "login_attendance_handoff",
+      "manual_action": "The operator opens DevHub in their own browser, completes PortlandOregon.gov login, and handles credentials, MFA, CAPTCHA, or security prompts manually while remaining present.",
+      "requires_operator_attendance": true,
+      "automated": false,
+      "playwright_allowed": false,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "captures_live_evidence": false,
+      "allows_consequential_control": false
+    },
+    {
+      "step_id": "observation_scope_confirmation",
+      "manual_action": "Confirm the observation scope is limited to read-only DevHub home, account summary, synthetic record list, synthetic record detail, headings, labels, landmarks, and non-private status categories.",
+      "requires_operator_attendance": true,
+      "automated": false,
+      "playwright_allowed": false,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "captures_live_evidence": false,
+      "allows_consequential_control": false
+    },
+    {
+      "step_id": "redaction_preflight",
+      "manual_action": "Review the redaction policy and verify that credentials, credential prompts, cookies, auth state, private values, payment details, browser artifacts, downloads, raw DOM, and raw authenticated text will not be recorded.",
+      "requires_operator_attendance": true,
+      "automated": false,
+      "playwright_allowed": false,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "captures_live_evidence": false,
+      "allows_consequential_control": false
+    },
+    {
+      "step_id": "automation_refusal_gate",
+      "manual_action": "Reject automated login, credential prompt capture, MFA automation, CAPTCHA automation, account creation automation, and password recovery automation before any observation entry is written.",
+      "requires_operator_attendance": true,
+      "automated": false,
+      "playwright_allowed": false,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "captures_live_evidence": false,
+      "allows_consequential_control": false
+    },
+    {
+      "step_id": "abort_condition_gate",
+      "manual_action": "Abort before any automated login, credential capture, MFA automation, CAPTCHA automation, account creation, payment, upload, submit, certify, schedule, cancel, private value recording, cookie capture, auth state capture, screenshot, trace, HAR file, live evidence claim, or browser artifact storage request.",
+      "requires_operator_attendance": true,
+      "automated": false,
+      "playwright_allowed": false,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "captures_live_evidence": false,
+      "allows_consequential_control": false
+    },
+    {
+      "step_id": "journal_event_id_crosscheck",
+      "manual_action": "Cross-check every abort condition and observation entry against a commit-safe journal event ID before writing evidence.",
+      "requires_operator_attendance": true,
+      "automated": false,
+      "playwright_allowed": false,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "captures_live_evidence": false,
+      "allows_consequential_control": false
+    },
+    {
+      "step_id": "evidence_template_entry",
+      "manual_action": "Populate only evidence template fields allowed by this packet: stable surface IDs, page headings, accessible landmark summaries, redacted label categories, synthetic status labels, operator decision codes, and redacted timestamps.",
+      "requires_operator_attendance": true,
+      "automated": false,
+      "playwright_allowed": false,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "captures_live_evidence": false,
+      "allows_consequential_control": false
+    },
+    {
+      "step_id": "post_action_hardening_review",
+      "manual_action": "After the manual observation, confirm no official state changed, no live evidence was captured, no browser artifact was created for storage, and next actions remain limited to read-only review or local preview.",
+      "requires_operator_attendance": true,
+      "automated": false,
+      "playwright_allowed": false,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "captures_live_evidence": false,
+      "allows_consequential_control": false
+    },
+    {
+      "step_id": "closeout_without_browser_artifacts",
+      "manual_action": "Close the browser manually and do not save auth state, session state, screenshots, traces, HAR files, raw crawl output, downloaded documents, or private local paths.",
+      "requires_operator_attendance": true,
+      "automated": false,
+      "playwright_allowed": false,
+      "stores_browser_artifacts": false,
+      "stores_private_values": false,
+      "captures_live_evidence": false,
+      "allows_consequential_control": false
+    }
+  ],
+  "automation_policy": {
+    "automated_login_allowed": false,
+    "credential_prompt_capture_allowed": false,
+    "mfa_automation_allowed": false,
+    "captcha_automation_allowed": false,
+    "account_creation_automation_allowed": false,
+    "password_recovery_automation_allowed": false,
+    "prohibited_automation": [
+      "automated_login",
+      "credential_prompt_capture",
+      "mfa_automation",
+      "captcha_automation",
+      "account_creation_automation",
+      "password_recovery_automation"
+    ]
+  },
+  "redaction_policy": {
+    "enabled": true,
+    "raw_values_allowed": false,
+    "browser_artifacts_allowed": false,
+    "allowed_observation_fields": [
+      "stable_surface_id",
+      "page_heading",
+      "accessible_landmark_summary",
+      "redacted_label_category",
+      "synthetic_record_status_label",
+      "operator_decision_code",
+      "redacted_timestamp"
+    ],
+    "forbidden_artifacts": [
+      "credentials",
+      "credential_prompts",
+      "cookies",
+      "auth_state",
+      "session_state",
+      "screenshots",
+      "traces",
+      "har_files",
+      "raw_dom",
+      "raw_authenticated_text",
+      "private_field_values",
+      "payment_details",
+      "downloads",
+      "local_private_file_paths"
+    ]
+  },
+  "redaction_attestations": {
+    "no_credentials": true,
+    "no_credential_prompts": true,
+    "no_cookies": true,
+    "no_auth_state": true,
+    "no_screenshots": true,
+    "no_traces": true,
+    "no_har_files": true,
+    "no_private_field_values": true,
+    "no_consequential_controls": true,
+    "no_live_evidence_captured": true
+  },
+  "evidence_claims": {
+    "fixture_only": true,
+    "live_evidence_captured": false,
+    "claims_live_evidence_was_captured": false,
+    "screenshots_captured": false,
+    "traces_captured": false,
+    "har_captured": false,
+    "cookies_captured": false,
+    "auth_state_captured": false
+  },
+  "consequential_controls": [
+    {
+      "control_id": "upload",
+      "allowed_in_read_only_pilot": false,
+      "operator_action": "Refuse and record only a commit-safe refused-action journal event."
+    },
+    {
+      "control_id": "submit",
+      "allowed_in_read_only_pilot": false,
+      "operator_action": "Refuse and record only a commit-safe refused-action journal event."
+    },
+    {
+      "control_id": "certify",
+      "allowed_in_read_only_pilot": false,
+      "operator_action": "Refuse and record only a commit-safe refused-action journal event."
+    },
+    {
+      "control_id": "payment",
+      "allowed_in_read_only_pilot": false,
+      "operator_action": "Refuse and record only a commit-safe refused-action journal event."
+    },
+    {
+      "control_id": "schedule_inspection",
+      "allowed_in_read_only_pilot": false,
+      "operator_action": "Refuse and record only a commit-safe refused-action journal event."
+    },
+    {
+      "control_id": "cancel",
+      "allowed_in_read_only_pilot": false,
+      "operator_action": "Refuse and record only a commit-safe refused-action journal event."
+    },
+    {
+      "control_id": "withdraw",
+      "allowed_in_read_only_pilot": false,
+      "operator_action": "Refuse and record only a commit-safe refused-action journal event."
+    },
+    {
+      "control_id": "request_extension",
+      "allowed_in_read_only_pilot": false,
+      "operator_action": "Refuse and record only a commit-safe refused-action journal event."
+    },
+    {
+      "control_id": "reactivate",
+      "allowed_in_read_only_pilot": false,
+      "operator_action": "Refuse and record only a commit-safe refused-action journal event."
+    },
+    {
+      "control_id": "account_security_change",
+      "allowed_in_read_only_pilot": false,
+      "operator_action": "Refuse and record only a commit-safe refused-action journal event."
+    }
+  ],
+  "journal_events": [
+    {
+      "event_id": "JRN-DEVHUB-PILOT-PREFLIGHT",
+      "event_type": "DevHub attended preflight",
+      "commit_safe": true,
+      "stores_private_values": false,
+      "stores_browser_artifacts": false,
+      "captures_live_evidence": false
+    },
+    {
+      "event_id": "JRN-DEVHUB-MANUAL-HANDOFF",
+      "event_type": "manual handoff",
+      "commit_safe": true,
+      "stores_private_values": false,
+      "stores_browser_artifacts": false,
+      "captures_live_evidence": false
+    },
+    {
+      "event_id": "JRN-DEVHUB-READONLY-OBSERVATION",
+      "event_type": "redacted read-only observation",
+      "commit_safe": true,
+      "stores_private_values": false,
+      "stores_browser_artifacts": false,
+      "captures_live_evidence": false
+    },
+    {
+      "event_id": "JRN-DEVHUB-REFUSED-ACTION",
+      "event_type": "refused action",
+      "commit_safe": true,
+      "stores_private_values": false,
+      "stores_browser_artifacts": false,
+      "captures_live_evidence": false
+    },
+    {
+      "event_id": "JRN-DEVHUB-HARDENING-REVIEW",
+      "event_type": "post-action hardening review",
+      "commit_safe": true,
+      "stores_private_values": false,
+      "stores_browser_artifacts": false,
+      "captures_live_evidence": false
+    }
+  ],
+  "abort_conditions": [
+    {
+      "condition_id": "abort-login-security-prompt",
+      "trigger": "Any automated login request, credential prompt, password prompt, MFA challenge, CAPTCHA, or security prompt must be handled only by the attending operator and stops evidence capture.",
+      "operator_action": "Pause the checklist, hand control to the operator, and write only the manual handoff journal event if commit-safe.",
+      "journal_event_id": "JRN-DEVHUB-MANUAL-HANDOFF"
+    },
+    {
+      "condition_id": "abort-account-creation-automation",
+      "trigger": "Any account creation, password recovery, MFA enrollment, CAPTCHA automation, or credential automation request stops the pilot.",
+      "operator_action": "Refuse the automation request and write the refused-action journal event without private values.",
+      "journal_event_id": "JRN-DEVHUB-REFUSED-ACTION"
+    },
+    {
+      "condition_id": "abort-consequential-control",
+      "trigger": "Any payment, upload, submit, certify, schedule, cancel, withdrawal, extension, reactivation, account creation, or official state-changing control stops the pilot.",
+      "operator_action": "Refuse the action and write the refused-action journal event without private values.",
+      "journal_event_id": "JRN-DEVHUB-REFUSED-ACTION"
+    },
+    {
+      "condition_id": "abort-private-value-or-artifact",
+      "trigger": "Any need to record a private value, private account data, cookie, auth state, browser artifact, screenshot, trace, HAR file, raw DOM, raw authenticated text, download, or local private path stops the pilot.",
+      "operator_action": "Stop observation and record only a redacted operator decision code.",
+      "journal_event_id": "JRN-DEVHUB-REFUSED-ACTION"
+    },
+    {
+      "condition_id": "abort-live-evidence-claim",
+      "trigger": "Any claim that live evidence was captured or that live evidence should be stored stops the pilot.",
+      "operator_action": "Reject the evidence claim and preserve only fixture-first, redacted checklist metadata.",
+      "journal_event_id": "JRN-DEVHUB-REFUSED-ACTION"
+    }
+  ],
+  "post_action_hardening": {
+    "required": true,
+    "official_state_changed": false,
+    "browser_artifacts_created": false,
+    "live_evidence_captured": false,
+    "next_actions_limited_to": ["read_only", "local_preview"],
+    "review_items": [
+      "No upload, submit, certify, payment, scheduling, cancellation, account creation, or account security action was performed.",
+      "No credentials, credential prompts, cookies, auth state, session state, screenshots, traces, HAR files, downloads, raw DOM, raw authenticated text, private field values, payment details, or local private file paths were saved.",
+      "No live DevHub evidence was captured or claimed in committed artifacts.",
+      "Every evidence row links to a commit-safe journal event ID."
+    ]
+  }
+}

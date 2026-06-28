@@ -1,0 +1,153 @@
+{
+  "packet_type": "attended_pilot_dry_run_review",
+  "review_mode": "fixture_first",
+  "pilot_mode": "manual_read_only_attended",
+  "live_session_authorized": false,
+  "operator": {
+    "name_or_role": "PP&D attended pilot reviewer",
+    "reviewed_at": "2026-05-28T00:00:00Z",
+    "attendance_required": true,
+    "completed_checklist": [
+      "operator_identity_recorded",
+      "manual_read_only_scope_confirmed",
+      "redaction_attestations_reviewed",
+      "abort_conditions_reviewed",
+      "journal_event_ids_cross_checked",
+      "post_action_hardening_notes_reviewed"
+    ]
+  },
+  "evidence_template": {
+    "template_id": "devhub-manual-read-only-pilot-evidence-v1",
+    "version": "2026-05-28",
+    "fields": [
+      {
+        "id": "operator_name_or_role",
+        "label": "Operator name or role",
+        "required": true,
+        "value": "PP&D attended pilot reviewer"
+      },
+      {
+        "id": "attended_read_only_scope",
+        "label": "Manual attended read-only scope",
+        "required": true,
+        "value": "Observe DevHub account-scoped pages only after manual login handoff; do not upload, submit, certify, schedule, cancel, or pay."
+      },
+      {
+        "id": "redaction_attestation_summary",
+        "label": "Redaction attestation summary",
+        "required": true,
+        "value": "Only commit-safe metadata and synthetic fixture values are present."
+      },
+      {
+        "id": "observation_scope_summary",
+        "label": "Observation scope summary",
+        "required": true,
+        "value": "Read-only review of headings, labels, statuses, and journal-safe metadata."
+      },
+      {
+        "id": "abort_condition_summary",
+        "label": "Abort condition summary",
+        "required": true,
+        "value": "Abort on CAPTCHA, MFA prompt, credential prompt, private value exposure, upload, payment, certification, scheduling, cancellation, or submission."
+      },
+      {
+        "id": "journal_event_ids",
+        "label": "Journal event IDs",
+        "required": true,
+        "value": "JRN-DEVHUB-PREFLIGHT, JRN-MANUAL-HANDOFF, JRN-ABORT-GATE, JRN-HARDENING-REVIEW"
+      },
+      {
+        "id": "post_action_hardening_notes",
+        "label": "Post-action hardening notes",
+        "required": true,
+        "value": "Keep selectors metadata-only, preserve exact-confirmation gates, and reject any workflow that requests consequential actions."
+      }
+    ]
+  },
+  "redaction_attestations": [
+    {
+      "attestation_id": "redaction-commit-safe-metadata",
+      "scope": "journal and evidence template fields",
+      "completed": true,
+      "prohibited_values_absent": true,
+      "statement": "The packet contains no credentials, cookies, auth state, screenshots, traces, HAR files, payment details, private uploads, local private file paths, or raw authenticated page values."
+    },
+    {
+      "attestation_id": "redaction-synthetic-fixture-only",
+      "scope": "fixture values",
+      "completed": true,
+      "prohibited_values_absent": true,
+      "statement": "All values are deterministic fixture values suitable for committed tests."
+    }
+  ],
+  "observation_scope": {
+    "read_only": true,
+    "no_private_values_recorded": true,
+    "allowed": [
+      "confirm authenticated landing state by generic page role or heading",
+      "record redacted accessible labels and non-private status metadata",
+      "record commit-safe journal event IDs",
+      "stop before any official change or data entry"
+    ],
+    "prohibited": [
+      "account_creation",
+      "captcha_automation",
+      "certification",
+      "credential_entry",
+      "mfa_automation",
+      "payment",
+      "schedule_or_cancel_inspection",
+      "submission",
+      "upload"
+    ]
+  },
+  "abort_conditions": [
+    {
+      "condition_id": "abort-private-value-visible",
+      "trigger": "A private account value, credential, document content, payment detail, or local private path would need to be recorded.",
+      "operator_action": "Stop observation and record only the redacted abort journal event.",
+      "journal_event_id": "JRN-ABORT-GATE"
+    },
+    {
+      "condition_id": "abort-consequential-action",
+      "trigger": "The page requires upload, submit, certify, schedule, cancel, payment, account creation, CAPTCHA automation, MFA automation, or credential entry.",
+      "operator_action": "Stop automation, hand control to the human operator, and do not continue without a separate exact-confirmation workflow.",
+      "journal_event_id": "JRN-ABORT-GATE"
+    }
+  ],
+  "journal_events": [
+    {
+      "event_id": "JRN-DEVHUB-PREFLIGHT",
+      "event_type": "DevHub attended preflight",
+      "redaction_status": "metadata_only",
+      "contains_private_data": false
+    },
+    {
+      "event_id": "JRN-MANUAL-HANDOFF",
+      "event_type": "manual handoff",
+      "redaction_status": "metadata_only",
+      "contains_private_data": false
+    },
+    {
+      "event_id": "JRN-ABORT-GATE",
+      "event_type": "refused action",
+      "redaction_status": "redacted",
+      "contains_private_data": false
+    },
+    {
+      "event_id": "JRN-HARDENING-REVIEW",
+      "event_type": "post-action hardening review",
+      "redaction_status": "metadata_only",
+      "contains_private_data": false
+    }
+  ],
+  "post_action_hardening_notes": {
+    "reviewed": true,
+    "notes": "Before any future live attended session, keep the packet fixture-first, validate all redaction attestations, cross-check abort conditions against journal event IDs, and preserve read-only scope.",
+    "follow_up_controls": [
+      "Require this validator to pass before live attended pilot scheduling.",
+      "Reject packets that authorize live sessions or omit abort-condition journal links.",
+      "Keep evidence templates free of private DevHub values and browser artifacts."
+    ]
+  }
+}

@@ -1,0 +1,16 @@
+Implemented a deterministic frame-audit fix so slot-normalized source IDs (`us_code_<title>_<section>_<digest>`) are now recognized as ontology coordinates, instead of being dropped.
+
+**Changes**
+- Added slot-normalized source ID parsing fallback in [_normalized_source_id_ontology_value](\
+/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000045-20260518_131934/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py).
+- Added/updated regression coverage in:
+  - [test_frame_bm25_selector.py (unit)](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000045-20260518_131934/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py)
+  - [test_frame_bm25_selector.py (module)](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000045-20260518_131934/ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py)
+  - [test_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000045-20260518_131934/tests/unit_tests/logic/modal/test_modal_codec.py)
+  - [test_flogic_integration.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000045-20260518_131934/tests/unit/logic/test_flogic_integration.py) (including alignment of one stale expectation with current source_id term behavior).
+
+**Validation**
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py` (`53 passed`)
+- `pytest -q ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py` (`12 passed`)
+- `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "frame_ontology_audit"` (`4 passed`)
+- `pytest -q tests/unit/logic/test_flogic_integration.py` (`40 passed`)

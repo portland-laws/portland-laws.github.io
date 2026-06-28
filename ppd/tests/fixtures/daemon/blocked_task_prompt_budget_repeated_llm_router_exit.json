@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "scenario": "blocked_task_prompt_budget_after_repeated_llm_router_exit",
+  "blocked_task": {
+    "checkbox_id": "checkbox-63",
+    "title": "Add daemon blocked-task prompt-budget fixture coverage",
+    "target_summary": "Add daemon blocked-task prompt-budget fixture coverage proving repeated llm_router exits summarize the target, compact errors, and next daemon-repair hint without retrying blocked domain work.",
+    "blocked_domain_work": "broad live crawl, authenticated DevHub automation, or another domain implementation retry"
+  },
+  "llm_router_exits": [
+    {
+      "attempt": 1,
+      "exit_kind": "prompt_budget_exceeded",
+      "stage": "domain_worker",
+      "target": "checkbox-63",
+      "error_summary": "llm_router exited after prompt budget while preparing a broad domain retry.",
+      "should_retry_domain_work": false
+    },
+    {
+      "attempt": 2,
+      "exit_kind": "prompt_budget_exceeded",
+      "stage": "domain_worker",
+      "target": "checkbox-63",
+      "error_summary": "llm_router exited again before producing a syntax-valid fixture repair.",
+      "should_retry_domain_work": false
+    }
+  ],
+  "daemon_prompt": {
+    "target_summary": "checkbox-63: add deterministic fixture coverage for blocked-task prompt-budget handling after repeated llm_router exits.",
+    "compact_errors": [
+      {
+        "exit_kind": "prompt_budget_exceeded",
+        "count": 2,
+        "summary": "llm_router exited repeatedly while attempting broad domain work; keep follow-up output limited to fixture and test repair."
+      },
+      {
+        "exit_kind": "syntax_preflight",
+        "count": 1,
+        "summary": "Previous generated Python was invalid at `assert len(compact_errors) None`; replace it with explicit comparison syntax."
+      }
+    ],
+    "next_daemon_repair_hint": "Return the smallest syntax-valid fixture/test replacement under ppd/tests that asserts target_summary, compact_errors, and retry_blocked_domain_work is false.",
+    "retry_blocked_domain_work": false
+  },
+  "domain_work_retry": {
+    "attempted": false,
+    "blocked_reason": "prompt_budget_exceeded",
+    "attempts_after_block": []
+  },
+  "expected_assertions": [
+    "two repeated llm_router prompt-budget exits are represented",
+    "the daemon prompt keeps a concise target summary for checkbox-63",
+    "errors are compacted into bounded summaries with counts",
+    "the next daemon-repair hint points to fixture/test repair",
+    "blocked domain work is not retried after repeated router exits"
+  ]
+}

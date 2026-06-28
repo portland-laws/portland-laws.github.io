@@ -1,0 +1,33 @@
+{
+  "version": "guardrail_recompile_reviewer_packet_v5",
+  "fixture_scope": "offline reviewer packet only",
+  "reviewer_packet_references": [
+    "ppd/agent_readiness/guardrail_recompile_reviewer_packet_v5.py",
+    "ppd/tests/fixtures/agent_readiness_replay_v5/guardrail_recompile_reviewer_packet_v5.json"
+  ],
+  "citation_payloads": {
+    "permit-status-help": {
+      "source": "fixture",
+      "title": "PP&D permit status help excerpt",
+      "document_id": "fixture-permit-status-help",
+      "section": "status review",
+      "locator": "ppd/tests/fixtures/agent_readiness_replay_v5/guardrail_recompile_reviewer_packet_v5.json#citation_payloads.permit-status-help"
+    },
+    "review-comments-help": {
+      "source": "fixture",
+      "title": "PP&D review comments help excerpt",
+      "document_id": "fixture-review-comments-help",
+      "section": "review comments",
+      "locator": "ppd/tests/fixtures/agent_readiness_replay_v5/guardrail_recompile_reviewer_packet_v5.json#citation_payloads.review-comments-help"
+    }
+  },
+  "manual_handoff_reminders": [
+    "Manual handoff required for private records, authenticated portals, uploads, submissions, payments, scheduling, certification, cancellation, or legal/permitting guarantees."
+  ],
+  "rollback_notes": [
+    "Rollback by removing the replay module, this test, and these committed fixtures; no daemon ledgers or private session files are touched."
+  ],
+  "offline_validation_commands": [
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

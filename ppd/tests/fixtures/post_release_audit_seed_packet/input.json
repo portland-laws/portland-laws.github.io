@@ -1,0 +1,142 @@
+{
+  "inputs": {
+    "user_handoff_checklist": {
+      "packet_type": "ppd.safe_next_action.user_handoff_checklist.v1",
+      "packet_id": "safe-next-action-user-handoff-checklist-synthetic-v1",
+      "fixture_first": true,
+      "metadata_only": true,
+      "offline_only": true,
+      "launches_devhub": false,
+      "launches_playwright": false,
+      "reads_private_files": false,
+      "network_requests_made": false,
+      "source_packets": {
+        "release_gate_status": {
+          "packet_id": "ppd-release-gate-status-synthetic-v1",
+          "citations": ["ev-release-gate-safe-next-action"]
+        },
+        "devhub_surface_registry_update_candidate": {
+          "packet_id": "devhub-surface-registry-update-candidate-synthetic-v1",
+          "citations": ["ev-devhub-surface-read-only-boundary"]
+        }
+      },
+      "blocked_consequential_actions": [
+        {
+          "action_id": "permit_submission",
+          "enabled": false,
+          "citations": ["ev-consequential-actions-blocked"]
+        },
+        {
+          "action_id": "fee_payment",
+          "enabled": false,
+          "citations": ["ev-fee-payment-blocked"]
+        }
+      ],
+      "disabled_live_actions": [
+        "devhub_launch",
+        "payment",
+        "upload",
+        "submission",
+        "scheduling",
+        "cancellation",
+        "certification"
+      ],
+      "citations": ["ev-user-handoff-checklist"]
+    },
+    "public_source_monitoring_schedule_candidate": {
+      "packet_type": "ppd.public_source_monitoring_schedule_candidate.v1",
+      "packet_id": "public-source-monitoring-schedule-candidate-synthetic-v1",
+      "fixture_first": true,
+      "metadata_only": true,
+      "execution_policy": {
+        "network_allowed": false,
+        "network_invoked": false,
+        "fetch_urls": false,
+        "download_documents": false,
+        "persist_raw_body": false,
+        "schedule_mutation_allowed": false,
+        "live_schedule_mutated": false
+      },
+      "allowlisted_source_ids": ["source:ppd-devhub-faq", "source:submit-plans-online"],
+      "robots_policy_prerequisite_ids": ["robots:portland.gov:metadata-preflight"],
+      "cadence_recommendations": [
+        {
+          "source_id": "source:ppd-devhub-faq",
+          "recommended_cadence": "daily",
+          "metadata_only": true,
+          "reviewer_owner": "source_monitor_reviewer",
+          "robots_policy_prerequisite_ids": ["robots:portland.gov:metadata-preflight"]
+        }
+      ],
+      "citations": ["ev-monitoring-schedule-candidate"]
+    },
+    "processor_handoff_readiness_packet": {
+      "packet_type": "ppd.processor_handoff_readiness_packet.v1",
+      "packet_id": "processor-handoff-readiness-synthetic-v1",
+      "fixture_first": true,
+      "metadata_only": true,
+      "prerequisite_links": [
+        {
+          "source_id": "source:ppd-home",
+          "url": "https://www.portland.gov/ppd",
+          "policy": "public_metadata_preflight"
+        }
+      ],
+      "targets": [
+        {
+          "source_id": "source:devhub-faq",
+          "url": "https://www.portland.gov/ppd/devhub-faqs",
+          "public": true,
+          "authenticated": false
+        }
+      ],
+      "skipped_targets": [
+        {
+          "source_id": "source:devhub-authenticated-home",
+          "reason": "authenticated_surface_requires_attended_user_session"
+        }
+      ],
+      "citations": ["ev-processor-handoff-preflight"]
+    },
+    "guardrail_consumer_integration_checklist": {
+      "packet_type": "ppd.guardrail_consumer_integration_checklist.v1",
+      "packet_id": "ppd-guardrail-consumer-integration-checklist-2026-05-28",
+      "fixture_first": true,
+      "metadata_only": true,
+      "generated_from_fixtures": true,
+      "live_services_called": false,
+      "active_guardrail_bundles_changed": false,
+      "live_enforcement_enabled": false,
+      "inputs_consumed": [
+        {
+          "input_role": "safe_next_action_release_notes",
+          "source_packet_id": "safe-next-action-release-notes-synthetic-v1",
+          "citations": ["ev-safe-next-action-release-notes"]
+        }
+      ],
+      "api_contract_expectations": [
+        {
+          "expectation_id": "missing_facts",
+          "citations": ["ev-missing-facts-contract"],
+          "live_enforcement_enabled": false,
+          "guardrail_bundle_mutation_allowed": false
+        },
+        {
+          "expectation_id": "refused_consequential_actions",
+          "citations": ["ev-refused-consequential-actions"],
+          "refused_actions": ["payment", "upload", "submission", "scheduling", "cancellation", "certification"],
+          "live_enforcement_enabled": false,
+          "guardrail_bundle_mutation_allowed": false
+        },
+        {
+          "expectation_id": "manual_handoffs",
+          "citations": ["ev-manual-handoff-contract"],
+          "live_enforcement_enabled": false,
+          "guardrail_bundle_mutation_allowed": false
+        }
+      ],
+      "disabled_live_actions": ["live_guardrail_enforcement", "active_guardrail_bundle_mutation"],
+      "citations": ["ev-guardrail-consumer-checklist"]
+    }
+  }
+}

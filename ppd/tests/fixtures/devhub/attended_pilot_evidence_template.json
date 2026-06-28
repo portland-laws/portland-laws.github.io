@@ -1,0 +1,184 @@
+{
+  "template_id": "devhub-attended-pilot-evidence-template-v1",
+  "template_kind": "fixture_first_attended_devhub_pilot_evidence_template",
+  "run_mode": "fixture_first_manual_read_only_followup",
+  "live_session_performed": false,
+  "read_only_only": true,
+  "allows_private_values": false,
+  "allows_browser_artifacts": false,
+  "purpose": "Commit-safe blank template for an operator to use after a future attended manual read-only DevHub session. The committed fixture contains no live DevHub session data.",
+  "prohibited_artifacts": [
+    "cookies",
+    "auth_state",
+    "session_storage",
+    "local_storage",
+    "screenshots",
+    "traces",
+    "har_files",
+    "raw_dom",
+    "raw_authenticated_text",
+    "private_field_values",
+    "payment_details",
+    "downloaded_documents",
+    "local_private_file_paths"
+  ],
+  "abort_conditions": [
+    "Abort if any credential, password recovery, MFA, CAPTCHA, account creation, or account security prompt appears.",
+    "Abort if any payment, fee checkout, payment detail entry, purchase, or submit-payment path appears.",
+    "Abort if any upload, document attach, submit, final submit, certify, acknowledgement submission, schedule, cancel, withdraw, extension, or reactivation control appears.",
+    "Abort if a private field value is visible outside the operator's intended read-only observation scope.",
+    "Abort if any browser artifact would be created or stored, including screenshots, traces, HAR files, cookies, auth state, raw DOM, raw authenticated text, downloads, or local private paths."
+  ],
+  "evidence_sections": {
+    "observation_scope": {
+      "description": "Record the bounded read-only scope without private account facts.",
+      "record_private_values": false,
+      "record_browser_artifacts": false,
+      "fields": [
+        "operator_session_mode",
+        "manual_read_only_session_only",
+        "observation_started_at_redacted",
+        "observation_finished_at_redacted",
+        "surfaces_observed",
+        "surfaces_excluded"
+      ]
+    },
+    "redacted_headings": {
+      "description": "Record only redacted or generic headings observed by the operator.",
+      "record_private_values": false,
+      "record_browser_artifacts": false,
+      "fields": [
+        "journal_event_id",
+        "stable_surface_id",
+        "redacted_heading_text",
+        "heading_level",
+        "observation_scope_id"
+      ],
+      "allowed_value_policy": "redacted_or_generic_text_only"
+    },
+    "redacted_labels": {
+      "description": "Record only stable labels or generic control labels, never private field values.",
+      "record_private_values": false,
+      "record_browser_artifacts": false,
+      "fields": [
+        "journal_event_id",
+        "stable_surface_id",
+        "redacted_label_text",
+        "label_category",
+        "observation_scope_id"
+      ],
+      "allowed_label_categories": [
+        "navigation",
+        "read_only_status",
+        "read_only_detail",
+        "help_text",
+        "blocked_consequential_control"
+      ]
+    },
+    "status_categories": {
+      "description": "Record status categories only, not permit numbers, addresses, names, invoices, or field values.",
+      "record_private_values": false,
+      "record_browser_artifacts": false,
+      "fields": [
+        "journal_event_id",
+        "stable_surface_id",
+        "status_category",
+        "status_context",
+        "observation_scope_id"
+      ],
+      "allowed_status_categories": [
+        "no_records_visible",
+        "records_visible_redacted",
+        "review_status_visible_redacted",
+        "fee_notice_visible_redacted",
+        "correction_notice_visible_redacted",
+        "unknown_or_not_recorded"
+      ]
+    },
+    "abort_conditions": {
+      "description": "Record why the operator stopped, using only categories and redacted notes.",
+      "record_private_values": false,
+      "record_browser_artifacts": false,
+      "fields": [
+        "journal_event_id",
+        "abort_condition_id",
+        "abort_category",
+        "redacted_operator_note",
+        "observed_before_action"
+      ]
+    },
+    "journal_event_ids": {
+      "description": "Link each evidence row to a commit-safe action journal event ID.",
+      "record_private_values": false,
+      "record_browser_artifacts": false,
+      "fields": [
+        "journal_event_id",
+        "event_type",
+        "redacted_timestamp",
+        "commit_safe",
+        "stores_private_values",
+        "stores_browser_artifacts"
+      ]
+    }
+  },
+  "journal_event_templates": [
+    {
+      "event_type": "DevHub attended preflight",
+      "journal_event_id_format": "ppd-devhub-attended-preflight-REDACTED-N",
+      "commit_safe": true,
+      "stores_private_values": false,
+      "stores_browser_artifacts": false
+    },
+    {
+      "event_type": "manual handoff",
+      "journal_event_id_format": "ppd-devhub-manual-handoff-REDACTED-N",
+      "commit_safe": true,
+      "stores_private_values": false,
+      "stores_browser_artifacts": false
+    },
+    {
+      "event_type": "redacted read-only observation",
+      "journal_event_id_format": "ppd-devhub-read-only-observation-REDACTED-N",
+      "commit_safe": true,
+      "stores_private_values": false,
+      "stores_browser_artifacts": false
+    },
+    {
+      "event_type": "refused action",
+      "journal_event_id_format": "ppd-devhub-refused-action-REDACTED-N",
+      "commit_safe": true,
+      "stores_private_values": false,
+      "stores_browser_artifacts": false
+    },
+    {
+      "event_type": "post-action hardening review",
+      "journal_event_id_format": "ppd-devhub-hardening-review-REDACTED-N",
+      "commit_safe": true,
+      "stores_private_values": false,
+      "stores_browser_artifacts": false
+    }
+  ],
+  "blank_row_examples": {
+    "redacted_heading_row": {
+      "journal_event_id": "ppd-devhub-read-only-observation-REDACTED-1",
+      "stable_surface_id": "devhub_surface_redacted_home_or_detail",
+      "redacted_heading_text": "[REDACTED_HEADING_OR_GENERIC_HEADING]",
+      "heading_level": "h1_or_h2_or_unknown",
+      "observation_scope_id": "scope-redacted-1"
+    },
+    "status_category_row": {
+      "journal_event_id": "ppd-devhub-read-only-observation-REDACTED-2",
+      "stable_surface_id": "devhub_surface_redacted_status",
+      "status_category": "records_visible_redacted",
+      "status_context": "category_only_no_private_values",
+      "observation_scope_id": "scope-redacted-1"
+    },
+    "abort_condition_row": {
+      "journal_event_id": "ppd-devhub-refused-action-REDACTED-1",
+      "abort_condition_id": "abort-consequential-control-redacted",
+      "abort_category": "blocked_consequential_control",
+      "redacted_operator_note": "A blocked control category appeared; no click or official action occurred.",
+      "observed_before_action": true
+    }
+  }
+}

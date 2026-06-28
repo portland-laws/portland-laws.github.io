@@ -1,0 +1,243 @@
+{
+  "evidence_freshness_watchlist_packet": {
+    "packet_type": "fixture_first_ppd_evidence_freshness_watchlist_packet",
+    "packet_mode": "offline_review_only_no_active_mutation",
+    "packet_id": "watchlist-fixture-for-disposition",
+    "generated_at": "2026-05-29T00:00:00Z",
+    "fixture_first": true,
+    "consumed_packets": {
+      "source_registry_schedule_update_candidate": {
+        "packet_id": "schedule-update-candidate-fixture",
+        "source_evidence_ids": ["SRC-SCHEDULE-FIXTURE"]
+      },
+      "public_source_refresh_operator_dry_run_transcript": {
+        "packet_id": "dry-run-fixture",
+        "source_evidence_ids": ["SRC-DRY-RUN-FIXTURE"]
+      },
+      "requirement_guardrail_traceability_review_packet": {
+        "packet_id": "traceability-fixture",
+        "source_evidence_ids": ["SRC-TRACEABILITY-FIXTURE"]
+      }
+    },
+    "watchlist_sources": [
+      {
+        "source_id": "ppd-devhub-faq",
+        "source_evidence_ids": ["SRC-DEVHUB-FAQ-20260508"],
+        "affected_requirement_ids": ["REQ-DEVHUB-UPLOAD-GATE-002"],
+        "affected_guardrail_ids": ["GR-DEVHUB-UPLOAD-EXACT-CONFIRMATION"],
+        "next_offline_review_triggers": [
+          {
+            "trigger_id": "traceability-blocked-action-1",
+            "review_action": "Confirm upload gate freshness before guardrail treatment changes.",
+            "source_evidence_ids": ["SRC-DEVHUB-FAQ-20260508"]
+          }
+        ],
+        "review_status": "pending_offline_reviewer_triage",
+        "reviewer_owner_fields": {
+          "primary_reviewer": "ppd-source-reviewer",
+          "source_registry_owner": "ppd-source-registry-review",
+          "refresh_operator_owner": "ppd-source-refresh-owner",
+          "traceability_owner": "ppd-traceability-reviewer",
+          "watchlist_owner": "ppd-evidence-freshness-watchlist-owner"
+        }
+      },
+      {
+        "source_id": "ppd-submit-plans-online",
+        "source_evidence_ids": ["SRC-SUBMIT-PLANS-ONLINE-20260508"],
+        "affected_requirement_ids": ["REQ-SINGLE-PDF-FILE-RULE-001"],
+        "affected_guardrail_ids": ["GR-SINGLE-PDF-FILE-PREP-CHECK"],
+        "next_offline_review_triggers": [
+          {
+            "trigger_id": "schedule-candidate-1",
+            "review_action": "Review cadence before source registry schedule changes.",
+            "source_evidence_ids": ["SRC-SUBMIT-PLANS-ONLINE-20260508"]
+          }
+        ],
+        "review_status": "pending_offline_reviewer_triage",
+        "reviewer_owner_fields": {
+          "primary_reviewer": "ppd-source-reviewer",
+          "source_registry_owner": "ppd-source-registry-review",
+          "refresh_operator_owner": "ppd-source-refresh-owner",
+          "traceability_owner": "ppd-traceability-reviewer",
+          "watchlist_owner": "ppd-evidence-freshness-watchlist-owner"
+        }
+      },
+      {
+        "source_id": "ppd-apply-permits",
+        "source_evidence_ids": ["SRC-APPLY-PERMITS-20260508"],
+        "affected_requirement_ids": ["REQ-APPLY-PERMIT-OVERVIEW-001"],
+        "affected_guardrail_ids": ["GR-APPLY-PERMIT-OVERVIEW-CHECK"],
+        "next_offline_review_triggers": [
+          {
+            "trigger_id": "operator-dry-run-checkpoint-1",
+            "review_action": "Confirm source remains in fixture dry-run scope.",
+            "source_evidence_ids": ["SRC-APPLY-PERMITS-20260508"]
+          }
+        ],
+        "review_status": "pending_offline_reviewer_triage",
+        "reviewer_owner_fields": {
+          "primary_reviewer": "ppd-source-reviewer",
+          "source_registry_owner": "ppd-source-registry-review",
+          "refresh_operator_owner": "ppd-source-refresh-owner",
+          "traceability_owner": "ppd-traceability-reviewer",
+          "watchlist_owner": "ppd-evidence-freshness-watchlist-owner"
+        }
+      }
+    ],
+    "affected_requirement_ids": ["REQ-DEVHUB-UPLOAD-GATE-002", "REQ-SINGLE-PDF-FILE-RULE-001", "REQ-APPLY-PERMIT-OVERVIEW-001"],
+    "affected_guardrail_ids": ["GR-DEVHUB-UPLOAD-EXACT-CONFIRMATION", "GR-SINGLE-PDF-FILE-PREP-CHECK", "GR-APPLY-PERMIT-OVERVIEW-CHECK"],
+    "next_offline_review_triggers": [
+      {
+        "trigger_id": "schedule-candidate-1",
+        "review_action": "Review cadence before source registry schedule changes.",
+        "source_evidence_ids": ["SRC-SUBMIT-PLANS-ONLINE-20260508"]
+      }
+    ],
+    "reviewer_owner_fields": {
+      "primary_reviewer": "ppd-source-reviewer",
+      "source_registry_owner": "ppd-source-registry-review",
+      "refresh_operator_owner": "ppd-source-refresh-owner",
+      "traceability_owner": "ppd-traceability-reviewer",
+      "watchlist_owner": "ppd-evidence-freshness-watchlist-owner"
+    },
+    "attestations": {
+      "no_fetch": true,
+      "no_processor": true,
+      "no_registry_mutation": true,
+      "no_guardrail_mutation": true,
+      "no_requirement_mutation": true,
+      "no_devhub_execution": true,
+      "fixture_first_inputs_only": true,
+      "attestation_basis": "committed fixture packets only"
+    },
+    "active_mutation_effects": {
+      "registry_mutated": false,
+      "source_schedule_mutated": false,
+      "requirements_mutated": false,
+      "guardrails_mutated": false,
+      "processor_invoked": false,
+      "live_fetch_performed": false,
+      "devhub_executed": false
+    }
+  },
+  "release_acceptance_review_packet": {
+    "packet_type": "ppd.fixture_first_release_acceptance_review_packet.v1",
+    "packet_id": "release-acceptance-review-for-disposition",
+    "fixture_first": true,
+    "review_status": "pending_reviewer_acceptance",
+    "consumed_packets": {
+      "source_registry_schedule_update_candidate": {"packet_id": "source-registry-schedule-update-candidate-fixture", "source_evidence_ids": ["SRC-SCHEDULE-FIXTURE"]},
+      "requirement_rerun_work_queue_packet": {"packet_id": "requirement-rerun-work-queue-fixture", "source_evidence_ids": ["SRC-REQ-RERUN-FIXTURE"]},
+      "process_model_impact_review_packet": {"packet_id": "process-model-impact-review-fixture", "source_evidence_ids": ["SRC-PROCESS-FIXTURE"]},
+      "devhub_surface_registry_reviewer_approval_packet": {"packet_id": "devhub-surface-registry-reviewer-approval-fixture", "source_evidence_ids": ["SRC-DEVHUB-SURFACE-FIXTURE"]},
+      "agent_prompt_regression_dry_run_packet": {"packet_id": "agent-prompt-regression-dry-run-fixture", "source_evidence_ids": ["SRC-PROMPT-FIXTURE"]},
+      "release_rollback_drill_outcome_review_packet": {"packet_id": "release-rollback-drill-outcome-review-fixture", "source_evidence_ids": ["SRC-ROLLBACK-FIXTURE"]}
+    },
+    "go_no_go_checklist_items": [
+      {
+        "checklist_item_id": "registry-schedule-candidate-reviewed",
+        "title": "Source registry schedule update candidate remains review-only",
+        "go_no_go": "go_pending_signoff",
+        "required_condition": "Candidate has cited adjustments and no active registry or schedule mutation.",
+        "source_evidence_ids": ["SRC-SCHEDULE-FIXTURE"]
+      }
+    ],
+    "open_blocker_dispositions": [
+      {
+        "blocker_id": "blocker-submit-plans-cadence-signoff",
+        "source_packet_id": "source-registry-schedule-update-candidate-fixture",
+        "summary": "Submit plans cadence signoff remains pending before release acceptance.",
+        "disposition": "open_pending_source_registry_reviewer",
+        "owner": "ppd-source-registry-reviewer",
+        "source_evidence_ids": ["SRC-SUBMIT-PLANS-ONLINE-20260508"]
+      }
+    ],
+    "reviewer_owner_signoff_slots": [
+      {
+        "signoff_slot_id": "signoff-source-registry-schedule-update-candidate",
+        "reviewer_role": "source registry schedule reviewer",
+        "owner": "ppd-source-registry-reviewer",
+        "status": "pending",
+        "acceptance_effect": "review_packet_only_no_publication",
+        "source_evidence_ids": ["SRC-SCHEDULE-FIXTURE"]
+      }
+    ],
+    "validation_rerun_expectations": [
+      {
+        "validation_id": "ppd-daemon-self-test",
+        "command": ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"],
+        "expected_result": "pass_before_release_acceptance",
+        "writes_active_artifacts": false,
+        "source_evidence_ids": ["SRC-PROMPT-FIXTURE"]
+      }
+    ],
+    "no_publication_no_artifact_mutation_attestations": {
+      "no_publication_performed": true,
+      "no_registry_mutation": true,
+      "no_manifest_mutation": true,
+      "no_requirement_mutation": true,
+      "no_process_model_mutation": true,
+      "no_guardrail_mutation": true,
+      "no_prompt_mutation": true,
+      "no_release_notes_mutation": true,
+      "no_schedule_mutation": true,
+      "no_agent_state_mutation": true,
+      "no_artifact_mutation": true
+    },
+    "release_effects": {
+      "publishes_release": false,
+      "mutates_registries": false,
+      "mutates_manifests": false,
+      "mutates_requirements": false,
+      "mutates_process_models": false,
+      "mutates_guardrails": false,
+      "mutates_prompts": false,
+      "mutates_release_notes": false,
+      "mutates_schedules": false,
+      "mutates_agent_state": false,
+      "mutates_artifacts": false,
+      "uses_live_network": false,
+      "launches_devhub": false,
+      "invokes_llm_consumers": false,
+      "invokes_processors": false
+    }
+  },
+  "public_source_refresh_operator_dry_run_transcript": {
+    "packet_type": "public_source_refresh_operator_dry_run_transcript",
+    "packet_id": "source-refresh-dry-run-for-disposition",
+    "mode": "fixture_first_dry_run",
+    "sources": ["ppd-devhub-faq", "ppd-submit-plans-online", "ppd-apply-permits"],
+    "reviewer": "ppd-refresh-reviewer",
+    "owner": "ppd-source-refresh-owner",
+    "ordered_simulated_operator_steps": [
+      {
+        "order": 1,
+        "name": "load-watchlist-fixture",
+        "simulation_only": true,
+        "expected_metadata_only_observation": "Watchlist source identifiers are readable from fixture metadata.",
+        "observation_citations": ["watchlist-fixture-for-disposition"]
+      },
+      {
+        "order": 2,
+        "name": "record-reviewer-disposition-scope",
+        "simulation_only": true,
+        "expected_metadata_only_observation": "Disposition review scope remains metadata-only.",
+        "observation_citations": ["source-refresh-dry-run-for-disposition"]
+      }
+    ],
+    "allowlist_evidence_refs": ["fixture://allowlist/ppd-public-sources.json"],
+    "robots_evidence_refs": ["fixture://robots/portland-gov-ppd.txt"],
+    "abort_or_rollback_checkpoints": [
+      {"checkpoint": "missing-review-citation", "operator_action": "abort before any source interaction"},
+      {"checkpoint": "mutation-requested", "operator_action": "rollback transcript draft and return to offline review"}
+    ],
+    "attestations": {
+      "no_fetch": true,
+      "no_processor": true,
+      "no_download": true,
+      "no_schedule_mutation": true,
+      "no_registry_mutation": true,
+      "metadata_only_observations": true
+    }
+  }
+}

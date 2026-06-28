@@ -1,0 +1,16 @@
+Implemented a deterministic parser fallback for U.S.C. declarative sections that previously produced zero formulas, and added golden replay tests for the three cited samples.
+
+- Added a new declarative fallback pattern/rule in [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000010-20260518_074246/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:36), wired into fallback ordering at [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000010-20260518_074246/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:197), and implemented at [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000010-20260518_074246/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:482).
+- Added helper checks for section-heading context and nearby citation references at [legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000010-20260518_074246/ipfs_datasets_py/optimizers/logic_theorem_optimizer/legal_modal_parser.py:609).
+- Added golden parser replay coverage for:
+  - `us-code-22-2688-83d45528085ab9e0`
+  - `us-code-7-7311-017c4d8b52982ca1`
+  - `us-code-15-2402-7e27f5e59f9ba39e`
+  in [test_legal_modal_parser.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000010-20260518_074246/tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py:197).
+- Added equivalent spaCy compiler-path replay coverage in [test_spacy_modal_codec.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-compiler_parser/worktrees/agent-codex-compiler_parser-packet-000010-20260518_074246/tests/unit/optimizers/logic_theorem_optimizer/test_spacy_modal_codec.py:95).
+
+Validation run:
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_legal_modal_parser.py -k declarative_statement_zero_formula_cases` currently errors before test execution due pre-existing repo issue: `__init__.py:11 NameError: __path__ is not defined`.
+- Verified behavior with direct Python assertion scripts:
+  - parser path: `parser assertions passed`
+  - spaCy compiler path: `spacy assertions passed`

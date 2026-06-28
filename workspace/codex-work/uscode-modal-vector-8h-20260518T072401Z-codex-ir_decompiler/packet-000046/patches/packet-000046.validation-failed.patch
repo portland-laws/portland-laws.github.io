@@ -1,0 +1,147 @@
+diff --git a/ipfs_datasets_py/logic/modal/codec.py b/ipfs_datasets_py/logic/modal/codec.py
+index b664de30..635c3d0e 100644
+--- a/ipfs_datasets_py/logic/modal/codec.py
++++ b/ipfs_datasets_py/logic/modal/codec.py
+@@ -1231,6 +1231,9 @@ def _citation_components(citation: str) -> List[tuple[str, str]]:
+                     str(len(section_trailing_punct)),
+                 )
+             )
++        else:
++            components.append(("citation_section_has_trailing_punct", "false"))
++            components.append(("citation_section_trailing_punct_count", "0"))
+         components.extend(_citation_section_components(section))
+         components.extend(
+             _typed_identifier_components(
+@@ -1300,6 +1303,9 @@ def _source_id_components(source_id: str) -> List[tuple[str, str]]:
+                 str(len(section_trailing_punct)),
+             )
+         )
++    elif normalized_section or section:
++        components.append(("source_id_section_has_trailing_punct", "false"))
++        components.append(("source_id_section_trailing_punct_count", "0"))
+     source_id_canonical = _canonical_usc_citation(title, section_for_components)
+     if source_id_canonical:
+         components.append(("source_id_citation_canonical", source_id_canonical))
+diff --git a/ipfs_datasets_py/logic/modal/decompiler.py b/ipfs_datasets_py/logic/modal/decompiler.py
+index da3a24f6..700a8bc6 100644
+--- a/ipfs_datasets_py/logic/modal/decompiler.py
++++ b/ipfs_datasets_py/logic/modal/decompiler.py
+@@ -875,6 +875,9 @@ def _source_id_slots(source_id: str) -> List[Tuple[str, str]]:
+                 str(len(section_trailing_punct)),
+             )
+         )
++    elif normalized_section or section:
++        slots.append(("source_id_section_has_trailing_punct", "false"))
++        slots.append(("source_id_section_trailing_punct_count", "0"))
+     section_for_slots = normalized_section or section
+     source_id_canonical = _canonical_usc_citation(title, section_for_slots)
+     if source_id_canonical:
+@@ -1411,6 +1414,9 @@ def _citation_slots(citation: str) -> List[Tuple[str, str]]:
+                     str(len(section_trailing_punct)),
+                 )
+             )
++        else:
++            slots.append(("citation_section_has_trailing_punct", "false"))
++            slots.append(("citation_section_trailing_punct_count", "0"))
+         slots.extend(_citation_section_slots(section))
+         slots.extend(
+             _typed_identifier_slots(
+diff --git a/tests/unit/optimizers/logic_theorem_optimizer/test_modal_ir_decompiler_slots.py b/tests/unit/optimizers/logic_theorem_optimizer/test_modal_ir_decompiler_slots.py
+index 977a42e9..9a4e9950 100644
+--- a/tests/unit/optimizers/logic_theorem_optimizer/test_modal_ir_decompiler_slots.py
++++ b/tests/unit/optimizers/logic_theorem_optimizer/test_modal_ir_decompiler_slots.py
+@@ -33,21 +33,53 @@ def _predicate_values(sample_section: str, *, title: str) -> dict[str, list[str]
+     return {
+         "citation_section_raw": slot_map.get("citation_section_raw", []),
+         "citation_section_normalized": slot_map.get("citation_section_normalized", []),
++        "citation_section_has_trailing_punct": slot_map.get(
++            "citation_section_has_trailing_punct",
++            [],
++        ),
++        "citation_section_trailing_punct_count": slot_map.get(
++            "citation_section_trailing_punct_count",
++            [],
++        ),
+         "source_id_section_raw": slot_map.get("source_id_section_raw", []),
+         "source_id_section_normalized": slot_map.get(
+             "source_id_section_normalized",
+             [],
+         ),
++        "source_id_section_has_trailing_punct": slot_map.get(
++            "source_id_section_has_trailing_punct",
++            [],
++        ),
++        "source_id_section_trailing_punct_count": slot_map.get(
++            "source_id_section_trailing_punct_count",
++            [],
++        ),
+         "triple_citation_section_raw": predicate_values.get("citation_section_raw", []),
+         "triple_citation_section_normalized": predicate_values.get(
+             "citation_section_normalized",
+             [],
+         ),
++        "triple_citation_section_has_trailing_punct": predicate_values.get(
++            "citation_section_has_trailing_punct",
++            [],
++        ),
++        "triple_citation_section_trailing_punct_count": predicate_values.get(
++            "citation_section_trailing_punct_count",
++            [],
++        ),
+         "triple_source_id_section_raw": predicate_values.get("source_id_section_raw", []),
+         "triple_source_id_section_normalized": predicate_values.get(
+             "source_id_section_normalized",
+             [],
+         ),
++        "triple_source_id_section_has_trailing_punct": predicate_values.get(
++            "source_id_section_has_trailing_punct",
++            [],
++        ),
++        "triple_source_id_section_trailing_punct_count": predicate_values.get(
++            "source_id_section_trailing_punct_count",
++            [],
++        ),
+     }
+ 
+ 
+@@ -56,13 +88,21 @@ def test_modal_slots_emit_raw_and_normalized_section_values_for_trailing_punct()
+ 
+     assert values["citation_section_raw"] == ["1437q."]
+     assert values["citation_section_normalized"] == ["1437q"]
++    assert values["citation_section_has_trailing_punct"] == ["true"]
++    assert values["citation_section_trailing_punct_count"] == ["1"]
+     assert values["source_id_section_raw"] == ["1437q."]
+     assert values["source_id_section_normalized"] == ["1437q"]
++    assert values["source_id_section_has_trailing_punct"] == ["true"]
++    assert values["source_id_section_trailing_punct_count"] == ["1"]
+ 
+     assert values["triple_citation_section_raw"] == ["1437q."]
+     assert values["triple_citation_section_normalized"] == ["1437q"]
++    assert values["triple_citation_section_has_trailing_punct"] == ["true"]
++    assert values["triple_citation_section_trailing_punct_count"] == ["1"]
+     assert values["triple_source_id_section_raw"] == ["1437q."]
+     assert values["triple_source_id_section_normalized"] == ["1437q"]
++    assert values["triple_source_id_section_has_trailing_punct"] == ["true"]
++    assert values["triple_source_id_section_trailing_punct_count"] == ["1"]
+ 
+ 
+ def test_modal_slots_emit_raw_and_normalized_section_values_without_trailing_punct() -> None:
+@@ -70,10 +110,18 @@ def test_modal_slots_emit_raw_and_normalized_section_values_without_trailing_pun
+ 
+     assert values["citation_section_raw"] == ["3902"]
+     assert values["citation_section_normalized"] == ["3902"]
++    assert values["citation_section_has_trailing_punct"] == ["false"]
++    assert values["citation_section_trailing_punct_count"] == ["0"]
+     assert values["source_id_section_raw"] == ["3902"]
+     assert values["source_id_section_normalized"] == ["3902"]
++    assert values["source_id_section_has_trailing_punct"] == ["false"]
++    assert values["source_id_section_trailing_punct_count"] == ["0"]
+ 
+     assert values["triple_citation_section_raw"] == ["3902"]
+     assert values["triple_citation_section_normalized"] == ["3902"]
++    assert values["triple_citation_section_has_trailing_punct"] == ["false"]
++    assert values["triple_citation_section_trailing_punct_count"] == ["0"]
+     assert values["triple_source_id_section_raw"] == ["3902"]
+     assert values["triple_source_id_section_normalized"] == ["3902"]
++    assert values["triple_source_id_section_has_trailing_punct"] == ["false"]
++    assert values["triple_source_id_section_trailing_punct_count"] == ["0"]

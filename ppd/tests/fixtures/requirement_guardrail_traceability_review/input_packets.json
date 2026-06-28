@@ -1,0 +1,218 @@
+{
+  "requirement_rerun_work_queue_packet": {
+    "packet_id": "fixture-requirement-rerun-work-queue",
+    "packet_type": "fixture_first_requirement_rerun_work_queue",
+    "cited_requirement_ids": [
+      "REQ-DEVHUB-UPLOAD-GATE-002",
+      "REQ-SINGLE-PDF-FILE-RULE-001"
+    ],
+    "affected_process_refs": [
+      "PROC-BUILDING-PERMIT-PLAN-REVIEW"
+    ],
+    "affected_guardrail_refs": [
+      "GR-UPLOAD-OFFICIAL-RECORD-BLOCK",
+      "GR-SINGLE-PDF-DOCUMENT-PREP"
+    ],
+    "source_evidence_ids": [
+      "SRC-DEVHUB-GUIDE-SUBMIT-PERMIT-APPLICATION",
+      "SRC-SUBMIT-PLANS-ONLINE"
+    ],
+    "reviewer_owner_fields": {
+      "requirement_owner": "ppd-requirement-reviewer"
+    },
+    "attestations": {
+      "no_requirement_record_mutation": true
+    }
+  },
+  "process_model_impact_review_packet": {
+    "packet_id": "fixture-process-model-impact-review",
+    "affected_process_ids": [
+      "PROC-BUILDING-PERMIT-PLAN-REVIEW"
+    ],
+    "affected_guardrail_ids": [
+      "GR-UPLOAD-OFFICIAL-RECORD-BLOCK",
+      "GR-SINGLE-PDF-DOCUMENT-PREP"
+    ],
+    "requirement_to_process_to_guardrail_links": [
+      {
+        "link_id": "trace.upload-gate",
+        "requirement_id": "REQ-DEVHUB-UPLOAD-GATE-002",
+        "process_ids": [
+          "PROC-BUILDING-PERMIT-PLAN-REVIEW"
+        ],
+        "guardrail_ids": [
+          "GR-UPLOAD-OFFICIAL-RECORD-BLOCK"
+        ],
+        "source_evidence_ids": [
+          "SRC-DEVHUB-GUIDE-SUBMIT-PERMIT-APPLICATION"
+        ]
+      },
+      {
+        "link_id": "trace.single-pdf",
+        "requirement_id": "REQ-SINGLE-PDF-FILE-RULE-001",
+        "process_ids": [
+          "PROC-BUILDING-PERMIT-PLAN-REVIEW"
+        ],
+        "guardrail_ids": [
+          "GR-SINGLE-PDF-DOCUMENT-PREP"
+        ],
+        "source_evidence_ids": [
+          "SRC-SUBMIT-PLANS-ONLINE"
+        ]
+      }
+    ],
+    "blocked_action_carryovers": [
+      {
+        "action_id": "upload_to_official_record",
+        "action_label": "Upload correction or application PDF to an official DevHub record",
+        "blocked": true,
+        "source_evidence_ids": [
+          "SRC-DEVHUB-GUIDE-SUBMIT-PERMIT-APPLICATION"
+        ],
+        "reviewer_owner": "ppd-process-reviewer"
+      }
+    ],
+    "source_evidence_ids": [
+      "SRC-DEVHUB-GUIDE-SUBMIT-PERMIT-APPLICATION",
+      "SRC-SUBMIT-PLANS-ONLINE"
+    ],
+    "reviewer_owner_fields": {
+      "process_owner": "ppd-process-reviewer"
+    },
+    "active_process_mutation": false
+  },
+  "guardrail_bundle_update_candidate_packet": {
+    "packet_id": "fixture-guardrail-bundle-update-candidate",
+    "packet_type": "fixture_first_guardrail_bundle_update_candidate_packet",
+    "active_guardrail_bundle_id": "GB-PPD-DRAFT-REVIEW",
+    "affected_process_ids": [
+      "PROC-BUILDING-PERMIT-PLAN-REVIEW"
+    ],
+    "cited_predicate_additions": [
+      {
+        "predicate_id": "GR-UPLOAD-OFFICIAL-RECORD-BLOCK",
+        "requirement_id": "REQ-DEVHUB-UPLOAD-GATE-002",
+        "source_evidence_ids": [
+          "SRC-DEVHUB-GUIDE-SUBMIT-PERMIT-APPLICATION"
+        ],
+        "activation_allowed": false
+      },
+      {
+        "predicate_id": "GR-SINGLE-PDF-DOCUMENT-PREP",
+        "requirement_id": "REQ-SINGLE-PDF-FILE-RULE-001",
+        "source_evidence_ids": [
+          "SRC-SUBMIT-PLANS-ONLINE"
+        ],
+        "activation_allowed": false
+      }
+    ],
+    "blocked_action_expectations": [
+      {
+        "action_id": "submit_permit_application",
+        "action": "Submit permit application",
+        "blocked": true,
+        "source_evidence_ids": [
+          "SRC-DEVHUB-GUIDE-SUBMIT-PERMIT-APPLICATION"
+        ],
+        "reviewer_owner": "ppd-guardrail-reviewer"
+      },
+      {
+        "action_id": "upload_to_official_record",
+        "action": "Upload to official record",
+        "blocked": true,
+        "source_evidence_ids": [
+          "SRC-DEVHUB-GUIDE-SUBMIT-PERMIT-APPLICATION"
+        ],
+        "reviewer_owner": "ppd-guardrail-reviewer"
+      }
+    ],
+    "source_evidence_ids": [
+      "SRC-DEVHUB-GUIDE-SUBMIT-PERMIT-APPLICATION",
+      "SRC-SUBMIT-PLANS-ONLINE"
+    ],
+    "reviewer_owner_fields": {
+      "guardrail_owner": "ppd-guardrail-reviewer"
+    },
+    "no_active_guardrail_mutation_attestations": {
+      "no_active_guardrail_mutation": true
+    }
+  },
+  "guardrail_explanation_regression_packet": {
+    "packet_id": "fixture-guardrail-explanation-regression",
+    "uses_llm": false,
+    "promotes_active_guardrails": false,
+    "known_predicate_ids": [
+      "GR-UPLOAD-OFFICIAL-RECORD-BLOCK",
+      "GR-SINGLE-PDF-DOCUMENT-PREP"
+    ],
+    "known_process_ids": [
+      "PROC-BUILDING-PERMIT-PLAN-REVIEW"
+    ],
+    "explanations": [
+      {
+        "id": "explain-upload-block",
+        "action_class": "refused_consequential_action",
+        "predicate_ids": [
+          "GR-UPLOAD-OFFICIAL-RECORD-BLOCK"
+        ],
+        "process_ids": [
+          "PROC-BUILDING-PERMIT-PLAN-REVIEW"
+        ],
+        "source_evidence_ids": [
+          "SRC-DEVHUB-GUIDE-SUBMIT-PERMIT-APPLICATION"
+        ],
+        "explanation": "Official uploads remain blocked until exact confirmation and attended review."
+      }
+    ],
+    "source_evidence_ids": [
+      "SRC-DEVHUB-GUIDE-SUBMIT-PERMIT-APPLICATION"
+    ]
+  },
+  "agent_prompt_regression_dry_run_packet": {
+    "packet_id": "fixture-agent-prompt-regression-dry-run",
+    "packet_type": "agent_prompt_regression_dry_run_packet",
+    "uses_llm": false,
+    "runs_agent_consumers": false,
+    "missing_fact_prompt_impacts": [
+      {
+        "prompt_id": "prompt.require-project-address",
+        "prompt_kind": "missing_fact_prompt",
+        "impacted_requirement_ids": [
+          "REQ-DEVHUB-UPLOAD-GATE-002"
+        ],
+        "impacted_process_ids": [
+          "PROC-BUILDING-PERMIT-PLAN-REVIEW"
+        ],
+        "impact_summary": "Prompt asks for the project address before any DevHub draft upload can be evaluated.",
+        "source_evidence_ids": [
+          "SRC-DEVHUB-GUIDE-SUBMIT-PERMIT-APPLICATION"
+        ],
+        "reviewer_owner": "ppd-agent-prompt-reviewer"
+      },
+      {
+        "prompt_id": "prompt.require-plan-file-readiness",
+        "prompt_kind": "missing_fact_prompt",
+        "impacted_requirement_ids": [
+          "REQ-SINGLE-PDF-FILE-RULE-001"
+        ],
+        "impacted_process_ids": [
+          "PROC-BUILDING-PERMIT-PLAN-REVIEW"
+        ],
+        "impact_summary": "Prompt asks whether plan drawings are prepared as one PDF with supporting documents separated.",
+        "source_evidence_ids": [
+          "SRC-SUBMIT-PLANS-ONLINE"
+        ],
+        "reviewer_owner": "ppd-agent-prompt-reviewer"
+      }
+    ],
+    "source_evidence_ids": [
+      "SRC-DEVHUB-GUIDE-SUBMIT-PERMIT-APPLICATION",
+      "SRC-SUBMIT-PLANS-ONLINE"
+    ],
+    "reviewer_owner_fields": {
+      "prompt_owner": "ppd-agent-prompt-reviewer",
+      "traceability_review_owner": "ppd-traceability-reviewer"
+    },
+    "active_prompt_mutation": false
+  }
+}

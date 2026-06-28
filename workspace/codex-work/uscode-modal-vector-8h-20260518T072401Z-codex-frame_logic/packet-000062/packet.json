@@ -1,0 +1,288 @@
+{
+  "claimed_at": "2026-05-18T15:50:48+00:00",
+  "codex_apply_mode": "apply_to_main",
+  "codex_exec": {
+    "command": [
+      "codex",
+      "exec",
+      "--cd",
+      "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000062-20260518_155047",
+      "--sandbox",
+      "danger-full-access",
+      "--output-last-message",
+      "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/packet-000062/codex-last-message.md",
+      "--model",
+      "gpt-5.3-codex",
+      "-"
+    ],
+    "duration_seconds": 900.105,
+    "exit_code": null,
+    "last_message_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/packet-000062/codex-last-message.md",
+    "prompt_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/packet-000062/CODEX_PROMPT.md",
+    "sandbox": "danger-full-access",
+    "status": "timeout",
+    "stderr_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/packet-000062/codex-stderr.log",
+    "stdout_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/packet-000062/codex-stdout.log",
+    "timeout_seconds": 900.0
+  },
+  "main_apply_ignored_artifact_paths": [],
+  "main_apply_status": "no_changes",
+  "main_apply_target_files": [],
+  "main_apply_target_repo_root": "/home/barberb/portland-laws.github.io/ipfs_datasets_py",
+  "main_apply_untracked_paths": [],
+  "packet_id": "packet-000062",
+  "packet_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/packet-000062/packet.json",
+  "patch_error": "No changes found in worktree",
+  "patch_path": null,
+  "patch_status": "awaiting_codex_changes",
+  "program_synthesis_scopes": [
+    "frame_logic"
+  ],
+  "queue_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-8h-20260518T072401Z-autoencoder.jsonl",
+  "queue_run_id": "uscode-modal-vector-8h-20260518T072401Z-autoencoder",
+  "repo_root": "/home/barberb/portland-laws.github.io",
+  "run_id": "uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic",
+  "semantic_bundle_keys": [
+    "{\"action\":\"audit_frame_logic_terms\",\"family_pairs\":[],\"program_synthesis_scope\":\"frame_logic\",\"target_component\":\"modal.frame_logic\"}"
+  ],
+  "source_repo_root": "/home/barberb/portland-laws.github.io/ipfs_datasets_py",
+  "suggested_target_files": [
+    "ipfs_datasets_py/logic/modal/codec.py",
+    "ipfs_datasets_py/optimizers/logic/flogic_optimizer.py",
+    "ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py"
+  ],
+  "task_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/packet-000062/CODEX_TASK.md",
+  "task_source": "autoencoder_supervisor_program_synthesis_queue",
+  "todo_list_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/packet-000062/TODO_LIST.jsonl",
+  "todo_markdown_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/packet-000062/TODO_LIST.md",
+  "todos": [
+    {
+      "action": "audit_frame_logic_terms",
+      "citations": [
+        "42 U.S.C. 1962b",
+        "19 U.S.C. 1618",
+        "15 U.S.C. 9803",
+        "49 U.S.C. 6305."
+      ],
+      "claimed_at": "2026-05-18T15:50:46+00:00",
+      "claimed_by": "codex-frame_logic",
+      "completed_at": null,
+      "created_at": "2026-05-18T15:03:59+00:00",
+      "loss_name": "autoencoder_residual_cluster",
+      "loss_value": 0.507868289709,
+      "metadata": {
+        "dedupe_signature": "{\"action\":\"audit_frame_logic_terms\",\"sample_ids\":[\"us-code-15-9803-adbc3a3791b318b1\",\"us-code-19-1618-247239ad48941cec\",\"us-code-42-1962b-f1f3e0bbb4bb8130\",\"us-code-49-6305.-48c2ddcbfba65b1e\"],\"target_component\":\"modal.frame_logic\"}",
+        "execution_target": "codex_program_repair",
+        "hint_evidence": [
+          {
+            "hint_id": "modal-synthesis-1f36782f18394d94",
+            "priority": 0.459959902889,
+            "sample_id": "us-code-15-9803-adbc3a3791b318b1"
+          },
+          {
+            "hint_id": "modal-synthesis-487bf5f9e2264766",
+            "priority": 0.610981674092,
+            "sample_id": "us-code-19-1618-247239ad48941cec"
+          },
+          {
+            "hint_id": "modal-synthesis-53b6fa0d109b0ae5",
+            "priority": 0.33900705814,
+            "sample_id": "us-code-49-6305.-48c2ddcbfba65b1e"
+          },
+          {
+            "hint_id": "modal-synthesis-b37235815166d8d7",
+            "priority": 0.621524523716,
+            "sample_id": "us-code-42-1962b-f1f3e0bbb4bb8130"
+          }
+        ],
+        "hint_ids": [
+          "modal-synthesis-1f36782f18394d94",
+          "modal-synthesis-487bf5f9e2264766",
+          "modal-synthesis-53b6fa0d109b0ae5",
+          "modal-synthesis-b37235815166d8d7"
+        ],
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "program_synthesis_scope": "frame_logic",
+        "semantic_bundle_key": "{\"action\":\"audit_frame_logic_terms\",\"family_pairs\":[],\"program_synthesis_scope\":\"frame_logic\",\"target_component\":\"modal.frame_logic\"}",
+        "source": "modal_program_synthesis_todo_generator_v1",
+        "support_count": 4,
+        "target_component": "modal.frame_logic",
+        "vector_bundle_anchor_id": "program-89efa8d960e8c4d3",
+        "vector_bundle_backend": "embeddings_router",
+        "vector_bundle_index_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-8h-20260518T072401Z-autoencoder.codex-task-vectors.json",
+        "vector_bundle_similarity": 1.0
+      },
+      "objective": "Frame-linked features influenced reconstruction or family scoring and should be audited as ontology terms.",
+      "priority": 54.786829,
+      "sample_ids": [
+        "us-code-42-1962b-f1f3e0bbb4bb8130",
+        "us-code-19-1618-247239ad48941cec",
+        "us-code-15-9803-adbc3a3791b318b1",
+        "us-code-49-6305.-48c2ddcbfba65b1e"
+      ],
+      "status": "claimed",
+      "todo_id": "program-89efa8d960e8c4d3"
+    },
+    {
+      "action": "audit_frame_logic_terms",
+      "citations": [
+        "7 U.S.C. 3603",
+        "25 U.S.C. 3331",
+        "42 U.S.C. 300ff",
+        "50 U.S.C. 494."
+      ],
+      "claimed_at": "2026-05-18T15:50:46+00:00",
+      "claimed_by": "codex-frame_logic",
+      "completed_at": null,
+      "created_at": "2026-05-18T07:35:39+00:00",
+      "loss_name": "autoencoder_residual_cluster",
+      "loss_value": 0.366376996575,
+      "metadata": {
+        "dedupe_signature": "{\"action\":\"audit_frame_logic_terms\",\"sample_ids\":[\"us-code-25-3331-87ea6078c016b573\",\"us-code-42-300ff-896565ebf8799cb4\",\"us-code-50-494.-a97da6e0daf266af\",\"us-code-7-3603-145b25ec66375aa0\"],\"target_component\":\"modal.frame_logic\"}",
+        "execution_target": "codex_program_repair",
+        "hint_evidence": [
+          {
+            "hint_id": "modal-synthesis-107e06ddf6a31aef",
+            "priority": 0.377157187772,
+            "sample_id": "us-code-25-3331-87ea6078c016b573"
+          },
+          {
+            "hint_id": "modal-synthesis-1561918f36f69442",
+            "priority": 0.61400939191,
+            "sample_id": "us-code-7-3603-145b25ec66375aa0"
+          },
+          {
+            "hint_id": "modal-synthesis-ba12b9466a840a94",
+            "priority": 0.340833799987,
+            "sample_id": "us-code-42-300ff-896565ebf8799cb4"
+          },
+          {
+            "hint_id": "modal-synthesis-d1ee01e4393967b9",
+            "priority": 0.133507606632,
+            "sample_id": "us-code-50-494.-a97da6e0daf266af"
+          }
+        ],
+        "hint_ids": [
+          "modal-synthesis-107e06ddf6a31aef",
+          "modal-synthesis-1561918f36f69442",
+          "modal-synthesis-ba12b9466a840a94",
+          "modal-synthesis-d1ee01e4393967b9"
+        ],
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "program_synthesis_scope": "frame_logic",
+        "semantic_bundle_key": "{\"action\":\"audit_frame_logic_terms\",\"family_pairs\":[],\"program_synthesis_scope\":\"frame_logic\",\"target_component\":\"modal.frame_logic\"}",
+        "source": "modal_program_synthesis_todo_generator_v1",
+        "support_count": 4,
+        "target_component": "modal.frame_logic",
+        "vector_bundle_anchor_id": "program-89efa8d960e8c4d3",
+        "vector_bundle_backend": "embeddings_router",
+        "vector_bundle_index_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-8h-20260518T072401Z-autoencoder.codex-task-vectors.json",
+        "vector_bundle_similarity": 0.993057
+      },
+      "objective": "Frame-linked features influenced reconstruction or family scoring and should be audited as ontology terms.",
+      "priority": 40.6377,
+      "sample_ids": [
+        "us-code-7-3603-145b25ec66375aa0",
+        "us-code-25-3331-87ea6078c016b573",
+        "us-code-42-300ff-896565ebf8799cb4",
+        "us-code-50-494.-a97da6e0daf266af"
+      ],
+      "status": "claimed",
+      "todo_id": "program-816847f05641ef30"
+    },
+    {
+      "action": "audit_frame_logic_terms",
+      "citations": [
+        "10 U.S.C. 8676",
+        "18 U.S.C. 203",
+        "38 U.S.C. 1723",
+        "10 U.S.C. 2512"
+      ],
+      "claimed_at": "2026-05-18T15:50:46+00:00",
+      "claimed_by": "codex-frame_logic",
+      "completed_at": null,
+      "created_at": "2026-05-18T11:24:53+00:00",
+      "loss_name": "autoencoder_residual_cluster",
+      "loss_value": 0.422868489075,
+      "metadata": {
+        "dedupe_signature": "{\"action\":\"audit_frame_logic_terms\",\"sample_ids\":[\"us-code-10-2512-1117c7c942280690\",\"us-code-10-8676-4f9d0cd6e98aa619\",\"us-code-18-203-c9486394d6acc318\",\"us-code-38-1723-b049061d923362b1\"],\"target_component\":\"modal.frame_logic\"}",
+        "execution_target": "codex_program_repair",
+        "hint_evidence": [
+          {
+            "hint_id": "modal-synthesis-31808a30c73fc15a",
+            "priority": 0.498445302624,
+            "sample_id": "us-code-18-203-c9486394d6acc318"
+          },
+          {
+            "hint_id": "modal-synthesis-9222d7b409d5e451",
+            "priority": 0.519914196065,
+            "sample_id": "us-code-10-8676-4f9d0cd6e98aa619"
+          },
+          {
+            "hint_id": "modal-synthesis-9a160f8ece934feb",
+            "priority": 0.295949495167,
+            "sample_id": "us-code-10-2512-1117c7c942280690"
+          },
+          {
+            "hint_id": "modal-synthesis-b7c98df449f8e1f4",
+            "priority": 0.377164962444,
+            "sample_id": "us-code-38-1723-b049061d923362b1"
+          }
+        ],
+        "hint_ids": [
+          "modal-synthesis-31808a30c73fc15a",
+          "modal-synthesis-9222d7b409d5e451",
+          "modal-synthesis-9a160f8ece934feb",
+          "modal-synthesis-b7c98df449f8e1f4"
+        ],
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "program_synthesis_scope": "frame_logic",
+        "semantic_bundle_key": "{\"action\":\"audit_frame_logic_terms\",\"family_pairs\":[],\"program_synthesis_scope\":\"frame_logic\",\"target_component\":\"modal.frame_logic\"}",
+        "source": "modal_program_synthesis_todo_generator_v1",
+        "support_count": 4,
+        "target_component": "modal.frame_logic",
+        "vector_bundle_anchor_id": "program-89efa8d960e8c4d3",
+        "vector_bundle_backend": "embeddings_router",
+        "vector_bundle_index_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-8h-20260518T072401Z-autoencoder.codex-task-vectors.json",
+        "vector_bundle_similarity": 0.99231
+      },
+      "objective": "Frame-linked features influenced reconstruction or family scoring and should be audited as ontology terms.",
+      "priority": 46.286849,
+      "sample_ids": [
+        "us-code-10-8676-4f9d0cd6e98aa619",
+        "us-code-18-203-c9486394d6acc318",
+        "us-code-38-1723-b049061d923362b1",
+        "us-code-10-2512-1117c7c942280690"
+      ],
+      "status": "claimed",
+      "todo_id": "program-adf82516f44e0bd7"
+    }
+  ],
+  "vector_bundle_anchor_ids": [
+    "program-89efa8d960e8c4d3"
+  ],
+  "vector_claim_report": {
+    "anchor_id": "program-89efa8d960e8c4d3",
+    "backend": "embeddings_router",
+    "candidate_count": 83,
+    "fallback_reason": "",
+    "indexed_count": 997,
+    "min_similarity": 0.72,
+    "mode": "vector",
+    "path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-8h-20260518T072401Z-autoencoder.codex-task-vectors.json",
+    "provider": "local_adapter",
+    "refreshed_count": 0,
+    "selected_count": 3,
+    "selected_ids": [
+      "program-89efa8d960e8c4d3",
+      "program-816847f05641ef30",
+      "program-adf82516f44e0bd7"
+    ]
+  },
+  "worker_id": "codex-frame_logic",
+  "worktree_error": null,
+  "worktree_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000062-20260518_155047"
+}

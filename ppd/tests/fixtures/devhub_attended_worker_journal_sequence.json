@@ -1,0 +1,118 @@
+{
+  "fixture_id": "devhub_attended_worker_journal_sequence_v1",
+  "description": "Commit-safe attended-worker journal proving DevHub completion requires preflight, classification, preview, exact confirmation, and post-action review evidence.",
+  "events": [
+    {
+      "event_id": "evt-001",
+      "event_type": "devhub_attended_preflight",
+      "action_id": "read-fee-notice",
+      "occurred_at": "2026-05-15T00:00:00Z",
+      "actor": "attended_worker",
+      "evidence": {
+        "attendance": "user_present",
+        "auth_boundary": "manual_login_completed_by_user",
+        "privacy": "no_credentials_cookies_auth_state_screenshots_traces_or_private_values",
+        "source_basis": "DevHub fee notice review is read-only until payment details or submit-payment controls are used"
+      }
+    },
+    {
+      "event_id": "evt-002",
+      "event_type": "devhub_action_classification",
+      "action_id": "read-fee-notice",
+      "occurred_at": "2026-05-15T00:01:00Z",
+      "actor": "attended_worker",
+      "classification": "safe_read_only",
+      "official_intent": "review_fee_notice",
+      "automation_mode": "attended_read_only_review",
+      "evidence": {
+        "surface": "fee_notice_review",
+        "blocked_controls": [
+          "payment_detail_entry",
+          "submit_payment"
+        ],
+        "completion_rule": "read-only action may complete only after exact confirmation and post-action review evidence"
+      }
+    },
+    {
+      "event_id": "evt-003",
+      "event_type": "devhub_action_preview",
+      "action_id": "read-fee-notice",
+      "occurred_at": "2026-05-15T00:02:00Z",
+      "actor": "attended_worker",
+      "preview": {
+        "user_visible_summary": "Review the fee notice status and line-item labels without entering payment details or pressing submit payment.",
+        "will_click_final_official_control": false,
+        "will_enter_private_or_payment_values": false
+      }
+    },
+    {
+      "event_id": "evt-004",
+      "event_type": "exact_confirmation_checkpoint",
+      "action_id": "read-fee-notice",
+      "occurred_at": "2026-05-15T00:03:00Z",
+      "actor": "user",
+      "confirmation": {
+        "required_phrase": "Confirm read-only fee notice review only; do not enter payment details or submit payment.",
+        "received_phrase": "Confirm read-only fee notice review only; do not enter payment details or submit payment.",
+        "matched_exactly": true
+      }
+    },
+    {
+      "event_id": "evt-005",
+      "event_type": "post_action_review_evidence",
+      "action_id": "read-fee-notice",
+      "occurred_at": "2026-05-15T00:04:00Z",
+      "actor": "attended_worker",
+      "evidence": {
+        "review_result": "fee_notice_visible_read_only_review_completed",
+        "user_visible_outcome": "No payment values entered and no submit-payment control activated.",
+        "private_artifacts_committed": false
+      }
+    },
+    {
+      "event_id": "evt-006",
+      "event_type": "devhub_action_mark_complete",
+      "action_id": "read-fee-notice",
+      "occurred_at": "2026-05-15T00:05:00Z",
+      "actor": "attended_worker",
+      "completion_evidence": "user_visible_post_action_review"
+    },
+    {
+      "event_id": "evt-007",
+      "event_type": "devhub_attended_preflight",
+      "action_id": "submit-permit-request",
+      "occurred_at": "2026-05-15T00:06:00Z",
+      "actor": "attended_worker",
+      "evidence": {
+        "attendance": "user_present",
+        "auth_boundary": "manual_login_completed_by_user",
+        "privacy": "no_credentials_cookies_auth_state_screenshots_traces_or_private_values"
+      }
+    },
+    {
+      "event_id": "evt-008",
+      "event_type": "devhub_action_classification",
+      "action_id": "submit-permit-request",
+      "occurred_at": "2026-05-15T00:07:00Z",
+      "actor": "attended_worker",
+      "classification": "consequential_official",
+      "official_intent": "permit_submission",
+      "automation_mode": "manual_handoff_only",
+      "evidence": {
+        "reason": "Submitting a permit request is an official consequential action and is not automated or simulated by this fixture.",
+        "completion_allowed": false
+      }
+    },
+    {
+      "event_id": "evt-009",
+      "event_type": "manual_handoff",
+      "action_id": "submit-permit-request",
+      "occurred_at": "2026-05-15T00:08:00Z",
+      "actor": "attended_worker",
+      "handoff": {
+        "reason": "Final official submission requires the user to act directly in DevHub after reviewing the exact consequence.",
+        "no_final_official_action_taken": true
+      }
+    }
+  ]
+}

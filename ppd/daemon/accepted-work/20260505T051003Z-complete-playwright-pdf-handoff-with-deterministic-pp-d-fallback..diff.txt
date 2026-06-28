@@ -1,0 +1,56 @@
+--- a/ppd/daemon/deterministic-progress.json
++++ b/ppd/daemon/deterministic-progress.json
+@@ -3267,9 +3267,52 @@
+       "taskLabel": "Task checkbox-559: Add processor-suite integration planning for tranche 30 proving PP&D public documents flow through archive manifests, normalized document records, PDF metadata, and requirement batches before agents use them.",
+       "title": "Add processor-suite integration planning for tranche 30 proving PP&D public documents flow through archive manifests, normalized document records, PDF metadata, and requirement batches before agents use them.",
+       "tranche": 30
++    },
++    {
++      "artifactContracts": [
++        "redacted_fact_map",
++        "accessible_selector_plan",
++        "pdf_preview_field_map",
++        "exact_confirmation_checkpoint",
++        "audit_event"
++      ],
++      "blockedActions": [
++        "official_upload",
++        "permit_submission",
++        "certification",
++        "fee_payment",
++        "account_security_transition",
++        "inspection_scheduling"
++      ],
++      "checkboxId": 560,
++      "completedAt": "2026-05-05T05:10:03.190119Z",
++      "fallbackKind": "playwright_pdf_handoff",
++      "guardrails": [
++        "public_sources_only",
++        "redacted_user_facts_only",
++        "reversible_draft_actions_only",
++        "local_pdf_preview_only",
++        "exact_confirmation_before_official_action",
++        "formal_logic_requires_source_evidence"
++      ],
++      "runtimePolicy": {
++        "liveCrawlAllowedByDefault": false,
++        "officialDevhubActionAllowedByDefault": false,
++        "privateArtifactPersistence": "forbidden",
++        "requiresHumanAttendanceBeforeBrowserUse": true
++      },
++      "sourceEvidenceIds": [
++        "evidence:ppd-home:2026-05-01",
++        "evidence:permit-applications-index:2026-05-01",
++        "evidence:devhub-faq:2026-05-01",
++        "evidence:single-pdf-process:2026-05-01"
++      ],
++      "taskLabel": "Task checkbox-560: Add Playwright/PDF handoff validation for tranche 30 proving redacted user facts can fill draft fields and PDF previews while official DevHub transitions stay behind exact confirmation checkpoints.",
++      "title": "Add Playwright/PDF handoff validation for tranche 30 proving redacted user facts can fill draft fields and PDF previews while official DevHub transitions stay behind exact confirmation checkpoints.",
++      "tranche": 30
+     }
+   ],
+   "schemaVersion": 1,
+   "strategy": "deterministic_task_fallback_when_llm_unavailable",
+-  "updatedAt": "2026-05-05T05:10:02.448912Z"
++  "updatedAt": "2026-05-05T05:10:03.190130Z"
+ }

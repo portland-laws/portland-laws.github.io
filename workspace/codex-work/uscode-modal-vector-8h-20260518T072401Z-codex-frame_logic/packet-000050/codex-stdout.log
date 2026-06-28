@@ -1,0 +1,15 @@
+Implemented a deterministic frame-term audit expansion so frame-linked signals emitted by the codec are no longer dropped during ontology-term extraction.
+
+- Added contextual frame-audit support for `procedural_keyword` and `procedural_keyword_*` predicates, and for `predicate_alnum_segment` / `predicate_alnum_segment_positioned` predicates in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000050-20260518_140357/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:68).
+- Added explicit numeric + single-character token allowances for `predicate_alnum_segment*` values so section fragments like `391` and `a` are retained in audits in [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000050-20260518_140357/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py:119).
+- Added regression tests for both triple and feature-key paths in:
+  - [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000050-20260518_140357/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:261)
+  - [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000050-20260518_140357/ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py:186)
+
+Tests run (all passing):
+
+1. `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py` (60 passed)
+2. `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py` (12 passed)
+3. `pytest -q tests/unit/logic/test_flogic_integration.py` (40 passed)
+4. `pytest -q tests/unit_tests/logic/modal/test_modal_codec.py -k "frame_ontology_audit"` (4 passed)
+5. `pytest -q ipfs_datasets_py/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py` (14 passed)

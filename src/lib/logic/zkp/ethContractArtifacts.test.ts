@@ -4,6 +4,7 @@ import {
   loadContractArtifact,
   loadContractArtifactFromJson,
   load_contract_artifact_from_json,
+  load_contract_abi_from_json,
   normalizeHexPrefixed,
 } from './ethContractArtifacts';
 
@@ -28,7 +29,9 @@ describe('EVM contract artifact helpers', () => {
   });
 
   it('loads top-level Hardhat/Truffle artifact objects', () => {
-    expect(loadContractArtifactFromJson({ abi, bytecode: '0x6000', contractName: 'VKRegistry' })).toEqual({
+    expect(
+      loadContractArtifactFromJson({ abi, bytecode: '0x6000', contractName: 'VKRegistry' }),
+    ).toEqual({
       abi,
       bytecode: '0x6000',
       contractName: 'VKRegistry',
@@ -36,7 +39,13 @@ describe('EVM contract artifact helpers', () => {
   });
 
   it('loads bytecode object and snake-case contract names', () => {
-    expect(loadContractArtifactFromJson({ abi, bytecode: { object: '6001' }, contract_name: 'Verifier' })).toEqual({
+    expect(
+      loadContractArtifactFromJson({
+        abi,
+        bytecode: { object: '6001' },
+        contract_name: 'Verifier',
+      }),
+    ).toEqual({
       abi,
       bytecode: '0x6001',
       contractName: 'Verifier',
@@ -58,16 +67,67 @@ describe('EVM contract artifact helpers', () => {
     expect(loadContractAbiFromJson(artifactJson)).toEqual(abi);
   });
 
+  it('loads deployed bytecode from solc-style artifacts', () => {
+    expect(
+      loadContractArtifactFromJson({
+        abi,
+        contractName: 'Verifier',
+        evm: {
+          bytecode: { object: '6004' },
+          deployedBytecode: { object: '0X6005' },
+        },
+      }),
+    ).toEqual({
+      abi,
+      bytecode: '0x6004',
+      deployedBytecode: '0x6005',
+      contractName: 'Verifier',
+    });
+  });
+
+  it('selects named artifacts from compiled contract maps without filesystem access', () => {
+    const compiled = {
+      contracts: {
+        'contracts/Registry.sol': {
+          Registry: { abi, bytecode: { object: '6006' } },
+          Verifier: { abi, deployedBytecode: { object: '6007' } },
+        },
+      },
+    };
+
+    expect(loadContractArtifactFromJson(compiled, { contractName: 'Verifier' })).toEqual({
+      abi,
+      deployedBytecode: '0x6007',
+      contractName: 'Verifier',
+    });
+    expect(load_contract_abi_from_json(compiled, { contractName: 'Registry' })).toEqual(abi);
+  });
+
   it('returns Python-style dictionary fields through snake-case aliases', () => {
-    expect(load_contract_artifact_from_json({ abi, bytecode: '6003', contractName: 'Registry' })).toEqual({
+    expect(
+      load_contract_artifact_from_json({ abi, bytecode: '6003', contractName: 'Registry' }),
+    ).toEqual({
       abi,
       bytecode: '0x6003',
       contract_name: 'Registry',
     });
+    expect(
+      load_contract_artifact_from_json({
+        abi,
+        deployed_bytecode: '6008',
+        contractName: 'Verifier',
+      }),
+    ).toEqual({
+      abi,
+      deployed_bytecode: '0x6008',
+      contract_name: 'Verifier',
+    });
   });
 
   it('omits empty bytecode and contract names', () => {
-    expect(loadContractArtifactFromJson({ abi, bytecode: '0x', contractName: '   ' })).toEqual({ abi });
+    expect(loadContractArtifactFromJson({ abi, bytecode: '0x', contractName: '   ' })).toEqual({
+      abi,
+    });
   });
 
   it('validates artifact and ABI shape', () => {
@@ -75,10 +135,30 @@ describe('EVM contract artifact helpers', () => {
     expect(() => loadContractArtifactFromJson({ bytecode: '6000' })).toThrow("missing 'abi' list");
     expect(() => loadContractArtifactFromJson({ abi: ['not-object'] })).toThrow('ABI entries');
     expect(() => loadContractArtifactFromJson('{')).toThrow('could not be parsed');
+    expect(() =>
+      loadContractArtifactFromJson({
+        contracts: {
+          'Verifier.sol': {
+            Registry: { abi },
+            Verifier: { abi },
+          },
+        },
+      }),
+    ).toThrow('multiple compiled contracts');
+    expect(() =>
+      loadContractArtifactFromJson(
+        { contracts: { 'Verifier.sol': { Verifier: { abi } } } },
+        { contractName: 'Missing' },
+      ),
+    ).toThrow("Contract artifact 'Missing' was not found");
   });
 
   it('fails closed for filesystem path helpers in the browser port', () => {
-    expect(() => loadContractArtifact('./Verifier.json')).toThrow('Filesystem artifact path loading is not browser-native');
-    expect(() => loadContractAbi('./Verifier.json')).toThrow('Filesystem artifact path loading is not browser-native');
+    expect(() => loadContractArtifact('./Verifier.json')).toThrow(
+      'Filesystem artifact path loading is not browser-native',
+    );
+    expect(() => loadContractAbi('./Verifier.json')).toThrow(
+      'Filesystem artifact path loading is not browser-native',
+    );
   });
 });

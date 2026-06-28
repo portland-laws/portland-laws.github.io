@@ -1,0 +1,19 @@
+{
+  "fixture_id": "synthetic-guardrail-impact-delta-packet-v1",
+  "source_process_dependency_graph_fixture": "../process_dependency_graph_delta_packet_v1/source_fixture.json",
+  "expected_row_groups": [
+    "affected_deterministic_predicate_rows",
+    "affected_deontic_rule_rows",
+    "affected_temporal_rule_rows",
+    "affected_reversible_action_predicate_rows",
+    "affected_exact_confirmation_predicate_rows",
+    "affected_refused_action_predicate_rows",
+    "affected_explanation_template_placeholder_rows",
+    "stale_source_hold_rows",
+    "reviewer_disposition_rows"
+  ],
+  "expected_candidate_ids": [
+    "candidate-required-upload-prep",
+    "candidate-trade-license-check"
+  ]
+}

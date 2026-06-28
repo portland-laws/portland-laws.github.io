@@ -1,0 +1,158 @@
+{
+  "packet_version": "devhub_fixture_first_read_only_observation_seed_packet_v1",
+  "packet_id": "fixture-first-next-devhub-read-only-observation-seed-v1",
+  "purpose": "Propose attended read-only DevHub observation targets from synthetic post-decision smoke replay rows and official guidance placeholders only.",
+  "input_rows": [
+    {
+      "row_id": "synthetic-smoke-row-permit-status-review",
+      "source_type": "synthetic_post_decision_smoke_replay",
+      "decision_status": "post_decision_smoke_replay_complete",
+      "contains_live_devhub_data": false,
+      "contains_private_values": false,
+      "observation_signal": "Synthetic replay indicates agents need a read-only permit status surface shape before guarded response promotion."
+    },
+    {
+      "row_id": "synthetic-smoke-row-correction-notice-review",
+      "source_type": "synthetic_post_decision_smoke_replay",
+      "decision_status": "post_decision_smoke_replay_complete",
+      "contains_live_devhub_data": false,
+      "contains_private_values": false,
+      "observation_signal": "Synthetic replay indicates agents need a redacted correction notice review target without attachment capture."
+    }
+  ],
+  "official_guidance_placeholders": [
+    {
+      "placeholder_id": "official-placeholder-devhub-faq-account-services",
+      "source_type": "official_devhub_guidance_placeholder",
+      "official_source_url": "https://www.portland.gov/ppd/devhub-faqs",
+      "placeholder_status": "placeholder_only",
+      "live_fetch_performed": false,
+      "expected_guidance_scope": "Account-scoped DevHub services and read-only status review references."
+    },
+    {
+      "placeholder_id": "official-placeholder-devhub-sign-guide",
+      "source_type": "official_devhub_guidance_placeholder",
+      "official_source_url": "https://www.portland.gov/ppd/devhub-sign-guide",
+      "placeholder_status": "placeholder_only",
+      "live_fetch_performed": false,
+      "expected_guidance_scope": "Manual account attendance prerequisites for online permitting services."
+    }
+  ],
+  "observation_targets": [
+    {
+      "target_id": "target-read-only-permit-status-summary",
+      "classification": "safe_read_only",
+      "target_surface": "DevHub permit or request status summary",
+      "objective": "Record fixture-only labels for navigation landmarks, status regions, and non-sensitive message categories using synthetic placeholders.",
+      "basis_row_ids": ["synthetic-smoke-row-permit-status-review"],
+      "guidance_placeholder_ids": ["official-placeholder-devhub-faq-account-services", "official-placeholder-devhub-sign-guide"],
+      "authorization_prerequisite_ids": ["authz-attended-user-owned-account", "authz-read-only-scope-confirmed"],
+      "redaction_expectation_ids": ["redact-account-scoped-values", "redact-record-identifiers"],
+      "capture_schema_update_ids": ["schema-synthetic-status-region-v1"],
+      "reviewer_route_ids": ["route-devhub-read-only-reviewer"]
+    },
+    {
+      "target_id": "target-read-only-correction-message-list",
+      "classification": "read_only_observation",
+      "target_surface": "DevHub correction or checksheet message list",
+      "objective": "Record fixture-only synthetic message categories, empty-state labels, and manual handoff triggers without viewing or retaining attachments.",
+      "basis_row_ids": ["synthetic-smoke-row-correction-notice-review"],
+      "guidance_placeholder_ids": ["official-placeholder-devhub-faq-account-services"],
+      "authorization_prerequisite_ids": ["authz-attended-user-owned-account", "authz-read-only-scope-confirmed"],
+      "redaction_expectation_ids": ["redact-account-scoped-values", "redact-attachment-metadata"],
+      "capture_schema_update_ids": ["schema-synthetic-correction-message-v1"],
+      "reviewer_route_ids": ["route-manual-handoff-reviewer"]
+    }
+  ],
+  "authorization_prerequisites": [
+    {
+      "prerequisite_id": "authz-attended-user-owned-account",
+      "status": "required_before_any_future_observation",
+      "requirement": "A human operator must attend any future observation in a user-owned account and complete all access prompts manually."
+    },
+    {
+      "prerequisite_id": "authz-read-only-scope-confirmed",
+      "status": "required_before_any_future_observation",
+      "requirement": "The operator must confirm the session is limited to read-only review and stop before any editable, upload, payment, scheduling, certification, cancellation, or submission control."
+    }
+  ],
+  "redaction_expectations": [
+    {
+      "redaction_id": "redact-account-scoped-values",
+      "expectation": "Replace names, addresses, account identifiers, permit identifiers, email addresses, phone numbers, and page values with typed synthetic placeholders."
+    },
+    {
+      "redaction_id": "redact-record-identifiers",
+      "expectation": "Capture only synthetic record identifier classes such as synthetic_permit_number_label and synthetic_status_label."
+    },
+    {
+      "redaction_id": "redact-attachment-metadata",
+      "expectation": "Do not retain file names, document titles, thumbnails, links, downloaded files, or attachment metadata from an account-scoped page."
+    }
+  ],
+  "fixture_only_capture_schema_updates": [
+    {
+      "schema_update_id": "schema-synthetic-status-region-v1",
+      "fixture_only": true,
+      "allowed_fixture_fields": ["synthetic_surface_id", "synthetic_heading_label", "synthetic_status_label", "synthetic_navigation_landmark", "synthetic_read_only_stop_reason"]
+    },
+    {
+      "schema_update_id": "schema-synthetic-correction-message-v1",
+      "fixture_only": true,
+      "allowed_fixture_fields": ["synthetic_surface_id", "synthetic_message_category", "synthetic_review_group_label", "synthetic_empty_state_label", "synthetic_manual_handoff_reason"]
+    }
+  ],
+  "unsupported_manual_handoff_reminders": [
+    {
+      "reminder_id": "handoff-editable-control",
+      "reminder": "Manual handoff is required if the future attended observation reaches any form fill, upload, payment, scheduling, certification, cancellation, or submission control."
+    },
+    {
+      "reminder_id": "handoff-authentication-prompt",
+      "reminder": "Manual handoff is required for sign-in, MFA, CAPTCHA, account creation, password recovery, or access troubleshooting."
+    }
+  ],
+  "rollback_notes": [
+    {
+      "rollback_id": "rollback-seed-only",
+      "note": "Rollback removes this seed packet and fixture-only tests only; it does not require cleanup of DevHub artifacts because none are created."
+    }
+  ],
+  "reviewer_routing": [
+    {
+      "route_id": "route-devhub-read-only-reviewer",
+      "reviewer_role": "devhub_read_only_reviewer",
+      "routing_reason": "Review proposed read-only surface labels and authorization prerequisites before any future attended observation."
+    },
+    {
+      "route_id": "route-manual-handoff-reviewer",
+      "reviewer_role": "manual_handoff_reviewer",
+      "routing_reason": "Confirm unsupported or consequential controls remain handoff-only and outside fixture capture."
+    }
+  ],
+  "prohibited_live_actions": [
+    "Do not open DevHub for this seed packet.",
+    "Do not log in or create session state for this seed packet.",
+    "Do not store auth files, session files, screenshots, traces, HAR files, raw crawl output, downloads, or private values.",
+    "Do not fill forms or perform official actions."
+  ],
+  "artifact_policy": {
+    "opens_devhub": false,
+    "logs_in": false,
+    "performs_form_fills": false,
+    "performs_official_actions": false,
+    "stores_auth_artifacts": false,
+    "stores_session_artifacts": false,
+    "stores_screenshots": false,
+    "stores_traces": false,
+    "stores_har_files": false,
+    "stores_private_values": false,
+    "stores_raw_crawl_output": false,
+    "downloads_documents": false
+  },
+  "validation_commands": [
+    ["python3", "-m", "py_compile", "ppd/agent_readiness/devhub_fixture_first_read_only_observation_seed_packet_v1.py", "ppd/tests/test_devhub_fixture_first_read_only_observation_seed_packet_v1.py"],
+    ["python3", "-m", "unittest", "ppd.tests.test_devhub_fixture_first_read_only_observation_seed_packet_v1"],
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

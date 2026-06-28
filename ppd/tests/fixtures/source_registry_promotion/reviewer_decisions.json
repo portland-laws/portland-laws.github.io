@@ -1,0 +1,33 @@
+{
+  "reviewer": "fixture-reviewer",
+  "registry_version": "fixture-public-source-registry-2026-05",
+  "decisions": [
+    {
+      "source_id": "portland-devhub-permits",
+      "decision": "promote",
+      "blocker_refs": [],
+      "rollback_owner_notes": "Public source registry owner will revert metadata-only registry artifact if downstream checks fail.",
+      "downstream_invalidation_targets": [
+        "ppd-public-source-registry-cache",
+        "ppd-devhub-source-index"
+      ],
+      "metadata_only_artifact_ids": [
+        "artifact:ppd:registry:devhub-permits:metadata-review"
+      ]
+    },
+    {
+      "source_id": "portland-zoning-code",
+      "decision": "defer",
+      "blocker_refs": [
+        "PPD-GATE-coverage-drift"
+      ],
+      "rollback_owner_notes": "Planning policy owner must confirm zoning chapter coverage before promotion.",
+      "downstream_invalidation_targets": [
+        "ppd-zoning-source-index"
+      ],
+      "metadata_only_artifact_ids": [
+        "artifact:ppd:registry:zoning-code:metadata-review"
+      ]
+    }
+  ]
+}

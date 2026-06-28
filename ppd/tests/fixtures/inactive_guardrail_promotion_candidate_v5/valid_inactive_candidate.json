@@ -1,0 +1,72 @@
+{
+  "candidate_id": "inactive-guardrail-promotion-v5-fixture",
+  "candidate_version": 5,
+  "candidate_state": "inactive",
+  "readiness_replay_refs": [
+    {
+      "replay_id": "readiness-replay-2026-05-08T00:00:00Z",
+      "source": "deterministic-fixture",
+      "result": "recorded_for_review"
+    }
+  ],
+  "inactive_promotion_rows": [
+    {
+      "row_id": "inactive-row-001",
+      "guardrail_bundle_id": "ppd-devhub-submission-guardrails",
+      "state": "inactive",
+      "activation_blocked_by": ["hold-open-reviewer-signoff"]
+    }
+  ],
+  "activation_prerequisites": [
+    {
+      "prerequisite_id": "source-freshness-review",
+      "description": "Reviewer must verify source freshness report before activation.",
+      "satisfied": false
+    }
+  ],
+  "unresolved_hold_inventory": [
+    {
+      "hold_id": "hold-open-reviewer-signoff",
+      "reason": "Inactive candidate awaits attended reviewer signoff placeholder resolution.",
+      "owner": "ppd-guardrail-review"
+    }
+  ],
+  "reviewer_signoff_placeholders": [
+    {
+      "placeholder_id": "reviewer-signoff-required",
+      "role": "human_reviewer",
+      "signed": false,
+      "approved": false
+    }
+  ],
+  "source_freshness_clearance_criteria": [
+    {
+      "criterion_id": "official-source-hash-review",
+      "description": "Compare official PP&D source hashes with the latest freshness report.",
+      "cleared": false
+    }
+  ],
+  "rollback_checkpoint_rows": [
+    {
+      "checkpoint_id": "rollback-before-activation",
+      "description": "Persist inactive bundle identifier and previous active bundle pointer before any future activation."
+    }
+  ],
+  "post_promotion_smoke_checks": [
+    {
+      "check_id": "agent-facing-readonly-check",
+      "description": "After future activation, verify read-only guardrail explanation lookup with fixture inputs.",
+      "planned": true
+    }
+  ],
+  "agent_notification_notes": [
+    {
+      "note_id": "inactive-candidate-notice",
+      "audience": "agent",
+      "message": "Candidate remains inactive; do not claim official completion or mutate active guardrails."
+    }
+  ],
+  "validation_commands": [
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ]
+}

@@ -1,0 +1,166 @@
+{
+  "preview_kind": "local_pdf_draft_preview",
+  "case_id": "fixture-case-adu-001",
+  "form_id": "residential-building-permit-application-fixture",
+  "generated_from": {
+    "fixture_only": true,
+    "live_crawl": false,
+    "authenticated_session": false,
+    "downloaded_document": false
+  },
+  "source_evidence": [
+    {
+      "evidence_id": "src-apply-permits-required-fields",
+      "source_id": "ppd-apply-permits",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/apply-permits",
+      "title": "Apply for permits",
+      "quote": "Permit applications require project, site, and applicant information before review."
+    },
+    {
+      "evidence_id": "src-devhub-guide-draft-before-submit",
+      "source_id": "ppd-devhub-submit-guide",
+      "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+      "title": "DevHub permit application guide",
+      "quote": "Applicants review request information before acknowledgement and submission."
+    },
+    {
+      "evidence_id": "src-submit-plans-separate-pdfs",
+      "source_id": "ppd-submit-plans-online",
+      "canonical_url": "https://www.portland.gov/ppd/get-permit/submit-plans-online",
+      "title": "Submit Plans Online / Single PDF Process",
+      "quote": "Drawing plans, applications, calculations, and supporting documents are prepared as separate PDFs."
+    }
+  ],
+  "known_user_facts": [
+    {
+      "fact_id": "fact-site-address",
+      "label": "Site address",
+      "value": "1234 NE Fixture St, Portland, OR 97211",
+      "sensitivity": "ordinary"
+    },
+    {
+      "fact_id": "fact-project-description",
+      "label": "Project description",
+      "value": "Convert existing detached garage to accessory dwelling unit.",
+      "sensitivity": "ordinary"
+    },
+    {
+      "fact_id": "fact-applicant-name",
+      "label": "Applicant legal name",
+      "value": "Fixture Applicant",
+      "sensitivity": "ordinary"
+    },
+    {
+      "fact_id": "fact-applicant-email",
+      "label": "Applicant email",
+      "value": "[REDACTED:EMAIL]",
+      "sensitivity": "contact"
+    },
+    {
+      "fact_id": "fact-applicant-phone",
+      "label": "Applicant phone",
+      "value": "[REDACTED:PHONE]",
+      "sensitivity": "contact"
+    },
+    {
+      "fact_id": "fact-tax-account",
+      "label": "Tax account number",
+      "value": "[REDACTED:ACCOUNT_IDENTIFIER]",
+      "sensitivity": "sensitive_identifier"
+    }
+  ],
+  "field_mappings": [
+    {
+      "field_name": "site_address",
+      "draft_value": "1234 NE Fixture St, Portland, OR 97211",
+      "source_evidence_ids": ["src-apply-permits-required-fields"],
+      "user_fact_ids": ["fact-site-address"],
+      "mapping_status": "ready_for_local_preview"
+    },
+    {
+      "field_name": "project_description",
+      "draft_value": "Convert existing detached garage to accessory dwelling unit.",
+      "source_evidence_ids": ["src-apply-permits-required-fields", "src-devhub-guide-draft-before-submit"],
+      "user_fact_ids": ["fact-project-description"],
+      "mapping_status": "ready_for_local_preview"
+    },
+    {
+      "field_name": "applicant_name",
+      "draft_value": "Fixture Applicant",
+      "source_evidence_ids": ["src-apply-permits-required-fields"],
+      "user_fact_ids": ["fact-applicant-name"],
+      "mapping_status": "ready_for_local_preview"
+    },
+    {
+      "field_name": "applicant_email",
+      "draft_value": "[REDACTED:EMAIL]",
+      "source_evidence_ids": ["src-apply-permits-required-fields"],
+      "user_fact_ids": ["fact-applicant-email"],
+      "mapping_status": "redacted_for_preview"
+    },
+    {
+      "field_name": "applicant_phone",
+      "draft_value": "[REDACTED:PHONE]",
+      "source_evidence_ids": ["src-apply-permits-required-fields"],
+      "user_fact_ids": ["fact-applicant-phone"],
+      "mapping_status": "redacted_for_preview"
+    },
+    {
+      "field_name": "tax_account_number",
+      "draft_value": "[REDACTED:ACCOUNT_IDENTIFIER]",
+      "source_evidence_ids": ["src-apply-permits-required-fields"],
+      "user_fact_ids": ["fact-tax-account"],
+      "mapping_status": "redacted_for_preview"
+    }
+  ],
+  "missing_facts": [
+    {
+      "fact_id": "missing-contractor-license",
+      "label": "Contractor license number or owner-as-applicant confirmation",
+      "reason": "Required before determining whether contractor fields can be drafted.",
+      "source_evidence_ids": ["src-apply-permits-required-fields"]
+    },
+    {
+      "fact_id": "missing-plan-set-confirmation",
+      "label": "Confirmation that plan sheets are prepared as a separate PDF",
+      "reason": "Single PDF guidance separates drawing plans from application and supporting documents.",
+      "source_evidence_ids": ["src-submit-plans-separate-pdfs"]
+    }
+  ],
+  "allowed_actions": [
+    {
+      "action": "render_local_pdf_draft_preview",
+      "status": "allowed",
+      "requires_user_confirmation": false
+    }
+  ],
+  "blocked_actions": [
+    {
+      "action": "sign_application",
+      "status": "blocked",
+      "reason": "Signature is consequential and must be handled by the user."
+    },
+    {
+      "action": "certify_acknowledgement",
+      "status": "blocked",
+      "reason": "Certification requires explicit attended review and confirmation."
+    },
+    {
+      "action": "upload_to_devhub",
+      "status": "blocked",
+      "reason": "Official uploads are consequential DevHub actions."
+    },
+    {
+      "action": "submit_permit_application",
+      "status": "blocked",
+      "reason": "Official submission is outside local preview scope."
+    }
+  ],
+  "privacy_controls": {
+    "omits_local_private_file_paths": true,
+    "redacts_sensitive_values": true,
+    "stores_credentials": false,
+    "stores_session_state": false,
+    "stores_payment_details": false
+  }
+}

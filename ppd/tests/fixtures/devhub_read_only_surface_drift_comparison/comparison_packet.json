@@ -1,0 +1,230 @@
+{
+  "packet_id": "devhub-read-only-surface-drift-comparison-synthetic-v1",
+  "packet_type": "ppd.devhub_read_only_surface_drift_comparison_packet.v1",
+  "mode": "fixture_first_devhub_read_only_surface_drift_comparison",
+  "fixture_first": true,
+  "launches_devhub": false,
+  "launches_playwright": false,
+  "stores_browser_artifacts": false,
+  "writes_surface_registry": false,
+  "mutates_active_surface_maps": false,
+  "source_packets": {
+    "devhub_read_only_observation_packet": {
+      "packet_id": "devhub-read-only-observation-comparison-input-v1",
+      "consumed": true
+    },
+    "devhub_surface_registry_update_candidate": {
+      "packet_id": "devhub-surface-registry-update-candidate-synthetic-v1",
+      "consumed": true
+    }
+  },
+  "surface_comparisons": [
+    {
+      "surface_id": "devhub_home_redacted",
+      "citations": [
+        "devhub-read-only-observation-comparison-input-v1",
+        "devhub-surface-registry-update-candidate-synthetic-v1",
+        "devhub_home_redacted"
+      ],
+      "route_differences": [
+        {
+          "field": "route_pattern",
+          "observed": "/dashboard",
+          "candidate": "/dashboard",
+          "status": "unchanged",
+          "citations": [
+            "devhub-read-only-observation-comparison-input-v1",
+            "devhub-surface-registry-update-candidate-synthetic-v1",
+            "devhub_home_redacted"
+          ]
+        }
+      ],
+      "heading_differences": [
+        {
+          "field": "redacted_heading",
+          "observed": "[REDACTED_HEADING:devhub-dashboard]",
+          "candidate": "[REDACTED_HEADING:devhub-home]",
+          "status": "synthetic_difference",
+          "citations": [
+            "devhub-read-only-observation-comparison-input-v1",
+            "devhub-surface-registry-update-candidate-synthetic-v1",
+            "devhub_home_redacted"
+          ]
+        }
+      ],
+      "action_differences": [
+        {
+          "field": "disabled_consequential_controls",
+          "observed": [
+            "disabled:upload",
+            "disabled:submit",
+            "disabled:certify",
+            "disabled:payment",
+            "disabled:schedule-inspection",
+            "disabled:cancel"
+          ],
+          "candidate": [
+            "disabled:upload",
+            "disabled:submit",
+            "disabled:certify",
+            "disabled:payment",
+            "disabled:schedule-inspection",
+            "disabled:cancel"
+          ],
+          "status": "disabled_controls_attested",
+          "citations": [
+            "devhub-read-only-observation-comparison-input-v1",
+            "devhub-surface-registry-update-candidate-synthetic-v1",
+            "devhub_home_redacted"
+          ]
+        }
+      ],
+      "selector_confidence_notes": [
+        {
+          "previous_confidence": "committed_registry_fixture",
+          "observed_confidence": "redacted_fixture_review",
+          "proposed_confidence": "attended_review_required",
+          "upgrade_requested": false,
+          "note": "primary heading and navigation labels are stable redacted tokens; status summary label has medium confidence because copy may vary by account state",
+          "citations": [
+            "devhub-read-only-observation-comparison-input-v1",
+            "devhub-surface-registry-update-candidate-synthetic-v1",
+            "devhub_home_redacted"
+          ]
+        }
+      ],
+      "unsupported_drift": true
+    },
+    {
+      "surface_id": "devhub_permit_detail_redacted",
+      "citations": [
+        "devhub-read-only-observation-comparison-input-v1",
+        "devhub-surface-registry-update-candidate-synthetic-v1",
+        "devhub_permit_detail_redacted"
+      ],
+      "route_differences": [
+        {
+          "field": "route_pattern",
+          "observed": "/permits/{permit_id}",
+          "candidate": "/permits/{permit_id}",
+          "status": "unchanged",
+          "citations": [
+            "devhub-read-only-observation-comparison-input-v1",
+            "devhub-surface-registry-update-candidate-synthetic-v1",
+            "devhub_permit_detail_redacted"
+          ]
+        }
+      ],
+      "heading_differences": [
+        {
+          "field": "redacted_heading",
+          "observed": "[REDACTED_HEADING:permit-detail]",
+          "candidate": "[REDACTED_HEADING:permit-detail]",
+          "status": "unchanged",
+          "citations": [
+            "devhub-read-only-observation-comparison-input-v1",
+            "devhub-surface-registry-update-candidate-synthetic-v1",
+            "devhub_permit_detail_redacted"
+          ]
+        }
+      ],
+      "action_differences": [
+        {
+          "field": "disabled_consequential_controls",
+          "observed": [
+            "disabled:upload-correction",
+            "disabled:pay-fee",
+            "disabled:schedule-inspection",
+            "disabled:request-extension",
+            "disabled:reactivate",
+            "disabled:withdraw"
+          ],
+          "candidate": [
+            "disabled:upload-correction",
+            "disabled:pay-fee",
+            "disabled:schedule-inspection",
+            "disabled:request-extension",
+            "disabled:reactivate",
+            "disabled:withdraw"
+          ],
+          "status": "disabled_controls_attested",
+          "citations": [
+            "devhub-read-only-observation-comparison-input-v1",
+            "devhub-surface-registry-update-candidate-synthetic-v1",
+            "devhub_permit_detail_redacted"
+          ]
+        }
+      ],
+      "selector_confidence_notes": [
+        {
+          "previous_confidence": "committed_registry_fixture",
+          "observed_confidence": "redacted_fixture_review",
+          "proposed_confidence": "attended_review_required",
+          "upgrade_requested": false,
+          "note": "route keeps permit identifier as a pattern placeholder; detail tabs require attended review before selector promotion",
+          "citations": [
+            "devhub-read-only-observation-comparison-input-v1",
+            "devhub-surface-registry-update-candidate-synthetic-v1",
+            "devhub_permit_detail_redacted"
+          ]
+        }
+      ],
+      "unsupported_drift": false
+    }
+  ],
+  "reviewer_owners": [
+    {
+      "owner": "ppd-devhub-reviewer",
+      "owns": [
+        "route_differences",
+        "heading_differences"
+      ],
+      "reason": "Route and heading drift remain synthetic until attended review cites live evidence."
+    },
+    {
+      "owner": "ppd-selector-reviewer",
+      "owns": [
+        "selector_confidence_notes"
+      ],
+      "reason": "Selector confidence may be noted but not upgraded from fixture-only comparison."
+    },
+    {
+      "owner": "ppd-action-guardrail-reviewer",
+      "owns": [
+        "action_differences",
+        "unsupported_drift_deferrals"
+      ],
+      "reason": "Consequential controls remain disabled and any unsupported drift is deferred."
+    }
+  ],
+  "unsupported_drift_deferrals": [
+    {
+      "surface_id": "devhub_home_redacted",
+      "reason": "Fixture comparison found route or heading drift that requires attended review before registry mutation.",
+      "resolution": "defer_no_registry_mutation",
+      "citations": [
+        "devhub-surface-registry-update-candidate-synthetic-v1",
+        "devhub_home_redacted"
+      ]
+    },
+    {
+      "surface_id": "devhub_permit_detail_redacted",
+      "reason": "Fixture-only comparison cannot promote active surface maps or selector confidence.",
+      "resolution": "defer_no_registry_mutation",
+      "citations": [
+        "devhub-surface-registry-update-candidate-synthetic-v1",
+        "devhub_permit_detail_redacted"
+      ]
+    }
+  ],
+  "no_registry_mutation_attestations": {
+    "no_devhub_launch": true,
+    "no_playwright_launch": true,
+    "no_browser_artifacts": true,
+    "no_registry_mutation": true,
+    "no_active_surface_map_change": true,
+    "no_selector_confidence_upgrade": true,
+    "no_consequential_controls_enabled": true,
+    "no_official_actions_completed": true
+  }
+}

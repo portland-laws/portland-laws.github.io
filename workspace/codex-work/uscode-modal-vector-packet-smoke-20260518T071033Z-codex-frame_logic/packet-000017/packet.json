@@ -1,0 +1,120 @@
+{
+  "claimed_at": "2026-05-18T07:11:13+00:00",
+  "packet_id": "packet-000017",
+  "packet_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-packet-smoke-20260518T071033Z-codex-frame_logic/packet-000017/packet.json",
+  "patch_error": "No changes found in worktree: /home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-packet-smoke-20260518T071033Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000017-20260518_071112",
+  "patch_path": null,
+  "patch_status": "awaiting_codex_changes",
+  "program_synthesis_scopes": [
+    "frame_logic"
+  ],
+  "queue_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-packet-smoke-20260518T071033Z-autoencoder.jsonl",
+  "queue_run_id": "uscode-modal-vector-packet-smoke-20260518T071033Z-autoencoder",
+  "repo_root": "/home/barberb/portland-laws.github.io",
+  "run_id": "uscode-modal-vector-packet-smoke-20260518T071033Z-codex-frame_logic",
+  "semantic_bundle_keys": [
+    "{\"action\":\"audit_frame_logic_terms\",\"family_pairs\":[],\"program_synthesis_scope\":\"frame_logic\",\"target_component\":\"modal.frame_logic\"}"
+  ],
+  "source_repo_root": "/home/barberb/portland-laws.github.io/ipfs_datasets_py",
+  "suggested_target_files": [
+    "ipfs_datasets_py/logic/modal/codec.py",
+    "ipfs_datasets_py/optimizers/logic/flogic_optimizer.py",
+    "ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py"
+  ],
+  "task_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-packet-smoke-20260518T071033Z-codex-frame_logic/packet-000017/CODEX_TASK.md",
+  "task_source": "autoencoder_supervisor_program_synthesis_queue",
+  "todo_list_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-packet-smoke-20260518T071033Z-codex-frame_logic/packet-000017/TODO_LIST.jsonl",
+  "todo_markdown_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-packet-smoke-20260518T071033Z-codex-frame_logic/packet-000017/TODO_LIST.md",
+  "todos": [
+    {
+      "action": "audit_frame_logic_terms",
+      "citations": [
+        "42 U.S.C. 16928a.",
+        "33 U.S.C. 549",
+        "7 U.S.C. 2032",
+        "35 U.S.C. 313"
+      ],
+      "claimed_at": "2026-05-18T07:11:12+00:00",
+      "claimed_by": "codex-frame_logic",
+      "completed_at": null,
+      "created_at": "2026-05-18T07:11:09+00:00",
+      "loss_name": "autoencoder_residual_cluster",
+      "loss_value": 0.616896131965,
+      "metadata": {
+        "dedupe_signature": "{\"action\":\"audit_frame_logic_terms\",\"sample_ids\":[\"us-code-33-549-6f82e0c7217912c5\",\"us-code-35-313-0cdecd0367a5f7c3\",\"us-code-42-16928a.-51cc2f6b0ac5ca81\",\"us-code-7-2032-e45599d1c3b7a334\"],\"target_component\":\"modal.frame_logic\"}",
+        "execution_target": "codex_program_repair",
+        "hint_evidence": [
+          {
+            "hint_id": "modal-synthesis-3213badaa76f0cf0",
+            "priority": 0.826507922731,
+            "sample_id": "us-code-42-16928a.-51cc2f6b0ac5ca81"
+          },
+          {
+            "hint_id": "modal-synthesis-5f8721be76ee4506",
+            "priority": 0.714468989682,
+            "sample_id": "us-code-33-549-6f82e0c7217912c5"
+          },
+          {
+            "hint_id": "modal-synthesis-718f0ae4fd1d3838",
+            "priority": 0.374759681351,
+            "sample_id": "us-code-35-313-0cdecd0367a5f7c3"
+          },
+          {
+            "hint_id": "modal-synthesis-ed169fbe5e3af336",
+            "priority": 0.551847934098,
+            "sample_id": "us-code-7-2032-e45599d1c3b7a334"
+          }
+        ],
+        "hint_ids": [
+          "modal-synthesis-3213badaa76f0cf0",
+          "modal-synthesis-5f8721be76ee4506",
+          "modal-synthesis-718f0ae4fd1d3838",
+          "modal-synthesis-ed169fbe5e3af336"
+        ],
+        "optimizer_role": "program_synthesis",
+        "optimizer_stage": "typed_program_synthesis",
+        "program_synthesis_scope": "frame_logic",
+        "semantic_bundle_key": "{\"action\":\"audit_frame_logic_terms\",\"family_pairs\":[],\"program_synthesis_scope\":\"frame_logic\",\"target_component\":\"modal.frame_logic\"}",
+        "source": "modal_program_synthesis_todo_generator_v1",
+        "support_count": 4,
+        "target_component": "modal.frame_logic",
+        "vector_bundle_anchor_id": "program-e9218be3fa1a709e",
+        "vector_bundle_backend": "local_hash_fallback",
+        "vector_bundle_index_path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-packet-smoke-20260518T071033Z-autoencoder.codex-task-vectors.json",
+        "vector_bundle_similarity": 1.0
+      },
+      "objective": "Frame-linked features influenced reconstruction or family scoring and should be audited as ontology terms.",
+      "priority": 65.689613,
+      "sample_ids": [
+        "us-code-42-16928a.-51cc2f6b0ac5ca81",
+        "us-code-33-549-6f82e0c7217912c5",
+        "us-code-7-2032-e45599d1c3b7a334",
+        "us-code-35-313-0cdecd0367a5f7c3"
+      ],
+      "status": "claimed",
+      "todo_id": "program-e9218be3fa1a709e"
+    }
+  ],
+  "vector_bundle_anchor_ids": [
+    "program-e9218be3fa1a709e"
+  ],
+  "vector_claim_report": {
+    "anchor_id": "program-e9218be3fa1a709e",
+    "backend": "local_hash_fallback",
+    "candidate_count": 1,
+    "fallback_reason": "",
+    "indexed_count": 21,
+    "min_similarity": 0.72,
+    "mode": "vector",
+    "path": "/home/barberb/portland-laws.github.io/workspace/todo-queues/uscode-modal-vector-packet-smoke-20260518T071033Z-autoencoder.codex-task-vectors.json",
+    "provider": "__force_hash_fallback__",
+    "refreshed_count": 0,
+    "selected_count": 1,
+    "selected_ids": [
+      "program-e9218be3fa1a709e"
+    ]
+  },
+  "worker_id": "codex-frame_logic",
+  "worktree_error": null,
+  "worktree_path": "/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-packet-smoke-20260518T071033Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000017-20260518_071112"
+}

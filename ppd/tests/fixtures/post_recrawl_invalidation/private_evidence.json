@@ -1,0 +1,17 @@
+{
+  "decisions": [
+    {
+      "id": "recrawl-004",
+      "metadata_review_link": "ppd/reviews/metadata/recrawl-004.json",
+      "risk_decision": "invalidate stale public metadata",
+      "citations": ["https://www.portland.gov/ppd/public-record"],
+      "evidence": [
+        {
+          "url": "https://devhub.portlandoregon.gov/session/case/123",
+          "authenticated": true,
+          "citation": "https://www.portland.gov/ppd/public-record"
+        }
+      ]
+    }
+  ]
+}

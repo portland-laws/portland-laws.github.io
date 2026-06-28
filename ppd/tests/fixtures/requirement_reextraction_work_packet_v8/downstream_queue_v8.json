@@ -1,0 +1,62 @@
+{
+  "schema": "ppd.downstream_requirement_reextraction_queue.v8",
+  "fixture_first": true,
+  "boundaries": {
+    "live_crawl_executed": false,
+    "raw_artifacts_downloaded": false,
+    "downloaded_documents_persisted": false,
+    "devhub_opened": false,
+    "private_documents_read": false,
+    "private_session_or_auth_artifacts_created": false,
+    "uploads_performed": false,
+    "submissions_performed": false,
+    "certifications_performed": false,
+    "payments_performed": false,
+    "scheduling_performed": false,
+    "official_action_completed": false,
+    "legal_or_permitting_guarantees_made": false,
+    "active_requirement_mutation": false,
+    "active_process_model_mutation": false,
+    "active_guardrail_mutation": false,
+    "active_mutation": false
+  },
+  "candidate_rows": [
+    {
+      "candidate_row_id": "candidate-v8-online-tools-action-gate",
+      "source_id": "ppd-online-tools-overview",
+      "canonical_url": "https://www.portland.gov/ppd/how-use-online-permitting-tools",
+      "expected_requirement_type": "action_gate",
+      "expectation_note": "Expect DevHub-related action gates and safe/offline review boundaries to be extracted from normalized citation spans only.",
+      "requires_live_crawl": false,
+      "requires_devhub": false,
+      "unsupported_path": false
+    },
+    {
+      "candidate_row_id": "candidate-v8-fee-payment-trigger",
+      "source_id": "ppd-fee-payment-guide-pdf",
+      "canonical_url": "https://www.portland.gov/ppd/documents/how-pay-fees/download",
+      "expected_requirement_type": "fee_trigger",
+      "expectation_note": "Expect fee-payment trigger language to remain citation-scoped and human-reviewed before formalization.",
+      "requires_live_crawl": false,
+      "requires_devhub": false,
+      "unsupported_path": false
+    },
+    {
+      "candidate_row_id": "candidate-v8-application-form-unsupported-path",
+      "source_id": "ppd-permit-application-form",
+      "canonical_url": "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications",
+      "expected_requirement_type": "document_requirement",
+      "expectation_note": "Record unsupported form or manual path notes without creating an extraction work item.",
+      "requires_live_crawl": false,
+      "requires_devhub": false,
+      "unsupported_path": true
+    }
+  ],
+  "unsupported_path_notes": [
+    {
+      "note_id": "unsupported-path-v8-application-form",
+      "source_id": "ppd-permit-application-form",
+      "note_placeholder": "Reviewer must confirm whether the fixture indicates an email, manual, form-only, or non-DevHub path before any process-model use."
+    }
+  ]
+}

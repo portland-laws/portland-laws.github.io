@@ -1,0 +1,102 @@
+{
+  "packet_type": "guardrail_bundle_activation_rehearsal",
+  "packet_id": "fixture-guardrail-activation-rehearsal-20260528",
+  "activation_status": "disabled_by_default",
+  "mutates_active_bundles": false,
+  "active_bundle_mutation": false,
+  "writes_active_bundle": false,
+  "consumes": {
+    "promotion_review_fixture": "ppd/tests/fixtures/guardrails/bundle_promotion_review.json",
+    "agent_readiness_contract_fixture": "ppd/tests/fixtures/guardrails/agent_readiness_contract.json",
+    "consumption_mode": "fixture_only",
+    "readiness_contract_links": [
+      {
+        "link_id": "readiness-contract.agent-facing-v1",
+        "contract_id": "agent_readiness_contract.operator_confirmation",
+        "fixture_path": "ppd/tests/fixtures/guardrails/agent_readiness_contract.json",
+        "freshness_status": "current",
+        "last_verified_at": "2026-05-28",
+        "stale": false,
+        "source_evidence_ids": [
+          "agent_readiness_contract.operator_confirmation",
+          "agent_readiness_contract.prohibited_actions"
+        ]
+      }
+    ]
+  },
+  "predicate_diff": {
+    "draft": [
+      {"name": "requires_source_citation_for_permit_rule", "state": "draft"},
+      {"name": "requires_exact_confirmation_for_activation", "state": "draft"},
+      {"name": "refuses_consequential_devhub_actions", "state": "draft"}
+    ],
+    "active": [
+      {"name": "requires_source_citation_for_permit_rule", "state": "active"}
+    ],
+    "recorded_changes": {
+      "added": [
+        "refuses_consequential_devhub_actions",
+        "requires_exact_confirmation_for_activation"
+      ],
+      "removed": [],
+      "changed": []
+    },
+    "diff_citations": {
+      "refuses_consequential_devhub_actions": [
+        "promotion_review.source_citations",
+        "agent_readiness_contract.prohibited_actions"
+      ],
+      "requires_exact_confirmation_for_activation": [
+        "agent_readiness_contract.operator_confirmation",
+        "promotion_review.source_citations"
+      ]
+    }
+  },
+  "exact_confirmation_gates": [
+    {"gate": "payment_confirmation", "action_category": "payment", "required": true, "exact_phrase": "I confirm I am ready to complete this PP&D payment myself.", "observed_phrase": null, "passed": false},
+    {"gate": "upload_confirmation", "action_category": "upload", "required": true, "exact_phrase": "I confirm I am ready to upload these PP&D documents myself.", "observed_phrase": null, "passed": false},
+    {"gate": "submission_confirmation", "action_category": "submission", "required": true, "exact_phrase": "I confirm I am ready to submit this PP&D application myself.", "observed_phrase": null, "passed": false},
+    {"gate": "scheduling_confirmation", "action_category": "scheduling", "required": true, "exact_phrase": "I confirm I am ready to schedule this PP&D inspection myself.", "observed_phrase": null, "passed": false},
+    {"gate": "cancellation_confirmation", "action_category": "cancellation", "required": true, "exact_phrase": "I confirm I am ready to cancel or withdraw this PP&D item myself.", "observed_phrase": null, "passed": false},
+    {"gate": "certification_confirmation", "action_category": "certification", "required": true, "exact_phrase": "I confirm I am ready to certify this PP&D acknowledgement myself.", "observed_phrase": null, "passed": false},
+    {"gate": "bundle_activation", "action_category": "activation", "required": true, "exact_phrase": "Activate the reviewed PP&D guardrail bundle", "observed_phrase": null, "passed": false},
+    {"gate": "rollback_override", "action_category": "rollback", "required": true, "exact_phrase": "Apply the reviewed PP&D rollback override", "observed_phrase": null, "passed": false}
+  ],
+  "refused_consequential_actions": [
+    {"action": "enter_or_submit_payment", "action_category": "payment", "refused": true, "reason": "Payment details and final payment execution require direct user control."},
+    {"action": "upload_or_certify_documents", "action_category": "upload", "refused": true, "reason": "Upload requires explicit operator control and exact confirmation."},
+    {"action": "submit_devhub_application", "action_category": "submission", "refused": true, "reason": "Consequential authenticated submission is outside rehearsal scope."},
+    {"action": "schedule_inspection", "action_category": "scheduling", "refused": true, "reason": "Inspection scheduling requires attended user confirmation."},
+    {"action": "cancel_or_withdraw", "action_category": "cancellation", "refused": true, "reason": "Cancellation or withdrawal requires direct user confirmation."},
+    {"action": "certify_acknowledgement", "action_category": "certification", "refused": true, "reason": "Certification requires the user to review and certify directly."},
+    {"action": "activate_guardrail_bundle", "action_category": "activation", "refused": true, "reason": "Fixture rehearsal must not mutate active bundles."}
+  ],
+  "citation_coverage": {
+    "required_citations": [
+      "promotion_review.source_citations",
+      "agent_readiness_contract.operator_confirmation",
+      "agent_readiness_contract.prohibited_actions"
+    ],
+    "covered_citations": [
+      "promotion_review.source_citations",
+      "agent_readiness_contract.operator_confirmation",
+      "agent_readiness_contract.prohibited_actions"
+    ],
+    "missing_citations": []
+  },
+  "review_items": [
+    {"item_id": "review.confirm-diff-citations", "status": "resolved", "marked_activated": false},
+    {"item_id": "review.confirm-readiness-link-current", "status": "resolved", "marked_activated": false}
+  ],
+  "rollback_notes": [
+    "Keep current active bundle unchanged during rehearsal.",
+    "If a later activation fails validation, restore the previously active bundle pointer and retain this packet as audit evidence.",
+    "Rollback rehearsal does not execute authenticated DevHub actions."
+  ],
+  "audit": {
+    "created_for_task": "checkbox-20 supervisor-20260528-266",
+    "live_crawl_used": false,
+    "authenticated_automation_used": false,
+    "private_case_facts_used": false
+  }
+}

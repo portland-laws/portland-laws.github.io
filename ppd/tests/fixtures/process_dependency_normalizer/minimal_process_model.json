@@ -1,0 +1,53 @@
+{
+  "process_id": "fixture-minimal-devhub-request",
+  "permit_type": "fixture permit type",
+  "stages": [
+    {
+      "stage_id": "research",
+      "name": "pre-application research",
+      "source_evidence_ids": ["fixture-source-1"]
+    },
+    {
+      "stage_id": "documents",
+      "name": "document preparation",
+      "depends_on": ["research"],
+      "required_user_facts": [
+        {
+          "id": "project-address",
+          "label": "project address",
+          "source_evidence_ids": ["fixture-source-2"]
+        }
+      ],
+      "required_documents": [
+        {
+          "id": "site-plan-pdf",
+          "label": "site plan PDF",
+          "source_evidence_ids": ["fixture-source-3"]
+        }
+      ],
+      "source_evidence_ids": ["fixture-source-2", "fixture-source-3"]
+    },
+    {
+      "stage_id": "draft-entry",
+      "name": "application data entry",
+      "depends_on": ["documents"],
+      "source_evidence_ids": ["fixture-source-4"]
+    }
+  ],
+  "required_user_facts": [
+    {
+      "id": "owner-contact",
+      "label": "owner contact",
+      "process_stage": "application data entry",
+      "source_evidence_ids": ["fixture-source-4"]
+    }
+  ],
+  "required_documents": [
+    {
+      "id": "energy-form",
+      "label": "energy form",
+      "process_stage": "document preparation",
+      "source_evidence_ids": ["fixture-source-5"]
+    }
+  ]
+}

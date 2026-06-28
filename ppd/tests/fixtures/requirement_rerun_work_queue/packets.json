@@ -1,0 +1,117 @@
+{
+  "valid": {
+    "packet_id": "requirement-rerun-fixture-001",
+    "packet_type": "requirement_rerun",
+    "requirement_ids": [
+      "REQ-devhub-upload-corrections-attended",
+      "REQ-single-pdf-separate-supporting-documents"
+    ],
+    "citations": {
+      "REQ-devhub-upload-corrections-attended": [
+        "source:devhub-faqs:account-scoped-services",
+        "source:upload-corrections-guide:review-group-status"
+      ],
+      "REQ-single-pdf-separate-supporting-documents": [
+        "source:submit-plans-online:single-pdf-guidance"
+      ]
+    },
+    "affected_process_refs": [
+      "process:corrections-checksheets",
+      "process:document-preparation"
+    ],
+    "affected_guardrail_refs": [
+      "guardrail:official-upload-exact-confirmation",
+      "guardrail:single-pdf-document-preparation"
+    ],
+    "rerun_steps": [
+      {
+        "order": 1,
+        "name": "review_existing_citations"
+      },
+      {
+        "order": 2,
+        "name": "rerun_deterministic_formalization"
+      },
+      {
+        "order": 3,
+        "name": "queue_human_review"
+      }
+    ],
+    "reviewer_owners": [
+      "ppd-requirements-review"
+    ],
+    "notes": "Planning packet only; rerun must use committed normalized evidence and produce reviewable deltas."
+  },
+  "invalid_claims": [
+    {
+      "packet_id": "invalid-raw-body-ref",
+      "requirement_ids": ["REQ-a"],
+      "citations": {"REQ-a": ["source:a"]},
+      "affected_process_refs": ["process:a"],
+      "affected_guardrail_refs": ["guardrail:a"],
+      "rerun_steps": [{"order": 1, "name": "review"}],
+      "reviewer_owners": ["owner:a"],
+      "raw_body_ref": "raw/private/body.html"
+    },
+    {
+      "packet_id": "invalid-download-url",
+      "requirement_ids": ["REQ-a"],
+      "citations": {"REQ-a": ["source:a"]},
+      "affected_process_refs": ["process:a"],
+      "affected_guardrail_refs": ["guardrail:a"],
+      "rerun_steps": [{"order": 1, "name": "review"}],
+      "reviewer_owners": ["owner:a"],
+      "download_url": "https://example.invalid/file.pdf"
+    },
+    {
+      "packet_id": "invalid-archive-ref",
+      "requirement_ids": ["REQ-a"],
+      "citations": {"REQ-a": ["source:a"]},
+      "affected_process_refs": ["process:a"],
+      "affected_guardrail_refs": ["guardrail:a"],
+      "rerun_steps": [{"order": 1, "name": "review"}],
+      "reviewer_owners": ["owner:a"],
+      "archive_artifact_ref": "warc:fixture"
+    },
+    {
+      "packet_id": "invalid-live-claim",
+      "requirement_ids": ["REQ-a"],
+      "citations": {"REQ-a": ["source:a"]},
+      "affected_process_refs": ["process:a"],
+      "affected_guardrail_refs": ["guardrail:a"],
+      "rerun_steps": [{"order": 1, "name": "review"}],
+      "reviewer_owners": ["owner:a"],
+      "notes": "Run live extraction before review."
+    },
+    {
+      "packet_id": "invalid-processor-claim",
+      "requirement_ids": ["REQ-a"],
+      "citations": {"REQ-a": ["source:a"]},
+      "affected_process_refs": ["process:a"],
+      "affected_guardrail_refs": ["guardrail:a"],
+      "rerun_steps": [{"order": 1, "name": "review"}],
+      "reviewer_owners": ["owner:a"],
+      "notes": "This packet may execute processor work."
+    },
+    {
+      "packet_id": "invalid-outcome-guarantee",
+      "requirement_ids": ["REQ-a"],
+      "citations": {"REQ-a": ["source:a"]},
+      "affected_process_refs": ["process:a"],
+      "affected_guardrail_refs": ["guardrail:a"],
+      "rerun_steps": [{"order": 1, "name": "review"}],
+      "reviewer_owners": ["owner:a"],
+      "notes": "The permit approval is guaranteed after this rerun."
+    },
+    {
+      "packet_id": "invalid-mutation-flag",
+      "requirement_ids": ["REQ-a"],
+      "citations": {"REQ-a": ["source:a"]},
+      "affected_process_refs": ["process:a"],
+      "affected_guardrail_refs": ["guardrail:a"],
+      "rerun_steps": [{"order": 1, "name": "review"}],
+      "reviewer_owners": ["owner:a"],
+      "active_requirement_mutation": true
+    }
+  ]
+}

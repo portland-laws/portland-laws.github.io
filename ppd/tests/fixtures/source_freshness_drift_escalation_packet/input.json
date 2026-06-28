@@ -1,0 +1,197 @@
+{
+  "source_freshness_badge_packet": {
+    "packet_type": "source_freshness_badge_packet",
+    "packet_version": "1.0",
+    "freshness_badges": [
+      {
+        "source_id": "src-devhub-submit-permit-application-guide",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+        "freshness_status": "review_due_daily",
+        "last_verified_at": "2026-05-08",
+        "badge_reason": "DevHub permit application guidance can change frequently.",
+        "reviewer_owner": "ppd-devhub-source-reviewer"
+      },
+      {
+        "source_id": "src-ppd-forms-index",
+        "canonical_url": "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications",
+        "freshness_status": "review_due_weekly",
+        "last_verified_at": "2026-05-08",
+        "badge_reason": "Permit application form indexes affect document requirement readiness.",
+        "reviewer_owner": "ppd-forms-source-reviewer"
+      }
+    ]
+  },
+  "public_source_refresh_intake_evidence_packet": {
+    "packet_type": "ppd_public_source_refresh_intake_evidence_packet",
+    "packet_version": "1.0",
+    "fixture_first": true,
+    "metadata_only": true,
+    "live_network_invoked": false,
+    "processor_invoked": false,
+    "raw_bodies_persisted": false,
+    "archive_manifest_updated": false,
+    "archive_manifest_mutation_allowed": false,
+    "registry_updated": false,
+    "schedule_updated": false,
+    "synthetic_reviewer_evidence": [
+      {
+        "evidence_id": "review-evidence-devhub-submit-guide",
+        "batch_order": 1,
+        "source_id": "src-devhub-submit-permit-application-guide",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+        "synthetic_reviewer_evidence_fields": {
+          "owning_surface": "public_ppd_guidance",
+          "source_type": "public_html",
+          "refresh_reason": "freshness badge requires daily review and registry metadata changed",
+          "reviewer_owner_fields": {
+            "primary_reviewer_owner": "ppd-devhub-source-reviewer"
+          },
+          "expected_metadata_fields": [
+            "last_seen_at",
+            "freshness_status",
+            "content_hash"
+          ],
+          "content_hash_expectation_fields": [
+            "content_hash",
+            "expected_content_hash_field"
+          ],
+          "skipped_target_reason_slot": "metadata_only_fixture_no_live_refresh",
+          "no_raw_body_attestation_id": "intake-no-raw-body-devhub-submit-guide"
+        }
+      },
+      {
+        "evidence_id": "review-evidence-forms-index",
+        "batch_order": 2,
+        "source_id": "src-ppd-forms-index",
+        "canonical_url": "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications",
+        "synthetic_reviewer_evidence_fields": {
+          "owning_surface": "public_ppd_forms",
+          "source_type": "public_html",
+          "refresh_reason": "freshness badge requires weekly review",
+          "reviewer_owner_fields": {
+            "primary_reviewer_owner": "ppd-forms-source-reviewer"
+          },
+          "expected_metadata_fields": [
+            "last_seen_at",
+            "freshness_status",
+            "content_hash"
+          ],
+          "content_hash_expectation_fields": [
+            "content_hash",
+            "expected_content_hash_field"
+          ],
+          "skipped_target_reason_slot": "metadata_only_fixture_no_live_refresh",
+          "no_raw_body_attestation_id": "intake-no-raw-body-forms-index"
+        }
+      }
+    ],
+    "no_raw_body_attestations": [
+      {
+        "attestation_id": "intake-no-raw-body-devhub-submit-guide",
+        "source_id": "src-devhub-submit-permit-application-guide",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+        "no_raw_body_persisted": true,
+        "raw_body_persisted": false,
+        "processor_invoked": false,
+        "live_network_invoked": false
+      },
+      {
+        "attestation_id": "intake-no-raw-body-forms-index",
+        "source_id": "src-ppd-forms-index",
+        "canonical_url": "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications",
+        "no_raw_body_persisted": true,
+        "raw_body_persisted": false,
+        "processor_invoked": false,
+        "live_network_invoked": false
+      }
+    ]
+  },
+  "source_registry_update_candidate_packet": {
+    "packet_id": "source-registry-update-candidates-fixture-001",
+    "packet_version": 1,
+    "fixture_id": "source-registry-update-candidate-fixture-001",
+    "fixture_first": true,
+    "metadata_only": true,
+    "network_requests_made": false,
+    "raw_page_bodies_stored": false,
+    "live_registry_edited": false,
+    "candidate_count": 2,
+    "changed_candidate_count": 1,
+    "source_registry_update_candidates": [
+      {
+        "candidate_id": "source-registry-update-devhub-submit-guide",
+        "source_id": "src-devhub-submit-permit-application-guide",
+        "prior_registry_id": "src-devhub-submit-permit-application-guide",
+        "canonical_url": "https://www.portland.gov/ppd/devhub-guide-submit-permit-application",
+        "candidate_status": "proposed_only",
+        "registry_edit_status": "not_applied",
+        "prior_fields": {
+          "last_seen_at": "2026-05-20T10:00:00Z",
+          "freshness_status": "stale",
+          "content_hash": "sha256:1111111111111111111111111111111111111111111111111111111111111111",
+          "skipped_reason": null
+        },
+        "proposed_fields": {
+          "last_seen_at": "2026-05-28T08:00:00Z",
+          "freshness_status": "metadata_changed",
+          "content_hash": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "skipped_reason": null
+        },
+        "changed_fields": [
+          "last_seen_at",
+          "freshness_status",
+          "content_hash"
+        ],
+        "downstream_invalidation_links": {
+          "requirement_ids": [
+            "req-devhub-certification-gate",
+            "req-devhub-dynamic-questions",
+            "req-devhub-required-uploads"
+          ],
+          "process_model_ids": [
+            "process-devhub-permit-application",
+            "process-trade-with-plan-review"
+          ],
+          "guardrail_bundle_ids": [
+            "guardrail-devhub-application-draft",
+            "guardrail-official-submission-confirmation"
+          ],
+          "agent_readiness_checklist_item_ids": [
+            "agent-ready-source-freshness-current"
+          ]
+        },
+        "review_evidence_id": "review-devhub-submit-guide-20260528"
+      },
+      {
+        "candidate_id": "source-registry-update-forms-index",
+        "source_id": "src-ppd-forms-index",
+        "prior_registry_id": "src-ppd-forms-index",
+        "canonical_url": "https://www.portland.gov/ppd/brochures-forms-handouts/permits-and-inspections-applications",
+        "candidate_status": "proposed_only",
+        "registry_edit_status": "not_applied",
+        "prior_fields": {
+          "last_seen_at": "2026-05-20T10:05:00Z",
+          "freshness_status": "current",
+          "content_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "skipped_reason": null
+        },
+        "proposed_fields": {
+          "last_seen_at": "2026-05-28T08:02:00Z",
+          "freshness_status": "unchanged",
+          "content_hash": "sha256:2222222222222222222222222222222222222222222222222222222222222222",
+          "skipped_reason": null
+        },
+        "changed_fields": [
+          "last_seen_at"
+        ],
+        "downstream_invalidation_links": {
+          "requirement_ids": [],
+          "process_model_ids": [],
+          "guardrail_bundle_ids": [],
+          "agent_readiness_checklist_item_ids": []
+        },
+        "review_evidence_id": "review-forms-index-20260528"
+      }
+    ]
+  }
+}

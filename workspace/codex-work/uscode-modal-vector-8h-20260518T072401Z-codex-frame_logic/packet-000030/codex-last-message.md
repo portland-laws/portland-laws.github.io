@@ -1,0 +1,14 @@
+Implemented a deterministic frame-logic audit improvement for citation/source-id trailing punctuation.
+
+- Updated [frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000030-20260518_104022/ipfs_datasets_py/optimizers/logic_theorem_optimizer/frame_bm25_selector.py):
+1. Added scoped handling for `citation_section_trailing_punct` and `source_id_section_trailing_punct`.
+2. Canonicalizes punctuation-only values into ontology tokens (for example `"." -> "period"`, `")." -> "right_paren_period"`).
+3. Kept behavior narrow to those predicates so unrelated punctuation extraction is unchanged.
+
+- Added unit coverage in [test_frame_bm25_selector.py](/home/barberb/portland-laws.github.io/workspace/codex-work/uscode-modal-vector-8h-20260518T072401Z-codex-frame_logic/worktrees/agent-codex-frame_logic-packet-000030-20260518_104022/tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py):
+1. Feature-key extraction test for trailing punctuation.
+2. Triple extraction test for trailing punctuation.
+
+Validation run:
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_frame_bm25_selector.py -k "trailing_punctuation or source_id_citation_canonical_terms"` → 4 passed.
+- `pytest -q tests/unit/optimizers/logic_theorem_optimizer/test_flogic_optimizer.py -k "tracks_source_id_citation_canonical_terms"` → 1 passed.

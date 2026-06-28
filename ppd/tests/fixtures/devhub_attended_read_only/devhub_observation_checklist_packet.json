@@ -1,0 +1,226 @@
+{
+  "packet_id": "devhub-observation-checklist-synthetic-v1",
+  "packet_type": "devhub_read_only_observation_checklist_packet",
+  "fixture_first": true,
+  "synthetic_only": true,
+  "capture_mode": "committed_fixture_metadata_only",
+  "workflow": {
+    "workflow_id": "synthetic-devhub-read-only-observation-checklist",
+    "purpose": "Map synthetic DevHub surface evidence into a read-only operator checklist without launching a browser or storing private artifacts.",
+    "attendance_required": true,
+    "live_devhub_allowed": false,
+    "official_actions_allowed": false
+  },
+  "linked_sections": {
+    "synthetic_surface_evidence": "#synthetic-surface-evidence",
+    "accessible_heading_checks": "#accessible-heading-checks",
+    "status_label_checks": "#status-label-checks",
+    "attachment_list_label_checks": "#attachment-list-label-checks",
+    "fee_notice_label_checks": "#fee-notice-label-checks",
+    "correction_request_label_checks": "#correction-request-label-checks",
+    "inspection_result_label_checks": "#inspection-result-label-checks",
+    "redaction_rules": "#redaction-rules",
+    "manual_stop_conditions": "#manual-stop-conditions"
+  },
+  "synthetic_surface_evidence": {
+    "section_id": "synthetic-surface-evidence",
+    "source": "synthetic-fixture",
+    "evidence_items": [
+      {
+        "evidence_id": "ev-heading-dashboard",
+        "evidence_type": "accessible_headings",
+        "synthetic_signal": "role=heading name=Dashboard",
+        "maps_to": "accessible_heading_checks",
+        "checklist_label": "Dashboard heading is exposed as an accessible heading."
+      },
+      {
+        "evidence_id": "ev-status-review",
+        "evidence_type": "status_labels",
+        "synthetic_signal": "status chip text=In Review",
+        "maps_to": "status_label_checks",
+        "checklist_label": "Current permit status is represented by a generic status label."
+      },
+      {
+        "evidence_id": "ev-attachments-list",
+        "evidence_type": "attachment_list_labels",
+        "synthetic_signal": "region name=Attachments list",
+        "maps_to": "attachment_list_label_checks",
+        "checklist_label": "Attachment list labels can be observed without opening files."
+      },
+      {
+        "evidence_id": "ev-fee-notice",
+        "evidence_type": "fee_notice_labels",
+        "synthetic_signal": "notice text=Fees due",
+        "maps_to": "fee_notice_label_checks",
+        "checklist_label": "Fee notice labels are recorded as labels only, not payment data."
+      },
+      {
+        "evidence_id": "ev-correction-request",
+        "evidence_type": "correction_request_labels",
+        "synthetic_signal": "tab name=Corrections requested",
+        "maps_to": "correction_request_label_checks",
+        "checklist_label": "Correction request labels are visible without opening private messages or uploads."
+      },
+      {
+        "evidence_id": "ev-inspection-result",
+        "evidence_type": "inspection_result_labels",
+        "synthetic_signal": "table column=Inspection result",
+        "maps_to": "inspection_result_label_checks",
+        "checklist_label": "Inspection result labels are generic read-only status evidence."
+      }
+    ]
+  },
+  "accessible_heading_checks": {
+    "section_id": "accessible-heading-checks",
+    "required_headings": [
+      "Dashboard",
+      "Permits",
+      "Application details",
+      "Fees",
+      "Corrections",
+      "Inspections"
+    ],
+    "accepted_roles": [
+      "heading"
+    ],
+    "recording_rule": "Record stable heading text only when it does not contain private case data."
+  },
+  "status_label_checks": {
+    "section_id": "status-label-checks",
+    "generic_status_labels": [
+      "Submitted",
+      "In Review",
+      "Corrections Requested",
+      "Approved",
+      "Issued",
+      "Closed",
+      "Expired"
+    ],
+    "recording_rule": "Record generic label text only; redact permit, application, IVR, invoice, site, owner, and project identifiers."
+  },
+  "attachment_list_label_checks": {
+    "section_id": "attachment-list-label-checks",
+    "allowed_labels": [
+      "Attachments",
+      "Documents",
+      "Plans",
+      "File type",
+      "Uploaded date",
+      "Review status"
+    ],
+    "blocked_observations": [
+      "document contents",
+      "downloaded files",
+      "original file names",
+      "local file paths"
+    ],
+    "recording_rule": "Observe list and column labels only; do not open, preview, download, or name private documents."
+  },
+  "fee_notice_label_checks": {
+    "section_id": "fee-notice-label-checks",
+    "allowed_labels": [
+      "Fees",
+      "Balance due",
+      "Invoice",
+      "Payment required",
+      "Paid",
+      "Due date"
+    ],
+    "blocked_observations": [
+      "card data",
+      "bank data",
+      "checkout steps",
+      "payment confirmation numbers"
+    ],
+    "recording_rule": "Record that a fee notice label exists; do not enter payment flow or store payment details."
+  },
+  "correction_request_label_checks": {
+    "section_id": "correction-request-label-checks",
+    "allowed_labels": [
+      "Corrections",
+      "Corrections Requested",
+      "Response required",
+      "Review group",
+      "Due date",
+      "Resubmit"
+    ],
+    "blocked_observations": [
+      "private correction text",
+      "message body",
+      "upload controls",
+      "reviewer names"
+    ],
+    "recording_rule": "Record labels and generic requested-action categories only after private text is redacted."
+  },
+  "inspection_result_label_checks": {
+    "section_id": "inspection-result-label-checks",
+    "allowed_labels": [
+      "Inspections",
+      "Scheduled",
+      "Requested",
+      "Passed",
+      "Failed",
+      "Cancelled",
+      "Result"
+    ],
+    "blocked_observations": [
+      "scheduling actions",
+      "rescheduling actions",
+      "cancellation actions",
+      "inspector notes with private data"
+    ],
+    "recording_rule": "Record generic inspection result labels only; do not schedule, reschedule, or cancel inspections."
+  },
+  "redaction_rules": {
+    "section_id": "redaction-rules",
+    "classification": "commit_safe_redacted_metadata_only",
+    "must_redact": [
+      "person names",
+      "email addresses",
+      "phone numbers",
+      "mailing addresses",
+      "site addresses",
+      "permit numbers",
+      "application numbers",
+      "IVR numbers",
+      "invoice numbers",
+      "license numbers",
+      "parcel identifiers",
+      "project descriptions",
+      "uploaded file names",
+      "document contents",
+      "payment data",
+      "browser session identifiers",
+      "local private file paths"
+    ],
+    "replacement_tokens": [
+      "[REDACTED_PERSON]",
+      "[REDACTED_ADDRESS]",
+      "[REDACTED_PERMIT]",
+      "[REDACTED_APPLICATION]",
+      "[REDACTED_DOCUMENT]",
+      "[REDACTED_PRIVATE]"
+    ],
+    "prohibited_storage": [
+      "Do not store screenshots.",
+      "Do not store Playwright or browser traces.",
+      "Do not store HAR data.",
+      "Do not store cookies.",
+      "Do not store auth state, browser storage state, or credentials.",
+      "Do not store raw authenticated HTML, downloaded documents, payment data, or private DevHub values."
+    ]
+  },
+  "manual_stop_conditions": {
+    "section_id": "manual-stop-conditions",
+    "stop_immediately_when": [
+      "A login, MFA, CAPTCHA, account recovery, or credential prompt appears.",
+      "The user is not present or asks the observer to stop.",
+      "The page exposes private values that cannot be reduced to labels before recording.",
+      "A document preview, download, message body, attachment body, or raw file content would need to be opened.",
+      "A payment, checkout, card entry, invoice payment, or receipt screen appears.",
+      "An upload, resubmit, submit, certify, acknowledge, withdraw, cancel, schedule, or reschedule control is the next step.",
+      "The observer would need screenshots, traces, HAR data, cookies, auth state, storage state, or browser session files to continue."
+    ],
+    "operator_result": "Stop observation, discard non-redacted notes, and record only a manual handoff reason."
+  }
+}

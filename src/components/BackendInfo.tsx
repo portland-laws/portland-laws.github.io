@@ -83,26 +83,26 @@ export default function BackendInfo({ className = '' }: BackendInfoProps) {
     }
   };
 
-  const testLlamaModel = async () => {
+  const testLiquidAIModel = async () => {
     try {
       const { clientLLM } = await import('../lib/clientLLM');
       
-      alert('Starting Llama 1B test. This will download ~637MB. Check console for progress...');
+      alert('Starting LiquidAI LFM2.5 Instruct test. This will download roughly 1GB. Check console for progress...');
       
-      console.log('Testing Llama 1B model with WebGPU...');
-      await clientLLM.switchModel('onnx-community/Llama-3.2-1B-Instruct');
+      console.log('Testing LiquidAI LFM2.5 Instruct model with WebGPU...');
+      await clientLLM.switchModel('LiquidAI/LFM2.5-1.2B-Instruct-ONNX');
       
       const testPrompt = 'Hello, how are you today?';
       console.log(`Testing with prompt: "${testPrompt}"`);
       
       const response = await clientLLM.generateResponse(testPrompt, 50);
-      console.log(`Llama 1B response: "${response}"`);
+      console.log(`LiquidAI LFM2.5 response: "${response}"`);
       
-      alert(`Llama 1B Test Successful!\n\nPrompt: ${testPrompt}\nResponse: ${response}\n\nCheck console for detailed logs.`);
+      alert(`LiquidAI LFM2.5 Test Successful!\n\nPrompt: ${testPrompt}\nResponse: ${response}\n\nCheck console for detailed logs.`);
     } catch (error) {
-      console.error('Llama model test failed:', error);
+      console.error('LiquidAI model test failed:', error);
       const errorMessage = error instanceof Error ? error.message : 'Unknown error';
-      alert(`Llama 1B Test Failed: ${errorMessage}\n\nThis might be normal if your device doesn't support WebGPU or has insufficient RAM. Check console for details.`);
+      alert(`LiquidAI LFM2.5 Test Failed: ${errorMessage}\n\nThis might be normal if your device doesn't support WebGPU or has insufficient RAM. Check console for details.`);
     }
   };
 
@@ -235,10 +235,10 @@ export default function BackendInfo({ className = '' }: BackendInfoProps) {
                           Initialize for LLM
                         </button>
                         <button
-                          onClick={testLlamaModel}
+                          onClick={testLiquidAIModel}
                           className="px-2 py-1 bg-green-600 hover:bg-green-700 text-xs rounded"
                         >
-                          Test Llama 1B
+                          Test LiquidAI
                         </button>
                       </div>
                     )}

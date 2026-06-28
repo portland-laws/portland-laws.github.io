@@ -1,0 +1,40 @@
+{
+  "version": "inactive_activation_rehearsal_checklist_v1",
+  "status": "inactive",
+  "release_decision_references": [
+    "placeholder: release decision memo reference required before activation"
+  ],
+  "smoke_replay_references": [
+    "placeholder: deterministic smoke replay fixture reference required before activation"
+  ],
+  "activation_prerequisites": [
+    "placeholder: source registry freshness review remains required"
+  ],
+  "source_evidence_placeholder_checks": [
+    "placeholder: every activation assertion must cite committed public-source evidence"
+  ],
+  "reviewer_signoff_placeholders": [
+    "placeholder: named reviewer signoff required before activation"
+  ],
+  "rollback_checkpoints": [
+    "placeholder: rollback checkpoint and owner required before activation"
+  ],
+  "post_activation_smoke_requirements": [
+    "placeholder: post-activation smoke command list required before activation"
+  ],
+  "hold_conditions": [
+    "hold if any source freshness, reviewer, rollback, or replay placeholder remains unresolved"
+  ],
+  "validation_commands": [
+    ["python3", "ppd/daemon/ppd_daemon.py", "--self-test"]
+  ],
+  "mutation_controls": {
+    "activation_enabled": false,
+    "devhub_write_enabled": false,
+    "live_mutation_enabled": false,
+    "official_action_enabled": false
+  },
+  "notes": [
+    "This inactive rehearsal fixture contains placeholders only and records no private artifacts."
+  ]
+}
