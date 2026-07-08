@@ -33,7 +33,7 @@ class ParserCleanDiagnosticTest(unittest.TestCase):
 
         self.assertEqual(diagnostic["failure_kind"], "non_json_llm_output")
         self.assertIn("attempts=1", diagnostic["compact_raw_response_summary"])
-        self.assertIn("snippet=''", diagnostic["compact_raw_response_summary"])
+        self.assertNotIn("snippet=", diagnostic["compact_raw_response_summary"])
 
 
 if __name__ == "__main__":

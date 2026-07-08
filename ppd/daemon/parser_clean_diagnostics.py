@@ -1,28 +1,10 @@
-"""Daemon-only diagnostics for parser-clean LLM failures.
-
-The helpers in this module intentionally keep only compact metadata derived from
-raw model output. They must not persist full raw LLM responses.
-"""
+"""Daemon-only diagnostics for parser-clean LLM failures."""
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from hashlib import sha256
-from typing import Iterable, Mapping, Sequence
-
-_MAX_SNIPPET_CHARS = 120
-_PRIVATE_MARKERS = (
-    "auth-state",
-    "auth_state",
-    "storage-state",
-    "storage_state",
-    "trace.zip",
-    ".har",
-    "cookie",
-    "screenshot",
-    "downloaded document",
-    "raw crawl output",
-)
+from typing import Mapping, Sequence
 
 
 @dataclass(frozen=True)
@@ -92,36 +74,16 @@ def _looks_like_json_object(value: str) -> bool:
 
 def _summarize_attempts(attempts: Sequence[str]) -> str:
     if not attempts:
-        return "attempts=0 chars=0 sha256=empty snippet=''"
+        return "attempts=0 unique=0 chars=0 sha256=empty repeated=false"
 
     total_chars = sum(len(attempt) for attempt in attempts)
     digest = sha256("\n---attempt---\n".join(attempts).encode("utf-8")).hexdigest()[:12]
     unique_count = len(set(attempts))
-    first_snippet = _compact_snippet(attempts[0])
     repeat_note = " repeated=true" if len(attempts) > 1 and unique_count == 1 else " repeated=false"
     return (
         f"attempts={len(attempts)} unique={unique_count} chars={total_chars} "
-        f"sha256={digest}{repeat_note} snippet='{first_snippet}'"
+        f"sha256={digest}{repeat_note}"
     )
-
-
-def _compact_snippet(value: str) -> str:
-    compact = " ".join(value.split())
-    compact = _redact_private_markers(compact)
-    if len(compact) > _MAX_SNIPPET_CHARS:
-        compact = compact[: _MAX_SNIPPET_CHARS - 3] + "..."
-    return compact.replace("'", "\\'")
-
-
-def _redact_private_markers(value: str) -> str:
-    redacted = value
-    lowered = redacted.lower()
-    for marker in _PRIVATE_MARKERS:
-        while marker in lowered:
-            index = lowered.index(marker)
-            redacted = redacted[:index] + "[private-marker-omitted]" + redacted[index + len(marker) :]
-            lowered = redacted.lower()
-    return redacted
 
 
 def _next_action_hint(failure_kind: str) -> str:
