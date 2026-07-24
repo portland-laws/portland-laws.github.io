@@ -52,3 +52,4 @@ dist/
 artifacts/
 .venv-dgx
 .local-build/
+.worktrees/
